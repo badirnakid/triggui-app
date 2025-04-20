@@ -1,13 +1,38 @@
 {
   "expo": {
-    "name": "TrigguiApp",
+    "name": "Triggui",
     "slug": "triggui-app",
     "version": "1.0.0",
     "orientation": "portrait",
+    "userInterfaceStyle": "light",
     "icon": "./assets/images/icon.png",
-    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/images/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
     "web": {
+      "bundler": "metro",
       "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": ["expo-router"],
+    "extra": {
+      "expo-router": {
+        "origin": "web"
+      }
     }
   }
 }
