@@ -1,12 +1,140 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TrigguiApp</title>
-  <script src="bundle.js" defer></script>
-</head>
-<body>
-  <div id="root">Cargando TrigguiApp...</div>
-</body>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TrigguiApp</title>
+    <style>
+      :root {
+        --color1: #ff6b6b;
+        --color2: #6bc2ff;
+        --color3: #ffe66d;
+        --color4: #6bffb1;
+        --logo-color: #333;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', sans-serif;
+      }
+
+      body {
+        background: white;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        overflow: hidden;
+        text-align: center;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        gap: 10px;
+        width: 100vw;
+        height: 70vh;
+      }
+
+      .block {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: white;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .block:nth-child(1) {
+        background: linear-gradient(135deg, var(--color1), #ff9999);
+      }
+
+      .block:nth-child(2) {
+        background: linear-gradient(135deg, var(--color2), #99dcff);
+      }
+
+      .block:nth-child(3) {
+        background: linear-gradient(135deg, var(--color3), #fff199);
+      }
+
+      .block:nth-child(4) {
+        background: linear-gradient(135deg, var(--color4), #99ffd0);
+      }
+
+      .block:active {
+        transform: scale(0.98);
+      }
+
+      .logo-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        animation: breathe 3s ease-in-out infinite;
+      }
+
+      .imagotipo {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: var(--color1);
+        animation: breathe 3s ease-in-out infinite;
+      }
+
+      .logotipo {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: var(--logo-color);
+      }
+
+      .frase {
+        font-size: 0.9rem;
+        color: #666;
+        padding: 10px;
+        font-style: italic;
+        opacity: 0.7;
+      }
+
+      @keyframes breathe {
+        0%, 100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.08);
+        }
+      }
+
+      @media (max-width: 600px) {
+        .grid {
+          grid-template-columns: 1fr;
+          grid-template-rows: repeat(4, 1fr);
+        }
+        .block {
+          font-size: 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="grid">
+      <div class="block">Detente</div>
+      <div class="block">Lee</div>
+      <div class="block">¿?</div>
+      <div class="block">Conecta</div>
+    </div>
+
+    <div class="logo-container">
+      <div class="imagotipo"></div>
+      <div class="logotipo">Triggui</div>
+    </div>
+
+    <div class="frase">Abre un libro. Cualquier página. Un párrafo. Ahora.</div>
+  </body>
 </html>
