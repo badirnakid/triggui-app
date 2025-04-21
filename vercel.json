@@ -1,7 +1,6 @@
 {
-    "framework": null,
-    "buildCommand": "npm run web",
-    "outputDirectory": "",
-    "cleanUrls": true
-  }
-  
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/", "destination": "/index.html" }
+  ]
+}
