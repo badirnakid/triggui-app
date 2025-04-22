@@ -12,33 +12,8 @@
       background: #ffffff;
       color: #222;
     }
-    body {
-      display: flex;
-      flex-direction: column;
-    }
-    .loader {
-      position: fixed;
-      inset: 0;
-      background: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 999;
-      animation: fadeOut 2s ease 1.6s forwards;
-    }
-    .loader img {
-      height: 30px;
-      animation: breathing 3s ease-in-out infinite;
-    }
-    @keyframes breathing {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.08); }
-    }
-    @keyframes fadeOut {
-      to { opacity: 0; visibility: hidden; }
-    }
     .main {
-      display: none;
+      display: flex;
       flex-direction: column;
       justify-content: space-between;
       height: 100%;
@@ -65,38 +40,40 @@
       text-align: center;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
       position: relative;
+      overflow: hidden;
+      color: white;
     }
-    .label { z-index: 1; position: relative; transition: opacity 0.2s ease; color: white; }
-    .block.show .label { opacity: 0; }
-    .accionables {
+    .label {
+      z-index: 1;
+      position: relative;
+      pointer-events: none;
+    }
+    .accionables, .book-cover {
       position: absolute;
       inset: 0;
+      display: none;
+      justify-content: center;
+      align-items: center;
       padding: 14px;
+      border-radius: 16px;
+      text-align: center;
+    }
+    .accionables {
       background: rgba(255,255,255,0.95);
       color: #222;
       font-size: 0.88rem;
       font-weight: 500;
-      border-radius: 16px;
-      display: flex;
       flex-direction: column;
-      justify-content: center;
-      align-items: center;
       line-height: 1.4;
-      text-align: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-      z-index: 5;
     }
-    .block.show .accionables { opacity: 1; pointer-events: auto; }
     .book-cover {
       background-size: cover;
       background-position: center;
-      border-radius: 16px;
-      height: 100%;
-      width: 100%;
+    }
+    .block.show .accionables,
+    .block.show .book-cover {
+      display: flex;
     }
     .shock {
       background: linear-gradient(to right, #F6BD60, #F7A072);
@@ -106,18 +83,13 @@
       border-radius: 32px;
       padding: 10px 24px;
       margin: 0 auto;
-      display: block;
       font-size: 0.9rem;
-      box-shadow: 0 3px 10px rgba(246, 189, 96, 0.3);
-      transition: all 0.3s ease;
       cursor: pointer;
-      white-space: nowrap;
     }
     .logo-wrapper {
       display: flex;
       justify-content: center;
       align-items: center;
-      margin-top: 4px;
     }
     .trigguiletras {
       height: 22px;
@@ -126,127 +98,111 @@
   </style>
 </head>
 <body>
-  <div class="loader"><img src="/imagotipo.png" alt="Cargando Triggui" /></div>
-  <div class="main" id="mainContent">
+  <div class="main">
     <div class="grid">
-      <div class="block" id="detenteBlock" style="background: linear-gradient(135deg, #F6BD60, #F7A072);">
-        <div class="accionables" id="accionablesText"></div>
+      <div class="block" id="detente" style="background: linear-gradient(135deg, #F6BD60, #F7A072);">
         <span class="label">Detente</span>
+        <div class="accionables" id="accionablesText"></div>
       </div>
-      <div class="block" id="leeBlock" style="background: linear-gradient(135deg, #84A59D, #B2C8BA);">
+      <div class="block" id="lee" style="background: linear-gradient(135deg, #84A59D, #B2C8BA);">
         <span class="label" id="leeLabel">Lee</span>
+        <div class="book-cover" id="leeCover"></div>
       </div>
-      <div class="block" id="questionBlock" style="background: linear-gradient(135deg, #F28482, #F5CAC3);">
+      <div class="block" id="question" style="background: linear-gradient(135deg, #F28482, #F5CAC3);">
         <span class="label">?</span>
       </div>
-      <div class="block" id="conectaBlock" style="background: linear-gradient(135deg, #7DBBC3, #C4DFAA);">
+      <div class="block" id="conecta" style="background: linear-gradient(135deg, #7DBBC3, #C4DFAA);">
         <span class="label">Conecta</span>
       </div>
     </div>
     <button class="shock" id="shockBtn">📚👊 Chócalas por leer un libro físico</button>
     <div class="logo-wrapper">
-      <img src="/trigguiletras.png" alt="triggui logo" class="trigguiletras" />
+      <img src="/trigguiletras.png" class="trigguiletras" />
     </div>
   </div>
 
   <script>
-    setTimeout(() => {
-      document.querySelector('.loader').style.display = 'none';
-      document.getElementById('mainContent').style.display = 'flex';
-    }, 1600);
-
     const libros = [
       {
         portada: 'https://m.media-amazon.com/images/I/91bYsX41DVL.jpg',
-        accionables: ['🧱 Crea sistemas, no metas', '🧠 La identidad guía los hábitos', '🔁 Mejora 1% cada día'],
-        frases: ['📖 Pequeños hábitos, grandes resultados.', '🔄 El cambio real es invisible al inicio.']
-      },
-      {
-        portada: 'https://m.media-amazon.com/images/I/71ZLctx5ZRL.jpg',
-        accionables: ['🫂 La amabilidad es revolución', '🕊 Permítete estar confundido', '💬 Escucha más que hablas'],
-        frases: ['💭 Lo esencial no siempre se dice.', '🐎 A veces solo necesitas estar.']
+        accionables: ['🧱 Crea sistemas, no metas', '🧠 Identidad primero', '🔁 Mejora 1% diario'],
+        frases: ['📖 Los hábitos son el interés compuesto del cambio.', '🛠 Crea, no persigas.']
       },
       {
         portada: 'https://m.media-amazon.com/images/I/81RrUu0gJ7L.jpg',
-        accionables: ['🔥 El dolor forja carácter', '💪 Haz lo que te incomoda', '🔒 Disciplina = libertad'],
-        frases: ['👊 Nadie vendrá a salvarte.', '🛠 Tú eres tu proyecto más brutal.']
+        accionables: ['🔥 Usa el dolor como gasolina', '🥶 Lo difícil es el entrenamiento', '💪 Disciplina brutal'],
+        frases: ['👊 Get comfortable being uncomfortable.', '🛡 Suffering is the test.']
+      },
+      {
+        portada: 'https://m.media-amazon.com/images/I/71ZLctx5ZRL.jpg',
+        accionables: ['🫂 La amabilidad es revolución', '🌫 No saber es válido', '🕊 Solo escucha'],
+        frases: ['💭 “What do you want to be?” “Kind.”', '🎧 El silencio también responde.']
       }
     ];
 
     let libroActual = null;
     let detenteOpen = false;
     let leeOpen = false;
-    let leeEstado = 'normal';
 
-    const detenteBlock = document.getElementById('detenteBlock');
+    const detente = document.getElementById('detente');
+    const lee = document.getElementById('lee');
     const accionablesText = document.getElementById('accionablesText');
-    const leeBlock = document.getElementById('leeBlock');
+    const leeCover = document.getElementById('leeCover');
     const leeLabel = document.getElementById('leeLabel');
-    const shockBtn = document.getElementById('shockBtn');
 
-    shockBtn.addEventListener('click', () => {
-      shockBtn.innerText = '📚👏 ¡Bien leído!';
-    });
-
-    function renderLee(state) {
-      if (state === 'portada') {
-        leeBlock.innerHTML = `<div class="book-cover" style="background-image:url('${libroActual.portada}')"></div>`;
-      } else if (state === 'frase') {
-        const frase = libroActual.frases[Math.floor(Math.random() * libroActual.frases.length)];
-        leeBlock.innerHTML = `<span class="label">${frase}</span>`;
-      } else {
-        leeBlock.innerHTML = `<span class="label" id="leeLabel">Lee</span>`;
-      }
-    }
-
-    function actualizarLibro() {
+    function seleccionarNuevoLibro() {
       libroActual = libros[Math.floor(Math.random() * libros.length)];
-      accionablesText.innerHTML = libroActual.accionables.join('<br>');
-      renderLee('portada');
-      leeEstado = 'portada';
     }
 
-    detenteBlock.addEventListener('click', () => {
-      detenteOpen = !detenteBlock.classList.toggle('show');
-      if (!detenteOpen) return;
+    function sincronizarAmbosConLibro() {
+      seleccionarNuevoLibro();
+      accionablesText.innerHTML = libroActual.accionables.join('<br>');
+      leeCover.style.backgroundImage = `url('${libroActual.portada}')`;
+      detente.classList.add('show');
+      lee.classList.add('show');
+      leeLabel.style.display = 'none';
+      detenteOpen = true;
+      leeOpen = true;
+    }
 
-      if (!leeOpen) {
-        leeBlock.classList.add('show');
-        leeOpen = true;
-        actualizarLibro();
-      } else {
-        actualizarLibro();
+    detente.addEventListener('click', () => {
+      if (!detenteOpen && !leeOpen) {
+        sincronizarAmbosConLibro();
+      } else if (detenteOpen && !leeOpen) {
+        sincronizarAmbosConLibro();
+      } else if (!detenteOpen && leeOpen) {
+        sincronizarAmbosConLibro();
+      } else if (detenteOpen && leeOpen) {
+        // Si ambos abiertos y se toca Detente → cerrar Detente y sincronizar nuevo
+        detente.classList.remove('show');
+        detenteOpen = false;
       }
     });
 
-    leeBlock.addEventListener('click', () => {
-      leeOpen = !leeBlock.classList.toggle('show');
-      if (!leeOpen) return;
-
-      if (!detenteOpen) {
-        detenteBlock.classList.add('show');
-        detenteOpen = true;
-        actualizarLibro();
-      } else {
-        actualizarLibro();
+    lee.addEventListener('click', () => {
+      if (!leeOpen && !detenteOpen) {
+        sincronizarAmbosConLibro();
+      } else if (leeOpen && !detenteOpen) {
+        sincronizarAmbosConLibro();
+      } else if (!leeOpen && detenteOpen) {
+        sincronizarAmbosConLibro();
+      } else if (leeOpen && detenteOpen) {
+        // Si ambos abiertos y se toca Lee → cerrar Lee y sincronizar nuevo
+        lee.classList.remove('show');
+        leeOpen = false;
+        leeLabel.style.display = 'block';
       }
     });
 
-    leeBlock.addEventListener('dblclick', () => {
-      if (leeEstado === 'portada') {
-        renderLee('frase');
-        leeEstado = 'frase';
-      } else {
-        renderLee('normal');
-        leeEstado = 'normal';
-      }
+    document.getElementById('shockBtn').addEventListener('click', () => {
+      document.getElementById('shockBtn').innerText = '📚👏 ¡Bien leído!';
     });
 
-    document.getElementById('questionBlock').addEventListener('click', () => {
+    document.getElementById('question').addEventListener('click', () => {
       window.open("https://www.ted.com/talks/simon_sinek_how_great_leaders_inspire_action", "_blank");
     });
 
-    document.getElementById('conectaBlock').addEventListener('click', () => {
+    document.getElementById('conecta').addEventListener('click', () => {
       alert("🔗 Muy pronto podrás conectar con otros lectores.");
     });
   </script>
