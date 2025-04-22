@@ -125,18 +125,39 @@
     const libros = [
       {
         portada: 'https://m.media-amazon.com/images/I/91bYsX41DVL.jpg',
-        accionables: ['🧱 Crea sistemas, no metas', '🧠 Identidad primero', '🔁 Mejora 1% diario'],
-        frases: ['📖 Los hábitos son el interés compuesto del cambio.', '🛠 Crea, no persigas.']
+        accionables: [
+          '🧱 Crea sistemas, no metas',
+          '🧠 La identidad guía el hábito',
+          '🔁 Mejora 1% cada día'
+        ],
+        frases: [
+          '📖 Los hábitos son el interés compuesto del cambio.',
+          '🎯 No se trata de ser perfecto, sino constante.'
+        ]
       },
       {
         portada: 'https://m.media-amazon.com/images/I/81RrUu0gJ7L.jpg',
-        accionables: ['🔥 Usa el dolor como gasolina', '🥶 Lo difícil es el entrenamiento', '💪 Disciplina brutal'],
-        frases: ['👊 Get comfortable being uncomfortable.', '🛡 Suffering is the test.']
+        accionables: [
+          '🔥 Usa el dolor como gasolina',
+          '🥶 Entrena tu mente como tu cuerpo',
+          '💪 Disciplina brutal'
+        ],
+        frases: [
+          '👊 Get comfortable being uncomfortable.',
+          '🛡 El sufrimiento revela tu verdadero yo.'
+        ]
       },
       {
-        portada: 'https://m.media-amazon.com/images/I/71ZLctx5ZRL.jpg',
-        accionables: ['🫂 La amabilidad es revolución', '🌫 No saber es válido', '🕊 Solo escucha'],
-        frases: ['💭 “What do you want to be?” “Kind.”', '🎧 El silencio también responde.']
+        portada: 'https://m.media-amazon.com/images/I/71QKQ9mwV7L.jpg',
+        accionables: [
+          '🧘‍♂️ No todo importa',
+          '💩 Aprende a ignorar con intención',
+          '🧠 Sé brutalmente honesto'
+        ],
+        frases: [
+          '🚫 No tienes que dar un f*ck por todo.',
+          '🎯 Elige con sabiduría lo que te afecta.'
+        ]
       }
     ];
 
@@ -173,7 +194,6 @@
       } else if (!detenteOpen && leeOpen) {
         sincronizarAmbosConLibro();
       } else if (detenteOpen && leeOpen) {
-        // Si ambos abiertos y se toca Detente → cerrar Detente y sincronizar nuevo
         detente.classList.remove('show');
         detenteOpen = false;
       }
@@ -187,10 +207,9 @@
       } else if (!leeOpen && detenteOpen) {
         sincronizarAmbosConLibro();
       } else if (leeOpen && detenteOpen) {
-        // Si ambos abiertos y se toca Lee → cerrar Lee y sincronizar nuevo
         lee.classList.remove('show');
-        leeOpen = false;
         leeLabel.style.display = 'block';
+        leeOpen = false;
       }
     });
 
