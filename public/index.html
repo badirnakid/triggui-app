@@ -21,14 +21,14 @@
       flex-direction: column;
       justify-content: space-between;
       height: 100vh;
-      padding: 8px;
+      padding: 4px;
     }
 
     .grid {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 6px;
+      gap: 4px;
       flex: 1;
     }
 
@@ -36,8 +36,7 @@
       flex: 1 1 48%;
       max-width: 48%;
       height: 36vh;
-      min-height: 120px;
-      border-radius: 20px;
+      border-radius: 18px;
       color: white;
       font-weight: 600;
       font-size: 1.15rem;
@@ -47,7 +46,7 @@
       text-align: center;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 5px 12px rgba(0, 0, 0, 0.07);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.07);
       position: relative;
     }
 
@@ -60,8 +59,7 @@
     }
 
     .block:hover {
-      transform: scale(1.015);
-      box-shadow: 0 10px 18px rgba(0, 0, 0, 0.08);
+      transform: scale(1.01);
     }
 
     .shock {
@@ -70,13 +68,14 @@
       font-weight: bold;
       border: none;
       border-radius: 32px;
-      padding: 14px 32px;
-      margin: 14px auto 0;
+      padding: 12px 26px;
+      margin: 10px auto 4px;
       display: block;
-      font-size: 0.95rem;
-      box-shadow: 0 4px 10px rgba(127, 0, 255, 0.3);
+      font-size: 0.88rem;
+      box-shadow: 0 3px 8px rgba(127, 0, 255, 0.25);
       transition: all 0.3s ease;
       cursor: pointer;
+      white-space: nowrap;
     }
 
     .shock.clicked {
@@ -88,28 +87,28 @@
       justify-content: center;
       align-items: center;
       gap: 8px;
-      margin-top: 6px;
+      margin-top: 4px;
     }
 
     .imagotipo {
-      width: 40px;
-      height: 40px;
+      width: 36px;
+      height: 36px;
     }
 
     .trigguiletras {
-      width: 96px;
-      height: 26px;
+      width: 92px;
+      height: 24px;
     }
 
     .accionables {
       position: absolute;
       inset: 0;
       padding: 14px;
-      background: rgba(255,255,255,0.93);
+      background: rgba(255,255,255,0.92);
       color: #222;
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       font-weight: 500;
-      border-radius: 20px;
+      border-radius: 18px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -151,8 +150,8 @@
 <body>
   <div class="main">
     <div class="grid">
-      <div class="block" id="detenteBlock" style="background: linear-gradient(135deg, #f43b47, #453a94);">
-        <div class="accionables" id="accionables">
+      <div class="block" id="detenteBlock" style="background: linear-gradient(135deg, #e96443, #e96443);">
+        <div class="accionables">
           ✊ Abraza la incomodidad<br>
           🧠 Domina tu diálogo interno<br>
           🔥 Haz lo que otros no se atreven
@@ -160,21 +159,21 @@
         <span class="label">Detente</span>
       </div>
 
-      <div class="block" id="leeBlock" style="background: linear-gradient(135deg, #3CA55C, #B5AC49);">
+      <div class="block" id="leeBlock" style="background: linear-gradient(135deg, #00b09b, #00b09b);">
         <span class="label">Lee</span>
       </div>
 
-      <div class="block" style="background: linear-gradient(135deg, #ff6a00, #ee0979);">
-        <a href="https://www.ted.com/talks/ken_robinson_do_schools_kill_creativity" target="_blank" class="label">?</a>
+      <div class="block" id="questionBlock" style="background: linear-gradient(135deg, #3f2b96, #3f2b96);">
+        <span class="label">?</span>
       </div>
 
-      <div class="block" style="background: linear-gradient(135deg, #36D1DC, #5B86E5);">
+      <div class="block" id="conectaBlock" style="background: linear-gradient(135deg, #667db6, #667db6);">
         <span class="label">Conecta</span>
       </div>
     </div>
 
     <button class="shock" id="shockBtn">
-      📚 Chócalas aquí si abriste un libro físico
+      📚 Ya leí
     </button>
 
     <div class="logo-wrapper">
@@ -185,23 +184,28 @@
 
   <script>
     document.getElementById('shockBtn').addEventListener('click', function () {
-      this.innerText = '📚 ¡Gracias por abrir un libro físico!';
+      this.innerText = '📘 Bien leído';
       this.classList.add('clicked');
     });
 
     let leeState = false;
     document.getElementById('leeBlock').addEventListener('click', function () {
-      if (!leeState) {
-        this.style.background = 'linear-gradient(135deg, #ffe000, #799f0c)';
-        leeState = true;
-      } else {
-        this.style.background = 'linear-gradient(135deg, #3CA55C, #B5AC49)';
-        leeState = false;
-      }
+      const colorOn = 'linear-gradient(135deg, #FFD200, #FFD200)';
+      const colorOff = 'linear-gradient(135deg, #00b09b, #00b09b)';
+      this.style.background = leeState ? colorOff : colorOn;
+      leeState = !leeState;
     });
 
     document.getElementById('detenteBlock').addEventListener('click', function () {
       this.classList.toggle('show');
+    });
+
+    document.getElementById('questionBlock').addEventListener('click', function () {
+      alert("🚧 Coming soon...");
+    });
+
+    document.getElementById('conectaBlock').addEventListener('click', function () {
+      alert("🔗 Próximamente podrás conectar.");
     });
   </script>
 </body>
