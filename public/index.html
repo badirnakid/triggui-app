@@ -27,7 +27,6 @@
       gap: 1.5vw;
       flex-grow: 1;
     }
-
     .block {
       flex: 1 1 calc(50% - 0.75vw);
       max-width: calc(50% - 0.75vw);
@@ -45,7 +44,6 @@
       overflow: hidden;
       color: white;
     }
-
     @media (min-width: 768px) {
       .grid {
         flex-wrap: nowrap;
@@ -56,13 +54,11 @@
         max-width: 100%;
       }
     }
-
     .label {
       z-index: 1;
       position: relative;
       pointer-events: none;
     }
-
     .accionables, .book-cover {
       position: absolute;
       inset: 0;
@@ -73,7 +69,6 @@
       border-radius: 16px;
       text-align: center;
     }
-
     .accionables {
       background: rgba(255,255,255,0.95);
       color: #222;
@@ -82,23 +77,19 @@
       flex-direction: column;
       line-height: 1.4;
     }
-
     .book-cover {
       background-size: cover;
       background-position: center;
     }
-
     .block.show .accionables,
     .block.show .book-cover {
       display: flex;
     }
-
     .block.show .label {
       display: none;
     }
-
     .shock {
-      background: linear-gradient(to right, #F6BD60, #F7A072);
+      background: linear-gradient(to right, #FF00B8, #FF6E40);
       color: white;
       font-weight: bold;
       border: none;
@@ -108,13 +99,11 @@
       font-size: 0.9rem;
       cursor: pointer;
     }
-
     .logo-wrapper {
       display: flex;
       justify-content: center;
       align-items: center;
     }
-
     .trigguiletras {
       height: 22px;
       object-fit: contain;
@@ -124,18 +113,18 @@
 <body>
   <div class="main">
     <div class="grid">
-      <div class="block" id="detente" style="background: linear-gradient(135deg, #F6BD60, #F7A072);">
+      <div class="block" id="detente" style="background: linear-gradient(135deg, #FF6F61, #D72638);">
         <span class="label" id="detenteLabel">Detente</span>
         <div class="accionables" id="accionablesText"></div>
       </div>
-      <div class="block" id="lee" style="background: linear-gradient(135deg, #84A59D, #B2C8BA);">
+      <div class="block" id="lee" style="background: linear-gradient(135deg, #00B4DB, #8E2DE2);">
         <span class="label" id="leeLabel">Lee</span>
         <div class="book-cover" id="leeCover"></div>
       </div>
-      <div class="block" id="question" style="background: linear-gradient(135deg, #F28482, #F5CAC3);">
+      <div class="block" id="question" style="background: linear-gradient(135deg, #FF6E7F, #FFC371);">
         <span class="label">?</span>
       </div>
-      <div class="block" id="conecta" style="background: linear-gradient(135deg, #7DBBC3, #C4DFAA);">
+      <div class="block" id="conecta" style="background: linear-gradient(135deg, #00F260, #0575E6);">
         <span class="label">Conecta</span>
       </div>
     </div>
@@ -148,7 +137,7 @@
   <script>
     const libros = [
       {
-        portada: 'https://m.media-amazon.com/images/I/91bYsX41DVL.jpg',
+        portada: 'https://images-na.ssl-images-amazon.com/images/I/91bYsX41DVL.jpg',
         accionables: [
           '🧱 Crea sistemas, no metas',
           '🧠 Identidad guía el hábito',
@@ -156,7 +145,7 @@
         ]
       },
       {
-        portada: 'https://m.media-amazon.com/images/I/81RrUu0gJ7L.jpg',
+        portada: 'https://images-na.ssl-images-amazon.com/images/I/81RrUu0gJ7L.jpg',
         accionables: [
           '🔥 Usa el dolor como gasolina',
           '🥶 Entrena tu mente como tu cuerpo',
@@ -164,7 +153,7 @@
         ]
       },
       {
-        portada: 'https://m.media-amazon.com/images/I/71QKQ9mwV7L.jpg',
+        portada: 'https://images-na.ssl-images-amazon.com/images/I/71QKQ9mwV7L.jpg',
         accionables: [
           '🧘‍♂️ No todo importa',
           '💩 Aprende a ignorar con intención',
@@ -193,7 +182,6 @@
       seleccionarNuevoLibro();
       accionablesText.innerHTML = libroActual.accionables.join('<br>');
       leeCover.style.backgroundImage = `url('${libroActual.portada}')`;
-
       detente.classList.add('show');
       lee.classList.add('show');
       detenteLabel.style.display = 'none';
