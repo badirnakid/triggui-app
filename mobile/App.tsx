@@ -13,7 +13,7 @@ export default function App() {
         />
       </View>
       <Text style={styles.phrase}>
-        “La vida es muy simple. Insistimos en complicarla.” — Confucio
+        “TrigguiApp: simple, sublime...” — Confucio
       </Text>
       <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
         <Text style={styles.buttonText}>📖</Text>
