@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Triggui App</title>
+  <title>Triggui App - Visual Edition</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
       height: 100%;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #ffffff;
+      font-family: 'Segoe UI', sans-serif;
+      background: #fff;
       color: #222;
     }
     .main {
@@ -32,8 +32,6 @@
       max-width: calc(50% - 0.75vw);
       height: calc(50% - 0.75vw);
       border-radius: 16px;
-      font-weight: 600;
-      font-size: 1.12rem;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -44,20 +42,12 @@
       overflow: hidden;
       color: white;
     }
-    @media (min-width: 768px) {
-      .grid {
-        flex-wrap: nowrap;
-      }
-      .block {
-        flex: 1;
-        height: 75vh;
-        max-width: 100%;
-      }
-    }
     .label {
       z-index: 1;
       position: relative;
       pointer-events: none;
+      font-weight: bold;
+      font-size: 1.2rem;
     }
     .accionables, .book-cover {
       position: absolute;
@@ -79,14 +69,24 @@
     }
     .book-cover {
       flex-direction: column;
-      font-size: 1.1rem;
-      color: #fff;
-      font-weight: bold;
-      text-shadow: 0 0 5px rgba(0,0,0,0.2);
+      animation: fadeIn 1.2s ease forwards;
     }
-    .book-cover .emoji {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
+    .icon svg {
+      width: 50px;
+      height: 50px;
+      margin-bottom: 12px;
+      fill: white;
+      opacity: 0.9;
+      animation: pulse 2s infinite;
+    }
+    .title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+    .author {
+      font-size: 0.85rem;
+      opacity: 0.85;
     }
     .block.show .accionables,
     .block.show .book-cover {
@@ -115,16 +115,25 @@
       height: 22px;
       object-fit: contain;
     }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 0.9; }
+      50% { transform: scale(1.15); opacity: 1; }
+      100% { transform: scale(1); opacity: 0.9; }
+    }
   </style>
 </head>
 <body>
   <div class="main">
     <div class="grid">
-      <div class="block" id="detente" style="background: linear-gradient(135deg, #FF6F91, #FFC75F);">
+      <div class="block" id="detente" style="background: linear-gradient(135deg, #FF6F61, #D72638);">
         <span class="label" id="detenteLabel">Detente</span>
         <div class="accionables" id="accionablesText"></div>
       </div>
-      <div class="block" id="lee" style="background: linear-gradient(135deg, #6A82FB, #FC5C7D);">
+      <div class="block" id="lee" style="background: linear-gradient(135deg, #3a1c71, #d76d77, #ffaf7b);">
         <span class="label" id="leeLabel">Lee</span>
         <div class="book-cover" id="leeCover"></div>
       </div>
@@ -144,54 +153,25 @@
   <script>
     const libros = [
       {
-        titulo: 'Atomic Habits',
-        emoji: '🧱',
-        accionables: ['Crea sistemas, no metas', 'Identidad guía el hábito', 'Mejora 1% diario']
+        titulo: 'Can’t Hurt Me',
+        autor: 'David Goggins',
+        color: 'linear-gradient(135deg, #1e130c, #9a8478)',
+        svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6 4 2 8 2 14c0 5 4 8 10 8s10-3 10-8c0-6-4-10-10-12z"/></svg>`,
+        accionables: ['Transforma el dolor', 'Persiste sin motivación', 'Hazte invencible']
       },
       {
-        titulo: 'Can’t Hurt Me',
-        emoji: '🔥',
-        accionables: ['Transforma el dolor', 'Disfruta lo difícil', 'Hazte imparable']
+        titulo: 'Atomic Habits',
+        autor: 'James Clear',
+        color: 'linear-gradient(135deg, #667db6, #0082c8, #0082c8, #667db6)',
+        svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 4v16h14V4H5zm12 14H7V6h10v12z"/></svg>`,
+        accionables: ['Identidad guía hábito', 'Sistemas > metas', 'Mejora 1% diario']
       },
       {
         titulo: 'Mindset',
-        emoji: '🧠',
-        accionables: ['Mentalidad de crecimiento', 'Aprende del fracaso', 'Confía en tu cambio']
-      },
-      {
-        titulo: 'The Power of Now',
-        emoji: '🌟',
-        accionables: ['El presente es todo', 'Observa sin juicio', 'Haz silencio interior']
-      },
-      {
-        titulo: '7 Habits',
-        emoji: '📘',
-        accionables: ['Sé proactivo', 'Fin en mente', 'Gana/Gana']
-      },
-      {
-        titulo: 'Start With Why',
-        emoji: '❓',
-        accionables: ['Empieza por el porqué', 'Inspira con visión', 'Conecta profundo']
-      },
-      {
-        titulo: 'Deep Work',
-        emoji: '🕳️',
-        accionables: ['Bloques de enfoque', 'Elimina distracciones', 'Produce sin ruido']
-      },
-      {
-        titulo: 'Thinking Fast & Slow',
-        emoji: '⏱️',
-        accionables: ['Sistema 1 y 2', 'No creas tu intuición', 'Decide con datos']
-      },
-      {
-        titulo: '12 Rules for Life',
-        emoji: '🧍‍♂️',
-        accionables: ['Ordena tu mundo', 'Di la verdad', 'Sé fuerte primero']
-      },
-      {
-        titulo: 'The Subtle Art...',
-        emoji: '🧘‍♂️',
-        accionables: ['No todo importa', 'Ignora con intención', 'Sé brutalmente honesto']
+        autor: 'Carol S. Dweck',
+        color: 'linear-gradient(135deg, #1f4037, #99f2c8)',
+        svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a10 10 0 00-2 19.8V22h4v-.2A10 10 0 0012 2z"/></svg>`,
+        accionables: ['Mentalidad de crecimiento', 'Aprende del error', 'Cree en el cambio']
       }
     ];
 
@@ -213,11 +193,17 @@
 
     function sincronizarYMostrarAmbos() {
       seleccionarNuevoLibro();
-      accionablesText.innerHTML = libroActual.accionables.map(a => `• ${a}`).join('<br>');
+
+      accionablesText.innerHTML = libroActual.accionables.map(text => `• ${text}`).join('<br>');
+
+      lee.style.background = libroActual.color;
+
       leeCover.innerHTML = `
-        <div class="emoji">${libroActual.emoji}</div>
-        <div class="titulo">${libroActual.titulo}</div>
+        <div class="icon">${libroActual.svg}</div>
+        <div class="title">${libroActual.titulo}</div>
+        <div class="author">${libroActual.autor}</div>
       `;
+
       detente.classList.add('show');
       lee.classList.add('show');
       detenteLabel.style.display = 'none';
