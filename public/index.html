@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -61,9 +62,9 @@
       flex-wrap: wrap;
       justify-content: center;
       align-items: center;
-      gap: 8px;
-      padding: 8px;
-      margin-top: 12px;
+      gap: 10px;
+      padding: 10px;
+      margin-top: 10px;
     }
     .block {
       width: 44vw;
@@ -76,13 +77,20 @@
       justify-content: center;
       align-items: center;
       text-align: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.15);
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+      animation: breathing 4s ease-in-out infinite;
     }
+
     .block:active {
-      transform: scale(0.97);
-      opacity: 0.9;
+      transform: scale(0.95);
+      opacity: 0.88;
+    }
+
+    @keyframes breathing {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
     }
 
     .shock {
@@ -96,6 +104,11 @@
       display: block;
       font-size: 0.95rem;
       box-shadow: 0 3px 6px rgba(98, 0, 234, 0.4);
+      transition: background-color 0.3s ease;
+    }
+
+    .shock.clicked {
+      background-color: #3700B3;
     }
 
     .logo-wrapper {
@@ -131,7 +144,7 @@
       <div class="block" style="background: linear-gradient(to bottom right, #00c3ff, #ffff1c); color: #000;">Conecta</div>
     </div>
 
-    <button class="shock" onclick="this.innerText='📚 ¡Gracias por abrir un libro físico!'">
+    <button class="shock" id="shockBtn">
       📚 Chócalas aquí si abriste un libro físico
     </button>
 
@@ -146,6 +159,11 @@
       document.getElementById('loader').style.display = 'none';
       document.getElementById('mainContent').style.display = 'flex';
     }, 1800);
+
+    document.getElementById('shockBtn').addEventListener('click', function () {
+      this.innerText = '📚 ¡Gracias por abrir un libro físico!';
+      this.classList.add('clicked');
+    });
   </script>
 </body>
 </html>
