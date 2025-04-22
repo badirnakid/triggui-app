@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Triggui - Lee Portal</title>
+  <title>Triggui Visual Book Portals</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
@@ -12,7 +12,6 @@
       background: #fff;
       color: #222;
     }
-
     .main {
       display: flex;
       flex-direction: column;
@@ -21,7 +20,6 @@
       padding: 1.5vw;
       gap: 1.5vw;
     }
-
     .grid {
       display: flex;
       flex-wrap: wrap;
@@ -29,14 +27,11 @@
       gap: 1.5vw;
       flex-grow: 1;
     }
-
     .block {
       flex: 1 1 calc(50% - 0.75vw);
       max-width: calc(50% - 0.75vw);
       height: calc(50% - 0.75vw);
       border-radius: 16px;
-      font-weight: 600;
-      font-size: 1.12rem;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -47,7 +42,6 @@
       overflow: hidden;
       color: white;
     }
-
     @media (min-width: 768px) {
       .grid {
         flex-wrap: nowrap;
@@ -58,13 +52,13 @@
         max-width: 100%;
       }
     }
-
     .label {
       z-index: 1;
       position: relative;
       pointer-events: none;
+      font-weight: 600;
+      font-size: 1.2rem;
     }
-
     .accionables, .book-cover {
       position: absolute;
       inset: 0;
@@ -75,7 +69,6 @@
       border-radius: 16px;
       text-align: center;
     }
-
     .accionables {
       background: rgba(255,255,255,0.95);
       color: #222;
@@ -84,88 +77,39 @@
       flex-direction: column;
       line-height: 1.4;
     }
-
     .book-cover {
-      position: relative;
       flex-direction: column;
       background: #000;
-      overflow: hidden;
     }
-
-    .pulse-circle {
-      position: absolute;
-      width: 140px;
-      height: 140px;
-      border-radius: 50%;
-      border: 2px solid rgba(255,255,255,0.1);
-      animation: spin 6s linear infinite;
-      z-index: 2;
+    .book-icon {
+      font-size: 4rem;
+      margin-bottom: 16px;
+      animation: iconPulse 2.5s ease-in-out infinite;
     }
-
-    .pulse-circle::before {
-      content: '';
-      position: absolute;
-      top: 50%; left: 50%;
-      width: 60px; height: 60px;
-      transform: translate(-50%, -50%);
-      background: radial-gradient(circle, #fff, #8E2DE2);
-      border-radius: 50%;
-      animation: breathe 4s ease-in-out infinite;
+    @keyframes iconPulse {
+      0%, 100% { transform: scale(1); opacity: 0.85; }
+      50% { transform: scale(1.25); opacity: 1; }
     }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    @keyframes breathe {
-      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.9; }
-      50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
-    }
-
-    .book-frase {
-      position: relative;
-      z-index: 3;
+    .book-phrase {
       font-size: 1rem;
       font-weight: 500;
-      margin-top: 160px;
+      text-align: center;
+      max-width: 80%;
+      color: #fff;
       opacity: 0;
-      animation: revealText 2s ease 1.5s forwards;
-      text-shadow: 0 0 12px rgba(255,255,255,0.2);
+      animation: fadeIn 1.6s ease-in-out forwards 1s;
+      text-shadow: 0 0 12px rgba(255,255,255,0.3);
     }
-
-    @keyframes revealText {
-      0% { opacity: 0; transform: scale(0.95); }
-      100% { opacity: 1; transform: scale(1); }
+    @keyframes fadeIn {
+      to { opacity: 1; }
     }
-
-    .plasma-bg {
-      position: absolute;
-      width: 200%;
-      height: 200%;
-      top: -50%;
-      left: -50%;
-      background: radial-gradient(circle at center, #8e2de2 0%, #000 60%);
-      animation: plasma 20s ease-in-out infinite;
-      z-index: 0;
-      filter: blur(60px);
-    }
-
-    @keyframes plasma {
-      0% { transform: rotate(0deg) scale(1); }
-      50% { transform: rotate(180deg) scale(1.3); }
-      100% { transform: rotate(360deg) scale(1); }
-    }
-
     .block.show .accionables,
     .block.show .book-cover {
       display: flex;
     }
-
     .block.show .label {
       display: none;
     }
-
     .shock {
       background: linear-gradient(to right, #FF6F61, #FAD961);
       color: white;
@@ -177,13 +121,11 @@
       font-size: 0.9rem;
       cursor: pointer;
     }
-
     .logo-wrapper {
       display: flex;
       justify-content: center;
       align-items: center;
     }
-
     .trigguiletras {
       height: 22px;
       object-fit: contain;
@@ -217,16 +159,28 @@
   <script>
     const libros = [
       {
+        titulo: "Atomic Habits",
+        emoji: "🧱", // bloques = hábitos
+        frase: "Eres lo que haces todos los días.",
+        accionables: ["Sistemas > metas", "Identidad guía hábitos", "Pequeños cambios diarios"]
+      },
+      {
+        titulo: "Can’t Hurt Me",
+        emoji: "🔥", // fuego interior, resistencia
         frase: "Haz que tu dolor tenga propósito.",
         accionables: ["Transforma el dolor", "Persiste sin motivación", "Hazte invencible"]
       },
       {
-        frase: "Eres lo que repites cada día.",
-        accionables: ["Sistemas > metas", "Identidad guía hábitos", "Pequeños cambios diarios"]
+        titulo: "Mindset",
+        emoji: "🧠", // mentalidad
+        frase: "Cambia tu mente, cambia tu realidad.",
+        accionables: ["Mentalidad de crecimiento", "Aprende del error", "Cree en el cambio"]
       },
       {
-        frase: "Todo puede cambiar si cambias tu mente.",
-        accionables: ["Mentalidad de crecimiento", "Aprende del error", "Cree en el cambio"]
+        titulo: "The Power of Now",
+        emoji: "🕯️", // iluminación, presente
+        frase: "Solo existe este instante.",
+        accionables: ["Respira el ahora", "Suelta el pasado", "Observa sin juicio"]
       }
     ];
 
@@ -250,9 +204,8 @@
       accionablesText.innerHTML = libroActual.accionables.map(a => `• ${a}`).join('<br>');
 
       leeCover.innerHTML = `
-        <div class="plasma-bg"></div>
-        <div class="pulse-circle"></div>
-        <div class="book-frase">“${libroActual.frase}”</div>
+        <div class="book-icon">${libroActual.emoji}</div>
+        <div class="book-phrase">“${libroActual.frase}”</div>
       `;
 
       detente.classList.add('show');
