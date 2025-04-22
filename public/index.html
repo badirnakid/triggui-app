@@ -125,7 +125,7 @@
   <div class="main">
     <div class="grid">
       <div class="block" id="detente" style="background: linear-gradient(135deg, #F6BD60, #F7A072);">
-        <span class="label">Detente</span>
+        <span class="label" id="detenteLabel">Detente</span>
         <div class="accionables" id="accionablesText"></div>
       </div>
       <div class="block" id="lee" style="background: linear-gradient(135deg, #84A59D, #B2C8BA);">
@@ -178,46 +178,44 @@
     let leeOpen = false;
 
     const detente = document.getElementById('detente');
-    const lee = document.getElementById('lee');
+    const detenteLabel = document.getElementById('detenteLabel');
     const accionablesText = document.getElementById('accionablesText');
-    const leeCover = document.getElementById('leeCover');
+
+    const lee = document.getElementById('lee');
     const leeLabel = document.getElementById('leeLabel');
+    const leeCover = document.getElementById('leeCover');
 
     function seleccionarNuevoLibro() {
       libroActual = libros[Math.floor(Math.random() * libros.length)];
     }
 
-    function sincronizarAmbosConLibro() {
+    function sincronizarYMostrarAmbos() {
       seleccionarNuevoLibro();
       accionablesText.innerHTML = libroActual.accionables.join('<br>');
       leeCover.style.backgroundImage = `url('${libroActual.portada}')`;
+
       detente.classList.add('show');
       lee.classList.add('show');
+      detenteLabel.style.display = 'none';
+      leeLabel.style.display = 'none';
       detenteOpen = true;
       leeOpen = true;
     }
 
     detente.addEventListener('click', () => {
-      if (!detenteOpen && !leeOpen) {
-        sincronizarAmbosConLibro();
-      } else if (detenteOpen && !leeOpen) {
-        sincronizarAmbosConLibro();
-      } else if (!detenteOpen && leeOpen) {
-        sincronizarAmbosConLibro();
-      } else if (detenteOpen && leeOpen) {
+      if (!detenteOpen || !leeOpen) {
+        sincronizarYMostrarAmbos();
+      } else {
         detente.classList.remove('show');
+        detenteLabel.style.display = 'block';
         detenteOpen = false;
       }
     });
 
     lee.addEventListener('click', () => {
-      if (!leeOpen && !detenteOpen) {
-        sincronizarAmbosConLibro();
-      } else if (leeOpen && !detenteOpen) {
-        sincronizarAmbosConLibro();
-      } else if (!leeOpen && detenteOpen) {
-        sincronizarAmbosConLibro();
-      } else if (leeOpen && detenteOpen) {
+      if (!leeOpen || !detenteOpen) {
+        sincronizarYMostrarAmbos();
+      } else {
         lee.classList.remove('show');
         leeLabel.style.display = 'block';
         leeOpen = false;
