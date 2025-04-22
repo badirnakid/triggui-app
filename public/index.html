@@ -2,61 +2,27 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <title>TrigguiApp</title>
+  <title>Triggui App</title>
   <style>
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body {
-      margin: 0;
-      padding: 0;
-      background: #fafafa;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
-      height: 100vh;
-      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #fdfdfd;
+      color: #333;
+      height: 100%;
       display: flex;
       flex-direction: column;
-    }
-
-    .loader {
-      flex: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: white;
-      z-index: 9999;
-      animation: fadeOut 1.8s ease-out forwards;
-    }
-
-    .loader img {
-      width: 80px;
-      height: 80px;
-      animation: pulse 1.8s ease-in-out forwards;
-    }
-
-    @keyframes pulse {
-      0% { transform: scale(0); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    @keyframes fadeOut {
-      0% { opacity: 1; }
-      80% { opacity: 1; }
-      100% { opacity: 0; visibility: hidden; display: none; }
+      overflow-x: hidden;
     }
 
     .main {
-      flex: 1;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding-bottom: 12px;
-      animation: fadeIn 2s ease-in forwards;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+      height: 100vh;
+      padding-bottom: 16px;
     }
 
     .grid {
@@ -64,47 +30,58 @@
       flex-wrap: wrap;
       justify-content: center;
       align-items: center;
-      gap: 10px;
-      padding: 10px;
-      margin-top: 10px;
+      gap: 16px;
+      padding: 16px;
+    }
+
+    @media (min-width: 768px) {
+      .grid {
+        flex-wrap: nowrap;
+        gap: 24px;
+      }
     }
 
     .block {
-      width: 44vw;
+      width: 42vw;
       height: 33vh;
-      border-radius: 22px;
+      min-width: 150px;
+      max-width: 180px;
+      border-radius: 20px;
       color: white;
-      font-size: 1.2rem;
       font-weight: 600;
+      font-size: 1.1rem;
       display: flex;
       justify-content: center;
       align-items: center;
       text-align: center;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.12);
       cursor: pointer;
       transition: all 0.3s ease;
-      animation: breathing 4.5s ease-in-out infinite;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.08);
     }
 
-    .block:active { transform: scale(0.96); opacity: 0.88; }
+    @media (min-width: 768px) {
+      .block {
+        width: 22vw;
+        height: 32vh;
+      }
+    }
 
-    @keyframes breathing {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.015); }
+    .block:hover {
+      transform: scale(1.02);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
     }
 
     .shock {
-      background: linear-gradient(to right, #fc466b, #3f5efb);
+      background: linear-gradient(to right, #7F00FF, #E100FF);
       color: white;
       font-weight: bold;
       border: none;
       border-radius: 32px;
       padding: 14px 32px;
-      margin: 10px auto;
+      margin: 14px auto 0;
       display: block;
       font-size: 0.95rem;
-      box-shadow: 0 4px 10px rgba(63, 94, 251, 0.3);
+      box-shadow: 0 4px 10px rgba(127, 0, 255, 0.3);
       transition: all 0.3s ease;
     }
 
@@ -121,36 +98,45 @@
     }
 
     .imagotipo {
-      width: 42px;
-      height: 42px;
+      width: 40px;
+      height: 40px;
     }
 
     .trigguiletras {
-      width: 100px;
-      height: 28px;
+      width: 96px;
+      height: 26px;
     }
 
     .accionables {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 6px;
-      font-size: 0.9rem;
-      color: #333;
-      font-weight: 500;
+      position: absolute;
+      top: 12px;
+      width: 100%;
       text-align: center;
+      font-size: 0.92rem;
+      font-weight: 500;
+      color: #444;
+      line-height: 1.4;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
     }
 
-    .accionables div {
-      margin: 4px 0;
+    .show .accionables {
+      opacity: 1;
+    }
+
+    .detente-wrapper {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .block a {
-      display: block;
-      width: 100%;
-      height: 100%;
       color: white;
       text-decoration: none;
+      width: 100%;
+      height: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -158,30 +144,24 @@
   </style>
 </head>
 <body>
-
-  <div class="loader" id="loader">
-    <img src="imagotipo.png" alt="Cargando..." />
-  </div>
-
-  <div class="main" id="mainContent" style="display:none;">
+  <div class="main">
     <div class="grid">
-      <div class="block" id="detenteBlock" style="background: linear-gradient(135deg, #fc5c7d, #6a82fb);">Detente</div>
-
-      <div class="block" id="leeBlock" onclick="toggleLee()" style="background: linear-gradient(135deg, #42e695, #3bb2b8);">
-        <span id="leeText">Lee</span>
+      <div class="detente-wrapper" id="detenteWrapper">
+        <div class="accionables" id="accionables">
+          ✊ Abraza la incomodidad<br />
+          🧠 Domina tu diálogo interno<br />
+          🔥 Haz lo que otros no se atreven
+        </div>
+        <div class="block" id="detenteBlock" style="background: linear-gradient(135deg, #FF416C, #FF4B2B);">Detente</div>
       </div>
 
-      <div class="block" style="background: linear-gradient(135deg, #ffecd2, #fcb69f);">
+      <div class="block" id="leeBlock" style="background: linear-gradient(135deg, #2193b0, #6dd5ed);">Lee</div>
+
+      <div class="block" style="background: linear-gradient(135deg, #FC466B, #3F5EFB);">
         <a href="https://www.ted.com/talks/ken_robinson_do_schools_kill_creativity" target="_blank">?</a>
       </div>
 
-      <div class="block" style="background: linear-gradient(135deg, #cc2b5e, #753a88);">Conecta</div>
-    </div>
-
-    <div class="accionables" id="accionables">
-      <div>✊ Abraza la incomodidad</div>
-      <div>🧠 Domina tu diálogo interno</div>
-      <div>🔥 Haz lo que otros no se atreven</div>
+      <div class="block" style="background: linear-gradient(135deg, #00C9FF, #92FE9D);">Conecta</div>
     </div>
 
     <button class="shock" id="shockBtn">
@@ -195,30 +175,17 @@
   </div>
 
   <script>
-    setTimeout(() => {
-      document.getElementById('loader').style.display = 'none';
-      document.getElementById('mainContent').style.display = 'flex';
-    }, 1800);
-
     document.getElementById('shockBtn').addEventListener('click', function () {
       this.innerText = '📚 ¡Gracias por abrir un libro físico!';
       this.classList.add('clicked');
     });
 
-    function toggleLee() {
-      const block = document.getElementById('leeBlock');
-      const text = document.getElementById('leeText');
-      const active = text.style.display === 'none';
-
-      text.style.display = active ? 'block' : 'none';
-      block.style.background = active
-        ? 'linear-gradient(135deg, #42e695, #3bb2b8)'
-        : 'linear-gradient(135deg, #F7971E, #FFD200)';
-    }
+    document.getElementById('leeBlock').addEventListener('click', function () {
+      this.style.background = 'linear-gradient(135deg, #F7971E, #FFD200)';
+    });
 
     document.getElementById('detenteBlock').addEventListener('click', function () {
-      const acc = document.getElementById('accionables');
-      acc.style.display = acc.style.display === 'flex' ? 'none' : 'flex';
+      document.getElementById('detenteWrapper').classList.toggle('show');
     });
   </script>
 </body>
