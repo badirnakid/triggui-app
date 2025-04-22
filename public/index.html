@@ -14,19 +14,53 @@
       height: 100%;
     }
 
-    .main {
+    body {
       display: flex;
+      flex-direction: column;
+    }
+
+    .loader {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+      animation: fadeOut 2s ease 1.8s forwards;
+    }
+
+    .loader img {
+      width: 80px;
+      height: 80px;
+      animation: breathing 2.5s ease-in-out infinite;
+    }
+
+    @keyframes breathing {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+    }
+
+    @keyframes fadeOut {
+      to { opacity: 0; visibility: hidden; }
+    }
+
+    .main {
+      display: none;
       flex-direction: column;
       justify-content: space-between;
       height: 100vh;
-      padding: 4px;
+      padding: 4px 4px 10px;
     }
 
     .grid {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 4px;
+      row-gap: 4px;
+      column-gap: 4px;
       flex: 1;
     }
 
@@ -54,6 +88,10 @@
         max-width: 22%;
         height: 60vh;
       }
+
+      .main {
+        padding-bottom: 6px;
+      }
     }
 
     .shock {
@@ -63,7 +101,7 @@
       border: none;
       border-radius: 32px;
       padding: 12px 26px;
-      margin: 10px auto 4px;
+      margin: 0 auto 4px;
       display: block;
       font-size: 0.88rem;
       box-shadow: 0 3px 8px rgba(127, 0, 255, 0.25);
@@ -76,14 +114,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 8px;
-      margin-top: 4px;
-    }
-
-    .imagotipo {
-      width: 42px;
-      height: 42px;
-      object-fit: contain;
+      margin-top: 6px;
     }
 
     .trigguiletras {
@@ -139,41 +170,40 @@
   </style>
 </head>
 <body>
-  <div class="main">
+  <div class="loader" id="loader">
+    <img src="/imagotipo.png" alt="Cargando Triggui" />
+  </div>
+
+  <div class="main" id="mainContent">
     <div class="grid">
       <div class="block" id="detenteBlock" style="background: linear-gradient(135deg, #e96443, #e96443);">
-        <div class="accionables">
-          ✊ Abraza la incomodidad<br>
-          🧠 Domina tu diálogo interno<br>
-          🔥 Haz lo que otros no se atreven
-        </div>
+        <div class="accionables">✊ Abraza la incomodidad<br>🧠 Domina tu diálogo interno<br>🔥 Haz lo que otros no se atreven</div>
         <span class="label">Detente</span>
       </div>
-
       <div class="block" id="leeBlock" style="background: linear-gradient(135deg, #00b09b, #00b09b);">
         <span class="label">Lee</span>
       </div>
-
       <div class="block" id="questionBlock" style="background: linear-gradient(135deg, #3f2b96, #3f2b96);">
         <span class="label">?</span>
       </div>
-
       <div class="block" id="conectaBlock" style="background: linear-gradient(135deg, #667db6, #667db6);">
         <span class="label">Conecta</span>
       </div>
     </div>
 
-    <button class="shock" id="shockBtn">
-      📚 Ya leí
-    </button>
+    <button class="shock" id="shockBtn">📚 Ya leí</button>
 
     <div class="logo-wrapper">
-      <img src="/imagotipo.png" alt="imagotipo" class="imagotipo" />
       <img src="/trigguiletras.png" alt="triggui logo" class="trigguiletras" />
     </div>
   </div>
 
   <script>
+    setTimeout(() => {
+      document.getElementById('loader').style.display = 'none';
+      document.getElementById('mainContent').style.display = 'flex';
+    }, 1800);
+
     document.getElementById('shockBtn').addEventListener('click', function () {
       this.innerText = '📘 Bien leído';
     });
