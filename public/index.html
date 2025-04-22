@@ -31,7 +31,7 @@
     }
 
     .loader img {
-      height: 72px;
+      height: 52px;
       width: auto;
       animation: breathing 3s ease-in-out infinite;
     }
@@ -50,7 +50,7 @@
       flex-direction: column;
       justify-content: space-between;
       height: 100%;
-      padding: 10px 12px 16px;
+      padding: 10px 10px 16px;
       gap: 10px;
     }
 
@@ -58,14 +58,14 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
-      gap: 8px;
+      gap: 6px;
       flex-grow: 1;
     }
 
     .block {
-      flex: 1 1 calc(50% - 8px);
-      max-width: calc(50% - 8px);
-      height: calc(50% - 8px);
+      flex: 1 1 calc(50% - 6px);
+      max-width: calc(50% - 6px);
+      height: calc(50% - 6px);
       border-radius: 14px;
       color: white;
       font-weight: 600;
@@ -83,23 +83,23 @@
     @media (min-width: 768px) {
       .grid {
         flex-wrap: nowrap;
-        gap: 16px;
+        gap: 20px;
       }
 
       .block {
         flex: 1;
-        height: 64vh;
+        height: 68vh;
         max-width: 100%;
       }
 
       .main {
         padding: 24px 32px;
-        gap: 24px;
+        gap: 16px;
       }
     }
 
     .shock {
-      background: linear-gradient(to right, #a600ff, #7b00c7);
+      background: linear-gradient(to right, #ff0099, #9b00ff);
       color: white;
       font-weight: bold;
       border: none;
@@ -122,7 +122,7 @@
     }
 
     .trigguiletras {
-      height: 24px;
+      height: 20px;
       object-fit: contain;
     }
 
@@ -130,9 +130,9 @@
       position: absolute;
       inset: 0;
       padding: 14px;
-      background: rgba(255,255,255,0.96);
+      background: rgba(255,255,255,0.95);
       color: #222;
-      font-size: 0.92rem;
+      font-size: 0.9rem;
       font-weight: 500;
       border-radius: 14px;
       display: flex;
@@ -170,17 +170,17 @@
 
   <div class="main" id="mainContent">
     <div class="grid">
-      <div class="block" id="detenteBlock" style="background: linear-gradient(135deg, #d84315, #ef6c00);">
-        <div class="accionables">✊ Respira antes de reaccionar<br>🧠 Repite: “Esto no es urgente”<br>🔒 No cedas al impulso</div>
+      <div class="block" id="detenteBlock" style="background: linear-gradient(135deg, #ff3d00, #ff9800);">
+        <div class="accionables">✋ Respira antes de reaccionar<br>🧠 Repite: “Esto no es urgente”<br>🔒 No cedas al impulso</div>
         <span class="label">Detente</span>
       </div>
-      <div class="block" id="leeBlock" style="background: linear-gradient(135deg, #00796b, #26a69a);">
+      <div class="block" id="leeBlock" style="background: linear-gradient(135deg, #00b894, #00cec9);">
         <span class="label">Lee</span>
       </div>
-      <div class="block" id="questionBlock" style="background: linear-gradient(135deg, #512da8, #7e57c2);">
+      <div class="block" id="questionBlock" style="background: linear-gradient(135deg, #6a1b9a, #ab47bc);">
         <span class="label">?</span>
       </div>
-      <div class="block" id="conectaBlock" style="background: linear-gradient(135deg, #1976d2, #64b5f6);">
+      <div class="block" id="conectaBlock" style="background: linear-gradient(135deg, #1565c0, #42a5f5);">
         <span class="label">Conecta</span>
       </div>
     </div>
@@ -204,8 +204,8 @@
 
     let leeState = false;
     document.getElementById('leeBlock').addEventListener('click', function () {
-      const colorOn = 'linear-gradient(135deg, #ffd600, #ffa000)';
-      const colorOff = 'linear-gradient(135deg, #00796b, #26a69a)';
+      const colorOn = 'linear-gradient(135deg, #fbc02d, #ffeb3b)';
+      const colorOff = 'linear-gradient(135deg, #00b894, #00cec9)';
       this.style.background = leeState ? colorOff : colorOn;
       this.querySelector('.label').innerText = leeState ? 'Lee' : 'Sigue leyendo...';
       leeState = !leeState;
