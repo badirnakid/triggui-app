@@ -28,7 +28,6 @@
     }
     .loader img {
       height: 30px;
-      width: auto;
       animation: breathing 3s ease-in-out infinite;
     }
     @keyframes breathing {
@@ -58,7 +57,6 @@
       max-width: calc(50% - 0.75vw);
       height: calc(50% - 0.75vw);
       border-radius: 16px;
-      color: white;
       font-weight: 600;
       font-size: 1.12rem;
       display: flex;
@@ -70,13 +68,38 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.05);
       position: relative;
     }
-    @media (min-width: 768px) {
-      .main { padding: 20px 28px; gap: 10px; }
-      .grid { flex-wrap: nowrap; gap: 10px; }
-      .block { flex: 1; height: 75vh; max-width: 100%; }
+    .label { z-index: 1; position: relative; transition: opacity 0.2s ease; color: white; }
+    .block.show .label { opacity: 0; }
+    .accionables {
+      position: absolute;
+      inset: 0;
+      padding: 14px;
+      background: rgba(255,255,255,0.95);
+      color: #222;
+      font-size: 0.88rem;
+      font-weight: 500;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      line-height: 1.4;
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 5;
+    }
+    .block.show .accionables { opacity: 1; pointer-events: auto; }
+    .book-cover {
+      background-size: cover;
+      background-position: center;
+      border-radius: 16px;
+      height: 100%;
+      width: 100%;
     }
     .shock {
-      background: linear-gradient(to right, #f6bd60, #f7a072);
+      background: linear-gradient(to right, #F6BD60, #F7A072);
       color: white;
       font-weight: bold;
       border: none;
@@ -100,60 +123,25 @@
       height: 22px;
       object-fit: contain;
     }
-    .accionables {
-      position: absolute;
-      inset: 0;
-      padding: 14px;
-      background: rgba(255,255,255,0.95);
-      color: #222;
-      font-size: 0.88rem;
-      font-weight: 500;
-      border-radius: 16px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      line-height: 1.4;
-      text-align: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-      z-index: 5;
-    }
-    .block.show .accionables {
-      opacity: 1;
-      pointer-events: auto;
-    }
-    .label {
-      z-index: 1;
-      position: relative;
-      transition: opacity 0.2s ease;
-    }
-    .block.show .label {
-      opacity: 0;
-    }
-    .book-cover {
-      background-size: cover;
-      background-position: center;
-      border-radius: 16px;
-      height: 100%;
-      width: 100%;
-    }
   </style>
 </head>
 <body>
-  <div class="loader" id="loader">
-    <img src="/imagotipo.png" alt="Cargando Triggui" />
-  </div>
+  <div class="loader"><img src="/imagotipo.png" alt="Cargando Triggui" /></div>
   <div class="main" id="mainContent">
     <div class="grid">
-      <div class="block" id="detenteBlock">
+      <div class="block" id="detenteBlock" style="background: linear-gradient(135deg, #F6BD60, #F7A072);">
         <div class="accionables" id="accionablesText"></div>
         <span class="label">Detente</span>
       </div>
-      <div class="block" id="leeBlock"><span class="label">Lee</span></div>
-      <div class="block" id="questionBlock" style="background: linear-gradient(135deg, #f7971e, #ffd200);"><span class="label">?</span></div>
-      <div class="block" id="conectaBlock" style="background: linear-gradient(135deg, #43cea2, #185a9d);"><span class="label">Conecta</span></div>
+      <div class="block" id="leeBlock" style="background: linear-gradient(135deg, #84A59D, #B2C8BA);">
+        <span class="label" id="leeLabel">Lee</span>
+      </div>
+      <div class="block" id="questionBlock" style="background: linear-gradient(135deg, #F28482, #F5CAC3);">
+        <span class="label">?</span>
+      </div>
+      <div class="block" id="conectaBlock" style="background: linear-gradient(135deg, #7DBBC3, #C4DFAA);">
+        <span class="label">Conecta</span>
+      </div>
     </div>
     <button class="shock" id="shockBtn">📚👊 Chócalas por leer un libro físico</button>
     <div class="logo-wrapper">
@@ -162,6 +150,11 @@
   </div>
 
   <script>
+    setTimeout(() => {
+      document.querySelector('.loader').style.display = 'none';
+      document.getElementById('mainContent').style.display = 'flex';
+    }, 1600);
+
     const libros = [
       {
         portada: 'https://m.media-amazon.com/images/I/91bYsX41DVL.jpg',
@@ -181,48 +174,70 @@
     ];
 
     let libroActual = null;
-    let leeEstado = 'normal'; // normal | portada | frase
+    let detenteOpen = false;
+    let leeOpen = false;
+    let leeEstado = 'normal';
 
-    const loader = document.getElementById('loader');
-    const mainContent = document.getElementById('mainContent');
     const detenteBlock = document.getElementById('detenteBlock');
-    const leeBlock = document.getElementById('leeBlock');
-    const shockBtn = document.getElementById('shockBtn');
     const accionablesText = document.getElementById('accionablesText');
-
-    setTimeout(() => {
-      loader.style.display = 'none';
-      mainContent.style.display = 'flex';
-    }, 1600);
+    const leeBlock = document.getElementById('leeBlock');
+    const leeLabel = document.getElementById('leeLabel');
+    const shockBtn = document.getElementById('shockBtn');
 
     shockBtn.addEventListener('click', () => {
       shockBtn.innerText = '📚👏 ¡Bien leído!';
     });
 
-    detenteBlock.addEventListener('click', () => {
-      detenteBlock.classList.toggle('show');
-      if (detenteBlock.classList.contains('show')) {
-        // Seleccionar libro nuevo
-        libroActual = libros[Math.floor(Math.random() * libros.length)];
-        // Actualizar accionables
-        accionablesText.innerHTML = libroActual.accionables.join('<br>');
-        // Forzar Lee también
-        leeEstado = 'portada';
+    function renderLee(state) {
+      if (state === 'portada') {
         leeBlock.innerHTML = `<div class="book-cover" style="background-image:url('${libroActual.portada}')"></div>`;
+      } else if (state === 'frase') {
+        const frase = libroActual.frases[Math.floor(Math.random() * libroActual.frases.length)];
+        leeBlock.innerHTML = `<span class="label">${frase}</span>`;
+      } else {
+        leeBlock.innerHTML = `<span class="label" id="leeLabel">Lee</span>`;
+      }
+    }
+
+    function actualizarLibro() {
+      libroActual = libros[Math.floor(Math.random() * libros.length)];
+      accionablesText.innerHTML = libroActual.accionables.join('<br>');
+      renderLee('portada');
+      leeEstado = 'portada';
+    }
+
+    detenteBlock.addEventListener('click', () => {
+      detenteOpen = !detenteBlock.classList.toggle('show');
+      if (!detenteOpen) return;
+
+      if (!leeOpen) {
+        leeBlock.classList.add('show');
+        leeOpen = true;
+        actualizarLibro();
+      } else {
+        actualizarLibro();
       }
     });
 
     leeBlock.addEventListener('click', () => {
-      if (!libroActual) return;
-      if (leeEstado === 'normal') {
-        leeBlock.innerHTML = `<div class="book-cover" style="background-image:url('${libroActual.portada}')"></div>`;
-        leeEstado = 'portada';
-      } else if (leeEstado === 'portada') {
-        const frase = libroActual.frases[Math.floor(Math.random() * libroActual.frases.length)];
-        leeBlock.innerHTML = `<span class="label">${frase}</span>`;
+      leeOpen = !leeBlock.classList.toggle('show');
+      if (!leeOpen) return;
+
+      if (!detenteOpen) {
+        detenteBlock.classList.add('show');
+        detenteOpen = true;
+        actualizarLibro();
+      } else {
+        actualizarLibro();
+      }
+    });
+
+    leeBlock.addEventListener('dblclick', () => {
+      if (leeEstado === 'portada') {
+        renderLee('frase');
         leeEstado = 'frase';
       } else {
-        leeBlock.innerHTML = `<span class="label">Lee</span>`;
+        renderLee('normal');
         leeEstado = 'normal';
       }
     });
