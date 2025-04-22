@@ -50,37 +50,42 @@
       flex-direction: column;
       justify-content: space-between;
       height: 100%;
-      padding: 5px 5px 10px;
-      gap: 5px;
+      padding: 4vw;
+      gap: 4vw;
     }
 
     .grid {
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
-      gap: 5px;
+      gap: 4vw;
       flex-grow: 1;
     }
 
     .block {
-      flex: 1 1 calc(50% - 5px);
-      max-width: calc(50% - 5px);
-      height: calc(50% - 5px);
+      flex: 1 1 calc(50% - 2vw);
+      max-width: calc(50% - 2vw);
+      height: calc(50% - 2vw);
       border-radius: 16px;
       color: white;
       font-weight: 600;
-      font-size: 1.08rem;
+      font-size: 1.1rem;
       display: flex;
       justify-content: center;
       align-items: center;
       text-align: center;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
       position: relative;
     }
 
     @media (min-width: 768px) {
+      .main {
+        padding: 24px 32px;
+        gap: 14px;
+      }
+
       .grid {
         flex-wrap: nowrap;
         gap: 14px;
@@ -90,11 +95,6 @@
         flex: 1;
         height: 68vh;
         max-width: 100%;
-      }
-
-      .main {
-        padding: 24px 32px;
-        gap: 12px;
       }
     }
 
@@ -212,11 +212,11 @@
     const leeBlock = document.getElementById('leeBlock');
     let leeClickCount = 0;
     const frases = [
-      "📖 Este párrafo... era para ti.",
-      "🧠 Leer es esculpir el silencio.",
-      "🌌 Las letras abren universos microscópicos.",
-      "⏳ Una página. Una eternidad concentrada.",
-      "🔍 Observa cómo piensas cuando lees."
+      "📖 Este párrafo era invisible… hasta que lo leíste.",
+      "🧠 Cada palabra se acomoda distinto en tu mente.",
+      "👂 A veces, lo más fuerte es lo que no suena.",
+      "✍️ ¿Estás leyendo… o está leyendo algo en ti?",
+      "🔓 Abriste una página, abriste una posibilidad."
     ];
 
     leeBlock.addEventListener('click', function () {
