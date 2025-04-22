@@ -82,7 +82,7 @@
       text-align: center;
       box-shadow: 0 10px 20px rgba(0,0,0,0.12);
       cursor: pointer;
-      transition: transform 0.15s ease, opacity 0.15s ease;
+      transition: all 0.3s ease;
       animation: breathing 4.5s ease-in-out infinite;
       text-shadow: 0 1px 2px rgba(0,0,0,0.25);
     }
@@ -95,7 +95,7 @@
     }
 
     .shock {
-      background: linear-gradient(to right, #ff6f61, #ff9966);
+      background: linear-gradient(to right, #fc466b, #3f5efb);
       color: white;
       font-weight: bold;
       border: none;
@@ -104,12 +104,12 @@
       margin: 10px auto;
       display: block;
       font-size: 0.95rem;
-      box-shadow: 0 4px 10px rgba(255, 111, 97, 0.3);
+      box-shadow: 0 4px 10px rgba(63, 94, 251, 0.3);
       transition: all 0.3s ease;
     }
 
     .shock.clicked {
-      background: linear-gradient(to right, #00c6ff, #0072ff);
+      background: linear-gradient(to right, #00b09b, #96c93d);
     }
 
     .logo-wrapper {
@@ -130,11 +130,19 @@
       height: 28px;
     }
 
-    .portada-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 22px;
+    .accionables {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 6px;
+      font-size: 0.9rem;
+      color: #333;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    .accionables div {
+      margin: 4px 0;
     }
 
     .block a {
@@ -157,18 +165,23 @@
 
   <div class="main" id="mainContent" style="display:none;">
     <div class="grid">
-      <div class="block" style="background: linear-gradient(135deg, #ff9a9e, #fad0c4);">Detente</div>
+      <div class="block" id="detenteBlock" style="background: linear-gradient(135deg, #fc5c7d, #6a82fb);">Detente</div>
 
-      <div class="block" id="leeBlock" onclick="toggleLee()" style="background: linear-gradient(135deg, #89f7fe, #66a6ff);">
+      <div class="block" id="leeBlock" onclick="toggleLee()" style="background: linear-gradient(135deg, #42e695, #3bb2b8);">
         <span id="leeText">Lee</span>
-        <img id="leeImage" src="Triggui-App-canthurtme.png" alt="Portada" class="portada-img" style="display:none;" />
       </div>
 
       <div class="block" style="background: linear-gradient(135deg, #ffecd2, #fcb69f);">
         <a href="https://www.ted.com/talks/ken_robinson_do_schools_kill_creativity" target="_blank">?</a>
       </div>
 
-      <div class="block" style="background: linear-gradient(135deg, #c471f5, #fa71cd);">Conecta</div>
+      <div class="block" style="background: linear-gradient(135deg, #cc2b5e, #753a88);">Conecta</div>
+    </div>
+
+    <div class="accionables" id="accionables">
+      <div>✊ Abraza la incomodidad</div>
+      <div>🧠 Domina tu diálogo interno</div>
+      <div>🔥 Haz lo que otros no se atreven</div>
     </div>
 
     <button class="shock" id="shockBtn">
@@ -193,13 +206,20 @@
     });
 
     function toggleLee() {
+      const block = document.getElementById('leeBlock');
       const text = document.getElementById('leeText');
-      const image = document.getElementById('leeImage');
-      const showingImage = image.style.display === 'block';
+      const active = text.style.display === 'none';
 
-      text.style.display = showingImage ? 'block' : 'none';
-      image.style.display = showingImage ? 'none' : 'block';
+      text.style.display = active ? 'block' : 'none';
+      block.style.background = active
+        ? 'linear-gradient(135deg, #42e695, #3bb2b8)'
+        : 'linear-gradient(135deg, #F7971E, #FFD200)';
     }
+
+    document.getElementById('detenteBlock').addEventListener('click', function () {
+      const acc = document.getElementById('accionables');
+      acc.style.display = acc.style.display === 'flex' ? 'none' : 'flex';
+    });
   </script>
 </body>
 </html>
