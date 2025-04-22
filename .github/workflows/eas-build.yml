@@ -1,0 +1,30 @@
+name: EAS Build Triggui
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'mobile/**'
+
+jobs:
+  build:
+    name: Build on Expo EAS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install EAS CLI
+        run: npm install -g eas-cli
+
+      - name: Run EAS Build (Preview)
+        run: eas build --platform all --non-interactive --profile preview
+        working-directory: mobile
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
