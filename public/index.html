@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Triggui Cósmico</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Triggui - Lee Portal</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
@@ -12,6 +12,7 @@
       background: #fff;
       color: #222;
     }
+
     .main {
       display: flex;
       flex-direction: column;
@@ -20,6 +21,7 @@
       padding: 1.5vw;
       gap: 1.5vw;
     }
+
     .grid {
       display: flex;
       flex-wrap: wrap;
@@ -27,6 +29,7 @@
       gap: 1.5vw;
       flex-grow: 1;
     }
+
     .block {
       flex: 1 1 calc(50% - 0.75vw);
       max-width: calc(50% - 0.75vw);
@@ -44,6 +47,7 @@
       overflow: hidden;
       color: white;
     }
+
     @media (min-width: 768px) {
       .grid {
         flex-wrap: nowrap;
@@ -54,11 +58,13 @@
         max-width: 100%;
       }
     }
+
     .label {
       z-index: 1;
       position: relative;
       pointer-events: none;
     }
+
     .accionables, .book-cover {
       position: absolute;
       inset: 0;
@@ -69,6 +75,7 @@
       border-radius: 16px;
       text-align: center;
     }
+
     .accionables {
       background: rgba(255,255,255,0.95);
       color: #222;
@@ -79,79 +86,80 @@
     }
 
     .book-cover {
-      position: absolute;
-      inset: 0;
-      overflow: hidden;
-      background: radial-gradient(ellipse at center, #1b2735 0%, #090a0f 100%);
-      animation: cosmicFade 1s ease-in;
-    }
-
-    .stars {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      background: transparent;
-      box-shadow:
-        0 0 1px #fff,
-        50px 100px 1px #fff,
-        100px 200px 1px #fff,
-        150px 300px 1px #fff,
-        200px 400px 1px #fff,
-        250px 150px 1px #fff,
-        300px 50px 1px #fff,
-        350px 250px 1px #fff;
-      animation: starsMove 60s linear infinite;
-    }
-
-    @keyframes starsMove {
-      0% { transform: translateY(0); }
-      100% { transform: translateY(-100%); }
-    }
-
-    .core {
       position: relative;
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background: radial-gradient(circle, #fff, #8e2de2);
-      box-shadow: 0 0 30px rgba(255,255,255,0.6);
-      animation: pulse 3s ease-in-out infinite;
-      z-index: 2;
+      flex-direction: column;
+      background: #000;
+      overflow: hidden;
     }
 
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 0.8; }
-      50% { transform: scale(1.2); opacity: 1; }
-    }
-
-    .orbit {
+    .pulse-circle {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      animation: orbit 10s linear infinite;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.1);
+      animation: spin 6s linear infinite;
       z-index: 2;
     }
 
-    .orbit span {
-      display: block;
-      font-size: 0.85rem;
-      color: #fff;
-      opacity: 0.7;
-      white-space: nowrap;
-      text-shadow: 0 0 8px rgba(255,255,255,0.3);
+    .pulse-circle::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 60px; height: 60px;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, #fff, #8E2DE2);
+      border-radius: 50%;
+      animation: breathe 4s ease-in-out infinite;
     }
 
-    @keyframes orbit {
-      0% { transform: translate(-50%, -50%) rotate(0deg); }
-      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes breathe {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.9; }
+      50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+    }
+
+    .book-frase {
+      position: relative;
+      z-index: 3;
+      font-size: 1rem;
+      font-weight: 500;
+      margin-top: 160px;
+      opacity: 0;
+      animation: revealText 2s ease 1.5s forwards;
+      text-shadow: 0 0 12px rgba(255,255,255,0.2);
+    }
+
+    @keyframes revealText {
+      0% { opacity: 0; transform: scale(0.95); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .plasma-bg {
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      top: -50%;
+      left: -50%;
+      background: radial-gradient(circle at center, #8e2de2 0%, #000 60%);
+      animation: plasma 20s ease-in-out infinite;
+      z-index: 0;
+      filter: blur(60px);
+    }
+
+    @keyframes plasma {
+      0% { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(180deg) scale(1.3); }
+      100% { transform: rotate(360deg) scale(1); }
     }
 
     .block.show .accionables,
     .block.show .book-cover {
       display: flex;
-      justify-content: center;
-      align-items: center;
     }
 
     .block.show .label {
@@ -179,11 +187,6 @@
     .trigguiletras {
       height: 22px;
       object-fit: contain;
-    }
-
-    @keyframes cosmicFade {
-      from { opacity: 0; }
-      to { opacity: 1; }
     }
   </style>
 </head>
@@ -215,17 +218,14 @@
     const libros = [
       {
         frase: "Haz que tu dolor tenga propósito.",
-        autor: "David Goggins",
         accionables: ["Transforma el dolor", "Persiste sin motivación", "Hazte invencible"]
       },
       {
         frase: "Eres lo que repites cada día.",
-        autor: "James Clear",
         accionables: ["Sistemas > metas", "Identidad guía hábitos", "Pequeños cambios diarios"]
       },
       {
         frase: "Todo puede cambiar si cambias tu mente.",
-        autor: "Carol S. Dweck",
         accionables: ["Mentalidad de crecimiento", "Aprende del error", "Cree en el cambio"]
       }
     ];
@@ -248,11 +248,13 @@
     function sincronizarYMostrarAmbos() {
       seleccionarNuevoLibro();
       accionablesText.innerHTML = libroActual.accionables.map(a => `• ${a}`).join('<br>');
+
       leeCover.innerHTML = `
-        <div class="stars"></div>
-        <div class="core"></div>
-        <div class="orbit"><span>“${libroActual.frase}”</span></div>
+        <div class="plasma-bg"></div>
+        <div class="pulse-circle"></div>
+        <div class="book-frase">“${libroActual.frase}”</div>
       `;
+
       detente.classList.add('show');
       lee.classList.add('show');
       detenteLabel.style.display = 'none';
