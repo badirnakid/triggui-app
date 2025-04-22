@@ -6,19 +6,16 @@
   <title>Triggui App</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
     html, body {
       height: 100%;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: #ffffff;
       color: #222;
     }
-
     body {
       display: flex;
       flex-direction: column;
     }
-
     .loader {
       position: fixed;
       inset: 0;
@@ -29,22 +26,18 @@
       z-index: 999;
       animation: fadeOut 2s ease 1.6s forwards;
     }
-
     .loader img {
       height: 30px;
       width: auto;
       animation: breathing 3s ease-in-out infinite;
     }
-
     @keyframes breathing {
       0%, 100% { transform: scale(1); }
       50% { transform: scale(1.08); }
     }
-
     @keyframes fadeOut {
       to { opacity: 0; visibility: hidden; }
     }
-
     .main {
       display: none;
       flex-direction: column;
@@ -53,7 +46,6 @@
       padding: 1.5vw;
       gap: 1.5vw;
     }
-
     .grid {
       display: flex;
       flex-wrap: wrap;
@@ -61,7 +53,6 @@
       gap: 1.5vw;
       flex-grow: 1;
     }
-
     .block {
       flex: 1 1 calc(50% - 0.75vw);
       max-width: calc(50% - 0.75vw);
@@ -79,27 +70,13 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.05);
       position: relative;
     }
-
     @media (min-width: 768px) {
-      .main {
-        padding: 20px 28px;
-        gap: 10px;
-      }
-
-      .grid {
-        flex-wrap: nowrap;
-        gap: 10px;
-      }
-
-      .block {
-        flex: 1;
-        height: 75vh;
-        max-width: 100%;
-      }
+      .main { padding: 20px 28px; gap: 10px; }
+      .grid { flex-wrap: nowrap; gap: 10px; }
+      .block { flex: 1; height: 75vh; max-width: 100%; }
     }
-
     .shock {
-      background: linear-gradient(to right, #1d2671, #c33764);
+      background: linear-gradient(to right, #f6bd60, #f7a072);
       color: white;
       font-weight: bold;
       border: none;
@@ -108,24 +85,21 @@
       margin: 0 auto;
       display: block;
       font-size: 0.9rem;
-      box-shadow: 0 3px 10px rgba(100, 0, 200, 0.3);
+      box-shadow: 0 3px 10px rgba(246, 189, 96, 0.3);
       transition: all 0.3s ease;
       cursor: pointer;
       white-space: nowrap;
     }
-
     .logo-wrapper {
       display: flex;
       justify-content: center;
       align-items: center;
       margin-top: 4px;
     }
-
     .trigguiletras {
       height: 22px;
       object-fit: contain;
     }
-
     .accionables {
       position: absolute;
       inset: 0;
@@ -146,24 +120,21 @@
       transition: opacity 0.3s ease;
       z-index: 5;
     }
-
     .block.show .accionables {
       opacity: 1;
       pointer-events: auto;
     }
-
     .label {
       z-index: 1;
       position: relative;
       transition: opacity 0.2s ease;
     }
-
     .block.show .label {
       opacity: 0;
     }
-
     .book-cover {
-      background: url('https://m.media-amazon.com/images/I/91bYsX41DVL.jpg') center center/cover no-repeat;
+      background-size: cover;
+      background-position: center;
       border-radius: 16px;
       height: 100%;
       width: 100%;
@@ -174,50 +145,93 @@
   <div class="loader" id="loader">
     <img src="/imagotipo.png" alt="Cargando Triggui" />
   </div>
-
   <div class="main" id="mainContent">
     <div class="grid">
-      <div class="block" id="detenteBlock" style="background: linear-gradient(135deg, #F6BD60, #F7A072);">
-        <div class="accionables">🛑 No hagas nada<br>👁 Observa tu impulso<br>📸 Respira desde el pecho</div>
+      <div class="block" id="detenteBlock">
+        <div class="accionables" id="accionablesText"></div>
         <span class="label">Detente</span>
       </div>
-      <div class="block" id="leeBlock" style="background: linear-gradient(135deg, #84A59D, #B2C8BA);">
-        <div class="book-cover"></div>
-      </div>
-      <div class="block" id="questionBlock" style="background: linear-gradient(135deg, #F28482, #F5CAC3);">
-        <span class="label">?</span>
-      </div>
-      <div class="block" id="conectaBlock" style="background: linear-gradient(135deg, #7DBBC3, #C4DFAA);">
-        <span class="label">Conecta</span>
-      </div>
+      <div class="block" id="leeBlock"><span class="label">Lee</span></div>
+      <div class="block" id="questionBlock" style="background: linear-gradient(135deg, #f7971e, #ffd200);"><span class="label">?</span></div>
+      <div class="block" id="conectaBlock" style="background: linear-gradient(135deg, #43cea2, #185a9d);"><span class="label">Conecta</span></div>
     </div>
-
-    <button class="shock" id="shockBtn">📘 Ya leí</button>
-
+    <button class="shock" id="shockBtn">📚👊 Chócalas por leer un libro físico</button>
     <div class="logo-wrapper">
       <img src="/trigguiletras.png" alt="triggui logo" class="trigguiletras" />
     </div>
   </div>
 
   <script>
+    const libros = [
+      {
+        portada: 'https://m.media-amazon.com/images/I/91bYsX41DVL.jpg',
+        accionables: ['🧱 Crea sistemas, no metas', '🧠 La identidad guía los hábitos', '🔁 Mejora 1% cada día'],
+        frases: ['📖 Pequeños hábitos, grandes resultados.', '🔄 El cambio real es invisible al inicio.']
+      },
+      {
+        portada: 'https://m.media-amazon.com/images/I/71ZLctx5ZRL.jpg',
+        accionables: ['🫂 La amabilidad es revolución', '🕊 Permítete estar confundido', '💬 Escucha más que hablas'],
+        frases: ['💭 Lo esencial no siempre se dice.', '🐎 A veces solo necesitas estar.']
+      },
+      {
+        portada: 'https://m.media-amazon.com/images/I/81RrUu0gJ7L.jpg',
+        accionables: ['🔥 El dolor forja carácter', '💪 Haz lo que te incomoda', '🔒 Disciplina = libertad'],
+        frases: ['👊 Nadie vendrá a salvarte.', '🛠 Tú eres tu proyecto más brutal.']
+      }
+    ];
+
+    let libroActual = null;
+    let leeEstado = 'normal'; // normal | portada | frase
+
+    const loader = document.getElementById('loader');
+    const mainContent = document.getElementById('mainContent');
+    const detenteBlock = document.getElementById('detenteBlock');
+    const leeBlock = document.getElementById('leeBlock');
+    const shockBtn = document.getElementById('shockBtn');
+    const accionablesText = document.getElementById('accionablesText');
+
     setTimeout(() => {
-      document.getElementById('loader').style.display = 'none';
-      document.getElementById('mainContent').style.display = 'flex';
+      loader.style.display = 'none';
+      mainContent.style.display = 'flex';
     }, 1600);
 
-    document.getElementById('shockBtn').addEventListener('click', function () {
-      this.innerText = '✅ Bien leído';
+    shockBtn.addEventListener('click', () => {
+      shockBtn.innerText = '📚👏 ¡Bien leído!';
     });
 
-    document.getElementById('detenteBlock').addEventListener('click', function () {
-      this.classList.toggle('show');
+    detenteBlock.addEventListener('click', () => {
+      detenteBlock.classList.toggle('show');
+      if (detenteBlock.classList.contains('show')) {
+        // Seleccionar libro nuevo
+        libroActual = libros[Math.floor(Math.random() * libros.length)];
+        // Actualizar accionables
+        accionablesText.innerHTML = libroActual.accionables.join('<br>');
+        // Forzar Lee también
+        leeEstado = 'portada';
+        leeBlock.innerHTML = `<div class="book-cover" style="background-image:url('${libroActual.portada}')"></div>`;
+      }
     });
 
-    document.getElementById('questionBlock').addEventListener('click', function () {
+    leeBlock.addEventListener('click', () => {
+      if (!libroActual) return;
+      if (leeEstado === 'normal') {
+        leeBlock.innerHTML = `<div class="book-cover" style="background-image:url('${libroActual.portada}')"></div>`;
+        leeEstado = 'portada';
+      } else if (leeEstado === 'portada') {
+        const frase = libroActual.frases[Math.floor(Math.random() * libroActual.frases.length)];
+        leeBlock.innerHTML = `<span class="label">${frase}</span>`;
+        leeEstado = 'frase';
+      } else {
+        leeBlock.innerHTML = `<span class="label">Lee</span>`;
+        leeEstado = 'normal';
+      }
+    });
+
+    document.getElementById('questionBlock').addEventListener('click', () => {
       window.open("https://www.ted.com/talks/simon_sinek_how_great_leaders_inspire_action", "_blank");
     });
 
-    document.getElementById('conectaBlock').addEventListener('click', function () {
+    document.getElementById('conectaBlock').addEventListener('click', () => {
       alert("🔗 Muy pronto podrás conectar con otros lectores.");
     });
   </script>
