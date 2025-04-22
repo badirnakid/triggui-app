@@ -8,32 +8,32 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
       height: 100%;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #ffffff;
+      font-family: 'Segoe UI', sans-serif;
+      background: #fff;
       color: #222;
     }
     .main {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      height: 100%;
-      padding: 1.5vw;
-      gap: 1.5vw;
+      height: 100vh;
+      padding: 16px;
+      gap: 16px;
     }
     .grid {
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
-      gap: 1.5vw;
+      gap: 16px;
       flex-grow: 1;
     }
     .block {
-      flex: 1 1 calc(50% - 0.75vw);
-      max-width: calc(50% - 0.75vw);
-      height: calc(50% - 0.75vw);
+      flex: 1 1 calc(50% - 8px);
+      max-width: calc(50% - 8px);
+      height: calc(50% - 8px);
       border-radius: 16px;
       font-weight: 600;
-      font-size: 1.12rem;
+      font-size: 1.1rem;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -44,16 +44,7 @@
       overflow: hidden;
       color: white;
     }
-    @media (min-width: 768px) {
-      .grid {
-        flex-wrap: nowrap;
-      }
-      .block {
-        flex: 1;
-        height: 75vh;
-        max-width: 100%;
-      }
-    }
+    .block.show .label { display: none; }
     .label {
       z-index: 1;
       position: relative;
@@ -68,8 +59,6 @@
       padding: 14px;
       border-radius: 16px;
       text-align: center;
-    }
-    .accionables {
       background: rgba(255,255,255,0.95);
       color: #222;
       font-size: 0.88rem;
@@ -85,16 +74,13 @@
     .block.show .book-cover {
       display: flex;
     }
-    .block.show .label {
-      display: none;
-    }
     .shock {
-      background: linear-gradient(to right, #FF4E50, #F9D423);
+      background: linear-gradient(to right, #fc466b, #3f5efb);
       color: white;
       font-weight: bold;
       border: none;
       border-radius: 32px;
-      padding: 10px 24px;
+      padding: 12px 24px;
       margin: 0 auto;
       font-size: 0.9rem;
       cursor: pointer;
@@ -102,7 +88,6 @@
     .logo-wrapper {
       display: flex;
       justify-content: center;
-      align-items: center;
     }
     .trigguiletras {
       height: 22px;
@@ -113,18 +98,18 @@
 <body>
   <div class="main">
     <div class="grid">
-      <div class="block" id="detente" style="background: linear-gradient(135deg, #FF6F61, #D72638);">
+      <div class="block" id="detente" style="background: linear-gradient(135deg, #FF6F91, #FFC75F);">
         <span class="label" id="detenteLabel">Detente</span>
         <div class="accionables" id="accionablesText"></div>
       </div>
-      <div class="block" id="lee" style="background: linear-gradient(135deg, #00B4DB, #8E2DE2);">
+      <div class="block" id="lee" style="background: linear-gradient(135deg, #845EC2, #00C9A7);">
         <span class="label" id="leeLabel">Lee</span>
         <div class="book-cover" id="leeCover"></div>
       </div>
-      <div class="block" id="question" style="background: linear-gradient(135deg, #FDC830, #F37335);">
+      <div class="block" id="question" style="background: linear-gradient(135deg, #F9F871, #F9A1BC);">
         <span class="label">?</span>
       </div>
-      <div class="block" id="conecta" style="background: linear-gradient(135deg, #00F260, #0575E6);">
+      <div class="block" id="conecta" style="background: linear-gradient(135deg, #2C73D2, #008E9B);">
         <span class="label">Conecta</span>
       </div>
     </div>
@@ -137,44 +122,28 @@
   <script>
     const libros = [
       {
-        portada: 'https://m.media-amazon.com/images/I/91bYsX41DVL.jpg',
-        accionables: ['🧱 Crea sistemas, no metas', '🧠 Identidad guía el hábito', '🔁 Mejora 1% diario']
+        portada: 'https://m.media-amazon.com/images/I/91bYsX41DVL._AC_UF1000,1000_QL80_.jpg',
+        accionables: ['🧱 Crea sistemas, no metas', '🔁 Mejora 1% diario', '🧠 Sé la identidad que aspiras']
       },
       {
-        portada: 'https://m.media-amazon.com/images/I/71QKQ9mwV7L.jpg',
-        accionables: ['🧘‍♂️ No todo importa', '💩 Aprende a ignorar con intención', '🧠 Sé brutalmente honesto']
+        portada: 'https://m.media-amazon.com/images/I/81mL+pf5vZL._AC_UF894,1000_QL80_.jpg',
+        accionables: ['💪 La pasión se entrena', '🏃‍♂️ Sé constante incluso sin ganas', '🔥 Transforma el dolor en poder']
       },
       {
-        portada: 'https://m.media-amazon.com/images/I/61AZS+gaZ8L.jpg',
-        accionables: ['🚪 Cierra puertas digitales', '🕰 Bloques de tiempo profundo', '🎯 Prioriza impacto']
+        portada: 'https://m.media-amazon.com/images/I/71y5d3Es6TL._AC_UF894,1000_QL80_.jpg',
+        accionables: ['🛏 Ordena tu espacio = mente', '🔍 Di la verdad con precisión', '🧍‍♂️ Camina con propósito']
       },
       {
-        portada: 'https://m.media-amazon.com/images/I/71y5d3Es6TL.jpg',
-        accionables: ['🧍 Camina erguido', '🛏 Ordena tu casa primero', '🧠 Sé preciso con tus palabras']
+        portada: 'https://m.media-amazon.com/images/I/81Zg2z5GZ-L._AC_UF894,1000_QL80_.jpg',
+        accionables: ['🔄 Empieza con el porqué', '🧭 Inspira acción auténtica', '❓ Encuentra tu propósito real']
       },
       {
-        portada: 'https://m.media-amazon.com/images/I/71w8Lr+opzL.jpg',
-        accionables: ['⏱ Sistema 1 vs Sistema 2', '🧮 No confíes en tu intuición', '📊 Usa datos, no suposiciones']
+        portada: 'https://m.media-amazon.com/images/I/81b6x+3uV-L._AC_UF894,1000_QL80_.jpg',
+        accionables: ['🤝 Gana/Gana o no hay trato', '🎯 Enfócate en lo importante', '🔍 Sé proactivo siempre']
       },
       {
-        portada: 'https://m.media-amazon.com/images/I/71bK3b4Y5eL.jpg',
-        accionables: ['🧘‍♂️ Vive en el presente', '🧠 Observa tu mente sin juzgar', '🌟 La iluminación es ahora']
-      },
-      {
-        portada: 'https://m.media-amazon.com/images/I/81mL+pf5vZL.jpg',
-        accionables: ['💪 La pasión supera al talento', '🏃‍♂️ Persevera ante la adversidad', '🎯 Enfócate en metas a largo plazo']
-      },
-      {
-        portada: 'https://m.media-amazon.com/images/I/81b6x+3uV-L.jpg',
-        accionables: ['🔍 Sé proactivo', '🎯 Comienza con un fin en mente', '🤝 Piensa en ganar/ganar']
-      },
-      {
-        portada: 'https://m.media-amazon.com/images/I/81Zg2z5GZ-L.jpg',
-        accionables: ['❓ Encuentra tu propósito', '🧭 Comunica desde el "por qué"', '🔄 Inspira acción auténtica']
-      },
-      {
-        portada: 'https://m.media-amazon.com/images/I/81c6z6Jz3-L.jpg',
-        accionables: ['🌱 Mentalidad de crecimiento', '💡 Aprende del fracaso', '🚀 Cree en tu mejora constante']
+        portada: 'https://m.media-amazon.com/images/I/81c6z6Jz3-L._AC_UF894,1000_QL80_.jpg',
+        accionables: ['🌱 Aprende del fracaso', '🚀 Crea tu mejora continua', '💡 Actúa con mentalidad de crecimiento']
       }
     ];
 
