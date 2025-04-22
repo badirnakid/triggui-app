@@ -31,7 +31,7 @@
     }
 
     .loader img {
-      height: 36px;
+      height: 32px;
       width: auto;
       animation: breathing 3s ease-in-out infinite;
     }
@@ -50,8 +50,8 @@
       flex-direction: column;
       justify-content: space-between;
       height: 100%;
-      padding: 8px 8px 14px;
-      gap: 8px;
+      padding: 6px 6px 14px;
+      gap: 6px;
     }
 
     .grid {
@@ -83,7 +83,7 @@
     @media (min-width: 768px) {
       .grid {
         flex-wrap: nowrap;
-        gap: 16px;
+        gap: 14px;
       }
 
       .block {
@@ -94,12 +94,12 @@
 
       .main {
         padding: 24px 32px;
-        gap: 14px;
+        gap: 12px;
       }
     }
 
     .shock {
-      background: linear-gradient(to right, #ff0080, #7928ca);
+      background: linear-gradient(to right, #6a11cb, #2575fc);
       color: white;
       font-weight: bold;
       border: none;
@@ -122,7 +122,7 @@
     }
 
     .trigguiletras {
-      height: 16px;
+      height: 15px;
       object-fit: contain;
     }
 
@@ -163,7 +163,7 @@
     }
 
     .book-cover {
-      background: url('https://m.media-amazon.com/images/I/81a4kCNuH+L.jpg') center center/cover no-repeat;
+      background: url('https://m.media-amazon.com/images/I/81usKCE0R-L.jpg') center center/cover no-repeat;
       border-radius: 16px;
       height: 100%;
       width: 100%;
@@ -177,17 +177,17 @@
 
   <div class="main" id="mainContent">
     <div class="grid">
-      <div class="block" id="detenteBlock" style="background: linear-gradient(135deg, #f44336, #d32f2f);">
-        <div class="accionables">⏸️ Haz una pausa<br>👀 Observa antes de reaccionar<br>🧠 Elige con intención</div>
+      <div class="block" id="detenteBlock" style="background: linear-gradient(135deg, #f27121, #e94057);">
+        <div class="accionables">📍 Respira<br>🔁 Interrumpe el ciclo<br>💡 Observa sin juzgar</div>
         <span class="label">Detente</span>
       </div>
-      <div class="block" id="leeBlock" style="background: linear-gradient(135deg, #00c9ff, #92fe9d);">
+      <div class="block" id="leeBlock" style="background: linear-gradient(135deg, #16a085, #f4d03f);">
         <span class="label">Lee</span>
       </div>
-      <div class="block" id="questionBlock" style="background: linear-gradient(135deg, #9c27b0, #6a1b9a);">
+      <div class="block" id="questionBlock" style="background: linear-gradient(135deg, #8e44ad, #3498db);">
         <span class="label">?</span>
       </div>
-      <div class="block" id="conectaBlock" style="background: linear-gradient(135deg, #3f51b5, #2196f3);">
+      <div class="block" id="conectaBlock" style="background: linear-gradient(135deg, #fd746c, #ff9068);">
         <span class="label">Conecta</span>
       </div>
     </div>
@@ -212,18 +212,18 @@
     const leeBlock = document.getElementById('leeBlock');
     let leeClickCount = 0;
     const frases = [
-      "📖 Una idea puede cambiarlo todo.",
-      "💭 ¿Qué te está susurrando el papel?",
-      "🔍 Lee entre líneas. Ahí está el oro.",
-      "🔥 El fuego interno se enciende con letras.",
-      "🌀 La mente se expande cuando el ruido se apaga."
+      "📘 El libro que más necesitas... aún no lo has abierto.",
+      "🧠 Cada página es una nueva versión de ti.",
+      "🧭 El papel también guía.",
+      "💥 Lee. Detona. Piensa distinto.",
+      "🛸 Tu nave mental despega con letras."
     ];
 
     leeBlock.addEventListener('click', function () {
-      if (leeClickCount === 0) {
+      if (leeClickCount % 2 === 0) {
         this.innerHTML = '<div class="book-cover"></div>';
       } else {
-        const frase = frases[leeClickCount % frases.length];
+        const frase = frases[(leeClickCount / 2) % frases.length];
         this.innerHTML = `<span class="label">${frase}</span>`;
       }
       leeClickCount++;
