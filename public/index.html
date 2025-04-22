@@ -163,7 +163,7 @@
     }
 
     .book-cover {
-      background: url('https://m.media-amazon.com/images/I/71ZLctx5ZRL.jpg') center center/cover no-repeat;
+      background: url('https://m.media-amazon.com/images/I/91bYsX41DVL.jpg') center center/cover no-repeat;
       border-radius: 16px;
       height: 100%;
       width: 100%;
@@ -177,17 +177,17 @@
 
   <div class="main" id="mainContent">
     <div class="grid">
-      <div class="block" id="detenteBlock" style="background: linear-gradient(135deg, #fc466b, #3f5efb);">
+      <div class="block" id="detenteBlock" style="background: linear-gradient(135deg, #F6BD60, #F7A072);">
         <div class="accionables">🛑 No hagas nada<br>👁 Observa tu impulso<br>📸 Respira desde el pecho</div>
         <span class="label">Detente</span>
       </div>
-      <div class="block" id="leeBlock" style="background: linear-gradient(135deg, #12c2e9, #c471ed);">
-        <span class="label">Lee</span>
+      <div class="block" id="leeBlock" style="background: linear-gradient(135deg, #84A59D, #B2C8BA);">
+        <div class="book-cover"></div>
       </div>
-      <div class="block" id="questionBlock" style="background: linear-gradient(135deg, #f7971e, #ffd200);">
+      <div class="block" id="questionBlock" style="background: linear-gradient(135deg, #F28482, #F5CAC3);">
         <span class="label">?</span>
       </div>
-      <div class="block" id="conectaBlock" style="background: linear-gradient(135deg, #43cea2, #185a9d);">
+      <div class="block" id="conectaBlock" style="background: linear-gradient(135deg, #7DBBC3, #C4DFAA);">
         <span class="label">Conecta</span>
       </div>
     </div>
@@ -207,26 +207,6 @@
 
     document.getElementById('shockBtn').addEventListener('click', function () {
       this.innerText = '✅ Bien leído';
-    });
-
-    const leeBlock = document.getElementById('leeBlock');
-    let leeClickCount = 0;
-    const frases = [
-      "📖 Este párrafo era invisible… hasta que lo leíste.",
-      "🧠 Cada palabra se acomoda distinto en tu mente.",
-      "👂 Lo que lees en voz baja cambia tu ritmo.",
-      "✍️ ¿Estás leyendo… o estás recordando?",
-      "🔓 Leer es desbloquear una emoción antigua."
-    ];
-
-    leeBlock.addEventListener('click', function () {
-      if (leeClickCount % 2 === 0) {
-        this.innerHTML = '<div class="book-cover"></div>';
-      } else {
-        const frase = frases[(leeClickCount / 2) % frases.length];
-        this.innerHTML = `<span class="label">${frase}</span>`;
-      }
-      leeClickCount++;
     });
 
     document.getElementById('detenteBlock').addEventListener('click', function () {
