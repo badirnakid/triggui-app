@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Triggui App - Portada Zen</title>
+  <title>Triggui Cósmico</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
       height: 100%;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #ffffff;
+      font-family: 'Segoe UI', sans-serif;
+      background: #fff;
       color: #222;
     }
     .main {
@@ -78,61 +78,80 @@
       line-height: 1.4;
     }
 
-    /* 👇 Este es el nuevo estilo para .book-cover sublime */
     .book-cover {
-      background: radial-gradient(circle at center, rgba(255,255,255,0.05), rgba(255,255,255,0));
-      flex-direction: column;
-      animation: fadeIn 1.4s ease forwards;
-      position: relative;
-      overflow: hidden;
-      padding: 20px;
-    }
-
-    .book-cover::before {
-      content: '';
       position: absolute;
-      width: 200%;
-      height: 200%;
-      top: -50%;
-      left: -50%;
-      background: radial-gradient(circle, rgba(255,255,255,0.05), transparent 70%);
-      animation: breathe 8s ease-in-out infinite;
-      z-index: 0;
+      inset: 0;
+      overflow: hidden;
+      background: radial-gradient(ellipse at center, #1b2735 0%, #090a0f 100%);
+      animation: cosmicFade 1s ease-in;
     }
 
-    .book-cover .quote {
-      z-index: 1;
-      font-size: 1rem;
-      font-weight: 500;
-      line-height: 1.5;
-      text-shadow: 0 0 10px rgba(0,0,0,0.3);
-      animation: textFade 2s ease-in-out forwards;
-      opacity: 0;
+    .stars {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      box-shadow:
+        0 0 1px #fff,
+        50px 100px 1px #fff,
+        100px 200px 1px #fff,
+        150px 300px 1px #fff,
+        200px 400px 1px #fff,
+        250px 150px 1px #fff,
+        300px 50px 1px #fff,
+        350px 250px 1px #fff;
+      animation: starsMove 60s linear infinite;
     }
 
-    .book-cover .author {
-      font-size: 0.75rem;
-      margin-top: 12px;
-      opacity: 0.6;
+    @keyframes starsMove {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-100%); }
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
+    .core {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff, #8e2de2);
+      box-shadow: 0 0 30px rgba(255,255,255,0.6);
+      animation: pulse 3s ease-in-out infinite;
+      z-index: 2;
     }
 
-    @keyframes breathe {
-      0%, 100% { transform: scale(1); opacity: 0.3; }
-      50% { transform: scale(1.2); opacity: 0.6; }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.2); opacity: 1; }
     }
 
-    @keyframes textFade {
-      to { opacity: 1; }
+    .orbit {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation: orbit 10s linear infinite;
+      z-index: 2;
+    }
+
+    .orbit span {
+      display: block;
+      font-size: 0.85rem;
+      color: #fff;
+      opacity: 0.7;
+      white-space: nowrap;
+      text-shadow: 0 0 8px rgba(255,255,255,0.3);
+    }
+
+    @keyframes orbit {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
     }
 
     .block.show .accionables,
     .block.show .book-cover {
       display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .block.show .label {
@@ -150,14 +169,21 @@
       font-size: 0.9rem;
       cursor: pointer;
     }
+
     .logo-wrapper {
       display: flex;
       justify-content: center;
       align-items: center;
     }
+
     .trigguiletras {
       height: 22px;
       object-fit: contain;
+    }
+
+    @keyframes cosmicFade {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
   </style>
 </head>
@@ -190,17 +216,17 @@
       {
         frase: "Haz que tu dolor tenga propósito.",
         autor: "David Goggins",
-        accionables: ['Transforma el dolor', 'Persiste sin motivación', 'Hazte invencible']
+        accionables: ["Transforma el dolor", "Persiste sin motivación", "Hazte invencible"]
       },
       {
         frase: "Eres lo que repites cada día.",
         autor: "James Clear",
-        accionables: ['Identidad guía hábito', 'Sistemas > metas', 'Mejora 1% diario']
+        accionables: ["Sistemas > metas", "Identidad guía hábitos", "Pequeños cambios diarios"]
       },
       {
         frase: "Todo puede cambiar si cambias tu mente.",
         autor: "Carol S. Dweck",
-        accionables: ['Mentalidad de crecimiento', 'Aprende del error', 'Cree en el cambio']
+        accionables: ["Mentalidad de crecimiento", "Aprende del error", "Cree en el cambio"]
       }
     ];
 
@@ -211,7 +237,6 @@
     const detente = document.getElementById('detente');
     const detenteLabel = document.getElementById('detenteLabel');
     const accionablesText = document.getElementById('accionablesText');
-
     const lee = document.getElementById('lee');
     const leeLabel = document.getElementById('leeLabel');
     const leeCover = document.getElementById('leeCover');
@@ -222,9 +247,11 @@
 
     function sincronizarYMostrarAmbos() {
       seleccionarNuevoLibro();
-      accionablesText.innerHTML = libroActual.accionables.map(t => `• ${t}`).join('<br>');
+      accionablesText.innerHTML = libroActual.accionables.map(a => `• ${a}`).join('<br>');
       leeCover.innerHTML = `
-        <div class="quote">${libroActual.frase}<div class="author">— ${libroActual.autor}</div></div>
+        <div class="stars"></div>
+        <div class="core"></div>
+        <div class="orbit"><span>“${libroActual.frase}”</span></div>
       `;
       detente.classList.add('show');
       lee.classList.add('show');
