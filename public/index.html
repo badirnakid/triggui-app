@@ -89,7 +89,7 @@
       display: none;
     }
     .shock {
-      background: linear-gradient(to right, #FF6F61, #D72638);
+      background: linear-gradient(to right, #FF6F61, #FAD961);
       color: white;
       font-weight: bold;
       border: none;
@@ -113,18 +113,18 @@
 <body>
   <div class="main">
     <div class="grid">
-      <div class="block" id="detente" style="background: linear-gradient(135deg, #FF512F, #DD2476);">
+      <div class="block" id="detente" style="background: linear-gradient(135deg, #FF512F, #F09819);">
         <span class="label" id="detenteLabel">Detente</span>
         <div class="accionables" id="accionablesText"></div>
       </div>
-      <div class="block" id="lee" style="background: linear-gradient(135deg, #24C6DC, #514A9D);">
+      <div class="block" id="lee" style="background: linear-gradient(135deg, #36D1DC, #5B86E5);">
         <span class="label" id="leeLabel">Lee</span>
         <div class="book-cover" id="leeCover"></div>
       </div>
-      <div class="block" id="question" style="background: linear-gradient(135deg, #F7971E, #FFD200);">
+      <div class="block" id="question" style="background: linear-gradient(135deg, #FDC830, #F37335);">
         <span class="label">?</span>
       </div>
-      <div class="block" id="conecta" style="background: linear-gradient(135deg, #00C9FF, #92FE9D);">
+      <div class="block" id="conecta" style="background: linear-gradient(135deg, #11998E, #38EF7D);">
         <span class="label">Conecta</span>
       </div>
     </div>
@@ -137,44 +137,44 @@
   <script>
     const libros = [
       {
-        portada: 'https://m.media-amazon.com/images/I/91bYsX41DVL._AC_UF1000,1000_QL80_.jpg',
+        portada: 'https://m.media-amazon.com/images/I/91bYsX41DVL.jpg',
         accionables: ['🧱 Crea sistemas, no metas', '🧠 Identidad guía el hábito', '🔁 Mejora 1% diario']
       },
       {
-        portada: 'https://m.media-amazon.com/images/I/71QKQ9mwV7L._AC_UF1000,1000_QL80_.jpg',
+        portada: 'https://m.media-amazon.com/images/I/71QKQ9mwV7L.jpg',
         accionables: ['🧘‍♂️ No todo importa', '💩 Aprende a ignorar con intención', '🧠 Sé brutalmente honesto']
       },
       {
-        portada: 'https://m.media-amazon.com/images/I/61AZS+gaZ8L._AC_UF1000,1000_QL80_.jpg',
-        accionables: ['🚪 Cierra puertas digitales', '🕰 Bloques de tiempo profundo', '🎯 Prioriza impacto']
+        portada: 'https://m.media-amazon.com/images/I/61AZS+gaZ8L.jpg',
+        accionables: ['🚪 Cierra puertas digitales', '🕰 Tiempo profundo', '🎯 Prioriza impacto']
       },
       {
-        portada: 'https://m.media-amazon.com/images/I/71y5d3Es6TL._AC_UF1000,1000_QL80_.jpg',
-        accionables: ['🧍 Camina erguido', '🛏 Ordena tu casa primero', '🧠 Sé preciso con tus palabras']
+        portada: 'https://m.media-amazon.com/images/I/71y5d3Es6TL.jpg',
+        accionables: ['🧍 Camina erguido', '🛏 Ordena tu entorno', '🧠 Sé preciso']
       },
       {
-        portada: 'https://m.media-amazon.com/images/I/71w8Lr+opzL._AC_UF1000,1000_QL80_.jpg',
-        accionables: ['⏱ Sistema 1 vs Sistema 2', '🧮 No confíes en tu intuición', '📊 Usa datos, no suposiciones']
+        portada: 'https://m.media-amazon.com/images/I/71w8Lr+opzL.jpg',
+        accionables: ['⏱ Sistema 1 vs 2', '🧮 Cuestiona tu intuición', '📊 Usa evidencia']
       },
       {
-        portada: 'https://m.media-amazon.com/images/I/71bK3b4Y5eL._AC_UF1000,1000_QL80_.jpg',
-        accionables: ['🧘‍♂️ Vive en el presente', '🧠 Observa tu mente sin juzgar', '🌟 La iluminación es ahora']
+        portada: 'https://m.media-amazon.com/images/I/71bK3b4Y5eL.jpg',
+        accionables: ['🧘 Vive el ahora', '🧠 Observa sin juicio', '🌟 Todo está aquí']
       },
       {
-        portada: 'https://m.media-amazon.com/images/I/81mL+pf5vZL._AC_UF1000,1000_QL80_.jpg',
-        accionables: ['💪 La pasión supera al talento', '🏃‍♂️ Persevera ante la adversidad', '🎯 Metas a largo plazo']
+        portada: 'https://m.media-amazon.com/images/I/81mL+pf5vZL.jpg',
+        accionables: ['💪 La pasión vence al talento', '🏃 Persevera siempre', '🎯 Visión a largo plazo']
       },
       {
-        portada: 'https://m.media-amazon.com/images/I/81b6x+3uV-L._AC_UF1000,1000_QL80_.jpg',
-        accionables: ['🔍 Sé proactivo', '🎯 Empieza con un fin en mente', '🤝 Gana/Gana siempre']
+        portada: 'https://m.media-amazon.com/images/I/81b6x+3uV-L.jpg',
+        accionables: ['🔍 Sé proactivo', '🎯 Ten un fin en mente', '🤝 Gana/Gana']
       },
       {
-        portada: 'https://m.media-amazon.com/images/I/81Zg2z5GZ-L._AC_UF1000,1000_QL80_.jpg',
-        accionables: ['❓ Propósito claro', '🧭 Comunica tu "por qué"', '🔄 Inspira con autenticidad']
+        portada: 'https://m.media-amazon.com/images/I/81Zg2z5GZ-L.jpg',
+        accionables: ['❓ Conecta con tu propósito', '🧭 Empieza con “por qué”', '🔄 Inspira con claridad']
       },
       {
-        portada: 'https://m.media-amazon.com/images/I/81c6z6Jz3-L._AC_UF1000,1000_QL80_.jpg',
-        accionables: ['🌱 Mentalidad de crecimiento', '💡 Aprende del fracaso', '🚀 Cree en tu mejora constante']
+        portada: 'https://m.media-amazon.com/images/I/81c6z6Jz3-L.jpg',
+        accionables: ['🌱 Mentalidad de crecimiento', '💡 Aprende del error', '🚀 Cree en tu mejora']
       }
     ];
 
