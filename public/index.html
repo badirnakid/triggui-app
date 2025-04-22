@@ -85,9 +85,14 @@
       transition: transform 0.15s ease, opacity 0.15s ease;
       animation: breathing 4.5s ease-in-out infinite;
       text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+      background: linear-gradient(135deg, #56CCF2, #2F80ED);
+      overflow: hidden;
     }
 
-    .block:active { transform: scale(0.96); opacity: 0.88; }
+    .block:active {
+      transform: scale(0.96);
+      opacity: 0.88;
+    }
 
     @keyframes breathing {
       0%, 100% { transform: scale(1); }
@@ -112,18 +117,6 @@
       background: linear-gradient(to right, #11998e, #38ef7d);
     }
 
-    .cover {
-      display: none;
-      justify-content: center;
-      margin: 10px auto 0;
-    }
-
-    .cover img {
-      width: 160px;
-      border-radius: 8px;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.15);
-    }
-
     .logo-wrapper {
       display: flex;
       justify-content: center;
@@ -141,6 +134,13 @@
       width: 100px;
       height: 28px;
     }
+
+    .portada-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 22px;
+    }
   </style>
 </head>
 <body>
@@ -152,13 +152,14 @@
   <div class="main" id="mainContent" style="display:none;">
     <div class="grid">
       <div class="block" style="background: linear-gradient(135deg, #F2994A, #F2C94C);">Detente</div>
-      <div class="block" id="leeBtn" style="background: linear-gradient(135deg, #56CCF2, #2F80ED);">Lee</div>
+
+      <div class="block" id="leeBlock" onclick="toggleLee()">
+        <span id="leeText">Lee</span>
+        <img id="leeImage" src="Triggui-App-canthurtme.png" alt="Portada" class="portada-img" style="display:none;" />
+      </div>
+
       <div class="block" style="background: linear-gradient(135deg, #667eea, #764ba2);">?</div>
       <div class="block" style="background: linear-gradient(135deg, #11998e, #38ef7d);">Conecta</div>
-    </div>
-
-    <div class="cover" id="coverContainer">
-      <img src="Triggui-App-canthurtme.png" alt="Portada del libro" />
     </div>
 
     <button class="shock" id="shockBtn">
@@ -182,10 +183,14 @@
       this.classList.add('clicked');
     });
 
-    document.getElementById('leeBtn').addEventListener('click', function () {
-      const cover = document.getElementById('coverContainer');
-      cover.style.display = cover.style.display === 'flex' ? 'none' : 'flex';
-    });
+    function toggleLee() {
+      const text = document.getElementById('leeText');
+      const image = document.getElementById('leeImage');
+      const showingImage = image.style.display === 'block';
+
+      text.style.display = showingImage ? 'block' : 'none';
+      image.style.display = showingImage ? 'none' : 'block';
+    }
   </script>
 </body>
 </html>
