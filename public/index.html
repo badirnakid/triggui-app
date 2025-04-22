@@ -6,85 +6,146 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <title>TrigguiApp</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
     html, body {
       margin: 0;
       padding: 0;
-      height: 100%;
-      background-color: #fff;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif;
+      background: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      height: 100vh;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
     }
-
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr 1fr;
+    .loader {
       flex: 1;
-    }
-
-    .button {
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 1.6rem;
-      font-weight: 600;
-      border: none;
-      cursor: pointer;
-      transition: all 0.25s ease;
-      color: white;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+      animation: fadeOut 1.8s ease-out forwards;
+      background: white;
+      z-index: 9999;
+    }
+    .loader img {
+      width: 80px;
+      height: 80px;
+      animation: pulse 1.8s ease-in-out forwards;
+    }
+    @keyframes pulse {
+      0% { transform: scale(0); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes fadeOut {
+      0% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { opacity: 0; visibility: hidden; display: none; }
     }
 
-    .button:active {
-      transform: scale(0.98);
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding-bottom: 12px;
+      animation: fadeIn 2s ease-in forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      margin-top: 12px;
+    }
+    .block {
+      width: 44vw;
+      height: 33vh;
+      border-radius: 22px;
+      color: white;
+      font-size: 1.1rem;
+      font-weight: 600;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .block:active {
+      transform: scale(0.97);
       opacity: 0.9;
     }
 
-    .footer {
-      text-align: center;
-      padding: 10px 0 6px;
-      font-size: 0.8rem;
-      color: #999;
-      font-style: italic;
+    .shock {
+      background-color: #6200EA;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 32px;
+      padding: 14px 32px;
+      margin: 10px auto;
+      display: block;
+      font-size: 0.95rem;
+      box-shadow: 0 3px 6px rgba(98, 0, 234, 0.4);
+    }
+
+    .logo-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 6px;
+      gap: 8px;
     }
 
     .imagotipo {
-      width: 60px;
-      height: 60px;
-      margin: 10px auto;
-      border-radius: 100%;
-      background-color: var(--main);
-      animation: breath 3s ease-in-out infinite;
+      width: 42px;
+      height: 42px;
     }
 
-    .logo {
-      font-size: 1.2rem;
-      font-weight: 600;
-      letter-spacing: 0.05em;
-      color: #333;
-      margin-top: 4px;
-    }
-
-    @keyframes breath {
-      0%, 100% { transform: scale(1); opacity: 0.8; }
-      50% { transform: scale(1.08); opacity: 1; }
+    .trigguiletras {
+      width: 100px;
+      height: 28px;
     }
   </style>
 </head>
 <body>
 
-  <div class="grid">
-    <button class="button" style="background-color:#FF6B6B;">Detente</button>
-    <button class="button" style="background-color:#4ECDC4;">Lee</button>
-    <button class="button" style="background-color:#1A535C;">Sorpresa</button>
-    <button class="button" style="background-color:#FFE66D; color:#333;">Conecta</button>
+  <div class="loader" id="loader">
+    <img src="imagotipo.png" alt="Cargando..." />
   </div>
 
-  <div class="imagotipo"></div>
-  <div class="logo">Triggui</div>
-  <div class="footer">Una pausa puede cambiarlo todo.</div>
+  <div class="main" id="mainContent" style="display:none;">
+    <div class="grid">
+      <div class="block" style="background: linear-gradient(to bottom right, #E96443, #904E95);">Detente</div>
+      <div class="block" style="background: linear-gradient(to bottom right, #2193b0, #6dd5ed);">Lee</div>
+      <div class="block" style="background: linear-gradient(to bottom right, #ff6e7f, #bfe9ff);">?</div>
+      <div class="block" style="background: linear-gradient(to bottom right, #00c3ff, #ffff1c); color: #000;">Conecta</div>
+    </div>
 
+    <button class="shock" onclick="this.innerText='📚 ¡Gracias por abrir un libro físico!'">
+      📚 Chócalas aquí si abriste un libro físico
+    </button>
+
+    <div class="logo-wrapper">
+      <img src="imagotipo.png" alt="imagotipo" class="imagotipo" />
+      <img src="trigguiletras.jpg" alt="triggui logo" class="trigguiletras" />
+    </div>
+  </div>
+
+  <script>
+    setTimeout(() => {
+      document.getElementById('loader').style.display = 'none';
+      document.getElementById('mainContent').style.display = 'flex';
+    }, 1800);
+  </script>
 </body>
 </html>
