@@ -31,14 +31,14 @@
     }
 
     .loader img {
-      height: 40px;
+      height: 36px;
       width: auto;
       animation: breathing 3s ease-in-out infinite;
     }
 
     @keyframes breathing {
       0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.12); }
+      50% { transform: scale(1.1); }
     }
 
     @keyframes fadeOut {
@@ -50,7 +50,7 @@
       flex-direction: column;
       justify-content: space-between;
       height: 100%;
-      padding: 10px 10px 16px;
+      padding: 8px 8px 14px;
       gap: 8px;
     }
 
@@ -66,24 +66,24 @@
       flex: 1 1 calc(50% - 4px);
       max-width: calc(50% - 4px);
       height: calc(50% - 4px);
-      border-radius: 14px;
+      border-radius: 16px;
       color: white;
       font-weight: 600;
-      font-size: 1.05rem;
+      font-size: 1.08rem;
       display: flex;
       justify-content: center;
       align-items: center;
       text-align: center;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
       position: relative;
     }
 
     @media (min-width: 768px) {
       .grid {
         flex-wrap: nowrap;
-        gap: 18px;
+        gap: 16px;
       }
 
       .block {
@@ -94,12 +94,12 @@
 
       .main {
         padding: 24px 32px;
-        gap: 16px;
+        gap: 14px;
       }
     }
 
     .shock {
-      background: linear-gradient(to right, #8e2de2, #4a00e0);
+      background: linear-gradient(to right, #ff0080, #7928ca);
       color: white;
       font-weight: bold;
       border: none;
@@ -122,7 +122,7 @@
     }
 
     .trigguiletras {
-      height: 18px;
+      height: 16px;
       object-fit: contain;
     }
 
@@ -134,7 +134,7 @@
       color: #222;
       font-size: 0.9rem;
       font-weight: 500;
-      border-radius: 14px;
+      border-radius: 16px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -163,8 +163,8 @@
     }
 
     .book-cover {
-      background: url('https://i.imgur.com/vxXjLOF.jpeg') center center/cover no-repeat;
-      border-radius: 14px;
+      background: url('https://m.media-amazon.com/images/I/81a4kCNuH+L.jpg') center center/cover no-repeat;
+      border-radius: 16px;
       height: 100%;
       width: 100%;
     }
@@ -177,17 +177,17 @@
 
   <div class="main" id="mainContent">
     <div class="grid">
-      <div class="block" id="detenteBlock" style="background: linear-gradient(135deg, #ef5350, #e53935);">
-        <div class="accionables">✋ Respira antes de responder<br>🧘 No todo necesita respuesta inmediata<br>💡 Detente, observa, elige</div>
+      <div class="block" id="detenteBlock" style="background: linear-gradient(135deg, #f44336, #d32f2f);">
+        <div class="accionables">⏸️ Haz una pausa<br>👀 Observa antes de reaccionar<br>🧠 Elige con intención</div>
         <span class="label">Detente</span>
       </div>
-      <div class="block" id="leeBlock" style="background: linear-gradient(135deg, #26c6da, #00acc1);">
+      <div class="block" id="leeBlock" style="background: linear-gradient(135deg, #00c9ff, #92fe9d);">
         <span class="label">Lee</span>
       </div>
-      <div class="block" id="questionBlock" style="background: linear-gradient(135deg, #ab47bc, #8e24aa);">
+      <div class="block" id="questionBlock" style="background: linear-gradient(135deg, #9c27b0, #6a1b9a);">
         <span class="label">?</span>
       </div>
-      <div class="block" id="conectaBlock" style="background: linear-gradient(135deg, #5c6bc0, #3949ab);">
+      <div class="block" id="conectaBlock" style="background: linear-gradient(135deg, #3f51b5, #2196f3);">
         <span class="label">Conecta</span>
       </div>
     </div>
@@ -209,14 +209,24 @@
       this.innerText = '✅ Bien leído';
     });
 
-    let leeState = false;
-    document.getElementById('leeBlock').addEventListener('click', function () {
-      if (!leeState) {
+    const leeBlock = document.getElementById('leeBlock');
+    let leeClickCount = 0;
+    const frases = [
+      "📖 Una idea puede cambiarlo todo.",
+      "💭 ¿Qué te está susurrando el papel?",
+      "🔍 Lee entre líneas. Ahí está el oro.",
+      "🔥 El fuego interno se enciende con letras.",
+      "🌀 La mente se expande cuando el ruido se apaga."
+    ];
+
+    leeBlock.addEventListener('click', function () {
+      if (leeClickCount === 0) {
         this.innerHTML = '<div class="book-cover"></div>';
       } else {
-        this.innerHTML = '<span class="label">Lee</span>';
+        const frase = frases[leeClickCount % frases.length];
+        this.innerHTML = `<span class="label">${frase}</span>`;
       }
-      leeState = !leeState;
+      leeClickCount++;
     });
 
     document.getElementById('detenteBlock').addEventListener('click', function () {
@@ -228,7 +238,7 @@
     });
 
     document.getElementById('conectaBlock').addEventListener('click', function () {
-      alert("🔗 Conecta vendrá muy pronto.");
+      alert("🔗 Muy pronto podrás conectar con otros lectores.");
     });
   </script>
 </body>
