@@ -89,7 +89,7 @@
       display: none;
     }
     .shock {
-      background: linear-gradient(to right, #FF00B8, #FF6E40);
+      background: linear-gradient(to right, #FF4E50, #F9D423);
       color: white;
       font-weight: bold;
       border: none;
@@ -113,18 +113,18 @@
 <body>
   <div class="main">
     <div class="grid">
-      <div class="block" id="detente" style="background: linear-gradient(135deg, #FF6F61, #D72638);">
+      <div class="block" id="detente" style="background: linear-gradient(135deg, #FF512F, #DD2476);">
         <span class="label" id="detenteLabel">Detente</span>
         <div class="accionables" id="accionablesText"></div>
       </div>
-      <div class="block" id="lee" style="background: linear-gradient(135deg, #00B4DB, #8E2DE2);">
+      <div class="block" id="lee" style="background: linear-gradient(135deg, #2193b0, #6dd5ed);">
         <span class="label" id="leeLabel">Lee</span>
         <div class="book-cover" id="leeCover"></div>
       </div>
-      <div class="block" id="question" style="background: linear-gradient(135deg, #FF6E7F, #FFC371);">
+      <div class="block" id="question" style="background: linear-gradient(135deg, #FDC830, #F37335);">
         <span class="label">?</span>
       </div>
-      <div class="block" id="conecta" style="background: linear-gradient(135deg, #00F260, #0575E6);">
+      <div class="block" id="conecta" style="background: linear-gradient(135deg, #00C9FF, #92FE9D);">
         <span class="label">Conecta</span>
       </div>
     </div>
@@ -137,44 +137,24 @@
   <script>
     const libros = [
       {
-        portada: 'https://images-na.ssl-images-amazon.com/images/I/91bYsX41DVL.jpg', // Atomic Habits
-        accionables: [
-          '🧱 Crea sistemas, no metas',
-          '🧠 Identidad guía el hábito',
-          '🔁 Mejora 1% diario'
-        ]
+        portada: 'https://m.media-amazon.com/images/I/81wgcld4wxL._AC_UF1000,1000_QL80_.jpg',
+        accionables: ['🧱 Crea sistemas, no metas', '🧠 Identidad guía el hábito', '🔁 Mejora 1% diario']
       },
       {
-        portada: 'https://images-na.ssl-images-amazon.com/images/I/71QKQ9mwV7L.jpg', // The Subtle Art
-        accionables: [
-          '🧘‍♂️ No todo importa',
-          '💩 Aprende a ignorar con intención',
-          '🧠 Sé brutalmente honesto'
-        ]
+        portada: 'https://m.media-amazon.com/images/I/71QKQ9mwV7L._AC_UF1000,1000_QL80_.jpg',
+        accionables: ['🧘‍♂️ No todo importa', '💩 Aprende a ignorar con intención', '🧠 Sé brutalmente honesto']
       },
       {
-        portada: 'https://images-na.ssl-images-amazon.com/images/I/61AZS+gaZ8L.jpg', // Deep Work
-        accionables: [
-          '🚪 Cierra puertas digitales',
-          '🕰 Bloques de tiempo profundo',
-          '🎯 Prioriza impacto, no urgencia'
-        ]
+        portada: 'https://m.media-amazon.com/images/I/71g2ednj0JL._AC_UF1000,1000_QL80_.jpg',
+        accionables: ['🚪 Cierra puertas digitales', '🕰 Bloques de tiempo profundo', '🎯 Prioriza impacto']
       },
       {
-        portada: 'https://images-na.ssl-images-amazon.com/images/I/71y5d3Es6TL.jpg', // 12 Rules for Life
-        accionables: [
-          '🧍 Camina erguido',
-          '🛏 Ordena tu casa primero',
-          '🧠 Sé preciso con tus palabras'
-        ]
+        portada: 'https://m.media-amazon.com/images/I/71t4GuxLCuL._AC_UF1000,1000_QL80_.jpg',
+        accionables: ['🧍 Camina erguido', '🛏 Ordena tu casa primero', '🧠 Sé preciso con tus palabras']
       },
       {
-        portada: 'https://images-na.ssl-images-amazon.com/images/I/71w8Lr+opzL.jpg', // Thinking Fast and Slow
-        accionables: [
-          '⏱ Sistema 1 vs Sistema 2',
-          '🧮 No confíes en tu intuición',
-          '📊 Usa datos, no suposiciones'
-        ]
+        portada: 'https://m.media-amazon.com/images/I/81vpsIs58WL._AC_UF1000,1000_QL80_.jpg',
+        accionables: ['⏱ Sistema 1 vs Sistema 2', '🧮 No confíes en tu intuición', '📊 Usa datos, no suposiciones']
       }
     ];
 
