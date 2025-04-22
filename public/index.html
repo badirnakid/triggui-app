@@ -3,246 +3,130 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Triggui App - Visual Edition</title>
+  <title>Triggui Zen</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
       height: 100%;
+      background: #0d0d0d;
+      color: #fff;
       font-family: 'Segoe UI', sans-serif;
-      background: #fff;
-      color: #222;
-    }
-    .main {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      height: 100%;
-      padding: 1.5vw;
-      gap: 1.5vw;
-    }
-    .grid {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      gap: 1.5vw;
-      flex-grow: 1;
-    }
-    .block {
-      flex: 1 1 calc(50% - 0.75vw);
-      max-width: calc(50% - 0.75vw);
-      height: calc(50% - 0.75vw);
-      border-radius: 16px;
       display: flex;
       justify-content: center;
       align-items: center;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      position: relative;
       overflow: hidden;
-      color: white;
     }
-    .label {
-      z-index: 1;
-      position: relative;
-      pointer-events: none;
-      font-weight: bold;
-      font-size: 1.2rem;
-    }
-    .accionables, .book-cover {
-      position: absolute;
-      inset: 0;
-      display: none;
+
+    .zen-container {
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(circle at center, #1f1f1f, #0d0d0d);
+      display: flex;
       justify-content: center;
       align-items: center;
-      padding: 14px;
-      border-radius: 16px;
+      position: relative;
+    }
+
+    .breath-circle {
+      position: absolute;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      animation: breathe 6s ease-in-out infinite;
+      box-shadow: 0 0 60px rgba(255,255,255,0.04);
+    }
+
+    @keyframes breathe {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    .quote {
+      z-index: 2;
       text-align: center;
+      padding: 24px;
+      font-size: 1.4rem;
+      line-height: 1.6;
+      max-width: 80vw;
+      opacity: 0;
+      animation: fadeIn 3s ease-in-out forwards 1.5s;
     }
-    .accionables {
-      background: rgba(255,255,255,0.95);
-      color: #222;
-      font-size: 0.88rem;
-      font-weight: 500;
-      flex-direction: column;
-      line-height: 1.4;
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
     }
-    .book-cover {
-      flex-direction: column;
-      animation: fadeIn 1.2s ease forwards;
+
+    .quote::before {
+      content: "“";
+      font-size: 3rem;
+      vertical-align: top;
+      line-height: 0.5;
+      opacity: 0.3;
+      display: block;
     }
-    .icon svg {
-      width: 50px;
-      height: 50px;
-      margin-bottom: 12px;
-      fill: white;
-      opacity: 0.9;
-      animation: pulse 2s infinite;
+
+    .quote::after {
+      content: "”";
+      font-size: 3rem;
+      vertical-align: bottom;
+      line-height: 0.5;
+      opacity: 0.3;
+      display: block;
+      margin-top: 12px;
     }
-    .title {
-      font-size: 1.1rem;
-      font-weight: bold;
-      margin-bottom: 4px;
-    }
+
     .author {
       font-size: 0.85rem;
-      opacity: 0.85;
+      opacity: 0.5;
+      margin-top: 16px;
     }
-    .block.show .accionables,
-    .block.show .book-cover {
-      display: flex;
-    }
-    .block.show .label {
-      display: none;
-    }
-    .shock {
-      background: linear-gradient(to right, #FF6F61, #FAD961);
-      color: white;
-      font-weight: bold;
-      border: none;
-      border-radius: 32px;
-      padding: 10px 24px;
-      margin: 0 auto;
+
+    .reveal {
+      position: absolute;
+      bottom: 30px;
       font-size: 0.9rem;
+      opacity: 0.2;
       cursor: pointer;
+      transition: opacity 0.5s ease;
     }
-    .logo-wrapper {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .trigguiletras {
-      height: 22px;
-      object-fit: contain;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
-    }
-    @keyframes pulse {
-      0% { transform: scale(1); opacity: 0.9; }
-      50% { transform: scale(1.15); opacity: 1; }
-      100% { transform: scale(1); opacity: 0.9; }
+
+    .reveal:hover {
+      opacity: 0.8;
     }
   </style>
 </head>
 <body>
-  <div class="main">
-    <div class="grid">
-      <div class="block" id="detente" style="background: linear-gradient(135deg, #FF6F61, #D72638);">
-        <span class="label" id="detenteLabel">Detente</span>
-        <div class="accionables" id="accionablesText"></div>
-      </div>
-      <div class="block" id="lee" style="background: linear-gradient(135deg, #3a1c71, #d76d77, #ffaf7b);">
-        <span class="label" id="leeLabel">Lee</span>
-        <div class="book-cover" id="leeCover"></div>
-      </div>
-      <div class="block" id="question" style="background: linear-gradient(135deg, #FDC830, #F37335);">
-        <span class="label">?</span>
-      </div>
-      <div class="block" id="conecta" style="background: linear-gradient(135deg, #00F260, #0575E6);">
-        <span class="label">Conecta</span>
-      </div>
+  <div class="zen-container">
+    <div class="breath-circle"></div>
+    <div class="quote" id="quote">
+      Haz que tu dolor tenga propósito.
+      <div class="author">David Goggins</div>
     </div>
-    <button class="shock" id="shockBtn">📚👊 Chócalas por leer un libro físico</button>
-    <div class="logo-wrapper">
-      <img src="/trigguiletras.png" class="trigguiletras" />
-    </div>
+    <div class="reveal" onclick="cambiarFrase()">Toca para otro momento</div>
   </div>
 
   <script>
-    const libros = [
-      {
-        titulo: 'Can’t Hurt Me',
-        autor: 'David Goggins',
-        color: 'linear-gradient(135deg, #1e130c, #9a8478)',
-        svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6 4 2 8 2 14c0 5 4 8 10 8s10-3 10-8c0-6-4-10-10-12z"/></svg>`,
-        accionables: ['Transforma el dolor', 'Persiste sin motivación', 'Hazte invencible']
-      },
-      {
-        titulo: 'Atomic Habits',
-        autor: 'James Clear',
-        color: 'linear-gradient(135deg, #667db6, #0082c8, #0082c8, #667db6)',
-        svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 4v16h14V4H5zm12 14H7V6h10v12z"/></svg>`,
-        accionables: ['Identidad guía hábito', 'Sistemas > metas', 'Mejora 1% diario']
-      },
-      {
-        titulo: 'Mindset',
-        autor: 'Carol S. Dweck',
-        color: 'linear-gradient(135deg, #1f4037, #99f2c8)',
-        svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a10 10 0 00-2 19.8V22h4v-.2A10 10 0 0012 2z"/></svg>`,
-        accionables: ['Mentalidad de crecimiento', 'Aprende del error', 'Cree en el cambio']
-      }
+    const frases = [
+      { texto: "Haz que tu dolor tenga propósito.", autor: "David Goggins" },
+      { texto: "No eres lo que logras, eres lo que superas.", autor: "Carl Jung" },
+      { texto: "Respira. Todo lo demás puede esperar.", autor: "Triggui" },
+      { texto: "Cierra los ojos. ¿Qué necesita tu alma hoy?", autor: "Triggui" },
+      { texto: "Deja de empujar. Empieza a escuchar.", autor: "Eckhart Tolle" },
+      { texto: "La claridad no es información. Es silencio interior.", autor: "Triggui" },
+      { texto: "Todo lo que necesitas está... aquí.", autor: "El Poder del Ahora" }
     ];
 
-    let libroActual = null;
-    let detenteOpen = false;
-    let leeOpen = false;
-
-    const detente = document.getElementById('detente');
-    const detenteLabel = document.getElementById('detenteLabel');
-    const accionablesText = document.getElementById('accionablesText');
-
-    const lee = document.getElementById('lee');
-    const leeLabel = document.getElementById('leeLabel');
-    const leeCover = document.getElementById('leeCover');
-
-    function seleccionarNuevoLibro() {
-      libroActual = libros[Math.floor(Math.random() * libros.length)];
+    function cambiarFrase() {
+      const f = frases[Math.floor(Math.random() * frases.length)];
+      const quote = document.getElementById('quote');
+      quote.style.opacity = 0;
+      setTimeout(() => {
+        quote.innerHTML = `${f.texto}<div class="author">${f.autor}</div>`;
+        quote.style.opacity = 1;
+      }, 600);
     }
-
-    function sincronizarYMostrarAmbos() {
-      seleccionarNuevoLibro();
-
-      accionablesText.innerHTML = libroActual.accionables.map(text => `• ${text}`).join('<br>');
-
-      lee.style.background = libroActual.color;
-
-      leeCover.innerHTML = `
-        <div class="icon">${libroActual.svg}</div>
-        <div class="title">${libroActual.titulo}</div>
-        <div class="author">${libroActual.autor}</div>
-      `;
-
-      detente.classList.add('show');
-      lee.classList.add('show');
-      detenteLabel.style.display = 'none';
-      leeLabel.style.display = 'none';
-      detenteOpen = true;
-      leeOpen = true;
-    }
-
-    detente.addEventListener('click', () => {
-      if (!detenteOpen || !leeOpen) {
-        sincronizarYMostrarAmbos();
-      } else {
-        detente.classList.remove('show');
-        detenteLabel.style.display = 'block';
-        detenteOpen = false;
-      }
-    });
-
-    lee.addEventListener('click', () => {
-      if (!leeOpen || !detenteOpen) {
-        sincronizarYMostrarAmbos();
-      } else {
-        lee.classList.remove('show');
-        leeLabel.style.display = 'block';
-        leeOpen = false;
-      }
-    });
-
-    document.getElementById('shockBtn').addEventListener('click', () => {
-      document.getElementById('shockBtn').innerText = '📚👏 ¡Bien leído!';
-    });
-
-    document.getElementById('question').addEventListener('click', () => {
-      window.open("https://www.ted.com/talks/simon_sinek_how_great_leaders_inspire_action", "_blank");
-    });
-
-    document.getElementById('conecta').addEventListener('click', () => {
-      alert("🔗 Muy pronto podrás conectar con otros lectores.");
-    });
   </script>
 </body>
 </html>
