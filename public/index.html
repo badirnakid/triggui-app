@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Triggui App</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     html, body {
+      height: 100%;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: #ffffff;
-      color: #333;
-      height: 100%;
+      color: #222;
     }
 
     body {
@@ -22,23 +22,23 @@
     .loader {
       position: fixed;
       inset: 0;
-      background: #ffffff;
+      background: #fff;
       display: flex;
       justify-content: center;
       align-items: center;
       z-index: 999;
-      animation: fadeOut 2s ease 1.8s forwards;
+      animation: fadeOut 2s ease 1.6s forwards;
     }
 
     .loader img {
-      height: 88px;
+      height: 72px;
       width: auto;
-      animation: breathing 2.8s ease-in-out infinite;
+      animation: breathing 3s ease-in-out infinite;
     }
 
     @keyframes breathing {
       0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.15); }
+      50% { transform: scale(1.12); }
     }
 
     @keyframes fadeOut {
@@ -49,61 +49,66 @@
       display: none;
       flex-direction: column;
       justify-content: space-between;
-      height: 100vh;
-      padding: 10px 8px;
+      height: 100%;
+      padding: 10px 12px 16px;
       gap: 10px;
     }
 
     .grid {
       display: flex;
       flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      flex: 1;
+      justify-content: space-between;
+      gap: 8px;
+      flex-grow: 1;
     }
 
     .block {
-      flex: 1 1 calc(50% - 10px);
-      max-width: calc(50% - 10px);
-      height: 36vh;
-      border-radius: 16px;
+      flex: 1 1 calc(50% - 8px);
+      max-width: calc(50% - 8px);
+      height: calc(50% - 8px);
+      border-radius: 14px;
       color: white;
       font-weight: 600;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       display: flex;
       justify-content: center;
       align-items: center;
       text-align: center;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.07);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
       position: relative;
     }
 
     @media (min-width: 768px) {
+      .grid {
+        flex-wrap: nowrap;
+        gap: 16px;
+      }
+
       .block {
-        flex: 1 1 22%;
-        max-width: 22%;
-        height: 60vh;
+        flex: 1;
+        height: 64vh;
+        max-width: 100%;
       }
 
       .main {
-        padding: 16px 32px 24px;
-        gap: 16px;
+        padding: 24px 32px;
+        gap: 24px;
       }
     }
 
     .shock {
-      background: linear-gradient(to right, #8e2de2, #4a00e0);
+      background: linear-gradient(to right, #a600ff, #7b00c7);
       color: white;
       font-weight: bold;
       border: none;
       border-radius: 32px;
-      padding: 12px 26px;
+      padding: 10px 22px;
       margin: 0 auto;
       display: block;
-      font-size: 0.88rem;
-      box-shadow: 0 3px 8px rgba(127, 0, 255, 0.25);
+      font-size: 0.9rem;
+      box-shadow: 0 3px 10px rgba(100, 0, 200, 0.3);
       transition: all 0.3s ease;
       cursor: pointer;
       white-space: nowrap;
@@ -113,6 +118,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      margin-top: 6px;
     }
 
     .trigguiletras {
@@ -124,11 +130,11 @@
       position: absolute;
       inset: 0;
       padding: 14px;
-      background: rgba(255,255,255,0.95);
+      background: rgba(255,255,255,0.96);
       color: #222;
-      font-size: 0.9rem;
+      font-size: 0.92rem;
       font-weight: 500;
-      border-radius: 16px;
+      border-radius: 14px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -155,16 +161,6 @@
     .block.show .label {
       opacity: 0;
     }
-
-    .block a {
-      color: white;
-      text-decoration: none;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
   </style>
 </head>
 <body>
@@ -174,22 +170,22 @@
 
   <div class="main" id="mainContent">
     <div class="grid">
-      <div class="block" id="detenteBlock" style="background: linear-gradient(135deg, #e95420, #e95420);">
-        <div class="accionables">✊ Abraza la incomodidad<br>🧠 Domina tu diálogo interno<br>🔥 Haz lo que otros no se atreven</div>
+      <div class="block" id="detenteBlock" style="background: linear-gradient(135deg, #d84315, #ef6c00);">
+        <div class="accionables">✊ Respira antes de reaccionar<br>🧠 Repite: “Esto no es urgente”<br>🔒 No cedas al impulso</div>
         <span class="label">Detente</span>
       </div>
-      <div class="block" id="leeBlock" style="background: linear-gradient(135deg, #009688, #009688);">
+      <div class="block" id="leeBlock" style="background: linear-gradient(135deg, #00796b, #26a69a);">
         <span class="label">Lee</span>
       </div>
-      <div class="block" id="questionBlock" style="background: linear-gradient(135deg, #5e35b1, #5e35b1);">
+      <div class="block" id="questionBlock" style="background: linear-gradient(135deg, #512da8, #7e57c2);">
         <span class="label">?</span>
       </div>
-      <div class="block" id="conectaBlock" style="background: linear-gradient(135deg, #3f51b5, #3f51b5);">
+      <div class="block" id="conectaBlock" style="background: linear-gradient(135deg, #1976d2, #64b5f6);">
         <span class="label">Conecta</span>
       </div>
     </div>
 
-    <button class="shock" id="shockBtn">📚 Ya leí</button>
+    <button class="shock" id="shockBtn">📘 Ya leí</button>
 
     <div class="logo-wrapper">
       <img src="/trigguiletras.png" alt="triggui logo" class="trigguiletras" />
@@ -200,17 +196,18 @@
     setTimeout(() => {
       document.getElementById('loader').style.display = 'none';
       document.getElementById('mainContent').style.display = 'flex';
-    }, 1800);
+    }, 1600);
 
     document.getElementById('shockBtn').addEventListener('click', function () {
-      this.innerText = '📘 Bien leído';
+      this.innerText = '✅ Bien leído';
     });
 
     let leeState = false;
     document.getElementById('leeBlock').addEventListener('click', function () {
-      const colorOn = 'linear-gradient(135deg, #ffd700, #ffd700)';
-      const colorOff = 'linear-gradient(135deg, #009688, #009688)';
+      const colorOn = 'linear-gradient(135deg, #ffd600, #ffa000)';
+      const colorOff = 'linear-gradient(135deg, #00796b, #26a69a)';
       this.style.background = leeState ? colorOff : colorOn;
+      this.querySelector('.label').innerText = leeState ? 'Lee' : 'Sigue leyendo...';
       leeState = !leeState;
     });
 
@@ -223,7 +220,7 @@
     });
 
     document.getElementById('conectaBlock').addEventListener('click', function () {
-      alert("🔗 Próximamente podrás conectar.");
+      alert("🔗 Pronto podrás conectar. Espéralo.");
     });
   </script>
 </body>
