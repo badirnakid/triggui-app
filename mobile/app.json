@@ -1,7 +1,8 @@
 {
   "expo": {
     "name": "TrigguiApp",
-    "slug": "triggui",
+    "slug": "trigguiapp",
+    "owner": "badirnakid",
     "version": "1.0.0",
     "orientation": "portrait",
     "platforms": ["ios", "android"],
