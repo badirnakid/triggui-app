@@ -31,7 +31,7 @@
     }
 
     .loader img {
-      height: 52px;
+      height: 40px;
       width: auto;
       animation: breathing 3s ease-in-out infinite;
     }
@@ -51,21 +51,21 @@
       justify-content: space-between;
       height: 100%;
       padding: 10px 10px 16px;
-      gap: 10px;
+      gap: 8px;
     }
 
     .grid {
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
-      gap: 6px;
+      gap: 4px;
       flex-grow: 1;
     }
 
     .block {
-      flex: 1 1 calc(50% - 6px);
-      max-width: calc(50% - 6px);
-      height: calc(50% - 6px);
+      flex: 1 1 calc(50% - 4px);
+      max-width: calc(50% - 4px);
+      height: calc(50% - 4px);
       border-radius: 14px;
       color: white;
       font-weight: 600;
@@ -83,7 +83,7 @@
     @media (min-width: 768px) {
       .grid {
         flex-wrap: nowrap;
-        gap: 20px;
+        gap: 18px;
       }
 
       .block {
@@ -99,12 +99,12 @@
     }
 
     .shock {
-      background: linear-gradient(to right, #ff0099, #9b00ff);
+      background: linear-gradient(to right, #8e2de2, #4a00e0);
       color: white;
       font-weight: bold;
       border: none;
       border-radius: 32px;
-      padding: 10px 22px;
+      padding: 10px 24px;
       margin: 0 auto;
       display: block;
       font-size: 0.9rem;
@@ -122,7 +122,7 @@
     }
 
     .trigguiletras {
-      height: 20px;
+      height: 18px;
       object-fit: contain;
     }
 
@@ -161,6 +161,13 @@
     .block.show .label {
       opacity: 0;
     }
+
+    .book-cover {
+      background: url('https://i.imgur.com/vxXjLOF.jpeg') center center/cover no-repeat;
+      border-radius: 14px;
+      height: 100%;
+      width: 100%;
+    }
   </style>
 </head>
 <body>
@@ -170,22 +177,22 @@
 
   <div class="main" id="mainContent">
     <div class="grid">
-      <div class="block" id="detenteBlock" style="background: linear-gradient(135deg, #ff3d00, #ff9800);">
-        <div class="accionables">✋ Respira antes de reaccionar<br>🧠 Repite: “Esto no es urgente”<br>🔒 No cedas al impulso</div>
+      <div class="block" id="detenteBlock" style="background: linear-gradient(135deg, #ef5350, #e53935);">
+        <div class="accionables">✋ Respira antes de responder<br>🧘 No todo necesita respuesta inmediata<br>💡 Detente, observa, elige</div>
         <span class="label">Detente</span>
       </div>
-      <div class="block" id="leeBlock" style="background: linear-gradient(135deg, #00b894, #00cec9);">
+      <div class="block" id="leeBlock" style="background: linear-gradient(135deg, #26c6da, #00acc1);">
         <span class="label">Lee</span>
       </div>
-      <div class="block" id="questionBlock" style="background: linear-gradient(135deg, #6a1b9a, #ab47bc);">
+      <div class="block" id="questionBlock" style="background: linear-gradient(135deg, #ab47bc, #8e24aa);">
         <span class="label">?</span>
       </div>
-      <div class="block" id="conectaBlock" style="background: linear-gradient(135deg, #1565c0, #42a5f5);">
+      <div class="block" id="conectaBlock" style="background: linear-gradient(135deg, #5c6bc0, #3949ab);">
         <span class="label">Conecta</span>
       </div>
     </div>
 
-    <button class="shock" id="shockBtn">📘 Ya leí</button>
+    <button class="shock" id="shockBtn">📗 Ya leí</button>
 
     <div class="logo-wrapper">
       <img src="/trigguiletras.png" alt="triggui logo" class="trigguiletras" />
@@ -204,10 +211,11 @@
 
     let leeState = false;
     document.getElementById('leeBlock').addEventListener('click', function () {
-      const colorOn = 'linear-gradient(135deg, #fbc02d, #ffeb3b)';
-      const colorOff = 'linear-gradient(135deg, #00b894, #00cec9)';
-      this.style.background = leeState ? colorOff : colorOn;
-      this.querySelector('.label').innerText = leeState ? 'Lee' : 'Sigue leyendo...';
+      if (!leeState) {
+        this.innerHTML = '<div class="book-cover"></div>';
+      } else {
+        this.innerHTML = '<span class="label">Lee</span>';
+      }
       leeState = !leeState;
     });
 
@@ -220,7 +228,7 @@
     });
 
     document.getElementById('conectaBlock').addEventListener('click', function () {
-      alert("🔗 Pronto podrás conectar. Espéralo.");
+      alert("🔗 Conecta vendrá muy pronto.");
     });
   </script>
 </body>
