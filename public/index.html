@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Triggui App - Portadas Simuladas</title>
+  <title>Triggui App</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
@@ -17,20 +17,20 @@
       flex-direction: column;
       justify-content: space-between;
       height: 100%;
-      padding: 16px;
-      gap: 16px;
+      padding: 1.5vw;
+      gap: 1.5vw;
     }
     .grid {
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
-      gap: 16px;
+      gap: 1.5vw;
       flex-grow: 1;
     }
     .block {
-      flex: 1 1 calc(50% - 8px);
-      max-width: calc(50% - 8px);
-      height: calc(50% - 8px);
+      flex: 1 1 calc(50% - 0.75vw);
+      max-width: calc(50% - 0.75vw);
+      height: calc(50% - 0.75vw);
       border-radius: 16px;
       font-weight: 600;
       font-size: 1.12rem;
@@ -44,12 +44,22 @@
       overflow: hidden;
       color: white;
     }
+    @media (min-width: 768px) {
+      .grid {
+        flex-wrap: nowrap;
+      }
+      .block {
+        flex: 1;
+        height: 75vh;
+        max-width: 100%;
+      }
+    }
     .label {
       z-index: 1;
       position: relative;
       pointer-events: none;
     }
-    .accionables, .simulada {
+    .accionables, .book-cover {
       position: absolute;
       inset: 0;
       display: none;
@@ -67,19 +77,19 @@
       flex-direction: column;
       line-height: 1.4;
     }
-    .simulada {
+    .book-cover {
       flex-direction: column;
-      font-size: 1rem;
+      font-size: 1.1rem;
       color: #fff;
       font-weight: bold;
       text-shadow: 0 0 5px rgba(0,0,0,0.2);
     }
-    .simulada span.emoji {
+    .book-cover .emoji {
       font-size: 2.5rem;
       margin-bottom: 10px;
     }
     .block.show .accionables,
-    .block.show .simulada {
+    .block.show .book-cover {
       display: flex;
     }
     .block.show .label {
@@ -91,7 +101,7 @@
       font-weight: bold;
       border: none;
       border-radius: 32px;
-      padding: 12px 24px;
+      padding: 10px 24px;
       margin: 0 auto;
       font-size: 0.9rem;
       cursor: pointer;
@@ -110,18 +120,18 @@
 <body>
   <div class="main">
     <div class="grid">
-      <div class="block" id="detente" style="background: linear-gradient(135deg, #FF512F, #F09819);">
+      <div class="block" id="detente" style="background: linear-gradient(135deg, #FF6F91, #FFC75F);">
         <span class="label" id="detenteLabel">Detente</span>
         <div class="accionables" id="accionablesText"></div>
       </div>
-      <div class="block" id="lee" style="background: linear-gradient(135deg, #36D1DC, #5B86E5);">
+      <div class="block" id="lee" style="background: linear-gradient(135deg, #6A82FB, #FC5C7D);">
         <span class="label" id="leeLabel">Lee</span>
-        <div class="simulada" id="leeCover"></div>
+        <div class="book-cover" id="leeCover"></div>
       </div>
       <div class="block" id="question" style="background: linear-gradient(135deg, #FDC830, #F37335);">
         <span class="label">?</span>
       </div>
-      <div class="block" id="conecta" style="background: linear-gradient(135deg, #11998E, #38EF7D);">
+      <div class="block" id="conecta" style="background: linear-gradient(135deg, #00F260, #0575E6);">
         <span class="label">Conecta</span>
       </div>
     </div>
@@ -205,8 +215,8 @@
       seleccionarNuevoLibro();
       accionablesText.innerHTML = libroActual.accionables.map(a => `• ${a}`).join('<br>');
       leeCover.innerHTML = `
-        <span class="emoji">${libroActual.emoji}</span>
-        <span class="titulo">${libroActual.titulo}</span>
+        <div class="emoji">${libroActual.emoji}</div>
+        <div class="titulo">${libroActual.titulo}</div>
       `;
       detente.classList.add('show');
       lee.classList.add('show');
