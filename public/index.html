@@ -27,6 +27,7 @@
       gap: 1.5vw;
       flex-grow: 1;
     }
+
     .block {
       flex: 1 1 calc(50% - 0.75vw);
       max-width: calc(50% - 0.75vw);
@@ -44,11 +45,24 @@
       overflow: hidden;
       color: white;
     }
+
+    @media (min-width: 768px) {
+      .grid {
+        flex-wrap: nowrap;
+      }
+      .block {
+        flex: 1;
+        height: 75vh;
+        max-width: 100%;
+      }
+    }
+
     .label {
       z-index: 1;
       position: relative;
       pointer-events: none;
     }
+
     .accionables, .book-cover {
       position: absolute;
       inset: 0;
@@ -59,6 +73,7 @@
       border-radius: 16px;
       text-align: center;
     }
+
     .accionables {
       background: rgba(255,255,255,0.95);
       color: #222;
@@ -67,14 +82,21 @@
       flex-direction: column;
       line-height: 1.4;
     }
+
     .book-cover {
       background-size: cover;
       background-position: center;
     }
+
     .block.show .accionables,
     .block.show .book-cover {
       display: flex;
     }
+
+    .block.show .label {
+      display: none;
+    }
+
     .shock {
       background: linear-gradient(to right, #F6BD60, #F7A072);
       color: white;
@@ -86,11 +108,13 @@
       font-size: 0.9rem;
       cursor: pointer;
     }
+
     .logo-wrapper {
       display: flex;
       justify-content: center;
       align-items: center;
     }
+
     .trigguiletras {
       height: 22px;
       object-fit: contain;
@@ -127,12 +151,8 @@
         portada: 'https://m.media-amazon.com/images/I/91bYsX41DVL.jpg',
         accionables: [
           '🧱 Crea sistemas, no metas',
-          '🧠 La identidad guía el hábito',
-          '🔁 Mejora 1% cada día'
-        ],
-        frases: [
-          '📖 Los hábitos son el interés compuesto del cambio.',
-          '🎯 No se trata de ser perfecto, sino constante.'
+          '🧠 Identidad guía el hábito',
+          '🔁 Mejora 1% diario'
         ]
       },
       {
@@ -141,10 +161,6 @@
           '🔥 Usa el dolor como gasolina',
           '🥶 Entrena tu mente como tu cuerpo',
           '💪 Disciplina brutal'
-        ],
-        frases: [
-          '👊 Get comfortable being uncomfortable.',
-          '🛡 El sufrimiento revela tu verdadero yo.'
         ]
       },
       {
@@ -153,10 +169,6 @@
           '🧘‍♂️ No todo importa',
           '💩 Aprende a ignorar con intención',
           '🧠 Sé brutalmente honesto'
-        ],
-        frases: [
-          '🚫 No tienes que dar un f*ck por todo.',
-          '🎯 Elige con sabiduría lo que te afecta.'
         ]
       }
     ];
@@ -181,7 +193,6 @@
       leeCover.style.backgroundImage = `url('${libroActual.portada}')`;
       detente.classList.add('show');
       lee.classList.add('show');
-      leeLabel.style.display = 'none';
       detenteOpen = true;
       leeOpen = true;
     }
