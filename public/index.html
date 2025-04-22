@@ -27,18 +27,18 @@
       justify-content: center;
       align-items: center;
       z-index: 999;
-      animation: fadeOut 2s ease 1.6s forwards;
+      animation: fadeOut 2s ease 1.5s forwards;
     }
 
     .loader img {
       height: 32px;
       width: auto;
-      animation: breathing 3s ease-in-out infinite;
+      animation: breathing 2.8s ease-in-out infinite;
     }
 
     @keyframes breathing {
       0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.1); }
+      50% { transform: scale(1.08); }
     }
 
     @keyframes fadeOut {
@@ -50,7 +50,7 @@
       flex-direction: column;
       justify-content: space-between;
       height: 100%;
-      padding: 6px 6px 14px;
+      padding: 5px 5px 12px;
       gap: 6px;
     }
 
@@ -58,25 +58,25 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
-      gap: 4px;
+      gap: 3.5px;
       flex-grow: 1;
     }
 
     .block {
-      flex: 1 1 calc(50% - 4px);
-      max-width: calc(50% - 4px);
-      height: calc(50% - 4px);
-      border-radius: 16px;
+      flex: 1 1 calc(50% - 3.5px);
+      max-width: calc(50% - 3.5px);
+      height: calc(50% - 3.5px);
+      border-radius: 15px;
       color: white;
       font-weight: 600;
-      font-size: 1.08rem;
+      font-size: 1.05rem;
       display: flex;
       justify-content: center;
       align-items: center;
       text-align: center;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.04);
       position: relative;
     }
 
@@ -89,26 +89,25 @@
       .block {
         flex: 1;
         height: 68vh;
-        max-width: 100%;
       }
 
       .main {
-        padding: 24px 32px;
-        gap: 12px;
+        padding: 20px 28px;
+        gap: 10px;
       }
     }
 
     .shock {
-      background: linear-gradient(to right, #6a11cb, #2575fc);
+      background: linear-gradient(to right, #FF6A00, #EE0979);
       color: white;
       font-weight: bold;
       border: none;
-      border-radius: 32px;
+      border-radius: 30px;
       padding: 10px 24px;
       margin: 0 auto;
       display: block;
       font-size: 0.9rem;
-      box-shadow: 0 3px 10px rgba(100, 0, 200, 0.3);
+      box-shadow: 0 3px 10px rgba(255, 100, 150, 0.3);
       transition: all 0.3s ease;
       cursor: pointer;
       white-space: nowrap;
@@ -118,23 +117,23 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      margin-top: 6px;
+      margin-top: 4px;
     }
 
     .trigguiletras {
-      height: 15px;
+      height: 14px;
       object-fit: contain;
     }
 
     .accionables {
       position: absolute;
       inset: 0;
-      padding: 14px;
+      padding: 12px;
       background: rgba(255,255,255,0.95);
       color: #222;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       font-weight: 500;
-      border-radius: 16px;
+      border-radius: 15px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -163,8 +162,8 @@
     }
 
     .book-cover {
-      background: url('https://m.media-amazon.com/images/I/81usKCE0R-L.jpg') center center/cover no-repeat;
-      border-radius: 16px;
+      background: url('https://m.media-amazon.com/images/I/91xQ1V7-OzL.jpg') center center/cover no-repeat;
+      border-radius: 15px;
       height: 100%;
       width: 100%;
     }
@@ -177,22 +176,22 @@
 
   <div class="main" id="mainContent">
     <div class="grid">
-      <div class="block" id="detenteBlock" style="background: linear-gradient(135deg, #f27121, #e94057);">
-        <div class="accionables">📍 Respira<br>🔁 Interrumpe el ciclo<br>💡 Observa sin juzgar</div>
+      <div class="block" id="detenteBlock" style="background: linear-gradient(135deg, #f85032, #e73827);">
+        <div class="accionables">🧘‍♂️ Pausa mental<br>🔁 Interrumpe el hábito<br>🎯 Elige el impacto</div>
         <span class="label">Detente</span>
       </div>
-      <div class="block" id="leeBlock" style="background: linear-gradient(135deg, #16a085, #f4d03f);">
+      <div class="block" id="leeBlock" style="background: linear-gradient(135deg, #11998e, #38ef7d);">
         <span class="label">Lee</span>
       </div>
       <div class="block" id="questionBlock" style="background: linear-gradient(135deg, #8e44ad, #3498db);">
         <span class="label">?</span>
       </div>
-      <div class="block" id="conectaBlock" style="background: linear-gradient(135deg, #fd746c, #ff9068);">
+      <div class="block" id="conectaBlock" style="background: linear-gradient(135deg, #fc6767, #ec008c);">
         <span class="label">Conecta</span>
       </div>
     </div>
 
-    <button class="shock" id="shockBtn">📗 Ya leí</button>
+    <button class="shock" id="shockBtn">📘 Ya leí</button>
 
     <div class="logo-wrapper">
       <img src="/trigguiletras.png" alt="triggui logo" class="trigguiletras" />
@@ -203,7 +202,7 @@
     setTimeout(() => {
       document.getElementById('loader').style.display = 'none';
       document.getElementById('mainContent').style.display = 'flex';
-    }, 1600);
+    }, 1500);
 
     document.getElementById('shockBtn').addEventListener('click', function () {
       this.innerText = '✅ Bien leído';
@@ -212,11 +211,11 @@
     const leeBlock = document.getElementById('leeBlock');
     let leeClickCount = 0;
     const frases = [
-      "📘 El libro que más necesitas... aún no lo has abierto.",
-      "🧠 Cada página es una nueva versión de ti.",
-      "🧭 El papel también guía.",
-      "💥 Lee. Detona. Piensa distinto.",
-      "🛸 Tu nave mental despega con letras."
+      "📘 Leer es recordar lo que ya sabías.",
+      "🧠 Cada palabra que entiendes, ya vivía en ti.",
+      "🕯 El silencio entre letras también habla.",
+      "🚪 Esta página es una puerta.",
+      "🌌 Hay mundos completos entre dos tapas."
     ];
 
     leeBlock.addEventListener('click', function () {
