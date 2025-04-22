@@ -9,7 +9,7 @@
 
     html, body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #fefefe;
+      background: #ffffff;
       color: #333;
       height: 100%;
     }
@@ -21,10 +21,8 @@
 
     .loader {
       position: fixed;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      background: #fff;
+      inset: 0;
+      background: #ffffff;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -33,9 +31,9 @@
     }
 
     .loader img {
-      width: 80px;
-      height: 80px;
-      animation: breathing 2.5s ease-in-out infinite;
+      height: 88px;
+      width: auto;
+      animation: breathing 2.8s ease-in-out infinite;
     }
 
     @keyframes breathing {
@@ -52,33 +50,33 @@
       flex-direction: column;
       justify-content: space-between;
       height: 100vh;
-      padding: 4px 4px 10px;
+      padding: 10px 8px;
+      gap: 10px;
     }
 
     .grid {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      row-gap: 4px;
-      column-gap: 4px;
+      gap: 10px;
       flex: 1;
     }
 
     .block {
-      flex: 1 1 48%;
-      max-width: 48%;
+      flex: 1 1 calc(50% - 10px);
+      max-width: calc(50% - 10px);
       height: 36vh;
-      border-radius: 18px;
+      border-radius: 16px;
       color: white;
       font-weight: 600;
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       display: flex;
       justify-content: center;
       align-items: center;
       text-align: center;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.07);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.07);
       position: relative;
     }
 
@@ -90,7 +88,8 @@
       }
 
       .main {
-        padding-bottom: 6px;
+        padding: 16px 32px 24px;
+        gap: 16px;
       }
     }
 
@@ -101,7 +100,7 @@
       border: none;
       border-radius: 32px;
       padding: 12px 26px;
-      margin: 0 auto 4px;
+      margin: 0 auto;
       display: block;
       font-size: 0.88rem;
       box-shadow: 0 3px 8px rgba(127, 0, 255, 0.25);
@@ -114,7 +113,6 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      margin-top: 6px;
     }
 
     .trigguiletras {
@@ -126,11 +124,11 @@
       position: absolute;
       inset: 0;
       padding: 14px;
-      background: rgba(255,255,255,0.92);
+      background: rgba(255,255,255,0.95);
       color: #222;
-      font-size: 0.92rem;
+      font-size: 0.9rem;
       font-weight: 500;
-      border-radius: 18px;
+      border-radius: 16px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -176,17 +174,17 @@
 
   <div class="main" id="mainContent">
     <div class="grid">
-      <div class="block" id="detenteBlock" style="background: linear-gradient(135deg, #e96443, #e96443);">
+      <div class="block" id="detenteBlock" style="background: linear-gradient(135deg, #e95420, #e95420);">
         <div class="accionables">✊ Abraza la incomodidad<br>🧠 Domina tu diálogo interno<br>🔥 Haz lo que otros no se atreven</div>
         <span class="label">Detente</span>
       </div>
-      <div class="block" id="leeBlock" style="background: linear-gradient(135deg, #00b09b, #00b09b);">
+      <div class="block" id="leeBlock" style="background: linear-gradient(135deg, #009688, #009688);">
         <span class="label">Lee</span>
       </div>
-      <div class="block" id="questionBlock" style="background: linear-gradient(135deg, #3f2b96, #3f2b96);">
+      <div class="block" id="questionBlock" style="background: linear-gradient(135deg, #5e35b1, #5e35b1);">
         <span class="label">?</span>
       </div>
-      <div class="block" id="conectaBlock" style="background: linear-gradient(135deg, #667db6, #667db6);">
+      <div class="block" id="conectaBlock" style="background: linear-gradient(135deg, #3f51b5, #3f51b5);">
         <span class="label">Conecta</span>
       </div>
     </div>
@@ -210,8 +208,8 @@
 
     let leeState = false;
     document.getElementById('leeBlock').addEventListener('click', function () {
-      const colorOn = 'linear-gradient(135deg, #FFD200, #FFD200)';
-      const colorOff = 'linear-gradient(135deg, #00b09b, #00b09b)';
+      const colorOn = 'linear-gradient(135deg, #ffd700, #ffd700)';
+      const colorOff = 'linear-gradient(135deg, #009688, #009688)';
       this.style.background = leeState ? colorOff : colorOn;
       leeState = !leeState;
     });
@@ -221,7 +219,7 @@
     });
 
     document.getElementById('questionBlock').addEventListener('click', function () {
-      alert("🚧 Coming soon...");
+      window.open("https://www.ted.com/talks/simon_sinek_how_great_leaders_inspire_action", "_blank");
     });
 
     document.getElementById('conectaBlock').addEventListener('click', function () {
