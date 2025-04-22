@@ -2,243 +2,210 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Triggui App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Triggui</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    html, body {
-      height: 100%;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #ffffff;
-      color: #222;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #ffffff;
       display: flex;
       flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
     }
 
     .loader {
       position: fixed;
-      inset: 0;
-      background: #fff;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: white;
       display: flex;
-      justify-content: center;
       align-items: center;
-      z-index: 999;
-      animation: fadeOut 2s ease 1.5s forwards;
+      justify-content: center;
+      z-index: 100;
     }
 
     .loader img {
-      height: 32px;
-      width: auto;
-      animation: breathing 2.8s ease-in-out infinite;
+      width: 80px;
+      height: 80px;
+      animation: breathing 2s infinite ease-in-out;
     }
 
     @keyframes breathing {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.08); }
-    }
-
-    @keyframes fadeOut {
-      to { opacity: 0; visibility: hidden; }
-    }
-
-    .main {
-      display: none;
-      flex-direction: column;
-      justify-content: space-between;
-      height: 100%;
-      padding: 5px 5px 12px;
-      gap: 6px;
+      0% { transform: scale(1); opacity: 0.7; }
+      50% { transform: scale(1.15); opacity: 1; }
+      100% { transform: scale(1); opacity: 0.7; }
     }
 
     .grid {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      gap: 3.5px;
-      flex-grow: 1;
-    }
-
-    .block {
-      flex: 1 1 calc(50% - 3.5px);
-      max-width: calc(50% - 3.5px);
-      height: calc(50% - 3.5px);
-      border-radius: 15px;
-      color: white;
-      font-weight: 600;
-      font-size: 1.05rem;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.04);
-      position: relative;
+      display: grid;
+      gap: 0px;
+      width: 100%;
+      max-width: 720px;
+      margin-top: 10px;
+      padding: 0 10px;
     }
 
     @media (min-width: 768px) {
       .grid {
-        flex-wrap: nowrap;
-        gap: 14px;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin-top: 28px;
+        padding: 0 40px;
       }
+    }
 
-      .block {
-        flex: 1;
-        height: 68vh;
+    @media (max-width: 767px) {
+      .grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
       }
+    }
 
-      .main {
-        padding: 20px 28px;
-        gap: 10px;
-      }
+    .block {
+      aspect-ratio: 1/1.2;
+      border-radius: 18px;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      padding: 10px;
+      position: relative;
+      transition: 0.3s ease;
+    }
+
+    .block img {
+      max-width: 80%;
+      border-radius: 12px;
+    }
+
+    .detente-frases {
+      position: absolute;
+      top: 12%;
+      font-size: 0.95rem;
+      padding: 0 8px;
+      line-height: 1.2;
     }
 
     .shock {
-      background: linear-gradient(to right, #FF6A00, #EE0979);
+      margin-top: 18px;
+      background: linear-gradient(90deg, #ff512f, #dd2476);
+      padding: 10px 26px;
+      border-radius: 32px;
       color: white;
-      font-weight: bold;
+      font-weight: 600;
+      font-size: 1rem;
       border: none;
-      border-radius: 30px;
-      padding: 10px 24px;
-      margin: 0 auto;
-      display: block;
-      font-size: 0.9rem;
-      box-shadow: 0 3px 10px rgba(255, 100, 150, 0.3);
-      transition: all 0.3s ease;
+      box-shadow: 0px 5px 12px rgba(0,0,0,0.2);
       cursor: pointer;
-      white-space: nowrap;
     }
 
-    .logo-wrapper {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-top: 4px;
-    }
-
-    .trigguiletras {
-      height: 14px;
-      object-fit: contain;
-    }
-
-    .accionables {
-      position: absolute;
-      inset: 0;
-      padding: 12px;
-      background: rgba(255,255,255,0.95);
-      color: #222;
-      font-size: 0.88rem;
-      font-weight: 500;
-      border-radius: 15px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      line-height: 1.4;
+    .logo {
+      margin-top: 8px;
       text-align: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-      z-index: 5;
     }
 
-    .block.show .accionables {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .label {
-      z-index: 1;
-      position: relative;
-      transition: opacity 0.2s ease;
-    }
-
-    .block.show .label {
-      opacity: 0;
-    }
-
-    .book-cover {
-      background: url('https://m.media-amazon.com/images/I/91xQ1V7-OzL.jpg') center center/cover no-repeat;
-      border-radius: 15px;
-      height: 100%;
-      width: 100%;
+    .logo img {
+      height: 26px;
+      margin-top: 6px;
     }
   </style>
 </head>
 <body>
-  <div class="loader" id="loader">
-    <img src="/imagotipo.png" alt="Cargando Triggui" />
+
+<div class="loader" id="loader">
+  <img src="/imagotipo.png" alt="Cargando..." />
+</div>
+
+<div class="grid">
+  <div class="block" id="detente" style="background: linear-gradient(135deg, #f12711, #f5af19);">
+    <span id="detenteText">Detente</span>
   </div>
-
-  <div class="main" id="mainContent">
-    <div class="grid">
-      <div class="block" id="detenteBlock" style="background: linear-gradient(135deg, #f85032, #e73827);">
-        <div class="accionables">🧘‍♂️ Pausa mental<br>🔁 Interrumpe el hábito<br>🎯 Elige el impacto</div>
-        <span class="label">Detente</span>
-      </div>
-      <div class="block" id="leeBlock" style="background: linear-gradient(135deg, #11998e, #38ef7d);">
-        <span class="label">Lee</span>
-      </div>
-      <div class="block" id="questionBlock" style="background: linear-gradient(135deg, #8e44ad, #3498db);">
-        <span class="label">?</span>
-      </div>
-      <div class="block" id="conectaBlock" style="background: linear-gradient(135deg, #fc6767, #ec008c);">
-        <span class="label">Conecta</span>
-      </div>
-    </div>
-
-    <button class="shock" id="shockBtn">📘 Ya leí</button>
-
-    <div class="logo-wrapper">
-      <img src="/trigguiletras.png" alt="triggui logo" class="trigguiletras" />
-    </div>
+  <div class="block" id="lee" style="background: linear-gradient(135deg, #00b09b, #96c93d);">
+    <span id="leeText">Lee</span>
   </div>
+  <div class="block" id="interrogante" style="background: linear-gradient(135deg, #7F00FF, #E100FF);">
+    <span>?</span>
+  </div>
+  <div class="block" id="conecta" style="background: linear-gradient(135deg, #FF416C, #FF4B2B);">
+    <span>Conecta</span>
+  </div>
+</div>
 
-  <script>
-    setTimeout(() => {
-      document.getElementById('loader').style.display = 'none';
-      document.getElementById('mainContent').style.display = 'flex';
-    }, 1500);
+<button class="shock" onclick="yaLei()">📘 Ya leí</button>
 
-    document.getElementById('shockBtn').addEventListener('click', function () {
-      this.innerText = '✅ Bien leído';
-    });
+<div class="logo">
+  <img src="/trigguiletras.png" alt="Triggui" />
+</div>
 
-    const leeBlock = document.getElementById('leeBlock');
-    let leeClickCount = 0;
-    const frases = [
-      "📘 Leer es recordar lo que ya sabías.",
-      "🧠 Cada palabra que entiendes, ya vivía en ti.",
-      "🕯 El silencio entre letras también habla.",
-      "🚪 Esta página es una puerta.",
-      "🌌 Hay mundos completos entre dos tapas."
-    ];
+<script>
+  const loader = document.getElementById("loader");
+  window.addEventListener("load", () => {
+    setTimeout(() => loader.style.display = "none", 1100);
+  });
 
-    leeBlock.addEventListener('click', function () {
-      if (leeClickCount % 2 === 0) {
-        this.innerHTML = '<div class="book-cover"></div>';
-      } else {
-        const frase = frases[(leeClickCount / 2) % frases.length];
-        this.innerHTML = `<span class="label">${frase}</span>`;
-      }
-      leeClickCount++;
-    });
+  const detente = document.getElementById("detente");
+  const detenteText = document.getElementById("detenteText");
+  let detenteOpen = false;
 
-    document.getElementById('detenteBlock').addEventListener('click', function () {
-      this.classList.toggle('show');
-    });
+  detente.addEventListener("click", () => {
+    detenteOpen = !detenteOpen;
+    detenteText.innerHTML = detenteOpen ? `
+      <div class="detente-frases">
+        • Respira. <br>
+        • Observa. <br>
+        • Elige.
+      </div>
+    ` : "Detente";
+  });
 
-    document.getElementById('questionBlock').addEventListener('click', function () {
-      window.open("https://www.ted.com/talks/simon_sinek_how_great_leaders_inspire_action", "_blank");
-    });
+  const lee = document.getElementById("lee");
+  const leeText = document.getElementById("leeText");
+  let leeOpen = false;
 
-    document.getElementById('conectaBlock').addEventListener('click', function () {
-      alert("🔗 Muy pronto podrás conectar con otros lectores.");
-    });
-  </script>
+  const frasesLee = [
+    "Abre una página al azar.",
+    "Concéntrate como nunca antes.",
+    "Lee un párrafo como si fuera oro."
+  ];
+
+  const portada = "https://images-na.ssl-images-amazon.com/images/I/81E%2BO-9MiJL.jpg";
+
+  lee.addEventListener("click", () => {
+    leeOpen = !leeOpen;
+    if (leeOpen) {
+      lee.style.background = "white";
+      lee.innerHTML = `<img src="${portada}" alt="Portada" />`;
+    } else {
+      lee.style.background = "linear-gradient(135deg, #00b09b, #96c93d)";
+      lee.innerHTML = `<span id="leeText">${frasesLee[Math.floor(Math.random() * frasesLee.length)]}</span>`;
+    }
+  });
+
+  const interrogante = document.getElementById("interrogante");
+  interrogante.addEventListener("click", () => {
+    window.open("https://www.ted.com/talks/andrew_solomon_how_the_worst_moments_in_our_lives_make_us_who_we_are", "_blank");
+  });
+
+  const conecta = document.getElementById("conecta");
+  conecta.addEventListener("click", () => {
+    alert("Pronto podrás conectar con otros lectores.");
+  });
+
+  function yaLei() {
+    alert("¡Felicidades por leer un libro físico!");
+  }
+</script>
+
 </body>
 </html>
