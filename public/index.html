@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Triggui - Visual Libro Sugerido</title>
+  <title>Triggui App - Visual Libro</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
       height: 100%;
       font-family: 'Segoe UI', sans-serif;
-      background: #F8F1F1;
+      background: #FFF9F0;
       color: #222;
     }
     .main {
@@ -70,37 +70,40 @@
       text-align: center;
     }
     .accionables {
-      background: rgba(255,255,255,0.95);
-      color: #222;
-      font-size: 0.88rem;
+      background: #ffffff;
+      color: #333;
+      font-size: 0.9rem;
       font-weight: 500;
       flex-direction: column;
-      line-height: 1.4;
+      gap: 10px;
     }
     .book-cover {
-      background: #FAFAFA;
+      background: #ffffff;
       flex-direction: column;
-      gap: 14px;
-      color: #222;
+      color: #333;
+      gap: 10px;
     }
     .book-icon {
-      width: 72px;
-      height: 72px;
-      fill: #A084CA;
+      width: 60px;
+      height: 60px;
+      fill: #FFC857;
       animation: pulse 2.5s ease-in-out infinite;
     }
     @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 0.85; }
+      0%, 100% { transform: scale(1); opacity: 0.8; }
       50% { transform: scale(1.15); opacity: 1; }
     }
     .book-title {
       font-size: 1rem;
-      font-weight: 600;
+      font-weight: bold;
     }
     .book-author {
       font-size: 0.85rem;
       font-style: italic;
-      color: #666;
+    }
+    .book-tagline {
+      font-size: 0.8rem;
+      color: #777;
     }
     .block.show .accionables,
     .block.show .book-cover {
@@ -110,7 +113,7 @@
       display: none;
     }
     .shock {
-      background: linear-gradient(to right, #FFAFBD, #ffc3a0);
+      background: linear-gradient(to right, #43e97b, #38f9d7);
       color: white;
       font-weight: bold;
       border: none;
@@ -134,20 +137,18 @@
 <body>
   <div class="main">
     <div class="grid">
-      <div class="block" id="detente" style="background: linear-gradient(135deg, #E2B0FF, #9F44D3);">
+      <div class="block" id="detente" style="background: linear-gradient(135deg, #FF5E7E, #FFBABA);">
         <span class="label" id="detenteLabel">Detente</span>
         <div class="accionables" id="accionablesText"></div>
       </div>
       <div class="block" id="lee" style="background: linear-gradient(135deg, #84fab0, #8fd3f4);">
         <span class="label" id="leeLabel">Lee</span>
-        <div class="book-cover" id="leeCover">
-          <!-- contenido dinámico -->
-        </div>
+        <div class="book-cover" id="leeCover"></div>
       </div>
-      <div class="block" id="question" style="background: linear-gradient(135deg, #ffecd2, #fcb69f);">
+      <div class="block" id="question" style="background: linear-gradient(135deg, #c2e9fb, #a1c4fd);">
         <span class="label">?</span>
       </div>
-      <div class="block" id="conecta" style="background: linear-gradient(135deg, #A1FFCE, #FAFFD1);">
+      <div class="block" id="conecta" style="background: linear-gradient(135deg, #fdfcfb, #e2d1c3);">
         <span class="label">Conecta</span>
       </div>
     </div>
@@ -162,28 +163,31 @@
       {
         titulo: "El poder del ahora",
         autor: "Eckhart Tolle",
+        tagline: "Un camino hacia la realización espiritual",
         accionables: [
-          "Respira el momento",
-          "Suelta el pasado",
-          "El presente es todo lo que hay"
+          "Respira conscientemente ahora.",
+          "Observa tus pensamientos sin juzgar.",
+          "Sumérgete en el presente sin miedo."
         ]
       },
       {
         titulo: "Mindset",
         autor: "Carol S. Dweck",
+        tagline: "La actitud del éxito",
         accionables: [
-          "Mentalidad de crecimiento",
-          "Aprende del error",
-          "Cree en el cambio"
+          "Abraza los desafíos.",
+          "Aprende de los errores.",
+          "Cree que puedes cambiar."
         ]
       },
       {
         titulo: "Los 7 hábitos",
         autor: "Stephen R. Covey",
+        tagline: "Lecciones poderosas en el cambio personal",
         accionables: [
-          "Sé proactivo",
-          "Empieza con un fin en mente",
-          "Afila la sierra"
+          "Sé proactivo desde hoy.",
+          "Comienza con un fin en mente.",
+          "Afila la sierra sin excusas."
         ]
       }
     ];
@@ -206,18 +210,16 @@
 
     function sincronizarYMostrarAmbos() {
       seleccionarNuevoLibro();
-
-      accionablesText.innerHTML = libroActual.accionables.map(t => `• ${t}`).join('<br>');
-
+      accionablesText.innerHTML = libroActual.accionables.map(a => `• ${a}`).join('<br>');
       leeCover.innerHTML = `
         <svg class="book-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-          <rect x="12" y="8" width="40" height="48" rx="4" ry="4" stroke="#444" stroke-width="2" fill="white"/>
-          <line x1="32" y1="8" x2="32" y2="56" stroke="#ccc" stroke-width="2"/>
+          <rect x="12" y="8" width="40" height="48" rx="4" ry="4" stroke="#ccc" stroke-width="2" fill="#fff"/>
+          <line x1="32" y1="8" x2="32" y2="56" stroke="#eee" stroke-width="2"/>
         </svg>
         <div class="book-title">${libroActual.titulo}</div>
         <div class="book-author">${libroActual.autor}</div>
+        <div class="book-tagline">${libroActual.tagline}</div>
       `;
-
       detente.classList.add('show');
       lee.classList.add('show');
       detenteLabel.style.display = 'none';
