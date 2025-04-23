@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Triggui App - Visual Libro</title>
+  <title>Triggui - Lectura Visual</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
       height: 100%;
       font-family: 'Segoe UI', sans-serif;
-      background: #FFF9F0;
+      background: #F9F7F3;
       color: #222;
     }
     .main {
@@ -32,32 +32,24 @@
       max-width: calc(50% - 0.75vw);
       height: calc(50% - 0.75vw);
       border-radius: 16px;
-      font-weight: 600;
-      font-size: 1.12rem;
       display: flex;
       justify-content: center;
       align-items: center;
       text-align: center;
       cursor: pointer;
-      transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
       color: white;
+      transition: transform 0.25s ease;
     }
-    @media (min-width: 768px) {
-      .grid {
-        flex-wrap: nowrap;
-      }
-      .block {
-        flex: 1;
-        height: 75vh;
-        max-width: 100%;
-      }
+    .block:active {
+      transform: scale(0.97);
     }
     .label {
       z-index: 1;
       position: relative;
-      pointer-events: none;
+      font-weight: 600;
+      font-size: 1.2rem;
     }
     .accionables, .book-cover {
       position: absolute;
@@ -65,32 +57,28 @@
       display: none;
       justify-content: center;
       align-items: center;
+      flex-direction: column;
       padding: 16px;
       border-radius: 16px;
       text-align: center;
+      background: rgba(255, 255, 255, 0.95);
+      color: #222;
     }
-    .accionables {
-      background: #ffffff;
-      color: #333;
-      font-size: 0.9rem;
-      font-weight: 500;
-      flex-direction: column;
-      gap: 10px;
+    .accionables p {
+      margin: 10px 0;
+      font-size: 1rem;
     }
     .book-cover {
-      background: #ffffff;
-      flex-direction: column;
-      color: #333;
       gap: 10px;
     }
     .book-icon {
-      width: 60px;
-      height: 60px;
-      fill: #FFC857;
-      animation: pulse 2.5s ease-in-out infinite;
+      width: 70px;
+      height: 70px;
+      fill: #FFB703;
+      animation: pulse 2s infinite;
     }
     @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 0.8; }
+      0%, 100% { transform: scale(1); opacity: 0.9; }
       50% { transform: scale(1.15); opacity: 1; }
     }
     .book-title {
@@ -98,12 +86,12 @@
       font-weight: bold;
     }
     .book-author {
-      font-size: 0.85rem;
+      font-size: 0.88rem;
       font-style: italic;
     }
     .book-tagline {
-      font-size: 0.8rem;
-      color: #777;
+      font-size: 0.85rem;
+      color: #666;
     }
     .block.show .accionables,
     .block.show .book-cover {
@@ -113,20 +101,21 @@
       display: none;
     }
     .shock {
-      background: linear-gradient(to right, #43e97b, #38f9d7);
+      background: linear-gradient(to right, #EF476F, #FFD166);
       color: white;
       font-weight: bold;
       border: none;
       border-radius: 32px;
-      padding: 10px 24px;
+      padding: 12px 24px;
       margin: 0 auto;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       cursor: pointer;
     }
     .logo-wrapper {
       display: flex;
       justify-content: center;
       align-items: center;
+      padding-top: 8px;
     }
     .trigguiletras {
       height: 22px;
@@ -137,22 +126,22 @@
 <body>
   <div class="main">
     <div class="grid">
-      <div class="block" id="detente" style="background: linear-gradient(135deg, #FF5E7E, #FFBABA);">
+      <div class="block" id="detente" style="background: linear-gradient(135deg, #FB5607, #FFBE0B);">
         <span class="label" id="detenteLabel">Detente</span>
         <div class="accionables" id="accionablesText"></div>
       </div>
-      <div class="block" id="lee" style="background: linear-gradient(135deg, #84fab0, #8fd3f4);">
+      <div class="block" id="lee" style="background: linear-gradient(135deg, #3A86FF, #8338EC);">
         <span class="label" id="leeLabel">Lee</span>
         <div class="book-cover" id="leeCover"></div>
       </div>
-      <div class="block" id="question" style="background: linear-gradient(135deg, #c2e9fb, #a1c4fd);">
+      <div class="block" id="question" style="background: linear-gradient(135deg, #FF006E, #FF8FAB);">
         <span class="label">?</span>
       </div>
-      <div class="block" id="conecta" style="background: linear-gradient(135deg, #fdfcfb, #e2d1c3);">
+      <div class="block" id="conecta" style="background: linear-gradient(135deg, #06D6A0, #8EECF5);">
         <span class="label">Conecta</span>
       </div>
     </div>
-    <button class="shock" id="shockBtn">📚👊 Chócalas por leer un libro físico</button>
+    <button class="shock" id="shockBtn">📚👊 ¡Chócalas si abriste un libro físico!</button>
     <div class="logo-wrapper">
       <img src="/trigguiletras.png" class="trigguiletras" />
     </div>
@@ -165,9 +154,9 @@
         autor: "Eckhart Tolle",
         tagline: "Un camino hacia la realización espiritual",
         accionables: [
-          "Respira conscientemente ahora.",
-          "Observa tus pensamientos sin juzgar.",
-          "Sumérgete en el presente sin miedo."
+          "🧘‍♂️ Respira conscientemente ahora.",
+          "🧠 Observa tus pensamientos sin juzgar.",
+          "🌟 Sumérgete en el presente sin miedo."
         ]
       },
       {
@@ -175,9 +164,9 @@
         autor: "Carol S. Dweck",
         tagline: "La actitud del éxito",
         accionables: [
-          "Abraza los desafíos.",
-          "Aprende de los errores.",
-          "Cree que puedes cambiar."
+          "🚀 Abraza los desafíos.",
+          "🔍 Aprende de los errores.",
+          "💡 Cree que puedes cambiar."
         ]
       },
       {
@@ -185,9 +174,9 @@
         autor: "Stephen R. Covey",
         tagline: "Lecciones poderosas en el cambio personal",
         accionables: [
-          "Sé proactivo desde hoy.",
-          "Comienza con un fin en mente.",
-          "Afila la sierra sin excusas."
+          "💪 Sé proactivo desde hoy.",
+          "🎯 Comienza con un fin en mente.",
+          "🛠️ Afila la sierra sin excusas."
         ]
       }
     ];
@@ -210,7 +199,11 @@
 
     function sincronizarYMostrarAmbos() {
       seleccionarNuevoLibro();
-      accionablesText.innerHTML = libroActual.accionables.map(a => `• ${a}`).join('<br>');
+
+      accionablesText.innerHTML = libroActual.accionables
+        .map(a => `<p>${a}</p>`)
+        .join('');
+
       leeCover.innerHTML = `
         <svg class="book-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
           <rect x="12" y="8" width="40" height="48" rx="4" ry="4" stroke="#ccc" stroke-width="2" fill="#fff"/>
@@ -220,6 +213,7 @@
         <div class="book-author">${libroActual.autor}</div>
         <div class="book-tagline">${libroActual.tagline}</div>
       `;
+
       detente.classList.add('show');
       lee.classList.add('show');
       detenteLabel.style.display = 'none';
