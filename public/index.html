@@ -19,40 +19,41 @@
     .main {
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
       height: 100%;
-      padding: 1vw;
+      padding: 2vw;
       gap: 1vw;
     }
     .grid {
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
+      align-items: stretch;
       gap: 1vw;
-      flex-grow: 1;
+      flex: 1;
     }
     .block {
-      flex: 1 1 calc(49% - 0.5vw);
-      max-width: calc(49% - 0.5vw);
-      height: 44vh;
+      flex: 1 1 calc(50% - 0.5vw);
+      max-width: calc(50% - 0.5vw);
+      aspect-ratio: 1 / 1;
       border-radius: 16px;
       font-weight: 600;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       display: flex;
       justify-content: center;
       align-items: center;
       text-align: center;
       cursor: pointer;
-      transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
       color: white;
+      transition: all 0.3s ease;
     }
     @media (orientation: landscape) and (max-width: 1024px),
            (min-width: 1025px) {
       .block {
         flex: 1 1 23%;
         max-width: 23%;
+        aspect-ratio: auto;
         height: 75vh;
       }
     }
@@ -67,7 +68,7 @@
       display: none;
       justify-content: center;
       align-items: center;
-      padding: 12px;
+      padding: 14px;
       border-radius: 16px;
       text-align: center;
     }
@@ -97,14 +98,15 @@
       border: none;
       border-radius: 32px;
       padding: 10px 24px;
-      margin: 0 auto;
       font-size: 0.9rem;
       cursor: pointer;
+      align-self: center;
     }
     .logo-wrapper {
       display: flex;
       justify-content: center;
       align-items: center;
+      margin-top: 1vw;
     }
     .trigguiletras {
       height: 22px;
