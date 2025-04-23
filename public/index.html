@@ -19,22 +19,23 @@
     .main {
       display: flex;
       flex-direction: column;
+      justify-content: space-between;
       height: 100%;
       padding: 2vw;
-      gap: 1vw;
+      gap: 1.5vw;
     }
     .grid {
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
       align-items: stretch;
-      gap: 1vw;
+      gap: 1.5vw;
       flex: 1;
     }
     .block {
-      flex: 1 1 calc(50% - 0.5vw);
-      max-width: calc(50% - 0.5vw);
-      aspect-ratio: 1 / 1;
+      flex: 1 1 calc(50% - 0.75vw);
+      max-width: calc(50% - 0.75vw);
+      height: 42vh;
       border-radius: 16px;
       font-weight: 600;
       font-size: 1.05rem;
@@ -48,20 +49,22 @@
       color: white;
       transition: all 0.3s ease;
     }
+
     @media (orientation: landscape) and (max-width: 1024px),
            (min-width: 1025px) {
       .block {
         flex: 1 1 23%;
         max-width: 23%;
-        aspect-ratio: auto;
         height: 75vh;
       }
     }
+
     .label {
       z-index: 1;
       position: relative;
       pointer-events: none;
     }
+
     .accionables, .book-cover {
       position: absolute;
       inset: 0;
@@ -92,7 +95,7 @@
       display: none;
     }
     .shock {
-      background: linear-gradient(to right, #FC466B, #3F5EFB);
+      background: linear-gradient(to right, #FF416C, #FFB347);
       color: white;
       font-weight: bold;
       border: none;
