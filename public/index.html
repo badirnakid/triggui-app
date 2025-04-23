@@ -32,12 +32,12 @@
       flex-grow: 1;
     }
     .block {
-      flex: 1 1 calc(50% - 0.75vw);
-      max-width: calc(50% - 0.75vw);
-      height: 45vh;
+      flex: 1 1 calc(48% - 1vw);
+      max-width: calc(48% - 1vw);
+      height: 44vh;
       border-radius: 16px;
       font-weight: 600;
-      font-size: 1.12rem;
+      font-size: 1.1rem;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -48,13 +48,23 @@
       overflow: hidden;
       color: white;
     }
-    @media (min-width: 768px) {
+
+    @media (orientation: landscape) and (max-width: 1024px) {
       .block {
         flex: 1 1 22%;
         max-width: 22%;
         height: 75vh;
       }
     }
+
+    @media (min-width: 1025px) {
+      .block {
+        flex: 1 1 22%;
+        max-width: 22%;
+        height: 75vh;
+      }
+    }
+
     .label {
       z-index: 1;
       position: relative;
