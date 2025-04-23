@@ -1,31 +1,29 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Triggui App Perfecta</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+
     html, body {
       width: 100%;
       height: 100%;
-      overflow: hidden;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background-color: #fff;
       color: #222;
       transition: background-color 0.3s ease;
     }
+
     body.dark {
       background-color: #000;
     }
 
     .main {
-      width: 100vw;
-      height: 100vh;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      padding: 2vh 2vw;
+      height: 100vh;
     }
 
     .grid {
@@ -33,16 +31,17 @@
       flex-wrap: wrap;
       justify-content: space-between;
       align-content: space-between;
+      padding: 2vh 2vw;
       gap: 2vw;
-      height: 80vh;
+      flex: 1;
     }
 
     .block {
-      width: 48vw;
-      height: 38vh;
+      width: calc(50% - 1vw);
+      height: calc(50% - 1vh);
       border-radius: 16px;
       font-weight: 600;
-      font-size: 1.05rem;
+      font-size: 1.1rem;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -54,14 +53,16 @@
       transition: all 0.3s ease;
     }
 
-    @media (orientation: landscape), (min-width: 1025px) {
+    @media (orientation: landscape) and (max-width: 1024px),
+           (min-width: 1025px) {
       .grid {
         flex-wrap: nowrap;
-        height: 80vh;
+        align-items: stretch;
       }
+
       .block {
-        width: 23.5vw;
-        height: 80vh;
+        width: 23%;
+        height: 100%;
       }
     }
 
@@ -106,6 +107,8 @@
     }
 
     .footer {
+      flex-shrink: 0;
+      padding: 1vh;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -124,7 +127,7 @@
     }
 
     .trigguiletras {
-      height: 20px;
+      height: 22px;
       object-fit: contain;
     }
   </style>
