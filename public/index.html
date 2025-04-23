@@ -22,26 +22,24 @@
     .main {
       width: 100vw;
       height: 100vh;
-      padding: 2vh 2vw;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      gap: 2vh;
+      padding: 2vh 2vw;
     }
 
     .grid {
       display: flex;
       flex-wrap: wrap;
-      gap: 2vw;
-      width: 100%;
-      height: calc(100% - 80px);
       justify-content: space-between;
       align-content: space-between;
+      gap: 2vw;
+      height: 80vh;
     }
 
     .block {
       width: 48vw;
-      height: 48vh;
+      height: 38vh;
       border-radius: 16px;
       font-weight: 600;
       font-size: 1.05rem;
@@ -57,13 +55,13 @@
     }
 
     @media (orientation: landscape), (min-width: 1025px) {
-      .block {
-        width: 23.5vw;
-        height: 92vh;
-      }
       .grid {
         flex-wrap: nowrap;
-        justify-content: space-between;
+        height: 80vh;
+      }
+      .block {
+        width: 23.5vw;
+        height: 80vh;
       }
     }
 
@@ -107,23 +105,22 @@
       display: none;
     }
 
+    .footer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1vh;
+    }
+
     .shock {
       background: linear-gradient(to right, #FF4E50, #F9D423);
       color: white;
       font-weight: bold;
       border: none;
       border-radius: 32px;
-      padding: 12px 24px;
+      padding: 10px 24px;
       font-size: 0.9rem;
       cursor: pointer;
-      align-self: center;
-    }
-
-    .logo-wrapper {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-top: 0.5vh;
     }
 
     .trigguiletras {
@@ -150,8 +147,9 @@
         <span class="label">Conecta</span>
       </div>
     </div>
-    <button class="shock" id="shockBtn">📚👊 Chócalas por leer un libro físico</button>
-    <div class="logo-wrapper">
+
+    <div class="footer">
+      <button class="shock" id="shockBtn">📚👊 Chócalas por leer un libro físico</button>
       <img src="/trigguiletras.png" class="trigguiletras" />
     </div>
   </div>
