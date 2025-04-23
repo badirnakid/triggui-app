@@ -19,26 +19,25 @@
     .main {
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
       height: 100%;
-      padding: 2vw;
-      gap: 1.5vw;
+      padding: 3vw 3vw 2vw;
+      gap: 2vw;
     }
     .grid {
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
       align-items: stretch;
-      gap: 1.5vw;
+      gap: 2vw;
       flex: 1;
     }
     .block {
-      flex: 1 1 calc(50% - 0.75vw);
-      max-width: calc(50% - 0.75vw);
+      flex: 1 1 calc(50% - 1vw);
+      max-width: calc(50% - 1vw);
       height: 42vh;
-      border-radius: 16px;
+      border-radius: 18px;
       font-weight: 600;
-      font-size: 1.05rem;
+      font-size: 1.1rem;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -71,46 +70,53 @@
       display: none;
       justify-content: center;
       align-items: center;
-      padding: 14px;
+      padding: 16px;
       border-radius: 16px;
       text-align: center;
     }
+
     .accionables {
-      background: rgba(255,255,255,0.94);
+      background: rgba(255,255,255,0.95);
       color: #222;
       font-size: 0.85rem;
       font-weight: 500;
       flex-direction: column;
       line-height: 1.4;
     }
+
     .book-cover {
       background-size: cover;
       background-position: center;
     }
+
     .block.show .accionables,
     .block.show .book-cover {
       display: flex;
     }
+
     .block.show .label {
       display: none;
     }
+
     .shock {
-      background: linear-gradient(to right, #FF416C, #FFB347);
+      background: linear-gradient(to right, #FF4E50, #F9D423);
       color: white;
       font-weight: bold;
       border: none;
-      border-radius: 32px;
-      padding: 10px 24px;
+      border-radius: 28px;
+      padding: 10px 22px;
       font-size: 0.9rem;
       cursor: pointer;
       align-self: center;
     }
+
     .logo-wrapper {
       display: flex;
       justify-content: center;
       align-items: center;
       margin-top: 1vw;
     }
+
     .trigguiletras {
       height: 22px;
       object-fit: contain;
@@ -120,18 +126,18 @@
 <body>
   <div class="main">
     <div class="grid">
-      <div class="block" id="detente" style="background: linear-gradient(135deg, #FF416C, #FF4B2B);">
+      <div class="block" id="detente" style="background: linear-gradient(135deg, #F00000, #DC281E);">
         <span class="label" id="detenteLabel">Detente</span>
         <div class="accionables" id="accionablesText"></div>
       </div>
-      <div class="block" id="lee" style="background: linear-gradient(135deg, #00C9FF, #92FE9D);">
+      <div class="block" id="lee" style="background: linear-gradient(135deg, #1FA2FF, #12D8FA, #A6FFCB);">
         <span class="label" id="leeLabel">Lee</span>
         <div class="book-cover" id="leeCover"></div>
       </div>
-      <div class="block" id="question" style="background: linear-gradient(135deg, #FC466B, #3F5EFB);">
+      <div class="block" id="question" style="background: linear-gradient(135deg, #FFB75E, #ED8F03);">
         <span class="label">?</span>
       </div>
-      <div class="block" id="conecta" style="background: linear-gradient(135deg, #FDC830, #F37335);">
+      <div class="block" id="conecta" style="background: linear-gradient(135deg, #FF9A8B, #FF6A88, #FF99AC);">
         <span class="label">Conecta</span>
       </div>
     </div>
