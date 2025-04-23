@@ -8,6 +8,8 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
       height: 100%;
+      width: 100%;
+      overflow: hidden;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background-color: #fff;
       color: #222;
@@ -16,26 +18,29 @@
     body.dark {
       background-color: #000;
     }
+
     .main {
       display: flex;
       flex-direction: column;
       height: 100%;
-      padding: 3vw 3vw 2vw;
-      gap: 2vw;
+      padding: 2vh 2vw;
+      gap: 2vh;
     }
+
     .grid {
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
       align-items: stretch;
-      gap: 2vw;
+      gap: 2vh;
       flex: 1;
     }
+
     .block {
-      flex: 1 1 calc(50% - 1vw);
-      max-width: calc(50% - 1vw);
-      height: 42vh;
-      border-radius: 18px;
+      flex: 1 1 calc(50% - 1vh);
+      max-width: calc(50% - 1vh);
+      height: calc(50% - 1vh);
+      border-radius: 16px;
       font-weight: 600;
       font-size: 1.1rem;
       display: flex;
@@ -52,9 +57,9 @@
     @media (orientation: landscape) and (max-width: 1024px),
            (min-width: 1025px) {
       .block {
-        flex: 1 1 23%;
-        max-width: 23%;
-        height: 75vh;
+        flex: 1 1 23.5%;
+        max-width: 23.5%;
+        height: 90vh;
       }
     }
 
@@ -70,7 +75,7 @@
       display: none;
       justify-content: center;
       align-items: center;
-      padding: 16px;
+      padding: 14px;
       border-radius: 16px;
       text-align: center;
     }
@@ -78,7 +83,7 @@
     .accionables {
       background: rgba(255,255,255,0.95);
       color: #222;
-      font-size: 0.85rem;
+      font-size: 0.88rem;
       font-weight: 500;
       flex-direction: column;
       line-height: 1.4;
@@ -99,12 +104,12 @@
     }
 
     .shock {
-      background: linear-gradient(to right, #FF4E50, #F9D423);
+      background: linear-gradient(to right, #FF416C, #FFB347);
       color: white;
       font-weight: bold;
       border: none;
-      border-radius: 28px;
-      padding: 10px 22px;
+      border-radius: 30px;
+      padding: 10px 24px;
       font-size: 0.9rem;
       cursor: pointer;
       align-self: center;
@@ -114,7 +119,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      margin-top: 1vw;
+      margin-top: 1vh;
     }
 
     .trigguiletras {
@@ -126,18 +131,18 @@
 <body>
   <div class="main">
     <div class="grid">
-      <div class="block" id="detente" style="background: linear-gradient(135deg, #F00000, #DC281E);">
+      <div class="block" id="detente" style="background: linear-gradient(135deg, #EF3B36, #FFFFFF);">
         <span class="label" id="detenteLabel">Detente</span>
         <div class="accionables" id="accionablesText"></div>
       </div>
-      <div class="block" id="lee" style="background: linear-gradient(135deg, #1FA2FF, #12D8FA, #A6FFCB);">
+      <div class="block" id="lee" style="background: linear-gradient(135deg, #00C9FF, #92FE9D);">
         <span class="label" id="leeLabel">Lee</span>
         <div class="book-cover" id="leeCover"></div>
       </div>
-      <div class="block" id="question" style="background: linear-gradient(135deg, #FFB75E, #ED8F03);">
+      <div class="block" id="question" style="background: linear-gradient(135deg, #FDB813, #F5515F);">
         <span class="label">?</span>
       </div>
-      <div class="block" id="conecta" style="background: linear-gradient(135deg, #FF9A8B, #FF6A88, #FF99AC);">
+      <div class="block" id="conecta" style="background: linear-gradient(135deg, #1D976C, #93F9B9);">
         <span class="label">Conecta</span>
       </div>
     </div>
