@@ -2,20 +2,21 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Triggui - Estilo Imprint</title>
   <style>
-    body {
-      margin: 0;
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      height: 100%;
       font-family: 'Segoe UI', sans-serif;
-      background-color: #ffffff;
-      color: #222222;
+      background: #ffffff;
+      color: #222;
     }
     .main {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      height: 100vh;
+      height: 100%;
       padding: 1.5vw;
       gap: 1.5vw;
     }
@@ -31,54 +32,64 @@
       max-width: calc(50% - 0.75vw);
       height: calc(50% - 0.75vw);
       border-radius: 16px;
+      font-weight: 600;
+      font-size: 1.12rem;
       display: flex;
       justify-content: center;
       align-items: center;
       text-align: center;
       cursor: pointer;
+      transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
       color: white;
-      background: linear-gradient(135deg, #00B4DB, #8E2DE2);
+    }
+    @media (min-width: 768px) {
+      .grid {
+        flex-wrap: nowrap;
+      }
+      .block {
+        flex: 1;
+        height: 75vh;
+        max-width: 100%;
+      }
     }
     .label {
       z-index: 1;
       position: relative;
-      font-weight: 600;
-      font-size: 1.2rem;
+      pointer-events: none;
     }
     .book-cover {
       position: absolute;
       inset: 0;
+      background-color: #0f0f0f;
       display: none;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      padding: 14px;
-      border-radius: 16px;
       text-align: center;
-      background-color: #0f0f0f;
+      padding: 20px;
+      gap: 20px;
     }
     .book-icon {
       width: 80px;
       height: 80px;
-      margin-bottom: 16px;
       animation: pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.15); opacity: 1; }
     }
     .book-phrase {
       font-size: 1rem;
       font-weight: 500;
       color: #ffffff;
       opacity: 0;
-      animation: fadeIn 1.4s ease-in-out forwards 0.8s;
-      text-shadow: 0 0 12px rgba(255,255,255,0.2);
+      animation: fadeIn 1.2s ease-in-out forwards 0.8s;
+      text-shadow: 0 0 10px rgba(255,255,255,0.2);
     }
     @keyframes fadeIn {
       to { opacity: 1; }
-    }
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 0.85; }
-      50% { transform: scale(1.2); opacity: 1; }
     }
     .block.show .book-cover {
       display: flex;
@@ -111,11 +122,24 @@
 <body>
   <div class="main">
     <div class="grid">
-      <div class="block" id="lee">
+      <!-- BLOQUE LEE -->
+      <div class="block" id="lee" style="background: linear-gradient(135deg, #00B4DB, #8E2DE2);">
         <span class="label" id="leeLabel">Lee</span>
         <div class="book-cover" id="leeCover"></div>
       </div>
+
+      <!-- OTROS BLOQUES (puedes añadir los demás como antes) -->
+      <div class="block" style="background: linear-gradient(135deg, #FDC830, #F37335);">
+        <span class="label">?</span>
+      </div>
+      <div class="block" style="background: linear-gradient(135deg, #00F260, #0575E6);">
+        <span class="label">Conecta</span>
+      </div>
+      <div class="block" style="background: linear-gradient(135deg, #FF6F61, #D72638);">
+        <span class="label">Detente</span>
+      </div>
     </div>
+
     <button class="shock" id="shockBtn">📚👊 Chócalas por leer un libro físico</button>
     <div class="logo-wrapper">
       <img src="/trigguiletras.png" class="trigguiletras" />
@@ -127,24 +151,24 @@
       {
         titulo: "Atomic Habits",
         frase: "Eres lo que haces todos los días.",
-        svg: `<svg class="book-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="32" cy="32" r="30" stroke="#ffffff" stroke-width="4"/>
-                <path d="M32 16v32M16 32h32" stroke="#ffffff" stroke-width="4"/>
+        svg: `<svg class="book-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="32" cy="32" r="30" stroke="white" stroke-width="4"/>
+                <path d="M32 16v32M16 32h32" stroke="white" stroke-width="4"/>
               </svg>`
       },
       {
         titulo: "Can't Hurt Me",
         frase: "Haz que tu dolor tenga propósito.",
-        svg: `<svg class="book-icon" viewBox="0 0 64 64" fill="white" xmlns="http://www.w3.org/2000/svg">
-                <path d="M32 4l8 24h24l-20 16 8 24-20-16-20 16 8-24-20-16h24z"/>
+        svg: `<svg class="book-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                <path d="M32 4l8 24h24l-20 16 8 24-20-16-20 16 8-24-20-16h24z" fill="white"/>
               </svg>`
       },
       {
         titulo: "Mindset",
         frase: "Cambia tu mente, cambia tu realidad.",
-        svg: `<svg class="book-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="32" cy="32" r="30" stroke="#ffffff" stroke-width="4"/>
-                <path d="M24 24h16v16H24z" fill="#ffffff"/>
+        svg: `<svg class="book-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="32" cy="32" r="30" stroke="white" stroke-width="4"/>
+                <circle cx="32" cy="32" r="8" fill="white"/>
               </svg>`
       }
     ];
@@ -153,18 +177,16 @@
     const leeLabel = document.getElementById('leeLabel');
     const leeCover = document.getElementById('leeCover');
 
-    let currentLibro = null;
-
-    function seleccionarLibroVisual() {
-      currentLibro = libros[Math.floor(Math.random() * libros.length)];
-      leeCover.innerHTML = `${currentLibro.svg}<div class="book-phrase">“${currentLibro.frase}”</div>`;
+    function mostrarLibroVisual() {
+      const libro = libros[Math.floor(Math.random() * libros.length)];
+      leeCover.innerHTML = libro.svg + `<div class="book-phrase">“${libro.frase}”</div>`;
       lee.classList.add('show');
       leeLabel.style.display = 'none';
     }
 
     lee.addEventListener('click', () => {
       if (!lee.classList.contains('show')) {
-        seleccionarLibroVisual();
+        mostrarLibroVisual();
       } else {
         lee.classList.remove('show');
         leeLabel.style.display = 'block';
