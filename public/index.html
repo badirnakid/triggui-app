@@ -1,22 +1,21 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Triggui Visual Book Portals</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Triggui - Estilo Imprint</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body {
-      height: 100%;
+    body {
+      margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: #fff;
-      color: #222;
+      background-color: #ffffff;
+      color: #222222;
     }
     .main {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      height: 100%;
+      height: 100vh;
       padding: 1.5vw;
       gap: 1.5vw;
     }
@@ -37,73 +36,50 @@
       align-items: center;
       text-align: center;
       cursor: pointer;
-      transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
       color: white;
-    }
-    @media (min-width: 768px) {
-      .grid {
-        flex-wrap: nowrap;
-      }
-      .block {
-        flex: 1;
-        height: 75vh;
-        max-width: 100%;
-      }
+      background: linear-gradient(135deg, #00B4DB, #8E2DE2);
     }
     .label {
       z-index: 1;
       position: relative;
-      pointer-events: none;
       font-weight: 600;
       font-size: 1.2rem;
     }
-    .accionables, .book-cover {
+    .book-cover {
       position: absolute;
       inset: 0;
       display: none;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       padding: 14px;
       border-radius: 16px;
       text-align: center;
-    }
-    .accionables {
-      background: rgba(255,255,255,0.95);
-      color: #222;
-      font-size: 0.88rem;
-      font-weight: 500;
-      flex-direction: column;
-      line-height: 1.4;
-    }
-    .book-cover {
-      flex-direction: column;
-      background: #000;
+      background-color: #0f0f0f;
     }
     .book-icon {
-      font-size: 4rem;
+      width: 80px;
+      height: 80px;
       margin-bottom: 16px;
-      animation: iconPulse 2.5s ease-in-out infinite;
-    }
-    @keyframes iconPulse {
-      0%, 100% { transform: scale(1); opacity: 0.85; }
-      50% { transform: scale(1.25); opacity: 1; }
+      animation: pulse 2.5s ease-in-out infinite;
     }
     .book-phrase {
       font-size: 1rem;
       font-weight: 500;
-      text-align: center;
-      max-width: 80%;
-      color: #fff;
+      color: #ffffff;
       opacity: 0;
-      animation: fadeIn 1.6s ease-in-out forwards 1s;
-      text-shadow: 0 0 12px rgba(255,255,255,0.3);
+      animation: fadeIn 1.4s ease-in-out forwards 0.8s;
+      text-shadow: 0 0 12px rgba(255,255,255,0.2);
     }
     @keyframes fadeIn {
       to { opacity: 1; }
     }
-    .block.show .accionables,
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.85; }
+      50% { transform: scale(1.2); opacity: 1; }
+    }
     .block.show .book-cover {
       display: flex;
     }
@@ -135,19 +111,9 @@
 <body>
   <div class="main">
     <div class="grid">
-      <div class="block" id="detente" style="background: linear-gradient(135deg, #FF6F61, #D72638);">
-        <span class="label" id="detenteLabel">Detente</span>
-        <div class="accionables" id="accionablesText"></div>
-      </div>
-      <div class="block" id="lee" style="background: linear-gradient(135deg, #00B4DB, #8E2DE2);">
+      <div class="block" id="lee">
         <span class="label" id="leeLabel">Lee</span>
         <div class="book-cover" id="leeCover"></div>
-      </div>
-      <div class="block" id="question" style="background: linear-gradient(135deg, #FDC830, #F37335);">
-        <span class="label">?</span>
-      </div>
-      <div class="block" id="conecta" style="background: linear-gradient(135deg, #00F260, #0575E6);">
-        <span class="label">Conecta</span>
       </div>
     </div>
     <button class="shock" id="shockBtn">📚👊 Chócalas por leer un libro físico</button>
@@ -160,92 +126,53 @@
     const libros = [
       {
         titulo: "Atomic Habits",
-        emoji: "🧱", // bloques = hábitos
         frase: "Eres lo que haces todos los días.",
-        accionables: ["Sistemas > metas", "Identidad guía hábitos", "Pequeños cambios diarios"]
+        svg: `<svg class="book-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="32" cy="32" r="30" stroke="#ffffff" stroke-width="4"/>
+                <path d="M32 16v32M16 32h32" stroke="#ffffff" stroke-width="4"/>
+              </svg>`
       },
       {
-        titulo: "Can’t Hurt Me",
-        emoji: "🔥", // fuego interior, resistencia
+        titulo: "Can't Hurt Me",
         frase: "Haz que tu dolor tenga propósito.",
-        accionables: ["Transforma el dolor", "Persiste sin motivación", "Hazte invencible"]
+        svg: `<svg class="book-icon" viewBox="0 0 64 64" fill="white" xmlns="http://www.w3.org/2000/svg">
+                <path d="M32 4l8 24h24l-20 16 8 24-20-16-20 16 8-24-20-16h24z"/>
+              </svg>`
       },
       {
         titulo: "Mindset",
-        emoji: "🧠", // mentalidad
         frase: "Cambia tu mente, cambia tu realidad.",
-        accionables: ["Mentalidad de crecimiento", "Aprende del error", "Cree en el cambio"]
-      },
-      {
-        titulo: "The Power of Now",
-        emoji: "🕯️", // iluminación, presente
-        frase: "Solo existe este instante.",
-        accionables: ["Respira el ahora", "Suelta el pasado", "Observa sin juicio"]
+        svg: `<svg class="book-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="32" cy="32" r="30" stroke="#ffffff" stroke-width="4"/>
+                <path d="M24 24h16v16H24z" fill="#ffffff"/>
+              </svg>`
       }
     ];
 
-    let libroActual = null;
-    let detenteOpen = false;
-    let leeOpen = false;
-
-    const detente = document.getElementById('detente');
-    const detenteLabel = document.getElementById('detenteLabel');
-    const accionablesText = document.getElementById('accionablesText');
     const lee = document.getElementById('lee');
     const leeLabel = document.getElementById('leeLabel');
     const leeCover = document.getElementById('leeCover');
 
-    function seleccionarNuevoLibro() {
-      libroActual = libros[Math.floor(Math.random() * libros.length)];
-    }
+    let currentLibro = null;
 
-    function sincronizarYMostrarAmbos() {
-      seleccionarNuevoLibro();
-      accionablesText.innerHTML = libroActual.accionables.map(a => `• ${a}`).join('<br>');
-
-      leeCover.innerHTML = `
-        <div class="book-icon">${libroActual.emoji}</div>
-        <div class="book-phrase">“${libroActual.frase}”</div>
-      `;
-
-      detente.classList.add('show');
+    function seleccionarLibroVisual() {
+      currentLibro = libros[Math.floor(Math.random() * libros.length)];
+      leeCover.innerHTML = `${currentLibro.svg}<div class="book-phrase">“${currentLibro.frase}”</div>`;
       lee.classList.add('show');
-      detenteLabel.style.display = 'none';
       leeLabel.style.display = 'none';
-      detenteOpen = true;
-      leeOpen = true;
     }
-
-    detente.addEventListener('click', () => {
-      if (!detenteOpen || !leeOpen) {
-        sincronizarYMostrarAmbos();
-      } else {
-        detente.classList.remove('show');
-        detenteLabel.style.display = 'block';
-        detenteOpen = false;
-      }
-    });
 
     lee.addEventListener('click', () => {
-      if (!leeOpen || !detenteOpen) {
-        sincronizarYMostrarAmbos();
+      if (!lee.classList.contains('show')) {
+        seleccionarLibroVisual();
       } else {
         lee.classList.remove('show');
         leeLabel.style.display = 'block';
-        leeOpen = false;
       }
     });
 
     document.getElementById('shockBtn').addEventListener('click', () => {
       document.getElementById('shockBtn').innerText = '📚👏 ¡Bien leído!';
-    });
-
-    document.getElementById('question').addEventListener('click', () => {
-      window.open("https://www.ted.com/talks/simon_sinek_how_great_leaders_inspire_action", "_blank");
-    });
-
-    document.getElementById('conecta').addEventListener('click', () => {
-      alert("🔗 Muy pronto podrás conectar con otros lectores.");
     });
   </script>
 </body>
