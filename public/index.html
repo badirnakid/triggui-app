@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Triggui Visual v2</title>
+  <title>Triggui - Visual Libro Sugerido</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
       height: 100%;
       font-family: 'Segoe UI', sans-serif;
-      background: #ffffff;
+      background: #F8F1F1;
       color: #222;
     }
     .main {
@@ -65,7 +65,7 @@
       display: none;
       justify-content: center;
       align-items: center;
-      padding: 14px;
+      padding: 16px;
       border-radius: 16px;
       text-align: center;
     }
@@ -78,29 +78,29 @@
       line-height: 1.4;
     }
     .book-cover {
-      background-color: #0f0f0f;
+      background: #FAFAFA;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
+      color: #222;
     }
     .book-icon {
-      width: 80px;
-      height: 80px;
+      width: 72px;
+      height: 72px;
+      fill: #A084CA;
       animation: pulse 2.5s ease-in-out infinite;
     }
     @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 0.8; }
+      0%, 100% { transform: scale(1); opacity: 0.85; }
       50% { transform: scale(1.15); opacity: 1; }
     }
-    .book-phrase {
+    .book-title {
       font-size: 1rem;
-      font-weight: 500;
-      color: #ffffff;
-      opacity: 0;
-      animation: fadeIn 1.2s ease-in-out forwards 0.8s;
-      text-shadow: 0 0 10px rgba(255,255,255,0.2);
+      font-weight: 600;
     }
-    @keyframes fadeIn {
-      to { opacity: 1; }
+    .book-author {
+      font-size: 0.85rem;
+      font-style: italic;
+      color: #666;
     }
     .block.show .accionables,
     .block.show .book-cover {
@@ -110,7 +110,7 @@
       display: none;
     }
     .shock {
-      background: linear-gradient(to right, #8360c3, #2ebf91);
+      background: linear-gradient(to right, #FFAFBD, #ffc3a0);
       color: white;
       font-weight: bold;
       border: none;
@@ -134,18 +134,20 @@
 <body>
   <div class="main">
     <div class="grid">
-      <div class="block" id="detente" style="background: linear-gradient(135deg, #ff758c, #ff7eb3);">
+      <div class="block" id="detente" style="background: linear-gradient(135deg, #E2B0FF, #9F44D3);">
         <span class="label" id="detenteLabel">Detente</span>
         <div class="accionables" id="accionablesText"></div>
       </div>
-      <div class="block" id="lee" style="background: linear-gradient(135deg, #43cea2, #185a9d);">
+      <div class="block" id="lee" style="background: linear-gradient(135deg, #84fab0, #8fd3f4);">
         <span class="label" id="leeLabel">Lee</span>
-        <div class="book-cover" id="leeCover"></div>
+        <div class="book-cover" id="leeCover">
+          <!-- contenido dinámico -->
+        </div>
       </div>
-      <div class="block" id="question" style="background: linear-gradient(135deg, #f7971e, #ffd200);">
+      <div class="block" id="question" style="background: linear-gradient(135deg, #ffecd2, #fcb69f);">
         <span class="label">?</span>
       </div>
-      <div class="block" id="conecta" style="background: linear-gradient(135deg, #00c3ff, #ffff1c);">
+      <div class="block" id="conecta" style="background: linear-gradient(135deg, #A1FFCE, #FAFFD1);">
         <span class="label">Conecta</span>
       </div>
     </div>
@@ -158,27 +160,31 @@
   <script>
     const libros = [
       {
-        frase: "Haz que tu dolor tenga propósito.",
-        svg: `<svg class="book-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-          <path d="M32 4l8 24h24l-20 16 8 24-20-16-20 16 8-24-20-16h24z" fill="white"/>
-        </svg>`,
-        accionables: ["Transforma el dolor", "Persiste sin motivación", "Hazte invencible"]
+        titulo: "El poder del ahora",
+        autor: "Eckhart Tolle",
+        accionables: [
+          "Respira el momento",
+          "Suelta el pasado",
+          "El presente es todo lo que hay"
+        ]
       },
       {
-        frase: "Eres lo que repites todos los días.",
-        svg: `<svg class="book-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="32" cy="32" r="28" stroke="white" stroke-width="4"/>
-          <path d="M32 20v12l10 6" stroke="white" stroke-width="4" stroke-linecap="round"/>
-        </svg>`,
-        accionables: ["Sistemas > metas", "Identidad guía hábitos", "Pequeños cambios diarios"]
+        titulo: "Mindset",
+        autor: "Carol S. Dweck",
+        accionables: [
+          "Mentalidad de crecimiento",
+          "Aprende del error",
+          "Cree en el cambio"
+        ]
       },
       {
-        frase: "Cambia tu mente, cambia tu realidad.",
-        svg: `<svg class="book-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="32" cy="32" r="30" stroke="white" stroke-width="4"/>
-          <circle cx="32" cy="32" r="8" fill="white"/>
-        </svg>`,
-        accionables: ["Mentalidad de crecimiento", "Aprende del error", "Cree en el cambio"]
+        titulo: "Los 7 hábitos",
+        autor: "Stephen R. Covey",
+        accionables: [
+          "Sé proactivo",
+          "Empieza con un fin en mente",
+          "Afila la sierra"
+        ]
       }
     ];
 
@@ -200,8 +206,18 @@
 
     function sincronizarYMostrarAmbos() {
       seleccionarNuevoLibro();
-      accionablesText.innerHTML = libroActual.accionables.map(a => `• ${a}`).join('<br>');
-      leeCover.innerHTML = libroActual.svg + `<div class="book-phrase">“${libroActual.frase}”</div>`;
+
+      accionablesText.innerHTML = libroActual.accionables.map(t => `• ${t}`).join('<br>');
+
+      leeCover.innerHTML = `
+        <svg class="book-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <rect x="12" y="8" width="40" height="48" rx="4" ry="4" stroke="#444" stroke-width="2" fill="white"/>
+          <line x1="32" y1="8" x2="32" y2="56" stroke="#ccc" stroke-width="2"/>
+        </svg>
+        <div class="book-title">${libroActual.titulo}</div>
+        <div class="book-author">${libroActual.autor}</div>
+      `;
+
       detente.classList.add('show');
       lee.classList.add('show');
       detenteLabel.style.display = 'none';
