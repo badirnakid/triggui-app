@@ -2,8 +2,8 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Triggui - Estilo Imprint</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Triggui Visual v2</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
@@ -59,17 +59,28 @@
       position: relative;
       pointer-events: none;
     }
-    .book-cover {
+    .accionables, .book-cover {
       position: absolute;
       inset: 0;
-      background-color: #0f0f0f;
       display: none;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
+      padding: 14px;
+      border-radius: 16px;
       text-align: center;
-      padding: 20px;
-      gap: 20px;
+    }
+    .accionables {
+      background: rgba(255,255,255,0.95);
+      color: #222;
+      font-size: 0.88rem;
+      font-weight: 500;
+      flex-direction: column;
+      line-height: 1.4;
+    }
+    .book-cover {
+      background-color: #0f0f0f;
+      flex-direction: column;
+      gap: 16px;
     }
     .book-icon {
       width: 80px;
@@ -91,6 +102,7 @@
     @keyframes fadeIn {
       to { opacity: 1; }
     }
+    .block.show .accionables,
     .block.show .book-cover {
       display: flex;
     }
@@ -98,7 +110,7 @@
       display: none;
     }
     .shock {
-      background: linear-gradient(to right, #FF6F61, #FAD961);
+      background: linear-gradient(to right, #8360c3, #2ebf91);
       color: white;
       font-weight: bold;
       border: none;
@@ -122,24 +134,21 @@
 <body>
   <div class="main">
     <div class="grid">
-      <!-- BLOQUE LEE -->
-      <div class="block" id="lee" style="background: linear-gradient(135deg, #00B4DB, #8E2DE2);">
+      <div class="block" id="detente" style="background: linear-gradient(135deg, #ff758c, #ff7eb3);">
+        <span class="label" id="detenteLabel">Detente</span>
+        <div class="accionables" id="accionablesText"></div>
+      </div>
+      <div class="block" id="lee" style="background: linear-gradient(135deg, #43cea2, #185a9d);">
         <span class="label" id="leeLabel">Lee</span>
         <div class="book-cover" id="leeCover"></div>
       </div>
-
-      <!-- OTROS BLOQUES (puedes añadir los demás como antes) -->
-      <div class="block" style="background: linear-gradient(135deg, #FDC830, #F37335);">
+      <div class="block" id="question" style="background: linear-gradient(135deg, #f7971e, #ffd200);">
         <span class="label">?</span>
       </div>
-      <div class="block" style="background: linear-gradient(135deg, #00F260, #0575E6);">
+      <div class="block" id="conecta" style="background: linear-gradient(135deg, #00c3ff, #ffff1c);">
         <span class="label">Conecta</span>
       </div>
-      <div class="block" style="background: linear-gradient(135deg, #FF6F61, #D72638);">
-        <span class="label">Detente</span>
-      </div>
     </div>
-
     <button class="shock" id="shockBtn">📚👊 Chócalas por leer un libro físico</button>
     <div class="logo-wrapper">
       <img src="/trigguiletras.png" class="trigguiletras" />
@@ -149,47 +158,75 @@
   <script>
     const libros = [
       {
-        titulo: "Atomic Habits",
-        frase: "Eres lo que haces todos los días.",
-        svg: `<svg class="book-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="32" cy="32" r="30" stroke="white" stroke-width="4"/>
-                <path d="M32 16v32M16 32h32" stroke="white" stroke-width="4"/>
-              </svg>`
-      },
-      {
-        titulo: "Can't Hurt Me",
         frase: "Haz que tu dolor tenga propósito.",
         svg: `<svg class="book-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-                <path d="M32 4l8 24h24l-20 16 8 24-20-16-20 16 8-24-20-16h24z" fill="white"/>
-              </svg>`
+          <path d="M32 4l8 24h24l-20 16 8 24-20-16-20 16 8-24-20-16h24z" fill="white"/>
+        </svg>`,
+        accionables: ["Transforma el dolor", "Persiste sin motivación", "Hazte invencible"]
       },
       {
-        titulo: "Mindset",
+        frase: "Eres lo que repites todos los días.",
+        svg: `<svg class="book-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="32" cy="32" r="28" stroke="white" stroke-width="4"/>
+          <path d="M32 20v12l10 6" stroke="white" stroke-width="4" stroke-linecap="round"/>
+        </svg>`,
+        accionables: ["Sistemas > metas", "Identidad guía hábitos", "Pequeños cambios diarios"]
+      },
+      {
         frase: "Cambia tu mente, cambia tu realidad.",
         svg: `<svg class="book-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="32" cy="32" r="30" stroke="white" stroke-width="4"/>
-                <circle cx="32" cy="32" r="8" fill="white"/>
-              </svg>`
+          <circle cx="32" cy="32" r="30" stroke="white" stroke-width="4"/>
+          <circle cx="32" cy="32" r="8" fill="white"/>
+        </svg>`,
+        accionables: ["Mentalidad de crecimiento", "Aprende del error", "Cree en el cambio"]
       }
     ];
+
+    let libroActual = null;
+    let detenteOpen = false;
+    let leeOpen = false;
+
+    const detente = document.getElementById('detente');
+    const detenteLabel = document.getElementById('detenteLabel');
+    const accionablesText = document.getElementById('accionablesText');
 
     const lee = document.getElementById('lee');
     const leeLabel = document.getElementById('leeLabel');
     const leeCover = document.getElementById('leeCover');
 
-    function mostrarLibroVisual() {
-      const libro = libros[Math.floor(Math.random() * libros.length)];
-      leeCover.innerHTML = libro.svg + `<div class="book-phrase">“${libro.frase}”</div>`;
-      lee.classList.add('show');
-      leeLabel.style.display = 'none';
+    function seleccionarNuevoLibro() {
+      libroActual = libros[Math.floor(Math.random() * libros.length)];
     }
 
+    function sincronizarYMostrarAmbos() {
+      seleccionarNuevoLibro();
+      accionablesText.innerHTML = libroActual.accionables.map(a => `• ${a}`).join('<br>');
+      leeCover.innerHTML = libroActual.svg + `<div class="book-phrase">“${libroActual.frase}”</div>`;
+      detente.classList.add('show');
+      lee.classList.add('show');
+      detenteLabel.style.display = 'none';
+      leeLabel.style.display = 'none';
+      detenteOpen = true;
+      leeOpen = true;
+    }
+
+    detente.addEventListener('click', () => {
+      if (!detenteOpen || !leeOpen) {
+        sincronizarYMostrarAmbos();
+      } else {
+        detente.classList.remove('show');
+        detenteLabel.style.display = 'block';
+        detenteOpen = false;
+      }
+    });
+
     lee.addEventListener('click', () => {
-      if (!lee.classList.contains('show')) {
-        mostrarLibroVisual();
+      if (!leeOpen || !detenteOpen) {
+        sincronizarYMostrarAmbos();
       } else {
         lee.classList.remove('show');
         leeLabel.style.display = 'block';
+        leeOpen = false;
       }
     });
 
