@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -33,9 +32,9 @@
       flex-grow: 1;
     }
     .block {
-      flex: 1 1 22%;
-      max-width: 22%;
-      height: 75vh;
+      flex: 1 1 calc(50% - 0.75vw);
+      max-width: calc(50% - 0.75vw);
+      height: 45vh;
       border-radius: 16px;
       font-weight: 600;
       font-size: 1.12rem;
@@ -48,6 +47,13 @@
       position: relative;
       overflow: hidden;
       color: white;
+    }
+    @media (min-width: 768px) {
+      .block {
+        flex: 1 1 22%;
+        max-width: 22%;
+        height: 75vh;
+      }
     }
     .label {
       z-index: 1;
@@ -84,7 +90,7 @@
       display: none;
     }
     .shock {
-      background: linear-gradient(to right, #FC466B, #3F5EFB);
+      background: linear-gradient(to right, #FF6F61, #F9D423);
       color: white;
       font-weight: bold;
       border: none;
@@ -112,14 +118,14 @@
         <span class="label" id="detenteLabel">Detente</span>
         <div class="accionables" id="accionablesText"></div>
       </div>
-      <div class="block" id="lee" style="background: linear-gradient(135deg, #36D1DC, #5B86E5);">
+      <div class="block" id="lee" style="background: linear-gradient(135deg, #00C9FF, #92FE9D);">
         <span class="label" id="leeLabel">Lee</span>
         <div class="book-cover" id="leeCover"></div>
       </div>
-      <div class="block" id="question" style="background: linear-gradient(135deg, #FFB75E, #ED8F03);">
+      <div class="block" id="question" style="background: linear-gradient(135deg, #FC466B, #3F5EFB);">
         <span class="label">?</span>
       </div>
-      <div class="block" id="conecta" style="background: linear-gradient(135deg, #11998E, #38EF7D);">
+      <div class="block" id="conecta" style="background: linear-gradient(135deg, #FDC830, #F37335);">
         <span class="label">Conecta</span>
       </div>
     </div>
