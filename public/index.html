@@ -21,19 +21,19 @@
       flex-direction: column;
       justify-content: space-between;
       height: 100%;
-      padding: 1.5vw;
-      gap: 1.5vw;
+      padding: 1vw;
+      gap: 1vw;
     }
     .grid {
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
-      gap: 1.5vw;
+      gap: 1vw;
       flex-grow: 1;
     }
     .block {
-      flex: 1 1 calc(48% - 1vw);
-      max-width: calc(48% - 1vw);
+      flex: 1 1 calc(49% - 0.5vw);
+      max-width: calc(49% - 0.5vw);
       height: 44vh;
       border-radius: 16px;
       font-weight: 600;
@@ -48,23 +48,14 @@
       overflow: hidden;
       color: white;
     }
-
-    @media (orientation: landscape) and (max-width: 1024px) {
+    @media (orientation: landscape) and (max-width: 1024px),
+           (min-width: 1025px) {
       .block {
-        flex: 1 1 22%;
-        max-width: 22%;
+        flex: 1 1 23%;
+        max-width: 23%;
         height: 75vh;
       }
     }
-
-    @media (min-width: 1025px) {
-      .block {
-        flex: 1 1 22%;
-        max-width: 22%;
-        height: 75vh;
-      }
-    }
-
     .label {
       z-index: 1;
       position: relative;
@@ -76,14 +67,14 @@
       display: none;
       justify-content: center;
       align-items: center;
-      padding: 14px;
+      padding: 12px;
       border-radius: 16px;
       text-align: center;
     }
     .accionables {
-      background: rgba(255,255,255,0.95);
+      background: rgba(255,255,255,0.94);
       color: #222;
-      font-size: 0.88rem;
+      font-size: 0.85rem;
       font-weight: 500;
       flex-direction: column;
       line-height: 1.4;
@@ -100,7 +91,7 @@
       display: none;
     }
     .shock {
-      background: linear-gradient(to right, #FF6F61, #F9D423);
+      background: linear-gradient(to right, #FC466B, #3F5EFB);
       color: white;
       font-weight: bold;
       border: none;
