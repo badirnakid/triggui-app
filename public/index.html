@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Triggui App Perfecta</title>
+  <title>Triggui App</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -11,8 +11,7 @@
       width: 100%;
       height: 100%;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background-color: #fff;
-      color: #222;
+      background: #fff;
       transition: background-color 0.3s ease;
     }
 
@@ -27,18 +26,18 @@
     }
 
     .grid {
+      flex: 1;
       display: flex;
       flex-wrap: wrap;
+      gap: 2vw;
+      padding: 2vh 2vw;
       justify-content: space-between;
       align-content: space-between;
-      padding: 2vh 2vw;
-      gap: 2vw;
-      flex: 1;
     }
 
     .block {
       width: calc(50% - 1vw);
-      height: calc(50% - 1vh);
+      height: calc(45vh - 1vh);
       border-radius: 16px;
       font-weight: 600;
       font-size: 1.1rem;
@@ -53,22 +52,20 @@
       transition: all 0.3s ease;
     }
 
-    @media (orientation: landscape) and (max-width: 1024px),
-           (min-width: 1025px) {
+    @media (orientation: landscape), (min-width: 1024px) {
       .grid {
         flex-wrap: nowrap;
-        align-items: stretch;
+        gap: 1.5vw;
       }
 
       .block {
-        width: 23%;
-        height: 100%;
+        width: 23.5%;
+        height: 82vh;
       }
     }
 
     .label {
       z-index: 1;
-      position: relative;
       pointer-events: none;
     }
 
@@ -84,9 +81,9 @@
     }
 
     .accionables {
-      background: rgba(255,255,255,0.95);
+      background: rgba(255,255,255,0.94);
       color: #222;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       font-weight: 500;
       flex-direction: column;
       line-height: 1.4;
@@ -108,7 +105,7 @@
 
     .footer {
       flex-shrink: 0;
-      padding: 1vh;
+      padding: 1.2vh;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -116,18 +113,18 @@
     }
 
     .shock {
-      background: linear-gradient(to right, #FF4E50, #F9D423);
+      background: linear-gradient(135deg, #F7971E, #FFD200);
       color: white;
       font-weight: bold;
       border: none;
-      border-radius: 32px;
-      padding: 10px 24px;
-      font-size: 0.9rem;
+      border-radius: 28px;
+      padding: 12px 24px;
+      font-size: 0.95rem;
       cursor: pointer;
     }
 
     .trigguiletras {
-      height: 22px;
+      height: 24px;
       object-fit: contain;
     }
   </style>
@@ -135,22 +132,21 @@
 <body>
   <div class="main">
     <div class="grid">
-      <div class="block" id="detente" style="background: linear-gradient(135deg, #EF3B36, #FFFFFF);">
+      <div class="block" id="detente" style="background: linear-gradient(135deg, #F00000, #DC281E);">
         <span class="label" id="detenteLabel">Detente</span>
         <div class="accionables" id="accionablesText"></div>
       </div>
-      <div class="block" id="lee" style="background: linear-gradient(135deg, #00C9FF, #92FE9D);">
+      <div class="block" id="lee" style="background: linear-gradient(135deg, #1FA2FF, #12D8FA, #A6FFCB);">
         <span class="label" id="leeLabel">Lee</span>
         <div class="book-cover" id="leeCover"></div>
       </div>
-      <div class="block" id="question" style="background: linear-gradient(135deg, #FDB813, #F5515F);">
+      <div class="block" id="question" style="background: linear-gradient(135deg, #FC466B, #3F5EFB);">
         <span class="label">?</span>
       </div>
-      <div class="block" id="conecta" style="background: linear-gradient(135deg, #1D976C, #93F9B9);">
+      <div class="block" id="conecta" style="background: linear-gradient(135deg, #00c3ff, #ffff1c);">
         <span class="label">Conecta</span>
       </div>
     </div>
-
     <div class="footer">
       <button class="shock" id="shockBtn">📚👊 Chócalas por leer un libro físico</button>
       <img src="/trigguiletras.png" class="trigguiletras" />
@@ -161,11 +157,15 @@
     const libros = [
       {
         portada: 'https://m.media-amazon.com/images/I/91bYsX41DVL.jpg',
-        accionables: ['🧱 Crea sistemas, no metas', '🧠 Identidad guía el hábito', '🔁 Mejora 1% diario']
+        accionables: ['🔁 Mejora 1% diario', '🧱 Crea sistemas, no metas', '🧠 Identidad guía el hábito']
       },
       {
         portada: 'https://m.media-amazon.com/images/I/71QKQ9mwV7L.jpg',
-        accionables: ['🧘‍♂️ No todo importa', '💩 Aprende a ignorar con intención', '🧠 Sé brutalmente honesto']
+        accionables: ['🧘‍♂️ No todo importa', '💩 Ignora con intención', '🔥 Sé brutalmente honesto']
+      },
+      {
+        portada: 'https://m.media-amazon.com/images/I/81LdLpv8mJL.jpg',
+        accionables: ['💪 No te rindas antes de empezar', '🛡️ Expón tus miedos al rechazo', '💬 Pide lo imposible']
       }
     ];
 
