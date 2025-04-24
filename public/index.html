@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>TrigguiApp</title>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&display=swap" rel="stylesheet" />
   <style>
@@ -13,8 +13,7 @@
       height: 100%;
       font-family: 'Archivo', sans-serif;
       background-color: #0d0e1a;
-      color: #fff;
-      transition: background 0.3s ease;
+      color: white;
     }
 
     body.dark {
@@ -22,9 +21,37 @@
     }
 
     .main {
-      display: flex;
+      display: none;
       flex-direction: column;
       height: 100vh;
+      animation: fadeIn 1s ease-out forwards;
+    }
+
+    .loader {
+      position: absolute;
+      inset: 0;
+      background: #0d0e1a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+
+    .breathing {
+      width: 90px;
+      height: 90px;
+      animation: breath 1.8s ease-in-out infinite;
+    }
+
+    @keyframes breath {
+      0% { transform: scale(1); opacity: 0.7; }
+      50% { transform: scale(1.15); opacity: 1; }
+      100% { transform: scale(1); opacity: 0.7; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
     .grid {
@@ -51,7 +78,6 @@
       overflow: hidden;
       color: white;
       cursor: pointer;
-      transition: all 0.3s ease;
       backdrop-filter: blur(6px);
       border: 1px solid rgba(255,255,255,0.08);
     }
@@ -135,7 +161,14 @@
   </style>
 </head>
 <body>
-  <div class="main">
+
+  <!-- Loader -->
+  <div class="loader" id="loader">
+    <img src="/imagotipo.png" alt="Triggui Loader" class="breathing" />
+  </div>
+
+  <!-- App -->
+  <div class="main" id="main">
     <div class="grid">
       <div class="block" id="detente" style="background: linear-gradient(135deg, #F00000, #DC281E);">
         <span class="label" id="detenteLabel">Detente</span>
@@ -160,6 +193,14 @@
   </div>
 
   <script>
+    // Mostrar loader y luego app
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('main').style.display = 'flex';
+      }, 1800);
+    });
+
     const libros = [
       {
         portada: 'https://m.media-amazon.com/images/I/91bYsX41DVL.jpg',
