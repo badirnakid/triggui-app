@@ -113,16 +113,14 @@
       object-fit: contain;
       border-radius: 14px;
       box-shadow: 0 20px 50px rgba(0,0,0,0.35);
-      animation: zoomIn 0.7s ease forwards;
-      opacity: 0;
-      transform: scale(0.94);
+      animation: floatBook 4s ease-in-out infinite;
+      transform-origin: center;
     }
 
-    @keyframes zoomIn {
-      to {
-        opacity: 1;
-        transform: scale(1);
-      }
+    @keyframes floatBook {
+      0% { transform: scale(1) rotateY(0deg) translateY(0); box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+      50% { transform: scale(1.02) rotateY(3deg) translateY(-8px); box-shadow: 0 25px 60px rgba(0,0,0,0.45); }
+      100% { transform: scale(1) rotateY(0deg) translateY(0); box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
     }
 
     .hidden {
@@ -235,7 +233,6 @@
     function mostrarContenido() {
       seleccionarNuevoLibro();
 
-      // Accionables typewriter
       accionablesText.innerHTML = '';
       libroActual.accionables.forEach((frase, i) => {
         const span = document.createElement('span');
@@ -246,9 +243,6 @@
       });
 
       leeImg.src = libroActual.portada;
-      leeImg.style.animation = 'none';
-      void leeImg.offsetWidth; // restart animation
-      leeImg.style.animation = null;
 
       accionablesText.classList.remove('hidden');
       detenteLabel.classList.add('hidden');
