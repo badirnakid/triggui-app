@@ -1,18 +1,20 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Triggui App</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TrigguiApp</title>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&display=swap" rel="stylesheet" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     html, body {
       width: 100%;
       height: 100%;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #fff;
-      transition: background-color 0.3s ease;
+      font-family: 'Archivo', sans-serif;
+      background-color: #0d0e1a;
+      color: #fff;
+      transition: background 0.3s ease;
     }
 
     body.dark {
@@ -50,6 +52,8 @@
       color: white;
       cursor: pointer;
       transition: all 0.3s ease;
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255,255,255,0.08);
     }
 
     @media (orientation: landscape), (min-width: 1024px) {
@@ -78,15 +82,15 @@
       padding: 16px;
       border-radius: 16px;
       text-align: center;
+      font-size: 0.95rem;
     }
 
     .accionables {
-      background: rgba(255,255,255,0.94);
-      color: #222;
-      font-size: 0.9rem;
+      background: rgba(255,255,255,0.92);
+      color: #111;
       font-weight: 500;
       flex-direction: column;
-      line-height: 1.4;
+      line-height: 1.5;
     }
 
     .book-cover {
@@ -113,19 +117,20 @@
     }
 
     .shock {
-      background: linear-gradient(135deg, #F7971E, #FFD200);
-      color: white;
+      background: linear-gradient(to right, #ffaf5f, #ff7c8a);
+      color: black;
       font-weight: bold;
       border: none;
       border-radius: 28px;
       padding: 12px 24px;
       font-size: 0.95rem;
       cursor: pointer;
+      box-shadow: 0 4px 16px rgba(255, 175, 95, 0.25);
     }
 
     .trigguiletras {
       height: 24px;
-      object-fit: contain;
+      opacity: 0.9;
     }
   </style>
 </head>
@@ -136,17 +141,18 @@
         <span class="label" id="detenteLabel">Detente</span>
         <div class="accionables" id="accionablesText"></div>
       </div>
-      <div class="block" id="lee" style="background: linear-gradient(135deg, #1FA2FF, #12D8FA, #A6FFCB);">
+      <div class="block" id="lee" style="background: linear-gradient(135deg, #1FA2FF, #12D8FA);">
         <span class="label" id="leeLabel">Lee</span>
         <div class="book-cover" id="leeCover"></div>
       </div>
-      <div class="block" id="question" style="background: linear-gradient(135deg, #FC466B, #3F5EFB);">
+      <div class="block" id="question" style="background: linear-gradient(135deg, #FDB813, #F5515F);">
         <span class="label">?</span>
       </div>
-      <div class="block" id="conecta" style="background: linear-gradient(135deg, #00c3ff, #ffff1c);">
+      <div class="block" id="conecta" style="background: linear-gradient(135deg, #1D976C, #93F9B9);">
         <span class="label">Conecta</span>
       </div>
     </div>
+
     <div class="footer">
       <button class="shock" id="shockBtn">📚👊 Chócalas por leer un libro físico</button>
       <img src="/trigguiletras.png" class="trigguiletras" />
@@ -228,16 +234,6 @@
 
     document.getElementById('shockBtn').addEventListener('click', () => {
       document.getElementById('shockBtn').innerText = '📚👏 ¡Bien leído!';
-    });
-
-    document.getElementById('question').addEventListener('click', () => {
-      document.body.classList.add('dark');
-      alert("🌟 Muy pronto una experiencia increíble.");
-    });
-
-    document.getElementById('conecta').addEventListener('click', () => {
-      document.body.classList.add('dark');
-      alert("🔗 Muy pronto podrás conectar con otros lectores.");
     });
   </script>
 </body>
