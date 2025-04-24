@@ -50,8 +50,11 @@
       overflow: hidden;
       color: white;
       cursor: pointer;
-      border: none;
-      transition: all 0.3s ease;
+      transition: all 0.4s ease;
+    }
+
+    .block.clear {
+      background: none !important;
     }
 
     @media (orientation: landscape), (min-width: 1024px) {
@@ -97,6 +100,7 @@
       max-width: 100%;
       object-fit: contain;
       border-radius: 12px;
+      box-shadow: 0 6px 30px rgba(0,0,0,0.4);
     }
 
     .hidden {
@@ -205,6 +209,9 @@
       leeCover.classList.remove('hidden');
       leeLabel.classList.add('hidden');
 
+      detente.classList.add('clear');
+      lee.classList.add('clear');
+
       detenteOpen = true;
       leeOpen = true;
       document.body.classList.add('dark');
@@ -213,6 +220,7 @@
     function ocultarDetente() {
       accionablesText.classList.add('hidden');
       detenteLabel.classList.remove('hidden');
+      detente.classList.remove('clear');
       detenteOpen = false;
       verificarCerrarFondo();
     }
@@ -220,6 +228,7 @@
     function ocultarLee() {
       leeCover.classList.add('hidden');
       leeLabel.classList.remove('hidden');
+      lee.classList.remove('clear');
       leeOpen = false;
       verificarCerrarFondo();
     }
