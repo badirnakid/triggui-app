@@ -50,9 +50,9 @@
     .loader-text {
       margin-top: 18px;
       font-size: 0.95rem;
-      color: rgba(255, 255, 255, 0.8);
+      color: rgba(255, 255, 255, 0.85);
       letter-spacing: 0.5px;
-      animation: fadeInText 1.6s ease-in-out 1.2s both;
+      animation: breath 1.8s ease-in-out infinite;
     }
 
     @keyframes breath {
@@ -64,11 +64,6 @@
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
-    }
-
-    @keyframes fadeInText {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
     }
 
     .grid {
@@ -179,7 +174,7 @@
 </head>
 <body>
 
-  <!-- Loader -->
+  <!-- Loader sincronizado -->
   <div class="loader" id="loader">
     <img src="/imagotipo.png" alt="Triggui Loader" class="breathing" />
     <div class="loader-text">Respira. Lee. Siente.</div>
