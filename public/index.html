@@ -21,49 +21,9 @@
     }
 
     .main {
-      display: none;
-      flex-direction: column;
-      height: 100vh;
-      animation: fadeIn 1s ease-out forwards;
-    }
-
-    .loader {
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at center, #a1c4fd 0%, #2c3e50 100%);
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 999;
-      text-align: center;
-    }
-
-    .breathing {
-      width: 96px;
-      height: 96px;
-      object-fit: contain;
-      animation: breath 1.8s ease-in-out infinite;
-      filter: drop-shadow(0 0 16px rgba(255,255,255,0.25));
-    }
-
-    .loader-text {
-      margin-top: 18px;
-      font-size: 0.95rem;
-      color: rgba(255, 255, 255, 0.85);
-      letter-spacing: 0.5px;
-      animation: breath 1.8s ease-in-out infinite;
-    }
-
-    @keyframes breath {
-      0% { transform: scale(1); opacity: 0.7; }
-      50% { transform: scale(1.1); opacity: 1; }
-      100% { transform: scale(1); opacity: 0.7; }
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+      height: 100vh;
     }
 
     .grid {
@@ -90,8 +50,8 @@
       overflow: hidden;
       color: white;
       cursor: pointer;
-      backdrop-filter: blur(6px);
-      border: 1px solid rgba(255,255,255,0.08);
+      border: none;
+      transition: all 0.3s ease;
     }
 
     @media (orientation: landscape), (min-width: 1024px) {
@@ -106,29 +66,30 @@
       }
     }
 
-    .label {
-      z-index: 1;
-      pointer-events: none;
-    }
-
-    .accionables, .book-cover {
+    .block-content {
       position: absolute;
       inset: 0;
-      display: none;
+      display: flex;
       justify-content: center;
       align-items: center;
-      padding: 16px;
       border-radius: 16px;
-      text-align: center;
-      font-size: 0.95rem;
+      padding: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .label {
+      font-size: 1.2rem;
+      z-index: 1;
     }
 
     .accionables {
-      background: rgba(255,255,255,0.92);
+      background: rgba(255,255,255,0.95);
       color: #111;
-      font-weight: 500;
       flex-direction: column;
-      line-height: 1.5;
+      text-align: center;
+      line-height: 1.6;
+      font-size: 0.9rem;
+      font-weight: 500;
     }
 
     .book-cover {
@@ -136,13 +97,8 @@
       background-position: center;
     }
 
-    .block.show .accionables,
-    .block.show .book-cover {
-      display: flex;
-    }
-
-    .block.show .label {
-      display: none;
+    .hidden {
+      display: none !important;
     }
 
     .footer {
@@ -174,28 +130,21 @@
 </head>
 <body>
 
-  <!-- Loader sincronizado -->
-  <div class="loader" id="loader">
-    <img src="/imagotipo.png" alt="Triggui Loader" class="breathing" />
-    <div class="loader-text">Respira. Lee. Siente.</div>
-  </div>
-
-  <!-- App -->
   <div class="main" id="main">
     <div class="grid">
-      <div class="block" id="detente" style="background: linear-gradient(135deg, #F00000, #DC281E);">
-        <span class="label" id="detenteLabel">Detente</span>
-        <div class="accionables" id="accionablesText"></div>
+      <div class="block" id="detente" style="background: linear-gradient(135deg, #ff5f6d, #ffc371);">
+        <div class="block-content label" id="detenteLabel">Detente</div>
+        <div class="block-content accionables hidden" id="accionablesText"></div>
       </div>
-      <div class="block" id="lee" style="background: linear-gradient(135deg, #0575E6, #00F260);">
-        <span class="label" id="leeLabel">Lee</span>
-        <div class="book-cover" id="leeCover"></div>
+      <div class="block" id="lee" style="background: linear-gradient(135deg, #00c6ff, #0072ff);">
+        <div class="block-content label" id="leeLabel">Lee</div>
+        <div class="block-content book-cover hidden" id="leeCover"></div>
       </div>
-      <div class="block" id="question" style="background: linear-gradient(135deg, #F7971E, #FFD200);">
-        <span class="label">?</span>
+      <div class="block" id="question" style="background: linear-gradient(135deg, #f7971e, #ffd200);">
+        <div class="block-content label">?</div>
       </div>
-      <div class="block" id="conecta" style="background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);">
-        <span class="label">Conecta</span>
+      <div class="block" id="conecta" style="background: linear-gradient(135deg, #7f00ff, #e100ff);">
+        <div class="block-content label">Conecta</div>
       </div>
     </div>
 
@@ -206,13 +155,6 @@
   </div>
 
   <script>
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        document.getElementById('loader').style.display = 'none';
-        document.getElementById('main').style.display = 'flex';
-      }, 1800);
-    });
-
     const libros = [
       {
         portada: 'https://m.media-amazon.com/images/I/91bYsX41DVL.jpg',
@@ -233,8 +175,8 @@
     let leeOpen = false;
 
     const detente = document.getElementById('detente');
-    const detenteLabel = document.getElementById('detenteLabel');
     const accionablesText = document.getElementById('accionablesText');
+    const detenteLabel = document.getElementById('detenteLabel');
 
     const lee = document.getElementById('lee');
     const leeLabel = document.getElementById('leeLabel');
@@ -244,20 +186,37 @@
       libroActual = libros[Math.floor(Math.random() * libros.length)];
     }
 
-    function sincronizarYMostrarAmbos() {
+    function mostrarContenido() {
       seleccionarNuevoLibro();
+
       accionablesText.innerHTML = libroActual.accionables.join('<br>');
       leeCover.style.backgroundImage = `url('${libroActual.portada}')`;
-      detente.classList.add('show');
-      lee.classList.add('show');
-      detenteLabel.style.display = 'none';
-      leeLabel.style.display = 'none';
+
+      accionablesText.classList.remove('hidden');
+      detenteLabel.classList.add('hidden');
+      leeCover.classList.remove('hidden');
+      leeLabel.classList.add('hidden');
+
       detenteOpen = true;
       leeOpen = true;
       document.body.classList.add('dark');
     }
 
-    function evaluarOscurecerFondo() {
+    function ocultarDetente() {
+      accionablesText.classList.add('hidden');
+      detenteLabel.classList.remove('hidden');
+      detenteOpen = false;
+      verificarCerrarFondo();
+    }
+
+    function ocultarLee() {
+      leeCover.classList.add('hidden');
+      leeLabel.classList.remove('hidden');
+      leeOpen = false;
+      verificarCerrarFondo();
+    }
+
+    function verificarCerrarFondo() {
       if (!detenteOpen && !leeOpen) {
         document.body.classList.remove('dark');
       }
@@ -265,23 +224,17 @@
 
     detente.addEventListener('click', () => {
       if (!detenteOpen || !leeOpen) {
-        sincronizarYMostrarAmbos();
+        mostrarContenido();
       } else {
-        detente.classList.remove('show');
-        detenteLabel.style.display = 'block';
-        detenteOpen = false;
-        evaluarOscurecerFondo();
+        ocultarDetente();
       }
     });
 
     lee.addEventListener('click', () => {
       if (!leeOpen || !detenteOpen) {
-        sincronizarYMostrarAmbos();
+        mostrarContenido();
       } else {
-        lee.classList.remove('show');
-        leeLabel.style.display = 'block';
-        leeOpen = false;
-        evaluarOscurecerFondo();
+        ocultarLee();
       }
     });
 
