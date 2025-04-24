@@ -30,7 +30,7 @@
     .loader {
       position: absolute;
       inset: 0;
-      background: #3a3a50;
+      background: radial-gradient(circle at center, #eeeeee 0%, #3a3a50 100%);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -42,7 +42,7 @@
       height: 96px;
       object-fit: contain;
       animation: breath 1.8s ease-in-out infinite;
-      filter: drop-shadow(0 0 12px rgba(255,255,255,0.08)) drop-shadow(0 0 18px rgba(255,255,255,0.06));
+      filter: drop-shadow(0 0 16px rgba(0,0,0,0.2)) drop-shadow(0 0 24px rgba(0,0,0,0.15));
     }
 
     @keyframes breath {
@@ -164,12 +164,12 @@
 </head>
 <body>
 
-  <!-- Loader visible y elegante -->
+  <!-- Loader -->
   <div class="loader" id="loader">
     <img src="/imagotipo.png" alt="Triggui Loader" class="breathing" />
   </div>
 
-  <!-- App principal -->
+  <!-- App -->
   <div class="main" id="main">
     <div class="grid">
       <div class="block" id="detente" style="background: linear-gradient(135deg, #F00000, #DC281E);">
