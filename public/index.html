@@ -30,7 +30,7 @@
     .loader {
       position: absolute;
       inset: 0;
-      background: #0d0e1a;
+      background: radial-gradient(ellipse at center, #1e1e28 0%, #0d0e1a 100%);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -38,14 +38,15 @@
     }
 
     .breathing {
-      width: 90px;
-      height: 90px;
+      width: 96px;
+      height: 96px;
+      object-fit: contain;
       animation: breath 1.8s ease-in-out infinite;
     }
 
     @keyframes breath {
       0% { transform: scale(1); opacity: 0.7; }
-      50% { transform: scale(1.15); opacity: 1; }
+      50% { transform: scale(1.12); opacity: 1; }
       100% { transform: scale(1); opacity: 0.7; }
     }
 
@@ -143,15 +144,15 @@
     }
 
     .shock {
-      background: linear-gradient(to right, #ffaf5f, #ff7c8a);
-      color: black;
+      background: linear-gradient(to right, #F00000, #DC281E);
+      color: white;
       font-weight: bold;
       border: none;
       border-radius: 28px;
       padding: 12px 24px;
       font-size: 0.95rem;
       cursor: pointer;
-      box-shadow: 0 4px 16px rgba(255, 175, 95, 0.25);
+      box-shadow: 0 4px 16px rgba(255, 80, 80, 0.25);
     }
 
     .trigguiletras {
@@ -174,14 +175,14 @@
         <span class="label" id="detenteLabel">Detente</span>
         <div class="accionables" id="accionablesText"></div>
       </div>
-      <div class="block" id="lee" style="background: linear-gradient(135deg, #1FA2FF, #12D8FA);">
+      <div class="block" id="lee" style="background: linear-gradient(135deg, #0575E6, #00F260);">
         <span class="label" id="leeLabel">Lee</span>
         <div class="book-cover" id="leeCover"></div>
       </div>
-      <div class="block" id="question" style="background: linear-gradient(135deg, #FDB813, #F5515F);">
+      <div class="block" id="question" style="background: linear-gradient(135deg, #F7971E, #FFD200);">
         <span class="label">?</span>
       </div>
-      <div class="block" id="conecta" style="background: linear-gradient(135deg, #1D976C, #93F9B9);">
+      <div class="block" id="conecta" style="background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);">
         <span class="label">Conecta</span>
       </div>
     </div>
