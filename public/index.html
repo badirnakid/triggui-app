@@ -57,7 +57,9 @@
       overflow: hidden;
       color: white;
       cursor: pointer;
-      transition: all 0.4s ease;
+      background-size: cover;
+      background-position: center;
+      transition: background 0.5s ease, transform 0.4s ease;
     }
 
     .block.clear {
@@ -105,6 +107,16 @@
     .accionables span {
       display: block;
       margin: 4px 0;
+      opacity: 0;
+      transform: translateY(6px);
+      animation: fadeInUp 0.5s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .portada-wrapper img {
@@ -112,15 +124,15 @@
       max-width: 90%;
       object-fit: contain;
       border-radius: 14px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.35);
-      animation: floatBook 4s ease-in-out infinite;
-      transform-origin: center;
+      opacity: 0;
+      transform: scale(0.94) rotateY(0deg);
+      animation: floatReveal 1.4s ease forwards;
     }
 
-    @keyframes floatBook {
-      0% { transform: scale(1) rotateY(0deg) translateY(0); box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
-      50% { transform: scale(1.02) rotateY(3deg) translateY(-8px); box-shadow: 0 25px 60px rgba(0,0,0,0.45); }
-      100% { transform: scale(1) rotateY(0deg) translateY(0); box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+    @keyframes floatReveal {
+      0% { opacity: 0; transform: scale(0.94) translateY(20px) rotateY(0deg); }
+      50% { opacity: 0.7; transform: scale(1.02) translateY(-4px) rotateY(5deg); }
+      100% { opacity: 1; transform: scale(1) translateY(0) rotateY(0deg); }
     }
 
     .hidden {
@@ -233,13 +245,13 @@
     function mostrarContenido() {
       seleccionarNuevoLibro();
 
+      // frases con typewriter
       accionablesText.innerHTML = '';
       libroActual.accionables.forEach((frase, i) => {
         const span = document.createElement('span');
-        setTimeout(() => {
-          span.textContent = frase;
-          accionablesText.appendChild(span);
-        }, i * 400);
+        span.style.animationDelay = `${i * 0.4}s`;
+        span.textContent = frase;
+        accionablesText.appendChild(span);
       });
 
       leeImg.src = libroActual.portada;
