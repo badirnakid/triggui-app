@@ -92,9 +92,11 @@
       font-weight: 500;
     }
 
-    .book-cover {
-      background-size: cover;
-      background-position: center;
+    .portada-wrapper img {
+      max-height: 100%;
+      max-width: 100%;
+      object-fit: contain;
+      border-radius: 12px;
     }
 
     .hidden {
@@ -136,13 +138,18 @@
         <div class="block-content label" id="detenteLabel">Detente</div>
         <div class="block-content accionables hidden" id="accionablesText"></div>
       </div>
+
       <div class="block" id="lee" style="background: linear-gradient(135deg, #00c6ff, #0072ff);">
         <div class="block-content label" id="leeLabel">Lee</div>
-        <div class="block-content book-cover hidden" id="leeCover"></div>
+        <div class="block-content portada-wrapper hidden" id="leeCover">
+          <img id="leeImg" src="" alt="portada del libro">
+        </div>
       </div>
+
       <div class="block" id="question" style="background: linear-gradient(135deg, #f7971e, #ffd200);">
         <div class="block-content label">?</div>
       </div>
+
       <div class="block" id="conecta" style="background: linear-gradient(135deg, #7f00ff, #e100ff);">
         <div class="block-content label">Conecta</div>
       </div>
@@ -181,6 +188,7 @@
     const lee = document.getElementById('lee');
     const leeLabel = document.getElementById('leeLabel');
     const leeCover = document.getElementById('leeCover');
+    const leeImg = document.getElementById('leeImg');
 
     function seleccionarNuevoLibro() {
       libroActual = libros[Math.floor(Math.random() * libros.length)];
@@ -190,7 +198,7 @@
       seleccionarNuevoLibro();
 
       accionablesText.innerHTML = libroActual.accionables.join('<br>');
-      leeCover.style.backgroundImage = `url('${libroActual.portada}')`;
+      leeImg.src = libroActual.portada;
 
       accionablesText.classList.remove('hidden');
       detenteLabel.classList.add('hidden');
