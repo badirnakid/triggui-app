@@ -14,6 +14,7 @@
       background: linear-gradient(135deg, #0d0e1a, #1e1f2a);
       animation: bgFlow 20s infinite alternate;
       color: white;
+      overscroll-behavior: contain;
     }
 
     @keyframes bgFlow {
@@ -27,29 +28,29 @@
     }
 
     .main {
+      height: 100vh;
       display: flex;
       flex-direction: column;
-      min-height: 100vh;
     }
 
     .grid {
       display: flex;
       flex-direction: column;
+      justify-content: space-between;
       gap: 2vh;
       padding: 2vh 2vw;
       flex-grow: 1;
-      justify-content: center;
     }
 
     @media (min-width: 768px) {
       .grid {
         flex-direction: row;
-        gap: 2vw;
       }
     }
 
     .block {
       flex: 1;
+      min-height: calc((100vh - 16vh - 4vh) / 2); /* reserva 16vh para footer + margen */
       border-radius: 16px;
       font-weight: 600;
       font-size: 1.2rem;
@@ -63,7 +64,6 @@
       background-size: cover;
       background-position: center;
       transition: background 0.5s ease, transform 0.4s ease;
-      min-height: 28vh;
     }
 
     .block.clear {
@@ -76,15 +76,8 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      border-radius: 16px;
       padding: 16px;
       text-align: center;
-      transition: all 0.3s ease;
-    }
-
-    .label {
-      font-size: 1.2rem;
-      z-index: 1;
     }
 
     .accionables {
@@ -93,8 +86,6 @@
       flex-direction: column;
       font-size: 1rem;
       font-weight: 500;
-      justify-content: center;
-      padding: 12px;
     }
 
     .accionables span {
@@ -121,21 +112,18 @@
     }
 
     @keyframes dopamineFloat {
-      0% { transform: scale(1) rotateY(0deg) translateY(0); filter: brightness(1); }
-      25% { transform: scale(1.04) rotateY(1deg) translateY(-8px); filter: brightness(1.05); }
-      50% { transform: scale(1.02) rotateY(2deg) translateY(2px); filter: brightness(0.95); }
-      75% { transform: scale(1.05) rotateY(-1deg) translateY(-6px); filter: brightness(1.1); }
-      100% { transform: scale(1) rotateY(0deg) translateY(0); filter: brightness(1); }
+      0%, 100% { transform: scale(1) rotateY(0deg) translateY(0); }
+      50% { transform: scale(1.04) rotateY(2deg) translateY(-4px); }
     }
 
     .footer {
-      padding: 1.5vh 2vw;
+      height: 16vh;
       display: flex;
       flex-direction: column;
-      align-items: center;
       justify-content: flex-end;
+      align-items: center;
       gap: 1vh;
-      min-height: 15vh;
+      padding: 1vh 2vw;
     }
 
     .shock {
@@ -178,12 +166,12 @@
 
   <div class="main">
     <div class="grid">
-      <div class="block" id="detente" style="background: linear-gradient(135deg, #ff4e50, #f9d423);">
+      <div class="block" id="detente" style="background: linear-gradient(135deg, #f12711, #f5af19);">
         <div class="block-content label" id="detenteLabel">Detente</div>
         <div class="block-content accionables hidden" id="accionablesText"></div>
       </div>
 
-      <div class="block" id="lee" style="background: linear-gradient(135deg, #24c6dc, #514a9d);">
+      <div class="block" id="lee" style="background: linear-gradient(135deg, #43cea2, #185a9d);">
         <div class="block-content label" id="leeLabel">Lee</div>
         <div class="block-content portada-wrapper hidden" id="leeCover">
           <img id="leeImg" src="" alt="portada del libro">
@@ -193,7 +181,7 @@
 
     <div class="footer">
       <button class="shock" id="shockBtn">📚👊 Chócalas por leer un libro físico</button>
-      <img src="/trigguiletras.png" class="trigguiletras" alt="Triggui logo" />
+      <img src="/trigguiletras.png" class="trigguiletras" />
     </div>
   </div>
 
