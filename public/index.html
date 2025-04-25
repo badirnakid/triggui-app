@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-  <title>Triggui – Ritual</title>
+  <title>Triggui – Ritual Heurístico</title>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -53,6 +53,11 @@
       background-size: cover;
       background-position: center;
       cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .block:hover {
+      transform: scale(1.015);
     }
 
     .block-content {
@@ -137,7 +142,29 @@
       margin-top: 10px;
       text-align: center;
       font-weight: 400;
-      opacity: 0.7;
+      opacity: 0.8;
+    }
+
+    .subtle-pulse {
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.015); opacity: 0.95; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .shake {
+      animation: shake 0.3s;
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0px); }
+      25% { transform: translateX(-4px); }
+      50% { transform: translateX(4px); }
+      75% { transform: translateX(-2px); }
+      100% { transform: translateX(0px); }
     }
 
     .hidden { display: none !important; }
@@ -146,7 +173,7 @@
 <body>
   <div class="main">
     <div class="grid">
-      <div class="block" id="detente" style="background: linear-gradient(135deg, #ff6a00, #ee0979);">
+      <div class="block subtle-pulse" id="detente" style="background: linear-gradient(135deg, #ff6a00, #ee0979);">
         <div class="block-content label">Detente</div>
         <div class="block-content accionable hidden" id="detenteText"></div>
       </div>
@@ -156,11 +183,11 @@
           <img id="leeImg" src="" alt="Portada del libro" />
         </div>
       </div>
-      <div class="block" id="pregunta" style="background: linear-gradient(135deg, #36d1dc, #5b86e5);">
+      <div class="block subtle-pulse" id="pregunta" style="background: linear-gradient(135deg, #36d1dc, #5b86e5);">
         <div class="block-content label">?</div>
         <div class="block-content accionable hidden" id="preguntaText"></div>
       </div>
-      <div class="block" id="conecta" style="background: linear-gradient(135deg, #c31432, #240b36);">
+      <div class="block subtle-pulse" id="conecta" style="background: linear-gradient(135deg, #c31432, #240b36);">
         <div class="block-content label">Conecta</div>
         <div class="block-content accionable hidden" id="conectaText"></div>
       </div>
@@ -169,6 +196,7 @@
     <div class="footer">
       <button class="shock hidden" id="shockBtn">📚👊 Chócalas por leer un libro físico</button>
       <div class="final-message hidden" id="mensajeFinal">
+        El libro no te eligió. Tú ya estabas listo para encontrarlo.<br><br>
         Ahora… busca un libro que tengas cerca. Ábrelo en cualquier página y lee una sola frase con absoluta presencia.
       </div>
       <img src="/trigguiletras.png" class="trigguiletras" />
@@ -218,6 +246,8 @@
       el(target).textContent = frase;
       el(target).classList.remove("hidden");
       el(bloque).querySelector(".label").classList.add("hidden");
+      el(bloque).classList.add("shake");
+      setTimeout(() => el(bloque).classList.remove("shake"), 300);
     }
 
     function revelarTodo() {
@@ -234,6 +264,7 @@
           el(target).classList.remove("hidden");
         }
         el(bloque).querySelector(".label").classList.add("hidden");
+        el(bloque).classList.remove("subtle-pulse");
       });
 
       document.body.classList.add("dark");
