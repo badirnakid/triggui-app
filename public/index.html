@@ -14,6 +14,7 @@
       background: linear-gradient(135deg, #0d0e1a, #1e1f2a);
       animation: bgFlow 20s infinite alternate;
       color: white;
+      overflow: hidden;
     }
 
     @keyframes bgFlow {
@@ -49,7 +50,7 @@
 
     .block {
       flex: 1;
-      min-height: 36vh;
+      min-height: 30vh;
       border-radius: 16px;
       font-weight: 600;
       font-size: 1.1rem;
@@ -102,8 +103,8 @@
     }
 
     .portada-wrapper img {
-      max-height: 92%;
-      max-width: 92%;
+      max-height: 95%;
+      max-width: 95%;
       object-fit: contain;
       border-radius: 14px;
       box-shadow: 0 20px 50px rgba(0,0,0,0.3);
@@ -112,11 +113,11 @@
 
     @keyframes floatBook {
       0%, 100% { transform: scale(1) translateY(0); }
-      50% { transform: scale(1.03) translateY(-6px); }
+      50% { transform: scale(1.05) translateY(-6px); }
     }
 
     .footer {
-      height: 18vh;
+      height: 20vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -126,7 +127,7 @@
     }
 
     .shock {
-      background: linear-gradient(to right, #FDC830, #F37335);
+      background: linear-gradient(to right, #ff512f, #dd2476);
       color: white;
       font-weight: bold;
       border: none;
@@ -134,7 +135,7 @@
       padding: 10px 22px;
       font-size: 0.9rem;
       cursor: pointer;
-      box-shadow: 0 0 12px rgba(255, 200, 100, 0.6);
+      box-shadow: 0 0 12px rgba(255, 120, 150, 0.5);
       visibility: hidden;
       opacity: 0;
       transform: scale(0.9);
@@ -149,8 +150,8 @@
     }
 
     @keyframes pulse {
-      0%, 100% { transform: scale(1); box-shadow: 0 0 12px rgba(255, 200, 100, 0.6); }
-      50% { transform: scale(1.08); box-shadow: 0 0 16px rgba(255, 255, 140, 0.9); }
+      0%, 100% { transform: scale(1); box-shadow: 0 0 12px rgba(255, 120, 150, 0.5); }
+      50% { transform: scale(1.08); box-shadow: 0 0 18px rgba(255, 200, 200, 0.8); }
     }
 
     .trigguiletras {
