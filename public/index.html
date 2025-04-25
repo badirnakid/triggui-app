@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-  <title>Triggui – Ritual Puro</title>
+  <title>Triggui – Ritual Impecable</title>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -12,7 +12,8 @@
       height: 100%;
       font-family: 'Archivo', sans-serif;
       background: white;
-      overflow: hidden; /* 🔥 SIN SCROLL */
+      overflow: hidden;
+      -webkit-overflow-scrolling: touch;
     }
     body.dark { background: #000; }
 
@@ -53,7 +54,7 @@
       background-size: cover;
       background-position: center;
       cursor: pointer;
-      transition: transform 0.2s ease, opacity 0.3s ease;
+      transition: transform 0.2s ease, opacity 0.3s ease, background 0.3s ease;
     }
 
     .block:hover {
@@ -73,23 +74,23 @@
     .label { z-index: 1; }
 
     .accionable {
-      background: rgba(255,255,255,0.95);
+      background: rgba(255, 255, 255, 0.92);
       color: #111;
       flex-direction: column;
       font-size: 1rem;
-      font-weight: 500;
-      padding: 12px;
+      font-weight: 600;
+      padding: 16px;
       border-radius: 12px;
-      box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
       opacity: 0;
-      animation: aparecer 0.7s forwards;
+      animation: aparecer 0.8s forwards;
     }
 
     .portada-wrapper img {
       width: 90%;
       max-height: 90%;
       object-fit: contain;
-      border-radius: 12px;
+      border-radius: 14px;
       animation: float 6s ease-in-out infinite;
     }
 
@@ -99,7 +100,7 @@
     }
 
     @keyframes aparecer {
-      from { opacity: 0; transform: translateY(10px) scale(0.95); }
+      from { opacity: 0; transform: translateY(12px) scale(0.95); }
       to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
@@ -112,7 +113,7 @@
     }
 
     .shock {
-      background: linear-gradient(135deg, #ff6a00, #ffc400);
+      background: linear-gradient(135deg, #ff6a00, #ffb347);
       color: white;
       font-weight: bold;
       border: none;
@@ -120,7 +121,7 @@
       padding: 12px 24px;
       font-size: 1rem;
       cursor: pointer;
-      box-shadow: 0 4px 16px rgba(255, 150, 0, 0.4);
+      box-shadow: 0 4px 16px rgba(255, 140, 0, 0.5);
       animation: fadeIn 1.2s ease forwards;
     }
 
@@ -131,6 +132,7 @@
 
     .trigguiletras {
       height: 24px;
+      margin-bottom: 8px;
       opacity: 0.9;
     }
 
@@ -139,8 +141,8 @@
       font-size: 1rem;
       margin-top: 10px;
       text-align: center;
-      font-weight: 400;
-      opacity: 0.8;
+      font-weight: 500;
+      opacity: 0.85;
     }
 
     #reiniciarBtn {
@@ -150,7 +152,7 @@
       margin-top: 8px;
       cursor: pointer;
       color: white;
-      opacity: 0.6;
+      opacity: 0.7;
       transition: opacity 0.3s ease;
     }
     #reiniciarBtn:hover {
@@ -160,15 +162,15 @@
     .pulse { animation: pulse 2.5s infinite; }
     @keyframes pulse {
       0% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.015); opacity: 0.95; }
+      50% { transform: scale(1.02); opacity: 0.95; }
       100% { transform: scale(1); opacity: 1; }
     }
 
     .shake { animation: shake 0.4s; }
     @keyframes shake {
       0% { transform: translateX(0px); }
-      25% { transform: translateX(-3px); }
-      50% { transform: translateX(3px); }
+      25% { transform: translateX(-4px); }
+      50% { transform: translateX(4px); }
       75% { transform: translateX(-2px); }
       100% { transform: translateX(0px); }
     }
@@ -182,9 +184,7 @@
 
     <div class="footer">
       <button class="shock hidden" id="shockBtn">📚👊 Chócalas</button>
-      <div class="final-message hidden" id="mensajeFinal">
-        📖 Ahora abre un libro físico y lee solo una frase.
-      </div>
+      <div class="final-message hidden" id="mensajeFinal">📖 Ahora abre cualquier libro y lee una frase.</div>
       <button id="reiniciarBtn" class="hidden">🔄</button>
       <img src="/trigguiletras.png" class="trigguiletras" />
     </div>
@@ -193,28 +193,28 @@
 <script>
 const bloques = ["detente", "lee", "pregunta", "conecta"];
 const colores = [
-  "linear-gradient(135deg, #ff4e50, #f9d423)",
-  "linear-gradient(135deg, #43cea2, #185a9d)",
-  "linear-gradient(135deg, #fc00ff, #00dbde)",
-  "linear-gradient(135deg, #f7971e, #ffd200)"
+  "linear-gradient(135deg, #ff416c, #ff4b2b)",
+  "linear-gradient(135deg, #00c6ff, #0072ff)",
+  "linear-gradient(135deg, #00f2fe, #4facfe)",
+  "linear-gradient(135deg, #43cea2, #185a9d)"
 ];
 
 const libros = [
   {
     portada: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1678027798i/123116666.jpg',
-    frases: ["🚀 Construye sin miedo", "💡 Ideas locas crean futuro", "🌎 Cambia el mundo"]
+    frases: ["🚀 Construye sin miedo", "💡 Piensa en grande", "🌎 Deja huella"]
   },
   {
     portada: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1606707026i/53138083.jpg',
-    frases: ["🧠 Empieza por el cliente", "🔄 Retrocede para avanzar", "📈 Evoluciona sistemas"]
+    frases: ["🧠 Cliente primero", "🔄 Retrocede para avanzar", "📈 Crea futuro"]
   },
   {
     portada: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1573309166i/50033678.jpg',
-    frases: ["🎭 Entiende tu máscara", "⚡ Controla impulsos", "👁️ Observa la esencia humana"]
+    frases: ["🎭 Reconoce tus máscaras", "👁️ Entiende tu mente", "⚡ Domina impulsos"]
   },
   {
     portada: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1604385988i/55729446.jpg',
-    frases: ["🎯 Cero distracciones", "🧘‍♂️ Mente enfocada", "🔒 Enfócate radicalmente"]
+    frases: ["🎯 Cero distracciones", "🧘‍♂️ Concentra tu energía", "🚀 Enfócate en lo vital"]
   }
 ];
 
@@ -269,6 +269,7 @@ function revelarSolo(bloque) {
 function revelarTodo() {
   bloques.forEach(bloque => {
     if (bloque === bloquePortada) {
+      el(bloque).style.background = 'none'; // 🔥 Fondo desaparece
       el(bloque + "Text").innerHTML = `<img src="${libroActual.portada}" style="width:90%;border-radius:12px;">`;
     }
     el(bloque + "Text").classList.remove("hidden");
