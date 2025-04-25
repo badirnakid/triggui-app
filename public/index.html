@@ -1,23 +1,30 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>TrigguiApp</title>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+
     html, body {
       width: 100%;
       height: 100%;
       font-family: 'Archivo', sans-serif;
-      background: #f9f9fb;
-      color: #222;
+      background: linear-gradient(135deg, #0d0e1a, #1e1f2a);
+      animation: bgFlow 20s infinite alternate;
+      color: white;
+    }
+
+    @keyframes bgFlow {
+      0% { background: linear-gradient(135deg, #0d0e1a, #1e1f2a); }
+      50% { background: linear-gradient(135deg, #222539, #393c5a); }
+      100% { background: linear-gradient(135deg, #0d0e1a, #1e1f2a); }
     }
 
     body.dark {
-      background: #0b0c10;
-      color: white;
+      background: #000;
     }
 
     .main {
@@ -30,126 +37,130 @@
       flex: 1;
       display: flex;
       flex-wrap: wrap;
+      gap: 2vw;
+      padding: 2vh 2vw;
       justify-content: space-between;
       align-content: space-between;
-      padding: 2vw;
-      gap: 2vw;
     }
 
     .block {
       width: calc(50% - 1vw);
       height: calc(45vh - 1vh);
       border-radius: 16px;
-      font-size: 1.2rem;
-      font-weight: bold;
-      text-align: center;
+      font-weight: 600;
+      font-size: 1.1rem;
       display: flex;
       justify-content: center;
       align-items: center;
+      text-align: center;
       position: relative;
-      cursor: pointer;
       overflow: hidden;
       color: white;
-      background: linear-gradient(135deg, #00C9FF, #92FE9D);
-      transition: all 0.4s ease;
+      cursor: pointer;
+      background-size: cover;
+      background-position: center;
+      transition: background 0.5s ease, transform 0.4s ease;
     }
 
     .block.clear {
-      background: none;
-      border: 2px solid white;
+      background: none !important;
     }
 
-    @media (min-width: 768px) {
-      .grid { flex-wrap: nowrap; }
-      .block { width: 48%; height: 84vh; }
+    @media (orientation: landscape), (min-width: 1024px) {
+      .grid {
+        flex-wrap: nowrap;
+        gap: 1.5vw;
+      }
+
+      .block {
+        width: 48%;
+        height: 82vh;
+      }
     }
 
     .block-content {
       position: absolute;
       inset: 0;
-      padding: 1rem;
       display: flex;
       justify-content: center;
       align-items: center;
+      border-radius: 16px;
+      padding: 16px;
+      transition: all 0.3s ease;
       text-align: center;
     }
 
-    .label { font-size: 1.4rem; }
+    .label {
+      font-size: 1.2rem;
+      z-index: 1;
+    }
 
     .accionables {
-      background: white;
+      background: rgba(255,255,255,0.93);
       color: #111;
-      font-weight: 500;
-      border-radius: 14px;
-      padding: 1rem;
-      font-size: 1rem;
       flex-direction: column;
-      opacity: 0;
-      animation: fadeIn 0.8s ease forwards;
+      font-size: 1rem;
+      font-weight: 500;
+      justify-content: center;
+      padding: 12px;
     }
 
     .accionables span {
       display: block;
       margin: 6px 0;
+      opacity: 0;
+      transform: scale(0.9);
+      animation: burstIn 0.6s ease forwards;
     }
 
-    @keyframes fadeIn {
-      to { opacity: 1; }
+    @keyframes burstIn {
+      0% { opacity: 0; transform: scale(0.6) translateY(10px); filter: blur(2px); }
+      50% { opacity: 0.8; transform: scale(1.05) translateY(-4px); filter: blur(0); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
     }
 
     .portada-wrapper img {
-      max-width: 94%;
-      max-height: 94%;
-      border-radius: 12px;
+      max-height: 104%;
+      max-width: 104%;
       object-fit: contain;
-      animation: floatIn 1.8s ease forwards;
+      border-radius: 14px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+      animation: dopamineFloat 6s ease-in-out infinite;
+      transform-origin: center;
     }
 
-    @keyframes floatIn {
-      0% { transform: scale(0.94) translateY(20px); opacity: 0; }
-      100% { transform: scale(1) translateY(0); opacity: 1; }
+    @keyframes dopamineFloat {
+      0% { transform: scale(1) rotateY(0deg) translateY(0); filter: brightness(1); }
+      25% { transform: scale(1.04) rotateY(1deg) translateY(-8px); filter: brightness(1.05); }
+      50% { transform: scale(1.02) rotateY(2deg) translateY(2px); filter: brightness(0.95); }
+      75% { transform: scale(1.05) rotateY(-1deg) translateY(-6px); filter: brightness(1.1); }
+      100% { transform: scale(1) rotateY(0deg) translateY(0); filter: brightness(1); }
     }
 
     .footer {
-      text-align: center;
-      padding: 1rem;
       flex-shrink: 0;
+      padding: 1.2vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1vh;
     }
 
-    .imagotipo {
-      width: 48px;
-      height: 48px;
-      animation: breathe 2.8s infinite ease-in-out;
-    }
-
-    @keyframes breathe {
-      0%, 100% { transform: scale(1); opacity: 0.85; }
-      50% { transform: scale(1.1); opacity: 1; }
+    .shock {
+      background: linear-gradient(to right, #F00000, #DC281E);
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 28px;
+      padding: 12px 24px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(255, 80, 80, 0.25);
     }
 
     .trigguiletras {
       height: 24px;
-      margin-top: 6px;
       opacity: 0.9;
-    }
-
-    .chocalas-btn {
-      margin-top: 12px;
-      background: linear-gradient(to right, #ff5f6d, #ffc371);
-      border: none;
-      color: white;
-      font-weight: bold;
-      border-radius: 999px;
-      padding: 10px 24px;
-      font-size: 0.9rem;
-      cursor: pointer;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.2);
-      transition: all 0.3s ease;
-      display: none;
-    }
-
-    .chocalas-btn.show {
-      display: inline-block;
     }
 
     .hidden { display: none !important; }
@@ -157,124 +168,139 @@
 </head>
 <body>
 
-<div class="main">
-  <div class="grid">
-    <div class="block" id="detente">
-      <div class="block-content label" id="detenteLabel">Detente</div>
-      <div class="block-content accionables hidden" id="accionablesText"></div>
-    </div>
-    <div class="block" id="lee">
-      <div class="block-content label" id="leeLabel">Lee</div>
-      <div class="block-content portada-wrapper hidden" id="leeCover">
-        <img id="leeImg" src="" alt="Portada del libro">
+  <div class="main">
+    <div class="grid">
+      <div class="block" id="detente" style="background: linear-gradient(135deg, #ff5f6d, #ffc371);">
+        <div class="block-content label" id="detenteLabel">Detente</div>
+        <div class="block-content accionables hidden" id="accionablesText"></div>
+      </div>
+
+      <div class="block" id="lee" style="background: linear-gradient(135deg, #00c6ff, #0072ff);">
+        <div class="block-content label" id="leeLabel">Lee</div>
+        <div class="block-content portada-wrapper hidden" id="leeCover">
+          <img id="leeImg" src="" alt="portada del libro">
+        </div>
       </div>
     </div>
+
+    <div class="footer">
+      <button class="shock" id="shockBtn">📚👊 Chócalas por leer un libro físico</button>
+      <img src="/trigguiletras.png" class="trigguiletras" />
+    </div>
   </div>
 
-  <div class="footer">
-    <img src="/imagotipo.png" alt="imagotipo" class="imagotipo" />
-    <img src="/trigguiletras.png" class="trigguiletras" />
-    <button class="chocalas-btn" id="chocalas">📚👊 Chócalas si abriste un libro físico</button>
-  </div>
-</div>
+  <script>
+    const libros = [
+      {
+        portada: 'https://m.media-amazon.com/images/I/91bYsX41DVL.jpg',
+        accionables: [
+          "🔁 Mejora 1% diario",
+          "🧱 Crea sistemas, no metas",
+          "🧠 Identidad guía el hábito"
+        ]
+      },
+      {
+        portada: 'https://m.media-amazon.com/images/I/71QKQ9mwV7L.jpg',
+        accionables: [
+          "🧘‍♂️ No todo importa",
+          "💩 Ignora con intención",
+          "🔥 Sé brutalmente honesto"
+        ]
+      },
+      {
+        portada: 'https://m.media-amazon.com/images/I/81LdLpv8mJL.jpg',
+        accionables: [
+          "💪 No te rindas antes de empezar",
+          "🛡️ Expón tus miedos al rechazo",
+          "💬 Pide lo imposible"
+        ]
+      }
+    ];
 
-<script>
-  let libros = [];
-  let libroActual = null;
-  let detenteOpen = false;
-  let leeOpen = false;
-  let tiempoInicio = null;
+    let libroActual = null;
+    let detenteOpen = false;
+    let leeOpen = false;
 
-  async function cargarLibros() {
-    const res = await fetch('/data/books.jsonl');
-    const texto = await res.text();
-    libros = texto.trim().split('\n').map(l => JSON.parse(l));
-  }
-
-  function seleccionarLibro() {
-    libroActual = libros[Math.floor(Math.random() * libros.length)];
-  }
-
-  function mostrarContenido() {
-    seleccionarLibro();
-
-    const { portada_url, frases_detente } = libroActual;
-
+    const detente = document.getElementById('detente');
     const accionablesText = document.getElementById('accionablesText');
-    accionablesText.innerHTML = '';
-    frases_detente.forEach(frase => {
-      const span = document.createElement('span');
-      span.textContent = frase;
-      accionablesText.appendChild(span);
+    const detenteLabel = document.getElementById('detenteLabel');
+
+    const lee = document.getElementById('lee');
+    const leeLabel = document.getElementById('leeLabel');
+    const leeCover = document.getElementById('leeCover');
+    const leeImg = document.getElementById('leeImg');
+
+    function seleccionarNuevoLibro() {
+      libroActual = libros[Math.floor(Math.random() * libros.length)];
+    }
+
+    function mostrarContenido() {
+      seleccionarNuevoLibro();
+
+      accionablesText.innerHTML = '';
+      libroActual.accionables.forEach((frase, i) => {
+        const span = document.createElement('span');
+        span.textContent = frase;
+        span.style.animationDelay = `${i * 0.4}s`;
+        accionablesText.appendChild(span);
+      });
+
+      leeImg.src = libroActual.portada;
+
+      accionablesText.classList.remove('hidden');
+      detenteLabel.classList.add('hidden');
+      leeCover.classList.remove('hidden');
+      leeLabel.classList.add('hidden');
+
+      detente.classList.add('clear');
+      lee.classList.add('clear');
+
+      detenteOpen = true;
+      leeOpen = true;
+      document.body.classList.add('dark');
+    }
+
+    function ocultarDetente() {
+      accionablesText.classList.add('hidden');
+      detenteLabel.classList.remove('hidden');
+      detente.classList.remove('clear');
+      detenteOpen = false;
+      verificarCerrarFondo();
+    }
+
+    function ocultarLee() {
+      leeCover.classList.add('hidden');
+      leeLabel.classList.remove('hidden');
+      lee.classList.remove('clear');
+      leeOpen = false;
+      verificarCerrarFondo();
+    }
+
+    function verificarCerrarFondo() {
+      if (!detenteOpen && !leeOpen) {
+        document.body.classList.remove('dark');
+      }
+    }
+
+    detente.addEventListener('click', () => {
+      if (!detenteOpen || !leeOpen) {
+        mostrarContenido();
+      } else {
+        ocultarDetente();
+      }
     });
 
-    document.getElementById('leeImg').src = portada_url;
-    document.getElementById('accionablesText').classList.remove('hidden');
-    document.getElementById('detenteLabel').classList.add('hidden');
-    document.getElementById('leeCover').classList.remove('hidden');
-    document.getElementById('leeLabel').classList.add('hidden');
-
-    document.getElementById('detente').classList.add('clear');
-    document.getElementById('lee').classList.add('clear');
-    document.body.classList.add('dark');
-
-    detenteOpen = true;
-    leeOpen = true;
-    tiempoInicio = Date.now();
-
-    setTimeout(() => {
-      if (detenteOpen && leeOpen) {
-        document.getElementById('chocalas').classList.add('show');
+    lee.addEventListener('click', () => {
+      if (!leeOpen || !detenteOpen) {
+        mostrarContenido();
+      } else {
+        ocultarLee();
       }
-    }, 6000); // 6 segundos después
-  }
+    });
 
-  function ocultarDetente() {
-    document.getElementById('accionablesText').classList.add('hidden');
-    document.getElementById('detenteLabel').classList.remove('hidden');
-    document.getElementById('detente').classList.remove('clear');
-    detenteOpen = false;
-    verificarFondo();
-  }
-
-  function ocultarLee() {
-    document.getElementById('leeCover').classList.add('hidden');
-    document.getElementById('leeLabel').classList.remove('hidden');
-    document.getElementById('lee').classList.remove('clear');
-    leeOpen = false;
-    verificarFondo();
-  }
-
-  function verificarFondo() {
-    if (!detenteOpen && !leeOpen) {
-      document.body.classList.remove('dark');
-      document.getElementById('chocalas').classList.remove('show');
-    }
-  }
-
-  document.getElementById('detente').addEventListener('click', () => {
-    if (!detenteOpen || !leeOpen) {
-      mostrarContenido();
-    } else {
-      ocultarDetente();
-    }
-  });
-
-  document.getElementById('lee').addEventListener('click', () => {
-    if (!detenteOpen || !leeOpen) {
-      mostrarContenido();
-    } else {
-      ocultarLee();
-    }
-  });
-
-  document.getElementById('chocalas').addEventListener('click', () => {
-    document.getElementById('chocalas').innerText = '✨ ¡Gracias!';
-    setTimeout(() => document.getElementById('chocalas').classList.remove('show'), 2000);
-  });
-
-  cargarLibros();
-</script>
-
+    document.getElementById('shockBtn').addEventListener('click', () => {
+      document.getElementById('shockBtn').innerText = '📚👏 ¡Bien leído!';
+    });
+  </script>
 </body>
 </html>
