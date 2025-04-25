@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-  <title>TrigguiApp – Ritual</title>
+  <title>Triggui – Ritual</title>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -28,15 +28,14 @@
       grid-template-columns: 1fr 1fr;
       grid-template-rows: 1fr 1fr;
       gap: 2vw;
-      padding: 2vh 2vw;
-      flex: 1;
+      padding: 2vw;
+      height: 100%;
     }
 
     @media (orientation: landscape), (min-width: 768px) {
       .grid {
         grid-template-columns: repeat(4, 1fr);
         grid-template-rows: 1fr;
-        height: 80vh;
       }
     }
 
@@ -51,7 +50,6 @@
       color: white;
       position: relative;
       overflow: hidden;
-      aspect-ratio: 3/4;
       background-size: cover;
       background-position: center;
       cursor: pointer;
@@ -179,7 +177,12 @@
 
   <script>
     const bloques = ["detente", "lee", "pregunta", "conecta"];
-    const frasesIds = ["detenteText", "leeCover", "preguntaText", "conectaText"];
+    const frasesIds = {
+      detente: "detenteText",
+      lee: "leeCover",
+      pregunta: "preguntaText",
+      conecta: "conectaText"
+    };
 
     const libros = [
       {
@@ -195,6 +198,7 @@
     let libroActual = null;
     let bloquePortada = null;
     let revelado = false;
+    const mostrado = new Set();
 
     const el = id => document.getElementById(id);
 
@@ -202,23 +206,34 @@
       libroActual = libros[Math.floor(Math.random() * libros.length)];
       bloquePortada = bloques[Math.floor(Math.random() * bloques.length)];
       revelado = false;
+      mostrado.clear();
     }
 
-    function revelarPortada() {
+    function revelarSolo(bloque) {
+      if (mostrado.has(bloque)) return;
+      mostrado.add(bloque);
+      const index = bloques.indexOf(bloque);
+      const frase = libroActual.frases[index % 3];
+      const target = frasesIds[bloque];
+      el(target).textContent = frase;
+      el(target).classList.remove("hidden");
+      el(bloque).querySelector(".label").classList.add("hidden");
+    }
+
+    function revelarTodo() {
       const frases = [...libroActual.frases].sort(() => Math.random() - 0.5);
-      let fraseIndex = 0;
+      let i = 0;
 
-      bloques.forEach((bloque, i) => {
-        el(bloque).querySelector(".label").classList.add("hidden");
-
+      bloques.forEach(bloque => {
         if (bloque === bloquePortada) {
           el("leeImg").src = libroActual.portada;
           el("leeCover").classList.remove("hidden");
         } else {
-          const target = frasesIds[i];
-          el(target).textContent = frases[fraseIndex++];
+          const target = frasesIds[bloque];
+          el(target).textContent = frases[i++];
           el(target).classList.remove("hidden");
         }
+        el(bloque).querySelector(".label").classList.add("hidden");
       });
 
       document.body.classList.add("dark");
@@ -227,20 +242,22 @@
     }
 
     function cerrarTodo() {
-      frasesIds.forEach(id => el(id).classList.add("hidden"));
+      Object.values(frasesIds).forEach(id => el(id).classList.add("hidden"));
       document.querySelectorAll(".label").forEach(l => l.classList.remove("hidden"));
-      document.body.classList.remove("dark");
       el("shockBtn").classList.add("hidden");
       el("mensajeFinal").classList.add("hidden");
-      revelado = false;
+      document.body.classList.remove("dark");
+      iniciarJuego();
     }
 
     bloques.forEach(bloque => {
       el(bloque).onclick = () => {
-        if (!revelado && bloque === bloquePortada) {
-          revelarPortada();
-        } else if (revelado) {
+        if (revelado) {
           cerrarTodo();
+        } else if (bloque === bloquePortada) {
+          revelarTodo();
+        } else {
+          revelarSolo(bloque);
         }
       };
     });
