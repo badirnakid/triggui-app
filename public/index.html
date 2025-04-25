@@ -7,16 +7,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
     html, body {
       width: 100%;
       height: 100%;
       font-family: 'Archivo', sans-serif;
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      background: white;
       color: white;
-      -webkit-overflow-scrolling: touch;
+      overflow: hidden;
     }
-
     body.dark { background: #000; }
 
     .main {
@@ -25,16 +23,13 @@
       flex-direction: column;
       justify-content: space-between;
     }
-
     .grid {
       display: flex;
       flex-wrap: wrap;
-      justify-content: space-between;
       gap: 1.5vw;
-      padding: 1.5vh 2vw;
+      padding: 2vh 2vw;
       flex: 1;
     }
-
     .block {
       flex: 1 1 calc(50% - 1.5vw);
       aspect-ratio: 3/4;
@@ -53,7 +48,6 @@
       background-position: center;
       transition: background 0.5s ease;
     }
-
     .block-content {
       position: absolute;
       inset: 0;
@@ -63,7 +57,6 @@
       align-items: center;
       text-align: center;
     }
-
     .label { z-index: 1; font-size: 1.25rem; }
 
     .accionable {
@@ -78,7 +71,6 @@
       opacity: 0;
       animation: aparecer 0.7s forwards;
     }
-
     @keyframes aparecer {
       from { opacity: 0; transform: translateY(10px) scale(0.95); }
       to { opacity: 1; transform: translateY(0) scale(1); }
@@ -91,7 +83,6 @@
       border-radius: 14px;
       animation: float 6s ease-in-out infinite;
     }
-
     @keyframes float {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-6px); }
@@ -104,7 +95,6 @@
       align-items: center;
       gap: 1vh;
     }
-
     .shock {
       background: linear-gradient(135deg, #ee0979, #ff6a00);
       color: white;
@@ -118,17 +108,14 @@
       transition: transform 0.3s ease;
       animation: fadeIn 1.2s ease forwards;
     }
-
     @keyframes fadeIn {
       from { opacity: 0; transform: scale(0.95); }
       to { opacity: 1; transform: scale(1); }
     }
-
     .trigguiletras {
       height: 24px;
       opacity: 0.9;
     }
-
     .hidden { display: none !important; }
 
     @media (min-width: 768px) {
@@ -143,19 +130,16 @@
         <div class="block-content label">Detente</div>
         <div class="block-content accionable hidden" id="detenteText"></div>
       </div>
-
       <div class="block" id="lee" style="background: linear-gradient(135deg, #56ab2f, #a8e063);">
         <div class="block-content label">Lee</div>
         <div class="block-content portada-wrapper hidden" id="leeCover">
           <img id="leeImg" src="" alt="Portada del libro" />
         </div>
       </div>
-
       <div class="block" id="pregunta" style="background: linear-gradient(135deg, #36d1dc, #5b86e5);">
         <div class="block-content label">?</div>
         <div class="block-content accionable hidden" id="preguntaText"></div>
       </div>
-
       <div class="block" id="conecta" style="background: linear-gradient(135deg, #c31432, #240b36);">
         <div class="block-content label">Conecta</div>
         <div class="block-content accionable hidden" id="conectaText"></div>
@@ -169,76 +153,72 @@
   </div>
 
   <script>
+    const bloques = ["detente", "lee", "pregunta", "conecta"];
+    const textos = ["detenteText", "leeCover", "preguntaText", "conectaText"];
+
     const libros = [
       {
         portada: 'https://m.media-amazon.com/images/I/91bYsX41DVL.jpg',
-        frases: [
-          "🔁 Mejora 1% diario",
-          "🧱 Crea sistemas, no metas",
-          "🧠 Identidad guía el hábito"
-        ]
+        frases: ["🔁 Mejora 1% diario", "🧱 Crea sistemas, no metas", "🧠 Identidad guía el hábito"]
       },
       {
         portada: 'https://m.media-amazon.com/images/I/81LdLpv8mJL.jpg',
-        frases: [
-          "💪 No te rindas antes de empezar",
-          "🛡️ Expón tus miedos al rechazo",
-          "💬 Pide lo imposible"
-        ]
+        frases: ["💪 No te rindas antes de empezar", "🛡️ Expón tus miedos al rechazo", "💬 Pide lo imposible"]
       }
     ];
 
     let libroActual = null;
+    let bloqueDelLibro = null;
     let abierto = false;
 
     const el = id => document.getElementById(id);
 
-    const mostrarContenido = () => {
+    function inicializarLibro() {
       libroActual = libros[Math.floor(Math.random() * libros.length)];
+      bloqueDelLibro = bloques[Math.floor(Math.random() * bloques.length)];
+    }
+
+    function revelarTodo(bloqueClickado) {
       const frases = [...libroActual.frases].sort(() => Math.random() - 0.5);
+      let frasesIndex = 0;
 
-      el("detenteText").textContent = frases[0];
-      el("preguntaText").textContent = frases[1];
-      el("conectaText").textContent = frases[2];
+      bloques.forEach((bloque, index) => {
+        const label = el(bloque).querySelector(".label");
+        label.classList.add("hidden");
 
-      el("leeImg").src = libroActual.portada;
-
-      ["detenteText", "preguntaText", "conectaText", "leeCover"].forEach(id => {
-        el(id).classList.remove("hidden");
+        if (bloque === bloqueDelLibro) {
+          el("leeImg").src = libroActual.portada;
+          el("leeCover").classList.remove("hidden");
+        } else {
+          const textId = textos[index];
+          el(textId).textContent = frases[frasesIndex++];
+          el(textId).classList.remove("hidden");
+        }
       });
-
-      document.querySelectorAll(".label").forEach(el => el.classList.add("hidden"));
 
       abierto = true;
       document.body.classList.add("dark");
-
       setTimeout(() => el("shockBtn").classList.remove("hidden"), 3000);
-    };
+    }
 
-    const toggleBloque = (bloqueId, textoId) => {
-      if (!abierto) {
-        mostrarContenido();
-      } else {
-        el(textoId).classList.toggle("hidden");
-        const label = el(bloqueId).querySelector(".label");
-        label.classList.toggle("hidden");
-        if (
-          el("detenteText").classList.contains("hidden") &&
-          el("leeCover").classList.contains("hidden") &&
-          el("preguntaText").classList.contains("hidden") &&
-          el("conectaText").classList.contains("hidden")
-        ) {
-          abierto = false;
-          document.body.classList.remove("dark");
-          el("shockBtn").classList.add("hidden");
+    function cerrarTodo() {
+      textos.forEach(id => el(id).classList.add("hidden"));
+      document.querySelectorAll(".label").forEach(elm => elm.classList.remove("hidden"));
+      el("shockBtn").classList.add("hidden");
+      document.body.classList.remove("dark");
+      abierto = false;
+    }
+
+    bloques.forEach((bloque, i) => {
+      el(bloque).onclick = () => {
+        if (!abierto) {
+          inicializarLibro();
+          revelarTodo(bloque);
+        } else {
+          cerrarTodo();
         }
-      }
-    };
-
-    el("detente").onclick = () => toggleBloque("detente", "detenteText");
-    el("lee").onclick = () => toggleBloque("lee", "leeCover");
-    el("pregunta").onclick = () => toggleBloque("pregunta", "preguntaText");
-    el("conecta").onclick = () => toggleBloque("conecta", "conectaText");
+      };
+    });
 
     el("shockBtn").onclick = () => {
       el("shockBtn").textContent = "📚👏 ¡Bien leído!";
