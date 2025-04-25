@@ -13,14 +13,13 @@
       font-family: 'Archivo', sans-serif;
       background: white;
       overflow: hidden;
-      -webkit-overflow-scrolling: touch;
     }
     body.dark { background: #000; }
 
     .main {
-      height: 100vh;
       display: flex;
       flex-direction: column;
+      height: 100vh;
       justify-content: space-between;
     }
 
@@ -54,11 +53,7 @@
       background-size: cover;
       background-position: center;
       cursor: pointer;
-      transition: transform 0.2s ease, opacity 0.3s ease, background 0.3s ease;
-    }
-
-    .block:hover {
-      transform: scale(1.02);
+      transition: background 0.3s ease, transform 0.2s ease;
     }
 
     .block-content {
@@ -74,34 +69,33 @@
     .label { z-index: 1; }
 
     .accionable {
-      background: rgba(255, 255, 255, 0.92);
-      color: #111;
-      flex-direction: column;
+      background: linear-gradient(135deg, #fdfbfb, #ebedee);
+      color: #222;
       font-size: 1rem;
       font-weight: 600;
-      padding: 16px;
-      border-radius: 12px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      padding: 14px;
+      border-radius: 14px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
       opacity: 0;
       animation: aparecer 0.8s forwards;
     }
 
     .portada-wrapper img {
-      width: 90%;
-      max-height: 90%;
+      width: 95%;
+      max-height: 95%;
       object-fit: contain;
-      border-radius: 14px;
-      animation: float 6s ease-in-out infinite;
+      border-radius: 18px;
+      animation: flotar 8s ease-in-out infinite;
     }
 
-    @keyframes float {
+    @keyframes flotar {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-6px); }
+      50% { transform: translateY(-8px); }
     }
 
     @keyframes aparecer {
-      from { opacity: 0; transform: translateY(12px) scale(0.95); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
     }
 
     .footer {
@@ -109,7 +103,6 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 1vh;
     }
 
     .shock {
@@ -118,22 +111,12 @@
       font-weight: bold;
       border: none;
       border-radius: 28px;
-      padding: 12px 24px;
+      padding: 10px 22px;
       font-size: 1rem;
       cursor: pointer;
-      box-shadow: 0 4px 16px rgba(255, 140, 0, 0.5);
-      animation: fadeIn 1.2s ease forwards;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
-    .trigguiletras {
-      height: 24px;
-      margin-bottom: 8px;
-      opacity: 0.9;
+      box-shadow: 0 4px 16px rgba(255, 150, 0, 0.5);
+      animation: fadeIn 1s ease forwards;
+      margin-top: 10px;
     }
 
     .final-message {
@@ -141,7 +124,6 @@
       font-size: 1rem;
       margin-top: 10px;
       text-align: center;
-      font-weight: 500;
       opacity: 0.85;
     }
 
@@ -152,17 +134,24 @@
       margin-top: 8px;
       cursor: pointer;
       color: white;
-      opacity: 0.7;
+      opacity: 0.6;
       transition: opacity 0.3s ease;
     }
+
     #reiniciarBtn:hover {
       opacity: 1;
+    }
+
+    .trigguiletras {
+      height: 22px;
+      margin-top: 10px;
+      opacity: 0.8;
     }
 
     .pulse { animation: pulse 2.5s infinite; }
     @keyframes pulse {
       0% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.02); opacity: 0.95; }
+      50% { transform: scale(1.02); opacity: 0.9; }
       100% { transform: scale(1); opacity: 1; }
     }
 
@@ -184,7 +173,7 @@
 
     <div class="footer">
       <button class="shock hidden" id="shockBtn">📚👊 Chócalas</button>
-      <div class="final-message hidden" id="mensajeFinal">📖 Ahora abre cualquier libro y lee una frase.</div>
+      <div class="final-message hidden" id="mensajeFinal">📖 Abre un libro y encuentra una verdad.</div>
       <button id="reiniciarBtn" class="hidden">🔄</button>
       <img src="/trigguiletras.png" class="trigguiletras" />
     </div>
@@ -194,27 +183,43 @@
 const bloques = ["detente", "lee", "pregunta", "conecta"];
 const colores = [
   "linear-gradient(135deg, #ff416c, #ff4b2b)",
-  "linear-gradient(135deg, #00c6ff, #0072ff)",
-  "linear-gradient(135deg, #00f2fe, #4facfe)",
-  "linear-gradient(135deg, #43cea2, #185a9d)"
+  "linear-gradient(135deg, #1fa2ff, #12d8fa, #a6ffcb)",
+  "linear-gradient(135deg, #fc466b, #3f5efb)",
+  "linear-gradient(135deg, #56ab2f, #a8e063)"
 ];
 
 const libros = [
   {
     portada: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1678027798i/123116666.jpg',
-    frases: ["🚀 Construye sin miedo", "💡 Piensa en grande", "🌎 Deja huella"]
+    frases: [
+      "🚀 Construye productos, no excusas.",
+      "💡 La mejor innovación es invisible.",
+      "🌎 No compitas, redefine las reglas."
+    ]
   },
   {
     portada: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1606707026i/53138083.jpg',
-    frases: ["🧠 Cliente primero", "🔄 Retrocede para avanzar", "📈 Crea futuro"]
+    frases: [
+      "🔍 Retrocede desde el cliente ideal.",
+      "🧠 Simplifica procesos hasta lo esencial.",
+      "📈 Las pequeñas mejoras escalan imperios."
+    ]
   },
   {
     portada: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1573309166i/50033678.jpg',
-    frases: ["🎭 Reconoce tus máscaras", "👁️ Entiende tu mente", "⚡ Domina impulsos"]
+    frases: [
+      "🎭 Tu carácter domina tus reacciones.",
+      "👁️ Las emociones son armas o cadenas.",
+      "⚡ El verdadero poder es paciencia calculada."
+    ]
   },
   {
     portada: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1604385988i/55729446.jpg',
-    frases: ["🎯 Cero distracciones", "🧘‍♂️ Concentra tu energía", "🚀 Enfócate en lo vital"]
+    frases: [
+      "🧘‍♂️ Domina tu atención y dominarás tu vida.",
+      "🎯 Elimina el ruido, enfoca tu poder.",
+      "🚀 Sin concentración, no hay ascenso."
+    ]
   }
 ];
 
@@ -237,7 +242,7 @@ function iniciarJuego() {
     div.id = nombre;
     div.style.background = colores[i];
     div.innerHTML = `
-      <div class="block-content label">${nombre.charAt(0).toUpperCase() + nombre.slice(1)}</div>
+      <div class="block-content label">${nombre.toUpperCase()}</div>
       <div class="block-content accionable hidden" id="${nombre}Text"></div>
     `;
     div.onclick = () => manejarClick(nombre);
@@ -269,8 +274,8 @@ function revelarSolo(bloque) {
 function revelarTodo() {
   bloques.forEach(bloque => {
     if (bloque === bloquePortada) {
-      el(bloque).style.background = 'none'; // 🔥 Fondo desaparece
-      el(bloque + "Text").innerHTML = `<img src="${libroActual.portada}" style="width:90%;border-radius:12px;">`;
+      el(bloque).style.background = "none";
+      el(bloque + "Text").innerHTML = `<img src="${libroActual.portada}" style="width:95%;border-radius:18px;">`;
     }
     el(bloque + "Text").classList.remove("hidden");
     el(bloque).querySelector(".label").classList.add("hidden");
