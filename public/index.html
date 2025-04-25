@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-  <title>Triggui – Ritual Final</title>
+  <title>Triggui – Edición Fundadores / Concentración</title>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -115,7 +115,7 @@
     }
 
     .shock {
-      background: linear-gradient(135deg, #ff6a00, #ffc400);
+      background: linear-gradient(135deg, #ff4e50, #f9d423);
       color: white;
       font-weight: bold;
       border: none;
@@ -204,28 +204,28 @@
 <script>
 const bloques = ["detente", "lee", "pregunta", "conecta"];
 const colores = [
-  "linear-gradient(135deg, #ff4e50, #f9d423)", // rojo a dorado
-  "linear-gradient(135deg, #43cea2, #185a9d)", // verde a azul oscuro
-  "linear-gradient(135deg, #ff6e7f, #bfe9ff)", // rosa a azul claro
-  "linear-gradient(135deg, #f7971e, #ffd200)"  // naranja vibrante
+  "linear-gradient(135deg, #f12711, #f5af19)", // rojo a naranja
+  "linear-gradient(135deg, #1e9600, #fff200)", // verde a amarillo
+  "linear-gradient(135deg, #396afc, #2948ff)", // azul a azul oscuro
+  "linear-gradient(135deg, #fc00ff, #00dbde)"  // rosa a cyan
 ];
 
 const libros = [
   {
     portada: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1678027798i/123116666.jpg',
-    frases: ["🔁 Mejora 1% diario", "🧱 Crea sistemas, no metas", "🧠 Identidad guía el hábito"]
+    frases: ["🚀 Construye con velocidad", "💡 Confía en ideas locas", "🌎 Piensa en grande"]
   },
   {
     portada: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1606707026i/53138083.jpg',
-    frases: ["⏳ Solo el ahora existe", "🌟 Observa, no reacciones", "🧘 Encuentra tu ser"]
+    frases: ["🧠 Empieza por el cliente", "🔄 Trabaja hacia atrás", "📈 Reinventa procesos"]
   },
   {
     portada: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1573309166i/50033678.jpg',
-    frases: ["🌿 Honra tus palabras", "🌀 No tomes nada personal", "🦅 Sé impecable contigo"]
+    frases: ["🎭 Conoce tus máscaras", "⚡ Domina tus impulsos", "👁️ Entiende la naturaleza humana"]
   },
   {
     portada: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1604385988i/55729446.jpg',
-    frases: ["🔓 Deja ir el control", "🌊 Fluye con la vida", "🌱 Libera la resistencia"]
+    frases: ["🎯 Enfócate radicalmente", "🧘‍♂️ Elimina distracciones", "🧩 Aumenta tu poder mental"]
   }
 ];
 
@@ -258,7 +258,7 @@ function iniciarJuego() {
 
 function manejarClick(nombre) {
   if (revelado) {
-    location.reload(); // Reinicia si ya se reveló todo
+    location.reload(); // Reinicia si todo revelado
   } else if (nombre === bloquePortada) {
     revelarTodo();
   } else {
