@@ -29,7 +29,7 @@
       grid-template-rows: 1fr 1fr;
       gap: 2vw;
       padding: 2vw;
-      height: 80vh; /* 🔧 altura ideal, bloques grandes */
+      height: 80vh;
     }
 
     @media (orientation: landscape), (min-width: 768px) {
@@ -70,7 +70,8 @@
     .label { z-index: 1; }
 
     .accionable {
-      color: white;
+      background: radial-gradient(circle at center, #ffffffcc, #e0e0e0cc);
+      color: #111;
       font-size: 1rem;
       font-weight: 600;
       padding: 16px;
@@ -80,16 +81,12 @@
       animation: aparecer 0.6s forwards;
     }
 
-    .bg-detente { background: linear-gradient(135deg, #fc466b, #3f5efb); }
-    .bg-lee     { background: linear-gradient(135deg, #ff9966, #ff5e62); }
-    .bg-pregunta { background: linear-gradient(135deg, #00c9ff, #92fe9d); }
-    .bg-conecta  { background: linear-gradient(135deg, #f2709c, #ff9472); }
-
     .portada-wrapper img {
       width: 100%;
       max-height: 100%;
       object-fit: contain;
       animation: flotar 8s ease-in-out infinite;
+      border-radius: 16px;
     }
 
     @keyframes flotar {
@@ -171,6 +168,8 @@
   </div>
 
 <script>
+const el = id => document.getElementById(id);
+
 const bloques = ["detente", "lee", "pregunta", "conecta"];
 const colores = [
   "linear-gradient(135deg, #ff4e50, #f9d423)",
@@ -215,7 +214,6 @@ const libros = [
 ];
 
 let libroActual, bloquePortada, revelado = false;
-const el = id => document.getElementById;
 
 function iniciarJuego() {
   const grid = el('gridContainer');
@@ -235,7 +233,7 @@ function iniciarJuego() {
     div.style.background = colores[i];
     div.innerHTML = `
       <div class="block-content label">${nombre.toUpperCase()}</div>
-      <div class="block-content accionable hidden bg-${nombre}" id="${nombre}Text">${frases[i % frases.length]}</div>
+      <div class="block-content accionable hidden" id="${nombre}Text">${frases[i % frases.length]}</div>
     `;
     div.onclick = () => manejarClick(nombre);
     grid.appendChild(div);
@@ -259,7 +257,7 @@ function revelarTodo() {
     const block = el(nombre);
     if (nombre === bloquePortada) {
       block.style.background = "none";
-      text.innerHTML = `<img src="${libroActual.portada}" style="width:100%;border-radius:18px;">`;
+      text.innerHTML = `<img src="${libroActual.portada}" style="width:100%;border-radius:16px;">`;
     }
     text.classList.remove("hidden");
     block.querySelector(".label").classList.add("hidden");
