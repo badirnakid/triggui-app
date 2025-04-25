@@ -3,22 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-  <title>Triggui – Edición Fundadores / Concentración</title>
+  <title>Triggui – Ritual Puro</title>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
       width: 100%;
-      min-height: 101vh;
+      height: 100%;
       font-family: 'Archivo', sans-serif;
       background: white;
-      -webkit-overflow-scrolling: touch;
-      overflow-y: auto;
+      overflow: hidden; /* 🔥 SIN SCROLL */
     }
     body.dark { background: #000; }
 
     .main {
-      min-height: 100vh;
+      height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -71,9 +70,7 @@
       text-align: center;
     }
 
-    .label {
-      z-index: 1;
-    }
+    .label { z-index: 1; }
 
     .accionable {
       background: rgba(255,255,255,0.95);
@@ -115,7 +112,7 @@
     }
 
     .shock {
-      background: linear-gradient(135deg, #ff4e50, #f9d423);
+      background: linear-gradient(135deg, #ff6a00, #ffc400);
       color: white;
       font-weight: bold;
       border: none;
@@ -149,32 +146,25 @@
     #reiniciarBtn {
       background: none;
       border: none;
-      font-size: 1.8rem;
+      font-size: 2rem;
       margin-top: 8px;
       cursor: pointer;
       color: white;
-      opacity: 0.5;
+      opacity: 0.6;
       transition: opacity 0.3s ease;
     }
-
     #reiniciarBtn:hover {
       opacity: 1;
     }
 
-    .pulse {
-      animation: pulse 2.5s infinite;
-    }
-
+    .pulse { animation: pulse 2.5s infinite; }
     @keyframes pulse {
       0% { transform: scale(1); opacity: 1; }
       50% { transform: scale(1.015); opacity: 0.95; }
       100% { transform: scale(1); opacity: 1; }
     }
 
-    .shake {
-      animation: shake 0.4s;
-    }
-
+    .shake { animation: shake 0.4s; }
     @keyframes shake {
       0% { transform: translateX(0px); }
       25% { transform: translateX(-3px); }
@@ -191,10 +181,9 @@
     <div class="grid" id="gridContainer"></div>
 
     <div class="footer">
-      <button class="shock hidden" id="shockBtn">📚👊 Chócalas por leer un libro físico</button>
+      <button class="shock hidden" id="shockBtn">📚👊 Chócalas</button>
       <div class="final-message hidden" id="mensajeFinal">
-        El libro no te eligió. Tú ya estabas listo para encontrarlo.<br><br>
-        Ahora… busca un libro que tengas cerca. Ábrelo en cualquier página y lee una sola frase con absoluta presencia.
+        📖 Ahora abre un libro físico y lee solo una frase.
       </div>
       <button id="reiniciarBtn" class="hidden">🔄</button>
       <img src="/trigguiletras.png" class="trigguiletras" />
@@ -204,28 +193,28 @@
 <script>
 const bloques = ["detente", "lee", "pregunta", "conecta"];
 const colores = [
-  "linear-gradient(135deg, #f12711, #f5af19)", // rojo a naranja
-  "linear-gradient(135deg, #1e9600, #fff200)", // verde a amarillo
-  "linear-gradient(135deg, #396afc, #2948ff)", // azul a azul oscuro
-  "linear-gradient(135deg, #fc00ff, #00dbde)"  // rosa a cyan
+  "linear-gradient(135deg, #ff4e50, #f9d423)",
+  "linear-gradient(135deg, #43cea2, #185a9d)",
+  "linear-gradient(135deg, #fc00ff, #00dbde)",
+  "linear-gradient(135deg, #f7971e, #ffd200)"
 ];
 
 const libros = [
   {
     portada: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1678027798i/123116666.jpg',
-    frases: ["🚀 Construye con velocidad", "💡 Confía en ideas locas", "🌎 Piensa en grande"]
+    frases: ["🚀 Construye sin miedo", "💡 Ideas locas crean futuro", "🌎 Cambia el mundo"]
   },
   {
     portada: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1606707026i/53138083.jpg',
-    frases: ["🧠 Empieza por el cliente", "🔄 Trabaja hacia atrás", "📈 Reinventa procesos"]
+    frases: ["🧠 Empieza por el cliente", "🔄 Retrocede para avanzar", "📈 Evoluciona sistemas"]
   },
   {
     portada: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1573309166i/50033678.jpg',
-    frases: ["🎭 Conoce tus máscaras", "⚡ Domina tus impulsos", "👁️ Entiende la naturaleza humana"]
+    frases: ["🎭 Entiende tu máscara", "⚡ Controla impulsos", "👁️ Observa la esencia humana"]
   },
   {
     portada: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1604385988i/55729446.jpg',
-    frases: ["🎯 Enfócate radicalmente", "🧘‍♂️ Elimina distracciones", "🧩 Aumenta tu poder mental"]
+    frases: ["🎯 Cero distracciones", "🧘‍♂️ Mente enfocada", "🔒 Enfócate radicalmente"]
   }
 ];
 
@@ -258,7 +247,7 @@ function iniciarJuego() {
 
 function manejarClick(nombre) {
   if (revelado) {
-    location.reload(); // Reinicia si todo revelado
+    location.reload();
   } else if (nombre === bloquePortada) {
     revelarTodo();
   } else {
@@ -269,8 +258,7 @@ function manejarClick(nombre) {
 function revelarSolo(bloque) {
   if (mostrado.has(bloque)) return;
   mostrado.add(bloque);
-  const index = bloques.indexOf(bloque);
-  const frase = libroActual.frases[index % 3];
+  const frase = libroActual.frases.shift();
   el(bloque + "Text").textContent = frase;
   el(bloque + "Text").classList.remove("hidden");
   el(bloque).querySelector(".label").classList.add("hidden");
@@ -279,16 +267,14 @@ function revelarSolo(bloque) {
 }
 
 function revelarTodo() {
-  bloques.forEach((bloque, i) => {
-    const content = bloque === bloquePortada
-      ? `<img src="${libroActual.portada}" style="width:90%;border-radius:12px;">`
-      : libroActual.frases[i % 3];
-    el(bloque + "Text").innerHTML = content;
+  bloques.forEach(bloque => {
+    if (bloque === bloquePortada) {
+      el(bloque + "Text").innerHTML = `<img src="${libroActual.portada}" style="width:90%;border-radius:12px;">`;
+    }
     el(bloque + "Text").classList.remove("hidden");
     el(bloque).querySelector(".label").classList.add("hidden");
     el(bloque).classList.remove("pulse");
   });
-
   document.body.classList.add("dark");
   el("shockBtn").classList.remove("hidden");
   revelado = true;
