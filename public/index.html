@@ -203,16 +203,19 @@ function manejarClick(nombre) {
 function revelarTodo() {
   bloques.forEach((nombre, i) => {
     const block = el(nombre);
-    const label = block.querySelector(".label");
-    if (label) label.classList.add("hidden");
 
     if (nombre === bloquePortada) {
-      block.innerHTML = `<img src="${portadaURL}" class="portada-img" alt="Portada">`;
+      while (block.firstChild) block.removeChild(block.firstChild);
+      const img = document.createElement("img");
+      img.src = portadaURL;
+      img.className = "portada-img";
+      block.appendChild(img);
       block.style.background = "none";
-      block.style.padding = "0";
     } else {
       const txt = el(nombre + "Text");
       if (txt) txt.classList.remove("hidden");
+      const label = block.querySelector(".label");
+      if (label) label.classList.add("hidden");
     }
   });
 
