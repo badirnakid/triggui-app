@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
   <title>TrigguiApp</title>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&display=swap" rel="stylesheet">
   <style>
@@ -14,7 +14,6 @@
       background: linear-gradient(135deg, #0d0e1a, #1e1f2a);
       animation: bgFlow 20s infinite alternate;
       color: white;
-      overscroll-behavior: contain;
     }
 
     @keyframes bgFlow {
@@ -28,9 +27,9 @@
     }
 
     .main {
-      height: 100vh;
       display: flex;
       flex-direction: column;
+      height: 100vh;
     }
 
     .grid {
@@ -38,7 +37,7 @@
       flex-direction: column;
       justify-content: space-between;
       gap: 2vh;
-      padding: 2vh 2vw;
+      padding: 2vh;
       flex-grow: 1;
     }
 
@@ -50,10 +49,10 @@
 
     .block {
       flex: 1;
-      min-height: calc((100vh - 16vh - 4vh) / 2); /* reserva 16vh para footer + margen */
+      min-height: 36vh;
       border-radius: 16px;
       font-weight: 600;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -63,7 +62,7 @@
       cursor: pointer;
       background-size: cover;
       background-position: center;
-      transition: background 0.5s ease, transform 0.4s ease;
+      transition: background 0.5s ease;
     }
 
     .block.clear {
@@ -103,42 +102,42 @@
     }
 
     .portada-wrapper img {
-      max-height: 94%;
-      max-width: 94%;
+      max-height: 92%;
+      max-width: 92%;
       object-fit: contain;
       border-radius: 14px;
-      box-shadow: 0 25px 60px rgba(0,0,0,0.4);
-      animation: dopamineFloat 6s ease-in-out infinite;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+      animation: floatBook 6s ease-in-out infinite;
     }
 
-    @keyframes dopamineFloat {
-      0%, 100% { transform: scale(1) rotateY(0deg) translateY(0); }
-      50% { transform: scale(1.04) rotateY(2deg) translateY(-4px); }
+    @keyframes floatBook {
+      0%, 100% { transform: scale(1) translateY(0); }
+      50% { transform: scale(1.03) translateY(-6px); }
     }
 
     .footer {
-      height: 16vh;
+      height: 18vh;
       display: flex;
       flex-direction: column;
-      justify-content: flex-end;
+      justify-content: center;
       align-items: center;
       gap: 1vh;
-      padding: 1vh 2vw;
+      padding: 1vh;
     }
 
     .shock {
-      background: linear-gradient(to right, #ff6a00, #ee0979);
+      background: linear-gradient(to right, #FDC830, #F37335);
       color: white;
       font-weight: bold;
       border: none;
       border-radius: 28px;
-      padding: 12px 24px;
-      font-size: 0.95rem;
+      padding: 10px 22px;
+      font-size: 0.9rem;
       cursor: pointer;
-      box-shadow: 0 0 12px rgba(255, 80, 120, 0.6);
+      box-shadow: 0 0 12px rgba(255, 200, 100, 0.6);
       visibility: hidden;
       opacity: 0;
-      transform: scale(0.8);
+      transform: scale(0.9);
       transition: all 0.5s ease;
     }
 
@@ -146,12 +145,12 @@
       visibility: visible;
       opacity: 1;
       transform: scale(1);
-      animation: pulse 1.4s infinite ease-in-out;
+      animation: pulse 1.6s ease-in-out infinite;
     }
 
     @keyframes pulse {
-      0%, 100% { transform: scale(1); box-shadow: 0 0 12px rgba(255, 180, 120, 0.6); }
-      50% { transform: scale(1.08); box-shadow: 0 0 16px rgba(255, 220, 160, 0.9); }
+      0%, 100% { transform: scale(1); box-shadow: 0 0 12px rgba(255, 200, 100, 0.6); }
+      50% { transform: scale(1.08); box-shadow: 0 0 16px rgba(255, 255, 140, 0.9); }
     }
 
     .trigguiletras {
@@ -166,12 +165,12 @@
 
   <div class="main">
     <div class="grid">
-      <div class="block" id="detente" style="background: linear-gradient(135deg, #f12711, #f5af19);">
+      <div class="block" id="detente" style="background: linear-gradient(135deg, #f2709c, #ff9472);">
         <div class="block-content label" id="detenteLabel">Detente</div>
         <div class="block-content accionables hidden" id="accionablesText"></div>
       </div>
 
-      <div class="block" id="lee" style="background: linear-gradient(135deg, #43cea2, #185a9d);">
+      <div class="block" id="lee" style="background: linear-gradient(135deg, #00c9ff, #92fe9d);">
         <div class="block-content label" id="leeLabel">Lee</div>
         <div class="block-content portada-wrapper hidden" id="leeCover">
           <img id="leeImg" src="" alt="portada del libro">
