@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-  <title>Triggui – Versión Fluida</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Triggui App - Final Perfecta</title>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -14,15 +14,9 @@
       background: #fafafa;
       overflow: hidden;
     }
-    body.dark {
-      background: #000;
-      transition: background 0.5s ease;
-    }
-    .main {
-      height: 100dvh;
-      display: flex;
-      flex-direction: column;
-    }
+    body.dark { background: #000; transition: background 0.5s ease; }
+
+    .main { height: 100dvh; display: flex; flex-direction: column; }
     .grid {
       flex: 1;
       display: grid;
@@ -32,10 +26,7 @@
       padding: 2vw;
     }
     @media (orientation: landscape), (min-width: 768px) {
-      .grid {
-        grid-template-columns: repeat(4, 1fr);
-        grid-template-rows: 1fr;
-      }
+      .grid { grid-template-columns: repeat(4, 1fr); grid-template-rows: 1fr; }
     }
     .block {
       display: flex;
@@ -43,31 +34,28 @@
       align-items: center;
       text-align: center;
       border-radius: 20px;
+      background-size: cover;
+      background-position: center;
       font-weight: bold;
       font-size: 1.3rem;
       color: white;
-      background-size: cover;
-      background-position: center;
+      cursor: pointer;
       position: relative;
       overflow: hidden;
-      cursor: pointer;
-      transition: transform 0.4s ease, box-shadow 0.4s ease;
-      animation: pulse 8s infinite;
+      transition: transform 0.4s, box-shadow 0.4s;
     }
-    .block:hover {
-      transform: scale(1.05);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    }
+    .block:hover { transform: scale(1.05); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
     .block-content {
       position: absolute;
       inset: 0;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 14px;
       text-align: center;
+      padding: 14px;
     }
     .label { z-index: 1; }
+
     .accionable {
       font-size: 1.1rem;
       font-weight: 600;
@@ -75,9 +63,9 @@
       border-radius: 20px;
       opacity: 0;
       animation: aparecer 0.7s forwards;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
       background: rgba(255,255,255,0.15);
       backdrop-filter: blur(6px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
     }
     .bg1 { background: linear-gradient(135deg, #ff416c, #ff4b2b); color: #fff; }
     .bg2 { background: linear-gradient(135deg, #00c3ff, #ffff1c); color: #000; }
@@ -92,19 +80,9 @@
       box-shadow: 0 10px 40px rgba(0,0,0,0.5);
       animation: flotar 6s ease-in-out infinite;
     }
-    @keyframes flotar {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
-    }
-    @keyframes aparecer {
-      from { opacity: 0; transform: scale(0.9); }
-      to { opacity: 1; transform: scale(1); }
-    }
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.02); }
-      100% { transform: scale(1); }
-    }
+    @keyframes flotar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    @keyframes aparecer { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
     .footer {
       display: flex;
       flex-direction: column;
@@ -122,17 +100,10 @@
       padding: 12px 28px;
       font-size: 1rem;
       cursor: pointer;
-      box-shadow: 0 6px 16px rgba(255, 140, 0, 0.5);
-      animation: fadeIn 1.5s ease forwards;
+      box-shadow: 0 6px 16px rgba(255,140,0,0.5);
       margin-bottom: 8px;
     }
-    .final-message {
-      color: white;
-      font-size: 1.2rem;
-      text-align: center;
-      opacity: 0.9;
-      margin-top: 8px;
-    }
+    .final-message { color: white; font-size: 1.2rem; text-align: center; opacity: 0.9; margin-top: 8px; }
     #reiniciarBtn {
       background: rgba(255,255,255,0.1);
       border: none;
@@ -144,9 +115,7 @@
       backdrop-filter: blur(6px);
       margin-top: 8px;
     }
-    #reiniciarBtn:hover {
-      background: rgba(255,255,255,0.2);
-    }
+    #reiniciarBtn:hover { background: rgba(255,255,255,0.2); }
     .trigguiletras {
       height: 26px;
       opacity: 0.9;
@@ -215,7 +184,7 @@ function manejarClick(nombre) {
 }
 
 function revelarTodo() {
-  bloques.forEach((nombre, i) => {
+  bloques.forEach(nombre => {
     const block = el(nombre);
     const label = block.querySelector(".label");
     const text = el(nombre + "Text");
