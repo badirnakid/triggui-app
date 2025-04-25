@@ -36,23 +36,27 @@
     .grid {
       flex: 1;
       display: flex;
-      flex-wrap: wrap;
-      gap: 2vw;
+      flex-direction: column;
+      gap: 2vh;
       padding: 2vh 2vw;
-      justify-content: space-between;
-      align-content: space-between;
+      justify-content: center;
+    }
+
+    @media (min-width: 768px) {
+      .grid {
+        flex-direction: row;
+        gap: 2vw;
+      }
     }
 
     .block {
-      width: calc(50% - 1vw);
-      height: calc(45vh - 1vh);
+      flex: 1;
       border-radius: 16px;
       font-weight: 600;
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       display: flex;
       justify-content: center;
       align-items: center;
-      text-align: center;
       position: relative;
       overflow: hidden;
       color: white;
@@ -60,22 +64,11 @@
       background-size: cover;
       background-position: center;
       transition: background 0.5s ease, transform 0.4s ease;
+      min-height: 44vh;
     }
 
     .block.clear {
       background: none !important;
-    }
-
-    @media (orientation: landscape), (min-width: 1024px) {
-      .grid {
-        flex-wrap: nowrap;
-        gap: 1.5vw;
-      }
-
-      .block {
-        width: 48%;
-        height: 82vh;
-      }
     }
 
     .block-content {
@@ -86,8 +79,8 @@
       align-items: center;
       border-radius: 16px;
       padding: 16px;
-      transition: all 0.3s ease;
       text-align: center;
+      transition: all 0.3s ease;
     }
 
     .label {
@@ -120,13 +113,12 @@
     }
 
     .portada-wrapper img {
-      max-height: 104%;
-      max-width: 104%;
+      max-height: 100%;
+      max-width: 100%;
       object-fit: contain;
       border-radius: 14px;
       box-shadow: 0 25px 60px rgba(0,0,0,0.4);
       animation: dopamineFloat 6s ease-in-out infinite;
-      transform-origin: center;
     }
 
     @keyframes dopamineFloat {
@@ -144,6 +136,7 @@
       flex-direction: column;
       align-items: center;
       gap: 1vh;
+      position: relative;
     }
 
     .shock {
@@ -156,6 +149,17 @@
       font-size: 0.95rem;
       cursor: pointer;
       box-shadow: 0 4px 16px rgba(255, 80, 80, 0.25);
+      display: none;
+    }
+
+    .shock.visible {
+      display: inline-block;
+      animation: popIn 0.6s ease forwards;
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
     }
 
     .trigguiletras {
@@ -193,42 +197,31 @@
     const libros = [
       {
         portada: 'https://m.media-amazon.com/images/I/91bYsX41DVL.jpg',
-        accionables: [
-          "🔁 Mejora 1% diario",
-          "🧱 Crea sistemas, no metas",
-          "🧠 Identidad guía el hábito"
-        ]
+        accionables: ["🔁 Mejora 1% diario", "🧱 Crea sistemas, no metas", "🧠 Identidad guía el hábito"]
       },
       {
         portada: 'https://m.media-amazon.com/images/I/71QKQ9mwV7L.jpg',
-        accionables: [
-          "🧘‍♂️ No todo importa",
-          "💩 Ignora con intención",
-          "🔥 Sé brutalmente honesto"
-        ]
+        accionables: ["🧘‍♂️ No todo importa", "💩 Ignora con intención", "🔥 Sé brutalmente honesto"]
       },
       {
         portada: 'https://m.media-amazon.com/images/I/81LdLpv8mJL.jpg',
-        accionables: [
-          "💪 No te rindas antes de empezar",
-          "🛡️ Expón tus miedos al rechazo",
-          "💬 Pide lo imposible"
-        ]
+        accionables: ["💪 No te rindas antes de empezar", "🛡️ Expón tus miedos al rechazo", "💬 Pide lo imposible"]
       }
     ];
 
     let libroActual = null;
     let detenteOpen = false;
     let leeOpen = false;
+    let tiempoInicio = null;
 
     const detente = document.getElementById('detente');
     const accionablesText = document.getElementById('accionablesText');
     const detenteLabel = document.getElementById('detenteLabel');
-
     const lee = document.getElementById('lee');
     const leeLabel = document.getElementById('leeLabel');
     const leeCover = document.getElementById('leeCover');
     const leeImg = document.getElementById('leeImg');
+    const shockBtn = document.getElementById('shockBtn');
 
     function seleccionarNuevoLibro() {
       libroActual = libros[Math.floor(Math.random() * libros.length)];
@@ -236,7 +229,6 @@
 
     function mostrarContenido() {
       seleccionarNuevoLibro();
-
       accionablesText.innerHTML = '';
       libroActual.accionables.forEach((frase, i) => {
         const span = document.createElement('span');
@@ -254,10 +246,17 @@
 
       detente.classList.add('clear');
       lee.classList.add('clear');
+      document.body.classList.add('dark');
 
       detenteOpen = true;
       leeOpen = true;
-      document.body.classList.add('dark');
+
+      tiempoInicio = Date.now();
+      setTimeout(() => {
+        if (detenteOpen && leeOpen) {
+          shockBtn.classList.add('visible');
+        }
+      }, 6000);
     }
 
     function ocultarDetente() {
@@ -279,6 +278,7 @@
     function verificarCerrarFondo() {
       if (!detenteOpen && !leeOpen) {
         document.body.classList.remove('dark');
+        shockBtn.classList.remove('visible');
       }
     }
 
@@ -298,8 +298,9 @@
       }
     });
 
-    document.getElementById('shockBtn').addEventListener('click', () => {
-      document.getElementById('shockBtn').innerText = '📚👏 ¡Bien leído!';
+    shockBtn.addEventListener('click', () => {
+      shockBtn.innerText = '📚✨ Gracias por hacerlo real';
+      shockBtn.disabled = true;
     });
   </script>
 </body>
