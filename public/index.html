@@ -2,9 +2,9 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Triggui – Ritual Perfecto</title>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&display=swap" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>Triggui – Ritual Estable</title>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
@@ -61,6 +61,7 @@
       text-align: center;
     }
     .label { z-index: 1; }
+
     .accionable {
       font-size: 1rem;
       font-weight: 600;
@@ -82,14 +83,17 @@
       animation: flotar 8s ease-in-out infinite;
       border-radius: 20px;
     }
+
     @keyframes flotar {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-8px); }
     }
+
     @keyframes aparecer {
       from { opacity: 0; transform: scale(0.95); }
       to { opacity: 1; transform: scale(1); }
     }
+
     .footer {
       display: flex;
       flex-direction: column;
@@ -98,6 +102,7 @@
       min-height: 80px;
       justify-content: center;
     }
+
     .shock {
       background: linear-gradient(135deg, #ff6a00, #ffb347);
       color: white;
@@ -111,12 +116,14 @@
       animation: fadeIn 1s ease forwards;
       margin-bottom: 6px;
     }
+
     .final-message {
       color: white;
       font-size: 1rem;
       text-align: center;
       opacity: 0.88;
     }
+
     #reiniciarBtn {
       background: rgba(255,255,255,0.1);
       border: none;
@@ -128,14 +135,17 @@
       backdrop-filter: blur(5px);
       margin-top: 6px;
     }
+
     #reiniciarBtn:hover {
       background: rgba(255,255,255,0.2);
     }
+
     .trigguiletras {
       height: 24px;
       opacity: 0.9;
       transition: opacity 0.4s ease;
     }
+
     .hidden {
       display: none !important;
     }
@@ -153,87 +163,94 @@
   </div>
 
 <script>
-const el = id => document.getElementById(id);
-const bloques = ["detente", "lee", "pregunta", "conecta"];
-const frases = [
-  "🧠 El poder nace del autoconocimiento.",
-  "👁️ Lo emocional es lo más racional.",
-  "🎭 Entiende tus sombras y hazlas aliadas.",
-  "🧬 Todo comportamiento tiene raíz invisible."
-];
-const portadaURL = "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1573309166i/50033678.jpg";
-let bloquePortada = bloques[Math.floor(Math.random() * bloques.length)];
-let revelado = false;
+document.addEventListener("DOMContentLoaded", () => {
+  const el = id => document.getElementById(id);
+  const bloques = ["detente", "lee", "pregunta", "conecta"];
+  const frases = [
+    "🧠 El poder nace del autoconocimiento.",
+    "👁️ Lo emocional es lo más racional.",
+    "🎭 Entiende tus sombras y hazlas aliadas.",
+    "🧬 Todo comportamiento tiene raíz invisible."
+  ];
+  const portadaURL = "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1573309166i/50033678.jpg";
+  let bloquePortada = bloques[Math.floor(Math.random() * bloques.length)];
+  let revelado = false;
 
-function iniciarJuego() {
   const grid = el('gridContainer');
   const logo = el('logoTriggui');
-  grid.innerHTML = '';
-  logo.classList.remove("hidden");
 
-  bloques.forEach((nombre, i) => {
-    const div = document.createElement('div');
-    div.className = 'block';
-    div.id = nombre;
+  function iniciarJuego() {
+    grid.innerHTML = '';
+    logo.classList.remove("hidden");
 
-    const bgClass = `bg${i+1}`;
-    div.innerHTML = `
-      <div class="block-content label">${nombre.toUpperCase()}</div>
-      <div class="block-content accionable hidden ${bgClass}" id="${nombre}Text">${frases[i]}</div>
-    `;
-    div.onclick = () => manejarClick(nombre);
-    grid.appendChild(div);
-  });
-}
-
-function manejarClick(nombre) {
-  if (revelado) return location.reload();
-
-  if (nombre === bloquePortada) {
-    revelarTodo();
-  } else {
-    const txt = el(nombre + "Text");
-    if (txt) {
-      txt.classList.remove("hidden");
-      el(nombre).querySelector(".label").classList.add("hidden");
-    }
+    bloques.forEach((nombre, i) => {
+      const div = document.createElement('div');
+      div.className = 'block';
+      div.id = nombre;
+      const bgClass = `bg${i+1}`;
+      div.innerHTML = `
+        <div class="block-content label">${nombre.toUpperCase()}</div>
+        <div class="block-content accionable hidden ${bgClass}" id="${nombre}Text">${frases[i]}</div>
+      `;
+      div.onclick = () => manejarClick(nombre);
+      grid.appendChild(div);
+    });
   }
-}
 
-function revelarTodo() {
-  bloques.forEach((nombre, i) => {
-    const block = el(nombre);
-
+  function manejarClick(nombre) {
+    if (revelado) return location.reload();
     if (nombre === bloquePortada) {
-      while (block.firstChild) block.removeChild(block.firstChild);
-      const img = document.createElement("img");
-      img.src = portadaURL;
-      img.className = "portada-img";
-      block.appendChild(img);
-      block.style.background = "none";
+      revelarTodo();
     } else {
       const txt = el(nombre + "Text");
-      if (txt) txt.classList.remove("hidden");
-      const label = block.querySelector(".label");
-      if (label) label.classList.add("hidden");
+      if (txt) {
+        txt.classList.remove("hidden");
+        const label = el(nombre).querySelector(".label");
+        if (label) label.classList.add("hidden");
+      }
     }
-  });
+  }
 
-  document.body.classList.add("dark");
-  el("shockBtn").classList.remove("hidden");
-  el("logoTriggui").classList.add("hidden");
-  revelado = true;
-}
+  function revelarTodo() {
+    bloques.forEach((nombre, i) => {
+      const block = el(nombre);
 
-el("shockBtn").onclick = () => {
-  el("shockBtn").classList.add("hidden");
-  el("mensajeFinal").classList.remove("hidden");
-  el("reiniciarBtn").classList.remove("hidden");
-};
+      if (nombre === bloquePortada) {
+        const label = block.querySelector(".label");
+        const text = el(nombre + "Text");
+        if (label) label.classList.add("hidden");
+        if (text) text.remove();
 
-el("reiniciarBtn").onclick = () => location.reload();
+        const img = document.createElement("img");
+        img.src = portadaURL;
+        img.alt = "Portada del libro";
+        img.className = "portada-img";
+        block.appendChild(img);
+        block.style.background = "none";
+      } else {
+        const text = el(nombre + "Text");
+        if (text) text.classList.remove("hidden");
+        const label = block.querySelector(".label");
+        if (label) label.classList.add("hidden");
+      }
+    });
 
-iniciarJuego();
+    document.body.classList.add("dark");
+    el("shockBtn").classList.remove("hidden");
+    el("logoTriggui").classList.add("hidden");
+    revelado = true;
+  }
+
+  el("shockBtn").onclick = () => {
+    el("shockBtn").classList.add("hidden");
+    el("mensajeFinal").classList.remove("hidden");
+    el("reiniciarBtn").classList.remove("hidden");
+  };
+
+  el("reiniciarBtn").onclick = () => location.reload();
+
+  iniciarJuego();
+});
 </script>
 </body>
 </html>
