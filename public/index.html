@@ -9,14 +9,12 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     html, body {
-      width: 100%;
       height: 100%;
       font-family: 'Archivo', sans-serif;
       background: linear-gradient(135deg, #0d0e1a, #1e1f2a);
       animation: bgFlow 20s infinite alternate;
       color: white;
-      overflow-y: auto; /* habilita swipe refresh */
-      -webkit-overflow-scrolling: touch;
+      overflow: hidden;
     }
 
     @keyframes bgFlow {
@@ -67,7 +65,7 @@
       background-size: cover;
       background-position: center;
       transition: background 0.5s ease, transform 0.4s ease;
-      min-height: 34vh;
+      min-height: 30vh;
     }
 
     .block.clear {
@@ -116,8 +114,8 @@
     }
 
     .portada-wrapper img {
-      max-height: 100%;
-      max-width: 100%;
+      max-height: 92%;
+      max-width: 92%;
       object-fit: contain;
       border-radius: 14px;
       box-shadow: 0 25px 60px rgba(0,0,0,0.4);
@@ -133,17 +131,17 @@
     }
 
     .footer {
-      flex-shrink: 0;
-      padding: 2vh 2vw;
+      padding: 1.5vh 2vw 2vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-end;
       gap: 1vh;
+      min-height: 15vh;
+      justify-content: flex-end;
     }
 
     .shock {
-      background: linear-gradient(90deg, #f83600, #f9d423);
+      background: linear-gradient(to right, #f12711, #f5af19);
       color: black;
       font-weight: bold;
       border: none;
@@ -152,18 +150,17 @@
       font-size: 0.95rem;
       cursor: pointer;
       box-shadow: 0 0 12px rgba(255, 190, 80, 0.6);
-      display: none;
-      animation: pulse 1.2s infinite ease-in-out;
+      visibility: hidden;
+      opacity: 0;
+      transform: scale(0.8);
+      transition: all 0.5s ease;
     }
 
     .shock.visible {
-      display: inline-block;
-      animation: popIn 0.4s ease forwards, pulse 1.4s infinite ease-in-out;
-    }
-
-    @keyframes popIn {
-      from { opacity: 0; transform: scale(0.8); }
-      to { opacity: 1; transform: scale(1); }
+      visibility: visible;
+      opacity: 1;
+      transform: scale(1);
+      animation: pulse 1.4s infinite ease-in-out;
     }
 
     @keyframes pulse {
@@ -172,7 +169,7 @@
     }
 
     .trigguiletras {
-      height: 24px;
+      height: 22px;
       opacity: 0.9;
     }
 
@@ -183,12 +180,12 @@
 
   <div class="main">
     <div class="grid">
-      <div class="block" id="detente" style="background: linear-gradient(135deg, #f77062, #fe5196);">
+      <div class="block" id="detente" style="background: linear-gradient(135deg, #f953c6, #b91d73);">
         <div class="block-content label" id="detenteLabel">Detente</div>
         <div class="block-content accionables hidden" id="accionablesText"></div>
       </div>
 
-      <div class="block" id="lee" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">
+      <div class="block" id="lee" style="background: linear-gradient(135deg, #43cea2, #185a9d);">
         <div class="block-content label" id="leeLabel">Lee</div>
         <div class="block-content portada-wrapper hidden" id="leeCover">
           <img id="leeImg" src="" alt="portada del libro">
