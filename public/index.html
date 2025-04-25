@@ -2,61 +2,49 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <title>TrigguiApp</title>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     html, body {
+      width: 100%;
       height: 100%;
       font-family: 'Archivo', sans-serif;
-      background: linear-gradient(135deg, #0d0e1a, #1e1f2a);
-      animation: bgFlow 20s infinite alternate;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
       color: white;
-      overflow: hidden;
+      -webkit-overflow-scrolling: touch;
     }
 
-    @keyframes bgFlow {
-      0% { background: linear-gradient(135deg, #0d0e1a, #1e1f2a); }
-      50% { background: linear-gradient(135deg, #2c3e50, #4ca1af); }
-      100% { background: linear-gradient(135deg, #0d0e1a, #1e1f2a); }
-    }
-
-    body.dark {
-      background: #000;
-    }
+    body.dark { background: #000; }
 
     .main {
+      height: 100dvh;
       display: flex;
       flex-direction: column;
-      height: 100vh;
+      justify-content: space-between;
     }
 
     .grid {
       display: flex;
-      flex-direction: column;
+      flex-wrap: wrap;
       justify-content: space-between;
-      gap: 2vh;
-      padding: 2vh;
-      flex-grow: 1;
-    }
-
-    @media (min-width: 768px) {
-      .grid {
-        flex-direction: row;
-      }
+      gap: 1.5vw;
+      padding: 1.5vh 2vw;
+      flex: 1;
     }
 
     .block {
-      flex: 1;
-      min-height: 30vh;
+      flex: 1 1 calc(50% - 1.5vw);
+      aspect-ratio: 3/4;
       border-radius: 16px;
       font-weight: 600;
       font-size: 1.1rem;
       display: flex;
       justify-content: center;
       align-items: center;
+      text-align: center;
       position: relative;
       overflow: hidden;
       color: white;
@@ -66,121 +54,116 @@
       transition: background 0.5s ease;
     }
 
-    .block.clear {
-      background: none !important;
-    }
-
     .block-content {
       position: absolute;
       inset: 0;
+      padding: 16px;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 16px;
       text-align: center;
     }
 
-    .accionables {
-      background: rgba(255,255,255,0.93);
+    .label { z-index: 1; font-size: 1.25rem; }
+
+    .accionable {
+      background: rgba(255,255,255,0.95);
       color: #111;
       flex-direction: column;
       font-size: 1rem;
       font-weight: 500;
-    }
-
-    .accionables span {
-      display: block;
-      margin: 6px 0;
+      padding: 12px;
+      border-radius: 12px;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.3);
       opacity: 0;
-      transform: scale(0.9);
-      animation: burstIn 0.6s ease forwards;
+      animation: aparecer 0.7s forwards;
     }
 
-    @keyframes burstIn {
-      0% { opacity: 0; transform: scale(0.6) translateY(10px); filter: blur(2px); }
-      50% { opacity: 0.8; transform: scale(1.05) translateY(-4px); filter: blur(0); }
-      100% { opacity: 1; transform: scale(1) translateY(0); }
+    @keyframes aparecer {
+      from { opacity: 0; transform: translateY(10px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
     .portada-wrapper img {
-      max-height: 95%;
-      max-width: 95%;
+      width: 90%;
+      max-height: 90%;
       object-fit: contain;
       border-radius: 14px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-      animation: floatBook 6s ease-in-out infinite;
+      animation: float 6s ease-in-out infinite;
     }
 
-    @keyframes floatBook {
-      0%, 100% { transform: scale(1) translateY(0); }
-      50% { transform: scale(1.05) translateY(-6px); }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
     }
 
     .footer {
-      height: 20vh;
+      padding: 1vh;
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
       gap: 1vh;
-      padding: 1vh;
     }
 
     .shock {
-      background: linear-gradient(to right, #ff512f, #dd2476);
+      background: linear-gradient(135deg, #ee0979, #ff6a00);
       color: white;
       font-weight: bold;
       border: none;
       border-radius: 28px;
-      padding: 10px 22px;
-      font-size: 0.9rem;
+      padding: 12px 24px;
+      font-size: 1rem;
       cursor: pointer;
-      box-shadow: 0 0 12px rgba(255, 120, 150, 0.5);
-      visibility: hidden;
-      opacity: 0;
-      transform: scale(0.9);
-      transition: all 0.5s ease;
+      box-shadow: 0 4px 16px rgba(255, 80, 80, 0.4);
+      transition: transform 0.3s ease;
+      animation: fadeIn 1.2s ease forwards;
     }
 
-    .shock.visible {
-      visibility: visible;
-      opacity: 1;
-      transform: scale(1);
-      animation: pulse 1.6s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); box-shadow: 0 0 12px rgba(255, 120, 150, 0.5); }
-      50% { transform: scale(1.08); box-shadow: 0 0 18px rgba(255, 200, 200, 0.8); }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
     }
 
     .trigguiletras {
-      height: 22px;
+      height: 24px;
       opacity: 0.9;
     }
 
     .hidden { display: none !important; }
+
+    @media (min-width: 768px) {
+      .block { aspect-ratio: auto; height: 80vh; }
+    }
   </style>
 </head>
 <body>
-
   <div class="main">
     <div class="grid">
-      <div class="block" id="detente" style="background: linear-gradient(135deg, #f2709c, #ff9472);">
-        <div class="block-content label" id="detenteLabel">Detente</div>
-        <div class="block-content accionables hidden" id="accionablesText"></div>
+      <div class="block" id="detente" style="background: linear-gradient(135deg, #ff6a00, #ee0979);">
+        <div class="block-content label">Detente</div>
+        <div class="block-content accionable hidden" id="detenteText"></div>
       </div>
 
-      <div class="block" id="lee" style="background: linear-gradient(135deg, #00c9ff, #92fe9d);">
-        <div class="block-content label" id="leeLabel">Lee</div>
+      <div class="block" id="lee" style="background: linear-gradient(135deg, #56ab2f, #a8e063);">
+        <div class="block-content label">Lee</div>
         <div class="block-content portada-wrapper hidden" id="leeCover">
-          <img id="leeImg" src="" alt="portada del libro">
+          <img id="leeImg" src="" alt="Portada del libro" />
         </div>
+      </div>
+
+      <div class="block" id="pregunta" style="background: linear-gradient(135deg, #36d1dc, #5b86e5);">
+        <div class="block-content label">?</div>
+        <div class="block-content accionable hidden" id="preguntaText"></div>
+      </div>
+
+      <div class="block" id="conecta" style="background: linear-gradient(135deg, #c31432, #240b36);">
+        <div class="block-content label">Conecta</div>
+        <div class="block-content accionable hidden" id="conectaText"></div>
       </div>
     </div>
 
     <div class="footer">
-      <button class="shock" id="shockBtn">📚👊 Chócalas por leer un libro físico</button>
+      <button class="shock hidden" id="shockBtn">📚👊 Chócalas por leer un libro físico</button>
       <img src="/trigguiletras.png" class="trigguiletras" />
     </div>
   </div>
@@ -189,110 +172,77 @@
     const libros = [
       {
         portada: 'https://m.media-amazon.com/images/I/91bYsX41DVL.jpg',
-        accionables: ["🔁 Mejora 1% diario", "🧱 Crea sistemas, no metas", "🧠 Identidad guía el hábito"]
-      },
-      {
-        portada: 'https://m.media-amazon.com/images/I/71QKQ9mwV7L.jpg',
-        accionables: ["🧘‍♂️ No todo importa", "💩 Ignora con intención", "🔥 Sé brutalmente honesto"]
+        frases: [
+          "🔁 Mejora 1% diario",
+          "🧱 Crea sistemas, no metas",
+          "🧠 Identidad guía el hábito"
+        ]
       },
       {
         portada: 'https://m.media-amazon.com/images/I/81LdLpv8mJL.jpg',
-        accionables: ["💪 No te rindas antes de empezar", "🛡️ Expón tus miedos al rechazo", "💬 Pide lo imposible"]
+        frases: [
+          "💪 No te rindas antes de empezar",
+          "🛡️ Expón tus miedos al rechazo",
+          "💬 Pide lo imposible"
+        ]
       }
     ];
 
     let libroActual = null;
-    let detenteOpen = false;
-    let leeOpen = false;
+    let abierto = false;
 
-    const detente = document.getElementById('detente');
-    const accionablesText = document.getElementById('accionablesText');
-    const detenteLabel = document.getElementById('detenteLabel');
-    const lee = document.getElementById('lee');
-    const leeLabel = document.getElementById('leeLabel');
-    const leeCover = document.getElementById('leeCover');
-    const leeImg = document.getElementById('leeImg');
-    const shockBtn = document.getElementById('shockBtn');
+    const el = id => document.getElementById(id);
 
-    function seleccionarNuevoLibro() {
+    const mostrarContenido = () => {
       libroActual = libros[Math.floor(Math.random() * libros.length)];
-    }
+      const frases = [...libroActual.frases].sort(() => Math.random() - 0.5);
 
-    function mostrarContenido() {
-      seleccionarNuevoLibro();
+      el("detenteText").textContent = frases[0];
+      el("preguntaText").textContent = frases[1];
+      el("conectaText").textContent = frases[2];
 
-      accionablesText.innerHTML = '';
-      libroActual.accionables.forEach((frase, i) => {
-        const span = document.createElement('span');
-        span.textContent = frase;
-        span.style.animationDelay = `${i * 0.3}s`;
-        accionablesText.appendChild(span);
+      el("leeImg").src = libroActual.portada;
+
+      ["detenteText", "preguntaText", "conectaText", "leeCover"].forEach(id => {
+        el(id).classList.remove("hidden");
       });
 
-      leeImg.src = libroActual.portada;
+      document.querySelectorAll(".label").forEach(el => el.classList.add("hidden"));
 
-      accionablesText.classList.remove('hidden');
-      detenteLabel.classList.add('hidden');
-      leeCover.classList.remove('hidden');
-      leeLabel.classList.add('hidden');
+      abierto = true;
+      document.body.classList.add("dark");
 
-      detente.classList.add('clear');
-      lee.classList.add('clear');
-      document.body.classList.add('dark');
+      setTimeout(() => el("shockBtn").classList.remove("hidden"), 3000);
+    };
 
-      detenteOpen = true;
-      leeOpen = true;
-
-      setTimeout(() => {
-        if (detenteOpen && leeOpen) {
-          shockBtn.classList.add('visible');
+    const toggleBloque = (bloqueId, textoId) => {
+      if (!abierto) {
+        mostrarContenido();
+      } else {
+        el(textoId).classList.toggle("hidden");
+        const label = el(bloqueId).querySelector(".label");
+        label.classList.toggle("hidden");
+        if (
+          el("detenteText").classList.contains("hidden") &&
+          el("leeCover").classList.contains("hidden") &&
+          el("preguntaText").classList.contains("hidden") &&
+          el("conectaText").classList.contains("hidden")
+        ) {
+          abierto = false;
+          document.body.classList.remove("dark");
+          el("shockBtn").classList.add("hidden");
         }
-      }, 3000);
-    }
-
-    function ocultarDetente() {
-      accionablesText.classList.add('hidden');
-      detenteLabel.classList.remove('hidden');
-      detente.classList.remove('clear');
-      detenteOpen = false;
-      verificarCerrarFondo();
-    }
-
-    function ocultarLee() {
-      leeCover.classList.add('hidden');
-      leeLabel.classList.remove('hidden');
-      lee.classList.remove('clear');
-      leeOpen = false;
-      verificarCerrarFondo();
-    }
-
-    function verificarCerrarFondo() {
-      if (!detenteOpen && !leeOpen) {
-        document.body.classList.remove('dark');
-        shockBtn.classList.remove('visible');
       }
-    }
+    };
 
-    detente.addEventListener('click', () => {
-      if (!detenteOpen || !leeOpen) {
-        mostrarContenido();
-      } else {
-        ocultarDetente();
-      }
-    });
+    el("detente").onclick = () => toggleBloque("detente", "detenteText");
+    el("lee").onclick = () => toggleBloque("lee", "leeCover");
+    el("pregunta").onclick = () => toggleBloque("pregunta", "preguntaText");
+    el("conecta").onclick = () => toggleBloque("conecta", "conectaText");
 
-    lee.addEventListener('click', () => {
-      if (!leeOpen || !detenteOpen) {
-        mostrarContenido();
-      } else {
-        ocultarLee();
-      }
-    });
-
-    shockBtn.addEventListener('click', () => {
-      shockBtn.innerText = '📚✨ ¡Gracias por abrir un libro real!';
-      shockBtn.disabled = true;
-    });
+    el("shockBtn").onclick = () => {
+      el("shockBtn").textContent = "📚👏 ¡Bien leído!";
+    };
   </script>
 </body>
 </html>
