@@ -14,12 +14,11 @@
       background: linear-gradient(135deg, #0d0e1a, #1e1f2a);
       animation: bgFlow 20s infinite alternate;
       color: white;
-      overflow: hidden;
     }
 
     @keyframes bgFlow {
       0% { background: linear-gradient(135deg, #0d0e1a, #1e1f2a); }
-      50% { background: linear-gradient(135deg, #2e3260, #1b1d32); }
+      50% { background: linear-gradient(135deg, #2c3e50, #4ca1af); }
       100% { background: linear-gradient(135deg, #0d0e1a, #1e1f2a); }
     }
 
@@ -30,8 +29,7 @@
     .main {
       display: flex;
       flex-direction: column;
-      height: 100vh;
-      justify-content: space-between;
+      min-height: 100vh;
     }
 
     .grid {
@@ -65,7 +63,7 @@
       background-size: cover;
       background-position: center;
       transition: background 0.5s ease, transform 0.4s ease;
-      min-height: 30vh;
+      min-height: 28vh;
     }
 
     .block.clear {
@@ -114,8 +112,8 @@
     }
 
     .portada-wrapper img {
-      max-height: 92%;
-      max-width: 92%;
+      max-height: 94%;
+      max-width: 94%;
       object-fit: contain;
       border-radius: 14px;
       box-shadow: 0 25px 60px rgba(0,0,0,0.4);
@@ -131,25 +129,25 @@
     }
 
     .footer {
-      padding: 1.5vh 2vw 2vh;
+      padding: 1.5vh 2vw;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: flex-end;
       gap: 1vh;
       min-height: 15vh;
-      justify-content: flex-end;
     }
 
     .shock {
-      background: linear-gradient(to right, #f12711, #f5af19);
-      color: black;
+      background: linear-gradient(to right, #ff6a00, #ee0979);
+      color: white;
       font-weight: bold;
       border: none;
       border-radius: 28px;
       padding: 12px 24px;
       font-size: 0.95rem;
       cursor: pointer;
-      box-shadow: 0 0 12px rgba(255, 190, 80, 0.6);
+      box-shadow: 0 0 12px rgba(255, 80, 120, 0.6);
       visibility: hidden;
       opacity: 0;
       transform: scale(0.8);
@@ -164,8 +162,8 @@
     }
 
     @keyframes pulse {
-      0%, 100% { transform: scale(1); box-shadow: 0 0 12px rgba(255, 190, 80, 0.6); }
-      50% { transform: scale(1.08); box-shadow: 0 0 16px rgba(255, 220, 120, 0.9); }
+      0%, 100% { transform: scale(1); box-shadow: 0 0 12px rgba(255, 180, 120, 0.6); }
+      50% { transform: scale(1.08); box-shadow: 0 0 16px rgba(255, 220, 160, 0.9); }
     }
 
     .trigguiletras {
@@ -180,12 +178,12 @@
 
   <div class="main">
     <div class="grid">
-      <div class="block" id="detente" style="background: linear-gradient(135deg, #f953c6, #b91d73);">
+      <div class="block" id="detente" style="background: linear-gradient(135deg, #ff4e50, #f9d423);">
         <div class="block-content label" id="detenteLabel">Detente</div>
         <div class="block-content accionables hidden" id="accionablesText"></div>
       </div>
 
-      <div class="block" id="lee" style="background: linear-gradient(135deg, #43cea2, #185a9d);">
+      <div class="block" id="lee" style="background: linear-gradient(135deg, #24c6dc, #514a9d);">
         <div class="block-content label" id="leeLabel">Lee</div>
         <div class="block-content portada-wrapper hidden" id="leeCover">
           <img id="leeImg" src="" alt="portada del libro">
@@ -304,7 +302,7 @@
     });
 
     shockBtn.addEventListener('click', () => {
-      shockBtn.innerText = '📚✨ Gracias por hacerlo real';
+      shockBtn.innerText = '📚✨ ¡Gracias por abrir un libro real!';
       shockBtn.disabled = true;
     });
   </script>
