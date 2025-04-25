@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-  <title>Triggui – Ritual Impactante</title>
+  <title>Triggui – Ritual Perfecto</title>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -14,29 +14,29 @@
       background: white;
       overflow: hidden;
     }
+
     body.dark { background: #000; }
 
     .main {
-      height: 100vh;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      height: 100vh;
     }
 
     .grid {
+      flex: 1;
       display: grid;
       grid-template-columns: 1fr 1fr;
       grid-template-rows: 1fr 1fr;
       gap: 2vw;
       padding: 2vw;
-      height: 80vh;
+      overflow-y: auto;
     }
 
     @media (orientation: landscape), (min-width: 768px) {
       .grid {
         grid-template-columns: repeat(4, 1fr);
         grid-template-rows: 1fr;
-        height: 80vh;
       }
     }
 
@@ -54,7 +54,7 @@
       background-size: cover;
       background-position: center;
       cursor: pointer;
-      transition: background 0.4s ease, transform 0.3s ease;
+      transition: all 0.3s ease;
     }
 
     .block-content {
@@ -70,16 +70,20 @@
     .label { z-index: 1; }
 
     .accionable {
-      background: radial-gradient(circle at center, #ffffffcc, #e0e0e0cc);
-      color: #111;
+      color: white;
       font-size: 1rem;
       font-weight: 600;
       padding: 16px;
       border-radius: 16px;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
       opacity: 0;
       animation: aparecer 0.6s forwards;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
     }
+
+    .bg1 { background: linear-gradient(135deg, #f6d365, #fda085); }
+    .bg2 { background: linear-gradient(135deg, #a1c4fd, #c2e9fb); }
+    .bg3 { background: linear-gradient(135deg, #fbc2eb, #a6c1ee); }
+    .bg4 { background: linear-gradient(135deg, #fddb92, #d1fdff); }
 
     .portada-wrapper img {
       width: 100%;
@@ -103,8 +107,9 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-end;
-      height: 20vh;
+      padding: 1vh;
+      min-height: 80px;
+      justify-content: center;
     }
 
     .shock {
@@ -112,45 +117,42 @@
       color: white;
       font-weight: bold;
       border: none;
-      border-radius: 28px;
-      padding: 10px 24px;
+      border-radius: 30px;
+      padding: 10px 22px;
       font-size: 1rem;
       cursor: pointer;
-      box-shadow: 0 4px 16px rgba(255, 140, 0, 0.5);
+      box-shadow: 0 4px 16px rgba(255, 140, 0, 0.4);
       animation: fadeIn 1s ease forwards;
-      margin-top: 10px;
+      margin-bottom: 6px;
     }
 
     .final-message {
       color: white;
       font-size: 1rem;
-      margin-top: 10px;
       text-align: center;
       opacity: 0.88;
     }
 
     #reiniciarBtn {
-      background: #fff2;
+      background: rgba(255,255,255,0.1);
       border: none;
-      font-size: 1.6rem;
-      margin-top: 8px;
-      padding: 8px 12px;
-      border-radius: 12px;
+      font-size: 1.5rem;
+      padding: 8px 14px;
+      border-radius: 14px;
       cursor: pointer;
       color: white;
-      backdrop-filter: blur(6px);
-      transition: background 0.3s;
+      backdrop-filter: blur(5px);
+      margin-top: 6px;
     }
 
     #reiniciarBtn:hover {
-      background: #fff4;
+      background: rgba(255,255,255,0.2);
     }
 
     .trigguiletras {
       height: 24px;
-      margin-top: 8px;
-      opacity: 0.88;
-      transition: opacity 0.3s ease;
+      opacity: 0.9;
+      transition: opacity 0.4s ease;
     }
 
     .hidden { display: none !important; }
@@ -169,7 +171,6 @@
 
 <script>
 const el = id => document.getElementById(id);
-
 const bloques = ["detente", "lee", "pregunta", "conecta"];
 const colores = [
   "linear-gradient(135deg, #ff4e50, #f9d423)",
@@ -180,35 +181,11 @@ const colores = [
 
 const libros = [
   {
-    portada: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1678027798i/123116666.jpg',
-    frases: [
-      "🚀 Construye sin pedir permiso.",
-      "💡 Innova donde otros repiten.",
-      "🌍 Empieza por ti, cambia el sistema."
-    ]
-  },
-  {
-    portada: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1606707026i/53138083.jpg',
-    frases: [
-      "🎯 Comienza desde el usuario.",
-      "🧠 Piensa con precisión matemática.",
-      "🔄 Elimina todo lo innecesario."
-    ]
-  },
-  {
     portada: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1573309166i/50033678.jpg',
     frases: [
-      "🎭 Entiende tus sombras y hazlas aliadas.",
-      "🧬 El poder nace del autoconocimiento.",
-      "👁️ Lo emocional es lo más racional."
-    ]
-  },
-  {
-    portada: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1604385988i/55729446.jpg',
-    frases: [
-      "🧘‍♂️ La atención es tu recurso más escaso.",
-      "🎯 Concéntrate como si fuera tu vida.",
-      "🚀 Avanza sin distracciones."
+      "🧠 El poder nace del autoconocimiento.",
+      "👁️ Lo emocional es lo más racional.",
+      "🎭 Entiende tus sombras y hazlas aliadas."
     ]
   }
 ];
@@ -219,21 +196,20 @@ function iniciarJuego() {
   const grid = el('gridContainer');
   const logo = el('logoTriggui');
   grid.innerHTML = '';
-  libroActual = libros[Math.floor(Math.random() * libros.length)];
+  libroActual = libros[0];
   bloquePortada = bloques[Math.floor(Math.random() * bloques.length)];
   revelado = false;
   logo.classList.remove("hidden");
-
-  let frases = [...libroActual.frases];
 
   bloques.forEach((nombre, i) => {
     const div = document.createElement('div');
     div.className = 'block';
     div.id = nombre;
     div.style.background = colores[i];
+    const bgClass = `bg${i+1}`;
     div.innerHTML = `
       <div class="block-content label">${nombre.toUpperCase()}</div>
-      <div class="block-content accionable hidden" id="${nombre}Text">${frases[i % frases.length]}</div>
+      <div class="block-content accionable hidden ${bgClass}" id="${nombre}Text">${libroActual.frases[i]}</div>
     `;
     div.onclick = () => manejarClick(nombre);
     grid.appendChild(div);
@@ -252,16 +228,17 @@ function manejarClick(nombre) {
 }
 
 function revelarTodo() {
-  bloques.forEach(nombre => {
-    const text = el(nombre + "Text");
+  bloques.forEach((nombre, i) => {
     const block = el(nombre);
+    const text = el(nombre + "Text");
+    block.querySelector(".label").classList.add("hidden");
     if (nombre === bloquePortada) {
       block.style.background = "none";
       text.innerHTML = `<img src="${libroActual.portada}" style="width:100%;border-radius:16px;">`;
     }
     text.classList.remove("hidden");
-    block.querySelector(".label").classList.add("hidden");
   });
+
   document.body.classList.add("dark");
   el("shockBtn").classList.remove("hidden");
   el("logoTriggui").classList.add("hidden");
