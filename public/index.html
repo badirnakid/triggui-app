@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-  <title>Triggui – Ritual Finalísimo</title>
+  <title>Triggui – Ritual Impactante</title>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -14,7 +14,6 @@
       background: white;
       overflow: hidden;
     }
-
     body.dark { background: #000; }
 
     .main {
@@ -30,14 +29,14 @@
       grid-template-rows: 1fr 1fr;
       gap: 2vw;
       padding: 2vw;
-      height: 78vh; /* 🔥 más espacio abajo para trigguiletras */
+      height: 80vh; /* 🔧 altura ideal, bloques grandes */
     }
 
     @media (orientation: landscape), (min-width: 768px) {
       .grid {
         grid-template-columns: repeat(4, 1fr);
         grid-template-rows: 1fr;
-        height: 78vh;
+        height: 80vh;
       }
     }
 
@@ -64,29 +63,32 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 12px;
+      padding: 14px;
       text-align: center;
     }
 
     .label { z-index: 1; }
 
     .accionable {
-      background: radial-gradient(circle at center, #ffffffee, #f0f0f0dd);
-      color: #111;
+      color: white;
       font-size: 1rem;
       font-weight: 600;
-      padding: 14px;
-      border-radius: 14px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      padding: 16px;
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
       opacity: 0;
       animation: aparecer 0.6s forwards;
     }
+
+    .bg-detente { background: linear-gradient(135deg, #fc466b, #3f5efb); }
+    .bg-lee     { background: linear-gradient(135deg, #ff9966, #ff5e62); }
+    .bg-pregunta { background: linear-gradient(135deg, #00c9ff, #92fe9d); }
+    .bg-conecta  { background: linear-gradient(135deg, #f2709c, #ff9472); }
 
     .portada-wrapper img {
       width: 100%;
       max-height: 100%;
       object-fit: contain;
-      border-radius: 16px;
       animation: flotar 8s ease-in-out infinite;
     }
 
@@ -105,7 +107,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-end;
-      height: 22vh;
+      height: 20vh;
     }
 
     .shock {
@@ -114,12 +116,12 @@
       font-weight: bold;
       border: none;
       border-radius: 28px;
-      padding: 10px 22px;
+      padding: 10px 24px;
       font-size: 1rem;
       cursor: pointer;
       box-shadow: 0 4px 16px rgba(255, 140, 0, 0.5);
       animation: fadeIn 1s ease forwards;
-      margin-top: 6px;
+      margin-top: 10px;
     }
 
     .final-message {
@@ -127,27 +129,31 @@
       font-size: 1rem;
       margin-top: 10px;
       text-align: center;
-      opacity: 0.85;
+      opacity: 0.88;
     }
 
     #reiniciarBtn {
-      background: none;
+      background: #fff2;
       border: none;
-      font-size: 2rem;
-      margin-top: 6px;
+      font-size: 1.6rem;
+      margin-top: 8px;
+      padding: 8px 12px;
+      border-radius: 12px;
       cursor: pointer;
       color: white;
-      opacity: 0.6;
+      backdrop-filter: blur(6px);
+      transition: background 0.3s;
     }
 
     #reiniciarBtn:hover {
-      opacity: 1;
+      background: #fff4;
     }
 
     .trigguiletras {
-      height: 22px;
-      margin-top: 6px;
-      opacity: 0.85;
+      height: 24px;
+      margin-top: 8px;
+      opacity: 0.88;
+      transition: opacity 0.3s ease;
     }
 
     .hidden { display: none !important; }
@@ -159,17 +165,17 @@
     <div class="footer">
       <button class="shock hidden" id="shockBtn">📚👊 Chócalas</button>
       <div class="final-message hidden" id="mensajeFinal">📖 Abre un libro y encuentra una verdad.</div>
-      <button id="reiniciarBtn" class="hidden">🔄</button>
-      <img src="/trigguiletras.png" class="trigguiletras" />
+      <button id="reiniciarBtn" class="hidden">↻</button>
+      <img src="/trigguiletras.png" class="trigguiletras" id="logoTriggui" />
     </div>
   </div>
 
 <script>
 const bloques = ["detente", "lee", "pregunta", "conecta"];
 const colores = [
-  "linear-gradient(135deg, #ff416c, #ff4b2b)",
-  "linear-gradient(135deg, #2193b0, #6dd5ed)",
-  "linear-gradient(135deg, #cc2b5e, #753a88)",
+  "linear-gradient(135deg, #ff4e50, #f9d423)",
+  "linear-gradient(135deg, #00c9ff, #92fe9d)",
+  "linear-gradient(135deg, #f2709c, #ff9472)",
   "linear-gradient(135deg, #43cea2, #185a9d)"
 ];
 
@@ -209,16 +215,18 @@ const libros = [
 ];
 
 let libroActual, bloquePortada, revelado = false;
-const el = id => document.getElementById(id);
+const el = id => document.getElementById;
 
 function iniciarJuego() {
   const grid = el('gridContainer');
+  const logo = el('logoTriggui');
   grid.innerHTML = '';
   libroActual = libros[Math.floor(Math.random() * libros.length)];
   bloquePortada = bloques[Math.floor(Math.random() * bloques.length)];
   revelado = false;
+  logo.classList.remove("hidden");
 
-  let frasesDisponibles = [...libroActual.frases];
+  let frases = [...libroActual.frases];
 
   bloques.forEach((nombre, i) => {
     const div = document.createElement('div');
@@ -227,50 +235,38 @@ function iniciarJuego() {
     div.style.background = colores[i];
     div.innerHTML = `
       <div class="block-content label">${nombre.toUpperCase()}</div>
-      <div class="block-content accionable hidden" id="${nombre}Text"></div>
+      <div class="block-content accionable hidden bg-${nombre}" id="${nombre}Text">${frases[i % frases.length]}</div>
     `;
-    div.onclick = () => manejarClick(nombre, i);
+    div.onclick = () => manejarClick(nombre);
     grid.appendChild(div);
-  });
-
-  // Guardar frases por bloque
-  bloques.forEach((bloque, i) => {
-    const frase = frasesDisponibles[i % frasesDisponibles.length];
-    document.getElementById(bloque + "Text").dataset.frase = frase;
   });
 }
 
-function manejarClick(nombre, index) {
-  if (revelado) {
-    location.reload();
-  } else if (nombre === bloquePortada) {
+function manejarClick(nombre) {
+  if (revelado) return location.reload();
+  if (nombre === bloquePortada) {
     revelarTodo();
   } else {
-    const txt = document.getElementById(nombre + "Text");
-    txt.textContent = txt.dataset.frase;
-    txt.classList.remove("hidden");
-    document.getElementById(nombre).querySelector(".label").classList.add("hidden");
+    const text = el(nombre + "Text");
+    text.classList.remove("hidden");
+    el(nombre).querySelector(".label").classList.add("hidden");
   }
 }
 
 function revelarTodo() {
-  bloques.forEach((bloque, i) => {
-    const block = document.getElementById(bloque);
-    const txt = document.getElementById(bloque + "Text");
-    block.querySelector(".label").classList.add("hidden");
-
-    if (bloque === bloquePortada) {
+  bloques.forEach(nombre => {
+    const text = el(nombre + "Text");
+    const block = el(nombre);
+    if (nombre === bloquePortada) {
       block.style.background = "none";
-      txt.innerHTML = `<img src="${libroActual.portada}" style="width:100%;border-radius:16px;">`;
-    } else {
-      txt.textContent = txt.dataset.frase;
+      text.innerHTML = `<img src="${libroActual.portada}" style="width:100%;border-radius:18px;">`;
     }
-
-    txt.classList.remove("hidden");
+    text.classList.remove("hidden");
+    block.querySelector(".label").classList.add("hidden");
   });
-
   document.body.classList.add("dark");
   el("shockBtn").classList.remove("hidden");
+  el("logoTriggui").classList.add("hidden");
   revelado = true;
 }
 
