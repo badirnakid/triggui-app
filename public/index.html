@@ -2,71 +2,53 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-  <title>TrigguiApp</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Triggui App</title>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
     html, body {
+      width: 100%;
       height: 100%;
       font-family: 'Archivo', sans-serif;
-      background: linear-gradient(135deg, #0d0e1a, #1e1f2a);
-      animation: bgFlow 20s infinite alternate;
-      color: white;
+      background: white;
+      overflow: hidden;
     }
+    body.dark { background: #000; }
 
-    @keyframes bgFlow {
-      0% { background: linear-gradient(135deg, #0d0e1a, #1e1f2a); }
-      50% { background: linear-gradient(135deg, #2c3e50, #4ca1af); }
-      100% { background: linear-gradient(135deg, #0d0e1a, #1e1f2a); }
-    }
-
-    body.dark {
-      background: #000;
-    }
-
-    .main {
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
+    .main { height: 100dvh; display: flex; flex-direction: column; }
 
     .grid {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 2vh;
-      padding: 2vh;
-      flex-grow: 1;
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 2vw;
+      padding: 2vw;
     }
 
-    @media (min-width: 768px) {
+    @media (orientation: landscape), (min-width: 768px) {
       .grid {
-        flex-direction: row;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: 1fr;
       }
     }
 
     .block {
-      flex: 1;
-      min-height: 36vh;
-      border-radius: 16px;
-      font-weight: 600;
-      font-size: 1.1rem;
       display: flex;
       justify-content: center;
       align-items: center;
+      text-align: center;
+      border-radius: 16px;
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: white;
       position: relative;
       overflow: hidden;
-      color: white;
-      cursor: pointer;
       background-size: cover;
       background-position: center;
-      transition: background 0.5s ease;
-    }
-
-    .block.clear {
-      background: none !important;
+      cursor: pointer;
+      transition: all 0.3s ease;
     }
 
     .block-content {
@@ -75,223 +57,205 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 16px;
+      padding: 14px;
       text-align: center;
     }
 
-    .accionables {
-      background: rgba(255,255,255,0.93);
-      color: #111;
-      flex-direction: column;
+    .label { z-index: 1; }
+
+    .accionable {
+      color: white;
       font-size: 1rem;
-      font-weight: 500;
-    }
-
-    .accionables span {
-      display: block;
-      margin: 6px 0;
+      font-weight: 600;
+      padding: 16px;
+      border-radius: 16px;
       opacity: 0;
-      transform: scale(0.9);
-      animation: burstIn 0.6s ease forwards;
+      animation: aparecer 0.6s forwards;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
     }
 
-    @keyframes burstIn {
-      0% { opacity: 0; transform: scale(0.6) translateY(10px); filter: blur(2px); }
-      50% { opacity: 0.8; transform: scale(1.05) translateY(-4px); filter: blur(0); }
-      100% { opacity: 1; transform: scale(1) translateY(0); }
-    }
+    .bg1 { background: linear-gradient(135deg, #ff6a00, #ee0979); }
+    .bg2 { background: linear-gradient(135deg, #00c3ff, #ffff1c); }
+    .bg3 { background: linear-gradient(135deg, #fc466b, #3f5efb); }
+    .bg4 { background: linear-gradient(135deg, #8e2de2, #4a00e0); }
 
-    .portada-wrapper img {
-      max-height: 92%;
-      max-width: 92%;
+    .portada-img {
+      width: 100%;
+      height: 100%;
       object-fit: contain;
-      border-radius: 14px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-      animation: floatBook 6s ease-in-out infinite;
+      animation: flotar 8s ease-in-out infinite;
+      border-radius: 16px;
     }
 
-    @keyframes floatBook {
-      0%, 100% { transform: scale(1) translateY(0); }
-      50% { transform: scale(1.03) translateY(-6px); }
+    @keyframes flotar {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    @keyframes aparecer {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
     }
 
     .footer {
-      height: 18vh;
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
-      gap: 1vh;
       padding: 1vh;
+      min-height: 80px;
+      justify-content: center;
     }
 
     .shock {
-      background: linear-gradient(to right, #FDC830, #F37335);
+      background: linear-gradient(135deg, #ff6a00, #ffb347);
       color: white;
       font-weight: bold;
       border: none;
-      border-radius: 28px;
+      border-radius: 30px;
       padding: 10px 22px;
-      font-size: 0.9rem;
+      font-size: 1rem;
       cursor: pointer;
-      box-shadow: 0 0 12px rgba(255, 200, 100, 0.6);
-      visibility: hidden;
-      opacity: 0;
-      transform: scale(0.9);
-      transition: all 0.5s ease;
+      box-shadow: 0 4px 16px rgba(255, 140, 0, 0.4);
+      animation: fadeIn 1s ease forwards;
+      margin-bottom: 6px;
     }
 
-    .shock.visible {
-      visibility: visible;
-      opacity: 1;
-      transform: scale(1);
-      animation: pulse 1.6s ease-in-out infinite;
+    .final-message {
+      color: white;
+      font-size: 1rem;
+      text-align: center;
+      opacity: 0.88;
     }
 
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); box-shadow: 0 0 12px rgba(255, 200, 100, 0.6); }
-      50% { transform: scale(1.08); box-shadow: 0 0 16px rgba(255, 255, 140, 0.9); }
+    #reiniciarBtn {
+      background: rgba(255,255,255,0.1);
+      border: none;
+      font-size: 1.5rem;
+      padding: 8px 14px;
+      border-radius: 14px;
+      cursor: pointer;
+      color: white;
+      backdrop-filter: blur(5px);
+      margin-top: 6px;
+    }
+
+    #reiniciarBtn:hover {
+      background: rgba(255,255,255,0.2);
     }
 
     .trigguiletras {
-      height: 22px;
+      height: 24px;
       opacity: 0.9;
+      transition: opacity 0.4s ease;
     }
 
     .hidden { display: none !important; }
   </style>
 </head>
+
 <body>
-
   <div class="main">
-    <div class="grid">
-      <div class="block" id="detente" style="background: linear-gradient(135deg, #f2709c, #ff9472);">
-        <div class="block-content label" id="detenteLabel">Detente</div>
-        <div class="block-content accionables hidden" id="accionablesText"></div>
-      </div>
-
-      <div class="block" id="lee" style="background: linear-gradient(135deg, #00c9ff, #92fe9d);">
-        <div class="block-content label" id="leeLabel">Lee</div>
-        <div class="block-content portada-wrapper hidden" id="leeCover">
-          <img id="leeImg" src="" alt="portada del libro">
-        </div>
-      </div>
-    </div>
-
+    <div class="grid" id="gridContainer"></div>
     <div class="footer">
-      <button class="shock" id="shockBtn">📚👊 Chócalas por leer un libro físico</button>
-      <img src="/trigguiletras.png" class="trigguiletras" />
+      <button class="shock hidden" id="shockBtn">📚👊 ¡Chócalas!</button>
+      <div class="final-message hidden" id="mensajeFinal">📖 ¿Listo para abrir un libro físico?</div>
+      <button id="reiniciarBtn" class="hidden">↻</button>
+      <img src="/trigguiletras.png" class="trigguiletras" id="logoTriggui" />
     </div>
   </div>
 
-  <script>
-    const libros = [
-      {
-        portada: 'https://m.media-amazon.com/images/I/91bYsX41DVL.jpg',
-        accionables: ["🔁 Mejora 1% diario", "🧱 Crea sistemas, no metas", "🧠 Identidad guía el hábito"]
-      },
-      {
-        portada: 'https://m.media-amazon.com/images/I/71QKQ9mwV7L.jpg',
-        accionables: ["🧘‍♂️ No todo importa", "💩 Ignora con intención", "🔥 Sé brutalmente honesto"]
-      },
-      {
-        portada: 'https://m.media-amazon.com/images/I/81LdLpv8mJL.jpg',
-        accionables: ["💪 No te rindas antes de empezar", "🛡️ Expón tus miedos al rechazo", "💬 Pide lo imposible"]
-      }
-    ];
+<script>
+const el = id => document.getElementById(id);
+const bloques = ["detente", "lee", "pregunta", "conecta"];
+const colores = ["bg1", "bg2", "bg3", "bg4"];
+const libros = [
+  {
+    portada: 'https://m.media-amazon.com/images/I/91bYsX41DVL.jpg',
+    frases: [
+      "🔁 Mejora 1% diario",
+      "🧱 Crea sistemas, no metas",
+      "🧠 Identidad guía el hábito",
+      "🕒 La constancia vence al talento"
+    ]
+  }
+];
 
-    let libroActual = null;
-    let detenteOpen = false;
-    let leeOpen = false;
+let libroActual, bloquePortada, revelado = false;
 
-    const detente = document.getElementById('detente');
-    const accionablesText = document.getElementById('accionablesText');
-    const detenteLabel = document.getElementById('detenteLabel');
-    const lee = document.getElementById('lee');
-    const leeLabel = document.getElementById('leeLabel');
-    const leeCover = document.getElementById('leeCover');
-    const leeImg = document.getElementById('leeImg');
-    const shockBtn = document.getElementById('shockBtn');
+function iniciarJuego() {
+  const grid = el('gridContainer');
+  const logo = el('logoTriggui');
+  grid.innerHTML = '';
+  libroActual = libros[0];
+  bloquePortada = bloques[Math.floor(Math.random() * bloques.length)];
+  revelado = false;
+  logo.classList.remove("hidden");
 
-    function seleccionarNuevoLibro() {
-      libroActual = libros[Math.floor(Math.random() * libros.length)];
+  bloques.forEach((nombre, i) => {
+    const div = document.createElement('div');
+    div.className = `block ${colores[i]}`;
+    div.id = nombre;
+    div.innerHTML = `
+      <div class="block-content label">${nombre.toUpperCase()}</div>
+      <div class="block-content accionable hidden" id="${nombre}Text">${libroActual.frases[i]}</div>
+    `;
+    div.onclick = () => manejarClick(nombre);
+    grid.appendChild(div);
+  });
+}
+
+function manejarClick(nombre) {
+  if (revelado) return location.reload();
+  if (nombre === bloquePortada) {
+    revelarTodo();
+  } else {
+    const text = el(nombre + "Text");
+    if (text) {
+      text.classList.remove("hidden");
+      el(nombre).querySelector(".label").classList.add("hidden");
     }
+  }
+}
 
-    function mostrarContenido() {
-      seleccionarNuevoLibro();
+function revelarTodo() {
+  bloques.forEach(nombre => {
+    const block = el(nombre);
+    const label = block.querySelector(".label");
+    const text = el(nombre + "Text");
 
-      accionablesText.innerHTML = '';
-      libroActual.accionables.forEach((frase, i) => {
-        const span = document.createElement('span');
-        span.textContent = frase;
-        span.style.animationDelay = `${i * 0.3}s`;
-        accionablesText.appendChild(span);
-      });
+    if (nombre === bloquePortada) {
+      block.innerHTML = '';
+      block.style.background = "none";
+      block.style.padding = "0";
+      block.style.borderRadius = "16px";
+      block.style.overflow = "hidden";
 
-      leeImg.src = libroActual.portada;
-
-      accionablesText.classList.remove('hidden');
-      detenteLabel.classList.add('hidden');
-      leeCover.classList.remove('hidden');
-      leeLabel.classList.add('hidden');
-
-      detente.classList.add('clear');
-      lee.classList.add('clear');
-      document.body.classList.add('dark');
-
-      detenteOpen = true;
-      leeOpen = true;
-
-      setTimeout(() => {
-        if (detenteOpen && leeOpen) {
-          shockBtn.classList.add('visible');
-        }
-      }, 3000);
+      const img = document.createElement("img");
+      img.src = libroActual.portada;
+      img.alt = "Portada del libro";
+      img.className = "portada-img";
+      block.appendChild(img);
+    } else {
+      if (text) text.classList.remove("hidden");
+      if (label) label.classList.add("hidden");
     }
+  });
 
-    function ocultarDetente() {
-      accionablesText.classList.add('hidden');
-      detenteLabel.classList.remove('hidden');
-      detente.classList.remove('clear');
-      detenteOpen = false;
-      verificarCerrarFondo();
-    }
+  document.body.classList.add("dark");
+  el("shockBtn").classList.remove("hidden");
+  el("logoTriggui").classList.add("hidden");
+  revelado = true;
+}
 
-    function ocultarLee() {
-      leeCover.classList.add('hidden');
-      leeLabel.classList.remove('hidden');
-      lee.classList.remove('clear');
-      leeOpen = false;
-      verificarCerrarFondo();
-    }
+el("shockBtn").onclick = () => {
+  el("shockBtn").classList.add("hidden");
+  el("mensajeFinal").classList.remove("hidden");
+  el("reiniciarBtn").classList.remove("hidden");
+};
 
-    function verificarCerrarFondo() {
-      if (!detenteOpen && !leeOpen) {
-        document.body.classList.remove('dark');
-        shockBtn.classList.remove('visible');
-      }
-    }
+el("reiniciarBtn").onclick = () => location.reload();
 
-    detente.addEventListener('click', () => {
-      if (!detenteOpen || !leeOpen) {
-        mostrarContenido();
-      } else {
-        ocultarDetente();
-      }
-    });
-
-    lee.addEventListener('click', () => {
-      if (!leeOpen || !detenteOpen) {
-        mostrarContenido();
-      } else {
-        ocultarLee();
-      }
-    });
-
-    shockBtn.addEventListener('click', () => {
-      shockBtn.innerText = '📚✨ ¡Gracias por abrir un libro real!';
-      shockBtn.disabled = true;
-    });
-  </script>
+iniciarJuego();
+</script>
 </body>
 </html>
