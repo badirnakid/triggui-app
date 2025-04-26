@@ -36,7 +36,7 @@
       text-align: center;
       border-radius: 16px;
       font-weight: bold;
-      font-size: 1.5rem;
+      font-size: 1.1rem; /* Ajustado para no desbordar */
       color: white;
       background-size: cover;
       background-position: center;
@@ -47,6 +47,7 @@
       opacity: 0;
       animation: scaleFadeIn 1.6s forwards;
       position: relative;
+      padding: 10px;
     }
     @keyframes scaleFadeIn { to { transform: scale(1); opacity: 1; } }
     .block-content {
@@ -99,7 +100,7 @@
       justify-content: center;
     }
     .shock {
-      background: linear-gradient(135deg, #ff6a00, #ffb347); /* Color se actualiza dinámicamente */
+      background: linear-gradient(135deg, #ff6a00, #ffb347);
       color: white;
       font-weight: bold;
       border: none;
@@ -129,7 +130,6 @@
       transition: opacity 0.4s ease;
     }
     .hidden { display: none !important; }
-    /* Gradientes de fondo bloques */
     .bg1 { background: linear-gradient(135deg, #ff7e5f, #feb47b); }
     .bg2 { background: linear-gradient(135deg, #43cea2, #185a9d); }
     .bg3 { background: linear-gradient(135deg, #8e2de2, #4a00e0); }
@@ -160,14 +160,59 @@ const colores = ["bg1", "bg2", "bg3", "bg4"];
 
 const libros = [
   {
-    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1678027798i/123116666.jpg",
+    titulo: "Los hábitos secretos de los genios",
+    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1642726660i/60171734.jpg",
+    fondo: "#140038",
     frases: [
-      "🌬️ Haz una pausa interna y siente tu espacio vacío.",
-      "🔍 Atrévete a abrir una puerta que nunca has cruzado.",
-      "🧠 Permítete cuestionarlo todo, sin miedo.",
-      "💓 Vibra con todo lo que ya habita en ti."
-    ],
-    fondo: "#140038"
+      "🌬️ Tómate un momento para observar el vacío.",
+      "🔍 Encuentra una chispa nueva en tu curiosidad.",
+      "🧠 Reflexiona en qué puedes mejorar hoy.",
+      "💓 Siente la grandeza que ya habita en ti."
+    ]
+  },
+  {
+    titulo: "Think Again",
+    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1602574232i/55539565.jpg",
+    fondo: "#001a33",
+    frases: [
+      "🌬️ Deja ir lo que creías cierto.",
+      "🔍 Abre una nueva pregunta interna.",
+      "🧠 Reflexiona sobre una idea que merece ser reescrita.",
+      "💓 Siente la libertad del desaprendizaje."
+    ]
+  },
+  {
+    titulo: "Crea",
+    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1662270336i/62237986.jpg",
+    fondo: "#33001a",
+    frases: [
+      "🌬️ Da espacio al caos creativo.",
+      "🔍 Descubre la magia de construir algo tuyo.",
+      "🧠 Reflexiona sobre lo que puedes crear hoy.",
+      "💓 Siente el impulso de hacer algo real."
+    ]
+  },
+  {
+    titulo: "Good to Great",
+    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1546097703i/76865.jpg",
+    fondo: "#003300",
+    frases: [
+      "🌬️ Haz una pausa y pregúntate: ¿puedo ser mejor?",
+      "🔍 Explora tu siguiente nivel de disciplina.",
+      "🧠 Reflexiona en tu visión a largo plazo.",
+      "💓 Siente la energía de dar el salto."
+    ]
+  },
+  {
+    titulo: "When",
+    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1544822311i/43163538.jpg",
+    fondo: "#333300",
+    frases: [
+      "🌬️ Escucha el ritmo natural de tu día.",
+      "🔍 Descubre tu mejor hora para actuar.",
+      "🧠 Reflexiona cuándo tomas tus mejores decisiones.",
+      "💓 Siente el flujo de tu mejor momento."
+    ]
   }
 ];
 
@@ -177,7 +222,7 @@ function iniciarJuego() {
   const grid = el('gridContainer');
   const logo = el('logoTriggui');
   grid.innerHTML = '';
-  libroActual = libros[0];
+  libroActual = libros[Math.floor(Math.random() * libros.length)];
   bloquePortada = Math.floor(Math.random() * 4);
   revelado = false;
   logo.classList.remove("hidden");
@@ -193,11 +238,6 @@ function iniciarJuego() {
     `;
     div.onclick = () => manejarClick(i);
     grid.appendChild(div);
-
-    // Asignar el color del primer bloque al botón "shock"
-    if (i === 0) {
-      document.querySelector('.shock').style.background = window.getComputedStyle(div).backgroundImage;
-    }
   });
 }
 
