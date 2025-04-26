@@ -14,6 +14,7 @@
       background: linear-gradient(135deg, #0d0e1a, #1a1c2d);
       overflow: hidden;
       transition: background 1s ease;
+      perspective: 1200px;
     }
     body.dark { background: #000; }
     .main { height: 100dvh; display: flex; flex-direction: column; opacity: 0; animation: fadeIn 1.6s ease forwards; }
@@ -36,7 +37,7 @@
       text-align: center;
       border-radius: 16px;
       font-weight: bold;
-      font-size: 1.1rem; /* Ajustado para no desbordar */
+      font-size: 1.1rem;
       color: white;
       background-size: cover;
       background-position: center;
@@ -77,8 +78,9 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      animation: flotar 8s ease-in-out infinite;
+      animation: flotar 8s ease-in-out infinite alternate;
       background: transparent;
+      transform-style: preserve-3d;
     }
     .portada-wrapper img {
       width: 88%;
@@ -87,10 +89,16 @@
       aspect-ratio: 2/3;
       border-radius: 22px;
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-      transition: transform 0.4s ease;
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+      animation: giro3D 10s infinite alternate ease-in-out;
     }
-    .portada-wrapper img:hover { transform: scale(1.02); }
     @keyframes flotar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    @keyframes giro3D {
+      0% { transform: rotateY(0deg) rotateX(0deg); }
+      50% { transform: rotateY(8deg) rotateX(4deg); }
+      100% { transform: rotateY(0deg) rotateX(0deg); }
+    }
     .footer {
       display: flex;
       flex-direction: column;
@@ -111,7 +119,6 @@
       box-shadow: 0 0 18px rgba(255, 175, 95, 0.6);
       margin-bottom: 6px;
       animation: pulse 2s infinite;
-      transition: background 0.6s ease, box-shadow 0.6s ease;
     }
     @keyframes pulse {
       0%, 100% { transform: scale(1); }
@@ -164,10 +171,10 @@ const libros = [
     portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1642726660i/60171734.jpg",
     fondo: "#140038",
     frases: [
-      "🌬️ Tómate un momento para observar el vacío.",
-      "🔍 Encuentra una chispa nueva en tu curiosidad.",
-      "🧠 Reflexiona en qué puedes mejorar hoy.",
-      "💓 Siente la grandeza que ya habita en ti."
+      "🌬️ Observa el vacío que te impulsa.",
+      "🔍 Encuentra una chispa nueva.",
+      "🧠 Reflexiona en qué puedes mejorar.",
+      "💓 Siente la grandeza en ti."
     ]
   },
   {
@@ -175,10 +182,10 @@ const libros = [
     portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1602574232i/55539565.jpg",
     fondo: "#001a33",
     frases: [
-      "🌬️ Deja ir lo que creías cierto.",
-      "🔍 Abre una nueva pregunta interna.",
-      "🧠 Reflexiona sobre una idea que merece ser reescrita.",
-      "💓 Siente la libertad del desaprendizaje."
+      "🌬️ Deja ir certezas viejas.",
+      "🔍 Abre tu curiosidad.",
+      "🧠 Cuestiona tu verdad.",
+      "💓 Siente la libertad."
     ]
   },
   {
@@ -186,10 +193,10 @@ const libros = [
     portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1662270336i/62237986.jpg",
     fondo: "#33001a",
     frases: [
-      "🌬️ Da espacio al caos creativo.",
-      "🔍 Descubre la magia de construir algo tuyo.",
-      "🧠 Reflexiona sobre lo que puedes crear hoy.",
-      "💓 Siente el impulso de hacer algo real."
+      "🌬️ Crea desde el silencio.",
+      "🔍 Inspírate en lo pequeño.",
+      "🧠 Deja que fluya la idea.",
+      "💓 Siente tu poder creador."
     ]
   },
   {
@@ -197,10 +204,10 @@ const libros = [
     portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1546097703i/76865.jpg",
     fondo: "#003300",
     frases: [
-      "🌬️ Haz una pausa y pregúntate: ¿puedo ser mejor?",
-      "🔍 Explora tu siguiente nivel de disciplina.",
-      "🧠 Reflexiona en tu visión a largo plazo.",
-      "💓 Siente la energía de dar el salto."
+      "🌬️ Pausa para mejorar.",
+      "🔍 Encuentra tu diferenciador.",
+      "🧠 Piensa a largo plazo.",
+      "💓 Siente tu grandeza."
     ]
   },
   {
@@ -208,10 +215,10 @@ const libros = [
     portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1544822311i/43163538.jpg",
     fondo: "#333300",
     frases: [
-      "🌬️ Escucha el ritmo natural de tu día.",
-      "🔍 Descubre tu mejor hora para actuar.",
-      "🧠 Reflexiona cuándo tomas tus mejores decisiones.",
-      "💓 Siente el flujo de tu mejor momento."
+      "🌬️ Escucha tu tiempo natural.",
+      "🔍 Actúa en tu mejor momento.",
+      "🧠 Planea tus mejores decisiones.",
+      "💓 Sigue el flujo perfecto."
     ]
   }
 ];
@@ -222,6 +229,7 @@ function iniciarJuego() {
   const grid = el('gridContainer');
   const logo = el('logoTriggui');
   grid.innerHTML = '';
+  
   libroActual = libros[Math.floor(Math.random() * libros.length)];
   bloquePortada = Math.floor(Math.random() * 4);
   revelado = false;
