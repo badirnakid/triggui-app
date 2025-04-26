@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>TrigguiApp – Tu portal de pausa</title>
+  <title>TrigguiApp – Tu Portal de Pausa</title>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&display=swap" rel="stylesheet" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -12,13 +12,18 @@
       height: 100%;
       font-family: 'Archivo', sans-serif;
       background: linear-gradient(135deg, #0d0e1a, #1a1c2d);
-      color: #e6e6ea;
       overflow: hidden;
       transition: background 1s ease;
     }
     body.dark { background: #000; }
 
-    .main { height: 100dvh; display: flex; flex-direction: column; opacity: 0; animation: fadeIn 1.6s ease forwards; }
+    .main {
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      animation: fadeIn 1.6s ease forwards;
+    }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
@@ -33,6 +38,7 @@
       gap: 2vw;
       padding: 2vw;
     }
+
     @media (orientation: landscape), (min-width: 768px) {
       .grid {
         grid-template-columns: repeat(4, 1fr);
@@ -49,7 +55,6 @@
       font-weight: bold;
       font-size: 1.2rem;
       color: white;
-      position: relative;
       background-size: cover;
       background-position: center;
       cursor: pointer;
@@ -58,7 +63,9 @@
       transform: scale(0.8);
       opacity: 0;
       animation: scaleFadeIn 1.6s forwards;
+      position: relative;
     }
+
     @keyframes scaleFadeIn {
       to { transform: scale(1); opacity: 1; }
     }
@@ -86,10 +93,10 @@
       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
     }
 
-    .bg1 { background: linear-gradient(135deg, #ff6a00, #ee0979); }
-    .bg2 { background: linear-gradient(135deg, #00c3ff, #ffff1c); }
-    .bg3 { background: linear-gradient(135deg, #fc466b, #3f5efb); }
-    .bg4 { background: linear-gradient(135deg, #8e2de2, #4a00e0); }
+    .bg1 { background: linear-gradient(135deg, #ff7e5f, #feb47b); }
+    .bg2 { background: linear-gradient(135deg, #6a11cb, #2575fc); }
+    .bg3 { background: linear-gradient(135deg, #43cea2, #185a9d); }
+    .bg4 { background: linear-gradient(135deg, #ee9ca7, #ffdde1); }
 
     .portada-wrapper {
       width: 100%;
@@ -107,9 +114,9 @@
       aspect-ratio: 2/3;
       border-radius: 22px;
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-      display: block;
       transition: transform 0.4s ease;
     }
+
     .portada-wrapper img:hover {
       transform: scale(1.02);
     }
@@ -181,52 +188,36 @@
 </head>
 
 <body>
-  <div class="main">
-    <div class="grid" id="gridContainer"></div>
-    <div class="footer">
-      <button class="shock hidden" id="shockBtn">📚👊 ¡Chócalas!</button>
-      <div class="final-message hidden" id="mensajeFinal">📖 ¿Listo para abrir un libro físico?</div>
-      <button id="reiniciarBtn" class="hidden">↻</button>
-      <img src="/trigguiletras.png" class="trigguiletras" id="logoTriggui" />
-    </div>
+<div class="main">
+  <div class="grid" id="gridContainer"></div>
+  <div class="footer">
+    <button class="shock hidden" id="shockBtn">📚👊 ¡Chócalas!</button>
+    <div class="final-message hidden" id="mensajeFinal">📖 ¿Listo para abrir un libro físico?</div>
+    <button id="reiniciarBtn" class="hidden">↻</button>
+    <img src="/trigguiletras.png" class="trigguiletras" id="logoTriggui" />
   </div>
+</div>
 
 <script>
 const el = id => document.getElementById(id);
-const bloques = ["detente", "lee", "pregunta", "conecta"];
-const colores = ["bg1", "bg2", "bg3", "bg4"];
 
-const hora = new Date().getHours();
-let libroIndex = 0;
-if (hora >= 6 && hora < 12) libroIndex = 1; // Mañana
-else if (hora >= 12 && hora < 18) libroIndex = 3; // Tarde
-else if (hora >= 18 && hora < 24) libroIndex = 2; // Noche
-else libroIndex = 0; // Madrugada
+const bloques = ["pausa", "descubre", "reflexiona", "siente"];
+const colores = ["bg1", "bg2", "bg3", "bg4"];
+const accionables = [
+  "🌬️ Inhala profundo 4 segundos... Retén 4... Exhala 4...",
+  "📖 Cada página es una puerta que podrías abrir hoy.",
+  "❓¿Qué cambiaría en tu vida si entendieras algo nuevo hoy?",
+  "💓 Imagina que ya eres quien siempre has querido ser."
+];
 
 const libros = [
   {
     portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1678027798i/123116666.jpg",
-    fondo: "#140038",
-    frases: ["🚀 Aprende de los errores temprano", "🧠 Piensa como un fundador", "⚙️ Construye lo que nadie ve aún", "📈 Escala con mentalidad brutal"]
-  },
-  {
-    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1606707026i/53138083.jpg",
-    fondo: "#001f3f",
-    frases: ["🔍 Enfócate en el cliente", "📊 Mide lo correcto", "🧱 Construye hacia atrás", "🚪 Di 'no' a lo que distrae"]
-  },
-  {
-    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1573309166i/50033678.jpg",
-    fondo: "#111111",
-    frases: ["🧠 Conoce la naturaleza humana", "🎭 Domina tus impulsos", "👁️ Lee a las personas", "🔓 Descifra el poder real"]
-  },
-  {
-    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1604385988i/55729446.jpg",
-    fondo: "#003300",
-    frases: ["🎯 Elimina distracciones", "🌿 Cultiva presencia profunda", "🧘‍♂️ Un foco = mil logros", "🔕 Apaga el ruido del mundo"]
+    fondo: "#140038"
   }
 ];
 
-let libroActual = libros[libroIndex];
+let libroActual = libros[0];
 let bloquePortada, revelado = false;
 
 function iniciarJuego() {
@@ -242,8 +233,8 @@ function iniciarJuego() {
     div.className = `block ${colores[i]}`;
     div.id = nombre;
     div.innerHTML = `
-      <div class="block-content label">${nombre.toUpperCase()}</div>
-      <div class="block-content accionable hidden" id="${nombre}Text">${libroActual.frases[i]}</div>
+      <div class="block-content label">${nombre.charAt(0).toUpperCase() + nombre.slice(1)}</div>
+      <div class="block-content accionable hidden" id="${nombre}Text">${accionables[i]}</div>
     `;
     div.onclick = () => manejarClick(nombre);
     grid.appendChild(div);
@@ -266,14 +257,8 @@ function manejarClick(nombre) {
 function revelarTodo() {
   bloques.forEach(nombre => {
     const block = el(nombre);
-    const label = block.querySelector(".label");
-    const text = el(nombre + "Text");
-
+    block.innerHTML = '';
     if (nombre === bloquePortada) {
-      block.innerHTML = '';
-      block.style.background = "none";
-      block.style.padding = "0";
-
       const wrapper = document.createElement("div");
       wrapper.className = "portada-wrapper";
 
@@ -284,8 +269,8 @@ function revelarTodo() {
       wrapper.appendChild(img);
       block.appendChild(wrapper);
     } else {
+      const text = el(nombre + "Text");
       if (text) text.classList.remove("hidden");
-      if (label) label.classList.add("hidden");
     }
   });
 
