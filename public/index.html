@@ -27,10 +27,7 @@
       padding: 2vw;
     }
     @media (orientation: landscape), (min-width: 768px) {
-      .grid {
-        grid-template-columns: repeat(4, 1fr);
-        grid-template-rows: 1fr;
-      }
+      .grid { grid-template-columns: repeat(4, 1fr); grid-template-rows: 1fr; }
     }
     .block {
       display: flex;
@@ -72,10 +69,7 @@
       animation: aparecer 0.6s forwards;
       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
     }
-    .bg1 { background: linear-gradient(135deg, #ff7e5f, #feb47b); }
-    .bg2 { background: linear-gradient(135deg, #6a11cb, #2575fc); }
-    .bg3 { background: linear-gradient(135deg, #43cea2, #185a9d); }
-    .bg4 { background: linear-gradient(135deg, #ee9ca7, #ffdde1); }
+    @keyframes aparecer { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
     .portada-wrapper {
       width: 100%;
       height: 100%;
@@ -96,8 +90,14 @@
     }
     .portada-wrapper img:hover { transform: scale(1.02); }
     @keyframes flotar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-    @keyframes aparecer { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-    .footer { display: flex; flex-direction: column; align-items: center; padding: 1vh; min-height: 80px; justify-content: center; }
+    .footer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1vh;
+      min-height: 80px;
+      justify-content: center;
+    }
     .shock {
       background: linear-gradient(135deg, #ff6a00, #ffb347);
       color: white;
@@ -143,69 +143,25 @@
 <script>
 const el = id => document.getElementById(id);
 
-const bloques = ["pausa", "descubre", "reflexiona", "siente"];
+// Opciones aleatorias para textos y colores de los botones
+const nombresBloques = [
+  ["Pausa", "Respira", "Detente", "Vacía", "Fluye"],
+  ["Descubre", "Explora", "Lee", "Observa", "Inspírate"],
+  ["Reflexiona", "Actúa", "Muévete", "Sorpréndete", "Transforma"],
+  ["Siente", "Conecta", "Abraza", "Disfruta", "Vibra"]
+];
 const colores = ["bg1", "bg2", "bg3", "bg4"];
 
 const libros = [
   {
-    titulo: "Los hábitos secretos de los genios",
-    autor: "Craig Wright",
-    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1642726660i/60171734.jpg",
-    fondo: "#140038",
-    accionables: {
-      pausa: "🌬️ Pausa y permite que la curiosidad florezca en el silencio.",
-      descubre: "🔍 Descubre un hábito invisible que alimente tu talento oculto.",
-      reflexiona: "🧠 Reflexiona sobre qué pequeña obsesión puede elevar tu vida.",
-      siente: "💓 Siente la chispa de tu genialidad despertándose ahora."
-    }
-  },
-  {
-    titulo: "Think Again",
-    autor: "Adam Grant",
-    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1602574232i/55539565.jpg",
-    fondo: "#001a33",
-    accionables: {
-      pausa: "🌬️ Pausa tus certezas. En el vacío surge la sabiduría real.",
-      descubre: "🔍 Descubre lo que aún no sabes que no sabes.",
-      reflexiona: "🧠 Reflexiona: ¿qué puedes desaprender hoy para crecer?",
-      siente: "💓 Siente la ligereza de soltar una verdad caduca."
-    }
-  },
-  {
-    titulo: "Crea",
-    autor: "Tony Fadell",
-    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1662270336i/62237986.jpg",
-    fondo: "#33001a",
-    accionables: {
-      pausa: "🌬️ Pausa el juicio interno. El primer boceto no es el final.",
-      descubre: "🔍 Descubre que construir es más poderoso que opinar.",
-      reflexiona: "🧠 Reflexiona: ¿qué mundo alternativo puedes diseñar hoy?",
-      siente: "💓 Siente la vida brotar mientras haces, no mientras planeas."
-    }
-  },
-  {
-    titulo: "Good to Great",
-    autor: "Jim Collins",
-    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1546097703i/76865.jpg",
-    fondo: "#003300",
-    accionables: {
-      pausa: "🌬️ Pausa el confort. La grandeza comienza donde termina lo fácil.",
-      descubre: "🔍 Descubre qué te hace verdaderamente imparable.",
-      reflexiona: "🧠 Reflexiona: ¿qué decisión difícil estás posponiendo?",
-      siente: "💓 Siente el poder interno de actuar con disciplina feroz."
-    }
-  },
-  {
-    titulo: "When",
-    autor: "Daniel Pink",
-    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1544822311i/43163538.jpg",
-    fondo: "#333300",
-    accionables: {
-      pausa: "🌬️ Pausa y siente el ritmo natural de tu día.",
-      descubre: "🔍 Descubre tu mejor momento para crear, pensar y decidir.",
-      reflexiona: "🧠 Reflexiona: ¿cuándo fue la última vez que seguiste tu intuición temporal?",
-      siente: "💓 Siente la marea a tu favor. El tiempo también respira contigo."
-    }
+    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1678027798i/123116666.jpg",
+    frases: [
+      "🌬️ Haz una pausa interna y siente tu espacio vacío.",
+      "🔍 Atrévete a abrir una puerta que nunca has cruzado.",
+      "🧠 Permítete cuestionarlo todo, sin miedo.",
+      "💓 Vibra con todo lo que ya habita en ti."
+    ],
+    fondo: "#140038"
   }
 ];
 
@@ -215,43 +171,49 @@ function iniciarJuego() {
   const grid = el('gridContainer');
   const logo = el('logoTriggui');
   grid.innerHTML = '';
-  libroActual = libros[Math.floor(Math.random() * libros.length)];
-  bloquePortada = bloques[Math.floor(Math.random() * bloques.length)];
+  libroActual = libros[0];
+  bloquePortada = Math.floor(Math.random() * 4);
   revelado = false;
   logo.classList.remove("hidden");
 
-  bloques.forEach((nombre, i) => {
+  nombresBloques.forEach((opciones, i) => {
+    const nombre = opciones[Math.floor(Math.random() * opciones.length)];
     const div = document.createElement('div');
     div.className = `block ${colores[i]}`;
-    div.id = nombre;
+    div.id = "bloque" + i;
     div.innerHTML = `
-      <div class="block-content label">${nombre.charAt(0).toUpperCase() + nombre.slice(1)}</div>
-      <div class="block-content accionable hidden" id="${nombre}Text">${libroActual.accionables[nombre]}</div>
+      <div class="block-content label">${nombre.toUpperCase()}</div>
+      <div class="block-content accionable hidden" id="bloque${i}Text">${libroActual.frases[i]}</div>
     `;
-    div.onclick = () => manejarClick(nombre);
+    div.onclick = () => manejarClick(i);
     grid.appendChild(div);
   });
 }
 
-function manejarClick(nombre) {
+function manejarClick(i) {
   if (revelado) return location.reload();
-  if (nombre === bloquePortada) {
+  if (i === bloquePortada) {
     revelarTodo();
   } else {
-    const text = el(nombre + "Text");
+    const text = el("bloque" + i + "Text");
     if (text) {
       text.classList.remove("hidden");
-      el(nombre).querySelector(".label").classList.add("hidden");
+      el("bloque" + i).querySelector(".label").classList.add("hidden");
     }
   }
 }
 
 function revelarTodo() {
-  bloques.forEach(nombre => {
-    const block = el(nombre);
-    block.innerHTML = '';
-    if (nombre === bloquePortada) {
-      block.style.background = 'none';
+  nombresBloques.forEach((_, i) => {
+    const block = el("bloque" + i);
+    const label = block.querySelector(".label");
+    const text = el("bloque" + i + "Text");
+
+    if (i === bloquePortada) {
+      block.innerHTML = '';
+      block.style.background = "none";
+      block.style.padding = "0";
+
       const wrapper = document.createElement("div");
       wrapper.className = "portada-wrapper";
 
@@ -262,10 +224,8 @@ function revelarTodo() {
       wrapper.appendChild(img);
       block.appendChild(wrapper);
     } else {
-      const accionable = document.createElement('div');
-      accionable.className = "block-content accionable";
-      accionable.textContent = libroActual.accionables[nombre];
-      block.appendChild(accionable);
+      if (text) text.classList.remove("hidden");
+      if (label) label.classList.add("hidden");
     }
   });
 
