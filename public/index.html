@@ -13,6 +13,7 @@
       font-family: 'Archivo', sans-serif;
       background: white;
       overflow: hidden;
+      transition: background 1s ease;
     }
     body.dark { background: #000; }
 
@@ -85,7 +86,6 @@
       justify-content: center;
       align-items: center;
       animation: flotar 8s ease-in-out infinite;
-      background: none;
     }
 
     .portada-wrapper img {
@@ -184,6 +184,15 @@
 const el = id => document.getElementById(id);
 const bloques = ["detente", "lee", "pregunta", "conecta"];
 const colores = ["bg1", "bg2", "bg3", "bg4"];
+
+// Heurística por hora
+const hora = new Date().getHours();
+let libroIndex = 0;
+if (hora >= 6 && hora < 12) libroIndex = 1;         // Mañana: Working Backwards
+else if (hora >= 12 && hora < 18) libroIndex = 3;    // Tarde: La magia concentración
+else if (hora >= 18 && hora < 24) libroIndex = 2;    // Noche: Leyes naturaleza humana
+else libroIndex = 0;                                 // Madrugada: Los Fundadores
+
 const libros = [
   {
     portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1678027798i/123116666.jpg",
@@ -192,7 +201,8 @@ const libros = [
       "🧠 Piensa como un fundador",
       "⚙️ Construye lo que nadie ve aún",
       "📈 Escala con mentalidad brutal"
-    ]
+    ],
+    fondo: "#140038"
   },
   {
     portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1606707026i/53138083.jpg",
@@ -201,7 +211,8 @@ const libros = [
       "📊 Mide lo correcto",
       "🧱 Construye hacia atrás",
       "🚪 Di 'no' a lo que distrae"
-    ]
+    ],
+    fondo: "#001f3f"
   },
   {
     portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1573309166i/50033678.jpg",
@@ -210,7 +221,8 @@ const libros = [
       "🎭 Domina tus impulsos",
       "👁️ Lee a las personas",
       "🔓 Descifra el poder real"
-    ]
+    ],
+    fondo: "#111111"
   },
   {
     portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1604385988i/55729446.jpg",
@@ -219,17 +231,18 @@ const libros = [
       "🌿 Cultiva presencia profunda",
       "🧘‍♂️ Un foco = mil logros",
       "🔕 Apaga el ruido del mundo"
-    ]
+    ],
+    fondo: "#003300"
   }
 ];
 
-let libroActual, bloquePortada, revelado = false;
+let libroActual = libros[libroIndex];
+let bloquePortada, revelado = false;
 
 function iniciarJuego() {
   const grid = el('gridContainer');
   const logo = el('logoTriggui');
   grid.innerHTML = '';
-  libroActual = libros[Math.floor(Math.random() * libros.length)];
   bloquePortada = bloques[Math.floor(Math.random() * bloques.length)];
   revelado = false;
   logo.classList.remove("hidden");
@@ -287,6 +300,7 @@ function revelarTodo() {
   });
 
   document.body.classList.add("dark");
+  document.body.style.background = libroActual.fondo;
   el("shockBtn").classList.remove("hidden");
   el("logoTriggui").classList.add("hidden");
   revelado = true;
