@@ -40,7 +40,6 @@
       align-items: center;
       text-align: center;
       border-radius: 16px;
-      overflow: hidden;
       font-weight: bold;
       font-size: 1.1rem;
       color: white;
@@ -79,12 +78,22 @@
     .bg3 { background: linear-gradient(135deg, #fc466b, #3f5efb); }
     .bg4 { background: linear-gradient(135deg, #8e2de2, #4a00e0); }
 
-    .portada-img {
+    .portada-wrapper {
       width: 100%;
       height: 100%;
-      object-fit: contain;
-      animation: flotar 8s ease-in-out infinite;
       border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      animation: flotar 8s ease-in-out infinite;
+    }
+
+    .portada-wrapper img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 0;
     }
 
     @keyframes flotar {
@@ -227,15 +236,16 @@ function revelarTodo() {
       block.innerHTML = '';
       block.style.background = "none";
       block.style.padding = "0";
-      block.style.borderRadius = "16px";
-      block.style.overflow = "hidden";
+
+      const wrapper = document.createElement("div");
+      wrapper.className = "portada-wrapper";
 
       const img = document.createElement("img");
       img.src = libroActual.portada;
       img.alt = "Portada del libro";
-      img.className = "portada-img";
-      img.style.borderRadius = "16px"; // <- Extra asegurado
-      block.appendChild(img);
+
+      wrapper.appendChild(img);
+      block.appendChild(wrapper);
     } else {
       if (text) text.classList.remove("hidden");
       if (label) label.classList.add("hidden");
