@@ -99,35 +99,37 @@
       justify-content: center;
     }
     .shock {
-      background: linear-gradient(135deg, #ff6a00, #ffb347);
+      background: linear-gradient(135deg, #ff6a00, #ffb347); /* Color se actualiza dinámicamente */
       color: white;
       font-weight: bold;
       border: none;
       border-radius: 30px;
-      padding: 10px 22px;
-      font-size: 1rem;
+      padding: 14px 26px;
+      font-size: 1.1rem;
       cursor: pointer;
-      box-shadow: 0 4px 16px rgba(255, 140, 0, 0.4);
-      animation: fadeIn 1s ease forwards;
+      box-shadow: 0 0 18px rgba(255, 175, 95, 0.6);
       margin-bottom: 6px;
+      animation: pulse 2s infinite;
+      transition: background 0.6s ease, box-shadow 0.6s ease;
     }
-    .final-message { color: white; font-size: 1rem; text-align: center; opacity: 0.88; }
-    #reiniciarBtn {
-      background: rgba(255,255,255,0.1);
-      border: none;
-      font-size: 1.5rem;
-      padding: 8px 14px;
-      border-radius: 14px;
-      cursor: pointer;
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+    .final-message {
       color: white;
-      backdrop-filter: blur(5px);
-      margin-top: 6px;
+      font-size: 1rem;
+      text-align: center;
+      opacity: 0;
+      animation: fadeIn 2s forwards;
     }
-    #reiniciarBtn:hover { background: rgba(255,255,255,0.2); }
-    .trigguiletras { height: 24px; opacity: 0.9; transition: opacity 0.4s ease; }
+    .trigguiletras {
+      height: 24px;
+      opacity: 0.9;
+      transition: opacity 0.4s ease;
+    }
     .hidden { display: none !important; }
-
-    /* Colores vibrantes para los bloques */
+    /* Gradientes de fondo bloques */
     .bg1 { background: linear-gradient(135deg, #ff7e5f, #feb47b); }
     .bg2 { background: linear-gradient(135deg, #43cea2, #185a9d); }
     .bg3 { background: linear-gradient(135deg, #8e2de2, #4a00e0); }
@@ -139,9 +141,8 @@
 <div class="main">
   <div class="grid" id="gridContainer"></div>
   <div class="footer">
-    <button class="shock hidden" id="shockBtn">📚👊 ¡Chócalas!</button>
-    <div class="final-message hidden" id="mensajeFinal">📖 ¿Listo para abrir un libro físico?</div>
-    <button id="reiniciarBtn" class="hidden">↻</button>
+    <button class="shock hidden" id="shockBtn">📖 ¡Chócalas por abrir un libro físico!</button>
+    <div class="final-message hidden" id="mensajeFinal">✨ ¡Felicidades! Elegiste la pausa perfecta con un libro real. ✨</div>
     <img src="/trigguiletras.png" class="trigguiletras" id="logoTriggui" />
   </div>
 </div>
@@ -192,6 +193,11 @@ function iniciarJuego() {
     `;
     div.onclick = () => manejarClick(i);
     grid.appendChild(div);
+
+    // Asignar el color del primer bloque al botón "shock"
+    if (i === 0) {
+      document.querySelector('.shock').style.background = window.getComputedStyle(div).backgroundImage;
+    }
   });
 }
 
@@ -244,10 +250,7 @@ function revelarTodo() {
 el("shockBtn").onclick = () => {
   el("shockBtn").classList.add("hidden");
   el("mensajeFinal").classList.remove("hidden");
-  el("reiniciarBtn").classList.remove("hidden");
 };
-
-el("reiniciarBtn").onclick = () => location.reload();
 
 iniciarJuego();
 </script>
