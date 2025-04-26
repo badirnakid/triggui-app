@@ -255,7 +255,7 @@ function manejarClick(nombre) {
 }
 
 function revelarTodo() {
-  bloques.forEach(nombre => {
+  bloques.forEach((nombre, i) => {
     const block = el(nombre);
     block.innerHTML = '';
     if (nombre === bloquePortada) {
@@ -269,8 +269,10 @@ function revelarTodo() {
       wrapper.appendChild(img);
       block.appendChild(wrapper);
     } else {
-      const text = el(nombre + "Text");
-      if (text) text.classList.remove("hidden");
+      const accionable = document.createElement('div');
+      accionable.className = "block-content accionable";
+      accionable.textContent = accionables[i];
+      block.appendChild(accionable);
     }
   });
 
