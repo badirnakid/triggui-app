@@ -204,40 +204,26 @@ const el = id => document.getElementById(id);
 
 const bloques = ["pausa", "descubre", "reflexiona", "siente"];
 const colores = ["bg1", "bg2", "bg3", "bg4"];
-const accionables = [
-  "🌟 Encuentra en lo pequeño el ritual que forma a los genios. (Craig Wright)",
-  "🔎 ¿Qué creencia limitante estás dispuesto a cuestionar hoy? (Adam Grant)",
-  "🚀 Crea algo imperfecto, pero que viva. No esperes permiso. (Tony Fadell)",
-  "🏔️ No sigas siendo bueno. Construye lo que el mundo nunca ha visto. (Jim Collins)"
-];
 
-const libros = [
-  {
-    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1642726660i/60171734.jpg",
-    fondo: "#1a0033"
-  },
-  {
-    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1602574232i/55539565.jpg",
-    fondo: "#001a33"
-  },
-  {
-    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1662270336i/62237986.jpg",
-    fondo: "#33001a"
-  },
-  {
-    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1546097703i/76865.jpg",
-    fondo: "#003300"
+const libro = {
+  titulo: "Think Again",
+  autor: "Adam Grant",
+  portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1602574232i/55539565.jpg",
+  fondo: "#001a33",
+  accionables: {
+    pausa: "🌬️ Pausa tus certezas. Solo en el silencio nace una nueva idea.",
+    descubre: "🔍 Descubre la belleza de admitir que no sabes... aún.",
+    reflexiona: "🧠 Reflexiona: ¿qué cambiaría hoy si soltaras una creencia vieja?",
+    siente: "💓 Siente la expansión que ocurre cuando aceptas aprender de nuevo."
   }
-];
+};
 
-let libroActual, bloquePortada, revelado = false;
+let bloquePortada, revelado = false;
 
 function iniciarJuego() {
   const grid = el('gridContainer');
   const logo = el('logoTriggui');
   grid.innerHTML = '';
-  const index = Math.floor(Math.random() * libros.length);
-  libroActual = libros[index];
   bloquePortada = bloques[Math.floor(Math.random() * bloques.length)];
   revelado = false;
   logo.classList.remove("hidden");
@@ -248,7 +234,7 @@ function iniciarJuego() {
     div.id = nombre;
     div.innerHTML = `
       <div class="block-content label">${nombre.charAt(0).toUpperCase() + nombre.slice(1)}</div>
-      <div class="block-content accionable hidden" id="${nombre}Text">${accionables[i]}</div>
+      <div class="block-content accionable hidden" id="${nombre}Text">${libro.accionables[nombre]}</div>
     `;
     div.onclick = () => manejarClick(nombre);
     grid.appendChild(div);
@@ -269,7 +255,7 @@ function manejarClick(nombre) {
 }
 
 function revelarTodo() {
-  bloques.forEach((nombre, i) => {
+  bloques.forEach(nombre => {
     const block = el(nombre);
     block.innerHTML = '';
     if (nombre === bloquePortada) {
@@ -278,7 +264,7 @@ function revelarTodo() {
       wrapper.className = "portada-wrapper";
 
       const img = document.createElement("img");
-      img.src = libroActual.portada;
+      img.src = libro.portada;
       img.alt = "Portada del libro";
 
       wrapper.appendChild(img);
@@ -286,13 +272,13 @@ function revelarTodo() {
     } else {
       const accionable = document.createElement('div');
       accionable.className = "block-content accionable";
-      accionable.textContent = accionables[i];
+      accionable.textContent = libro.accionables[nombre];
       block.appendChild(accionable);
     }
   });
 
   document.body.classList.add("dark");
-  document.body.style.background = libroActual.fondo;
+  document.body.style.background = libro.fondo;
   el("shockBtn").classList.remove("hidden");
   el("logoTriggui").classList.add("hidden");
   revelado = true;
