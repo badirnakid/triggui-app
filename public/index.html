@@ -86,14 +86,16 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      background: white;
       animation: flotar 8s ease-in-out infinite;
     }
 
     .portada-wrapper img {
       width: 100%;
       height: 100%;
-      object-fit: contain;
-      border-radius: 16px; /* REDONDEA LA IMAGEN TAMBIÉN */
+      object-fit: cover;
+      border-radius: 16px;
+      display: block;
     }
 
     @keyframes flotar {
