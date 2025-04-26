@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>TrigguiApp – Tu Portal de Pausa</title>
+  <title>TrigguiApp – Una Página, Una Vida Nueva</title>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&display=swap" rel="stylesheet" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -97,6 +97,7 @@
     .bg2 { background: linear-gradient(135deg, #6a11cb, #2575fc); }
     .bg3 { background: linear-gradient(135deg, #43cea2, #185a9d); }
     .bg4 { background: linear-gradient(135deg, #ee9ca7, #ffdde1); }
+    .bg5 { background: linear-gradient(135deg, #ff9a9e, #fad0c4); }
 
     .portada-wrapper {
       width: 100%;
@@ -202,29 +203,47 @@
 <script>
 const el = id => document.getElementById(id);
 
-const bloques = ["pausa", "descubre", "reflexiona", "siente"];
-const colores = ["bg1", "bg2", "bg3", "bg4"];
+const bloques = ["pausa", "descubre", "reflexiona", "siente", "crea"];
+const colores = ["bg1", "bg2", "bg3", "bg4", "bg5"];
 const accionables = [
-  "🌬️ Inhala profundo 4 segundos... Retén 4... Exhala 4...",
-  "📖 Cada página es una puerta que podrías abrir hoy.",
-  "❓¿Qué cambiaría en tu vida si entendieras algo nuevo hoy?",
-  "💓 Imagina que ya eres quien siempre has querido ser."
+  "🌟 La genialidad se cultiva en lo invisible.",
+  "🧠 Atreverse a pensar distinto es el primer acto de sabiduría.",
+  "🚀 Crear sin permiso: tu voz importa.",
+  "🏔️ De bueno a extraordinario: cruza el abismo.",
+  "⏳ El tiempo correcto existe. Alinea tus pasos."
 ];
 
 const libros = [
   {
-    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1678027798i/123116666.jpg",
-    fondo: "#140038"
+    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1642726660i/60171734.jpg",
+    fondo: "#1a0033"
+  },
+  {
+    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1602574232i/55539565.jpg",
+    fondo: "#001a33"
+  },
+  {
+    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1662270336i/62237986.jpg",
+    fondo: "#33001a"
+  },
+  {
+    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1546097703i/76865.jpg",
+    fondo: "#003300"
+  },
+  {
+    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1544822311i/43163538.jpg",
+    fondo: "#333300"
   }
 ];
 
-let libroActual = libros[0];
-let bloquePortada, revelado = false;
+let libroActual, bloquePortada, revelado = false;
 
 function iniciarJuego() {
   const grid = el('gridContainer');
   const logo = el('logoTriggui');
   grid.innerHTML = '';
+  const index = Math.floor(Math.random() * libros.length);
+  libroActual = libros[index];
   bloquePortada = bloques[Math.floor(Math.random() * bloques.length)];
   revelado = false;
   logo.classList.remove("hidden");
