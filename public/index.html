@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>TrigguiApp – La Pausa que Cambia Todo</title>
+  <title>TrigguiApp – Un instante, un universo</title>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&display=swap" rel="stylesheet" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -16,20 +16,8 @@
       transition: background 1s ease;
     }
     body.dark { background: #000; }
-
-    .main {
-      height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      opacity: 0;
-      animation: fadeIn 1.6s ease forwards;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
+    .main { height: 100dvh; display: flex; flex-direction: column; opacity: 0; animation: fadeIn 1.6s ease forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     .grid {
       flex: 1;
       display: grid;
@@ -38,14 +26,12 @@
       gap: 2vw;
       padding: 2vw;
     }
-
     @media (orientation: landscape), (min-width: 768px) {
       .grid {
         grid-template-columns: repeat(4, 1fr);
         grid-template-rows: 1fr;
       }
     }
-
     .block {
       display: flex;
       justify-content: center;
@@ -65,11 +51,7 @@
       animation: scaleFadeIn 1.6s forwards;
       position: relative;
     }
-
-    @keyframes scaleFadeIn {
-      to { transform: scale(1); opacity: 1; }
-    }
-
+    @keyframes scaleFadeIn { to { transform: scale(1); opacity: 1; } }
     .block-content {
       position: absolute;
       inset: 0;
@@ -79,9 +61,7 @@
       padding: 14px;
       text-align: center;
     }
-
     .label { z-index: 1; }
-
     .accionable {
       color: white;
       font-size: 1rem;
@@ -92,12 +72,10 @@
       animation: aparecer 0.6s forwards;
       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
     }
-
     .bg1 { background: linear-gradient(135deg, #ff7e5f, #feb47b); }
     .bg2 { background: linear-gradient(135deg, #6a11cb, #2575fc); }
     .bg3 { background: linear-gradient(135deg, #43cea2, #185a9d); }
     .bg4 { background: linear-gradient(135deg, #ee9ca7, #ffdde1); }
-
     .portada-wrapper {
       width: 100%;
       height: 100%;
@@ -107,7 +85,6 @@
       animation: flotar 8s ease-in-out infinite;
       background: transparent;
     }
-
     .portada-wrapper img {
       width: 88%;
       max-height: 92%;
@@ -117,30 +94,10 @@
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
       transition: transform 0.4s ease;
     }
-
-    .portada-wrapper img:hover {
-      transform: scale(1.02);
-    }
-
-    @keyframes flotar {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
-    }
-
-    @keyframes aparecer {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
-    .footer {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 1vh;
-      min-height: 80px;
-      justify-content: center;
-    }
-
+    .portada-wrapper img:hover { transform: scale(1.02); }
+    @keyframes flotar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    @keyframes aparecer { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    .footer { display: flex; flex-direction: column; align-items: center; padding: 1vh; min-height: 80px; justify-content: center; }
     .shock {
       background: linear-gradient(135deg, #ff6a00, #ffb347);
       color: white;
@@ -154,14 +111,7 @@
       animation: fadeIn 1s ease forwards;
       margin-bottom: 6px;
     }
-
-    .final-message {
-      color: white;
-      font-size: 1rem;
-      text-align: center;
-      opacity: 0.88;
-    }
-
+    .final-message { color: white; font-size: 1rem; text-align: center; opacity: 0.88; }
     #reiniciarBtn {
       background: rgba(255,255,255,0.1);
       border: none;
@@ -173,17 +123,8 @@
       backdrop-filter: blur(5px);
       margin-top: 6px;
     }
-
-    #reiniciarBtn:hover {
-      background: rgba(255,255,255,0.2);
-    }
-
-    .trigguiletras {
-      height: 24px;
-      opacity: 0.9;
-      transition: opacity 0.4s ease;
-    }
-
+    #reiniciarBtn:hover { background: rgba(255,255,255,0.2); }
+    .trigguiletras { height: 24px; opacity: 0.9; transition: opacity 0.4s ease; }
     .hidden { display: none !important; }
   </style>
 </head>
@@ -205,25 +146,76 @@ const el = id => document.getElementById(id);
 const bloques = ["pausa", "descubre", "reflexiona", "siente"];
 const colores = ["bg1", "bg2", "bg3", "bg4"];
 
-const libro = {
-  titulo: "Think Again",
-  autor: "Adam Grant",
-  portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1602574232i/55539565.jpg",
-  fondo: "#001a33",
-  accionables: {
-    pausa: "🌬️ Pausa tus certezas. Solo en el silencio nace una nueva idea.",
-    descubre: "🔍 Descubre la belleza de admitir que no sabes... aún.",
-    reflexiona: "🧠 Reflexiona: ¿qué cambiaría hoy si soltaras una creencia vieja?",
-    siente: "💓 Siente la expansión que ocurre cuando aceptas aprender de nuevo."
+const libros = [
+  {
+    titulo: "Los hábitos secretos de los genios",
+    autor: "Craig Wright",
+    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1642726660i/60171734.jpg",
+    fondo: "#140038",
+    accionables: {
+      pausa: "🌬️ Pausa y permite que la curiosidad florezca en el silencio.",
+      descubre: "🔍 Descubre un hábito invisible que alimente tu talento oculto.",
+      reflexiona: "🧠 Reflexiona sobre qué pequeña obsesión puede elevar tu vida.",
+      siente: "💓 Siente la chispa de tu genialidad despertándose ahora."
+    }
+  },
+  {
+    titulo: "Think Again",
+    autor: "Adam Grant",
+    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1602574232i/55539565.jpg",
+    fondo: "#001a33",
+    accionables: {
+      pausa: "🌬️ Pausa tus certezas. En el vacío surge la sabiduría real.",
+      descubre: "🔍 Descubre lo que aún no sabes que no sabes.",
+      reflexiona: "🧠 Reflexiona: ¿qué puedes desaprender hoy para crecer?",
+      siente: "💓 Siente la ligereza de soltar una verdad caduca."
+    }
+  },
+  {
+    titulo: "Crea",
+    autor: "Tony Fadell",
+    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1662270336i/62237986.jpg",
+    fondo: "#33001a",
+    accionables: {
+      pausa: "🌬️ Pausa el juicio interno. El primer boceto no es el final.",
+      descubre: "🔍 Descubre que construir es más poderoso que opinar.",
+      reflexiona: "🧠 Reflexiona: ¿qué mundo alternativo puedes diseñar hoy?",
+      siente: "💓 Siente la vida brotar mientras haces, no mientras planeas."
+    }
+  },
+  {
+    titulo: "Good to Great",
+    autor: "Jim Collins",
+    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1546097703i/76865.jpg",
+    fondo: "#003300",
+    accionables: {
+      pausa: "🌬️ Pausa el confort. La grandeza comienza donde termina lo fácil.",
+      descubre: "🔍 Descubre qué te hace verdaderamente imparable.",
+      reflexiona: "🧠 Reflexiona: ¿qué decisión difícil estás posponiendo?",
+      siente: "💓 Siente el poder interno de actuar con disciplina feroz."
+    }
+  },
+  {
+    titulo: "When",
+    autor: "Daniel Pink",
+    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1544822311i/43163538.jpg",
+    fondo: "#333300",
+    accionables: {
+      pausa: "🌬️ Pausa y siente el ritmo natural de tu día.",
+      descubre: "🔍 Descubre tu mejor momento para crear, pensar y decidir.",
+      reflexiona: "🧠 Reflexiona: ¿cuándo fue la última vez que seguiste tu intuición temporal?",
+      siente: "💓 Siente la marea a tu favor. El tiempo también respira contigo."
+    }
   }
-};
+];
 
-let bloquePortada, revelado = false;
+let libroActual, bloquePortada, revelado = false;
 
 function iniciarJuego() {
   const grid = el('gridContainer');
   const logo = el('logoTriggui');
   grid.innerHTML = '';
+  libroActual = libros[Math.floor(Math.random() * libros.length)];
   bloquePortada = bloques[Math.floor(Math.random() * bloques.length)];
   revelado = false;
   logo.classList.remove("hidden");
@@ -234,7 +226,7 @@ function iniciarJuego() {
     div.id = nombre;
     div.innerHTML = `
       <div class="block-content label">${nombre.charAt(0).toUpperCase() + nombre.slice(1)}</div>
-      <div class="block-content accionable hidden" id="${nombre}Text">${libro.accionables[nombre]}</div>
+      <div class="block-content accionable hidden" id="${nombre}Text">${libroActual.accionables[nombre]}</div>
     `;
     div.onclick = () => manejarClick(nombre);
     grid.appendChild(div);
@@ -264,7 +256,7 @@ function revelarTodo() {
       wrapper.className = "portada-wrapper";
 
       const img = document.createElement("img");
-      img.src = libro.portada;
+      img.src = libroActual.portada;
       img.alt = "Portada del libro";
 
       wrapper.appendChild(img);
@@ -272,13 +264,13 @@ function revelarTodo() {
     } else {
       const accionable = document.createElement('div');
       accionable.className = "block-content accionable";
-      accionable.textContent = libro.accionables[nombre];
+      accionable.textContent = libroActual.accionables[nombre];
       block.appendChild(accionable);
     }
   });
 
   document.body.classList.add("dark");
-  document.body.style.background = libro.fondo;
+  document.body.style.background = libroActual.fondo;
   el("shockBtn").classList.remove("hidden");
   el("logoTriggui").classList.add("hidden");
   revelado = true;
