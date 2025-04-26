@@ -2,9 +2,9 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Triggui – Ritual Perfecto</title>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&display=swap" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>Triggui – Ritual</title>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
@@ -16,16 +16,20 @@
     }
     body.dark { background: #000; }
 
-    .main { height: 100dvh; display: flex; flex-direction: column; }
+    .main {
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
 
     .grid {
-      flex: 1;
       display: grid;
       grid-template-columns: 1fr 1fr;
       grid-template-rows: 1fr 1fr;
       gap: 2vw;
       padding: 2vw;
-      overflow-y: auto;
+      height: 100%;
     }
 
     @media (orientation: landscape), (min-width: 768px) {
@@ -42,14 +46,13 @@
       text-align: center;
       border-radius: 16px;
       font-weight: bold;
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       color: white;
       position: relative;
       overflow: hidden;
       background-size: cover;
       background-position: center;
       cursor: pointer;
-      transition: all 0.3s ease;
     }
 
     .block-content {
@@ -58,207 +61,213 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 14px;
+      padding: 16px;
       text-align: center;
     }
 
-    .label { z-index: 1; }
+    .label {
+      z-index: 1;
+    }
 
     .accionable {
-      color: white;
+      background: rgba(255,255,255,0.95);
+      color: #111;
+      flex-direction: column;
       font-size: 1rem;
-      font-weight: 600;
-      padding: 16px;
-      border-radius: 16px;
+      font-weight: 500;
+      padding: 12px;
+      border-radius: 12px;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.3);
       opacity: 0;
-      animation: aparecer 0.6s forwards;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+      animation: aparecer 0.7s forwards;
     }
 
-    .bg1 { background: #ffccbc; color: #3e2723; }
-    .bg2 { background: #c8e6c9; color: #1b5e20; }
-    .bg3 { background: #b3e5fc; color: #01579b; }
-    .bg4 { background: #f8bbd0; color: #880e4f; }
-
-    .portada-img {
-      width: 100%;
-      height: 100%;
+    .portada-wrapper img {
+      width: 90%;
+      max-height: 90%;
       object-fit: contain;
-      animation: flotar 8s ease-in-out infinite;
-      border-radius: 16px;
+      border-radius: 12px;
+      animation: float 6s ease-in-out infinite;
     }
 
-    @keyframes flotar {
+    @keyframes float {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
+      50% { transform: translateY(-6px); }
     }
 
     @keyframes aparecer {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
+      from { opacity: 0; transform: translateY(10px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
     .footer {
+      padding: 1vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 1vh;
-      min-height: 80px;
-      justify-content: center;
+      gap: 1vh;
     }
 
     .shock {
-      background: linear-gradient(135deg, #ff6a00, #ffb347);
+      background: linear-gradient(135deg, #ee0979, #ff6a00);
       color: white;
       font-weight: bold;
       border: none;
-      border-radius: 30px;
-      padding: 10px 22px;
+      border-radius: 28px;
+      padding: 12px 24px;
       font-size: 1rem;
       cursor: pointer;
-      box-shadow: 0 4px 16px rgba(255, 140, 0, 0.4);
-      animation: fadeIn 1s ease forwards;
-      margin-bottom: 6px;
+      box-shadow: 0 4px 16px rgba(255, 80, 80, 0.4);
+      animation: fadeIn 1.2s ease forwards;
     }
 
-    .final-message {
-      color: white;
-      font-size: 1rem;
-      text-align: center;
-      opacity: 0.88;
-    }
-
-    #reiniciarBtn {
-      background: rgba(255,255,255,0.1);
-      border: none;
-      font-size: 1.5rem;
-      padding: 8px 14px;
-      border-radius: 14px;
-      cursor: pointer;
-      color: white;
-      backdrop-filter: blur(5px);
-      margin-top: 6px;
-    }
-
-    #reiniciarBtn:hover {
-      background: rgba(255,255,255,0.2);
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
     }
 
     .trigguiletras {
       height: 24px;
       opacity: 0.9;
-      transition: opacity 0.4s ease;
+    }
+
+    .final-message {
+      color: white;
+      font-size: 1rem;
+      margin-top: 10px;
+      text-align: center;
+      font-weight: 400;
+      opacity: 0.7;
     }
 
     .hidden { display: none !important; }
   </style>
 </head>
-
 <body>
   <div class="main">
-    <div class="grid" id="gridContainer"></div>
+    <div class="grid">
+      <div class="block" id="detente" style="background: linear-gradient(135deg, #ff6a00, #ee0979);">
+        <div class="block-content label">Detente</div>
+        <div class="block-content accionable hidden" id="detenteText"></div>
+      </div>
+      <div class="block" id="lee" style="background: linear-gradient(135deg, #56ab2f, #a8e063);">
+        <div class="block-content label">Lee</div>
+        <div class="block-content portada-wrapper hidden" id="leeCover">
+          <img id="leeImg" src="" alt="Portada del libro" />
+        </div>
+      </div>
+      <div class="block" id="pregunta" style="background: linear-gradient(135deg, #36d1dc, #5b86e5);">
+        <div class="block-content label">?</div>
+        <div class="block-content accionable hidden" id="preguntaText"></div>
+      </div>
+      <div class="block" id="conecta" style="background: linear-gradient(135deg, #c31432, #240b36);">
+        <div class="block-content label">Conecta</div>
+        <div class="block-content accionable hidden" id="conectaText"></div>
+      </div>
+    </div>
+
     <div class="footer">
-      <button class="shock hidden" id="shockBtn">📚👊 Chócalas</button>
-      <div class="final-message hidden" id="mensajeFinal">📖 Abre un libro y encuentra una verdad.</div>
-      <button id="reiniciarBtn" class="hidden">↻</button>
-      <img src="/trigguiletras.png" class="trigguiletras" id="logoTriggui" />
+      <button class="shock hidden" id="shockBtn">📚👊 Chócalas por leer un libro físico</button>
+      <div class="final-message hidden" id="mensajeFinal">
+        Ahora… busca un libro que tengas cerca. Ábrelo en cualquier página y lee una sola frase con absoluta presencia.
+      </div>
+      <img src="/trigguiletras.png" class="trigguiletras" />
     </div>
   </div>
 
-<script>
-const el = id => document.getElementById(id);
-const bloques = ["detente", "lee", "pregunta", "conecta"];
-const colores = ["#ffccbc", "#c8e6c9", "#b3e5fc", "#f8bbd0"];
-const libros = [
-  {
-    portada: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1573309166i/50033678.jpg',
-    frases: [
-      "🧠 El poder nace del autoconocimiento.",
-      "👁️ Lo emocional es lo más racional.",
-      "🎭 Entiende tus sombras y hazlas aliadas.",
-      "🧬 Todo comportamiento tiene raíz invisible."
-    ]
-  }
-];
+  <script>
+    const bloques = ["detente", "lee", "pregunta", "conecta"];
+    const frasesIds = {
+      detente: "detenteText",
+      lee: "leeCover",
+      pregunta: "preguntaText",
+      conecta: "conectaText"
+    };
 
-let libroActual, bloquePortada, revelado = false;
+    const libros = [
+      {
+        portada: 'https://m.media-amazon.com/images/I/91bYsX41DVL.jpg',
+        frases: ["🔁 Mejora 1% diario", "🧱 Crea sistemas, no metas", "🧠 Identidad guía el hábito"]
+      },
+      {
+        portada: 'https://m.media-amazon.com/images/I/81LdLpv8mJL.jpg',
+        frases: ["💪 No te rindas antes de empezar", "🛡️ Expón tus miedos al rechazo", "💬 Pide lo imposible"]
+      }
+    ];
 
-function iniciarJuego() {
-  const grid = el('gridContainer');
-  const logo = el('logoTriggui');
-  grid.innerHTML = '';
-  libroActual = libros[0];
-  bloquePortada = bloques[Math.floor(Math.random() * bloques.length)];
-  revelado = false;
-  logo.classList.remove("hidden");
+    let libroActual = null;
+    let bloquePortada = null;
+    let revelado = false;
+    const mostrado = new Set();
 
-  let frases = [...libroActual.frases];
-  while (frases.length < 4) frases.push(...libroActual.frases);
+    const el = id => document.getElementById(id);
 
-  bloques.forEach((nombre, i) => {
-    const div = document.createElement('div');
-    div.className = 'block';
-    div.id = nombre;
-    div.style.background = colores[i];
-    const bgClass = `bg${i+1}`;
-    div.innerHTML = `
-      <div class="block-content label">${nombre.toUpperCase()}</div>
-      <div class="block-content accionable hidden ${bgClass}" id="${nombre}Text">${frases[i]}</div>
-    `;
-    div.onclick = () => manejarClick(nombre);
-    grid.appendChild(div);
-  });
-}
-
-function manejarClick(nombre) {
-  if (revelado) return location.reload();
-  if (nombre === bloquePortada) {
-    revelarTodo();
-  } else {
-    const text = el(nombre + "Text");
-    text.classList.remove("hidden");
-    el(nombre).querySelector(".label").classList.add("hidden");
-  }
-}
-
-function revelarTodo() {
-  bloques.forEach((nombre) => {
-    const block = el(nombre);
-    const text = el(nombre + "Text");
-    block.querySelector(".label").classList.add("hidden");
-
-    if (nombre === bloquePortada) {
-      block.innerHTML = '';
-      block.style.background = "none";
-      block.style.padding = "0";
-      block.style.borderRadius = "16px";
-      block.style.overflow = "hidden";
-
-      const img = document.createElement("img");
-      img.src = libroActual.portada;
-      img.alt = "Portada del libro";
-      img.className = "portada-img";
-      block.appendChild(img);
-    } else {
-      text.classList.remove("hidden");
+    function iniciarJuego() {
+      libroActual = libros[Math.floor(Math.random() * libros.length)];
+      bloquePortada = bloques[Math.floor(Math.random() * bloques.length)];
+      revelado = false;
+      mostrado.clear();
     }
-  });
 
-  document.body.classList.add("dark");
-  el("shockBtn").classList.remove("hidden");
-  el("logoTriggui").classList.add("hidden");
-  revelado = true;
-}
+    function revelarSolo(bloque) {
+      if (mostrado.has(bloque)) return;
+      mostrado.add(bloque);
+      const index = bloques.indexOf(bloque);
+      const frase = libroActual.frases[index % 3];
+      const target = frasesIds[bloque];
+      el(target).textContent = frase;
+      el(target).classList.remove("hidden");
+      el(bloque).querySelector(".label").classList.add("hidden");
+    }
 
-el("shockBtn").onclick = () => {
-  el("shockBtn").classList.add("hidden");
-  el("mensajeFinal").classList.remove("hidden");
-  el("reiniciarBtn").classList.remove("hidden");
-};
+    function revelarTodo() {
+      const frases = [...libroActual.frases].sort(() => Math.random() - 0.5);
+      let i = 0;
 
-el("reiniciarBtn").onclick = () => location.reload();
+      bloques.forEach(bloque => {
+        if (bloque === bloquePortada) {
+          el("leeImg").src = libroActual.portada;
+          el("leeCover").classList.remove("hidden");
+        } else {
+          const target = frasesIds[bloque];
+          el(target).textContent = frases[i++];
+          el(target).classList.remove("hidden");
+        }
+        el(bloque).querySelector(".label").classList.add("hidden");
+      });
 
-iniciarJuego();
-</script>
+      document.body.classList.add("dark");
+      el("shockBtn").classList.remove("hidden");
+      revelado = true;
+    }
+
+    function cerrarTodo() {
+      Object.values(frasesIds).forEach(id => el(id).classList.add("hidden"));
+      document.querySelectorAll(".label").forEach(l => l.classList.remove("hidden"));
+      el("shockBtn").classList.add("hidden");
+      el("mensajeFinal").classList.add("hidden");
+      document.body.classList.remove("dark");
+      iniciarJuego();
+    }
+
+    bloques.forEach(bloque => {
+      el(bloque).onclick = () => {
+        if (revelado) {
+          cerrarTodo();
+        } else if (bloque === bloquePortada) {
+          revelarTodo();
+        } else {
+          revelarSolo(bloque);
+        }
+      };
+    });
+
+    el("shockBtn").onclick = () => {
+      el("shockBtn").classList.add("hidden");
+      el("mensajeFinal").classList.remove("hidden");
+    };
+
+    iniciarJuego();
+  </script>
 </body>
 </html>
