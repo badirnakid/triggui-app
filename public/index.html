@@ -230,12 +230,12 @@ function iniciarJuego() {
   nombresBloques.forEach((opciones, i) => {
     const nombre = opciones[Math.floor(Math.random() * opciones.length)];
     const div = document.createElement('div');
-    div.className = block ${colores[i]};
+    div.className = `block ${colores[i]}`;
     div.id = "bloque" + i;
-    div.innerHTML = 
+    div.innerHTML = `
       <div class="block-content label">${nombre.toUpperCase()}</div>
       <div class="block-content accionable hidden" id="bloque${i}Text">${libroActual.frases[i]}</div>
-    ;
+    `;
     div.onclick = () => manejarClick(i);
     grid.appendChild(div);
   });
