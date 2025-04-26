@@ -81,26 +81,31 @@
     .portada-wrapper {
       width: 100%;
       height: 100%;
-      border-radius: 16px;
-      overflow: hidden;
       display: flex;
       justify-content: center;
       align-items: center;
-      background: white;
       animation: flotar 8s ease-in-out infinite;
+      background: none;
     }
 
     .portada-wrapper img {
-      width: 100%;
-      height: 100%;
+      width: 88%;
+      max-height: 92%;
       object-fit: cover;
-      border-radius: 16px;
+      aspect-ratio: 2/3;
+      border-radius: 22px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
       display: block;
+      transition: transform 0.4s ease;
+    }
+
+    .portada-wrapper img:hover {
+      transform: scale(1.02);
     }
 
     @keyframes flotar {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-6px); }
+      50% { transform: translateY(-8px); }
     }
 
     @keyframes aparecer {
@@ -149,6 +154,7 @@
       backdrop-filter: blur(5px);
       margin-top: 6px;
     }
+
     #reiniciarBtn:hover {
       background: rgba(255,255,255,0.2);
     }
@@ -180,12 +186,39 @@ const bloques = ["detente", "lee", "pregunta", "conecta"];
 const colores = ["bg1", "bg2", "bg3", "bg4"];
 const libros = [
   {
-    portada: 'https://m.media-amazon.com/images/I/91bYsX41DVL.jpg',
+    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1678027798i/123116666.jpg",
     frases: [
-      "🔁 Mejora 1% diario",
-      "🧱 Crea sistemas, no metas",
-      "🧠 Identidad guía el hábito",
-      "🕒 La constancia vence al talento"
+      "🚀 Aprende de los errores temprano",
+      "🧠 Piensa como un fundador",
+      "⚙️ Construye lo que nadie ve aún",
+      "📈 Escala con mentalidad brutal"
+    ]
+  },
+  {
+    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1606707026i/53138083.jpg",
+    frases: [
+      "🔍 Enfócate en el cliente",
+      "📊 Mide lo correcto",
+      "🧱 Construye hacia atrás",
+      "🚪 Di 'no' a lo que distrae"
+    ]
+  },
+  {
+    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1573309166i/50033678.jpg",
+    frases: [
+      "🧠 Conoce la naturaleza humana",
+      "🎭 Domina tus impulsos",
+      "👁️ Lee a las personas",
+      "🔓 Descifra el poder real"
+    ]
+  },
+  {
+    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1604385988i/55729446.jpg",
+    frases: [
+      "🎯 Elimina distracciones",
+      "🌿 Cultiva presencia profunda",
+      "🧘‍♂️ Un foco = mil logros",
+      "🔕 Apaga el ruido del mundo"
     ]
   }
 ];
@@ -196,7 +229,7 @@ function iniciarJuego() {
   const grid = el('gridContainer');
   const logo = el('logoTriggui');
   grid.innerHTML = '';
-  libroActual = libros[0];
+  libroActual = libros[Math.floor(Math.random() * libros.length)];
   bloquePortada = bloques[Math.floor(Math.random() * bloques.length)];
   revelado = false;
   logo.classList.remove("hidden");
