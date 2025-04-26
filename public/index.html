@@ -36,14 +36,14 @@
       text-align: center;
       border-radius: 16px;
       font-weight: bold;
-      font-size: 1.2rem;
+      font-size: 1.5rem;
       color: white;
       background-size: cover;
       background-position: center;
       cursor: pointer;
       transition: all 0.5s ease;
       overflow: hidden;
-      transform: scale(0.8);
+      transform: scale(0.95);
       opacity: 0;
       animation: scaleFadeIn 1.6s forwards;
       position: relative;
@@ -126,6 +126,12 @@
     #reiniciarBtn:hover { background: rgba(255,255,255,0.2); }
     .trigguiletras { height: 24px; opacity: 0.9; transition: opacity 0.4s ease; }
     .hidden { display: none !important; }
+
+    /* Colores vibrantes para los bloques */
+    .bg1 { background: linear-gradient(135deg, #ff7e5f, #feb47b); }
+    .bg2 { background: linear-gradient(135deg, #43cea2, #185a9d); }
+    .bg3 { background: linear-gradient(135deg, #8e2de2, #4a00e0); }
+    .bg4 { background: linear-gradient(135deg, #fc466b, #3f5efb); }
   </style>
 </head>
 
@@ -143,7 +149,6 @@
 <script>
 const el = id => document.getElementById(id);
 
-// Opciones aleatorias para textos y colores de los botones
 const nombresBloques = [
   ["Pausa", "Respira", "Detente", "Vacía", "Fluye"],
   ["Descubre", "Explora", "Lee", "Observa", "Inspírate"],
