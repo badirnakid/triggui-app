@@ -40,7 +40,7 @@
       align-items: center;
       text-align: center;
       border-radius: 16px;
-      overflow: hidden; /* 👈 clave para redondeo real */
+      overflow: hidden; /* ← Clave para esquinas redondeadas visibles */
       font-weight: bold;
       font-size: 1.1rem;
       color: white;
@@ -84,7 +84,7 @@
       height: 100%;
       object-fit: contain;
       animation: flotar 8s ease-in-out infinite;
-      border-radius: inherit; /* 👈 hereda los 16px del .block */
+      border-radius: inherit; /* ← Clave */
     }
 
     @keyframes flotar {
@@ -227,6 +227,8 @@ function revelarTodo() {
       block.innerHTML = '';
       block.style.background = "none";
       block.style.padding = "0";
+      block.style.borderRadius = "16px";
+      block.style.overflow = "hidden";
 
       const img = document.createElement("img");
       img.src = libroActual.portada;
