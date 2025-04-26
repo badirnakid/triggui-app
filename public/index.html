@@ -40,7 +40,7 @@
       align-items: center;
       text-align: center;
       border-radius: 16px;
-      overflow: hidden; /* ← Clave para esquinas redondeadas visibles */
+      overflow: hidden;
       font-weight: bold;
       font-size: 1.1rem;
       color: white;
@@ -84,7 +84,7 @@
       height: 100%;
       object-fit: contain;
       animation: flotar 8s ease-in-out infinite;
-      border-radius: inherit; /* ← Clave */
+      border-radius: 16px;
     }
 
     @keyframes flotar {
@@ -234,6 +234,7 @@ function revelarTodo() {
       img.src = libroActual.portada;
       img.alt = "Portada del libro";
       img.className = "portada-img";
+      img.style.borderRadius = "16px"; // <- Extra asegurado
       block.appendChild(img);
     } else {
       if (text) text.classList.remove("hidden");
