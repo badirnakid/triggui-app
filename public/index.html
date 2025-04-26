@@ -3,21 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-  <title>Triggui – Heurística Ritual</title>
+  <title>Triggui – Ritual Final</title>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
       width: 100%;
-      height: 100%;
+      min-height: 101vh;
       font-family: 'Archivo', sans-serif;
       background: white;
-      overflow: hidden;
+      -webkit-overflow-scrolling: touch;
+      overflow-y: auto;
     }
     body.dark { background: #000; }
 
     .main {
-      height: 100dvh;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -29,7 +30,7 @@
       grid-template-rows: 1fr 1fr;
       gap: 2vw;
       padding: 2vw;
-      height: 100%;
+      flex: 1;
     }
 
     @media (orientation: landscape), (min-width: 768px) {
@@ -53,7 +54,7 @@
       background-size: cover;
       background-position: center;
       cursor: pointer;
-      transition: transform 0.2s ease;
+      transition: transform 0.2s ease, opacity 0.3s ease;
     }
 
     .block:hover {
@@ -114,7 +115,7 @@
     }
 
     .shock {
-      background: linear-gradient(135deg, #ee0979, #ff6a00);
+      background: linear-gradient(135deg, #ff6a00, #ffc400);
       color: white;
       font-weight: bold;
       border: none;
@@ -122,7 +123,7 @@
       padding: 12px 24px;
       font-size: 1rem;
       cursor: pointer;
-      box-shadow: 0 4px 16px rgba(255, 80, 80, 0.4);
+      box-shadow: 0 4px 16px rgba(255, 150, 0, 0.4);
       animation: fadeIn 1.2s ease forwards;
     }
 
@@ -145,8 +146,23 @@
       opacity: 0.8;
     }
 
+    #reiniciarBtn {
+      background: none;
+      border: none;
+      font-size: 1.8rem;
+      margin-top: 8px;
+      cursor: pointer;
+      color: white;
+      opacity: 0.5;
+      transition: opacity 0.3s ease;
+    }
+
+    #reiniciarBtn:hover {
+      opacity: 1;
+    }
+
     .pulse {
-      animation: pulse 2s infinite;
+      animation: pulse 2.5s infinite;
     }
 
     @keyframes pulse {
@@ -156,13 +172,13 @@
     }
 
     .shake {
-      animation: shake 0.3s;
+      animation: shake 0.4s;
     }
 
     @keyframes shake {
       0% { transform: translateX(0px); }
-      25% { transform: translateX(-4px); }
-      50% { transform: translateX(4px); }
+      25% { transform: translateX(-3px); }
+      50% { transform: translateX(3px); }
       75% { transform: translateX(-2px); }
       100% { transform: translateX(0px); }
     }
@@ -172,9 +188,7 @@
 </head>
 <body>
   <div class="main">
-    <div class="grid" id="gridContainer">
-      <!-- Los bloques se generarán dinámicamente -->
-    </div>
+    <div class="grid" id="gridContainer"></div>
 
     <div class="footer">
       <button class="shock hidden" id="shockBtn">📚👊 Chócalas por leer un libro físico</button>
@@ -182,114 +196,113 @@
         El libro no te eligió. Tú ya estabas listo para encontrarlo.<br><br>
         Ahora… busca un libro que tengas cerca. Ábrelo en cualquier página y lee una sola frase con absoluta presencia.
       </div>
+      <button id="reiniciarBtn" class="hidden">🔄</button>
       <img src="/trigguiletras.png" class="trigguiletras" />
     </div>
   </div>
 
-  <script>
-    const bloques = ["detente", "lee", "pregunta", "conecta"];
-    const colores = [
-      "linear-gradient(135deg, #ff6a00, #ee0979)",
-      "linear-gradient(135deg, #56ab2f, #a8e063)",
-      "linear-gradient(135deg, #36d1dc, #5b86e5)",
-      "linear-gradient(135deg, #c31432, #240b36)"
-    ];
+<script>
+const bloques = ["detente", "lee", "pregunta", "conecta"];
+const colores = [
+  "linear-gradient(135deg, #ff4e50, #f9d423)", // rojo a dorado
+  "linear-gradient(135deg, #43cea2, #185a9d)", // verde a azul oscuro
+  "linear-gradient(135deg, #ff6e7f, #bfe9ff)", // rosa a azul claro
+  "linear-gradient(135deg, #f7971e, #ffd200)"  // naranja vibrante
+];
 
-    const libros = [
-      {
-        portada: 'https://m.media-amazon.com/images/I/91bYsX41DVL.jpg',
-        frases: ["🔁 Mejora 1% diario", "🧱 Crea sistemas, no metas", "🧠 Identidad guía el hábito"]
-      },
-      {
-        portada: 'https://m.media-amazon.com/images/I/81LdLpv8mJL.jpg',
-        frases: ["💪 No te rindas antes de empezar", "🛡️ Expón tus miedos al rechazo", "💬 Pide lo imposible"]
-      }
-    ];
+const libros = [
+  {
+    portada: 'https://m.media-amazon.com/images/I/91bYsX41DVL.jpg',
+    frases: ["🔁 Mejora 1% diario", "🧱 Crea sistemas, no metas", "🧠 Identidad guía el hábito"]
+  },
+  {
+    portada: 'https://m.media-amazon.com/images/I/71QKQ9mwV7L.jpg',
+    frases: ["⏳ Solo el ahora existe", "🌟 Observa, no reacciones", "🧘 Encuentra tu ser"]
+  },
+  {
+    portada: 'https://m.media-amazon.com/images/I/81aY1lxkJ5L.jpg',
+    frases: ["🌿 Honra tus palabras", "🌀 No tomes nada personal", "🦅 Sé impecable contigo"]
+  },
+  {
+    portada: 'https://m.media-amazon.com/images/I/71XkT7vX3DL.jpg',
+    frases: ["🔓 Deja ir el control", "🌊 Fluye con la vida", "🌱 Libera la resistencia"]
+  }
+];
 
-    let libroActual, bloquePortada, revelado = false;
-    const mostrado = new Set();
+let libroActual, bloquePortada, revelado = false;
+const mostrado = new Set();
 
-    const el = id => document.getElementById(id);
+const el = id => document.getElementById(id);
 
-    function iniciarJuego() {
-      const grid = el('gridContainer');
-      grid.innerHTML = '';
+function iniciarJuego() {
+  const grid = el('gridContainer');
+  grid.innerHTML = '';
+  libroActual = libros[Math.floor(Math.random() * libros.length)];
+  bloquePortada = bloques[Math.floor(Math.random() * bloques.length)];
+  revelado = false;
+  mostrado.clear();
 
-      libroActual = libros[Math.floor(Math.random() * libros.length)];
-      bloquePortada = bloques[Math.floor(Math.random() * bloques.length)];
-      revelado = false;
-      mostrado.clear();
+  bloques.forEach((nombre, i) => {
+    const div = document.createElement('div');
+    div.className = 'block' + (nombre === bloquePortada ? ' pulse' : '');
+    div.id = nombre;
+    div.style.background = colores[i];
+    div.innerHTML = `
+      <div class="block-content label">${nombre.charAt(0).toUpperCase() + nombre.slice(1)}</div>
+      <div class="block-content accionable hidden" id="${nombre}Text"></div>
+    `;
+    div.onclick = () => manejarClick(nombre);
+    grid.appendChild(div);
+  });
+}
 
-      bloques.forEach((nombre, i) => {
-        const div = document.createElement('div');
-        div.className = 'block' + (nombre === bloquePortada ? ' pulse' : '');
-        div.id = nombre;
-        div.style.background = colores[i];
-        div.innerHTML = `
-          <div class="block-content label">${nombre.charAt(0).toUpperCase() + nombre.slice(1)}</div>
-          <div class="block-content accionable hidden" id="${nombre}Text"></div>
-        `;
-        div.onclick = () => manejarClick(nombre);
-        grid.appendChild(div);
-      });
-    }
+function manejarClick(nombre) {
+  if (revelado) {
+    location.reload(); // Reinicia si ya se reveló todo
+  } else if (nombre === bloquePortada) {
+    revelarTodo();
+  } else {
+    revelarSolo(nombre);
+  }
+}
 
-    function manejarClick(nombre) {
-      if (revelado) {
-        cerrarTodo();
-      } else if (nombre === bloquePortada) {
-        revelarTodo();
-      } else {
-        revelarSolo(nombre);
-      }
-    }
+function revelarSolo(bloque) {
+  if (mostrado.has(bloque)) return;
+  mostrado.add(bloque);
+  const index = bloques.indexOf(bloque);
+  const frase = libroActual.frases[index % 3];
+  el(bloque + "Text").textContent = frase;
+  el(bloque + "Text").classList.remove("hidden");
+  el(bloque).querySelector(".label").classList.add("hidden");
+  el(bloque).classList.add("shake");
+  setTimeout(() => el(bloque).classList.remove("shake"), 400);
+}
 
-    function revelarSolo(bloque) {
-      if (mostrado.has(bloque)) return;
-      mostrado.add(bloque);
-      const index = bloques.indexOf(bloque);
-      const frase = libroActual.frases[index % 3];
-      el(bloque + "Text").textContent = frase;
-      el(bloque + "Text").classList.remove("hidden");
-      el(bloque).querySelector(".label").classList.add("hidden");
-      el(bloque).classList.add("shake");
-      setTimeout(() => el(bloque).classList.remove("shake"), 300);
-    }
+function revelarTodo() {
+  bloques.forEach((bloque, i) => {
+    const content = bloque === bloquePortada
+      ? `<img src="${libroActual.portada}" style="width:90%;border-radius:12px;">`
+      : libroActual.frases[i % 3];
+    el(bloque + "Text").innerHTML = content;
+    el(bloque + "Text").classList.remove("hidden");
+    el(bloque).querySelector(".label").classList.add("hidden");
+    el(bloque).classList.remove("pulse");
+  });
 
-    function revelarTodo() {
-      bloques.forEach((bloque, i) => {
-        if (bloque === bloquePortada) {
-          el(bloque + "Text").innerHTML = `<img src="${libroActual.portada}" style="width:90%;border-radius:12px;">`;
-        } else {
-          el(bloque + "Text").textContent = libroActual.frases[i % 3];
-        }
-        el(bloque + "Text").classList.remove("hidden");
-        el(bloque).querySelector(".label").classList.add("hidden");
-        el(bloque).classList.remove("pulse");
-      });
+  document.body.classList.add("dark");
+  el("shockBtn").classList.remove("hidden");
+  revelado = true;
+}
 
-      document.body.classList.add("dark");
-      el("shockBtn").classList.remove("hidden");
-      revelado = true;
-    }
+el("shockBtn").onclick = () => {
+  el("shockBtn").classList.add("hidden");
+  el("mensajeFinal").classList.remove("hidden");
+  el("reiniciarBtn").classList.remove("hidden");
+};
 
-    function cerrarTodo() {
-      bloques.forEach(bloque => {
-        el(bloque + "Text").classList.add("hidden");
-        el(bloque).querySelector(".label").classList.remove("hidden");
-      });
-      el("shockBtn").classList.add("hidden");
-      el("mensajeFinal").classList.add("hidden");
-      document.body.classList.remove("dark");
-      iniciarJuego();
-    }
+el("reiniciarBtn").onclick = () => location.reload();
 
-    el("shockBtn").onclick = () => {
-      el("shockBtn").classList.add("hidden");
-      el("mensajeFinal").classList.remove("hidden");
-    };
-
-    iniciarJuego();
-  </script>
+iniciarJuego();
+</script>
 </body>
 </html>
