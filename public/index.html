@@ -97,15 +97,11 @@
       from { opacity: 0; transform: scale(0.95); }
       to { opacity: 1; transform: scale(1); }
     }
-</style>
+  </style>
 </head>
-
 <body>
 <div class="main">
   <div class="grid" id="gridContainer"></div>
-
-  <!-- Contenedor para el Canvas 3D que aparecerá solo al revelar la portada -->
-  <div id="canvas-container" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></div>
 
   <div class="footer">
     <button class="shock hidden" id="shockBtn">📖 ¡Chócalas por abrir un libro físico!</button>
@@ -210,7 +206,7 @@ function iniciarJuego() {
 function manejarClick(i) {
   if (revelado) return location.reload();
   if (i === bloquePortada) {
-    revelarTodo();
+    revelarBloque(i);
   } else {
     const text = el("bloque" + i + "Text");
     if (text) {
@@ -220,51 +216,58 @@ function manejarClick(i) {
   }
 }
 
-function revelarTodo() {
-  document.getElementById('gridContainer').classList.add('hidden');
-  el('canvas-container').classList.remove('hidden');
-  document.body.classList.add("dark");
-  document.body.style.background = libroActual.fondo;
-  el("shockBtn").classList.remove("hidden");
-  el("logoTriggui").classList.add("hidden");
-  crearLibro3D(libroActual.portada);
-  revelado = true;
-}
+function revelarBloque(i) {
+  const block = el("bloque" + i);
+  block.innerHTML = ''; // limpiamos el contenido previo
+  block.style.background = "none";
+  block.style.padding = "0";
+  block.style.position = "relative";
 
-function crearLibro3D(urlPortada) {
-  const container = document.getElementById('canvas-container');
+  // Creamos un canvas 3D directamente dentro del bloque
+  const canvas = document.createElement('canvas');
+  canvas.style.width = "100%";
+  canvas.style.height = "100%";
+  canvas.style.position = "absolute";
+  canvas.style.top = "0";
+  canvas.style.left = "0";
+  block.appendChild(canvas);
+
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-  camera.position.z = 3;
+  const camera = new THREE.PerspectiveCamera(60, block.clientWidth / block.clientHeight, 0.1, 1000);
+  camera.position.z = 2.5;
 
-  const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+  renderer.setSize(block.clientWidth, block.clientHeight);
   renderer.setPixelRatio(window.devicePixelRatio);
-  container.innerHTML = '';
-  container.appendChild(renderer.domElement);
 
   const ambientLight = new THREE.AmbientLight(0xffffff, 1);
   scene.add(ambientLight);
 
   const geometry = new THREE.BoxGeometry(1, 1.4, 0.08);
-  const texture = new THREE.TextureLoader().load(urlPortada);
+  const texture = new THREE.TextureLoader().load(libroActual.portada);
   const material = new THREE.MeshStandardMaterial({ map: texture });
   const libro = new THREE.Mesh(geometry, material);
   scene.add(libro);
 
   function animate() {
     requestAnimationFrame(animate);
-    libro.rotation.y += 0.0025;
+    libro.rotation.y += 0.003;
     libro.rotation.x += 0.0015;
     renderer.render(scene, camera);
   }
   animate();
 
   window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.aspect = block.clientWidth / block.clientHeight;
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(block.clientWidth, block.clientHeight);
   });
+
+  document.body.classList.add("dark");
+  document.body.style.background = libroActual.fondo;
+  el("shockBtn").classList.remove("hidden");
+  el("logoTriggui").classList.add("hidden");
+  revelado = true;
 }
 
 el("shockBtn").onclick = () => {
