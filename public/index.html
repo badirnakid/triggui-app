@@ -10,25 +10,24 @@
 html,body{width:100%;height:100%;font-family:'Archivo',sans-serif;background:linear-gradient(135deg,#0d0e1a,#1a1c2d);overflow:hidden;transition:background 1s ease;perspective:1200px}
 body.dark{background:#000}
 .main{height:100dvh;display:flex;flex-direction:column;opacity:0;animation:fadeIn 1.5s ease forwards}
-.grid{flex:1;display:grid;gap:1vw;padding:1vw;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
+.grid{flex:1;display:grid;gap:1.2vw;padding:2vw;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
 @media(orientation:landscape){.grid{grid-template-columns:repeat(4,1fr);grid-template-rows:1fr}}
-.block{display:flex;justify-content:center;align-items:center;text-align:center;border-radius:20px;font-weight:bold;font-size:clamp(1.1rem,2vw,1.5rem);color:white;background-size:cover;background-position:center;cursor:pointer;transition:.5s;overflow:hidden;transform:scale(.95);opacity:0;animation:scaleFadeIn 1.6s forwards;position:relative;padding:10px;min-height:0}
+.block{display:flex;justify-content:center;align-items:center;text-align:center;border-radius:20px;font-weight:bold;font-size:clamp(1.2rem,2vw,1.5rem);color:white;background-size:cover;background-position:center;cursor:pointer;transition:.5s;overflow:hidden;transform:scale(.95);opacity:0;animation:scaleFadeIn 1.6s forwards;position:relative;padding:10px;min-height:0}
 .block-content{position:absolute;inset:0;display:flex;justify-content:center;align-items:center;padding:10px;text-align:center;word-break:break-word}
-.label{z-index:1;font-size:clamp(1.4rem,2vw,2rem)}
-.accionable{color:white;font-family:'Poppins',sans-serif;font-size:clamp(1rem,1.8vw,1.4rem);font-weight:600;padding:14px;border-radius:20px;opacity:0;animation:aparecer .6s forwards;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.3)}
+.label{z-index:1}
+.accionable{color:white;font-family:'Poppins',sans-serif;font-size:clamp(1rem,1.8vw,1.4rem);font-weight:600;padding:14px;border-radius:18px;opacity:0;animation:aparecer .6s forwards;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.3)}
 .portada-wrapper{width:100%;height:100%;display:flex;justify-content:center;align-items:center;background:transparent;transform-style:preserve-3d;animation:flotarRespirarTilt 8s ease-in-out infinite}
 .portada-wrapper img{width:88%;height:auto;object-fit:cover;border-radius:22px;box-shadow:0 12px 30px rgba(0,0,0,.4);transition:transform .6s}
 .portada-wrapper img:hover{transform:scale(1.06) rotateY(6deg) rotateX(3deg)}
 .footer{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:1vh;min-height:100px}
-.shock{background:linear-gradient(135deg,#ff0080,#ff8c00);color:white;font-weight:bold;border:none;border-radius:30px;padding:14px 24px;margin-top:6px;font-size:clamp(1rem,2vw,1.4rem);cursor:pointer;box-shadow:0 0 18px rgba(255,105,180,.6);animation:pulse 2s infinite;max-width:90%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shock{background:linear-gradient(135deg,#ff0080,#ff8c00);color:white;font-weight:bold;border:none;border-radius:30px;padding:14px 24px;margin-top:8px;font-size:clamp(1rem,2vw,1.4rem);cursor:pointer;box-shadow:0 0 18px rgba(255,105,180,.6);animation:pulse 2s infinite;max-width:90%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .final-message{color:white;font-size:clamp(1.1rem,2vw,1.5rem);text-align:center;opacity:0;animation:fadeIn 2s forwards;margin-top:8px;font-family:'Poppins',sans-serif}
 .trigguiletras{height:24px;opacity:.9;margin-top:6px;transition:opacity .4s}
 .hidden{display:none!important}
-.bg1{background:linear-gradient(135deg,#ff6b6b,#f7b733)}
-.bg2{background:linear-gradient(135deg,#00c3ff,#ffff1c)}
-.bg3{background:linear-gradient(135deg,#d53369,#daae51)}
+.bg1{background:linear-gradient(135deg,#ff5f6d,#ffc371)}
+.bg2{background:linear-gradient(135deg,#36d1dc,#5b86e5)}
+.bg3{background:linear-gradient(135deg,#f7797d,#fbd786)}
 .bg4{background:linear-gradient(135deg,#12c2e9,#c471ed,#f64f59)}
-.colorful span{display:inline-block;background:linear-gradient(45deg,#ff0080,#ff8c00);-webkit-background-clip:text;color:transparent}
 @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes scaleFadeIn{to{transform:scale(1);opacity:1}}
 @keyframes aparecer{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
@@ -42,21 +41,26 @@ body.dark{background:#000}
   <div class="grid" id="gridContainer"></div>
   <div class="footer">
     <button class="shock hidden" id="shockBtn">📖 ¡Chócalas!</button>
-    <div class="final-message hidden" id="mensajeFinal">✨ ¡Felicidades! Vibraste en alto. ✨</div>
+    <div class="final-message hidden" id="mensajeFinal">✨ ¡Felicidades! Vibraste alto. ✨</div>
     <img src="/trigguiletras.png" class="trigguiletras" id="logoTriggui">
   </div>
 </div>
 
 <script>
 const $=id=>document.getElementById(id),
-nombres=[["<span class='colorful'><span>F</span><span>L</span><span>U</span><span>Y</span><span>E</span></span>"],["<span class='colorful'><span>C</span><span>R</span><span>E</span><span>A</span></span>"],["<span class='colorful'><span>S</span><span>E</span><span>N</span><span>T</span><span>I</span></span>"],["<span class='colorful'><span>V</span><span>I</span><span>B</span><span>R</span><span>A</span></span>"]],
+nombres=[
+["Fluye"],
+["Crea"],
+["Siente"],
+["Vibra"]
+],
 colores=["bg1","bg2","bg3","bg4"],
 libros=[
-{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1642726660i/60171734.jpg",fondo:"#140038",frases:["🌬️ Respira profundo 🌬️ y deja que la vida te encuentre." ]},
-{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1602574232i/55539565.jpg",fondo:"#001a33",frases:["🔍 Explora 💫 las maravillas ocultas en lo cotidiano."]},
-{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1662270336i/62237986.jpg",fondo:"#33001a",frases:["🧠 Crea 🔥 nuevas ideas que transformen realidades."]},
-{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1546097703i/76865.jpg",fondo:"#003300",frases:["💓 Vibra ⚡ desde el lugar más auténtico de tu ser."]},
-{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1544822311i/43163538.jpg",fondo:"#333300",frases:["🌟 Fluye 🍃 con la energía que guía a los sabios."]}
+{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1642726660i/60171734.jpg",fondo:"#140038",frases:["🌬️ Respira profundamente y permite que la calma invada cada rincón de tu ser."]},
+{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1602574232i/55539565.jpg",fondo:"#001a33",frases:["🔍 Explora caminos desconocidos que expandan tu conciencia y te inspiren."]},
+{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1662270336i/62237986.jpg",fondo:"#33001a",frases:["🧠 Crea espacios de magia donde cada idea sea un mundo posible."]},
+{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1546097703i/76865.jpg",fondo:"#003300",frases:["💓 Vibra en sintonía con la energía más pura del universo que habita en ti."]},
+{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1544822311i/43163538.jpg",fondo:"#333300",frases:["✨ Fluye como el río que avanza sin esfuerzo hacia su destino de grandeza."]}
 ];
 let libroActual,bloquePortada,revelado=false;
 
