@@ -1,98 +1,110 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>TrigguiApp</title>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    html,body{height:100%;font-family:'Archivo',sans-serif;background:linear-gradient(135deg,#0d0e1a,#1a1c2d);overflow:hidden;transition:background 1s;perspective:1200px}
-    .main{height:100dvh;display:flex;flex-direction:column;animation:fadeIn 1.5s forwards}
-    .grid{flex:1;display:grid;gap:2vw;padding:2vw;grid-template:1fr 1fr/1fr 1fr}
-    @media(orientation:landscape){.grid{grid-template:1fr/1fr 1fr 1fr 1fr}}
-    .block{display:flex;justify-content:center;align-items:center;text-align:center;border-radius:16px;font-weight:bold;font-size:1.1rem;color:white;background-size:cover;background-position:center;cursor:pointer;transition:.5s;overflow:hidden;transform:scale(.95);opacity:0;animation:scaleFadeIn 1.6s forwards;position:relative;padding:10px}
-    .block-content{position:absolute;inset:0;display:flex;justify-content:center;align-items:center;padding:14px;text-align:center}
-    .accionable{color:white;font-size:1rem;font-weight:600;padding:16px;border-radius:16px;opacity:0;animation:aparecer .6s forwards;box-shadow:0 8px 30px rgba(0,0,0,.3)}
-    .portada-wrapper{width:100%;height:100%;display:flex;justify-content:center;align-items:center;background:transparent;animation:flotarRespirarTilt 8s infinite;transform-style:preserve-3d}
-    .portada-wrapper img{width:88%;max-height:92%;object-fit:cover;aspect-ratio:2/3;border-radius:22px;box-shadow:0 12px 30px rgba(0,0,0,.4);transition:.6s}
-    .portada-wrapper img:hover{transform:scale(1.06) rotateY(6deg) rotateX(3deg)}
-    .footer{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1vh;min-height:80px}
-    .shock{background:linear-gradient(135deg,#ff6a00,#ffb347);color:white;font-weight:bold;border:none;border-radius:30px;padding:14px 26px;font-size:1.1rem;cursor:pointer;box-shadow:0 0 18px rgba(255,175,95,.6);margin-bottom:6px;animation:pulse 2s infinite}
-    .final-message{color:white;font-size:1rem;text-align:center;opacity:0;animation:fadeIn 2s forwards}
-    .trigguiletras{height:24px;opacity:.9;transition:opacity .4s}
-    .hidden{display:none!important}
-    .bg1{background:linear-gradient(135deg,#ff7e5f,#feb47b)}
-    .bg2{background:linear-gradient(135deg,#43cea2,#185a9d)}
-    .bg3{background:linear-gradient(135deg,#8e2de2,#4a00e0)}
-    .bg4{background:linear-gradient(135deg,#fc466b,#3f5efb)}
-    @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-    @keyframes scaleFadeIn{to{transform:scale(1);opacity:1}}
-    @keyframes aparecer{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
-    @keyframes flotarRespirarTilt{0%,50%,100%{transform:translateY(0) rotateX(0) rotateY(0) scale(1)}25%{transform:translateY(-6px) rotateX(2deg) rotateY(-2deg) scale(1.015)}75%{transform:translateY(-6px) rotateX(-2deg) rotateY(2deg) scale(1.015)}}
-    @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>TrigguiApp – Un instante, un universo</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;font-family:'Archivo',sans-serif;background:linear-gradient(135deg,#0d0e1a,#1a1c2d);overflow:hidden;transition:background 1s ease;perspective:1200px}
+body.dark{background:#000}
+.main{height:100dvh;display:flex;flex-direction:column;opacity:0;animation:fadeIn 1.5s ease forwards}
+.grid{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:2vw;padding:2vw}
+@media(orientation:landscape){.grid{grid-template-columns:repeat(4,1fr);grid-template-rows:1fr}}
+.block{display:flex;justify-content:center;align-items:center;text-align:center;border-radius:16px;font-weight:bold;font-size:1.1rem;color:#fff;background-size:cover;background-position:center;cursor:pointer;transition:.5s;overflow:hidden;transform:scale(.95);opacity:0;animation:scaleFadeIn 1.6s forwards;position:relative;padding:10px}
+.block-content{position:absolute;inset:0;display:flex;justify-content:center;align-items:center;padding:14px;text-align:center}
+.label{z-index:1}
+.accionable{color:#fff;font-size:1rem;font-weight:600;padding:16px;border-radius:16px;opacity:0;animation:aparecer .6s forwards;box-shadow:0 8px 30px rgba(0,0,0,.3)}
+.portada-wrapper{width:100%;height:100%;display:flex;justify-content:center;align-items:center;animation:flotarRespirarTilt 8s ease-in-out infinite;transform-style:preserve-3d;background:transparent}
+.portada-wrapper img{width:88%;max-height:92%;object-fit:cover;aspect-ratio:2/3;border-radius:22px;box-shadow:0 12px 30px rgba(0,0,0,.4);transition:transform .6s}
+.portada-wrapper img:hover{transform:scale(1.06) rotateY(6deg) rotateX(3deg)}
+.footer{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1vh;min-height:80px}
+.shock{background:linear-gradient(135deg,#ff6a00,#ffb347);color:#fff;font-weight:bold;border:none;border-radius:30px;padding:14px 26px;font-size:1.1rem;cursor:pointer;box-shadow:0 0 18px rgba(255,175,95,.6);margin-bottom:6px;animation:pulse 2s infinite;transition:background .6s,box-shadow .6s}
+.final-message{color:#fff;font-size:1rem;text-align:center;opacity:0;animation:fadeIn 2s forwards}
+.trigguiletras{height:24px;opacity:.9;transition:opacity .4s}
+.hidden{display:none!important}
+.bg1{background:linear-gradient(135deg,#ff7e5f,#feb47b)}
+.bg2{background:linear-gradient(135deg,#43cea2,#185a9d)}
+.bg3{background:linear-gradient(135deg,#8e2de2,#4a00e0)}
+.bg4{background:linear-gradient(135deg,#fc466b,#3f5efb)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes scaleFadeIn{to{transform:scale(1);opacity:1}}
+@keyframes aparecer{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+@keyframes flotarRespirarTilt{0%{transform:translateY(0)rotateX(0)rotateY(0)scale(1)}25%{transform:translateY(-6px)rotateX(2deg)rotateY(-2deg)scale(1.015)}50%{transform:translateY(0)rotateX(0)rotateY(0)scale(1)}75%{transform:translateY(-6px)rotateX(-2deg)rotateY(2deg)scale(1.015)}100%{transform:translateY(0)rotateX(0)rotateY(0)scale(1)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+</style>
 </head>
 <body>
 <div class="main">
-  <div class="grid" id="grid"></div>
+  <div class="grid" id="gridContainer"></div>
   <div class="footer">
-    <button class="shock hidden" id="shock">📖 ¡Chócalas!</button>
-    <div class="final-message hidden" id="final">✨ ¡Felicidades! Elegiste la pausa perfecta. ✨</div>
-    <img src="/trigguiletras.png" class="trigguiletras" id="logo">
+    <button class="shock hidden" id="shockBtn">📖 ¡Chócalas por abrir un libro físico!</button>
+    <div class="final-message hidden" id="mensajeFinal">✨ ¡Felicidades! Elegiste la pausa perfecta con un libro real. ✨</div>
+    <img src="/trigguiletras.png" class="trigguiletras" id="logoTriggui">
   </div>
 </div>
 <script>
-const $=id=>document.getElementById(id),rand=a=>a[Math.floor(Math.random()*a.length)];
-const nombres=[["Pausa","Respira","Detente","Vacía","Fluye"],["Descubre","Explora","Lee","Observa","Inspírate"],["Reflexiona","Actúa","Muévete","Sorpréndete","Transforma"],["Siente","Conecta","Abraza","Disfruta","Vibra"]];
-const colores=["bg1","bg2","bg3","bg4"];
-const libros=[
-  {portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1642726660i/60171734.jpg",fondo:"#140038",frases:["🌬️ Tómate un momento.","🔍 Encuentra curiosidad.","🧠 Mejora hoy.","💓 Siente la grandeza."]},
-  {portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1602574232i/55539565.jpg",fondo:"#001a33",frases:["🌬️ Deja ir certezas.","🔍 Abre preguntas.","🧠 Reescribe ideas.","💓 Libertad interna."]},
-  {portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1662270336i/62237986.jpg",fondo:"#33001a",frases:["🌬️ Espacio al caos.","🔍 Crea tuyo.","🧠 Crea hoy.","💓 Impulso real."]},
-  {portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1546097703i/76865.jpg",fondo:"#003300",frases:["🌬️ ¿Mejorar?","🔍 Nivel nuevo.","🧠 Visión grande.","💓 Energía salto."]},
-  {portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1544822311i/43163538.jpg",fondo:"#333300",frases:["🌬️ Ritmo natural.","🔍 Mejor momento.","🧠 Decisiones sabias.","💓 Flujo vital."]}
+const $=id=>document.getElementById(id),
+nombres=[["Pausa","Respira","Detente","Vacía","Fluye"],["Descubre","Explora","Lee","Observa","Inspírate"],["Reflexiona","Actúa","Muévete","Sorpréndete","Transforma"],["Siente","Conecta","Abraza","Disfruta","Vibra"]],
+colores=["bg1","bg2","bg3","bg4"],
+libros=[
+{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1642726660i/60171734.jpg",fondo:"#140038",frases:["🌬️ Tómate un momento.","🔍 Encuentra curiosidad.","🧠 Mejora hoy.","💓 Siente la grandeza."]},
+{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1602574232i/55539565.jpg",fondo:"#001a33",frases:["🌬️ Deja ir certezas.","🔍 Abre preguntas.","🧠 Reescribe ideas.","💓 Libertad interna."]},
+{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1662270336i/62237986.jpg",fondo:"#33001a",frases:["🌬️ Espacio creativo.","🔍 Descubre magia.","🧠 Crea hoy.","💓 Impulso real."]},
+{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1546097703i/76865.jpg",fondo:"#003300",frases:["🌬️ ¿Mejorar?","🔍 Nivel nuevo.","🧠 Visión larga.","💓 Energía salto."]},
+{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1544822311i/43163538.jpg",fondo:"#333300",frases:["🌬️ Ritmo natural.","🔍 Mejor hora.","🧠 Decisiones sabias.","💓 Flujo vital."]}
 ];
-let libro,bloque,abierto=false;
+let libroActual,bloquePortada,revelado=false;
 
-function init(){
-  const g=$("grid");
-  g.innerHTML="",libro=rand(libros),bloque=Math.floor(Math.random()*4),abierto=false,$("logo").classList.remove("hidden");
-  nombres.forEach((n,i)=>{
-    const d=document.createElement("div");
-    d.className=`block ${colores[i]}`;
-    d.id="b"+i;
-    d.innerHTML=`<div class='block-content label'>${rand(n).toUpperCase()}</div><div class='block-content accionable hidden' id='b${i}'>${libro.frases[i]}</div>`;
-    d.onclick=()=>click(i);
-    g.appendChild(d);
+function iniciarJuego(){
+  const grid=$("gridContainer"),logo=$("logoTriggui");
+  grid.innerHTML="",libroActual=libros[Math.floor(Math.random()*libros.length)],bloquePortada=Math.floor(Math.random()*4),revelado=false,logo.classList.remove("hidden");
+  nombres.forEach((opciones,i)=>{
+    const div=document.createElement("div");
+    div.className=`block ${colores[i]}`;
+    div.id="bloque"+i;
+    div.innerHTML=`<div class="block-content label">${opciones[Math.floor(Math.random()*opciones.length)].toUpperCase()}</div><div class="block-content accionable hidden" id="bloque${i}Text">${libroActual.frases[i]}</div>`;
+    div.onclick=()=>manejarClick(i);
+    grid.appendChild(div);
   });
 }
 
-function click(i){
-  if(abierto)return location.reload();
-  if(i===bloque)reveal();else $("b"+i).classList.remove("hidden"),$("b"+i).previousElementSibling.classList.add("hidden");
+function manejarClick(i){
+  if(revelado)return location.reload();
+  if(i===bloquePortada)revelarTodo();
+  else{$("bloque"+i+"Text").classList.remove("hidden");$("bloque"+i).querySelector(".label").classList.add("hidden")}
 }
 
-function reveal(){
+function revelarTodo(){
   nombres.forEach((_,i)=>{
-    const b=$("b"+i).parentElement;
-    if(i===bloque){
-      b.innerHTML=`<div class='portada-wrapper'><img src='${libro.portada}'></div>`;
-      b.style.background="none";b.style.padding=0;
+    const block=$("bloque"+i);
+    if(i===bloquePortada){
+      block.innerHTML="";
+      block.style.background="none";
+      block.style.padding="0";
+      const wrapper=document.createElement("div");
+      wrapper.className="portada-wrapper";
+      const img=document.createElement("img");
+      img.src=libroActual.portada;
+      img.alt="Portada del libro";
+      wrapper.appendChild(img);
+      block.appendChild(wrapper);
     }else{
-      $("b"+i).classList.remove("hidden");
-      b.querySelector(".label").classList.add("hidden");
+      $("bloque"+i+"Text").classList.remove("hidden");
+      block.querySelector(".label").classList.add("hidden");
     }
   });
   document.body.classList.add("dark");
-  document.body.style.background=libro.fondo;
-  $("shock").classList.remove("hidden");
-  $("logo").classList.add("hidden");
-  abierto=true;
+  document.body.style.background=libroActual.fondo;
+  $("shockBtn").classList.remove("hidden");
+  $("logoTriggui").classList.add("hidden");
+  revelado=true;
 }
 
-$("shock").onclick=()=>{$("shock").classList.add("hidden");$("final").classList.remove("hidden");};
-init();
+$("shockBtn").onclick=()=>{ $("shockBtn").classList.add("hidden"); $("mensajeFinal").classList.remove("hidden"); };
+
+iniciarJuego();
 </script>
 </body>
 </html>
