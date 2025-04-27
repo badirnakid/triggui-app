@@ -69,6 +69,7 @@
       animation: scaleFadeIn 1.6s forwards;
       position: relative;
       padding: 10px;
+      min-height: 30vh; /* Important: mantener altura mínima para bloques */
     }
     @keyframes scaleFadeIn {
       to { transform: scale(1); opacity: 1; }
@@ -218,12 +219,12 @@ function manejarClick(i) {
 
 function revelarBloque(i) {
   const block = el("bloque" + i);
-  block.innerHTML = ''; // limpiamos el contenido previo
+  block.innerHTML = '';
   block.style.background = "none";
   block.style.padding = "0";
+  block.style.minHeight = "40vh"; // Aseguramos altura decente para 3D
   block.style.position = "relative";
 
-  // Creamos un canvas 3D directamente dentro del bloque
   const canvas = document.createElement('canvas');
   canvas.style.width = "100%";
   canvas.style.height = "100%";
@@ -266,7 +267,7 @@ function revelarBloque(i) {
   document.body.classList.add("dark");
   document.body.style.background = libroActual.fondo;
   el("shockBtn").classList.remove("hidden");
-  el("logoTriggui").classList.add("hidden");
+  el("logoTriggui").classList.add("hidden"); // Ocultamos logo Triggui al revelar
   revelado = true;
 }
 
