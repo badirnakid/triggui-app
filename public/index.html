@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>TrigguiApp – Un instante, un universo</title>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:100%;height:100%;font-family:'Archivo',sans-serif;background:linear-gradient(135deg,#0d0e1a,#1a1c2d);overflow:hidden;transition:background 1s ease;perspective:1200px}
@@ -12,22 +12,22 @@ body.dark{background:#000}
 .main{height:100dvh;display:flex;flex-direction:column;opacity:0;animation:fadeIn 1.5s ease forwards}
 .grid{flex:1;display:grid;gap:1vw;padding:2vw;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
 @media(orientation:landscape){.grid{grid-template-columns:repeat(4,1fr);grid-template-rows:1fr}}
-.block{display:flex;justify-content:center;align-items:center;text-align:center;border-radius:18px;font-weight:bold;font-size:1.2rem;color:white;background-size:cover;background-position:center;cursor:pointer;transition:.5s;overflow:hidden;transform:scale(.95);opacity:0;animation:scaleFadeIn 1.6s forwards;position:relative;padding:8px}
+.block{display:flex;justify-content:center;align-items:center;text-align:center;border-radius:20px;font-weight:bold;font-size:1.3rem;color:white;background-size:cover;background-position:center;cursor:pointer;transition:.5s;overflow:hidden;transform:scale(.95);opacity:0;animation:scaleFadeIn 1.6s forwards;position:relative;padding:10px}
 .block-content{position:absolute;inset:0;display:flex;justify-content:center;align-items:center;padding:10px;text-align:center;word-break:break-word}
-.label{z-index:1;font-size:clamp(1rem,2vw,1.3rem)}
-.accionable{color:white;font-size:clamp(1rem,1.8vw,1.2rem);font-weight:600;padding:14px;border-radius:16px;opacity:0;animation:aparecer .6s forwards;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.3)}
+.label{z-index:1;font-size:clamp(1.1rem,2vw,1.5rem)}
+.accionable{color:white;font-family:'Poppins',sans-serif;font-size:clamp(1.05rem,2vw,1.3rem);font-weight:500;padding:14px;border-radius:20px;opacity:0;animation:aparecer .6s forwards;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.3)}
 .portada-wrapper{width:100%;height:100%;display:flex;justify-content:center;align-items:center;animation:flotarRespirarTilt 8s ease-in-out infinite;background:transparent;transform-style:preserve-3d}
 .portada-wrapper img{width:88%;max-height:92%;object-fit:cover;aspect-ratio:2/3;border-radius:22px;box-shadow:0 12px 30px rgba(0,0,0,.4);transition:transform .6s}
 .portada-wrapper img:hover{transform:scale(1.06) rotateY(6deg) rotateX(3deg)}
 .footer{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2vh 2vw;min-height:90px}
-.shock{background:linear-gradient(135deg,#ff7e5f,#feb47b);color:white;font-weight:bold;border:none;border-radius:30px;padding:14px 28px;margin-bottom:8px;font-size:clamp(1rem,2vw,1.3rem);cursor:pointer;box-shadow:0 0 18px rgba(255,175,95,.6);animation:pulse 2s infinite;max-width:90%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.final-message{color:white;font-size:clamp(1rem,2vw,1.4rem);text-align:center;opacity:0;animation:fadeIn 2s forwards;margin-top:8px}
-.trigguiletras{height:24px;opacity:.9;margin-top:6px;transition:opacity .4s}
+.shock{background:linear-gradient(135deg,#ff6b6b,#f06595);color:white;font-weight:bold;border:none;border-radius:30px;padding:14px 28px;margin-bottom:8px;font-size:clamp(1rem,2vw,1.4rem);cursor:pointer;box-shadow:0 0 18px rgba(255,105,180,.6);animation:pulse 2s infinite;max-width:90%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.final-message{color:white;font-size:clamp(1.1rem,2vw,1.5rem);text-align:center;opacity:0;animation:fadeIn 2s forwards;margin-top:8px;font-family:'Poppins',sans-serif}
+.trigguiletras{height:26px;opacity:.9;margin-top:8px;transition:opacity .4s}
 .hidden{display:none!important}
-.bg1{background:linear-gradient(135deg,#ff7e5f,#feb47b)}
-.bg2{background:linear-gradient(135deg,#43cea2,#185a9d)}
-.bg3{background:linear-gradient(135deg,#8e2de2,#4a00e0)}
-.bg4{background:linear-gradient(135deg,#fc466b,#3f5efb)}
+.bg1{background:linear-gradient(135deg,#ff6b6b,#f7b733)}
+.bg2{background:linear-gradient(135deg,#00c3ff,#ffff1c)}
+.bg3{background:linear-gradient(135deg,#d53369,#daae51)}
+.bg4{background:linear-gradient(135deg,#12c2e9,#c471ed,#f64f59)}
 @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes scaleFadeIn{to{transform:scale(1);opacity:1}}
 @keyframes aparecer{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
@@ -39,14 +39,16 @@ body.dark{background:#000}
   100%{transform:translateY(0)rotateX(0)rotateY(0)scale(1)}
 }
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.gradient{background:linear-gradient(45deg,#ff6b6b,#f7b733);-webkit-background-clip:text;color:transparent}
+.colorful{color:#ff6b6b}
 </style>
 </head>
 <body>
 <div class="main">
   <div class="grid" id="gridContainer"></div>
   <div class="footer">
-    <button class="shock hidden" id="shockBtn">📖 ¡Chócalas!</button>
-    <div class="final-message hidden" id="mensajeFinal">✨ ¡Felicidades por abrir un libro real! ✨</div>
+    <button class="shock hidden" id="shockBtn">📖 <span class="gradient">¡Chócalas!</span></button>
+    <div class="final-message hidden" id="mensajeFinal">✨ <span class="gradient">¡Felicidades!</span> por abrir un libro real. ✨</div>
     <img src="/trigguiletras.png" class="trigguiletras" id="logoTriggui">
   </div>
 </div>
@@ -56,11 +58,11 @@ const $=id=>document.getElementById(id),
 nombres=[["Pausa","Respira","Detente","Vacía","Fluye"],["Descubre","Explora","Lee","Observa","Inspírate"],["Reflexiona","Actúa","Muévete","Sorpréndete","Transforma"],["Siente","Conecta","Abraza","Disfruta","Vibra"]],
 colores=["bg1","bg2","bg3","bg4"],
 libros=[
-{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1642726660i/60171734.jpg",fondo:"#140038",frases:["🌬️ Observa el vacío","🔍 Encuentra curiosidad","🧠 Mejora hoy","💓 Grandeza interior"]},
-{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1602574232i/55539565.jpg",fondo:"#001a33",frases:["🌬️ Libera certezas","🔍 Pregunta nuevo","🧠 Rediseña ideas","💓 Desapego consciente"]},
-{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1662270336i/62237986.jpg",fondo:"#33001a",frases:["🌬️ Abraza el caos","🔍 Encuentra magia","🧠 Crea hoy","💓 Activa chispa"]},
-{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1546097703i/76865.jpg",fondo:"#003300",frases:["🌬️ Mejora continua","🔍 Nuevo nivel","🧠 Visión grande","💓 Energía salto"]},
-{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1544822311i/43163538.jpg",fondo:"#333300",frases:["🌬️ Ritmo natural","🔍 Mejor momento","🧠 Decisiones sabias","💓 Fluye hoy"]}
+{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1642726660i/60171734.jpg",fondo:"#140038",frases:["🌬️ <span class='colorful'>Observa</span> el vacío","🔍 Encuentra <span class='colorful'>curiosidad</span>","🧠 Mejora <span class='gradient'>hoy</span>","💓 Siente la grandeza"]},
+{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1602574232i/55539565.jpg",fondo:"#001a33",frases:["🌬️ Libera <span class='gradient'>certezas</span>","🔍 Pregunta <span class='colorful'>nuevo</span>","🧠 Rediseña <span class='colorful'>ideas</span>","💓 Vive el desapego"]},
+{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1662270336i/62237986.jpg",fondo:"#33001a",frases:["🌬️ Abraza el <span class='gradient'>caos</span>","🔍 Encuentra tu <span class='colorful'>magia</span>","🧠 <span class='colorful'>Crea</span> hoy","💓 Activa tu chispa"]},
+{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1546097703i/76865.jpg",fondo:"#003300",frases:["🌬️ Mejora continua","🔍 <span class='gradient'>Nuevo nivel</span>","🧠 Visión <span class='colorful'>grande</span>","💓 Energía salto"]},
+{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1544822311i/43163538.jpg",fondo:"#333300",frases:["🌬️ Sigue tu ritmo","🔍 Mejor <span class='gradient'>momento</span>","🧠 Decisiones sabias","💓 Fluye hoy"]}
 ];
 let libroActual,bloquePortada,revelado=false;
 
