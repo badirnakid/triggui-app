@@ -72,14 +72,14 @@
     }
     @keyframes aparecer { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
-    /* Nueva animación portada: LATIDO + RESPLANDOR */
+    /* Animación nueva de la portada */
     .portada-wrapper {
       width: 100%;
       height: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
-      animation: latidoPortada 6s ease-in-out infinite;
+      animation: flotarSuave 6s ease-in-out infinite;
       background: transparent;
     }
     .portada-wrapper img {
@@ -88,22 +88,22 @@
       object-fit: cover;
       aspect-ratio: 2/3;
       border-radius: 22px;
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-      transition: transform 0.4s ease, box-shadow 0.4s ease;
-      animation: resplandorLatido 6s ease-in-out infinite;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+      transition: transform 0.6s ease;
+      animation: respirarSuave 6s ease-in-out infinite;
     }
     .portada-wrapper img:hover {
       transform: scale(1.04);
     }
 
-    @keyframes latidoPortada {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.03); }
+    @keyframes flotarSuave {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
     }
 
-    @keyframes resplandorLatido {
-      0%, 100% { box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4); }
-      50% { box-shadow: 0 16px 50px rgba(255, 255, 255, 0.25); }
+    @keyframes respirarSuave {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
     }
 
     .footer {
