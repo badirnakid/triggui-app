@@ -50,7 +50,15 @@
       padding: 10px;
     }
     @keyframes scaleFadeIn { to { transform: scale(1); opacity: 1; } }
-    .block-content { position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; padding: 14px; text-align: center; }
+    .block-content {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 14px;
+      text-align: center;
+    }
     .label { z-index: 1; }
     .accionable {
       color: white;
@@ -63,18 +71,16 @@
       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
     }
     @keyframes aparecer { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+    /* Nueva animación portada */
     .portada-wrapper {
       width: 100%;
       height: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
+      animation: flotarPortada 10s ease-in-out infinite;
       background: transparent;
-      animation: breathe 6s ease-in-out infinite;
-    }
-    @keyframes breathe {
-      0%, 100% { transform: scale(1) translateY(0); }
-      50% { transform: scale(1.05) translateY(-6px); }
     }
     .portada-wrapper img {
       width: 88%;
@@ -83,15 +89,27 @@
       aspect-ratio: 2/3;
       border-radius: 22px;
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-      transition: transform 0.4s ease;
-      animation: pulseImg 8s ease-in-out infinite;
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
     }
-    @keyframes pulseImg {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.03); }
+    .portada-wrapper img:hover {
+      transform: scale(1.02);
     }
-    .portada-wrapper img:hover { transform: scale(1.06); }
-    .footer { display: flex; flex-direction: column; align-items: center; padding: 1vh; min-height: 80px; justify-content: center; }
+    @keyframes flotarPortada {
+      0% { transform: translateY(0px) rotate(0deg) scale(1); }
+      25% { transform: translateY(-6px) rotate(-1deg) scale(1.02); }
+      50% { transform: translateY(0px) rotate(0deg) scale(1); }
+      75% { transform: translateY(-6px) rotate(1deg) scale(1.02); }
+      100% { transform: translateY(0px) rotate(0deg) scale(1); }
+    }
+
+    .footer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1vh;
+      min-height: 80px;
+      justify-content: center;
+    }
     .shock {
       background: linear-gradient(135deg, #ff6a00, #ffb347);
       color: white;
@@ -106,9 +124,22 @@
       animation: pulse 2s infinite;
       transition: background 0.6s ease, box-shadow 0.6s ease;
     }
-    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
-    .final-message { color: white; font-size: 1rem; text-align: center; opacity: 0; animation: fadeIn 2s forwards; }
-    .trigguiletras { height: 24px; opacity: 0.9; transition: opacity 0.4s ease; }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+    .final-message {
+      color: white;
+      font-size: 1rem;
+      text-align: center;
+      opacity: 0;
+      animation: fadeIn 2s forwards;
+    }
+    .trigguiletras {
+      height: 24px;
+      opacity: 0.9;
+      transition: opacity 0.4s ease;
+    }
     .hidden { display: none !important; }
     .bg1 { background: linear-gradient(135deg, #ff7e5f, #feb47b); }
     .bg2 { background: linear-gradient(135deg, #43cea2, #185a9d); }
@@ -121,7 +152,7 @@
 <div class="main">
   <div class="grid" id="gridContainer"></div>
   <div class="footer">
-    <button class="shock hidden" id="shockBtn">📚 ¡Chócalas por abrir un libro físico!‼️</button>
+    <button class="shock hidden" id="shockBtn">📖 ¡Chócalas por abrir un libro físico!</button>
     <div class="final-message hidden" id="mensajeFinal">✨ ¡Felicidades! Elegiste la pausa perfecta con un libro real. ✨</div>
     <img src="/trigguiletras.png" class="trigguiletras" id="logoTriggui" />
   </div>
@@ -139,12 +170,61 @@ const nombresBloques = [
 const colores = ["bg1", "bg2", "bg3", "bg4"];
 
 const libros = [
-  // (los libros que ya tienes, los mantenemos igual)
-  { titulo: "Los hábitos secretos de los genios", portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1642726660i/60171734.jpg", fondo: "#140038", frases: ["...", "...", "...", "..."] },
-  { titulo: "Think Again", portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1602574232i/55539565.jpg", fondo: "#001a33", frases: ["...", "...", "...", "..."] },
-  { titulo: "Crea", portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1662270336i/62237986.jpg", fondo: "#33001a", frases: ["...", "...", "...", "..."] },
-  { titulo: "Good to Great", portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1546097703i/76865.jpg", fondo: "#003300", frases: ["...", "...", "...", "..."] },
-  { titulo: "When", portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1544822311i/43163538.jpg", fondo: "#333300", frases: ["...", "...", "...", "..."] }
+  {
+    titulo: "Los hábitos secretos de los genios",
+    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1642726660i/60171734.jpg",
+    fondo: "#140038",
+    frases: [
+      "🌬️ Tómate un momento para observar el vacío.",
+      "🔍 Encuentra una chispa nueva en tu curiosidad.",
+      "🧠 Reflexiona en qué puedes mejorar hoy.",
+      "💓 Siente la grandeza que ya habita en ti."
+    ]
+  },
+  {
+    titulo: "Think Again",
+    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1602574232i/55539565.jpg",
+    fondo: "#001a33",
+    frases: [
+      "🌬️ Deja ir lo que creías cierto.",
+      "🔍 Abre una nueva pregunta interna.",
+      "🧠 Reflexiona sobre una idea que merece ser reescrita.",
+      "💓 Siente la libertad del desaprendizaje."
+    ]
+  },
+  {
+    titulo: "Crea",
+    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1662270336i/62237986.jpg",
+    fondo: "#33001a",
+    frases: [
+      "🌬️ Da espacio al caos creativo.",
+      "🔍 Descubre la magia de construir algo tuyo.",
+      "🧠 Reflexiona sobre lo que puedes crear hoy.",
+      "💓 Siente el impulso de hacer algo real."
+    ]
+  },
+  {
+    titulo: "Good to Great",
+    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1546097703i/76865.jpg",
+    fondo: "#003300",
+    frases: [
+      "🌬️ Haz una pausa y pregúntate: ¿puedo ser mejor?",
+      "🔍 Explora tu siguiente nivel de disciplina.",
+      "🧠 Reflexiona en tu visión a largo plazo.",
+      "💓 Siente la energía de dar el salto."
+    ]
+  },
+  {
+    titulo: "When",
+    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1544822311i/43163538.jpg",
+    fondo: "#333300",
+    frases: [
+      "🌬️ Escucha el ritmo natural de tu día.",
+      "🔍 Descubre tu mejor hora para actuar.",
+      "🧠 Reflexiona cuándo tomas tus mejores decisiones.",
+      "💓 Siente el flujo de tu mejor momento."
+    ]
+  }
 ];
 
 let libroActual, bloquePortada, revelado = false;
@@ -189,7 +269,7 @@ function revelarTodo() {
   nombresBloques.forEach((_, i) => {
     const block = el("bloque" + i);
     const label = block.querySelector(".label");
-    const text = el("bloque" + i + "Text");
+    const text = block.querySelector(".accionable");
 
     if (i === bloquePortada) {
       block.innerHTML = '';
