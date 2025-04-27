@@ -19,7 +19,7 @@ body.dark{background:#000}
 .portada-wrapper{width:100%;height:100%;display:flex;justify-content:center;align-items:center;background:transparent;transform-style:preserve-3d;animation:flotarRespirarTilt 8s ease-in-out infinite}
 .portada-wrapper img{width:88%;height:auto;object-fit:cover;border-radius:22px;box-shadow:0 12px 30px rgba(0,0,0,.4);transition:transform .6s}
 .portada-wrapper img:hover{transform:scale(1.06) rotateY(6deg) rotateX(3deg)}
-.footer{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:1vh;min-height:100px}
+.footer{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:1vh;min-height:110px}
 .shock{background:linear-gradient(135deg,#ff0080,#ff8c00);color:white;font-weight:bold;border:none;border-radius:30px;padding:14px 24px;margin-top:8px;font-size:clamp(1rem,2vw,1.4rem);cursor:pointer;box-shadow:0 0 18px rgba(255,105,180,.6);animation:pulse 2s infinite;max-width:90%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .final-message{color:white;font-size:clamp(1.1rem,2vw,1.5rem);text-align:center;opacity:0;animation:fadeIn 2s forwards;margin-top:8px;font-family:'Poppins',sans-serif}
 .trigguiletras{height:24px;opacity:.9;margin-top:6px;transition:opacity .4s}
@@ -40,8 +40,8 @@ body.dark{background:#000}
 <div class="main">
   <div class="grid" id="gridContainer"></div>
   <div class="footer">
-    <button class="shock hidden" id="shockBtn">📖 ¡Chócalas!</button>
-    <div class="final-message hidden" id="mensajeFinal">✨ ¡Felicidades! Vibraste alto. ✨</div>
+    <button class="shock hidden" id="shockBtn">📖 ¡Chócalas si abriste un libro físico!</button>
+    <div class="final-message hidden" id="mensajeFinal">📚 Cada página que tocas, despierta tu alma. ✨</div>
     <img src="/trigguiletras.png" class="trigguiletras" id="logoTriggui">
   </div>
 </div>
@@ -51,25 +51,25 @@ const $=id=>document.getElementById(id),
 libros=[
 {
   palabras:["Fluye","Respira","Deja","Acepta"],
-  frases:["🌬️ Deja que la vida te lleve hacia lugares inesperados.","🧘‍♂️ Respira profundamente y renueva tu energía.","🌊 Fluye como el agua, sin resistencia.","🤲 Acepta lo que llega y aprende de ello."],
+  frases:["🌬️ Deja que la historia te lleve sin resistencia.","🧘‍♂️ Respira entre las páginas abiertas.","🌊 Fluye con la imaginación del autor.","🤲 Acepta las lecciones escritas en papel."],
   portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1642726660i/60171734.jpg",
   fondo:"#140038"
 },
 {
-  palabras:["Explora","Descubre","Observa","Curiosea"],
-  frases:["🔍 Explora caminos que aún no has recorrido.","🧭 Descubre mundos escondidos en tu interior.","👁️ Observa cada detalle como si fuera nuevo.","🤔 Curiosea, pregunta y transforma tu realidad."],
+  palabras:["Explora","Descubre","Observa","Imagina"],
+  frases:["🔍 Explora cada rincón del libro como un viajero curioso.","🧭 Descubre un nuevo mundo entre tus manos.","👁️ Observa los detalles que sólo un libro físico revela.","💡 Imagina más allá de cada página que hojeas."],
   portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1602574232i/55539565.jpg",
   fondo:"#001a33"
 },
 {
-  palabras:["Crea","Imagina","Construye","Diseña"],
-  frases:["🎨 Crea universos que sólo tú puedes soñar.","💡 Imagina lo imposible y hazlo realidad.","🏗️ Construye puentes hacia tus sueños.","🛠️ Diseña la vida que siempre has querido."],
+  palabras:["Crea","Construye","Diseña","Inventa"],
+  frases:["🎨 Crea nuevas realidades desde las palabras impresas.","🏗️ Construye tus sueños hoja por hoja.","🛠️ Diseña tu universo interior leyendo.","💡 Inventa caminos que solo existen en el papel."],
   portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1662270336i/62237986.jpg",
   fondo:"#33001a"
 },
 {
-  palabras:["Vibra","Conecta","Siente","Ama"],
-  frases:["💓 Vibra alto y contagia tu energía.","🔗 Conecta profundamente contigo mismo.","💖 Siente el pulso del universo dentro de ti.","❤️ Ama sin condiciones, empieza por ti."],
+  palabras:["Vibra","Conecta","Siente","Abraza"],
+  frases:["💓 Vibra con cada palabra escrita.","🔗 Conecta tu corazón a cada historia.","💖 Siente el aroma y textura de un libro vivo.","🤲 Abraza la experiencia tangible de leer físicamente."],
   portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1546097703i/76865.jpg",
   fondo:"#003300"
 }
