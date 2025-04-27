@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
 <title>TrigguiApp – Un instante, un universo</title>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500&display=swap" rel="stylesheet">
 <style>
@@ -10,18 +10,18 @@
 html,body{width:100%;height:100%;font-family:'Archivo',sans-serif;background:linear-gradient(135deg,#0d0e1a,#1a1c2d);overflow:hidden;transition:background 1s ease;perspective:1200px}
 body.dark{background:#000}
 .main{height:100dvh;display:flex;flex-direction:column;opacity:0;animation:fadeIn 1.5s ease forwards}
-.grid{flex:1;display:grid;gap:1vw;padding:1vw;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
-@media(orientation:landscape){.grid{grid-template-columns:repeat(4,1fr);grid-template-rows:1fr}}
-.block{display:flex;justify-content:center;align-items:center;text-align:center;border-radius:20px;font-weight:bold;font-size:clamp(1.2rem,2vw,1.5rem);color:white;background-size:cover;background-position:center;cursor:pointer;transition:.5s;overflow:hidden;transform:scale(.95);opacity:0;animation:scaleFadeIn 1.6s forwards;position:relative;padding:10px;min-height:0}
+.grid{flex:1;display:grid;gap:1vw;padding:1vw;grid-template:1fr 1fr/1fr 1fr}
+@media(orientation:landscape){.grid{grid-template:1fr/1fr 1fr 1fr 1fr}}
+.block{display:flex;justify-content:center;align-items:center;text-align:center;border-radius:20px;font-weight:bold;font-size:clamp(1.2rem,2vw,1.5rem);color:#fff;background-size:cover;background-position:center;cursor:pointer;transition:.5s;overflow:hidden;transform:scale(.95);opacity:0;animation:scaleFadeIn 1.6s forwards;position:relative;padding:10px}
 .block-content{position:absolute;inset:0;display:flex;justify-content:center;align-items:center;padding:10px;text-align:center;word-break:break-word}
 .label{z-index:1}
-.accionable{color:white;font-family:'Poppins',sans-serif;font-size:clamp(1rem,1.8vw,1.4rem);font-weight:600;padding:14px;border-radius:18px;opacity:0;animation:aparecer .6s forwards;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.3)}
+.accionable{color:#fff;font-family:'Poppins',sans-serif;font-size:clamp(1rem,1.8vw,1.4rem);font-weight:600;padding:14px;border-radius:18px;opacity:0;animation:aparecer .6s forwards;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.3)}
 .portada-wrapper{width:100%;height:100%;display:flex;justify-content:center;align-items:center;background:transparent;transform-style:preserve-3d;animation:flotarRespirarTilt 8s ease-in-out infinite}
 .portada-wrapper img{width:88%;height:auto;object-fit:cover;border-radius:22px;box-shadow:0 12px 30px rgba(0,0,0,.4);transition:transform .6s}
 .portada-wrapper img:hover{transform:scale(1.06) rotateY(6deg) rotateX(3deg)}
 .footer{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:1vh;min-height:110px}
-.shock{background:linear-gradient(135deg,#ff0080,#ff8c00,#00f2fe);color:white;font-weight:bold;border:none;border-radius:30px;padding:14px 24px;margin-top:8px;font-size:clamp(1rem,2vw,1.4rem);cursor:pointer;box-shadow:0 0 18px rgba(255,105,180,.6);animation:pulse 2s infinite;max-width:90%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.final-message{color:white;font-size:clamp(1.1rem,2vw,1.5rem);text-align:center;opacity:0;animation:fadeIn 2s forwards;margin-top:8px;font-family:'Poppins',sans-serif}
+.shock{background:linear-gradient(135deg,#ff0080,#ff8c00,#00f2fe);color:#fff;font-weight:bold;border:none;border-radius:30px;padding:14px 24px;margin-top:8px;font-size:clamp(1rem,2vw,1.4rem);cursor:pointer;box-shadow:0 0 18px rgba(255,105,180,.6);animation:pulse 2s infinite;max-width:90%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.final-message{color:#fff;font-size:clamp(1.1rem,2vw,1.5rem);text-align:center;opacity:0;animation:fadeIn 2s forwards;margin-top:8px;font-family:'Poppins',sans-serif}
 .trigguiletras{height:24px;opacity:.9;margin-top:6px;transition:opacity .4s}
 .hidden{display:none!important}
 .bg1{background:linear-gradient(135deg,#ff416c,#ff4b2b)}
@@ -48,65 +48,19 @@ body.dark{background:#000}
 <script>
 const $=id=>document.getElementById(id),
 libros=[
-{
-  palabras:["Adaptabilidad","Resiliencia","Mentalidad","Estrategia"],
-  frases:[
-    "🌊 Aprende a moverte con flexibilidad en entornos de cambio radical.",
-    "🛡️ Construye fortaleza emocional para afrontar lo que otros no soportan.",
-    "🧠 Desarrolla una mente dispuesta a desaprender y evolucionar constantemente.",
-    "📈 Aplica tácticas inteligentes para superar barreras invisibles hoy mismo."
-  ],
-  portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1642726660i/60171734.jpg",
-  fondo:"#140038"
-},
-{
-  palabras:["Duda","Replantea","Actualiza","Expande"],
-  frases:[
-    "🔍 Convierte cada duda en una oportunidad de transformación mental.",
-    "🧭 Replantea tus certezas con preguntas más inteligentes.",
-    "♻️ Actualiza tus mapas mentales y navega nuevos caminos de vida.",
-    "🚀 Expande tus fronteras internas al derribar prejuicios invisibles."
-  ],
-  portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1602574232i/55539565.jpg",
-  fondo:"#001a33"
-},
-{
-  palabras:["Construcción","Innovación","Acción","Empoderamiento"],
-  frases:[
-    "🏗️ Lleva tus ideas a la acción real, construyendo paso a paso tu obra maestra.",
-    "🎨 Crea realidades que inspiren a quienes te rodean.",
-    "🚶‍♂️ No esperes condiciones perfectas: empieza ahora, ajusta después.",
-    "🌟 Recupera el control de tu camino personal y profesional."
-  ],
-  portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1662270336i/62237986.jpg",
-  fondo:"#33001a"
-},
-{
-  palabras:["Disciplina","Excelencia","Ambición","Liderazgo"],
-  frases:[
-    "🏹 Domina la consistencia diaria para lograr metas a largo plazo.",
-    "👑 Persigue estándares de excelencia incluso cuando nadie te ve.",
-    "🚀 Deja que tu ambición marque el ritmo de tu evolución.",
-    "🧭 Lidera proyectos y personas desde tu autenticidad más profunda."
-  ],
-  portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1546097703i/76865.jpg",
-  fondo:"#003300"
-}
+{palabras:["Adaptabilidad","Resiliencia","Mentalidad","Estrategia"],frases:["🌊 Aprende a moverte con flexibilidad.","🛡️ Construye fortaleza emocional.","🧠 Evoluciona tu mente constantemente.","📈 Aplica tácticas inteligentes hoy."],portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1642726660i/60171734.jpg",fondo:"#140038"},
+{palabras:["Duda","Replantea","Actualiza","Expande"],frases:["🔍 Convierte la duda en transformación.","🧭 Replantea certezas con preguntas.","♻️ Actualiza mapas mentales.","🚀 Derriba prejuicios y expande."],portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1602574232i/55539565.jpg",fondo:"#001a33"},
+{palabras:["Construcción","Innovación","Acción","Empoderamiento"],frases:["🏗️ Lleva ideas a acción real.","🎨 Crea realidades inspiradoras.","🚶‍♂️ Empieza ahora, ajusta después.","🌟 Recupera el control personal."],portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1662270336i/62237986.jpg",fondo:"#33001a"},
+{palabras:["Disciplina","Excelencia","Ambición","Liderazgo"],frases:["🏹 Domina consistencia diaria.","👑 Persigue excelencia silenciosa.","🚀 Deja que tu ambición crezca.","🧭 Lidera con autenticidad."],portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1546097703i/76865.jpg",fondo:"#003300"}
 ];
 let libroActual,bloquePortada,revelado=false;
 
 function iniciarJuego(){
   const grid=$("gridContainer"),logo=$("logoTriggui");
-  grid.innerHTML="";
-  libroActual=libros[Math.floor(Math.random()*libros.length)];
-  bloquePortada=Math.floor(Math.random()*4);
-  revelado=false;
-  logo.classList.remove("hidden");
-
+  grid.innerHTML="",libroActual=libros[Math.floor(Math.random()*libros.length)],bloquePortada=Math.floor(Math.random()*4),revelado=false,logo.classList.remove("hidden");
   libroActual.palabras.forEach((palabra,i)=>{
     const div=document.createElement("div");
-    div.className=`block bg${i+1}`;
-    div.id="bloque"+i;
+    div.className=`block bg${i+1}`,div.id="bloque"+i;
     div.innerHTML=`<div class="block-content label">${palabra}</div><div class="block-content accionable hidden" id="bloque${i}Text">${libroActual.frases[i]}</div>`;
     div.onclick=()=>manejarClick(i);
     grid.appendChild(div);
@@ -116,7 +70,7 @@ function iniciarJuego(){
 function manejarClick(i){
   if(revelado)return location.reload();
   if(i===bloquePortada)revelarTodo();
-  else{$("bloque"+i+"Text").classList.remove("hidden");$("bloque"+i).querySelector(".label").classList.add("hidden")}
+  else $("bloque"+i+"Text").classList.remove("hidden"),$("bloque"+i).querySelector(".label").classList.add("hidden");
 }
 
 function revelarTodo(){
@@ -124,21 +78,12 @@ function revelarTodo(){
     const block=$("bloque"+i);
     if(i===bloquePortada){
       block.innerHTML="";
-      block.style.background="none";
-      block.style.padding="0";
       const wrapper=document.createElement("div"),img=document.createElement("img");
-      wrapper.className="portada-wrapper";
-      img.src=libroActual.portada;
-      img.alt="Portada del libro";
-      wrapper.appendChild(img);
-      block.appendChild(wrapper);
-    }else{
-      $("bloque"+i+"Text").classList.remove("hidden");
-      block.querySelector(".label").classList.add("hidden");
-    }
+      wrapper.className="portada-wrapper",img.src=libroActual.portada,img.alt="Portada",wrapper.appendChild(img),block.appendChild(wrapper);
+      block.style.background="none";block.style.padding="0";
+    }else $("bloque"+i+"Text").classList.remove("hidden"),block.querySelector(".label").classList.add("hidden");
   });
-  document.body.classList.add("dark");
-  document.body.style.background=libroActual.fondo;
+  document.body.classList.add("dark"),document.body.style.background=libroActual.fondo;
   $("shockBtn").classList.remove("hidden");
   $("logoTriggui").classList.add("hidden");
   revelado=true;
