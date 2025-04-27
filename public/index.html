@@ -14,6 +14,7 @@
       background: linear-gradient(135deg, #0d0e1a, #1a1c2d);
       overflow: hidden;
       transition: background 1s ease;
+      perspective: 1200px; /* NUEVO: activa profundidad 3D real */
     }
     body.dark { background: #000; }
     .main { height: 100dvh; display: flex; flex-direction: column; opacity: 0; animation: fadeIn 1.6s ease forwards; }
@@ -72,14 +73,15 @@
     }
     @keyframes aparecer { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
-    /* Animación nueva de la portada */
+    /* Nueva animación 3D de la portada */
     .portada-wrapper {
       width: 100%;
       height: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
-      animation: flotarSuave 6s ease-in-out infinite;
+      transform-style: preserve-3d;
+      animation: flotarYRespirar 6s ease-in-out infinite;
       background: transparent;
     }
     .portada-wrapper img {
@@ -90,20 +92,27 @@
       border-radius: 22px;
       box-shadow: 0 12px 30px rgba(0,0,0,0.35);
       transition: transform 0.6s ease;
-      animation: respirarSuave 6s ease-in-out infinite;
     }
     .portada-wrapper img:hover {
-      transform: scale(1.04);
+      transform: scale(1.06) translateZ(40px);
     }
 
-    @keyframes flotarSuave {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-6px); }
-    }
-
-    @keyframes respirarSuave {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.02); }
+    @keyframes flotarYRespirar {
+      0% {
+        transform: translateY(0) rotateX(0deg) scale(1) translateZ(0px);
+      }
+      25% {
+        transform: translateY(-6px) rotateX(3deg) scale(1.02) translateZ(20px);
+      }
+      50% {
+        transform: translateY(0) rotateX(0deg) scale(1) translateZ(0px);
+      }
+      75% {
+        transform: translateY(-6px) rotateX(-3deg) scale(1.02) translateZ(20px);
+      }
+      100% {
+        transform: translateY(0) rotateX(0deg) scale(1) translateZ(0px);
+      }
     }
 
     .footer {
