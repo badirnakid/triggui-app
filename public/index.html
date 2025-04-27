@@ -22,7 +22,7 @@
       perspective: 1200px;
       transition: background 1s ease;
     }
-    body.dark { background: #000; }
+    body.dark { background: linear-gradient(135deg, #0d0e1a, #1a1c2d); }
 
     .main {
       height: 100vh;
@@ -104,8 +104,8 @@
 <div class="main">
   <div class="grid" id="gridContainer"></div>
 
-  <!-- Contenedor para el Canvas 3D de la portada revelada -->
-  <div id="canvas-container" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;"></div>
+  <!-- Contenedor para el Canvas 3D que aparecerá solo al revelar la portada -->
+  <div id="canvas-container" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></div>
 
   <div class="footer">
     <button class="shock hidden" id="shockBtn">📖 ¡Chócalas por abrir un libro físico!</button>
@@ -246,7 +246,7 @@ function crearLibro3D(urlPortada) {
   const ambientLight = new THREE.AmbientLight(0xffffff, 1);
   scene.add(ambientLight);
 
-  const geometry = new THREE.BoxGeometry(1, 1.4, 0.1);
+  const geometry = new THREE.BoxGeometry(1, 1.4, 0.08);
   const texture = new THREE.TextureLoader().load(urlPortada);
   const material = new THREE.MeshStandardMaterial({ map: texture });
   const libro = new THREE.Mesh(geometry, material);
