@@ -12,57 +12,49 @@ body.dark{background:#000}
 .main{height:100dvh;display:flex;flex-direction:column;opacity:0;animation:fadeIn 1.5s ease forwards}
 .grid{flex:1;display:grid;gap:1vw;padding:2vw;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
 @media(orientation:landscape){.grid{grid-template-columns:repeat(4,1fr);grid-template-rows:1fr}}
-.block{display:flex;justify-content:center;align-items:center;text-align:center;border-radius:20px;font-weight:bold;font-size:1.3rem;color:white;background-size:cover;background-position:center;cursor:pointer;transition:.5s;overflow:hidden;transform:scale(.95);opacity:0;animation:scaleFadeIn 1.6s forwards;position:relative;padding:10px}
+.block{display:flex;justify-content:center;align-items:center;text-align:center;border-radius:20px;font-weight:bold;font-size:1.2rem;color:white;background-size:cover;background-position:center;cursor:pointer;transition:.5s;overflow:hidden;transform:scale(.95);opacity:0;animation:scaleFadeIn 1.6s forwards;position:relative;padding:10px;min-height:0}
 .block-content{position:absolute;inset:0;display:flex;justify-content:center;align-items:center;padding:10px;text-align:center;word-break:break-word}
 .label{z-index:1;font-size:clamp(1.1rem,2vw,1.5rem)}
-.accionable{color:white;font-family:'Poppins',sans-serif;font-size:clamp(1.05rem,2vw,1.3rem);font-weight:500;padding:14px;border-radius:20px;opacity:0;animation:aparecer .6s forwards;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.3)}
-.portada-wrapper{width:100%;height:100%;display:flex;justify-content:center;align-items:center;animation:flotarRespirarTilt 8s ease-in-out infinite;background:transparent;transform-style:preserve-3d}
-.portada-wrapper img{width:88%;max-height:92%;object-fit:cover;aspect-ratio:2/3;border-radius:22px;box-shadow:0 12px 30px rgba(0,0,0,.4);transition:transform .6s}
+.accionable{color:white;font-family:'Poppins',sans-serif;font-size:clamp(1.05rem,1.8vw,1.3rem);font-weight:500;padding:14px;border-radius:20px;opacity:0;animation:aparecer .6s forwards;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.3)}
+.portada-wrapper{width:100%;height:100%;display:flex;justify-content:center;align-items:center;background:transparent;transform-style:preserve-3d;animation:flotarRespirarTilt 8s ease-in-out infinite}
+.portada-wrapper img{width:90%;height:auto;object-fit:cover;aspect-ratio:2/3;border-radius:22px;box-shadow:0 12px 30px rgba(0,0,0,.4);transition:transform .6s}
 .portada-wrapper img:hover{transform:scale(1.06) rotateY(6deg) rotateX(3deg)}
-.footer{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2vh 2vw;min-height:90px}
-.shock{background:linear-gradient(135deg,#ff6b6b,#f06595);color:white;font-weight:bold;border:none;border-radius:30px;padding:14px 28px;margin-bottom:8px;font-size:clamp(1rem,2vw,1.4rem);cursor:pointer;box-shadow:0 0 18px rgba(255,105,180,.6);animation:pulse 2s infinite;max-width:90%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.footer{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2vh 2vw;min-height:100px}
+.shock{background:linear-gradient(135deg,#ff6b6b,#ffb347);color:white;font-weight:bold;border:none;border-radius:30px;padding:14px 28px;margin-bottom:8px;font-size:clamp(1rem,2vw,1.4rem);cursor:pointer;box-shadow:0 0 18px rgba(255,175,95,.6);animation:pulse 2s infinite;max-width:90%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .final-message{color:white;font-size:clamp(1.1rem,2vw,1.5rem);text-align:center;opacity:0;animation:fadeIn 2s forwards;margin-top:8px;font-family:'Poppins',sans-serif}
 .trigguiletras{height:26px;opacity:.9;margin-top:8px;transition:opacity .4s}
 .hidden{display:none!important}
-.bg1{background:linear-gradient(135deg,#ff6b6b,#f7b733)}
-.bg2{background:linear-gradient(135deg,#00c3ff,#ffff1c)}
-.bg3{background:linear-gradient(135deg,#d53369,#daae51)}
+.bg1{background:linear-gradient(135deg,#ff5f6d,#ffc371)}
+.bg2{background:linear-gradient(135deg,#36d1dc,#5b86e5)}
+.bg3{background:linear-gradient(135deg,#f7797d,#fbd786)}
 .bg4{background:linear-gradient(135deg,#12c2e9,#c471ed,#f64f59)}
 @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes scaleFadeIn{to{transform:scale(1);opacity:1}}
 @keyframes aparecer{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
-@keyframes flotarRespirarTilt{
-  0%{transform:translateY(0)rotateX(0)rotateY(0)scale(1)}
-  25%{transform:translateY(-6px)rotateX(2deg)rotateY(-2deg)scale(1.015)}
-  50%{transform:translateY(0)rotateX(0)rotateY(0)scale(1)}
-  75%{transform:translateY(-6px)rotateX(-2deg)rotateY(2deg)scale(1.015)}
-  100%{transform:translateY(0)rotateX(0)rotateY(0)scale(1)}
-}
+@keyframes flotarRespirarTilt{0%,50%,100%{transform:translateY(0) rotateX(0) rotateY(0) scale(1)}25%{transform:translateY(-6px) rotateX(2deg) rotateY(-2deg) scale(1.015)}75%{transform:translateY(-6px) rotateX(-2deg) rotateY(2deg) scale(1.015)}}
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
-.gradient{background:linear-gradient(45deg,#ff6b6b,#f7b733);-webkit-background-clip:text;color:transparent}
-.colorful{color:#ff6b6b}
 </style>
 </head>
 <body>
 <div class="main">
   <div class="grid" id="gridContainer"></div>
   <div class="footer">
-    <button class="shock hidden" id="shockBtn">📖 <span class="gradient">¡Chócalas!</span></button>
-    <div class="final-message hidden" id="mensajeFinal">✨ <span class="gradient">¡Felicidades!</span> por abrir un libro real. ✨</div>
+    <button class="shock hidden" id="shockBtn">📖 ¡Chócalas por abrir un libro!</button>
+    <div class="final-message hidden" id="mensajeFinal">✨ ¡Felicidades! Has elegido <strong>pausar y crecer</strong>. ✨</div>
     <img src="/trigguiletras.png" class="trigguiletras" id="logoTriggui">
   </div>
 </div>
 
 <script>
 const $=id=>document.getElementById(id),
-nombres=[["Pausa","Respira","Detente","Vacía","Fluye"],["Descubre","Explora","Lee","Observa","Inspírate"],["Reflexiona","Actúa","Muévete","Sorpréndete","Transforma"],["Siente","Conecta","Abraza","Disfruta","Vibra"]],
+nombres=[["Pausa consciente","Respira profundo","Detente y siente","Vacía tu mente","Fluye con ligereza"],["Descubre tu chispa","Explora un nuevo mundo","Lee y transforma","Observa con nuevos ojos","Inspírate sin límites"],["Reflexiona a fondo","Actúa desde el ser","Muévete con propósito","Sorpréndete a diario","Transforma realidades"],["Siente el presente","Conecta desde el alma","Abraza tu viaje","Disfruta cada instante","Vibra más alto"]],
 colores=["bg1","bg2","bg3","bg4"],
 libros=[
-{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1642726660i/60171734.jpg",fondo:"#140038",frases:["🌬️ <span class='colorful'>Observa</span> el vacío","🔍 Encuentra <span class='colorful'>curiosidad</span>","🧠 Mejora <span class='gradient'>hoy</span>","💓 Siente la grandeza"]},
-{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1602574232i/55539565.jpg",fondo:"#001a33",frases:["🌬️ Libera <span class='gradient'>certezas</span>","🔍 Pregunta <span class='colorful'>nuevo</span>","🧠 Rediseña <span class='colorful'>ideas</span>","💓 Vive el desapego"]},
-{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1662270336i/62237986.jpg",fondo:"#33001a",frases:["🌬️ Abraza el <span class='gradient'>caos</span>","🔍 Encuentra tu <span class='colorful'>magia</span>","🧠 <span class='colorful'>Crea</span> hoy","💓 Activa tu chispa"]},
-{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1546097703i/76865.jpg",fondo:"#003300",frases:["🌬️ Mejora continua","🔍 <span class='gradient'>Nuevo nivel</span>","🧠 Visión <span class='colorful'>grande</span>","💓 Energía salto"]},
-{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1544822311i/43163538.jpg",fondo:"#333300",frases:["🌬️ Sigue tu ritmo","🔍 Mejor <span class='gradient'>momento</span>","🧠 Decisiones sabias","💓 Fluye hoy"]}
+{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1642726660i/60171734.jpg",fondo:"#140038",frases:["🌬️ Permítete un espacio para respirar hondo y profundo.","🔍 Redescubre el poder escondido en tu curiosidad.","🧠 Reflexiona sobre la grandeza que yace dormida en ti.","💓 Siente la emoción genuina de aprender algo nuevo."]},
+{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1602574232i/55539565.jpg",fondo:"#001a33",frases:["🌬️ Deja atrás las certezas para abrazar la sorpresa.","🔍 Ábrete a cuestionar lo que siempre diste por hecho.","🧠 Reflexiona sobre las ideas que ya no te sirven.","💓 Siente la ligereza de desaprender y renovarte."]},
+{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1662270336i/62237986.jpg",fondo:"#33001a",frases:["🌬️ Da un espacio generoso al caos creativo.","🔍 Descubre el gozo de construir algo tuyo desde cero.","🧠 Reflexiona sobre lo que puedes hacer nacer hoy.","💓 Siente la pasión de moldear tu mundo con tus manos."]},
+{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1546097703i/76865.jpg",fondo:"#003300",frases:["🌬️ Pregúntate en calma: ¿puedo ser aún mejor?","🔍 Explora tu siguiente nivel de disciplina interna.","🧠 Reflexiona sobre tu visión de vida más ambiciosa.","💓 Siente la energía de construir tu legado."]},
+{portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1544822311i/43163538.jpg",fondo:"#333300",frases:["🌬️ Escucha atentamente el ritmo natural de tu cuerpo.","🔍 Descubre tu hora mágica para crear y decidir.","🧠 Reflexiona sobre tus momentos de mayor claridad.","💓 Siente el poder de fluir cuando todo se alinea."]}
 ];
 let libroActual,bloquePortada,revelado=false;
 
@@ -73,7 +65,7 @@ function iniciarJuego(){
     const div=document.createElement("div");
     div.className=`block ${colores[i]}`;
     div.id="bloque"+i;
-    div.innerHTML=`<div class="block-content label">${opciones[Math.floor(Math.random()*opciones.length)].toUpperCase()}</div><div class="block-content accionable hidden" id="bloque${i}Text">${libroActual.frases[i]}</div>`;
+    div.innerHTML=`<div class="block-content label">${opciones[Math.floor(Math.random()*opciones.length)]}</div><div class="block-content accionable hidden" id="bloque${i}Text">${libroActual.frases[i]}</div>`;
     div.onclick=()=>manejarClick(i);
     grid.appendChild(div);
   });
@@ -110,7 +102,7 @@ function revelarTodo(){
   revelado=true;
 }
 
-$("shockBtn").onclick=()=>{$("shockBtn").classList.add("hidden");$("mensajeFinal").classList.remove("hidden")};
+$("shockBtn").onclick=()=>{ $("shockBtn").classList.add("hidden"); $("mensajeFinal").classList.remove("hidden"); };
 
 iniciarJuego();
 </script>
