@@ -14,7 +14,7 @@
       background: linear-gradient(135deg, #0d0e1a, #1a1c2d);
       overflow: hidden;
       transition: background 1s ease;
-      perspective: 1200px; /* NUEVO: activa profundidad 3D real */
+      perspective: 1200px; /* importante para 3D real */
     }
     body.dark { background: #000; }
     .main { height: 100dvh; display: flex; flex-direction: column; opacity: 0; animation: fadeIn 1.6s ease forwards; }
@@ -73,7 +73,7 @@
     }
     @keyframes aparecer { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
-    /* Nueva animación 3D de la portada */
+    /* Portada Animación Avanzada */
     .portada-wrapper {
       width: 100%;
       height: 100%;
@@ -81,7 +81,7 @@
       justify-content: center;
       align-items: center;
       transform-style: preserve-3d;
-      animation: flotarYRespirar 6s ease-in-out infinite;
+      animation: flotarTiltRespirar 7s ease-in-out infinite;
       background: transparent;
     }
     .portada-wrapper img {
@@ -90,28 +90,28 @@
       object-fit: cover;
       aspect-ratio: 2/3;
       border-radius: 22px;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
       transition: transform 0.6s ease;
     }
     .portada-wrapper img:hover {
-      transform: scale(1.06) translateZ(40px);
+      transform: scale(1.08) translateZ(60px);
     }
 
-    @keyframes flotarYRespirar {
+    @keyframes flotarTiltRespirar {
       0% {
-        transform: translateY(0) rotateX(0deg) scale(1) translateZ(0px);
+        transform: translateY(0px) rotateX(0deg) rotateY(0deg) scale(1);
       }
       25% {
-        transform: translateY(-6px) rotateX(3deg) scale(1.02) translateZ(20px);
+        transform: translateY(-8px) rotateX(3deg) rotateY(-3deg) scale(1.02);
       }
       50% {
-        transform: translateY(0) rotateX(0deg) scale(1) translateZ(0px);
+        transform: translateY(0px) rotateX(0deg) rotateY(0deg) scale(1);
       }
       75% {
-        transform: translateY(-6px) rotateX(-3deg) scale(1.02) translateZ(20px);
+        transform: translateY(-8px) rotateX(-3deg) rotateY(3deg) scale(1.02);
       }
       100% {
-        transform: translateY(0) rotateX(0deg) scale(1) translateZ(0px);
+        transform: translateY(0px) rotateX(0deg) rotateY(0deg) scale(1);
       }
     }
 
@@ -172,6 +172,7 @@
 </div>
 
 <script>
+/* JavaScript de TrigguiApp */
 const el = id => document.getElementById(id);
 
 const nombresBloques = [
