@@ -10,7 +10,7 @@
 html,body{width:100%;height:100%;font-family:'Archivo',sans-serif;background:linear-gradient(135deg,#0d0e1a,#1a1c2d);overflow:hidden;transition:background 1s ease;perspective:1200px}
 body.dark{background:#000}
 .main{height:100dvh;display:flex;flex-direction:column;opacity:0;animation:fadeIn 1.5s ease forwards}
-.grid{flex:1;display:grid;gap:1vw;padding:1.5vw;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
+.grid{flex:1;display:grid;gap:1vw;padding:1vw;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
 @media(orientation:landscape){.grid{grid-template-columns:repeat(4,1fr);grid-template-rows:1fr}}
 .block{display:flex;justify-content:center;align-items:center;text-align:center;border-radius:20px;font-weight:bold;font-size:clamp(1.2rem,2vw,1.5rem);color:white;background-size:cover;background-position:center;cursor:pointer;transition:.5s;overflow:hidden;transform:scale(.95);opacity:0;animation:scaleFadeIn 1.6s forwards;position:relative;padding:10px;min-height:0}
 .block-content{position:absolute;inset:0;display:flex;justify-content:center;align-items:center;padding:10px;text-align:center;word-break:break-word}
@@ -20,14 +20,14 @@ body.dark{background:#000}
 .portada-wrapper img{width:88%;height:auto;object-fit:cover;border-radius:22px;box-shadow:0 12px 30px rgba(0,0,0,.4);transition:transform .6s}
 .portada-wrapper img:hover{transform:scale(1.06) rotateY(6deg) rotateX(3deg)}
 .footer{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:1vh;min-height:110px}
-.shock{background:linear-gradient(135deg,#ff0080,#ff8c00);color:white;font-weight:bold;border:none;border-radius:30px;padding:14px 24px;margin-top:8px;font-size:clamp(1rem,2vw,1.4rem);cursor:pointer;box-shadow:0 0 18px rgba(255,105,180,.6);animation:pulse 2s infinite;max-width:90%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shock{background:linear-gradient(135deg,#ff0080,#ff8c00,#00f2fe);color:white;font-weight:bold;border:none;border-radius:30px;padding:14px 24px;margin-top:8px;font-size:clamp(1rem,2vw,1.4rem);cursor:pointer;box-shadow:0 0 18px rgba(255,105,180,.6);animation:pulse 2s infinite;max-width:90%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .final-message{color:white;font-size:clamp(1.1rem,2vw,1.5rem);text-align:center;opacity:0;animation:fadeIn 2s forwards;margin-top:8px;font-family:'Poppins',sans-serif}
 .trigguiletras{height:24px;opacity:.9;margin-top:6px;transition:opacity .4s}
 .hidden{display:none!important}
-.bg1{background:linear-gradient(135deg,#ff5f6d,#ffc371)}
-.bg2{background:linear-gradient(135deg,#36d1dc,#5b86e5)}
-.bg3{background:linear-gradient(135deg,#f7797d,#fbd786)}
-.bg4{background:linear-gradient(135deg,#12c2e9,#c471ed,#f64f59)}
+.bg1{background:linear-gradient(135deg,#ff416c,#ff4b2b)}
+.bg2{background:linear-gradient(135deg,#00b09b,#96c93d)}
+.bg3{background:linear-gradient(135deg,#a18cd1,#fbc2eb)}
+.bg4{background:linear-gradient(135deg,#ff6a00,#ee0979)}
 @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes scaleFadeIn{to{transform:scale(1);opacity:1}}
 @keyframes aparecer{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
@@ -35,13 +35,12 @@ body.dark{background:#000}
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
 </style>
 </head>
-
 <body>
 <div class="main">
   <div class="grid" id="gridContainer"></div>
   <div class="footer">
     <button class="shock hidden" id="shockBtn">📖 ¡Chócalas si abriste un libro físico!</button>
-    <div class="final-message hidden" id="mensajeFinal">✨ Cada página física es un puente hacia tu mejor versión. 📚</div>
+    <div class="final-message hidden" id="mensajeFinal">📚 Cada página que sostienes abre un nuevo mundo real. ✨</div>
     <img src="/trigguiletras.png" class="trigguiletras" id="logoTriggui">
   </div>
 </div>
@@ -50,26 +49,46 @@ body.dark{background:#000}
 const $=id=>document.getElementById(id),
 libros=[
 {
-  palabras:["Adaptabilidad","Resiliencia","Curiosidad","Crecimiento"],
-  frases:["🌊 Aprende a adaptarte a cualquier entorno en segundos.","🛡️ Fortalece tu mente en cada desafío real.","🔍 Encuentra oportunidades donde otros ven obstáculos.","🚀 Construye una mentalidad que siempre evoluciona."],
+  palabras:["Adaptabilidad","Resiliencia","Mentalidad","Estrategia"],
+  frases:[
+    "🌊 Aprende a moverte con flexibilidad en entornos de cambio radical.",
+    "🛡️ Construye fortaleza emocional para afrontar lo que otros no soportan.",
+    "🧠 Desarrolla una mente dispuesta a desaprender y evolucionar constantemente.",
+    "📈 Aplica tácticas inteligentes para superar barreras invisibles hoy mismo."
+  ],
   portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1642726660i/60171734.jpg",
   fondo:"#140038"
 },
 {
-  palabras:["Preguntar","Pensar","Renovar","Dudar"],
-  frases:["🤔 Cuestiona lo que otros aceptan sin pensar.","🧠 Reconfigura tu forma de analizar problemas.","♻️ Renueva creencias limitantes con pensamiento crítico.","❓ Usa la duda como catalizador para innovar."],
+  palabras:["Duda","Replantea","Actualiza","Expande"],
+  frases:[
+    "🔍 Convierte cada duda en una oportunidad de transformación mental.",
+    "🧭 Replantea tus certezas con preguntas más inteligentes.",
+    "♻️ Actualiza tus mapas mentales y navega nuevos caminos de vida.",
+    "🚀 Expande tus fronteras internas al derribar prejuicios invisibles."
+  ],
   portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1602574232i/55539565.jpg",
   fondo:"#001a33"
 },
 {
-  palabras:["Construir","Crear","Reinventar","Manifestar"],
-  frases:["🛠️ Levanta proyectos concretos con propósito.","🎨 Expresa tus ideas en realidades palpables.","🧬 Reinventa procesos estancados para crecer.","🌟 Manifiesta tu visión de vida paso a paso."],
+  palabras:["Construcción","Innovación","Acción","Empoderamiento"],
+  frases:[
+    "🏗️ Lleva tus ideas a la acción real, construyendo paso a paso tu obra maestra.",
+    "🎨 Crea realidades que inspiren a quienes te rodean.",
+    "🚶‍♂️ No esperes condiciones perfectas: empieza ahora, ajusta después.",
+    "🌟 Recupera el control de tu camino personal y profesional."
+  ],
   portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1662270336i/62237986.jpg",
   fondo:"#33001a"
 },
 {
-  palabras:["Disciplina","Estrategia","Visión","Liderazgo"],
-  frases:["🎯 Domina pequeños hábitos que te llevan lejos.","📊 Planifica tus movimientos como un maestro.","🔭 Piensa a largo plazo como los grandes constructores.","👑 Lidera proyectos desde tu autenticidad interior."],
+  palabras:["Disciplina","Excelencia","Ambición","Liderazgo"],
+  frases:[
+    "🏹 Domina la consistencia diaria para lograr metas a largo plazo.",
+    "👑 Persigue estándares de excelencia incluso cuando nadie te ve.",
+    "🚀 Deja que tu ambición marque el ritmo de tu evolución.",
+    "🧭 Lidera proyectos y personas desde tu autenticidad más profunda."
+  ],
   portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1546097703i/76865.jpg",
   fondo:"#003300"
 }
