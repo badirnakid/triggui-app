@@ -14,22 +14,11 @@
       background: linear-gradient(135deg, #0d0e1a, #1a1c2d);
       overflow: hidden;
       transition: background 1s ease;
-      perspective: 1200px;
+      perspective: 1200px; /* NUEVO: activa profundidad 3D real */
     }
-    body.dark { background: linear-gradient(135deg, #0d0e1a, #1a1c2d); }
-
-    .main {
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      opacity: 0;
-      animation: fadeIn 1.6s ease forwards;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
+    body.dark { background: #000; }
+    .main { height: 100dvh; display: flex; flex-direction: column; opacity: 0; animation: fadeIn 1.6s ease forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     .grid {
       flex: 1;
       display: grid;
@@ -41,7 +30,6 @@
     @media (orientation: landscape), (min-width: 768px) {
       .grid { grid-template-columns: repeat(4, 1fr); grid-template-rows: 1fr; }
     }
-
     .block {
       display: flex;
       justify-content: center;
@@ -61,13 +49,8 @@
       animation: scaleFadeIn 1.6s forwards;
       position: relative;
       padding: 10px;
-      min-height: 30vh;
-      backdrop-filter: brightness(1);
     }
-    @keyframes scaleFadeIn {
-      to { transform: scale(1); opacity: 1; }
-    }
-
+    @keyframes scaleFadeIn { to { transform: scale(1); opacity: 1; } }
     .block-content {
       position: absolute;
       inset: 0;
@@ -77,9 +60,7 @@
       padding: 14px;
       text-align: center;
     }
-
     .label { z-index: 1; }
-
     .accionable {
       color: white;
       font-size: 1rem;
@@ -90,12 +71,9 @@
       animation: aparecer 0.6s forwards;
       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
     }
-    @keyframes aparecer {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
-    }
+    @keyframes aparecer { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
-    /* 🎯 Portada flotante 3D ÉPICA */
+    /* Nueva animación 3D de la portada */
     .portada-wrapper {
       width: 100%;
       height: 100%;
@@ -103,9 +81,8 @@
       justify-content: center;
       align-items: center;
       transform-style: preserve-3d;
-      animation: flotarRespirar 6s ease-in-out infinite;
-      background: radial-gradient(rgba(255,255,255,0.05), transparent 70%);
-      border-radius: 22px;
+      animation: flotarYRespirar 6s ease-in-out infinite;
+      background: transparent;
     }
     .portada-wrapper img {
       width: 88%;
@@ -113,29 +90,28 @@
       object-fit: cover;
       aspect-ratio: 2/3;
       border-radius: 22px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.45);
-      transition: transform 0.6s ease, box-shadow 0.6s ease;
-      transform: perspective(800px) rotateX(0deg) rotateY(0deg) translateZ(0px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+      transition: transform 0.6s ease;
     }
     .portada-wrapper img:hover {
-      transform: perspective(800px) rotateX(5deg) rotateY(5deg) scale(1.05) translateZ(40px);
-      box-shadow: 0 30px 70px rgba(255,255,255,0.2);
+      transform: scale(1.06) translateZ(40px);
     }
-    @keyframes flotarRespirar {
+
+    @keyframes flotarYRespirar {
       0% {
-        transform: translateY(0px) rotateX(0deg) scale(1) translateZ(0px);
+        transform: translateY(0) rotateX(0deg) scale(1) translateZ(0px);
       }
       25% {
-        transform: translateY(-8px) rotateX(3deg) scale(1.02) translateZ(20px);
+        transform: translateY(-6px) rotateX(3deg) scale(1.02) translateZ(20px);
       }
       50% {
-        transform: translateY(0px) rotateX(0deg) scale(1) translateZ(0px);
+        transform: translateY(0) rotateX(0deg) scale(1) translateZ(0px);
       }
       75% {
-        transform: translateY(-8px) rotateX(-3deg) scale(1.02) translateZ(20px);
+        transform: translateY(-6px) rotateX(-3deg) scale(1.02) translateZ(20px);
       }
       100% {
-        transform: translateY(0px) rotateX(0deg) scale(1) translateZ(0px);
+        transform: translateY(0) rotateX(0deg) scale(1) translateZ(0px);
       }
     }
 
@@ -147,7 +123,6 @@
       min-height: 80px;
       justify-content: center;
     }
-
     .shock {
       background: linear-gradient(135deg, #ff6a00, #ffb347);
       color: white;
@@ -166,7 +141,6 @@
       0%, 100% { transform: scale(1); }
       50% { transform: scale(1.08); }
     }
-
     .final-message {
       color: white;
       font-size: 1rem;
@@ -174,31 +148,29 @@
       opacity: 0;
       animation: fadeIn 2s forwards;
     }
-
     .trigguiletras {
       height: 24px;
       opacity: 0.9;
       transition: opacity 0.4s ease;
     }
-
     .hidden { display: none !important; }
-
     .bg1 { background: linear-gradient(135deg, #ff7e5f, #feb47b); }
     .bg2 { background: linear-gradient(135deg, #43cea2, #185a9d); }
     .bg3 { background: linear-gradient(135deg, #8e2de2, #4a00e0); }
     .bg4 { background: linear-gradient(135deg, #fc466b, #3f5efb); }
   </style>
 </head>
+
 <body>
 <div class="main">
   <div class="grid" id="gridContainer"></div>
-
   <div class="footer">
     <button class="shock hidden" id="shockBtn">📖 ¡Chócalas por abrir un libro físico!</button>
     <div class="final-message hidden" id="mensajeFinal">✨ ¡Felicidades! Elegiste la pausa perfecta con un libro real. ✨</div>
     <img src="/trigguiletras.png" class="trigguiletras" id="logoTriggui" />
   </div>
 </div>
+
 <script>
 const el = id => document.getElementById(id);
 
@@ -282,12 +254,12 @@ function iniciarJuego() {
   nombresBloques.forEach((opciones, i) => {
     const nombre = opciones[Math.floor(Math.random() * opciones.length)];
     const div = document.createElement('div');
-    div.className = `block ${colores[i]}`;
+    div.className = block ${colores[i]};
     div.id = "bloque" + i;
-    div.innerHTML = `
+    div.innerHTML = 
       <div class="block-content label">${nombre.toUpperCase()}</div>
       <div class="block-content accionable hidden" id="bloque${i}Text">${libroActual.frases[i]}</div>
-    `;
+    ;
     div.onclick = () => manejarClick(i);
     grid.appendChild(div);
   });
@@ -329,7 +301,6 @@ function revelarTodo() {
     } else {
       if (text) text.classList.remove("hidden");
       if (label) label.classList.add("hidden");
-      block.style.opacity = "0.4"; // Atenuamos los demás bloques para enfocar visualmente
     }
   });
 
