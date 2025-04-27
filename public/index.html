@@ -1,10 +1,16 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>TrigguiApp – Un instante, un universo</title>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&display=swap" rel="stylesheet" />
+
+  <!-- Cargamos Three.js oficial -->
+  <script src="https://unpkg.com/three@0.152.2/build/three.min.js"></script>
+
+  <!-- Fuente Archivo para estética -->
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&display=swap" rel="stylesheet">
+
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
@@ -14,299 +20,89 @@
       background: linear-gradient(135deg, #0d0e1a, #1a1c2d);
       overflow: hidden;
       transition: background 1s ease;
-      perspective: 1200px;
     }
     body.dark { background: #000; }
 
-    .main { height: 100dvh; display: flex; flex-direction: column; opacity: 0; animation: fadeIn 1.5s ease forwards; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-    .grid {
-      flex: 1;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr 1fr;
-      gap: 2vw;
-      padding: 2vw;
-    }
-    @media (orientation: landscape), (min-width: 768px) {
-      .grid { grid-template-columns: repeat(4, 1fr); grid-template-rows: 1fr; }
-    }
-    .block {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      border-radius: 16px;
-      font-weight: bold;
-      font-size: 1.1rem;
-      color: white;
-      background-size: cover;
-      background-position: center;
-      cursor: pointer;
-      transition: all 0.5s ease;
-      overflow: hidden;
-      transform: scale(0.95);
-      opacity: 0;
-      animation: scaleFadeIn 1.6s forwards;
-      position: relative;
-      padding: 10px;
-    }
-    @keyframes scaleFadeIn { to { transform: scale(1); opacity: 1; } }
-    .block-content {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 14px;
-      text-align: center;
-    }
-    .label { z-index: 1; }
-    .accionable {
-      color: white;
-      font-size: 1rem;
-      font-weight: 600;
-      padding: 16px;
-      border-radius: 16px;
-      opacity: 0;
-      animation: aparecer 0.6s forwards;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-    }
-    @keyframes aparecer { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-    /* Portada Flotante Limpia, Sin Fondo */
-    .portada-wrapper {
+    .main {
       width: 100%;
       height: 100%;
       display: flex;
-      justify-content: center;
-      align-items: center;
-      transform-style: preserve-3d;
-      background: transparent;
-      animation: flotarTilt 8s ease-in-out infinite;
-    }
-    .portada-wrapper img {
-      width: 88%;
-      max-height: 92%;
-      object-fit: cover;
-      aspect-ratio: 2/3;
-      border-radius: 22px;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.5);
-      transition: transform 0.6s ease, box-shadow 0.6s ease;
-      background: transparent;
-    }
-    .portada-wrapper img:hover {
-      transform: scale(1.08) rotateY(6deg) rotateX(3deg);
-      box-shadow: 0 25px 60px rgba(255,255,255,0.2);
-    }
-    @keyframes flotarTilt {
-      0% { transform: translateY(0px) rotateX(0deg) rotateY(0deg); }
-      25% { transform: translateY(-6px) rotateX(3deg) rotateY(-3deg); }
-      50% { transform: translateY(0px) rotateX(0deg) rotateY(0deg); }
-      75% { transform: translateY(-6px) rotateX(-3deg) rotateY(3deg); }
-      100% { transform: translateY(0px) rotateX(0deg) rotateY(0deg); }
-    }
-    .footer {
-      display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 1vh;
-      min-height: 80px;
       justify-content: center;
-    }
-    .shock {
-      background: linear-gradient(135deg, #ff6a00, #ffb347);
-      color: white;
-      font-weight: bold;
-      border: none;
-      border-radius: 30px;
-      padding: 14px 26px;
-      font-size: 1.1rem;
-      cursor: pointer;
-      box-shadow: 0 0 18px rgba(255, 175, 95, 0.6);
-      margin-bottom: 6px;
-      animation: pulse 2s infinite;
-      transition: background 0.6s ease, box-shadow 0.6s ease;
-    }
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.08); }
-    }
-    .final-message {
-      color: white;
-      font-size: 1rem;
-      text-align: center;
       opacity: 0;
-      animation: fadeIn 2s forwards;
+      animation: fadeIn 1.5s ease forwards;
     }
-    .trigguiletras {
-      height: 24px;
-      opacity: 0.9;
-      transition: opacity 0.4s ease;
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-    .hidden { display: none !important; }
-    .bg1 { background: linear-gradient(135deg, #ff7e5f, #feb47b); }
-    .bg2 { background: linear-gradient(135deg, #43cea2, #185a9d); }
-    .bg3 { background: linear-gradient(135deg, #8e2de2, #4a00e0); }
-    .bg4 { background: linear-gradient(135deg, #fc466b, #3f5efb); }
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
   </style>
 </head>
 <body>
 <div class="main">
-  <div class="grid" id="gridContainer"></div>
+  <div id="canvas-container"></div>
+
   <div class="footer">
     <button class="shock hidden" id="shockBtn">📖 ¡Chócalas por abrir un libro físico!</button>
     <div class="final-message hidden" id="mensajeFinal">✨ ¡Felicidades! Elegiste la pausa perfecta con un libro real. ✨</div>
     <img src="/trigguiletras.png" class="trigguiletras" id="logoTriggui" />
   </div>
 </div>
-
 <script>
-const el = id => document.getElementById(id);
+const container = document.getElementById('canvas-container');
 
-const nombresBloques = [
-  ["Pausa", "Respira", "Detente", "Vacía", "Fluye"],
-  ["Descubre", "Explora", "Lee", "Observa", "Inspírate"],
-  ["Reflexiona", "Actúa", "Muévete", "Sorpréndete", "Transforma"],
-  ["Siente", "Conecta", "Abraza", "Disfruta", "Vibra"]
-];
-const colores = ["bg1", "bg2", "bg3", "bg4"];
+// Crear la escena
+const scene = new THREE.Scene();
 
-const libros = [
-  {
-    titulo: "Los hábitos secretos de los genios",
-    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1642726660i/60171734.jpg",
-    fondo: "#140038",
-    frases: [
-      "🌬️ Tómate un momento para observar el vacío.",
-      "🔍 Encuentra una chispa nueva en tu curiosidad.",
-      "🧠 Reflexiona en qué puedes mejorar hoy.",
-      "💓 Siente la grandeza que ya habita en ti."
-    ]
-  },
-  {
-    titulo: "Think Again",
-    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1602574232i/55539565.jpg",
-    fondo: "#001a33",
-    frases: [
-      "🌬️ Deja ir lo que creías cierto.",
-      "🔍 Abre una nueva pregunta interna.",
-      "🧠 Reflexiona sobre una idea que merece ser reescrita.",
-      "💓 Siente la libertad del desaprendizaje."
-    ]
-  },
-  {
-    titulo: "Crea",
-    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1662270336i/62237986.jpg",
-    fondo: "#33001a",
-    frases: [
-      "🌬️ Da espacio al caos creativo.",
-      "🔍 Descubre la magia de construir algo tuyo.",
-      "🧠 Reflexiona sobre lo que puedes crear hoy.",
-      "💓 Siente el impulso de hacer algo real."
-    ]
-  },
-  {
-    titulo: "Good to Great",
-    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1546097703i/76865.jpg",
-    fondo: "#003300",
-    frases: [
-      "🌬️ Haz una pausa y pregúntate: ¿puedo ser mejor?",
-      "🔍 Explora tu siguiente nivel de disciplina.",
-      "🧠 Reflexiona en tu visión a largo plazo.",
-      "💓 Siente la energía de dar el salto."
-    ]
-  },
-  {
-    titulo: "When",
-    portada: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1544822311i/43163538.jpg",
-    fondo: "#333300",
-    frases: [
-      "🌬️ Escucha el ritmo natural de tu día.",
-      "🔍 Descubre tu mejor hora para actuar.",
-      "🧠 Reflexiona cuándo tomas tus mejores decisiones.",
-      "💓 Siente el flujo de tu mejor momento."
-    ]
-  }
-];
+// Crear la cámara
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.z = 3;
 
-let libroActual, bloquePortada, revelado = false;
+// Crear el renderer
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+container.appendChild(renderer.domElement);
 
-function iniciarJuego() {
-  const grid = el('gridContainer');
-  const logo = el('logoTriggui');
-  grid.innerHTML = '';
-  libroActual = libros[Math.floor(Math.random() * libros.length)];
-  bloquePortada = Math.floor(Math.random() * 4);
-  revelado = false;
-  logo.classList.remove("hidden");
+// Crear una luz ambiental
+const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+scene.add(ambientLight);
 
-  nombresBloques.forEach((opciones, i) => {
-    const nombre = opciones[Math.floor(Math.random() * opciones.length)];
-    const div = document.createElement('div');
-    div.className = `block ${colores[i]}`;
-    div.id = "bloque" + i;
-    div.innerHTML = `
-      <div class="block-content label">${nombre.toUpperCase()}</div>
-      <div class="block-content accionable hidden" id="bloque${i}Text">${libroActual.frases[i]}</div>
-    `;
-    div.onclick = () => manejarClick(i);
-    grid.appendChild(div);
-  });
+// Crear el "libro" como una caja delgada
+const geometry = new THREE.BoxGeometry(1, 1.4, 0.1);
+const texture = new THREE.TextureLoader().load('https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1642726660i/60171734.jpg'); // Ejemplo de portada
+const material = new THREE.MeshStandardMaterial({ map: texture });
+const libro = new THREE.Mesh(geometry, material);
+scene.add(libro);
+
+// Animación
+function animate() {
+  requestAnimationFrame(animate);
+  libro.rotation.y += 0.0025;
+  libro.rotation.x += 0.0015;
+  renderer.render(scene, camera);
 }
 
-function manejarClick(i) {
-  if (revelado) return location.reload();
-  if (i === bloquePortada) {
-    revelarTodo();
-  } else {
-    const text = el("bloque" + i + "Text");
-    if (text) {
-      text.classList.remove("hidden");
-      el("bloque" + i).querySelector(".label").classList.add("hidden");
-    }
-  }
-}
+animate();
 
-function revelarTodo() {
-  nombresBloques.forEach((_, i) => {
-    const block = el("bloque" + i);
-    const label = block.querySelector(".label");
-    const text = block.querySelector(".accionable");
-
-    if (i === bloquePortada) {
-      block.innerHTML = '';
-      block.style.background = "none";
-      block.style.padding = "0";
-
-      const wrapper = document.createElement("div");
-      wrapper.className = "portada-wrapper";
-
-      const img = document.createElement("img");
-      img.src = libroActual.portada;
-      img.alt = "Portada del libro";
-
-      wrapper.appendChild(img);
-      block.appendChild(wrapper);
-    } else {
-      if (text) text.classList.remove("hidden");
-      if (label) label.classList.add("hidden");
-    }
-  });
-
-  document.body.classList.add("dark");
-  document.body.style.background = libroActual.fondo;
-  el("shockBtn").classList.remove("hidden");
-  el("logoTriggui").classList.add("hidden");
-  revelado = true;
-}
-
-el("shockBtn").onclick = () => {
-  el("shockBtn").classList.add("hidden");
-  el("mensajeFinal").classList.remove("hidden");
-};
-
-iniciarJuego();
+// Ajuste responsivo
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
 </script>
 </body>
 </html>
