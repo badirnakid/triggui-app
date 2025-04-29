@@ -10,6 +10,7 @@
 html,body{width:100%;height:100%;font-family:'Archivo',sans-serif;background:linear-gradient(135deg,#0d0e1a,#1a1c2d);overflow:hidden;transition:background 1s ease;perspective:1200px}
 body.dark{background:#000}
 .main{height:100dvh;display:flex;flex-direction:column;opacity:0;animation:fadeIn 1.5s ease forwards}
+.header-message{font-size:clamp(1rem,1.5vw,1.3rem);color:#fff;opacity:0.8;padding:1vh;text-align:center}
 .grid{flex:1;display:grid;gap:1vw;padding:1vw;grid-template:1fr 1fr/1fr 1fr}
 @media(orientation:landscape){.grid{grid-template:1fr/1fr 1fr 1fr 1fr}}
 .block{display:flex;justify-content:center;align-items:center;text-align:center;border-radius:20px;font-weight:bold;font-size:clamp(1.2rem,2vw,1.5rem);color:#fff;background-size:cover;background-position:center;cursor:pointer;transition:.5s;overflow:hidden;transform:scale(.95);opacity:0;animation:scaleFadeIn 1.6s forwards;position:relative;padding:10px}
@@ -21,6 +22,7 @@ body.dark{background:#000}
 .portada-wrapper img:hover{transform:scale(1.06) rotateY(6deg) rotateX(3deg)}
 .footer{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:1vh;min-height:110px}
 .shock{background:linear-gradient(135deg,#ff0080,#ff8c00,#00f2fe);color:#fff;font-weight:bold;border:none;border-radius:30px;padding:14px 24px;margin-top:8px;font-size:clamp(1rem,2vw,1.4rem);cursor:pointer;box-shadow:0 0 18px rgba(255,105,180,.6);animation:pulse 2s infinite;max-width:90%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.counter{font-size:clamp(0.9rem,1.5vw,1.2rem);color:#fff;opacity:0.8;margin-top:5px}
 .final-message{color:#fff;font-size:clamp(1.1rem,2vw,1.5rem);text-align:center;opacity:0;animation:fadeIn 2s forwards;margin-top:8px;font-family:'Poppins',sans-serif}
 .trigguiletras{height:24px;opacity:.9;margin-top:6px;transition:opacity .4s}
 .hidden{display:none!important}
@@ -35,11 +37,14 @@ body.dark{background:#000}
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
 </style>
 </head>
+
 <body>
 <div class="main">
+  <div class="header-message">¿Dónde está el libro físico? 📚</div>
   <div class="grid" id="gridContainer"></div>
   <div class="footer">
     <button class="shock hidden" id="shockBtn">📖 ¡Chócalas si abriste un libro físico!</button>
+    <div class="counter hidden" id="contador">📚 345 lectores reales abrieron un libro</div>
     <div class="final-message hidden" id="mensajeFinal">📚 Cada página que sostienes abre un nuevo mundo real. ✨</div>
     <img src="/trigguiletras.png" class="trigguiletras" id="logoTriggui">
   </div>
@@ -53,7 +58,7 @@ libros=[
 {palabras:["Construcción","Innovación","Acción","Empoderamiento"],frases:["🏗️ Lleva ideas a acción real.","🎨 Crea realidades inspiradoras.","🚶‍♂️ Empieza ahora, ajusta después.","🌟 Recupera el control personal."],portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1662270336i/62237986.jpg",fondo:"#33001a"},
 {palabras:["Disciplina","Excelencia","Ambición","Liderazgo"],frases:["🏹 Domina consistencia diaria.","👑 Persigue excelencia silenciosa.","🚀 Deja que tu ambición crezca.","🧭 Lidera con autenticidad."],portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1546097703i/76865.jpg",fondo:"#003300"}
 ];
-let libroActual,bloquePortada,revelado=false;
+let libroActual,bloquePortada,revelado=false,count=345;
 
 function iniciarJuego(){
   const grid=$("gridContainer"),logo=$("logoTriggui");
@@ -89,9 +94,14 @@ function revelarTodo(){
   revelado=true;
 }
 
-$("shockBtn").onclick=()=>{ $("shockBtn").classList.add("hidden"); $("mensajeFinal").classList.remove("hidden"); };
+$("shockBtn").onclick=()=>{
+  $("shockBtn").classList.add("hidden");
+  $("mensajeFinal").classList.remove("hidden");
+  $("contador").classList.remove("hidden");
+  $("contador").innerText=`📚 ${++count} lectores reales abrieron un libro`;
+};
 
-iniciarJuego();
+window.onload=iniciarJuego;
 </script>
 </body>
 </html>
