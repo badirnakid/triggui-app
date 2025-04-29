@@ -53,10 +53,10 @@ body.dark{background:#000}
 <script>
 const $=id=>document.getElementById(id),
 libros=[
-{palabras:["Adaptabilidad","Resiliencia","Mentalidad","Estrategia"],frases:["🌊 Aprende a moverte flexible.","🛡️ Fortalece emociones frente a cambios.","🧠 Evoluciona tu forma de pensar.","📈 Aplica estrategias efectivas."],portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1642726660i/60171734.jpg",fondo:"#140038"},
-{palabras:["Duda","Replantea","Actualiza","Expande"],frases:["🔍 Convierte duda en motor.","🧭 Cuestiona mejor tus certezas.","♻️ Renueva tus creencias.","🚀 Amplía horizontes internos."],portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1602574232i/55539565.jpg",fondo:"#001a33"},
-{palabras:["Construcción","Innovación","Acción","Empoderamiento"],frases:["🏗️ Materializa ideas concretas.","🎨 Crea caminos nuevos.","🚶‍♂️ Actúa antes que planear.","🌟 Recupera tu poder creador."],portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1662270336i/62237986.jpg",fondo:"#33001a"},
-{palabras:["Disciplina","Excelencia","Ambición","Liderazgo"],frases:["🏹 Constancia diaria inquebrantable.","👑 Persigue estándares altos.","🚀 Deja crecer tu ambición.","🧭 Lidera desde tu esencia."],portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1546097703i/76865.jpg",fondo:"#003300"}
+{palabras:["Adaptabilidad","Resiliencia","Mentalidad","Estrategia"],frases:["🌊 Aprende a moverte flexible.","🛡️ Fortalece emociones.","🧠 Evoluciona tu pensamiento.","📈 Aplica estrategias efectivas."],portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1642726660i/60171734.jpg",fondo:"#140038"},
+{palabras:["Duda","Replantea","Actualiza","Expande"],frases:["🔍 Transforma duda en oportunidad.","🧭 Replantea tus certezas.","♻️ Actualiza tu mapa mental.","🚀 Expande tu horizonte interior."],portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1602574232i/55539565.jpg",fondo:"#001a33"},
+{palabras:["Construcción","Innovación","Acción","Empoderamiento"],frases:["🏗️ Lleva ideas a hechos.","🎨 Innova creando caminos.","🚶‍♂️ Muévete antes de planear.","🌟 Recupera tu energía creadora."],portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1662270336i/62237986.jpg",fondo:"#33001a"},
+{palabras:["Disciplina","Excelencia","Ambición","Liderazgo"],frases:["🏹 Sé constante diariamente.","👑 Persigue alta excelencia.","🚀 Deja crecer tu ambición.","🧭 Lidera con autenticidad."],portada:"https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1546097703i/76865.jpg",fondo:"#003300"}
 ];
 let libroActual,bloquePortada,revelado=false,count=345;
 
@@ -101,7 +101,7 @@ $("shockBtn").onclick=()=>{
   $("contador").innerText=`📚 ${++count} lectores reales abrieron un libro`;
 };
 
-iniciarJuego();
+window.onload=iniciarJuego;
 </script>
 </body>
 </html>
