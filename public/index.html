@@ -47,9 +47,8 @@ body.dark{background:#000}
 
 <script>
 const $ = id => document.getElementById(id);
-let libroActual, bloquePortada, revelado = false, count = 0;
+let libroActual, bloquePortada, revelado = false;
 
-// Cargar JSON de libros
 fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json")
   .then(res => res.json())
   .then(data => {
@@ -58,15 +57,6 @@ fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/conteni
     libroActual = libro;
     bloquePortada = Math.floor(Math.random() * 4);
     iniciarUI(libro);
-  });
-
-// Cargar contador real desde /api/get y mostrarlo
-fetch("https://triggui-api.vercel.app/api/get")
-  .then(res => res.json())
-  .then(counter => {
-    count = counter.total || 0;
-    $("contador").innerText = `📚 ${count.toLocaleString('es-MX')} lectores reales abrieron un libro`;
-    $("contador").classList.remove("hidden");
   });
 
 function iniciarUI(libro) {
@@ -80,7 +70,6 @@ function iniciarUI(libro) {
     div.className = "block";
     div.id = "bloque" + i;
     div.style.background = libro.colores[i] || "#555";
-
     div.innerHTML = `
       <div class="block-content label">${palabra}</div>
       <div class="block-content accionable hidden" id="bloque${i}Text">${libro.frases[i]}</div>
@@ -128,11 +117,15 @@ function revelarTodo() {
 $("shockBtn").onclick = async () => {
   $("shockBtn").classList.add("hidden");
   $("mensajeFinal").classList.remove("hidden");
-
-  const res = await fetch("https://triggui-api.vercel.app/api/increment");
-  const data = await res.json();
-  $("contador").innerText = `📚 ${data.total.toLocaleString('es-MX')} lectores reales abrieron un libro`;
   $("contador").classList.remove("hidden");
+
+  try {
+    const res = await fetch("https://triggui-api.vercel.app/api/increment");
+    const data = await res.json();
+    $("contador").innerText = `📚 ${data.total.toLocaleString('es-MX')} lectores reales abrieron un libro`;
+  } catch (e) {
+    $("contador").innerText = "📚 Error al contar";
+  }
 };
 </script>
 </body>
