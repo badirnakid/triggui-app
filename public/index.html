@@ -117,12 +117,14 @@ function revelarTodo() {
   revelado = true;
 }
 
-$("shockBtn").onclick = () => {
+$("shockBtn").onclick = async () => {
   $("shockBtn").classList.add("hidden");
   $("mensajeFinal").classList.remove("hidden");
   $("contador").classList.remove("hidden");
-  count++;
-  $("contador").innerText = `📚 ${count.toLocaleString('es-MX')} lectores reales abrieron un libro`;
+
+  const res = await fetch("https://triggui-api.vercel.app/api/increment");
+  const data = await res.json();
+  $("contador").innerText = `📚 ${data.total.toLocaleString('es-MX')} lectores reales abrieron un libro`;
 };
 </script>
 </body>
