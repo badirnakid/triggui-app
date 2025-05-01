@@ -49,7 +49,7 @@ body.dark{background:#000}
 const $ = id => document.getElementById(id);
 let libroActual, bloquePortada, revelado = false, count = 0;
 
-// Cargar contenido y contador real
+// Cargar JSON de libros
 fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json")
   .then(res => res.json())
   .then(data => {
@@ -60,7 +60,7 @@ fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/conteni
     iniciarUI(libro);
   });
 
-// Cargar contador real inicial
+// Cargar contador real al iniciar
 fetch("https://triggui-api.vercel.app/api/increment")
   .then(res => res.json())
   .then(counter => {
