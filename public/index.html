@@ -39,7 +39,7 @@ body.dark{background:#000}
   <div class="grid" id="gridContainer"></div>
   <div class="footer">
     <button class="shock hidden" id="shockBtn">📖 ¡Chócalas si abriste un libro físico!</button>
-    <div class="counter hidden" id="contador">📚 0 lectores reales abrieron un libro</div>
+    <div class="counter hidden" id="contador"></div>
     <div class="final-message hidden" id="mensajeFinal">📚 Cada página que sostienes abre un nuevo mundo real. ✨</div>
     <img src="/trigguiletras.png" class="trigguiletras" id="logoTriggui">
   </div>
@@ -60,12 +60,13 @@ fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/conteni
     iniciarUI(libro);
   });
 
-// Cargar contador real desde /api/get
+// Cargar contador real desde /api/get y mostrarlo
 fetch("https://triggui-api.vercel.app/api/get")
   .then(res => res.json())
   .then(counter => {
     count = counter.total || 0;
     $("contador").innerText = `📚 ${count.toLocaleString('es-MX')} lectores reales abrieron un libro`;
+    $("contador").classList.remove("hidden");
   });
 
 function iniciarUI(libro) {
@@ -127,11 +128,11 @@ function revelarTodo() {
 $("shockBtn").onclick = async () => {
   $("shockBtn").classList.add("hidden");
   $("mensajeFinal").classList.remove("hidden");
-  $("contador").classList.remove("hidden");
 
   const res = await fetch("https://triggui-api.vercel.app/api/increment");
   const data = await res.json();
   $("contador").innerText = `📚 ${data.total.toLocaleString('es-MX')} lectores reales abrieron un libro`;
+  $("contador").classList.remove("hidden");
 };
 </script>
 </body>
