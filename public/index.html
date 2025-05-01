@@ -39,7 +39,7 @@ body.dark{background:#000}
   <div class="grid" id="gridContainer"></div>
   <div class="footer">
     <button class="shock hidden" id="shockBtn">📖 ¡Chócalas si abriste un libro físico!</button>
-    <div class="counter hidden" id="contador">📚 345 lectores reales abrieron un libro</div>
+    <div class="counter hidden" id="contador">📚 0 lectores reales abrieron un libro</div>
     <div class="final-message hidden" id="mensajeFinal">📚 Cada página que sostienes abre un nuevo mundo real. ✨</div>
     <img src="/trigguiletras.png" class="trigguiletras" id="logoTriggui">
   </div>
@@ -49,16 +49,23 @@ body.dark{background:#000}
 const $ = id => document.getElementById(id);
 let libroActual, bloquePortada, revelado = false, count = 0;
 
-// Cargar JSON desde triggui-content
+// Cargar contenido y contador real
 fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json")
   .then(res => res.json())
   .then(data => {
     const libros = data.libros;
-    count = data.contador || 0;
     const libro = libros[Math.floor(Math.random() * libros.length)];
     libroActual = libro;
     bloquePortada = Math.floor(Math.random() * 4);
     iniciarUI(libro);
+  });
+
+// Cargar contador real inicial
+fetch("https://triggui-api.vercel.app/api/increment")
+  .then(res => res.json())
+  .then(counter => {
+    count = counter.total || 0;
+    $("contador").innerText = `📚 ${count.toLocaleString('es-MX')} lectores reales abrieron un libro`;
   });
 
 function iniciarUI(libro) {
