@@ -60,8 +60,8 @@ fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/conteni
     iniciarUI(libro);
   });
 
-// Cargar contador real al iniciar
-fetch("https://triggui-api.vercel.app/api/increment")
+// Cargar contador real desde /api/get
+fetch("https://triggui-api.vercel.app/api/get")
   .then(res => res.json())
   .then(counter => {
     count = counter.total || 0;
