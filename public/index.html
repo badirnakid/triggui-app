@@ -22,11 +22,12 @@ body.dark{background:#000}
 .portada-wrapper img:hover{transform:scale(1.06) rotateY(6deg) rotateX(3deg)}
 .footer{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:1vh;min-height:110px}
 .shock{background:linear-gradient(135deg,#ff0080,#ff8c00,#00f2fe);color:#fff;font-weight:bold;border:none;border-radius:30px;padding:14px 24px;margin-top:8px;font-size:clamp(1rem,2vw,1.4rem);cursor:pointer;box-shadow:0 0 18px rgba(255,105,180,.6);animation:pulse 2s infinite;max-width:90%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.counter{font-size:clamp(1rem,1.4vw,1.2rem);color:#fff;margin-top:8px;font-family:'Poppins',sans-serif;text-align:center;white-space:nowrap}
+.counter{font-size:clamp(1rem,1.4vw,1.2rem);color:#fff;margin-top:8px;font-family:'Poppins',sans-serif;text-align:center;white-space:nowrap;opacity:0;animation:fadeInInstant .3s forwards}
 .resaltado{font-size:1.2em;color:#ffcc00;font-weight:700}
 .trigguiletras{height:24px;opacity:.9;margin-top:6px;transition:opacity .4s}
 .hidden{display:none!important}
 @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInInstant{to{opacity:1}}
 @keyframes scaleFadeIn{to{transform:scale(1);opacity:1}}
 @keyframes aparecer{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
 @keyframes flotarRespirarTilt{0%,50%,100%{transform:translateY(0) rotateX(0) rotateY(0) scale(1)}25%{transform:translateY(-6px) rotateX(2deg) rotateY(-2deg) scale(1.015)}75%{transform:translateY(-6px) rotateX(-2deg) rotateY(2deg) scale(1.015)}}
@@ -39,7 +40,7 @@ body.dark{background:#000}
   <div class="grid" id="gridContainer"></div>
   <div class="footer">
     <button class="shock hidden" id="shockBtn">📖 ¡Chócalas si abriste un libro físico!</button>
-    <div class="counter hidden" id="contador"></div>
+    <div class="counter hidden" id="contador">✨ Juntos hemos abierto <span class="resaltado">...</span> libros físicos ✨</div>
     <img src="/trigguiletras.png" class="trigguiletras" id="logoTriggui">
   </div>
 </div>
@@ -116,6 +117,7 @@ function revelarTodo() {
 $("shockBtn").onclick = async () => {
   $("shockBtn").classList.add("hidden");
   $("contador").classList.remove("hidden");
+
   try {
     const res = await fetch("https://triggui-api.vercel.app/api/increment");
     const data = await res.json();
