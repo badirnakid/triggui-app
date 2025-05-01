@@ -50,7 +50,7 @@ const $ = id => document.getElementById(id);
 let libroActual, bloquePortada, revelado = false, count = 0;
 
 // Cargar JSON desde triggui-content
-fetch("https://raw.githubusercontent.com/TU_USUARIO/triggui-content/main/contenido.json")
+fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json")
   .then(res => res.json())
   .then(data => {
     const libros = data.libros;
