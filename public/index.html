@@ -67,7 +67,7 @@ function iniciarUI(libro) {
   libro.palabras.forEach((palabra, i) => {
     const div = document.createElement("div");
     div.className = "block";
-    div.id = "bloque" + i;
+    div.id = `bloque${i}`;
     div.style.background = libro.colores[i] || "#555";
     div.innerHTML = `
       <div class="block-content label">${palabra}</div>
@@ -82,14 +82,14 @@ function manejarClick(i) {
   if (revelado) return location.reload();
   if (i === bloquePortada) revelarTodo();
   else {
-    $("bloque" + i + "Text").classList.remove("hidden");
-    $("bloque" + i).querySelector(".label").classList.add("hidden");
+    $(`bloque${i}Text`).classList.remove("hidden");
+    $(`bloque${i}`).querySelector(".label").classList.add("hidden");
   }
 }
 
 function revelarTodo() {
   libroActual.palabras.forEach((_, i) => {
-    const block = $("bloque" + i);
+    const block = $(`bloque${i}`);
     if (i === bloquePortada) {
       block.innerHTML = "";
       const wrapper = document.createElement("div");
@@ -102,7 +102,7 @@ function revelarTodo() {
       block.style.background = "none";
       block.style.padding = "0";
     } else {
-      $("bloque${i}Text").classList.remove("hidden");
+      $(`bloque${i}Text`).classList.remove("hidden");
       block.querySelector(".label").classList.add("hidden");
     }
   });
