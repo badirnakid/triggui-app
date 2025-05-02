@@ -13,17 +13,19 @@ body.dark{background:#000}
 .header-message{text-align:center;padding:1vh 1vw;margin-top:1.5vh}
 .header-gradient{font-weight:800;font-size:clamp(1.4rem,2.5vw,2.2rem);background:linear-gradient(to right,#ff8a00,#e52e71,#9b00ff,#00c6ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;white-space:nowrap}
 .grid{flex:1;display:grid;gap:1vw;padding:1vw;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
-@media(min-width:768px){ .grid{grid-template-columns:repeat(4,1fr);grid-template-rows:1fr} }
+@media(min-width:768px){
+  .grid{grid-template-columns:repeat(4,1fr);grid-template-rows:1fr}
+}
 
 .block{
   position:relative;display:flex;justify-content:center;align-items:center;text-align:center;
   border-radius:18px;font-weight:bold;font-size:clamp(1rem,1.9vw,1.3rem);color:#fff;
   background-size:200% 200%;background-position:center;cursor:pointer;transition:.5s;
   overflow:hidden;transform:scale(.95);opacity:0;animation:scaleFadeIn 1.6s forwards;padding:6px;
-  height:clamp(140px,22vh,300px)
+  height:100%
 }
 @media(orientation:landscape) and (max-width:767px){
-  .block{height:clamp(120px,32vh,220px)}
+  .block{height:clamp(140px,30vh,240px)}
 }
 
 .block-content{position:absolute;inset:0;display:flex;justify-content:center;align-items:center;padding:6px;text-align:center;max-height:100%}
