@@ -10,7 +10,8 @@
 html,body{width:100%;height:100%;font-family:'Archivo',sans-serif;background:linear-gradient(135deg,#0d0e1a,#1a1c2d);overflow:hidden;transition:background 1s ease;perspective:1200px}
 body.dark{background:#000}
 .main{height:100dvh;display:flex;flex-direction:column;opacity:0;animation:fadeIn 1.5s ease forwards}
-.header-message{font-size:clamp(1rem,1.5vw,1.3rem);color:#fff;opacity:0.8;padding:1vh;text-align:center}
+.header-message{text-align:center;padding:2vh 1vw}
+.gradient-text{display:block;font-weight:800;line-height:1.2;background:linear-gradient(90deg,#ff8a00,#e52e71,#00c6ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:clamp(1.4rem,2.5vw,2rem)}
 .grid{flex:1;display:grid;gap:1vw;padding:1vw;grid-template:1fr 1fr/1fr 1fr}
 @media(orientation:landscape){.grid{grid-template:1fr/1fr 1fr 1fr 1fr}}
 .block{display:flex;justify-content:center;align-items:center;text-align:center;border-radius:20px;font-weight:bold;font-size:clamp(1.2rem,2vw,1.5rem);color:#fff;background-size:200% 200%;background-position:center;cursor:pointer;transition:.5s;overflow:hidden;transform:scale(.95);opacity:0;animation:scaleFadeIn 1.6s forwards;position:relative;padding:10px;box-shadow:0 0 18px rgba(0,0,0,0.4)}
@@ -37,7 +38,11 @@ body.dark{background:#000}
 </head>
 <body>
 <div class="main">
-  <div class="header-message">¿Dónde está el libro? 📚</div>
+  <div class="header-message">
+    <span class="gradient-text">¿Dónde</span>
+    <span class="gradient-text">está</span>
+    <span class="gradient-text">el libro?</span> 📚
+  </div>
   <div class="grid" id="gridContainer"></div>
   <div class="footer">
     <div class="frase-magica hidden" id="fraseMagica">✨ Este libro te eligió a ti. No es coincidencia.</div>
