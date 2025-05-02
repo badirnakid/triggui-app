@@ -43,12 +43,10 @@ body.dark { background:#000; }
   grid-template-columns:1fr 1fr;
   grid-template-rows:1fr 1fr;
 }
-@media(min-width:768px) {
-  .grid {
-    grid-template-columns:repeat(4, 1fr);
-    grid-template-rows:1fr;
-  }
+@media (orientation: landscape) {
+  .grid { grid-template-columns: repeat(4, 1fr); grid-template-rows: 1fr; }
 }
+
 .block {
   position:relative;
   display:flex; justify-content:center; align-items:center; text-align:center;
