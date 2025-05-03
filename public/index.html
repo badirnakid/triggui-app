@@ -1,257 +1,255 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>TrigguiApp – Un instante, un universo</title>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500&display=swap" rel="stylesheet" />
-<style>
-:root {
-  --header-height: 60px;
-  --footer-height: 120px;
-}
-* { margin:0; padding:0; box-sizing:border-box; }
-html,body {
-  width:100%; height:100%;
-  font-family:'Archivo',sans-serif;
-  background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
-  overflow:hidden;
-  transition:background 1.5s ease;
-}
-body.dark {
-  background:#000;
-}
-.fade-in {
-  opacity:0; animation:fadeIn 2s ease-in-out forwards;
-}
-.main {
-  display:flex; flex-direction:column; height:100dvh;
-}
-.header-message {
-  height:var(--header-height);
-  display:flex; align-items:center; justify-content:center;
-  font-size:clamp(1.3rem,2.5vw,2rem);
-  background:linear-gradient(to right,#ff8a00,#e52e71,#9b00ff,#00c6ff);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  font-weight:800;
-  white-space:nowrap;
-  text-align:center;
-  padding:1vh 4vw;
-}
-.grid {
-  flex:1;
-  display:grid;
-  gap:1.5vw;
-  padding:0 2vw;
-  grid-template-columns:1fr 1fr;
-  grid-template-rows:1fr 1fr;
-}
-@media (orientation: landscape) {
-  .grid { grid-template-columns: repeat(4, 1fr); grid-template-rows: 1fr; }
-}
-.block {
-  position:relative;
-  display:flex; justify-content:center; align-items:center;
-  text-align:center;
-  border-radius:18px;
-  font-weight:bold;
-  font-size:clamp(1rem,1.9vw,1.3rem);
-  color:#fff;
-  background-size:200% 200%;
-  cursor:pointer;
-  transition:.5s;
-  overflow:hidden;
-  transform:scale(.95);
-  opacity:0;
-  animation:scaleFadeIn 1.2s forwards;
-  animation-delay: .3s;
-  padding:6px;
-}
-.block-content {
-  position:absolute; inset:0;
-  display:flex; justify-content:center; align-items:center;
-  padding:6px;
-}
-.label { z-index:1; }
-.accionable {
-  font-family:'Poppins',sans-serif;
-  font-size:clamp(.9rem,1.4vw,1.1rem);
-  font-weight:600;
-  color:#fff;
-  padding:10px;
-  border-radius:14px;
-  opacity:0;
-  animation:aparecer .6s forwards;
-  text-align:center;
-  box-shadow:0 6px 20px rgba(0,0,0,.3);
-}
-.portada-wrapper {
-  width:100%; height:100%;
-  display:flex; justify-content:center; align-items:center;
-  background:radial-gradient(circle,#ffffff10,#0000);
-  animation:glow 6s ease-in-out infinite;
-}
-.portada-wrapper img {
-  width:80%;
-  max-height:90%;
-  object-fit:contain;
-  border-radius:20px;
-  box-shadow:0 10px 24px rgba(0,0,0,.4);
-}
-.footer {
-  height:var(--footer-height);
-  display:flex; flex-direction:column;
-  align-items:center; justify-content:flex-start;
-  padding:2vh 2vw;
-}
-.shock {
-  background:linear-gradient(135deg,#ff0080,#ff8c00,#00f2fe);
-  color:#fff;
-  font-weight:bold;
-  border:none;
-  border-radius:28px;
-  padding:10px 20px;
-  margin-top:10px;
-  font-size:clamp(.9rem,1.8vw,1.2rem);
-  cursor:pointer;
-  box-shadow:0 0 12px rgba(255,105,180,.5);
-  animation:pulse 2s infinite;
-}
-.counter {
-  font-size:clamp(.9rem,1.2vw,1.1rem);
-  color:#fff;
-  margin-top:6px;
-  font-family:'Poppins',sans-serif;
-  text-align:center;
-  white-space:nowrap;
-}
-.resaltado {
-  font-size:1.1em;
-  color:#ffcc00;
-  font-weight:700;
-}
-.trigguiletras {
-  height:22px;
-  opacity:.9;
-  margin-top:1.5vh;
-}
-.frase-magica {
-  font-size:1rem;
-  color:#ffeb3b;
-  text-align:center;
-  margin-top:1rem;
-  font-family:'Poppins',sans-serif;
-}
-.hidden { display:none!important; }
-
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes scaleFadeIn{to{transform:scale(1);opacity:1}}
-@keyframes aparecer{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
-@keyframes glow{0%,100%{background:radial-gradient(circle,#ffffff05,#0000)}50%{background:radial-gradient(circle,#ffffff15,#0000)}}
-</style>
-</head>
-<body class="fade-in">
-<div class="main">
-  <div class="header-message">¿Dónde está el libro? 📚</div>
-  <div class="grid" id="gridContainer"></div>
-  <div class="footer">
-    <div class="frase-magica hidden" id="fraseMagica">✨ Este libro te eligió a ti. No es coincidencia.</div>
-    <button class="shock hidden" id="shockBtn">📖 ¡Chócalas si abriste un libro físico!</button>
-    <div class="counter hidden" id="contador">✨ Juntos hemos abierto <span class="resaltado">...</span> libros físicos ✨</div>
-    <img src="/trigguiletras.png" class="trigguiletras" id="logoTriggui">
-  </div>
-</div>
-<script>
-const $ = id => document.getElementById(id);
-let libroActual, bloquePortada, revelado = false;
-const emojis = ["🌊","🛡️","🧠","📈","📘","🔮","❤️","✨","🪞"];
-
-fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json")
-  .then(res => res.json())
-  .then(data => {
-    const libro = data.libros[Math.floor(Math.random()*data.libros.length)];
-    libroActual = libro;
-    bloquePortada = Math.floor(Math.random()*4);
-    iniciarUI(libro);
-  });
-
-function generarGradiente(color) {
-  const h = parseInt(color.slice(1,3),16),
-        l = parseInt(color.slice(3,5),16),
-        s = parseInt(color.slice(5,7),16);
-  const light = `rgba(${Math.min(h+30,255)},${Math.min(l+30,255)},${Math.min(s+30,255)},0.8)`;
-  return `linear-gradient(135deg, ${color}, ${light})`;
-}
-
-function iniciarUI(libro) {
-  const grid = $("gridContainer");
-  $("logoTriggui").classList.remove("hidden");
-  grid.innerHTML = "";
-  libro.palabras.forEach((palabra, i) => {
-    const div = document.createElement("div");
-    div.className = "block";
-    div.id = `bloque${i}`;
-    div.style.background = generarGradiente(libro.colores[i] || "#555");
-    const emoji = emojis[i % emojis.length];
-    div.innerHTML = `
-      <div class="block-content label">${emoji} ${palabra}</div>
-      <div class="block-content accionable hidden" id="bloque${i}Text">${libro.frases[i]}</div>`;
-    div.onclick = () => manejarClick(i);
-    grid.appendChild(div);
-  });
-}
-
-function manejarClick(i) {
-  if (revelado) return location.reload();
-  if (i === bloquePortada) revelarTodo();
-  else {
-    $(`bloque${i}Text`).classList.remove("hidden");
-    $(`bloque${i}`).querySelector(".label").classList.add("hidden");
-  }
-}
-
-function revelarTodo() {
-  libroActual.palabras.forEach((_, i) => {
-    const block = $(`bloque${i}`);
-    if (i === bloquePortada) {
-      block.innerHTML = "";
-      const wrapper = document.createElement("div");
-      wrapper.className = "portada-wrapper";
-      const img = document.createElement("img");
-      img.src = libroActual.portada;
-      img.alt = "Portada";
-      wrapper.appendChild(img);
-      block.appendChild(wrapper);
-      block.style.background = "none";
-    } else {
-      $(`bloque${i}Text`).classList.remove("hidden");
-      block.querySelector(".label").classList.add("hidden");
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" />
+  <title>TrigguiApp – Detente. Lee. Conecta.</title>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500&display=swap" rel="stylesheet" />
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html, body {
+      width:100%; height:100%;
+      font-family:'Archivo',sans-serif;
+      background:linear-gradient(135deg,#0d0e1a,#1a1c2d);
+      overflow:hidden;
+      transition: background 1s ease;
+      perspective: 1000px;
     }
-  });
-  document.body.classList.add("dark");
-  document.body.style.background = libroActual.fondo;
-  $("logoTriggui").classList.add("hidden");
-  $("fraseMagica").classList.remove("hidden");
-  setTimeout(() => {
-    $("fraseMagica").classList.add("hidden");
-    $("shockBtn").classList.remove("hidden");
-  }, 2500);
-  revelado = true;
-}
+    .main {
+      display:flex; flex-direction:column;
+      height:100dvh;
+      opacity:0;
+      animation:fadeIn 1.5s ease forwards;
+    }
+    .grid {
+      flex:1;
+      display:grid;
+      gap:1.5vw;
+      padding:1.5vw;
+      grid-template-columns:1fr 1fr;
+      grid-template-rows:1fr 1fr;
+    }
+    @media (orientation: landscape) {
+      .grid {
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: 1fr;
+      }
+    }
+    .block {
+      position:relative;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      text-align:center;
+      border-radius:20px;
+      font-weight:bold;
+      font-size:clamp(1.2rem, 2vw, 1.5rem);
+      color:#fff;
+      background-size:cover;
+      background-position:center;
+      cursor:pointer;
+      transition:.5s;
+      overflow:hidden;
+      transform:scale(.95);
+      opacity:0;
+      animation:scaleFadeIn 1.3s forwards;
+      padding:10px;
+    }
+    .block-content {
+      position:absolute;
+      inset:0;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding:10px;
+      text-align:center;
+    }
+    .accionable {
+      font-family:'Poppins',sans-serif;
+      font-size:clamp(1rem, 1.5vw, 1.2rem);
+      font-weight:600;
+      color:#fff;
+      padding:14px;
+      border-radius:18px;
+      opacity:0;
+      animation:aparecer .6s forwards;
+      box-shadow:0 8px 30px rgba(0,0,0,0.3);
+    }
+    .portada-wrapper {
+      width:100%; height:100%;
+      display:flex; justify-content:center; align-items:center;
+      animation:flotarTilt 7s ease-in-out infinite;
+    }
+    .portada-wrapper img {
+      width:85%;
+      max-height:90%;
+      object-fit:contain;
+      border-radius:20px;
+      box-shadow:0 10px 24px rgba(0,0,0,0.4);
+      transition:transform .6s;
+    }
+    .portada-wrapper img:hover {
+      transform:scale(1.05) rotateY(5deg) rotateX(2deg);
+    }
+    .footer {
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:flex-start;
+      padding:2vh 2vw;
+      min-height:110px;
+    }
+    .shock {
+      background:linear-gradient(135deg,#ff0080,#ff8c00,#00f2fe);
+      color:#fff;
+      font-weight:bold;
+      border:none;
+      border-radius:28px;
+      padding:14px 24px;
+      margin-top:10px;
+      font-size:clamp(1rem,2vw,1.4rem);
+      cursor:pointer;
+      box-shadow:0 0 18px rgba(255,105,180,0.5);
+      animation:pulse 2s infinite;
+      max-width:90%;
+    }
+    .counter {
+      font-size:clamp(1rem,1.4vw,1.2rem);
+      color:#fff;
+      margin-top:8px;
+      font-family:'Poppins',sans-serif;
+      text-align:center;
+      white-space:nowrap;
+      opacity:0;
+      animation:fadeInInstant .3s forwards;
+    }
+    .resaltado {
+      font-size:1.1em;
+      color:#ffcc00;
+      font-weight:700;
+    }
+    .trigguiletras {
+      height:20px;
+      opacity:.9;
+      margin-top:1.5vh;
+    }
+    .frase-magica {
+      font-size:1rem;
+      color:#ffeb3b;
+      text-align:center;
+      margin-top:1rem;
+      font-family:'Poppins',sans-serif;
+    }
+    .hidden { display:none!important; }
+    @keyframes fadeIn { from {opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
+    @keyframes scaleFadeIn { to {transform:scale(1); opacity:1;} }
+    @keyframes aparecer { from {opacity:0; transform:scale(.95);} to {opacity:1; transform:scale(1);} }
+    @keyframes pulse { 0%,100% {transform:scale(1);} 50% {transform:scale(1.04);} }
+    @keyframes fadeInInstant { to {opacity:1;} }
+    @keyframes flotarTilt {
+      0%, 100% {transform:translateY(0) rotateX(0) rotateY(0);}
+      50% {transform:translateY(-6px) rotateX(2deg) rotateY(-2deg);}
+    }
+  </style>
+</head>
+<body>
+  <div class="main">
+    <div class="grid" id="gridContainer"></div>
+    <div class="footer">
+      <div class="frase-magica hidden" id="fraseMagica">✨ Este libro te eligió a ti. No es coincidencia.</div>
+      <button class="shock hidden" id="shockBtn">📖 ¡Chócalas si abriste un libro físico!</button>
+      <div class="counter hidden" id="contador">✨ Juntos hemos abierto <span class="resaltado">...</span> libros físicos ✨</div>
+      <img src="/trigguiletras.png" class="trigguiletras" id="logoTriggui" />
+    </div>
+  </div>
 
-$("shockBtn").onclick = async () => {
-  $("shockBtn").classList.add("hidden");
-  $("contador").classList.remove("hidden");
-  try {
-    const res = await fetch("https://triggui-api.vercel.app/api/increment");
-    const data = await res.json();
-    $("contador").innerHTML = `✨ Juntos hemos abierto <span class="resaltado">${data.total.toLocaleString('es-MX')}</span> libros físicos ✨`;
-  } catch {
-    $("contador").innerText = "📚 ¡Error al contar libros!";
-  }
-};
-</script>
+  <script>
+    const $ = id => document.getElementById(id);
+    let libroActual, bloquePortada, revelado = false;
+    const emojis = ["📘","🧠","🎯","🌟","💡","🌈","🔥","💫","🧲"];
+
+    fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json")
+      .then(res => res.json())
+      .then(data => {
+        const libro = data.libros[Math.floor(Math.random() * data.libros.length)];
+        libroActual = libro;
+        bloquePortada = Math.floor(Math.random() * 4);
+        iniciarUI(libro);
+      });
+
+    function generarGradiente(hex) {
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      return `linear-gradient(135deg, ${hex}, rgba(${r + 20},${g + 20},${b + 20},0.8))`;
+    }
+
+    function iniciarUI(libro) {
+      const grid = $("gridContainer");
+      $("logoTriggui").classList.remove("hidden");
+      grid.innerHTML = "";
+      libro.palabras.forEach((palabra, i) => {
+        const div = document.createElement("div");
+        div.className = "block";
+        div.id = `bloque${i}`;
+        div.style.background = generarGradiente(libro.colores[i] || "#666");
+        const emoji = emojis[i % emojis.length];
+        div.innerHTML = `
+          <div class="block-content label">${emoji} ${palabra}</div>
+          <div class="block-content accionable hidden" id="bloque${i}Text">${libro.frases[i]}</div>`;
+        div.onclick = () => manejarClick(i);
+        grid.appendChild(div);
+      });
+    }
+
+    function manejarClick(i) {
+      if (revelado) return location.reload();
+      if (i === bloquePortada) revelarTodo();
+      else {
+        $(`bloque${i}Text`).classList.remove("hidden");
+        $(`bloque${i}`).querySelector(".label").classList.add("hidden");
+      }
+    }
+
+    function revelarTodo() {
+      libroActual.palabras.forEach((_, i) => {
+        const block = $(`bloque${i}`);
+        if (i === bloquePortada) {
+          block.innerHTML = "";
+          const wrapper = document.createElement("div");
+          wrapper.className = "portada-wrapper";
+          const img = document.createElement("img");
+          img.src = libroActual.portada;
+          img.alt = "Portada";
+          wrapper.appendChild(img);
+          block.appendChild(wrapper);
+          block.style.background = "none";
+        } else {
+          $(`bloque${i}Text`).classList.remove("hidden");
+          block.querySelector(".label").classList.add("hidden");
+        }
+      });
+      document.body.style.background = libroActual.fondo;
+      $("logoTriggui").classList.add("hidden");
+      $("fraseMagica").classList.remove("hidden");
+      setTimeout(() => {
+        $("fraseMagica").classList.add("hidden");
+        $("shockBtn").classList.remove("hidden");
+      }, 2500);
+      revelado = true;
+    }
+
+    $("shockBtn").onclick = async () => {
+      $("shockBtn").classList.add("hidden");
+      $("contador").classList.remove("hidden");
+      try {
+        const res = await fetch("https://triggui-api.vercel.app/api/increment");
+        const data = await res.json();
+        $("contador").innerHTML = `✨ Juntos hemos abierto <span class="resaltado">${data.total.toLocaleString('es-MX')}</span> libros físicos ✨`;
+      } catch {
+        $("contador").innerText = "📚 ¡Error al contar libros!";
+      }
+    };
+  </script>
 </body>
 </html>
