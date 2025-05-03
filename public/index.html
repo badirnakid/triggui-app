@@ -10,28 +10,18 @@
       --header-height: 60px;
       --footer-height: 120px;
     }
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
       font-family: 'Archivo', sans-serif;
       background: linear-gradient(135deg, #0d0e1a, #1a1c2d);
-      overscroll-behavior: none;
-      overflow-x: hidden;
       height: 100%;
-      min-height: 100dvh;
+      overflow-x: hidden;
     }
-    body.dark {
-      background: #000;
-    }
+    body.dark { background: #000; }
     .main {
       display: flex;
       flex-direction: column;
-      height: 100dvh;
-      min-height: 100vh;
-      opacity: 0;
+      min-height: 100dvh;
       animation: fadeIn 1.2s ease forwards;
     }
     .header-message {
@@ -78,7 +68,6 @@
       background-size: 200% 200%;
       background-position: center;
       cursor: pointer;
-      transition: transform 0.4s ease;
       overflow: hidden;
       animation: popIn 0.7s ease forwards;
     }
@@ -130,7 +119,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      padding: 3vh 2vw 2vh;
+      padding: 3vh 2vw 6vh;
     }
     .shock {
       background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff);
@@ -175,13 +164,6 @@
       font-family: 'Poppins', sans-serif;
       animation: fadeIn 1.4s ease;
     }
-
-    @media screen and (max-width: 800px) and (min-height: 600px) and (-webkit-device-pixel-ratio: 2) {
-      .footer {
-        padding-bottom: 10vh !important;
-      }
-    }
-
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
@@ -211,7 +193,7 @@
       <div class="header-gradient">¿Dónde está el libro? 📚</div>
     </div>
     <div class="grid" id="gridContainer"></div>
-    <div class="footer">
+    <div class="footer" id="footer">
       <div class="frase-magica hidden" id="fraseMagica">✨ Este libro te eligió a ti. No es coincidencia.</div>
       <button class="shock hidden" id="shockBtn">📖 ¡Chócalas!</button>
       <div class="counter hidden" id="contador">✨ Juntos hemos abierto <span class="resaltado">...</span> libros físicos ✨</div>
@@ -308,6 +290,16 @@
         $("contador").innerText = "📚 ¡Error al contar libros!";
       }
     };
+
+    // 🎯 Ajuste dinámico sólo si espacio vertical disponible es mayor al 100vh
+    window.addEventListener("load", () => {
+      const alturaReal = window.innerHeight;
+      const alturaEstimada = document.documentElement.clientHeight;
+      const extra = alturaReal - alturaEstimada;
+      if (extra > 30) {
+        document.getElementById("footer").style.paddingBottom = "calc(6vh + 40px)";
+      }
+    });
   </script>
 </body>
 </html>
