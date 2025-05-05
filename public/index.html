@@ -8,7 +8,6 @@
   <style>
     :root {
       --header-height: 60px;
-      --footer-height: 120px;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
@@ -118,7 +117,7 @@
     }
     .footer {
       flex-shrink: 0;
-      height: auto;
+      min-height: 160px;
       padding: max(2vh, 16px) 2vw;
       display: flex;
       flex-direction: column;
@@ -147,7 +146,7 @@
       text-align: center;
       white-space: nowrap;
       opacity: 0;
-      animation: fadeIn 0.3s forwards;
+      transition: opacity 0.4s ease;
     }
     .resaltado {
       font-size: 1.1em;
@@ -159,14 +158,27 @@
       opacity: .9;
       margin-top: 1.5vh;
     }
-    .hidden { display: none !important; }
+    .hidden {
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+      height: 0;
+      overflow: hidden;
+      transition: opacity 0.5s ease;
+    }
+    .visible {
+      visibility: visible;
+      opacity: 1;
+      height: auto;
+      pointer-events: auto;
+    }
     .frase-magica {
       font-size: 1rem;
       color: #00ffff;
       text-align: center;
       margin-top: 1rem;
       font-family: 'Poppins', sans-serif;
-      animation: fadeIn 1.4s ease;
+      transition: opacity 0.4s ease;
     }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
@@ -274,17 +286,28 @@
       document.body.classList.add("dark");
       document.body.style.background = libroActual.fondo;
       $("logoTriggui").classList.add("hidden");
+
       $("fraseMagica").classList.remove("hidden");
+      $("fraseMagica").classList.add("visible");
+
       setTimeout(() => {
+        $("fraseMagica").classList.remove("visible");
         $("fraseMagica").classList.add("hidden");
+
         $("shockBtn").classList.remove("hidden");
+        $("shockBtn").classList.add("visible");
       }, 2500);
+
       revelado = true;
     }
 
     $("shockBtn").onclick = async () => {
+      $("shockBtn").classList.remove("visible");
       $("shockBtn").classList.add("hidden");
+
       $("contador").classList.remove("hidden");
+      $("contador").classList.add("visible");
+
       try {
         const res = await fetch("https://triggui-api.vercel.app/api/increment");
         const data = await res.json();
