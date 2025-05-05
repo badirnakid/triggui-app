@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="es">
+>
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>TrigguiApp – Solo Bloques con contenido.json</title>
+  <title>TrigguiApp – Perfecta</title>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500&display=swap" rel="stylesheet" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
       height: 100%;
       width: 100%;
-      font-family: sans-serif;
+      font-family: 'Archivo', sans-serif;
       background: linear-gradient(135deg, #0d0e1a, #1a1c2d);
       overflow: hidden;
     }
@@ -28,15 +30,18 @@
       align-items: center;
       justify-content: center;
       color: white;
-      font-size: 1.2rem;
       text-align: center;
       position: relative;
       overflow: hidden;
+      font-size: 1.1rem;
+      background-size: 200% 200%;
+      animation: fadeIn 1s ease forwards;
     }
-    .block .frase,
-    .block .portada,
-    .block .btn,
-    .block .contador {
+    .label {
+      z-index: 1;
+      font-weight: bold;
+    }
+    .frase, .portada, .btn, .contador {
       position: absolute;
       inset: 0;
       display: none;
@@ -44,23 +49,27 @@
       align-items: center;
       padding: 1rem;
       text-align: center;
+      font-family: 'Poppins', sans-serif;
     }
-    .block .frase {
+    .frase {
       font-size: 1rem;
-      line-height: 1.4;
+      animation: fadeIn 0.6s ease forwards;
     }
-    .block .portada img {
+    .portada {
+      animation: glow 6s ease-in-out infinite;
+    }
+    .portada img {
       max-width: 90%;
       max-height: 90%;
       border-radius: 16px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
     }
-    .block .btn {
+    .btn {
       flex-direction: column;
       gap: 0.5rem;
     }
-    .block .btn button {
-      background: #ff0080;
+    .btn button {
+      background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff);
       color: white;
       border: none;
       padding: 0.6rem 1.4rem;
@@ -68,13 +77,24 @@
       font-size: 1rem;
       font-weight: bold;
       cursor: pointer;
+      animation: pulse 2s infinite;
     }
-    .block .contador {
+    .contador {
       font-size: 0.9rem;
       color: #ffeb3b;
     }
-    .label {
-      z-index: 1;
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes glow {
+      0%, 100% { background: radial-gradient(circle, #ffffff08, #0000); }
+      50% { background: radial-gradient(circle, #ffffff22, #0000); }
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
     }
   </style>
 </head>
