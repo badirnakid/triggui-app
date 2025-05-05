@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>TrigguiApp – Layout Perfecto</title>
+  <title>TrigguiApp – Layout Inteligente</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -87,12 +87,15 @@
 
       const width = window.innerWidth;
       const height = window.innerHeight;
-      const orientation = width > height ? 'landscape' : 'portrait';
+      const isLandscape = width > height;
 
-      const columnas = orientation === 'landscape' ? 4 : 2;
+      // ⚠️ Regla inteligente: si está en landscape PERO el alto es muy bajo → usar 2x2
+      const usar2x2 = !isLandscape || height < 500;
+
+      const columnas = usar2x2 ? 2 : 4;
       const filas = 4 / columnas;
 
-      // posicionamiento absoluto dinámico
+      // Posición exacta
       const top = header.offsetHeight;
       const bottom = footer.offsetHeight;
       const altoDisponible = height - top - bottom;
