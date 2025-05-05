@@ -16,21 +16,21 @@
     }
 
     .introWidget {
-      position: fixed;
+      position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: rgba(255, 255, 255, 0.08);
-      color: #fff;
-      padding: 2rem 2.5rem;
-      border-radius: 24px;
+      padding: 2.5rem 3rem;
+      background: linear-gradient(145deg, #22293f, #0a0b1a);
+      color: #ffffff;
       font-family: 'Poppins', sans-serif;
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       text-align: center;
+      border-radius: 24px;
       z-index: 50;
+      box-shadow: 0 0 40px rgba(255,255,255,0.1);
       opacity: 1;
-      box-shadow: 0 0 30px rgba(255,255,255,0.1);
-      animation: fadeOutIntro 3s ease 2.8s forwards;
+      animation: fadeOutIntro 4s ease 3.5s forwards;
     }
 
     @keyframes fadeOutIntro {
@@ -62,7 +62,7 @@
     }
 
     .block {
-      border-radius: 18px;
+      border-radius: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -72,8 +72,9 @@
       color: white;
       position: relative;
       cursor: pointer;
-      background-size: 250% 250%;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+      background-size: 300% 300%;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.4);
+      border: 2px solid rgba(255,255,255,0.07);
     }
 
     .label {
@@ -107,7 +108,7 @@
       max-width: 90%;
       max-height: 90%;
       border-radius: 20px;
-      box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.5);
     }
 
     .ctaZone {
@@ -123,39 +124,41 @@
 
     .ctaZone button {
       border: none;
-      padding: 0.8rem 1.6rem;
+      padding: 1rem 2rem;
       border-radius: 999px;
-      font-size: 1rem;
+      font-size: 1.1rem;
       font-weight: bold;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.3);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
+      min-width: 180px;
+      text-align: center;
     }
 
     .ctaZone button:hover {
-      transform: scale(1.05);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+      transform: scale(1.06);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
     }
 
     #btnOtro {
-      background: linear-gradient(135deg, #ffe000, #ff8c00);
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
       color: #000;
     }
 
     #btnLibro {
-      background: linear-gradient(135deg, #00ffcc, #00bfff);
+      background: linear-gradient(135deg, #a1ffce, #faffd1);
       color: #000;
     }
 
     .celebracion-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.85);
+      background: rgba(0, 0, 0, 0.88);
       display: none;
       align-items: center;
       justify-content: center;
       z-index: 20;
-      animation: fadeOutCelebracion 0.3s ease 2.7s forwards;
+      animation: fadeOutCelebracion 0.3s ease 2.5s forwards;
     }
 
     @keyframes fadeOutCelebracion {
@@ -163,20 +166,21 @@
     }
 
     .celebracion-message {
-      font-size: 1.8rem;
+      font-size: 2rem;
       color: #fff;
       text-align: center;
       font-family: 'Poppins', sans-serif;
       background: rgba(255, 255, 255, 0.05);
-      padding: 1.5rem 2.5rem;
-      border-radius: 18px;
-      box-shadow: 0 0 40px rgba(255,255,255,0.15);
+      padding: 2rem 3rem;
+      border-radius: 20px;
+      box-shadow: 0 0 50px rgba(255,255,255,0.15);
     }
 
     .resaltado {
-      color: #ffeb3b;
+      color: #00ffc3;
       font-weight: 900;
-      font-size: 2.4rem;
+      font-size: 3rem;
+      text-shadow: 0 0 10px #00ffc3, 0 0 20px #00ffc3;
     }
 
     @keyframes fadeIn {
@@ -186,7 +190,7 @@
   </style>
 </head>
 <body>
-  <div class="introWidget">🧘‍♂️ Detente. Respira. Elige una palabra y deja que un libro te encuentre.</div>
+  <div class="introWidget">🧘‍♂️ Detente. Respira. Elige una palabra. Algo hermoso está por suceder.</div>
 
   <div class="grid" id="gridContainer"></div>
 
@@ -216,7 +220,7 @@
       const r = parseInt(hex.slice(1, 3), 16);
       const g = parseInt(hex.slice(3, 5), 16);
       const b = parseInt(hex.slice(5, 7), 16);
-      const light = `rgba(${Math.min(r+40,255)},${Math.min(g+40,255)},${Math.min(b+40,255)},0.85)`;
+      const light = `rgba(${Math.min(r+50,255)},${Math.min(g+50,255)},${Math.min(b+50,255)},0.85)`;
       return `linear-gradient(135deg, ${hex}, ${light})`;
     }
 
@@ -290,7 +294,7 @@
       setTimeout(() => {
         celebracionOverlay.style.display = "none";
         ctaZone.style.display = "flex";
-      }, 2700);
+      }, 2500);
     };
 
     async function iniciar() {
