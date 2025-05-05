@@ -3,34 +3,62 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>TrigguiApp Layout Test</title>
+  <title>TrigguiApp – Layout Perfecto</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body {
+
+    html {
       height: 100%;
-      background: linear-gradient(135deg, #0d0e1a, #1a1c2d);
-      font-family: sans-serif;
-      overflow: hidden;
+      -webkit-overflow-scrolling: touch;
     }
+
     body {
-      display: flex;
-      flex-direction: column;
+      height: 100%;
+      font-family: sans-serif;
+      background: linear-gradient(135deg, #0d0e1a, #1a1c2d);
+      overflow: auto;
+      position: relative;
     }
+
     .header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
       height: 60px;
-      flex-shrink: 0;
       display: flex;
       justify-content: center;
       align-items: center;
       color: #fff;
       font-weight: bold;
+      z-index: 10;
     }
+
+    .footer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 160px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #aaa;
+      font-size: 0.9rem;
+      text-align: center;
+      padding: 1rem;
+      z-index: 10;
+    }
+
     .grid {
+      position: absolute;
+      left: 0;
+      right: 0;
+      padding: 2vw;
       display: grid;
       gap: 1.5vw;
-      padding: 2vw;
-      flex-grow: 1;
     }
+
     .block {
       background: #333;
       border-radius: 18px;
@@ -41,26 +69,21 @@
       font-size: 1.2rem;
       text-align: center;
     }
-    .footer {
-      height: 160px;
-      flex-shrink: 0;
-      padding: 1rem;
-      color: #aaa;
-      text-align: center;
-      font-size: 0.9rem;
-    }
   </style>
 </head>
 <body>
-  <div class="header">Header fijo</div>
+  <div class="header" id="header">Header fijo</div>
   <div class="grid" id="gridContainer"></div>
-  <div class="footer">Footer fijo con espacio para botones y frase</div>
+  <div class="footer" id="footer">Footer fijo con espacio para botones y frase</div>
 
   <script>
     const grid = document.getElementById("gridContainer");
 
     function redibujarBloques() {
       grid.innerHTML = "";
+
+      const header = document.getElementById("header");
+      const footer = document.getElementById("footer");
 
       const width = window.innerWidth;
       const height = window.innerHeight;
@@ -69,22 +92,21 @@
       const columnas = orientation === 'landscape' ? 4 : 2;
       const filas = 4 / columnas;
 
+      // posicionamiento absoluto dinámico
+      const top = header.offsetHeight;
+      const bottom = footer.offsetHeight;
+      const altoDisponible = height - top - bottom;
+
+      grid.style.top = `${top}px`;
+      grid.style.bottom = `${bottom}px`;
       grid.style.gridTemplateColumns = `repeat(${columnas}, 1fr)`;
       grid.style.gridTemplateRows = `repeat(${filas}, 1fr)`;
-
-      const headerH = document.querySelector('.header').offsetHeight;
-      const footerH = document.querySelector('.footer').offsetHeight;
-      const disponible = height - headerH - footerH - 16;
-
-      // ⚡ Escalamos más la altura de bloque en landscape
-      const factorAltura = orientation === 'landscape' ? 1.2 : 1.1;
-      const alturaBloque = (disponible / filas) * factorAltura;
 
       for (let i = 1; i <= 4; i++) {
         const b = document.createElement("div");
         b.className = "block";
-        b.style.height = `${alturaBloque}px`;
         b.innerText = `Bloque ${i}`;
+        b.style.height = `100%`;
         grid.appendChild(b);
       }
     }
