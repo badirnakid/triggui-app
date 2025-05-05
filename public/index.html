@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>TrigguiApp – Versión UX Legendaria</title>
+  <title>TrigguiApp – Trascendente</title>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500&display=swap" rel="stylesheet" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -44,6 +44,14 @@
       z-index: 1;
       font-weight: bold;
     }
+    .label.guia {
+      background: rgba(255, 255, 255, 0.15);
+      border: 2px solid #ff4081;
+      padding: 0.6rem 1rem;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      animation: glow 1.8s ease-in-out infinite;
+    }
     .frase, .portada {
       position: absolute;
       inset: 0;
@@ -82,29 +90,41 @@
       text-align: center;
     }
     .ctaZone button {
-      background: #ffeb3b;
+      background: #00ffc3;
       color: #000;
       border: none;
-      padding: 0.7rem 1.6rem;
-      border-radius: 12px;
-      font-size: 1rem;
+      padding: 0.8rem 1.6rem;
+      border-radius: 999px;
+      font-size: 1.05rem;
       font-weight: bold;
       cursor: pointer;
       box-shadow: 0 4px 12px rgba(0,0,0,0.25);
       transition: background 0.3s;
     }
     .ctaZone button:hover {
-      background: #fff176;
+      background: #a1ffe7;
     }
-    .celebracion {
-      font-size: 1.2rem;
+
+    .celebracion-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 20;
+      animation: fadeIn 0.5s ease both;
+    }
+    .celebracion-message {
+      font-size: 1.4rem;
       color: #fff;
-      background: rgba(0,0,0,0.5);
-      padding: 0.8rem 1.4rem;
-      border-radius: 12px;
-      margin-top: 1rem;
-      animation: celebracion 1.2s ease both;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 1.2rem 2rem;
+      border-radius: 16px;
+      text-align: center;
       font-family: 'Poppins', sans-serif;
+      box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+      animation: celebracion 1.2s ease both;
     }
     .resaltado {
       color: #ffeb3b;
@@ -113,10 +133,10 @@
 
     .trigguiletras {
       position: fixed;
-      bottom: 1vh;
-      left: 1vw;
+      top: 1vh;
+      right: 1vw;
       height: 18px;
-      opacity: 0.6;
+      opacity: 0.5;
       z-index: 5;
     }
 
@@ -125,8 +145,8 @@
       to { opacity: 1; transform: translateY(0); }
     }
     @keyframes glow {
-      0%, 100% { background: radial-gradient(circle, #ffffff08, #0000); }
-      50% { background: radial-gradient(circle, #ffffff22, #0000); }
+      0%, 100% { box-shadow: 0 0 8px #ff4081; }
+      50% { box-shadow: 0 0 18px #ff80ab; }
     }
     @keyframes celebracion {
       0% { transform: scale(0.8); opacity: 0; }
@@ -139,8 +159,11 @@
   <div class="grid" id="gridContainer"></div>
 
   <div class="ctaZone" id="ctaZone">
-    <button id="ctaBtn">📖 Yo abrí un libro físico</button>
-    <div class="celebracion" id="celebracion" style="display:none;">
+    <button id="ctaBtn">📚 Haz clic si abriste un libro físico</button>
+  </div>
+
+  <div class="celebracion-overlay" id="celebracionOverlay">
+    <div class="celebracion-message" id="celebracionMsg">
       ✨ Juntos hemos abierto <span class="resaltado">...</span> libros físicos ✨
     </div>
   </div>
@@ -151,7 +174,9 @@
     const grid = document.getElementById("gridContainer");
     const ctaZone = document.getElementById("ctaZone");
     const ctaBtn = document.getElementById("ctaBtn");
-    const celebracion = document.getElementById("celebracion");
+    const celebracionOverlay = document.getElementById("celebracionOverlay");
+    const celebracionMsg = document.getElementById("celebracionMsg");
+
     const emojis = ["🌊", "🛡️", "🧠", "📘", "🔮", "❤️", "✨", "🪞"];
     let libro = null;
     let portadaBloque = 0;
@@ -172,24 +197,22 @@
       const rows = 4 / cols;
       grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
       grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
-
       grid.innerHTML = "";
+
       libro.palabras.forEach((palabra, i) => {
         const b = document.createElement("div");
         b.className = "block";
         b.dataset.index = i;
 
-        let color = libro.colores[i] || "#444";
         if (i === bloqueGuia) {
           b.style.background = "linear-gradient(135deg, #ff4081, #ff80ab)";
-          palabra = "¿Qué sientes?";
         } else {
-          b.style.background = generarGradiente(color);
+          b.style.background = generarGradiente(libro.colores[i] || "#555");
         }
 
         const label = document.createElement("div");
-        label.className = "label";
-        label.innerText = `${emojis[i]} ${palabra}`;
+        label.className = "label" + (i === bloqueGuia ? " guia" : "");
+        label.innerText = i === bloqueGuia ? "¿Qué sientes?" : `${emojis[i]} ${palabra}`;
 
         const frase = document.createElement("div");
         frase.className = "frase";
@@ -210,7 +233,6 @@
     function manejarClick(bloque) {
       const i = parseInt(bloque.dataset.index);
       const children = bloque.children;
-
       if (revelado) return location.reload();
 
       if (i === portadaBloque) {
@@ -226,8 +248,6 @@
 
         revelado = true;
         ctaZone.style.display = "flex";
-        ctaBtn.style.display = "inline-block";
-        celebracion.style.display = "none";
       } else {
         bloque.children[0].style.display = "none";
         bloque.children[1].style.display = "flex";
@@ -235,15 +255,17 @@
     }
 
     ctaBtn.onclick = async () => {
-      ctaBtn.style.display = "none";
-      celebracion.style.display = "block";
+      ctaBtn.disabled = true;
+      celebracionOverlay.style.display = "flex";
+      celebracionMsg.innerHTML = '✨ Juntos hemos abierto <span class="resaltado">...</span> libros físicos ✨';
       try {
         const res = await fetch("https://triggui-api.vercel.app/api/increment");
         const data = await res.json();
-        celebracion.innerHTML = `✨ Juntos hemos abierto <span class="resaltado">${data.total.toLocaleString('es-MX')}</span> libros físicos ✨`;
+        celebracionMsg.innerHTML = `✨ Juntos hemos abierto <span class="resaltado">${data.total.toLocaleString('es-MX')}</span> libros físicos ✨`;
       } catch {
-        celebracion.innerText = "📚 Error al contar libros";
+        celebracionMsg.innerText = "📚 Error al contar libros";
       }
+      setTimeout(() => location.reload(), 3000);
     };
 
     async function iniciar() {
