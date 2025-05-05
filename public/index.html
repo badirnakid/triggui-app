@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>TrigguiApp – Perfecta y Emocional</title>
+  <title>TrigguiApp – Versión UX Legendaria</title>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500&display=swap" rel="stylesheet" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -35,6 +35,10 @@
       animation: fadeIn 1s ease forwards;
       cursor: pointer;
       flex-direction: column;
+      transition: transform 0.3s;
+    }
+    .block:hover {
+      transform: scale(1.03);
     }
     .label {
       z-index: 1;
@@ -66,7 +70,7 @@
       box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
     }
 
-    .shockZone {
+    .ctaZone {
       position: fixed;
       bottom: 3vh;
       left: 50%;
@@ -77,25 +81,32 @@
       z-index: 10;
       text-align: center;
     }
-    .shockZone button {
-      background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff);
-      color: white;
+    .ctaZone button {
+      background: #ffeb3b;
+      color: #000;
       border: none;
-      padding: 0.6rem 1.4rem;
-      border-radius: 999px;
+      padding: 0.7rem 1.6rem;
+      border-radius: 12px;
       font-size: 1rem;
       font-weight: bold;
       cursor: pointer;
-      animation: pulse 2s infinite;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      transition: background 0.3s;
     }
-    .shockZone .contador {
-      font-size: 1rem;
+    .ctaZone button:hover {
+      background: #fff176;
+    }
+    .celebracion {
+      font-size: 1.2rem;
       color: #fff;
-      margin-top: 1.2rem;
+      background: rgba(0,0,0,0.5);
+      padding: 0.8rem 1.4rem;
+      border-radius: 12px;
+      margin-top: 1rem;
+      animation: celebracion 1.2s ease both;
       font-family: 'Poppins', sans-serif;
-      animation: fadeIn 1s ease forwards;
     }
-    .shockZone .resaltado {
+    .resaltado {
       color: #ffeb3b;
       font-weight: 700;
     }
@@ -103,7 +114,7 @@
     .trigguiletras {
       position: fixed;
       bottom: 1vh;
-      right: 1.5vw;
+      left: 1vw;
       height: 18px;
       opacity: 0.6;
       z-index: 5;
@@ -117,18 +128,19 @@
       0%, 100% { background: radial-gradient(circle, #ffffff08, #0000); }
       50% { background: radial-gradient(circle, #ffffff22, #0000); }
     }
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.06); }
+    @keyframes celebracion {
+      0% { transform: scale(0.8); opacity: 0; }
+      60% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(1); }
     }
   </style>
 </head>
 <body>
   <div class="grid" id="gridContainer"></div>
 
-  <div class="shockZone" id="shockZone">
-    <button id="shockBtn">📖 ¡Chócalas si abriste un libro físico!</button>
-    <div class="contador" id="contador" style="display:none;">
+  <div class="ctaZone" id="ctaZone">
+    <button id="ctaBtn">📖 Yo abrí un libro físico</button>
+    <div class="celebracion" id="celebracion" style="display:none;">
       ✨ Juntos hemos abierto <span class="resaltado">...</span> libros físicos ✨
     </div>
   </div>
@@ -137,13 +149,13 @@
 
   <script>
     const grid = document.getElementById("gridContainer");
-    const shockZone = document.getElementById("shockZone");
-    const shockBtn = document.getElementById("shockBtn");
-    const contador = document.getElementById("contador");
+    const ctaZone = document.getElementById("ctaZone");
+    const ctaBtn = document.getElementById("ctaBtn");
+    const celebracion = document.getElementById("celebracion");
     const emojis = ["🌊", "🛡️", "🧠", "📘", "🔮", "❤️", "✨", "🪞"];
     let libro = null;
     let portadaBloque = 0;
-    let clics = 0;
+    let bloqueGuia = 0;
     let revelado = false;
 
     function generarGradiente(hex) {
@@ -166,7 +178,14 @@
         const b = document.createElement("div");
         b.className = "block";
         b.dataset.index = i;
-        b.style.background = generarGradiente(libro.colores[i] || "#444");
+
+        let color = libro.colores[i] || "#444";
+        if (i === bloqueGuia) {
+          b.style.background = "linear-gradient(135deg, #ff4081, #ff80ab)";
+          palabra = "¿Qué sientes?";
+        } else {
+          b.style.background = generarGradiente(color);
+        }
 
         const label = document.createElement("div");
         label.className = "label";
@@ -196,36 +215,34 @@
 
       if (i === portadaBloque) {
         [...children].forEach(c => c.style.display = "none");
-        children[2].style.display = "flex"; // portada
+        children[2].style.display = "flex";
 
         [...grid.children].forEach((blk, j) => {
           if (j !== i) {
-            blk.children[0].style.display = "none"; // label
-            blk.children[1].style.display = "flex"; // frase
+            blk.children[0].style.display = "none";
+            blk.children[1].style.display = "flex";
           }
         });
 
         revelado = true;
-        shockZone.style.display = "flex";
-        shockBtn.style.display = "inline-block";
-        contador.style.display = "none";
-        contador.innerHTML = '✨ Juntos hemos abierto <span class="resaltado">...</span> libros físicos ✨';
+        ctaZone.style.display = "flex";
+        ctaBtn.style.display = "inline-block";
+        celebracion.style.display = "none";
       } else {
-        bloque.children[0].style.display = "none"; // label
-        bloque.children[1].style.display = "flex"; // frase
-        clics++;
+        bloque.children[0].style.display = "none";
+        bloque.children[1].style.display = "flex";
       }
     }
 
-    shockBtn.onclick = async () => {
-      shockBtn.style.display = "none";
-      contador.style.display = "block";
+    ctaBtn.onclick = async () => {
+      ctaBtn.style.display = "none";
+      celebracion.style.display = "block";
       try {
         const res = await fetch("https://triggui-api.vercel.app/api/increment");
         const data = await res.json();
-        contador.innerHTML = `✨ Juntos hemos abierto <span class="resaltado">${data.total.toLocaleString('es-MX')}</span> libros físicos ✨`;
+        celebracion.innerHTML = `✨ Juntos hemos abierto <span class="resaltado">${data.total.toLocaleString('es-MX')}</span> libros físicos ✨`;
       } catch {
-        contador.innerHTML = "📚 Error al contar libros";
+        celebracion.innerText = "📚 Error al contar libros";
       }
     };
 
@@ -235,6 +252,7 @@
         const data = await res.json();
         libro = data.libros[Math.floor(Math.random() * data.libros.length)];
         portadaBloque = Math.floor(Math.random() * 4);
+        do { bloqueGuia = Math.floor(Math.random() * 4); } while (bloqueGuia === portadaBloque);
         dibujarUI();
       } catch (e) {
         console.error("Error cargando contenido:", e);
