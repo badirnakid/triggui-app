@@ -3,27 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>TrigguiApp – Toca un bloque</title>
+  <title>TrigguiApp – Encuentra el libro</title>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500&display=swap" rel="stylesheet" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
-      width: 100%;
-      height: 100%;
+      width: 100%; height: 100%;
       font-family: 'Archivo', sans-serif;
       background: linear-gradient(135deg, #0d0e1a, #1a1c2d);
       overflow: hidden;
     }
-    body.dark {
-      background: #000;
+    #mensajeInicial {
+      position: absolute;
+      top: 2.5%;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #fff;
+      font-size: 1.05rem;
+      font-family: 'Poppins', sans-serif;
+      background: rgba(255,255,255,0.08);
+      padding: 10px 20px;
+      border-radius: 999px;
+      z-index: 10;
+      white-space: nowrap;
+      backdrop-filter: blur(6px);
     }
     #grid {
       display: grid;
-      gap: 1.5vw;
+      gap: 2vw;
       padding: 2vw;
       width: 100%;
       height: 100%;
-      transition: all 0.5s ease;
+      position: absolute;
+      top: 0; left: 0;
     }
     .block {
       border-radius: 20px;
@@ -39,6 +51,7 @@
       cursor: pointer;
       position: relative;
       overflow: hidden;
+      transition: all 0.3s ease;
     }
     .block-content {
       padding: 8px;
@@ -47,7 +60,7 @@
     }
     .accionable {
       font-family: 'Poppins', sans-serif;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 600;
       opacity: 0;
       transition: opacity 0.5s ease;
@@ -69,21 +82,6 @@
       object-fit: contain;
       border-radius: 20px;
       box-shadow: 0 10px 24px rgba(0,0,0,0.4);
-    }
-    #mensajeInicial {
-      position: absolute;
-      top: 3%;
-      left: 50%;
-      transform: translateX(-50%);
-      color: #fff;
-      font-size: 1.1rem;
-      font-family: 'Poppins', sans-serif;
-      background: rgba(0,0,0,0.4);
-      padding: 10px 20px;
-      border-radius: 999px;
-      z-index: 10;
-      text-align: center;
-      white-space: nowrap;
     }
     #shockBtn {
       position: absolute;
@@ -123,12 +121,13 @@
       bottom: 14px;
       left: 14px;
       height: 22px;
-      opacity: 0.4;
+      opacity: 0.35;
+      pointer-events: none;
     }
   </style>
 </head>
 <body>
-  <div id="mensajeInicial">Toca el bloque donde creas que está el libro 📚</div>
+  <div id="mensajeInicial">Toca el bloque donde crees que está el libro 📚</div>
   <div id="grid"></div>
   <button id="shockBtn">✅ ¡Sí! Abrí un libro físico</button>
   <div id="contador"></div>
@@ -157,12 +156,20 @@
 
     function ajustarLayout() {
       const grid = $("grid");
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      const portrait = height >= width;
-      grid.style.gridTemplateColumns = portrait ? "1fr 1fr" : "repeat(4, 1fr)";
-      grid.style.gridTemplateRows = portrait ? "1fr 1fr" : "1fr";
-      grid.style.height = "100vh";
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      const portrait = h >= w;
+      const margin = 24;
+      const availableH = h - margin * 2;
+      const availableW = w - margin * 2;
+      const rows = portrait ? 2 : 1;
+      const cols = portrait ? 2 : 4;
+      const blockH = (availableH - ((rows - 1) * margin)) / rows;
+      const blockW = (availableW - ((cols - 1) * margin)) / cols;
+      grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+      grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+      grid.style.padding = `${margin}px`;
+      grid.style.gap = `${margin}px`;
     }
 
     function iniciarUI(libro) {
@@ -194,7 +201,6 @@
     }
 
     function revelarTodo() {
-      document.body.classList.add("dark");
       document.getElementById("mensajeInicial").style.display = "none";
       libroActual.palabras.forEach((_, i) => {
         const block = $(`bloque${i}`);
@@ -213,9 +219,7 @@
           block.querySelector(".label").style.opacity = 0;
         }
       });
-      setTimeout(() => {
-        $("shockBtn").style.display = "block";
-      }, 2500);
+      setTimeout(() => $("shockBtn").style.display = "block", 1800);
       revelado = true;
     }
 
