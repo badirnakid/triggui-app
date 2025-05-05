@@ -13,18 +13,26 @@
       background: linear-gradient(135deg, #0d0e1a, #1a1c2d);
       overflow: hidden;
     }
-    .fraseTop {
+
+    .introOverlay {
       position: fixed;
-      top: 1.5vh;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 20;
-      color: #ccc;
-      font-size: 1rem;
+      inset: 0;
+      background: #0d0e1a;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
       font-family: 'Poppins', sans-serif;
-      text-align: center;
-      opacity: 0.8;
+      font-size: 1.2rem;
+      opacity: 1;
+      animation: fadeOutIntro 2.5s ease 2s forwards;
     }
+
+    @keyframes fadeOutIntro {
+      to { opacity: 0; visibility: hidden; }
+    }
+
     .grid {
       position: absolute;
       top: 5vh;
@@ -92,22 +100,20 @@
     }
     .ctaZone {
       position: fixed;
-      bottom: 2.5vh;
+      bottom: 3vh;
       left: 50%;
       transform: translateX(-50%);
       display: none;
-      gap: 1rem;
-      flex-direction: column;
-      align-items: center;
+      flex-direction: row;
+      gap: 1.2rem;
       z-index: 10;
-      text-align: center;
     }
     .ctaZone button {
       background: linear-gradient(135deg, #00ffd5, #00c3ff, #0099ff);
       background-size: 200% auto;
       color: #000;
       border: none;
-      padding: 0.6rem 1.4rem;
+      padding: 0.7rem 1.4rem;
       border-radius: 999px;
       font-size: 0.95rem;
       font-weight: bold;
@@ -145,7 +151,7 @@
   </style>
 </head>
 <body>
-  <div class="fraseTop">✨ Detente. Respira. Elige una palabra y deja que un libro te encuentre.</div>
+  <div class="introOverlay">🧘‍♂️ Detente. Respira. Elige una palabra y deja que un libro te encuentre.</div>
 
   <div class="grid" id="gridContainer"></div>
 
