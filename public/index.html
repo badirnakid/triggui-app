@@ -14,17 +14,12 @@
       background: linear-gradient(135deg, #0d0e1a, #1a1c2d);
       overflow: hidden;
     }
-
     .grid {
       position: absolute;
-      top: 2vw;
-      bottom: 2vw;
-      left: 2vw;
-      right: 2vw;
+      inset: 1.5vw;
       display: grid;
-      gap: 2vw;
+      gap: 1vw;
     }
-
     .block {
       border-radius: 18px;
       display: flex;
@@ -41,23 +36,28 @@
       transition: transform 0.3s;
     }
     .block:hover {
-      transform: scale(1.02);
+      transform: scale(1.03);
     }
-
     .label {
       z-index: 1;
       font-weight: bold;
     }
-
     .label.guia {
       background: rgba(255, 255, 255, 0.15);
-      border: 2px solid #00ffc3;
-      padding: 0.6rem 1rem;
-      border-radius: 12px;
-      font-size: 1.05rem;
-      animation: pulse 1.8s ease-in-out infinite;
+      border: 3px dashed #00ffc3;
+      padding: 0.8rem 1.2rem;
+      border-radius: 16px;
+      font-size: 1.1rem;
+      animation: brilla 1.5s infinite;
+      color: #00ffc3;
     }
-
+    .guia-msg {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.85rem;
+      margin-top: 8px;
+      color: #00ffc3;
+      text-shadow: 0 0 6px rgba(0,255,200,0.4);
+    }
     .frase, .portada {
       position: absolute;
       inset: 0;
@@ -68,22 +68,19 @@
       text-align: center;
       font-family: 'Poppins', sans-serif;
     }
-
     .frase {
       font-size: 1rem;
       animation: fadeIn 0.6s ease forwards;
     }
-
     .portada {
-      animation: pulse 6s ease-in-out infinite;
+      animation: glow 6s ease-in-out infinite;
       flex-direction: column;
       gap: 1rem;
     }
-
     .portada img {
       max-width: 85%;
-      max-height: 80%;
-      border-radius: 20px;
+      max-height: 75%;
+      border-radius: 16px;
       box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
     }
 
@@ -97,24 +94,21 @@
       align-items: center;
       z-index: 10;
       text-align: center;
-      animation: fadeIn 1s ease forwards;
     }
-
     .ctaZone button {
-      background: linear-gradient(135deg, #00ffc3, #00bfa6);
+      background: #00ffc3;
       color: #000;
       border: none;
       padding: 0.9rem 1.8rem;
       border-radius: 999px;
-      font-size: 1.05rem;
+      font-size: 1.1rem;
       font-weight: bold;
       cursor: pointer;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
-      transition: transform 0.2s;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+      transition: background 0.3s;
     }
-
     .ctaZone button:hover {
-      transform: scale(1.05);
+      background: #a1ffe7;
     }
 
     .celebracion-overlay {
@@ -125,9 +119,8 @@
       justify-content: center;
       align-items: center;
       z-index: 20;
-      animation: fadeIn 0.6s ease both;
+      animation: fadeIn 0.5s ease both;
     }
-
     .celebracion-message {
       font-size: 1.6rem;
       color: #fff;
@@ -136,10 +129,9 @@
       border-radius: 20px;
       text-align: center;
       font-family: 'Poppins', sans-serif;
-      box-shadow: 0 0 40px rgba(255, 255, 255, 0.1);
-      animation: celebrate 1s ease both;
+      box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+      animation: celebracion 1s ease both;
     }
-
     .resaltado {
       color: #ffeb3b;
       font-weight: 700;
@@ -147,9 +139,9 @@
 
     .trigguiletras {
       position: fixed;
-      bottom: 1vh;
-      left: 1vw;
-      height: 16px;
+      top: 1vh;
+      right: 2vw;
+      height: 18px;
       opacity: 0.4;
       z-index: 5;
     }
@@ -158,15 +150,17 @@
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
-    @keyframes pulse {
-      0%, 100% { box-shadow: 0 0 8px #00ffc3; }
-      50% { box-shadow: 0 0 18px #00ffe5; }
+    @keyframes glow {
+      0%, 100% { background: radial-gradient(circle, #ffffff05, #0000); }
+      50% { background: radial-gradient(circle, #ffffff20, #0000); }
     }
-
-    @keyframes celebrate {
+    @keyframes brilla {
+      0%, 100% { box-shadow: 0 0 10px #00ffc3; }
+      50% { box-shadow: 0 0 20px #00ffc3; }
+    }
+    @keyframes celebracion {
       0% { transform: scale(0.8); opacity: 0; }
-      60% { transform: scale(1.15); opacity: 1; }
+      60% { transform: scale(1.05); opacity: 1; }
       100% { transform: scale(1); }
     }
   </style>
@@ -175,7 +169,7 @@
   <div class="grid" id="gridContainer"></div>
 
   <div class="ctaZone" id="ctaZone">
-    <button id="ctaBtn">✔️ ¡Sí! Yo abrí un libro físico</button>
+    <button id="ctaBtn">✅ Ya abrí un libro físico. Contarlo</button>
   </div>
 
   <div class="celebracion-overlay" id="celebracionOverlay">
@@ -219,13 +213,20 @@
         const b = document.createElement("div");
         b.className = "block";
         b.dataset.index = i;
-        b.style.background = i === bloqueGuia
-          ? "linear-gradient(135deg, #00ffc3, #00bfa6)"
-          : generarGradiente(libro.colores[i] || "#555");
+        b.style.background = generarGradiente(libro.colores[i] || "#555");
 
         const label = document.createElement("div");
-        label.className = "label" + (i === bloqueGuia ? " guia" : "");
-        label.innerText = i === bloqueGuia ? "¿Qué sientes?" : `${emojis[i]} ${palabra}`;
+        label.className = "label";
+        label.innerHTML = `${emojis[i]} ${palabra}`;
+
+        if (i === bloqueGuia) {
+          label.className += " guia";
+          label.innerText = "¿Qué sientes?";
+          const msg = document.createElement("div");
+          msg.className = "guia-msg";
+          msg.innerText = "Toca cualquier bloque para descubrir tu libro. Ábrelo. O abre otro que tengas cerca.";
+          b.appendChild(msg);
+        }
 
         const frase = document.createElement("div");
         frase.className = "frase";
