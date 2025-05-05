@@ -3,60 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>TrigguiApp – Layout Final</title>
+  <title>TrigguiApp – Solo Bloques</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    html {
+    html, body {
       height: 100%;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    body {
-      height: 100%;
-      font-family: sans-serif;
+      width: 100%;
       background: linear-gradient(135deg, #0d0e1a, #1a1c2d);
-      overflow: auto;
-      position: relative;
-    }
-
-    .header {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 60px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: #fff;
-      font-weight: bold;
-      z-index: 10;
-    }
-
-    .footer {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 160px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: #aaa;
-      font-size: 0.9rem;
-      text-align: center;
-      padding: 1rem;
-      z-index: 10;
+      font-family: sans-serif;
+      overflow: hidden;
     }
 
     .grid {
       position: absolute;
-      left: 0;
-      right: 0;
-      padding: 2vw;
+      top: 1.5vw;
+      bottom: 1.5vw;
+      left: 1.5vw;
+      right: 1.5vw;
       display: grid;
-      gap: 1.5vw;
+      gap: 1vw;
     }
 
     .block {
@@ -68,13 +33,16 @@
       color: white;
       font-size: 1.2rem;
       text-align: center;
+      transition: background 0.3s;
+    }
+
+    .block:hover {
+      background: #444;
     }
   </style>
 </head>
 <body>
-  <div class="header" id="header">Header fijo</div>
   <div class="grid" id="gridContainer"></div>
-  <div class="footer" id="footer">Footer fijo con espacio para botones y frase</div>
 
   <script>
     const grid = document.getElementById("gridContainer");
@@ -89,26 +57,13 @@
       const columnas = isLandscape ? 4 : 2;
       const filas = 4 / columnas;
 
-      const header = document.getElementById("header");
-      const footer = document.getElementById("footer");
-
-      const top = header.offsetHeight;
-      const bottom = footer.offsetHeight;
-
-      const altoDisponible = height - top - bottom - 32;
-
-      grid.style.top = `${top}px`;
-      grid.style.bottom = `${bottom}px`;
       grid.style.gridTemplateColumns = `repeat(${columnas}, 1fr)`;
-      grid.style.gridTemplateRows = `none`;
-
-      const alturaBloque = altoDisponible / filas;
+      grid.style.gridTemplateRows = `repeat(${filas}, 1fr)`;
 
       for (let i = 1; i <= 4; i++) {
         const b = document.createElement("div");
         b.className = "block";
         b.innerText = `Bloque ${i}`;
-        b.style.height = `${alturaBloque}px`;
         grid.appendChild(b);
       }
     }
