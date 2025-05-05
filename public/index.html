@@ -20,17 +20,20 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      padding: 2.5rem 3rem;
-      background: linear-gradient(145deg, #22293f, #0a0b1a);
+      padding: 2rem 2.5rem;
+      background: linear-gradient(145deg, #1a2033, #0e1024);
       color: #ffffff;
       font-family: 'Poppins', sans-serif;
-      font-size: 1.3rem;
+      font-size: 1.25rem;
       text-align: center;
       border-radius: 24px;
       z-index: 50;
-      box-shadow: 0 0 40px rgba(255,255,255,0.1);
-      opacity: 1;
-      animation: fadeOutIntro 4s ease 3.5s forwards;
+      box-shadow: 0 0 60px rgba(255,255,255,0.08);
+      animation: fadeOutIntro 5s ease 3.2s forwards;
+    }
+    .introWidget .highlight {
+      color: #00ffc3;
+      font-weight: 700;
     }
 
     @keyframes fadeOutIntro {
@@ -118,20 +121,20 @@
       transform: translateX(-50%);
       display: none;
       flex-direction: row;
-      gap: 1.2rem;
+      gap: 1rem;
       z-index: 10;
     }
 
     .ctaZone button {
       border: none;
-      padding: 1rem 2rem;
+      padding: 0.6rem 1.2rem;
       border-radius: 999px;
-      font-size: 1.1rem;
+      font-size: 0.95rem;
       font-weight: bold;
       cursor: pointer;
       box-shadow: 0 4px 14px rgba(0,0,0,0.3);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
-      min-width: 180px;
+      min-width: 160px;
       text-align: center;
     }
 
@@ -158,7 +161,7 @@
       align-items: center;
       justify-content: center;
       z-index: 20;
-      animation: fadeOutCelebracion 0.3s ease 2.5s forwards;
+      animation: fadeOutCelebracion 0.3s ease 2.3s forwards;
     }
 
     @keyframes fadeOutCelebracion {
@@ -190,7 +193,9 @@
   </style>
 </head>
 <body>
-  <div class="introWidget">🧘‍♂️ Detente. Respira. Elige una palabra. Algo hermoso está por suceder.</div>
+  <div class="introWidget">
+    <span class="highlight">Detente</span>. Respira. Elige una palabra. <span class="highlight">Algo hermoso</span> está por suceder.
+  </div>
 
   <div class="grid" id="gridContainer"></div>
 
@@ -294,7 +299,7 @@
       setTimeout(() => {
         celebracionOverlay.style.display = "none";
         ctaZone.style.display = "flex";
-      }, 2500);
+      }, 2300);
     };
 
     async function iniciar() {
