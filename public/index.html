@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>TrigguiApp – Perfecta y Fluida</title>
+  <title>TrigguiApp – Flujo perfecto</title>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500&display=swap" rel="stylesheet" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -12,7 +12,6 @@
       width: 100%;
       font-family: 'Archivo', sans-serif;
       background: linear-gradient(135deg, #0d0e1a, #1a1c2d);
-      /* No overflow:hidden → permite swipe-down refresh */
     }
     .grid {
       position: absolute;
@@ -41,7 +40,7 @@
       z-index: 1;
       font-weight: bold;
     }
-    .frase, .portada, .btn, .contador {
+    .frase, .portada {
       position: absolute;
       inset: 0;
       display: none;
@@ -66,7 +65,19 @@
       border-radius: 16px;
       box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
     }
-    .btn button {
+
+    .shockZone {
+      position: fixed;
+      bottom: 3vh;
+      left: 50%;
+      transform: translateX(-50%);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      z-index: 10;
+      text-align: center;
+    }
+    .shockZone button {
       background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff);
       color: white;
       border: none;
@@ -76,12 +87,12 @@
       font-weight: bold;
       cursor: pointer;
       animation: pulse 2s infinite;
-      margin-top: 1rem;
     }
-    .contador {
+    .shockZone .contador {
       font-size: 0.9rem;
       color: #ffeb3b;
-      margin-top: 0.6rem;
+      margin-top: 0.5rem;
+      font-family: 'Poppins', sans-serif;
     }
 
     @keyframes fadeIn {
@@ -101,8 +112,16 @@
 <body>
   <div class="grid" id="gridContainer"></div>
 
+  <div class="shockZone" id="shockZone">
+    <button id="shockBtn">📖 ¡Chócalas si abriste un libro físico!</button>
+    <div class="contador" id="contador" style="display:none;">✨ ...</div>
+  </div>
+
   <script>
     const grid = document.getElementById("gridContainer");
+    const shockZone = document.getElementById("shockZone");
+    const shockBtn = document.getElementById("shockBtn");
+    const contador = document.getElementById("contador");
     const emojis = ["🌊", "🛡️", "🧠", "📘", "🔮", "❤️", "✨", "🪞"];
     let libro = null;
     let portadaBloque = 0;
@@ -145,30 +164,7 @@
         img.src = libro.portada;
         portada.appendChild(img);
 
-        const btnWrap = document.createElement("div");
-        btnWrap.className = "btn";
-        const btn = document.createElement("button");
-        btn.innerText = "📖 ¡Chócalas si abriste un libro físico!";
-        btnWrap.appendChild(btn);
-
-        const contador = document.createElement("div");
-        contador.className = "contador";
-        contador.innerText = "✨ Cargando...";
-        btnWrap.appendChild(contador);
-
-        btn.onclick = async () => {
-          btn.style.display = "none";
-          contador.style.display = "flex";
-          try {
-            const res = await fetch("https://triggui-api.vercel.app/api/increment");
-            const data = await res.json();
-            contador.innerText = `✨ Juntos hemos abierto ${data.total.toLocaleString('es-MX')} libros físicos ✨`;
-          } catch {
-            contador.innerText = "Error al contar libros";
-          }
-        };
-
-        b.append(label, frase, portada, btnWrap);
+        b.append(label, frase, portada);
         b.onclick = () => manejarClick(b);
         grid.appendChild(b);
       });
@@ -181,14 +177,10 @@
       if (revelado) return location.reload();
 
       if (i === portadaBloque) {
-        // mostrar portada + botón
         [...children].forEach(c => c.style.display = "none");
         children[2].style.display = "flex"; // portada
-        children[3].style.display = "flex"; // btnWrap
 
-        // mostrar frases que falten
-        const all = [...grid.children];
-        all.forEach((blk, j) => {
+        [...grid.children].forEach((blk, j) => {
           if (j !== i) {
             blk.children[0].style.display = "none"; // label
             blk.children[1].style.display = "flex"; // frase
@@ -196,12 +188,25 @@
         });
 
         revelado = true;
+        shockZone.style.display = "flex";
       } else {
         bloque.children[0].style.display = "none"; // label
         bloque.children[1].style.display = "flex"; // frase
         clics++;
       }
     }
+
+    shockBtn.onclick = async () => {
+      shockBtn.style.display = "none";
+      contador.style.display = "block";
+      try {
+        const res = await fetch("https://triggui-api.vercel.app/api/increment");
+        const data = await res.json();
+        contador.innerText = `✨ Juntos hemos abierto ${data.total.toLocaleString('es-MX')} libros físicos ✨`;
+      } catch {
+        contador.innerText = "Error al contar libros";
+      }
+    };
 
     async function iniciar() {
       try {
