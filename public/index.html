@@ -24,7 +24,6 @@
       align-items: center;
       color: #fff;
       font-weight: bold;
-      background: transparent;
     }
     .grid {
       display: grid;
@@ -77,7 +76,9 @@
       const footerH = document.querySelector('.footer').offsetHeight;
       const disponible = height - headerH - footerH - 16;
 
-      const alturaBloque = disponible / filas;
+      // ⚡ Escalamos más la altura de bloque en landscape
+      const factorAltura = orientation === 'landscape' ? 1.2 : 1.1;
+      const alturaBloque = (disponible / filas) * factorAltura;
 
       for (let i = 1; i <= 4; i++) {
         const b = document.createElement("div");
@@ -88,7 +89,6 @@
       }
     }
 
-    // Inicial + cada vez que se redimensiona
     window.addEventListener("resize", redibujarBloques);
     window.addEventListener("orientationchange", redibujarBloques);
     window.addEventListener("load", redibujarBloques);
