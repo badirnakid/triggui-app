@@ -57,6 +57,17 @@
         grid-template-rows: 1fr;
       }
     }
+    @media (max-width: 768px) and (orientation: landscape) {
+      .grid {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+      }
+    }
+    @media (max-height: 500px) and (orientation: landscape) {
+      .block {
+        min-height: 120px;
+      }
+    }
     .block {
       position: relative;
       display: flex;
@@ -215,7 +226,6 @@
       <img src="/trigguiletras.png" class="trigguiletras" id="logoTriggui">
     </div>
   </div>
-
   <script>
     const $ = id => document.getElementById(id);
     let libroActual, bloquePortada, revelado = false;
@@ -261,6 +271,7 @@
       if (i === bloquePortada) revelarTodo();
       else {
         $(`bloque${i}Text`).classList.remove("hidden");
+        $(`bloque${i}Text`).classList.add("visible");
         $(`bloque${i}`).querySelector(".label").classList.add("hidden");
       }
     }
@@ -280,6 +291,7 @@
           block.style.background = "none";
         } else {
           $(`bloque${i}Text`).classList.remove("hidden");
+          $(`bloque${i}Text`).classList.add("visible");
           block.querySelector(".label").classList.add("hidden");
         }
       });
