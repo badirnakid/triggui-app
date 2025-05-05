@@ -3,17 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>TrigguiApp – Solo Bloques</title>
+  <title>TrigguiApp – Universo Total</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
       height: 100%;
       width: 100%;
-      background: linear-gradient(135deg, #0d0e1a, #1a1c2d);
       font-family: sans-serif;
+      background: linear-gradient(135deg, #0d0e1a, #1a1c2d);
       overflow: hidden;
     }
-
     .grid {
       position: absolute;
       top: 1.5vw;
@@ -23,7 +22,6 @@
       display: grid;
       gap: 1vw;
     }
-
     .block {
       background: #333;
       border-radius: 18px;
@@ -33,11 +31,51 @@
       color: white;
       font-size: 1.2rem;
       text-align: center;
-      transition: background 0.3s;
+      position: relative;
+      overflow: hidden;
     }
-
-    .block:hover {
-      background: #444;
+    .block .frase,
+    .block .portada,
+    .block .btn,
+    .block .contador {
+      position: absolute;
+      inset: 0;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+      text-align: center;
+    }
+    .block .frase {
+      font-size: 1rem;
+      line-height: 1.4;
+    }
+    .block .portada img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    }
+    .block .btn {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .block .btn button {
+      background: #ff0080;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.4rem;
+      border-radius: 999px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .block .contador {
+      font-size: 0.9rem;
+      color: #ffeb3b;
+    }
+    .label {
+      z-index: 1;
     }
   </style>
 </head>
@@ -46,31 +84,94 @@
 
   <script>
     const grid = document.getElementById("gridContainer");
+    const emojis = ["🌊", "🛡️", "🧠", "📘", "🔮", "❤️", "✨", "🪞"];
+    let revelado = false;
+    let libro = {
+      palabras: ["Detente", "Lee", "¿?", "Conecta"],
+      frases: [
+        "Solo necesitas un instante para volver a ti.",
+        "Abre cualquier página. Es ahora.",
+        "No necesitas saber. Solo sentir.",
+        "Conecta contigo. Con el libro. Con todo."
+      ],
+      portada: "https://raw.githubusercontent.com/badirnakid/triggui-content/main/portadas/supremaciacuantica.jpg"
+    };
+    const portadaBloque = Math.floor(Math.random() * 4);
 
-    function redibujarBloques() {
+    function generarGrid() {
+      const w = window.innerWidth, h = window.innerHeight;
+      const cols = w > h ? 4 : 2;
+      const rows = 4 / cols;
+      grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+      grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+
       grid.innerHTML = "";
-
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      const isLandscape = width > height;
-
-      const columnas = isLandscape ? 4 : 2;
-      const filas = 4 / columnas;
-
-      grid.style.gridTemplateColumns = `repeat(${columnas}, 1fr)`;
-      grid.style.gridTemplateRows = `repeat(${filas}, 1fr)`;
-
-      for (let i = 1; i <= 4; i++) {
+      libro.palabras.forEach((palabra, i) => {
         const b = document.createElement("div");
         b.className = "block";
-        b.innerText = `Bloque ${i}`;
+        b.dataset.index = i;
+
+        const label = document.createElement("div");
+        label.className = "label";
+        label.innerText = `${emojis[i]} ${palabra}`;
+
+        const frase = document.createElement("div");
+        frase.className = "frase";
+        frase.innerText = libro.frases[i];
+
+        const portada = document.createElement("div");
+        portada.className = "portada";
+        const img = document.createElement("img");
+        img.src = libro.portada;
+        portada.appendChild(img);
+
+        const btnWrap = document.createElement("div");
+        btnWrap.className = "btn";
+        const btn = document.createElement("button");
+        btn.innerText = "📖 ¡Chócalas si abriste un libro físico!";
+        btnWrap.appendChild(btn);
+
+        const contador = document.createElement("div");
+        contador.className = "contador";
+        contador.innerText = "✨ Cargando...";
+
+        btn.onclick = async () => {
+          btn.style.display = "none";
+          contador.style.display = "flex";
+          try {
+            const res = await fetch("https://triggui-api.vercel.app/api/increment");
+            const data = await res.json();
+            contador.innerText = `✨ Juntos hemos abierto ${data.total.toLocaleString('es-MX')} libros físicos ✨`;
+          } catch {
+            contador.innerText = "Error al contar libros";
+          }
+        };
+
+        b.append(label, frase, portada, btnWrap, contador);
+        b.onclick = () => manejarClick(b);
         grid.appendChild(b);
-      }
+      });
     }
 
-    window.addEventListener("resize", redibujarBloques);
-    window.addEventListener("orientationchange", redibujarBloques);
-    window.addEventListener("load", redibujarBloques);
+    function manejarClick(bloque) {
+      if (revelado) return location.reload();
+      const i = parseInt(bloque.dataset.index);
+      const children = bloque.children;
+
+      if (i === portadaBloque) {
+        [...children].forEach(c => c.style.display = "none");
+        children[2].style.display = "flex"; // portada
+        children[3].style.display = "flex"; // botón
+      } else {
+        [...children].forEach(c => c.style.display = "none");
+        children[1].style.display = "flex"; // frase
+      }
+      revelado = true;
+    }
+
+    window.addEventListener("load", generarGrid);
+    window.addEventListener("resize", generarGrid);
+    window.addEventListener("orientationchange", generarGrid);
   </script>
 </body>
 </html>
