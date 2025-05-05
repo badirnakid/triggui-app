@@ -15,17 +15,19 @@
       font-family: 'Archivo', sans-serif;
       background: linear-gradient(135deg, #0d0e1a, #1a1c2d);
       height: 100%;
-      overflow-x: hidden;
+      overflow: hidden;
     }
     body.dark { background: #000; }
     .main {
       display: flex;
       flex-direction: column;
-      min-height: 100dvh;
-      animation: fadeIn 1.2s ease forwards;
+      height: 100dvh;
+      max-height: 100vh;
+      overflow: hidden;
     }
     .header-message {
       height: var(--header-height);
+      flex-shrink: 0;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -42,12 +44,13 @@
       white-space: nowrap;
     }
     .grid {
-      flex: 1;
       display: grid;
-      gap: 1.5vw;
-      padding: 0 2vw;
       grid-template-columns: 1fr 1fr;
       grid-template-rows: 1fr 1fr;
+      gap: 1.5vw;
+      padding: 2vw;
+      flex: 1;
+      min-height: 0;
     }
     @media (orientation: landscape) {
       .grid {
@@ -114,12 +117,13 @@
       transform: scale(1.03) rotateY(4deg) rotateX(2deg);
     }
     .footer {
-      height: var(--footer-height);
+      flex-shrink: 0;
+      height: auto;
+      padding: max(2vh, 16px) 2vw;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      padding: 3vh 2vw 6vh;
     }
     .shock {
       background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff);
@@ -186,7 +190,6 @@
     }
   </style>
 </head>
-
 <body>
   <div class="main">
     <div class="header-message">
@@ -290,16 +293,6 @@
         $("contador").innerText = "📚 ¡Error al contar libros!";
       }
     };
-
-    // 🎯 Ajuste dinámico sólo si espacio vertical disponible es mayor al 100vh
-    window.addEventListener("load", () => {
-      const alturaReal = window.innerHeight;
-      const alturaEstimada = document.documentElement.clientHeight;
-      const extra = alturaReal - alturaEstimada;
-      if (extra > 30) {
-        document.getElementById("footer").style.paddingBottom = "calc(6vh + 40px)";
-      }
-    });
   </script>
 </body>
 </html>
