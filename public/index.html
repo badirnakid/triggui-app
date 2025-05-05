@@ -11,7 +11,7 @@
       height: 100%;
       font-family: 'Archivo', sans-serif;
       background: linear-gradient(135deg, #0d0e1a, #1a1c2d);
-      overflow: hidden;
+      overflow-y: scroll; -webkit-overflow-scrolling: touch;
       user-select: none;
     }
 
@@ -28,14 +28,13 @@
       text-align: center;
       border-radius: 30px;
       z-index: 50;
-      box-shadow: 0 0 90px rgba(0,255,195,0.15);
+      box-shadow: 0 0 16px rgba(48,255,228,0.3);
       animation: fadeOutIntro 2.2s ease 1.2s forwards;
     }
     .introWidget .highlight {
-      color: #30ffe4; text-shadow: 0 0 10px #00ffc3;
+      color: #30ffe4;
       font-weight: 800;
     }
-
     @keyframes fadeOutIntro {
       to { opacity: 0; visibility: hidden; transform: translate(-50%, -70%); }
     }
@@ -49,6 +48,7 @@
       display: grid;
       gap: 1vw;
     }
+
     @media (orientation: landscape) {
       .grid { grid-template-columns: repeat(4, 1fr); grid-template-rows: 1fr; }
     }
@@ -62,7 +62,7 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       font-weight: bold;
       color: white;
       position: relative;
@@ -90,7 +90,7 @@
       text-align: center;
       padding: 1rem;
       font-family: 'Poppins', sans-serif;
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       color: white;
     }
 
@@ -129,6 +129,7 @@
       min-width: 160px;
       text-align: center;
     }
+
     .ctaZone button:hover {
       transform: scale(1.06);
       box-shadow: 0 8px 24px rgba(0,0,0,0.4);
@@ -138,6 +139,7 @@
       background: linear-gradient(135deg, #ff9a9e, #fad0c4);
       color: #000;
     }
+
     #btnLibro {
       background: linear-gradient(135deg, #a1ffce, #faffd1);
       color: #000;
