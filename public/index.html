@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>TrigguiApp – Universo Total</title>
+  <title>TrigguiApp – Solo Bloques con contenido.json</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
@@ -23,7 +23,6 @@
       gap: 1vw;
     }
     .block {
-      background: #333;
       border-radius: 18px;
       display: flex;
       align-items: center;
@@ -86,19 +85,18 @@
     const grid = document.getElementById("gridContainer");
     const emojis = ["🌊", "🛡️", "🧠", "📘", "🔮", "❤️", "✨", "🪞"];
     let revelado = false;
-    let libro = {
-      palabras: ["Detente", "Lee", "¿?", "Conecta"],
-      frases: [
-        "Solo necesitas un instante para volver a ti.",
-        "Abre cualquier página. Es ahora.",
-        "No necesitas saber. Solo sentir.",
-        "Conecta contigo. Con el libro. Con todo."
-      ],
-      portada: "https://raw.githubusercontent.com/badirnakid/triggui-content/main/portadas/supremaciacuantica.jpg"
-    };
-    const portadaBloque = Math.floor(Math.random() * 4);
+    let libro = null;
+    let portadaBloque = Math.floor(Math.random() * 4);
 
-    function generarGrid() {
+    function generarGradiente(hex) {
+      const r = parseInt(hex.slice(1,3), 16);
+      const g = parseInt(hex.slice(3,5), 16);
+      const b = parseInt(hex.slice(5,7), 16);
+      const light = `rgba(${Math.min(r+30,255)},${Math.min(g+30,255)},${Math.min(b+30,255)},0.85)`;
+      return `linear-gradient(135deg, ${hex}, ${light})`;
+    }
+
+    function dibujarUI() {
       const w = window.innerWidth, h = window.innerHeight;
       const cols = w > h ? 4 : 2;
       const rows = 4 / cols;
@@ -110,6 +108,7 @@
         const b = document.createElement("div");
         b.className = "block";
         b.dataset.index = i;
+        b.style.background = generarGradiente(libro.colores[i] || "#444");
 
         const label = document.createElement("div");
         label.className = "label";
@@ -169,9 +168,21 @@
       revelado = true;
     }
 
-    window.addEventListener("load", generarGrid);
-    window.addEventListener("resize", generarGrid);
-    window.addEventListener("orientationchange", generarGrid);
+    async function iniciar() {
+      try {
+        const res = await fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json");
+        const data = await res.json();
+        libro = data.libros[Math.floor(Math.random() * data.libros.length)];
+        portadaBloque = Math.floor(Math.random() * 4);
+        dibujarUI();
+      } catch (e) {
+        console.error("Error cargando contenido:", e);
+      }
+    }
+
+    window.addEventListener("load", iniciar);
+    window.addEventListener("resize", dibujarUI);
+    window.addEventListener("orientationchange", dibujarUI);
   </script>
 </body>
 </html>
