@@ -86,8 +86,7 @@
       const height = window.innerHeight;
       const isLandscape = width > height;
 
-      const usar2x2 = !isLandscape || height < 500;
-      const columnas = usar2x2 ? 2 : 4;
+      const columnas = isLandscape ? 4 : 2;
       const filas = 4 / columnas;
 
       const header = document.getElementById("header");
@@ -96,7 +95,7 @@
       const top = header.offsetHeight;
       const bottom = footer.offsetHeight;
 
-      const altoDisponible = height - top - bottom - 32; // 32 extra por paddings
+      const altoDisponible = height - top - bottom - 32;
 
       grid.style.top = `${top}px`;
       grid.style.bottom = `${bottom}px`;
