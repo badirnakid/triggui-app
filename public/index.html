@@ -12,16 +12,19 @@
       width: 100%;
       font-family: 'Archivo', sans-serif;
       background: linear-gradient(135deg, #0d0e1a, #1a1c2d);
+      overflow: hidden;
     }
+
     .grid {
       position: absolute;
-      top: 1.5vw;
-      bottom: 1.5vw;
-      left: 1.5vw;
-      right: 1.5vw;
+      top: 2vw;
+      bottom: 2vw;
+      left: 2vw;
+      right: 2vw;
       display: grid;
-      gap: 1vw;
+      gap: 2vw;
     }
+
     .block {
       border-radius: 18px;
       display: flex;
@@ -38,20 +41,23 @@
       transition: transform 0.3s;
     }
     .block:hover {
-      transform: scale(1.03);
+      transform: scale(1.02);
     }
+
     .label {
       z-index: 1;
       font-weight: bold;
     }
+
     .label.guia {
       background: rgba(255, 255, 255, 0.15);
-      border: 2px solid #ff4081;
+      border: 2px solid #00ffc3;
       padding: 0.6rem 1rem;
       border-radius: 12px;
       font-size: 1.05rem;
-      animation: glow 1.8s ease-in-out infinite;
+      animation: pulse 1.8s ease-in-out infinite;
     }
+
     .frase, .portada {
       position: absolute;
       inset: 0;
@@ -62,19 +68,22 @@
       text-align: center;
       font-family: 'Poppins', sans-serif;
     }
+
     .frase {
       font-size: 1rem;
       animation: fadeIn 0.6s ease forwards;
     }
+
     .portada {
-      animation: glow 6s ease-in-out infinite;
+      animation: pulse 6s ease-in-out infinite;
       flex-direction: column;
       gap: 1rem;
     }
+
     .portada img {
       max-width: 85%;
-      max-height: 75%;
-      border-radius: 16px;
+      max-height: 80%;
+      border-radius: 20px;
       box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
     }
 
@@ -88,44 +97,49 @@
       align-items: center;
       z-index: 10;
       text-align: center;
+      animation: fadeIn 1s ease forwards;
     }
+
     .ctaZone button {
-      background: #00ffc3;
+      background: linear-gradient(135deg, #00ffc3, #00bfa6);
       color: #000;
       border: none;
-      padding: 0.8rem 1.6rem;
+      padding: 0.9rem 1.8rem;
       border-radius: 999px;
       font-size: 1.05rem;
       font-weight: bold;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-      transition: background 0.3s;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+      transition: transform 0.2s;
     }
+
     .ctaZone button:hover {
-      background: #a1ffe7;
+      transform: scale(1.05);
     }
 
     .celebracion-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.75);
+      background: rgba(0, 0, 0, 0.85);
       display: none;
       justify-content: center;
       align-items: center;
       z-index: 20;
-      animation: fadeIn 0.5s ease both;
+      animation: fadeIn 0.6s ease both;
     }
+
     .celebracion-message {
-      font-size: 1.4rem;
+      font-size: 1.6rem;
       color: #fff;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 1.2rem 2rem;
-      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 1.6rem 2.4rem;
+      border-radius: 20px;
       text-align: center;
       font-family: 'Poppins', sans-serif;
-      box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
-      animation: celebracion 1.2s ease both;
+      box-shadow: 0 0 40px rgba(255, 255, 255, 0.1);
+      animation: celebrate 1s ease both;
     }
+
     .resaltado {
       color: #ffeb3b;
       font-weight: 700;
@@ -133,10 +147,10 @@
 
     .trigguiletras {
       position: fixed;
-      top: 1vh;
-      right: 1vw;
-      height: 18px;
-      opacity: 0.5;
+      bottom: 1vh;
+      left: 1vw;
+      height: 16px;
+      opacity: 0.4;
       z-index: 5;
     }
 
@@ -144,13 +158,15 @@
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    @keyframes glow {
-      0%, 100% { box-shadow: 0 0 8px #ff4081; }
-      50% { box-shadow: 0 0 18px #ff80ab; }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 8px #00ffc3; }
+      50% { box-shadow: 0 0 18px #00ffe5; }
     }
-    @keyframes celebracion {
+
+    @keyframes celebrate {
       0% { transform: scale(0.8); opacity: 0; }
-      60% { transform: scale(1.1); opacity: 1; }
+      60% { transform: scale(1.15); opacity: 1; }
       100% { transform: scale(1); }
     }
   </style>
@@ -159,7 +175,7 @@
   <div class="grid" id="gridContainer"></div>
 
   <div class="ctaZone" id="ctaZone">
-    <button id="ctaBtn">📚 Haz clic si abriste un libro físico</button>
+    <button id="ctaBtn">✔️ ¡Sí! Yo abrí un libro físico</button>
   </div>
 
   <div class="celebracion-overlay" id="celebracionOverlay">
@@ -203,12 +219,9 @@
         const b = document.createElement("div");
         b.className = "block";
         b.dataset.index = i;
-
-        if (i === bloqueGuia) {
-          b.style.background = "linear-gradient(135deg, #ff4081, #ff80ab)";
-        } else {
-          b.style.background = generarGradiente(libro.colores[i] || "#555");
-        }
+        b.style.background = i === bloqueGuia
+          ? "linear-gradient(135deg, #00ffc3, #00bfa6)"
+          : generarGradiente(libro.colores[i] || "#555");
 
         const label = document.createElement("div");
         label.className = "label" + (i === bloqueGuia ? " guia" : "");
@@ -265,7 +278,7 @@
       } catch {
         celebracionMsg.innerText = "📚 Error al contar libros";
       }
-      setTimeout(() => location.reload(), 3000);
+      setTimeout(() => location.reload(), 3500);
     };
 
     async function iniciar() {
