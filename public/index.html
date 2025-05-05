@@ -13,37 +13,26 @@
       background: linear-gradient(135deg, #0d0e1a, #1a1c2d);
       overflow: hidden;
     }
-    .loader {
+    .fraseTop {
       position: fixed;
-      inset: 0;
-      background: #0d0e1a;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      z-index: 999;
-      animation: fadeOut 2s 2.8s forwards;
-    }
-    .loader p {
-      font-size: 1.2rem;
-      margin-top: 1.2rem;
+      top: 1.5vh;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      color: #ccc;
+      font-size: 1rem;
+      font-family: 'Poppins', sans-serif;
       text-align: center;
       opacity: 0.8;
     }
-    @keyframes fadeOut {
-      to { opacity: 0; visibility: hidden; }
-    }
     .grid {
       position: absolute;
-      top: 1.5vw; bottom: 1.5vw; left: 1.5vw; right: 1.5vw;
+      top: 5vh;
+      bottom: 5vh;
+      left: 1.5vw;
+      right: 1.5vw;
       display: grid;
       gap: 1vw;
-      opacity: 0;
-      animation: fadeInGrid 1s 3s forwards;
-    }
-    @keyframes fadeInGrid {
-      to { opacity: 1; }
     }
     @media (orientation: landscape) {
       .grid {
@@ -70,7 +59,6 @@
       cursor: pointer;
       background-size: 250% 250%;
       box-shadow: 0 10px 25px rgba(0,0,0,0.35);
-      transition: transform 0.25s ease;
     }
     .label {
       display: flex;
@@ -104,10 +92,13 @@
     }
     .ctaZone {
       position: fixed;
-      bottom: 3vh;
+      bottom: 2.5vh;
       left: 50%;
       transform: translateX(-50%);
       display: none;
+      gap: 1rem;
+      flex-direction: column;
+      align-items: center;
       z-index: 10;
       text-align: center;
     }
@@ -116,17 +107,12 @@
       background-size: 200% auto;
       color: #000;
       border: none;
-      padding: 0.7rem 1.6rem;
+      padding: 0.6rem 1.4rem;
       border-radius: 999px;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: bold;
       cursor: pointer;
-      box-shadow: 0 4px 18px rgba(0,0,0,0.25);
-      animation: pulse 2.5s infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
     }
     .celebracion-overlay {
       position: fixed;
@@ -136,7 +122,6 @@
       align-items: center;
       justify-content: center;
       z-index: 20;
-      animation: fadeIn 0.5s ease both;
     }
     .celebracion-message {
       font-size: 1.8rem;
@@ -154,21 +139,19 @@
       font-size: 2.4rem;
     }
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
     }
   </style>
 </head>
 <body>
-  <div class="loader" id="loader">
-    <h2>🧘‍♂️ Pausa. Respira.</h2>
-    <p>Elige una palabra para revelar un libro.<br>Y si no es este, ve por el que tengas más cerca.</p>
-  </div>
+  <div class="fraseTop">✨ Detente. Respira. Elige una palabra y deja que un libro te encuentre.</div>
 
   <div class="grid" id="gridContainer"></div>
 
   <div class="ctaZone" id="ctaZone">
-    <button id="ctaBtn">📚 Sí, abrí un libro físico (aunque no fue este)</button>
+    <button id="btnOtro">🎲 Intentar con otro libro</button>
+    <button id="btnLibro">📖 Sí, abrí un libro físico cercano</button>
   </div>
 
   <div class="celebracion-overlay" id="celebracionOverlay">
@@ -179,9 +162,9 @@
 
   <script>
     const grid = document.getElementById("gridContainer");
-    const loader = document.getElementById("loader");
     const ctaZone = document.getElementById("ctaZone");
-    const ctaBtn = document.getElementById("ctaBtn");
+    const btnOtro = document.getElementById("btnOtro");
+    const btnLibro = document.getElementById("btnLibro");
     const celebracionOverlay = document.getElementById("celebracionOverlay");
     const celebracionMsg = document.getElementById("celebracionMsg");
 
@@ -226,7 +209,7 @@
     }
 
     function manejarClick(block) {
-      if (revelado) return location.reload();
+      if (revelado) return;
       const i = parseInt(block.dataset.index);
       const [label, frase, portada] = block.children;
 
@@ -250,8 +233,10 @@
       }
     }
 
-    ctaBtn.onclick = async () => {
-      ctaBtn.disabled = true;
+    btnOtro.onclick = () => location.reload();
+
+    btnLibro.onclick = async () => {
+      btnLibro.disabled = true;
       celebracionOverlay.style.display = "flex";
       celebracionMsg.innerHTML = '✨ <span class="resaltado">...</span><br>libros físicos abiertos';
       try {
@@ -261,6 +246,10 @@
       } catch {
         celebracionMsg.innerText = "📚 Error al contar libros";
       }
+      setTimeout(() => {
+        celebracionOverlay.style.display = "none";
+        ctaZone.style.display = "flex";
+      }, 3000);
     };
 
     async function iniciar() {
