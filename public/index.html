@@ -6,7 +6,6 @@
   <title>TrigguiApp – Un instante, un universo</title>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500&display=swap" rel="stylesheet" />
   <style>
-    /* Estilos generales */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
       height: 100%;
@@ -16,7 +15,6 @@
       user-select: none;
     }
 
-    /* Widget inicial */
     .introWidget {
       position: absolute;
       top: 50%;
@@ -34,15 +32,14 @@
       animation: fadeOutIntro 2.2s ease 1.2s forwards;
     }
     .introWidget .highlight {
-      color: #30ffe4; text-shadow: 0 0 4px #30ffe4;
+      color: #30ffe4; text-shadow: 0 0 10px #00ffc3;
       font-weight: 800;
-      text-shadow: 0 0 10px #00ffc3;
     }
+
     @keyframes fadeOutIntro {
       to { opacity: 0; visibility: hidden; transform: translate(-50%, -70%); }
     }
 
-    /* Grid y layout de bloques */
     .grid {
       position: absolute;
       top: 5vh;
@@ -53,16 +50,10 @@
       gap: 1vw;
     }
     @media (orientation: landscape) {
-      .grid {
-        grid-template-columns: repeat(4, 1fr);
-        grid-template-rows: 1fr;
-      }
+      .grid { grid-template-columns: repeat(4, 1fr); grid-template-rows: 1fr; }
     }
     @media (orientation: portrait) {
-      .grid {
-        grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: repeat(2, 1fr);
-      }
+      .grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); }
     }
 
     .block {
@@ -71,7 +62,7 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       font-weight: bold;
       color: white;
       position: relative;
@@ -80,6 +71,7 @@
       box-shadow: 0 12px 30px rgba(0,0,0,0.45);
       border: 2px solid rgba(255,255,255,0.08);
     }
+
     .label {
       display: flex;
       align-items: center;
@@ -106,6 +98,7 @@
       flex-direction: column;
       animation: fadeIn 1s ease forwards;
     }
+
     .portada img {
       max-width: 90%;
       max-height: 90%;
@@ -113,7 +106,6 @@
       box-shadow: 0 15px 38px rgba(0,0,0,0.5);
     }
 
-    /* CTA */
     .ctaZone {
       position: fixed;
       bottom: 3vh;
@@ -124,6 +116,7 @@
       gap: 1.2rem;
       z-index: 10;
     }
+
     .ctaZone button {
       border: none;
       padding: 0.6rem 1.2rem;
@@ -140,6 +133,7 @@
       transform: scale(1.06);
       box-shadow: 0 8px 24px rgba(0,0,0,0.4);
     }
+
     #btnOtro {
       background: linear-gradient(135deg, #ff9a9e, #fad0c4);
       color: #000;
@@ -149,7 +143,6 @@
       color: #000;
     }
 
-    /* Celebración */
     .celebracion-overlay {
       position: fixed;
       inset: 0;
@@ -160,9 +153,11 @@
       z-index: 20;
       animation: fadeOutCelebracion 0.3s ease 2.3s forwards;
     }
+
     @keyframes fadeOutCelebracion {
       to { opacity: 0; visibility: hidden; }
     }
+
     .celebracion-message {
       font-size: 2.4rem;
       color: #fff;
@@ -173,11 +168,13 @@
       border-radius: 22px;
       box-shadow: 0 0 80px rgba(255,255,255,0.12);
     }
+
     .resaltado {
-      color: #30ffe4; text-shadow: 0 0 4px #30ffe4;
+      color: #00ffc3;
       font-weight: 900;
-      font-size: 3.5rem;
-      text-shadow: 0 0 4px #30ffe4, 0 0 10px #30ffe4;
+      font-size: 3.6rem;
+      text-shadow: none;
+      letter-spacing: -1px;
     }
 
     @keyframes fadeIn {
