@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>TrigguiApp – Layout Inteligente</title>
+  <title>TrigguiApp – Layout Final</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -82,34 +82,34 @@
     function redibujarBloques() {
       grid.innerHTML = "";
 
-      const header = document.getElementById("header");
-      const footer = document.getElementById("footer");
-
       const width = window.innerWidth;
       const height = window.innerHeight;
       const isLandscape = width > height;
 
-      // ⚠️ Regla inteligente: si está en landscape PERO el alto es muy bajo → usar 2x2
       const usar2x2 = !isLandscape || height < 500;
-
       const columnas = usar2x2 ? 2 : 4;
       const filas = 4 / columnas;
 
-      // Posición exacta
+      const header = document.getElementById("header");
+      const footer = document.getElementById("footer");
+
       const top = header.offsetHeight;
       const bottom = footer.offsetHeight;
-      const altoDisponible = height - top - bottom;
+
+      const altoDisponible = height - top - bottom - 32; // 32 extra por paddings
 
       grid.style.top = `${top}px`;
       grid.style.bottom = `${bottom}px`;
       grid.style.gridTemplateColumns = `repeat(${columnas}, 1fr)`;
-      grid.style.gridTemplateRows = `repeat(${filas}, 1fr)`;
+      grid.style.gridTemplateRows = `none`;
+
+      const alturaBloque = altoDisponible / filas;
 
       for (let i = 1; i <= 4; i++) {
         const b = document.createElement("div");
         b.className = "block";
         b.innerText = `Bloque ${i}`;
-        b.style.height = `100%`;
+        b.style.height = `${alturaBloque}px`;
         grid.appendChild(b);
       }
     }
