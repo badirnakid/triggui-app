@@ -14,23 +14,25 @@
       overflow: hidden;
     }
 
-    .introOverlay {
+    .introWidget {
       position: fixed;
-      inset: 0;
-      background: #0d0e1a;
+      top: 5vh;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.85);
       color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
+      padding: 1rem 2rem;
+      border-radius: 20px;
       font-family: 'Poppins', sans-serif;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
+      text-align: center;
+      z-index: 50;
       opacity: 1;
-      animation: fadeOutIntro 2.5s ease 2s forwards;
+      animation: fadeOutIntro 2.5s ease 2.2s forwards;
     }
 
     @keyframes fadeOutIntro {
-      to { opacity: 0; visibility: hidden; }
+      to { opacity: 0; visibility: hidden; transform: translateX(-50%) translateY(-10px); }
     }
 
     .grid {
@@ -42,18 +44,21 @@
       display: grid;
       gap: 1vw;
     }
+
     @media (orientation: landscape) {
       .grid {
         grid-template-columns: repeat(4, 1fr);
         grid-template-rows: 1fr;
       }
     }
+
     @media (orientation: portrait) {
       .grid {
         grid-template-columns: repeat(2, 1fr);
         grid-template-rows: repeat(2, 1fr);
       }
     }
+
     .block {
       border-radius: 18px;
       display: flex;
@@ -68,6 +73,7 @@
       background-size: 250% 250%;
       box-shadow: 0 10px 25px rgba(0,0,0,0.35);
     }
+
     .label {
       display: flex;
       align-items: center;
@@ -76,6 +82,7 @@
       width: 100%;
       padding: 1rem;
     }
+
     .frase, .portada {
       position: absolute;
       inset: 0;
@@ -88,16 +95,19 @@
       font-size: 1.1rem;
       color: white;
     }
+
     .portada {
       flex-direction: column;
       animation: fadeIn 1s ease forwards;
     }
+
     .portada img {
       max-width: 90%;
       max-height: 90%;
       border-radius: 20px;
       box-shadow: 0 15px 30px rgba(0,0,0,0.5);
     }
+
     .ctaZone {
       position: fixed;
       bottom: 3vh;
@@ -108,10 +118,8 @@
       gap: 1.2rem;
       z-index: 10;
     }
+
     .ctaZone button {
-      background: linear-gradient(135deg, #00ffd5, #00c3ff, #0099ff);
-      background-size: 200% auto;
-      color: #000;
       border: none;
       padding: 0.7rem 1.4rem;
       border-radius: 999px;
@@ -120,6 +128,17 @@
       cursor: pointer;
       box-shadow: 0 4px 12px rgba(0,0,0,0.25);
     }
+
+    #btnOtro {
+      background: linear-gradient(135deg, #ffe000, #ff8c00);
+      color: #000;
+    }
+
+    #btnLibro {
+      background: linear-gradient(135deg, #00ffcc, #00bfff);
+      color: #000;
+    }
+
     .celebracion-overlay {
       position: fixed;
       inset: 0;
@@ -129,6 +148,7 @@
       justify-content: center;
       z-index: 20;
     }
+
     .celebracion-message {
       font-size: 1.8rem;
       color: #fff;
@@ -139,11 +159,13 @@
       border-radius: 18px;
       box-shadow: 0 0 40px rgba(255,255,255,0.15);
     }
+
     .resaltado {
       color: #ffeb3b;
       font-weight: 900;
       font-size: 2.4rem;
     }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: scale(0.95); }
       to { opacity: 1; transform: scale(1); }
@@ -151,7 +173,7 @@
   </style>
 </head>
 <body>
-  <div class="introOverlay">🧘‍♂️ Detente. Respira. Elige una palabra y deja que un libro te encuentre.</div>
+  <div class="introWidget">🧘‍♂️ Detente. Respira. Elige una palabra y deja que un libro te encuentre.</div>
 
   <div class="grid" id="gridContainer"></div>
 
@@ -175,7 +197,6 @@
     const celebracionMsg = document.getElementById("celebracionMsg");
 
     let libro = null, portadaBloque = 0, revelado = false;
-
     const emojis = ["🌊", "🛡️", "🧠", "📘", "🔮", "❤️", "✨", "🪞"];
 
     function generarGradiente(hex) {
