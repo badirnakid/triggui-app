@@ -12,27 +12,29 @@
       font-family: 'Archivo', sans-serif;
       background: linear-gradient(135deg, #0d0e1a, #1a1c2d);
       overflow: hidden;
+      user-select: none;
     }
 
     .introWidget {
       position: fixed;
-      top: 5vh;
+      top: 50%;
       left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0, 0, 0, 0.85);
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.08);
       color: #fff;
-      padding: 1rem 2rem;
-      border-radius: 20px;
+      padding: 2rem 2.5rem;
+      border-radius: 24px;
       font-family: 'Poppins', sans-serif;
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       text-align: center;
       z-index: 50;
       opacity: 1;
-      animation: fadeOutIntro 2.5s ease 2.2s forwards;
+      box-shadow: 0 0 30px rgba(255,255,255,0.1);
+      animation: fadeOutIntro 3s ease 2.8s forwards;
     }
 
     @keyframes fadeOutIntro {
-      to { opacity: 0; visibility: hidden; transform: translateX(-50%) translateY(-10px); }
+      to { opacity: 0; visibility: hidden; transform: translate(-50%, -60%); }
     }
 
     .grid {
@@ -121,12 +123,18 @@
 
     .ctaZone button {
       border: none;
-      padding: 0.7rem 1.4rem;
+      padding: 0.8rem 1.6rem;
       border-radius: 999px;
-      font-size: 0.95rem;
+      font-size: 1rem;
       font-weight: bold;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .ctaZone button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.4);
     }
 
     #btnOtro {
@@ -147,6 +155,11 @@
       align-items: center;
       justify-content: center;
       z-index: 20;
+      animation: fadeOutCelebracion 0.3s ease 2.7s forwards;
+    }
+
+    @keyframes fadeOutCelebracion {
+      to { opacity: 0; visibility: hidden; }
     }
 
     .celebracion-message {
@@ -179,7 +192,7 @@
 
   <div class="ctaZone" id="ctaZone">
     <button id="btnOtro">🎲 Intentar con otro libro</button>
-    <button id="btnLibro">📖 Sí, abrí un libro físico cercano</button>
+    <button id="btnLibro">📖 Abrí un libro físico que tengo cerca</button>
   </div>
 
   <div class="celebracion-overlay" id="celebracionOverlay">
@@ -236,11 +249,12 @@
     }
 
     function manejarClick(block) {
-      if (revelado) return;
       const i = parseInt(block.dataset.index);
       const [label, frase, portada] = block.children;
 
-      if (i === portadaBloque) {
+      if (revelado && i !== portadaBloque) return location.reload();
+
+      if (!revelado && i === portadaBloque) {
         block.innerHTML = "";
         portada.style.display = "flex";
         block.appendChild(portada);
@@ -254,7 +268,7 @@
 
         ctaZone.style.display = "flex";
         revelado = true;
-      } else {
+      } else if (!revelado) {
         label.style.display = "none";
         frase.style.display = "flex";
       }
@@ -276,7 +290,7 @@
       setTimeout(() => {
         celebracionOverlay.style.display = "none";
         ctaZone.style.display = "flex";
-      }, 3000);
+      }, 2700);
     };
 
     async function iniciar() {
