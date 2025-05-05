@@ -6,10 +6,6 @@
   <title>TrigguiApp – Un instante, un universo</title>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500&display=swap" rel="stylesheet" />
   <style>
-    :root {
-      --header-height: 60px;
-      --footer-height: 160px;
-    }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
       height: 100%;
@@ -19,13 +15,15 @@
     }
     body.dark { background: #000; }
 
-    body {
-      display: grid;
-      grid-template-rows: var(--header-height) 1fr var(--footer-height);
-      height: 100dvh;
+    .main {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
     }
 
     .header-message {
+      height: 60px;
+      flex-shrink: 0;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -48,7 +46,7 @@
       grid-template-rows: repeat(2, 1fr);
       gap: 1.5vw;
       padding: 2vw;
-      height: 100%;
+      flex-grow: 1;
     }
 
     @media (orientation: landscape) and (min-width: 768px) {
@@ -59,33 +57,33 @@
     }
 
     .block {
-      display: flex;
-      align-items: center;
-      justify-content: center;
       position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
       border-radius: 18px;
       font-weight: bold;
       font-size: clamp(1rem, 1.9vw, 1.3rem);
       color: #fff;
       background-size: 200% 200%;
       background-position: center;
-      overflow: hidden;
-      aspect-ratio: 1 / 1;
       cursor: pointer;
-      animation: popIn 0.7s ease forwards;
+      overflow: hidden;
     }
 
     .block-content {
       position: absolute;
       inset: 0;
       display: flex;
-      align-items: center;
       justify-content: center;
-      text-align: center;
+      align-items: center;
       padding: 6px;
+      text-align: center;
     }
 
     .accionable {
+      color: #fff;
       font-family: 'Poppins', sans-serif;
       font-size: clamp(.9rem, 1.4vw, 1.2rem);
       font-weight: 600;
@@ -96,15 +94,14 @@
       background: rgba(0, 0, 0, 0.4);
       opacity: 0;
       animation: fadeIn 0.6s forwards;
-      color: #fff;
     }
 
     .portada-wrapper {
       width: 100%;
       height: 100%;
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
       background: radial-gradient(circle, #ffffff10, #0000);
       animation: glow 6s ease-in-out infinite;
       border-radius: 18px;
@@ -125,28 +122,13 @@
     }
 
     .footer {
+      height: 160px;
+      flex-shrink: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
       padding: 2vh 2vw;
-      overflow: hidden;
-    }
-
-    .frase-magica,
-    .shock,
-    .counter {
-      font-family: 'Poppins', sans-serif;
-      transition: opacity 0.4s ease;
-    }
-
-    .frase-magica {
-      font-size: 1rem;
-      color: #00ffff;
-      text-align: center;
-      margin-bottom: 1vh;
-      opacity: 0;
-      height: 1.5em;
     }
 
     .shock {
@@ -156,22 +138,25 @@
       border: none;
       border-radius: 999px;
       padding: 12px 26px;
+      margin-top: 8px;
       font-size: clamp(.9rem, 1.8vw, 1.2rem);
       cursor: pointer;
       box-shadow: 0 0 16px rgba(255, 255, 255, 0.15);
       animation: pulse 2s infinite;
       max-width: 95%;
       opacity: 0;
-      margin-top: 6px;
+      transition: opacity 0.4s ease;
     }
 
     .counter {
       font-size: clamp(.9rem, 1.2vw, 1.1rem);
       color: #fff;
       margin-top: 6px;
+      font-family: 'Poppins', sans-serif;
       text-align: center;
       white-space: nowrap;
       opacity: 0;
+      transition: opacity 0.4s ease;
     }
 
     .resaltado {
@@ -186,28 +171,30 @@
       margin-top: 1.5vh;
     }
 
+    .frase-magica {
+      font-size: 1rem;
+      color: #00ffff;
+      text-align: center;
+      margin-top: 1rem;
+      font-family: 'Poppins', sans-serif;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
     .hidden { display: none !important; }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
-    @keyframes popIn {
-      0% { transform: scale(0.95); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
     @keyframes pulse {
       0%, 100% { transform: scale(1); }
       50% { transform: scale(1.06); }
     }
-
     @keyframes glow {
       0%, 100% { background: radial-gradient(circle, #ffffff05, #0000); }
       50% { background: radial-gradient(circle, #ffffff20, #0000); }
     }
-
     @keyframes pulseText {
       0% { background-position: 0% 50%; }
       100% { background-position: 200% 50%; }
@@ -215,21 +202,37 @@
   </style>
 </head>
 <body>
-  <div class="header-message">
-    <div class="header-gradient">¿Dónde está el libro? 📚</div>
-  </div>
-  <div class="grid" id="gridContainer"></div>
-  <div class="footer">
-    <div class="frase-magica" id="fraseMagica">✨ Si tienes cualquier libro físico cerca. Ábrelo.</div>
-    <button class="shock" id="shockBtn">📖 ¡Chócalas si abriste un libro físico!</button>
-    <div class="counter" id="contador">✨ Juntos hemos abierto <span class="resaltado">...</span> libros físicos ✨</div>
-    <img src="/trigguiletras.png" class="trigguiletras" id="logoTriggui">
+  <div class="main">
+    <div class="header-message">
+      <div class="header-gradient">¿Dónde está el libro? 📚</div>
+    </div>
+    <div class="grid" id="gridContainer"></div>
+    <div class="footer">
+      <div class="frase-magica" id="fraseMagica">✨ Si tienes cualquier libro físico cerca. Ábrelo.</div>
+      <button class="shock" id="shockBtn">📖 ¡Chócalas si abriste un libro físico!</button>
+      <div class="counter" id="contador">✨ Juntos hemos abierto <span class="resaltado">...</span> libros físicos ✨</div>
+      <img src="/trigguiletras.png" class="trigguiletras" id="logoTriggui">
+    </div>
   </div>
 
   <script>
     const $ = id => document.getElementById(id);
     let libroActual, bloquePortada, revelado = false;
     const emojis = ["🌊","🛡️","🧠","📘","🔮","❤️","✨","🪞"];
+
+    function ajustarAlturaBloques() {
+      const grid = $("gridContainer");
+      const alto = window.innerHeight;
+      const header = document.querySelector(".header-message").offsetHeight;
+      const footer = document.querySelector(".footer").offsetHeight;
+      const disponible = alto - header - footer;
+      const columnas = window.matchMedia("(orientation: landscape)").matches && window.innerWidth > 768 ? 4 : 2;
+      const filas = 4 / columnas;
+      const alturaBloque = (disponible - 16) / filas;
+      [...grid.children].forEach(b => b.style.height = `${alturaBloque}px`);
+    }
+
+    window.addEventListener("resize", ajustarAlturaBloques);
 
     fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json")
       .then(res => res.json())
@@ -263,6 +266,7 @@
         div.onclick = () => manejarClick(i);
         grid.appendChild(div);
       });
+      ajustarAlturaBloques();
     }
 
     function manejarClick(i) {
