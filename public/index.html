@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>TrigguiApp – Flujo perfecto</title>
+  <title>TrigguiApp – Perfecta y Emocional</title>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500&display=swap" rel="stylesheet" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -89,10 +89,24 @@
       animation: pulse 2s infinite;
     }
     .shockZone .contador {
-      font-size: 0.9rem;
-      color: #ffeb3b;
-      margin-top: 0.5rem;
+      font-size: 1rem;
+      color: #fff;
+      margin-top: 1.2rem;
       font-family: 'Poppins', sans-serif;
+      animation: fadeIn 1s ease forwards;
+    }
+    .shockZone .resaltado {
+      color: #ffeb3b;
+      font-weight: 700;
+    }
+
+    .trigguiletras {
+      position: fixed;
+      bottom: 1vh;
+      right: 1.5vw;
+      height: 18px;
+      opacity: 0.6;
+      z-index: 5;
     }
 
     @keyframes fadeIn {
@@ -114,8 +128,12 @@
 
   <div class="shockZone" id="shockZone">
     <button id="shockBtn">📖 ¡Chócalas si abriste un libro físico!</button>
-    <div class="contador" id="contador" style="display:none;">✨ ...</div>
+    <div class="contador" id="contador" style="display:none;">
+      ✨ Juntos hemos abierto <span class="resaltado">...</span> libros físicos ✨
+    </div>
   </div>
+
+  <img src="/trigguiletras.png" alt="Trigguiletras" class="trigguiletras" />
 
   <script>
     const grid = document.getElementById("gridContainer");
@@ -189,6 +207,9 @@
 
         revelado = true;
         shockZone.style.display = "flex";
+        shockBtn.style.display = "inline-block";
+        contador.style.display = "none";
+        contador.innerHTML = '✨ Juntos hemos abierto <span class="resaltado">...</span> libros físicos ✨';
       } else {
         bloque.children[0].style.display = "none"; // label
         bloque.children[1].style.display = "flex"; // frase
@@ -202,9 +223,9 @@
       try {
         const res = await fetch("https://triggui-api.vercel.app/api/increment");
         const data = await res.json();
-        contador.innerText = `✨ Juntos hemos abierto ${data.total.toLocaleString('es-MX')} libros físicos ✨`;
+        contador.innerHTML = `✨ Juntos hemos abierto <span class="resaltado">${data.total.toLocaleString('es-MX')}</span> libros físicos ✨`;
       } catch {
-        contador.innerText = "Error al contar libros";
+        contador.innerHTML = "📚 Error al contar libros";
       }
     };
 
