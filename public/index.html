@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500;800&display=swap" rel="stylesheet"/>
 
 <style>
-/* BASE ---------------------------------------------------------- */
+/* RESET & BASE -------------------------------------------------- */
 *,*:before,*:after{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;font-family:'Archivo',sans-serif;background:linear-gradient(135deg,#0d0e1a,#1a1c2d);overflow-y:auto;-webkit-overflow-scrolling:touch;user-select:none}
 
@@ -22,12 +22,10 @@ html,body{height:100%;font-family:'Archivo',sans-serif;background:linear-gradien
 @media(orientation:portrait){.grid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr)}}
 
 /* BLOCK --------------------------------------------------------- */
-.block{border-radius:22px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:1.05rem;font-weight:700;letter-spacing:.3px;position:relative;cursor:pointer;background-size:350% 350%;box-shadow:0 12px 30px rgba(0,0,0,.45);overflow:hidden;transition:background-position 3s ease}
+.block{border-radius:22px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:1.05rem;font-weight:700;letter-spacing:.3px;position:relative;cursor:pointer;background-size:350% 350%;box-shadow:0 12px 30px rgba(0,0,0,.45);overflow:hidden;transition:background-position 4s ease}
 .block:hover{background-position:100% 100%}
-.block::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;box-shadow:inset 0 0 0 3px hsla(0,0%,100%,.14);transition:box-shadow .4s ease}
-.block:hover::after{box-shadow:inset 0 0 0 3px hsla(0,0%,100%,.25)}
-
-/* LABEL & FRASE ------------------------------------------------- */
+.block::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,.15),transparent 60%);mix-blend-mode:overlay;pointer-events:none;opacity:.65;transition:opacity .4s}
+.block:hover::before{opacity:.85}
 .label{display:flex;align-items:center;justify-content:center;height:100%;width:100%;padding:1rem}
 .frase,.portada{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:1rem;font-family:'Poppins',sans-serif;font-size:1rem}
 
@@ -35,12 +33,9 @@ html,body{height:100%;font-family:'Archivo',sans-serif;background:linear-gradien
 .portada img{max-width:88%;max-height:88%;border-radius:18px;box-shadow:0 12px 32px rgba(0,0,0,.55);animation:fadeIn .8s ease forwards}
 
 /* PORTADA TEXT -------------------------------------------------- */
-.port-text{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.65rem;padding:2rem 1rem;animation:fadeIn .8s ease forwards}
-.port-text::before{content:"";position:absolute;inset:-25%;background:radial-gradient(circle at center,rgba(255,255,255,.12),transparent 70%);filter:blur(20px);z-index:-1}
-.icon-big{font-size:clamp(3rem,6vw,4.4rem);opacity:.8;animation:float 6s ease-in-out infinite}
-@keyframes float{0%,100%{transform:translateY(-4%)}50%{transform:translateY(4%)}}
-.port-title{font-size:clamp(2rem,5vw,3.4rem);font-weight:800;line-height:1.1;text-align:center;background-clip:text;-webkit-background-clip:text;color:transparent}
-.port-author{font-size:clamp(.95rem,2.1vw,1.3rem);font-weight:600;opacity:.92}
+.port-text{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6rem;animation:fadeIn .8s ease forwards}
+.port-text h2{font-size:clamp(2rem,5vw,3.4rem);font-weight:800;line-height:1.1;text-align:center}
+.port-text p{font-size:clamp(.95rem,2vw,1.3rem);font-weight:600;opacity:.9}
 
 /* FADE ANIM */
 @keyframes fadeIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
@@ -73,86 +68,84 @@ html,body{height:100%;font-family:'Archivo',sans-serif;background:linear-gradien
 <div class="cele" id="cele"><div class="cele-msg" id="celeMsg">✨ <span class="num">...</span><br>libros físicos abiertos</div></div>
 
 <script>
-const grid=document.getElementById("grid"),cta=document.getElementById("cta"),
-      btnOtro=document.getElementById("otro"),btnLibro=document.getElementById("fisico"),
-      cele=document.getElementById("cele"),celeMsg=document.getElementById("celeMsg");
+/* ------------ helpers & state ---------------- */
+const grid  = document.getElementById("grid");
+const cta   = document.getElementById("cta");
+const btnOtro  = document.getElementById("otro");
+const btnLibro = document.getElementById("fisico");
+const cele     = document.getElementById("cele");
+const celeMsg  = document.getElementById("celeMsg");
 
-let libro=null,portIndex=0,revelado=false;
-
-/* Emojis -------------------------------------------------------- */
-const EMO_LABEL={
-  Bienestar:["🌱","🌀","💪","🧘"],
-  Prosperidad:["💰","🚀","📈","💎"],
-  Conexión:["🤝","💖","🔗","🌟"]
+let libro=null,portadaIdx=0,revelado=false;
+const emojis = ["🌊","🛡️","🧠","📘","🔮","❤️","✨","🪞"];
+const isURL  = s => /^https?:\/\//i.test((s||"").trim());
+const grad   = h => {
+  const [r,g,b] = [h.slice(1,3),h.slice(3,5),h.slice(5,7)].map(x=>parseInt(x,16));
+  const l = `rgba(${Math.min(r+60,255)},${Math.min(g+60,255)},${Math.min(b+60,255)},0.85)`;
+  return `linear-gradient(135deg,${h},${l})`;
 };
-const BIG_ICON={
-  Bienestar:"💚",
-  Prosperidad:"💎",
-  Conexión:"✨"
-};
-const fallbackLabel=["🌊","🛡️","🧠","📘"];
-const fallbackBig="📚";
-const isURL=s=>/^https?:\/\//i.test((s||"").trim());
-const grad=hex=>{const r=parseInt(hex.substr(1,2),16),g=parseInt(hex.substr(3,2),16),b=parseInt(hex.substr(5,2),16);
-  const light=`rgba(${Math.min(r+60,255)},${Math.min(g+60,255)},${Math.min(b+60,255)},0.85)`;return`linear-gradient(135deg,${hex},${light})`;};
 
-function makePortada(){
+/* ------------ construir portada ------------ */
+function portadaElem(){
   const wrap=document.createElement("div");wrap.className="portada";
   if(isURL(libro.portada)){
     const img=new Image();img.src=libro.portada;wrap.append(img);
   }else{
     const box=document.createElement("div");box.className="port-text";
-    const icon=document.createElement("div");icon.className="icon-big";icon.textContent=BIG_ICON[libro.dimension]||fallbackBig;
-    const title=document.createElement("div");title.className="port-title";title.textContent=libro.portada.split('\n')[0];
-    const author=document.createElement("div");author.className="port-author";author.textContent=libro.portada.split('\n').slice(1).join(' ');
-    /* gradiente para texto */
-    const g=`linear-gradient(135deg,${libro.colores[0]},${libro.colores[1]||libro.colores[0]})`;
-    title.style.backgroundImage=g;
-    box.append(icon,title,author);wrap.append(box);
+    const [t, ...rest]=libro.portada.split('\n');
+    const h=document.createElement("h2");h.textContent=t;
+    const p=document.createElement("p");p.textContent=rest.join(' ');
+    box.append(h,p);wrap.append(box);
   }
   return wrap;
 }
 
+/* ------------ UI render -------------------- */
 function render(){
   grid.innerHTML="";
-  const set=EMO_LABEL[libro.dimension]||fallbackLabel;
-  libro.palabras.forEach((w,i)=>{
+  libro.palabras.forEach((pal,i)=>{
     const card=document.createElement("div");card.className="block";card.dataset.i=i;card.style.background=grad(libro.colores[i]);
-    const label=document.createElement("div");label.className="label";label.textContent=`${set[i%set.length]} ${w}`;label.style.color=libro.textColors[i];
+    const label=document.createElement("div");label.className="label";label.textContent=`${emojis[i]} ${pal}`;label.style.color=libro.textColors[i];
     const frase=document.createElement("div");frase.className="frase";frase.textContent=libro.frases[i];frase.style.color=libro.textColors[i];
-    const port=makePortada();
-    card.append(label,frase,port);card.onclick=()=>clickCard(card);
+    const port=portadaElem();
+    card.append(label,frase,port);card.onclick=()=>onClick(card);
     grid.append(card);
   });
 }
 
-function clickCard(card){
+/* ------------ click logic ------------------ */
+function onClick(card){
   const i=+card.dataset.i;const [lab,fr,port]=card.children;
-  if(revelado&&i!==portIndex)return location.reload();
-  if(!revelado&&i===portIndex){
+  if(revelado&&i!==portadaIdx)return location.reload();
+  if(!revelado&&i===portadaIdx){
     card.innerHTML="";card.append(port);port.style.display="flex";
     [...grid.children].forEach((c,j)=>{if(j!==i){c.children[0].style.display="none";c.children[1].style.display="flex";}});
     cta.style.display="flex";revelado=true;
   }else if(!revelado){lab.style.display="none";fr.style.display="flex";}
 }
 
+/* ------------ botones ---------------------- */
 btnOtro.onclick=()=>location.reload();
 
 btnLibro.onclick=async()=>{
   btnLibro.disabled=true;cele.style.display="flex";celeMsg.innerHTML='✨ <span class="num">...</span><br>libros físicos abiertos';
-  try{const res=await fetch("https://triggui-api.vercel.app/api/increment");const d=await res.json();
-      celeMsg.innerHTML=`✨ <span class="num">${d.total.toLocaleString('es-MX')}</span><br>libros físicos abiertos`;
+  try{
+    const r=await fetch("https://triggui-api.vercel.app/api/increment");
+    const d=await r.json();
+    celeMsg.innerHTML=`✨ <span class="num">${d.total.toLocaleString('es-MX')}</span><br>libros físicos abiertos`;
   }catch{celeMsg.textContent="📚 Error al contar libros";}
   setTimeout(()=>{cele.style.display="none";cta.style.display="flex";},2300);
 };
 
+/* ------------ init ------------------------- */
 (async()=>{
   try{
-    const res=await fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json?ts="+Date.now());
-    libro=(await res.json()).libros[Math.floor(Math.random()*10)];
-    portIndex=Math.floor(Math.random()*4);
+    const r=await fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json?ts="+Date.now());
+    const data=await r.json();
+    libro=data.libros[Math.floor(Math.random()*data.libros.length)];
+    portadaIdx=Math.floor(Math.random()*4);
     render();
-  }catch(e){console.error("Error:",e);}
+  }catch(e){console.error("Error cargando contenido:",e);}
 })();
 </script>
 </body>
