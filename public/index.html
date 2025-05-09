@@ -58,7 +58,7 @@ html,body{height:100%;font-family:'Archivo',sans-serif;background:linear-gradien
 </head>
 <body>
 
-<div class="intro"><span class="hl">Respira</span>. Elige una palabra. <span class="hl">En uno de los bloques aparecerá un libro</span>.</div>
+<div class="intro"><span class="hl">Detente un segundo.</span>. Elige una palabra. <span class="hl">En uno de los bloques aparecerá un libro</span>.</div>
 
 <div class="grid" id="grid"></div>
 
@@ -105,7 +105,7 @@ function portadaElem(){
 /* Render blocks ------------------------------------------------- */
 function render(){
   grid.innerHTML="";
-  libro.palabras.forEach((word,i)=>{
+  libro.palabras.slice(0,3).forEach((word,i)=>{
     const card=document.createElement("div");card.className="block";card.dataset.i=i;card.style.background=gradientTwo(i);
     const label=document.createElement("div");label.className="label";label.textContent=`${emojis[i%4]} ${word}`;label.style.color=libro.textColors[i];
     const frase=document.createElement("div");frase.className="frase";frase.textContent=libro.frases[i];frase.style.color=libro.textColors[i];
