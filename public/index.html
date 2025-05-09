@@ -7,14 +7,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500;800&display=swap" rel="stylesheet"/>
 
 <style>
-/* RESET & BASE -------------------------------------------------- */
+/* RESET --------------------------------------------------------- */
 *,*:before,*:after{margin:0;padding:0;box-sizing:border-box}
-html,body{height:100%;font-family:'Archivo',sans-serif;background:linear-gradient(135deg,#0d0e1a,#1a1c2d);overflow:hidden}
+html,body{height:100%;font-family:'Archivo',sans-serif;background:#0d0e1a;color:#fff;overflow-y:auto;-webkit-overflow-scrolling:touch}
 
 /* INTRO --------------------------------------------------------- */
-.intro{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);padding:2rem 3rem;background:#191e32;border-radius:26px;box-shadow:0 0 16px rgba(48,255,228,.32);font-family:'Poppins';color:#fff;font-size:1rem;z-index:50;animation:fadeOut 2s 1.2s forwards}
+.intro{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);padding:1.8rem 2.8rem;background:#191e32;border-radius:24px;font-family:'Poppins';font-size:1rem;box-shadow:0 0 14px rgba(48,255,228,.32);animation:introHide 2s 1.2s forwards}
 .intro .hl{color:#30ffe4;font-weight:800}
-@keyframes fadeOut{to{opacity:0;visibility:hidden;transform:translate(-50%,-76%)}}
+@keyframes introHide{to{opacity:0;visibility:hidden;transform:translate(-50%,-76%)}}
 
 /* GRID ---------------------------------------------------------- */
 .grid{position:absolute;inset:5vh 1.5vw;display:grid;gap:1vw}
@@ -22,27 +22,32 @@ html,body{height:100%;font-family:'Archivo',sans-serif;background:linear-gradien
 @media(orientation:portrait){.grid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr)}}
 
 /* BLOCK --------------------------------------------------------- */
-.block{border-radius:22px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:700;letter-spacing:.3px;cursor:pointer;overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,.45);background-size:350% 350%;transition:background-position 4s}
+.block{position:relative;display:flex;align-items:center;justify-content:center;padding:1rem;border-radius:22px;font-weight:700;cursor:pointer;overflow:hidden;background-size:320% 320%;transition:background-position 4s}
 .block:hover{background-position:100% 100%}
-.block::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,.18),transparent 65%);mix-blend-mode:overlay;pointer-events:none;opacity:.6;transition:opacity .4s}
-.block:hover::before{opacity:.85}
-.label{padding:1rem}
-.frase,.portada{position:absolute;inset:0;display:none;align-items:center;justify-content:center;padding:1rem;font-family:'Poppins';text-align:center}
+.block::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,.18),transparent 65%);mix-blend-mode:overlay;pointer-events:none}
+
+/* LABEL / FRASE ----------------------------------------------- */
+.label{z-index:2;text-align:center;line-height:1.25}
+.frase{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:1rem;text-align:center;line-height:1.25;z-index:2;opacity:0;transition:opacity .3s}
+.block.show-frase .label{opacity:0}
+.block.show-frase .frase{opacity:1}
 
 /* PORTADA ------------------------------------------------------- */
+.portada{position:absolute;inset:0;display:none;align-items:center;justify-content:center;padding:1rem;text-align:center}
 .portada img{max-width:88%;max-height:88%;border-radius:18px;box-shadow:0 12px 32px rgba(0,0,0,.55)}
-.port-text h2{font-size:clamp(1.9rem,5vw,3.3rem);font-weight:800;line-height:1.1}
-.port-text p{font-size:clamp(.9rem,2vw,1.25rem);font-weight:600;opacity:.9;}
+.port-text h2{font-size:clamp(2rem,5vw,3.3rem);font-weight:800;line-height:1.1}
+.port-text p{font-size:clamp(.9rem,2vw,1.25rem);font-weight:600;opacity:.9}
 
-/* CTA & CELEB --------------------------------------------------- */
+/* CTA ----------------------------------------------------------- */
 .cta{position:fixed;bottom:3vh;left:50%;transform:translateX(-50%);display:none;gap:1rem}
 .cta button{border:none;padding:.6rem 1.2rem;border-radius:999px;font-size:.9rem;font-weight:700;cursor:pointer}
-#otro{background:#ffd3d3;color:#000}
-#fisico{background:#d3ffd8;color:#000}
-.cele{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;z-index:60;animation:fadeC 2.4s forwards}
-@keyframes fadeC{0%{opacity:0}10%{opacity:1}90%{opacity:1}100%{opacity:0;visibility:hidden}}
-.cele-msg{font-family:'Poppins';font-size:2rem;text-align:center;background:rgba(255,255,255,.05);padding:2.2rem 3rem;border-radius:20px;color:#fff;box-shadow:0 0 60px rgba(255,255,255,.12)}
-.num{color:#00ffc3;font-weight:900;font-size:3rem}
+#otro{background:#ffd1d1;color:#000}
+#fisico{background:#d1ffd9;color:#000}
+
+/* CELEBRACIÓN --------------------------------------------------- */
+.cele{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;z-index:60}
+.cele-msg{font-family:'Poppins';font-size:2rem;text-align:center;background:rgba(255,255,255,.05);padding:2rem 3rem;border-radius:20px}
+.num{color:#30ffe4;font-weight:800;font-size:2.6rem}
 </style>
 </head>
 <body>
@@ -59,19 +64,22 @@ html,body{height:100%;font-family:'Archivo',sans-serif;background:linear-gradien
 
 <script>
 /* STATE --------------------------------------------------------- */
-const grid=document.getElementById("grid"),cta=document.getElementById("cta"),
-      btnOtro=document.getElementById("otro"),btnLibro=document.getElementById("fisico"),
-      cele=document.getElementById("cele"),celeMsg=document.getElementById("celeMsg");
+const grid = document.getElementById("grid"),
+      cta  = document.getElementById("cta"),
+      btnOtro = document.getElementById("otro"),
+      btnLibro= document.getElementById("fisico"),
+      cele    = document.getElementById("cele"),
+      celeMsg = document.getElementById("celeMsg");
 
-let libro=null,revelado=false,PORT=3;
+let libro=null,PORT=3,revealed=false;
 const emojis=["🚶","❤️","🧠","📚"];
 const isURL=s=>/^https?:\/\//i.test(s||"");
 
-/* gradiente bicromático ---------------------------------------- */
+/* gradiente ----------------------------------------------------- */
 const grad=(i)=>`linear-gradient(135deg,${libro.colores[i]},${libro.colores[(i+1)%4]})`;
 
 /* build portada ------------------------------------------------- */
-function makePort(){
+function buildPort(){
   const d=document.createElement("div");d.className="portada";
   if(isURL(libro.portada)){const img=new Image();img.src=libro.portada;d.append(img);}
   else{
@@ -82,7 +90,7 @@ function makePort(){
   return d;
 }
 
-/* render -------------------------------------------------------- */
+/* render grid --------------------------------------------------- */
 function render(){
   grid.innerHTML="";
   for(let i=0;i<4;i++){
@@ -92,30 +100,27 @@ function render(){
     if(i<3){
       label.textContent=`${emojis[i]} ${libro.palabras[i]}`;
       label.style.color=libro.textColors[i];
-      frase.textContent=libro.frases[i];
-      frase.style.color=libro.textColors[i];
+      frase.textContent=libro.frases[i];frase.style.color=libro.textColors[i];
     }else{
-      label.textContent=`${emojis[3]} Libro`;
-      label.style.color=libro.textColors[3];
+      label.textContent=`${emojis[3]} Libro`;label.style.color=libro.textColors[3];
     }
-    const port=makePort();
+    const port=buildPort();
     card.append(label,frase,port);
-    card.onclick=()=>clicked(card);
+    card.onclick=()=>handle(card);
     grid.append(card);
   }
 }
 
-/* click logic ---------------------------------------------------- */
-function clicked(card){
+/* click logic --------------------------------------------------- */
+function handle(card){
   const i=+card.dataset.i;
-  const [lab,fr,port]=card.children;
-  if(revelado&&i!==PORT){location.reload();return;}
-  if(!revelado&&i===PORT){
-    card.innerHTML="";card.append(port);port.style.display="flex";
-    [...grid.children].forEach((c,j)=>{if(j!==i){c.children[0].style.display="none";c.children[1].style.display="flex";}});
-    cta.style.display="flex";revelado=true;
-  }else if(!revelado){
-    lab.style.display="none";fr.style.display="flex";
+  if(revealed&&i!==PORT){location.reload();return;}
+  if(!revealed&&i===PORT){
+    card.querySelector(".portada").style.display="flex";
+    [...grid.children].forEach((c,j)=>{if(j!==i)c.classList.add("show-frase");});
+    cta.style.display="flex";revealed=true;
+  }else if(!revealed&&i<3){
+    card.classList.toggle("show-frase");
   }
 }
 
@@ -124,29 +129,24 @@ btnOtro.onclick=()=>location.reload();
 btnLibro.onclick=async()=>{
   btnLibro.disabled=true;cele.style.display="flex";
   celeMsg.innerHTML='✨ <span class="num">...</span><br>libros físicos abiertos';
-  try{const r=await fetch("https://triggui-api.vercel.app/api/increment");const d=await r.json();
-       celeMsg.innerHTML=`✨ <span class="num">${d.total.toLocaleString('es-MX')}</span><br>libros físicos abiertos`; }
-  catch{celeMsg.textContent="📚 Error al contar libros";}
+  try{
+    const r=await fetch("https://triggui-api.vercel.app/api/increment");
+    const d=await r.json();
+    celeMsg.innerHTML=`✨ <span class="num">${d.total.toLocaleString('es-MX')}</span><br>libros físicos abiertos`;
+  }catch{celeMsg.textContent="📚 Error al contar libros";}
   setTimeout(()=>{cele.style.display="none";cta.style.display="flex";},2300);
 };
 
-/* FETCH & INIT -------------------------------------------------- */
+/* INIT ---------------------------------------------------------- */
 (async()=>{
   try{
     const r=await fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json?ts="+Date.now());
     const data=await r.json();
-    if(!data.libros||!data.libros.length) throw new Error("contenido.json vacío");
     libro=data.libros[Math.floor(Math.random()*data.libros.length)];
-
-    /* safety padding de colores */
-    while(libro.colores.length<4) libro.colores.push("#ffffff");
-    while(libro.textColors.length<4) libro.textColors.push("#000000");
-
+    while(libro.colores.length<4)libro.colores.push("#ffffff");
+    while(libro.textColors.length<4)libro.textColors.push("#000000");
     render();
-  }catch(e){
-    console.error("⚠",e.message);
-    alert("No se pudo cargar el contenido. Intenta más tarde.");
-  }
+  }catch(e){alert("No se pudo cargar el contenido.");console.error(e);}
 })();
 </script>
 </body>
