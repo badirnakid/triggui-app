@@ -40,11 +40,15 @@ html,body{height:100%;font-family:'Archivo',sans-serif;background:#0e0f1b;color:
 
 /* ───────── Portada───────── */
 .portada{position:absolute;inset:0;display:none;align-items:center;justify-content:center;
-         flex-direction:column;padding:1rem;gap:.8rem;text-align:center}
-.portada img{max-width:88%;max-height:88%;border-radius:18px;
+         flex-direction:column;padding:1rem;gap:.95rem;text-align:center;
+         animation:pop .6s ease-out forwards}
+@keyframes pop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
+.portada img{max-width:88%;max-height:72%;border-radius:18px;
              box-shadow:0 12px 32px rgba(0,0,0,.55)}
-.port-text h2{font-size:clamp(1.8rem,4.8vw,2.8rem);font-weight:800;line-height:1.15}
-.port-text p{font-size:clamp(.8rem,2.2vw,1.1rem);font-weight:600;opacity:.92;margin-top:.25rem}
+.emoji-big{font-size:clamp(2.6rem,7vw,4rem);filter:drop-shadow(0 4px 8px rgba(0,0,0,.3))}
+.port-text h2{font-size:clamp(1.9rem,5vw,3rem);font-weight:800;line-height:1.15;
+              text-shadow:0 2px 6px rgba(0,0,0,.35)}
+.port-text p{font-size:clamp(.85rem,2.4vw,1.15rem);font-weight:600;opacity:.9;margin-top:.25rem}
 
 /* ───────── CTA───────── */
 .cta{position:fixed;bottom:3vh;left:50%;transform:translateX(-50%);
@@ -80,18 +84,23 @@ const grid=document.getElementById("grid"),cta=document.getElementById("cta"),
 
 let libro=null;const portIdx=Math.floor(Math.random()*4);let revealed=false;
 const isURL=s=>/^https?:\/\//i.test(s||"");
-const emojis=["🌊","🛡️","🧠","✨","📘","🔮","❤️","🪞"]; // más variedad si crece a futuro
+const emojis=["🌊","🛡️","🧠","✨","📘","🔮","❤️","🪞"];
 
 const grad=i=>`linear-gradient(135deg,${libro.colores[i]},${libro.colores[(i+1)%4]})`;
 
 /* ── Crear portada (imagen o título/autor) ──*/
-function buildPort(){
+function buildPort(idx){
   const d=document.createElement("div");d.className="portada";
-  if(isURL(libro.portada)){d.append(Object.assign(new Image(),{src:libro.portada,loading:"lazy"}));}
-  else{
+  /* gran emoji encabezando */
+  const bigEmoji=document.createElement("div");
+  bigEmoji.className="emoji-big";
+  bigEmoji.textContent=emojis[idx%emojis.length];
+  if(isURL(libro.portada)){
+    d.append(bigEmoji,Object.assign(new Image(),{src:libro.portada,loading:"lazy"}));
+  }else{
     const box=document.createElement("div");box.className="port-text";
     box.innerHTML=`<h2>${libro.titulo}</h2><p>${libro.autor}</p>`;
-    d.append(box);
+    d.append(bigEmoji,box);
   }
   return d;
 }
@@ -103,7 +112,7 @@ function render(){
     const card=document.createElement("div");card.className="block";card.dataset.i=i;card.style.background=grad(i);
     const label=document.createElement("div");label.className="label";label.style.color=libro.textColors?.[i]||"#fff";label.textContent=`${emojis[i%emojis.length]} ${libro.palabras[i]}`;
     const frase=document.createElement("div");frase.className="frase";frase.style.color=libro.textColors?.[i]||"#fff";frase.textContent=libro.frases[i];
-    const port=buildPort();
+    const port=buildPort(i);
     if(i===portIdx) card.append(port);
     card.append(label,frase);card.onclick=()=>click(card,i,port,label);
     grid.append(card);
