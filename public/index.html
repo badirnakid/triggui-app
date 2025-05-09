@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
 <title>Triggui — Abre un libro físico. Aquí y ahora.</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500;800&display=swap" rel="stylesheet"/>
 
 <style>
-/* RESET & BASE */
+/* RESET + BASE */
 *,*:before,*:after{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;font-family:'Archivo',sans-serif;background:linear-gradient(135deg,#0d0e1a,#1a1c2d);overflow-y:scroll;-webkit-overflow-scrolling:touch;user-select:none}
 
@@ -23,18 +23,22 @@ html,body{height:100%;font-family:'Archivo',sans-serif;background:linear-gradien
 @media(orientation:portrait){.grid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr)}}
 
 /* BLOCK */
-.block{border-radius:22px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:1.2rem;font-weight:bold;position:relative;cursor:pointer;background-size:300% 300%;box-shadow:0 12px 30px rgba(0,0,0,.45);border:2px solid rgba(255,255,255,.08)}
+.block{border-radius:22px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:1.2rem;font-weight:bold;position:relative;cursor:pointer;background-size:300% 300%;box-shadow:0 12px 30px rgba(0,0,0,.45);border:2px solid rgba(255,255,255,.08);overflow:hidden}
 .label{display:flex;align-items:center;justify-content:center;height:100%;width:100%;padding:1rem}
 .frase,.portada{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:1rem;font-family:'Poppins',sans-serif;font-size:1.1rem}
-.portada{flex-direction:column;animation:fadeIn 1s ease forwards}
+.portada{animation:fadeIn .8s ease forwards}
+@keyframes fadeIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.portada img{max-width:92%;max-height:92%;border-radius:18px;box-shadow:0 15px 40px rgba(0,0,0,.55)}
 
-/* portada IMG */
-.portada img{max-width:90%;max-height:90%;border-radius:22px;box-shadow:0 15px 38px rgba(0,0,0,.5)}
-
-/* portada TEXT */
-.title{font-size:clamp(2.4rem,4vw,3.6rem);font-weight:900;line-height:1.1;margin-bottom:.6rem;letter-spacing:-.5px;background-size:200% 200%;background-clip:text;-webkit-background-clip:text;color:transparent;animation:gradMove 6s ease infinite}
+/* ------------ BOOK EFFECT (texto) ------------ */
+.book{position:relative;width:86%;max-width:310px;aspect-ratio:0.72;border-radius:18px;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:1.2rem 1.6rem;text-align:center;color:#fff;box-shadow:0 18px 40px rgba(0,0,0,.55);transform:perspective(800px) rotateY(-8deg);background-size:200% 200%;animation:gradMove 8s linear infinite}
+.book:before, .book:after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none}
+.book:before{background:rgba(0,0,0,.35);mix-blend-mode:multiply}
+.book:after{right:-12px;width:20px;background:linear-gradient(90deg,rgba(255,255,255,.4),rgba(255,255,255,.15) 30%,rgba(0,0,0,.25) 60%);border-radius:0 18px 18px 0;filter:blur(1px)} /* lomito */
 @keyframes gradMove{0%{background-position:0 0}50%{background-position:100% 100%}100%{background-position:0 0}}
-.author{font-size:clamp(1.2rem,2.3vw,1.6rem);font-weight:600;opacity:.85;color:#ffffff}
+
+.book-title{font-size:clamp(2.2rem,5vw,3.8rem);font-weight:800;line-height:1.1;letter-spacing:-.6px;background-clip:text;-webkit-background-clip:text;color:transparent}
+.book-author{font-size:clamp(1rem,2vw,1.4rem);font-weight:600;margin-top:.8rem;opacity:.9}
 
 /* CTA */
 .cta{position:fixed;bottom:3vh;left:50%;transform:translateX(-50%);display:none;gap:1.2rem;z-index:10}
@@ -66,84 +70,74 @@ html,body{height:100%;font-family:'Archivo',sans-serif;background:linear-gradien
 </div>
 
 <script>
-const grid=document.getElementById("grid");
-const cta=document.getElementById("cta");
-const btnOtro=document.getElementById("otro");
-const btnLibro=document.getElementById("físico");
-const cele=document.getElementById("cele");
-const celeMsg=document.getElementById("celeMsg");
-
-let libro=null,portaIdx=0,revelado=false;
+/* --- helpers --- */
+const grid=document.getElementById("grid"),cta=document.getElementById("cta"),
+      btnOtro=document.getElementById("otro"),btnLibro=document.getElementById("físico"),
+      cele=document.getElementById("cele"),celeMsg=document.getElementById("celeMsg");
+let libro=null,porta=0,revelado=false;
 const emojis=["🌊","🛡️","🧠","📘","🔮","❤️","✨","🪞"];
 const isURL=s=>/^https?:\/\//i.test((s||"").trim());
-const grad=hex=>{
-  const r=parseInt(hex.substr(1,2),16),g=parseInt(hex.substr(3,2),16),b=parseInt(hex.substr(5,2),16);
-  const light=`rgba(${Math.min(r+60,255)},${Math.min(g+60,255)},${Math.min(b+60,255)},0.85)`;
-  return`linear-gradient(135deg,${hex},${light})`;
-};
+const grad=hex=>{const r=parseInt(hex.substr(1,2),16),g=parseInt(hex.substr(3,2),16),b=parseInt(hex.substr(5,2),16);
+  const l=`rgba(${Math.min(r+60,255)},${Math.min(g+60,255)},${Math.min(b+60,255)},.85)`;return`linear-gradient(135deg,${hex},${l})`;};
 
-function crearPortada(){
-  const div=document.createElement("div");div.className="portada";
+/* --- build portada elemento book or img --- */
+function makePortada(){
+  const d=document.createElement("div");d.className="portada";
   if(isURL(libro.portada)){
-    const img=new Image();img.src=libro.portada;div.append(img);
+    const img=new Image();img.src=libro.portada;d.append(img);
   }else{
-    const colors=libro.colores.slice(0,2).join(',');
-    const title=document.createElement("div");title.className="title";title.textContent=libro.portada.split('\n')[0];
-    title.style.backgroundImage=`linear-gradient(135deg,${colors})`;
-    const author=document.createElement("div");author.className="author";author.textContent=libro.portada.split('\n').slice(1).join(' ');
-    div.append(title,author);
+    const book=document.createElement("div");book.className="book";
+    const title=document.createElement("div");title.className="book-title";title.textContent=libro.portada.split('\n')[0];
+    const author=document.createElement("div");author.className="book-author";author.textContent=libro.portada.split('\n').slice(1).join(' ');
+    /* grad del título igual a book bg */
+    const bgPair=`${libro.colores[0]},${libro.colores[1]||libro.colores[0]}`;
+    book.style.background=`linear-gradient(135deg,${bgPair})`;
+    title.style.backgroundImage=`linear-gradient(135deg,${bgPair})`;
+    book.append(title,author);d.append(book);
   }
-  return div;
+  return d;
 }
 
-function buildUI(){
+/* --- render UI --- */
+function render(){
   grid.innerHTML="";
-  libro.palabras.forEach((pal,i)=>{
+  libro.palabras.forEach((p,i)=>{
     const blk=document.createElement("div");blk.className="block";blk.dataset.i=i;blk.style.background=grad(libro.colores[i]);
-    /* label */
-    const label=document.createElement("div");label.className="label";label.textContent=`${emojis[i]} ${pal}`;label.style.color=libro.textColors[i];
-    /* frase */
-    const fr=document.createElement("div");fr.className="frase";fr.textContent=libro.frases[i];fr.style.color=libro.textColors[i];
-    /* portada */
-    const port=crearPortada();
-    blk.append(label,fr,port);
-    blk.onclick=()=>handleClick(blk);
-    grid.append(blk);
+    const label=document.createElement("div");label.className="label";label.textContent=`${emojis[i]} ${p}`;label.style.color=libro.textColors[i];
+    const frase=document.createElement("div");frase.className="frase";frase.textContent=libro.frases[i];frase.style.color=libro.textColors[i];
+    const port=makePortada();
+    blk.append(label,frase,port);blk.onclick=()=>clickBlk(blk);grid.append(blk);
   });
 }
 
-function handleClick(blk){
-  const i=+blk.dataset.i;
-  const [label,frase,port]=blk.children;
-  if(revelado&&i!==portaIdx){return location.reload();}
-  if(!revelado&&i===portaIdx){
-    blk.innerHTML="";port.style.display="flex";blk.append(port);
+/* --- click logic --- */
+function clickBlk(blk){
+  const i=+blk.dataset.i;const [lab,fr,port]=blk.children;
+  if(revelado&&i!==porta)return location.reload();
+  if(!revelado&&i===porta){
+    blk.innerHTML="";blk.append(port);port.style.display="flex";
     [...grid.children].forEach((b,j)=>{if(j!==i){b.children[0].style.display="none";b.children[1].style.display="flex";}});
     cta.style.display="flex";revelado=true;
-  }else if(!revelado){
-    label.style.display="none";frase.style.display="flex";
-  }
+  }else if(!revelado){lab.style.display="none";fr.style.display="flex";}
 }
-
 btnOtro.onclick=()=>location.reload();
 
 btnLibro.onclick=async()=>{
   btnLibro.disabled=true;cele.style.display="flex";celeMsg.innerHTML='✨ <span class="num">...</span><br>libros físicos abiertos';
-  try{
-    const r=await fetch("https://triggui-api.vercel.app/api/increment");
-    const d=await r.json();
-    celeMsg.innerHTML=`✨ <span class="num">${d.total.toLocaleString('es-MX')}</span><br>libros físicos abiertos`;
-  }catch{celeMsg.textContent="📚 Error al contar libros";}
+  try{const r=await fetch("https://triggui-api.vercel.app/api/increment");const d=await r.json();
+      celeMsg.innerHTML=`✨ <span class="num">${d.total.toLocaleString('es-MX')}</span><br>libros físicos abiertos`;}
+  catch{celeMsg.textContent="📚 Error al contar libros";}
   setTimeout(()=>{cele.style.display="none";cta.style.display="flex";},2300);
 };
 
+/* --- init --- */
 (async()=>{
   try{
     const r=await fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json?ts="+Date.now());
     const data=await r.json();
     libro=data.libros[Math.floor(Math.random()*data.libros.length)];
-    portaIdx=Math.floor(Math.random()*4);
-    buildUI();
+    porta=Math.floor(Math.random()*4);
+    render();
   }catch(e){console.error("Error cargando contenido:",e);}
 })();
 </script>
