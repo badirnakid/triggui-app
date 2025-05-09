@@ -2,64 +2,52 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
 <title>Triggui — Abre un libro físico. Aquí y ahora.</title>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500;800&display=swap" rel="stylesheet"/>
 
 <style>
-/* BASE ---------------------------------------------------------- */
+/* RESET & BASE -------------------------------------------------- */
 *,*:before,*:after{margin:0;padding:0;box-sizing:border-box}
-html,body{height:100%;font-family:'Archivo',sans-serif;background:linear-gradient(135deg,#0d0e1a,#1a1c2d);overflow-y:auto;-webkit-overflow-scrolling:touch;user-select:none}
+html,body{height:100%;font-family:'Archivo',sans-serif;background:linear-gradient(135deg,#0d0e1a,#1a1c2d);overflow:hidden}
 
 /* INTRO --------------------------------------------------------- */
-.intro{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);padding:2rem 3rem;background:linear-gradient(135deg,#191e32,#0e1325);color:#fff;font-family:'Poppins',sans-serif;font-size:1.04rem;text-align:center;border-radius:26px;box-shadow:0 0 16px rgba(48,255,228,.3);z-index:50;animation:fadeOutIntro 2s ease 1s forwards}
+.intro{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);padding:2rem 3rem;background:#191e32;border-radius:26px;box-shadow:0 0 16px rgba(48,255,228,.32);font-family:'Poppins';color:#fff;font-size:1rem;z-index:50;animation:fadeOut 2s 1.2s forwards}
 .intro .hl{color:#30ffe4;font-weight:800}
-@keyframes fadeOutIntro{to{opacity:0;visibility:hidden;transform:translate(-50%,-74%)}}
+@keyframes fadeOut{to{opacity:0;visibility:hidden;transform:translate(-50%,-76%)}}
 
 /* GRID ---------------------------------------------------------- */
-.grid{position:absolute;top:5vh;bottom:5vh;left:1.5vw;right:1.5vw;display:grid;gap:1vw}
+.grid{position:absolute;inset:5vh 1.5vw;display:grid;gap:1vw}
 @media(orientation:landscape){.grid{grid-template-columns:repeat(4,1fr)}}
 @media(orientation:portrait){.grid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr)}}
 
-/* MULTI-COLOR BLOCK -------------------------------------------- */
-.block{border-radius:22px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:1.05rem;font-weight:700;letter-spacing:.3px;position:relative;cursor:pointer;background-size:300% 300%;box-shadow:0 12px 30px rgba(0,0,0,.45);overflow:hidden;transition:background-position 4s ease}
+/* BLOCK --------------------------------------------------------- */
+.block{border-radius:22px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:700;letter-spacing:.3px;cursor:pointer;overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,.45);background-size:350% 350%;transition:background-position 4s}
 .block:hover{background-position:100% 100%}
 .block::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,.18),transparent 65%);mix-blend-mode:overlay;pointer-events:none;opacity:.6;transition:opacity .4s}
 .block:hover::before{opacity:.85}
+.label{padding:1rem}
+.frase,.portada{position:absolute;inset:0;display:none;align-items:center;justify-content:center;padding:1rem;font-family:'Poppins';text-align:center}
 
-/* LABEL & FRASE ------------------------------------------------- */
-.label{display:flex;align-items:center;justify-content:center;height:100%;width:100%;padding:1rem}
-.frase,.portada{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:1rem;font-family:'Poppins',sans-serif;font-size:1rem}
+/* PORTADA ------------------------------------------------------- */
+.portada img{max-width:88%;max-height:88%;border-radius:18px;box-shadow:0 12px 32px rgba(0,0,0,.55)}
+.port-text h2{font-size:clamp(1.9rem,5vw,3.3rem);font-weight:800;line-height:1.1}
+.port-text p{font-size:clamp(.9rem,2vw,1.25rem);font-weight:600;opacity:.9;}
 
-/* PORTADA IMG --------------------------------------------------- */
-.portada img{max-width:88%;max-height:88%;border-radius:18px;box-shadow:0 12px 32px rgba(0,0,0,.55);animation:fadeIn .8s ease forwards}
-
-/* PORTADA TEXT -------------------------------------------------- */
-.port-text{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6rem;animation:fadeIn .8s ease forwards}
-.port-text h2{font-size:clamp(2rem,5vw,3.4rem);font-weight:800;line-height:1.1;text-align:center}
-.port-text p{font-size:clamp(.95rem,2vw,1.3rem);font-weight:600;opacity:.9}
-
-/* ANIMS --------------------------------------------------------- */
-@keyframes fadeIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
-
-/* CTA ----------------------------------------------------------- */
-.cta{position:fixed;bottom:3vh;left:50%;transform:translateX(-50%);display:none;gap:1.2rem;z-index:10}
-.cta button{border:none;padding:.6rem 1.2rem;border-radius:999px;font-size:.9rem;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.3);transition:.2s;min-width:150px}
-.cta button:hover{transform:scale(1.06);box-shadow:0 8px 24px rgba(0,0,0,.38)}
-#otro{background:linear-gradient(135deg,#ff9a9e,#fad0c4);color:#000}
-#fisico{background:linear-gradient(135deg,#a1ffce,#faffd1);color:#000}
-
-/* CELEBRACIÓN --------------------------------------------------- */
-.cele{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;z-index:20;animation:fadeOut .3s ease 2.3s forwards}
-@keyframes fadeOut{to{opacity:0;visibility:hidden}}
-.cele-msg{font-size:2.15rem;color:#fff;text-align:center;font-family:'Poppins',sans-serif;background:rgba(255,255,255,.05);padding:2.3rem 3rem;border-radius:20px;box-shadow:0 0 70px rgba(255,255,255,.12)}
-.num{color:#00ffc3;font-weight:900;font-size:3.3rem;letter-spacing:-1px}
+/* CTA & CELEB --------------------------------------------------- */
+.cta{position:fixed;bottom:3vh;left:50%;transform:translateX(-50%);display:none;gap:1rem}
+.cta button{border:none;padding:.6rem 1.2rem;border-radius:999px;font-size:.9rem;font-weight:700;cursor:pointer}
+#otro{background:#ffd3d3;color:#000}
+#fisico{background:#d3ffd8;color:#000}
+.cele{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;z-index:60;animation:fadeC 2.4s forwards}
+@keyframes fadeC{0%{opacity:0}10%{opacity:1}90%{opacity:1}100%{opacity:0;visibility:hidden}}
+.cele-msg{font-family:'Poppins';font-size:2rem;text-align:center;background:rgba(255,255,255,.05);padding:2.2rem 3rem;border-radius:20px;color:#fff;box-shadow:0 0 60px rgba(255,255,255,.12)}
+.num{color:#00ffc3;font-weight:900;font-size:3rem}
 </style>
 </head>
 <body>
 
-<div class="intro"><span class="hl">Detente un segundo.</span>. Elige una palabra. <span class="hl">En uno de los bloques aparecerá un libro</span>.</div>
-
+<div class="intro"><span class="hl">Elige una palabra.</span> Detente un segundo.</div>
 <div class="grid" id="grid"></div>
 
 <div class="cta" id="cta">
@@ -70,84 +58,95 @@ html,body{height:100%;font-family:'Archivo',sans-serif;background:linear-gradien
 <div class="cele" id="cele"><div class="cele-msg" id="celeMsg">✨ <span class="num">...</span><br>libros físicos abiertos</div></div>
 
 <script>
-/* -------- state -------- */
+/* STATE --------------------------------------------------------- */
 const grid=document.getElementById("grid"),cta=document.getElementById("cta"),
       btnOtro=document.getElementById("otro"),btnLibro=document.getElementById("fisico"),
       cele=document.getElementById("cele"),celeMsg=document.getElementById("celeMsg");
 
-let libro=null,portIdx=0,revelado=false;
-const emojis=["🌞","🌙","⭐","⚡"];
+let libro=null,revelado=false,PORT=3;
+const emojis=["🚶","❤️","🧠","📚"];
+const isURL=s=>/^https?:\/\//i.test(s||"");
 
-/* helpers ------------------------------------------------------- */
-const isURL=s=>/^https?:\/\//i.test((s||"").trim());
+/* gradiente bicromático ---------------------------------------- */
+const grad=(i)=>`linear-gradient(135deg,${libro.colores[i]},${libro.colores[(i+1)%4]})`;
 
-function gradientTwo(i){
-  const c1=libro.colores[i];
-  const c2=libro.colores[(i+1)%libro.colores.length];
-  returnlinear-gradient(135deg,${c1},${c2});
-}
-
-/* Crear portada ------------------------------------------------- */
-function portadaElem(){
-  const wrap=document.createElement("div");wrap.className="portada";
-  if(isURL(libro.portada)){
-    const img=new Image();img.src=libro.portada;wrap.append(img);
-  }else{
+/* build portada ------------------------------------------------- */
+function makePort(){
+  const d=document.createElement("div");d.className="portada";
+  if(isURL(libro.portada)){const img=new Image();img.src=libro.portada;d.append(img);}
+  else{
     const box=document.createElement("div");box.className="port-text";
-    const [t,...rest]=libro.portada.split('\n');
-    const h=document.createElement("h2");h.textContent=t;
-    const p=document.createElement("p");p.textContent=rest.join(' ');
-    box.append(h,p);wrap.append(box);
+    const [t,...rest]=libro.portada.split("\\n");
+    box.innerHTML=`<h2>${t}</h2><p>${rest.join(" ")}</p>`;d.append(box);
   }
-  return wrap;
+  return d;
 }
 
-/* Render blocks ------------------------------------------------- */
+/* render -------------------------------------------------------- */
 function render(){
   grid.innerHTML="";
-  libro.palabras.slice(0,3).forEach((word,i)=>{
-    const card=document.createElement("div");card.className="block";card.dataset.i=i;card.style.background=gradientTwo(i);
-    const label=document.createElement("div");label.className="label";label.textContent=${emojis[i%4]} ${word};label.style.color=libro.textColors[i];
-    const frase=document.createElement("div");frase.className="frase";frase.textContent=libro.frases[i];frase.style.color=libro.textColors[i];
-    const port=portadaElem();
-    card.append(label,frase,port);card.onclick=()=>onClick(card);
+  for(let i=0;i<4;i++){
+    const card=document.createElement("div");card.className="block";card.dataset.i=i;card.style.background=grad(i);
+    const label=document.createElement("div");label.className="label";
+    const frase=document.createElement("div");frase.className="frase";
+    if(i<3){
+      label.textContent=`${emojis[i]} ${libro.palabras[i]}`;
+      label.style.color=libro.textColors[i];
+      frase.textContent=libro.frases[i];
+      frase.style.color=libro.textColors[i];
+    }else{
+      label.textContent=`${emojis[3]} Libro`;
+      label.style.color=libro.textColors[3];
+    }
+    const port=makePort();
+    card.append(label,frase,port);
+    card.onclick=()=>clicked(card);
     grid.append(card);
-  });
+  }
 }
 
-/* Click logic --------------------------------------------------- */
-function onClick(card){
-  const i=+card.dataset.i;const [lab,fr,port]=card.children;
-  if(revelado&&i!==portIdx)return location.reload();
-  if(!revelado&&i===portIdx){
+/* click logic ---------------------------------------------------- */
+function clicked(card){
+  const i=+card.dataset.i;
+  const [lab,fr,port]=card.children;
+  if(revelado&&i!==PORT){location.reload();return;}
+  if(!revelado&&i===PORT){
     card.innerHTML="";card.append(port);port.style.display="flex";
     [...grid.children].forEach((c,j)=>{if(j!==i){c.children[0].style.display="none";c.children[1].style.display="flex";}});
     cta.style.display="flex";revelado=true;
-  }else if(!revelado){lab.style.display="none";fr.style.display="flex";}
+  }else if(!revelado){
+    lab.style.display="none";fr.style.display="flex";
+  }
 }
 
-/* Botones ------------------------------------------------------- */
+/* buttons ------------------------------------------------------- */
 btnOtro.onclick=()=>location.reload();
-
 btnLibro.onclick=async()=>{
-  btnLibro.disabled=true;cele.style.display="flex";celeMsg.innerHTML='✨ <span class="num">...</span><br>libros físicos abiertos';
-  try{
-    const r=await fetch("https://triggui-api.vercel.app/api/increment");
-    const d=await r.json();
-    celeMsg.innerHTML=✨ <span class="num">${d.total.toLocaleString('es-MX')}</span><br>libros físicos abiertos;
-  }catch{celeMsg.textContent="📚 Error al contar libros";}
+  btnLibro.disabled=true;cele.style.display="flex";
+  celeMsg.innerHTML='✨ <span class="num">...</span><br>libros físicos abiertos';
+  try{const r=await fetch("https://triggui-api.vercel.app/api/increment");const d=await r.json();
+       celeMsg.innerHTML=`✨ <span class="num">${d.total.toLocaleString('es-MX')}</span><br>libros físicos abiertos`; }
+  catch{celeMsg.textContent="📚 Error al contar libros";}
   setTimeout(()=>{cele.style.display="none";cta.style.display="flex";},2300);
 };
 
-/* Init ---------------------------------------------------------- */
+/* FETCH & INIT -------------------------------------------------- */
 (async()=>{
   try{
     const r=await fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json?ts="+Date.now());
     const data=await r.json();
+    if(!data.libros||!data.libros.length) throw new Error("contenido.json vacío");
     libro=data.libros[Math.floor(Math.random()*data.libros.length)];
-    portIdx=Math.floor(Math.random()*4);
+
+    /* safety padding de colores */
+    while(libro.colores.length<4) libro.colores.push("#ffffff");
+    while(libro.textColors.length<4) libro.textColors.push("#000000");
+
     render();
-  }catch(e){console.error("Error cargando contenido:",e);}
+  }catch(e){
+    console.error("⚠",e.message);
+    alert("No se pudo cargar el contenido. Intenta más tarde.");
+  }
 })();
 </script>
 </body>
