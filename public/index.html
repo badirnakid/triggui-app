@@ -12,9 +12,9 @@
 html,body{height:100%;font-family:'Archivo',sans-serif;background:#0d0e1a;color:#fff;overflow-y:auto;-webkit-overflow-scrolling:touch}
 
 /* INTRO --------------------------------------------------------- */
-.intro{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);padding:1.8rem 2.8rem;background:#191e32;border-radius:24px;font-family:'Poppins';font-size:1rem;box-shadow:0 0 14px rgba(48,255,228,.32);animation:introHide 2s 1.2s forwards}
+.intro{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);padding:1.8rem 2.8rem;background:#191e32;border-radius:24px;box-shadow:0 0 16px rgba(48,255,228,.32);font-family:'Poppins';font-size:1rem;z-index:120;animation:introHide 2s 1.4s forwards}
 .intro .hl{color:#30ffe4;font-weight:800}
-@keyframes introHide{to{opacity:0;visibility:hidden;transform:translate(-50%,-76%)}}
+@keyframes introHide{to{opacity:0;visibility:hidden;transform:translate(-50%,-78%)}}
 
 /* GRID ---------------------------------------------------------- */
 .grid{position:absolute;inset:5vh 1.5vw;display:grid;gap:1vw}
@@ -22,15 +22,15 @@ html,body{height:100%;font-family:'Archivo',sans-serif;background:#0d0e1a;color:
 @media(orientation:portrait){.grid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr)}}
 
 /* BLOCK --------------------------------------------------------- */
-.block{position:relative;display:flex;align-items:center;justify-content:center;padding:1rem;border-radius:22px;font-weight:700;cursor:pointer;overflow:hidden;background-size:320% 320%;transition:background-position 4s}
+.block{position:relative;display:flex;align-items:center;justify-content:center;padding:1rem;border-radius:22px;font-weight:700;cursor:pointer;background-size:320% 320%;transition:background-position 4s;overflow:hidden}
 .block:hover{background-position:100% 100%}
-.block::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,.18),transparent 65%);mix-blend-mode:overlay;pointer-events:none}
+.block::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,.18),transparent 65%);mix-blend-mode:overlay}
 
-/* LABEL / FRASE ----------------------------------------------- */
+/* LABEL / FRASE ------------------------------------------------- */
 .label{z-index:2;text-align:center;line-height:1.25}
-.frase{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:1rem;text-align:center;line-height:1.25;z-index:2;opacity:0;transition:opacity .3s}
-.block.show-frase .label{opacity:0}
-.block.show-frase .frase{opacity:1}
+.frase{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:1rem;text-align:center;line-height:1.25;z-index:2;opacity:0;transition:opacity .25s}
+.block.show .label{opacity:0}
+.block.show .frase{opacity:1}
 
 /* PORTADA ------------------------------------------------------- */
 .portada{position:absolute;inset:0;display:none;align-items:center;justify-content:center;padding:1rem;text-align:center}
@@ -45,9 +45,9 @@ html,body{height:100%;font-family:'Archivo',sans-serif;background:#0d0e1a;color:
 #fisico{background:#d1ffd9;color:#000}
 
 /* CELEBRACIÓN --------------------------------------------------- */
-.cele{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;z-index:60}
+.cele{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;z-index:110}
 .cele-msg{font-family:'Poppins';font-size:2rem;text-align:center;background:rgba(255,255,255,.05);padding:2rem 3rem;border-radius:20px}
-.num{color:#30ffe4;font-weight:800;font-size:2.6rem}
+.num{color:#30ffe4;font-weight:900;font-size:2.8rem}
 </style>
 </head>
 <body>
@@ -63,22 +63,26 @@ html,body{height:100%;font-family:'Archivo',sans-serif;background:#0d0e1a;color:
 <div class="cele" id="cele"><div class="cele-msg" id="celeMsg">✨ <span class="num">...</span><br>libros físicos abiertos</div></div>
 
 <script>
-/* STATE --------------------------------------------------------- */
-const grid = document.getElementById("grid"),
-      cta  = document.getElementById("cta"),
-      btnOtro = document.getElementById("otro"),
-      btnLibro= document.getElementById("fisico"),
-      cele    = document.getElementById("cele"),
-      celeMsg = document.getElementById("celeMsg");
+/* ELEMENTOS ----------------------------------------------------- */
+const grid      = document.getElementById("grid");
+const cta       = document.getElementById("cta");
+const btnOtro   = document.getElementById("otro");
+const btnLibro  = document.getElementById("fisico");
+const cele      = document.getElementById("cele");
+const celeMsg   = document.getElementById("celeMsg");
 
-let libro=null,PORT=3,revealed=false;
-const emojis=["🚶","❤️","🧠","📚"];
+/* VARS ---------------------------------------------------------- */
+let libro=null;
+let portIdx=Math.floor(Math.random()*4);  // bloque aleatorio para la portada
+let revealed=false;
+const emojis=["🚶","❤️","🧠","✨"];         // 4 emojis genéricos
+const defaultWord="Abrir";                // para el cuarto bloque si faltan palabras
 const isURL=s=>/^https?:\/\//i.test(s||"");
 
-/* gradiente ----------------------------------------------------- */
+/* gradientes ---------------------------------------------------- */
 const grad=(i)=>`linear-gradient(135deg,${libro.colores[i]},${libro.colores[(i+1)%4]})`;
 
-/* build portada ------------------------------------------------- */
+/* PORTADA ------------------------------------------------------- */
 function buildPort(){
   const d=document.createElement("div");d.className="portada";
   if(isURL(libro.portada)){const img=new Image();img.src=libro.portada;d.append(img);}
@@ -90,41 +94,48 @@ function buildPort(){
   return d;
 }
 
-/* render grid --------------------------------------------------- */
+/* RENDER -------------------------------------------------------- */
 function render(){
   grid.innerHTML="";
   for(let i=0;i<4;i++){
-    const card=document.createElement("div");card.className="block";card.dataset.i=i;card.style.background=grad(i);
+    const card=document.createElement("div");
+    card.className="block";card.dataset.i=i;card.style.background=grad(i);
+
     const label=document.createElement("div");label.className="label";
     const frase=document.createElement("div");frase.className="frase";
-    if(i<3){
-      label.textContent=`${emojis[i]} ${libro.palabras[i]}`;
-      label.style.color=libro.textColors[i];
-      frase.textContent=libro.frases[i];frase.style.color=libro.textColors[i];
-    }else{
-      label.textContent=`${emojis[3]} Libro`;label.style.color=libro.textColors[3];
+    const word=i<libro.palabras.length?libro.palabras[i]:defaultWord;
+
+    label.textContent=`${emojis[i]} ${word}`;
+    label.style.color=libro.textColors[i];
+
+    if(i<libro.frases.length){
+      frase.textContent=libro.frases[i];
+      frase.style.color=libro.textColors[i];
     }
+
     const port=buildPort();
-    card.append(label,frase,port);
-    card.onclick=()=>handle(card);
+    if(i===portIdx) card.append(port);      // portada oculta de inicio
+    card.append(label,frase);
+
+    card.onclick=()=>handle(card,i,port);
     grid.append(card);
   }
 }
 
-/* click logic --------------------------------------------------- */
-function handle(card){
-  const i=+card.dataset.i;
-  if(revealed&&i!==PORT){location.reload();return;}
-  if(!revealed&&i===PORT){
-    card.querySelector(".portada").style.display="flex";
-    [...grid.children].forEach((c,j)=>{if(j!==i)c.classList.add("show-frase");});
+/* CLICK --------------------------------------------------------- */
+function handle(card,i,port){
+  if(revealed && i!==portIdx){location.reload();return;}
+
+  if(i===portIdx && !revealed){
+    port.style.display="flex";
+    [...grid.children].forEach((c,j)=>{if(j!==portIdx)c.classList.add("show");});
     cta.style.display="flex";revealed=true;
-  }else if(!revealed&&i<3){
-    card.classList.toggle("show-frase");
+  }else if(i!==portIdx && !revealed){
+    card.classList.toggle("show");
   }
 }
 
-/* buttons ------------------------------------------------------- */
+/* BOTONES ------------------------------------------------------- */
 btnOtro.onclick=()=>location.reload();
 btnLibro.onclick=async()=>{
   btnLibro.disabled=true;cele.style.display="flex";
@@ -142,11 +153,17 @@ btnLibro.onclick=async()=>{
   try{
     const r=await fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json?ts="+Date.now());
     const data=await r.json();
+    if(!data.libros||!data.libros.length)throw new Error("contenido.json vacío");
     libro=data.libros[Math.floor(Math.random()*data.libros.length)];
+
+    /* safety: mínimo 4 colores/textColors */
     while(libro.colores.length<4)libro.colores.push("#ffffff");
     while(libro.textColors.length<4)libro.textColors.push("#000000");
+
     render();
-  }catch(e){alert("No se pudo cargar el contenido.");console.error(e);}
+  }catch(e){
+    console.error(e);alert("No se pudo cargar Triggui. Intenta más tarde.");
+  }
 })();
 </script>
 </body>
