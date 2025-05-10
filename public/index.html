@@ -9,17 +9,16 @@
 <style>
 /* ── RESET ── */
 *,*:before,*:after{margin:0;padding:0;box-sizing:border-box}
-html,body{height:100%;font-family:'Archivo',sans-serif;background:#0e0f1b;color:#fff;-webkit-overflow-scrolling:touch}
+html,body{height:100%;font-family:'Archivo',sans-serif;background:#0e0f1b;color:#fff}
 
-/* ── INTRO (“¿Qué sientes?”) ── */
+/* ── INTRO ── */
 .intro{
   position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
-  padding:1.8rem 2.8rem;background:#191e32;border-radius:24px;
-  font-family:'Poppins';font-size:1.1rem;font-weight:600;text-align:center;
-  box-shadow:0 0 16px rgba(48,255,228,.32);z-index:120;
-  animation:introHide 2.2s 1.2s forwards
+  padding:1.9rem 2.8rem;background:#191e32;border-radius:24px;font-family:'Poppins';
+  font-size:1.15rem;font-weight:600;text-align:center;box-shadow:0 0 16px rgba(48,255,228,.32);z-index:120;
+  animation:introHide 2.2s 1s forwards
 }
-@keyframes introHide{to{opacity:0;visibility:hidden;transform:translate(-50%,-82%)}}
+@keyframes introHide{to{opacity:0;visibility:hidden;transform:translate(-50%,-85%)}}
 
 /* ── GRID ── */
 .grid{position:absolute;inset:5vh 1.5vw;display:grid;gap:1vw}
@@ -41,48 +40,47 @@ html,body{height:100%;font-family:'Archivo',sans-serif;background:#0e0f1b;color:
 .label{z-index:2;font-weight:700;text-align:center}
 .frase{
   position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  padding:1rem;text-align:center;font-size:1.05rem;opacity:0;transition:opacity .25s
+  padding:1rem;text-align:center;font-size:1.15rem;opacity:0;transition:opacity .25s
 }
 .block.show .label{opacity:0}.block.show .frase{opacity:1}
 
 /* ── AURA ── */
 @keyframes aura{0%{transform:scale(.3);opacity:.8}100%{transform:scale(1.4);opacity:0}}
 .reveal-aura::after{
-  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-  background:var(--aura);animation:aura .6s ease-out forwards
+  content:"";position:absolute;inset:0;border-radius:inherit;background:var(--aura);
+  pointer-events:none;animation:aura .6s ease-out forwards
 }
 @media(prefers-reduced-motion:reduce){.reveal-aura::after{animation:none;opacity:0}}
 
 /* ── PORTADA ── */
 .portada{
   position:absolute;inset:0;display:none;flex-direction:column;align-items:center;
-  justify-content:center;padding:1rem;gap:.9rem;text-align:center;
+  justify-content:center;padding:1rem;gap:.85rem;text-align:center;
   animation:pop .55s ease-out forwards
 }
-@keyframes pop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
+@keyframes pop{0%{transform:scale(.82);opacity:0}100%{transform:scale(1);opacity:1}}
 .emoji{
   font-size:clamp(2.3rem,7vw,4rem);
   filter:drop-shadow(0 4px 8px rgba(0,0,0,.35));
   animation:bounce .5s cubic-bezier(.34,1.56,.64,1)
 }
 @keyframes bounce{0%{transform:scale(.6) rotate(-6deg)}60%{transform:scale(1.15) rotate(6deg)}100%{transform:scale(1) rotate(0)}}
-.portada h2{
-  font-size:clamp(1.5rem,5vw,2.7rem);font-weight:800;line-height:1.15;
-  max-width:88%;margin-inline:auto;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.25)
+
+.txt-wrap{
+  display:inline-flex;flex-direction:column;align-items:center;
+  transform-origin:top center;gap:.4rem;
 }
-.portada p{font-size:clamp(.8rem,2.4vw,1.1rem);font-weight:600;opacity:.9}
+.txt-wrap h2{
+  font-size:clamp(1.65rem,5.4vw,2.8rem);font-weight:800;line-height:1.12;max-width:88%;text-align:center
+}
+.txt-wrap p{
+  font-size:.7em;font-weight:600;opacity:.92
+}
 
 /* ── CTA ── */
-.cta{
-  position:fixed;bottom:3vh;left:50%;transform:translateX(-50%);
-  display:none;gap:1rem;z-index:100
-}
-.cta button{
-  border:none;padding:.6rem 1.2rem;border-radius:999px;
-  font-size:.9rem;font-weight:700;cursor:pointer
-}
-#otro{background:#ffd1d1;color:#000}
-#fisico{background:#d1ffd9;color:#000}
+.cta{position:fixed;bottom:3vh;left:50%;transform:translateX(-50%);display:none;gap:1rem;z-index:100}
+.cta button{border:none;padding:.6rem 1.2rem;border-radius:999px;font-size:.9rem;font-weight:700;cursor:pointer}
+#otro{background:#ffd1d1;color:#000}#fisico{background:#d1ffd9;color:#000}
 
 /* ── CELE ── */
 .cele{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;z-index:110}
@@ -103,55 +101,54 @@ html,body{height:100%;font-family:'Archivo',sans-serif;background:#0e0f1b;color:
 <div class="cele" id="cele"><div class="cele-msg" id="celeMsg">✨ <span class="num">...</span><br>libros físicos abiertos</div></div>
 
 <script>
-/* ── references ── */
-const grid = document.getElementById("grid"),
-      cta  = document.getElementById("cta"),
+/* ── refs ── */
+const grid   = document.getElementById("grid"),
+      cta    = document.getElementById("cta"),
       btnNew = document.getElementById("otro"),
       btnPhy = document.getElementById("fisico"),
-      cele = document.getElementById("cele"),
-      celeMsg = document.getElementById("celeMsg");
+      cele   = document.getElementById("cele"),
+      celeMsg= document.getElementById("celeMsg");
 
 /* ── globals ── */
 let libro=null, revealed=false;
-const portIdx = Math.random()*4|0;
-const emojis  = ["🌊","🛡️","🧠","✨","📘","🔮","❤️","🪞"];
-const isURL   = s=>/^https?:\/\//i.test(s||"");
-const grad    = i => `linear-gradient(135deg,${libro.colores[i]},${libro.colores[(i+1)%4]})`;
+const portIdx=Math.floor(Math.random()*4);
+const emojis=["🌊","🛡️","🧠","✨","📘","🔮","❤️","🪞"];
+const isURL=s=>/^https?:\/\//i.test(s||"");
+const grad=i=>`linear-gradient(135deg,${libro.colores[i]},${libro.colores[(i+1)%4]})`;
 
-/* ── ajuste dinámico del título ── */
-function fitTitle(h2){
-  const box = h2.parentElement,
-        MAX_H = 120, MIN_SCALE = .4;
-  let scale = Math.min(
-    box.clientWidth /(h2.scrollWidth+1),
-    MAX_H           /(h2.scrollHeight+1),
+/* Escala wrapper de título+autor */
+function scaleWrap(wrap){
+  const MAX_H=120, MIN_SCALE=.5;
+  const scale=Math.min(
+    wrap.parentElement.clientWidth/(wrap.scrollWidth+1),
+    MAX_H                         /(wrap.scrollHeight+1),
     1
   );
-  if(scale < MIN_SCALE){ scale = MIN_SCALE; }
-  h2.style.transform = `scale(${scale})`;
-  h2.style.transformOrigin = 'top center';
+  wrap.style.transform=`scale(${Math.max(scale,MIN_SCALE)})`;
 }
 
-/* ── portada builder ── */
+/* Build portada */
 function buildPort(i){
-  const wrap = document.createElement("div");wrap.className="portada";
-  const emoji = document.createElement("div");emoji.className="emoji";emoji.textContent=emojis[i%emojis.length];
-  wrap.append(emoji);
+  const wrap=document.createElement("div");wrap.className="portada";
+  const e=document.createElement("div");e.className="emoji";e.textContent=emojis[i%emojis.length];
+  wrap.append(e);
 
-  /* imagen real */
-  if(isURL(libro.portada)){
-    const img=new Image();img.src=libro.portada;img.loading="lazy";
-    wrap.append(img);
-  }
-
-  /* título + autor */
+  /* Text wrapper */
+  const txt=document.createElement("div");txt.className="txt-wrap";
   const h2=document.createElement("h2");h2.textContent=libro.titulo;
   const p=document.createElement("p");p.textContent=libro.autor;
-  wrap.append(h2,p);fitTitle(h2);
+  txt.append(h2,p);wrap.append(txt);
+  scaleWrap(txt);
+
+  /* Si existe imagen real la insertamos arriba del texto */
+  if(isURL(libro.portada)){
+    const img=new Image();img.src=libro.portada;img.loading="lazy";img.style.maxWidth="78%";
+    wrap.insertBefore(img,txt);
+  }
   return wrap;
 }
 
-/* ── render ── */
+/* Render */
 function render(){
   grid.innerHTML="";
   for(let i=0;i<4;i++){
@@ -159,50 +156,43 @@ function render(){
     const label=document.createElement("div");label.className="label";label.textContent=`${emojis[i]} ${libro.palabras[i]}`;
     const frase=document.createElement("div");frase.className="frase";frase.textContent=libro.frases[i];
     const port=buildPort(i);
-    if(i===portIdx) card.append(port);
+    if(i===portIdx)card.append(port);
     card.append(label,frase);
     card.onclick=()=>handleClick(card,i,port,label);
     grid.append(card);
   }
 }
 
-/* ── click logic ── */
+/* Click */
 function handleClick(card,i,port,label){
   if(revealed && i!==portIdx){location.reload();return;}
   if(i===portIdx && !revealed){
-    label.style.display="none";
-    port.style.display="flex";
-    card.classList.add("reveal-aura");
-    card.style.setProperty("--aura",libro.colores[i]);
+    label.style.display="none";port.style.display="flex";
+    card.classList.add("reveal-aura");card.style.setProperty("--aura",libro.colores[i]);
     [...grid.children].forEach((c,j)=>{if(j!==portIdx)c.classList.add("show");});
     cta.style.display="flex";revealed=true;
-  }else if(i!==portIdx && !revealed){
-    card.classList.toggle("show");
-  }
+  }else if(i!==portIdx && !revealed){card.classList.toggle("show");}
 }
 
-/* ── botones ── */
+/* Botones */
 btnNew.onclick=()=>location.reload();
 btnPhy.onclick=async()=>{
   btnPhy.disabled=true;cele.style.display="flex";
   celeMsg.innerHTML='✨ <span class="num">...</span><br>libros físicos abiertos';
   try{
-    const r=await fetch("https://triggui-api.vercel.app/api/increment");
-    const d=await r.json();
+    const d=await fetch("https://triggui-api.vercel.app/api/increment").then(r=>r.json());
     celeMsg.innerHTML=`✨ <span class="num">${d.total.toLocaleString('es-MX')}</span><br>libros físicos abiertos`;
   }catch{celeMsg.textContent="📚 Error al contar libros";}
   setTimeout(()=>{cele.style.display="none";cta.style.display="flex";btnPhy.disabled=false;},2300);
 };
 
-/* ── data ── */
+/* Data */
 (async()=>{
   try{
-    const r=await fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json?ts="+Date.now());
-    libro=(await r.json()).libros[Math.random()*4|0];
+    const data=await fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json?ts="+Date.now()).then(r=>r.json());
+    libro=data.libros[Math.floor(Math.random()*data.libros.length)];
     render();
-  }catch(e){
-    alert("No se pudo cargar Triggui.");console.error(e);
-  }
+  }catch(e){alert("No se pudo cargar Triggui.");console.error(e);}
 })();
 </script>
 </body>
