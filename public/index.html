@@ -12,10 +12,10 @@ html,body{height:100%;font-family:'Archivo',sans-serif;background:#0e0f1b;color:
 
 /* ───────── Intro───────── */
 .intro{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
-       padding:1.8rem 2.8rem;background:#191e32;border-radius:24px;z-index:120;
-       font-family:'Poppins';font-size:1rem;box-shadow:0 0 16px rgba(48,255,228,.32);
+       padding:2rem 2.8rem;background:#191e32;border-radius:24px;z-index:120;
+       font-family:'Poppins';font-size:2rem;text-align:center;
+       box-shadow:0 0 16px rgba(48,255,228,.32);
        animation:introHide 2.2s 1s forwards}
-.intro .hl{color:#30ffe4;font-weight:800}
 @keyframes introHide{to{opacity:0;visibility:hidden;transform:translate(-50%,-80%)}}
 
 /* ───────── Grid───────── */
@@ -53,7 +53,15 @@ html,body{height:100%;font-family:'Archivo',sans-serif;background:#0e0f1b;color:
 /* ───────── CTA───────── */
 .cta{position:fixed;bottom:3vh;left:50%;transform:translateX(-50%);
      display:none;gap:1rem;z-index:100}
-.cta button{border:none;padding:.6rem 1.2rem;border-radius:999px;font-size:.9rem;font-weight:700;cursor:pointer}
+.cta button{
+  border:none;
+  padding:.5rem 1rem;
+  border-radius:999px;
+  font-size:.85rem;
+  font-weight:600;
+  cursor:pointer;
+  font-family:'Archivo',sans-serif;
+}
 #otro{background:#ffd1d1;color:#000}
 #fisico{background:#d1ffd9;color:#000}
 
@@ -67,7 +75,7 @@ html,body{height:100%;font-family:'Archivo',sans-serif;background:#0e0f1b;color:
 </head>
 <body>
 
-<div class="intro"><span class="hl">Elige una palabra.</span> Detente un segundo.</div>
+<div class="intro">¿Qué sientes?</div>
 <div class="grid" id="grid"></div>
 
 <div class="cta" id="cta">
@@ -88,13 +96,12 @@ const emojis=["🌊","🛡️","🧠","✨","📘","🔮","❤️","🪞"];
 
 const grad=i=>`linear-gradient(135deg,${libro.colores[i]},${libro.colores[(i+1)%4]})`;
 
-/* ── Crear portada (imagen o título/autor) ──*/
+/* Crear portada (imagen o título/autor) */
 function buildPort(idx){
   const d=document.createElement("div");d.className="portada";
-  /* gran emoji encabezando */
-  const bigEmoji=document.createElement("div");
-  bigEmoji.className="emoji-big";
+  const bigEmoji=document.createElement("div");bigEmoji.className="emoji-big";
   bigEmoji.textContent=emojis[idx%emojis.length];
+
   if(isURL(libro.portada)){
     d.append(bigEmoji,Object.assign(new Image(),{src:libro.portada,loading:"lazy"}));
   }else{
@@ -105,7 +112,7 @@ function buildPort(idx){
   return d;
 }
 
-/* ── Dibujar 4 bloques ──*/
+/* Dibujar bloques */
 function render(){
   grid.innerHTML="";
   for(let i=0;i<4;i++){
@@ -119,11 +126,10 @@ function render(){
   }
 }
 
-/* ── Lógica de clic ──*/
+/* Clic sobre bloque */
 function click(card,i,port,labelRef){
   if(revealed&&i!==portIdx){location.reload();return;}
   if(i===portIdx&&!revealed){
-    /* quitar palabra para evitar encimarse */
     labelRef.style.display="none";
     port.style.display="flex";
     [...grid.children].forEach((c,j)=>{if(j!==portIdx)c.classList.add("show");});
@@ -135,7 +141,7 @@ function click(card,i,port,labelRef){
 
 btnOtro.onclick=()=>location.reload();
 
-/* ── Botón "Abrí uno físico" ──*/
+/* Botón físico */
 btnLibro.onclick=async()=>{
   btnLibro.disabled=true;cele.style.display="flex";
   celeMsg.innerHTML='✨ <span class="num">...</span><br>libros físicos abiertos';
@@ -147,7 +153,7 @@ btnLibro.onclick=async()=>{
   setTimeout(()=>{cele.style.display="none";cta.style.display="flex";btnLibro.disabled=false;},2300);
 };
 
-/* ── Cargar contenido remoto ──*/
+/* Cargar contenido remoto */
 (async()=>{
   try{
     const r=await fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json?ts="+Date.now());
