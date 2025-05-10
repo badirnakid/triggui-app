@@ -4,139 +4,80 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
 <title>Triggui — Abre un libro físico. Aquí y ahora.</title>
-
-<!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500;800&display=swap" rel="stylesheet"/>
-
 <style>
-/* ───────── RESET & CORE ───────── */
+/* ───────── RESET ───────── */
 *,*:before,*:after{margin:0;padding:0;box-sizing:border-box}
-html,body{
-  height:100%;
-  font-family:'Archivo',sans-serif;
-  background:#0e0f1b;
-  color:#fff;
-  overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
-  user-select:none;
-}
+html,body{height:100%;font-family:'Archivo',sans-serif;background:#0e0f1b;color:#fff;
+          overflow-y:auto;-webkit-overflow-scrolling:touch;user-select:none}
 
 /* ───────── INTRO ───────── */
-.intro{
-  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
-  padding:1.8rem 2.8rem;background:#191e32;border-radius:24px;z-index:120;
-  font-family:'Poppins';font-size:1rem;
-  box-shadow:0 0 16px rgba(48,255,228,.32);
-  animation:introHide 2.2s 1s forwards;
-}
+.intro{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+       padding:1.8rem 2.8rem;background:#191e32;border-radius:24px;z-index:120;
+       font-family:'Poppins';font-size:1rem;box-shadow:0 0 16px rgba(48,255,228,.32);
+       animation:introHide 2.2s 1s forwards}
 .intro .hl{color:#30ffe4;font-weight:800}
 @keyframes introHide{to{opacity:0;visibility:hidden;transform:translate(-50%,-80%)}}
 
 /* ───────── GRID ───────── */
 .grid{position:absolute;inset:5vh 1.5vw;display:grid;gap:1vw}
 @media(orientation:landscape){.grid{grid-template-columns:repeat(4,1fr)}}
-@media(orientation:portrait){
-  .grid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr)}
-}
+@media(orientation:portrait){.grid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr)}}
 
 /* ───────── BLOCKS ───────── */
-.block{
-  position:relative;display:flex;align-items:center;justify-content:center;
-  padding:1rem;border-radius:22px;font-weight:700;cursor:pointer;
-  background-size:320% 320%;transition:background-position 4s;overflow:hidden;
-}
+.block{position:relative;display:flex;align-items:center;justify-content:center;
+       padding:1rem;border-radius:22px;font-weight:700;cursor:pointer;
+       background-size:320% 320%;transition:background-position 4s;overflow:hidden}
 .block:hover{background-position:100% 100%}
-.block::before{
-  content:"";position:absolute;inset:0;border-radius:inherit;
-  background:linear-gradient(180deg,rgba(255,255,255,.18),transparent 65%);
-  mix-blend-mode:overlay;
-}
+.block::before{content:"";position:absolute;inset:0;border-radius:inherit;
+               background:linear-gradient(180deg,rgba(255,255,255,.18),transparent 65%);
+               mix-blend-mode:overlay}
 
 .label{z-index:2;text-align:center}
-.frase{
-  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  padding:1rem;text-align:center;opacity:0;transition:opacity .25s;
-}
-.block.show .label{opacity:0}
-.block.show .frase{opacity:1}
+.frase{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+       padding:1rem;text-align:center;opacity:0;transition:opacity .25s}
+.block.show .label{opacity:0}.block.show .frase{opacity:1}
 
-/* ───────── AURA AL REVELAR ───────── */
-@keyframes auraExpand{
-  0%{transform:scale(.3);opacity:.8}
-  100%{transform:scale(1.3);opacity:0}
-}
-.reveal-aura::after{
-  content:"";position:absolute;inset:0;border-radius:inherit;
-  background:var(--aura,rgba(255,255,255,.35));
-  animation:auraExpand .6s ease-out forwards;pointer-events:none;
-}
-@media(prefers-reduced-motion:reduce){
-  .reveal-aura::after{animation:none;opacity:0}
-}
+/* ───────── AURA ───────── */
+@keyframes auraExpand{0%{transform:scale(.3);opacity:.8}100%{transform:scale(1.3);opacity:0}}
+.reveal-aura::after{content:"";position:absolute;inset:0;border-radius:inherit;
+                    background:var(--aura,rgba(255,255,255,.35));
+                    animation:auraExpand .6s ease-out forwards;pointer-events:none}
+@media(prefers-reduced-motion:reduce){.reveal-aura::after{animation:none;opacity:0}}
 
 /* ───────── PORTADA ───────── */
-.portada{
-  position:absolute;inset:0;display:none;
-  align-items:center;justify-content:center;flex-direction:column;
-  padding:1rem;gap:1rem;text-align:center;animation:pop .6s ease-out forwards;
-}
+.portada{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;
+         justify-content:center;padding:1rem;gap:1rem;text-align:center;
+         animation:pop .6s ease-out forwards}
 @keyframes pop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
-.portada img{
-  max-width:88%;max-height:70%;border-radius:18px;
-  box-shadow:0 12px 32px rgba(0,0,0,.55);
-}
-.emoji-big{
-  font-size:clamp(2.4rem,7vw,4rem);
-  filter:drop-shadow(0 4px 8px rgba(0,0,0,.35));
-  animation:bounce .5s cubic-bezier(.34,1.56,.64,1);
-}
-@keyframes bounce{
-  0%{transform:scale(.6) rotate(-6deg)}
-  60%{transform:scale(1.15) rotate(6deg)}
-  100%{transform:scale(1) rotate(0)}
-}
+.portada img{max-width:88%;max-height:65%;border-radius:18px;box-shadow:0 12px 32px rgba(0,0,0,.55)}
+.emoji-big{font-size:clamp(2.4rem,7vw,4rem);filter:drop-shadow(0 4px 8px rgba(0,0,0,.35));
+           animation:bounce .5s cubic-bezier(.34,1.56,.64,1)}
+@keyframes bounce{0%{transform:scale(.6) rotate(-6deg)}60%{transform:scale(1.15) rotate(6deg)}100%{transform:scale(1) rotate(0)}}
 
 .port-text h2{
-  font-size:clamp(1.6rem,5.5vw,3rem);
-  font-weight:800;line-height:1.15;
+  font-size:clamp(1.6rem,5.5vw,3rem);font-weight:800;line-height:1.15;
   margin-inline:auto;max-width:90%;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  text-rendering:geometricPrecision;
-  -webkit-font-smoothing:antialiased;
-  -webkit-background-clip:text;background-clip:text;color:transparent;
+  color:#fff;-webkit-text-fill-color:#fff;                  /* color de seguridad */
+  text-rendering:geometricPrecision;-webkit-font-smoothing:antialiased;
   text-shadow:0 1px 3px rgba(0,0,0,.25);
+  /* Gradiente overlay mediante mask */
+  background:linear-gradient(90deg,var(--c1),var(--c2)) no-repeat;
+  -webkit-mask-image:linear-gradient(#fff 0 0);mask-image:linear-gradient(#fff 0 0);
+  background-size:200% 100%;animation:titleFlow 8s linear infinite;
 }
-.port-text p{
-  font-size:clamp(.8rem,2.4vw,1.15rem);
-  font-weight:600;opacity:.88;margin-top:.2rem;
-}
-
-/* Fallback si no hay background-clip:text */
-@supports not (-webkit-background-clip:text){
-  .port-text h2{color:#fff;background:none}
-}
+@keyframes titleFlow{from{background-position:0 0}to{background-position:200% 0}}
+.port-text p{font-size:clamp(.8rem,2.4vw,1.15rem);font-weight:600;opacity:.88}
 
 /* ───────── CTA ───────── */
-.cta{
-  position:fixed;bottom:3vh;left:50%;transform:translateX(-50%);
-  display:none;gap:1rem;z-index:100;
-}
-.cta button{
-  border:none;padding:.6rem 1.2rem;border-radius:999px;
-  font-size:.9rem;font-weight:700;cursor:pointer;
-}
-#otro{background:#ffd1d1;color:#000}
-#fisico{background:#d1ffd9;color:#000}
+.cta{position:fixed;bottom:3vh;left:50%;transform:translateX(-50%);display:none;gap:1rem;z-index:100}
+.cta button{border:none;padding:.6rem 1.2rem;border-radius:999px;font-size:.9rem;font-weight:700;cursor:pointer}
+#otro{background:#ffd1d1;color:#000}#fisico{background:#d1ffd9;color:#000}
 
-/* ───────── CELEBRACIÓN ───────── */
-.cele{
-  position:fixed;inset:0;background:rgba(0,0,0,.88);
-  display:none;align-items:center;justify-content:center;z-index:110;
-}
-.cele-msg{
-  font-family:'Poppins';font-size:2rem;text-align:center;
-  background:rgba(255,255,255,.05);padding:2rem 3rem;border-radius:20px;
-}
+/* ───────── CELE ───────── */
+.cele{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;z-index:110}
+.cele-msg{font-family:'Poppins';font-size:2rem;text-align:center;background:rgba(255,255,255,.05);padding:2rem 3rem;border-radius:20px}
 .num{color:#30ffe4;font-weight:900;font-size:2.8rem}
 </style>
 </head>
@@ -150,72 +91,52 @@ html,body{
   <button id="fisico">📖 Abrí uno físico</button>
 </div>
 
-<div class="cele" id="cele">
-  <div class="cele-msg" id="celeMsg">
-    ✨ <span class="num">...</span><br>libros físicos abiertos
-  </div>
-</div>
+<div class="cele" id="cele"><div class="cele-msg" id="celeMsg">✨ <span class="num">...</span><br>libros físicos abiertos</div></div>
 
 <script>
-/* ───────── DOM refs ───────── */
-const grid   = document.getElementById("grid"),
-      cta    = document.getElementById("cta"),
-      btnNew = document.getElementById("otro"),
-      btnPhy = document.getElementById("fisico"),
-      cele   = document.getElementById("cele"),
-      celeMsg= document.getElementById("celeMsg");
+/* ───────── Refs ───────── */
+const grid = document.getElementById("grid"), cta = document.getElementById("cta"),
+      btnOtro = document.getElementById("otro"), btnLibro = document.getElementById("fisico"),
+      cele = document.getElementById("cele"), celeMsg = document.getElementById("celeMsg");
 
 /* ───────── Globals ───────── */
-let libro   = null;
-const portIdx = Math.floor(Math.random()*4);
-let revealed  = false;
+let libro=null, revealed=false;
+const portIdx=Math.floor(Math.random()*4);
+const emojis=["🌊","🛡️","🧠","✨","📘","🔮","❤️","🪞"];
+const isURL=s=>/^https?:\/\//i.test(s||"");
 
-const isURL = s => /^https?:\/\//i.test(s||"");
-const emojis = ["🌊","🛡️","🧠","✨","📘","🔮","❤️","🪞"];
+/* ───────── Helpers ───────── */
+const grad=i=>`linear-gradient(135deg,${libro.colores[i]},${libro.colores[(i+1)%4]})`;
 
-/* Background gradiente por bloque */
-const grad = i => `linear-gradient(135deg,${libro.colores[i]},${libro.colores[(i+1)%4]})`;
-
-/* ───────── Ajuste de título ───────── */
 function fitTitle(h2,box){
-  const wScale = box.clientWidth /(h2.scrollWidth +1);
-  const hScale = 120               /(h2.scrollHeight+1);
-  const scale  = Math.min(wScale,hScale,1);
+  const wScale=box.clientWidth /(h2.scrollWidth +1);
+  const hScale=120            /(h2.scrollHeight+1);
+  const scale=Math.min(wScale,hScale,1);
   if(scale<1){
-    h2.style.transform = `scale(${scale})`;
-    h2.style.transformOrigin = 'top center';
+    h2.style.transform=`scale(${scale})`;
+    h2.style.transformOrigin='top center';
   }
 }
 
-/* ───────── Construir portada ───────── */
+/* ───────── Portada ───────── */
 function buildPort(idx){
-  const d = document.createElement("div");
-  d.className = "portada";
+  const d=document.createElement("div");d.className="portada";
+  const bigE=document.createElement("div");bigE.className="emoji-big";bigE.textContent=emojis[idx%emojis.length];
 
-  /* Emoji */
-  const bigEmoji = document.createElement("div");
-  bigEmoji.className = "emoji-big";
-  bigEmoji.textContent = emojis[idx % emojis.length];
+  const box=document.createElement("div");box.className="port-text";
+  const h2=document.createElement("h2");h2.textContent=libro.titulo;
+  h2.style.setProperty('--c1',libro.colores[0]);
+  h2.style.setProperty('--c2',libro.colores[1]);
+  const p=document.createElement("p");p.textContent=libro.autor;
 
-  if(isURL(libro.portada)){          /* Imagen existente */
-    const img = new Image();
-    img.loading = "lazy";
-    img.src = libro.portada;
-    d.append(bigEmoji,img);
-  }else{                             /* Título + autor */
-    const box = document.createElement("div");
-    box.className = "port-text";
+  box.append(h2,p);
+  fitTitle(h2,box);
 
-    const h2 = document.createElement("h2");
-    h2.textContent = libro.titulo;
-    h2.style.backgroundImage = `linear-gradient(90deg,${libro.colores[0]},${libro.colores[1]})`;
-
-    const p  = document.createElement("p");
-    p.textContent = libro.autor;
-
-    box.append(h2,p);
-    d.append(bigEmoji,box);
-    fitTitle(h2,box);
+  if(isURL(libro.portada)){
+    const img=Object.assign(new Image(),{src:libro.portada,loading:"lazy"});
+    d.append(bigE,img,box);
+  }else{
+    d.append(bigE,box);             /* si no hay imagen, solo texto */
   }
   return d;
 }
@@ -224,35 +145,21 @@ function buildPort(idx){
 function render(){
   grid.innerHTML="";
   for(let i=0;i<4;i++){
-    const card = document.createElement("div");
-    card.className = "block";
-    card.style.background = grad(i);
-
-    const label = document.createElement("div");
-    label.className = "label";
-    label.style.color = libro.textColors?.[i] || "#fff";
-    label.textContent = `${emojis[i%emojis.length]} ${libro.palabras[i]}`;
-
-    const frase = document.createElement("div");
-    frase.className = "frase";
-    frase.style.color = libro.textColors?.[i] || "#fff";
-    frase.textContent = libro.frases[i];
-
-    const port = buildPort(i);
-    if(i===portIdx) card.append(port);
+    const card=document.createElement("div");card.className="block";card.style.background=grad(i);
+    const label=document.createElement("div");label.className="label";label.textContent=`${emojis[i]} ${libro.palabras[i]}`;
+    const frase=document.createElement("div");frase.className="frase";frase.textContent=libro.frases[i];
+    const port=buildPort(i);
+    if(i===portIdx)card.append(port);
     card.append(label,frase);
-
-    card.onclick = () => handleClick(card,i,port,label);
+    card.onclick=()=>click(card,i,port,label);
     grid.append(card);
   }
 }
 
 /* ───────── Interacción ───────── */
-function handleClick(card,i,port,label){
-  if(revealed && i!==portIdx){
-    location.reload();return;
-  }
-  if(i===portIdx && !revealed){
+function click(card,i,port,label){
+  if(revealed&&i!==portIdx){location.reload();return;}
+  if(i===portIdx&&!revealed){
     label.style.display="none";
     port.style.display="flex";
     card.classList.add("reveal-aura");
@@ -260,42 +167,33 @@ function handleClick(card,i,port,label){
     [...grid.children].forEach((c,j)=>{if(j!==portIdx)c.classList.add("show");});
     cta.style.display="flex";
     revealed=true;
-  }else if(i!==portIdx && !revealed){
+  }else if(i!==portIdx&&!revealed){
     card.classList.toggle("show");
   }
 }
 
 /* ───────── Botones ───────── */
-btnNew.onclick = () => location.reload();
+btnOtro.onclick=()=>location.reload();
 
-btnPhy.onclick = async()=>{
-  btnPhy.disabled = true;
-  cele.style.display="flex";
-  celeMsg.innerHTML = '✨ <span class="num">...</span><br>libros físicos abiertos';
+btnLibro.onclick=async()=>{
+  btnLibro.disabled=true;cele.style.display="flex";
+  celeMsg.innerHTML='✨ <span class="num">...</span><br>libros físicos abiertos';
   try{
-    const r = await fetch("https://triggui-api.vercel.app/api/increment");
-    const d = await r.json();
-    celeMsg.innerHTML = `✨ <span class="num">${d.total.toLocaleString('es-MX')}</span><br>libros físicos abiertos`;
-  }catch{
-    celeMsg.textContent = "📚 Error al contar libros";
-  }
-  setTimeout(()=>{
-    cele.style.display="none";
-    cta.style.display="flex";
-    btnPhy.disabled=false;
-  },2300);
+    const r=await fetch("https://triggui-api.vercel.app/api/increment");
+    const d=await r.json();
+    celeMsg.innerHTML=`✨ <span class="num">${d.total.toLocaleString('es-MX')}</span><br>libros físicos abiertos`;
+  }catch{celeMsg.textContent="📚 Error al contar libros";}
+  setTimeout(()=>{cele.style.display="none";cta.style.display="flex";btnLibro.disabled=false;},2300);
 };
 
 /* ───────── Cargar contenido ───────── */
 (async()=>{
   try{
-    const r  = await fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json?ts="+Date.now());
-    const data = await r.json();
-    libro = data.libros[Math.floor(Math.random()*data.libros.length)];
+    const r=await fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json?ts="+Date.now());
+    const data=await r.json();
+    libro=data.libros[Math.floor(Math.random()*data.libros.length)];
     render();
-  }catch(e){
-    alert("No se pudo cargar Triggui.");console.error(e);
-  }
+  }catch(e){alert("No se pudo cargar Triggui.");console.error(e);}
 })();
 </script>
 </body>
