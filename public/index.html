@@ -7,15 +7,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500;800&display=swap" rel="stylesheet"/>
 <style>
 *,*:before,*:after{margin:0;padding:0;box-sizing:border-box}
-html,body{height:100%;font-family:'Archivo',sans-serif;background:#0e0f1b;color:#fff;
-          overflow-y:auto;-webkit-overflow-scrolling:touch;user-select:none}
+html,body{height:100%;font-family:'Archivo',sans-serif;background:#0e0f1b;color:#fff;-webkit-overflow-scrolling:touch}
 
 /* ───────── Intro───────── */
-.intro{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
-       padding:2rem 2.8rem;background:#191e32;border-radius:24px;z-index:120;
-       font-family:'Poppins';font-size:2rem;text-align:center;
-       box-shadow:0 0 16px rgba(48,255,228,.32);
-       animation:introHide 2.2s 1s forwards}
+.intro{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  padding:2.2rem 2.8rem;background:#191e32;border-radius:24px;z-index:120;
+  font-family:'Poppins';font-size:2rem;font-weight:700;text-align:center;
+  box-shadow:0 0 16px rgba(48,255,228,.32);
+  animation:introHide 2.2s 1s forwards;
+}
 @keyframes introHide{to{opacity:0;visibility:hidden;transform:translate(-50%,-80%)}}
 
 /* ───────── Grid───────── */
@@ -50,20 +51,41 @@ html,body{height:100%;font-family:'Archivo',sans-serif;background:#0e0f1b;color:
               text-shadow:0 2px 6px rgba(0,0,0,.35)}
 .port-text p{font-size:clamp(.85rem,2.4vw,1.15rem);font-weight:600;opacity:.9;margin-top:.25rem}
 
-/* ───────── CTA───────── */
-.cta{position:fixed;bottom:3vh;left:50%;transform:translateX(-50%);
-     display:none;gap:1rem;z-index:100}
+/* ───────── CTA actualizada───────── */
+.cta{
+  position:fixed;bottom:3vh;left:50%;transform:translateX(-50%);
+  display:none;gap:1rem;z-index:100;
+}
 .cta button{
   border:none;
-  padding:.5rem 1rem;
+  padding:.55rem 1.15rem;
   border-radius:999px;
   font-size:.85rem;
   font-weight:600;
-  cursor:pointer;
   font-family:'Archivo',sans-serif;
+  cursor:pointer;
+  transition:all 0.25s ease;
+  box-shadow:0 4px 12px rgba(0,0,0,0.12);
+  letter-spacing:0.3px;
 }
-#otro{background:#ffd1d1;color:#000}
-#fisico{background:#d1ffd9;color:#000}
+
+/* colores vibrantes */
+#otro{
+  background:linear-gradient(135deg, #5fbfff, #1e90ff);
+  color:#fff;
+}
+#otro:hover{
+  filter:brightness(1.15);
+  transform:translateY(-1px);
+}
+#fisico{
+  background:linear-gradient(135deg, #b2f8c8, #42d97c);
+  color:#0c2d1b;
+}
+#fisico:hover{
+  filter:brightness(1.12);
+  transform:translateY(-1px);
+}
 
 /* ───────── Celebración───────── */
 .cele{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;
@@ -79,8 +101,8 @@ html,body{height:100%;font-family:'Archivo',sans-serif;background:#0e0f1b;color:
 <div class="grid" id="grid"></div>
 
 <div class="cta" id="cta">
-  <button id="otro">🎲 Otro digital</button>
-  <button id="fisico">📖 Abrí uno físico</button>
+  <button id="otro">🎲 Quiero otro digital</button>
+  <button id="fisico">📖 Abrí un libro físico</button>
 </div>
 
 <div class="cele" id="cele"><div class="cele-msg" id="celeMsg">✨ <span class="num">...</span><br>libros físicos abiertos</div></div>
@@ -96,12 +118,11 @@ const emojis=["🌊","🛡️","🧠","✨","📘","🔮","❤️","🪞"];
 
 const grad=i=>`linear-gradient(135deg,${libro.colores[i]},${libro.colores[(i+1)%4]})`;
 
-/* Crear portada (imagen o título/autor) */
 function buildPort(idx){
   const d=document.createElement("div");d.className="portada";
-  const bigEmoji=document.createElement("div");bigEmoji.className="emoji-big";
+  const bigEmoji=document.createElement("div");
+  bigEmoji.className="emoji-big";
   bigEmoji.textContent=emojis[idx%emojis.length];
-
   if(isURL(libro.portada)){
     d.append(bigEmoji,Object.assign(new Image(),{src:libro.portada,loading:"lazy"}));
   }else{
@@ -112,7 +133,6 @@ function buildPort(idx){
   return d;
 }
 
-/* Dibujar bloques */
 function render(){
   grid.innerHTML="";
   for(let i=0;i<4;i++){
@@ -126,7 +146,6 @@ function render(){
   }
 }
 
-/* Clic sobre bloque */
 function click(card,i,port,labelRef){
   if(revealed&&i!==portIdx){location.reload();return;}
   if(i===portIdx&&!revealed){
@@ -141,7 +160,6 @@ function click(card,i,port,labelRef){
 
 btnOtro.onclick=()=>location.reload();
 
-/* Botón físico */
 btnLibro.onclick=async()=>{
   btnLibro.disabled=true;cele.style.display="flex";
   celeMsg.innerHTML='✨ <span class="num">...</span><br>libros físicos abiertos';
@@ -153,7 +171,6 @@ btnLibro.onclick=async()=>{
   setTimeout(()=>{cele.style.display="none";cta.style.display="flex";btnLibro.disabled=false;},2300);
 };
 
-/* Cargar contenido remoto */
 (async()=>{
   try{
     const r=await fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json?ts="+Date.now());
