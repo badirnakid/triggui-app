@@ -58,12 +58,26 @@ html,body{height:100%;font-family:'Archivo',sans-serif;background:#0e0f1b;color:
 .emoji-big{font-size:clamp(2.4rem,7vw,4rem);filter:drop-shadow(0 4px 8px rgba(0,0,0,.35));
            animation:bounce .5s cubic-bezier(.34,1.56,.64,1)}
 @keyframes bounce{0%{transform:scale(.6) rotate(-6deg)}60%{transform:scale(1.15) rotate(6deg)}100%{transform:scale(1) rotate(0)}}
-.port-text h2{font-size:clamp(1.6rem,5.5vw,3rem);font-weight:800;line-height:1.15;
-              word-break:break-word;hyphens:auto;margin-inline:auto;max-width:90%;
-              background-image:var(--grad-text);
-              -webkit-background-clip:text;background-clip:text;color:transparent;
-              text-shadow:0 2px 6px rgba(0,0,0,.3)}
-.port-text p{font-size:clamp(.8rem,2.4vw,1.15rem);font-weight:600;opacity:.88;margin-top:.15rem}
+.port-text h2{
+  font-size:clamp(1.6rem,5.5vw,3rem);
+  font-weight:800;
+  line-height:1.15;
+  word-break:break-word;
+  hyphens:auto;
+  margin-inline:auto;
+  max-width:90%;
+  background-image:var(--grad-text);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  /* ELIMINADO: text-shadow: 0 2px 6px rgba(0,0,0,.3); */
+}
+.port-text p{
+  font-size:clamp(.8rem,2.4vw,1.15rem);
+  font-weight:600;
+  opacity:.88;
+  margin-top:.15rem
+}
 
 /* fallback si el navegador no soporta background-clip */
 @supports not (-webkit-background-clip:text){
@@ -110,7 +124,7 @@ const grad=i=>`linear-gradient(135deg,${libro.colores[i]},${libro.colores[(i+1)%
 
 /* ───────── Ajuste dinámico de título largo ───────── */
 function fitTitle(el){
-  const maxH=120;                         /* altura máxima en px antes de escalar */
+  const maxH=120;
   if(el.scrollHeight>maxH){
     const scale=maxH/el.scrollHeight;
     el.style.transform=`scale(${scale}) translateY(-${(1-scale)*50}%)`;
@@ -128,7 +142,6 @@ function buildPort(idx){
     d.append(bigEmoji,Object.assign(new Image(),{src:libro.portada,loading:"lazy"}));
   }else{
     const box=document.createElement("div");box.className="port-text";
-    /* gradiente de texto dinámico */
     const gradText=`linear-gradient(90deg,${libro.colores[0]},${libro.colores[1]})`;
     box.innerHTML=`<h2 style="--grad-text:${JSON.stringify(gradText)}">${libro.titulo}</h2><p>${libro.autor}</p>`;
     d.append(bigEmoji,box);
@@ -156,10 +169,10 @@ function render(){
 function click(card,i,port,labelRef){
   if(revealed&&i!==portIdx){location.reload();return;}
   if(i===portIdx&&!revealed){
-    labelRef.style.display="none";       /* quita la palabra para no empalmar */
+    labelRef.style.display="none";
     port.style.display="flex";
-    card.classList.add('reveal-aura');   /* halo emocional */
-    card.style.setProperty('--aura',libro.colores[i]); /* color aura */
+    card.classList.add('reveal-aura');
+    card.style.setProperty('--aura',libro.colores[i]);
     [...grid.children].forEach((c,j)=>{if(j!==portIdx)c.classList.add("show");});
     cta.style.display="flex";revealed=true;
   }else if(i!==portIdx&&!revealed){
@@ -169,7 +182,6 @@ function click(card,i,port,labelRef){
 
 btnOtro.onclick=()=>location.reload();
 
-/* ───────── “Abrí uno físico” ───────── */
 btnLibro.onclick=async()=>{
   btnLibro.disabled=true;cele.style.display="flex";
   celeMsg.innerHTML='✨ <span class="num">...</span><br>libros físicos abiertos';
@@ -181,7 +193,6 @@ btnLibro.onclick=async()=>{
   setTimeout(()=>{cele.style.display="none";cta.style.display="flex";btnLibro.disabled=false;},2300);
 };
 
-/* ───────── Cargar contenido ───────── */
 (async()=>{
   try{
     const r=await fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json?ts="+Date.now());
