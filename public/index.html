@@ -15,7 +15,6 @@ html, body {
   -webkit-overflow-scrolling: touch;
 }
 
-/* Intro */
 .intro {
   position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
   padding: 2.2rem 2.8rem; background: #191e32; border-radius: 24px; z-index: 120;
@@ -27,7 +26,6 @@ html, body {
   to { opacity: 0; visibility: hidden; transform: translate(-50%, -80%); }
 }
 
-/* Grid */
 .grid {
   position: absolute; inset: 5vh 1.5vw; display: grid; gap: 1vw;
 }
@@ -38,7 +36,6 @@ html, body {
   .grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); }
 }
 
-/* Blocks */
 .block {
   position: relative; display: flex; align-items: center; justify-content: center;
   padding: 1rem; border-radius: 22px; font-weight: 700; cursor: pointer;
@@ -58,47 +55,60 @@ html, body {
 .block.show .label { opacity: 0; }
 .block.show .frase { opacity: 1; }
 
-/* Portada */
+/* ─── PORTADA LIBRO REAL ─── */
 .portada {
   position: absolute; inset: 0; display: none;
-  align-items: center; justify-content: center; flex-direction: column;
-  padding: 1rem; gap: .4rem; text-align: center;
-  animation: pop .6s ease-out forwards; max-height: 90%; overflow: hidden;
+  align-items: flex-start; justify-content: center; flex-direction: column;
+  padding: 2rem 1rem; gap: .8rem; text-align: left;
+  animation: pop .6s ease-out forwards;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.02);
+  box-shadow: inset 0 0 10px rgba(255,255,255,0.03), 0 8px 24px rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.04);
+}
+.portada::before {
+  content: "";
+  position: absolute;
+  top: 12%; bottom: 12%; left: 0;
+  width: 5px;
+  background: linear-gradient(to bottom, #444, #222);
+  border-radius: 2px;
 }
 @keyframes pop {
-  0% { transform: scale(.8); opacity: 0; }
+  0% { transform: scale(.85); opacity: 0; }
   100% { transform: scale(1); opacity: 1; }
 }
-.portada img {
-  max-width: 88%; max-height: 72%; border-radius: 18px;
-  box-shadow: 0 12px 32px rgba(0,0,0,.55);
-}
 
-/* Zoom animación para portada */
-.port-text h2, .port-text p, .emoji-big {
+.port-text h2 {
+  font-size: clamp(2.2rem, 6vw, 3.2rem);
+  font-weight: 800;
+  line-height: 1.15;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  text-shadow: 0 2px 6px rgba(0,0,0,.35);
+  animation: settle 0.6s ease-out forwards;
+  opacity: 0;
+}
+.port-text p {
+  font-size: clamp(1.2rem, 4vw, 1.8rem);
+  font-style: italic;
+  font-weight: 400;
+  opacity: .85;
+  margin-top: .25rem;
+  animation: settle 0.6s ease-out forwards;
+  opacity: 0;
+}
+.emoji-big {
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,.3));
   animation: settle 0.6s ease-out forwards;
   opacity: 0;
 }
 @keyframes settle {
-  0%   { transform: scale(1.25); opacity: 0; }
-  100% { transform: scale(1);    opacity: 1; }
+  0% { transform: scale(1.2); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
-.port-text h2 {
-  font-size: clamp(2.8rem, 7vw, 4rem);
-  font-weight: 800; line-height: 1.15;
-  text-shadow: 0 2px 6px rgba(0,0,0,.35);
-}
-.port-text p {
-  font-size: clamp(1.5rem, 4vw, 2.2rem);
-  font-weight: 600; opacity: .9; margin-top: .3rem;
-}
-.emoji-big {
-  font-size: clamp(1.6rem, 5vw, 2.8rem);
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,.3));
-}
-
-/* CTA */
 .cta {
   position: fixed; bottom: 3vh; left: 50%; transform: translateX(-50%);
   display: none; gap: 1rem; z-index: 100;
@@ -115,7 +125,6 @@ html, body {
   filter: brightness(1.15); transform: translateY(-1px);
 }
 
-/* Celebración */
 .cele {
   position: fixed; inset: 0; background: rgba(0,0,0,.88);
   display: none; align-items: center; justify-content: center; z-index: 110;
@@ -153,18 +162,6 @@ const emojis = ["🌊", "🛡️", "🧠", "✨", "📘", "🔮", "❤️", "�
 const isURL = s => /^https?:\/\//i.test(s || "");
 const grad = i => `linear-gradient(135deg,${libro.colores[i]},${libro.colores[(i + 1) % 4]})`;
 
-function adjustScale(wrap) {
-  const parent = wrap.closest(".portada");
-  if (!parent) return;
-  const available = parent.clientHeight - 40;
-  let scale = 1;
-  wrap.style.transform = "scale(1)";
-  while (wrap.scrollHeight > available && scale > 0.55) {
-    scale -= 0.02;
-    wrap.style.transform = `scale(${scale})`;
-  }
-}
-
 function buildPort(i) {
   const d = document.createElement("div");
   d.className = "portada";
@@ -187,7 +184,6 @@ function buildPort(i) {
     d.append(Object.assign(new Image(), { src: libro.portada, loading: "lazy" }));
   } else {
     d.append(wrap);
-    setTimeout(() => adjustScale(wrap), 0);
   }
 
   return d;
