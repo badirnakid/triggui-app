@@ -1,13 +1,20 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Triggui — Abre un libro físico. Aquí y ahora.</title>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500;800&display=swap" rel="stylesheet" />
 <style>
-*,*:before,*:after{margin:0;padding:0;box-sizing:border-box}
-html,body{height:100%;font-family:'Archivo',sans-serif;background:#0e0f1b;color:#fff;-webkit-overflow-scrolling:touch;user-select:none;overflow:hidden}
+*, *:before, *:after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  height: 100%;
+  font-family: 'Archivo', sans-serif;
+  background: #0e0f1b;
+  color: #fff;
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+}
 
 /* Intro */
 .intro {
@@ -15,7 +22,7 @@ html,body{height:100%;font-family:'Archivo',sans-serif;background:#0e0f1b;color:
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  padding: 2rem 3rem;
+  padding: 2.2rem 2.8rem;
   background: #191e32;
   border-radius: 24px;
   z-index: 120;
@@ -38,10 +45,10 @@ html,body{height:100%;font-family:'Archivo',sans-serif;background:#0e0f1b;color:
   gap: 1vw;
 }
 @media (orientation: landscape) {
-  .grid { grid-template-columns: repeat(4,1fr); }
+  .grid { grid-template-columns: repeat(4, 1fr); }
 }
 @media (orientation: portrait) {
-  .grid { grid-template-columns: repeat(2,1fr); grid-template-rows: repeat(2,1fr); }
+  .grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); }
 }
 
 /* Blocks */
@@ -99,7 +106,7 @@ html,body{height:100%;font-family:'Archivo',sans-serif;background:#0e0f1b;color:
   100% { transform: scale(1); opacity: 1; }
 }
 .portada-inner {
-  background: rgba(255,255,255,0.035);
+  background: rgba(255,255,255,0.03);
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 18px;
   padding: 1.5rem;
@@ -113,7 +120,7 @@ html,body{height:100%;font-family:'Archivo',sans-serif;background:#0e0f1b;color:
   gap: .6rem;
 }
 .portada h2 {
-  font-size: clamp(1.8rem, 5vw, 2.6rem);
+  font-size: clamp(1.9rem, 5.5vw, 2.6rem);
   font-weight: 800;
   line-height: 1.2;
   word-break: break-word;
@@ -121,7 +128,7 @@ html,body{height:100%;font-family:'Archivo',sans-serif;background:#0e0f1b;color:
   text-shadow: 0 1px 4px rgba(0,0,0,0.4);
 }
 .portada p {
-  font-size: clamp(1.1rem, 2.8vw, 1.5rem);
+  font-size: clamp(1.1rem, 3.2vw, 1.45rem);
   font-weight: 600;
   opacity: .9;
 }
@@ -134,11 +141,11 @@ html,body{height:100%;font-family:'Archivo',sans-serif;background:#0e0f1b;color:
 /* CTA */
 .cta {
   position: fixed;
-  bottom: 3vh;
+  bottom: 2.8vh;
   left: 50%;
   transform: translateX(-50%);
   display: none;
-  gap: 1rem;
+  gap: 1.2rem;
   z-index: 100;
 }
 .cta button {
@@ -175,7 +182,7 @@ html,body{height:100%;font-family:'Archivo',sans-serif;background:#0e0f1b;color:
 </head>
 <body>
 
-<div class="intro"><span class="hl">¿Qué sientes?</span></div>
+<div class="intro">¿Qué sientes?</div>
 <div class="grid" id="grid"></div>
 
 <div class="cta" id="cta">
@@ -196,9 +203,9 @@ const grid = document.getElementById("grid"),
 let libro = null;
 const portIdx = Math.floor(Math.random() * 4);
 let revealed = false;
-const emojis = ["🌊", "🛡️", "🧠", "✨", "📘", "🔮", "❤️", "🪞"];
+const emojis = ["🌊","🛡️","🧠","✨","📘","🔮","❤️","🪞"];
 const isURL = s => /^https?:\/\//i.test(s || "");
-const grad = i => `linear-gradient(135deg,${libro.colores[i]},${libro.colores[(i + 1) % 4]})`;
+const grad = i => `linear-gradient(135deg,${libro.colores[i]},${libro.colores[(i+1)%4]})`;
 
 function buildPort(i) {
   const d = document.createElement("div");
