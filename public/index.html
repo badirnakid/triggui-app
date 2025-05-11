@@ -47,7 +47,6 @@ html,body{height:100%;font-family:'Archivo',sans-serif;background:#0e0f1b;color:
              box-shadow:0 12px 32px rgba(0,0,0,.55)}
 .emoji-big{font-size:clamp(2.6rem,7vw,4rem);filter:drop-shadow(0 4px 8px rgba(0,0,0,.3))}
 
-/* Ajuste dinámico */
 .port-text-wrap {
   display: flex;
   flex-direction: column;
@@ -118,10 +117,12 @@ const isURL=s=>/^https?:\/\//i.test(s||"");
 const emojis=["🌊","🛡️","🧠","✨","📘","🔮","❤️","🪞"];
 const grad=i=>`linear-gradient(135deg,${libro.colores[i]},${libro.colores[(i+1)%4]})`;
 
-function adjustScale(wrap, maxHeight = 180){
+function adjustScale(wrap){
+  const container = wrap.parentElement;
+  const available = container.clientHeight * 0.82;
   let scale = 1;
   wrap.style.transform = `scale(1)`;
-  const check = () => wrap.getBoundingClientRect().height > maxHeight;
+  const check = () => wrap.scrollHeight > available;
   while (check() && scale > 0.55) {
     scale -= 0.02;
     wrap.style.transform = `scale(${scale})`;
@@ -141,7 +142,7 @@ function buildPort(idx){
     box.innerHTML=`<h2>${libro.titulo}</h2><p>${libro.autor}</p>`;
     wrap.appendChild(box);
     d.append(bigEmoji,wrap);
-    setTimeout(() => adjustScale(wrap, 180), 0);
+    setTimeout(() => adjustScale(wrap), 0);
   }
   return d;
 }
