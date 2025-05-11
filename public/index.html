@@ -74,14 +74,16 @@ html, body {
   box-shadow: 0 12px 32px rgba(0,0,0,.55);
 }
 
+/* Zoom animación para portada */
 .port-text h2, .port-text p, .emoji-big {
-  animation: zoomIn 0.6s ease-out forwards;
+  animation: settle 0.6s ease-out forwards;
   opacity: 0;
 }
-@keyframes zoomIn {
-  0% { transform: scale(1.2); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
+@keyframes settle {
+  0%   { transform: scale(1.25); opacity: 0; }
+  100% { transform: scale(1);    opacity: 1; }
 }
+
 .port-text h2 {
   font-size: clamp(2.8rem, 7vw, 4rem);
   font-weight: 800; line-height: 1.15;
