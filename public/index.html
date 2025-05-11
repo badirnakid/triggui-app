@@ -1,145 +1,78 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" />
 <title>Triggui — Abre un libro físico. Aquí y ahora.</title>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500;800&display=swap" rel="stylesheet" />
 <style>
-*, *:before, *:after { margin: 0; padding: 0; box-sizing: border-box; }
-html, body {
-  height: 100%;
-  font-family: 'Archivo', sans-serif;
-  background: #0e0f1b;
-  color: #fff;
-  -webkit-overflow-scrolling: touch;
-}
+*,*:before,*:after{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;font-family:'Archivo',sans-serif;background:#0e0f1b;color:#fff;-webkit-overflow-scrolling:touch}
 
 /* Intro */
-.intro {
-  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  padding: 2.2rem 2.8rem; background: #191e32; border-radius: 24px; z-index: 120;
-  font-family: 'Poppins'; font-size: 2rem; font-weight: 700; text-align: center;
-  box-shadow: 0 0 16px rgba(48, 255, 228, .32);
-  animation: introHide 2.2s 1s forwards;
-}
-@keyframes introHide {
-  to { opacity: 0; visibility: hidden; transform: translate(-50%, -80%); }
-}
+.intro{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  padding:2.2rem 2.8rem;background:#191e32;border-radius:24px;z-index:120;
+  font-family:'Poppins';font-size:2rem;font-weight:700;text-align:center;
+  box-shadow:0 0 16px rgba(48,255,228,.32);animation:introHide 2.2s 1s forwards}
+@keyframes introHide{to{opacity:0;visibility:hidden;transform:translate(-50%,-80%)}}
 
 /* Grid */
-.grid {
-  position: absolute; inset: 5vh 1.5vw; display: grid; gap: 1vw;
-}
-@media (orientation: landscape) {
-  .grid { grid-template-columns: repeat(4, 1fr); }
-}
-@media (orientation: portrait) {
-  .grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); }
-}
+.grid{position:absolute;inset:5vh 1.5vw;display:grid;gap:1vw}
+@media(orientation:landscape){.grid{grid-template-columns:repeat(4,1fr)}}
+@media(orientation:portrait){.grid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr)}}
 
 /* Blocks */
-.block {
-  position: relative; display: flex; align-items: center; justify-content: center;
-  padding: 1rem; border-radius: 22px; font-weight: 700; cursor: pointer;
-  background-size: 320% 320%; transition: background-position 4s; overflow: hidden;
-}
-.block:hover { background-position: 100% 100%; }
-.block::before {
-  content: ""; position: absolute; inset: 0; border-radius: inherit;
-  background: linear-gradient(180deg, rgba(255,255,255,.18), transparent 65%);
-  mix-blend-mode: overlay;
-}
-.label { z-index: 2; text-align: center; }
-.frase {
-  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-  padding: 1rem; text-align: center; opacity: 0; transition: opacity .25s;
-}
-.block.show .label { opacity: 0; }
-.block.show .frase { opacity: 1; }
+.block{position:relative;display:flex;align-items:center;justify-content:center;
+  padding:1rem;border-radius:22px;font-weight:700;cursor:pointer;
+  background-size:320% 320%;transition:background-position 4s;overflow:hidden}
+.block:hover{background-position:100% 100%}
+.block::before{content:"";position:absolute;inset:0;border-radius:inherit;
+  background:linear-gradient(180deg,rgba(255,255,255,.18),transparent 65%);
+  mix-blend-mode:overlay}
+.label{z-index:2;text-align:center}
+.frase{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  padding:1rem;text-align:center;opacity:0;transition:opacity .25s}
+.block.show .label{opacity:0}
+.block.show .frase{opacity:1}
 
 /* Portada */
-.portada {
-  position: absolute; inset: 0; display: none;
-  align-items: center; justify-content: center; flex-direction: column;
-  padding: 1rem; gap: .95rem; text-align: center;
-  animation: pop .6s ease-out forwards;
-  max-height: 90%;
-  overflow: hidden;
-}
-@keyframes pop {
-  0% { transform: scale(.8); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
-}
-.portada img {
-  max-width: 88%; max-height: 72%; border-radius: 18px;
-  box-shadow: 0 12px 32px rgba(0,0,0,.55);
-}
-.emoji-big {
-  font-size: clamp(2.6rem, 7vw, 4rem);
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,.3));
-}
+.portada{position:absolute;inset:0;display:none;align-items:center;justify-content:center;
+  flex-direction:column;padding:1rem;gap:.95rem;text-align:center;
+  animation:pop .6s ease-out forwards;max-height:90%;overflow:hidden}
+@keyframes pop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
+.portada img{max-width:88%;max-height:72%;border-radius:18px;
+  box-shadow:0 12px 32px rgba(0,0,0,.55)}
+.emoji-big{font-size:clamp(2.6rem,7vw,4rem);filter:drop-shadow(0 4px 8px rgba(0,0,0,.3))}
 
 /* Escalado inteligente */
-.port-text-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transform-origin: top center;
+.port-text-wrap{
+  display:flex;flex-direction:column;align-items:center;
+  transform-origin:top center;transition:transform .3s ease;
+  will-change:transform;
 }
-.port-text h2 {
-  font-size: clamp(1.9rem, 5vw, 3rem);
-  font-weight: 800;
-  line-height: 1.15;
-  text-align: center;
-  text-shadow: 0 2px 6px rgba(0,0,0,.35);
-}
-.port-text p {
-  font-size: clamp(.85rem, 2.4vw, 1.15rem);
-  font-weight: 600;
-  opacity: .9;
-  margin-top: .25rem;
-  text-align: center;
-}
+.port-text h2{font-size:clamp(1.9rem,5vw,3rem);font-weight:800;line-height:1.15;
+  text-shadow:0 2px 6px rgba(0,0,0,.35);text-align:center}
+.port-text p{font-size:clamp(.85rem,2.4vw,1.15rem);font-weight:600;opacity:.9;
+  margin-top:.25rem;text-align:center}
 
 /* CTA */
-.cta {
-  position: fixed; bottom: 3vh; left: 50%; transform: translateX(-50%);
-  display: none; gap: 1rem; z-index: 100;
-}
-.cta button {
-  border: none; padding: .55rem 1.15rem; border-radius: 999px;
-  font-size: .85rem; font-weight: 600; font-family: 'Archivo', sans-serif;
-  cursor: pointer; transition: all 0.25s ease;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.12); letter-spacing: 0.3px;
-}
-#otro {
-  background: linear-gradient(135deg, #5fbfff, #1e90ff);
-  color: #fff;
-}
-#otro:hover {
-  filter: brightness(1.15);
-  transform: translateY(-1px);
-}
-#fisico {
-  background: linear-gradient(135deg, #b2f8c8, #42d97c);
-  color: #0c2d1b;
-}
-#fisico:hover {
-  filter: brightness(1.12);
-  transform: translateY(-1px);
-}
+.cta{position:fixed;bottom:3vh;left:50%;transform:translateX(-50%);
+  display:none;gap:1rem;z-index:100}
+.cta button{border:none;padding:.55rem 1.15rem;border-radius:999px;
+  font-size:.85rem;font-weight:600;font-family:'Archivo',sans-serif;
+  cursor:pointer;transition:all 0.25s ease;
+  box-shadow:0 4px 12px rgba(0,0,0,0.12);letter-spacing:0.3px}
+#otro{background:linear-gradient(135deg, #5fbfff, #1e90ff);color:#fff}
+#otro:hover{filter:brightness(1.15);transform:translateY(-1px)}
+#fisico{background:linear-gradient(135deg, #b2f8c8, #42d97c);color:#0c2d1b}
+#fisico:hover{filter:brightness(1.12);transform:translateY(-1px)}
 
 /* Celebración */
-.cele {
-  position: fixed; inset: 0; background: rgba(0,0,0,.88);
-  display: none; align-items: center; justify-content: center; z-index: 110;
-}
-.cele-msg {
-  font-family: 'Poppins'; font-size: 2rem; text-align: center;
-  background: rgba(255,255,255,.05); padding: 2rem 3rem; border-radius: 20px;
-}
-.num { color: #30ffe4; font-weight: 900; font-size: 2.8rem; }
+.cele{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;
+  align-items:center;justify-content:center;z-index:110}
+.cele-msg{font-family:'Poppins';font-size:2rem;text-align:center;
+  background:rgba(255,255,255,.05);padding:2rem 3rem;border-radius:20px}
+.num{color:#30ffe4;font-weight:900;font-size:2.8rem}
 </style>
 </head>
 <body>
@@ -155,106 +88,93 @@ html, body {
 <div class="cele" id="cele"><div class="cele-msg" id="celeMsg">✨ <span class="num">...</span><br>libros físicos abiertos</div></div>
 
 <script>
-const grid = document.getElementById("grid"), cta = document.getElementById("cta"),
-      btnOtro = document.getElementById("otro"), btnLibro = document.getElementById("fisico"),
-      cele = document.getElementById("cele"), celeMsg = document.getElementById("celeMsg");
+const grid=document.getElementById("grid"),cta=document.getElementById("cta"),
+      btnOtro=document.getElementById("otro"),btnLibro=document.getElementById("fisico"),
+      cele=document.getElementById("cele"),celeMsg=document.getElementById("celeMsg");
 
-let libro = null; const portIdx = Math.floor(Math.random() * 4); let revealed = false;
-const isURL = s => /^https?:\/\//i.test(s || "");
-const emojis = ["🌊", "🛡️", "🧠", "✨", "📘", "🔮", "❤️", "🪞"];
-const grad = i => linear-gradient(135deg,${libro.colores[i]},${libro.colores[(i + 1) % 4]});
+let libro=null;const portIdx=Math.floor(Math.random()*4);let revealed=false;
+const isURL=s=>/^https?:\/\//i.test(s||"");
+const emojis=["🌊","🛡️","🧠","✨","📘","🔮","❤️","🪞"];
+const grad=i=>`linear-gradient(135deg,${libro.colores[i]},${libro.colores[(i+1)%4]})`;
 
-/* Escalado dinámico perfecto */
+/* Escalado dinámico refinado */
 function adjustScale(wrap){
   const parent = wrap.closest(".portada");
   if (!parent) return;
   const available = parent.clientHeight - 40;
-  let scale = 1;
-  wrap.style.transform = scale(1);
+  let scale = 1.12;
+  wrap.style.transform = `scale(${scale})`;
   const fits = () => wrap.scrollHeight <= available;
   while (!fits() && scale > 0.55) {
     scale -= 0.02;
-    wrap.style.transform = scale(${scale});
+    wrap.style.transform = `scale(${scale})`;
   }
 }
 
 /* Crear portada */
 function buildPort(idx){
-  const d = document.createElement("div"); d.className = "portada";
-  const emoji = document.createElement("div"); emoji.className = "emoji-big";
-  emoji.textContent = emojis[idx % emojis.length];
-
-  if (isURL(libro.portada)){
-    d.append(emoji, Object.assign(new Image(), { src: libro.portada, loading: "lazy" }));
-  } else {
-    const wrap = document.createElement("div"); wrap.className = "port-text-wrap";
-    const box = document.createElement("div"); box.className = "port-text";
-    box.innerHTML = <h2>${libro.titulo}</h2><p>${libro.autor}</p>;
+  const d=document.createElement("div");d.className="portada";
+  const bigEmoji=document.createElement("div");bigEmoji.className="emoji-big";
+  bigEmoji.textContent=emojis[idx%emojis.length];
+  if(isURL(libro.portada)){
+    d.append(bigEmoji,Object.assign(new Image(),{src:libro.portada,loading:"lazy"}));
+  }else{
+    const wrap=document.createElement("div");wrap.className="port-text-wrap";
+    const box=document.createElement("div");box.className="port-text";
+    box.innerHTML=`<h2>${libro.titulo}</h2><p>${libro.autor}</p>`;
     wrap.appendChild(box);
-    d.append(emoji, wrap);
-    setTimeout(() => adjustScale(wrap), 0);
+    d.append(bigEmoji,wrap);
+    setTimeout(()=>adjustScale(wrap),0);
   }
   return d;
 }
 
 /* Render */
 function render(){
-  grid.innerHTML = "";
-  for (let i = 0; i < 4; i++){
-    const card = document.createElement("div"); card.className = "block"; card.dataset.i = i;
-    card.style.background = grad(i);
-    const label = document.createElement("div"); label.className = "label";
-    label.style.color = libro.textColors?.[i] || "#fff";
-    label.textContent = ${emojis[i % emojis.length]} ${libro.palabras[i]};
-    const frase = document.createElement("div"); frase.className = "frase";
-    frase.style.color = libro.textColors?.[i] || "#fff"; frase.textContent = libro.frases[i];
-    const port = buildPort(i);
-    if (i === portIdx) card.append(port);
-    card.append(label, frase); card.onclick = () => handleClick(card, i, port, label);
+  grid.innerHTML="";
+  for(let i=0;i<4;i++){
+    const card=document.createElement("div");card.className="block";card.dataset.i=i;card.style.background=grad(i);
+    const label=document.createElement("div");label.className="label";label.style.color=libro.textColors?.[i]||"#fff";label.textContent=`${emojis[i%emojis.length]} ${libro.palabras[i]}`;
+    const frase=document.createElement("div");frase.className="frase";frase.style.color=libro.textColors?.[i]||"#fff";frase.textContent=libro.frases[i];
+    const port=buildPort(i);
+    if(i===portIdx) card.append(port);
+    card.append(label,frase);card.onclick=()=>click(card,i,port,label);
     grid.append(card);
   }
 }
 
-function handleClick(card, i, port, label){
-  if (revealed && i !== portIdx) return location.reload();
-  if (i === portIdx && !revealed){
-    label.style.display = "none";
-    port.style.display = "flex";
-    [...grid.children].forEach((c, j) => { if (j !== portIdx) c.classList.add("show"); });
-    cta.style.display = "flex"; revealed = true;
-  } else if (!revealed) {
+function click(card,i,port,labelRef){
+  if(revealed&&i!==portIdx){location.reload();return;}
+  if(i===portIdx&&!revealed){
+    labelRef.style.display="none";
+    port.style.display="flex";
+    [...grid.children].forEach((c,j)=>{if(j!==portIdx)c.classList.add("show");});
+    cta.style.display="flex";revealed=true;
+  }else if(i!==portIdx&&!revealed){
     card.classList.toggle("show");
   }
 }
 
-btnOtro.onclick = () => location.reload();
+btnOtro.onclick=()=>location.reload();
 
-btnLibro.onclick = async () => {
-  btnLibro.disabled = true; cele.style.display = "flex";
-  celeMsg.innerHTML = '✨ <span class="num">...</span><br>libros físicos abiertos';
-  try {
-    const r = await fetch("https://triggui-api.vercel.app/api/increment");
-    const d = await r.json();
-    celeMsg.innerHTML = ✨ <span class="num">${d.total.toLocaleString('es-MX')}</span><br>libros físicos abiertos;
-  } catch {
-    celeMsg.textContent = "📚 Error al contar libros";
-  }
-  setTimeout(() => {
-    cele.style.display = "none";
-    cta.style.display = "flex"; btnLibro.disabled = false;
-  }, 2300);
+btnLibro.onclick=async()=>{
+  btnLibro.disabled=true;cele.style.display="flex";
+  celeMsg.innerHTML='✨ <span class="num">...</span><br>libros físicos abiertos';
+  try{
+    const r=await fetch("https://triggui-api.vercel.app/api/increment");
+    const d=await r.json();
+    celeMsg.innerHTML=`✨ <span class="num">${d.total.toLocaleString('es-MX')}</span><br>libros físicos abiertos`;
+  }catch{celeMsg.textContent="📚 Error al contar libros";}
+  setTimeout(()=>{cele.style.display="none";cta.style.display="flex";btnLibro.disabled=false;},2300);
 };
 
 (async()=>{
-  try {
-    const r = await fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json?ts=" + Date.now());
-    const data = await r.json();
-    libro = data.libros[Math.floor(Math.random() * data.libros.length)];
+  try{
+    const r=await fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json?ts="+Date.now());
+    const data=await r.json();
+    libro=data.libros[Math.floor(Math.random()*data.libros.length)];
     render();
-  } catch(e) {
-    alert("No se pudo cargar Triggui.");
-    console.error(e);
-  }
+  }catch(e){alert("No se pudo cargar Triggui.");console.error(e);}
 })();
 </script>
 </body>
