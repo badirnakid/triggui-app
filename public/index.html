@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Triggui — Abre un libro físico. Aquí y ahora.</title>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500;800&display=swap" rel="stylesheet" />
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html, body {
@@ -15,19 +15,6 @@ html, body {
   -webkit-overflow-scrolling: touch;
 }
 
-/* Intro */
-.intro {
-  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  padding: 2.2rem 2.8rem; background: #191e32; border-radius: 24px; z-index: 120;
-  font-family: 'Poppins'; font-size: 2rem; font-weight: 700; text-align: center;
-  box-shadow: 0 0 16px rgba(48,255,228,.32);
-  animation: introHide 2.2s 1s forwards;
-}
-@keyframes introHide {
-  to { opacity: 0; visibility: hidden; transform: translate(-50%, -80%); }
-}
-
-/* Grid */
 .grid {
   position: absolute; inset: 5vh 1.5vw; display: grid; gap: 1vw;
 }
@@ -38,7 +25,6 @@ html, body {
   .grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); }
 }
 
-/* Blocks */
 .block {
   position: relative; display: flex; align-items: center; justify-content: center;
   padding: 1rem; border-radius: 22px; font-weight: 700; cursor: pointer;
@@ -58,73 +44,50 @@ html, body {
 .block.show .label { opacity: 0; }
 .block.show .frase { opacity: 1; }
 
-/* Portada + borde solo cuando activa */
+/* Portada exterior */
 .portada {
   position: absolute; inset: 0; display: none;
   align-items: center; justify-content: center; flex-direction: column;
-  padding: 1rem; gap: .4rem; text-align: center;
-  animation: pop .6s ease-out forwards; max-height: 90%; overflow: hidden;
-  border-radius: 18px;
-  transition: border 0.3s ease;
-}
-.portada.activa {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.04) inset;
+  animation: pop .6s ease-out forwards;
 }
 @keyframes pop {
-  0% { transform: scale(.8); opacity: 0; }
+  0% { transform: scale(.85); opacity: 0; }
   100% { transform: scale(1); opacity: 1; }
 }
-.portada img {
-  max-width: 88%; max-height: 72%; border-radius: 18px;
-  box-shadow: 0 12px 32px rgba(0,0,0,.55);
+
+/* Contenedor interno con borde editorial */
+.portada-contenido {
+  padding: 2rem;
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  max-width: 90%;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.015);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.05) inset;
+  text-align: center;
 }
-.port-text h2 {
-  font-size: clamp(2.8rem, 7vw, 4rem);
-  font-weight: 800; line-height: 1.15;
-  text-shadow: 0 2px 6px rgba(0,0,0,.35);
+.portada-contenido h2 {
+  font-size: clamp(2.4rem, 6vw, 3.6rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 1rem;
 }
-.port-text p {
-  font-size: clamp(1.5rem, 4vw, 2.2rem);
-  font-weight: 600; opacity: .9; margin-top: .3rem;
+.portada-contenido p {
+  font-size: clamp(1.3rem, 3.5vw, 2rem);
+  font-style: italic;
+  opacity: 0.85;
+  margin-bottom: 0.8rem;
 }
 .emoji-big {
-  font-size: clamp(1.6rem, 5vw, 2.8rem);
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,.3));
+  font-size: 2rem;
+  line-height: 1;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4));
 }
-
-/* CTA */
-.cta {
-  position: fixed; bottom: 3vh; left: 50%; transform: translateX(-50%);
-  display: none; gap: 1rem; z-index: 100;
-}
-.cta button {
-  border: none; padding: .55rem 1.15rem; border-radius: 999px;
-  font-size: .85rem; font-weight: 600; font-family: 'Archivo', sans-serif;
-  cursor: pointer; transition: all 0.25s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-  letter-spacing: 0.3px;
-}
-#otro { background: linear-gradient(135deg, #5fbfff, #1e90ff); color: #fff; }
-#fisico { background: linear-gradient(135deg, #b2f8c8, #42d97c); color: #0c2d1b; }
-.cta button:hover {
-  filter: brightness(1.15); transform: translateY(-1px);
-}
-
-/* Celebración */
-.cele {
-  position: fixed; inset: 0; background: rgba(0,0,0,.88);
-  display: none; align-items: center; justify-content: center; z-index: 110;
-}
-.cele-msg {
-  font-family: 'Poppins'; font-size: 2rem; text-align: center;
-  background: rgba(255,255,255,.05); padding: 2rem 3rem; border-radius: 20px;
-}
-.num { color: #30ffe4; font-weight: 900; font-size: 2.8rem; }
 </style>
 </head>
 <body>
 
-<div class="intro">¿Qué sientes?</div>
 <div class="grid" id="grid"></div>
 
 <div class="cta" id="cta">
@@ -132,7 +95,9 @@ html, body {
   <button id="fisico">📖 Abrí un libro físico</button>
 </div>
 
-<div class="cele" id="cele"><div class="cele-msg" id="celeMsg">✨ <span class="num">...</span><br>libros físicos abiertos</div></div>
+<div class="cele" id="cele">
+  <div class="cele-msg" id="celeMsg">✨ <span class="num">...</span><br>libros físicos abiertos</div>
+</div>
 
 <script>
 const grid = document.getElementById("grid"),
@@ -148,84 +113,65 @@ const emojis = ["🌊", "🛡️", "🧠", "✨", "📘", "🔮", "❤️", "�
 const isURL = s => /^https?:\/\//i.test(s || "");
 const grad = i => `linear-gradient(135deg,${libro.colores[i]},${libro.colores[(i + 1) % 4]})`;
 
-function adjustScale(wrap) {
-  const parent = wrap.closest(".portada");
-  if (!parent) return;
-  const available = parent.clientHeight - 40;
-  let scale = 1;
-  wrap.style.transform = "scale(1)";
-  while (wrap.scrollHeight > available && scale > 0.55) {
-    scale -= 0.02;
-    wrap.style.transform = `scale(${scale})`;
-  }
-}
-
-function buildPort(i) {
+function buildPort(i){
   const d = document.createElement("div");
   d.className = "portada";
 
-  const wrap = document.createElement("div");
-  wrap.className = "port-text-wrap";
+  const contenido = document.createElement("div");
+  contenido.className = "portada-contenido";
 
-  const box = document.createElement("div");
-  box.className = "port-text";
-  box.innerHTML = `<h2>${libro.titulo}</h2><p>${libro.autor}</p>`;
+  const h2 = document.createElement("h2");
+  h2.textContent = libro.titulo;
+
+  const p = document.createElement("p");
+  p.textContent = libro.autor;
 
   const emoji = document.createElement("div");
   emoji.className = "emoji-big";
   emoji.textContent = emojis[i % emojis.length];
 
-  wrap.appendChild(box);
-  wrap.appendChild(emoji);
-
-  if (isURL(libro.portada)) {
-    d.append(Object.assign(new Image(), { src: libro.portada, loading: "lazy" }));
-  } else {
-    d.append(wrap);
-    setTimeout(() => adjustScale(wrap), 0);
-  }
+  contenido.append(h2, p, emoji);
+  d.appendChild(contenido);
 
   return d;
 }
 
-function render() {
+function render(){
   grid.innerHTML = "";
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < 4; i++){
     const card = document.createElement("div");
     card.className = "block";
     card.dataset.i = i;
     card.style.background = grad(i);
 
-    const label = Object.assign(document.createElement("div"), {
-      className: "label",
-      textContent: `${emojis[i % emojis.length]} ${libro.palabras[i]}`,
-      style: `color: ${libro.textColors?.[i] || "#fff"}`
-    });
+    const label = document.createElement("div");
+    label.className = "label";
+    label.style.color = libro.textColors?.[i] || "#fff";
+    label.textContent = `${emojis[i % emojis.length]} ${libro.palabras[i]}`;
 
-    const frase = Object.assign(document.createElement("div"), {
-      className: "frase",
-      textContent: libro.frases[i],
-      style: `color: ${libro.textColors?.[i] || "#fff"}`
-    });
+    const frase = document.createElement("div");
+    frase.className = "frase";
+    frase.style.color = libro.textColors?.[i] || "#fff";
+    frase.textContent = libro.frases[i];
 
     const port = buildPort(i);
     if (i === portIdx) card.append(port);
+
     card.append(label, frase);
     card.onclick = () => handleClick(card, i, port, label);
     grid.append(card);
   }
 }
 
-function handleClick(card, i, port, label) {
+function handleClick(card, i, port, label){
   if (revealed && i !== portIdx) return location.reload();
-  if (i === portIdx && !revealed) {
+  if (i === portIdx && !revealed){
     label.style.display = "none";
     port.style.display = "flex";
-    port.classList.add("activa");
     [...grid.children].forEach((c, j) => j !== portIdx && c.classList.add("show"));
     cta.style.display = "flex";
     revealed = true;
-  } else if (!revealed) {
+  } else if (!revealed){
     card.classList.toggle("show");
   }
 }
