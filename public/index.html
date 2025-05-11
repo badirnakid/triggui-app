@@ -19,7 +19,7 @@ html, body {
 .intro {
   position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
   padding: 2.2rem 2.8rem; background: #191e32; border-radius: 24px; z-index: 120;
-  font-family: 'Poppins', sans-serif; font-size: 2rem; font-weight: 700; text-align: center;
+  font-family: 'Poppins'; font-size: 2rem; font-weight: 700; text-align: center;
   box-shadow: 0 0 16px rgba(48,255,228,.32);
   animation: introHide 2.2s 1s forwards;
 }
@@ -62,7 +62,7 @@ html, body {
 .portada {
   position: absolute; inset: 0; display: none;
   align-items: center; justify-content: center; flex-direction: column;
-  padding: 1rem; gap: .95rem; text-align: center;
+  padding: 1rem; gap: .85rem; text-align: center;
   animation: pop .6s ease-out forwards; max-height: 90%; overflow: hidden;
 }
 @keyframes pop {
@@ -73,18 +73,18 @@ html, body {
   max-width: 88%; max-height: 72%; border-radius: 18px;
   box-shadow: 0 12px 32px rgba(0,0,0,.55);
 }
-.emoji-big {
-  font-size: clamp(2.6rem, 7vw, 4rem);
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,.3));
-}
 .port-text h2 {
-  font-size: clamp(1.9rem, 5vw, 3rem);
-  font-weight: 800; line-height: 1.15;
+  font-size: clamp(2.4rem, 6vw, 3.4rem);
+  font-weight: 800; line-height: 1.1;
   text-shadow: 0 2px 6px rgba(0,0,0,.35);
 }
 .port-text p {
-  font-size: clamp(.85rem, 2.4vw, 1.15rem);
+  font-size: clamp(1.2rem, 3vw, 1.5rem);
   font-weight: 600; opacity: .9; margin-top: .25rem;
+}
+.emoji-big {
+  font-size: clamp(2rem, 5vw, 3rem);
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,.3));
 }
 
 /* CTA */
@@ -157,19 +157,21 @@ function adjustScale(wrap) {
 function buildPort(i) {
   const d = document.createElement("div");
   d.className = "portada";
+  const wrap = document.createElement("div");
+  wrap.className = "port-text-wrap";
+  const box = document.createElement("div");
+  box.className = "port-text";
+  box.innerHTML = `<h2>${libro.titulo}</h2><p>${libro.autor}</p>`;
+  wrap.appendChild(box);
+
   const emoji = document.createElement("div");
   emoji.className = "emoji-big";
   emoji.textContent = emojis[i % emojis.length];
+
   if (isURL(libro.portada)) {
-    d.append(emoji, Object.assign(new Image(), { src: libro.portada, loading: "lazy" }));
+    d.append(Object.assign(new Image(), { src: libro.portada, loading: "lazy" }));
   } else {
-    const wrap = document.createElement("div");
-    wrap.className = "port-text-wrap";
-    const box = document.createElement("div");
-    box.className = "port-text";
-    box.innerHTML = `<h2>${libro.titulo}</h2><p>${libro.autor}</p>`;
-    wrap.appendChild(box);
-    d.append(emoji, wrap);
+    d.append(wrap, emoji);
     setTimeout(() => adjustScale(wrap), 0);
   }
   return d;
