@@ -1,10 +1,11 @@
+<!-- 👇 Aquí comienza tu código HTML -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Triggui — Abre un libro físico. Aquí y ahora.</title>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500;800&display=swap" rel="stylesheet" />
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html, body {
@@ -14,18 +15,6 @@ html, body {
   color: #fff;
   -webkit-overflow-scrolling: touch;
 }
-
-.intro {
-  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  padding: 2.2rem 2.8rem; background: #191e32; border-radius: 24px; z-index: 120;
-  font-family: 'Poppins'; font-size: 2rem; font-weight: 700; text-align: center;
-  box-shadow: 0 0 16px rgba(48,255,228,.32);
-  animation: introHide 2.2s 1s forwards;
-}
-@keyframes introHide {
-  to { opacity: 0; visibility: hidden; transform: translate(-50%, -80%); }
-}
-
 .grid {
   position: absolute; inset: 5vh 1.5vw; display: grid; gap: 1vw;
 }
@@ -35,7 +24,6 @@ html, body {
 @media (orientation: portrait) {
   .grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); }
 }
-
 .block {
   position: relative; display: flex; align-items: center; justify-content: center;
   padding: 1rem; border-radius: 22px; font-weight: 700; cursor: pointer;
@@ -55,11 +43,10 @@ html, body {
 .block.show .label { opacity: 0; }
 .block.show .frase { opacity: 1; }
 
-/* ─── PORTADA LIBRO REAL ─── */
 .portada {
   position: absolute; inset: 0; display: none;
   align-items: flex-start; justify-content: center; flex-direction: column;
-  padding: 2rem 1rem; gap: .8rem; text-align: left;
+  padding: 2rem 1rem; gap: .8rem;
   animation: pop .6s ease-out forwards;
   border-radius: 20px;
   background: rgba(255,255,255,0.02);
@@ -79,6 +66,12 @@ html, body {
   100% { transform: scale(1); opacity: 1; }
 }
 
+.port-text-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  transform-origin: top left;
+}
 .port-text h2 {
   font-size: clamp(2.2rem, 6vw, 3.2rem);
   font-weight: 800;
@@ -86,8 +79,8 @@ html, body {
   text-transform: uppercase;
   letter-spacing: 1.5px;
   text-shadow: 0 2px 6px rgba(0,0,0,.35);
-  animation: settle 0.6s ease-out forwards;
-  opacity: 0;
+  word-break: break-word;
+  max-width: 100%;
 }
 .port-text p {
   font-size: clamp(1.2rem, 4vw, 1.8rem);
@@ -95,20 +88,13 @@ html, body {
   font-weight: 400;
   opacity: .85;
   margin-top: .25rem;
-  animation: settle 0.6s ease-out forwards;
-  opacity: 0;
+  word-break: break-word;
+  max-width: 100%;
 }
 .emoji-big {
   font-size: clamp(1.5rem, 5vw, 2.5rem);
   filter: drop-shadow(0 4px 8px rgba(0,0,0,.3));
-  animation: settle 0.6s ease-out forwards;
-  opacity: 0;
 }
-@keyframes settle {
-  0% { transform: scale(1.2); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
-}
-
 .cta {
   position: fixed; bottom: 3vh; left: 50%; transform: translateX(-50%);
   display: none; gap: 1rem; z-index: 100;
@@ -124,7 +110,6 @@ html, body {
 .cta button:hover {
   filter: brightness(1.15); transform: translateY(-1px);
 }
-
 .cele {
   position: fixed; inset: 0; background: rgba(0,0,0,.88);
   display: none; align-items: center; justify-content: center; z-index: 110;
@@ -138,7 +123,6 @@ html, body {
 </head>
 <body>
 
-<div class="intro">¿Qué sientes?</div>
 <div class="grid" id="grid"></div>
 
 <div class="cta" id="cta">
@@ -162,53 +146,52 @@ const emojis = ["🌊", "🛡️", "🧠", "✨", "📘", "🔮", "❤️", "�
 const isURL = s => /^https?:\/\//i.test(s || "");
 const grad = i => `linear-gradient(135deg,${libro.colores[i]},${libro.colores[(i + 1) % 4]})`;
 
-function buildPort(i) {
+function adjustScale(wrap){
+  const parent = wrap.closest(".portada");
+  if (!parent) return;
+  const available = parent.clientHeight - 40;
+  let scale = 1;
+  wrap.style.transform = `scale(1)`;
+  const fits = () => wrap.scrollHeight <= available;
+  while (!fits() && scale > 0.55) {
+    scale -= 0.02;
+    wrap.style.transform = `scale(${scale})`;
+  }
+}
+
+function buildPort(i){
   const d = document.createElement("div");
   d.className = "portada";
-
   const wrap = document.createElement("div");
   wrap.className = "port-text-wrap";
-
   const box = document.createElement("div");
   box.className = "port-text";
   box.innerHTML = `<h2>${libro.titulo}</h2><p>${libro.autor}</p>`;
-
   const emoji = document.createElement("div");
   emoji.className = "emoji-big";
   emoji.textContent = emojis[i % emojis.length];
-
   wrap.appendChild(box);
   wrap.appendChild(emoji);
-
-  if (isURL(libro.portada)) {
-    d.append(Object.assign(new Image(), { src: libro.portada, loading: "lazy" }));
-  } else {
-    d.append(wrap);
-  }
-
+  d.append(wrap);
+  setTimeout(() => adjustScale(wrap), 0);
   return d;
 }
 
-function render() {
+function render(){
   grid.innerHTML = "";
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < 4; i++){
     const card = document.createElement("div");
     card.className = "block";
     card.dataset.i = i;
     card.style.background = grad(i);
-
-    const label = Object.assign(document.createElement("div"), {
-      className: "label",
-      textContent: `${emojis[i % emojis.length]} ${libro.palabras[i]}`,
-      style: `color: ${libro.textColors?.[i] || "#fff"}`
-    });
-
-    const frase = Object.assign(document.createElement("div"), {
-      className: "frase",
-      textContent: libro.frases[i],
-      style: `color: ${libro.textColors?.[i] || "#fff"}`
-    });
-
+    const label = document.createElement("div");
+    label.className = "label";
+    label.style.color = libro.textColors?.[i] || "#fff";
+    label.textContent = `${emojis[i % emojis.length]} ${libro.palabras[i]}`;
+    const frase = document.createElement("div");
+    frase.className = "frase";
+    frase.style.color = libro.textColors?.[i] || "#fff";
+    frase.textContent = libro.frases[i];
     const port = buildPort(i);
     if (i === portIdx) card.append(port);
     card.append(label, frase);
@@ -217,15 +200,14 @@ function render() {
   }
 }
 
-function handleClick(card, i, port, label) {
+function handleClick(card, i, port, label){
   if (revealed && i !== portIdx) return location.reload();
-  if (i === portIdx && !revealed) {
+  if (i === portIdx && !revealed){
     label.style.display = "none";
     port.style.display = "flex";
-    [...grid.children].forEach((c, j) => j !== portIdx && c.classList.add("show"));
-    cta.style.display = "flex";
-    revealed = true;
-  } else if (!revealed) {
+    [...grid.children].forEach((c, j) => { if (j !== portIdx) c.classList.add("show"); });
+    cta.style.display = "flex"; revealed = true;
+  } else if (!revealed){
     card.classList.toggle("show");
   }
 }
@@ -233,8 +215,7 @@ function handleClick(card, i, port, label) {
 btnOtro.onclick = () => location.reload();
 
 btnLibro.onclick = async () => {
-  btnLibro.disabled = true;
-  cele.style.display = "flex";
+  btnLibro.disabled = true; cele.style.display = "flex";
   celeMsg.innerHTML = '✨ <span class="num">...</span><br>libros físicos abiertos';
   try {
     const r = await fetch("https://triggui-api.vercel.app/api/increment");
@@ -244,21 +225,18 @@ btnLibro.onclick = async () => {
     celeMsg.textContent = "📚 Error al contar libros";
   }
   setTimeout(() => {
-    cele.style.display = "none";
-    cta.style.display = "flex";
-    btnLibro.disabled = false;
+    cele.style.display = "none"; cta.style.display = "flex"; btnLibro.disabled = false;
   }, 2300);
 };
 
-(async () => {
+(async()=>{
   try {
     const r = await fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json?ts=" + Date.now());
     const data = await r.json();
     libro = data.libros[Math.floor(Math.random() * data.libros.length)];
     render();
-  } catch (e) {
-    alert("No se pudo cargar Triggui.");
-    console.error(e);
+  } catch(e) {
+    alert("No se pudo cargar Triggui."); console.error(e);
   }
 })();
 </script>
