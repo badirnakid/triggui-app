@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Triggui — Abre un libro físico</title>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500;800&display=swap" rel="stylesheet" />
 <style>
 *, *:before, *:after { margin: 0; padding: 0; box-sizing: border-box; }
 html, body {
@@ -51,7 +51,6 @@ html, body {
 }
 .block.show .label { opacity: 0; }
 .block.show .frase { opacity: 1; }
-
 /* Portada */
 .portada {
   position: absolute; inset: 0; display: none;
@@ -74,33 +73,29 @@ html, body {
   filter: drop-shadow(0 4px 8px rgba(0,0,0,.3));
 }
 
-/* Escalado + detección */
 .port-text-wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
   transform-origin: top center;
   will-change: transform;
-  transition: transform .3s ease-out;
+  transition: transform .25s ease;
 }
 .port-text h2 {
-  font-size: clamp(1.9rem, 5vw, 3rem);
+  font-size: 2.5rem;
   font-weight: 800;
-  line-height: 1.15;
+  line-height: 1.1;
+  hyphens: none;
+  word-break: keep-all;
   text-align: center;
   text-shadow: 0 2px 6px rgba(0,0,0,.35);
 }
 .port-text p {
-  font-size: clamp(.85rem, 2.4vw, 1.15rem);
+  font-size: 1.1rem;
   font-weight: 600;
   opacity: .9;
   margin-top: .25rem;
   text-align: center;
-}
-.extra-long h2 {
-  word-break: break-word;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
 }
 
 /* CTA */
@@ -153,118 +148,144 @@ html, body {
   <button id="fisico">📖 Abrí un libro físico</button>
 </div>
 
-<div class="cele" id="cele"><div class="cele-msg" id="celeMsg">✨ <span class="num">...</span><br>libros físicos abiertos</div></div>
-
+<div class="cele" id="cele">
+  <div class="cele-msg" id="celeMsg">✨ <span class="num">...</span><br>libros físicos abiertos</div>
+</div>
 <script>
-const grid=document.getElementById("grid"),cta=document.getElementById("cta"),
-      btnOtro=document.getElementById("otro"),btnLibro=document.getElementById("fisico"),
-      cele=document.getElementById("cele"),celeMsg=document.getElementById("celeMsg");
+const grid=document.getElementById("grid"),
+      cta=document.getElementById("cta"),
+      btnOtro=document.getElementById("otro"),
+      btnLibro=document.getElementById("fisico"),
+      cele=document.getElementById("cele"),
+      celeMsg=document.getElementById("celeMsg");
 
-let libro=null;const portIdx=Math.floor(Math.random()*4);let revealed=false;
-const isURL=s=>/^https?:\/\//i.test(s||"");
-const emojis=["🌊","🛡️","🧠","✨","📘","🔮","❤️","🪞"];
-const grad=i=>`linear-gradient(135deg,${libro.colores[i]},${libro.colores[(i+1)%4]})`;
+let libro = null;
+const portIdx = Math.floor(Math.random()*4);
+let revealed = false;
 
-/* Detección inteligente */
-function adjustScale(wrap){
-  const parent = wrap.closest(".portada");
-  const h2 = wrap.querySelector("h2");
-  const words = h2.textContent.split(" ");
-  const containerWidth = parent.clientWidth;
+const isURL = s => /^https?:\/\//i.test(s || "");
+const emojis = ["🌊","🛡️","🧠","✨","📘","🔮","❤️","🪞"];
+const grad = i => `linear-gradient(135deg,${libro.colores[i]},${libro.colores[(i+1)%4]})`;
 
-  const test = document.createElement("span");
-  test.style.visibility = "hidden";
-  test.style.position = "absolute";
-  test.style.whiteSpace = "nowrap";
-  test.style.font = window.getComputedStyle(h2).font;
-  document.body.appendChild(test);
+/* Ajuste dinámico inteligente del font-size */
+function adjustFontSize(h2, maxHeightPx) {
+  let fontSize = parseFloat(window.getComputedStyle(h2).fontSize);
+  const originalFontSize = fontSize;
+  const parent = h2.parentElement.parentElement; // .portada
+  h2.style.hyphens = 'none';
+  h2.style.wordBreak = 'keep-all';
 
-  let extraLong = false;
-  for (const word of words){
-    test.textContent = word;
-    if (test.offsetWidth > containerWidth * 0.8){
-      extraLong = true;
-      break;
-    }
+  while (h2.scrollHeight > maxHeightPx && fontSize > 16) {
+    fontSize -= 1;
+    h2.style.fontSize = `${fontSize}px`;
   }
-  document.body.removeChild(test);
-  if (extraLong) wrap.classList.add("extra-long");
 
-  // Escalado clásico
-  const available = parent.clientHeight - 40;
-  let scale = 1.12;
-  wrap.style.transform = `scale(${scale})`;
-  const fits = () => wrap.scrollHeight <= available;
-  while (!fits() && scale > 0.55) {
-    scale -= 0.02;
-    wrap.style.transform = `scale(${scale})`;
+  if (fontSize === originalFontSize) {
+    h2.style.fontSize = ''; // reset inline style if no change
   }
 }
 
 /* Crear portada */
-function buildPort(idx){
-  const d=document.createElement("div");d.className="portada";
-  const bigEmoji=document.createElement("div");bigEmoji.className="emoji-big";
-  bigEmoji.textContent=emojis[idx%emojis.length];
-  if(isURL(libro.portada)){
-    d.append(bigEmoji,Object.assign(new Image(),{src:libro.portada,loading:"lazy"}));
-  }else{
-    const wrap=document.createElement("div");wrap.className="port-text-wrap";
-    const box=document.createElement("div");box.className="port-text";
-    box.innerHTML=`<h2>${libro.titulo}</h2><p>${libro.autor}</p>`;
+function buildPort(idx) {
+  const d = document.createElement("div");
+  d.className = "portada";
+
+  const emoji = document.createElement("div");
+  emoji.className = "emoji-big";
+  emoji.textContent = emojis[idx % emojis.length];
+
+  if (isURL(libro.portada)) {
+    d.append(emoji, Object.assign(new Image(), { src: libro.portada, loading: "lazy" }));
+  } else {
+    const wrap = document.createElement("div");
+    wrap.className = "port-text-wrap";
+
+    const box = document.createElement("div");
+    box.className = "port-text";
+    box.innerHTML = `<h2>${libro.titulo}</h2><p>${libro.autor}</p>`;
+
     wrap.appendChild(box);
-    d.append(bigEmoji,wrap);
-    setTimeout(()=>adjustScale(wrap),0);
+    d.append(emoji, wrap);
+
+    setTimeout(() => {
+      const h2 = box.querySelector("h2");
+      adjustFontSize(h2, d.clientHeight * 0.6); // máximo 60% de altura
+    }, 0);
   }
+
   return d;
 }
 
-/* Render */
-function render(){
-  grid.innerHTML="";
-  for(let i=0;i<4;i++){
-    const card=document.createElement("div");card.className="block";card.dataset.i=i;card.style.background=grad(i);
-    const label=document.createElement("div");label.className="label";label.style.color=libro.textColors?.[i]||"#fff";label.textContent=`${emojis[i%emojis.length]} ${libro.palabras[i]}`;
-    const frase=document.createElement("div");frase.className="frase";frase.style.color=libro.textColors?.[i]||"#fff";frase.textContent=libro.frases[i];
-    const port=buildPort(i);
-    if(i===portIdx) card.append(port);
-    card.append(label,frase);card.onclick=()=>click(card,i,port,label);
+function render() {
+  grid.innerHTML = "";
+  for (let i = 0; i < 4; i++) {
+    const card = document.createElement("div");
+    card.className = "block";
+    card.style.background = grad(i);
+
+    const label = document.createElement("div");
+    label.className = "label";
+    label.style.color = libro.textColors?.[i] || "#fff";
+    label.textContent = `${emojis[i % emojis.length]} ${libro.palabras[i]}`;
+
+    const frase = document.createElement("div");
+    frase.className = "frase";
+    frase.style.color = libro.textColors?.[i] || "#fff";
+    frase.textContent = libro.frases[i];
+
+    const port = buildPort(i);
+    if (i === portIdx) card.append(port);
+    card.append(label, frase);
+
+    card.onclick = () => click(card, i, port, label);
     grid.append(card);
   }
 }
 
-function click(card,i,port,labelRef){
-  if(revealed&&i!==portIdx){location.reload();return;}
-  if(i===portIdx&&!revealed){
-    labelRef.style.display="none";
-    port.style.display="flex";
-    [...grid.children].forEach((c,j)=>{if(j!==portIdx)c.classList.add("show");});
-    cta.style.display="flex";revealed=true;
-  }else if(i!==portIdx&&!revealed){
+function click(card, i, port, labelRef) {
+  if (revealed && i !== portIdx) return location.reload();
+
+  if (i === portIdx && !revealed) {
+    labelRef.style.display = "none";
+    port.style.display = "flex";
+    [...grid.children].forEach((c, j) => { if (j !== portIdx) c.classList.add("show"); });
+    cta.style.display = "flex";
+    revealed = true;
+  } else if (!revealed) {
     card.classList.toggle("show");
   }
 }
 
-btnOtro.onclick=()=>location.reload();
+btnOtro.onclick = () => location.reload();
 
-btnLibro.onclick=async()=>{
-  btnLibro.disabled=true;cele.style.display="flex";
-  celeMsg.innerHTML='✨ <span class="num">...</span><br>libros físicos abiertos';
-  try{
-    const r=await fetch("https://triggui-api.vercel.app/api/increment");
-    const d=await r.json();
-    celeMsg.innerHTML=`✨ <span class="num">${d.total.toLocaleString('es-MX')}</span><br>libros físicos abiertos`;
-  }catch{celeMsg.textContent="📚 Error al contar libros";}
-  setTimeout(()=>{cele.style.display="none";cta.style.display="flex";btnLibro.disabled=false;},2300);
+btnLibro.onclick = async () => {
+  btnLibro.disabled = true;
+  cele.style.display = "flex";
+  celeMsg.innerHTML = '✨ <span class="num">...</span><br>libros físicos abiertos';
+  try {
+    const r = await fetch("https://triggui-api.vercel.app/api/increment");
+    const d = await r.json();
+    celeMsg.innerHTML = `✨ <span class="num">${d.total.toLocaleString('es-MX')}</span><br>libros físicos abiertos`;
+  } catch {
+    celeMsg.textContent = "📚 Error al contar libros";
+  }
+  setTimeout(() => {
+    cele.style.display = "none";
+    cta.style.display = "flex";
+    btnLibro.disabled = false;
+  }, 2300);
 };
 
-(async()=>{
-  try{
-    const r=await fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json?ts="+Date.now());
-    const data=await r.json();
-    libro=data.libros[Math.floor(Math.random()*data.libros.length)];
+(async () => {
+  try {
+    const r = await fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json?ts=" + Date.now());
+    const data = await r.json();
+    libro = data.libros[Math.floor(Math.random() * data.libros.length)];
     render();
-  }catch(e){alert("No se pudo cargar Triggui.");console.error(e);}
+  } catch (e) {
+    alert("No se pudo cargar Triggui.");
+    console.error(e);
+  }
 })();
 </script>
 </body>
