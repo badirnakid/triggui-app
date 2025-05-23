@@ -27,7 +27,7 @@ html, body {
   color: #fff;
   -webkit-overflow-scrolling: touch;
 }
-/* ...todo tu CSS igual... */
+/* Intro */
 .intro {
   position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
   padding: 2.2rem 2.8rem; background: #191e32; border-radius: 24px; z-index: 120;
@@ -71,6 +71,7 @@ html, body {
   align-items: center; justify-content: center; flex-direction: column;
   padding: 1rem; gap: .4rem; text-align: center;
   animation: pop .6s ease-out forwards; max-height: 90%; overflow: hidden;
+  cursor: pointer;
 }
 @keyframes pop {
   0% { transform: scale(.8); opacity: 0; }
@@ -79,6 +80,7 @@ html, body {
 .portada img {
   max-width: 94%; max-height: 76%; border-radius: 18px;
   box-shadow: 0 12px 32px rgba(0,0,0,.55);
+  cursor: pointer;
 }
 .port-text h2, .port-text p, .emoji-big {
   animation: settle 0.6s ease-out forwards;
@@ -166,17 +168,16 @@ function adjustScale(wrap) {
   }
 }
 
-// MODIFICACIÓN: al construir la portada, se le añade el click para reiniciar
+// buildPort con reinicio al hacer clic en portada (imagen o texto)
 function buildPort(i) {
   const d = document.createElement("div");
   d.className = "portada";
 
-  // Reinicia el juego al hacer clic en cualquier parte de la portada revelada
-  d.onclick = function(e) {
-    // Solo reinicia si está visible (display: flex)
-    if (d.style.display === "flex") location.reload();
+  // Reinicia el juego al hacer clic en la portada completa
+  d.addEventListener("click", function(e) {
     e.stopPropagation();
-  };
+    location.reload();
+  });
 
   const wrap = document.createElement("div");
   wrap.className = "port-text-wrap";
@@ -194,6 +195,12 @@ function buildPort(i) {
 
   if (isURL(libro.portada)) {
     const img = Object.assign(new Image(), { src: libro.portada, loading: "lazy" });
+    // Asegura que el click en la imagen también reinicie
+    img.style.cursor = "pointer";
+    img.addEventListener("click", function(e) {
+      e.stopPropagation();
+      location.reload();
+    });
     d.append(img);
   } else {
     d.append(wrap);
