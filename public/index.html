@@ -146,7 +146,7 @@ html, body {
 <div class="grid" id="grid"></div>
 
 <div class="cta" id="cta">
-  <button id="otro">💖 Me gusta, quiero donar</button>
+  <button id="otro">💖 Me gusta quiero donar</button>
   <button id="fisico">📖 Abrí un libro físico</button>
 </div>
 
@@ -247,7 +247,7 @@ function handleClick(card, i, port, label) {
   }
 }
 
-btnOtro.onclick = () => location.reload();
+btnOtro.onclick = () => window.open("https://donate.stripe.com/eVqaEX1JD9oB0yE55H0oM03", "_blank");
 
 btnLibro.onclick = async () => {
   btnLibro.disabled = true;
