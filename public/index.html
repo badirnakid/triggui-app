@@ -27,7 +27,6 @@ html, body {
   color: #fff;
   -webkit-overflow-scrolling: touch;
 }
-/* Intro */
 .intro {
   position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
   padding: 2.2rem 2.8rem; background: #191e32; border-radius: 24px; z-index: 120;
@@ -65,7 +64,6 @@ html, body {
 }
 .block.show .label { opacity: 0; }
 .block.show .frase { opacity: 1; }
-/* Portada */
 .portada {
   position: absolute; inset: 0; display: none;
   align-items: center; justify-content: center; flex-direction: column;
@@ -103,7 +101,6 @@ html, body {
   font-size: clamp(1.6rem, 5vw, 2.8rem);
   filter: drop-shadow(0 4px 8px rgba(0,0,0,.3));
 }
-/* CTA */
 .cta {
   position: fixed; bottom: 3vh; left: 50%; transform: translateX(-50%);
   display: none; gap: 1rem; z-index: 100;
@@ -168,16 +165,9 @@ function adjustScale(wrap) {
   }
 }
 
-// buildPort con reinicio al hacer clic en portada (imagen o texto)
 function buildPort(i) {
   const d = document.createElement("div");
   d.className = "portada";
-
-  // Reinicia el juego al hacer clic en la portada completa
-  d.addEventListener("click", function(e) {
-    e.stopPropagation();
-    location.reload();
-  });
 
   const wrap = document.createElement("div");
   wrap.className = "port-text-wrap";
@@ -195,12 +185,7 @@ function buildPort(i) {
 
   if (isURL(libro.portada)) {
     const img = Object.assign(new Image(), { src: libro.portada, loading: "lazy" });
-    // Asegura que el click en la imagen también reinicie
     img.style.cursor = "pointer";
-    img.addEventListener("click", function(e) {
-      e.stopPropagation();
-      location.reload();
-    });
     d.append(img);
   } else {
     d.append(wrap);
@@ -208,6 +193,36 @@ function buildPort(i) {
   }
 
   return d;
+}
+
+// Añade el listener justo después de mostrar la portada (esto es CLAVE)
+function handleClick(card, i, port, label) {
+  if (revealed && i !== portIdx) return location.reload();
+  if (i === portIdx && !revealed) {
+    label.style.display = "none";
+    port.style.display = "flex";
+    [...grid.children].forEach((c, j) => j !== portIdx && c.classList.add("show"));
+    cta.style.display = "flex";
+    revealed = true;
+
+    // -- Aquí el fix: add event listener a portada y también a img si existe --
+    setTimeout(() => {
+      port.addEventListener("click", function reinicia(e) {
+        e.stopPropagation();
+        location.reload();
+      });
+      const img = port.querySelector("img");
+      if (img) {
+        img.addEventListener("click", function(e) {
+          e.stopPropagation();
+          location.reload();
+        });
+      }
+    }, 50); // Pequeño delay para asegurar que display: flex ya está aplicado
+    // ----------------------------------------------------------------------
+  } else if (!revealed) {
+    card.classList.toggle("show");
+  }
 }
 
 function render() {
@@ -235,19 +250,6 @@ function render() {
     card.append(label, frase);
     card.onclick = () => handleClick(card, i, port, label);
     grid.append(card);
-  }
-}
-
-function handleClick(card, i, port, label) {
-  if (revealed && i !== portIdx) return location.reload();
-  if (i === portIdx && !revealed) {
-    label.style.display = "none";
-    port.style.display = "flex";
-    [...grid.children].forEach((c, j) => j !== portIdx && c.classList.add("show"));
-    cta.style.display = "flex";
-    revealed = true;
-  } else if (!revealed) {
-    card.classList.toggle("show");
   }
 }
 
