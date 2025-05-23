@@ -27,6 +27,8 @@ html, body {
   color: #fff;
   -webkit-overflow-scrolling: touch;
 }
+
+/* Intro */
 .intro {
   position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
   padding: 2.2rem 2.8rem; background: #191e32; border-radius: 24px; z-index: 120;
@@ -37,6 +39,8 @@ html, body {
 @keyframes introHide {
   to { opacity: 0; visibility: hidden; transform: translate(-50%, -80%); }
 }
+
+/* Grid */
 .grid {
   position: absolute; inset: 5vh 1.5vw; display: grid; gap: 1vw;
 }
@@ -46,6 +50,8 @@ html, body {
 @media (orientation: portrait) {
   .grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); }
 }
+
+/* Blocks */
 .block {
   position: relative; display: flex; align-items: center; justify-content: center;
   padding: 1rem; border-radius: 22px; font-weight: 700; cursor: pointer;
@@ -64,12 +70,13 @@ html, body {
 }
 .block.show .label { opacity: 0; }
 .block.show .frase { opacity: 1; }
+
+/* Portada */
 .portada {
   position: absolute; inset: 0; display: none;
   align-items: center; justify-content: center; flex-direction: column;
   padding: 1rem; gap: .4rem; text-align: center;
   animation: pop .6s ease-out forwards; max-height: 90%; overflow: hidden;
-  cursor: pointer;
 }
 @keyframes pop {
   0% { transform: scale(.8); opacity: 0; }
@@ -78,8 +85,9 @@ html, body {
 .portada img {
   max-width: 94%; max-height: 76%; border-radius: 18px;
   box-shadow: 0 12px 32px rgba(0,0,0,.55);
-  cursor: pointer;
 }
+
+/* Zoom animación para portada */
 .port-text h2, .port-text p, .emoji-big {
   animation: settle 0.6s ease-out forwards;
   opacity: 0;
@@ -88,6 +96,7 @@ html, body {
   0%   { transform: scale(1.25); opacity: 0; }
   100% { transform: scale(1);    opacity: 1; }
 }
+
 .port-text h2 {
   font-size: clamp(2.8rem, 7vw, 4rem);
   font-weight: 800; line-height: 1.15;
@@ -101,6 +110,8 @@ html, body {
   font-size: clamp(1.6rem, 5vw, 2.8rem);
   filter: drop-shadow(0 4px 8px rgba(0,0,0,.3));
 }
+
+/* CTA */
 .cta {
   position: fixed; bottom: 3vh; left: 50%; transform: translateX(-50%);
   display: none; gap: 1rem; z-index: 100;
@@ -116,6 +127,8 @@ html, body {
 .cta button:hover {
   filter: brightness(1.15); transform: translateY(-1px);
 }
+
+/* Celebración */
 .cele {
   position: fixed; inset: 0; background: rgba(0,0,0,.88);
   display: none; align-items: center; justify-content: center; z-index: 110;
@@ -184,45 +197,13 @@ function buildPort(i) {
   wrap.appendChild(emoji);
 
   if (isURL(libro.portada)) {
-    const img = Object.assign(new Image(), { src: libro.portada, loading: "lazy" });
-    img.style.cursor = "pointer";
-    d.append(img);
+    d.append(Object.assign(new Image(), { src: libro.portada, loading: "lazy" }));
   } else {
     d.append(wrap);
     setTimeout(() => adjustScale(wrap), 0);
   }
 
   return d;
-}
-
-// Añade el listener justo después de mostrar la portada (esto es CLAVE)
-function handleClick(card, i, port, label) {
-  if (revealed && i !== portIdx) return location.reload();
-  if (i === portIdx && !revealed) {
-    label.style.display = "none";
-    port.style.display = "flex";
-    [...grid.children].forEach((c, j) => j !== portIdx && c.classList.add("show"));
-    cta.style.display = "flex";
-    revealed = true;
-
-    // -- Aquí el fix: add event listener a portada y también a img si existe --
-    setTimeout(() => {
-      port.addEventListener("click", function reinicia(e) {
-        e.stopPropagation();
-        location.reload();
-      });
-      const img = port.querySelector("img");
-      if (img) {
-        img.addEventListener("click", function(e) {
-          e.stopPropagation();
-          location.reload();
-        });
-      }
-    }, 50); // Pequeño delay para asegurar que display: flex ya está aplicado
-    // ----------------------------------------------------------------------
-  } else if (!revealed) {
-    card.classList.toggle("show");
-  }
 }
 
 function render() {
@@ -250,6 +231,24 @@ function render() {
     card.append(label, frase);
     card.onclick = () => handleClick(card, i, port, label);
     grid.append(card);
+  }
+}
+
+function handleClick(card, i, port, label) {
+  /* 1. Si ya se reveló, cualquier clic (incluyendo la portada) reinicia */
+  if (revealed) return location.reload();
+
+  /* 2. Primer clic en la tarjeta con portada: revela y muestra CTA */
+  if (i === portIdx && !revealed) {
+    label.style.display = "none";
+    port.style.display = "flex";
+    [...grid.children].forEach((c, j) => j !== portIdx && c.classList.add("show"));
+    cta.style.display = "flex";
+    revealed = true;
+  } 
+  /* 3. Clics antes de revelar: alternan entre palabra y frase */
+  else if (!revealed) {
+    card.classList.toggle("show");
   }
 }
 
