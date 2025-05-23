@@ -27,8 +27,7 @@ html, body {
   color: #fff;
   -webkit-overflow-scrolling: touch;
 }
-
-/* Intro */
+/* ...todo tu CSS igual... */
 .intro {
   position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
   padding: 2.2rem 2.8rem; background: #191e32; border-radius: 24px; z-index: 120;
@@ -39,8 +38,6 @@ html, body {
 @keyframes introHide {
   to { opacity: 0; visibility: hidden; transform: translate(-50%, -80%); }
 }
-
-/* Grid */
 .grid {
   position: absolute; inset: 5vh 1.5vw; display: grid; gap: 1vw;
 }
@@ -50,8 +47,6 @@ html, body {
 @media (orientation: portrait) {
   .grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); }
 }
-
-/* Blocks */
 .block {
   position: relative; display: flex; align-items: center; justify-content: center;
   padding: 1rem; border-radius: 22px; font-weight: 700; cursor: pointer;
@@ -70,7 +65,6 @@ html, body {
 }
 .block.show .label { opacity: 0; }
 .block.show .frase { opacity: 1; }
-
 /* Portada */
 .portada {
   position: absolute; inset: 0; display: none;
@@ -86,8 +80,6 @@ html, body {
   max-width: 94%; max-height: 76%; border-radius: 18px;
   box-shadow: 0 12px 32px rgba(0,0,0,.55);
 }
-
-/* Zoom animación para portada */
 .port-text h2, .port-text p, .emoji-big {
   animation: settle 0.6s ease-out forwards;
   opacity: 0;
@@ -96,7 +88,6 @@ html, body {
   0%   { transform: scale(1.25); opacity: 0; }
   100% { transform: scale(1);    opacity: 1; }
 }
-
 .port-text h2 {
   font-size: clamp(2.8rem, 7vw, 4rem);
   font-weight: 800; line-height: 1.15;
@@ -110,7 +101,6 @@ html, body {
   font-size: clamp(1.6rem, 5vw, 2.8rem);
   filter: drop-shadow(0 4px 8px rgba(0,0,0,.3));
 }
-
 /* CTA */
 .cta {
   position: fixed; bottom: 3vh; left: 50%; transform: translateX(-50%);
@@ -127,8 +117,6 @@ html, body {
 .cta button:hover {
   filter: brightness(1.15); transform: translateY(-1px);
 }
-
-/* Celebración */
 .cele {
   position: fixed; inset: 0; background: rgba(0,0,0,.88);
   display: none; align-items: center; justify-content: center; z-index: 110;
@@ -178,9 +166,17 @@ function adjustScale(wrap) {
   }
 }
 
+// MODIFICACIÓN: al construir la portada, se le añade el click para reiniciar
 function buildPort(i) {
   const d = document.createElement("div");
   d.className = "portada";
+
+  // Reinicia el juego al hacer clic en cualquier parte de la portada revelada
+  d.onclick = function(e) {
+    // Solo reinicia si está visible (display: flex)
+    if (d.style.display === "flex") location.reload();
+    e.stopPropagation();
+  };
 
   const wrap = document.createElement("div");
   wrap.className = "port-text-wrap";
@@ -197,7 +193,8 @@ function buildPort(i) {
   wrap.appendChild(emoji);
 
   if (isURL(libro.portada)) {
-    d.append(Object.assign(new Image(), { src: libro.portada, loading: "lazy" }));
+    const img = Object.assign(new Image(), { src: libro.portada, loading: "lazy" });
+    d.append(img);
   } else {
     d.append(wrap);
     setTimeout(() => adjustScale(wrap), 0);
