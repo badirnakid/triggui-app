@@ -3,6 +3,7 @@
     "name": "TrigguiApp",
     "slug": "trigguiapp",
     "owner": "badirnakid",
+    "scheme": "triggui",
     "version": "1.0.0",
     "orientation": "portrait",
     "platforms": ["ios", "android"],
@@ -11,7 +12,8 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "bundleIdentifier": "com.triggui.app",
+      "supportsTablet": false
     },
     "android": {
       "package": "com.triggui.app"
@@ -20,6 +22,7 @@
       "favicon": "./assets/favicon.png"
     },
     "extra": {
+      "APP_URL": "https://app.triggui.com",
       "eas": {
         "projectId": "1417880a-2431-4ef5-a6a0-c5962b11ddd4"
       }
