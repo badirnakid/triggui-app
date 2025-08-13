@@ -1,116 +1,112 @@
-import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity, Modal, StyleSheet } from 'react-native';
+import React, { useCallback, useRef, useState, useEffect } from "react";
+import { BackHandler, Linking, Platform, SafeAreaView, Share, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import WebView, { WebViewNavigation } from "react-native-webview";
+
+const APP_URL = "https://app.triggui.com";
+const ALLOWED_HOST = "app.triggui.com";
 
 export default function App() {
-  const [modalVisible, setModalVisible] = useState(false);
+  const webRef = useRef<WebView>(null);
+  const [canGoBack, setCanGoBack] = useState(false);
+  const [offline, setOffline] = useState(false);
+
+  // Control botón atrás en Android
+  useEffect(() => {
+    if (Platform.OS === "android") {
+      const sub = BackHandler.addEventListener("hardwareBackPress", () => {
+        if (canGoBack && webRef.current) {
+          webRef.current.goBack();
+          return true;
+        }
+        return false;
+      });
+      return () => sub.remove();
+    }
+  }, [canGoBack]);
+
+  const onNav = (nav: WebViewNavigation) => setCanGoBack(nav.canGoBack);
+
+  // Control de navegación segura
+  const onShouldStart = useCallback((req: any) => {
+    try {
+      const url = new URL(req.url);
+      if (url.host === ALLOWED_HOST) return true; // interno
+      Linking.openURL(req.url); // externo
+      return false;
+    } catch {
+      return false;
+    }
+  }, []);
+
+  // Botón compartir
+  const share = async () => {
+    try {
+      await Share.share({ message: "Triggui — Abre un libro: https://triggui.com" });
+    } catch {}
+  };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.bookContainer}>
-        <Image
-          source={{ uri: 'https://is1-ssl.mzstatic.com/image/thumb/Publication71/v4/37/ae/8f/37ae8f8e-f4d9-2ea2-b550-093804c0e8a3/9781351817677.jpg/626x0w.jpg' }}
-          style={styles.bookImage}
-        />
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#000" }}>
+      <StatusBar barStyle="light-content" />
+      <View style={styles.topbar}>
+        <Text style={styles.title}>Triggui</Text>
+        <TouchableOpacity onPress={share} style={styles.shareBtn}>
+          <Text style={styles.shareTxt}>Compartir</Text>
+        </TouchableOpacity>
       </View>
-      <Text style={styles.phrase}>
-        “TrigguiApp: en la nube funcionando” — Confucio
-      </Text>
-      <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
-        <Text style={styles.buttonText}>📖</Text>
-      </TouchableOpacity>
 
-      <Modal visible={modalVisible} transparent={true} animationType="fade">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
-              <Text style={styles.closeText}>×</Text>
-            </TouchableOpacity>
-            <Text style={styles.modalTitle}>Si no sacamos tiempo</Text>
-            <Text style={styles.modalText}>
-              en el momento para hacer lo que realmente importa, estaremos abriendo las puertas a la COMPLEJIDAD y total desenfoque.
-            </Text>
-          </View>
+      {offline ? (
+        <View style={styles.offline}>
+          <Text style={styles.offlineTitle}>Sin conexión</Text>
+          <Text style={styles.offlineTxt}>Revisa tu Internet y vuelve a abrir la app.</Text>
         </View>
-      </Modal>
-    </View>
+      ) : (
+        <WebView
+          ref={webRef}
+          source={{ uri: APP_URL }}
+          onNavigationStateChange={onNav}
+          onShouldStartLoadWithRequest={onShouldStart}
+          startInLoadingState
+          onError={() => setOffline(true)}
+          onHttpError={() => setOffline(true)}
+          pullToRefreshEnabled
+          allowsBackForwardNavigationGestures
+          setSupportMultipleWindows={false}
+          javaScriptEnabled
+          domStorageEnabled
+          cacheEnabled
+          originWhitelist={["*"]}
+          style={{ backgroundColor: "#000" }}
+        />
+      )}
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000',
-    alignItems: 'center',
-    justifyContent: 'space-evenly',
-    padding: 20,
+  topbar: {
+    height: 48,
+    backgroundColor: "#000",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 12
   },
-  bookContainer: {
-    width: 200,
-    height: 300,
+  title: { color: "#fff", fontSize: 18, fontWeight: "600" },
+  shareBtn: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
     borderRadius: 10,
-    overflow: 'hidden',
-    shadowColor: '#fff',
-    shadowOpacity: 0.4,
-    shadowOffset: { width: 0, height: 8 },
-    shadowRadius: 10,
+    backgroundColor: "#111"
   },
-  bookImage: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
-  },
-  phrase: {
-    color: '#fff',
-    fontSize: 16,
-    textAlign: 'center',
-    fontStyle: 'italic',
-    marginHorizontal: 10,
-  },
-  button: {
-    backgroundColor: '#87CEEB',
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#fff',
-    shadowOpacity: 0.5,
-    shadowRadius: 8,
-  },
-  buttonText: {
-    fontSize: 32,
-    color: '#000',
-  },
-  modalOverlay: {
+  shareTxt: { color: "#fff", fontSize: 13 },
+  offline: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.8)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#000",
+    paddingHorizontal: 24
   },
-  modalContent: {
-    backgroundColor: '#fff',
-    padding: 24,
-    borderRadius: 12,
-    width: '80%',
-    alignItems: 'center',
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 12,
-  },
-  modalText: {
-    fontSize: 16,
-    textAlign: 'center',
-    color: '#444',
-  },
-  closeButton: {
-    position: 'absolute',
-    top: 12,
-    right: 16,
-  },
-  closeText: {
-    fontSize: 22,
-    color: '#444',
-  },
+  offlineTitle: { color: "#fff", fontSize: 22, fontWeight: "700", marginBottom: 8 },
+  offlineTxt: { color: "#bbb", fontSize: 14, textAlign: "center" }
 });
