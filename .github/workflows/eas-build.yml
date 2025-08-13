@@ -1,30 +1,54 @@
-name: EAS Build Triggui
+name: Build & Submit (Android; iOS manual)
 
 on:
   push:
-    branches:
-      - main
-    paths:
-      - 'mobile/**'
+    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
-  build:
-    name: Build on Expo EAS
+  android:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - name: Install EAS CLI
-        run: npm install -g eas-cli
-
-      - name: Run EAS Build (Preview)
-        run: eas build --platform all --non-interactive --profile preview
+    defaults:
+      run:
         working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install -g eas-cli
+      - run: npm install
+      - name: Write Google Play service account
+        run: echo "${ANDROID_SERVICE_ACCOUNT_JSON}" > play.json
+        env:
+          ANDROID_SERVICE_ACCOUNT_JSON: ${{ secrets.ANDROID_SERVICE_ACCOUNT_JSON }}
+      - name: Build (Android, cloud)
+        run: eas build --platform android --profile production --non-interactive
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      - name: Submit to Google Play (Internal track)
+        run: eas submit -p android --latest --track internal --key play.json --non-interactive
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+  ios:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' }} # actívalo manual cuando tengas llaves de Apple
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install -g eas-cli
+      - run: npm install
+      - name: Build (iOS, cloud)
+        run: eas build --platform ios --profile production --non-interactive
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      - name: Submit to App Store Connect
+        run: eas submit -p ios --latest --non-interactive
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
