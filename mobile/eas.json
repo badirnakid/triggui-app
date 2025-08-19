@@ -1,11 +1,8 @@
 {
-  "cli": { "version": ">= 3.18.0" },
   "build": {
     "production": {
-      "credentialsSource": "remote",
       "android": { "buildType": "app-bundle" },
-      "ios": { "resourceClass": "m1-medium" },
-      "env": { "APP_URL": "https://app.triggui.com" }
+      "ios": { "simulator": false }
     }
   },
   "submit": {
