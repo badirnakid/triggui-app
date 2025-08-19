@@ -6,8 +6,27 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "assetBundlePatterns": ["**/*"],
-    "ios": { "supportsTablet": true, "bundleIdentifier": "com.triggui.app" },
-    "android": { "package": "com.triggui.app" },
-    "extra": { "eas": { "projectId": "1417880a-2431-4ef5-a6a0-c5962b11ddd4" } }
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
+    "android": {
+      "package": "com.triggui.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#000000"
+      }
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.triggui.app"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "1417880a-2431-4ef5-a6a0-c5962b11ddd4"
+      }
+    }
   }
 }
