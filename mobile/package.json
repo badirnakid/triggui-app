@@ -1,24 +1,25 @@
 {
-  "name": "triggui-app",
-  "private": true,
+  "name": "trigguiapp",
   "version": "1.0.0",
-  "main": "expo-router/entry",
+  "main": "index.js",
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
-    "expo": "^52.0.0",
-    "expo-linking": "~6.3.1",
-    "expo-status-bar": "~2.0.0",
-    "react": "18.2.0",
-    "react-native": "0.74.0",
-    "react-native-webview": "^13.8.6"
+    "expo": "^51.0.0",
+    "expo-status-bar": "~1.12.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-native": "0.76.9",
+    "react-native-web": "~0.19.10"
   },
   "devDependencies": {
-    "typescript": "~5.3.3",
-    "babel-preset-expo": "~11.0.0"
-  }
+    "@babel/core": "^7.20.0",
+    "babel-preset-expo": "~12.0.0"
+  },
+  "private": true
 }
