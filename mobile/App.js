@@ -1,74 +1,142 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Animated, Easing } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView, Platform } from 'react-native';
-import { WebView } from 'react-native-webview';
+import React, { useEffect, useRef, useState } from "react";
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  Animated, 
+  BackHandler, 
+  Platform 
+} from "react-native";
+import { WebView } from "react-native-webview";
+import { SafeAreaView } from "react-native-safe-area-context";
+import NetInfo from "@react-native-community/netinfo";
+import * as SplashScreen from "expo-splash-screen";
+
+// Mantener splash visible hasta que cargue
+SplashScreen.preventAutoHideAsync();
 
 export default function App() {
-  const [loading, setLoading] = useState(true);
-  const opacity = new Animated.Value(0);
+  const [isReady, setIsReady] = useState(false);
+  const [isConnected, setIsConnected] = useState(true);
+  const webViewRef = useRef(null);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
 
+  // Animación de respiración del logo
   useEffect(() => {
-    // Animación de pulsación infinita
     Animated.loop(
       Animated.sequence([
-        Animated.timing(opacity, {
-          toValue: 1,
+        Animated.timing(scaleAnim, {
+          toValue: 1.05,
           duration: 1200,
-          easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
         }),
-        Animated.timing(opacity, {
-          toValue: 0.3,
+        Animated.timing(scaleAnim, {
+          toValue: 0.95,
           duration: 1200,
-          easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
         }),
       ])
     ).start();
+
+    // Simula carga inicial (2.5s máx)
+    setTimeout(async () => {
+      setIsReady(true);
+      await SplashScreen.hideAsync();
+    }, 2500);
+
+    // Monitorear conexión a internet
+    const unsubscribe = NetInfo.addEventListener((state) => {
+      setIsConnected(state.isConnected);
+    });
+
+    return () => unsubscribe();
   }, []);
 
+  // Manejar botón Back en Android
+  useEffect(() => {
+    if (Platform.OS === "android") {
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        () => {
+          if (webViewRef.current) {
+            webViewRef.current.goBack();
+            return true; // evita cerrar la app
+          }
+          return false;
+        }
+      );
+      return () => backHandler.remove();
+    }
+  }, []);
+
+  // Si no hay conexión → mensaje elegante
+  if (!isConnected) {
+    return (
+      <SafeAreaView style={styles.center}>
+        <Text style={styles.errorText}>
+          Necesitas conexión a internet para abrir TrigguiApp
+        </Text>
+      </SafeAreaView>
+    );
+  }
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#0e0f1b' }}>
-      {loading && (
+    <SafeAreaView style={styles.container}>
+      {!isReady ? (
+        // Splash animado
         <View style={styles.splash}>
           <Animated.Image
-            source={require('./assets/adaptive-icon-1024.png')} // tu logo
-            style={[styles.logo, { opacity }]}
+            source={require("./assets/icon.png")} // tu logo
+            style={[styles.logo, { transform: [{ scale: scaleAnim }] }]}
             resizeMode="contain"
           />
+          <Text style={styles.splashText}>TrigguiApp</Text>
         </View>
+      ) : (
+        // WebView cargando triggui.com
+        <WebView
+          ref={webViewRef}
+          source={{ uri: "https://app.triggui.com" }}
+          startInLoadingState
+          javaScriptEnabled
+          domStorageEnabled
+          style={{ flex: 1 }}
+        />
       )}
-      <WebView
-        source={{ uri: 'https://app.triggui.com' }}
-        style={{ flex: 1 }}
-        originWhitelist={['*']}
-        allowsInlineMediaPlayback
-        javaScriptEnabled
-        domStorageEnabled
-        setSupportMultipleWindows={false}
-        startInLoadingState
-        onLoadEnd={() => setLoading(false)} // quita splash al cargar
-      />
-      <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
   splash: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: '#0e0f1b',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 10,
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff", // fondo limpio
   },
   logo: {
-    width: 180,
-    height: 180,
+    width: 150,
+    height: 150,
+  },
+  splashText: {
+    marginTop: 20,
+    fontSize: 22,
+    fontWeight: "600",
+    color: "#222",
+  },
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  errorText: {
+    fontSize: 18,
+    textAlign: "center",
+    color: "red",
   },
 });
