@@ -3,33 +3,27 @@
     "name": "TrigguiApp",
     "slug": "trigguiapp",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/adaptive-icon-1024.png",
     "userInterfaceStyle": "light",
-
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#000000",
-      "duration": 2500
+      "backgroundColor": "#0e0f1b"
     },
-
     "android": {
       "package": "com.triggui.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon-1024.png",
-        "backgroundColor": "#000000"
+        "backgroundColor": "#0e0f1b"
       }
     },
-
     "ios": {
       "supportsTablet": true
     },
-
     "web": {
       "favicon": "./assets/favicon.png"
     },
-
     "extra": {
       "eas": {
         "projectId": "1417880a-2431-4ef5-a6a0-c5962b11ddd4"
