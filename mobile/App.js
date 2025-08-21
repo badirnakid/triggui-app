@@ -4,7 +4,7 @@ import { WebView } from 'react-native-webview';
 import { useRef, useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 
-// Mantén splash hasta que nosotros lo ocultemos
+// Mantener splash hasta que decidamos ocultarlo
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
@@ -12,21 +12,21 @@ export default function App() {
   const webViewRef = useRef(null);
   const [isReady, setIsReady] = useState(false);
 
-  // Delay elegante del splash
+  // Control de splash con retardo
   useEffect(() => {
     const timer = setTimeout(async () => {
       setIsReady(true);
       await SplashScreen.hideAsync();
-    }, 2500); // Ajusta 2000–3000ms
+    }, 2500); // 2.5s elegante
     return () => clearTimeout(timer);
   }, []);
 
-  // Manejo del botón físico "Back" en Android
+  // Back físico en Android
   useEffect(() => {
     const backAction = () => {
       if (webViewRef.current) {
         webViewRef.current.goBack();
-        return true; // evita cierre de app
+        return true;
       }
       return false;
     };
@@ -37,7 +37,7 @@ export default function App() {
     return () => backHandler.remove();
   }, []);
 
-  if (!isReady) return null; // Splash activo
+  if (!isReady) return null; // splash activo
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#000000' }}>
@@ -51,8 +51,13 @@ export default function App() {
         domStorageEnabled
         setSupportMultipleWindows={false}
         overScrollMode="never"
+        // 🔥 Inyectamos CSS para quitar highlight azul en Android
         injectedJavaScript={`
-          const css = '*:focus { outline: none !important; } ::-webkit-tap-highlight-color { transparent; }';
+          const css = \`
+            * { -webkit-tap-highlight-color: transparent !important; }
+            *:focus { outline: none !important; }
+            button, a { outline: none !important; }
+          \`;
           const style = document.createElement('style');
           style.innerHTML = css;
           document.head.appendChild(style);
