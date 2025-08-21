@@ -1,4 +1,4 @@
-import { SafeAreaView, BackHandler, Platform } from 'react-native';
+import { SafeAreaView, BackHandler } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { useRef, useEffect } from 'react';
 
@@ -6,21 +6,16 @@ export default function App() {
   const uri = 'https://app.triggui.com';
   const webViewRef = useRef(null);
 
-  // Manejo del botón físico "Back" en Android
+  // Botón físico "Back" en Android
   useEffect(() => {
     const backAction = () => {
       if (webViewRef.current) {
         webViewRef.current.goBack();
-        return true; // evita que cierre la app
+        return true;
       }
       return false;
     };
-
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      backAction
-    );
-
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
     return () => backHandler.remove();
   }, []);
 
@@ -35,13 +30,12 @@ export default function App() {
         javaScriptEnabled
         domStorageEnabled
         setSupportMultipleWindows={false}
-        overScrollMode="never"             // sin rebotes
-        androidLayerType="hardware"        // rendimiento óptimo
+        overScrollMode="never"
+        androidLayerType="hardware"
         androidHardwareAccelerationDisabled={false}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
         injectedJavaScript={`
-          // Elimina highlight azul al tocar en Android
           const style = document.createElement('style');
           style.innerHTML = '* { -webkit-tap-highlight-color: transparent; }';
           document.head.appendChild(style);
