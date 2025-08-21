@@ -1,12 +1,16 @@
-import { SafeAreaView, Platform, BackHandler } from 'react-native';
+import { useEffect, useRef, useCallback } from 'react';
+import { SafeAreaView, BackHandler, Platform } from 'react-native';
 import { WebView } from 'react-native-webview';
-import { useRef, useEffect } from 'react';
+import * as SplashScreen from 'expo-splash-screen';
+
+// Prevenir que el splash desaparezca automáticamente
+SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const uri = 'https://app.triggui.com';
   const webViewRef = useRef(null);
 
-  // Manejo del botón físico "Back" en Android (volver dentro del WebView)
+  // Manejo del botón físico "Back" en Android
   useEffect(() => {
     const backAction = () => {
       if (webViewRef.current) {
@@ -24,8 +28,13 @@ export default function App() {
     return () => backHandler.remove();
   }, []);
 
+  // Cuando la web ya terminó de cargar → ocultamos splash
+  const handleLoadEnd = useCallback(async () => {
+    await SplashScreen.hideAsync(); // fade automático de Expo
+  }, []);
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#000000' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#0e0f1b' }}>
       <WebView
         ref={webViewRef}
         source={{ uri }}
@@ -35,20 +44,10 @@ export default function App() {
         javaScriptEnabled
         domStorageEnabled
         setSupportMultipleWindows={false}
-        startInLoadingState
-
-        // 🔥 Fix 1: sin highlight azul en Android
-        injectedJavaScript={`
-          const css = '* { -webkit-tap-highlight-color: rgba(0,0,0,0); }';
-          const style = document.createElement('style');
-          style.appendChild(document.createTextNode(css));
-          document.head.appendChild(style);
-          true;
-        `}
-
-        // 🔥 Fix 2: sin rebotes ni vibraciones
         overScrollMode="never"
-        androidLayerType="hardware"
+        androidLayerType="software" // elimina highlight azul feo
+        androidHardwareAccelerationDisabled={false}
+        onLoadEnd={handleLoadEnd}
       />
     </SafeAreaView>
   );
