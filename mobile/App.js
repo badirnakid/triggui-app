@@ -4,7 +4,7 @@ import { WebView } from 'react-native-webview';
 import { useRef, useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 
-// Evita que el splash desaparezca automáticamente
+// Mantén splash hasta que nosotros lo ocultemos
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
@@ -12,12 +12,12 @@ export default function App() {
   const webViewRef = useRef(null);
   const [isReady, setIsReady] = useState(false);
 
-  // Simulamos retardo elegante del splash (ej. 2500ms)
+  // Delay elegante del splash
   useEffect(() => {
     const timer = setTimeout(async () => {
       setIsReady(true);
       await SplashScreen.hideAsync();
-    }, 2500); // <- ajusta el tiempo aquí (2000–3000ms es elegante)
+    }, 2500); // Ajusta 2000–3000ms
     return () => clearTimeout(timer);
   }, []);
 
@@ -26,26 +26,21 @@ export default function App() {
     const backAction = () => {
       if (webViewRef.current) {
         webViewRef.current.goBack();
-        return true; // evita que cierre la app
+        return true; // evita cierre de app
       }
       return false;
     };
-
     const backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
       backAction
     );
-
     return () => backHandler.remove();
   }, []);
 
-  if (!isReady) {
-    // Mientras no esté listo, mantenemos splash activo
-    return null;
-  }
+  if (!isReady) return null; // Splash activo
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#0e0f1b' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#000000' }}>
       <WebView
         ref={webViewRef}
         source={{ uri }}
@@ -55,8 +50,14 @@ export default function App() {
         javaScriptEnabled
         domStorageEnabled
         setSupportMultipleWindows={false}
-        overScrollMode="never"   // evita rebotes
-        androidLayerType="software" // quita highlight azul
+        overScrollMode="never"
+        injectedJavaScript={`
+          const css = '*:focus { outline: none !important; } ::-webkit-tap-highlight-color { transparent; }';
+          const style = document.createElement('style');
+          style.innerHTML = css;
+          document.head.appendChild(style);
+          true;
+        `}
       />
       <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
     </SafeAreaView>
