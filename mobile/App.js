@@ -1,5 +1,4 @@
-import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView, Platform, BackHandler } from 'react-native';
+import { SafeAreaView, BackHandler, Platform } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { useRef, useEffect } from 'react';
 
@@ -26,22 +25,19 @@ export default function App() {
   }, []);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#0e0f1b' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#000' }}>
       <WebView
         ref={webViewRef}
         source={{ uri }}
         style={{ flex: 1 }}
         originWhitelist={['*']}
-        allowsInlineMediaPlayback
         javaScriptEnabled
         domStorageEnabled
+        allowsInlineMediaPlayback
         setSupportMultipleWindows={false}
-        startInLoadingState
-        androidLayerType="software"   // evita el efecto azul feo
-        androidHardwareAccelerationDisabled={false}
-        overScrollMode="never"        // evita "rebotes"
+        overScrollMode="never"
+        androidLayerType="hardware"  // evita efecto azul y mantiene fluidez
       />
-      <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
     </SafeAreaView>
   );
 }
