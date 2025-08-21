@@ -1,4 +1,4 @@
-import { SafeAreaView, BackHandler, Platform } from 'react-native';
+import { SafeAreaView, Platform, BackHandler } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { useRef, useEffect } from 'react';
 
@@ -6,7 +6,7 @@ export default function App() {
   const uri = 'https://app.triggui.com';
   const webViewRef = useRef(null);
 
-  // Manejo del botón físico "Back" en Android
+  // Manejo del botón físico "Back" en Android (volver dentro del WebView)
   useEffect(() => {
     const backAction = () => {
       if (webViewRef.current) {
@@ -25,18 +25,30 @@ export default function App() {
   }, []);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#000' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#000000' }}>
       <WebView
         ref={webViewRef}
         source={{ uri }}
         style={{ flex: 1 }}
         originWhitelist={['*']}
+        allowsInlineMediaPlayback
         javaScriptEnabled
         domStorageEnabled
-        allowsInlineMediaPlayback
         setSupportMultipleWindows={false}
+        startInLoadingState
+
+        // 🔥 Fix 1: sin highlight azul en Android
+        injectedJavaScript={`
+          const css = '* { -webkit-tap-highlight-color: rgba(0,0,0,0); }';
+          const style = document.createElement('style');
+          style.appendChild(document.createTextNode(css));
+          document.head.appendChild(style);
+          true;
+        `}
+
+        // 🔥 Fix 2: sin rebotes ni vibraciones
         overScrollMode="never"
-        androidLayerType="hardware"  // evita efecto azul y mantiene fluidez
+        androidLayerType="hardware"
       />
     </SafeAreaView>
   );
