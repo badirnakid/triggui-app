@@ -9,13 +9,14 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#0e0f1b"
+      "backgroundColor": "#000000",
+      "fadeOutDuration": 1500
     },
     "android": {
       "package": "com.triggui.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon-1024.png",
-        "backgroundColor": "#0e0f1b"
+        "backgroundColor": "#000000"
       }
     },
     "ios": {

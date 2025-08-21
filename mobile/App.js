@@ -1,10 +1,6 @@
-import { useEffect, useRef, useCallback } from 'react';
 import { SafeAreaView, BackHandler, Platform } from 'react-native';
 import { WebView } from 'react-native-webview';
-import * as SplashScreen from 'expo-splash-screen';
-
-// Prevenir que el splash desaparezca automáticamente
-SplashScreen.preventAutoHideAsync();
+import { useRef, useEffect } from 'react';
 
 export default function App() {
   const uri = 'https://app.triggui.com';
@@ -28,13 +24,8 @@ export default function App() {
     return () => backHandler.remove();
   }, []);
 
-  // Cuando la web ya terminó de cargar → ocultamos splash
-  const handleLoadEnd = useCallback(async () => {
-    await SplashScreen.hideAsync(); // fade automático de Expo
-  }, []);
-
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#0e0f1b' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#000000' }}>
       <WebView
         ref={webViewRef}
         source={{ uri }}
@@ -44,10 +35,18 @@ export default function App() {
         javaScriptEnabled
         domStorageEnabled
         setSupportMultipleWindows={false}
-        overScrollMode="never"
-        androidLayerType="software" // elimina highlight azul feo
+        overScrollMode="never"             // sin rebotes
+        androidLayerType="hardware"        // rendimiento óptimo
         androidHardwareAccelerationDisabled={false}
-        onLoadEnd={handleLoadEnd}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        injectedJavaScript={`
+          // Elimina highlight azul al tocar en Android
+          const style = document.createElement('style');
+          style.innerHTML = '* { -webkit-tap-highlight-color: transparent; }';
+          document.head.appendChild(style);
+          true;
+        `}
       />
     </SafeAreaView>
   );
