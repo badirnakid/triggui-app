@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView, Platform, BackHandler } from 'react-native';
+import { SafeAreaView, Platform, BackHandler, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { useRef, useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
@@ -11,13 +11,14 @@ export default function App() {
   const uri = 'https://app.triggui.com';
   const webViewRef = useRef(null);
   const [isReady, setIsReady] = useState(false);
+  const [currentUrl, setCurrentUrl] = useState(uri);
 
   // Control de splash con retardo
   useEffect(() => {
     const timer = setTimeout(async () => {
       setIsReady(true);
       await SplashScreen.hideAsync();
-    }, 2500); // 2.5s elegante
+    }, 2500); // 2.5s
     return () => clearTimeout(timer);
   }, []);
 
@@ -39,32 +40,64 @@ export default function App() {
 
   if (!isReady) return null; // splash activo
 
+  const isStripe = currentUrl.includes('stripe.com');
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#000000' }}>
-      <WebView
-        ref={webViewRef}
-        source={{ uri }}
-        style={{ flex: 1 }}
-        originWhitelist={['*']}
-        allowsInlineMediaPlayback
-        javaScriptEnabled
-        domStorageEnabled
-        setSupportMultipleWindows={false}
-        overScrollMode="never"
-        // 🔥 Inyectamos CSS para quitar highlight azul en Android
-        injectedJavaScript={`
-          const css = \`
-            * { -webkit-tap-highlight-color: transparent !important; }
-            *:focus { outline: none !important; }
-            button, a { outline: none !important; }
-          \`;
-          const style = document.createElement('style');
-          style.innerHTML = css;
-          document.head.appendChild(style);
-          true;
-        `}
-      />
-      <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
-    </SafeAreaView>
+    <View style={{ flex: 1, backgroundColor: '#000000' }}>
+      {isStripe ? (
+        // Stripe → con SafeArea
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#000000' }}>
+          <WebView
+            ref={webViewRef}
+            source={{ uri }}
+            style={{ flex: 1 }}
+            originWhitelist={['*']}
+            allowsInlineMediaPlayback
+            javaScriptEnabled
+            domStorageEnabled
+            setSupportMultipleWindows={false}
+            overScrollMode="never"
+            onNavigationStateChange={(event) => setCurrentUrl(event.url)}
+            injectedJavaScript={`
+              const css = \`
+                * { -webkit-tap-highlight-color: transparent !important; }
+                *:focus { outline: none !important; }
+                button, a { outline: none !important; }
+              \`;
+              const style = document.createElement('style');
+              style.innerHTML = css;
+              document.head.appendChild(style);
+              true;
+            `}
+          />
+          <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
+        </SafeAreaView>
+      ) : (
+        // Bloques → fullscreen absoluto
+        <WebView
+          ref={webViewRef}
+          source={{ uri }}
+          style={{ flex: 1 }}
+          originWhitelist={['*']}
+          allowsInlineMediaPlayback
+          javaScriptEnabled
+          domStorageEnabled
+          setSupportMultipleWindows={false}
+          overScrollMode="never"
+          onNavigationStateChange={(event) => setCurrentUrl(event.url)}
+          injectedJavaScript={`
+            const css = \`
+              * { -webkit-tap-highlight-color: transparent !important; }
+              *:focus { outline: none !important; }
+              button, a { outline: none !important; }
+            \`;
+            const style = document.createElement('style');
+            style.innerHTML = css;
+            document.head.appendChild(style);
+            true;
+          `}
+        />
+      )}
+    </View>
   );
 }
