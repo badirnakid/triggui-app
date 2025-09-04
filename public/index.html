@@ -198,12 +198,14 @@ btnShare.onclick=()=>{
   if(navigator.share){
     navigator.share(shareData).catch(console.error);
   }else{
-    const encoded=encodeURIComponent(`${shareData.text} ${shareData.url}`);
-    const fb=`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareData.url)}`;
-    const tw=`https://twitter.com/intent/tweet?text=${encoded}`;
-    const wa=`https://wa.me/?text=${encoded}`;
-    alert(`Comparte en:\n${fb}\n${tw}\n${wa}`);
-  }
+  // Fallback bonito para WebView o navegadores sin Web Share API
+  const msg = 
+    "✨ Comparte este momento con quien quieras:\n\n" +
+    "📚 " + shareData.text + "\n\n" +
+    "👉 Copia y pega este link en tu app favorita:\n" +
+    shareData.url;
+
+  alert(msg);
 };
 
   
