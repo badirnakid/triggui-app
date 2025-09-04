@@ -211,20 +211,38 @@ btnOtro.onclick=()=>window.open("https://donate.stripe.com/9B66oJ8bI1E02U85aR240
 btnShare.onclick=async()=>{
   try{
     // 1. Obtener número actual del contador
-    const r = await fetch("https://triggui-api.vercel.app/api/get");
-    const d = await r.json();
-    document.getElementById("shareNum").textContent = d.total.toLocaleString("es-MX");
+    const r=await fetch("https://triggui-api.vercel.app/api/get");
+    const d=await r.json();
+    const numTexto=`${d.total.toLocaleString("es-MX")} libros físicos abiertos`;
 
-    // 2. Capturar tarjeta con html2canvas
-    const card = document.getElementById("shareCard");
-    card.style.display="flex"; // mostrar temporalmente
-    const canvas = await html2canvas(card,{backgroundColor:null});
-    card.style.display="none"; // ocultar de nuevo
+    // 2. Preparar grid para captura (reemplazar portada por contador)
+    const portada=document.querySelector("#portada-img");
+    let backup=null;
+    if(portada){
+      backup=portada.style.display;
+      portada.style.display="none"; // ocultamos portada
+      const numDiv=document.createElement("div");
+      numDiv.id="portada-contador";
+      numDiv.style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;";
+      numDiv.innerHTML=`<div style="font-size:2rem;font-weight:900;color:#30ffe4;text-align:center;">${numTexto}</div>`;
+      portada.parentNode.append(numDiv);
+    }
 
+    // 3. Capturar grid completo
+    const gridEl=document.getElementById("grid");
+    const canvas=await html2canvas(gridEl,{backgroundColor:null});
+
+    // 4. Restaurar estado original
+    if(portada){
+      document.getElementById("portada-contador")?.remove();
+      portada.style.display=backup;
+    }
+
+    // 5. Compartir o fallback
     canvas.toBlob(async(blob)=>{
       const file=new File([blob],"triggui.png",{type:"image/png"});
 
-      // 3. Intentar compartir nativo (Android moderno)
+      // ✅ Android moderno: menú nativo
       if(navigator.canShare && navigator.canShare({files:[file]})){
         await navigator.share({
           files:[file],
@@ -232,7 +250,7 @@ btnShare.onclick=async()=>{
           text:"Un impulso real. Nada más. Nada menos."
         });
       }else{
-        // 4. Fallback → abrir la imagen en nueva pestaña para descargar
+        // ❌ iOS/desktop: abrir imagen en nueva pestaña
         const url=URL.createObjectURL(blob);
         window.open(url,"_blank");
       }
