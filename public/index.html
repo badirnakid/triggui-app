@@ -180,6 +180,26 @@ function handle(card,i,port,label){
 
 btnOtro.onclick=()=>window.open("https://donate.stripe.com/9B66oJ8bI1E02U85aR24001","_blank");
 
+btnShare.onclick=()=>{
+  const shareData={
+    title:"Triggui — Abre un libro físico",
+    text:`Estoy abriendo "${libro.titulo}" de ${libro.autor} con Triggui 📖✨`,
+    url:"https://app.triggui.com"
+  };
+
+  if(navigator.share){
+    navigator.share(shareData).catch(console.error);
+  }else{
+    const encoded=encodeURIComponent(`${shareData.text} ${shareData.url}`);
+    const fb=`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareData.url)}`;
+    const tw=`https://twitter.com/intent/tweet?text=${encoded}`;
+    const wa=`https://wa.me/?text=${encoded}`;
+    alert(`Comparte en:\n${fb}\n${tw}\n${wa}`);
+  }
+};
+
+  
+
 btnLibro.onclick=async()=>{
   btnLibro.disabled=true;cele.style.display="flex";
   celeMsg.innerHTML='✨ <span class="num">...</span><br>libros físicos abiertos';
