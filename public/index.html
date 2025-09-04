@@ -197,26 +197,46 @@ function handle(card,i,port,label){
 
 btnOtro.onclick=()=>window.open("https://donate.stripe.com/9B66oJ8bI1E02U85aR24001","_blank");
 
-btnShare.onclick=()=>{
-  const shareData={
-    title:"Triggui — Abre un libro físico",
-    text:`Estoy abriendo "${libro.titulo}" de ${libro.autor} con Triggui 📖✨`,
-    url:"https://app.triggui.com"
-  };
+btnShare.onclick = () => {
+  const t = libro.tarjeta;
+  const card = document.getElementById("tarjetaCard");
 
-  if(navigator.share){
-    navigator.share(shareData).catch(console.error);
-  }else{
-  // Fallback bonito para WebView o navegadores sin Web Share API
-  const msg = 
-    "✨ Comparte este momento con quien quieras:\n\n" +
-    "📚 " + shareData.text + "\n\n" +
-    "👉 Copia y pega este link en tu app favorita:\n" +
-    shareData.url;
+  card.style = `
+    width:360px;height:560px;
+    background:${t.style.paper};
+    color:${t.style.ink};
+    border:2px solid ${t.style.border};
+    border-radius:20px;
+    padding:16px;
+    font-family:${t.style.serif};
+    display:flex;flex-direction:column;justify-content:space-between;
+  `;
 
-  alert(msg);
-}    
+  card.innerHTML = `
+    <div style="font:700 20px ${t.style.serif};margin-bottom:8px;">
+      ${libro.titulo} · ${libro.autor}
+    </div>
+    <div style="font:14px/1.5 ${t.style.serif};margin-bottom:12px;">
+      ${t.parrafoTop}
+    </div>
+    <div style="font:600 14px ${t.style.sans};color:${t.style.accent};margin-bottom:8px;">
+      ${t.subtitulo}
+    </div>
+    <div style="font:14px/1.5 ${t.style.serif};flex:1;margin-bottom:12px;">
+      ${t.parrafoBot}
+    </div>
+    <div style="text-align:center;font:12px ${t.style.sans};">
+      app.triggui.com
+    </div>
+  `;
+
+  document.getElementById("tarjetaOverlay").style.display = "flex";
 };
+
+// cerrar overlay al tocar fuera
+document.getElementById("tarjetaOverlay").onclick = () =>
+  document.getElementById("tarjetaOverlay").style.display = "none";
+
 
   
 
