@@ -171,7 +171,14 @@ function buildPort(i){
   box.innerHTML=`<h2>${libro.titulo}</h2><p>${libro.autor}</p>`;
   const emoji=document.createElement("div");emoji.className="emoji-big";emoji.textContent=emojis[i%emojis.length];
   wrap.append(box,emoji);
-  if(isURL(libro.portada)){d.append(Object.assign(new Image(),{src:libro.portada,loading:"lazy"}));}
+  if(isURL(libro.portada)){
+  const img=new Image();
+  img.src=libro.portada;
+  img.loading="lazy";
+  img.id="portada-img";   // 👈 clave para que btnShare lo encuentre
+  d.append(img);
+}
+
   else{d.append(wrap);setTimeout(()=>adjustScale(wrap),0);}
   return d;
 }
