@@ -66,17 +66,24 @@ html,body{height:100%;font-family:'Archivo',sans-serif;background:#0e0f1b;color:
 .emoji-big{font-size:clamp(1.6rem,5vw,2.8rem);filter:drop-shadow(0 4px 8px rgba(0,0,0,.3))}
 
 /* ---------------- CTA Buttons ---------------- */
-.cta{position:fixed;bottom:3vh;left:50%;transform:translateX(-50%);z-index:100;display:none;gap:1.2rem;justify-content:center;flex-wrap:wrap}
+.cta{position:fixed;bottom:3vh;left:50%;transform:translateX(-50%);z-index:100;display:none;gap:0.8rem;justify-content:center;flex-wrap:wrap}
 
 .cta button{
-  width:var(--btnSize);height:var(--btnSize);flex:0 0 var(--btnSize);
-  border:none;border-radius:50%;padding:.65rem;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
-  font-family:'Archivo',sans-serif;font-weight:600;letter-spacing:.3px;
-  font-size:clamp(.58rem,2.2vw,.85rem);line-height:1.05;
-  cursor:pointer;background-size:200% 200%;transition:filter .25s,transform .25s;
-  box-shadow:0 4px 12px rgba(0,0,0,.12);white-space:pre-line;overflow:hidden
+  width:clamp(3rem,10vw,4.6rem);
+  height:clamp(3rem,10vw,4.6rem);
+  flex:0 0 clamp(3rem,10vw,4.6rem);
+  border:none;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:clamp(1.3rem,3.5vw,1.8rem); /* tamaño perfecto del ícono */
+  cursor:pointer;
+  background-size:200% 200%;
+  transition:filter .25s,transform .25s;
+  box-shadow:0 4px 10px rgba(0,0,0,.15);
 }
+
 .cta button:hover{filter:brightness(1.15);transform:translateY(-2px)}
 
 .cta .icon{font-size:1.55rem;margin-bottom:.15rem;line-height:1}
