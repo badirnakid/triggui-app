@@ -208,24 +208,39 @@ function handle(card,i,port,label){
 
 btnOtro.onclick=()=>window.open("https://donate.stripe.com/9B66oJ8bI1E02U85aR24001","_blank");
 
-btnShare.onclick=()=>{
-  const shareData={
-    title:"Triggui — Abre un libro físico",
-    text:`Estoy abriendo "${libro.titulo}" de ${libro.autor} con Triggui 📖✨`,
-    url:"https://app.triggui.com"
-  };
+btnShare.onclick=async()=>{
+  try{
+    // 1. Obtener número actual del contador
+    const r = await fetch("https://triggui-api.vercel.app/api/get");
+    const d = await r.json();
+    document.getElementById("shareNum").textContent = d.total.toLocaleString("es-MX");
 
-  if(navigator.share){
-    navigator.share(shareData).catch(console.error);
-  }else{
-    const encoded=encodeURIComponent(`${shareData.text} ${shareData.url}`);
-    const fb=`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareData.url)}`;
-    const tw=`https://twitter.com/intent/tweet?text=${encoded}`;
-    const wa=`https://wa.me/?text=${encoded}`;
-    alert(`Comparte en:\n${fb}\n${tw}\n${wa}`);
+    // 2. Capturar tarjeta con html2canvas
+    const card = document.getElementById("shareCard");
+    card.style.display="flex"; // mostrar temporalmente
+    const canvas = await html2canvas(card,{backgroundColor:null});
+    card.style.display="none"; // ocultar de nuevo
+
+    canvas.toBlob(async(blob)=>{
+      const file=new File([blob],"triggui.png",{type:"image/png"});
+
+      // 3. Intentar compartir nativo (Android moderno)
+      if(navigator.canShare && navigator.canShare({files:[file]})){
+        await navigator.share({
+          files:[file],
+          title:"Triggui — Abre un libro físico",
+          text:"Un impulso real. Nada más. Nada menos."
+        });
+      }else{
+        // 4. Fallback → abrir la imagen en nueva pestaña para descargar
+        const url=URL.createObjectURL(blob);
+        window.open(url,"_blank");
+      }
+    });
+  }catch(err){
+    console.error("❌ Error al compartir:",err);
   }
 };
-
   
 
 btnLibro.onclick=async()=>{
