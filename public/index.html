@@ -37,6 +37,20 @@
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;font-family:'Archivo',sans-serif;background:#0e0f1b;color:#fff;-webkit-overflow-scrolling:touch}
 
+/* 🔑 Evita que WebView escale el texto automáticamente */
+html, body {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* 🔑 Asegura que los textos largos en la tarjeta no se desborden */
+#tarjetaCard {
+  overflow-wrap: break-word;
+  word-break: break-word;
+  box-sizing: border-box; /* asegura que padding y border no rompan layout */
+}
+
+
 /* ---------------- Intro ---------------- */
 .intro{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);padding:2.2rem 2.8rem;background:#191e32;border-radius:24px;z-index:120;font-family:'Poppins';font-size:1.5rem;font-weight:600;text-align:center;box-shadow:0 0 16px rgba(48,255,228,.32);animation:introHide 3.2s 2s forwards}
 @keyframes introHide{to{opacity:0;visibility:hidden;transform:translate(-50%,-80%)}}
