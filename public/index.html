@@ -235,12 +235,13 @@ btnShare.onclick = () => {
 
 // 👉 NUEVO: abrir tarjeta también al hacer clic en la portada
 document.addEventListener("click", e => {
-  if (e.target.closest(".portada")) {
-    e.stopPropagation();   // evita que llegue al card.onclick
+  const portada = e.target.closest(".portada");
+  if (portada) {
+    e.stopPropagation(); // evita que llegue a card.onclick (handle)
+    e.preventDefault();
     btnShare.click();
   }
-});
-
+}, true); // fase de captura
 
 // cerrar overlay al tocar fuera
 document.getElementById("tarjetaOverlay").onclick = () =>
