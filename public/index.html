@@ -236,9 +236,11 @@ btnShare.onclick = () => {
 // 👉 NUEVO: abrir tarjeta también al hacer clic en la portada
 document.addEventListener("click", e => {
   if (e.target.closest(".portada")) {
+    e.stopPropagation();   // evita que llegue al card.onclick
     btnShare.click();
   }
 });
+
 
 // cerrar overlay al tocar fuera
 document.getElementById("tarjetaOverlay").onclick = () =>
