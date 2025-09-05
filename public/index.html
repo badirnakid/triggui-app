@@ -163,14 +163,15 @@ function buildPort(i){
   if(isURL(libro.portada)){d.append(Object.assign(new Image(),{src:libro.portada,loading:"lazy"}));}
   else{d.append(wrap);setTimeout(()=>adjustScale(wrap),0);}
 
-  // 👉 Nuevo: abrir tarjeta al hacer clic en la portada
+  // 👉 Al hacer clic en la portada: abrir tarjeta SIN recargar
   d.addEventListener("click", e => {
-    e.stopPropagation(); // evita que llegue al card.onclick
+    e.stopPropagation(); // evita que suba al card.onclick
     btnShare.click();    // abre la tarjeta
   });
 
   return d;
 }
+
 
 
 function render(){
