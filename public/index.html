@@ -335,6 +335,18 @@ btnLibro.onclick=async()=>{
   setTimeout(()=>{cele.style.display="none";btnLibro.disabled=false},2300);
 };
 
+// 🔑 Detecta si está dentro de un WebView (Android/iOS)
+function isWebView() {
+  const ua = navigator.userAgent || navigator.vendor || window.opera;
+  return (/wv/i.test(ua) || /WebView/i.test(ua) ||
+          (ua.includes("Android") && ua.includes("Version/")) ||
+          (ua.includes("iPhone") && !ua.includes("Safari")));
+}
+if (isWebView()) {
+  document.body.classList.add("webview");
+}
+
+  
 (async()=>{
   try{
     const r=await fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json?ts="+Date.now());
