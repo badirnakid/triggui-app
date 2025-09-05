@@ -242,15 +242,6 @@ btnShare.onclick = () => {
   document.getElementById("tarjetaOverlay").style.display = "flex";
 };
 
-// 👉 NUEVO: abrir tarjeta también al hacer clic en la portada
-document.addEventListener("click", e => {
-  const portada = e.target.closest(".portada");
-  if (portada) {
-    e.stopPropagation(); // evita que llegue a card.onclick (handle)
-    e.preventDefault();
-    btnShare.click();
-  }
-}, true); // fase de captura
 
 // cerrar overlay al tocar fuera
 document.getElementById("tarjetaOverlay").onclick = () =>
