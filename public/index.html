@@ -128,10 +128,12 @@ html, body {
   opacity: .9;
 }
 
-/* 🔑 Tarjeta más alta solo en WebView */
+/* 🔑 Tarjeta más alta y texto más compacto solo en WebView */
 body.webview #tarjetaCard {
-  height: 600px !important; /* antes era 560px */
+  height: 600px !important;
+  font-size: clamp(11px, 1.5vw, 15px); /* un pelín más compacto */
 }
+
   
   
 </style>
