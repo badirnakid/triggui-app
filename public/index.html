@@ -178,20 +178,50 @@ function render(){
   grid.innerHTML="";
   for(let i=0;i<4;i++){
     const card=document.createElement("div");
-    card.className="block";card.style.background=grad(i);
+    card.className="block";
+    card.style.background=grad(i);
+
     const label=document.createElement("div");
-    label.className="label";label.textContent=`${emojis[i%emojis.length]} ${libro.palabras[i]}`;
+    label.className="label";
+    label.textContent=`${emojis[i%emojis.length]} ${libro.palabras[i]}`;
     label.style.color=libro.textColors?.[i]||"#fff";
+
     const frase=document.createElement("div");
-    frase.className="frase";frase.textContent=libro.frases[i];
+    frase.className="frase";
+    frase.textContent=libro.frases[i];
     frase.style.color=libro.textColors?.[i]||"#fff";
+
     const port=buildPort(i);
-    if(i===portIdx)card.append(port);
-    card.append(label,frase);
-    card.onclick=()=>handle(card,i,port,label);
+
+    if(i===portIdx){
+      // 👉 Portada especial
+      card.append(port);
+      card.append(label,frase);
+
+      card.addEventListener("click", e=>{
+        if(!revealed){
+          // Primera vez: revelar portada
+          label.style.display="none";
+          port.style.display="flex";
+          [...grid.children].forEach((c,j)=>j!==portIdx&&c.classList.add("show"));
+          cta.style.display="flex";
+          revealed=true;
+        }else{
+          // Clics posteriores: abrir tarjeta
+          e.stopPropagation();
+          btnShare.click();
+        }
+      });
+    } else {
+      // 👉 Bloques normales
+      card.append(label,frase);
+      card.onclick=()=>handle(card,i,port,label);
+    }
+
     grid.append(card);
   }
 }
+
 
 function handle(card,i,port,label){
   if(revealed){location.reload();return;}
