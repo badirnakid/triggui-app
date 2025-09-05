@@ -249,6 +249,8 @@ btnShare.onclick = () => {
     padding:16px;
     font-family:${t.style.serif};
     display:flex;flex-direction:column;justify-content:space-between;
+    font-size:clamp(12px, 1.8vw, 16px); /* 🔑 asegura tamaño estable */
+    box-sizing:border-box;
   `;
 
   card.innerHTML = `
