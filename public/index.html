@@ -331,10 +331,13 @@ btnShare.onclick = () => {
       ${t.parrafoBot}
     </div>
     <div style="text-align:center; margin-top:12px;">
-      <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png" 
-           alt="Triggui" 
-           style="max-width:22%; max-height:40px; height:auto; display:block; margin:0 auto; opacity:.9;">
-    </div>
+  <img src="${pickTextColor(safePaper) === '#000'
+              ? 'https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png'
+              : 'https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletrasblanco.png'}"
+       alt="Triggui" 
+       style="max-width:22%; max-height:40px; height:auto; display:block; margin:0 auto; opacity:.9;">
+</div>
+
   `;
 
   document.getElementById("tarjetaOverlay").style.display = "flex";
