@@ -331,12 +331,21 @@ btnShare.onclick = () => {
       ${t.parrafoBot}
     </div>
     <div style="text-align:center; margin-top:12px;">
-  <img src="${pickTextColor(safePaper) === '#000'
-              ? 'https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png'
-              : 'https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletrasblanco.png'}"
-       alt="Triggui" 
-       style="max-width:22%; max-height:40px; height:auto; display:block; margin:0 auto; opacity:.9;">
+  <img src="${
+    pickTextColor(safePaper) === '#000'
+      // Fondo claro → logo oscuro
+      ? 'https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png'
+      : (
+          // Fondo oscuro → a veces blanco normal, a veces color
+          (t.style.accent && Math.random() > 0.5)
+            ? 'https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletrascolor3.png'
+            : 'https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletrasblanco.png'
+        )
+  }"
+  alt="Triggui"
+  style="max-width:22%; max-height:40px; height:auto; display:block; margin:0 auto; opacity:.9;">
 </div>
+
 
   `;
 
