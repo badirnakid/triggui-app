@@ -318,19 +318,19 @@ btnShare.onclick = () => {
   `;
 
   card.innerHTML = `
-    <div style="font:700 26px ${safeSerif};margin-bottom:12px;">
+    <div style="font:700 24px ${safeSerif};margin-bottom:10px;">
       ${libro.titulo} · ${libro.autor}
     </div>
-    <div style="font:20px/1.8 ${safeSerif};margin-bottom:16px;">
+    <div style="font:18px/1.6 ${safeSerif};margin-bottom:14px;">
       ${t.parrafoTop}
     </div>
-    <div style="font:600 24px ${safeSans};color:${t.style.accent || "#30ffe4"};margin-bottom:12px;">
+    <div style="font:600 22px ${safeSans};color:${t.style.accent || "#30ffe4"};margin-bottom:10px;">
       ${t.subtitulo}
     </div>
-    <div style="font:20px/1.8 ${safeSerif};flex:1;margin-bottom:16px;">
+    <div style="font:18px/1.6 ${safeSerif};flex:1;margin-bottom:14px;">
       ${t.parrafoBot}
     </div>
-    <div style="text-align:center; margin-top:14px;">
+    <div style="text-align:center; margin-top:8px;">
   <img src="${
     pickTextColor(safePaper) === '#000'
       // Fondo claro → logo oscuro
