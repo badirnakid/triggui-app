@@ -114,7 +114,7 @@ html, body {
 .num{color:#30ffe4;font-weight:900;font-size:2.8rem}
 
 #tarjetaCard {
-  font-size: clamp(14px, 1.8vw, 18px);
+  font-size: clamp(18px, 2.6vw, 24px);
   line-height: 1.6;
   -webkit-text-size-adjust: none;
   text-size-adjust: none;
@@ -131,7 +131,7 @@ html, body {
 /* 🔑 Tarjeta más alta y texto más compacto solo en WebView */
 body.webview #tarjetaCard {
   height: 650px !important;
-  font-size: clamp(11px, 1.5vw, 15px); /* un pelín más compacto */
+  font-size: clamp(16px, 2.4vw, 20px); /* un pelín más compacto */
 }
 
   
@@ -312,25 +312,25 @@ btnShare.onclick = () => {
     padding:16px;
     font-family:${safeSerif};
     display:flex;flex-direction:column;justify-content:space-between;
-    font-size:clamp(16px, 2.4vw, 22px);
+    font-size:clamp(20px, 2.8vw, 24px);
     line-height:1.6;
     box-sizing:border-box;
   `;
 
   card.innerHTML = `
-    <div style="font:700 24px ${safeSerif};margin-bottom:10px;">
+    <div style="font:700 26px ${safeSerif};margin-bottom:12px;">
       ${libro.titulo} · ${libro.autor}
     </div>
-    <div style="font:16px/1.6 ${safeSerif};margin-bottom:14px;">
+    <div style="font:20px/1.8 ${safeSerif};margin-bottom:16px;">
       ${t.parrafoTop}
     </div>
-    <div style="font:600 16px ${safeSans};color:${t.style.accent || "#30ffe4"};margin-bottom:10px;">
+    <div style="font:600 24px ${safeSans};color:${t.style.accent || "#30ffe4"};margin-bottom:12px;">
       ${t.subtitulo}
     </div>
-    <div style="font:16px/1.6 ${safeSerif};flex:1;margin-bottom:14px;">
+    <div style="font:20px/1.8 ${safeSerif};flex:1;margin-bottom:16px;">
       ${t.parrafoBot}
     </div>
-    <div style="text-align:center; margin-top:12px;">
+    <div style="text-align:center; margin-top:14px;">
   <img src="${
     pickTextColor(safePaper) === '#000'
       // Fondo claro → logo oscuro
