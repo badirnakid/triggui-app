@@ -312,22 +312,22 @@ btnShare.onclick = () => {
     padding:16px;
     font-family:${safeSerif};
     display:flex;flex-direction:column;justify-content:space-between;
-    font-size:clamp(12px, 1.8vw, 16px);
-    line-height:1.5;
+    font-size:clamp(16px, 2.4vw, 22px);
+    line-height:1.6;
     box-sizing:border-box;
   `;
 
   card.innerHTML = `
-    <div style="font:700 20px ${safeSerif};margin-bottom:8px;">
+    <div style="font:700 24px ${safeSerif};margin-bottom:10px;">
       ${libro.titulo} · ${libro.autor}
     </div>
-    <div style="font:14px/1.5 ${safeSerif};margin-bottom:12px;">
+    <div style="font:16px/1.6 ${safeSerif};margin-bottom:14px;">
       ${t.parrafoTop}
     </div>
-    <div style="font:600 14px ${safeSans};color:${t.style.accent || "#30ffe4"};margin-bottom:8px;">
+    <div style="font:600 16px ${safeSans};color:${t.style.accent || "#30ffe4"};margin-bottom:10px;">
       ${t.subtitulo}
     </div>
-    <div style="font:14px/1.5 ${safeSerif};flex:1;margin-bottom:12px;">
+    <div style="font:16px/1.6 ${safeSerif};flex:1;margin-bottom:14px;">
       ${t.parrafoBot}
     </div>
     <div style="text-align:center; margin-top:12px;">
