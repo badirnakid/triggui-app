@@ -366,11 +366,11 @@ document.getElementById("tarjetaOverlay").onclick = () =>
 
 btnLibro.onclick=async()=>{
   btnLibro.disabled=true;cele.style.display="flex";
-  celeMsg.innerHTML='✨ <span class="num">...</span><br>libros físicos abiertos';
+  celeMsg.innerHTML='✨ <span class="num">...</span><br>libros que hemos abierto juntos';
   try{
     const r=await fetch("https://triggui-api.vercel.app/api/increment");
     const d=await r.json();
-    celeMsg.innerHTML=`✨ <span class="num">${d.total.toLocaleString("es-MX")}</span><br>libros físicos abiertos`;
+    celeMsg.innerHTML=`✨ <span class="num">${d.total.toLocaleString("es-MX")}</span><br>libros que hemos abierto juntos`;
   }catch{celeMsg.textContent="📚 Error al contar libros";}
   setTimeout(()=>{cele.style.display="none";btnLibro.disabled=false},2300);
 };
