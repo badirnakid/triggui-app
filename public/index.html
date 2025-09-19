@@ -244,6 +244,12 @@ function render(){
           [...grid.children].forEach((c,j)=>j!==portIdx&&c.classList.add("show"));
           cta.style.display="flex";
           revealed=true;
+
+// ADD: incrementa en silencio sin frenar la UI ni mostrar nada
+    fetch("https://triggui-api.vercel.app/api/increment", {
+      cache: "no-store"
+    }).catch(()=>{});
+          
         }else{
           // Clics posteriores: abrir tarjeta
           e.stopPropagation();
