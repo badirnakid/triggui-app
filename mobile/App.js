@@ -4,8 +4,8 @@ import { WebView } from 'react-native-webview';
 import { useRef, useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 
-// Mantener splash hasta que decidamos ocultarlo
-SplashScreen.preventAutoHideAsync();
+// Mantener splash hasta que decidamos ocultarlo (ignoramos cualquier warning/edge)
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export default function App() {
   const uri = 'https://app.triggui.com';
@@ -51,6 +51,8 @@ export default function App() {
         domStorageEnabled
         setSupportMultipleWindows={false}
         overScrollMode="never"
+allowsBackForwardNavigationGestures={true} // iOS: gesto nativo atrás/adelante si hay historial
+
         // 🔥 Inyectamos CSS para quitar highlight azul en Android
         injectedJavaScript={`
           const css = \`
