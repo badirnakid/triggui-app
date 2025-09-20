@@ -23,7 +23,8 @@
   "buildNumber": "1.0.0",
   "supportsTablet": true,
   "infoPlist": {
-    "NSAppTransportSecurity": { "NSAllowsArbitraryLoads": false }
+    "NSAppTransportSecurity": { "NSAllowsArbitraryLoads": false },
+    "ITSAppUsesNonExemptEncryption": false
   }
 },
     "web": {
