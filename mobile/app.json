@@ -19,7 +19,14 @@
       }
     },
     "ios": {
-      "supportsTablet": true
+  "bundleIdentifier": "com.triggui.app",
+  "buildNumber": "1.0.0",
+  "supportsTablet": true,
+  "infoPlist": {
+    "NSAppTransportSecurity": { "NSAllowsArbitraryLoads": false }
+  },
+}
+
     },
     "web": {
       "favicon": "./assets/favicon.png"
