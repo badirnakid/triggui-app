@@ -13,13 +13,16 @@ export default function App() {
   const [isReady, setIsReady] = useState(false);
 
   // Control de splash con retardo
-  useEffect(() => {
-    const timer = setTimeout(async () => {
+useEffect(() => {
+  const timer = setTimeout(async () => {
+    if (!isReady) {
       setIsReady(true);
       await SplashScreen.hideAsync();
-    }, 2500); // 2.5s elegante
-    return () => clearTimeout(timer);
-  }, []);
+    }
+  }, 5000); // backup 5s
+  return () => clearTimeout(timer);
+}, [isReady]);
+
 
   // Back físico en Android
   useEffect(() => {
@@ -41,10 +44,10 @@ export default function App() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#000000' }}>
-      <WebView
-        ref={webViewRef}
-        source={{ uri }}
-        style={{ flex: 1 }}
+ <WebView
+  ref={webViewRef}
+  source={{ uri }}
+  style={{ flex: 1, backgroundColor: '#000000' }} // 🔑 evita pantallazo blanco
         originWhitelist={['*']}
         allowsInlineMediaPlayback
         javaScriptEnabled
@@ -52,6 +55,14 @@ export default function App() {
         setSupportMultipleWindows={false}
         overScrollMode="never"
 allowsBackForwardNavigationGestures={true} // iOS: gesto nativo atrás/adelante si hay historial
+
+onLoadEnd={async () => {
+  if (!isReady) {
+    setIsReady(true);
+    await SplashScreen.hideAsync();
+  }
+}}
+
 
         // 🔥 Inyectamos CSS para quitar highlight azul en Android
         injectedJavaScript={`
