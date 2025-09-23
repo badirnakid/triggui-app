@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView, Platform, BackHandler } from 'react-native';
+import { SafeAreaView, Platform, BackHandler, View, TouchableOpacity, Text } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { useRef, useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
@@ -11,6 +11,8 @@ export default function App() {
   const uri = 'https://app.triggui.com';
   const webViewRef = useRef(null);
   const [isReady, setIsReady] = useState(false);
+  const [canGoBack, setCanGoBack] = useState(false);
+
 
   // Control de splash con retardo
 useEffect(() => {
@@ -63,6 +65,10 @@ onLoadEnd={async () => {
   }
 }}
 
+onNavigationStateChange={(navState) => {
+  const isHome = navState.url.startsWith('https://app.triggui.com');
+  setCanGoBack(!isHome && navState.canGoBack);
+}}
 
         // 🔥 Inyectamos CSS para quitar highlight azul en Android
         injectedJavaScript={`
@@ -78,6 +84,39 @@ onLoadEnd={async () => {
         `}
       />
       <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
+         {canGoBack && (
+      <View
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: 50,
+          backgroundColor: '#000',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderTopWidth: 1,
+          borderTopColor: '#222',
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => {
+  if (webViewRef.current && canGoBack) {
+    webViewRef.current.goBack();
+  }
+}}
+
+          style={{
+            paddingHorizontal: 20,
+            paddingVertical: 10,
+          }}
+          accessibilityLabel="Regresar"
+        >
+          <Text style={{ color: '#fff', fontSize: 24 }} accessible={false}>‹</Text>
+        </TouchableOpacity>
+      </View>
+    )}
     </SafeAreaView>
   );
 }
