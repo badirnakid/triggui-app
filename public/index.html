@@ -61,7 +61,7 @@ html, body {
 @media(orientation:portrait){.grid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr)}}
 
 /* ---------------- Blocks ---------------- */
-.block{position:relative;display:flex;align-items:center;justify-content:center;padding:1rem;border-radius:22px;font-weight:700;cursor:pointer;background-size:320% 320%;transition:background-position 4s;overflow:hidden}
+.block{position:relative;display:flex;align-items:center;justify-content:center;padding:1rem;border-radius:22px;font-weight:700;cursor:pointer;background-size:320% 320%;transition:background-position 4s;transform 0.15s ease;overflow:hidden}
 .block:hover{background-position:100% 100%}
 .block::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,.18),transparent 65%);mix-blend-mode:overlay}
 .label,.frase{z-index:2;text-align:center;color:inherit}
