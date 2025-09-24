@@ -62,7 +62,8 @@ useEffect(() => {
  <WebView
   ref={webViewRef}
   source={{ uri }}
-  style={{ flex: 1, backgroundColor: '#000000' }} // 🔑 evita pantallazo blanco
+  style={{ flex: 1, backgroundColor: 'transparent' }}
+containerStyle={{ backgroundColor: '#000000' }}
         originWhitelist={['*']}
         allowsInlineMediaPlayback
         javaScriptEnabled
@@ -71,10 +72,20 @@ useEffect(() => {
         overScrollMode="never"
 allowsBackForwardNavigationGestures={true} // iOS: gesto nativo atrás/adelante si hay historial
 
+/*
 onLoadEnd={async () => {
   if (!isReady) {
     setIsReady(true);
     hideOverlay();
+  }
+}}*/
+
+onMessage={(event) => {
+  if (event.nativeEvent.data === "FIRST_PAINT") {
+    if (!isReady) {
+      setIsReady(true);
+      hideOverlay(); // 🔑 solo ahora se quita el overlay cuando el HTML ya pintó
+    }
   }
 }}
 
