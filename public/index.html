@@ -1,9 +1,21 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" style="background:#0e0f1b;">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, shrink-to-fit=no">
 <title>Triggui — Abre un libro físico. Aquí y ahora.</title>
+
+<!-- CSS crítico para evitar pantalla blanca -->
+<style>
+  html, body {
+    background:#0e0f1b !important;
+    color:#fff;
+    margin:0;
+    padding:0;
+    height:100%;
+  }
+</style>
+
 
 <!-- OG / Twitter -->
 <meta property="og:title" content="Abre. Un Libro. Físico.">
@@ -35,7 +47,11 @@
 }
 
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{height:100%;font-family:'Archivo',sans-serif;background:#0e0f1b;background-color:#0e0f1b;color:#fff;-webkit-overflow-scrolling:touch}
+html,body{
+  height:100%;
+  font-family:'Archivo',sans-serif;
+  -webkit-overflow-scrolling:touch;
+}
 
 /* 🔑 Evita que WebView escale el texto automáticamente */
 html, body {
@@ -151,7 +167,7 @@ body.webview {
   
 </style>
 </head>
-<body style="background:#0e0f1b;">
+<body style="background:#0e0f1b; margin:0; padding:0; height:100%; color:#fff;">
 
 <div class="intro">Toca. Un libro te abrirá.</div>
 <div class="grid" id="grid"></div>
