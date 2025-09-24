@@ -100,9 +100,9 @@ html, body {
 @media(orientation:landscape){.grid{grid-template-columns:repeat(4,1fr)}}
 @media(orientation:portrait){.grid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr)}}
 
-/* ---------------- Blocks ---------------- */
+/* ---------------- Blocks ---------------- 
 .block{position:relative;display:flex;align-items:center;justify-content:center;padding:1rem;border-radius:22px;font-weight:700;cursor:pointer;background-size:320% 320%;transition:background-position 4s,transform 0.15s ease;overflow:hidden}
-/* 🔑 feedback sutil al tocar */
+// 🔑 feedback sutil al tocar 
 .block:active {
   transform: scale(0.97);
 }
@@ -111,7 +111,76 @@ html, body {
 .block::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,.18),transparent 65%);mix-blend-mode:overlay}
 .label,.frase{z-index:2;text-align:center;color:inherit}
 .frase{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;transition:opacity .25s}
-.block.show .label{opacity:0}.block.show .frase{opacity:1}
+.block.show .label{opacity:0}.block.show .frase{opacity:1}*/
+
+/* ---------------- Blocks ---------------- */
+.block {
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:1rem;
+  border-radius:22px;
+  font-weight:700;
+  cursor:pointer;
+  background-size:320% 320%;
+  transition:background-position 4s,transform 0.15s ease;
+  overflow:hidden;
+}
+/* 🔑 feedback sutil al tocar */
+.block:active {
+  transform: scale(0.97);
+  box-shadow:0 6px 18px rgba(0,0,0,0.25); /* sutil efecto depth */
+}
+
+.block:hover { background-position:100% 100%; }
+
+.block::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  background:linear-gradient(180deg,rgba(255,255,255,.18),transparent 65%);
+  mix-blend-mode:overlay;
+}
+
+/* Labels y frases */
+.label,
+.frase {
+  z-index:2;
+  text-align:center;
+  color:inherit;
+}
+
+/* 👉 Palabra principal más grande y fuerte */
+.label {
+  font-size:clamp(1rem, 3.2vw, 1.6rem);
+  font-weight:700;
+  letter-spacing:0.3px;
+}
+
+/* 👉 Frase más ligera + animación sutil */
+.frase {
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:1rem;
+  opacity:0;
+  transform:translateY(6px); /* inicio abajo */
+  transition:opacity .25s, transform .25s;
+  font-size:clamp(0.95rem, 2.8vw, 1.4rem);
+  font-weight:500;
+  line-height:1.35;
+}
+
+.block.show .label { opacity:0; }
+.block.show .frase {
+  opacity:1;
+  transform:translateY(0); /* sube suavemente */
+}
+
 
 /* ---------------- Portada ---------------- */
 .portada{position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;padding:1rem;gap:.4rem;text-align:center;animation:pop .6s ease-out forwards;max-height:90%;overflow:hidden}
