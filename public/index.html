@@ -329,8 +329,11 @@ body.webview {
 
 <!-- Overlay de tarjeta coleccionable -->
 <div id="tarjetaOverlay">
-  <div id="tarjetaCard"></div>
+  <div id="tarjetaCard">
+    <div id="tarjetaContent"></div> <!-- contenedor fijo -->
+  </div>
 </div>
+
 
 
 
@@ -478,12 +481,10 @@ function pickTextColor(bg) {
 
 const overlay = document.getElementById("tarjetaOverlay");
 const card    = document.getElementById("tarjetaCard");
+const content = document.getElementById("tarjetaContent");
 
 btnShare.onclick = () => {
   const t = libro.tarjeta;
-
-  // 🔑 siempre limpia antes de regenerar
-  card.innerHTML = "";
 
   // Fallbacks seguros
   const safePaper  = t.style.paper  || "#111111";
@@ -509,7 +510,8 @@ btnShare.onclick = () => {
     box-shadow:0 8px 32px rgba(0,0,0,.45);
   `;
 
-  card.innerHTML = `
+  // 👉 en vez de borrar el card, actualizamos el content
+  content.innerHTML = `
     <div style="font:800 22px ${safeSerif};margin-bottom:12px;letter-spacing:0.3px;">
       ${libro.titulo} · ${libro.autor}
     </div>
@@ -537,33 +539,17 @@ btnShare.onclick = () => {
     </div>
   `;
 
-  // 🔑 Forzar reflow para que iOS renderice siempre
-  void card.offsetHeight;
-
-  // Mostrar overlay con fade-in
   overlay.style.display = "flex";
   requestAnimationFrame(() => overlay.classList.add("show"));
 };
 
-// 🔑 función universal para cerrar overlay
 function closeOverlay() {
   overlay.classList.remove("show");
   setTimeout(() => {
     overlay.style.display = "none";
-    card.innerHTML = ""; // limpiar siempre
+    // 🔑 ya NO borramos el contenido -> Safari nunca pierde el DOM
   }, 350);
 }
-
-// cerrar al hacer click en cualquier parte del overlay
-overlay.addEventListener("click", () => closeOverlay());
-
-// cerrar con ESC
-document.addEventListener("keydown", e => {
-  if (e.key === "Escape" && overlay.classList.contains("show")) {
-    closeOverlay();
-  }
-});
-
 
 
 
