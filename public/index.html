@@ -431,5 +431,14 @@ if (isWebView()) {
   }catch(e){alert("No se pudo cargar Triggui.");console.error(e);}
 })();
 </script>
+<script>
+  // Avisamos a React Native que el HTML ya pintó el primer frame
+  window.addEventListener("load", () => {
+    setTimeout(() => {
+      window.ReactNativeWebView?.postMessage("FIRST_PAINT");
+    }, 50); // pequeño buffer para asegurar render
+  });
+</script>
 </body>
 </html>
+
