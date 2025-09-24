@@ -55,8 +55,7 @@ useEffect(() => {
     return () => backHandler.remove();
   }, []);
 
-  if (!isReady) return null; // splash activo
-
+  
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#000000' }}>
  <WebView
