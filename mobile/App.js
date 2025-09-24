@@ -119,7 +119,7 @@ onNavigationStateChange={(navState) => {
           bottom: 0,
           left: 0,
           right: 0,
-          height: 70,
+          height: 80,
           backgroundColor: '#000',
           flexDirection: 'row',
           alignItems: 'center',
