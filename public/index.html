@@ -482,6 +482,9 @@ const card    = document.getElementById("tarjetaCard");
 btnShare.onclick = () => {
   const t = libro.tarjeta;
 
+  // 🔑 siempre limpia y regenera el contenido
+  card.innerHTML = "";
+
   // Fallbacks seguros
   const safePaper  = t.style.paper  || "#111111";
   const safeBorder = t.style.border || "#666";
@@ -539,21 +542,24 @@ btnShare.onclick = () => {
   requestAnimationFrame(() => overlay.classList.add("show"));
 };
 
-// cerrar al hacer click fuera
-overlay.addEventListener("click", e => {
-  if (e.target === overlay) {
-    overlay.classList.remove("show");
-    setTimeout(() => overlay.style.display = "none", 350);
-  }
+// 🔑 función universal para cerrar overlay
+function closeOverlay() {
+  overlay.classList.remove("show");
+  setTimeout(() => overlay.style.display = "none", 350);
+}
+
+// cerrar al hacer click en cualquier parte del overlay (incluida la tarjeta)
+overlay.addEventListener("click", () => {
+  closeOverlay();
 });
 
 // cerrar con ESC
 document.addEventListener("keydown", e => {
   if (e.key === "Escape" && overlay.classList.contains("show")) {
-    overlay.classList.remove("show");
-    setTimeout(() => overlay.style.display = "none", 350);
+    closeOverlay();
   }
 });
+
 
 
 
