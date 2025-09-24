@@ -169,7 +169,7 @@ body.webview {
 </head>
 <body style="background:#0e0f1b; margin:0; padding:0; height:100%; color:#fff;">
 
-<div class="intro">Toca. Un libro te abrirá.</div>
+<div class="intro" id="intro"></div>
 <div class="grid" id="grid"></div>
 
 <!-- CTA (aparece tras revelar) -->
@@ -207,6 +207,16 @@ const grid=document.getElementById("grid"),
       btnShare=document.getElementById("share"),
       cele=document.getElementById("cele"),
       celeMsg=document.getElementById("celeMsg");
+
+// Frases rotativas estilo Jobs
+const frasesIntro = [
+  "Un gesto. Un libro. Una chispa.",
+  "Abres la app. Abres un libro. Nada más.",
+  "Un instante basta para cambiar tu día."
+];
+document.getElementById("intro").innerText =
+  frasesIntro[Math.floor(Math.random() * frasesIntro.length)];
+  
 
 let libro=null,revealed=false;
 const portIdx=Math.floor(Math.random()*4),
@@ -431,6 +441,8 @@ if (isWebView()) {
   }catch(e){alert("No se pudo cargar Triggui.");console.error(e);}
 })();
 </script>
+
+  
 <script>
   // Avisamos a React Native que el HTML ya pintó el primer frame
   window.addEventListener("load", () => {
