@@ -119,7 +119,7 @@ onNavigationStateChange={(navState) => {
           bottom: 0,
           left: 0,
           right: 0,
-          height: 50,
+          height: 70,
           backgroundColor: '#000',
           flexDirection: 'row',
           alignItems: 'center',
@@ -141,7 +141,7 @@ onNavigationStateChange={(navState) => {
           }}
           accessibilityLabel="Regresar"
         >
-          <Text style={{ color: '#fff', fontSize: 24 }} accessible={false}>‹</Text>
+          <Text style={{ color: '#fff', fontSize: 32 }} accessible={false}>‹</Text>
         </TouchableOpacity>
       </View>
     )}
