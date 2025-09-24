@@ -20,7 +20,7 @@
     },
    "ios": {
   "bundleIdentifier": "com.triggui.app",
-  "buildNumber": "1.0.3",
+  "buildNumber": "1.0.4",
   "supportsTablet": true,
   "infoPlist": {
     "NSAppTransportSecurity": { "NSAllowsArbitraryLoads": false },
