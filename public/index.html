@@ -90,7 +90,20 @@ html, body {
 @keyframes introHide{to{opacity:0;visibility:hidden;transform:translate(-50%,-80%)}}
 
 /* ---------------- Grid ---------------- */
-.grid{position:absolute;inset:5vh 1.5vw;display:grid;gap:1vw}
+.grid{
+  position:absolute;
+  inset:5vh 1.5vw;
+  display:grid;
+  gap:1vw;
+  opacity:0; /* 🔑 inicio invisible */
+  animation:gridFadeIn 0.6s 3.2s forwards; /* fade-in suave coordinado */
+}
+
+@keyframes gridFadeIn {
+  from { opacity:0; transform:translateY(12px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
 @media(orientation:landscape){.grid{grid-template-columns:repeat(4,1fr)}}
 @media(orientation:portrait){.grid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr)}}
 
