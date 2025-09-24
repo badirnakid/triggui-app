@@ -230,6 +230,27 @@ html, body {
 .cele-msg{font-family:'Poppins';font-size:2rem;text-align:center;background:rgba(255,255,255,.05);padding:2rem 3rem;border-radius:20px}
 .num{color:#30ffe4;font-weight:900;font-size:2.8rem}
 
+
+#tarjetaOverlay {
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:999;
+  background:rgba(0,0,0,.72); /* un poco más ligero */
+  align-items:center;
+  justify-content:center;
+
+  /* 🔑 Efecto vidrio Jobs-like */
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+#tarjetaCard {
+  width:360px;
+  height:560px;
+}
+
+
 #tarjetaCard {
   font-size: clamp(16px, 2.6vw, 22px);
   line-height: 1.35;
@@ -296,11 +317,10 @@ body.webview {
 </div>
 
 <!-- Overlay de tarjeta coleccionable -->
-<div id="tarjetaOverlay" style="display:none;
-  position:fixed;inset:0;z-index:999;
-  background:rgba(0,0,0,.85);align-items:center;justify-content:center;">
-  <div id="tarjetaCard" style="width:360px;height:560px;"></div>
+<div id="tarjetaOverlay">
+  <div id="tarjetaCard"></div>
 </div>
+
 
 
   
