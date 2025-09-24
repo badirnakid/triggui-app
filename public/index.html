@@ -444,51 +444,52 @@ btnShare.onclick = () => {
   const safeSerif  = t.style.serif  || "Georgia, serif";
   const safeSans   = t.style.sans   || "Arial, sans-serif";
 
-  card.style = `
-    width:420px;height:600px;
+card.style = `
+    width: min(420px, 90vw);
+    height: min(600px, 90vh);
     background:${safePaper};
     color:${pickTextColor(safePaper)};
     border:2px solid ${safeBorder};
     border-radius:20px;
-    padding:16px;
+    padding:20px;
     font-family:${safeSerif};
-    display:flex;flex-direction:column;justify-content:space-between;
-    font-size:clamp(18px, 2.8vw, 22px);
-    line-height:1.2;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    font-size:clamp(18px, 2.2vw, 26px); /* más grande en desktop */
+    line-height:1.45;
     box-sizing:border-box;
+    box-shadow:0 8px 32px rgba(0,0,0,.45); /* efecto depth */
   `;
 
   card.innerHTML = `
-    <div style="font:700 20px ${safeSerif};margin-bottom:10px;">
+    <div style="font:800 22px ${safeSerif};margin-bottom:12px;letter-spacing:0.3px;">
       ${libro.titulo} · ${libro.autor}
     </div>
-    <div style="font:18px/1.4 ${safeSerif};margin-bottom:10px;">
+    <div style="font:18px/1.45 ${safeSerif};margin-bottom:14px;opacity:.95;">
       ${t.parrafoTop}
     </div>
-    <div style="font:600 20px ${safeSans};color:${t.style.accent || "#30ffe4"};margin-bottom:10px;">
+    <div style="font:600 21px ${safeSans};color:${t.style.accent || "#30ffe4"};margin:12px 0;">
       ${t.subtitulo}
     </div>
-    <div style="font:18px/1.4 ${safeSerif};flex:1;margin-bottom:10px;">
+    <div style="font:18px/1.45 ${safeSerif};flex:1;margin-bottom:12px;">
       ${t.parrafoBot}
     </div>
     <div style="text-align:center; margin-top:10px;">
-  <img src="${
-    pickTextColor(safePaper) === '#000'
-      // Fondo claro → logo oscuro
-      ? 'https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png'
-      : (
-          // Fondo oscuro → a veces blanco normal, a veces color
-          (t.style.accent && Math.random() > 0.5)
-            ? 'https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletrascolor3.png'
-            : 'https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletrasblanco.png'
-        )
-  }"
-  alt="Triggui"
-  style="max-width:22%; max-height:40px; height:auto; display:block; margin:0 auto; opacity:.9;">
-</div>
-
-
+      <img src="${
+        pickTextColor(safePaper) === '#000'
+          ? 'https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png'
+          : (
+              (t.style.accent && Math.random() > 0.5)
+                ? 'https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletrascolor3.png'
+                : 'https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletrasblanco.png'
+            )
+      }"
+      alt="Triggui"
+      style="max-width:22%; max-height:40px; height:auto; display:block; margin:0 auto; opacity:.9;">
+    </div>
   `;
+
 
   document.getElementById("tarjetaOverlay").style.display = "flex";
 };
