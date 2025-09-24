@@ -239,21 +239,15 @@ html, body {
   align-items:center;
   justify-content:center;
 
+  /* 🔑 Overlay profundo pero nítido */
   background: radial-gradient(
     circle at center,
     rgba(0,0,0,0.85) 0%,
     rgba(0,0,0,0.92) 100%
   );
 
-  opacity:0;
-  transition: opacity .35s ease;
+  /* ❌ Quitamos blur para evitar cansancio visual */
 }
-
-#tarjetaOverlay.show {
-  display:flex;
-  opacity:1;
-}
-
 
 
 #tarjetaCard {
@@ -329,11 +323,8 @@ body.webview {
 
 <!-- Overlay de tarjeta coleccionable -->
 <div id="tarjetaOverlay">
-  <div id="tarjetaCard">
-    <div id="tarjetaContent"></div> <!-- contenedor fijo -->
-  </div>
+  <div id="tarjetaCard"></div>
 </div>
-
 
 
 
@@ -479,20 +470,18 @@ function pickTextColor(bg) {
 
   
 
-const overlay = document.getElementById("tarjetaOverlay");
-const card    = document.getElementById("tarjetaCard");
-const content = document.getElementById("tarjetaContent");
-
 btnShare.onclick = () => {
   const t = libro.tarjeta;
+  const card = document.getElementById("tarjetaCard");
 
   // Fallbacks seguros
   const safePaper  = t.style.paper  || "#111111";
+  const safeInk    = t.style.ink    || pickTextColor(safePaper);
   const safeBorder = t.style.border || "#666";
   const safeSerif  = t.style.serif  || "Georgia, serif";
   const safeSans   = t.style.sans   || "Arial, sans-serif";
 
-  card.style = `
+card.style = `
     width: min(420px, 90vw);
     height: min(600px, 90vh);
     background:${safePaper};
@@ -504,14 +493,13 @@ btnShare.onclick = () => {
     display:flex;
     flex-direction:column;
     justify-content:space-between;
-    font-size:clamp(18px, 2.2vw, 26px);
+    font-size:clamp(18px, 2.2vw, 26px); /* más grande en desktop */
     line-height:1.45;
     box-sizing:border-box;
-    box-shadow:0 8px 32px rgba(0,0,0,.45);
+    box-shadow:0 8px 32px rgba(0,0,0,.45); /* efecto depth */
   `;
 
-  // 👉 en vez de borrar el card, actualizamos el content
-  content.innerHTML = `
+  card.innerHTML = `
     <div style="font:800 22px ${safeSerif};margin-bottom:12px;letter-spacing:0.3px;">
       ${libro.titulo} · ${libro.autor}
     </div>
@@ -539,19 +527,17 @@ btnShare.onclick = () => {
     </div>
   `;
 
-  overlay.style.display = "flex";
-  requestAnimationFrame(() => overlay.classList.add("show"));
+
+  document.getElementById("tarjetaOverlay").style.display = "flex";
 };
 
-function closeOverlay() {
-  overlay.classList.remove("show");
-  setTimeout(() => {
-    overlay.style.display = "none";
-    // 🔑 ya NO borramos el contenido -> Safari nunca pierde el DOM
-  }, 350);
-}
 
 
+ 
+
+// cerrar overlay al tocar fuera
+document.getElementById("tarjetaOverlay").onclick = () =>
+  document.getElementById("tarjetaOverlay").style.display = "none";
 
 
 
@@ -601,4 +587,3 @@ if (isWebView()) {
 </script>
 </body>
 </html>
-
