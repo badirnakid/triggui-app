@@ -578,12 +578,25 @@ if (isWebView()) {
 
   
 <script>
-  // Avisamos a React Native que el HTML ya pintó el primer frame
-  window.addEventListener("load", () => {
-    setTimeout(() => {
-      window.ReactNativeWebView?.postMessage("FIRST_PAINT");
-    }, 50); // pequeño buffer para asegurar render
-  });
+  // Enviamos FIRST_PAINT lo antes posible: DOM listo + 1 frame real
+  const signalFirstPaint = () => {
+    requestAnimationFrame(() => {
+      try {
+        window.ReactNativeWebView?.postMessage("FIRST_PAINT");
+      } catch (_) {
+        // silencioso: si no hay RN WebView, no rompe web
+      }
+    });
+  };
+
+  if (document.readyState === "interactive" || document.readyState === "complete") {
+    // Si el DOM ya está listo cuando se inyecta este script
+    signalFirstPaint();
+  } else {
+    // Si aún no, esperamos a DOMContentLoaded
+    document.addEventListener("DOMContentLoaded", signalFirstPaint, { once: true });
+  }
 </script>
+
 </body>
 </html>
