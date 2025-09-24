@@ -14,17 +14,29 @@ export default function App() {
   const [canGoBack, setCanGoBack] = useState(false);
   const overlayOpacity = useRef(new Animated.Value(1)).current;
 
+    const hideOverlay = async () => {
+    await SplashScreen.hideAsync();
+    Animated.timing(overlayOpacity, {
+      toValue: 0,
+      duration: 400, // transición elegante
+      useNativeDriver: true,
+    }).start();
+  };
 
-  // Control de splash con retardo
+
+
+// Control de splash con retardo (fallback)
 useEffect(() => {
-  const timer = setTimeout(async () => {
+   const timer = setTimeout(async () => {
     if (!isReady) {
       setIsReady(true);
-      await SplashScreen.hideAsync();
+      hideOverlay();
     }
-  }, 5000); // backup 5s
+  }, 1500); // backup 1.5s más rápido
+
   return () => clearTimeout(timer);
 }, [isReady]);
+
 
 
   // Back físico en Android
@@ -62,14 +74,10 @@ allowsBackForwardNavigationGestures={true} // iOS: gesto nativo atrás/adelante 
 onLoadEnd={async () => {
   if (!isReady) {
     setIsReady(true);
-    await SplashScreen.hideAsync();
+    hideOverlay();
   }
-  Animated.timing(overlayOpacity, {
-    toValue: 0,
-    duration: 400, // transición elegante
-    useNativeDriver: true,
-  }).start();
 }}
+
 
 
 onNavigationStateChange={(navState) => {
@@ -102,7 +110,8 @@ onNavigationStateChange={(navState) => {
      />
         
         
-      <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
+      <StatusBar style="light" />
+
          {canGoBack && (
       <View
         style={{
