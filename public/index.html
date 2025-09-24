@@ -68,7 +68,25 @@ html, body {
 
 
 /* ---------------- Intro ---------------- */
-.intro{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);padding:2.2rem 2.8rem;background:#191e32;border-radius:24px;z-index:120;font-family:'Poppins';font-size:1.5rem;font-weight:600;text-align:center;box-shadow:0 0 16px rgba(48,255,228,.32);animation:introHide 3.2s 2s forwards}
+.intro{
+  position:fixed;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  padding:2.2rem 2.8rem;
+  background:#141826; /* un negro más neutro que armoniza con el fondo */
+  border-radius:24px;
+  z-index:120;
+  font-family:'Poppins';
+  font-size:1.5rem;
+  font-weight:600;
+  text-align:center;
+  box-shadow:0 4px 22px rgba(48,255,228,.22); /* sombra más sutil y Apple-like */
+  letter-spacing:0.5px; /* aire entre letras */
+  backdrop-filter: blur(8px); /* sutil efecto glass */
+  -webkit-backdrop-filter: blur(8px); /* soporte Safari */
+  animation:introHide 3s 1.6s forwards; /* fade más corto + delay refinado */
+}
+
 @keyframes introHide{to{opacity:0;visibility:hidden;transform:translate(-50%,-80%)}}
 
 /* ---------------- Grid ---------------- */
