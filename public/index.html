@@ -537,6 +537,15 @@ card.style = `
 
 // cerrar overlay al tocar fuera
 document.getElementById("tarjetaOverlay").onclick = () =>
+
+  // Cerrar con ESC en desktop
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") {
+    document.getElementById("tarjetaOverlay").style.display = "none";
+  }
+});
+
+  
   document.getElementById("tarjetaOverlay").style.display = "none";
 
 
