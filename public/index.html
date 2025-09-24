@@ -145,21 +145,19 @@ html, body {
 }
 
 /* Labels y frases */
-.label,
-.frase {
+/* 👉 Labels y frases con animación Jobs-like */
+.label {
   z-index:2;
   text-align:center;
-  color:inherit;
-}
-
-/* 👉 Palabra principal más grande y fuerte */
-.label {
-  font-size:clamp(1rem, 3.2vw, 1.6rem);
-  font-weight:700;
+  opacity:1;
+  transition:opacity .25s, transform .25s;
+  transform:translateY(0);
+  font-size:clamp(1rem, 3vw, 1.6rem); /* palabra más grande */
+  font-weight:600;                     /* más fuerte */
+  line-height:1.3;
   letter-spacing:0.3px;
 }
 
-/* 👉 Frase más ligera + animación sutil */
 .frase {
   position:absolute;
   inset:0;
@@ -168,14 +166,18 @@ html, body {
   justify-content:center;
   padding:1rem;
   opacity:0;
-  transform:translateY(6px); /* inicio abajo */
+  transform:translateY(6px); /* arranca un poco abajo */
   transition:opacity .25s, transform .25s;
-  font-size:clamp(0.95rem, 2.8vw, 1.4rem);
+  font-size:clamp(0.95rem, 2.8vw, 1.4rem); /* más ligera que el label */
   font-weight:500;
   line-height:1.35;
 }
 
-.block.show .label { opacity:0; }
+.block.show .label {
+  opacity:0;
+  transform:translateY(-6px); /* se va hacia arriba */
+}
+
 .block.show .frase {
   opacity:1;
   transform:translateY(0); /* sube suavemente */
