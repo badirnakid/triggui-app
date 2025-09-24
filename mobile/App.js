@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView, Platform, BackHandler, View, TouchableOpacity, Text } from 'react-native';
+import { SafeAreaView, Platform, BackHandler, View, TouchableOpacity, Text, Animated, StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { useRef, useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
@@ -12,6 +12,7 @@ export default function App() {
   const webViewRef = useRef(null);
   const [isReady, setIsReady] = useState(false);
   const [canGoBack, setCanGoBack] = useState(false);
+  const overlayOpacity = useRef(new Animated.Value(1)).current;
 
 
   // Control de splash con retardo
@@ -63,7 +64,13 @@ onLoadEnd={async () => {
     setIsReady(true);
     await SplashScreen.hideAsync();
   }
+  Animated.timing(overlayOpacity, {
+    toValue: 0,
+    duration: 400, // transición elegante
+    useNativeDriver: true,
+  }).start();
 }}
+
 
 onNavigationStateChange={(navState) => {
   const isHome = navState.url.startsWith('https://app.triggui.com');
@@ -83,6 +90,18 @@ onNavigationStateChange={(navState) => {
           true;
         `}
       />
+
+     {/* Overlay negro que tapa el flash blanco y se desvanece */}
+     <Animated.View
+       pointerEvents="none"
+       style={{
+         ...StyleSheet.absoluteFillObject,
+         backgroundColor: '#000',
+         opacity: overlayOpacity,
+       }}
+     />
+        
+        
       <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
          {canGoBack && (
       <View
