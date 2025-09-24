@@ -18,7 +18,7 @@ export default function App() {
     await SplashScreen.hideAsync();
     Animated.timing(overlayOpacity, {
       toValue: 0,
-      duration: 400, // transición elegante
+      duration: 320, // transición elegante
       useNativeDriver: true,
     }).start();
   };
