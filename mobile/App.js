@@ -32,7 +32,7 @@ useEffect(() => {
       setIsReady(true);
       hideOverlay();
     }
-  }, 1500); // backup 1.5s más rápido
+  }, 2500); // backup 2.5s más rápido
 
   return () => clearTimeout(timer);
 }, [isReady]);
@@ -112,39 +112,41 @@ onNavigationStateChange={(navState) => {
         
       <StatusBar style="light" />
 
-         {canGoBack && (
-      <View
-        style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: 80,
-          backgroundColor: '#000',
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderTopWidth: 1,
-          borderTopColor: '#222',
-        }}
-      >
-        <TouchableOpacity
-          onPress={() => {
-  if (webViewRef.current && canGoBack) {
-    webViewRef.current.goBack();
-  }
-}}
-
-          style={{
-            paddingHorizontal: 20,
-            paddingVertical: 10,
-          }}
-          accessibilityLabel="Regresar"
-        >
-          <Text style={{ color: '#fff', fontSize: 32 }} accessible={false}>‹</Text>
-        </TouchableOpacity>
-      </View>
-    )}
+    {canGoBack && (
+  <View
+    style={{
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      height: 80,
+      backgroundColor: '#000',
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderTopWidth: 1,
+      borderTopColor: '#222',
+    }}
+  >
+    <TouchableOpacity
+      onPress={() => {
+        if (webViewRef.current && canGoBack) {
+          webViewRef.current.goBack();
+        }
+      }}
+      style={{
+        paddingHorizontal: 24,
+        height: '100%',           // 🔑 ocupa toda la barra
+        justifyContent: 'center', // 🔑 centra verticalmente
+      }}
+      accessibilityLabel="Regresar"
+    >
+      <Text style={{ color: '#fff', fontSize: 34, lineHeight: 34 }} accessible={false}>
+        ‹
+      </Text>
+    </TouchableOpacity>
+  </View>
+)}
     </SafeAreaView>
   );
 }
