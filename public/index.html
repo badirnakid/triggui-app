@@ -482,7 +482,7 @@ const card    = document.getElementById("tarjetaCard");
 btnShare.onclick = () => {
   const t = libro.tarjeta;
 
-  // 🔑 siempre limpia y regenera el contenido
+  // 🔑 siempre limpia antes de regenerar
   card.innerHTML = "";
 
   // Fallbacks seguros
@@ -537,7 +537,10 @@ btnShare.onclick = () => {
     </div>
   `;
 
-  // 🔑 Fade-in elegante
+  // 🔑 Forzar reflow para que iOS renderice siempre
+  void card.offsetHeight;
+
+  // Mostrar overlay con fade-in
   overlay.style.display = "flex";
   requestAnimationFrame(() => overlay.classList.add("show"));
 };
@@ -545,13 +548,14 @@ btnShare.onclick = () => {
 // 🔑 función universal para cerrar overlay
 function closeOverlay() {
   overlay.classList.remove("show");
-  setTimeout(() => overlay.style.display = "none", 350);
+  setTimeout(() => {
+    overlay.style.display = "none";
+    card.innerHTML = ""; // limpiar siempre
+  }, 350);
 }
 
-// cerrar al hacer click en cualquier parte del overlay (incluida la tarjeta)
-overlay.addEventListener("click", () => {
-  closeOverlay();
-});
+// cerrar al hacer click en cualquier parte del overlay
+overlay.addEventListener("click", () => closeOverlay());
 
 // cerrar con ESC
 document.addEventListener("keydown", e => {
@@ -559,6 +563,7 @@ document.addEventListener("keydown", e => {
     closeOverlay();
   }
 });
+
 
 
 
