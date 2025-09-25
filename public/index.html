@@ -309,7 +309,7 @@ body.webview {
 <!-- CTA (aparece tras revelar) -->
 <div class="cta" id="cta">
   <button id="otro">
-    <span class="icon">🏠</span>
+    <span class="icon">🎲</span>
     <!--<span class="txt">Me gusta<br>quiero<br>donar</span> -->
   </button>
   <button id="fisico">
@@ -450,7 +450,10 @@ function handle(card,i,port,label){
   }
 }
 
-btnOtro.onclick=()=>window.open("https://triggui.com","_blank");
+//btnOtro.onclick=()=>window.open("https://triggui.com","_blank");
+  btnOtro.onclick = () => {
+  location.reload();
+};
 
 // ===== CONTRASTE SEGURO =====
 function luminance(hex) {
