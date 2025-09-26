@@ -256,18 +256,38 @@ html, body {
 }
 
 
+/* INICIO FIX TARJETA */
 #tarjetaCard {
+  width: min(420px, 90vw);
+  height: 600px; /* portrait y desktop siguen igual */
   font-size: clamp(16px, 2.6vw, 22px);
   line-height: 1.35;
   -webkit-text-size-adjust: none;
   text-size-adjust: none;
 
   /* 🔑 Animación de entrada Jobs-like */
-  opacity:0;
-  transform:scale(0.92);
+  opacity: 0;
+  transform: scale(0.92);
   animation: cardIn 0.45s ease-out forwards;
-  border-radius:20px;
+  border-radius: 20px;
 }
+
+body.webview #tarjetaCard {
+  height: 650px !important; /* portrait y desktop siguen igual */
+  font-size: clamp(16px, 2.4vw, 20px);
+}
+
+/* 🔑 Ajuste solo en landscape para que no se corte */
+@media (orientation: landscape) {
+  #tarjetaCard {
+    height: min(560px, 85vh);
+  }
+
+  body.webview #tarjetaCard {
+    height: min(650px, 85vh) !important;
+  }
+}
+/* FIN FIX TARJETA */
 
 @keyframes cardIn {
   from { opacity:0; transform:scale(0.92); }
@@ -283,11 +303,7 @@ html, body {
   opacity: .9;
 }
 
-/* 🔑 Tarjeta más alta y texto más compacto solo en WebView */
-body.webview #tarjetaCard {
-  height: 650px !important;
-  font-size: clamp(16px, 2.4vw, 20px); /* un pelín más compacto */
-}
+
 
 body.webview {
   position: fixed;
