@@ -237,32 +237,40 @@ html, body {
 .emoji-big{font-size:clamp(1.6rem,5vw,2.8rem);filter:drop-shadow(0 4px 8px rgba(0,0,0,.3))}
 
 /* ---------------- CTA Buttons ---------------- */
-.cta{position:fixed;bottom:3vh;left:50%;transform:translateX(-50%);z-index:100;display:none;gap:0.8rem;justify-content:center;flex-wrap:wrap}
-
+.cta{
+  position:fixed;bottom:3vh;left:50%;transform:translateX(-50%);
+  z-index:100;display:none;gap:.9rem;justify-content:center;flex-wrap:wrap
+}
 .cta button{
-  width:clamp(3rem, min(7vw,7vh), 4rem);
-  height:clamp(3rem, min(7vw,7vh), 4rem);
-  flex:0 0 clamp(3rem, min(7vw,7vh), 4rem);
-  border:none;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:clamp(1.3rem,3.5vw,1.8rem); /* tamaño perfecto del ícono */
-  cursor:pointer;
-  background-size:200% 200%;
-  transition:filter .25s,transform .25s;
-  box-shadow:0 4px 10px rgba(0,0,0,.15);
+  width:clamp(3rem,min(7vw,7vh),4rem);
+  height:clamp(3rem,min(7vw,7vh),4rem);
+  flex:0 0 clamp(3rem,min(7vw,7vh),4rem);
+  border:none;border-radius:22px; /* pastilla más moderna */
+  display:flex;align-items:center;justify-content:center;
+  font-size:clamp(1.25rem,3.2vw,1.7rem);
+  cursor:pointer;background-size:200% 200%;
+  transition:transform .2s ease, filter .2s ease, box-shadow .3s ease;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.18),
+    0 8px 22px rgba(0,0,0,.28);
+  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  outline:0; position:relative; isolation:isolate;
 }
-
-
-.cta button:hover{filter:brightness(1.15);transform:translateY(-2px)}
-
-.cta .icon{font-size:1.55rem;margin-bottom:.15rem;line-height:1}
-#otro{background:linear-gradient(135deg,#5fbfff,#1e90ff);color:#fff}
-#fisico{background:linear-gradient(135deg,#b2f8c8,#42d97c);color:#0c2d1b}
-#share{background:linear-gradient(135deg,#ff8a00,#ff3d3d);color:#fff;
+.cta button::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;
+  box-shadow:0 0 0 1px rgba(255,255,255,.08) inset, 0 0 0 1px rgba(0,0,0,.18);
+  pointer-events:none;
 }
+.cta button:hover{ filter:saturate(1.06) contrast(1.04); transform:translateY(-2px) }
+.cta button:active{ transform:translateY(0); }
+.cta button:focus-visible{ box-shadow:0 0 0 3px rgba(48,255,228,.45); }
+.cta .icon{font-size:1.55rem;line-height:1;}
+
+/* colores por defecto (si no se inyectan desde JS) */
+#otro{ background:linear-gradient(135deg,#5fbfff,#1e90ff); color:#0b1820 }
+#fisico{ background:linear-gradient(135deg,#b2f8c8,#42d97c); color:#0c2d1b }
+#share{ background:linear-gradient(135deg,#ff8a00,#ff3d3d); color:#1b0b0b }
+
 
 
 /* ---------------- Celebración ---------------- */
