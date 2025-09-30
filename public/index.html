@@ -411,8 +411,10 @@ const frasesIntro = [
   "¿Qué sientes ahora?",
   "¿Qué sientes ahora?"
 ];
-document.getElementById("intro").innerText =
-  frasesIntro[Math.floor(Math.random() * frasesIntro.length)];
+const introEl=document.getElementById("intro");
+const frase=frasesIntro[Math.floor(Math.random()*frasesIntro.length)];
+introEl.innerHTML=`<span class="t">${frase}</span>`;
+
   
 
 let libro=null,revealed=false;
