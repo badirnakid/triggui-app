@@ -67,27 +67,63 @@ html, body {
 }
 
 
-/* ---------------- Intro ---------------- */
+/* ---------------- Intro (refinado) ---------------- */
 .intro{
   position:fixed;
   top:50%;left:50%;
   transform:translate(-50%,-50%);
-  padding:2.2rem 2.8rem;
-  background:#141826; /* un negro más neutro que armoniza con el fondo */
-  border-radius:24px;
+  padding:2rem 2.4rem;
+  background:rgba(20,24,38,.78); /* glass más fino */
+  border-radius:28px;
   z-index:120;
-  font-family:'Poppins';
-  font-size:1.5rem;
-  font-weight:600;
+  font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
   text-align:center;
-  box-shadow:0 4px 22px rgba(48,255,228,.22); /* sombra más sutil y Apple-like */
-  letter-spacing:0.5px; /* aire entre letras */
-  backdrop-filter: blur(8px); /* sutil efecto glass */
-  -webkit-backdrop-filter: blur(8px); /* soporte Safari */
-  animation:introHide 3s 1.6s forwards; /* fade más corto + delay refinado */
+  box-shadow:0 10px 40px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06);
+  letter-spacing:.3px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  /* tipografía adaptable */
+  font-size:clamp(1.1rem,3.8vw,1.9rem);
+  font-weight:700;
+  line-height:1.25;
+  /* animación de aparición suave */
+  opacity:0; transform:translate(-50%,-52%) scale(.985);
+  animation:introIn .6s ease-out .15s forwards, introHide 3.2s 1.7s forwards; 
 }
 
-@keyframes introHide{to{opacity:0;visibility:hidden;transform:translate(-50%,-80%)}}
+/* texto con degradado — cae a sólido donde no hay soporte */
+.intro .t{
+  background:linear-gradient(120deg,#c9fff2,#30ffe4 40%,#9dd5ff);
+  -webkit-background-clip:text; background-clip:text;
+  -webkit-text-fill-color:transparent; color:#eaf7ff;
+  text-shadow:0 0 0 transparent; /* evita halo en Safari */
+}
+
+/* subtítulo mínimo opcional */
+.intro .s{
+  display:block;
+  margin-top:.45rem;
+  font-weight:600;
+  opacity:.85;
+  font-size:clamp(.85rem,2.8vw,1.05rem);
+  color:#dfe9ff;
+}
+
+/* accesibilidad: reduce movimiento */
+@media (prefers-reduced-motion: reduce){
+  .intro{animation:introHide 0s 2.2s forwards}
+}
+
+/* entrada */
+@keyframes introIn{
+  to{opacity:1; transform:translate(-50%,-50%) scale(1)}
+}
+
+/* salida */
+@keyframes introHide{
+  to{opacity:0; visibility:hidden; transform:translate(-50%,-80%) scale(.985)}
+}
+
 
 /* ---------------- Grid ---------------- */
 .grid{position:absolute;inset:5vh 1.5vw;display:grid;gap:1vw}
