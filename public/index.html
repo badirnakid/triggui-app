@@ -483,6 +483,13 @@ function render(){
           cta.style.display="flex";
           revealed=true;
 
+          // CTA cromática basada en colores del libro
+const c=libro.colores;
+document.getElementById("otro").style.background  = `linear-gradient(135deg, ${c[0]}, ${c[1]})`;
+document.getElementById("fisico").style.background= `linear-gradient(135deg, ${c[1]}, ${c[2]})`;
+document.getElementById("share").style.background = `linear-gradient(135deg, ${c[2]}, ${c[3]})`;
+
+
 // ADD: incrementa en silencio sin frenar la UI ni mostrar nada
     fetch("https://triggui-api.vercel.app/api/increment", {
       cache: "no-store"
