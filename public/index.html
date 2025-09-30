@@ -420,8 +420,10 @@ introEl.innerHTML=`<span class="t">${frase}</span>`;
 let libro=null,revealed=false;
 const portIdx=Math.floor(Math.random()*4),
       emojis=["🌊","🛡️","🧠","✨","📘","🔮","❤️","🪞"],
-      isURL=s=>/^https?:\/\//i.test(s||""),
-      grad=i=>`linear-gradient(135deg,${libro.colores[i]},${libro.colores[(i+1)%4]})`;
+            isURL = s => /^https?:\/\//i.test(s || "");
+const ANG  = [115,205,35,320];
+const grad = i => `linear-gradient(${ANG[i%4]}deg,${libro.colores[i]},${libro.colores[(i+1)%4]})`;
+
 
 function adjustScale(wrap){
   const parent=wrap.closest(".portada");if(!parent)return;
@@ -483,11 +485,23 @@ function render(){
           cta.style.display="flex";
           revealed=true;
 
-          // CTA cromática basada en colores del libro
-const c=libro.colores;
-document.getElementById("otro").style.background  = `linear-gradient(135deg, ${c[0]}, ${c[1]})`;
-document.getElementById("fisico").style.background= `linear-gradient(135deg, ${c[1]}, ${c[2]})`;
-document.getElementById("share").style.background = `linear-gradient(135deg, ${c[2]}, ${c[3]})`;
+// dentro de addEventListener("click", e=>{ ... revealed=true; ... })
+const c = libro.colores;
+document.getElementById("otro").style.background   =
+  `linear-gradient(135deg, ${c[0]}, ${c[1]})`;
+document.getElementById("fisico").style.background =
+  `linear-gradient(135deg, ${c[1]}, ${c[2]})`;
+document.getElementById("share").style.background  =
+  `linear-gradient(135deg, ${c[2]}, ${c[3]})`;
+
+// texto legible (sin midColor)
+document.getElementById("otro").style.color   = pickTextColor(c[0]);
+document.getElementById("fisico").style.color = pickTextColor(c[1]);
+document.getElementById("share").style.color  = pickTextColor(c[2]);
+
+// ⬇️ ELIMINA por completo este bloque duplicado:
+// const c=libro.colores; document.getElementById("otro").style.background = ...
+
 
 
 // ADD: incrementa en silencio sin frenar la UI ni mostrar nada
