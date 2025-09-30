@@ -150,35 +150,39 @@ html, body {
 .block.show .label{opacity:0}.block.show .frase{opacity:1}*/
 
 /* ---------------- Blocks ---------------- */
-.block {
+.block{
   position:relative;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:1rem;
-  border-radius:22px;
-  font-weight:700;
-  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  padding:1rem;border-radius:22px;font-weight:700;cursor:pointer;
   background-size:320% 320%;
-  transition:background-position 4s,transform 0.15s ease;
-  overflow:hidden;
+  transition:background-position 4s linear, transform .15s ease, filter .2s ease;
+  overflow:hidden;isolation:isolate;
+  /* depth sutil y legible sobre fondos neón */
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.06),
+    0 8px 22px rgba(0,0,0,.28);
+  will-change: background-position, transform;
 }
-/* 🔑 feedback sutil al tocar */
-.block:active {
-  transform: scale(0.97);
-  box-shadow:0 6px 18px rgba(0,0,0,0.25); /* sutil efecto depth */
+.block:hover{ background-position:100% 100%; filter:saturate(1.05) contrast(1.02); }
+.block:active{ transform:scale(.97); box-shadow:0 10px 24px rgba(0,0,0,.30); }
+/* brillo tangencial suave que no lava el texto */
+.block::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;
+  background:linear-gradient(180deg,rgba(255,255,255,.14),transparent 62%);
+  mix-blend-mode:soft-light;pointer-events:none;
+}
+/* anillo de contraste accesible */
+.block::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;
+  box-shadow:0 0 0 1px rgba(0,0,0,.20) inset, 0 0 0 1px rgba(255,255,255,.04);
+  pointer-events:none;
+}
+/* respeta usuarios con reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .block{transition:transform .15s ease}
+  .block:hover{background-position:0 0;filter:none}
 }
 
-.block:hover { background-position:100% 100%; }
-
-.block::before {
-  content:"";
-  position:absolute;
-  inset:0;
-  border-radius:inherit;
-  background:linear-gradient(180deg,rgba(255,255,255,.18),transparent 65%);
-  mix-blend-mode:overlay;
-}
 
 /* Labels y frases */
 /* 👉 Labels y frases con animación Jobs-like */
