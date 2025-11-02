@@ -384,6 +384,22 @@ body.webview {
   <div id="tarjetaCard"></div>
 </div>
 
+<!-- Overlay de video -->
+<div id="videoOverlay" style="
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:1000;
+  background:rgba(0,0,0,0.9);
+  align-items:center;
+  justify-content:center;
+">
+  <iframe id="videoFrame" 
+    style="width:90vw;max-width:720px;height:55vh;border:none;border-radius:18px;"
+    allow="autoplay; encrypted-media"
+    allowfullscreen>
+  </iframe>
+</div>
 
 
   
