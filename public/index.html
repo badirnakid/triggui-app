@@ -633,6 +633,25 @@ card.style = `
   document.getElementById("tarjetaOverlay").style.display = "flex";
 };
 
+// 🎬 NUEVO: abrir video dentro de la app (sin navegador externo)
+btnVideo.onclick = () => {
+  if (!libro || !libro.videoUrl) return alert("No hay video disponible.");
+
+  const overlay = document.getElementById("videoOverlay");
+  const frame = document.getElementById("videoFrame");
+
+  // Usa el URL generado por contenido.json
+  frame.src = libro.videoUrl;
+  overlay.style.display = "flex";
+};
+
+// Cerrar video al tocar fuera
+document.getElementById("videoOverlay").onclick = e => {
+  if (e.target.id === "videoOverlay") {
+    document.getElementById("videoOverlay").style.display = "none";
+    document.getElementById("videoFrame").src = ""; // detener reproducción
+  }
+};
 
 
  
