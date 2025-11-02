@@ -385,21 +385,20 @@ body.webview {
 </div>
 
 <!-- Overlay de video -->
-<div id="videoOverlay" style="
-  display:none;
-  position:fixed;
-  inset:0;
-  z-index:1000;
-  background:rgba(0,0,0,0.9);
-  align-items:center;
-  justify-content:center;
-">
-  <iframe id="videoFrame" 
-    style="width:90vw;max-width:720px;height:55vh;border:none;border-radius:18px;"
-    allow="autoplay; encrypted-media"
-    allowfullscreen>
-  </iframe>
+<div id="videoOverlay" class="hidden fixed inset-0 z-[1000] flex items-center justify-center
+  bg-[rgba(0,0,0,0.9)] backdrop-blur-md opacity-0 transition-opacity duration-500 ease-out">
+  <div class="relative w-[90%] max-w-[720px] aspect-video rounded-2xl overflow-hidden shadow-2xl border border-[rgba(255,255,255,0.1)]">
+    <iframe id="videoFrame"
+      class="w-full h-full"
+      allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+      allowfullscreen></iframe>
+    <button id="closeVideo"
+      class="absolute top-3 right-3 text-white bg-[rgba(0,0,0,0.4)] hover:bg-[rgba(255,255,255,0.15)] rounded-full w-9 h-9 flex items-center justify-center text-lg backdrop-blur-sm">
+      ✕
+    </button>
+  </div>
 </div>
+
 
 
   
@@ -633,66 +632,61 @@ card.style = `
   document.getElementById("tarjetaOverlay").style.display = "flex";
 };
 
-// 🎬 VIDEO OVERLAY (dinámico, fade + blur)
-const videoOverlay = document.getElementById("videoOverlay");
-const videoFrame   = document.getElementById("videoFrame");
-const closeVideo   = document.getElementById("closeVideo");
-
-// --- Abrir video dinámicamente ---
-btnVideo.onclick = async () => {
-  if (!libro || !libro.titulo || !libro.autor) {
-    alert("No hay información del libro.");
-    return;
-  }
-
-  const q = `${libro.titulo} ${libro.autor} entrevista español`;
-
-  try {
-    // 🔍 Buscar primer video en YouTube
-    const res = await fetch(`https://www.youtube.com/results?search_query=${encodeURIComponent(q)}`);
-    const html = await res.text();
-    const match = html.match(/"videoId":"([a-zA-Z0-9_-]{11})"/);
-
-    if (!match) {
-      alert("No se encontró un video disponible.");
-      return;
-    }
-
-    const videoId = match[1];
-    videoFrame.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&cc_load_policy=1&hl=es&playsinline=1`;
-
-    // Mostrar overlay con fade
-    videoOverlay.classList.remove("hidden");
-    requestAnimationFrame(() => videoOverlay.classList.remove("opacity-0"));
-
-  } catch (err) {
-    console.error("Error cargando video:", err);
-    alert("Error al cargar el video.");
-  }
-};
-
-// --- Cerrar overlay con fade-out ---
-function cerrarVideoOverlay() {
-  videoOverlay.classList.add("opacity-0");
-  setTimeout(() => {
-    videoOverlay.classList.add("hidden");
-    videoFrame.src = ""; // detener reproducción
-  }, 400);
-}
-
-closeVideo.onclick = cerrarVideoOverlay;
-videoOverlay.onclick = e => {
-  if (e.target.id === "videoOverlay") cerrarVideoOverlay();
-};
-
-
-
- 
-
 // cerrar overlay al tocar fuera
 document.getElementById("tarjetaOverlay").onclick = () =>
   document.getElementById("tarjetaOverlay").style.display = "none";
 
+// 🎬 VIDEO OVERLAY (dinámico, fade + blur)
+document.addEventListener("DOMContentLoaded", () => {
+  const btnVideo = document.getElementById("video");
+  const videoOverlay = document.getElementById("videoOverlay");
+  const videoFrame = document.getElementById("videoFrame");
+  const closeVideo = document.getElementById("closeVideo");
+
+  if (!btnVideo) return; // evita bloqueo si el botón no existe
+
+  btnVideo.onclick = async () => {
+    if (!libro || !libro.titulo || !libro.autor) {
+      alert("No hay información del libro.");
+      return;
+    }
+
+    const q = `${libro.titulo} ${libro.autor} entrevista español`;
+
+    try {
+      const res = await fetch(`https://www.youtube.com/results?search_query=${encodeURIComponent(q)}`);
+      const html = await res.text();
+      const match = html.match(/"videoId":"([a-zA-Z0-9_-]{11})"/);
+
+      if (!match) {
+        alert("No se encontró un video disponible.");
+        return;
+      }
+
+      const videoId = match[1];
+      videoFrame.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&cc_load_policy=1&hl=es&playsinline=1`;
+
+      videoOverlay.classList.remove("hidden");
+      requestAnimationFrame(() => videoOverlay.classList.remove("opacity-0"));
+    } catch (err) {
+      console.error("Error cargando video:", err);
+      alert("Error al cargar el video.");
+    }
+  };
+
+  function cerrarVideoOverlay() {
+    videoOverlay.classList.add("opacity-0");
+    setTimeout(() => {
+      videoOverlay.classList.add("hidden");
+      videoFrame.src = "";
+    }, 400);
+  }
+
+  closeVideo.onclick = cerrarVideoOverlay;
+  videoOverlay.onclick = e => {
+    if (e.target.id === "videoOverlay") cerrarVideoOverlay();
+  };
+});
 
 
   
