@@ -383,9 +383,6 @@ body.webview {
     <button id="share">
     <span class="icon">📖</span>
   </button>
-    <button id="video">
-    <span class="icon">▶️</span>
-  </button>
 </div>
 
 <!-- Overlay de tarjeta coleccionable -->
@@ -405,7 +402,6 @@ const grid=document.getElementById("grid"),
       btnOtro=document.getElementById("otro"),
       btnLibro=document.getElementById("fisico"),
       btnShare=document.getElementById("share"),
-  btnVideo=document.getElementById("video"),
       cele=document.getElementById("cele"),
       celeMsg=document.getElementById("celeMsg");
 
@@ -625,29 +621,6 @@ card.style = `
   document.getElementById("tarjetaOverlay").style.display = "flex";
 };
 
-// 🎬 BOTÓN DE VIDEO — abre videoUrl externo
-btnVideo.onclick = () => {
-  if (!libro || !libro.videoUrl) {
-    alert("🎥 Video no disponible para este libro.");
-    return;
-  }
-
-  const url = libro.videoUrl.trim();
-  try {
-    // 🔑 Dentro de WebView (TrigguiApp iOS/Android)
-    if (window.ReactNativeWebView) {
-      window.ReactNativeWebView.postMessage(
-        JSON.stringify({ type: "OPEN_EXTERNAL", url })
-      );
-    } else {
-      // 🔑 En navegador normal
-      window.open(url, "_blank");
-    }
-  } catch (err) {
-    console.error("Error abriendo video:", err);
-    window.open(url, "_blank");
-  }
-};
 
 
  
