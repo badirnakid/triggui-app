@@ -633,25 +633,58 @@ card.style = `
   document.getElementById("tarjetaOverlay").style.display = "flex";
 };
 
-// 🎬 NUEVO: abrir video dentro de la app (sin navegador externo)
-btnVideo.onclick = () => {
-  if (!libro || !libro.videoUrl) return alert("No hay video disponible.");
+// 🎬 VIDEO OVERLAY (dinámico, fade + blur)
+const videoOverlay = document.getElementById("videoOverlay");
+const videoFrame   = document.getElementById("videoFrame");
+const closeVideo   = document.getElementById("closeVideo");
 
-  const overlay = document.getElementById("videoOverlay");
-  const frame = document.getElementById("videoFrame");
+// --- Abrir video dinámicamente ---
+btnVideo.onclick = async () => {
+  if (!libro || !libro.titulo || !libro.autor) {
+    alert("No hay información del libro.");
+    return;
+  }
 
-  // Usa el URL generado por contenido.json
-  frame.src = libro.videoUrl;
-  overlay.style.display = "flex";
-};
+  const q = `${libro.titulo} ${libro.autor} entrevista español`;
 
-// Cerrar video al tocar fuera
-document.getElementById("videoOverlay").onclick = e => {
-  if (e.target.id === "videoOverlay") {
-    document.getElementById("videoOverlay").style.display = "none";
-    document.getElementById("videoFrame").src = ""; // detener reproducción
+  try {
+    // 🔍 Buscar primer video en YouTube
+    const res = await fetch(`https://www.youtube.com/results?search_query=${encodeURIComponent(q)}`);
+    const html = await res.text();
+    const match = html.match(/"videoId":"([a-zA-Z0-9_-]{11})"/);
+
+    if (!match) {
+      alert("No se encontró un video disponible.");
+      return;
+    }
+
+    const videoId = match[1];
+    videoFrame.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&cc_load_policy=1&hl=es&playsinline=1`;
+
+    // Mostrar overlay con fade
+    videoOverlay.classList.remove("hidden");
+    requestAnimationFrame(() => videoOverlay.classList.remove("opacity-0"));
+
+  } catch (err) {
+    console.error("Error cargando video:", err);
+    alert("Error al cargar el video.");
   }
 };
+
+// --- Cerrar overlay con fade-out ---
+function cerrarVideoOverlay() {
+  videoOverlay.classList.add("opacity-0");
+  setTimeout(() => {
+    videoOverlay.classList.add("hidden");
+    videoFrame.src = ""; // detener reproducción
+  }, 400);
+}
+
+closeVideo.onclick = cerrarVideoOverlay;
+videoOverlay.onclick = e => {
+  if (e.target.id === "videoOverlay") cerrarVideoOverlay();
+};
+
 
 
  
