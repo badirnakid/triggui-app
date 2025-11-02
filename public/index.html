@@ -625,6 +625,29 @@ card.style = `
   document.getElementById("tarjetaOverlay").style.display = "flex";
 };
 
+// 🎬 BOTÓN DE VIDEO — abre videoUrl externo
+btnVideo.onclick = () => {
+  if (!libro || !libro.videoUrl) {
+    alert("🎥 Video no disponible para este libro.");
+    return;
+  }
+
+  const url = libro.videoUrl.trim();
+  try {
+    // 🔑 Dentro de WebView (TrigguiApp iOS/Android)
+    if (window.ReactNativeWebView) {
+      window.ReactNativeWebView.postMessage(
+        JSON.stringify({ type: "OPEN_EXTERNAL", url })
+      );
+    } else {
+      // 🔑 En navegador normal
+      window.open(url, "_blank");
+    }
+  } catch (err) {
+    console.error("Error abriendo video:", err);
+    window.open(url, "_blank");
+  }
+};
 
 
  
