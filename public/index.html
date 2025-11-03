@@ -368,27 +368,22 @@ body.webview {
 <body style="background:#0e0f1b; margin:0; padding:0; height:100%; color:#fff;">
 
 <div class="intro" id="intro"></div>
-<!-- ✨ Contador de libros abiertos -->
-<div class="intro" id="contador" style="display:none;">
-  <span class="t" id="contadorTexto">✨ 0 libros abiertos juntos</span>
-</div>
-
-  
 <div class="grid" id="grid"></div>
 
 <!-- CTA (aparece tras revelar) -->
 <div class="cta" id="cta">
   <button id="otro">
     <span class="icon">🎲</span>
+    <!--<span class="txt">Me gusta<br>quiero<br>donar</span> -->
   </button>
-  <button id="share">
+  <button id="fisico">
+    <span class="icon">🔟</span>
+    <!--<span class="txt">Abrí un<br>libro<br>físico</span> -->
+  </button>
+    <button id="share">
     <span class="icon">📖</span>
   </button>
-  <button id="donar">
-    <span class="icon">❤️</span>
-  </button>
 </div>
-
 
 <!-- Overlay de tarjeta coleccionable -->
 <div id="tarjetaOverlay">
@@ -405,18 +400,16 @@ body.webview {
 const grid=document.getElementById("grid"),
       cta=document.getElementById("cta"),
       btnOtro=document.getElementById("otro"),
+      btnLibro=document.getElementById("fisico"),
       btnShare=document.getElementById("share"),
-      btnDonar=document.getElementById("donar"),
-      intro=document.getElementById("intro"),
-      contador=document.getElementById("contador"),
-      contadorTexto=document.getElementById("contadorTexto");
-
+      cele=document.getElementById("cele"),
+      celeMsg=document.getElementById("celeMsg");
 
 // Frases rotativas estilo Jobs
 const frasesIntro = [
-  "¿Qué sientes o qué buscas ahora?",
-  "¿Qué sientes o qué buscas ahora?",
-  "¿Qué sientes o qué buscas ahora?"
+  "¿Qué sientes y qué buscas ahora?",
+  "¿Qué sientes y qué buscas ahora?",
+  "¿Qué sientes y qué buscas ahora?"
 ];
 const introEl=document.getElementById("intro");
 const frase=frasesIntro[Math.floor(Math.random()*frasesIntro.length)];
@@ -491,21 +484,20 @@ function render(){
           [...grid.children].forEach((c,j)=>j!==portIdx&&c.classList.add("show"));
           cta.style.display="flex";
           revealed=true;
-          mostrarContador();
-
 
 // dentro de addEventListener("click", e=>{ ... revealed=true; ... })
 const c = libro.colores;
 document.getElementById("otro").style.background   =
   `linear-gradient(135deg, ${c[0]}, ${c[1]})`;
-document.getElementById("share").style.background  =
+document.getElementById("fisico").style.background =
   `linear-gradient(135deg, ${c[1]}, ${c[2]})`;
-document.getElementById("donar").style.background  =
+document.getElementById("share").style.background  =
   `linear-gradient(135deg, ${c[2]}, ${c[3]})`;
 
+// texto legible (sin midColor)
 document.getElementById("otro").style.color   = pickTextColor(c[0]);
-document.getElementById("share").style.color  = pickTextColor(c[1]);
-document.getElementById("donar").style.color  = pickTextColor(c[2]);
+document.getElementById("fisico").style.color = pickTextColor(c[1]);
+document.getElementById("share").style.color  = pickTextColor(c[2]);
 
 // ⬇️ ELIMINA por completo este bloque duplicado:
 // const c=libro.colores; document.getElementById("otro").style.background = ...
@@ -566,38 +558,7 @@ function pickTextColor(bg) {
   catch { return "#fff"; }
 }
 
- // ✨ Mostrar contador igual que el mensaje inicial
-async function mostrarContador() {
-  try {
-    const r = await fetch("https://triggui-api.vercel.app/api/increment");
-    const d = await r.json();
-    const total = d.total.toLocaleString("es-MX");
-
-    contadorTexto.innerHTML = `✨ ${total} libros abiertos juntos`;
-    contador.style.display = "block";
-    contador.style.opacity = "0";
-    contador.style.transform = "translate(-50%, -52%) scale(.985)";
-
-    // Fade-in suave (idéntico al intro)
-    requestAnimationFrame(() => {
-      contador.style.transition = "opacity .6s ease-out, transform .6s ease-out";
-      contador.style.opacity = "1";
-      contador.style.transform = "translate(-50%, -50%) scale(1)";
-    });
-
-    // Auto-ocultar tras 4.5 s
-    setTimeout(() => {
-      contador.style.transition = "opacity .8s ease-in, transform .8s ease-in";
-      contador.style.opacity = "0";
-      contador.style.transform = "translate(-50%, -80%) scale(.985)";
-      setTimeout(() => (contador.style.display = "none"), 1000);
-    }, 4500);
-  } catch {
-    contadorTexto.innerHTML = "📚 Error al contar libros";
-    contador.style.display = "block";
-  }
-}
- 
+  
 
 btnShare.onclick = () => {
   const t = libro.tarjeta;
@@ -660,22 +621,6 @@ card.style = `
   document.getElementById("tarjetaOverlay").style.display = "flex";
 };
 
-// ❤️ BOTÓN DONAR — abre Stripe Donate universal
-btnDonar.onclick = () => {
-  const url = "https://donate.stripe.com/9B66oJ8bI1E02U85aR24001";
-  try {
-    if (window.ReactNativeWebView) {
-      window.ReactNativeWebView.postMessage(
-        JSON.stringify({ type: "OPEN_EXTERNAL", url })
-      );
-    } else {
-      window.open(url, "_blank");
-    }
-  } catch (err) {
-    console.error("Error al abrir donación:", err);
-    window.open(url, "_blank");
-  }
-};
 
 
  
