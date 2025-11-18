@@ -361,6 +361,20 @@ body.webview {
   overflow: hidden;
   background: #0e0f1b;
 }
+
+/* ==================== PULSE PORTADA (100% SEGURO) ==================== */
+@keyframes trigguiPulse {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.035); }
+  100% { transform: scale(1); }
+}
+
+/* Solo la imagen de portada pulsa — nada más */
+.portada.reveal-pulse img {
+  animation: trigguiPulse 2.6s ease-in-out infinite;
+  will-change: transform;
+}
+
   
   
 </style>
@@ -481,6 +495,8 @@ function render(){
           // Primera vez: revelar portada
           label.style.display="none";
           port.style.display="flex";
+          /* 👇 Añadimos el pulso aquí. 100% seguro. */
+  port.classList.add("reveal-pulse");
           [...grid.children].forEach((c,j)=>j!==portIdx&&c.classList.add("show"));
           cta.style.display="flex";
           revealed=true;
