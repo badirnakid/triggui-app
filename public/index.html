@@ -602,6 +602,57 @@ card.style = `
     <div style="font:18px/1.45 ${safeSerif};flex:1;margin-bottom:12px;">
       ${t.parrafoBot}
     </div>
+
+${(() => {
+    const palabras = libro.palabras || [];
+    let p1 = "", p2 = "";
+
+    if (palabras.length > 0) {
+        const shuffled = [...palabras].sort(() => 0.5 - Math.random());
+        p1 = shuffled[0] || "";
+        p2 = shuffled[1] || shuffled[0] || "";
+    }
+
+    const queryRandom = encodeURIComponent(`${p1} ${p2}`);
+
+    return `
+    <div style="margin:18px 0 8px 0; text-align:center; display:flex; flex-direction:column; gap:10px;">
+
+        <a href="https://www.buscalibre.com.mx/search?q=${encodeURIComponent(libro.titulo + ' ' + libro.autor)}"
+            target="_blank"
+            style="
+                display:block;
+                padding:12px 18px;
+                font:600 18px ${safeSans};
+                border-radius:16px;
+                background:linear-gradient(135deg,#27fdd6,#00d4ff);
+                color:#000;
+                text-decoration:none;
+                box-shadow:0 4px 12px rgba(0,0,0,.25);
+            ">
+            Comprar este libro en Buscalibre
+        </a>
+
+        <a href="https://www.buscalibre.com.mx/libros/search/?q=${queryRandom}"
+            target="_blank"
+            style="
+                display:block;
+                padding:12px 18px;
+                font:600 18px ${safeSans};
+                border-radius:16px;
+                background:linear-gradient(135deg,#ffcf2b,#ff9320);
+                color:#000;
+                text-decoration:none;
+                box-shadow:0 4px 12px rgba(0,0,0,.25);
+            ">
+            Ver más libros como este
+        </a>
+
+    </div>
+    `;
+})()}
+
+    
     <div style="text-align:center; margin-top:10px;">
       <img src="${
         pickTextColor(safePaper) === '#000'
