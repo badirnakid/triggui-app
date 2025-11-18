@@ -592,7 +592,7 @@ const queryRandom = encodeURIComponent(p);
     buscalibreHTML = `
         <div style="margin:18px 0 8px 0; text-align:center; display:flex; flex-direction:column; gap:10px;">
 
-          <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(libro.titulo + ' ' + libro.autor)}"
+          <a href="https://www.buscalibre.com.mx/libros/search/?ui=desktop&q=${encodeURIComponent(libro.titulo + ' ' + libro.autor)}"
               target="_blank"
               style="
                   display:block;
@@ -607,7 +607,7 @@ const queryRandom = encodeURIComponent(p);
               Comprar este libro en Buscalibre
           </a>
 
-          <a href="https://www.buscalibre.com.mx/libros/search/?q=${queryRandom}"
+          <a href="https://www.buscalibre.com.mx/libros/search/?ui=desktop&q=${queryRandom}"
               target="_blank"
               style="
                   display:block;
