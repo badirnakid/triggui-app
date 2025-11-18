@@ -590,40 +590,59 @@ const queryRandom = encodeURIComponent(p);
 
 
     buscalibreHTML = `
-        <div style="margin:18px 0 8px 0; text-align:center; display:flex; flex-direction:column; gap:10px;">
+  <div style="
+    margin: 18px 0 8px 0; 
+    text-align:center; 
+    display:flex; 
+    flex-direction:column; 
+    gap:12px;
+  ">
 
-          <a href="https://www.buscalibre.com.mx/libros/search/?tema=claro&q=${encodeURIComponent(libro.titulo + ' ' + libro.autor)}"
-              target="_blank"
-              style="
-                  display:block;
-                  padding:12px 18px;
-                  font:600 18px Arial, sans-serif;
-                  border-radius:16px;
-                  background:linear-gradient(135deg,#27fdd6,#00d4ff);
-                  color:#000;
-                  text-decoration:none;
-                  box-shadow:0 4px 12px rgba(0,0,0,.25);
-              ">
-              Comprar en Buscalibre
-          </a>
+    <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(libro.titulo + ' ' + libro.autor)}"
+        target="_blank"
+        style="
+          display:block;
+          padding:10px 14px;
+          font:600 16px Arial, sans-serif;
+          border-radius:12px;
+          border:1px solid rgba(255,255,255,0.75);
+          background:transparent;
+          color:#ffffff;
+          text-decoration:none;
+          backdrop-filter:blur(4px);
+          -webkit-backdrop-filter:blur(4px);
+          transition:all .25s ease;
+        "
+        onmouseover="this.style.borderColor='white'; this.style.transform='scale(1.03)';"
+        onmouseout="this.style.borderColor='rgba(255,255,255,0.75)'; this.style.transform='scale(1)';"
+    >
+      Comprar este libro en Buscalibre
+    </a>
 
-          <a href="https://www.buscalibre.com.mx/libros/search/?tema=claro&q=${queryRandom}"
-              target="_blank"
-              style="
-                  display:block;
-                  padding:12px 18px;
-                  font:600 18px Arial, sans-serif;
-                  border-radius:16px;
-                  background:linear-gradient(135deg,#ffcf2b,#ff9320);
-                  color:#000;
-                  text-decoration:none;
-                  box-shadow:0 4px 12px rgba(0,0,0,.25);
-              ">
-              Ver más como este
-          </a>
+    <a href="https://www.buscalibre.com.mx/libros/search/?q=${queryRandom}"
+        target="_blank"
+        style="
+          display:block;
+          padding:10px 14px;
+          font:600 16px Arial, sans-serif;
+          border-radius:12px;
+          border:1px solid rgba(255,255,255,0.75);
+          background:transparent;
+          color:#ffffff;
+          text-decoration:none;
+          backdrop-filter:blur(4px);
+          -webkit-backdrop-filter:blur(4px);
+          transition:all .25s ease;
+        "
+        onmouseover="this.style.borderColor='white'; this.style.transform='scale(1.03)';"
+        onmouseout="this.style.borderColor='rgba(255,255,255,0.75)'; this.style.transform='scale(1)';"
+    >
+      Ver más libros como este
+    </a>
 
-        </div>
-    `;
+  </div>
+`;
+
 }
 
 
