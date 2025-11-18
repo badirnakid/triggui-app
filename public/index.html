@@ -579,16 +579,15 @@ let buscalibreHTML = "";
 
 if (activarBuscalibre) {
 
-    const palabras = libro.palabras || [];
-    let p1 = "", p2 = "";
+const palabras = libro.palabras || [];
+let p = "";
 
-    if (palabras.length > 0) {
-        const s = [...palabras].sort(() => 0.5 - Math.random());
-        p1 = s[0] || "";
-        p2 = s[1] || s[0] || "";
-    }
+if (palabras.length > 0) {
+    p = palabras[Math.floor(Math.random() * palabras.length)] || "";
+}
 
-    const queryRandom = encodeURIComponent(`${p1} ${p2}`);
+const queryRandom = encodeURIComponent(p);
+
 
     buscalibreHTML = `
         <div style="margin:18px 0 8px 0; text-align:center; display:flex; flex-direction:column; gap:10px;">
