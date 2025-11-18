@@ -602,6 +602,7 @@ const queryRandom = encodeURIComponent(p);
     <a 
       href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(libro.titulo + ' ' + libro.autor)}"
       target="_blank"
+      onclick="event.stopPropagation();"
       style="
         padding: 12px 16px;
         border: 1px solid rgba(255,255,255,0.15);
@@ -647,6 +648,7 @@ const queryRandom = encodeURIComponent(p);
     <a 
       href="https://www.buscalibre.com.mx/libros/search/?q=${queryRandom}"
       target="_blank"
+      onclick="event.stopPropagation();"
       style="
         padding: 12px 16px;
         border: 1px solid rgba(255,255,255,0.15);
