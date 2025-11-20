@@ -788,19 +788,22 @@ if (isWebView()) {
 }
 
   
-// ------------ Anti-repetición nivel dios ------------
-let lastIdx = null;
-
+// ------------ Anti-repetición DEFINITIVO nivel dios ------------
 function pickLibroNoRepetido(libros) {
+  let last = sessionStorage.getItem("lastLibroIdx");
+  if (last !== null) last = parseInt(last);
+
   let idx = Math.floor(Math.random() * libros.length);
 
-  if (idx === lastIdx) {
+  // evita el último incluso después de reload
+  if (idx === last) {
     idx = Math.floor(Math.random() * libros.length);
-    if (idx === lastIdx) idx = (idx + 1) % libros.length;
+    // si sigue igual, usa el siguiente seguro
+    if (idx === last) idx = (idx + 1) % libros.length;
   }
 
-  lastIdx = idx;
-  return libros[idx];
+  sessionStorage.setItem("lastLibroIdx", idx);
+  return idx;
 }
 // ------------------------------------------------------
 
@@ -812,8 +815,7 @@ function pickLibroNoRepetido(libros) {
     const data = await r.json();
 
     // 👉 Aquí usamos la función perfecta:
-    libro = pickLibroNoRepetido(data.libros);
-
+    libro = data.libros[pickLibroNoRepetido(data.libros)];
     render();
   }catch(e){
     alert("No se pudo cargar Triggui.");
