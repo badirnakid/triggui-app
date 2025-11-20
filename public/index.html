@@ -788,14 +788,39 @@ if (isWebView()) {
 }
 
   
+// ------------ Anti-repetición nivel dios ------------
+let lastIdx = null;
+
+function pickLibroNoRepetido(libros) {
+  let idx = Math.floor(Math.random() * libros.length);
+
+  if (idx === lastIdx) {
+    idx = Math.floor(Math.random() * libros.length);
+    if (idx === lastIdx) idx = (idx + 1) % libros.length;
+  }
+
+  lastIdx = idx;
+  return libros[idx];
+}
+// ------------------------------------------------------
+
+
+
 (async()=>{
   try{
-    const r=await fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json?ts="+Date.now());
-    const data=await r.json();
-    libro=data.libros[Math.floor(Math.random()*data.libros.length)];
+    const r = await fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json?ts=" + Date.now());
+    const data = await r.json();
+
+    // 👉 Aquí usamos la función perfecta:
+    libro = pickLibroNoRepetido(data.libros);
+
     render();
-  }catch(e){alert("No se pudo cargar Triggui.");console.error(e);}
+  }catch(e){
+    alert("No se pudo cargar Triggui.");
+    console.error(e);
+  }
 })();
+
 </script>
 
   
