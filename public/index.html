@@ -6,7 +6,7 @@
 <title>Triggui — Abre un libro físico. Aquí y ahora.</title>
 
 <style>
-  html, body { background:#0e0f1b !important; color:#fff; margin:0; padding:0; height:100%; font-family:'Archivo',sans-serif; -webkit-overflow-scrolling:touch; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overflow: hidden; /* Evita scroll por partículas */ }
+  html, body { background:#0e0f1b !important; color:#fff; margin:0; padding:0; height:100%; font-family:'Archivo',sans-serif; -webkit-overflow-scrolling:touch; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overflow: hidden; }
   #tarjetaCard { overflow-wrap: break-word; word-break: break-word; box-sizing: border-box; }
 </style>
 
@@ -34,7 +34,7 @@ function getLocal(key, defaultValue = null) { try { const data = localStorage.ge
 // Reset Helper
 window.reset = function() {
   localStorage.removeItem('triggui_books_opened');
-  localStorage.removeItem('triggui_concepts');
+  localStorage.removeItem('triggui_concepts'); // Nuevo contador real
   localStorage.removeItem('triggui_last_book_time');
   localStorage.removeItem('triggui_streak');
   localStorage.removeItem('triggui_last_visit');
@@ -83,11 +83,16 @@ function incrementBooks() {
   return count;
 }
 
-// LÓGICA DE CONCEPTOS (+4 y +1)
-function addConcepts(amount) {
+// LÓGICA DE CONCEPTOS (+4 y +1 REAL)
+function incrementConcepts(amount) {
   let current = getLocal('concepts', 0);
   const books = getLocal('books_opened', 0);
-  if (current === 0 && books > 1) { current = books * 5; } // Migración
+  
+  // Migración para usuarios viejos: si tiene libros pero 0 conceptos
+  if (current === 0 && books > 0) {
+    current = books * 5; 
+  }
+  
   const newVal = current + amount;
   saveLocal('concepts', newVal);
   return newVal;
@@ -138,7 +143,7 @@ function getRealisticUserCount() {
 @keyframes introIn{ to{opacity:1; transform:translate(-50%,-50%) scale(1)} }
 @keyframes introHide{ to{opacity:0; visibility:hidden; transform:translate(-50%,-80%) scale(.985)} }
 
-/* --- GRID ORIGINAL --- */
+/* Grid */
 .grid{position:absolute;inset:5vh 1.5vw;display:grid;gap:1vw}
 @media(orientation:landscape){.grid{grid-template-columns:repeat(4,1fr)}}
 @media(orientation:portrait){.grid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr)}}
@@ -169,11 +174,11 @@ function getRealisticUserCount() {
 .port-text p{ font-size:clamp(1.2rem,4vw,1.8rem); font-weight:600; opacity:.9; }
 .emoji-big{ font-size:clamp(1.6rem,5vw,2.8rem); filter:drop-shadow(0 4px 8px rgba(0,0,0,.3)); }
 
-/* CTA (4 BOTONES PERFECTAMENTE DISTRIBUIDOS) */
+/* CTA (4 BOTONES) */
 .cta{ 
   position:fixed; bottom:3vh; left:50%; transform:translateX(-50%); z-index:100; 
   display:none; 
-  gap: clamp(0.5rem, 2vw, 0.9rem); /* Gap responsivo para que quepan 4 */
+  gap: clamp(0.5rem, 2vw, 0.9rem); 
   justify-content:center; 
 }
 .cta button{
@@ -185,7 +190,7 @@ function getRealisticUserCount() {
 #otro{ background:linear-gradient(135deg,#5fbfff,#1e90ff); color:#fff; }
 #fisico{ background:linear-gradient(135deg,#b2f8c8,#42d97c); color:#000; }
 #share{ background:linear-gradient(135deg,#ff8a00,#ff3d3d); color:#fff; }
-#like { background:linear-gradient(135deg, #ff416c, #ff4b2b); color:#fff; } /* NUEVO BOTON LIKE */
+#like { background:linear-gradient(135deg, #ff416c, #ff4b2b); color:#fff; } 
 
 /* Overlay */
 #tarjetaOverlay { display:none; position:fixed; inset:0; z-index:999; align-items:center; justify-content:center; background: radial-gradient(circle, rgba(0,0,0,0.90), rgba(0,0,0,0.98)); backdrop-filter: blur(5px); }
@@ -193,20 +198,31 @@ function getRealisticUserCount() {
 body.webview #tarjetaCard { height:650px !important; }
 @keyframes cardIn { to { opacity:1; transform:scale(1); } }
 
-/* ✨ BADGE COMPACTO NIVEL DIOS */
+/* ✨ BADGE COMPACTO NIVEL DIOS (CENTRADO ABSOLUTO) */
 #progressBadge {
-  position: fixed; left: 50%; top: 15px; z-index: 150;
-  /* Centrado absoluto */
-  margin-left: -50%; margin-right: -50%; transform: translateX(-50%); /* Técnica robusta de centrado */
-  width: fit-content; max-width: 90vw;
+  position: fixed;
+  top: 15px; /* Margen superior */
+  /* CENTRADO INFALIBLE SIN TRANSFORM HORIZONTAL */
+  left: 0; right: 0; margin: 0 auto;
+  
+  width: fit-content; max-width: 92%; /* Evita que se salga */
+  z-index: 150;
+  
   background: rgba(20,24,38,0.90); border: 1px solid rgba(255,255,255,0.12);
   padding: 6px 20px; border-radius: 99px; color: #dfe9ff;
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  
+  /* Animación SOLO Vertical */
   opacity: 0; animation: badgeDrop 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
   box-shadow: 0 4px 20px rgba(0,0,0,0.3); text-align: center;
   cursor: pointer; user-select: none; pointer-events: auto;
 }
-@keyframes badgeDrop { 0% { opacity: 0; top: -40px; } 100% { opacity: 1; top: 15px; } }
+
+/* Solo animamos Y, el X lo controla el margin:auto */
+@keyframes badgeDrop { 
+  0% { opacity: 0; transform: translateY(-40px); } 
+  100% { opacity: 1; transform: translateY(0); } 
+}
 
 #progressBadge .line1 {
   display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; 
@@ -250,10 +266,9 @@ body.webview #tarjetaCard { height:650px !important; }
 .btn-primary { background: linear-gradient(135deg, #ff0080, #7928ca); color: white; box-shadow: 0 4px 15px rgba(255,0,128,0.3); }
 .btn-secondary { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
 
-/* ✨ CORAZONES FLOTANTES (PARTÍCULAS) */
+/* ✨ PARTÍCULAS LIKE */
 .floating-heart {
-  position: fixed; pointer-events: none; z-index: 200;
-  font-size: 24px; opacity: 0;
+  position: fixed; pointer-events: none; z-index: 200; font-size: 24px; opacity: 0;
   animation: floatUp 1.2s ease-out forwards;
 }
 @keyframes floatUp {
@@ -302,7 +317,8 @@ body.webview #tarjetaCard { height:650px !important; }
   <button id="otro"><span class="icon">🎲</span></button>
   <button id="fisico"><span class="icon">🔟</span></button>
   <button id="share"><span class="icon">📖</span></button>
-  <button id="like"><span class="icon">😍</span></button> </div>
+  <button id="like"><span class="icon">😍</span></button>
+</div>
 
 <div id="tarjetaOverlay"><div id="tarjetaCard"></div></div>
 <div class="cele" id="cele"><div class="cele-msg" id="celeMsg"></div></div>
@@ -378,7 +394,7 @@ progressBadge.addEventListener('click', () => {
   if (tapCount === 3) {
     clearTimeout(tapTimer); tapCount = 0;
     Modal.show({
-      emoji: '🔄', title: '¿Reiniciar Contadores?', text: 'Esto pondrá tus contadores a cero.',
+      emoji: '🔄', title: '¿Reiniciar?', text: 'Esto pondrá tus contadores a cero.',
       btnText: 'Sí, Reiniciar', showCancel: true, cancelText: 'Cancelar',
       onConfirm: () => {
         window.reset();
@@ -393,11 +409,11 @@ function showToast(msg, duration=3000) {
   setTimeout(() => toast.classList.remove('visible'), duration);
 }
 
-// ✨ UPDATE BADGE (Conceptos)
+// ✨ UPDATE BADGE (Conceptos Reales)
 function updateBadge() {
   const streak = updateStreak(); 
   const books = getLocal('books_opened', 0);
-  const concepts = getLocal('concepts', books * 5); 
+  const concepts = getLocal('concepts', books * 5); // Fallback inicial seguro
   
   document.getElementById('badgeContent').innerHTML = 
     `🔥 ${streak}d <span class="dot"></span> 📚 ${books} libros <span class="dot"></span> <span class="highlight-txt">🤓 ${concepts} conceptos absorbidos - ¡Aplícalos hoy!</span>`;
@@ -447,7 +463,9 @@ function render(){
           document.getElementById("otro").style.background = `linear-gradient(135deg, ${c[0]}, ${c[1]})`;
           document.getElementById("fisico").style.background = `linear-gradient(135deg, ${c[1]}, ${c[2]})`;
           document.getElementById("share").style.background = `linear-gradient(135deg, ${c[2]}, ${c[3]})`;
-          // El Like se mantiene con su identidad propia
+          
+          // LIKE BUTTON STYLE
+          document.getElementById("like").style.background = `linear-gradient(135deg, #ff416c, #ff4b2b)`;
           
           document.getElementById("otro").style.color = pickTextColor(c[0]);
           document.getElementById("fisico").style.color = pickTextColor(c[1]);
@@ -466,7 +484,7 @@ function render(){
 // LOGICA ENGAGEMENT
 function handleBookReveal() {
   const booksCount = incrementBooks();
-  addConcepts(4); 
+  incrementConcepts(4); // +4 al revelar
   updateBadge();
   fetch("https://triggui-api.vercel.app/api/increment", {cache:"no-store"}).catch(()=>{});
 
@@ -487,7 +505,7 @@ function handleBookReveal() {
     }), delay);
   } else if (booksCount === 10) {
     setTimeout(() => Modal.show({
-      emoji: '🔥', title: '¡Estás en racha!', text: `Ya llevas <b>10 libros</b> y <b>50 conceptos absorbidos</b>. ${userCount} personas están aplicando esto hoy. <br>Únete al grupo de WhatsApp.`,
+      emoji: '🔥', title: '¡Estás en racha!', text: `Ya llevas <b>10 libros</b>. ${userCount} personas están aplicando esto hoy. <br>Únete al grupo de WhatsApp.`,
       btnText: 'Suscribirme', onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
       showCancel: true
     }), delay);
@@ -502,27 +520,18 @@ function handleBookReveal() {
 
 // === EFECTO LIKE & SHARE MODAL ===
 btnLike.onclick = (e) => {
-  // 1. Animación de Partículas
   const rect = btnLike.getBoundingClientRect();
   const centerX = rect.left + rect.width / 2;
   const centerY = rect.top + rect.height / 2;
 
-  for (let i = 0; i < 8; i++) {
-    createFloatingHeart(centerX, centerY);
-  }
-  
-  // Track
+  for (let i = 0; i < 8; i++) { createFloatingHeart(centerX, centerY); }
   track('like_clicked');
 
-  // 2. Delayed Modal (Gen Z Hook)
   setTimeout(() => {
     Modal.show({
-      emoji: '📸',
-      title: '¡Guárdalo!',
+      emoji: '📸', title: '¡Guárdalo!',
       text: '<b>Toma Screenshot</b> y súbelo a close friends.<br><span class="m-highlight">Este mensaje te encontró por algo.</span>',
-      btnText: 'Listo',
-      onConfirm: () => {}, // Solo cierra
-      showCancel: false
+      btnText: 'Listo', onConfirm: () => {}, showCancel: false
     });
   }, 1500);
 };
@@ -532,14 +541,9 @@ function createFloatingHeart(x, y) {
   heart.classList.add('floating-heart');
   heart.innerText = ['❤️', '😍', '🔥'][Math.floor(Math.random() * 3)];
   document.body.appendChild(heart);
-
-  // Random X drift
   const randomX = (Math.random() - 0.5) * 60; 
-  heart.style.left = `${x}px`;
-  heart.style.top = `${y}px`;
+  heart.style.left = `${x}px`; heart.style.top = `${y}px`;
   heart.style.setProperty('--tx', `${randomX}px`);
-
-  // Cleanup
   setTimeout(() => heart.remove(), 1200);
 }
 
@@ -558,9 +562,9 @@ function pickTextColor(bg) { try { return luminance(bg) > 0.35 ? "#000" : "#fff"
 btnShare.onclick = () => {
   const t = libro.tarjeta; const card = document.getElementById("tarjetaCard");
   
-  // +1 Concepto
+  // +1 Concepto al abrir tarjeta
   if (!cardOpenedThisSession) {
-    addConcepts(1);
+    incrementConcepts(1);
     updateBadge(); 
     cardOpenedThisSession = true;
   }
