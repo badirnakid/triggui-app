@@ -383,9 +383,13 @@ function updateBadge() {
   const streak = updateStreak(); 
   const books = getLocal('books_opened', 0);
   const concepts = getLocal('concepts', books * 5); 
-   
+  
+  // Agregar lógica para singular/plural
+  const diasTexto = streak === 1 ? 'día' : 'días';
+  const librosTexto = books === 1 ? 'libro' : 'libros';
+  
   document.getElementById('badgeContent').innerHTML = 
-    `🔥 ${streak}d <span class="dot"></span> 📚 ${books} libros <span class="dot"></span> <span class="highlight-txt">🤓 ${concepts} conceptos absorbidos - ¡Aplícalos hoy!</span>`;
+    `🔥 ${streak} ${diasTexto} <span class="dot"></span> 📚 ${books} ${librosTexto} <span class="dot"></span> <span class="highlight-txt">🤓 ${concepts} conceptos absorbidos - ¡Aplícalos hoy!</span>`;
 }
 
 // BUILDERS
