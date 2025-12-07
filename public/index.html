@@ -57,6 +57,18 @@ function getLocal(key, defaultValue = null) {
 }
 
 // ========================================
+// 🎯 RESET HELPER (Para testing)
+// ========================================
+window.reset = function() {
+  localStorage.removeItem('triggui_books_opened');
+  localStorage.removeItem('triggui_last_book_time');
+  console.log('✅ Reset completo. Recarga la página.');
+  console.log('Usa: location.reload()');
+}
+
+console.log('💡 TIP: Escribe reset() para volver a libro 0');
+
+// ========================================
 // TRACKING ANÓNIMO (Solo Analytics)
 // ========================================
 function track(event, data = {}) {
@@ -773,7 +785,7 @@ body.webview {
 <div id="streakBadge">🔥 0 días</div>
 
 <!-- Books Counter Badge -->
-<div id="booksBadge">📚 0 libros</div>
+<div id="booksBadge">🤓 0 conceptos</div>
 
 <!-- Toast Notification -->
 <div id="toast"></div>
@@ -912,7 +924,7 @@ function updateBadges() {
   const books = getLocal('books_opened', 0);
   
   streakBadge.textContent = `🔥 ${streak} día${streak !== 1 ? 's' : ''}`;
-  booksBadge.textContent = `📚 ${books} libro${books !== 1 ? 's' : ''}`;
+  booksBadge.textContent = `🤓 ${books} concepto${books !== 1 ? 's' : ''} - Aplícalos hoy`;
 }
 
 // ========================================
@@ -1051,7 +1063,7 @@ function handle(card,i,port,label){
 }
 
 // ========================================
-// ✨ ENGAGEMENT MAGIC - NIVEL DIOS ✨
+// ✨ ENGAGEMENT MAGIC - NIVEL DIOS PERFECTO ✨
 // ========================================
 function handleBookReveal() {
   const streak = updateStreak();
@@ -1074,7 +1086,7 @@ function handleBookReveal() {
     showToast('🔥🔥🔥 UN MES! Eres imparable');
   }
   
-  // ✨ UPGRADE PROMPTS INTELIGENTES - NIVEL DIOS ✨
+  // ✨ UPGRADE PROMPTS PERFECTOS - NIVEL DIOS 100% ✨
   
   // Libro 2: Primera experiencia suave
   if (booksCount === 2) {
@@ -1115,7 +1127,7 @@ function handleBookReveal() {
     setTimeout(() => {
       showUpgradeModal({
         emoji: '🔥',
-        title: '10 libros descubiertos',
+        title: '10 conceptos absorbidos',
         text: 'Ya conoces 10 libros increíbles. ¿Los quieres por WhatsApp?',
         subtext: 'Cada lunes, páginas seleccionadas para ti',
         social: '31 personas activas ahora',
@@ -1132,7 +1144,7 @@ function handleBookReveal() {
     setTimeout(() => {
       showUpgradeModal({
         emoji: '💎',
-        title: '15 libros descubiertos',
+        title: '15 conceptos absorbidos',
         text: '¿Quieres el plan anual? Ahorras $588',
         subtext: '$1,199/año (vs $1,788 mensual)',
         social: '18 personas eligieron el plan anual esta semana',
@@ -1149,7 +1161,7 @@ function handleBookReveal() {
     setTimeout(() => {
       showUpgradeModal({
         emoji: '⚡',
-        title: '20 libros descubiertos!',
+        title: '20 conceptos - Aplícalos hoy!',
         text: 'Precio de lanzamiento ($100) termina pronto',
         subtext: 'Después sube a $149/mes',
         social: 'Solo para las primeras 100 personas',
@@ -1161,12 +1173,29 @@ function handleBookReveal() {
     }, 2000);
   }
   
+  // Libro 25: Milestone especial
+  else if (booksCount === 25) {
+    setTimeout(() => {
+      showUpgradeModal({
+        emoji: '🤓',
+        title: '25 conceptos absorbidos!',
+        text: 'Aplica lo que has descubierto',
+        subtext: 'Recibe 1 concepto cada lunes por WhatsApp',
+        social: `${getRealisticUserCount()} personas aplicando conceptos hoy`,
+        primaryText: 'Quiero recibirlos',
+        primaryUrl: 'https://triggui.com/#planes',
+        trackAccept: 'upgrade_prompt_25books_accepted',
+        trackDecline: 'upgrade_prompt_25books_declined'
+      });
+    }, 2000);
+  }
+  
   // Libro 30: Lifetime offer
   else if (booksCount === 30) {
     setTimeout(() => {
       showUpgradeModal({
         emoji: '🏆',
-        title: '30 libros descubiertos!',
+        title: '30 conceptos - Nivel maestro!',
         text: 'Desbloquea acceso LIFETIME',
         subtext: 'Pago único: $3,999 (nunca vuelves a pagar)',
         social: '7 personas eligieron lifetime este mes',
@@ -1178,16 +1207,53 @@ function handleBookReveal() {
     }, 2000);
   }
   
-  // Cada 10 libros (después del 30): Recordatorio sutil con toast
-  else if (booksCount > 30 && booksCount % 10 === 0) {
+  // Libro 50: Super milestone
+  else if (booksCount === 50) {
     setTimeout(() => {
-      showToast(`📚 ${booksCount} libros descubiertos! ¿Los quieres por WhatsApp?`);
+      showUpgradeModal({
+        emoji: '🤓',
+        title: '50 conceptos absorbidos!',
+        text: 'Ya dominas 50 conceptos. Ahora aplícalos',
+        subtext: 'Recíbelos organizados cada semana',
+        social: 'Solo 5 personas han llegado aquí',
+        primaryText: 'Suscribirme ahora',
+        primaryUrl: 'https://triggui.com/#planes',
+        trackAccept: 'upgrade_prompt_50books_accepted',
+        trackDecline: 'upgrade_prompt_50books_declined'
+      });
+    }, 2000);
+  }
+  
+  // Cada 25 libros (después del 50): Milestone perpetuo
+  else if (booksCount > 50 && booksCount % 25 === 0) {
+    setTimeout(() => {
+      showToast(`🤓 ${booksCount} conceptos absorbidos - Aplícalos hoy!`);
       
-      // Modal sutil después del toast
+      setTimeout(() => {
+        showUpgradeModal({
+          emoji: '🤓',
+          title: `${booksCount} conceptos dominados`,
+          text: 'Conviértelos en resultados reales',
+          subtext: 'Recíbelos cada semana por WhatsApp',
+          social: `${getRealisticUserCount()} personas transformando conocimiento en acción`,
+          primaryText: 'Ver planes',
+          primaryUrl: 'https://triggui.com/#planes',
+          trackAccept: `upgrade_prompt_${booksCount}books_milestone_accepted`,
+          trackDecline: `upgrade_prompt_${booksCount}books_milestone_declined`
+        });
+      }, 3000);
+    }, 1500);
+  }
+  
+  // Cada 10 libros (que no sean milestone de 25): Recordatorio sutil
+  else if (booksCount > 5 && booksCount % 10 === 0 && booksCount % 25 !== 0) {
+    setTimeout(() => {
+      showToast(`📚 ${booksCount} conceptos descubiertos!`);
+      
       setTimeout(() => {
         showUpgradeModal({
           emoji: '📖',
-          title: `${booksCount} libros y contando`,
+          title: `${booksCount} conceptos y contando`,
           text: 'Recíbelos cada semana por WhatsApp',
           subtext: 'Planes desde $100/mes',
           social: `${getRealisticUserCount()} personas leyendo ahora`,
@@ -1201,7 +1267,7 @@ function handleBookReveal() {
   }
   
   // Random surprises (solo si NO es milestone)
-  else if (surprise.type !== 'none' && ![2,5,10,15,20,30].includes(booksCount) && booksCount % 10 !== 0) {
+  else if (surprise.type !== 'none' && ![2,5,10,15,20,25,30,50].includes(booksCount) && booksCount % 10 !== 0 && booksCount % 25 !== 0) {
     setTimeout(() => {
       showToast(surprise.msg);
       track('surprise_shown', { type: surprise.type });
