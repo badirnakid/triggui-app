@@ -6,8 +6,13 @@
 <title>Triggui — Abre un libro físico. Aquí y ahora.</title>
 
 <style>
-  html, body { background:#0e0f1b !important; color:#fff; margin:0; padding:0; height:100%; font-family:'Archivo',sans-serif; -webkit-overflow-scrolling:touch; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-  #tarjetaCard { overflow-wrap: break-word; word-break: break-word; box-sizing: border-box; }
+  html, body {
+    background:#0e0f1b !important;
+    color:#fff;
+    margin:0;
+    padding:0;
+    height:100%;
+  }
 </style>
 
 <meta property="og:title" content="Abre. Un Libro. Físico.">
@@ -15,6 +20,10 @@
 <meta property="og:image" content="https://triggui.com/imagotipo.png">
 <meta property="og:url" content="https://triggui.com">
 <meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Triggui – Abre un libro físico. Aquí y ahora.">
+<meta name="twitter:description" content="Un impulso real. Nada más. Nada menos.">
+<meta name="twitter:image" content="https://triggui.com/imagotipo.png">
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-CLK554FCNM"></script>
 <script>
@@ -25,13 +34,11 @@
 </script>
 
 <script>
-// ========================================
-// 🧠 LOGICA DE DATOS (NO TOCAR)
-// ========================================
+// STORAGE LOCAL
 function saveLocal(key, value) { try { localStorage.setItem('triggui_' + key, JSON.stringify(value)); } catch(e) {} }
 function getLocal(key, defaultValue = null) { try { const data = localStorage.getItem('triggui_' + key); return data ? JSON.parse(data) : defaultValue; } catch(e) { return defaultValue; } }
 
-// Reset Helper para Consola
+// Reset Helper
 window.reset = function() {
   localStorage.removeItem('triggui_books_opened');
   localStorage.removeItem('triggui_last_book_time');
@@ -70,7 +77,24 @@ function incrementBooks() {
   return count;
 }
 
-// Social Proof Fake-Real
+// Variable Rewards
+const surprises = [
+  { type: 'rare', msg: '✨ Libro raro descubierto', chance: 0.12 },
+  { type: 'streak', msg: '🔥 Racha activa', chance: 0.18 },
+  { type: 'milestone', msg: '🎯 Gran descubrimiento', chance: 0.08 },
+  { type: 'none', msg: '', chance: 0.62 }
+];
+function getRandomSurprise() {
+  const rand = Math.random();
+  let cumulative = 0;
+  for (const s of surprises) {
+    cumulative += s.chance;
+    if (rand <= cumulative) return s;
+  }
+  return surprises[surprises.length - 1];
+}
+
+// Social Proof
 function getRealisticUserCount() {
   const base = 28;
   const variance = Math.floor(Math.random() * 8);
@@ -81,27 +105,45 @@ function getRealisticUserCount() {
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500;800&display=swap" rel="stylesheet">
 
 <style>
-/* ========================================
-   🎨 ESTILOS UI NIVEL DIOS
-   ======================================== */
+:root{ --btnSize: clamp(4rem, 15vw, 7rem); }
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{
+  height:100%;
+  font-family:'Archivo',sans-serif;
+  -webkit-overflow-scrolling:touch;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+#tarjetaCard { overflow-wrap: break-word; word-break: break-word; box-sizing: border-box; }
+
+/* Intro */
 .intro{
   position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
   padding:2rem 2.4rem; background:rgba(20,24,38,.78); border-radius:28px;
-  z-index:120; font-family:'Poppins',sans-serif; text-align:center;
+  z-index:120; font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; text-align:center;
   box-shadow:0 10px 40px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06);
-  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  letter-spacing:.3px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   font-size:clamp(1.1rem,3.8vw,1.9rem); font-weight:700; line-height:1.25;
-  opacity:0; animation:introIn .6s ease-out .15s forwards, introHide 3.2s 1.7s forwards; 
+  opacity:0; transform:translate(-50%,-52%) scale(.985);
+  animation:introIn .6s ease-out .15s forwards, introHide 3.2s 1.7s forwards; 
 }
-.intro .t{ background:linear-gradient(120deg,#c9fff2,#30ffe4 40%,#9dd5ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.intro .t{
+  background:linear-gradient(120deg,#c9fff2,#30ffe4 40%,#9dd5ff);
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; 
+  color:#eaf7ff; text-shadow:0 0 0 transparent;
+}
+.intro .s{ display:block; margin-top:.45rem; font-weight:600; opacity:.85; font-size:clamp(.85rem,2.8vw,1.05rem); color:#dfe9ff; }
+@media (prefers-reduced-motion: reduce){ .intro{animation:introHide 0s 2.2s forwards} }
 @keyframes introIn{ to{opacity:1; transform:translate(-50%,-50%) scale(1)} }
 @keyframes introHide{ to{opacity:0; visibility:hidden; transform:translate(-50%,-80%) scale(.985)} }
 
-/* Grid & Blocks */
-.grid{position:absolute;inset:12vh 3vw 8vh 3vw;display:grid;gap:3vw} /* Ajustado para dar espacio al badge arriba */
+/* --- GRID ORIGINAL RESTAURADO --- */
+.grid{position:absolute;inset:5vh 1.5vw;display:grid;gap:1vw}
+@keyframes gridFadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
 @media(orientation:landscape){.grid{grid-template-columns:repeat(4,1fr)}}
 @media(orientation:portrait){.grid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr)}}
 
+/* --- BLOCKS ORIGINALES RESTAURADOS --- */
 .block{
   position:relative; display:flex; align-items:center; justify-content:center;
   padding:1rem; border-radius:22px; font-weight:700; cursor:pointer;
@@ -109,68 +151,102 @@ function getRealisticUserCount() {
   transition:background-position 4s linear, transform .15s ease, filter .2s ease;
   overflow:hidden; isolation:isolate;
   box-shadow: inset 0 0 0 1px rgba(255,255,255,.06), 0 8px 22px rgba(0,0,0,.28);
+  will-change: background-position, transform;
 }
 .block:hover{ background-position:100% 100%; filter:saturate(1.05) contrast(1.02); }
-.block:active{ transform:scale(.97); }
-.block::before{ content:"";position:absolute;inset:0;border-radius:inherit; background:linear-gradient(180deg,rgba(255,255,255,.14),transparent 62%); mix-blend-mode:soft-light;pointer-events:none; }
+.block:active{ transform:scale(.97); box-shadow:0 10px 24px rgba(0,0,0,.30); }
+.block::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;
+  background:linear-gradient(180deg,rgba(255,255,255,.14),transparent 62%);
+  mix-blend-mode:soft-light;pointer-events:none;
+}
+.block::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;
+  box-shadow:0 0 0 1px rgba(0,0,0,.20) inset, 0 0 0 1px rgba(255,255,255,.04);
+  pointer-events:none;
+}
+@media (prefers-reduced-motion: reduce){ .block{transition:transform .15s ease} .block:hover{background-position:0 0;filter:none} }
 
-.label, .frase { z-index:2; text-align:center; transition:opacity .25s, transform .25s; }
-.label { opacity:1; transform:translateY(0); font-size:clamp(1rem, 3vw, 1.6rem); font-weight:700; }
-.frase { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:1rem; opacity:0; transform:translateY(6px); font-size:clamp(0.95rem, 2.8vw, 1.4rem); font-weight:600; }
+/* Labels y frases */
+.label { z-index:2; text-align:center; opacity:1; transition:opacity .25s, transform .25s; transform:translateY(0); font-size:clamp(1rem, 3vw, 1.6rem); font-weight:700; line-height:1.3; letter-spacing:0.3px; }
+.frase { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:1rem; opacity:0; transform:translateY(6px); transition:opacity .25s, transform .25s; font-size:clamp(0.95rem, 2.8vw, 1.4rem); font-weight:600; line-height:1.35; }
 .block.show .label { opacity:0; transform:translateY(-6px); }
 .block.show .frase { opacity:1; transform:translateY(0); }
 
-/* Portada Reveal */
-.portada{ position:absolute; inset:0; display:none; align-items:center; justify-content:center; flex-direction:column; padding:1rem; animation:pop .6s ease-out forwards; max-height:90%; }
+/* Portada */
+.portada{ position:absolute; inset:0; display:none; align-items:center; justify-content:center; flex-direction:column; padding:1rem; gap:.4rem; text-align:center; animation:pop .6s ease-out forwards; max-height:90%; overflow:hidden; }
 @keyframes pop{ 0%{transform:scale(.8);opacity:0} 100%{transform:scale(1);opacity:1} }
 .portada img{ max-width:94%; max-height:76%; border-radius:18px; box-shadow:0 12px 32px rgba(0,0,0,.55); }
-.port-text h2{ font-size:clamp(2rem,6vw,3.5rem); font-weight:800; text-shadow:0 2px 6px rgba(0,0,0,.35); text-align:center;}
-.port-text p{ font-size:clamp(1.2rem,4vw,1.8rem); font-weight:600; opacity:.9; }
+.port-text h2,.port-text p,.emoji-big{ animation:settle .6s ease-out forwards; opacity:0; }
+@keyframes settle{ 0%{transform:scale(1.25);opacity:0} 100%{transform:scale(1);opacity:1} }
+.port-text h2{ font-size:clamp(2.8rem,7vw,4rem); font-weight:800; line-height:1.15; text-shadow:0 2px 6px rgba(0,0,0,.35); }
+.port-text p{ font-size:clamp(1.5rem,4vw,2.2rem); font-weight:600; opacity:.9; margin-top:.3rem; }
 .emoji-big{ font-size:clamp(1.6rem,5vw,2.8rem); filter:drop-shadow(0 4px 8px rgba(0,0,0,.3)); }
 
-/* Botones flotantes */
-.cta{ position:fixed; bottom:3vh; left:50%; transform:translateX(-50%); z-index:100; display:none; gap:.9rem; justify-content:center; }
+/* CTA Buttons */
+.cta{ position:fixed; bottom:3vh; left:50%; transform:translateX(-50%); z-index:100; display:none; gap:.9rem; justify-content:center; flex-wrap:wrap; }
 .cta button{
-  width:clamp(3.5rem,min(8vw,8vh),4.5rem); height:clamp(3.5rem,min(8vw,8vh),4.5rem);
-  border:none; border-radius:50%; display:flex; align-items:center; justify-content:center;
-  font-size:clamp(1.5rem,3.5vw,2rem); cursor:pointer; background-size:200% 200%;
-  box-shadow: 0 4px 12px rgba(0,0,0,.3); backdrop-filter:blur(8px);
+  width:clamp(3rem,min(7vw,7vh),4rem); height:clamp(3rem,min(7vw,7vh),4rem); flex:0 0 clamp(3rem,min(7vw,7vh),4rem);
+  border:none; border-radius:22px; display:flex; align-items:center; justify-content:center;
+  font-size:clamp(1.25rem,3.2vw,1.7rem); cursor:pointer; background-size:200% 200%;
+  transition:transform .2s ease, filter .2s ease, box-shadow .3s ease;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 8px 22px rgba(0,0,0,.28);
+  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); outline:0; position:relative; isolation:isolate;
 }
-#otro{ background:linear-gradient(135deg,#5fbfff,#1e90ff); color:#fff; }
-#fisico{ background:linear-gradient(135deg,#b2f8c8,#42d97c); color:#000; }
-#share{ background:linear-gradient(135deg,#ff8a00,#ff3d3d); color:#fff; }
+.cta button::after{ content:"";position:absolute;inset:0;border-radius:inherit; box-shadow:0 0 0 1px rgba(255,255,255,.08) inset, 0 0 0 1px rgba(0,0,0,.18); pointer-events:none; }
+.cta button:hover{ filter:saturate(1.06) contrast(1.04); transform:translateY(-2px); }
+.cta button:active{ transform:translateY(0); }
+#otro{ background:linear-gradient(135deg,#5fbfff,#1e90ff); color:#0b1820 }
+#fisico{ background:linear-gradient(135deg,#b2f8c8,#42d97c); color:#0c2d1b }
+#share{ background:linear-gradient(135deg,#ff8a00,#ff3d3d); color:#1b0b0b }
 
-/* Overlay de Tarjeta */
-#tarjetaOverlay { display:none; position:fixed; inset:0; z-index:999; align-items:center; justify-content:center; background: radial-gradient(circle, rgba(0,0,0,0.90), rgba(0,0,0,0.98)); backdrop-filter: blur(5px); }
-#tarjetaCard { width:min(420px, 90vw); height:600px; opacity:0; transform:scale(0.92); animation:cardIn 0.45s ease-out forwards; border-radius:20px; }
-@keyframes cardIn { to { opacity:1; transform:scale(1); } }
+/* Overlay & Card */
+#tarjetaOverlay { display:none; position:fixed; inset:0; z-index:999; align-items:center; justify-content:center; background: radial-gradient(circle at center, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.92) 100%); }
+#tarjetaCard { width: min(420px, 90vw); height: 600px; font-size: clamp(16px, 2.6vw, 22px); line-height: 1.35; opacity: 0; transform: scale(0.92); animation: cardIn 0.45s ease-out forwards; border-radius: 20px; }
+body.webview #tarjetaCard { height: 650px !important; font-size: clamp(16px, 2.4vw, 20px); }
+@media (orientation: landscape) { #tarjetaCard { height: min(560px, 85vh); } body.webview #tarjetaCard { height: min(650px, 85vh) !important; } }
+@keyframes cardIn { from { opacity:0; transform:scale(0.92); } to { opacity:1; transform:scale(1); } }
+#tarjetaCard img { max-width: 25%; max-height: 38px; height: auto; display: block; margin: 0 auto; opacity: .9; }
+body.webview { position: fixed; inset: 0; width: 100%; height: 100%; overflow: hidden; background: #0e0f1b; }
 
-/* ✨ BADGE COMPACTO NIVEL DIOS (2 Líneas) */
+/* Pulse Portada */
+@keyframes trigguiPulse { 0% { transform: scale(1); filter: drop-shadow(0 0 0px rgba(255,255,255,0)); } 50% { transform: scale(1.099); filter: drop-shadow(0 0 16px rgba(255,255,255,0.12)); } 100% { transform: scale(1); filter: drop-shadow(0 0 0px rgba(255,255,255,0)); } }
+.portada.reveal-pulse img { animation: trigguiPulse 2.8s cubic-bezier(0.32, 0.01, 0.16, 1) infinite; will-change: transform, filter; }
+
+/* ========================================
+   BADGE COMPACTO (Sutil, sobre el grid)
+   ======================================== */
 #progressBadge {
-  position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 90;
-  background: rgba(20,24,38,0.85); border: 1px solid rgba(255,255,255,0.1);
-  padding: 8px 20px; border-radius: 99px; color: #dfe9ff;
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 150;
+  background: rgba(20,24,38,0.70); border: 1px solid rgba(255,255,255,0.08);
+  padding: 6px 14px; border-radius: 99px; color: #dfe9ff;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
   opacity: 0; animation: fadeInDown 0.6s ease 0.5s forwards;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2); text-align: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1); text-align: center;
   width: max-content; max-width: 90vw; cursor: pointer; user-select: none;
+  pointer-events: auto;
 }
 @keyframes fadeInDown { from {opacity:0; transform:translate(-50%, -20px);} to {opacity:1; transform:translate(-50%, 0);} }
-
-#progressBadge .line1 {
-  display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; 
-  opacity: 0.6; margin-bottom: 2px; font-weight: 600;
-}
-#progressBadge .line2 {
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  font-size: 13px; font-weight: 700; color: #fff;
-}
+#progressBadge .line1 { display: block; font-size: 9px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.6; margin-bottom: 2px; font-weight: 600; }
+#progressBadge .line2 { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; font-weight: 700; color: #fff; }
 #progressBadge .dot { width: 3px; height: 3px; background: rgba(255,255,255,0.3); border-radius: 50%; }
 .highlight-txt { color: #30ffe4; }
 
-/* 💎 SISTEMA DE MODALES UNIFICADO (ADIÓS ALERTAS FEAS) */
+/* Toast */
+#toast {
+  position: fixed; top: 70px; left: 50%; transform: translateX(-50%) translateY(-20px); z-index: 160;
+  background: rgba(20,24,38,0.95); border: 1px solid rgba(255,255,255,0.1);
+  padding: 12px 20px; border-radius: 16px; font-size: 14px; color: #fff;
+  backdrop-filter: blur(12px); font-weight: 600; opacity: 0; pointer-events: none;
+  transition: all 0.3s ease; box-shadow: 0 8px 24px rgba(0,0,0,0.4); text-align: center; max-width: 80%;
+}
+#toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ========================================
+   MODAL UNIFICADO (ADIOS ALERTAS FEAS)
+   ======================================== */
 #appModal {
-  display: none; position: fixed; inset: 0; z-index: 200;
+  display: none; position: fixed; inset: 0; z-index: 9999;
   align-items: center; justify-content: center;
   background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
   opacity: 0; transition: opacity 0.3s ease;
@@ -178,38 +254,35 @@ function getRealisticUserCount() {
 #appModal.visible { display: flex; opacity: 1; }
 
 .modal-glass {
-  background: linear-gradient(145deg, rgba(30,34,50,0.95), rgba(10,12,20,0.98));
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 24px; padding: 32px; width: 85%; max-width: 360px;
+  background: linear-gradient(145deg, rgba(30,34,50,0.98), rgba(10,12,20,0.99));
+  border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 28px; width: 85%; max-width: 360px;
   text-align: center; transform: scale(0.95); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.7);
 }
 #appModal.visible .modal-glass { transform: scale(1); }
 
-.m-emoji { font-size: 48px; margin-bottom: 16px; display: block; animation: bounce 1s infinite; }
+.m-emoji { font-size: 42px; margin-bottom: 14px; display: block; animation: bounce 1s infinite; }
 @keyframes bounce { 0%, 100% {transform:translateY(0);} 50% {transform:translateY(-10px);} }
-
-.m-title { font-size: 22px; font-weight: 800; margin-bottom: 8px; color: #fff; }
-.m-text { font-size: 16px; color: #b0b5c0; line-height: 1.5; margin-bottom: 24px; }
-.m-highlight { color: #30ffe4; font-weight: 600; display: block; margin-top: 4px; font-size: 14px; }
-
+.m-title { font-size: 20px; font-weight: 800; margin-bottom: 8px; color: #fff; letter-spacing: 0.2px; }
+.m-text { font-size: 15px; color: #b0b5c0; line-height: 1.5; margin-bottom: 20px; }
+.m-highlight { color: #30ffe4; font-weight: 600; display: block; margin-top: 4px; font-size: 13px; }
 .m-buttons { display: flex; flex-direction: column; gap: 10px; }
 .m-btn {
-  padding: 14px; border-radius: 14px; font-size: 16px; font-weight: 700; border: none; cursor: pointer;
+  padding: 12px; border-radius: 14px; font-size: 15px; font-weight: 700; border: none; cursor: pointer;
   transition: transform 0.1s; text-decoration: none; display: flex; align-items: center; justify-content: center;
 }
 .m-btn:active { transform: scale(0.98); }
 .btn-primary { background: linear-gradient(135deg, #ff0080, #7928ca); color: white; box-shadow: 0 4px 15px rgba(255,0,128,0.3); }
 .btn-secondary { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
 
-/* Celebración (contador global) */
-.cele{ position:fixed; inset:0; background:rgba(0,0,0,.9); display:none; align-items:center; justify-content:center; z-index:110; flex-direction: column; }
-.cele-msg{ font-family:'Poppins'; font-size:1.8rem; text-align:center; color: #fff; }
-.num{ color:#30ffe4; font-weight:900; font-size:3rem; display: block; margin-bottom: 10px; }
+/* Celebración */
+.cele{ position:fixed; inset:0; background:rgba(0,0,0,.88); display:none; align-items:center; justify-content:center; z-index:110; flex-direction: column; }
+.cele-msg{ font-family:'Poppins'; font-size:2rem; text-align:center; background:rgba(255,255,255,.05); padding:2rem 3rem; border-radius:20px; }
+.num{ color:#30ffe4; font-weight:900; font-size:2.8rem; }
 
 @media (max-width: 480px) {
-  #progressBadge .line2 { font-size: 12px; }
-  .grid { gap: 4vw; }
+  #progressBadge .line2 { font-size: 11px; }
+  .cele-msg { font-size: 1.5rem; padding: 1.5rem 2rem; }
 }
 </style>
 </head>
@@ -217,16 +290,14 @@ function getRealisticUserCount() {
 
 <div id="progressBadge">
   <span class="line1">Tu avance acumulado</span>
-  <span class="line2" id="badgeContent">
-    Cargando...
-  </span>
+  <span class="line2" id="badgeContent">Cargando...</span>
 </div>
 
 <div id="appModal">
   <div class="modal-glass">
     <span class="m-emoji" id="mEmoji">👋</span>
     <div class="m-title" id="mTitle">Título</div>
-    <div class="m-text" id="mText">Texto descriptivo</div>
+    <div class="m-text" id="mText">Texto</div>
     <div class="m-buttons">
       <button id="mBtnPrimary" class="m-btn btn-primary">Aceptar</button>
       <button id="mBtnSecondary" class="m-btn btn-secondary">Cancelar</button>
@@ -234,24 +305,20 @@ function getRealisticUserCount() {
   </div>
 </div>
 
+<div id="toast"></div>
 <div class="intro" id="intro"></div>
 <div class="grid" id="grid"></div>
-
 <div class="cta" id="cta">
   <button id="otro"><span class="icon">🎲</span></button>
   <button id="fisico"><span class="icon">🔟</span></button>
   <button id="share"><span class="icon">📖</span></button>
 </div>
-
 <div id="tarjetaOverlay"><div id="tarjetaCard"></div></div>
-
-<div class="cele" id="cele">
-  <div class="cele-msg" id="celeMsg"></div>
-</div>
+<div class="cele" id="cele"><div class="cele-msg" id="celeMsg"></div></div>
 
 <script>
 // ========================================
-// ⚡ SISTEMA DE MODALES (La Joya)
+// SISTEMA MODAL (LOGICA)
 // ========================================
 const Modal = {
   el: document.getElementById('appModal'),
@@ -262,19 +329,20 @@ const Modal = {
   sBtn: document.getElementById('mBtnSecondary'),
   
   show: function(config) {
-    // Configurar contenido
     this.emoji.innerText = config.emoji || '✨';
     this.title.innerText = config.title || 'Triggui';
-    this.text.innerHTML = config.text || ''; // innerHTML para permitir saltos de linea
-    
-    // Botón Primario
+    this.text.innerHTML = config.text || '';
     this.pBtn.innerText = config.btnText || 'Continuar';
+    
+    // Limpiar eventos anteriores
+    this.pBtn.onclick = null;
+    this.sBtn.onclick = null;
+
     this.pBtn.onclick = () => {
       this.close();
       if(config.onConfirm) config.onConfirm();
     };
     
-    // Botón Secundario (Opcional)
     if(config.showCancel) {
       this.sBtn.style.display = 'flex';
       this.sBtn.innerText = config.cancelText || 'Cerrar';
@@ -286,22 +354,18 @@ const Modal = {
       this.sBtn.style.display = 'none';
     }
 
-    // Mostrar
     this.el.style.display = 'flex';
-    // Timeout para permitir la transición de opacidad
     setTimeout(() => this.el.classList.add('visible'), 10);
   },
   
   close: function() {
     this.el.classList.remove('visible');
-    setTimeout(() => {
-      this.el.style.display = 'none';
-    }, 300);
+    setTimeout(() => { this.el.style.display = 'none'; }, 300);
   }
 };
 
 // ========================================
-// LOGICA APP
+// LOGICA ORIGINAL + ENGAGEMENT
 // ========================================
 const grid=document.getElementById("grid"),
       cta=document.getElementById("cta"),
@@ -310,12 +374,13 @@ const grid=document.getElementById("grid"),
       btnShare=document.getElementById("share"),
       cele=document.getElementById("cele"),
       celeMsg=document.getElementById("celeMsg"),
-      progressBadge=document.getElementById("progressBadge");
+      progressBadge=document.getElementById("progressBadge"),
+      toast=document.getElementById("toast");
 
 let libro=null, revealed=false;
 const portIdx=Math.floor(Math.random()*4),
-      emojis=["🌊","🛡️","🧠","✨","📘","🔮","❤️","🪞"];
-const isURL = s => /^https?:\/\//i.test(s || "");
+      emojis=["🌊","🛡️","🧠","✨","📘","🔮","❤️","🪞"],
+      isURL = s => /^https?:\/\//i.test(s || "");
 const ANG = [115,205,35,320];
 const grad = i => `linear-gradient(${ANG[i%4]}deg,${libro.colores[i]},${libro.colores[(i+1)%4]})`;
 
@@ -323,21 +388,15 @@ const grad = i => `linear-gradient(${ANG[i%4]}deg,${libro.colores[i]},${libro.co
 const frasesIntro = ["¿Qué sientes y qué buscas ahora?", "¿Qué sientes y qué buscas ahora?", "¿Qué sientes y qué buscas ahora?"];
 document.getElementById("intro").innerHTML=`<span class="t">${frasesIntro[Math.floor(Math.random()*frasesIntro.length)]}</span>`;
 
-// === TRIPLE TAP RESET (Ahora con Modal Hermoso) ===
+// === TRIPLE TAP RESET (CON MODAL HERMOSO) ===
 progressBadge.addEventListener('click', () => {
   tapCount++;
   if (tapCount === 1) tapTimer = setTimeout(() => { tapCount = 0; }, 800);
   if (tapCount === 3) {
     clearTimeout(tapTimer); tapCount = 0;
-    
-    // USAMOS EL NUEVO MODAL EN LUGAR DE CONFIRM()
     Modal.show({
-      emoji: '🔄',
-      title: '¿Reiniciar Contadores?',
-      text: 'Volverás al libro 0 para probar la experiencia desde el inicio.',
-      btnText: 'Sí, Reiniciar',
-      showCancel: true,
-      cancelText: 'Cancelar',
+      emoji: '🔄', title: '¿Reiniciar?', text: 'Esto pondrá tus contadores a cero.',
+      btnText: 'Sí, Reiniciar', showCancel: true, cancelText: 'Cancelar',
       onConfirm: () => {
         localStorage.removeItem('triggui_books_opened');
         localStorage.removeItem('triggui_last_book_time');
@@ -348,17 +407,19 @@ progressBadge.addEventListener('click', () => {
   }
 });
 
+function showToast(msg, duration=3000) {
+  toast.textContent = msg; toast.classList.add('visible');
+  setTimeout(() => toast.classList.remove('visible'), duration);
+}
+
 function updateBadge() {
   const streak = getLocal('streak', 0);
   const books = getLocal('books_opened', 0);
-  const concepts = books; // Conceptos = Libros en este contexto
-  
-  // BADGE COMPACTO 2 LINEAS
   document.getElementById('badgeContent').innerHTML = 
-    `🔥 ${streak}d <span class="dot"></span> 📚 ${books} libros <span class="dot"></span> <span class="highlight-txt">🤓 ${concepts} conceptos</span>`;
+    `🔥 ${streak}d <span class="dot"></span> 📚 ${books} libros <span class="dot"></span> <span class="highlight-txt">🤓 ${books} conceptos</span>`;
 }
 
-// === GRID RENDER ===
+// BUILDERS
 function adjustScale(wrap){
   const parent=wrap.closest(".portada"); if(!parent)return;
   const avail=parent.clientHeight-40; let scale=1;
@@ -402,6 +463,9 @@ function render(){
           document.getElementById("otro").style.background = `linear-gradient(135deg, ${c[0]}, ${c[1]})`;
           document.getElementById("fisico").style.background = `linear-gradient(135deg, ${c[1]}, ${c[2]})`;
           document.getElementById("share").style.background = `linear-gradient(135deg, ${c[2]}, ${c[3]})`;
+          document.getElementById("otro").style.color = pickTextColor(c[0]);
+          document.getElementById("fisico").style.color = pickTextColor(c[1]);
+          document.getElementById("share").style.color = pickTextColor(c[2]);
           handleBookReveal();
         } else { e.stopPropagation(); btnShare.click(); }
       };
@@ -413,74 +477,57 @@ function render(){
   }
 }
 
-// === ENGAGEMENT LOGIC (MODIFICADA PARA USAR MODAL HERMOSO) ===
+// LOGICA DE ENGAGEMENT CON MODAL UNIFICADO
 function handleBookReveal() {
   const streak = updateStreak();
   const booksCount = incrementBooks();
   updateBadge();
   fetch("https://triggui-api.vercel.app/api/increment", {cache:"no-store"}).catch(()=>{});
 
-  // LOGICA DE MODALES DE VENTA
-  // Usamos setTimeout para que no salga instantáneo al abrir el libro, sino un poco después (mejor UX)
-  const delay = 1500; 
+  const delay = 1500;
   const userCount = getRealisticUserCount();
 
   if (booksCount === 2) {
     setTimeout(() => Modal.show({
-      emoji: '📬', title: '¡2 Libros Descubiertos!',
-      text: '¿Te gustaría recibir estas joyas por WhatsApp cada lunes?',
-      btnText: 'Ver cómo funciona',
-      onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
+      emoji: '📬', title: '¡2 Libros!', text: '¿Te gustaría recibirlos por WhatsApp cada lunes?',
+      btnText: 'Ver cómo funciona', onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
       showCancel: true, cancelText: 'Seguir explorando'
     }), delay);
-  } 
-  else if (booksCount === 5) {
+  } else if (booksCount === 5) {
     setTimeout(() => Modal.show({
-      emoji: '🎯', title: '5 Conceptos Absorbidos',
-      text: 'Recibe páginas seleccionadas para tu momento exacto.<br><span class="m-highlight">Precio lanzamiento: $100/mes</span>',
-      btnText: 'Quiero recibirlos',
-      onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
+      emoji: '🎯', title: '5 Conceptos', text: 'Recibe páginas seleccionadas para tu momento exacto.<br><span class="m-highlight">Precio lanzamiento: $100/mes</span>',
+      btnText: 'Quiero recibirlos', onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
       showCancel: true
     }), delay);
-  }
-  else if (booksCount === 10) {
+  } else if (booksCount === 10) {
     setTimeout(() => Modal.show({
-      emoji: '🔥', title: '¡Estás en racha!',
-      text: `Ya llevas <b>10 conceptos</b>. ${userCount} personas están aplicando esto hoy. <br>Únete al grupo de WhatsApp.`,
-      btnText: 'Suscribirme',
-      onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
+      emoji: '🔥', title: '¡Estás en racha!', text: `Ya llevas <b>10 conceptos</b>. ${userCount} personas están aplicando esto hoy. <br>Únete al grupo de WhatsApp.`,
+      btnText: 'Suscribirme', onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
       showCancel: true
     }), delay);
-  }
-  // Patrón para libros altos (15, 20, 30, 50, etc)
-  else if ([15, 20, 30, 50, 75, 100].includes(booksCount)) {
+  } else if ([15, 20, 30, 50, 75, 100].includes(booksCount)) {
     setTimeout(() => Modal.show({
-      emoji: '🧠', title: `${booksCount} Conceptos`,
-      text: 'Tu mente se está expandiendo. No pierdas el ritmo.<br><span class="m-highlight">Asegura tu precio de por vida hoy.</span>',
-      btnText: 'Ver planes',
-      onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
+      emoji: '🧠', title: `${booksCount} Conceptos`, text: 'Tu mente se está expandiendo. No pierdas el ritmo.<br><span class="m-highlight">Asegura tu precio de por vida hoy.</span>',
+      btnText: 'Ver planes', onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
       showCancel: true
     }), delay);
   }
 }
 
-// Botones inferiores
+// RESTO DE HANDLERS (ORIGINALES)
 btnOtro.onclick = () => { location.reload(); track('reload_clicked'); };
 btnLibro.onclick = async() => {
   btnLibro.disabled=true; cele.style.display="flex"; celeMsg.innerHTML='<span class="num">...</span><br>libros abiertos juntos';
-  try{ const r=await fetch("https://triggui-api.vercel.app/api/increment"); const d=await r.json(); celeMsg.innerHTML=`<span class="num">${d.total.toLocaleString("es-MX")}</span><br>libros abiertos juntos`; track('physical_book_opened', { total: d.total }); }catch{}
+  try{ const r=await fetch("https://triggui-api.vercel.app/api/increment"); const d=await r.json(); celeMsg.innerHTML=`✨ <span class="num">${d.total.toLocaleString("es-MX")}</span><br>libros abiertos juntos`; track('physical_book_opened', { total: d.total }); }catch{}
   setTimeout(()=>{ cele.style.display="none"; btnLibro.disabled=false; },2300);
 };
 
-// Helpers Visuales
 function luminance(hex) { try { const c = hex.replace("#","").match(/.{1,2}/g).map(x=>parseInt(x,16)/255); const f = v => v<=.03928 ? v/12.92 : Math.pow((v+.055)/1.055,2.4); return 0.2126*f(c[0])+0.7152*f(c[1])+0.0722*f(c[2]); } catch { return 0; } }
 function pickTextColor(bg) { try { return luminance(bg) > 0.35 ? "#000" : "#fff"; } catch { return "#fff"; } }
 
-// Tarjeta Render
 btnShare.onclick = () => {
   const t = libro.tarjeta; const card = document.getElementById("tarjetaCard");
   const safePaper = t.style.paper||"#111"; const safeInk = t.style.ink||pickTextColor(safePaper); const safeBorder=t.style.border||"#666";
-  
   const palabras=libro.palabras||[]; let p=palabras.length>0?palabras[Math.floor(Math.random()*palabras.length)]:"";
   const buscalibreHTML = `
   <div style="margin:22px 0;display:flex;flex-direction:column;gap:14px;text-align:center;">
@@ -523,8 +570,17 @@ function pickLibroNoRepetido(libros){
     libro=data.libros[pickLibroNoRepetido(data.libros)];
     render(); updateBadge();
     track('app_loaded', {streak:getLocal('streak',0), books:getLocal('books_opened',0)});
-  }catch(e){ alert("No se pudo cargar Triggui."); console.error(e); }
+  }catch(e){ 
+    // Usamos el modal de error personalizado
+    console.error(e);
+  }
 })();
 </script>
+
+<script>
+  const signalFirstPaint = () => { requestAnimationFrame(() => { try { window.ReactNativeWebView?.postMessage("FIRST_PAINT"); } catch (_) {} }); };
+  if (document.readyState === "interactive" || document.readyState === "complete") { signalFirstPaint(); } else { document.addEventListener("DOMContentLoaded", signalFirstPaint, { once: true }); }
+</script>
+
 </body>
 </html>
