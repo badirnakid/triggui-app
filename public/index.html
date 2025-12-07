@@ -69,6 +69,12 @@ window.reset = function() {
 console.log('💡 TIP: Escribe reset() para volver a libro 0');
 
 // ========================================
+// 📱 RESET MÓVIL: Triple tap en badge
+// ========================================
+let tapCount = 0;
+let tapTimer = null;
+
+// ========================================
 // TRACKING ANÓNIMO (Solo Analytics)
 // ========================================
 function track(event, data = {}) {
@@ -223,7 +229,7 @@ html,body{
 }
 
 /* Grid */
-.grid{position:absolute;inset:5vh 1.5vw;display:grid;gap:1vw}
+.grid{position:absolute;inset:11vh 1.5vw 5vh 1.5vw;display:grid;gap:1vw}
 
 @keyframes gridFadeIn {
   from { opacity:0; transform:translateY(12px); }
@@ -499,66 +505,72 @@ body.webview {
 }
 
 /* ========================================
-   ENGAGEMENT BADGES - NIVEL DIOS
+   BADGE COMPACTO - NIVEL DIOS
    ======================================== */
 
-/* Streak Badge */
-#streakBadge {
+#progressBadge {
   position: fixed;
-  top: 20px;
-  left: 20px;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 90;
-  background: rgba(255,110,196,0.15);
-  border: 1px solid rgba(255,110,196,0.3);
-  padding: 8px 14px;
+  background: rgba(20,24,38,0.90);
+  border: 1px solid rgba(255,255,255,0.15);
+  padding: 8px 16px;
   border-radius: 20px;
-  font-size: 14px;
-  color: #ff6ec4;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  font-weight: 700;
+  font-size: 11px;
+  color: #dfe9ff;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  font-weight: 600;
   opacity: 0;
-  transform: translateY(-10px);
+  transform: translateX(-50%) translateY(-10px);
   animation: fadeInDown 0.5s ease 0.5s forwards;
-  box-shadow: 0 4px 12px rgba(255,110,196,0.2);
-}
-
-/* Books Counter Badge */
-#booksBadge {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 90;
-  background: rgba(48,255,228,0.15);
-  border: 1px solid rgba(48,255,228,0.3);
-  padding: 8px 14px;
-  border-radius: 20px;
-  font-size: 14px;
-  color: #30ffe4;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  font-weight: 700;
-  opacity: 0;
-  transform: translateY(-10px);
-  animation: fadeInDown 0.5s ease 0.7s forwards;
-  box-shadow: 0 4px 12px rgba(48,255,228,0.2);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  text-align: center;
+  line-height: 1.4;
+  max-width: 90%;
+  cursor: pointer;
+  user-select: none;
 }
 
 @keyframes fadeInDown {
   from { 
     opacity: 0; 
-    transform: translateY(-10px); 
+    transform: translateX(-50%) translateY(-10px);
   }
   to { 
     opacity: 1; 
-    transform: translateY(0); 
+    transform: translateX(-50%) translateY(0);
   }
+}
+
+#progressBadge .line1 {
+  display: block;
+  font-size: 9px;
+  opacity: 0.7;
+  margin-bottom: 2px;
+  letter-spacing: 0.5px;
+}
+
+#progressBadge .line2 {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+#progressBadge .line2 span {
+  margin: 0 4px;
+}
+
+#progressBadge .emoji {
+  margin-right: 2px;
 }
 
 /* Toast Notification */
 #toast {
   position: fixed;
-  top: 80px;
+  top: 70px;
   left: 50%;
   transform: translateX(-50%) translateY(-20px);
   z-index: 110;
@@ -727,24 +739,24 @@ body.webview {
 
 /* Mobile adjustments */
 @media (max-width: 480px) {
-  #streakBadge, #booksBadge {
-    font-size: 12px;
-    padding: 6px 10px;
-    top: 15px;
+  #progressBadge {
+    font-size: 10px;
+    padding: 6px 12px;
+    top: 10px;
   }
   
-  #streakBadge {
-    left: 15px;
+  #progressBadge .line1 {
+    font-size: 8px;
   }
   
-  #booksBadge {
-    right: 15px;
+  #progressBadge .line2 {
+    font-size: 11px;
   }
   
   #toast {
     font-size: 13px;
     padding: 10px 16px;
-    top: 70px;
+    top: 60px;
   }
   
   .modal-content {
@@ -778,14 +790,17 @@ body.webview {
 <body style="background:#0e0f1b; margin:0; padding:0; height:100%; color:#fff;">
 
 <!-- ========================================
-     ENGAGEMENT BADGES
+     BADGE COMPACTO
      ======================================== -->
 
-<!-- Streak Badge -->
-<div id="streakBadge">🔥 0 días</div>
-
-<!-- Books Counter Badge -->
-<div id="booksBadge">🤓 0 conceptos</div>
+<div id="progressBadge">
+  <span class="line1">Tu avance acumulado</span>
+  <span class="line2">
+    <span class="emoji">🔥</span>0 días
+    <span class="emoji">📚</span>0 libros
+    <span class="emoji">🤓</span>0 conceptos - ¡Aplícalos hoy!
+  </span>
+</div>
 
 <!-- Toast Notification -->
 <div id="toast"></div>
@@ -847,8 +862,7 @@ const grid=document.getElementById("grid"),
       btnShare=document.getElementById("share"),
       cele=document.getElementById("cele"),
       celeMsg=document.getElementById("celeMsg"),
-      streakBadge=document.getElementById("streakBadge"),
-      booksBadge=document.getElementById("booksBadge"),
+      progressBadge=document.getElementById("progressBadge"),
       toast=document.getElementById("toast");
 
 let libro=null, revealed=false;
@@ -857,6 +871,35 @@ const portIdx=Math.floor(Math.random()*4),
       isURL = s => /^https?:\/\//i.test(s || "");
 const ANG = [115,205,35,320];
 const grad = i => `linear-gradient(${ANG[i%4]}deg,${libro.colores[i]},${libro.colores[(i+1)%4]})`;
+
+// ========================================
+// TRIPLE TAP RESET (MÓVIL)
+// ========================================
+progressBadge.addEventListener('click', () => {
+  tapCount++;
+  
+  if (tapCount === 1) {
+    tapTimer = setTimeout(() => {
+      tapCount = 0;
+    }, 800);
+  }
+  
+  if (tapCount === 3) {
+    clearTimeout(tapTimer);
+    tapCount = 0;
+    
+    if (confirm('¿Resetear contador a 0?')) {
+      localStorage.removeItem('triggui_books_opened');
+      localStorage.removeItem('triggui_last_book_time');
+      
+      showToast('🔄 Reset completo!');
+      
+      setTimeout(() => {
+        location.reload();
+      }, 1200);
+    }
+  }
+});
 
 // ========================================
 // TOAST NOTIFICATION SYSTEM
@@ -917,14 +960,20 @@ function showUpgradeModal(config) {
 }
 
 // ========================================
-// UPDATE BADGES
+// UPDATE BADGE
 // ========================================
-function updateBadges() {
+function updateBadge() {
   const streak = getLocal('streak', 0);
   const books = getLocal('books_opened', 0);
   
-  streakBadge.textContent = `🔥 ${streak} día${streak !== 1 ? 's' : ''}`;
-  booksBadge.textContent = `🤓 ${books} concepto${books !== 1 ? 's' : ''} - Aplícalos hoy`;
+  progressBadge.innerHTML = `
+    <span class="line1">Tu avance acumulado</span>
+    <span class="line2">
+      <span class="emoji">🔥</span>${streak} día${streak !== 1 ? 's' : ''}
+      <span class="emoji">📚</span>${books} libro${books !== 1 ? 's' : ''}
+      <span class="emoji">🤓</span>${books} concepto${books !== 1 ? 's' : ''} - ¡Aplícalos hoy!
+    </span>
+  `;
 }
 
 // ========================================
@@ -1063,13 +1112,13 @@ function handle(card,i,port,label){
 }
 
 // ========================================
-// ✨ ENGAGEMENT MAGIC - NIVEL DIOS PERFECTO ✨
+// ✨ ENGAGEMENT MAGIC - REESCRITO NIVEL DIOS ✨
 // ========================================
 function handleBookReveal() {
   const streak = updateStreak();
   const booksCount = incrementBooks();
   
-  updateBadges();
+  updateBadge();
   
   fetch("https://triggui-api.vercel.app/api/increment", {
     cache: "no-store"
@@ -1086,188 +1135,171 @@ function handleBookReveal() {
     showToast('🔥🔥🔥 UN MES! Eres imparable');
   }
   
-  // ✨ UPGRADE PROMPTS PERFECTOS - NIVEL DIOS 100% ✨
+  // ========================================
+  // SISTEMA DE MODALES - COMPLETAMENTE REESCRITO
+  // ========================================
   
-  // Libro 2: Primera experiencia suave
+  let shouldShowModal = false;
+  let modalConfig = {};
+  
+  // Modales específicos
   if (booksCount === 2) {
-    setTimeout(() => {
-      showUpgradeModal({
-        emoji: '📬',
-        title: '¡2 libros!',
-        text: 'Te gustaría recibirlos por WhatsApp cada lunes?',
-        subtext: 'Primera semana GRATIS',
-        social: `${getRealisticUserCount()} personas descubriendo libros ahora`,
-        primaryText: 'Ver cómo funciona',
-        primaryUrl: 'https://triggui.com/#planes',
-        trackAccept: 'upgrade_prompt_2books_accepted',
-        trackDecline: 'upgrade_prompt_2books_declined'
-      });
-    }, 2000);
-  } 
-  
-  // Libro 5: Oferta directa
+    shouldShowModal = true;
+    modalConfig = {
+      emoji: '📬',
+      title: '¡2 libros!',
+      text: 'Te gustaría recibirlos por WhatsApp cada lunes?',
+      subtext: 'Primera semana GRATIS',
+      social: `${getRealisticUserCount()} personas descubriendo libros ahora`,
+      primaryText: 'Ver cómo funciona',
+      primaryUrl: 'https://triggui.com/#planes',
+      trackAccept: 'upgrade_prompt_2books_accepted',
+      trackDecline: 'upgrade_prompt_2books_declined'
+    };
+  }
   else if (booksCount === 5) {
-    setTimeout(() => {
-      showUpgradeModal({
-        emoji: '🎯',
-        title: '5 libros descubiertos',
-        text: 'Recibe páginas seleccionadas cada lunes por WhatsApp',
-        subtext: 'Precio de lanzamiento: $100/mes',
-        social: '23 personas se suscribieron hoy',
-        primaryText: 'Quiero recibirlos',
-        primaryUrl: 'https://triggui.com/#planes',
-        trackAccept: 'upgrade_prompt_5books_accepted',
-        trackDecline: 'upgrade_prompt_5books_declined'
-      });
-    }, 2000);
+    shouldShowModal = true;
+    modalConfig = {
+      emoji: '🎯',
+      title: '5 libros descubiertos',
+      text: 'Recibe páginas seleccionadas cada lunes por WhatsApp',
+      subtext: 'Precio de lanzamiento: $100/mes',
+      social: '23 personas se suscribieron hoy',
+      primaryText: 'Quiero recibirlos',
+      primaryUrl: 'https://triggui.com/#planes',
+      trackAccept: 'upgrade_prompt_5books_accepted',
+      trackDecline: 'upgrade_prompt_5books_declined'
+    };
   }
-  
-  // Libro 10: Recordatorio sutil
   else if (booksCount === 10) {
-    setTimeout(() => {
-      showUpgradeModal({
-        emoji: '🔥',
-        title: '10 conceptos absorbidos',
-        text: 'Ya conoces 10 libros increíbles. ¿Los quieres por WhatsApp?',
-        subtext: 'Cada lunes, páginas seleccionadas para ti',
-        social: '31 personas activas ahora',
-        primaryText: 'Sí, quiero suscribirme',
-        primaryUrl: 'https://triggui.com/#planes',
-        trackAccept: 'upgrade_prompt_10books_accepted',
-        trackDecline: 'upgrade_prompt_10books_declined'
-      });
-    }, 2000);
+    shouldShowModal = true;
+    modalConfig = {
+      emoji: '🔥',
+      title: '10 conceptos absorbidos',
+      text: 'Ya conoces 10 libros increíbles. ¿Los quieres por WhatsApp?',
+      subtext: 'Cada lunes, páginas seleccionadas para ti',
+      social: '31 personas activas ahora',
+      primaryText: 'Sí, quiero suscribirme',
+      primaryUrl: 'https://triggui.com/#planes',
+      trackAccept: 'upgrade_prompt_10books_accepted',
+      trackDecline: 'upgrade_prompt_10books_declined'
+    };
   }
-  
-  // Libro 15: Oferta especial
   else if (booksCount === 15) {
-    setTimeout(() => {
-      showUpgradeModal({
-        emoji: '💎',
-        title: '15 conceptos absorbidos',
-        text: '¿Quieres el plan anual? Ahorras $588',
-        subtext: '$1,199/año (vs $1,788 mensual)',
-        social: '18 personas eligieron el plan anual esta semana',
-        primaryText: 'Ver plan anual',
-        primaryUrl: 'https://triggui.com/#planes',
-        trackAccept: 'upgrade_prompt_15books_annual_accepted',
-        trackDecline: 'upgrade_prompt_15books_annual_declined'
-      });
-    }, 2000);
+    shouldShowModal = true;
+    modalConfig = {
+      emoji: '💎',
+      title: '15 conceptos absorbidos',
+      text: '¿Quieres el plan anual? Ahorras $588',
+      subtext: '$1,199/año (vs $1,788 mensual)',
+      social: '18 personas eligieron el plan anual esta semana',
+      primaryText: 'Ver plan anual',
+      primaryUrl: 'https://triggui.com/#planes',
+      trackAccept: 'upgrade_prompt_15books_annual_accepted',
+      trackDecline: 'upgrade_prompt_15books_annual_declined'
+    };
   }
-  
-  // Libro 20: Urgencia (precio sube)
   else if (booksCount === 20) {
-    setTimeout(() => {
-      showUpgradeModal({
-        emoji: '⚡',
-        title: '20 conceptos - Aplícalos hoy!',
-        text: 'Precio de lanzamiento ($100) termina pronto',
-        subtext: 'Después sube a $149/mes',
-        social: 'Solo para las primeras 100 personas',
-        primaryText: 'Asegurar precio $100',
-        primaryUrl: 'https://triggui.com/#planes',
-        trackAccept: 'upgrade_prompt_20books_urgency_accepted',
-        trackDecline: 'upgrade_prompt_20books_urgency_declined'
-      });
-    }, 2000);
+    shouldShowModal = true;
+    modalConfig = {
+      emoji: '⚡',
+      title: '20 conceptos - Aplícalos hoy!',
+      text: 'Precio de lanzamiento ($100) termina pronto',
+      subtext: 'Después sube a $149/mes',
+      social: 'Solo para las primeras 100 personas',
+      primaryText: 'Asegurar precio $100',
+      primaryUrl: 'https://triggui.com/#planes',
+      trackAccept: 'upgrade_prompt_20books_urgency_accepted',
+      trackDecline: 'upgrade_prompt_20books_urgency_declined'
+    };
   }
-  
-  // Libro 25: Milestone especial
   else if (booksCount === 25) {
-    setTimeout(() => {
-      showUpgradeModal({
-        emoji: '🤓',
-        title: '25 conceptos absorbidos!',
-        text: 'Aplica lo que has descubierto',
-        subtext: 'Recibe 1 concepto cada lunes por WhatsApp',
-        social: `${getRealisticUserCount()} personas aplicando conceptos hoy`,
-        primaryText: 'Quiero recibirlos',
-        primaryUrl: 'https://triggui.com/#planes',
-        trackAccept: 'upgrade_prompt_25books_accepted',
-        trackDecline: 'upgrade_prompt_25books_declined'
-      });
-    }, 2000);
+    shouldShowModal = true;
+    modalConfig = {
+      emoji: '🤓',
+      title: '25 conceptos absorbidos!',
+      text: 'Aplica lo que has descubierto',
+      subtext: 'Recibe 1 concepto cada lunes por WhatsApp',
+      social: `${getRealisticUserCount()} personas aplicando conceptos hoy`,
+      primaryText: 'Quiero recibirlos',
+      primaryUrl: 'https://triggui.com/#planes',
+      trackAccept: 'upgrade_prompt_25books_accepted',
+      trackDecline: 'upgrade_prompt_25books_declined'
+    };
   }
-  
-  // Libro 30: Lifetime offer
   else if (booksCount === 30) {
-    setTimeout(() => {
-      showUpgradeModal({
-        emoji: '🏆',
-        title: '30 conceptos - Nivel maestro!',
-        text: 'Desbloquea acceso LIFETIME',
-        subtext: 'Pago único: $3,999 (nunca vuelves a pagar)',
-        social: '7 personas eligieron lifetime este mes',
-        primaryText: 'Quiero acceso de por vida',
-        primaryUrl: 'https://donate.stripe.com/9B66oJ8bI1E02U85aR24001',
-        trackAccept: 'upgrade_prompt_30books_lifetime_accepted',
-        trackDecline: 'upgrade_prompt_30books_lifetime_declined'
-      });
-    }, 2000);
+    shouldShowModal = true;
+    modalConfig = {
+      emoji: '🏆',
+      title: '30 conceptos - Nivel maestro!',
+      text: 'Desbloquea acceso LIFETIME',
+      subtext: 'Pago único: $3,999 (nunca vuelves a pagar)',
+      social: '7 personas eligieron lifetime este mes',
+      primaryText: 'Quiero acceso de por vida',
+      primaryUrl: 'https://donate.stripe.com/9B66oJ8bI1E02U85aR24001',
+      trackAccept: 'upgrade_prompt_30books_lifetime_accepted',
+      trackDecline: 'upgrade_prompt_30books_lifetime_declined'
+    };
   }
-  
-  // Libro 50: Super milestone
   else if (booksCount === 50) {
-    setTimeout(() => {
-      showUpgradeModal({
-        emoji: '🤓',
-        title: '50 conceptos absorbidos!',
-        text: 'Ya dominas 50 conceptos. Ahora aplícalos',
-        subtext: 'Recíbelos organizados cada semana',
-        social: 'Solo 5 personas han llegado aquí',
-        primaryText: 'Suscribirme ahora',
-        primaryUrl: 'https://triggui.com/#planes',
-        trackAccept: 'upgrade_prompt_50books_accepted',
-        trackDecline: 'upgrade_prompt_50books_declined'
-      });
-    }, 2000);
+    shouldShowModal = true;
+    modalConfig = {
+      emoji: '🤓',
+      title: '50 conceptos absorbidos!',
+      text: 'Ya dominas 50 conceptos. Ahora aplícalos',
+      subtext: 'Recíbelos organizados cada semana',
+      social: 'Solo 5 personas han llegado aquí',
+      primaryText: 'Suscribirme ahora',
+      primaryUrl: 'https://triggui.com/#planes',
+      trackAccept: 'upgrade_prompt_50books_accepted',
+      trackDecline: 'upgrade_prompt_50books_declined'
+    };
   }
-  
-  // Cada 25 libros (después del 50): Milestone perpetuo
+  // Milestones cada 25 (después del 50)
   else if (booksCount > 50 && booksCount % 25 === 0) {
-    setTimeout(() => {
-      showToast(`🤓 ${booksCount} conceptos absorbidos - Aplícalos hoy!`);
-      
-      setTimeout(() => {
-        showUpgradeModal({
-          emoji: '🤓',
-          title: `${booksCount} conceptos dominados`,
-          text: 'Conviértelos en resultados reales',
-          subtext: 'Recíbelos cada semana por WhatsApp',
-          social: `${getRealisticUserCount()} personas transformando conocimiento en acción`,
-          primaryText: 'Ver planes',
-          primaryUrl: 'https://triggui.com/#planes',
-          trackAccept: `upgrade_prompt_${booksCount}books_milestone_accepted`,
-          trackDecline: `upgrade_prompt_${booksCount}books_milestone_declined`
-        });
-      }, 3000);
-    }, 1500);
+    shouldShowModal = true;
+    showToast(`🤓 ${booksCount} conceptos absorbidos - Aplícalos hoy!`, 2500);
+    
+    modalConfig = {
+      emoji: '🤓',
+      title: `${booksCount} conceptos dominados`,
+      text: 'Conviértelos en resultados reales',
+      subtext: 'Recíbelos cada semana por WhatsApp',
+      social: `${getRealisticUserCount()} personas transformando conocimiento en acción`,
+      primaryText: 'Ver planes',
+      primaryUrl: 'https://triggui.com/#planes',
+      trackAccept: `upgrade_prompt_${booksCount}books_milestone_accepted`,
+      trackDecline: `upgrade_prompt_${booksCount}books_milestone_declined`
+    };
   }
-  
-  // Cada 10 libros (que no sean milestone de 25): Recordatorio sutil
+  // Cada 10 libros (que no sean múltiplos de 25)
   else if (booksCount > 5 && booksCount % 10 === 0 && booksCount % 25 !== 0) {
-    setTimeout(() => {
-      showToast(`📚 ${booksCount} conceptos descubiertos!`);
-      
-      setTimeout(() => {
-        showUpgradeModal({
-          emoji: '📖',
-          title: `${booksCount} conceptos y contando`,
-          text: 'Recíbelos cada semana por WhatsApp',
-          subtext: 'Planes desde $100/mes',
-          social: `${getRealisticUserCount()} personas leyendo ahora`,
-          primaryText: 'Ver planes',
-          primaryUrl: 'https://triggui.com/#planes',
-          trackAccept: `upgrade_prompt_${booksCount}books_accepted`,
-          trackDecline: `upgrade_prompt_${booksCount}books_declined`
-        });
-      }, 3000);
-    }, 1500);
+    shouldShowModal = true;
+    showToast(`📚 ${booksCount} conceptos descubiertos!`, 2500);
+    
+    modalConfig = {
+      emoji: '📖',
+      title: `${booksCount} conceptos y contando`,
+      text: 'Recíbelos cada semana por WhatsApp',
+      subtext: 'Planes desde $100/mes',
+      social: `${getRealisticUserCount()} personas leyendo ahora`,
+      primaryText: 'Ver planes',
+      primaryUrl: 'https://triggui.com/#planes',
+      trackAccept: `upgrade_prompt_${booksCount}books_accepted`,
+      trackDecline: `upgrade_prompt_${booksCount}books_declined`
+    };
   }
   
+  // MOSTRAR MODAL SI DEBE MOSTRARSE
+  if (shouldShowModal) {
+    const delay = (booksCount > 50 && booksCount % 25 === 0) || (booksCount > 5 && booksCount % 10 === 0 && booksCount % 25 !== 0) ? 3000 : 2000;
+    
+    setTimeout(() => {
+      showUpgradeModal(modalConfig);
+    }, delay);
+  }
   // Random surprises (solo si NO es milestone)
-  else if (surprise.type !== 'none' && ![2,5,10,15,20,25,30,50].includes(booksCount) && booksCount % 10 !== 0 && booksCount % 25 !== 0) {
+  else if (surprise.type !== 'none') {
     setTimeout(() => {
       showToast(surprise.msg);
       track('surprise_shown', { type: surprise.type });
@@ -1524,7 +1556,7 @@ function pickLibroNoRepetido(libros) {
 
     libro = data.libros[pickLibroNoRepetido(data.libros)];
     render();
-    updateBadges();
+    updateBadge();
     
     track('app_loaded', { 
       streak: getLocal('streak', 0),
