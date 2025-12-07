@@ -26,17 +26,21 @@
 
 <script>
 // ========================================
-// 🧠 LOGICA DE DATOS (DATA LAYER)
+// 🧠 LOGICA DE DATOS & UTILS
 // ========================================
 function saveLocal(key, value) { try { localStorage.setItem('triggui_' + key, JSON.stringify(value)); } catch(e) {} }
 function getLocal(key, defaultValue = null) { try { const data = localStorage.getItem('triggui_' + key); return data ? JSON.parse(data) : defaultValue; } catch(e) { return defaultValue; } }
 
-// Detección de Plataforma para Analytics
+// 🔧 DETECCIÓN DE PLATAFORMA CORREGIDA
 function getPlatform() {
   const ua = navigator.userAgent || navigator.vendor || window.opera;
-  if (/wv|WebView/i.test(ua) || (ua.includes("Android") && ua.includes("Version/"))) return "App/WebView";
+  // 1. Prioridad iOS
   if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) return "iOS Web";
+  // 2. Detectar WebView especifico (Facebook, Instagram, WebViews nativos)
+  if (/wv|WebView/i.test(ua) || (ua.includes("Android") && ua.includes("Version/"))) return "App/WebView";
+  // 3. Si es Android y no cayó en el anterior, es Chrome/Firefox nativo
   if (/android/i.test(ua)) return "Android Web";
+  // 4. Default
   return "Desktop";
 }
 
@@ -50,14 +54,42 @@ window.reset = function() {
   console.log('✅ Reset completo. Recarga la página.');
 }
 
-// Variables Globales
-let tapCount = 0;
-let tapTimer = null;
-let cardOpenedThisSession = false; 
-
-// Tracking
+// Tracking Global (GA4)
 function track(event, data = {}) {
   if (typeof gtag !== 'undefined') gtag('event', event, { event_category: 'app_engagement', ...data });
+}
+
+// ⚡️ FUNCIÓN MAESTRA DE ENVÍO A SHEETS (NIVEL DIOS)
+function sendToSheet(sourceName) {
+  try {
+    if (!libro) return; // Seguridad
+
+    const rachaActual = getLocal('streak', 0);
+    const totalLibros = getLocal('books_opened', 0);
+    const conceptosActuales = getLocal('concepts', 0);
+    const tipoDispositivo = getPlatform();
+    const frasesVistas = libro.frases ? libro.frases.join(" | ") : "";
+    const urlScript = "https://script.google.com/macros/s/AKfycbyJdF6QZ4b321MUzzkpkvNLEL4-ZJDdgzs7gXTS6bhtI0HMgnJQnAm7tZMeo7u8oatE/exec";
+    
+    // fetch con keepalive:true asegura que se envíe aunque el usuario cambie de página
+    fetch(urlScript, {
+      method: "POST",
+      keepalive: true, 
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        "action": "like",
+        "book": libro.titulo,
+        "author": libro.autor,
+        "phrases": frasesVistas,
+        "streak": rachaActual,
+        "total_books": totalLibros,
+        "platform": tipoDispositivo,
+        "concepts": conceptosActuales,
+        "source": sourceName // <--- AQUÍ LLEGA EL ORIGEN EXACTO
+      })
+    });
+    console.log(`📡 Enviando datos desde: ${sourceName}`);
+  } catch (err) { console.error("Error enviando a sheet:", err); }
 }
 
 // Streak Update
@@ -72,7 +104,6 @@ function updateStreak() {
     saveLocal('last_visit', today);
     return 1;
   }
-
   if (lastVisit === today) return streak;
 
   const yesterday = new Date(Date.now() - 86400000).toDateString();
@@ -93,22 +124,16 @@ function incrementBooks() {
   return count;
 }
 
-// LÓGICA DE CONCEPTOS (+4 al revelar, +1 al abrir)
+// LÓGICA DE CONCEPTOS
 function addConcepts(amount) {
   let current = getLocal('concepts', 0);
   const books = getLocal('books_opened', 0);
-  
-  // Migración para usuarios existentes
-  if (current === 0 && books > 1) { 
-    current = books * 5; 
-  }
-   
+  if (current === 0 && books > 1) { current = books * 5; }
   const newVal = current + amount;
   saveLocal('concepts', newVal);
   return newVal;
 }
 
-// Social Proof Fake-Real
 function getRealisticUserCount() {
   const base = 28;
   const variance = Math.floor(Math.random() * 8);
@@ -120,7 +145,7 @@ function getRealisticUserCount() {
 
 <style>
 /* ========================================
-   🎨 ESTILOS UI (OPTIMIZADOS)
+   🎨 ESTILOS UI
    ======================================== */
 .intro{
   position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
@@ -167,7 +192,7 @@ function getRealisticUserCount() {
 .port-text p{ font-size:clamp(1.2rem,4vw,1.8rem); font-weight:600; opacity:.9; }
 .emoji-big{ font-size:clamp(1.6rem,5vw,2.8rem); filter:drop-shadow(0 4px 8px rgba(0,0,0,.3)); }
 
-/* CTA (4 Botones) */
+/* CTA */
 .cta{ 
   position:fixed; bottom:3vh; left:50%; transform:translateX(-50%); z-index:100; 
   display:none; gap: clamp(0.5rem, 2vw, 0.9rem); justify-content:center; 
@@ -189,7 +214,7 @@ function getRealisticUserCount() {
 body.webview #tarjetaCard { height:650px !important; }
 @keyframes cardIn { to { opacity:1; transform:scale(1); } }
 
-/* ✨ BADGE COMPACTO */
+/* Badge */
 #progressBadge {
   position: fixed; top: 15px; left: 0; right: 0; margin: 0 auto; width: fit-content; max-width: 90vw; z-index: 150;
   background: rgba(20,24,38,0.90); border: 1px solid rgba(255,255,255,0.12);
@@ -214,7 +239,7 @@ body.webview #tarjetaCard { height:650px !important; }
 }
 #toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-/* Modal Unificado */
+/* Modal */
 #appModal { display: none; position: fixed; inset: 0; z-index: 9999; align-items: center; justify-content: center; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.3s ease; }
 #appModal.visible { display: flex; opacity: 1; }
 .modal-glass {
@@ -235,7 +260,7 @@ body.webview #tarjetaCard { height:650px !important; }
 .btn-primary { background: linear-gradient(135deg, #ff0080, #7928ca); color: white; box-shadow: 0 4px 15px rgba(255,0,128,0.3); }
 .btn-secondary { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
 
-/* ✨ PARTÍCULAS LIKE */
+/* Floating Heart */
 .floating-heart {
   position: fixed; pointer-events: none; z-index: 200; font-size: 24px; opacity: 0;
   animation: floatUp 1.2s ease-out forwards;
@@ -356,7 +381,7 @@ const grad = i => `linear-gradient(${ANG[i%4]}deg,${libro.colores[i]},${libro.co
 const frasesIntro = ["¿Qué sientes y qué buscas ahora?", "¿Qué sientes y qué buscas ahora?", "¿Qué sientes y qué buscas ahora?"];
 document.getElementById("intro").innerHTML=`<span class="t">${frasesIntro[Math.floor(Math.random()*frasesIntro.length)]}</span>`;
 
-// === TRIPLE TAP RESET ===
+// RESET
 progressBadge.addEventListener('click', () => {
   tapCount++;
   if (tapCount === 1) tapTimer = setTimeout(() => { tapCount = 0; }, 800);
@@ -365,10 +390,7 @@ progressBadge.addEventListener('click', () => {
     Modal.show({
       emoji: '🔄', title: '¿Reiniciar Contadores?', text: 'Esto pondrá tus estadísticas a cero.',
       btnText: 'Sí, Reiniciar', showCancel: true, cancelText: 'Cancelar',
-      onConfirm: () => {
-        window.reset();
-        location.reload();
-      }
+      onConfirm: () => { window.reset(); location.reload(); }
     });
   }
 });
@@ -378,7 +400,7 @@ function showToast(msg, duration=3000) {
   setTimeout(() => toast.classList.remove('visible'), duration);
 }
 
-// ✨ UPDATE BADGE (Conceptos)
+// UPDATE BADGE
 function updateBadge() {
   const streak = updateStreak(); 
   const books = getLocal('books_opened', 0);
@@ -449,12 +471,11 @@ function render(){
   }
 }
 
-// LOGICA ENGAGEMENT (+4 al revelar)
+// LOGICA ENGAGEMENT & MODALES (CON TRACKING)
 function handleBookReveal() {
   const booksCount = incrementBooks();
   addConcepts(4); 
   updateBadge();
-  // Call to Vercel (Optional)
   fetch("https://triggui-api.vercel.app/api/increment", {cache:"no-store"}).catch(()=>{});
 
   const delay = 1500;
@@ -463,31 +484,47 @@ function handleBookReveal() {
   if (booksCount === 2) {
     setTimeout(() => Modal.show({
       emoji: '📬', title: '¡2 Libros!', text: '¿Te gustaría recibir estas joyas por WhatsApp cada lunes?',
-      btnText: 'Ver cómo funciona', onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
+      btnText: 'Ver cómo funciona', 
+      onConfirm: () => { 
+        sendToSheet('modal-landing-plans'); // TRACKING AQUI
+        window.open('https://triggui.com/#planes', '_blank'); 
+      },
       showCancel: true, cancelText: 'Seguir explorando'
     }), delay);
   } else if (booksCount === 5) {
     setTimeout(() => Modal.show({
       emoji: '🎯', title: '5 Libros Descubiertos', text: 'Recibe páginas seleccionadas para tu momento exacto.<br><span class="m-highlight">Precio lanzamiento: $100/mes</span>',
-      btnText: 'Quiero recibirlos', onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
+      btnText: 'Quiero recibirlos', 
+      onConfirm: () => { 
+        sendToSheet('modal-landing-5books'); // TRACKING AQUI
+        window.open('https://triggui.com/#planes', '_blank'); 
+      },
       showCancel: true
     }), delay);
   } else if (booksCount === 10) {
     setTimeout(() => Modal.show({
       emoji: '🔥', title: '¡Estás en racha!', text: `Ya llevas <b>10 libros</b> y <b>50 conceptos absorbidos</b>. ${userCount} personas están aplicando esto hoy. <br>Únete al grupo de WhatsApp.`,
-      btnText: 'Suscribirme', onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
+      btnText: 'Suscribirme', 
+      onConfirm: () => { 
+        sendToSheet('modal-landing-streak'); // TRACKING AQUI
+        window.open('https://triggui.com/#planes', '_blank'); 
+      },
       showCancel: true
     }), delay);
   } else if ([15, 20, 30, 50, 75, 100].includes(booksCount)) {
     setTimeout(() => Modal.show({
       emoji: '🧠', title: `${booksCount} Libros Descubiertos`, text: 'Tu mente se está expandiendo. No pierdas el ritmo.<br><span class="m-highlight">Asegura tu precio de por vida hoy.</span>',
-      btnText: 'Ver planes', onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
+      btnText: 'Ver planes', 
+      onConfirm: () => { 
+        sendToSheet('modal-landing-recurring'); // TRACKING AQUI
+        window.open('https://triggui.com/#planes', '_blank'); 
+      },
       showCancel: true
     }), delay);
   }
 }
 
-// === EFECTO LIKE & SHARE MODAL (NIVEL DIOS FIXED) ===
+// === CLICK EN BOTÓN LIKE ===
 btnLike.onclick = (e) => {
   const rect = btnLike.getBoundingClientRect();
   const centerX = rect.left + rect.width / 2;
@@ -495,34 +532,9 @@ btnLike.onclick = (e) => {
 
   for (let i = 0; i < 8; i++) { createFloatingHeart(centerX, centerY); }
   
-  // 1. RECOLECTAR DATOS
-  const rachaActual = getLocal('streak', 0);
-  const totalLibros = getLocal('books_opened', 0);
-  const conceptosActuales = getLocal('concepts', 0);
-  const tipoDispositivo = getPlatform();
-
-  try {
-    const frasesVistas = libro.frases.join(" | ");
-    const urlScript = "https://script.google.com/macros/s/AKfycbyJdF6QZ4b321MUzzkpkvNLEL4-ZJDdgzs7gXTS6bhtI0HMgnJQnAm7tZMeo7u8oatE/exec";
-    
-    // 2. ENVIAR DATOS COMPLETOS
-    fetch(urlScript, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        "action": "like",
-        "book": libro.titulo,
-        "author": libro.autor,
-        "phrases": frasesVistas,
-        "streak": rachaActual,
-        "total_books": totalLibros,
-        "platform": tipoDispositivo,
-        "concepts": conceptosActuales,
-        "source": "Triggui Web" 
-      })
-    });
-    track('like_clicked', { book: libro.titulo, streak: rachaActual });
-  } catch (err) { console.log("Error enviando like:", err); }
+  // USAMOS LA FUNCIÓN MAESTRA
+  sendToSheet('like-button'); 
+  track('like_clicked', { book: libro.titulo });
 
   setTimeout(() => {
     Modal.show({
@@ -555,25 +567,31 @@ btnLibro.onclick = async() => {
 function luminance(hex) { try { const c = hex.replace("#","").match(/.{1,2}/g).map(x=>parseInt(x,16)/255); const f = v => v<=.03928 ? v/12.92 : Math.pow((v+.055)/1.055,2.4); return 0.2126*f(c[0])+0.7152*f(c[1])+0.0722*f(c[2]); } catch { return 0; } }
 function pickTextColor(bg) { try { return luminance(bg) > 0.35 ? "#000" : "#fff"; } catch { return "#fff"; } }
 
-// SHARE & TARJETA
+// === CARD COMPLETA (CON TRACKING EN BOTONES BUSCALIBRE) ===
 btnShare.onclick = () => {
   const t = libro.tarjeta; const card = document.getElementById("tarjetaCard");
   
   if (!cardOpenedThisSession) {
-    addConcepts(1);
-    updateBadge(); 
-    cardOpenedThisSession = true;
+    addConcepts(1); updateBadge(); cardOpenedThisSession = true;
   }
 
   const safePaper = t.style.paper||"#111"; const safeInk = t.style.ink||pickTextColor(safePaper); const safeBorder=t.style.border||"#666";
   const palabras=libro.palabras||[]; let p=palabras.length>0?palabras[Math.floor(Math.random()*palabras.length)]:"";
+  
+  // HTML INYECTADO CON ONCLICK TRACKING
   const buscalibreHTML = `
   <div style="margin:22px 0;display:flex;flex-direction:column;gap:14px;text-align:center;">
-    <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(libro.titulo + ' ' + libro.autor)}" target="_blank" onclick="event.stopPropagation();" style="padding:12px 16px;border:1px solid rgba(255,255,255,0.15);border-radius:16px;display:flex;align-items:center;justify-content:center;gap:10px;text-decoration:none;background:rgba(255,255,255,0.03);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:all .25s ease;">
+    <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(libro.titulo + ' ' + libro.autor)}" 
+       target="_blank" 
+       onclick="event.stopPropagation(); sendToSheet('buscalibre-comprar');" 
+       style="padding:12px 16px;border:1px solid rgba(255,255,255,0.15);border-radius:16px;display:flex;align-items:center;justify-content:center;gap:10px;text-decoration:none;background:rgba(255,255,255,0.03);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:all .25s ease;">
       <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/buscalibre.png" style="height:auto;max-height:22px;max-width:120px;" alt="Buscalibre">
       <span style="font:600 15px 'Archivo',sans-serif;color:#ffffff;letter-spacing:0.25px;">Comprar libro</span>
     </a>
-    <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(p)}" target="_blank" onclick="event.stopPropagation();" style="padding:12px 16px;border:1px solid rgba(255,255,255,0.15);border-radius:16px;text-decoration:none;color:#ffffff;font:600 15px 'Archivo',sans-serif;letter-spacing:0.25px;background:rgba(255,255,255,0.03);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:all .25s ease;">Explora posibilidades</a>
+    <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(p)}" 
+       target="_blank" 
+       onclick="event.stopPropagation(); sendToSheet('buscalibre-explora');"
+       style="padding:12px 16px;border:1px solid rgba(255,255,255,0.15);border-radius:16px;text-decoration:none;color:#ffffff;font:600 15px 'Archivo',sans-serif;letter-spacing:0.25px;background:rgba(255,255,255,0.03);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:all .25s ease;">Explora posibilidades</a>
   </div>`;
 
   card.style = `width:min(420px,90vw);height:min(600px,90vh);background:${safePaper};color:${safeInk};border:2px solid ${safeBorder};border-radius:20px;padding:20px;font-family:${t.style.serif||"Georgia"};display:flex;flex-direction:column;justify-content:space-between;font-size:clamp(18px,2.2vw,26px);line-height:1.45;box-sizing:border-box;box-shadow:0 8px 32px rgba(0,0,0,.45);`;
@@ -607,7 +625,6 @@ function pickLibroNoRepetido(libros){
     const data=await r.json();
     libro=data.libros[pickLibroNoRepetido(data.libros)];
     render(); 
-    // Init Visual
     updateBadge();
     track('app_loaded', {streak:getLocal('streak',0), books:getLocal('books_opened',0)});
   }catch(e){ 
