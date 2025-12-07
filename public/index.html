@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, shrink-to-fit=no">
 <title>Triggui — Abre un libro físico. Aquí y ahora.</title>
 
-<!-- CSS crítico para evitar pantalla blanca -->
 <style>
   html, body {
     background:#0e0f1b !important;
@@ -16,8 +15,6 @@
   }
 </style>
 
-
-<!-- OG / Twitter -->
 <meta property="og:title" content="Abre. Un Libro. Físico.">
 <meta property="og:description" content="Toma un libro físico que tengas cerca, ábrelo en cualquier parte, lee la primera línea que veas.">
 <meta property="og:image" content="https://triggui.com/imagotipo.png">
@@ -28,21 +25,111 @@
 <meta name="twitter:description" content="Un impulso real. Nada más. Nada menos.">
 <meta name="twitter:image" content="https://triggui.com/imagotipo.png">
 
-<!-- Google tag (gtag.js) -->
+<!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-CLK554FCNM"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-CLK554FCNM');
+</script>
+
+<!-- ========================================
+     TRIGGUI ENGAGEMENT FRAMEWORK - NIVEL DIOS
+     ======================================== -->
+<script>
+// ========================================
+// STORAGE LOCAL (CERO BACKEND)
+// ========================================
+function saveLocal(key, value) {
+  try {
+    localStorage.setItem('triggui_' + key, JSON.stringify(value));
+  } catch(e) {}
+}
+
+function getLocal(key, defaultValue = null) {
+  try {
+    const data = localStorage.getItem('triggui_' + key);
+    return data ? JSON.parse(data) : defaultValue;
+  } catch(e) {
+    return defaultValue;
+  }
+}
+
+// ========================================
+// TRACKING ANÓNIMO (Solo Analytics)
+// ========================================
+function track(event, data = {}) {
+  if (typeof gtag !== 'undefined') {
+    gtag('event', event, {
+      event_category: 'app_engagement',
+      ...data
+    });
+  }
+  console.log('📊', event, data);
+}
+
+// ========================================
+// STREAK SYSTEM (ADICCIÓN NIVEL DIOS)
+// ========================================
+function updateStreak() {
+  const today = new Date().toDateString();
+  const lastVisit = getLocal('last_visit');
+  const streak = getLocal('streak', 0);
+  
+  if (lastVisit === today) {
+    return streak; // Ya visitó hoy
+  }
+  
+  const yesterday = new Date(Date.now() - 86400000).toDateString();
+  const newStreak = (lastVisit === yesterday) ? streak + 1 : 1;
+  
+  saveLocal('streak', newStreak);
+  saveLocal('last_visit', today);
+  
+  track('streak_updated', { streak: newStreak });
+  
+  return newStreak;
+}
+
+// ========================================
+// BOOKS COUNTER
+// ========================================
+function incrementBooks() {
+  const count = getLocal('books_opened', 0) + 1;
+  saveLocal('books_opened', count);
+  saveLocal('last_book_time', Date.now());
+  track('book_opened', { total: count });
+  return count;
+}
+
+// ========================================
+// VARIABLE REWARDS (Sorpresas aleatorias)
+// ========================================
+const surprises = [
+  { type: 'rare', msg: '✨ Libro raro desbloqueado', chance: 0.15 },
+  { type: 'streak', msg: '🔥 Racha activa', chance: 0.25 },
+  { type: 'milestone', msg: '🎯 Milestone alcanzado', chance: 0.10 },
+  { type: 'none', msg: '', chance: 0.50 }
+];
+
+function getRandomSurprise() {
+  const rand = Math.random();
+  let cumulative = 0;
+  
+  for (const s of surprises) {
+    cumulative += s.chance;
+    if (rand <= cumulative) return s;
+  }
+  
+  return surprises[surprises.length - 1];
+}
 </script>
 
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500;800&display=swap" rel="stylesheet">
 
 <style>
 :root{
-  /* Diámetro de los botones: adapta de 4 rem (móvil) a 7 rem (desktop grande) */
   --btnSize: clamp(4rem, 15vw, 7rem);
 }
 
@@ -51,29 +138,23 @@ html,body{
   height:100%;
   font-family:'Archivo',sans-serif;
   -webkit-overflow-scrolling:touch;
-}
-
-/* 🔑 Evita que WebView escale el texto automáticamente */
-html, body {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
 
-/* 🔑 Asegura que los textos largos en la tarjeta no se desborden */
 #tarjetaCard {
   overflow-wrap: break-word;
   word-break: break-word;
-  box-sizing: border-box; /* asegura que padding y border no rompan layout */
+  box-sizing: border-box;
 }
 
-
-/* ---------------- Intro (refinado) ---------------- */
+/* Intro */
 .intro{
   position:fixed;
   top:50%;left:50%;
   transform:translate(-50%,-50%);
   padding:2rem 2.4rem;
-  background:rgba(20,24,38,.78); /* glass más fino */
+  background:rgba(20,24,38,.78);
   border-radius:28px;
   z-index:120;
   font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
@@ -82,24 +163,23 @@ html, body {
   letter-spacing:.3px;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  /* tipografía adaptable */
   font-size:clamp(1.1rem,3.8vw,1.9rem);
   font-weight:700;
   line-height:1.25;
-  /* animación de aparición suave */
-  opacity:0; transform:translate(-50%,-52%) scale(.985);
+  opacity:0; 
+  transform:translate(-50%,-52%) scale(.985);
   animation:introIn .6s ease-out .15s forwards, introHide 3.2s 1.7s forwards; 
 }
 
-/* texto con degradado — cae a sólido donde no hay soporte */
 .intro .t{
   background:linear-gradient(120deg,#c9fff2,#30ffe4 40%,#9dd5ff);
-  -webkit-background-clip:text; background-clip:text;
-  -webkit-text-fill-color:transparent; color:#eaf7ff;
-  text-shadow:0 0 0 transparent; /* evita halo en Safari */
+  -webkit-background-clip:text; 
+  background-clip:text;
+  -webkit-text-fill-color:transparent; 
+  color:#eaf7ff;
+  text-shadow:0 0 0 transparent;
 }
 
-/* subtítulo mínimo opcional */
 .intro .s{
   display:block;
   margin-top:.45rem;
@@ -109,23 +189,19 @@ html, body {
   color:#dfe9ff;
 }
 
-/* accesibilidad: reduce movimiento */
 @media (prefers-reduced-motion: reduce){
   .intro{animation:introHide 0s 2.2s forwards}
 }
 
-/* entrada */
 @keyframes introIn{
   to{opacity:1; transform:translate(-50%,-50%) scale(1)}
 }
 
-/* salida */
 @keyframes introHide{
   to{opacity:0; visibility:hidden; transform:translate(-50%,-80%) scale(.985)}
 }
 
-
-/* ---------------- Grid ---------------- */
+/* Grid */
 .grid{position:absolute;inset:5vh 1.5vw;display:grid;gap:1vw}
 
 @keyframes gridFadeIn {
@@ -136,20 +212,7 @@ html, body {
 @media(orientation:landscape){.grid{grid-template-columns:repeat(4,1fr)}}
 @media(orientation:portrait){.grid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr)}}
 
-/* ---------------- Blocks ---------------- 
-.block{position:relative;display:flex;align-items:center;justify-content:center;padding:1rem;border-radius:22px;font-weight:700;cursor:pointer;background-size:320% 320%;transition:background-position 4s,transform 0.15s ease;overflow:hidden}
-// 🔑 feedback sutil al tocar 
-.block:active {
-  transform: scale(0.97);
-}
-
-.block:hover{background-position:100% 100%}
-.block::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,.18),transparent 65%);mix-blend-mode:overlay}
-.label,.frase{z-index:2;text-align:center;color:inherit}
-.frase{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;transition:opacity .25s}
-.block.show .label{opacity:0}.block.show .frase{opacity:1}*/
-
-/* ---------------- Blocks ---------------- */
+/* Blocks */
 .block{
   position:relative;
   display:flex;align-items:center;justify-content:center;
@@ -157,7 +220,6 @@ html, body {
   background-size:320% 320%;
   transition:background-position 4s linear, transform .15s ease, filter .2s ease;
   overflow:hidden;isolation:isolate;
-  /* depth sutil y legible sobre fondos neón */
   box-shadow:
     inset 0 0 0 1px rgba(255,255,255,.06),
     0 8px 22px rgba(0,0,0,.28);
@@ -165,36 +227,33 @@ html, body {
 }
 .block:hover{ background-position:100% 100%; filter:saturate(1.05) contrast(1.02); }
 .block:active{ transform:scale(.97); box-shadow:0 10px 24px rgba(0,0,0,.30); }
-/* brillo tangencial suave que no lava el texto */
+
 .block::before{
   content:"";position:absolute;inset:0;border-radius:inherit;
   background:linear-gradient(180deg,rgba(255,255,255,.14),transparent 62%);
   mix-blend-mode:soft-light;pointer-events:none;
 }
-/* anillo de contraste accesible */
+
 .block::after{
   content:"";position:absolute;inset:0;border-radius:inherit;
   box-shadow:0 0 0 1px rgba(0,0,0,.20) inset, 0 0 0 1px rgba(255,255,255,.04);
   pointer-events:none;
 }
-/* respeta usuarios con reduced motion */
+
 @media (prefers-reduced-motion: reduce){
   .block{transition:transform .15s ease}
   .block:hover{background-position:0 0;filter:none}
 }
 
-
 /* Labels y frases */
-/* 👉 Labels y frases con animación Jobs-like */
-/* 👉 Labels y frases con animación Jobs-like */
 .label {
   z-index:2;
   text-align:center;
   opacity:1;
   transition:opacity .25s, transform .25s;
   transform:translateY(0);
-  font-size:clamp(1rem, 3vw, 1.6rem); /* palabra más grande */
-  font-weight:700;                     /* más fuerte */
+  font-size:clamp(1rem, 3vw, 1.6rem);
+  font-weight:700;
   line-height:1.3;
   letter-spacing:0.3px;
 }
@@ -207,45 +266,80 @@ html, body {
   justify-content:center;
   padding:1rem;
   opacity:0;
-  transform:translateY(6px); /* arranca un poco abajo */
+  transform:translateY(6px);
   transition:opacity .25s, transform .25s;
-  font-size:clamp(0.95rem, 2.8vw, 1.4rem); /* más ligera que el label */
-  font-weight:600;                          /* ahora también negrita */
+  font-size:clamp(0.95rem, 2.8vw, 1.4rem);
+  font-weight:600;
   line-height:1.35;
 }
 
 .block.show .label {
   opacity:0;
-  transform:translateY(-6px); /* se va hacia arriba */
+  transform:translateY(-6px);
 }
 
 .block.show .frase {
   opacity:1;
-  transform:translateY(0); /* sube suavemente */
+  transform:translateY(0);
 }
 
+/* Portada */
+.portada{
+  position:absolute;inset:0;
+  display:none;align-items:center;justify-content:center;
+  flex-direction:column;padding:1rem;gap:.4rem;text-align:center;
+  animation:pop .6s ease-out forwards;
+  max-height:90%;overflow:hidden
+}
 
-/* ---------------- Portada ---------------- */
-.portada{position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;padding:1rem;gap:.4rem;text-align:center;animation:pop .6s ease-out forwards;max-height:90%;overflow:hidden}
-@keyframes pop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
-.portada img{max-width:94%;max-height:76%;border-radius:18px;box-shadow:0 12px 32px rgba(0,0,0,.55)}
+@keyframes pop{
+  0%{transform:scale(.8);opacity:0}
+  100%{transform:scale(1);opacity:1}
+}
 
-.port-text h2,.port-text p,.emoji-big{animation:settle .6s ease-out forwards;opacity:0}
-@keyframes settle{0%{transform:scale(1.25);opacity:0}100%{transform:scale(1);opacity:1}}
-.port-text h2{font-size:clamp(2.8rem,7vw,4rem);font-weight:800;line-height:1.15;text-shadow:0 2px 6px rgba(0,0,0,.35)}
-.port-text p{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:600;opacity:.9;margin-top:.3rem}
-.emoji-big{font-size:clamp(1.6rem,5vw,2.8rem);filter:drop-shadow(0 4px 8px rgba(0,0,0,.3))}
+.portada img{
+  max-width:94%;max-height:76%;
+  border-radius:18px;
+  box-shadow:0 12px 32px rgba(0,0,0,.55)
+}
 
-/* ---------------- CTA Buttons ---------------- */
+.port-text h2,.port-text p,.emoji-big{
+  animation:settle .6s ease-out forwards;
+  opacity:0
+}
+
+@keyframes settle{
+  0%{transform:scale(1.25);opacity:0}
+  100%{transform:scale(1);opacity:1}
+}
+
+.port-text h2{
+  font-size:clamp(2.8rem,7vw,4rem);
+  font-weight:800;line-height:1.15;
+  text-shadow:0 2px 6px rgba(0,0,0,.35)
+}
+
+.port-text p{
+  font-size:clamp(1.5rem,4vw,2.2rem);
+  font-weight:600;opacity:.9;margin-top:.3rem
+}
+
+.emoji-big{
+  font-size:clamp(1.6rem,5vw,2.8rem);
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,.3))
+}
+
+/* CTA Buttons */
 .cta{
   position:fixed;bottom:3vh;left:50%;transform:translateX(-50%);
   z-index:100;display:none;gap:.9rem;justify-content:center;flex-wrap:wrap
 }
+
 .cta button{
   width:clamp(3rem,min(7vw,7vh),4rem);
   height:clamp(3rem,min(7vw,7vh),4rem);
   flex:0 0 clamp(3rem,min(7vw,7vh),4rem);
-  border:none;border-radius:22px; /* pastilla más moderna */
+  border:none;border-radius:22px;
   display:flex;align-items:center;justify-content:center;
   font-size:clamp(1.25rem,3.2vw,1.7rem);
   cursor:pointer;background-size:200% 200%;
@@ -253,32 +347,50 @@ html, body {
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,.18),
     0 8px 22px rgba(0,0,0,.28);
-  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  backdrop-filter:blur(8px); 
+  -webkit-backdrop-filter:blur(8px);
   outline:0; position:relative; isolation:isolate;
 }
+
 .cta button::after{
   content:"";position:absolute;inset:0;border-radius:inherit;
   box-shadow:0 0 0 1px rgba(255,255,255,.08) inset, 0 0 0 1px rgba(0,0,0,.18);
   pointer-events:none;
 }
-.cta button:hover{ filter:saturate(1.06) contrast(1.04); transform:translateY(-2px) }
+
+.cta button:hover{ 
+  filter:saturate(1.06) contrast(1.04); 
+  transform:translateY(-2px) 
+}
+
 .cta button:active{ transform:translateY(0); }
 .cta button:focus-visible{ box-shadow:0 0 0 3px rgba(48,255,228,.45); }
 .cta .icon{font-size:1.55rem;line-height:1;}
 
-/* colores por defecto (si no se inyectan desde JS) */
 #otro{ background:linear-gradient(135deg,#5fbfff,#1e90ff); color:#0b1820 }
 #fisico{ background:linear-gradient(135deg,#b2f8c8,#42d97c); color:#0c2d1b }
 #share{ background:linear-gradient(135deg,#ff8a00,#ff3d3d); color:#1b0b0b }
 
+/* Celebración */
+.cele{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.88);
+  display:none;align-items:center;justify-content:center;
+  z-index:110
+}
 
+.cele-msg{
+  font-family:'Poppins';
+  font-size:2rem;text-align:center;
+  background:rgba(255,255,255,.05);
+  padding:2rem 3rem;border-radius:20px
+}
 
-/* ---------------- Celebración ---------------- */
-.cele{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;z-index:110}
-.cele-msg{font-family:'Poppins';font-size:2rem;text-align:center;background:rgba(255,255,255,.05);padding:2rem 3rem;border-radius:20px}
-.num{color:#30ffe4;font-weight:900;font-size:2.8rem}
+.num{
+  color:#30ffe4;font-weight:900;font-size:2.8rem
+}
 
-
+/* Tarjeta Overlay */
 #tarjetaOverlay {
   display:none;
   position:fixed;
@@ -286,34 +398,20 @@ html, body {
   z-index:999;
   align-items:center;
   justify-content:center;
-
-  /* 🔑 Overlay profundo pero nítido */
   background: radial-gradient(
     circle at center,
     rgba(0,0,0,0.85) 0%,
     rgba(0,0,0,0.92) 100%
   );
-
-  /* ❌ Quitamos blur para evitar cansancio visual */
 }
 
-
-#tarjetaCard {
-  width:360px;
-  height:560px;
-}
-
-
-/* INICIO FIX TARJETA */
 #tarjetaCard {
   width: min(420px, 90vw);
-  height: 600px; /* portrait y desktop siguen igual */
+  height: 600px;
   font-size: clamp(16px, 2.6vw, 22px);
   line-height: 1.35;
   -webkit-text-size-adjust: none;
   text-size-adjust: none;
-
-  /* 🔑 Animación de entrada Jobs-like */
   opacity: 0;
   transform: scale(0.92);
   animation: cardIn 0.45s ease-out forwards;
@@ -321,11 +419,10 @@ html, body {
 }
 
 body.webview #tarjetaCard {
-  height: 650px !important; /* portrait y desktop siguen igual */
+  height: 650px !important;
   font-size: clamp(16px, 2.4vw, 20px);
 }
 
-/* 🔑 Ajuste solo en landscape para que no se corte */
 @media (orientation: landscape) {
   #tarjetaCard {
     height: min(560px, 85vh);
@@ -335,7 +432,6 @@ body.webview #tarjetaCard {
     height: min(650px, 85vh) !important;
   }
 }
-/* FIN FIX TARJETA */
 
 @keyframes cardIn {
   from { opacity:0; transform:scale(0.92); }
@@ -351,8 +447,6 @@ body.webview #tarjetaCard {
   opacity: .9;
 }
 
-
-
 body.webview {
   position: fixed;
   inset: 0;
@@ -362,7 +456,7 @@ body.webview {
   background: #0e0f1b;
 }
 
-/* ==================== PULSE + GLOW PORTADA (Nivel Dios) ==================== */
+/* Pulse Portada */
 @keyframes trigguiPulse {
   0% {
     transform: scale(1);
@@ -383,52 +477,210 @@ body.webview {
   will-change: transform, filter;
 }
 
+/* ========================================
+   NUEVOS ESTILOS - ENGAGEMENT BADGES
+   ======================================== */
 
+/* Streak Badge (top-left, hermoso) */
+#streakBadge {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 90;
+  background: rgba(255,110,196,0.15);
+  border: 1px solid rgba(255,110,196,0.3);
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  color: #ff6ec4;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-weight: 700;
+  opacity: 0;
+  transform: translateY(-10px);
+  animation: fadeInDown 0.5s ease 0.5s forwards;
+  box-shadow: 0 4px 12px rgba(255,110,196,0.2);
+}
+
+/* Books Counter Badge (top-right, hermoso) */
+#booksBadge {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 90;
+  background: rgba(48,255,228,0.15);
+  border: 1px solid rgba(48,255,228,0.3);
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  color: #30ffe4;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-weight: 700;
+  opacity: 0;
+  transform: translateY(-10px);
+  animation: fadeInDown 0.5s ease 0.7s forwards;
+  box-shadow: 0 4px 12px rgba(48,255,228,0.2);
+}
+
+@keyframes fadeInDown {
+  from { 
+    opacity: 0; 
+    transform: translateY(-10px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+/* Toast Notification (center-top) */
+#toast {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  z-index: 110;
+  background: rgba(20,24,38,0.95);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 14px 24px;
+  border-radius: 16px;
+  font-size: 15px;
+  color: #fff;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  font-weight: 600;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  text-align: center;
+  max-width: 80%;
+}
+
+#toast.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+  #streakBadge, #booksBadge {
+    font-size: 12px;
+    padding: 6px 10px;
+    top: 15px;
+  }
   
+  #streakBadge {
+    left: 15px;
+  }
   
+  #booksBadge {
+    right: 15px;
+  }
+  
+  #toast {
+    font-size: 13px;
+    padding: 10px 16px;
+    top: 70px;
+  }
+}
 </style>
 </head>
 <body style="background:#0e0f1b; margin:0; padding:0; height:100%; color:#fff;">
 
+<!-- ========================================
+     ENGAGEMENT BADGES - NIVEL DIOS
+     ======================================== -->
+
+<!-- Streak Badge -->
+<div id="streakBadge">🔥 0 días</div>
+
+<!-- Books Counter Badge -->
+<div id="booksBadge">📚 0 libros</div>
+
+<!-- Toast Notification -->
+<div id="toast"></div>
+
+<!-- Intro -->
 <div class="intro" id="intro"></div>
+
+<!-- Grid -->
 <div class="grid" id="grid"></div>
 
-<!-- CTA (aparece tras revelar) -->
+<!-- CTA Buttons -->
 <div class="cta" id="cta">
   <button id="otro">
     <span class="icon">🎲</span>
-    <!--<span class="txt">Me gusta<br>quiero<br>donar</span> -->
   </button>
   <button id="fisico">
     <span class="icon">🔟</span>
-    <!--<span class="txt">Abrí un<br>libro<br>físico</span> -->
   </button>
-    <button id="share">
+  <button id="share">
     <span class="icon">📖</span>
   </button>
 </div>
 
-<!-- Overlay de tarjeta coleccionable -->
+<!-- Tarjeta Overlay -->
 <div id="tarjetaOverlay">
   <div id="tarjetaCard"></div>
 </div>
 
-
-
-  
 <!-- Celebración -->
-<div class="cele" id="cele"><div class="cele-msg" id="celeMsg">✨ <span class="num">...</span><br>libros físicos abiertos</div></div>
+<div class="cele" id="cele">
+  <div class="cele-msg" id="celeMsg">
+    ✨ <span class="num">...</span><br>libros físicos abiertos
+  </div>
+</div>
 
 <script>
+// ========================================
+// VARIABLES GLOBALES
+// ========================================
 const grid=document.getElementById("grid"),
       cta=document.getElementById("cta"),
       btnOtro=document.getElementById("otro"),
       btnLibro=document.getElementById("fisico"),
       btnShare=document.getElementById("share"),
       cele=document.getElementById("cele"),
-      celeMsg=document.getElementById("celeMsg");
+      celeMsg=document.getElementById("celeMsg"),
+      streakBadge=document.getElementById("streakBadge"),
+      booksBadge=document.getElementById("booksBadge"),
+      toast=document.getElementById("toast");
 
-// Frases rotativas estilo Jobs
+let libro=null, revealed=false;
+const portIdx=Math.floor(Math.random()*4),
+      emojis=["🌊","🛡️","🧠","✨","📘","🔮","❤️","🪞"],
+      isURL = s => /^https?:\/\//i.test(s || "");
+const ANG = [115,205,35,320];
+const grad = i => `linear-gradient(${ANG[i%4]}deg,${libro.colores[i]},${libro.colores[(i+1)%4]})`;
+
+// ========================================
+// TOAST NOTIFICATION SYSTEM
+// ========================================
+function showToast(message, duration = 3000) {
+  toast.textContent = message;
+  toast.classList.add('visible');
+  
+  setTimeout(() => {
+    toast.classList.remove('visible');
+  }, duration);
+}
+
+// ========================================
+// UPDATE BADGES
+// ========================================
+function updateBadges() {
+  const streak = getLocal('streak', 0);
+  const books = getLocal('books_opened', 0);
+  
+  streakBadge.textContent = `🔥 ${streak} día${streak !== 1 ? 's' : ''}`;
+  booksBadge.textContent = `📚 ${books} libro${books !== 1 ? 's' : ''}`;
+}
+
+// ========================================
+// INTRO MESSAGES
+// ========================================
 const frasesIntro = [
   "¿Qué sientes y qué buscas ahora?",
   "¿Qué sientes y qué buscas ahora?",
@@ -438,45 +690,55 @@ const introEl=document.getElementById("intro");
 const frase=frasesIntro[Math.floor(Math.random()*frasesIntro.length)];
 introEl.innerHTML=`<span class="t">${frase}</span>`;
 
-  
-
-let libro=null,revealed=false;
-const portIdx=Math.floor(Math.random()*4),
-      emojis=["🌊","🛡️","🧠","✨","📘","🔮","❤️","🪞"],
-            isURL = s => /^https?:\/\//i.test(s || "");
-const ANG  = [115,205,35,320];
-const grad = i => `linear-gradient(${ANG[i%4]}deg,${libro.colores[i]},${libro.colores[(i+1)%4]})`;
-
-
+// ========================================
+// PORTADA BUILDER
+// ========================================
 function adjustScale(wrap){
-  const parent=wrap.closest(".portada");if(!parent)return;
-  const avail=parent.clientHeight-40;let scale=1;wrap.style.transform="scale(1)";
-  while(wrap.scrollHeight>avail&&scale>0.55){scale-=.02;wrap.style.transform=`scale(${scale})`}
+  const parent=wrap.closest(".portada");
+  if(!parent)return;
+  const avail=parent.clientHeight-40;
+  let scale=1;
+  wrap.style.transform="scale(1)";
+  while(wrap.scrollHeight>avail&&scale>0.55){
+    scale-=.02;
+    wrap.style.transform=`scale(${scale})`;
+  }
 }
 
 function buildPort(i){
-  const d=document.createElement("div");d.className="portada";
-  const wrap=document.createElement("div");wrap.className="port-text-wrap";
-  const box=document.createElement("div");box.className="port-text";
+  const d=document.createElement("div");
+  d.className="portada";
+  const wrap=document.createElement("div");
+  wrap.className="port-text-wrap";
+  const box=document.createElement("div");
+  box.className="port-text";
   box.innerHTML=`<h2>${libro.titulo}</h2><p>${libro.autor}</p>`;
-  const emoji=document.createElement("div");emoji.className="emoji-big";emoji.textContent=emojis[i%emojis.length];
+  const emoji=document.createElement("div");
+  emoji.className="emoji-big";
+  emoji.textContent=emojis[i%emojis.length];
   wrap.append(box,emoji);
-  if(isURL(libro.portada)){d.append(Object.assign(new Image(),{src:libro.portada,loading:"lazy"}));}
-  else{d.append(wrap);setTimeout(()=>adjustScale(wrap),0);}
+  
+  if(isURL(libro.portada)){
+    d.append(Object.assign(new Image(),{src:libro.portada,loading:"lazy"}));
+  }else{
+    d.append(wrap);
+    setTimeout(()=>adjustScale(wrap),0);
+  }
 
-  // 👉 Al hacer clic en la portada: abrir tarjeta SIN recargar
   d.addEventListener("click", e => {
-    e.stopPropagation(); // evita que suba al card.onclick
-    btnShare.click();    // abre la tarjeta
+    e.stopPropagation();
+    btnShare.click();
   });
 
   return d;
 }
 
-
-
+// ========================================
+// RENDER GRID
+// ========================================
 function render(){
   grid.innerHTML="";
+  
   for(let i=0;i<4;i++){
     const card=document.createElement("div");
     card.className="block";
@@ -495,53 +757,38 @@ function render(){
     const port=buildPort(i);
 
     if(i===portIdx){
-      // 👉 Portada especial
       card.append(port);
       card.append(label,frase);
 
       card.addEventListener("click", e=>{
         if(!revealed){
-          // Primera vez: revelar portada
+          // Primera revelación
           label.style.display="none";
           port.style.display="flex";
-          /* 👇 Añadimos el pulso aquí. 100% seguro. */
-  port.classList.add("reveal-pulse");
+          port.classList.add("reveal-pulse");
+          
           [...grid.children].forEach((c,j)=>j!==portIdx&&c.classList.add("show"));
           cta.style.display="flex";
           revealed=true;
 
-// dentro de addEventListener("click", e=>{ ... revealed=true; ... })
-const c = libro.colores;
-document.getElementById("otro").style.background   =
-  `linear-gradient(135deg, ${c[0]}, ${c[1]})`;
-document.getElementById("fisico").style.background =
-  `linear-gradient(135deg, ${c[1]}, ${c[2]})`;
-document.getElementById("share").style.background  =
-  `linear-gradient(135deg, ${c[2]}, ${c[3]})`;
+          // Actualizar colores CTA
+          const c = libro.colores;
+          document.getElementById("otro").style.background = `linear-gradient(135deg, ${c[0]}, ${c[1]})`;
+          document.getElementById("fisico").style.background = `linear-gradient(135deg, ${c[1]}, ${c[2]})`;
+          document.getElementById("share").style.background = `linear-gradient(135deg, ${c[2]}, ${c[3]})`;
+          document.getElementById("otro").style.color = pickTextColor(c[0]);
+          document.getElementById("fisico").style.color = pickTextColor(c[1]);
+          document.getElementById("share").style.color = pickTextColor(c[2]);
 
-// texto legible (sin midColor)
-document.getElementById("otro").style.color   = pickTextColor(c[0]);
-document.getElementById("fisico").style.color = pickTextColor(c[1]);
-document.getElementById("share").style.color  = pickTextColor(c[2]);
-
-// ⬇️ ELIMINA por completo este bloque duplicado:
-// const c=libro.colores; document.getElementById("otro").style.background = ...
-
-
-
-// ADD: incrementa en silencio sin frenar la UI ni mostrar nada
-    fetch("https://triggui-api.vercel.app/api/increment", {
-      cache: "no-store"
-    }).catch(()=>{});
+          // ✨ ENGAGEMENT MAGIC ✨
+          handleBookReveal();
           
         }else{
-          // Clics posteriores: abrir tarjeta
           e.stopPropagation();
           btnShare.click();
         }
       });
     } else {
-      // 👉 Bloques normales
       card.append(label,frase);
       card.onclick=()=>handle(card,i,port,label);
     }
@@ -550,69 +797,165 @@ document.getElementById("share").style.color  = pickTextColor(c[2]);
   }
 }
 
-
+// ========================================
+// HANDLE CARD CLICK
+// ========================================
 function handle(card,i,port,label){
-  if(revealed){location.reload();return;}
+  if(revealed){
+    location.reload();
+    return;
+  }
   if(i===portIdx){
-    label.style.display="none";port.style.display="flex";
+    label.style.display="none";
+    port.style.display="flex";
     [...grid.children].forEach((c,j)=>j!==portIdx&&c.classList.add("show"));
-    cta.style.display="flex";revealed=true;
+    cta.style.display="flex";
+    revealed=true;
   }else{
     card.classList.toggle("show");
   }
 }
 
-//btnOtro.onclick=()=>window.open("https://triggui.com","_blank");
-  btnOtro.onclick = () => {
+// ========================================
+// ✨ ENGAGEMENT MAGIC - NIVEL DIOS ✨
+// ========================================
+function handleBookReveal() {
+  // Increment counters
+  const streak = updateStreak();
+  const booksCount = incrementBooks();
+  
+  // Update badges
+  updateBadges();
+  
+  // Track to Analytics
+  fetch("https://triggui-api.vercel.app/api/increment", {
+    cache: "no-store"
+  }).catch(()=>{});
+  
+  // Variable Reward System
+  const surprise = getRandomSurprise();
+  
+  // Streak milestones
+  if (streak === 3) {
+    showToast('🔥 3 días seguidos!');
+  } else if (streak === 7) {
+    showToast('🔥🔥 Una semana completa!');
+  } else if (streak === 30) {
+    showToast('🔥🔥🔥 UN MES! Eres imparable');
+  }
+  
+  // Books milestones + Upgrade Prompts
+  if (booksCount === 7) {
+    setTimeout(() => {
+      if (confirm('📚 Has descubierto 7 libros!\n\n¿Quieres recibirlos por WhatsApp cada lunes?\n(Primera semana gratis)')) {
+        window.open('https://triggui.com/#planes', '_blank');
+        track('upgrade_prompt_7books_accepted');
+      } else {
+        track('upgrade_prompt_7books_declined');
+      }
+    }, 2000);
+  } else if (booksCount === 15) {
+    setTimeout(() => {
+      showToast('📬 Recibe estos libros por email gratis');
+      setTimeout(() => {
+        const email = prompt('Tu email para recordatorios semanales:');
+        if (email && email.includes('@')) {
+          // Aquí se conectaría con tu Google Sheet
+          track('email_captured', { source: 'app_15books' });
+          showToast('✅ Listo! Recibirás recordatorios cada lunes');
+        }
+      }, 3000);
+    }, 2000);
+  } else if (booksCount === 30) {
+    setTimeout(() => {
+      if (confirm('🎯 30 libros descubiertos!\n\nDesbloquea acceso lifetime por $3,999')) {
+        window.open('https://donate.stripe.com/9B66oJ8bI1E02U85aR24001', '_blank');
+        track('upgrade_prompt_30books_lifetime');
+      }
+    }, 2000);
+  }
+  
+  // Random surprises
+  if (surprise.type !== 'none') {
+    setTimeout(() => {
+      showToast(surprise.msg);
+      track('surprise_shown', { type: surprise.type });
+    }, 1000);
+  }
+}
+
+// ========================================
+// BUTTON HANDLERS
+// ========================================
+btnOtro.onclick = () => {
   location.reload();
+  track('reload_clicked');
 };
 
-// ===== CONTRASTE SEGURO =====
+btnLibro.onclick = async() => {
+  btnLibro.disabled=true;
+  cele.style.display="flex";
+  celeMsg.innerHTML='✨ <span class="num">...</span><br>libros que hemos abierto juntos';
+  
+  try{
+    const r=await fetch("https://triggui-api.vercel.app/api/increment");
+    const d=await r.json();
+    celeMsg.innerHTML=`✨ <span class="num">${d.total.toLocaleString("es-MX")}</span><br>libros que hemos abierto juntos`;
+    track('physical_book_opened', { total: d.total });
+  }catch{
+    celeMsg.textContent="📚 Error al contar libros";
+  }
+  
+  setTimeout(()=>{
+    cele.style.display="none";
+    btnLibro.disabled=false;
+  },2300);
+};
+
+// ========================================
+// CONTRAST HELPER
+// ========================================
 function luminance(hex) {
   try {
     const c = hex.replace("#","").match(/.{1,2}/g).map(x=>parseInt(x,16)/255);
     const f = v => v<=.03928 ? v/12.92 : Math.pow((v+.055)/1.055,2.4);
     return 0.2126*f(c[0])+0.7152*f(c[1])+0.0722*f(c[2]);
   } catch {
-    return 0; // fallback seguro
+    return 0;
   }
 }
 
 function pickTextColor(bg) {
-  try { return luminance(bg) > 0.35 ? "#000" : "#fff"; }
-  catch { return "#fff"; }
+  try { 
+    return luminance(bg) > 0.35 ? "#000" : "#fff"; 
+  } catch { 
+    return "#fff"; 
+  }
 }
 
-  
-
+// ========================================
+// TARJETA SHARE
+// ========================================
 btnShare.onclick = () => {
   const t = libro.tarjeta;
   const card = document.getElementById("tarjetaCard");
 
-  // Fallbacks seguros
   const safePaper  = t.style.paper  || "#111111";
   const safeInk    = t.style.ink    || pickTextColor(safePaper);
   const safeBorder = t.style.border || "#666";
   const safeSerif  = t.style.serif  || "Georgia, serif";
   const safeSans   = t.style.sans   || "Arial, sans-serif";
 
-  /* ===== SWITCH PARA ACTIVAR / DESACTIVAR BUSCALIBRE ===== */
-const activarBuscalibre = true;
-/* ======================================================== */
+  const activarBuscalibre = true;
+  let buscalibreHTML = "";
 
-let buscalibreHTML = "";
-
-if (activarBuscalibre) {
-
-const palabras = libro.palabras || [];
-let p = "";
-
-if (palabras.length > 0) {
-    p = palabras[Math.floor(Math.random() * palabras.length)] || "";
-}
-
-const queryRandom = encodeURIComponent(p);
-
+  if (activarBuscalibre) {
+    const palabras = libro.palabras || [];
+    let p = "";
+    if (palabras.length > 0) {
+      p = palabras[Math.floor(Math.random() * palabras.length)] || "";
+    }
+    const queryRandom = encodeURIComponent(p);
 
     buscalibreHTML = `
   <div style="
@@ -622,8 +965,6 @@ const queryRandom = encodeURIComponent(p);
     gap: 14px;
     text-align: center;
   ">
-
-    <!-- Botón 1: Comprar este libro -->
     <a 
       href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(libro.titulo + ' ' + libro.autor)}"
       target="_blank"
@@ -645,21 +986,20 @@ const queryRandom = encodeURIComponent(p);
       onmouseover="this.style.borderColor='rgba(255,255,255,0.35)'"
       onmouseout="this.style.borderColor='rgba(255,255,255,0.15)'"
     >
-     <img 
-  src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/buscalibre.png"
-  alt="Buscalibre"
-  style="
-    display:block;
-    height:auto;
-    max-height:22px;
-    max-width:120px;
-    width:auto;
-    object-fit:contain;
-    object-position:center;
-    opacity:0.90;
-  "
->
-
+      <img 
+        src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/buscalibre.png"
+        alt="Buscalibre"
+        style="
+          display:block;
+          height:auto;
+          max-height:22px;
+          max-width:120px;
+          width:auto;
+          object-fit:contain;
+          object-position:center;
+          opacity:0.90;
+        "
+      >
       <span style="
         font: 600 15px 'Archivo', sans-serif;
         color:#ffffff;
@@ -669,7 +1009,6 @@ const queryRandom = encodeURIComponent(p);
       </span>
     </a>
 
-    <!-- Botón 2: Ver más libros -->
     <a 
       href="https://www.buscalibre.com.mx/libros/search/?q=${queryRandom}"
       target="_blank"
@@ -692,15 +1031,11 @@ const queryRandom = encodeURIComponent(p);
     >
       Explora posibilidades
     </a>
-
   </div>
 `;
+  }
 
-
-}
-
-
-card.style = `
+  card.style = `
     width: min(420px, 90vw);
     height: min(600px, 90vh);
     background:${safePaper};
@@ -712,10 +1047,10 @@ card.style = `
     display:flex;
     flex-direction:column;
     justify-content:space-between;
-    font-size:clamp(18px, 2.2vw, 26px); /* más grande en desktop */
+    font-size:clamp(18px, 2.2vw, 26px);
     line-height:1.45;
     box-sizing:border-box;
-    box-shadow:0 8px 32px rgba(0,0,0,.45); /* efecto depth */
+    box-shadow:0 8px 32px rgba(0,0,0,.45);
   `;
 
   card.innerHTML = `
@@ -749,34 +1084,18 @@ ${buscalibreHTML}
     </div>
   `;
 
-
   document.getElementById("tarjetaOverlay").style.display = "flex";
+  track('card_viewed', { book: libro.titulo });
 };
 
-
-
- 
-
-// cerrar overlay al tocar fuera
-document.getElementById("tarjetaOverlay").onclick = () =>
+// Cerrar overlay
+document.getElementById("tarjetaOverlay").onclick = () => {
   document.getElementById("tarjetaOverlay").style.display = "none";
-
-
-
-  
-
-btnLibro.onclick=async()=>{
-  btnLibro.disabled=true;cele.style.display="flex";
-  celeMsg.innerHTML='✨ <span class="num">...</span><br>libros que hemos abierto juntos';
-  try{
-    const r=await fetch("https://triggui-api.vercel.app/api/increment");
-    const d=await r.json();
-    celeMsg.innerHTML=`✨ <span class="num">${d.total.toLocaleString("es-MX")}</span><br>libros que hemos abierto juntos`;
-  }catch{celeMsg.textContent="📚 Error al contar libros";}
-  setTimeout(()=>{cele.style.display="none";btnLibro.disabled=false},2300);
 };
 
-// 🔑 Detecta si está dentro de un WebView (Android/iOS)
+// ========================================
+// WEBVIEW DETECTION
+// ========================================
 function isWebView() {
   const ua = navigator.userAgent || navigator.vendor || window.opera;
   return (/wv/i.test(ua) || /WebView/i.test(ua) ||
@@ -787,62 +1106,61 @@ if (isWebView()) {
   document.body.classList.add("webview");
 }
 
-  
-// ------------ Anti-repetición DEFINITIVO nivel dios ------------
+// ========================================
+// ANTI-REPETICIÓN
+// ========================================
 function pickLibroNoRepetido(libros) {
   let last = sessionStorage.getItem("lastLibroIdx");
   if (last !== null) last = parseInt(last);
 
   let idx = Math.floor(Math.random() * libros.length);
 
-  // evita el último incluso después de reload
   if (idx === last) {
     idx = Math.floor(Math.random() * libros.length);
-    // si sigue igual, usa el siguiente seguro
     if (idx === last) idx = (idx + 1) % libros.length;
   }
 
   sessionStorage.setItem("lastLibroIdx", idx);
   return idx;
 }
-// ------------------------------------------------------
 
-
-
+// ========================================
+// INIT APP
+// ========================================
 (async()=>{
   try{
     const r = await fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json?ts=" + Date.now());
     const data = await r.json();
 
-    // 👉 Aquí usamos la función perfecta:
     libro = data.libros[pickLibroNoRepetido(data.libros)];
     render();
+    updateBadges();
+    
+    track('app_loaded', { 
+      streak: getLocal('streak', 0),
+      books: getLocal('books_opened', 0)
+    });
+    
   }catch(e){
     alert("No se pudo cargar Triggui.");
     console.error(e);
   }
 })();
-
 </script>
 
-  
+<!-- REACT NATIVE BRIDGE -->
 <script>
-  // Enviamos FIRST_PAINT lo antes posible: DOM listo + 1 frame real
   const signalFirstPaint = () => {
     requestAnimationFrame(() => {
       try {
         window.ReactNativeWebView?.postMessage("FIRST_PAINT");
-      } catch (_) {
-        // silencioso: si no hay RN WebView, no rompe web
-      }
+      } catch (_) {}
     });
   };
 
   if (document.readyState === "interactive" || document.readyState === "complete") {
-    // Si el DOM ya está listo cuando se inyecta este script
     signalFirstPaint();
   } else {
-    // Si aún no, esperamos a DOMContentLoaded
     document.addEventListener("DOMContentLoaded", signalFirstPaint, { once: true });
   }
 </script>
