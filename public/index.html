@@ -41,22 +41,23 @@ window.reset = function() {
   console.log('✅ Reset completo. Recarga la página.');
 }
 
-// Variables
+// Variables Globales
 let tapCount = 0;
 let tapTimer = null;
-let cardOpenedThisSession = false; 
+let cardOpenedThisSession = false; // Control para el +1 del concepto
 
 // Tracking
 function track(event, data = {}) {
   if (typeof gtag !== 'undefined') gtag('event', event, { event_category: 'app_engagement', ...data });
 }
 
-// Streak
+// Streak Update
 function updateStreak() {
   const today = new Date().toDateString();
   const lastVisit = getLocal('last_visit');
   let streak = getLocal('streak', 0);
 
+  // Fix primer día: Si es 0, lo iniciamos en 1 hoy mismo
   if (streak === 0) {
     streak = 1;
     saveLocal('streak', 1);
@@ -75,6 +76,7 @@ function updateStreak() {
   return newStreak;
 }
 
+// Book Counter
 function incrementBooks() {
   const count = getLocal('books_opened', 0) + 1;
   saveLocal('books_opened', count);
@@ -83,17 +85,22 @@ function incrementBooks() {
   return count;
 }
 
-// LÓGICA DE CONCEPTOS (+4 y +1)
+// LÓGICA DE CONCEPTOS (+4 al revelar, +1 al abrir)
 function addConcepts(amount) {
   let current = getLocal('concepts', 0);
   const books = getLocal('books_opened', 0);
-  if (current === 0 && books > 1) { current = books * 5; } // Migración
+  
+  // Migración para usuarios existentes que tengan 0 conceptos pero muchos libros
+  if (current === 0 && books > 1) { 
+    current = books * 5; 
+  }
+  
   const newVal = current + amount;
   saveLocal('concepts', newVal);
   return newVal;
 }
 
-// Rewards
+// Rewards System
 const surprises = [
   { type: 'rare', msg: '✨ Libro raro descubierto', chance: 0.12 },
   { type: 'streak', msg: '🔥 Racha activa', chance: 0.18 },
@@ -110,7 +117,7 @@ function getRandomSurprise() {
   return surprises[surprises.length - 1];
 }
 
-// Social Proof
+// Social Proof Fake-Real
 function getRealisticUserCount() {
   const base = 28;
   const variance = Math.floor(Math.random() * 8);
@@ -169,12 +176,10 @@ function getRealisticUserCount() {
 .port-text p{ font-size:clamp(1.2rem,4vw,1.8rem); font-weight:600; opacity:.9; }
 .emoji-big{ font-size:clamp(1.6rem,5vw,2.8rem); filter:drop-shadow(0 4px 8px rgba(0,0,0,.3)); }
 
-/* CTA (4 BOTONES) */
+/* CTA (4 Botones) */
 .cta{ 
   position:fixed; bottom:3vh; left:50%; transform:translateX(-50%); z-index:100; 
-  display:none; 
-  gap: clamp(0.5rem, 2vw, 0.9rem); 
-  justify-content:center; 
+  display:none; gap: clamp(0.5rem, 2vw, 0.9rem); justify-content:center; 
 }
 .cta button{
   width:clamp(3.5rem,min(8vw,8vh),4.5rem); height:clamp(3.5rem,min(8vw,8vh),4.5rem);
@@ -185,7 +190,7 @@ function getRealisticUserCount() {
 #otro{ background:linear-gradient(135deg,#5fbfff,#1e90ff); color:#fff; }
 #fisico{ background:linear-gradient(135deg,#b2f8c8,#42d97c); color:#000; }
 #share{ background:linear-gradient(135deg,#ff8a00,#ff3d3d); color:#fff; }
-#like { background:linear-gradient(135deg, #ff416c, #ff4b2b); color:#fff; } 
+#like{ background:linear-gradient(135deg, #ff416c, #ff4b2b); color:#fff; }
 
 /* Overlay */
 #tarjetaOverlay { display:none; position:fixed; inset:0; z-index:999; align-items:center; justify-content:center; background: radial-gradient(circle, rgba(0,0,0,0.90), rgba(0,0,0,0.98)); backdrop-filter: blur(5px); }
@@ -193,11 +198,11 @@ function getRealisticUserCount() {
 body.webview #tarjetaCard { height:650px !important; }
 @keyframes cardIn { to { opacity:1; transform:scale(1); } }
 
-/* ✨ BADGE COMPACTO NIVEL DIOS (CENTRADO ABSOLUTO) */
+/* ✨ BADGE COMPACTO NIVEL DIOS (CENTRADO ABSOLUTO + ESPACIADO) */
 #progressBadge {
   position: fixed;
-  top: 15px; 
-  /* CENTRADO INFALIBLE */
+  top: 15px;
+  /* CENTRADO INFALIBLE: Márgenes automáticos con left/right 0 */
   left: 0; right: 0; margin: 0 auto;
   
   width: fit-content; max-width: 90vw;
@@ -207,7 +212,10 @@ body.webview #tarjetaCard { height:650px !important; }
   padding: 6px 20px; border-radius: 99px; color: #dfe9ff;
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
   
-  opacity: 0; animation: badgeDrop 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  opacity: 0; 
+  /* Animación SOLO vertical */
+  animation: badgeDrop 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  
   box-shadow: 0 4px 20px rgba(0,0,0,0.3); text-align: center;
   cursor: pointer; user-select: none; pointer-events: auto;
 }
@@ -219,7 +227,9 @@ body.webview #tarjetaCard { height:650px !important; }
 
 #progressBadge .line1 {
   display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; 
-  opacity: 0.65; margin-bottom: 3px; font-weight: 700; color: #a0aec0;
+  opacity: 0.65; 
+  margin-bottom: 3px; /* Espacio extra para que no se pegue */
+  font-weight: 700; color: #a0aec0;
 }
 #progressBadge .line2 {
   display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;
@@ -473,7 +483,7 @@ function render(){
   }
 }
 
-// LOGICA ENGAGEMENT
+// LOGICA ENGAGEMENT (+4 al revelar)
 function handleBookReveal() {
   const booksCount = incrementBooks();
   addConcepts(4); 
@@ -510,7 +520,7 @@ function handleBookReveal() {
   }
 }
 
-// === EFECTO LIKE, SHARE MODAL & DATA TRACKING ===
+// === EFECTO LIKE & SHARE MODAL ===
 btnLike.onclick = (e) => {
   const rect = btnLike.getBoundingClientRect();
   const centerX = rect.left + rect.width / 2;
@@ -521,6 +531,7 @@ btnLike.onclick = (e) => {
   // Enviar Data a Google Sheet
   try {
     const frasesVistas = libro.frases.join(" | ");
+    // URL DE TU APPS SCRIPT
     const urlScript = "https://script.google.com/macros/s/AKfycbyJdF6QZ4b321MUzzkpkvNLEL4-ZJDdgzs7gXTS6bhtI0HMgnJQnAm7tZMeo7u8oatE/exec";
     
     fetch(urlScript, {
@@ -567,7 +578,7 @@ btnLibro.onclick = async() => {
 function luminance(hex) { try { const c = hex.replace("#","").match(/.{1,2}/g).map(x=>parseInt(x,16)/255); const f = v => v<=.03928 ? v/12.92 : Math.pow((v+.055)/1.055,2.4); return 0.2126*f(c[0])+0.7152*f(c[1])+0.0722*f(c[2]); } catch { return 0; } }
 function pickTextColor(bg) { try { return luminance(bg) > 0.35 ? "#000" : "#fff"; } catch { return "#fff"; } }
 
-// SHARE & TARJETA
+// SHARE & TARJETA (+1 CONCEPTO AL ABRIR TARJETA)
 btnShare.onclick = () => {
   const t = libro.tarjeta; const card = document.getElementById("tarjetaCard");
   
