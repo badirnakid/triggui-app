@@ -26,21 +26,8 @@
 
 <script>
 // ========================================
-// 🧠 LOGICA DE DATOS & GEO
+// 🧠 LOGICA DE DATOS
 // ========================================
-let userLocation = { city: "Detectando...", country: "Mundo" };
-
-// GeoIP (Con timeout para no bloquear)
-const geoTimeout = new Promise((_, reject) => setTimeout(() => reject("Geo timeout"), 2000));
-const geoFetch = fetch('https://ipapi.co/json/').then(res => res.json());
-
-Promise.race([geoFetch, geoTimeout])
-  .then(data => {
-    userLocation.city = data.city || "Desconocido";
-    userLocation.country = data.country_name || "Desconocido";
-  })
-  .catch(err => console.log("Geo silenciado:", err));
-
 function saveLocal(key, value) { try { localStorage.setItem('triggui_' + key, JSON.stringify(value)); } catch(e) {} }
 function getLocal(key, defaultValue = null) { try { const data = localStorage.getItem('triggui_' + key); return data ? JSON.parse(data) : defaultValue; } catch(e) { return defaultValue; } }
 
@@ -52,31 +39,32 @@ window.reset = function() {
   localStorage.removeItem('triggui_streak');
   localStorage.removeItem('triggui_last_visit');
   console.log('✅ Reset completo. Recarga la página.');
-  location.reload();
 }
 
 // Variables Globales
 let tapCount = 0;
 let tapTimer = null;
-let cardOpenedThisSession = false; 
+let cardOpenedThisSession = false; // Control para el +1 del concepto
 
-// Tracking Analytics
+// Tracking
 function track(event, data = {}) {
   if (typeof gtag !== 'undefined') gtag('event', event, { event_category: 'app_engagement', ...data });
 }
 
-// Streak
+// Streak Update
 function updateStreak() {
   const today = new Date().toDateString();
   const lastVisit = getLocal('last_visit');
   let streak = getLocal('streak', 0);
 
+  // Fix primer día: Si es 0, lo iniciamos en 1 hoy mismo
   if (streak === 0) {
     streak = 1;
     saveLocal('streak', 1);
     saveLocal('last_visit', today);
     return 1;
   }
+
   if (lastVisit === today) return streak;
 
   const yesterday = new Date(Date.now() - 86400000).toDateString();
@@ -88,6 +76,7 @@ function updateStreak() {
   return newStreak;
 }
 
+// Book Counter
 function incrementBooks() {
   const count = getLocal('books_opened', 0) + 1;
   saveLocal('books_opened', count);
@@ -96,17 +85,22 @@ function incrementBooks() {
   return count;
 }
 
-// Conceptos (4+1)
+// LÓGICA DE CONCEPTOS (+4 al revelar, +1 al abrir)
 function addConcepts(amount) {
   let current = getLocal('concepts', 0);
   const books = getLocal('books_opened', 0);
-  if (current === 0 && books > 1) { current = books * 5; } 
+  
+  // Migración para usuarios existentes que tengan 0 conceptos pero muchos libros
+  if (current === 0 && books > 1) { 
+    current = books * 5; 
+  }
+  
   const newVal = current + amount;
   saveLocal('concepts', newVal);
   return newVal;
 }
 
-// Rewards
+// Rewards System
 const surprises = [
   { type: 'rare', msg: '✨ Libro raro descubierto', chance: 0.12 },
   { type: 'streak', msg: '🔥 Racha activa', chance: 0.18 },
@@ -123,7 +117,7 @@ function getRandomSurprise() {
   return surprises[surprises.length - 1];
 }
 
-// Social Proof
+// Social Proof Fake-Real
 function getRealisticUserCount() {
   const base = 28;
   const variance = Math.floor(Math.random() * 8);
@@ -182,12 +176,10 @@ function getRealisticUserCount() {
 .port-text p{ font-size:clamp(1.2rem,4vw,1.8rem); font-weight:600; opacity:.9; }
 .emoji-big{ font-size:clamp(1.6rem,5vw,2.8rem); filter:drop-shadow(0 4px 8px rgba(0,0,0,.3)); }
 
-/* CTA (4 BOTONES) */
+/* CTA (4 Botones) */
 .cta{ 
   position:fixed; bottom:3vh; left:50%; transform:translateX(-50%); z-index:100; 
-  display:none; 
-  gap: clamp(0.5rem, 2vw, 0.9rem); 
-  justify-content:center; 
+  display:none; gap: clamp(0.5rem, 2vw, 0.9rem); justify-content:center; 
 }
 .cta button{
   width:clamp(3.5rem,min(8vw,8vh),4.5rem); height:clamp(3.5rem,min(8vw,8vh),4.5rem);
@@ -198,7 +190,7 @@ function getRealisticUserCount() {
 #otro{ background:linear-gradient(135deg,#5fbfff,#1e90ff); color:#fff; }
 #fisico{ background:linear-gradient(135deg,#b2f8c8,#42d97c); color:#000; }
 #share{ background:linear-gradient(135deg,#ff8a00,#ff3d3d); color:#fff; }
-#like { background:linear-gradient(135deg, #ff416c, #ff4b2b); color:#fff; } 
+#like{ background:linear-gradient(135deg, #ff416c, #ff4b2b); color:#fff; }
 
 /* Overlay */
 #tarjetaOverlay { display:none; position:fixed; inset:0; z-index:999; align-items:center; justify-content:center; background: radial-gradient(circle, rgba(0,0,0,0.90), rgba(0,0,0,0.98)); backdrop-filter: blur(5px); }
@@ -206,20 +198,28 @@ function getRealisticUserCount() {
 body.webview #tarjetaCard { height:650px !important; }
 @keyframes cardIn { to { opacity:1; transform:scale(1); } }
 
-/* ✨ BADGE COMPACTO (MÁRGENES AUTOMÁTICOS) */
+/* ✨ BADGE COMPACTO NIVEL DIOS (CENTRADO ABSOLUTO + ESPACIADO) */
 #progressBadge {
   position: fixed;
   top: 15px;
+  /* CENTRADO INFALIBLE: Márgenes automáticos con left/right 0 */
   left: 0; right: 0; margin: 0 auto;
+  
   width: fit-content; max-width: 90vw;
   z-index: 150;
+  
   background: rgba(20,24,38,0.90); border: 1px solid rgba(255,255,255,0.12);
   padding: 6px 20px; border-radius: 99px; color: #dfe9ff;
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  opacity: 0; animation: badgeDrop 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  
+  opacity: 0; 
+  /* Animación SOLO vertical */
+  animation: badgeDrop 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  
   box-shadow: 0 4px 20px rgba(0,0,0,0.3); text-align: center;
   cursor: pointer; user-select: none; pointer-events: auto;
 }
+
 @keyframes badgeDrop { 
   0% { opacity: 0; transform: translateY(-40px); } 
   100% { opacity: 1; transform: translateY(0); } 
@@ -227,7 +227,9 @@ body.webview #tarjetaCard { height:650px !important; }
 
 #progressBadge .line1 {
   display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; 
-  opacity: 0.65; margin-bottom: 3px; font-weight: 700; color: #a0aec0;
+  opacity: 0.65; 
+  margin-bottom: 3px; /* Espacio extra para que no se pegue */
+  font-weight: 700; color: #a0aec0;
 }
 #progressBadge .line2 {
   display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;
@@ -370,50 +372,6 @@ const Modal = {
 };
 
 // ========================================
-// FUNCIÓN UNIFICADA DE ENVÍO DE DATOS
-// ========================================
-function sendInteractionToSheet(origin) {
-  try {
-    const frasesVistas = libro ? libro.frases.join(" | ") : "Sin libro cargado";
-    
-    // Detectar plataforma simple
-    let platform = "Web";
-    const ua = navigator.userAgent;
-    if (/android/i.test(ua)) platform = "Android";
-    else if (/iPad|iPhone|iPod/.test(ua)) platform = "iOS";
-    
-    // Tipo de Usuario
-    const totalBooks = getLocal('books_opened', 0);
-    const userType = totalBooks <= 1 ? "Nuevo" : "Recurrente";
-    
-    const urlScript = "https://script.google.com/macros/s/AKfycbyJdF6QZ4b321MUzzkpkvNLEL4-ZJDdgzs7gXTS6bhtI0HMgnJQnAm7tZMeo7u8oatE/exec";
-    
-    fetch(urlScript, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        "action": "interaction", // Siempre 'interaction' para ir a la hoja Likes
-        "book": libro ? libro.titulo : "Error",
-        "author": libro ? libro.autor : "Error",
-        "phrases": frasesVistas,
-        // Stats
-        "streak": getLocal('streak', 0),
-        "total_books": totalBooks,
-        "concepts": getLocal('concepts', 0),
-        // Contexto
-        "platform": platform,
-        "city": userLocation.city,
-        "country": userLocation.country,
-        "user_type": userType,
-        "origin": origin // Like, Share, Portada, Buscalibre_Buy, etc.
-      })
-    });
-    
-    track(origin + '_clicked', { book: libro ? libro.titulo : "Error" });
-  } catch (err) { console.log("Error sending data:", err); }
-}
-
-// ========================================
 // LOGICA APP
 // ========================================
 const grid=document.getElementById("grid"), cta=document.getElementById("cta"),
@@ -426,7 +384,7 @@ const portIdx=Math.floor(Math.random()*4),
       emojis=["🌊","🛡️","🧠","✨","📘","🔮","❤️","🪞"];
 const isURL = s => /^https?:\/\//i.test(s || "");
 const ANG = [115,205,35,320];
-let grad = i => "#333"; // Placeholder
+const grad = i => `linear-gradient(${ANG[i%4]}deg,${libro.colores[i]},${libro.colores[(i+1)%4]})`;
 
 // INTRO
 const frasesIntro = ["¿Qué sientes y qué buscas ahora?", "¿Qué sientes y qué buscas ahora?", "¿Qué sientes y qué buscas ahora?"];
@@ -482,20 +440,11 @@ function buildPort(i){
   wrap.append(box,emoji);
   if(isURL(libro.portada)){ d.append(Object.assign(new Image(),{src:libro.portada,loading:"lazy"})); }
   else{ d.append(wrap); setTimeout(()=>adjustScale(wrap),0); }
-  
-  // CLICK EN PORTADA -> ABRE TARJETA + ENVIA DATA
-  d.addEventListener("click", e => { 
-    e.stopPropagation(); 
-    sendInteractionToSheet("Cover_Click");
-    btnShare.click(); 
-  });
+  d.addEventListener("click", e => { e.stopPropagation(); btnShare.click(); });
   return d;
 }
 
 function render(){
-  // Actualizar funcion gradiente con libro real
-  grad = i => `linear-gradient(${ANG[i%4]}deg,${libro.colores[i]},${libro.colores[(i+1)%4]})`;
-  
   grid.innerHTML="";
   for(let i=0;i<4;i++){
     const card=document.createElement("div"); card.className="block"; card.style.background=grad(i);
@@ -517,17 +466,14 @@ function render(){
           document.getElementById("otro").style.background = `linear-gradient(135deg, ${c[0]}, ${c[1]})`;
           document.getElementById("fisico").style.background = `linear-gradient(135deg, ${c[1]}, ${c[2]})`;
           document.getElementById("share").style.background = `linear-gradient(135deg, ${c[2]}, ${c[3]})`;
+          
           document.getElementById("like").style.background = `linear-gradient(135deg, #ff416c, #ff4b2b)`;
 
           document.getElementById("otro").style.color = pickTextColor(c[0]);
           document.getElementById("fisico").style.color = pickTextColor(c[1]);
           document.getElementById("share").style.color = pickTextColor(c[2]);
           handleBookReveal();
-        } else { 
-            e.stopPropagation(); 
-            sendInteractionToSheet("Cover_Click");
-            btnShare.click(); 
-        }
+        } else { e.stopPropagation(); btnShare.click(); }
       };
     } else {
       card.append(label, frase);
@@ -537,7 +483,7 @@ function render(){
   }
 }
 
-// LOGICA ENGAGEMENT
+// LOGICA ENGAGEMENT (+4 al revelar)
 function handleBookReveal() {
   const booksCount = incrementBooks();
   addConcepts(4); 
@@ -547,31 +493,28 @@ function handleBookReveal() {
   const delay = 1500;
   const userCount = getRealisticUserCount();
 
-  // ENVIO AUTOMATICO AL REVELAR (IMPRESION)
-  sendInteractionToSheet("Book_Revealed");
-
   if (booksCount === 2) {
     setTimeout(() => Modal.show({
       emoji: '📬', title: '¡2 Libros!', text: '¿Te gustaría recibir estas joyas por WhatsApp cada lunes?',
-      btnText: 'Ver cómo funciona', onConfirm: () => { sendInteractionToSheet("Modal_2_Accept"); window.open('https://triggui.com/#planes', '_blank'); },
+      btnText: 'Ver cómo funciona', onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
       showCancel: true, cancelText: 'Seguir explorando'
     }), delay);
   } else if (booksCount === 5) {
     setTimeout(() => Modal.show({
       emoji: '🎯', title: '5 Libros Descubiertos', text: 'Recibe páginas seleccionadas para tu momento exacto.<br><span class="m-highlight">Precio lanzamiento: $100/mes</span>',
-      btnText: 'Quiero recibirlos', onConfirm: () => { sendInteractionToSheet("Modal_5_Accept"); window.open('https://triggui.com/#planes', '_blank'); },
+      btnText: 'Quiero recibirlos', onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
       showCancel: true
     }), delay);
   } else if (booksCount === 10) {
     setTimeout(() => Modal.show({
       emoji: '🔥', title: '¡Estás en racha!', text: `Ya llevas <b>10 libros</b> y <b>50 conceptos absorbidos</b>. ${userCount} personas están aplicando esto hoy. <br>Únete al grupo de WhatsApp.`,
-      btnText: 'Suscribirme', onConfirm: () => { sendInteractionToSheet("Modal_10_Accept"); window.open('https://triggui.com/#planes', '_blank'); },
+      btnText: 'Suscribirme', onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
       showCancel: true
     }), delay);
   } else if ([15, 20, 30, 50, 75, 100].includes(booksCount)) {
     setTimeout(() => Modal.show({
       emoji: '🧠', title: `${booksCount} Libros Descubiertos`, text: 'Tu mente se está expandiendo. No pierdas el ritmo.<br><span class="m-highlight">Asegura tu precio de por vida hoy.</span>',
-      btnText: 'Ver planes', onConfirm: () => { sendInteractionToSheet(`Modal_${booksCount}_Accept`); window.open('https://triggui.com/#planes', '_blank'); },
+      btnText: 'Ver planes', onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
       showCancel: true
     }), delay);
   }
@@ -585,8 +528,24 @@ btnLike.onclick = (e) => {
 
   for (let i = 0; i < 8; i++) { createFloatingHeart(centerX, centerY); }
   
-  // ENVIAR DATA (LIKE)
-  sendInteractionToSheet("Like_Button");
+  // Enviar Data a Google Sheet
+  try {
+    const frasesVistas = libro.frases.join(" | ");
+    // URL DE TU APPS SCRIPT
+    const urlScript = "https://script.google.com/macros/s/AKfycbyJdF6QZ4b321MUzzkpkvNLEL4-ZJDdgzs7gXTS6bhtI0HMgnJQnAm7tZMeo7u8oatE/exec";
+    
+    fetch(urlScript, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        "action": "like",
+        "book": libro.titulo,
+        "author": libro.autor,
+        "phrases": frasesVistas
+      })
+    });
+    track('like_clicked', { book: libro.titulo });
+  } catch (err) { console.log("Error enviando like:", err); }
 
   setTimeout(() => {
     Modal.show({
@@ -619,29 +578,26 @@ btnLibro.onclick = async() => {
 function luminance(hex) { try { const c = hex.replace("#","").match(/.{1,2}/g).map(x=>parseInt(x,16)/255); const f = v => v<=.03928 ? v/12.92 : Math.pow((v+.055)/1.055,2.4); return 0.2126*f(c[0])+0.7152*f(c[1])+0.0722*f(c[2]); } catch { return 0; } }
 function pickTextColor(bg) { try { return luminance(bg) > 0.35 ? "#000" : "#fff"; } catch { return "#fff"; } }
 
-// SHARE & TARJETA
+// SHARE & TARJETA (+1 CONCEPTO AL ABRIR TARJETA)
 btnShare.onclick = () => {
   const t = libro.tarjeta; const card = document.getElementById("tarjetaCard");
   
-  // +1 Concepto al abrir tarjeta
+  // +1 Concepto
   if (!cardOpenedThisSession) {
     addConcepts(1);
     updateBadge(); 
     cardOpenedThisSession = true;
-    
-    // ENVIAR DATA (SHARE/OPEN CARD)
-    sendInteractionToSheet("Share_Button");
   }
 
   const safePaper = t.style.paper||"#111"; const safeInk = t.style.ink||pickTextColor(safePaper); const safeBorder=t.style.border||"#666";
   const palabras=libro.palabras||[]; let p=palabras.length>0?palabras[Math.floor(Math.random()*palabras.length)]:"";
   const buscalibreHTML = `
   <div style="margin:22px 0;display:flex;flex-direction:column;gap:14px;text-align:center;">
-    <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(libro.titulo + ' ' + libro.autor)}" target="_blank" onclick="event.stopPropagation(); sendInteractionToSheet('Buscalibre_Buy');" style="padding:12px 16px;border:1px solid rgba(255,255,255,0.15);border-radius:16px;display:flex;align-items:center;justify-content:center;gap:10px;text-decoration:none;background:rgba(255,255,255,0.03);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:all .25s ease;">
+    <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(libro.titulo + ' ' + libro.autor)}" target="_blank" onclick="event.stopPropagation();" style="padding:12px 16px;border:1px solid rgba(255,255,255,0.15);border-radius:16px;display:flex;align-items:center;justify-content:center;gap:10px;text-decoration:none;background:rgba(255,255,255,0.03);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:all .25s ease;">
       <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/buscalibre.png" style="height:auto;max-height:22px;max-width:120px;" alt="Buscalibre">
       <span style="font:600 15px 'Archivo',sans-serif;color:#ffffff;letter-spacing:0.25px;">Comprar libro</span>
     </a>
-    <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(p)}" target="_blank" onclick="event.stopPropagation(); sendInteractionToSheet('Buscalibre_Explore');" style="padding:12px 16px;border:1px solid rgba(255,255,255,0.15);border-radius:16px;text-decoration:none;color:#ffffff;font:600 15px 'Archivo',sans-serif;letter-spacing:0.25px;background:rgba(255,255,255,0.03);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:all .25s ease;">Explora posibilidades</a>
+    <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(p)}" target="_blank" onclick="event.stopPropagation();" style="padding:12px 16px;border:1px solid rgba(255,255,255,0.15);border-radius:16px;text-decoration:none;color:#ffffff;font:600 15px 'Archivo',sans-serif;letter-spacing:0.25px;background:rgba(255,255,255,0.03);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:all .25s ease;">Explora posibilidades</a>
   </div>`;
 
   card.style = `width:min(420px,90vw);height:min(600px,90vh);background:${safePaper};color:${safeInk};border:2px solid ${safeBorder};border-radius:20px;padding:20px;font-family:${t.style.serif||"Georgia"};display:flex;flex-direction:column;justify-content:space-between;font-size:clamp(18px,2.2vw,26px);line-height:1.45;box-sizing:border-box;box-shadow:0 8px 32px rgba(0,0,0,.45);`;
@@ -658,9 +614,8 @@ btnShare.onclick = () => {
 };
 document.getElementById("tarjetaOverlay").onclick=()=>{ document.getElementById("tarjetaOverlay").style.display="none"; };
 
-// INIT - FALLBACK POR SI FALLA RED
-const FALLBACK_LIBRO = { titulo:"Triggui", autor:"Bienvenido", colores:["#ff0080","#7928ca","#ff0080","#7928ca"], palabras:["Inicio","Despegue","Fuerza","Visión"], frases:["Todo comienza con un paso.","La lectura transforma tu mente.","Pequeños hábitos, grandes logros.","Tu potencial es infinito."], portada:"https://triggui.com/imagotipo.png", tarjeta:{style:{paper:"#111",ink:"#fff",border:"#333",serif:"Georgia",sans:"Arial",accent:"#30ffe4"},parrafoTop:"Bienvenido a Triggui.",subtitulo:"Tu viaje comienza hoy",parrafoBot:"Abre libros físicos y expande tu mente."} };
-
+// INIT
+function isWebView(){ const ua=navigator.userAgent||navigator.vendor||window.opera; return (/wv/i.test(ua)||/WebView/i.test(ua)||(ua.includes("Android")&&ua.includes("Version/"))||(ua.includes("iPhone")&&!ua.includes("Safari"))); }
 if(isWebView()) document.body.classList.add("webview");
 
 function pickLibroNoRepetido(libros){
@@ -676,13 +631,12 @@ function pickLibroNoRepetido(libros){
     const data=await r.json();
     libro=data.libros[pickLibroNoRepetido(data.libros)];
     render(); 
+    // Init Visual
     updateBadge();
     track('app_loaded', {streak:getLocal('streak',0), books:getLocal('books_opened',0)});
   }catch(e){ 
-    console.error("Carga fallida, usando fallback", e);
-    libro = FALLBACK_LIBRO; // Carga libro backup para evitar pantalla negra
-    render();
-    updateBadge();
+    // Fallback silencioso en prod
+    console.error(e);
   }
 })();
 </script>
