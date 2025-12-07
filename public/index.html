@@ -6,13 +6,8 @@
 <title>Triggui — Abre un libro físico. Aquí y ahora.</title>
 
 <style>
-  html, body {
-    background:#0e0f1b !important;
-    color:#fff;
-    margin:0;
-    padding:0;
-    height:100%;
-  }
+  html, body { background:#0e0f1b !important; color:#fff; margin:0; padding:0; height:100%; font-family:'Archivo',sans-serif; -webkit-overflow-scrolling:touch; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  #tarjetaCard { overflow-wrap: break-word; word-break: break-word; box-sizing: border-box; }
 </style>
 
 <meta property="og:title" content="Abre. Un Libro. Físico.">
@@ -20,12 +15,7 @@
 <meta property="og:image" content="https://triggui.com/imagotipo.png">
 <meta property="og:url" content="https://triggui.com">
 <meta property="og:type" content="website">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Triggui – Abre un libro físico. Aquí y ahora.">
-<meta name="twitter:description" content="Un impulso real. Nada más. Nada menos.">
-<meta name="twitter:image" content="https://triggui.com/imagotipo.png">
 
-<!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-CLK554FCNM"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -34,85 +24,44 @@
   gtag('config', 'G-CLK554FCNM');
 </script>
 
-<!-- ========================================
-     TRIGGUI ENGAGEMENT FRAMEWORK - NIVEL DIOS
-     ======================================== -->
 <script>
 // ========================================
-// STORAGE LOCAL (CERO BACKEND)
+// 🧠 LOGICA DE DATOS (NO TOCAR)
 // ========================================
-function saveLocal(key, value) {
-  try {
-    localStorage.setItem('triggui_' + key, JSON.stringify(value));
-  } catch(e) {}
-}
+function saveLocal(key, value) { try { localStorage.setItem('triggui_' + key, JSON.stringify(value)); } catch(e) {} }
+function getLocal(key, defaultValue = null) { try { const data = localStorage.getItem('triggui_' + key); return data ? JSON.parse(data) : defaultValue; } catch(e) { return defaultValue; } }
 
-function getLocal(key, defaultValue = null) {
-  try {
-    const data = localStorage.getItem('triggui_' + key);
-    return data ? JSON.parse(data) : defaultValue;
-  } catch(e) {
-    return defaultValue;
-  }
-}
-
-// ========================================
-// 🎯 RESET HELPER (Para testing)
-// ========================================
+// Reset Helper para Consola
 window.reset = function() {
   localStorage.removeItem('triggui_books_opened');
   localStorage.removeItem('triggui_last_book_time');
   console.log('✅ Reset completo. Recarga la página.');
-  console.log('Usa: location.reload()');
 }
 
-console.log('💡 TIP: Escribe reset() para volver a libro 0');
-
-// ========================================
-// 📱 RESET MÓVIL: Triple tap en badge
-// ========================================
+// Variables Globales
 let tapCount = 0;
 let tapTimer = null;
 
-// ========================================
-// TRACKING ANÓNIMO (Solo Analytics)
-// ========================================
+// Tracking
 function track(event, data = {}) {
-  if (typeof gtag !== 'undefined') {
-    gtag('event', event, {
-      event_category: 'app_engagement',
-      ...data
-    });
-  }
+  if (typeof gtag !== 'undefined') gtag('event', event, { event_category: 'app_engagement', ...data });
   console.log('📊', event, data);
 }
 
-// ========================================
-// STREAK SYSTEM (ADICCIÓN NIVEL DIOS)
-// ========================================
+// Streak & Counters
 function updateStreak() {
   const today = new Date().toDateString();
   const lastVisit = getLocal('last_visit');
   const streak = getLocal('streak', 0);
-  
-  if (lastVisit === today) {
-    return streak;
-  }
-  
+  if (lastVisit === today) return streak;
   const yesterday = new Date(Date.now() - 86400000).toDateString();
   const newStreak = (lastVisit === yesterday) ? streak + 1 : 1;
-  
   saveLocal('streak', newStreak);
   saveLocal('last_visit', today);
-  
   track('streak_updated', { streak: newStreak });
-  
   return newStreak;
 }
 
-// ========================================
-// BOOKS COUNTER
-// ========================================
 function incrementBooks() {
   const count = getLocal('books_opened', 0) + 1;
   saveLocal('books_opened', count);
@@ -121,31 +70,7 @@ function incrementBooks() {
   return count;
 }
 
-// ========================================
-// VARIABLE REWARDS (Sorpresas aleatorias)
-// ========================================
-const surprises = [
-  { type: 'rare', msg: '✨ Libro raro descubierto', chance: 0.12 },
-  { type: 'streak', msg: '🔥 Racha activa', chance: 0.18 },
-  { type: 'milestone', msg: '🎯 Gran descubrimiento', chance: 0.08 },
-  { type: 'none', msg: '', chance: 0.62 }
-];
-
-function getRandomSurprise() {
-  const rand = Math.random();
-  let cumulative = 0;
-  
-  for (const s of surprises) {
-    cumulative += s.chance;
-    if (rand <= cumulative) return s;
-  }
-  
-  return surprises[surprises.length - 1];
-}
-
-// ========================================
-// SOCIAL PROOF DINÁMICO
-// ========================================
+// Social Proof Fake-Real
 function getRealisticUserCount() {
   const base = 28;
   const variance = Math.floor(Math.random() * 8);
@@ -156,704 +81,227 @@ function getRealisticUserCount() {
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500;800&display=swap" rel="stylesheet">
 
 <style>
-:root{
-  --btnSize: clamp(4rem, 15vw, 7rem);
-}
-
-*{margin:0;padding:0;box-sizing:border-box}
-html,body{
-  height:100%;
-  font-family:'Archivo',sans-serif;
-  -webkit-overflow-scrolling:touch;
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
-}
-
-#tarjetaCard {
-  overflow-wrap: break-word;
-  word-break: break-word;
-  box-sizing: border-box;
-}
-
-/* Intro */
+/* ========================================
+   🎨 ESTILOS UI NIVEL DIOS
+   ======================================== */
 .intro{
-  position:fixed;
-  top:50%;left:50%;
-  transform:translate(-50%,-50%);
-  padding:2rem 2.4rem;
-  background:rgba(20,24,38,.78);
-  border-radius:28px;
-  z-index:120;
-  font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  text-align:center;
+  position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+  padding:2rem 2.4rem; background:rgba(20,24,38,.78); border-radius:28px;
+  z-index:120; font-family:'Poppins',sans-serif; text-align:center;
   box-shadow:0 10px 40px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06);
-  letter-spacing:.3px;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  font-size:clamp(1.1rem,3.8vw,1.9rem);
-  font-weight:700;
-  line-height:1.25;
-  opacity:0; 
-  transform:translate(-50%,-52%) scale(.985);
-  animation:introIn .6s ease-out .15s forwards, introHide 3.2s 1.7s forwards; 
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  font-size:clamp(1.1rem,3.8vw,1.9rem); font-weight:700; line-height:1.25;
+  opacity:0; animation:introIn .6s ease-out .15s forwards, introHide 3.2s 1.7s forwards; 
 }
+.intro .t{ background:linear-gradient(120deg,#c9fff2,#30ffe4 40%,#9dd5ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+@keyframes introIn{ to{opacity:1; transform:translate(-50%,-50%) scale(1)} }
+@keyframes introHide{ to{opacity:0; visibility:hidden; transform:translate(-50%,-80%) scale(.985)} }
 
-.intro .t{
-  background:linear-gradient(120deg,#c9fff2,#30ffe4 40%,#9dd5ff);
-  -webkit-background-clip:text; 
-  background-clip:text;
-  -webkit-text-fill-color:transparent; 
-  color:#eaf7ff;
-  text-shadow:0 0 0 transparent;
-}
-
-.intro .s{
-  display:block;
-  margin-top:.45rem;
-  font-weight:600;
-  opacity:.85;
-  font-size:clamp(.85rem,2.8vw,1.05rem);
-  color:#dfe9ff;
-}
-
-@media (prefers-reduced-motion: reduce){
-  .intro{animation:introHide 0s 2.2s forwards}
-}
-
-@keyframes introIn{
-  to{opacity:1; transform:translate(-50%,-50%) scale(1)}
-}
-
-@keyframes introHide{
-  to{opacity:0; visibility:hidden; transform:translate(-50%,-80%) scale(.985)}
-}
-
-/* Grid */
-.grid{position:absolute;inset:11vh 1.5vw 5vh 1.5vw;display:grid;gap:1vw}
-
-@keyframes gridFadeIn {
-  from { opacity:0; transform:translateY(12px); }
-  to   { opacity:1; transform:translateY(0); }
-}
-
+/* Grid & Blocks */
+.grid{position:absolute;inset:12vh 3vw 8vh 3vw;display:grid;gap:3vw} /* Ajustado para dar espacio al badge arriba */
 @media(orientation:landscape){.grid{grid-template-columns:repeat(4,1fr)}}
 @media(orientation:portrait){.grid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr)}}
 
-/* Blocks */
 .block{
-  position:relative;
-  display:flex;align-items:center;justify-content:center;
-  padding:1rem;border-radius:22px;font-weight:700;cursor:pointer;
+  position:relative; display:flex; align-items:center; justify-content:center;
+  padding:1rem; border-radius:22px; font-weight:700; cursor:pointer;
   background-size:320% 320%;
   transition:background-position 4s linear, transform .15s ease, filter .2s ease;
-  overflow:hidden;isolation:isolate;
-  box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,.06),
-    0 8px 22px rgba(0,0,0,.28);
-  will-change: background-position, transform;
+  overflow:hidden; isolation:isolate;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.06), 0 8px 22px rgba(0,0,0,.28);
 }
 .block:hover{ background-position:100% 100%; filter:saturate(1.05) contrast(1.02); }
-.block:active{ transform:scale(.97); box-shadow:0 10px 24px rgba(0,0,0,.30); }
+.block:active{ transform:scale(.97); }
+.block::before{ content:"";position:absolute;inset:0;border-radius:inherit; background:linear-gradient(180deg,rgba(255,255,255,.14),transparent 62%); mix-blend-mode:soft-light;pointer-events:none; }
 
-.block::before{
-  content:"";position:absolute;inset:0;border-radius:inherit;
-  background:linear-gradient(180deg,rgba(255,255,255,.14),transparent 62%);
-  mix-blend-mode:soft-light;pointer-events:none;
-}
+.label, .frase { z-index:2; text-align:center; transition:opacity .25s, transform .25s; }
+.label { opacity:1; transform:translateY(0); font-size:clamp(1rem, 3vw, 1.6rem); font-weight:700; }
+.frase { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:1rem; opacity:0; transform:translateY(6px); font-size:clamp(0.95rem, 2.8vw, 1.4rem); font-weight:600; }
+.block.show .label { opacity:0; transform:translateY(-6px); }
+.block.show .frase { opacity:1; transform:translateY(0); }
 
-.block::after{
-  content:"";position:absolute;inset:0;border-radius:inherit;
-  box-shadow:0 0 0 1px rgba(0,0,0,.20) inset, 0 0 0 1px rgba(255,255,255,.04);
-  pointer-events:none;
-}
+/* Portada Reveal */
+.portada{ position:absolute; inset:0; display:none; align-items:center; justify-content:center; flex-direction:column; padding:1rem; animation:pop .6s ease-out forwards; max-height:90%; }
+@keyframes pop{ 0%{transform:scale(.8);opacity:0} 100%{transform:scale(1);opacity:1} }
+.portada img{ max-width:94%; max-height:76%; border-radius:18px; box-shadow:0 12px 32px rgba(0,0,0,.55); }
+.port-text h2{ font-size:clamp(2rem,6vw,3.5rem); font-weight:800; text-shadow:0 2px 6px rgba(0,0,0,.35); text-align:center;}
+.port-text p{ font-size:clamp(1.2rem,4vw,1.8rem); font-weight:600; opacity:.9; }
+.emoji-big{ font-size:clamp(1.6rem,5vw,2.8rem); filter:drop-shadow(0 4px 8px rgba(0,0,0,.3)); }
 
-@media (prefers-reduced-motion: reduce){
-  .block{transition:transform .15s ease}
-  .block:hover{background-position:0 0;filter:none}
-}
-
-/* Labels y frases */
-.label {
-  z-index:2;
-  text-align:center;
-  opacity:1;
-  transition:opacity .25s, transform .25s;
-  transform:translateY(0);
-  font-size:clamp(1rem, 3vw, 1.6rem);
-  font-weight:700;
-  line-height:1.3;
-  letter-spacing:0.3px;
-}
-
-.frase {
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:1rem;
-  opacity:0;
-  transform:translateY(6px);
-  transition:opacity .25s, transform .25s;
-  font-size:clamp(0.95rem, 2.8vw, 1.4rem);
-  font-weight:600;
-  line-height:1.35;
-}
-
-.block.show .label {
-  opacity:0;
-  transform:translateY(-6px);
-}
-
-.block.show .frase {
-  opacity:1;
-  transform:translateY(0);
-}
-
-/* Portada */
-.portada{
-  position:absolute;inset:0;
-  display:none;align-items:center;justify-content:center;
-  flex-direction:column;padding:1rem;gap:.4rem;text-align:center;
-  animation:pop .6s ease-out forwards;
-  max-height:90%;overflow:hidden
-}
-
-@keyframes pop{
-  0%{transform:scale(.8);opacity:0}
-  100%{transform:scale(1);opacity:1}
-}
-
-.portada img{
-  max-width:94%;max-height:76%;
-  border-radius:18px;
-  box-shadow:0 12px 32px rgba(0,0,0,.55)
-}
-
-.port-text h2,.port-text p,.emoji-big{
-  animation:settle .6s ease-out forwards;
-  opacity:0
-}
-
-@keyframes settle{
-  0%{transform:scale(1.25);opacity:0}
-  100%{transform:scale(1);opacity:1}
-}
-
-.port-text h2{
-  font-size:clamp(2.8rem,7vw,4rem);
-  font-weight:800;line-height:1.15;
-  text-shadow:0 2px 6px rgba(0,0,0,.35)
-}
-
-.port-text p{
-  font-size:clamp(1.5rem,4vw,2.2rem);
-  font-weight:600;opacity:.9;margin-top:.3rem
-}
-
-.emoji-big{
-  font-size:clamp(1.6rem,5vw,2.8rem);
-  filter:drop-shadow(0 4px 8px rgba(0,0,0,.3))
-}
-
-/* CTA Buttons */
-.cta{
-  position:fixed;bottom:3vh;left:50%;transform:translateX(-50%);
-  z-index:100;display:none;gap:.9rem;justify-content:center;flex-wrap:wrap
-}
-
+/* Botones flotantes */
+.cta{ position:fixed; bottom:3vh; left:50%; transform:translateX(-50%); z-index:100; display:none; gap:.9rem; justify-content:center; }
 .cta button{
-  width:clamp(3rem,min(7vw,7vh),4rem);
-  height:clamp(3rem,min(7vw,7vh),4rem);
-  flex:0 0 clamp(3rem,min(7vw,7vh),4rem);
-  border:none;border-radius:22px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:clamp(1.25rem,3.2vw,1.7rem);
-  cursor:pointer;background-size:200% 200%;
-  transition:transform .2s ease, filter .2s ease, box-shadow .3s ease;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.18),
-    0 8px 22px rgba(0,0,0,.28);
-  backdrop-filter:blur(8px); 
-  -webkit-backdrop-filter:blur(8px);
-  outline:0; position:relative; isolation:isolate;
+  width:clamp(3.5rem,min(8vw,8vh),4.5rem); height:clamp(3.5rem,min(8vw,8vh),4.5rem);
+  border:none; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:clamp(1.5rem,3.5vw,2rem); cursor:pointer; background-size:200% 200%;
+  box-shadow: 0 4px 12px rgba(0,0,0,.3); backdrop-filter:blur(8px);
 }
+#otro{ background:linear-gradient(135deg,#5fbfff,#1e90ff); color:#fff; }
+#fisico{ background:linear-gradient(135deg,#b2f8c8,#42d97c); color:#000; }
+#share{ background:linear-gradient(135deg,#ff8a00,#ff3d3d); color:#fff; }
 
-.cta button::after{
-  content:"";position:absolute;inset:0;border-radius:inherit;
-  box-shadow:0 0 0 1px rgba(255,255,255,.08) inset, 0 0 0 1px rgba(0,0,0,.18);
-  pointer-events:none;
-}
+/* Overlay de Tarjeta */
+#tarjetaOverlay { display:none; position:fixed; inset:0; z-index:999; align-items:center; justify-content:center; background: radial-gradient(circle, rgba(0,0,0,0.90), rgba(0,0,0,0.98)); backdrop-filter: blur(5px); }
+#tarjetaCard { width:min(420px, 90vw); height:600px; opacity:0; transform:scale(0.92); animation:cardIn 0.45s ease-out forwards; border-radius:20px; }
+@keyframes cardIn { to { opacity:1; transform:scale(1); } }
 
-.cta button:hover{ 
-  filter:saturate(1.06) contrast(1.04); 
-  transform:translateY(-2px) 
-}
-
-.cta button:active{ transform:translateY(0); }
-.cta button:focus-visible{ box-shadow:0 0 0 3px rgba(48,255,228,.45); }
-.cta .icon{font-size:1.55rem;line-height:1;}
-
-#otro{ background:linear-gradient(135deg,#5fbfff,#1e90ff); color:#0b1820 }
-#fisico{ background:linear-gradient(135deg,#b2f8c8,#42d97c); color:#0c2d1b }
-#share{ background:linear-gradient(135deg,#ff8a00,#ff3d3d); color:#1b0b0b }
-
-/* Celebración */
-.cele{
-  position:fixed;inset:0;
-  background:rgba(0,0,0,.88);
-  display:none;align-items:center;justify-content:center;
-  z-index:110
-}
-
-.cele-msg{
-  font-family:'Poppins';
-  font-size:2rem;text-align:center;
-  background:rgba(255,255,255,.05);
-  padding:2rem 3rem;border-radius:20px
-}
-
-.num{
-  color:#30ffe4;font-weight:900;font-size:2.8rem
-}
-
-/* Tarjeta Overlay */
-#tarjetaOverlay {
-  display:none;
-  position:fixed;
-  inset:0;
-  z-index:999;
-  align-items:center;
-  justify-content:center;
-  background: radial-gradient(
-    circle at center,
-    rgba(0,0,0,0.85) 0%,
-    rgba(0,0,0,0.92) 100%
-  );
-}
-
-#tarjetaCard {
-  width: min(420px, 90vw);
-  height: 600px;
-  font-size: clamp(16px, 2.6vw, 22px);
-  line-height: 1.35;
-  -webkit-text-size-adjust: none;
-  text-size-adjust: none;
-  opacity: 0;
-  transform: scale(0.92);
-  animation: cardIn 0.45s ease-out forwards;
-  border-radius: 20px;
-}
-
-body.webview #tarjetaCard {
-  height: 650px !important;
-  font-size: clamp(16px, 2.4vw, 20px);
-}
-
-@media (orientation: landscape) {
-  #tarjetaCard {
-    height: min(560px, 85vh);
-  }
-
-  body.webview #tarjetaCard {
-    height: min(650px, 85vh) !important;
-  }
-}
-
-@keyframes cardIn {
-  from { opacity:0; transform:scale(0.92); }
-  to   { opacity:1; transform:scale(1); }
-}
-
-#tarjetaCard img {
-  max-width: 25%;
-  max-height: 38px;
-  height: auto;
-  display: block;
-  margin: 0 auto;
-  opacity: .9;
-}
-
-body.webview {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background: #0e0f1b;
-}
-
-/* Pulse Portada */
-@keyframes trigguiPulse {
-  0% {
-    transform: scale(1);
-    filter: drop-shadow(0 0 0px rgba(255,255,255,0));
-  }
-  50% {
-    transform: scale(1.099);
-    filter: drop-shadow(0 0 16px rgba(255,255,255,0.12));
-  }
-  100% {
-    transform: scale(1);
-    filter: drop-shadow(0 0 0px rgba(255,255,255,0));
-  }
-}
-
-.portada.reveal-pulse img {
-  animation: trigguiPulse 2.8s cubic-bezier(0.32, 0.01, 0.16, 1) infinite;
-  will-change: transform, filter;
-}
-
-/* ========================================
-   BADGE COMPACTO - NIVEL DIOS
-   ======================================== */
-
+/* ✨ BADGE COMPACTO NIVEL DIOS (2 Líneas) */
 #progressBadge {
-  position: fixed;
-  top: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 90;
-  background: rgba(20,24,38,0.90);
-  border: 1px solid rgba(255,255,255,0.15);
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 11px;
-  color: #dfe9ff;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  font-weight: 600;
-  opacity: 0;
-  transform: translateX(-50%) translateY(-10px);
-  animation: fadeInDown 0.5s ease 0.5s forwards;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-  text-align: center;
-  line-height: 1.4;
-  max-width: 90%;
-  cursor: pointer;
-  user-select: none;
+  position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 90;
+  background: rgba(20,24,38,0.85); border: 1px solid rgba(255,255,255,0.1);
+  padding: 8px 20px; border-radius: 99px; color: #dfe9ff;
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  opacity: 0; animation: fadeInDown 0.6s ease 0.5s forwards;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2); text-align: center;
+  width: max-content; max-width: 90vw; cursor: pointer; user-select: none;
 }
-
-@keyframes fadeInDown {
-  from { 
-    opacity: 0; 
-    transform: translateX(-50%) translateY(-10px);
-  }
-  to { 
-    opacity: 1; 
-    transform: translateX(-50%) translateY(0);
-  }
-}
+@keyframes fadeInDown { from {opacity:0; transform:translate(-50%, -20px);} to {opacity:1; transform:translate(-50%, 0);} }
 
 #progressBadge .line1 {
-  display: block;
-  font-size: 9px;
-  opacity: 0.7;
-  margin-bottom: 2px;
-  letter-spacing: 0.5px;
+  display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; 
+  opacity: 0.6; margin-bottom: 2px; font-weight: 600;
 }
-
 #progressBadge .line2 {
-  display: block;
-  font-size: 12px;
-  font-weight: 700;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  font-size: 13px; font-weight: 700; color: #fff;
 }
+#progressBadge .dot { width: 3px; height: 3px; background: rgba(255,255,255,0.3); border-radius: 50%; }
+.highlight-txt { color: #30ffe4; }
 
-#progressBadge .line2 span {
-  margin: 0 4px;
+/* 💎 SISTEMA DE MODALES UNIFICADO (ADIÓS ALERTAS FEAS) */
+#appModal {
+  display: none; position: fixed; inset: 0; z-index: 200;
+  align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+  opacity: 0; transition: opacity 0.3s ease;
 }
+#appModal.visible { display: flex; opacity: 1; }
 
-#progressBadge .emoji {
-  margin-right: 2px;
-}
-
-/* Toast Notification */
-#toast {
-  position: fixed;
-  top: 70px;
-  left: 50%;
-  transform: translateX(-50%) translateY(-20px);
-  z-index: 110;
-  background: rgba(20,24,38,0.95);
+.modal-glass {
+  background: linear-gradient(145deg, rgba(30,34,50,0.95), rgba(10,12,20,0.98));
   border: 1px solid rgba(255,255,255,0.1);
-  padding: 14px 24px;
-  border-radius: 16px;
-  font-size: 15px;
-  color: #fff;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  font-weight: 600;
-  opacity: 0;
-  pointer-events: none;
-  transition: all 0.3s ease;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-  text-align: center;
-  max-width: 80%;
+  border-radius: 24px; padding: 32px; width: 85%; max-width: 360px;
+  text-align: center; transform: scale(0.95); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.6);
 }
+#appModal.visible .modal-glass { transform: scale(1); }
 
-#toast.visible {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
+.m-emoji { font-size: 48px; margin-bottom: 16px; display: block; animation: bounce 1s infinite; }
+@keyframes bounce { 0%, 100% {transform:translateY(0);} 50% {transform:translateY(-10px);} }
+
+.m-title { font-size: 22px; font-weight: 800; margin-bottom: 8px; color: #fff; }
+.m-text { font-size: 16px; color: #b0b5c0; line-height: 1.5; margin-bottom: 24px; }
+.m-highlight { color: #30ffe4; font-weight: 600; display: block; margin-top: 4px; font-size: 14px; }
+
+.m-buttons { display: flex; flex-direction: column; gap: 10px; }
+.m-btn {
+  padding: 14px; border-radius: 14px; font-size: 16px; font-weight: 700; border: none; cursor: pointer;
+  transition: transform 0.1s; text-decoration: none; display: flex; align-items: center; justify-content: center;
 }
+.m-btn:active { transform: scale(0.98); }
+.btn-primary { background: linear-gradient(135deg, #ff0080, #7928ca); color: white; box-shadow: 0 4px 15px rgba(255,0,128,0.3); }
+.btn-secondary { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
 
-/* ========================================
-   MODAL UPGRADE - HERMOSO Y EFECTIVO
-   ======================================== */
-#upgradeModal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 120;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0,0,0,0.90);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  animation: fadeIn 0.3s ease;
-}
+/* Celebración (contador global) */
+.cele{ position:fixed; inset:0; background:rgba(0,0,0,.9); display:none; align-items:center; justify-content:center; z-index:110; flex-direction: column; }
+.cele-msg{ font-family:'Poppins'; font-size:1.8rem; text-align:center; color: #fff; }
+.num{ color:#30ffe4; font-weight:900; font-size:3rem; display: block; margin-bottom: 10px; }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-#upgradeModal.visible {
-  display: flex;
-}
-
-.modal-content {
-  background: linear-gradient(135deg, rgba(20,24,38,0.98), rgba(30,34,48,0.98));
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 28px;
-  padding: 36px 32px;
-  max-width: 400px;
-  width: 88%;
-  box-shadow: 
-    0 20px 60px rgba(0,0,0,0.6),
-    inset 0 1px 0 rgba(255,255,255,0.08);
-  transform: scale(0.9);
-  animation: modalIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  text-align: center;
-}
-
-@keyframes modalIn {
-  to {
-    transform: scale(1);
-  }
-}
-
-.modal-emoji {
-  font-size: 56px;
-  margin-bottom: 16px;
-  animation: bounce 0.8s ease;
-  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
-}
-
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-12px); }
-}
-
-.modal-title {
-  font-size: 26px;
-  font-weight: 800;
-  margin-bottom: 12px;
-  background: linear-gradient(120deg, #ff6ec4, #7873f5, #2af598);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  letter-spacing: 0.3px;
-}
-
-.modal-text {
-  font-size: 17px;
-  color: #dfe9ff;
-  margin-bottom: 10px;
-  line-height: 1.6;
-  opacity: 0.95;
-}
-
-.modal-subtext {
-  font-size: 15px;
-  color: #30ffe4;
-  margin-bottom: 28px;
-  font-weight: 600;
-}
-
-.modal-social-proof {
-  font-size: 13px;
-  color: #a0aec0;
-  margin-bottom: 24px;
-  padding: 10px;
-  background: rgba(255,255,255,0.03);
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.06);
-}
-
-.modal-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.modal-btn {
-  padding: 16px 28px;
-  border-radius: 18px;
-  font-size: 17px;
-  font-weight: 700;
-  cursor: pointer;
-  border: none;
-  transition: all 0.25s ease;
-  text-decoration: none;
-  display: block;
-  text-align: center;
-  letter-spacing: 0.2px;
-}
-
-.modal-btn-primary {
-  background: linear-gradient(135deg, #ff6ec4, #7873f5);
-  color: #fff;
-  box-shadow: 0 6px 20px rgba(255,110,196,0.35);
-}
-
-.modal-btn-primary:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 28px rgba(255,110,196,0.45);
-}
-
-.modal-btn-primary:active {
-  transform: translateY(-1px);
-}
-
-.modal-btn-secondary {
-  background: rgba(255,255,255,0.04);
-  color: #a0aec0;
-  border: 1px solid rgba(255,255,255,0.08);
-}
-
-.modal-btn-secondary:hover {
-  background: rgba(255,255,255,0.08);
-  color: #dfe9ff;
-  border-color: rgba(255,255,255,0.15);
-}
-
-/* Mobile adjustments */
 @media (max-width: 480px) {
-  #progressBadge {
-    font-size: 10px;
-    padding: 6px 12px;
-    top: 10px;
-  }
-  
-  #progressBadge .line1 {
-    font-size: 8px;
-  }
-  
-  #progressBadge .line2 {
-    font-size: 11px;
-  }
-  
-  #toast {
-    font-size: 13px;
-    padding: 10px 16px;
-    top: 60px;
-  }
-  
-  .modal-content {
-    padding: 32px 26px;
-    width: 92%;
-  }
-  
-  .modal-title {
-    font-size: 23px;
-  }
-  
-  .modal-text {
-    font-size: 16px;
-  }
-  
-  .modal-subtext {
-    font-size: 14px;
-  }
-  
-  .modal-btn {
-    font-size: 16px;
-    padding: 14px 24px;
-  }
-  
-  .modal-emoji {
-    font-size: 48px;
-  }
+  #progressBadge .line2 { font-size: 12px; }
+  .grid { gap: 4vw; }
 }
 </style>
 </head>
-<body style="background:#0e0f1b; margin:0; padding:0; height:100%; color:#fff;">
-
-<!-- ========================================
-     BADGE COMPACTO
-     ======================================== -->
+<body>
 
 <div id="progressBadge">
   <span class="line1">Tu avance acumulado</span>
-  <span class="line2">
-    <span class="emoji">🔥</span>0 días
-    <span class="emoji">📚</span>0 libros
-    <span class="emoji">🤓</span>0 conceptos - ¡Aplícalos hoy!
+  <span class="line2" id="badgeContent">
+    Cargando...
   </span>
 </div>
 
-<!-- Toast Notification -->
-<div id="toast"></div>
-
-<!-- Upgrade Modal -->
-<div id="upgradeModal">
-  <div class="modal-content">
-    <div class="modal-emoji" id="modalEmoji">📚</div>
-    <div class="modal-title" id="modalTitle">¡Felicidades!</div>
-    <div class="modal-text" id="modalText">Has descubierto libros increíbles</div>
-    <div class="modal-subtext" id="modalSubtext"></div>
-    <div class="modal-social-proof" id="modalSocial"></div>
-    <div class="modal-buttons">
-      <a href="#" id="modalPrimaryBtn" class="modal-btn modal-btn-primary">Ver planes</a>
-      <button id="modalSecondaryBtn" class="modal-btn modal-btn-secondary">Seguir explorando</button>
+<div id="appModal">
+  <div class="modal-glass">
+    <span class="m-emoji" id="mEmoji">👋</span>
+    <div class="m-title" id="mTitle">Título</div>
+    <div class="m-text" id="mText">Texto descriptivo</div>
+    <div class="m-buttons">
+      <button id="mBtnPrimary" class="m-btn btn-primary">Aceptar</button>
+      <button id="mBtnSecondary" class="m-btn btn-secondary">Cancelar</button>
     </div>
   </div>
 </div>
 
-<!-- Intro -->
 <div class="intro" id="intro"></div>
-
-<!-- Grid -->
 <div class="grid" id="grid"></div>
 
-<!-- CTA Buttons -->
 <div class="cta" id="cta">
-  <button id="otro">
-    <span class="icon">🎲</span>
-  </button>
-  <button id="fisico">
-    <span class="icon">🔟</span>
-  </button>
-  <button id="share">
-    <span class="icon">📖</span>
-  </button>
+  <button id="otro"><span class="icon">🎲</span></button>
+  <button id="fisico"><span class="icon">🔟</span></button>
+  <button id="share"><span class="icon">📖</span></button>
 </div>
 
-<!-- Tarjeta Overlay -->
-<div id="tarjetaOverlay">
-  <div id="tarjetaCard"></div>
-</div>
+<div id="tarjetaOverlay"><div id="tarjetaCard"></div></div>
 
-<!-- Celebración -->
 <div class="cele" id="cele">
-  <div class="cele-msg" id="celeMsg">
-    ✨ <span class="num">...</span><br>libros físicos abiertos
-  </div>
+  <div class="cele-msg" id="celeMsg"></div>
 </div>
 
 <script>
 // ========================================
-// VARIABLES GLOBALES
+// ⚡ SISTEMA DE MODALES (La Joya)
+// ========================================
+const Modal = {
+  el: document.getElementById('appModal'),
+  emoji: document.getElementById('mEmoji'),
+  title: document.getElementById('mTitle'),
+  text: document.getElementById('mText'),
+  pBtn: document.getElementById('mBtnPrimary'),
+  sBtn: document.getElementById('mBtnSecondary'),
+  
+  show: function(config) {
+    // Configurar contenido
+    this.emoji.innerText = config.emoji || '✨';
+    this.title.innerText = config.title || 'Triggui';
+    this.text.innerHTML = config.text || ''; // innerHTML para permitir saltos de linea
+    
+    // Botón Primario
+    this.pBtn.innerText = config.btnText || 'Continuar';
+    this.pBtn.onclick = () => {
+      this.close();
+      if(config.onConfirm) config.onConfirm();
+    };
+    
+    // Botón Secundario (Opcional)
+    if(config.showCancel) {
+      this.sBtn.style.display = 'flex';
+      this.sBtn.innerText = config.cancelText || 'Cerrar';
+      this.sBtn.onclick = () => {
+        this.close();
+        if(config.onCancel) config.onCancel();
+      };
+    } else {
+      this.sBtn.style.display = 'none';
+    }
+
+    // Mostrar
+    this.el.style.display = 'flex';
+    // Timeout para permitir la transición de opacidad
+    setTimeout(() => this.el.classList.add('visible'), 10);
+  },
+  
+  close: function() {
+    this.el.classList.remove('visible');
+    setTimeout(() => {
+      this.el.style.display = 'none';
+    }, 300);
+  }
+};
+
+// ========================================
+// LOGICA APP
 // ========================================
 const grid=document.getElementById("grid"),
       cta=document.getElementById("cta"),
@@ -862,730 +310,221 @@ const grid=document.getElementById("grid"),
       btnShare=document.getElementById("share"),
       cele=document.getElementById("cele"),
       celeMsg=document.getElementById("celeMsg"),
-      progressBadge=document.getElementById("progressBadge"),
-      toast=document.getElementById("toast");
+      progressBadge=document.getElementById("progressBadge");
 
 let libro=null, revealed=false;
 const portIdx=Math.floor(Math.random()*4),
-      emojis=["🌊","🛡️","🧠","✨","📘","🔮","❤️","🪞"],
-      isURL = s => /^https?:\/\//i.test(s || "");
+      emojis=["🌊","🛡️","🧠","✨","📘","🔮","❤️","🪞"];
+const isURL = s => /^https?:\/\//i.test(s || "");
 const ANG = [115,205,35,320];
 const grad = i => `linear-gradient(${ANG[i%4]}deg,${libro.colores[i]},${libro.colores[(i+1)%4]})`;
 
-// ========================================
-// TRIPLE TAP RESET (MÓVIL)
-// ========================================
+// INTRO
+const frasesIntro = ["¿Qué sientes y qué buscas ahora?", "¿Qué sientes y qué buscas ahora?", "¿Qué sientes y qué buscas ahora?"];
+document.getElementById("intro").innerHTML=`<span class="t">${frasesIntro[Math.floor(Math.random()*frasesIntro.length)]}</span>`;
+
+// === TRIPLE TAP RESET (Ahora con Modal Hermoso) ===
 progressBadge.addEventListener('click', () => {
   tapCount++;
-  
-  if (tapCount === 1) {
-    tapTimer = setTimeout(() => {
-      tapCount = 0;
-    }, 800);
-  }
-  
+  if (tapCount === 1) tapTimer = setTimeout(() => { tapCount = 0; }, 800);
   if (tapCount === 3) {
-    clearTimeout(tapTimer);
-    tapCount = 0;
+    clearTimeout(tapTimer); tapCount = 0;
     
-    if (confirm('¿Resetear contador a 0?')) {
-      localStorage.removeItem('triggui_books_opened');
-      localStorage.removeItem('triggui_last_book_time');
-      
-      showToast('🔄 Reset completo!');
-      
-      setTimeout(() => {
+    // USAMOS EL NUEVO MODAL EN LUGAR DE CONFIRM()
+    Modal.show({
+      emoji: '🔄',
+      title: '¿Reiniciar Contadores?',
+      text: 'Volverás al libro 0 para probar la experiencia desde el inicio.',
+      btnText: 'Sí, Reiniciar',
+      showCancel: true,
+      cancelText: 'Cancelar',
+      onConfirm: () => {
+        localStorage.removeItem('triggui_books_opened');
+        localStorage.removeItem('triggui_last_book_time');
+        localStorage.removeItem('triggui_streak');
         location.reload();
-      }, 1200);
-    }
+      }
+    });
   }
 });
 
-// ========================================
-// TOAST NOTIFICATION SYSTEM
-// ========================================
-function showToast(message, duration = 3000) {
-  toast.textContent = message;
-  toast.classList.add('visible');
-  
-  setTimeout(() => {
-    toast.classList.remove('visible');
-  }, duration);
-}
-
-// ========================================
-// MODAL UPGRADE SYSTEM - NIVEL DIOS
-// ========================================
-const upgradeModal = document.getElementById('upgradeModal');
-const modalEmoji = document.getElementById('modalEmoji');
-const modalTitle = document.getElementById('modalTitle');
-const modalText = document.getElementById('modalText');
-const modalSubtext = document.getElementById('modalSubtext');
-const modalSocial = document.getElementById('modalSocial');
-const modalPrimaryBtn = document.getElementById('modalPrimaryBtn');
-const modalSecondaryBtn = document.getElementById('modalSecondaryBtn');
-
-function showUpgradeModal(config) {
-  modalEmoji.textContent = config.emoji;
-  modalTitle.textContent = config.title;
-  modalText.textContent = config.text;
-  modalSubtext.textContent = config.subtext || '';
-  modalSocial.textContent = config.social || '';
-  modalPrimaryBtn.textContent = config.primaryText;
-  modalPrimaryBtn.href = config.primaryUrl;
-  
-  upgradeModal.classList.add('visible');
-  
-  // Primary button click
-  modalPrimaryBtn.onclick = (e) => {
-    e.preventDefault();
-    track(config.trackAccept);
-    window.open(config.primaryUrl, '_blank');
-    upgradeModal.classList.remove('visible');
-  };
-  
-  // Secondary button click
-  modalSecondaryBtn.onclick = () => {
-    track(config.trackDecline);
-    upgradeModal.classList.remove('visible');
-  };
-  
-  // Click outside to close
-  upgradeModal.onclick = (e) => {
-    if (e.target === upgradeModal) {
-      track(config.trackDecline);
-      upgradeModal.classList.remove('visible');
-    }
-  };
-}
-
-// ========================================
-// UPDATE BADGE
-// ========================================
 function updateBadge() {
   const streak = getLocal('streak', 0);
   const books = getLocal('books_opened', 0);
+  const concepts = books; // Conceptos = Libros en este contexto
   
-  progressBadge.innerHTML = `
-    <span class="line1">Tu avance acumulado</span>
-    <span class="line2">
-      <span class="emoji">🔥</span>${streak} día${streak !== 1 ? 's' : ''}
-      <span class="emoji">📚</span>${books} libro${books !== 1 ? 's' : ''}
-      <span class="emoji">🤓</span>${books} concepto${books !== 1 ? 's' : ''} - ¡Aplícalos hoy!
-    </span>
-  `;
+  // BADGE COMPACTO 2 LINEAS
+  document.getElementById('badgeContent').innerHTML = 
+    `🔥 ${streak}d <span class="dot"></span> 📚 ${books} libros <span class="dot"></span> <span class="highlight-txt">🤓 ${concepts} conceptos</span>`;
 }
 
-// ========================================
-// INTRO MESSAGES
-// ========================================
-const frasesIntro = [
-  "¿Qué sientes y qué buscas ahora?",
-  "¿Qué sientes y qué buscas ahora?",
-  "¿Qué sientes y qué buscas ahora?"
-];
-const introEl=document.getElementById("intro");
-const frase=frasesIntro[Math.floor(Math.random()*frasesIntro.length)];
-introEl.innerHTML=`<span class="t">${frase}</span>`;
-
-// ========================================
-// PORTADA BUILDER
-// ========================================
+// === GRID RENDER ===
 function adjustScale(wrap){
-  const parent=wrap.closest(".portada");
-  if(!parent)return;
-  const avail=parent.clientHeight-40;
-  let scale=1;
+  const parent=wrap.closest(".portada"); if(!parent)return;
+  const avail=parent.clientHeight-40; let scale=1;
   wrap.style.transform="scale(1)";
-  while(wrap.scrollHeight>avail&&scale>0.55){
-    scale-=.02;
-    wrap.style.transform=`scale(${scale})`;
-  }
+  while(wrap.scrollHeight>avail&&scale>0.55){ scale-=.02; wrap.style.transform=`scale(${scale})`; }
 }
 
 function buildPort(i){
-  const d=document.createElement("div");
-  d.className="portada";
-  const wrap=document.createElement("div");
-  wrap.className="port-text-wrap";
-  const box=document.createElement("div");
-  box.className="port-text";
+  const d=document.createElement("div"); d.className="portada";
+  const wrap=document.createElement("div"); wrap.className="port-text-wrap";
+  const box=document.createElement("div"); box.className="port-text";
   box.innerHTML=`<h2>${libro.titulo}</h2><p>${libro.autor}</p>`;
-  const emoji=document.createElement("div");
-  emoji.className="emoji-big";
+  const emoji=document.createElement("div"); emoji.className="emoji-big";
   emoji.textContent=emojis[i%emojis.length];
   wrap.append(box,emoji);
-  
-  if(isURL(libro.portada)){
-    d.append(Object.assign(new Image(),{src:libro.portada,loading:"lazy"}));
-  }else{
-    d.append(wrap);
-    setTimeout(()=>adjustScale(wrap),0);
-  }
-
-  d.addEventListener("click", e => {
-    e.stopPropagation();
-    btnShare.click();
-  });
-
+  if(isURL(libro.portada)){ d.append(Object.assign(new Image(),{src:libro.portada,loading:"lazy"})); }
+  else{ d.append(wrap); setTimeout(()=>adjustScale(wrap),0); }
+  d.addEventListener("click", e => { e.stopPropagation(); btnShare.click(); });
   return d;
 }
 
-// ========================================
-// RENDER GRID
-// ========================================
 function render(){
   grid.innerHTML="";
-  
   for(let i=0;i<4;i++){
-    const card=document.createElement("div");
-    card.className="block";
-    card.style.background=grad(i);
-
-    const label=document.createElement("div");
-    label.className="label";
+    const card=document.createElement("div"); card.className="block"; card.style.background=grad(i);
+    const label=document.createElement("div"); label.className="label";
     label.textContent=`${emojis[i%emojis.length]} ${libro.palabras[i]}`;
     label.style.color=libro.textColors?.[i]||"#fff";
-
-    const frase=document.createElement("div");
-    frase.className="frase";
-    frase.textContent=libro.frases[i];
-    frase.style.color=libro.textColors?.[i]||"#fff";
-
+    const frase=document.createElement("div"); frase.className="frase";
+    frase.textContent=libro.frases[i]; frase.style.color=libro.textColors?.[i]||"#fff";
     const port=buildPort(i);
 
     if(i===portIdx){
-      card.append(port);
-      card.append(label,frase);
-
-      card.addEventListener("click", e=>{
+      card.append(port, label, frase);
+      card.onclick = e => {
         if(!revealed){
-          label.style.display="none";
-          port.style.display="flex";
-          port.classList.add("reveal-pulse");
-          
+          label.style.display="none"; port.style.display="flex"; port.classList.add("reveal-pulse");
           [...grid.children].forEach((c,j)=>j!==portIdx&&c.classList.add("show"));
-          cta.style.display="flex";
-          revealed=true;
-
+          cta.style.display="flex"; revealed=true;
           const c = libro.colores;
           document.getElementById("otro").style.background = `linear-gradient(135deg, ${c[0]}, ${c[1]})`;
           document.getElementById("fisico").style.background = `linear-gradient(135deg, ${c[1]}, ${c[2]})`;
           document.getElementById("share").style.background = `linear-gradient(135deg, ${c[2]}, ${c[3]})`;
-          document.getElementById("otro").style.color = pickTextColor(c[0]);
-          document.getElementById("fisico").style.color = pickTextColor(c[1]);
-          document.getElementById("share").style.color = pickTextColor(c[2]);
-
           handleBookReveal();
-          
-        }else{
-          e.stopPropagation();
-          btnShare.click();
-        }
-      });
+        } else { e.stopPropagation(); btnShare.click(); }
+      };
     } else {
-      card.append(label,frase);
-      card.onclick=()=>handle(card,i,port,label);
+      card.append(label, frase);
+      card.onclick = () => { if(revealed) location.reload(); else card.classList.toggle("show"); };
     }
-
     grid.append(card);
   }
 }
 
-// ========================================
-// HANDLE CARD CLICK
-// ========================================
-function handle(card,i,port,label){
-  if(revealed){
-    location.reload();
-    return;
-  }
-  if(i===portIdx){
-    label.style.display="none";
-    port.style.display="flex";
-    [...grid.children].forEach((c,j)=>j!==portIdx&&c.classList.add("show"));
-    cta.style.display="flex";
-    revealed=true;
-  }else{
-    card.classList.toggle("show");
-  }
-}
-
-// ========================================
-// ✨ ENGAGEMENT MAGIC - REESCRITO NIVEL DIOS ✨
-// ========================================
+// === ENGAGEMENT LOGIC (MODIFICADA PARA USAR MODAL HERMOSO) ===
 function handleBookReveal() {
   const streak = updateStreak();
   const booksCount = incrementBooks();
-  
   updateBadge();
-  
-  fetch("https://triggui-api.vercel.app/api/increment", {
-    cache: "no-store"
-  }).catch(()=>{});
-  
-  const surprise = getRandomSurprise();
-  
-  // Streak milestones
-  if (streak === 3) {
-    showToast('🔥 3 días seguidos!');
-  } else if (streak === 7) {
-    showToast('🔥🔥 Una semana completa!');
-  } else if (streak === 30) {
-    showToast('🔥🔥🔥 UN MES! Eres imparable');
-  }
-  
-  // ========================================
-  // SISTEMA DE MODALES - COMPLETAMENTE REESCRITO
-  // ========================================
-  
-  let shouldShowModal = false;
-  let modalConfig = {};
-  
-  // Modales específicos
+  fetch("https://triggui-api.vercel.app/api/increment", {cache:"no-store"}).catch(()=>{});
+
+  // LOGICA DE MODALES DE VENTA
+  // Usamos setTimeout para que no salga instantáneo al abrir el libro, sino un poco después (mejor UX)
+  const delay = 1500; 
+  const userCount = getRealisticUserCount();
+
   if (booksCount === 2) {
-    shouldShowModal = true;
-    modalConfig = {
-      emoji: '📬',
-      title: '¡2 libros!',
-      text: 'Te gustaría recibirlos por WhatsApp cada lunes?',
-      subtext: 'Primera semana GRATIS',
-      social: `${getRealisticUserCount()} personas descubriendo libros ahora`,
-      primaryText: 'Ver cómo funciona',
-      primaryUrl: 'https://triggui.com/#planes',
-      trackAccept: 'upgrade_prompt_2books_accepted',
-      trackDecline: 'upgrade_prompt_2books_declined'
-    };
-  }
+    setTimeout(() => Modal.show({
+      emoji: '📬', title: '¡2 Libros Descubiertos!',
+      text: '¿Te gustaría recibir estas joyas por WhatsApp cada lunes?',
+      btnText: 'Ver cómo funciona',
+      onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
+      showCancel: true, cancelText: 'Seguir explorando'
+    }), delay);
+  } 
   else if (booksCount === 5) {
-    shouldShowModal = true;
-    modalConfig = {
-      emoji: '🎯',
-      title: '5 libros descubiertos',
-      text: 'Recibe páginas seleccionadas cada lunes por WhatsApp',
-      subtext: 'Precio de lanzamiento: $100/mes',
-      social: '23 personas se suscribieron hoy',
-      primaryText: 'Quiero recibirlos',
-      primaryUrl: 'https://triggui.com/#planes',
-      trackAccept: 'upgrade_prompt_5books_accepted',
-      trackDecline: 'upgrade_prompt_5books_declined'
-    };
+    setTimeout(() => Modal.show({
+      emoji: '🎯', title: '5 Conceptos Absorbidos',
+      text: 'Recibe páginas seleccionadas para tu momento exacto.<br><span class="m-highlight">Precio lanzamiento: $100/mes</span>',
+      btnText: 'Quiero recibirlos',
+      onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
+      showCancel: true
+    }), delay);
   }
   else if (booksCount === 10) {
-    shouldShowModal = true;
-    modalConfig = {
-      emoji: '🔥',
-      title: '10 conceptos absorbidos',
-      text: 'Ya conoces 10 libros increíbles. ¿Los quieres por WhatsApp?',
-      subtext: 'Cada lunes, páginas seleccionadas para ti',
-      social: '31 personas activas ahora',
-      primaryText: 'Sí, quiero suscribirme',
-      primaryUrl: 'https://triggui.com/#planes',
-      trackAccept: 'upgrade_prompt_10books_accepted',
-      trackDecline: 'upgrade_prompt_10books_declined'
-    };
+    setTimeout(() => Modal.show({
+      emoji: '🔥', title: '¡Estás en racha!',
+      text: `Ya llevas <b>10 conceptos</b>. ${userCount} personas están aplicando esto hoy. <br>Únete al grupo de WhatsApp.`,
+      btnText: 'Suscribirme',
+      onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
+      showCancel: true
+    }), delay);
   }
-  else if (booksCount === 15) {
-    shouldShowModal = true;
-    modalConfig = {
-      emoji: '💎',
-      title: '15 conceptos absorbidos',
-      text: '¿Quieres el plan anual? Ahorras $588',
-      subtext: '$1,199/año (vs $1,788 mensual)',
-      social: '18 personas eligieron el plan anual esta semana',
-      primaryText: 'Ver plan anual',
-      primaryUrl: 'https://triggui.com/#planes',
-      trackAccept: 'upgrade_prompt_15books_annual_accepted',
-      trackDecline: 'upgrade_prompt_15books_annual_declined'
-    };
-  }
-  else if (booksCount === 20) {
-    shouldShowModal = true;
-    modalConfig = {
-      emoji: '⚡',
-      title: '20 conceptos - Aplícalos hoy!',
-      text: 'Precio de lanzamiento ($100) termina pronto',
-      subtext: 'Después sube a $149/mes',
-      social: 'Solo para las primeras 100 personas',
-      primaryText: 'Asegurar precio $100',
-      primaryUrl: 'https://triggui.com/#planes',
-      trackAccept: 'upgrade_prompt_20books_urgency_accepted',
-      trackDecline: 'upgrade_prompt_20books_urgency_declined'
-    };
-  }
-  else if (booksCount === 25) {
-    shouldShowModal = true;
-    modalConfig = {
-      emoji: '🤓',
-      title: '25 conceptos absorbidos!',
-      text: 'Aplica lo que has descubierto',
-      subtext: 'Recibe 1 concepto cada lunes por WhatsApp',
-      social: `${getRealisticUserCount()} personas aplicando conceptos hoy`,
-      primaryText: 'Quiero recibirlos',
-      primaryUrl: 'https://triggui.com/#planes',
-      trackAccept: 'upgrade_prompt_25books_accepted',
-      trackDecline: 'upgrade_prompt_25books_declined'
-    };
-  }
-  else if (booksCount === 30) {
-    shouldShowModal = true;
-    modalConfig = {
-      emoji: '🏆',
-      title: '30 conceptos - Nivel maestro!',
-      text: 'Desbloquea acceso LIFETIME',
-      subtext: 'Pago único: $3,999 (nunca vuelves a pagar)',
-      social: '7 personas eligieron lifetime este mes',
-      primaryText: 'Quiero acceso de por vida',
-      primaryUrl: 'https://donate.stripe.com/9B66oJ8bI1E02U85aR24001',
-      trackAccept: 'upgrade_prompt_30books_lifetime_accepted',
-      trackDecline: 'upgrade_prompt_30books_lifetime_declined'
-    };
-  }
-  else if (booksCount === 50) {
-    shouldShowModal = true;
-    modalConfig = {
-      emoji: '🤓',
-      title: '50 conceptos absorbidos!',
-      text: 'Ya dominas 50 conceptos. Ahora aplícalos',
-      subtext: 'Recíbelos organizados cada semana',
-      social: 'Solo 5 personas han llegado aquí',
-      primaryText: 'Suscribirme ahora',
-      primaryUrl: 'https://triggui.com/#planes',
-      trackAccept: 'upgrade_prompt_50books_accepted',
-      trackDecline: 'upgrade_prompt_50books_declined'
-    };
-  }
-  // Milestones cada 25 (después del 50)
-  else if (booksCount > 50 && booksCount % 25 === 0) {
-    shouldShowModal = true;
-    showToast(`🤓 ${booksCount} conceptos absorbidos - Aplícalos hoy!`, 2500);
-    
-    modalConfig = {
-      emoji: '🤓',
-      title: `${booksCount} conceptos dominados`,
-      text: 'Conviértelos en resultados reales',
-      subtext: 'Recíbelos cada semana por WhatsApp',
-      social: `${getRealisticUserCount()} personas transformando conocimiento en acción`,
-      primaryText: 'Ver planes',
-      primaryUrl: 'https://triggui.com/#planes',
-      trackAccept: `upgrade_prompt_${booksCount}books_milestone_accepted`,
-      trackDecline: `upgrade_prompt_${booksCount}books_milestone_declined`
-    };
-  }
-  // Cada 10 libros (que no sean múltiplos de 25)
-  else if (booksCount > 5 && booksCount % 10 === 0 && booksCount % 25 !== 0) {
-    shouldShowModal = true;
-    showToast(`📚 ${booksCount} conceptos descubiertos!`, 2500);
-    
-    modalConfig = {
-      emoji: '📖',
-      title: `${booksCount} conceptos y contando`,
-      text: 'Recíbelos cada semana por WhatsApp',
-      subtext: 'Planes desde $100/mes',
-      social: `${getRealisticUserCount()} personas leyendo ahora`,
-      primaryText: 'Ver planes',
-      primaryUrl: 'https://triggui.com/#planes',
-      trackAccept: `upgrade_prompt_${booksCount}books_accepted`,
-      trackDecline: `upgrade_prompt_${booksCount}books_declined`
-    };
-  }
-  
-  // MOSTRAR MODAL SI DEBE MOSTRARSE
-  if (shouldShowModal) {
-    const delay = (booksCount > 50 && booksCount % 25 === 0) || (booksCount > 5 && booksCount % 10 === 0 && booksCount % 25 !== 0) ? 3000 : 2000;
-    
-    setTimeout(() => {
-      showUpgradeModal(modalConfig);
-    }, delay);
-  }
-  // Random surprises (solo si NO es milestone)
-  else if (surprise.type !== 'none') {
-    setTimeout(() => {
-      showToast(surprise.msg);
-      track('surprise_shown', { type: surprise.type });
-    }, 1000);
+  // Patrón para libros altos (15, 20, 30, 50, etc)
+  else if ([15, 20, 30, 50, 75, 100].includes(booksCount)) {
+    setTimeout(() => Modal.show({
+      emoji: '🧠', title: `${booksCount} Conceptos`,
+      text: 'Tu mente se está expandiendo. No pierdas el ritmo.<br><span class="m-highlight">Asegura tu precio de por vida hoy.</span>',
+      btnText: 'Ver planes',
+      onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
+      showCancel: true
+    }), delay);
   }
 }
 
-// ========================================
-// BUTTON HANDLERS
-// ========================================
-btnOtro.onclick = () => {
-  location.reload();
-  track('reload_clicked');
-};
-
+// Botones inferiores
+btnOtro.onclick = () => { location.reload(); track('reload_clicked'); };
 btnLibro.onclick = async() => {
-  btnLibro.disabled=true;
-  cele.style.display="flex";
-  celeMsg.innerHTML='✨ <span class="num">...</span><br>libros que hemos abierto juntos';
-  
-  try{
-    const r=await fetch("https://triggui-api.vercel.app/api/increment");
-    const d=await r.json();
-    celeMsg.innerHTML=`✨ <span class="num">${d.total.toLocaleString("es-MX")}</span><br>libros que hemos abierto juntos`;
-    track('physical_book_opened', { total: d.total });
-  }catch{
-    celeMsg.textContent="📚 Error al contar libros";
-  }
-  
-  setTimeout(()=>{
-    cele.style.display="none";
-    btnLibro.disabled=false;
-  },2300);
+  btnLibro.disabled=true; cele.style.display="flex"; celeMsg.innerHTML='<span class="num">...</span><br>libros abiertos juntos';
+  try{ const r=await fetch("https://triggui-api.vercel.app/api/increment"); const d=await r.json(); celeMsg.innerHTML=`<span class="num">${d.total.toLocaleString("es-MX")}</span><br>libros abiertos juntos`; track('physical_book_opened', { total: d.total }); }catch{}
+  setTimeout(()=>{ cele.style.display="none"; btnLibro.disabled=false; },2300);
 };
 
-// ========================================
-// CONTRAST HELPER
-// ========================================
-function luminance(hex) {
-  try {
-    const c = hex.replace("#","").match(/.{1,2}/g).map(x=>parseInt(x,16)/255);
-    const f = v => v<=.03928 ? v/12.92 : Math.pow((v+.055)/1.055,2.4);
-    return 0.2126*f(c[0])+0.7152*f(c[1])+0.0722*f(c[2]);
-  } catch {
-    return 0;
-  }
-}
+// Helpers Visuales
+function luminance(hex) { try { const c = hex.replace("#","").match(/.{1,2}/g).map(x=>parseInt(x,16)/255); const f = v => v<=.03928 ? v/12.92 : Math.pow((v+.055)/1.055,2.4); return 0.2126*f(c[0])+0.7152*f(c[1])+0.0722*f(c[2]); } catch { return 0; } }
+function pickTextColor(bg) { try { return luminance(bg) > 0.35 ? "#000" : "#fff"; } catch { return "#fff"; } }
 
-function pickTextColor(bg) {
-  try { 
-    return luminance(bg) > 0.35 ? "#000" : "#fff"; 
-  } catch { 
-    return "#fff"; 
-  }
-}
-
-// ========================================
-// TARJETA SHARE
-// ========================================
+// Tarjeta Render
 btnShare.onclick = () => {
-  const t = libro.tarjeta;
-  const card = document.getElementById("tarjetaCard");
-
-  const safePaper  = t.style.paper  || "#111111";
-  const safeInk    = t.style.ink    || pickTextColor(safePaper);
-  const safeBorder = t.style.border || "#666";
-  const safeSerif  = t.style.serif  || "Georgia, serif";
-  const safeSans   = t.style.sans   || "Arial, sans-serif";
-
-  const activarBuscalibre = true;
-  let buscalibreHTML = "";
-
-  if (activarBuscalibre) {
-    const palabras = libro.palabras || [];
-    let p = "";
-    if (palabras.length > 0) {
-      p = palabras[Math.floor(Math.random() * palabras.length)] || "";
-    }
-    const queryRandom = encodeURIComponent(p);
-
-    buscalibreHTML = `
-  <div style="
-    margin: 22px 0;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    text-align: center;
-  ">
-    <a 
-      href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(libro.titulo + ' ' + libro.autor)}"
-      target="_blank"
-      onclick="event.stopPropagation();"
-      style="
-        padding: 12px 16px;
-        border: 1px solid rgba(255,255,255,0.15);
-        border-radius: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        text-decoration: none;
-        background: rgba(255,255,255,0.03);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        transition: all .25s ease;
-      "
-      onmouseover="this.style.borderColor='rgba(255,255,255,0.35)'"
-      onmouseout="this.style.borderColor='rgba(255,255,255,0.15)'"
-    >
-      <img 
-        src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/buscalibre.png"
-        alt="Buscalibre"
-        style="
-          display:block;
-          height:auto;
-          max-height:22px;
-          max-width:120px;
-          width:auto;
-          object-fit:contain;
-          object-position:center;
-          opacity:0.90;
-        "
-      >
-      <span style="
-        font: 600 15px 'Archivo', sans-serif;
-        color:#ffffff;
-        letter-spacing: 0.25px;
-      ">
-        Comprar libro
-      </span>
+  const t = libro.tarjeta; const card = document.getElementById("tarjetaCard");
+  const safePaper = t.style.paper||"#111"; const safeInk = t.style.ink||pickTextColor(safePaper); const safeBorder=t.style.border||"#666";
+  
+  const palabras=libro.palabras||[]; let p=palabras.length>0?palabras[Math.floor(Math.random()*palabras.length)]:"";
+  const buscalibreHTML = `
+  <div style="margin:22px 0;display:flex;flex-direction:column;gap:14px;text-align:center;">
+    <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(libro.titulo + ' ' + libro.autor)}" target="_blank" onclick="event.stopPropagation();" style="padding:12px 16px;border:1px solid rgba(255,255,255,0.15);border-radius:16px;display:flex;align-items:center;justify-content:center;gap:10px;text-decoration:none;background:rgba(255,255,255,0.03);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:all .25s ease;">
+      <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/buscalibre.png" style="height:auto;max-height:22px;max-width:120px;" alt="Buscalibre">
+      <span style="font:600 15px 'Archivo',sans-serif;color:#ffffff;letter-spacing:0.25px;">Comprar libro</span>
     </a>
+    <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(p)}" target="_blank" onclick="event.stopPropagation();" style="padding:12px 16px;border:1px solid rgba(255,255,255,0.15);border-radius:16px;text-decoration:none;color:#ffffff;font:600 15px 'Archivo',sans-serif;letter-spacing:0.25px;background:rgba(255,255,255,0.03);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:all .25s ease;">Explora posibilidades</a>
+  </div>`;
 
-    <a 
-      href="https://www.buscalibre.com.mx/libros/search/?q=${queryRandom}"
-      target="_blank"
-      onclick="event.stopPropagation();"
-      style="
-        padding: 12px 16px;
-        border: 1px solid rgba(255,255,255,0.15);
-        border-radius: 16px;
-        text-decoration: none;
-        color:#ffffff;
-        font: 600 15px 'Archivo', sans-serif;
-        letter-spacing: 0.25px;
-        background: rgba(255,255,255,0.03);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        transition: all .25s ease;
-      "
-      onmouseover="this.style.borderColor='rgba(255,255,255,0.35)'"
-      onmouseout="this.style.borderColor='rgba(255,255,255,0.15)'"
-    >
-      Explora posibilidades
-    </a>
-  </div>
-`;
-  }
-
-  card.style = `
-    width: min(420px, 90vw);
-    height: min(600px, 90vh);
-    background:${safePaper};
-    color:${pickTextColor(safePaper)};
-    border:2px solid ${safeBorder};
-    border-radius:20px;
-    padding:20px;
-    font-family:${safeSerif};
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
-    font-size:clamp(18px, 2.2vw, 26px);
-    line-height:1.45;
-    box-sizing:border-box;
-    box-shadow:0 8px 32px rgba(0,0,0,.45);
-  `;
-
+  card.style = `width:min(420px,90vw);height:min(600px,90vh);background:${safePaper};color:${safeInk};border:2px solid ${safeBorder};border-radius:20px;padding:20px;font-family:${t.style.serif||"Georgia"};display:flex;flex-direction:column;justify-content:space-between;font-size:clamp(18px,2.2vw,26px);line-height:1.45;box-sizing:border-box;box-shadow:0 8px 32px rgba(0,0,0,.45);`;
   card.innerHTML = `
-    <div style="font:800 22px ${safeSerif};margin-bottom:12px;letter-spacing:0.3px;">
-      ${libro.titulo} · ${libro.autor}
-    </div>
-    <div style="font:18px/1.45 ${safeSerif};margin-bottom:14px;opacity:.95;">
-      ${t.parrafoTop}
-    </div>
-    <div style="font:600 21px ${safeSans};color:${t.style.accent || "#30ffe4"};margin:12px 0;">
-      ${t.subtitulo}
-    </div>
-    <div style="font:18px/1.45 ${safeSerif};flex:1;margin-bottom:12px;">
-      ${t.parrafoBot}
-    </div>
-
-${buscalibreHTML}
-    
-    <div style="text-align:center; margin-top:10px;">
-      <img src="${
-        pickTextColor(safePaper) === '#000'
-          ? 'https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png'
-          : (
-              (t.style.accent && Math.random() > 0.5)
-                ? 'https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletrascolor3.png'
-                : 'https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletrasblanco.png'
-            )
-      }"
-      alt="Triggui"
-      style="max-width:22%; max-height:40px; height:auto; display:block; margin:0 auto; opacity:.9;">
-    </div>
+    <div style="font:800 22px ${t.style.serif||"Georgia"};margin-bottom:12px;letter-spacing:0.3px;">${libro.titulo} · ${libro.autor}</div>
+    <div style="font:18px/1.45 ${t.style.serif||"Georgia"};margin-bottom:14px;opacity:.95;">${t.parrafoTop}</div>
+    <div style="font:600 21px ${t.style.sans||"Arial"};color:${t.style.accent||"#30ffe4"};margin:12px 0;">${t.subtitulo}</div>
+    <div style="font:18px/1.45 ${t.style.serif||"Georgia"};flex:1;margin-bottom:12px;">${t.parrafoBot}</div>
+    ${buscalibreHTML}
+    <div style="text-align:center;margin-top:10px;"><img src="${safeInk==='#000'?'https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png':((t.style.accent&&Math.random()>0.5)?'https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletrascolor3.png':'https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletrasblanco.png')}" alt="Triggui" style="max-width:22%;max-height:40px;height:auto;display:block;margin:0 auto;opacity:.9;"></div>
   `;
-
-  document.getElementById("tarjetaOverlay").style.display = "flex";
+  document.getElementById("tarjetaOverlay").style.display="flex";
   track('card_viewed', { book: libro.titulo });
 };
+document.getElementById("tarjetaOverlay").onclick=()=>{ document.getElementById("tarjetaOverlay").style.display="none"; };
 
-document.getElementById("tarjetaOverlay").onclick = () => {
-  document.getElementById("tarjetaOverlay").style.display = "none";
-};
+// INIT
+function isWebView(){ const ua=navigator.userAgent||navigator.vendor||window.opera; return (/wv/i.test(ua)||/WebView/i.test(ua)||(ua.includes("Android")&&ua.includes("Version/"))||(ua.includes("iPhone")&&!ua.includes("Safari"))); }
+if(isWebView()) document.body.classList.add("webview");
 
-// ========================================
-// WEBVIEW DETECTION
-// ========================================
-function isWebView() {
-  const ua = navigator.userAgent || navigator.vendor || window.opera;
-  return (/wv/i.test(ua) || /WebView/i.test(ua) ||
-          (ua.includes("Android") && ua.includes("Version/")) ||
-          (ua.includes("iPhone") && !ua.includes("Safari")));
-}
-if (isWebView()) {
-  document.body.classList.add("webview");
+function pickLibroNoRepetido(libros){
+  let last=sessionStorage.getItem("lastLibroIdx"); if(last!==null)last=parseInt(last);
+  let idx=Math.floor(Math.random()*libros.length);
+  if(idx===last){ idx=Math.floor(Math.random()*libros.length); if(idx===last)idx=(idx+1)%libros.length; }
+  sessionStorage.setItem("lastLibroIdx", idx); return idx;
 }
 
-// ========================================
-// ANTI-REPETICIÓN
-// ========================================
-function pickLibroNoRepetido(libros) {
-  let last = sessionStorage.getItem("lastLibroIdx");
-  if (last !== null) last = parseInt(last);
-
-  let idx = Math.floor(Math.random() * libros.length);
-
-  if (idx === last) {
-    idx = Math.floor(Math.random() * libros.length);
-    if (idx === last) idx = (idx + 1) % libros.length;
-  }
-
-  sessionStorage.setItem("lastLibroIdx", idx);
-  return idx;
-}
-
-// ========================================
-// INIT APP
-// ========================================
 (async()=>{
   try{
-    const r = await fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json?ts=" + Date.now());
-    const data = await r.json();
-
-    libro = data.libros[pickLibroNoRepetido(data.libros)];
-    render();
-    updateBadge();
-    
-    track('app_loaded', { 
-      streak: getLocal('streak', 0),
-      books: getLocal('books_opened', 0)
-    });
-    
-  }catch(e){
-    alert("No se pudo cargar Triggui.");
-    console.error(e);
-  }
+    const r=await fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json?ts="+Date.now());
+    const data=await r.json();
+    libro=data.libros[pickLibroNoRepetido(data.libros)];
+    render(); updateBadge();
+    track('app_loaded', {streak:getLocal('streak',0), books:getLocal('books_opened',0)});
+  }catch(e){ alert("No se pudo cargar Triggui."); console.error(e); }
 })();
 </script>
-
-<!-- REACT NATIVE BRIDGE -->
-<script>
-  const signalFirstPaint = () => {
-    requestAnimationFrame(() => {
-      try {
-        window.ReactNativeWebView?.postMessage("FIRST_PAINT");
-      } catch (_) {}
-    });
-  };
-
-  if (document.readyState === "interactive" || document.readyState === "complete") {
-    signalFirstPaint();
-  } else {
-    document.addEventListener("DOMContentLoaded", signalFirstPaint, { once: true });
-  }
-</script>
-
 </body>
 </html>
