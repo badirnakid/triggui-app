@@ -138,7 +138,7 @@ function getRealisticUserCount() {
 @keyframes introIn{ to{opacity:1; transform:translate(-50%,-50%) scale(1)} }
 @keyframes introHide{ to{opacity:0; visibility:hidden; transform:translate(-50%,-80%) scale(.985)} }
 
-/* --- GRID ORIGINAL --- */
+/* Grid */
 .grid{position:absolute;inset:5vh 1.5vw;display:grid;gap:1vw}
 @media(orientation:landscape){.grid{grid-template-columns:repeat(4,1fr)}}
 @media(orientation:portrait){.grid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr)}}
@@ -187,46 +187,52 @@ function getRealisticUserCount() {
 body.webview #tarjetaCard { height:650px !important; }
 @keyframes cardIn { to { opacity:1; transform:scale(1); } }
 
-/* ✨ BADGE COMPACTO NIVEL DIOS (AJUSTADO ESPACIADO) */
+/* ✨ BADGE COMPACTO NIVEL DIOS (CENTRADO POR MARGENES - NO SE MUEVE) */
 #progressBadge {
-  position: fixed; 
-  left: 50%; 
-  transform: translateX(-50%); /* Centrado estático */
-  top: 12px; /* Un poco más arriba */
+  position: fixed;
+  top: 15px;
+  /* Centrado absoluto sin transform X */
+  left: 0; 
+  right: 0; 
+  margin: 0 auto;
+  
+  width: fit-content;
+  max-width: 90%; /* Evita desborde en móvil */
+  
   z-index: 150;
   background: rgba(20,24,38,0.90); border: 1px solid rgba(255,255,255,0.12);
-  /* Padding ajustado para mantener altura total similar pero con más aire interno */
-  padding: 6px 24px; 
+  padding: 6px 20px; /* Compacto verticalmente */
   border-radius: 99px; color: #dfe9ff;
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  
+  /* Animación SOLO Vertical */
   opacity: 0; 
-  animation: badgeSlideIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation: badgeDrop 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  
   box-shadow: 0 4px 20px rgba(0,0,0,0.3); text-align: center;
-  width: max-content; max-width: 94vw; cursor: pointer; user-select: none;
+  cursor: pointer; user-select: none;
   pointer-events: auto;
 }
 
-@keyframes badgeSlideIn {
-  from { opacity: 0; transform: translate(-50%, -30px); }
-  to   { opacity: 1; transform: translate(-50%, 0); }
+@keyframes badgeDrop {
+  0% { opacity: 0; transform: translateY(-40px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 #progressBadge .line1 {
-  display: block; font-size: 9px; text-transform: uppercase; letter-spacing: 1.2px; 
-  opacity: 0.6; 
-  margin-bottom: 3px; /* ESPACIO QUIRÚRGICO AGREGADO */
-  font-weight: 700; color: #a0aec0;
+  display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; 
+  opacity: 0.65; margin-bottom: 2px; font-weight: 700; color: #a0aec0;
 }
 #progressBadge .line2 {
   display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;
   font-size: 13px; font-weight: 700; color: #fff; line-height: 1.2;
 }
-#progressBadge .dot { width: 2px; height: 2px; background: rgba(255,255,255,0.4); border-radius: 50%; display: inline-block; margin: 0 2px; }
+#progressBadge .dot { width: 3px; height: 3px; background: rgba(255,255,255,0.3); border-radius: 50%; display: inline-block; margin: 0 2px; }
 .highlight-txt { color: #30ffe4; text-shadow: 0 0 10px rgba(48,255,228,0.25); }
 
 /* Toast */
 #toast {
-  position: fixed; top: 85px; left: 50%; transform: translateX(-50%) translateY(-20px); z-index: 160;
+  position: fixed; top: 90px; left: 50%; transform: translateX(-50%) translateY(-20px); z-index: 160;
   background: rgba(20,24,38,0.95); border: 1px solid rgba(255,255,255,0.1);
   padding: 12px 24px; border-radius: 16px; font-size: 15px; color: #fff;
   backdrop-filter: blur(12px); font-weight: 600; opacity: 0; pointer-events: none;
@@ -261,8 +267,8 @@ body.webview #tarjetaCard { height:650px !important; }
 .num{ color:#30ffe4; font-weight:900; font-size:2.8rem; }
 
 @media (max-width: 480px) {
-  #progressBadge { padding: 6px 16px; top: 12px; }
-  #progressBadge .line2 { font-size: 12px; gap: 4px; }
+  #progressBadge { padding: 6px 14px; top: 12px; }
+  #progressBadge .line2 { font-size: 11px; gap: 4px; } /* Texto ligeramente menor en móvil para asegurar 1 linea */
   .grid { gap: 1vw; } 
   .cele-msg { font-size: 1.5rem; padding: 1.5rem 2rem; }
 }
@@ -369,7 +375,7 @@ progressBadge.addEventListener('click', () => {
   if (tapCount === 3) {
     clearTimeout(tapTimer); tapCount = 0;
     Modal.show({
-      emoji: '🔄', title: '¿Reiniciar?', text: 'Esto pondrá tus contadores a cero.',
+      emoji: '🔄', title: '¿Reiniciar Contadores?', text: 'Esto pondrá tus estadísticas a cero para reiniciar la experiencia.',
       btnText: 'Sí, Reiniciar', showCancel: true, cancelText: 'Cancelar',
       onConfirm: () => {
         window.reset();
@@ -384,7 +390,7 @@ function showToast(msg, duration=3000) {
   setTimeout(() => toast.classList.remove('visible'), duration);
 }
 
-// ✨ UPDATE BADGE
+// ✨ UPDATE BADGE (Conceptos)
 function updateBadge() {
   const streak = updateStreak(); 
   const books = getLocal('books_opened', 0);
