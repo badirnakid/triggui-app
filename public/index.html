@@ -34,6 +34,7 @@ function getLocal(key, defaultValue = null) { try { const data = localStorage.ge
 // Reset Helper
 window.reset = function() {
   localStorage.removeItem('triggui_books_opened');
+  localStorage.removeItem('triggui_concepts');
   localStorage.removeItem('triggui_last_book_time');
   localStorage.removeItem('triggui_streak');
   localStorage.removeItem('triggui_last_visit');
@@ -43,48 +44,31 @@ window.reset = function() {
 // Variables
 let tapCount = 0;
 let tapTimer = null;
+let cardOpenedThisSession = false; // Para controlar el +1 del concepto
 
 // Tracking
 function track(event, data = {}) {
   if (typeof gtag !== 'undefined') gtag('event', event, { event_category: 'app_engagement', ...data });
+  console.log('📊', event, data);
 }
 
-// Streak Update Logic (Fixed Day 1)
-function checkAndFixStreak() {
+// Streak
+function updateStreak() {
   const today = new Date().toDateString();
   const lastVisit = getLocal('last_visit');
   let streak = getLocal('streak', 0);
 
-  // Si es primera visita ever, o primera visita de hoy y streak es 0 -> Asignar 1
+  // Fix primer día
   if (streak === 0) {
     streak = 1;
     saveLocal('streak', 1);
     saveLocal('last_visit', today);
-  } else if (lastVisit !== today) {
-    // Verificar si es consecutivo
-    const yesterday = new Date(Date.now() - 86400000).toDateString();
-    if (lastVisit === yesterday) {
-      // Es consecutivo, pero no incrementamos aquí visualmente hasta una acción, 
-      // PERO para visualización inicial mantenemos el streak actual
-    } else {
-      // Rompió racha, reset a 1 (hoy cuenta)
-      streak = 1;
-      saveLocal('streak', 1);
-      saveLocal('last_visit', today);
-    }
+    return 1;
   }
-  return streak;
-}
 
-function incrementStreakAction() {
-  const today = new Date().toDateString();
-  const lastVisit = getLocal('last_visit');
-  let streak = getLocal('streak', 1); // Start at 1 fallback
-
-  if (lastVisit === today) return streak; // Ya contó hoy
+  if (lastVisit === today) return streak;
 
   const yesterday = new Date(Date.now() - 86400000).toDateString();
-  // Si visitó ayer, suma 1. Si no, reinicia a 1 (porque hoy cuenta).
   const newStreak = (lastVisit === yesterday) ? streak + 1 : 1;
   
   saveLocal('streak', newStreak);
@@ -99,6 +83,18 @@ function incrementBooks() {
   saveLocal('last_book_time', Date.now());
   track('book_opened', { total: count });
   return count;
+}
+
+// LÓGICA DE CONCEPTOS (+4 y +1)
+function addConcepts(amount) {
+  let current = getLocal('concepts', 0);
+  // Migración si usuario viejo tiene 0 conceptos pero ya abrió libros
+  if (current === 0 && getLocal('books_opened', 0) > 0) {
+    current = getLocal('books_opened', 0) * 5; 
+  }
+  const newVal = current + amount;
+  saveLocal('concepts', newVal);
+  return newVal;
 }
 
 // Rewards
@@ -139,13 +135,14 @@ function getRealisticUserCount() {
   box-shadow:0 10px 40px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06);
   backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   font-size:clamp(1.1rem,3.8vw,1.9rem); font-weight:700; line-height:1.25;
-  opacity:0; animation:introIn .6s ease-out .15s forwards, introHide 3.2s 1.7s forwards; 
+  opacity:0; transform:translate(-50%,-52%) scale(.985);
+  animation:introIn .6s ease-out .15s forwards, introHide 3.2s 1.7s forwards; 
 }
 .intro .t{ background:linear-gradient(120deg,#c9fff2,#30ffe4 40%,#9dd5ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
 @keyframes introIn{ to{opacity:1; transform:translate(-50%,-50%) scale(1)} }
 @keyframes introHide{ to{opacity:0; visibility:hidden; transform:translate(-50%,-80%) scale(.985)} }
 
-/* --- GRID ORIGINAL --- */
+/* Grid */
 .grid{position:absolute;inset:5vh 1.5vw;display:grid;gap:1vw}
 @media(orientation:landscape){.grid{grid-template-columns:repeat(4,1fr)}}
 @media(orientation:portrait){.grid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr)}}
@@ -194,39 +191,42 @@ function getRealisticUserCount() {
 body.webview #tarjetaCard { height:650px !important; }
 @keyframes cardIn { to { opacity:1; transform:scale(1); } }
 
-/* ✨ BADGE COMPACTO NIVEL DIOS (Fix Animación + Tamaño + Centrado) */
+/* ✨ BADGE COMPACTO (FIX ANIMACIÓN + MOBILE) */
 #progressBadge {
-  position: fixed; top: 15px; left: 50%; transform: translateX(-50%); z-index: 150;
+  position: fixed; 
+  left: 50%; 
+  transform: translateX(-50%); /* CENTRADO ESTATICO */
+  top: 15px; /* Posicion final */
+  z-index: 150;
   background: rgba(20,24,38,0.85); border: 1px solid rgba(255,255,255,0.15);
-  padding: 8px 22px; border-radius: 99px; color: #dfe9ff;
+  padding: 10px 24px; border-radius: 20px; color: #dfe9ff;
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  opacity: 0; 
-  /* FIX ANIMACION: translate(-50%, Y) explícito en ambos steps */
-  animation: badgeSlideIn 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  /* Animación solo de opacidad y top, no toca el X */
+  animation: slideDownBadge 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
   box-shadow: 0 4px 24px rgba(0,0,0,0.3); text-align: center;
-  width: max-content; max-width: 94vw; cursor: pointer; user-select: none;
+  width: auto; max-width: 92vw; cursor: pointer; user-select: none;
   pointer-events: auto;
 }
 
-@keyframes badgeSlideIn {
-  from { opacity: 0; transform: translate(-50%, -30px); }
-  to   { opacity: 1; transform: translate(-50%, 0); }
+@keyframes slideDownBadge {
+  0% { opacity: 0; top: -60px; }
+  100% { opacity: 1; top: 15px; }
 }
 
 #progressBadge .line1 {
   display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; 
-  opacity: 0.8; margin-bottom: 3px; font-weight: 700; color: #a0aec0;
+  opacity: 0.8; margin-bottom: 4px; font-weight: 700; color: #a0aec0;
 }
 #progressBadge .line2 {
   display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;
-  font-size: 15px; font-weight: 700; color: #fff; line-height: 1.3;
+  font-size: 15px; font-weight: 700; color: #fff; line-height: 1.4;
 }
-#progressBadge .dot { width: 3px; height: 3px; background: rgba(255,255,255,0.3); border-radius: 50%; display: inline-block; }
+#progressBadge .dot { width: 3px; height: 3px; background: rgba(255,255,255,0.3); border-radius: 50%; display: inline-block; margin: 0 2px; }
 .highlight-txt { color: #30ffe4; text-shadow: 0 0 12px rgba(48,255,228,0.3); }
 
 /* Toast */
 #toast {
-  position: fixed; top: 85px; left: 50%; transform: translateX(-50%) translateY(-20px); z-index: 160;
+  position: fixed; top: 90px; left: 50%; transform: translateX(-50%) translateY(-20px); z-index: 160;
   background: rgba(20,24,38,0.95); border: 1px solid rgba(255,255,255,0.1);
   padding: 12px 24px; border-radius: 16px; font-size: 15px; color: #fff;
   backdrop-filter: blur(12px); font-weight: 600; opacity: 0; pointer-events: none;
@@ -261,8 +261,9 @@ body.webview #tarjetaCard { height:650px !important; }
 .num{ color:#30ffe4; font-weight:900; font-size:2.8rem; }
 
 @media (max-width: 480px) {
+  #progressBadge { padding: 8px 16px; border-radius: 16px; width: 92%; }
   #progressBadge .line2 { font-size: 13px; }
-  .grid { gap: 1vw; } /* Aseguramos gap original en móvil */
+  .grid { gap: 1vw; } 
   .cele-msg { font-size: 1.5rem; padding: 1.5rem 2rem; }
 }
 </style>
@@ -314,7 +315,6 @@ const Modal = {
     this.title.innerText = config.title || 'Triggui';
     this.text.innerHTML = config.text || '';
     this.pBtn.innerText = config.btnText || 'Continuar';
-    
     this.pBtn.onclick = null; this.sBtn.onclick = null;
 
     this.pBtn.onclick = () => {
@@ -384,11 +384,11 @@ function showToast(msg, duration=3000) {
   setTimeout(() => toast.classList.remove('visible'), duration);
 }
 
-// ✨ UPDATE BADGE (Tipografía más grande y lógica x5)
+// ✨ UPDATE BADGE (Conceptos = Libros * 5)
 function updateBadge() {
-  const streak = checkAndFixStreak(); // Asegura 1 día mínimo si es hoy
+  const streak = updateStreak(); 
   const books = getLocal('books_opened', 0);
-  const concepts = books * 5; 
+  const concepts = getLocal('concepts', books * 5); // Fallback para usuarios viejos
   
   document.getElementById('badgeContent').innerHTML = 
     `🔥 ${streak}d <span class="dot"></span> 📚 ${books} libros <span class="dot"></span> <span class="highlight-txt">🤓 ${concepts} conceptos absorbidos - ¡Aplícalos hoy!</span>`;
@@ -452,17 +452,16 @@ function render(){
   }
 }
 
-// ENGAGEMENT LOGIC
+// LOGICA ENGAGEMENT (SUMA 4 AL REVELAR)
 function handleBookReveal() {
-  const streak = incrementStreakAction();
   const booksCount = incrementBooks();
+  addConcepts(4); // +4 Conceptos al revelar
   updateBadge();
   fetch("https://triggui-api.vercel.app/api/increment", {cache:"no-store"}).catch(()=>{});
 
   const delay = 1500;
   const userCount = getRealisticUserCount();
 
-  // LOGICA MODALES
   if (booksCount === 2) {
     setTimeout(() => Modal.show({
       emoji: '📬', title: '¡2 Libros!', text: '¿Te gustaría recibir estas joyas por WhatsApp cada lunes?',
@@ -477,7 +476,7 @@ function handleBookReveal() {
     }), delay);
   } else if (booksCount === 10) {
     setTimeout(() => Modal.show({
-      emoji: '🔥', title: '¡Estás en racha!', text: `Ya llevas <b>10 libros</b> y <b>50 conceptos absorbidos</b>. ${userCount} personas están aplicando esto hoy. <br>Únete al grupo de WhatsApp.`,
+      emoji: '🔥', title: '¡Estás en racha!', text: `Ya llevas <b>10 libros</b>. ${userCount} personas están aplicando esto hoy. <br>Únete al grupo de WhatsApp.`,
       btnText: 'Suscribirme', onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
       showCancel: true
     }), delay);
@@ -501,8 +500,17 @@ btnLibro.onclick = async() => {
 function luminance(hex) { try { const c = hex.replace("#","").match(/.{1,2}/g).map(x=>parseInt(x,16)/255); const f = v => v<=.03928 ? v/12.92 : Math.pow((v+.055)/1.055,2.4); return 0.2126*f(c[0])+0.7152*f(c[1])+0.0722*f(c[2]); } catch { return 0; } }
 function pickTextColor(bg) { try { return luminance(bg) > 0.35 ? "#000" : "#fff"; } catch { return "#fff"; } }
 
+// SHARE & TARJETA (+1 CONCEPTO AQUI)
 btnShare.onclick = () => {
   const t = libro.tarjeta; const card = document.getElementById("tarjetaCard");
+  
+  // +1 Concepto al abrir tarjeta
+  if (!cardOpenedThisSession) {
+    addConcepts(1);
+    updateBadge(); // Refrescar UI inmediatamente
+    cardOpenedThisSession = true;
+  }
+
   const safePaper = t.style.paper||"#111"; const safeInk = t.style.ink||pickTextColor(safePaper); const safeBorder=t.style.border||"#666";
   const palabras=libro.palabras||[]; let p=palabras.length>0?palabras[Math.floor(Math.random()*palabras.length)]:"";
   const buscalibreHTML = `
@@ -545,11 +553,10 @@ function pickLibroNoRepetido(libros){
     const data=await r.json();
     libro=data.libros[pickLibroNoRepetido(data.libros)];
     render(); 
-    // INIT STREAK VISUAL (CHECK ONLY)
+    // Init Visual
     updateBadge();
     track('app_loaded', {streak:getLocal('streak',0), books:getLocal('books_opened',0)});
   }catch(e){ 
-    // Fallback silencioso en prod
     console.error(e);
   }
 })();
