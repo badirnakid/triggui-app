@@ -6,7 +6,7 @@
 <title>Triggui — Abre un libro físico. Aquí y ahora.</title>
 
 <style>
-  html, body { background:#0e0f1b !important; color:#fff; margin:0; padding:0; height:100%; font-family:'Archivo',sans-serif; -webkit-overflow-scrolling:touch; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  html, body { background:#0e0f1b !important; color:#fff; margin:0; padding:0; height:100%; font-family:'Archivo',sans-serif; -webkit-overflow-scrolling:touch; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overflow: hidden; /* Evita scroll por partículas */ }
   #tarjetaCard { overflow-wrap: break-word; word-break: break-word; box-sizing: border-box; }
 </style>
 
@@ -138,7 +138,7 @@ function getRealisticUserCount() {
 @keyframes introIn{ to{opacity:1; transform:translate(-50%,-50%) scale(1)} }
 @keyframes introHide{ to{opacity:0; visibility:hidden; transform:translate(-50%,-80%) scale(.985)} }
 
-/* Grid */
+/* --- GRID ORIGINAL --- */
 .grid{position:absolute;inset:5vh 1.5vw;display:grid;gap:1vw}
 @media(orientation:landscape){.grid{grid-template-columns:repeat(4,1fr)}}
 @media(orientation:portrait){.grid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr)}}
@@ -169,8 +169,13 @@ function getRealisticUserCount() {
 .port-text p{ font-size:clamp(1.2rem,4vw,1.8rem); font-weight:600; opacity:.9; }
 .emoji-big{ font-size:clamp(1.6rem,5vw,2.8rem); filter:drop-shadow(0 4px 8px rgba(0,0,0,.3)); }
 
-/* CTA */
-.cta{ position:fixed; bottom:3vh; left:50%; transform:translateX(-50%); z-index:100; display:none; gap:.9rem; justify-content:center; }
+/* CTA (4 BOTONES PERFECTAMENTE DISTRIBUIDOS) */
+.cta{ 
+  position:fixed; bottom:3vh; left:50%; transform:translateX(-50%); z-index:100; 
+  display:none; 
+  gap: clamp(0.5rem, 2vw, 0.9rem); /* Gap responsivo para que quepan 4 */
+  justify-content:center; 
+}
 .cta button{
   width:clamp(3.5rem,min(8vw,8vh),4.5rem); height:clamp(3.5rem,min(8vw,8vh),4.5rem);
   border:none; border-radius:50%; display:flex; align-items:center; justify-content:center;
@@ -180,6 +185,7 @@ function getRealisticUserCount() {
 #otro{ background:linear-gradient(135deg,#5fbfff,#1e90ff); color:#fff; }
 #fisico{ background:linear-gradient(135deg,#b2f8c8,#42d97c); color:#000; }
 #share{ background:linear-gradient(135deg,#ff8a00,#ff3d3d); color:#fff; }
+#like { background:linear-gradient(135deg, #ff416c, #ff4b2b); color:#fff; } /* NUEVO BOTON LIKE */
 
 /* Overlay */
 #tarjetaOverlay { display:none; position:fixed; inset:0; z-index:999; align-items:center; justify-content:center; background: radial-gradient(circle, rgba(0,0,0,0.90), rgba(0,0,0,0.98)); backdrop-filter: blur(5px); }
@@ -187,47 +193,30 @@ function getRealisticUserCount() {
 body.webview #tarjetaCard { height:650px !important; }
 @keyframes cardIn { to { opacity:1; transform:scale(1); } }
 
-/* ✨ BADGE COMPACTO NIVEL DIOS (CENTRADO POR MARGENES - NO SE MUEVE) */
+/* ✨ BADGE COMPACTO NIVEL DIOS */
 #progressBadge {
-  position: fixed;
-  top: 15px;
-  /* Centrado absoluto sin transform X */
-  left: 0; 
-  right: 0; 
-  margin: 0 auto;
-  
-  width: fit-content;
-  max-width: 90%; /* Evita desborde en móvil */
-  
-  z-index: 150;
+  position: fixed; left: 50%; top: 15px; z-index: 150;
+  /* Centrado absoluto */
+  margin-left: -50%; margin-right: -50%; transform: translateX(-50%); /* Técnica robusta de centrado */
+  width: fit-content; max-width: 90vw;
   background: rgba(20,24,38,0.90); border: 1px solid rgba(255,255,255,0.12);
-  padding: 6px 20px; /* Compacto verticalmente */
-  border-radius: 99px; color: #dfe9ff;
+  padding: 6px 20px; border-radius: 99px; color: #dfe9ff;
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  
-  /* Animación SOLO Vertical */
-  opacity: 0; 
-  animation: badgeDrop 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-  
+  opacity: 0; animation: badgeDrop 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
   box-shadow: 0 4px 20px rgba(0,0,0,0.3); text-align: center;
-  cursor: pointer; user-select: none;
-  pointer-events: auto;
+  cursor: pointer; user-select: none; pointer-events: auto;
 }
-
-@keyframes badgeDrop {
-  0% { opacity: 0; transform: translateY(-40px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
+@keyframes badgeDrop { 0% { opacity: 0; top: -40px; } 100% { opacity: 1; top: 15px; } }
 
 #progressBadge .line1 {
   display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; 
-  opacity: 0.65; margin-bottom: 2px; font-weight: 700; color: #a0aec0;
+  opacity: 0.65; margin-bottom: 3px; font-weight: 700; color: #a0aec0;
 }
 #progressBadge .line2 {
   display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;
   font-size: 13px; font-weight: 700; color: #fff; line-height: 1.2;
 }
-#progressBadge .dot { width: 3px; height: 3px; background: rgba(255,255,255,0.3); border-radius: 50%; display: inline-block; margin: 0 2px; }
+#progressBadge .dot { width: 2px; height: 2px; background: rgba(255,255,255,0.4); border-radius: 50%; display: inline-block; margin: 0 2px; }
 .highlight-txt { color: #30ffe4; text-shadow: 0 0 10px rgba(48,255,228,0.25); }
 
 /* Toast */
@@ -261,6 +250,18 @@ body.webview #tarjetaCard { height:650px !important; }
 .btn-primary { background: linear-gradient(135deg, #ff0080, #7928ca); color: white; box-shadow: 0 4px 15px rgba(255,0,128,0.3); }
 .btn-secondary { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
 
+/* ✨ CORAZONES FLOTANTES (PARTÍCULAS) */
+.floating-heart {
+  position: fixed; pointer-events: none; z-index: 200;
+  font-size: 24px; opacity: 0;
+  animation: floatUp 1.2s ease-out forwards;
+}
+@keyframes floatUp {
+  0% { transform: translate(0, 0) scale(0.5); opacity: 0; }
+  20% { opacity: 1; transform: translate(var(--tx), -40px) scale(1.2); }
+  100% { opacity: 0; transform: translate(var(--tx), -150px) scale(1); }
+}
+
 /* Celebración */
 .cele{ position:fixed; inset:0; background:rgba(0,0,0,.88); display:none; align-items:center; justify-content:center; z-index:110; flex-direction: column; }
 .cele-msg{ font-family:'Poppins'; font-size:2rem; text-align:center; background:rgba(255,255,255,.05); padding:2rem 3rem; border-radius:20px; }
@@ -268,7 +269,7 @@ body.webview #tarjetaCard { height:650px !important; }
 
 @media (max-width: 480px) {
   #progressBadge { padding: 6px 14px; top: 12px; }
-  #progressBadge .line2 { font-size: 11px; gap: 4px; } /* Texto ligeramente menor en móvil para asegurar 1 linea */
+  #progressBadge .line2 { font-size: 11px; gap: 4px; }
   .grid { gap: 1vw; } 
   .cele-msg { font-size: 1.5rem; padding: 1.5rem 2rem; }
 }
@@ -296,11 +297,13 @@ body.webview #tarjetaCard { height:650px !important; }
 <div id="toast"></div>
 <div class="intro" id="intro"></div>
 <div class="grid" id="grid"></div>
+
 <div class="cta" id="cta">
   <button id="otro"><span class="icon">🎲</span></button>
   <button id="fisico"><span class="icon">🔟</span></button>
   <button id="share"><span class="icon">📖</span></button>
-</div>
+  <button id="like"><span class="icon">😍</span></button> </div>
+
 <div id="tarjetaOverlay"><div id="tarjetaCard"></div></div>
 <div class="cele" id="cele"><div class="cele-msg" id="celeMsg"></div></div>
 
@@ -353,7 +356,7 @@ const Modal = {
 // LOGICA APP
 // ========================================
 const grid=document.getElementById("grid"), cta=document.getElementById("cta"),
-      btnOtro=document.getElementById("otro"), btnLibro=document.getElementById("fisico"), btnShare=document.getElementById("share"),
+      btnOtro=document.getElementById("otro"), btnLibro=document.getElementById("fisico"), btnShare=document.getElementById("share"), btnLike=document.getElementById("like"),
       cele=document.getElementById("cele"), celeMsg=document.getElementById("celeMsg"),
       progressBadge=document.getElementById("progressBadge"), toast=document.getElementById("toast");
 
@@ -375,7 +378,7 @@ progressBadge.addEventListener('click', () => {
   if (tapCount === 3) {
     clearTimeout(tapTimer); tapCount = 0;
     Modal.show({
-      emoji: '🔄', title: '¿Reiniciar Contadores?', text: 'Esto pondrá tus estadísticas a cero para reiniciar la experiencia.',
+      emoji: '🔄', title: '¿Reiniciar Contadores?', text: 'Esto pondrá tus contadores a cero.',
       btnText: 'Sí, Reiniciar', showCancel: true, cancelText: 'Cancelar',
       onConfirm: () => {
         window.reset();
@@ -444,6 +447,8 @@ function render(){
           document.getElementById("otro").style.background = `linear-gradient(135deg, ${c[0]}, ${c[1]})`;
           document.getElementById("fisico").style.background = `linear-gradient(135deg, ${c[1]}, ${c[2]})`;
           document.getElementById("share").style.background = `linear-gradient(135deg, ${c[2]}, ${c[3]})`;
+          // El Like se mantiene con su identidad propia
+          
           document.getElementById("otro").style.color = pickTextColor(c[0]);
           document.getElementById("fisico").style.color = pickTextColor(c[1]);
           document.getElementById("share").style.color = pickTextColor(c[2]);
@@ -493,6 +498,49 @@ function handleBookReveal() {
       showCancel: true
     }), delay);
   }
+}
+
+// === EFECTO LIKE & SHARE MODAL ===
+btnLike.onclick = (e) => {
+  // 1. Animación de Partículas
+  const rect = btnLike.getBoundingClientRect();
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+
+  for (let i = 0; i < 8; i++) {
+    createFloatingHeart(centerX, centerY);
+  }
+  
+  // Track
+  track('like_clicked');
+
+  // 2. Delayed Modal (Gen Z Hook)
+  setTimeout(() => {
+    Modal.show({
+      emoji: '📸',
+      title: '¡Guárdalo!',
+      text: '<b>Toma Screenshot</b> y súbelo a close friends.<br><span class="m-highlight">Este mensaje te encontró por algo.</span>',
+      btnText: 'Listo',
+      onConfirm: () => {}, // Solo cierra
+      showCancel: false
+    });
+  }, 1500);
+};
+
+function createFloatingHeart(x, y) {
+  const heart = document.createElement('div');
+  heart.classList.add('floating-heart');
+  heart.innerText = ['❤️', '😍', '🔥'][Math.floor(Math.random() * 3)];
+  document.body.appendChild(heart);
+
+  // Random X drift
+  const randomX = (Math.random() - 0.5) * 60; 
+  heart.style.left = `${x}px`;
+  heart.style.top = `${y}px`;
+  heart.style.setProperty('--tx', `${randomX}px`);
+
+  // Cleanup
+  setTimeout(() => heart.remove(), 1200);
 }
 
 // HANDLERS
