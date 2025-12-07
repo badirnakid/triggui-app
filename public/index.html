@@ -129,10 +129,9 @@ function getRandomSurprise() {
 // SOCIAL PROOF DINÁMICO
 // ========================================
 function getRealisticUserCount() {
-  // Basado en tu contador real (~8000) dividido por día
   const base = 28;
   const variance = Math.floor(Math.random() * 8);
-  return base + variance; // 28-35 usuarios "activos ahora"
+  return base + variance;
 }
 </script>
 
@@ -1075,7 +1074,8 @@ function handleBookReveal() {
     showToast('🔥🔥🔥 UN MES! Eres imparable');
   }
   
-  // ✨ UPGRADE PROMPTS NIVEL DIOS ✨
+  // ✨ UPGRADE PROMPTS INTELIGENTES - NIVEL DIOS ✨
+  
   // Libro 2: Primera experiencia suave
   if (booksCount === 2) {
     setTimeout(() => {
@@ -1093,7 +1093,7 @@ function handleBookReveal() {
     }, 2000);
   } 
   
-  // Libro 5: Más enganchado, oferta directa
+  // Libro 5: Oferta directa
   else if (booksCount === 5) {
     setTimeout(() => {
       showUpgradeModal({
@@ -1110,8 +1110,98 @@ function handleBookReveal() {
     }, 2000);
   }
   
-  // Random surprises
-  if (surprise.type !== 'none' && booksCount !== 2 && booksCount !== 5) {
+  // Libro 10: Recordatorio sutil
+  else if (booksCount === 10) {
+    setTimeout(() => {
+      showUpgradeModal({
+        emoji: '🔥',
+        title: '10 libros descubiertos',
+        text: 'Ya conoces 10 libros increíbles. ¿Los quieres por WhatsApp?',
+        subtext: 'Cada lunes, páginas seleccionadas para ti',
+        social: '31 personas activas ahora',
+        primaryText: 'Sí, quiero suscribirme',
+        primaryUrl: 'https://triggui.com/#planes',
+        trackAccept: 'upgrade_prompt_10books_accepted',
+        trackDecline: 'upgrade_prompt_10books_declined'
+      });
+    }, 2000);
+  }
+  
+  // Libro 15: Oferta especial
+  else if (booksCount === 15) {
+    setTimeout(() => {
+      showUpgradeModal({
+        emoji: '💎',
+        title: '15 libros descubiertos',
+        text: '¿Quieres el plan anual? Ahorras $588',
+        subtext: '$1,199/año (vs $1,788 mensual)',
+        social: '18 personas eligieron el plan anual esta semana',
+        primaryText: 'Ver plan anual',
+        primaryUrl: 'https://triggui.com/#planes',
+        trackAccept: 'upgrade_prompt_15books_annual_accepted',
+        trackDecline: 'upgrade_prompt_15books_annual_declined'
+      });
+    }, 2000);
+  }
+  
+  // Libro 20: Urgencia (precio sube)
+  else if (booksCount === 20) {
+    setTimeout(() => {
+      showUpgradeModal({
+        emoji: '⚡',
+        title: '20 libros descubiertos!',
+        text: 'Precio de lanzamiento ($100) termina pronto',
+        subtext: 'Después sube a $149/mes',
+        social: 'Solo para las primeras 100 personas',
+        primaryText: 'Asegurar precio $100',
+        primaryUrl: 'https://triggui.com/#planes',
+        trackAccept: 'upgrade_prompt_20books_urgency_accepted',
+        trackDecline: 'upgrade_prompt_20books_urgency_declined'
+      });
+    }, 2000);
+  }
+  
+  // Libro 30: Lifetime offer
+  else if (booksCount === 30) {
+    setTimeout(() => {
+      showUpgradeModal({
+        emoji: '🏆',
+        title: '30 libros descubiertos!',
+        text: 'Desbloquea acceso LIFETIME',
+        subtext: 'Pago único: $3,999 (nunca vuelves a pagar)',
+        social: '7 personas eligieron lifetime este mes',
+        primaryText: 'Quiero acceso de por vida',
+        primaryUrl: 'https://donate.stripe.com/9B66oJ8bI1E02U85aR24001',
+        trackAccept: 'upgrade_prompt_30books_lifetime_accepted',
+        trackDecline: 'upgrade_prompt_30books_lifetime_declined'
+      });
+    }, 2000);
+  }
+  
+  // Cada 10 libros (después del 30): Recordatorio sutil con toast
+  else if (booksCount > 30 && booksCount % 10 === 0) {
+    setTimeout(() => {
+      showToast(`📚 ${booksCount} libros descubiertos! ¿Los quieres por WhatsApp?`);
+      
+      // Modal sutil después del toast
+      setTimeout(() => {
+        showUpgradeModal({
+          emoji: '📖',
+          title: `${booksCount} libros y contando`,
+          text: 'Recíbelos cada semana por WhatsApp',
+          subtext: 'Planes desde $100/mes',
+          social: `${getRealisticUserCount()} personas leyendo ahora`,
+          primaryText: 'Ver planes',
+          primaryUrl: 'https://triggui.com/#planes',
+          trackAccept: `upgrade_prompt_${booksCount}books_accepted`,
+          trackDecline: `upgrade_prompt_${booksCount}books_declined`
+        });
+      }, 3000);
+    }, 1500);
+  }
+  
+  // Random surprises (solo si NO es milestone)
+  else if (surprise.type !== 'none' && ![2,5,10,15,20,30].includes(booksCount) && booksCount % 10 !== 0) {
     setTimeout(() => {
       showToast(surprise.msg);
       track('surprise_shown', { type: surprise.type });
