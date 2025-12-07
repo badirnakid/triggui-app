@@ -35,6 +35,8 @@ function getLocal(key, defaultValue = null) { try { const data = localStorage.ge
 window.reset = function() {
   localStorage.removeItem('triggui_books_opened');
   localStorage.removeItem('triggui_last_book_time');
+  localStorage.removeItem('triggui_streak');
+  localStorage.removeItem('triggui_last_visit');
   console.log('✅ Reset completo. Recarga la página.');
 }
 
@@ -45,17 +47,46 @@ let tapTimer = null;
 // Tracking
 function track(event, data = {}) {
   if (typeof gtag !== 'undefined') gtag('event', event, { event_category: 'app_engagement', ...data });
-  console.log('📊', event, data);
 }
 
-// Streak
-function updateStreak() {
+// Streak Update Logic (Fixed Day 1)
+function checkAndFixStreak() {
   const today = new Date().toDateString();
   const lastVisit = getLocal('last_visit');
-  const streak = getLocal('streak', 0);
-  if (lastVisit === today) return streak;
+  let streak = getLocal('streak', 0);
+
+  // Si es primera visita ever, o primera visita de hoy y streak es 0 -> Asignar 1
+  if (streak === 0) {
+    streak = 1;
+    saveLocal('streak', 1);
+    saveLocal('last_visit', today);
+  } else if (lastVisit !== today) {
+    // Verificar si es consecutivo
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+    if (lastVisit === yesterday) {
+      // Es consecutivo, pero no incrementamos aquí visualmente hasta una acción, 
+      // PERO para visualización inicial mantenemos el streak actual
+    } else {
+      // Rompió racha, reset a 1 (hoy cuenta)
+      streak = 1;
+      saveLocal('streak', 1);
+      saveLocal('last_visit', today);
+    }
+  }
+  return streak;
+}
+
+function incrementStreakAction() {
+  const today = new Date().toDateString();
+  const lastVisit = getLocal('last_visit');
+  let streak = getLocal('streak', 1); // Start at 1 fallback
+
+  if (lastVisit === today) return streak; // Ya contó hoy
+
   const yesterday = new Date(Date.now() - 86400000).toDateString();
+  // Si visitó ayer, suma 1. Si no, reinicia a 1 (porque hoy cuenta).
   const newStreak = (lastVisit === yesterday) ? streak + 1 : 1;
+  
   saveLocal('streak', newStreak);
   saveLocal('last_visit', today);
   track('streak_updated', { streak: newStreak });
@@ -95,11 +126,11 @@ function getRealisticUserCount() {
 }
 </script>
 
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500;700;800&display=swap" rel="stylesheet">
 
 <style>
 /* ========================================
-   🎨 ESTILOS UI NIVEL DIOS
+   🎨 ESTILOS UI
    ======================================== */
 .intro{
   position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
@@ -114,8 +145,8 @@ function getRealisticUserCount() {
 @keyframes introIn{ to{opacity:1; transform:translate(-50%,-50%) scale(1)} }
 @keyframes introHide{ to{opacity:0; visibility:hidden; transform:translate(-50%,-80%) scale(.985)} }
 
-/* Grid */
-.grid{position:absolute;inset:13vh 3vw 8vh 3vw;display:grid;gap:3vw}
+/* --- GRID ORIGINAL --- */
+.grid{position:absolute;inset:5vh 1.5vw;display:grid;gap:1vw}
 @media(orientation:landscape){.grid{grid-template-columns:repeat(4,1fr)}}
 @media(orientation:portrait){.grid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr)}}
 
@@ -132,7 +163,7 @@ function getRealisticUserCount() {
 .block::before{ content:"";position:absolute;inset:0;border-radius:inherit; background:linear-gradient(180deg,rgba(255,255,255,.14),transparent 62%); mix-blend-mode:soft-light;pointer-events:none; }
 
 .label, .frase { z-index:2; text-align:center; transition:opacity .25s, transform .25s; }
-.label { opacity:1; transform:translateY(0); font-size:clamp(1rem, 3vw, 1.6rem); font-weight:700; }
+.label { opacity:1; transform:translateY(0); font-size:clamp(1rem, 3vw, 1.6rem); font-weight:700; line-height:1.3; letter-spacing:0.3px; }
 .frase { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:1rem; opacity:0; transform:translateY(6px); font-size:clamp(0.95rem, 2.8vw, 1.4rem); font-weight:600; }
 .block.show .label { opacity:0; transform:translateY(-6px); }
 .block.show .frase { opacity:1; transform:translateY(0); }
@@ -163,36 +194,35 @@ function getRealisticUserCount() {
 body.webview #tarjetaCard { height:650px !important; }
 @keyframes cardIn { to { opacity:1; transform:scale(1); } }
 
-/* ✨ BADGE COMPACTO NIVEL DIOS (Fix Animación + Tamaño) */
+/* ✨ BADGE COMPACTO NIVEL DIOS (Fix Animación + Tamaño + Centrado) */
 #progressBadge {
-  position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 150;
-  background: rgba(20,24,38,0.85); border: 1px solid rgba(255,255,255,0.1);
-  padding: 10px 24px; border-radius: 99px; color: #dfe9ff;
+  position: fixed; top: 15px; left: 50%; transform: translateX(-50%); z-index: 150;
+  background: rgba(20,24,38,0.85); border: 1px solid rgba(255,255,255,0.15);
+  padding: 8px 22px; border-radius: 99px; color: #dfe9ff;
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
   opacity: 0; 
-  /* Animación corregida para mantener el centrado perfecto */
+  /* FIX ANIMACION: translate(-50%, Y) explícito en ambos steps */
   animation: badgeSlideIn 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.25); text-align: center;
-  width: max-content; max-width: 92vw; cursor: pointer; user-select: none;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3); text-align: center;
+  width: max-content; max-width: 94vw; cursor: pointer; user-select: none;
   pointer-events: auto;
 }
 
-/* Keyframes corregidos: translate(-50%) se mantiene constante */
 @keyframes badgeSlideIn {
   from { opacity: 0; transform: translate(-50%, -30px); }
   to   { opacity: 1; transform: translate(-50%, 0); }
 }
 
 #progressBadge .line1 {
-  display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; 
-  opacity: 0.65; margin-bottom: 3px; font-weight: 700;
+  display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; 
+  opacity: 0.8; margin-bottom: 3px; font-weight: 700; color: #a0aec0;
 }
 #progressBadge .line2 {
-  display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;
-  font-size: 14px; font-weight: 700; color: #fff; line-height: 1.4;
+  display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;
+  font-size: 15px; font-weight: 700; color: #fff; line-height: 1.3;
 }
 #progressBadge .dot { width: 3px; height: 3px; background: rgba(255,255,255,0.3); border-radius: 50%; display: inline-block; }
-.highlight-txt { color: #30ffe4; text-shadow: 0 0 10px rgba(48,255,228,0.2); }
+.highlight-txt { color: #30ffe4; text-shadow: 0 0 12px rgba(48,255,228,0.3); }
 
 /* Toast */
 #toast {
@@ -204,7 +234,7 @@ body.webview #tarjetaCard { height:650px !important; }
 }
 #toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-/* Modal */
+/* Modal Unificado */
 #appModal { display: none; position: fixed; inset: 0; z-index: 9999; align-items: center; justify-content: center; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.3s ease; }
 #appModal.visible { display: flex; opacity: 1; }
 .modal-glass {
@@ -226,13 +256,13 @@ body.webview #tarjetaCard { height:650px !important; }
 .btn-secondary { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
 
 /* Celebración */
-.cele{ position:fixed; inset:0; background:rgba(0,0,0,.9); display:none; align-items:center; justify-content:center; z-index:110; flex-direction: column; }
+.cele{ position:fixed; inset:0; background:rgba(0,0,0,.88); display:none; align-items:center; justify-content:center; z-index:110; flex-direction: column; }
 .cele-msg{ font-family:'Poppins'; font-size:2rem; text-align:center; background:rgba(255,255,255,.05); padding:2rem 3rem; border-radius:20px; }
 .num{ color:#30ffe4; font-weight:900; font-size:2.8rem; }
 
 @media (max-width: 480px) {
   #progressBadge .line2 { font-size: 13px; }
-  .grid { gap: 4vw; }
+  .grid { gap: 1vw; } /* Aseguramos gap original en móvil */
   .cele-msg { font-size: 1.5rem; padding: 1.5rem 2rem; }
 }
 </style>
@@ -284,15 +314,24 @@ const Modal = {
     this.title.innerText = config.title || 'Triggui';
     this.text.innerHTML = config.text || '';
     this.pBtn.innerText = config.btnText || 'Continuar';
+    
     this.pBtn.onclick = null; this.sBtn.onclick = null;
 
-    this.pBtn.onclick = () => { this.close(); if(config.onConfirm) config.onConfirm(); };
+    this.pBtn.onclick = () => {
+      this.close();
+      if(config.onConfirm) config.onConfirm();
+    };
     
     if(config.showCancel) {
       this.sBtn.style.display = 'flex';
       this.sBtn.innerText = config.cancelText || 'Cerrar';
-      this.sBtn.onclick = () => { this.close(); if(config.onCancel) config.onCancel(); };
-    } else { this.sBtn.style.display = 'none'; }
+      this.sBtn.onclick = () => {
+        this.close();
+        if(config.onCancel) config.onCancel();
+      };
+    } else {
+      this.sBtn.style.display = 'none';
+    }
 
     this.el.style.display = 'flex';
     setTimeout(() => this.el.classList.add('visible'), 10);
@@ -330,10 +369,10 @@ progressBadge.addEventListener('click', () => {
   if (tapCount === 3) {
     clearTimeout(tapTimer); tapCount = 0;
     Modal.show({
-      emoji: '🔄', title: '¿Reiniciar Contadores?', text: 'Volverás al libro 0 para probar todo de nuevo.',
+      emoji: '🔄', title: '¿Reiniciar?', text: 'Esto pondrá tus contadores a cero.',
       btnText: 'Sí, Reiniciar', showCancel: true, cancelText: 'Cancelar',
       onConfirm: () => {
-        localStorage.removeItem('triggui_books_opened'); localStorage.removeItem('triggui_last_book_time'); localStorage.removeItem('triggui_streak');
+        window.reset();
         location.reload();
       }
     });
@@ -345,11 +384,11 @@ function showToast(msg, duration=3000) {
   setTimeout(() => toast.classList.remove('visible'), duration);
 }
 
-// ✨ ACTUALIZACIÓN DE BADGE CON MATEMÁTICA DE DOPAMINA ✨
+// ✨ UPDATE BADGE (Tipografía más grande y lógica x5)
 function updateBadge() {
-  const streak = getLocal('streak', 0);
+  const streak = checkAndFixStreak(); // Asegura 1 día mínimo si es hoy
   const books = getLocal('books_opened', 0);
-  const concepts = books * 5; // 1 Libro = 5 Conceptos (Visualmente poderoso)
+  const concepts = books * 5; 
   
   document.getElementById('badgeContent').innerHTML = 
     `🔥 ${streak}d <span class="dot"></span> 📚 ${books} libros <span class="dot"></span> <span class="highlight-txt">🤓 ${concepts} conceptos absorbidos - ¡Aplícalos hoy!</span>`;
@@ -415,7 +454,7 @@ function render(){
 
 // ENGAGEMENT LOGIC
 function handleBookReveal() {
-  const streak = updateStreak();
+  const streak = incrementStreakAction();
   const booksCount = incrementBooks();
   updateBadge();
   fetch("https://triggui-api.vercel.app/api/increment", {cache:"no-store"}).catch(()=>{});
@@ -423,33 +462,28 @@ function handleBookReveal() {
   const delay = 1500;
   const userCount = getRealisticUserCount();
 
+  // LOGICA MODALES
   if (booksCount === 2) {
     setTimeout(() => Modal.show({
       emoji: '📬', title: '¡2 Libros!', text: '¿Te gustaría recibir estas joyas por WhatsApp cada lunes?',
       btnText: 'Ver cómo funciona', onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
       showCancel: true, cancelText: 'Seguir explorando'
     }), delay);
-  } 
-  else if (booksCount === 5) {
+  } else if (booksCount === 5) {
     setTimeout(() => Modal.show({
-      emoji: '🎯', title: '5 Conceptos Absorbidos',
-      text: 'Recibe páginas seleccionadas para tu momento exacto.<br><span class="m-highlight">Precio lanzamiento: $100/mes</span>',
+      emoji: '🎯', title: '5 Libros Descubiertos', text: 'Recibe páginas seleccionadas para tu momento exacto.<br><span class="m-highlight">Precio lanzamiento: $100/mes</span>',
       btnText: 'Quiero recibirlos', onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
       showCancel: true
     }), delay);
-  }
-  else if (booksCount === 10) {
+  } else if (booksCount === 10) {
     setTimeout(() => Modal.show({
-      emoji: '🔥', title: '¡Estás en racha!',
-      text: `Ya llevas <b>10 libros</b> y <b>50 conceptos</b>. ${userCount} personas están aplicando esto hoy.`,
-      btnText: 'Unirme a WhatsApp', onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
+      emoji: '🔥', title: '¡Estás en racha!', text: `Ya llevas <b>10 libros</b> y <b>50 conceptos absorbidos</b>. ${userCount} personas están aplicando esto hoy. <br>Únete al grupo de WhatsApp.`,
+      btnText: 'Suscribirme', onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
       showCancel: true
     }), delay);
-  }
-  else if ([15, 20, 30, 50, 75, 100].includes(booksCount)) {
+  } else if ([15, 20, 30, 50, 75, 100].includes(booksCount)) {
     setTimeout(() => Modal.show({
-      emoji: '🧠', title: `${booksCount} Libros Descubiertos`,
-      text: 'Tu mente se está expandiendo. No pierdas el ritmo.<br><span class="m-highlight">Asegura tu precio de por vida hoy.</span>',
+      emoji: '🧠', title: `${booksCount} Libros Descubiertos`, text: 'Tu mente se está expandiendo. No pierdas el ritmo.<br><span class="m-highlight">Asegura tu precio de por vida hoy.</span>',
       btnText: 'Ver planes', onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
       showCancel: true
     }), delay);
@@ -460,7 +494,7 @@ function handleBookReveal() {
 btnOtro.onclick = () => { location.reload(); track('reload_clicked'); };
 btnLibro.onclick = async() => {
   btnLibro.disabled=true; cele.style.display="flex"; celeMsg.innerHTML='<span class="num">...</span><br>libros abiertos juntos';
-  try{ const r=await fetch("https://triggui-api.vercel.app/api/increment"); const d=await r.json(); celeMsg.innerHTML=`<span class="num">${d.total.toLocaleString("es-MX")}</span><br>libros abiertos juntos`; track('physical_book_opened', { total: d.total }); }catch{}
+  try{ const r=await fetch("https://triggui-api.vercel.app/api/increment"); const d=await r.json(); celeMsg.innerHTML=`✨ <span class="num">${d.total.toLocaleString("es-MX")}</span><br>libros abiertos juntos`; track('physical_book_opened', { total: d.total }); }catch{}
   setTimeout(()=>{ cele.style.display="none"; btnLibro.disabled=false; },2300);
 };
 
@@ -510,10 +544,12 @@ function pickLibroNoRepetido(libros){
     const r=await fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json?ts="+Date.now());
     const data=await r.json();
     libro=data.libros[pickLibroNoRepetido(data.libros)];
-    render(); updateBadge();
+    render(); 
+    // INIT STREAK VISUAL (CHECK ONLY)
+    updateBadge();
     track('app_loaded', {streak:getLocal('streak',0), books:getLocal('books_opened',0)});
   }catch(e){ 
-    // Usamos el modal de error personalizado
+    // Fallback silencioso en prod
     console.error(e);
   }
 })();
