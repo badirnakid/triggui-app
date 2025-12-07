@@ -49,7 +49,6 @@ let cardOpenedThisSession = false;
 // Tracking
 function track(event, data = {}) {
   if (typeof gtag !== 'undefined') gtag('event', event, { event_category: 'app_engagement', ...data });
-  console.log('📊', event, data);
 }
 
 // Streak
@@ -188,40 +187,35 @@ function getRealisticUserCount() {
 body.webview #tarjetaCard { height:650px !important; }
 @keyframes cardIn { to { opacity:1; transform:scale(1); } }
 
-/* ✨ BADGE COMPACTO (ANIMACIÓN ARREGLADA POR MÁRGENES) */
+/* ✨ BADGE COMPACTO NIVEL DIOS (AJUSTADO ESPACIADO) */
 #progressBadge {
-  position: fixed;
-  top: 15px;
-  /* TECNICA DE CENTRADO ABSOLUTO SIN TRANSFORM EN EL EJE X */
-  left: 0; 
-  right: 0; 
-  margin-left: auto; 
-  margin-right: auto;
-  width: fit-content;
-  max-width: 90vw;
-  
+  position: fixed; 
+  left: 50%; 
+  transform: translateX(-50%); /* Centrado estático */
+  top: 12px; /* Un poco más arriba */
   z-index: 150;
-  background: rgba(20,24,38,0.88); border: 1px solid rgba(255,255,255,0.12);
-  padding: 5px 20px; border-radius: 99px; color: #dfe9ff;
+  background: rgba(20,24,38,0.90); border: 1px solid rgba(255,255,255,0.12);
+  /* Padding ajustado para mantener altura total similar pero con más aire interno */
+  padding: 6px 24px; 
+  border-radius: 99px; color: #dfe9ff;
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  
-  /* Animación SOLO en Y y Opacidad - IMPOSIBLE QUE SE MUEVA LATERALMENTE */
   opacity: 0; 
-  animation: badgeDrop 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-  
+  animation: badgeSlideIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
   box-shadow: 0 4px 20px rgba(0,0,0,0.3); text-align: center;
-  cursor: pointer; user-select: none;
+  width: max-content; max-width: 94vw; cursor: pointer; user-select: none;
   pointer-events: auto;
 }
 
-@keyframes badgeDrop {
-  0% { opacity: 0; transform: translateY(-40px); }
-  100% { opacity: 1; transform: translateY(0); }
+@keyframes badgeSlideIn {
+  from { opacity: 0; transform: translate(-50%, -30px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
 }
 
 #progressBadge .line1 {
   display: block; font-size: 9px; text-transform: uppercase; letter-spacing: 1.2px; 
-  opacity: 0.6; margin-bottom: 0px; font-weight: 700; color: #a0aec0;
+  opacity: 0.6; 
+  margin-bottom: 3px; /* ESPACIO QUIRÚRGICO AGREGADO */
+  font-weight: 700; color: #a0aec0;
 }
 #progressBadge .line2 {
   display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;
@@ -267,7 +261,7 @@ body.webview #tarjetaCard { height:650px !important; }
 .num{ color:#30ffe4; font-weight:900; font-size:2.8rem; }
 
 @media (max-width: 480px) {
-  #progressBadge { padding: 5px 16px; top: 12px; }
+  #progressBadge { padding: 6px 16px; top: 12px; }
   #progressBadge .line2 { font-size: 12px; gap: 4px; }
   .grid { gap: 1vw; } 
   .cele-msg { font-size: 1.5rem; padding: 1.5rem 2rem; }
