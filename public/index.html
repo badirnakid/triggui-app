@@ -115,21 +115,20 @@ function getRealisticUserCount() {
   return base + variance;
 }
 
-// ✨ FUNCIÓN WHATSAPP UNIVERSAL (WEB + WEBVIEW)
+// ✨ FUNCIÓN WHATSAPP UNIVERSAL (MÁXIMO RIESGO - MÁXIMA COMPATIBILIDAD)
 function abrirWhatsApp(numero, mensaje = '') {
-  const isWebView = /wv|WebView/i.test(navigator.userAgent) || 
-                    (navigator.userAgent.includes("Android") && navigator.userAgent.includes("Version/")) ||
-                    (navigator.userAgent.includes("iPhone") && !navigator.userAgent.includes("Safari"));
-  
   const textoEncoded = encodeURIComponent(mensaje);
   
-  if (isWebView) {
-    // En WebView usa esquema directo
-    window.location.href = `whatsapp://send?phone=${numero}&text=${textoEncoded}`;
-  } else {
-    // En navegador web usa wa.me
-    window.open(`https://wa.me/${numero}?text=${textoEncoded}`, '_blank');
-  }
+  // Guardar estado actual por si acaso
+  saveLocal('last_state_before_whatsapp', {
+    libro: libro ? libro.titulo : null,
+    timestamp: Date.now()
+  });
+  
+  track('whatsapp_intent', { platform: getPlatform() });
+  
+  // Usar esquema directo - funciona en WebView iOS/Android
+  window.location.href = `whatsapp://send?phone=${numero}&text=${textoEncoded}`;
 }
 </script>
 
@@ -401,7 +400,6 @@ function updateBadge() {
   const books = getLocal('books_opened', 0);
   const concepts = getLocal('concepts', books * 5); 
   
-  // Agregar lógica para singular/plural
   const diasTexto = streak === 1 ? 'día' : 'días';
   const librosTexto = books === 1 ? 'libro' : 'libros';
   
@@ -475,7 +473,6 @@ function handleBookReveal() {
   const booksCount = incrementBooks();
   addConcepts(4); 
   updateBadge();
-  // Call to Vercel (Optional)
   fetch("https://triggui-api.vercel.app/api/increment", {cache:"no-store"}).catch(()=>{});
 
   const delay = 1500;
@@ -484,31 +481,31 @@ function handleBookReveal() {
   if (booksCount === 2) {
     setTimeout(() => Modal.show({
       emoji: '📬', title: '¡2 Libros!', text: '¿Te gustaría recibir estas joyas por WhatsApp cada lunes?',
-      btnText: 'Ver cómo funciona', onConfirm: () => abrirWhatsApp('5215532394017', '¡Hola! Quiero recibir las joyas por WhatsApp 📚'),
+      btnText: 'Sí, quiero', onConfirm: () => abrirWhatsApp('5215532394017', '¡Hola! Quiero recibir las joyas de Triggui por WhatsApp 📚'),
       showCancel: true, cancelText: 'Seguir explorando'
     }), delay);
   } else if (booksCount === 5) {
     setTimeout(() => Modal.show({
       emoji: '🎯', title: '5 Libros Descubiertos', text: 'Recibe páginas seleccionadas para tu momento exacto.<br><span class="m-highlight">Precio lanzamiento: $100/mes</span>',
-      btnText: 'Quiero recibirlos', onConfirm: () => abrirWhatsApp('5215532394017', 'Quiero suscribirme a Triggui 📖'),
+      btnText: 'Quiero suscribirme', onConfirm: () => abrirWhatsApp('5215532394017', 'Quiero suscribirme a Triggui - 5 libros descubiertos 📖'),
       showCancel: true
     }), delay);
   } else if (booksCount === 10) {
     setTimeout(() => Modal.show({
       emoji: '🔥', title: '¡Estás en racha!', text: `Ya llevas <b>10 libros</b> y <b>50 conceptos absorbidos</b>. ${userCount} personas están aplicando esto hoy. <br>Únete al grupo de WhatsApp.`,
-      btnText: 'Suscribirme', onConfirm: () => abrirWhatsApp('5215532394017', '¡Quiero suscribirme! Llevo 10 libros 🔥'),
+      btnText: 'Unirme ahora', onConfirm: () => abrirWhatsApp('5215532394017', '¡Llevo 10 libros! Quiero unirme al grupo 🔥'),
       showCancel: true
     }), delay);
   } else if ([15, 20, 30, 50, 75, 100].includes(booksCount)) {
     setTimeout(() => Modal.show({
       emoji: '🧠', title: `${booksCount} Libros Descubiertos`, text: 'Tu mente se está expandiendo. No pierdas el ritmo.<br><span class="m-highlight">Asegura tu precio de por vida hoy.</span>',
-      btnText: 'Ver planes', onConfirm: () => abrirWhatsApp('5215532394017', `Llevo ${booksCount} libros. Quiero más info 📚`),
+      btnText: 'Más información', onConfirm: () => abrirWhatsApp('5215532394017', `Llevo ${booksCount} libros. Quiero más info sobre Triggui 📚`),
       showCancel: true
     }), delay);
   }
 }
 
-// === EFECTO LIKE & SHARE MODAL (NIVEL DIOS FIXED: ORIGEN "like-button") ===
+// === EFECTO LIKE & SHARE MODAL ===
 btnLike.onclick = (e) => {
   const rect = btnLike.getBoundingClientRect();
   const centerX = rect.left + rect.width / 2;
@@ -516,7 +513,6 @@ btnLike.onclick = (e) => {
 
   for (let i = 0; i < 8; i++) { createFloatingHeart(centerX, centerY); }
   
-  // 1. RECOLECTAR DATOS
   const rachaActual = getLocal('streak', 0);
   const totalLibros = getLocal('books_opened', 0);
   const conceptosActuales = getLocal('concepts', 0);
@@ -526,7 +522,6 @@ btnLike.onclick = (e) => {
     const frasesVistas = libro.frases.join(" | ");
     const urlScript = "https://script.google.com/macros/s/AKfycbyJdF6QZ4b321MUzzkpkvNLEL4-ZJDdgzs7gXTS6bhtI0HMgnJQnAm7tZMeo7u8oatE/exec";
     
-    // 2. ENVIAR DATOS COMPLETOS
     fetch(urlScript, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -539,7 +534,7 @@ btnLike.onclick = (e) => {
         "total_books": totalLibros,
         "platform": tipoDispositivo,
         "concepts": conceptosActuales,
-        "source": "like-button" // <--- ORIGEN EXACTO DEL CLICK
+        "source": "like-button"
       })
     });
     track('like_clicked', { book: libro.titulo, streak: rachaActual });
@@ -628,7 +623,6 @@ function pickLibroNoRepetido(libros){
     const data=await r.json();
     libro=data.libros[pickLibroNoRepetido(data.libros)];
     render(); 
-    // Init Visual
     updateBadge();
     track('app_loaded', {streak:getLocal('streak',0), books:getLocal('books_opened',0)});
   }catch(e){ 
