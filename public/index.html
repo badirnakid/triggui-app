@@ -34,7 +34,7 @@ function getLocal(key, defaultValue = null) { try { const data = localStorage.ge
 // Reset Helper
 window.reset = function() {
   localStorage.removeItem('triggui_books_opened');
-  localStorage.removeItem('triggui_concepts'); // Nuevo contador real
+  localStorage.removeItem('triggui_concepts');
   localStorage.removeItem('triggui_last_book_time');
   localStorage.removeItem('triggui_streak');
   localStorage.removeItem('triggui_last_visit');
@@ -83,16 +83,11 @@ function incrementBooks() {
   return count;
 }
 
-// LÓGICA DE CONCEPTOS (+4 y +1 REAL)
-function incrementConcepts(amount) {
+// LÓGICA DE CONCEPTOS (+4 y +1)
+function addConcepts(amount) {
   let current = getLocal('concepts', 0);
   const books = getLocal('books_opened', 0);
-  
-  // Migración para usuarios viejos: si tiene libros pero 0 conceptos
-  if (current === 0 && books > 0) {
-    current = books * 5; 
-  }
-  
+  if (current === 0 && books > 1) { current = books * 5; } // Migración
   const newVal = current + amount;
   saveLocal('concepts', newVal);
   return newVal;
@@ -201,24 +196,22 @@ body.webview #tarjetaCard { height:650px !important; }
 /* ✨ BADGE COMPACTO NIVEL DIOS (CENTRADO ABSOLUTO) */
 #progressBadge {
   position: fixed;
-  top: 15px; /* Margen superior */
-  /* CENTRADO INFALIBLE SIN TRANSFORM HORIZONTAL */
+  top: 15px; 
+  /* CENTRADO INFALIBLE */
   left: 0; right: 0; margin: 0 auto;
   
-  width: fit-content; max-width: 92%; /* Evita que se salga */
+  width: fit-content; max-width: 90vw;
   z-index: 150;
   
   background: rgba(20,24,38,0.90); border: 1px solid rgba(255,255,255,0.12);
   padding: 6px 20px; border-radius: 99px; color: #dfe9ff;
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
   
-  /* Animación SOLO Vertical */
   opacity: 0; animation: badgeDrop 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
   box-shadow: 0 4px 20px rgba(0,0,0,0.3); text-align: center;
   cursor: pointer; user-select: none; pointer-events: auto;
 }
 
-/* Solo animamos Y, el X lo controla el margin:auto */
 @keyframes badgeDrop { 
   0% { opacity: 0; transform: translateY(-40px); } 
   100% { opacity: 1; transform: translateY(0); } 
@@ -394,7 +387,7 @@ progressBadge.addEventListener('click', () => {
   if (tapCount === 3) {
     clearTimeout(tapTimer); tapCount = 0;
     Modal.show({
-      emoji: '🔄', title: '¿Reiniciar?', text: 'Esto pondrá tus contadores a cero.',
+      emoji: '🔄', title: '¿Reiniciar Contadores?', text: 'Esto pondrá tus estadísticas a cero.',
       btnText: 'Sí, Reiniciar', showCancel: true, cancelText: 'Cancelar',
       onConfirm: () => {
         window.reset();
@@ -409,11 +402,11 @@ function showToast(msg, duration=3000) {
   setTimeout(() => toast.classList.remove('visible'), duration);
 }
 
-// ✨ UPDATE BADGE (Conceptos Reales)
+// ✨ UPDATE BADGE (Conceptos)
 function updateBadge() {
   const streak = updateStreak(); 
   const books = getLocal('books_opened', 0);
-  const concepts = getLocal('concepts', books * 5); // Fallback inicial seguro
+  const concepts = getLocal('concepts', books * 5); 
   
   document.getElementById('badgeContent').innerHTML = 
     `🔥 ${streak}d <span class="dot"></span> 📚 ${books} libros <span class="dot"></span> <span class="highlight-txt">🤓 ${concepts} conceptos absorbidos - ¡Aplícalos hoy!</span>`;
@@ -464,9 +457,8 @@ function render(){
           document.getElementById("fisico").style.background = `linear-gradient(135deg, ${c[1]}, ${c[2]})`;
           document.getElementById("share").style.background = `linear-gradient(135deg, ${c[2]}, ${c[3]})`;
           
-          // LIKE BUTTON STYLE
           document.getElementById("like").style.background = `linear-gradient(135deg, #ff416c, #ff4b2b)`;
-          
+
           document.getElementById("otro").style.color = pickTextColor(c[0]);
           document.getElementById("fisico").style.color = pickTextColor(c[1]);
           document.getElementById("share").style.color = pickTextColor(c[2]);
@@ -484,7 +476,7 @@ function render(){
 // LOGICA ENGAGEMENT
 function handleBookReveal() {
   const booksCount = incrementBooks();
-  incrementConcepts(4); // +4 al revelar
+  addConcepts(4); 
   updateBadge();
   fetch("https://triggui-api.vercel.app/api/increment", {cache:"no-store"}).catch(()=>{});
 
@@ -505,7 +497,7 @@ function handleBookReveal() {
     }), delay);
   } else if (booksCount === 10) {
     setTimeout(() => Modal.show({
-      emoji: '🔥', title: '¡Estás en racha!', text: `Ya llevas <b>10 libros</b>. ${userCount} personas están aplicando esto hoy. <br>Únete al grupo de WhatsApp.`,
+      emoji: '🔥', title: '¡Estás en racha!', text: `Ya llevas <b>10 libros</b> y <b>50 conceptos absorbidos</b>. ${userCount} personas están aplicando esto hoy. <br>Únete al grupo de WhatsApp.`,
       btnText: 'Suscribirme', onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
       showCancel: true
     }), delay);
@@ -518,14 +510,31 @@ function handleBookReveal() {
   }
 }
 
-// === EFECTO LIKE & SHARE MODAL ===
+// === EFECTO LIKE, SHARE MODAL & DATA TRACKING ===
 btnLike.onclick = (e) => {
   const rect = btnLike.getBoundingClientRect();
   const centerX = rect.left + rect.width / 2;
   const centerY = rect.top + rect.height / 2;
 
   for (let i = 0; i < 8; i++) { createFloatingHeart(centerX, centerY); }
-  track('like_clicked');
+  
+  // Enviar Data a Google Sheet
+  try {
+    const frasesVistas = libro.frases.join(" | ");
+    const urlScript = "https://script.google.com/macros/s/AKfycbyJdF6QZ4b321MUzzkpkvNLEL4-ZJDdgzs7gXTS6bhtI0HMgnJQnAm7tZMeo7u8oatE/exec";
+    
+    fetch(urlScript, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        "action": "like",
+        "book": libro.titulo,
+        "author": libro.autor,
+        "phrases": frasesVistas
+      })
+    });
+    track('like_clicked', { book: libro.titulo });
+  } catch (err) { console.log("Error enviando like:", err); }
 
   setTimeout(() => {
     Modal.show({
@@ -562,9 +571,9 @@ function pickTextColor(bg) { try { return luminance(bg) > 0.35 ? "#000" : "#fff"
 btnShare.onclick = () => {
   const t = libro.tarjeta; const card = document.getElementById("tarjetaCard");
   
-  // +1 Concepto al abrir tarjeta
+  // +1 Concepto
   if (!cardOpenedThisSession) {
-    incrementConcepts(1);
+    addConcepts(1);
     updateBadge(); 
     cardOpenedThisSession = true;
   }
