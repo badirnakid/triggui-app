@@ -44,12 +44,11 @@ window.reset = function() {
 // Variables
 let tapCount = 0;
 let tapTimer = null;
-let cardOpenedThisSession = false; // Para controlar el +1 del concepto
+let cardOpenedThisSession = false; 
 
 // Tracking
 function track(event, data = {}) {
   if (typeof gtag !== 'undefined') gtag('event', event, { event_category: 'app_engagement', ...data });
-  console.log('📊', event, data);
 }
 
 // Streak
@@ -58,7 +57,6 @@ function updateStreak() {
   const lastVisit = getLocal('last_visit');
   let streak = getLocal('streak', 0);
 
-  // Fix primer día
   if (streak === 0) {
     streak = 1;
     saveLocal('streak', 1);
@@ -85,13 +83,16 @@ function incrementBooks() {
   return count;
 }
 
-// LÓGICA DE CONCEPTOS (+4 y +1)
+// LÓGICA DE CONCEPTOS (+4 y +1) - CORREGIDA
 function addConcepts(amount) {
   let current = getLocal('concepts', 0);
-  // Migración si usuario viejo tiene 0 conceptos pero ya abrió libros
-  if (current === 0 && getLocal('books_opened', 0) > 0) {
-    current = getLocal('books_opened', 0) * 5; 
+  const books = getLocal('books_opened', 0);
+  
+  // FIX: Solo migrar si libros > 1 (evita bug de arranque que suma 9)
+  if (current === 0 && books > 1) {
+    current = books * 5; 
   }
+  
   const newVal = current + amount;
   saveLocal('concepts', newVal);
   return newVal;
@@ -191,42 +192,43 @@ function getRealisticUserCount() {
 body.webview #tarjetaCard { height:650px !important; }
 @keyframes cardIn { to { opacity:1; transform:scale(1); } }
 
-/* ✨ BADGE COMPACTO (FIX ANIMACIÓN + MOBILE) */
+/* ✨ BADGE COMPACTO NIVEL DIOS (Menos Alto + Fix 4 Conceptos) */
 #progressBadge {
   position: fixed; 
   left: 50%; 
-  transform: translateX(-50%); /* CENTRADO ESTATICO */
-  top: 15px; /* Posicion final */
+  transform: translateX(-50%); /* Centrado estático */
+  top: 10px; /* Más arriba */
   z-index: 150;
-  background: rgba(20,24,38,0.85); border: 1px solid rgba(255,255,255,0.15);
-  padding: 10px 24px; border-radius: 20px; color: #dfe9ff;
+  background: rgba(20,24,38,0.88); border: 1px solid rgba(255,255,255,0.12);
+  padding: 5px 20px; /* Menos padding vertical para reducir altura */
+  border-radius: 99px; color: #dfe9ff;
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  /* Animación solo de opacidad y top, no toca el X */
-  animation: slideDownBadge 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.3); text-align: center;
-  width: auto; max-width: 92vw; cursor: pointer; user-select: none;
+  opacity: 0; 
+  animation: badgeSlideIn 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3); text-align: center;
+  width: max-content; max-width: 94vw; cursor: pointer; user-select: none;
   pointer-events: auto;
 }
 
-@keyframes slideDownBadge {
-  0% { opacity: 0; top: -60px; }
-  100% { opacity: 1; top: 15px; }
+@keyframes badgeSlideIn {
+  from { opacity: 0; transform: translate(-50%, -30px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
 }
 
 #progressBadge .line1 {
-  display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; 
-  opacity: 0.8; margin-bottom: 4px; font-weight: 700; color: #a0aec0;
+  display: block; font-size: 9px; text-transform: uppercase; letter-spacing: 1.2px; 
+  opacity: 0.6; margin-bottom: 0px; font-weight: 700; color: #a0aec0;
 }
 #progressBadge .line2 {
-  display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;
-  font-size: 15px; font-weight: 700; color: #fff; line-height: 1.4;
+  display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;
+  font-size: 13px; font-weight: 700; color: #fff; line-height: 1.2;
 }
-#progressBadge .dot { width: 3px; height: 3px; background: rgba(255,255,255,0.3); border-radius: 50%; display: inline-block; margin: 0 2px; }
-.highlight-txt { color: #30ffe4; text-shadow: 0 0 12px rgba(48,255,228,0.3); }
+#progressBadge .dot { width: 2px; height: 2px; background: rgba(255,255,255,0.4); border-radius: 50%; display: inline-block; margin: 0 2px; }
+.highlight-txt { color: #30ffe4; text-shadow: 0 0 10px rgba(48,255,228,0.25); }
 
 /* Toast */
 #toast {
-  position: fixed; top: 90px; left: 50%; transform: translateX(-50%) translateY(-20px); z-index: 160;
+  position: fixed; top: 85px; left: 50%; transform: translateX(-50%) translateY(-20px); z-index: 160;
   background: rgba(20,24,38,0.95); border: 1px solid rgba(255,255,255,0.1);
   padding: 12px 24px; border-radius: 16px; font-size: 15px; color: #fff;
   backdrop-filter: blur(12px); font-weight: 600; opacity: 0; pointer-events: none;
@@ -261,8 +263,8 @@ body.webview #tarjetaCard { height:650px !important; }
 .num{ color:#30ffe4; font-weight:900; font-size:2.8rem; }
 
 @media (max-width: 480px) {
-  #progressBadge { padding: 8px 16px; border-radius: 16px; width: 92%; }
-  #progressBadge .line2 { font-size: 13px; }
+  #progressBadge { padding: 5px 16px; top: 12px; }
+  #progressBadge .line2 { font-size: 12px; gap: 4px; }
   .grid { gap: 1vw; } 
   .cele-msg { font-size: 1.5rem; padding: 1.5rem 2rem; }
 }
@@ -384,11 +386,11 @@ function showToast(msg, duration=3000) {
   setTimeout(() => toast.classList.remove('visible'), duration);
 }
 
-// ✨ UPDATE BADGE (Conceptos = Libros * 5)
+// ✨ UPDATE BADGE (Conceptos)
 function updateBadge() {
   const streak = updateStreak(); 
   const books = getLocal('books_opened', 0);
-  const concepts = getLocal('concepts', books * 5); // Fallback para usuarios viejos
+  const concepts = getLocal('concepts', books * 5); 
   
   document.getElementById('badgeContent').innerHTML = 
     `🔥 ${streak}d <span class="dot"></span> 📚 ${books} libros <span class="dot"></span> <span class="highlight-txt">🤓 ${concepts} conceptos absorbidos - ¡Aplícalos hoy!</span>`;
@@ -476,7 +478,7 @@ function handleBookReveal() {
     }), delay);
   } else if (booksCount === 10) {
     setTimeout(() => Modal.show({
-      emoji: '🔥', title: '¡Estás en racha!', text: `Ya llevas <b>10 libros</b>. ${userCount} personas están aplicando esto hoy. <br>Únete al grupo de WhatsApp.`,
+      emoji: '🔥', title: '¡Estás en racha!', text: `Ya llevas <b>10 libros</b> y <b>50 conceptos absorbidos</b>. ${userCount} personas están aplicando esto hoy. <br>Únete al grupo de WhatsApp.`,
       btnText: 'Suscribirme', onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
       showCancel: true
     }), delay);
@@ -553,10 +555,11 @@ function pickLibroNoRepetido(libros){
     const data=await r.json();
     libro=data.libros[pickLibroNoRepetido(data.libros)];
     render(); 
-    // Init Visual
+    // INIT STREAK VISUAL (CHECK ONLY)
     updateBadge();
     track('app_loaded', {streak:getLocal('streak',0), books:getLocal('books_opened',0)});
   }catch(e){ 
+    // Fallback silencioso en prod
     console.error(e);
   }
 })();
