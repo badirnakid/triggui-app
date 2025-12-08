@@ -104,7 +104,7 @@ function getRealisticUserCount() {
 }
 </script>
 
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Lora:ital,wght@0,400;0,600;1,400&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,500&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 
 <style>
 /* ========================================
@@ -171,87 +171,100 @@ function getRealisticUserCount() {
 #share{ background:linear-gradient(135deg,#ff8a00,#ff3d3d); color:#fff; }
 #like{ background:linear-gradient(135deg, #ff416c, #ff4b2b); color:#fff; }
 
-/* 💎 CARD OVERLAY & DESIGN (COLECCIONABLE) */
-#tarjetaOverlay { display:none; position:fixed; inset:0; z-index:999; align-items:center; justify-content:center; background: rgba(0,0,0,0.88); backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.3s ease; }
+/* 💎 TARJETA NIVEL DIOS (SUBLIME) */
+#tarjetaOverlay { 
+  display:none; position:fixed; inset:0; z-index:999; 
+  align-items:center; justify-content:center; 
+  background: rgba(0,0,0,0.85); 
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  opacity: 0; transition: opacity 0.3s ease; 
+  cursor: pointer; /* Indica que se puede picar para cerrar */
+}
 #tarjetaOverlay.visible { opacity: 1; }
 
 #tarjetaCard { 
-  /* Estructura Base */
-  width: min(420px, 88vw); 
+  /* Estructura Full-Width pero Elegante */
+  width: 94%; /* Mucho más ancho en móvil como pediste */
+  max-width: 520px; /* Límite para que no se vea ridículo en Desktop */
+  height: auto;
   max-height: 85vh;
+  
+  /* Scroll Invisible pero funcional */
   overflow-y: auto; 
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
   
-  /* Look Papel/Tarjeta Premium */
-  border-radius: 12px; /* Bordes menos redondos, más papel */
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+  /* Diseño Físico */
+  border-radius: 20px; 
   position: relative;
-  transform: scale(0.92) translateY(20px);
+  transform: scale(0.94) translateY(15px);
   opacity: 0;
   transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.4s ease;
   
-  /* Variables CSS dinámicas (se llenan con JS) */
+  /* Variables CSS dinámicas */
   background-color: var(--paper-col);
   color: var(--ink-col);
+  
+  /* Sombra de Levitación */
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.6), 
+    0 0 0 1px rgba(255,255,255,0.08); /* Borde sutil de luz */
+    
+  cursor: default; /* Reinicia cursor dentro de la tarjeta */
 }
 
-/* Textura de ruido encima del color del papel */
-#tarjetaCard::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0.05; z-index: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
-  background-size: 150px;
+/* Ocultar barra scroll en Chrome/Safari */
+#tarjetaCard::-webkit-scrollbar { display: none; }
+
+/* Textura de papel "ruido" sutil */
+#tarjetaCard::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0.04; z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+  border-radius: 20px;
 }
 
 #tarjetaOverlay.visible #tarjetaCard { transform: scale(1) translateY(0); opacity: 1; }
-body.webview #tarjetaCard { max-height: 90vh; }
+body.webview #tarjetaCard { max-height: 90vh; padding-bottom: 20px; }
 
-/* Marco Decorativo Interno */
-.card-frame {
-  position: relative; z-index: 1;
-  margin: 10px;
-  border: 2px solid var(--border-col); /* Color del borde del JSON */
-  border-radius: 8px;
-  padding: 24px 20px;
-  min-height: calc(100% - 20px);
-  box-sizing: border-box;
+/* Contenedor interno */
+.card-content-wrap {
+  position: relative; z-index: 2; padding: 32px 24px;
   display: flex; flex-direction: column;
 }
 
-/* Tipografías y Elementos */
-.card-header { text-align: center; margin-bottom: 24px; padding-bottom: 18px; border-bottom: 1px solid var(--border-col); }
-.card-title { font-family: var(--serif-font); font-weight: 800; font-size: 26px; line-height: 1.1; margin-bottom: 8px; letter-spacing: -0.02em; }
-.card-author { font-family: var(--sans-font); font-size: 12px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.75; font-weight: 700; }
+/* Tipografía Sublime */
+.card-header { text-align: center; margin-bottom: 26px; border-bottom: 1px solid var(--border-col); padding-bottom: 20px; }
+.card-title { font-family: var(--serif-font); font-weight: 800; font-size: clamp(24px, 6vw, 32px); line-height: 1.05; margin-bottom: 8px; letter-spacing: -0.5px; }
+.card-author { font-family: var(--sans-font); font-size: 13px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.7; font-weight: 700; margin-top: 6px; }
 
-.card-body { flex: 1; font-family: var(--serif-font); font-size: 18px; line-height: 1.6; opacity: 0.95; margin-bottom: 28px; }
+.card-body { font-family: var(--serif-font); font-size: 19px; line-height: 1.55; opacity: 0.95; margin-bottom: 30px; }
 .card-highlight { 
   font-family: var(--sans-font); 
-  font-weight: 700; font-size: 19px; margin: 24px 0; line-height: 1.35; 
-  color: var(--accent-col); /* Color de acento del JSON */
-  text-align: center;
-  position: relative; padding: 0 10px;
+  font-weight: 700; font-size: 21px; margin: 24px 0; line-height: 1.35; 
+  color: var(--accent-col); text-align: center;
 }
 
-/* Botones dentro de la tarjeta */
-.card-actions { display: flex; flex-direction: column; gap: 12px; margin-top: auto; }
+/* Botones de Acción */
+.card-actions { display: flex; flex-direction: column; gap: 14px; margin-top: auto; }
 
 .btn-action {
-  position: relative; overflow: hidden;
-  background: rgba(255,255,255,0.9); /* Fondo base limpio */
-  color: #111;
-  padding: 14px 18px; border-radius: 12px;
-  display: flex; align-items: center; justify-content: center; gap: 10px;
-  text-decoration: none; transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  position: relative; z-index: 10; /* Asegura que sean clickeables sobre el overlay de cierre */
+  background: rgba(255,255,255,0.95); 
+  color: #000;
+  padding: 16px; border-radius: 16px;
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  text-decoration: none; transition: transform 0.1s;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
   border: 1px solid rgba(0,0,0,0.05);
   cursor: pointer;
 }
 .btn-action:active { transform: scale(0.98); }
 
-/* Modificadores Dark Mode automáticos según tinta */
-.card-dark-mode .btn-action { background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.15); }
-.card-dark-mode .btn-action:hover { background: rgba(255,255,255,0.12); }
+/* Dark Mode Automático */
+.card-dark-mode .btn-action { background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.15); backdrop-filter: blur(10px); }
 
-.btn-txt { font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.2px; }
+.btn-txt { font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 0.3px; }
 
 /* Badge */
 #progressBadge {
@@ -353,7 +366,7 @@ body.webview #tarjetaCard { max-height: 90vh; }
   <button id="like"><span class="icon">😍</span></button>
 </div>
 
-<div id="tarjetaOverlay"><div id="tarjetaCard"></div></div>
+<div id="tarjetaOverlay" onclick="closeCard()"><div id="tarjetaCard" onclick="handleCardClick(event)"></div></div>
 
 <div class="cele" id="cele"><div class="cele-msg" id="celeMsg"></div></div>
 
@@ -611,7 +624,7 @@ btnLibro.onclick = async() => {
 function luminance(hex) { try { const c = hex.replace("#","").match(/.{1,2}/g).map(x=>parseInt(x,16)/255); const f = v => v<=.03928 ? v/12.92 : Math.pow((v+.055)/1.055,2.4); return 0.2126*f(c[0])+0.7152*f(c[1])+0.0722*f(c[2]); } catch { return 0; } }
 function pickTextColor(bg) { try { return luminance(bg) > 0.35 ? "#000" : "#fff"; } catch { return "#fff"; } }
 
-// SHARE & TARJETA - DISEÑO DINÁMICO
+// SHARE & TARJETA
 btnShare.onclick = () => {
   const t = libro.tarjeta; 
   const overlay = document.getElementById("tarjetaOverlay");
@@ -621,7 +634,7 @@ btnShare.onclick = () => {
     addConcepts(1); updateBadge(); cardOpenedThisSession = true;
   }
 
-  // Extraer estilos del JSON
+  // Estilos del JSON
   const sPaper = t.style.paper || "#fff"; 
   const sInk = t.style.ink || "#111"; 
   const sBorder = t.style.border || "rgba(0,0,0,0.1)";
@@ -630,7 +643,7 @@ btnShare.onclick = () => {
   const sSans = t.style.sans || "'Archivo', sans-serif";
   const p = libro.palabras && libro.palabras.length > 0 ? libro.palabras[Math.floor(Math.random()*libro.palabras.length)] : "";
 
-  // Inyectar variables CSS para esta tarjeta específica
+  // Inyectar variables CSS
   card.style.setProperty('--paper-col', sPaper);
   card.style.setProperty('--ink-col', sInk);
   card.style.setProperty('--border-col', sBorder);
@@ -638,13 +651,13 @@ btnShare.onclick = () => {
   card.style.setProperty('--serif-font', sSerif);
   card.style.setProperty('--sans-font', sSans);
 
-  // Detectar modo oscuro para ajustar botones
+  // Modo Oscuro Detector
   if (pickTextColor(sPaper) === '#fff') { card.classList.add('card-dark-mode'); } 
   else { card.classList.remove('card-dark-mode'); }
 
-  // Renderizar HTML Interno
+  // Render HTML
   card.innerHTML = `
-    <div class="card-frame" onclick="event.stopPropagation()">
+    <div class="card-content-wrap">
       
       <div class="card-header">
         <div class="card-title">${libro.titulo}</div>
@@ -666,7 +679,7 @@ btnShare.onclick = () => {
         
         <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(p)}" 
            target="_blank" class="btn-action">
-           <span class="icon">✨</span>
+           <span class="icon" style="font-size:18px;">✨</span>
            <span class="btn-txt">Explorar posibilidades</span>
         </a>
 
@@ -683,17 +696,24 @@ btnShare.onclick = () => {
   track('card_viewed', { book: libro.titulo });
 };
 
-// Cierre Global
+// LOGICA DE CIERRE (MÁXIMA PRIORIDAD)
+// Esta función decide si cerrar o dejar pasar el click
+window.handleCardClick = function(e) {
+  // Si el click fue en un botón (link) o dentro de un botón, NO cerramos
+  if (e.target.closest('a') || e.target.closest('button')) {
+    e.stopPropagation(); // Dejamos que el link haga lo suyo
+    return;
+  }
+  // Si fue texto, fondo blanco o cualquier otra cosa -> CERRAMOS
+  window.closeCard();
+}
+
+// Cierre Global y Animación
 window.closeCard = function() {
   const overlay = document.getElementById("tarjetaOverlay");
   overlay.classList.remove('visible');
   setTimeout(() => { overlay.style.display="none"; }, 300);
 }
-// Cierre al tocar el overlay (fondo oscuro)
-document.getElementById("tarjetaOverlay").onclick = (e) => {
-  // Asegura que solo cierre si el click fue directo en el overlay, no en la tarjeta
-  if(e.target === document.getElementById("tarjetaOverlay")) window.closeCard();
-};
 
 // INIT
 function isWebView(){ const ua=navigator.userAgent||navigator.vendor||window.opera; return (/wv/i.test(ua)||/WebView/i.test(ua)||(ua.includes("Android")&&ua.includes("Version/"))||(ua.includes("iPhone")&&!ua.includes("Safari"))); }
