@@ -7,7 +7,7 @@
 
 <style>
   html, body { background:#0e0f1b !important; color:#fff; margin:0; padding:0; height:100%; font-family:'Archivo',sans-serif; -webkit-overflow-scrolling:touch; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overflow: hidden; }
-  /* Fondo animado sutil para dar vida */
+  /* Fondo animado sutil */
   body::before { content:""; position:fixed; inset:0; background:radial-gradient(circle at 50% 50%, rgba(48,255,228,0.03), transparent 70%); z-index:-1; pointer-events:none; }
 </style>
 
@@ -27,7 +27,7 @@
 
 <script>
 // ========================================
-// 🧠 LOGICA DE DATOS (DATA LAYER - INTACTO)
+// 🧠 LOGICA DE DATOS (INTACTA)
 // ========================================
 function saveLocal(key, value) { try { localStorage.setItem('triggui_' + key, JSON.stringify(value)); } catch(e) {} }
 function getLocal(key, defaultValue = null) { try { const data = localStorage.getItem('triggui_' + key); return data ? JSON.parse(data) : defaultValue; } catch(e) { return defaultValue; } }
@@ -104,11 +104,11 @@ function getRealisticUserCount() {
 }
 </script>
 
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Lora:ital,wght@0,400;0,600;1,400&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
 /* ========================================
-   🎨 ESTILOS UI (OPTIMIZADOS NIVEL DIOS)
+   🎨 ESTILOS UI
    ======================================== */
 .intro{
   position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
@@ -171,76 +171,89 @@ function getRealisticUserCount() {
 #share{ background:linear-gradient(135deg,#ff8a00,#ff3d3d); color:#fff; }
 #like{ background:linear-gradient(135deg, #ff416c, #ff4b2b); color:#fff; }
 
-/* 💎 CARD OVERLAY & DESIGN (NIVEL DIOS) */
-#tarjetaOverlay { display:none; position:fixed; inset:0; z-index:999; align-items:center; justify-content:center; background: radial-gradient(circle, rgba(0,0,0,0.85), rgba(0,0,0,0.95)); backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.3s ease; }
+/* 💎 CARD OVERLAY & DESIGN (COLECCIONABLE) */
+#tarjetaOverlay { display:none; position:fixed; inset:0; z-index:999; align-items:center; justify-content:center; background: rgba(0,0,0,0.88); backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.3s ease; }
 #tarjetaOverlay.visible { opacity: 1; }
 
 #tarjetaCard { 
-  width: min(420px, 90vw); 
+  /* Estructura Base */
+  width: min(420px, 88vw); 
   max-height: 85vh;
-  /* Scroll interno si el contenido es largo */
   overflow-y: auto; 
   -webkit-overflow-scrolling: touch;
   
-  /* Look & Feel Papel Premium */
-  border-radius: 24px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255,255,255,0.05);
+  /* Look Papel/Tarjeta Premium */
+  border-radius: 12px; /* Bordes menos redondos, más papel */
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
   position: relative;
   transform: scale(0.92) translateY(20px);
   opacity: 0;
   transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.4s ease;
   
-  /* Textura de papel sutil usando CSS noise */
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+  /* Variables CSS dinámicas (se llenan con JS) */
+  background-color: var(--paper-col);
+  color: var(--ink-col);
 }
 
-/* Estado activo de la tarjeta */
+/* Textura de ruido encima del color del papel */
+#tarjetaCard::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0.05; z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+  background-size: 150px;
+}
+
 #tarjetaOverlay.visible #tarjetaCard { transform: scale(1) translateY(0); opacity: 1; }
-/* Webview adjustment */
-body.webview #tarjetaCard { max-height: 90vh; padding-bottom: 20px; }
+body.webview #tarjetaCard { max-height: 90vh; }
 
-/* Elementos internos de la Tarjeta */
-.card-inner { padding: 32px 24px; display: flex; flex-direction: column; height: 100%; box-sizing: border-box; }
-.card-close-btn {
-  position: absolute; top: 16px; right: 16px; width: 32px; height: 32px;
-  background: rgba(0,0,0,0.06); border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  cursor: pointer; font-size: 18px; color: inherit; opacity: 0.6; transition: opacity 0.2s; z-index: 10;
+/* Marco Decorativo Interno */
+.card-frame {
+  position: relative; z-index: 1;
+  margin: 10px;
+  border: 2px solid var(--border-col); /* Color del borde del JSON */
+  border-radius: 8px;
+  padding: 24px 20px;
+  min-height: calc(100% - 20px);
+  box-sizing: border-box;
+  display: flex; flex-direction: column;
 }
-.card-close-btn:hover { opacity: 1; background: rgba(0,0,0,0.1); }
-.card-header { margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid rgba(0,0,0,0.08); }
-.card-title { font-family: 'Playfair Display', serif; font-weight: 800; font-size: 24px; line-height: 1.1; margin-bottom: 6px; letter-spacing: -0.5px; }
-.card-author { font-family: 'Archivo', sans-serif; font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.7; font-weight: 700; }
-.card-body { flex: 1; font-family: 'Georgia', serif; font-size: 19px; line-height: 1.55; opacity: 0.95; }
-.card-highlight { font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 20px; margin: 20px 0; color: #d93025; line-height: 1.3; } /* Color dinámico se inyectará */
-.card-actions { margin-top: 28px; display: flex; flex-direction: column; gap: 12px; }
 
-/* Botón Buscalibre - NIVEL DIOS */
-.btn-buscalibre {
+/* Tipografías y Elementos */
+.card-header { text-align: center; margin-bottom: 24px; padding-bottom: 18px; border-bottom: 1px solid var(--border-col); }
+.card-title { font-family: var(--serif-font); font-weight: 800; font-size: 26px; line-height: 1.1; margin-bottom: 8px; letter-spacing: -0.02em; }
+.card-author { font-family: var(--sans-font); font-size: 12px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.75; font-weight: 700; }
+
+.card-body { flex: 1; font-family: var(--serif-font); font-size: 18px; line-height: 1.6; opacity: 0.95; margin-bottom: 28px; }
+.card-highlight { 
+  font-family: var(--sans-font); 
+  font-weight: 700; font-size: 19px; margin: 24px 0; line-height: 1.35; 
+  color: var(--accent-col); /* Color de acento del JSON */
+  text-align: center;
+  position: relative; padding: 0 10px;
+}
+
+/* Botones dentro de la tarjeta */
+.card-actions { display: flex; flex-direction: column; gap: 12px; margin-top: auto; }
+
+.btn-action {
   position: relative; overflow: hidden;
-  background: #1a1a1a; color: #fff;
-  padding: 16px 20px; border-radius: 16px;
-  display: flex; align-items: center; justify-content: center; gap: 12px;
-  text-decoration: none; transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  background: rgba(255,255,255,0.9); /* Fondo base limpio */
+  color: #111;
+  padding: 14px 18px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  text-decoration: none; transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  border: 1px solid rgba(0,0,0,0.05);
+  cursor: pointer;
 }
-.btn-buscalibre:active { transform: scale(0.97); }
-.btn-buscalibre img { height: 18px; width: auto; filter: brightness(0) invert(1); }
-.btn-buscalibre span { font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 15px; letter-spacing: 0.3px; }
-/* Brillo sutil animado */
-.btn-buscalibre::after {
-  content: ""; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
-  transform: skewX(-20deg); animation: shine 4s infinite; pointer-events: none;
-}
-@keyframes shine { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
+.btn-action:active { transform: scale(0.98); }
 
-.btn-explore {
-  text-align: center; font-size: 14px; font-weight: 600; opacity: 0.6;
-  text-decoration: none; color: inherit; padding: 10px; transition: opacity 0.2s;
-}
-.btn-explore:hover { opacity: 1; }
+/* Modificadores Dark Mode automáticos según tinta */
+.card-dark-mode .btn-action { background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.15); }
+.card-dark-mode .btn-action:hover { background: rgba(255,255,255,0.12); }
 
-/* ✨ BADGE COMPACTO */
+.btn-txt { font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.2px; }
+
+/* Badge */
 #progressBadge {
   position: fixed; top: 15px; left: 0; right: 0; margin: 0 auto; width: fit-content; max-width: 90vw; z-index: 150;
   background: rgba(20,24,38,0.90); border: 1px solid rgba(255,255,255,0.12);
@@ -307,7 +320,6 @@ body.webview #tarjetaCard { max-height: 90vh; padding-bottom: 20px; }
   #progressBadge .line2 { font-size: 11px; gap: 4px; }
   .grid { gap: 1vw; } 
   .cele-msg { font-size: 1.5rem; padding: 1.5rem 2rem; }
-  .btn-buscalibre { padding: 14px 16px; }
 }
 </style>
 </head>
@@ -505,7 +517,7 @@ function render(){
   }
 }
 
-// LOGICA ENGAGEMENT (+4 al revelar)
+// LOGICA ENGAGEMENT
 function handleBookReveal() {
   const booksCount = incrementBooks();
   addConcepts(4); 
@@ -542,12 +554,11 @@ function handleBookReveal() {
   }
 }
 
-// === EFECTO LIKE & SHARE MODAL ===
+// === LIKE & SHARE ===
 btnLike.onclick = (e) => {
   const rect = btnLike.getBoundingClientRect();
   const centerX = rect.left + rect.width / 2;
   const centerY = rect.top + rect.height / 2;
-
   for (let i = 0; i < 8; i++) { createFloatingHeart(centerX, centerY); }
   
   const rachaActual = getLocal('streak', 0);
@@ -558,20 +569,12 @@ btnLike.onclick = (e) => {
   try {
     const frasesVistas = libro.frases.join(" | ");
     const urlScript = "https://script.google.com/macros/s/AKfycbyJdF6QZ4b321MUzzkpkvNLEL4-ZJDdgzs7gXTS6bhtI0HMgnJQnAm7tZMeo7u8oatE/exec";
-    
     fetch(urlScript, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({
-        "action": "like",
-        "book": libro.titulo,
-        "author": libro.autor,
-        "phrases": frasesVistas,
-        "streak": rachaActual,
-        "total_books": totalLibros,
-        "platform": tipoDispositivo,
-        "concepts": conceptosActuales,
-        "source": "like-button"
+        "action": "like", "book": libro.titulo, "author": libro.autor, "phrases": frasesVistas, "streak": rachaActual,
+        "total_books": totalLibros, "platform": tipoDispositivo, "concepts": conceptosActuales, "source": "like-button"
       })
     });
     track('like_clicked', { book: libro.titulo, streak: rachaActual });
@@ -608,82 +611,87 @@ btnLibro.onclick = async() => {
 function luminance(hex) { try { const c = hex.replace("#","").match(/.{1,2}/g).map(x=>parseInt(x,16)/255); const f = v => v<=.03928 ? v/12.92 : Math.pow((v+.055)/1.055,2.4); return 0.2126*f(c[0])+0.7152*f(c[1])+0.0722*f(c[2]); } catch { return 0; } }
 function pickTextColor(bg) { try { return luminance(bg) > 0.35 ? "#000" : "#fff"; } catch { return "#fff"; } }
 
-// SHARE & TARJETA - REINGENIERÍA VISUAL
+// SHARE & TARJETA - DISEÑO DINÁMICO
 btnShare.onclick = () => {
   const t = libro.tarjeta; 
   const overlay = document.getElementById("tarjetaOverlay");
   const card = document.getElementById("tarjetaCard");
   
   if (!cardOpenedThisSession) {
-    addConcepts(1);
-    updateBadge(); 
-    cardOpenedThisSession = true;
+    addConcepts(1); updateBadge(); cardOpenedThisSession = true;
   }
 
-  // Estilos seguros extraídos del JSON o Defaults Elegantes
-  const safePaper = t.style.paper || "#fff"; 
-  const safeInk = t.style.ink || "#222"; 
-  const safeAccent = t.style.accent || "#30ffe4";
-  const palabras = libro.palabras || []; 
-  let p = palabras.length > 0 ? palabras[Math.floor(Math.random()*palabras.length)] : "";
+  // Extraer estilos del JSON
+  const sPaper = t.style.paper || "#fff"; 
+  const sInk = t.style.ink || "#111"; 
+  const sBorder = t.style.border || "rgba(0,0,0,0.1)";
+  const sAccent = t.style.accent || "#30ffe4";
+  const sSerif = t.style.serif || "'Playfair Display', serif";
+  const sSans = t.style.sans || "'Archivo', sans-serif";
+  const p = libro.palabras && libro.palabras.length > 0 ? libro.palabras[Math.floor(Math.random()*libro.palabras.length)] : "";
 
-  // 1. Configuramos el estilo base de la tarjeta (Variables CSS inline para este elemento)
-  card.style.background = safePaper;
-  card.style.color = safeInk;
+  // Inyectar variables CSS para esta tarjeta específica
+  card.style.setProperty('--paper-col', sPaper);
+  card.style.setProperty('--ink-col', sInk);
+  card.style.setProperty('--border-col', sBorder);
+  card.style.setProperty('--accent-col', sAccent);
+  card.style.setProperty('--serif-font', sSerif);
+  card.style.setProperty('--sans-font', sSans);
 
-  // 2. Construimos el HTML INTERNO con nueva jerarquía
+  // Detectar modo oscuro para ajustar botones
+  if (pickTextColor(sPaper) === '#fff') { card.classList.add('card-dark-mode'); } 
+  else { card.classList.remove('card-dark-mode'); }
+
+  // Renderizar HTML Interno
   card.innerHTML = `
-    <div class="card-close-btn" onclick="closeCard()">×</div>
-    <div class="card-inner">
+    <div class="card-frame" onclick="event.stopPropagation()">
       
       <div class="card-header">
         <div class="card-title">${libro.titulo}</div>
-        <div class="card-author">Por ${libro.autor}</div>
+        <div class="card-author">${libro.autor}</div>
       </div>
       
       <div class="card-body">
         <div style="margin-bottom:16px;">${t.parrafoTop}</div>
-        <div class="card-highlight" style="color:${safeAccent};">${t.subtitulo}</div>
+        <div class="card-highlight">${t.subtitulo}</div>
         <div>${t.parrafoBot}</div>
       </div>
 
       <div class="card-actions">
         <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(libro.titulo + ' ' + libro.autor)}" 
-           target="_blank" class="btn-buscalibre">
-           <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/buscalibre.png" alt="Buscalibre">
-           <span>Conseguir en Buscalibre</span>
+           target="_blank" class="btn-action">
+           <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/buscalibre.png" alt="Buscalibre" style="height:20px; width:auto; display:block;">
+           <span class="btn-txt">Comprar libro</span>
         </a>
         
         <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(p)}" 
-           target="_blank" class="btn-explore">
-           Explorar: "${p}"
+           target="_blank" class="btn-action">
+           <span class="icon">✨</span>
+           <span class="btn-txt">Explorar posibilidades</span>
         </a>
 
         <div style="text-align:center; margin-top:8px; opacity:0.3;">
            <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png" 
-                style="height:14px; filter: ${safeInk==='#fff'?'invert(1)':'none'};">
+                style="height:14px; filter: ${sInk==='#fff'||sInk==='#ffffff'?'invert(1)':'none'};">
         </div>
       </div>
-
     </div>
   `;
 
   overlay.style.display="flex";
-  // Pequeño delay para permitir que el display:flex renderice antes de la opacidad (transición suave)
   setTimeout(() => overlay.classList.add('visible'), 10);
-  
   track('card_viewed', { book: libro.titulo });
 };
 
-// Función global para cerrar (accesible desde el HTML inyectado)
+// Cierre Global
 window.closeCard = function() {
   const overlay = document.getElementById("tarjetaOverlay");
   overlay.classList.remove('visible');
-  setTimeout(() => { overlay.style.display="none"; }, 300); // Espera a que termine la animación
+  setTimeout(() => { overlay.style.display="none"; }, 300);
 }
-
-// Cerrar al click afuera
+// Cierre al tocar el overlay (fondo oscuro)
 document.getElementById("tarjetaOverlay").onclick = (e) => {
+  // Asegura que solo cierre si el click fue directo en el overlay, no en la tarjeta
   if(e.target === document.getElementById("tarjetaOverlay")) window.closeCard();
 };
 
