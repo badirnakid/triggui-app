@@ -7,8 +7,8 @@
 
 <style>
   html, body { background:#0e0f1b !important; color:#fff; margin:0; padding:0; height:100%; font-family:'Archivo',sans-serif; -webkit-overflow-scrolling:touch; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overflow: hidden; }
-  /* Fondo animado sutil */
-  body::before { content:""; position:fixed; inset:0; background:radial-gradient(circle at 50% 50%, rgba(48,255,228,0.03), transparent 70%); z-index:-1; pointer-events:none; }
+  /* Fondo animado sutil "Nebula" */
+  body::before { content:""; position:fixed; inset:0; background:radial-gradient(circle at 50% 50%, rgba(48,255,228,0.04), transparent 80%); z-index:-1; pointer-events:none; }
 </style>
 
 <meta property="og:title" content="Abre. Un Libro. Físico.">
@@ -27,7 +27,7 @@
 
 <script>
 // ========================================
-// 🧠 LOGICA DE DATOS (INTACTA)
+// 🧠 LOGICA DE DATOS (CORE BLINDADO)
 // ========================================
 function saveLocal(key, value) { try { localStorage.setItem('triggui_' + key, JSON.stringify(value)); } catch(e) {} }
 function getLocal(key, defaultValue = null) { try { const data = localStorage.getItem('triggui_' + key); return data ? JSON.parse(data) : defaultValue; } catch(e) { return defaultValue; } }
@@ -46,7 +46,7 @@ window.reset = function() {
   localStorage.removeItem('triggui_last_book_time');
   localStorage.removeItem('triggui_streak');
   localStorage.removeItem('triggui_last_visit');
-  console.log('✅ Reset completo. Recarga la página.');
+  console.log('✅ Reset completo.');
 }
 
 let tapCount = 0;
@@ -104,11 +104,11 @@ function getRealisticUserCount() {
 }
 </script>
 
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,500&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,500;1,700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 
 <style>
 /* ========================================
-   🎨 ESTILOS UI
+   🎨 ESTILOS UI (NIVEL DIOS)
    ======================================== */
 .intro{
   position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
@@ -171,100 +171,137 @@ function getRealisticUserCount() {
 #share{ background:linear-gradient(135deg,#ff8a00,#ff3d3d); color:#fff; }
 #like{ background:linear-gradient(135deg, #ff416c, #ff4b2b); color:#fff; }
 
-/* 💎 TARJETA NIVEL DIOS (SUBLIME) */
+/* 💎 TARJETA SUBLIME (DISEÑO FINAL) */
 #tarjetaOverlay { 
   display:none; position:fixed; inset:0; z-index:999; 
   align-items:center; justify-content:center; 
   background: rgba(0,0,0,0.85); 
-  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
   opacity: 0; transition: opacity 0.3s ease; 
-  cursor: pointer; /* Indica que se puede picar para cerrar */
+  cursor: pointer; /* Todo es un botón de cierre */
 }
 #tarjetaOverlay.visible { opacity: 1; }
 
 #tarjetaCard { 
-  /* Estructura Full-Width pero Elegante */
-  width: 94%; /* Mucho más ancho en móvil como pediste */
-  max-width: 520px; /* Límite para que no se vea ridículo en Desktop */
+  /* Dimensiones Imersivas */
+  width: 94%; 
+  max-width: 500px; /* Elegancia en Desktop */
   height: auto;
   max-height: 85vh;
   
-  /* Scroll Invisible pero funcional */
+  /* UX: Scroll Invisible */
   overflow-y: auto; 
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: none; /* Firefox */
+  scrollbar-width: none;
   
-  /* Diseño Físico */
-  border-radius: 20px; 
+  /* Física del Objeto */
+  border-radius: 16px; 
   position: relative;
   transform: scale(0.94) translateY(15px);
   opacity: 0;
-  transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.4s ease;
+  transition: transform 0.45s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.4s ease;
   
-  /* Variables CSS dinámicas */
+  /* Apariencia Papel Premium */
   background-color: var(--paper-col);
   color: var(--ink-col);
   
-  /* Sombra de Levitación */
+  /* Sombra Volumétrica (Elevación Alta) */
   box-shadow: 
-    0 25px 50px -12px rgba(0, 0, 0, 0.6), 
-    0 0 0 1px rgba(255,255,255,0.08); /* Borde sutil de luz */
+    0 40px 80px -20px rgba(0, 0, 0, 0.7), 
+    0 0 0 1px rgba(255,255,255,0.08);
     
-  cursor: default; /* Reinicia cursor dentro de la tarjeta */
+  cursor: default; /* Reset cursor */
 }
-
-/* Ocultar barra scroll en Chrome/Safari */
 #tarjetaCard::-webkit-scrollbar { display: none; }
 
-/* Textura de papel "ruido" sutil */
+/* Textura y Luz */
 #tarjetaCard::after {
-  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0.04; z-index: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  /* Ruido + Gradiente de Luz de lectura */
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.12), transparent 70%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+  background-size: 100%, 150px;
   mix-blend-mode: overlay;
-  border-radius: 20px;
+  opacity: 0.05;
+  border-radius: 16px;
 }
 
 #tarjetaOverlay.visible #tarjetaCard { transform: scale(1) translateY(0); opacity: 1; }
-body.webview #tarjetaCard { max-height: 90vh; padding-bottom: 20px; }
+body.webview #tarjetaCard { max-height: 90vh; padding-bottom: 25px; }
 
-/* Contenedor interno */
+/* Layout Interno */
 .card-content-wrap {
-  position: relative; z-index: 2; padding: 32px 24px;
-  display: flex; flex-direction: column;
+  position: relative; z-index: 2; padding: 36px 28px;
+  display: flex; flex-direction: column; min-height: 100%; box-sizing: border-box;
 }
 
-/* Tipografía Sublime */
-.card-header { text-align: center; margin-bottom: 26px; border-bottom: 1px solid var(--border-col); padding-bottom: 20px; }
-.card-title { font-family: var(--serif-font); font-weight: 800; font-size: clamp(24px, 6vw, 32px); line-height: 1.05; margin-bottom: 8px; letter-spacing: -0.5px; }
-.card-author { font-family: var(--sans-font); font-size: 13px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.7; font-weight: 700; margin-top: 6px; }
+/* Tipografía de Colección */
+.card-header { text-align: center; margin-bottom: 30px; }
+.card-title { 
+  font-family: var(--serif-font); font-style: italic; font-weight: 800; 
+  font-size: clamp(26px, 7vw, 36px); line-height: 1.05; 
+  margin-bottom: 10px; letter-spacing: -0.5px; 
+}
+.card-author { 
+  font-family: var(--sans-font); font-size: 11px; 
+  text-transform: uppercase; letter-spacing: 2.5px; 
+  opacity: 0.65; font-weight: 800; 
+}
+.card-divider { 
+  width: 40px; height: 1px; background: currentColor; opacity: 0.2; 
+  margin: 20px auto 0; 
+}
 
-.card-body { font-family: var(--serif-font); font-size: 19px; line-height: 1.55; opacity: 0.95; margin-bottom: 30px; }
+.card-body { 
+  font-family: var(--serif-font); font-size: 19px; 
+  line-height: 1.6; opacity: 0.95; margin-bottom: 32px; 
+}
 .card-highlight { 
-  font-family: var(--sans-font); 
-  font-weight: 700; font-size: 21px; margin: 24px 0; line-height: 1.35; 
+  font-family: var(--sans-font); font-weight: 700; 
+  font-size: 20px; margin: 26px 0; line-height: 1.4; 
   color: var(--accent-col); text-align: center;
+  position: relative; padding: 0 10px;
 }
 
-/* Botones de Acción */
-.card-actions { display: flex; flex-direction: column; gap: 14px; margin-top: auto; }
+/* Botones de Conversión */
+.card-actions { display: flex; flex-direction: column; gap: 14px; margin-top: auto; align-items: stretch; }
 
 .btn-action {
-  position: relative; z-index: 10; /* Asegura que sean clickeables sobre el overlay de cierre */
-  background: rgba(255,255,255,0.95); 
-  color: #000;
-  padding: 16px; border-radius: 16px;
+  position: relative; z-index: 10;
+  background: #fff; color: #111;
+  padding: 18px; border-radius: 14px;
   display: flex; align-items: center; justify-content: center; gap: 12px;
-  text-decoration: none; transition: transform 0.1s;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  border: 1px solid rgba(0,0,0,0.05);
+  text-decoration: none; transition: transform 0.1s, box-shadow 0.2s;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  border: 1px solid rgba(0,0,0,0.04);
   cursor: pointer;
 }
 .btn-action:active { transform: scale(0.98); }
 
-/* Dark Mode Automático */
-.card-dark-mode .btn-action { background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.15); backdrop-filter: blur(10px); }
+/* Estilo Buscalibre Específico */
+.btn-buscalibre {
+  /* Un toque de glow sutil para destacar */
+  box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+}
 
-.btn-txt { font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 0.3px; }
+.btn-txt { font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 0.2px; }
+
+/* Dark Mode Logic */
+.card-dark-mode .btn-action { 
+  background: rgba(255,255,255,0.08); color: #fff; 
+  border: 1px solid rgba(255,255,255,0.12); 
+  backdrop-filter: blur(12px); 
+}
+.card-dark-mode .btn-buscalibre { background: rgba(255,255,255,0.95); color: #000; border: none; } /* Botón Buscalibre resalta en blanco incluso en dark mode */
+
+/* Logo Triggui Footer */
+.triggui-logo-footer {
+  margin-top: 24px; display: flex; justify-content: center; opacity: 0.4;
+  transition: opacity 0.3s;
+}
+.triggui-logo-footer:hover { opacity: 0.8; }
+.triggui-logo-footer img { height: 16px; width: auto; display: block; }
 
 /* Badge */
 #progressBadge {
@@ -637,7 +674,6 @@ btnShare.onclick = () => {
   // Estilos del JSON
   const sPaper = t.style.paper || "#fff"; 
   const sInk = t.style.ink || "#111"; 
-  const sBorder = t.style.border || "rgba(0,0,0,0.1)";
   const sAccent = t.style.accent || "#30ffe4";
   const sSerif = t.style.serif || "'Playfair Display', serif";
   const sSans = t.style.sans || "'Archivo', sans-serif";
@@ -646,13 +682,13 @@ btnShare.onclick = () => {
   // Inyectar variables CSS
   card.style.setProperty('--paper-col', sPaper);
   card.style.setProperty('--ink-col', sInk);
-  card.style.setProperty('--border-col', sBorder);
   card.style.setProperty('--accent-col', sAccent);
   card.style.setProperty('--serif-font', sSerif);
   card.style.setProperty('--sans-font', sSans);
 
-  // Modo Oscuro Detector
-  if (pickTextColor(sPaper) === '#fff') { card.classList.add('card-dark-mode'); } 
+  // Modo Oscuro
+  const isDark = pickTextColor(sPaper) === '#fff';
+  if (isDark) { card.classList.add('card-dark-mode'); } 
   else { card.classList.remove('card-dark-mode'); }
 
   // Render HTML
@@ -662,18 +698,19 @@ btnShare.onclick = () => {
       <div class="card-header">
         <div class="card-title">${libro.titulo}</div>
         <div class="card-author">${libro.autor}</div>
+        <div class="card-divider"></div>
       </div>
       
       <div class="card-body">
-        <div style="margin-bottom:16px;">${t.parrafoTop}</div>
+        <div style="margin-bottom:18px;">${t.parrafoTop}</div>
         <div class="card-highlight">${t.subtitulo}</div>
         <div>${t.parrafoBot}</div>
       </div>
 
       <div class="card-actions">
         <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(libro.titulo + ' ' + libro.autor)}" 
-           target="_blank" class="btn-action">
-           <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/buscalibre.png" alt="Buscalibre" style="height:20px; width:auto; display:block;">
+           target="_blank" class="btn-action btn-buscalibre">
+           <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/buscalibre.png" alt="Buscalibre" style="height:22px; width:auto; display:block;">
            <span class="btn-txt">Comprar libro</span>
         </a>
         
@@ -683,9 +720,10 @@ btnShare.onclick = () => {
            <span class="btn-txt">Explorar posibilidades</span>
         </a>
 
-        <div style="text-align:center; margin-top:8px; opacity:0.3;">
+        <div class="triggui-logo-footer">
            <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png" 
-                style="height:14px; filter: ${sInk==='#fff'||sInk==='#ffffff'?'invert(1)':'none'};">
+                alt="Triggui"
+                style="filter: ${isDark ? 'invert(1) brightness(1.5)' : 'none'};">
         </div>
       </div>
     </div>
@@ -697,18 +735,16 @@ btnShare.onclick = () => {
 };
 
 // LOGICA DE CIERRE (MÁXIMA PRIORIDAD)
-// Esta función decide si cerrar o dejar pasar el click
 window.handleCardClick = function(e) {
-  // Si el click fue en un botón (link) o dentro de un botón, NO cerramos
+  // Si click en link/botón, no hacer nada (dejar navegar)
   if (e.target.closest('a') || e.target.closest('button')) {
-    e.stopPropagation(); // Dejamos que el link haga lo suyo
+    e.stopPropagation();
     return;
   }
-  // Si fue texto, fondo blanco o cualquier otra cosa -> CERRAMOS
+  // Click en cualquier otro lado -> Cerrar
   window.closeCard();
 }
 
-// Cierre Global y Animación
 window.closeCard = function() {
   const overlay = document.getElementById("tarjetaOverlay");
   overlay.classList.remove('visible');
