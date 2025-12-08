@@ -171,88 +171,74 @@ function getRealisticUserCount() {
 #share{ background:linear-gradient(135deg,#ff8a00,#ff3d3d); color:#fff; }
 #like{ background:linear-gradient(135deg, #ff416c, #ff4b2b); color:#fff; }
 
-/* 💎 TARJETA SUBLIME (DISEÑO FINAL) */
+/* 💎 TARJETA SUPREMA (DEFINITIVA) */
 #tarjetaOverlay { 
   display:none; position:fixed; inset:0; z-index:999; 
   align-items:center; justify-content:center; 
-  background: rgba(0,0,0,0.85); 
+  background: rgba(0,0,0,0.88); 
   backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
   opacity: 0; transition: opacity 0.3s ease; 
-  cursor: pointer; /* Todo es un botón de cierre */
+  cursor: pointer;
 }
 #tarjetaOverlay.visible { opacity: 1; }
 
 #tarjetaCard { 
-  /* Dimensiones Imersivas */
-  width: 94%; 
-  max-width: 500px; /* Elegancia en Desktop */
-  height: auto;
-  max-height: 85vh;
+  /* Dimensiones Inmersivas */
+  width: 94%; max-width: 500px;
+  height: auto; max-height: 85vh;
   
-  /* UX: Scroll Invisible */
+  /* Scroll Invisible */
   overflow-y: auto; 
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   
-  /* Física del Objeto */
-  border-radius: 16px; 
+  /* Estilo Físico */
+  border-radius: 20px; 
   position: relative;
   transform: scale(0.94) translateY(15px);
   opacity: 0;
   transition: transform 0.45s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.4s ease;
   
-  /* Apariencia Papel Premium */
+  /* Color dinámico */
   background-color: var(--paper-col);
   color: var(--ink-col);
   
-  /* Sombra Volumétrica (Elevación Alta) */
-  box-shadow: 
-    0 40px 80px -20px rgba(0, 0, 0, 0.7), 
-    0 0 0 1px rgba(255,255,255,0.08);
-    
-  cursor: default; /* Reset cursor */
+  /* Sombra Profunda */
+  box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255,255,255,0.06);
+  cursor: default;
 }
 #tarjetaCard::-webkit-scrollbar { display: none; }
 
-/* Textura y Luz */
+/* Textura de papel "Grain" */
 #tarjetaCard::after {
   content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 0;
-  /* Ruido + Gradiente de Luz de lectura */
-  background-image: 
-    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.12), transparent 70%),
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
-  background-size: 100%, 150px;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
   mix-blend-mode: overlay;
-  opacity: 0.05;
-  border-radius: 16px;
+  opacity: 0.04;
+  border-radius: 20px;
 }
 
 #tarjetaOverlay.visible #tarjetaCard { transform: scale(1) translateY(0); opacity: 1; }
 body.webview #tarjetaCard { max-height: 90vh; padding-bottom: 25px; }
 
-/* Layout Interno */
+/* Estructura Interna */
 .card-content-wrap {
-  position: relative; z-index: 2; padding: 36px 28px;
+  position: relative; z-index: 2; padding: 34px 28px;
   display: flex; flex-direction: column; min-height: 100%; box-sizing: border-box;
 }
 
-/* Tipografía de Colección */
+/* Tipografía */
 .card-header { text-align: center; margin-bottom: 30px; }
 .card-title { 
   font-family: var(--serif-font); font-style: italic; font-weight: 800; 
   font-size: clamp(26px, 7vw, 36px); line-height: 1.05; 
-  margin-bottom: 10px; letter-spacing: -0.5px; 
+  margin-bottom: 12px; letter-spacing: -0.5px; 
 }
 .card-author { 
   font-family: var(--sans-font); font-size: 11px; 
   text-transform: uppercase; letter-spacing: 2.5px; 
-  opacity: 0.65; font-weight: 800; 
+  opacity: 0.7; font-weight: 800; 
 }
-.card-divider { 
-  width: 40px; height: 1px; background: currentColor; opacity: 0.2; 
-  margin: 20px auto 0; 
-}
-
 .card-body { 
   font-family: var(--serif-font); font-size: 19px; 
   line-height: 1.6; opacity: 0.95; margin-bottom: 32px; 
@@ -261,47 +247,67 @@ body.webview #tarjetaCard { max-height: 90vh; padding-bottom: 25px; }
   font-family: var(--sans-font); font-weight: 700; 
   font-size: 20px; margin: 26px 0; line-height: 1.4; 
   color: var(--accent-col); text-align: center;
-  position: relative; padding: 0 10px;
 }
 
-/* Botones de Conversión */
-.card-actions { display: flex; flex-direction: column; gap: 14px; margin-top: auto; align-items: stretch; }
+/* --- BOTONES DE ACCIÓN (DISEÑO SUPREMO) --- */
+.card-actions { display: flex; flex-direction: column; gap: 14px; margin-top: auto; }
 
+/* Estilo Base Botón */
 .btn-action {
   position: relative; z-index: 10;
-  background: #fff; color: #111;
-  padding: 18px; border-radius: 14px;
+  width: 100%; height: 52px; /* Altura Fija Exacta para ambos */
+  border-radius: 14px;
   display: flex; align-items: center; justify-content: center; gap: 12px;
-  text-decoration: none; transition: transform 0.1s, box-shadow 0.2s;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-  border: 1px solid rgba(0,0,0,0.04);
-  cursor: pointer;
+  text-decoration: none; cursor: pointer;
+  transition: transform 0.1s, opacity 0.2s;
+  box-sizing: border-box;
 }
-.btn-action:active { transform: scale(0.98); }
+.btn-action:active { transform: scale(0.97); }
 
-/* Estilo Buscalibre Específico */
+/* 1. Botón Buscalibre (Fondo Oscuro + Brillo Animado) */
 .btn-buscalibre {
-  /* Un toque de glow sutil para destacar */
-  box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+  background: #0f172a; /* Slate 900 - Oscuro elegante para logo blanco */
+  color: white;
+  border: none;
+  box-shadow: 0 8px 20px -4px rgba(15, 23, 42, 0.4);
+  overflow: hidden;
 }
 
-.btn-txt { font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 0.2px; }
-
-/* Dark Mode Logic */
-.card-dark-mode .btn-action { 
-  background: rgba(255,255,255,0.08); color: #fff; 
-  border: 1px solid rgba(255,255,255,0.12); 
-  backdrop-filter: blur(12px); 
+/* Animación de Brillo "Shine" */
+.btn-buscalibre::after {
+  content: ""; position: absolute; top: 0; left: -150%; width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+  transform: skewX(-20deg);
+  animation: shiny 4s infinite; pointer-events: none;
 }
-.card-dark-mode .btn-buscalibre { background: rgba(255,255,255,0.95); color: #000; border: none; } /* Botón Buscalibre resalta en blanco incluso en dark mode */
+@keyframes shiny { 
+  0% { left: -150%; } 
+  20% { left: 150%; } 
+  100% { left: 150%; } 
+}
 
-/* Logo Triggui Footer */
+/* 2. Botón Explorar (Gemelo en tamaño, estilo secundario) */
+.btn-explore {
+  background: rgba(125,125,125,0.08); /* Gris muy sutil */
+  border: 1px solid rgba(0,0,0,0.08);
+  color: inherit; /* Hereda color de tinta (negro o blanco) */
+}
+.card-dark-mode .btn-explore {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+.btn-txt { 
+  font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 16px; 
+  letter-spacing: 0.1px; white-space: nowrap; /* NO SALTO DE LÍNEA */
+}
+
+/* Logo Triggui Footer - Aumentado */
 .triggui-logo-footer {
-  margin-top: 24px; display: flex; justify-content: center; opacity: 0.4;
+  margin-top: 22px; display: flex; justify-content: center; opacity: 0.5;
   transition: opacity 0.3s;
 }
-.triggui-logo-footer:hover { opacity: 0.8; }
-.triggui-logo-footer img { height: 16px; width: auto; display: block; }
+.triggui-logo-footer img { height: 22px; width: auto; display: block; } /* Aumentado de 14px a 22px */
 
 /* Badge */
 #progressBadge {
@@ -698,7 +704,6 @@ btnShare.onclick = () => {
       <div class="card-header">
         <div class="card-title">${libro.titulo}</div>
         <div class="card-author">${libro.autor}</div>
-        <div class="card-divider"></div>
       </div>
       
       <div class="card-body">
@@ -710,14 +715,14 @@ btnShare.onclick = () => {
       <div class="card-actions">
         <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(libro.titulo + ' ' + libro.autor)}" 
            target="_blank" class="btn-action btn-buscalibre">
-           <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/buscalibre.png" alt="Buscalibre" style="height:22px; width:auto; display:block;">
+           <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/buscalibre.png" alt="Buscalibre" style="height:24px; width:auto; display:block;">
            <span class="btn-txt">Comprar libro</span>
         </a>
         
         <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(p)}" 
-           target="_blank" class="btn-action">
+           target="_blank" class="btn-action btn-explore">
            <span class="icon" style="font-size:18px;">✨</span>
-           <span class="btn-txt">Explorar posibilidades</span>
+           <span class="btn-txt">Explora posibilidades</span>
         </a>
 
         <div class="triggui-logo-footer">
