@@ -114,22 +114,6 @@ function getRealisticUserCount() {
   const variance = Math.floor(Math.random() * 8);
   return base + variance;
 }
-
-// ✨ FUNCIÓN WHATSAPP UNIVERSAL (MÁXIMO RIESGO - MÁXIMA COMPATIBILIDAD)
-function abrirWhatsApp(numero, mensaje = '') {
-  const textoEncoded = encodeURIComponent(mensaje);
-  
-  // Guardar estado actual por si acaso
-  saveLocal('last_state_before_whatsapp', {
-    libro: libro ? libro.titulo : null,
-    timestamp: Date.now()
-  });
-  
-  track('whatsapp_intent', { platform: getPlatform() });
-  
-  // Usar esquema directo - funciona en WebView iOS/Android
-  window.location.href = `whatsapp://send?phone=${numero}&text=${textoEncoded}`;
-}
 </script>
 
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -481,25 +465,25 @@ function handleBookReveal() {
   if (booksCount === 2) {
     setTimeout(() => Modal.show({
       emoji: '📬', title: '¡2 Libros!', text: '¿Te gustaría recibir estas joyas por WhatsApp cada lunes?',
-      btnText: 'Sí, quiero', onConfirm: () => abrirWhatsApp('5215532394017', '¡Hola! Quiero recibir las joyas de Triggui por WhatsApp 📚'),
+      btnText: 'Ver cómo funciona', onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
       showCancel: true, cancelText: 'Seguir explorando'
     }), delay);
   } else if (booksCount === 5) {
     setTimeout(() => Modal.show({
       emoji: '🎯', title: '5 Libros Descubiertos', text: 'Recibe páginas seleccionadas para tu momento exacto.<br><span class="m-highlight">Precio lanzamiento: $100/mes</span>',
-      btnText: 'Quiero suscribirme', onConfirm: () => abrirWhatsApp('5215532394017', 'Quiero suscribirme a Triggui - 5 libros descubiertos 📖'),
+      btnText: 'Quiero recibirlos', onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
       showCancel: true
     }), delay);
   } else if (booksCount === 10) {
     setTimeout(() => Modal.show({
       emoji: '🔥', title: '¡Estás en racha!', text: `Ya llevas <b>10 libros</b> y <b>50 conceptos absorbidos</b>. ${userCount} personas están aplicando esto hoy. <br>Únete al grupo de WhatsApp.`,
-      btnText: 'Unirme ahora', onConfirm: () => abrirWhatsApp('5215532394017', '¡Llevo 10 libros! Quiero unirme al grupo 🔥'),
+      btnText: 'Suscribirme', onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
       showCancel: true
     }), delay);
   } else if ([15, 20, 30, 50, 75, 100].includes(booksCount)) {
     setTimeout(() => Modal.show({
       emoji: '🧠', title: `${booksCount} Libros Descubiertos`, text: 'Tu mente se está expandiendo. No pierdas el ritmo.<br><span class="m-highlight">Asegura tu precio de por vida hoy.</span>',
-      btnText: 'Más información', onConfirm: () => abrirWhatsApp('5215532394017', `Llevo ${booksCount} libros. Quiero más info sobre Triggui 📚`),
+      btnText: 'Ver planes', onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
       showCancel: true
     }), delay);
   }
