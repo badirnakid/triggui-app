@@ -2,58 +2,21 @@
 <html lang="es" style="background:#0e0f1b;">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Triggui — La chispa. 30 segundos.</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, shrink-to-fit=no">
+<title>Triggui — Abre un libro físico. Aquí y ahora.</title>
 
-<!-- ═══════════════════════════════════════════════════════════════════════
-     🎨 SECCIÓN 1: BASE STYLES (HTML & BODY)
-     Estilos fundamentales del documento
-     MODIFICAR: Solo si necesitas cambiar colores base o comportamiento del body
-     ═══════════════════════════════════════════════════════════════════════ -->
-<style id="base-styles">
-  html, body { 
-    background:#0e0f1b !important; 
-    color:#fff; 
-    margin:0; 
-    padding:0; 
-    height:100%; 
-    font-family:'Archivo',sans-serif; 
-    -webkit-overflow-scrolling:touch; 
-    -webkit-text-size-adjust: 100%; 
-    text-size-adjust: 100%; 
-    overflow: hidden;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-  
-  /* Fondo animado OPTIMIZADO "Deep Space" - MÁS LENTO para fluidez */
-  body::before { 
-    content:""; 
-    position:fixed; 
-    inset:0; 
-    background:
-      radial-gradient(ellipse at 30% 20%, rgba(48,255,228,0.08), transparent 50%),
-      radial-gradient(ellipse at 70% 80%, rgba(255,0,128,0.06), transparent 50%);
-    z-index:-1; 
-    pointer-events:none;
-    animation: nebula-breathe 20s ease-in-out infinite;
-  }
-  
-  @keyframes nebula-breathe {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
-  }
+<style>
+  html, body { background:#0e0f1b !important; color:#fff; margin:0; padding:0; height:100%; font-family:'Archivo',sans-serif; -webkit-overflow-scrolling:touch; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overflow: hidden; }
+  /* Fondo animado sutil "Nebula" */
+  body::before { content:""; position:fixed; inset:0; background:radial-gradient(circle at 50% 50%, rgba(48,255,228,0.04), transparent 80%); z-index:-1; pointer-events:none; }
 </style>
 
-<meta property="og:title" content="La chispa. El impulso.">
-<meta property="og:description" content="El libro correcto. El momento exacto. 30 segundos que eliminan la fricción de empezar.">
+<meta property="og:title" content="Abre. Un Libro. Físico.">
+<meta property="og:description" content="Toma un libro físico que tengas cerca, ábrelo en cualquier parte, lee la primera línea que veas.">
 <meta property="og:image" content="https://triggui.com/imagotipo.png">
 <meta property="og:url" content="https://triggui.com">
 <meta property="og:type" content="website">
 
-<!-- ═══════════════════════════════════════════════════════════════════════
-     📊 GOOGLE ANALYTICS
-     ═══════════════════════════════════════════════════════════════════════ -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-CLK554FCNM"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -62,12 +25,7 @@
   gtag('config', 'G-CLK554FCNM');
 </script>
 
-<!-- ═══════════════════════════════════════════════════════════════════════
-     🧠 CORE LOGIC - LOCAL STORAGE & UTILITIES
-     Funciones de datos y localStorage
-     MODIFICAR: Solo si necesitas cambiar lógica de persistencia
-     ═══════════════════════════════════════════════════════════════════════ -->
-<script id="core-logic">
+<script>
 // ========================================
 // 🧠 LOGICA DE DATOS (CORE BLINDADO)
 // ========================================
@@ -146,328 +104,88 @@ function getRealisticUserCount() {
 }
 </script>
 
-<!-- ═══════════════════════════════════════════════════════════════════════
-     🔤 GOOGLE FONTS
-     ═══════════════════════════════════════════════════════════════════════ -->
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,500;1,700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 
-<!-- ═══════════════════════════════════════════════════════════════════════
-     💫 SECCIÓN 2: INTRO ANIMATION
-     Mensaje de introducción temporal
-     MODIFICAR: Texto, animación, timing del intro
-     ═══════════════════════════════════════════════════════════════════════ -->
-<style id="intro-animation">
+<style>
+/* ========================================
+   🎨 ESTILOS UI (NIVEL DIOS)
+   ======================================== */
 .intro{
-  position:fixed; 
-  top:50%; 
-  left:50%; 
-  transform:translate(-50%,-50%);
-  padding:2rem 2.4rem; 
-  background:rgba(20,24,38,.92); 
-  border-radius:28px;
-  border: 1px solid rgba(48,255,228,0.25);
-  z-index:120; 
-  font-family:'Poppins',sans-serif; 
-  text-align:center;
-  box-shadow:
-    0 20px 60px rgba(0,0,0,.5),
-    0 0 0 1px rgba(255,255,255,.08),
-    inset 0 1px 0 rgba(255,255,255,.12);
-  backdrop-filter: blur(8px); 
-  -webkit-backdrop-filter: blur(8px);
-  font-size:clamp(1.1rem,3.8vw,1.9rem); 
-  font-weight:700; 
-  line-height:1.25;
-  opacity:0; 
-  transform:translate(-50%,-52%) scale(.985);
-  animation:introIn .6s ease-out .15s forwards, introHide 3.2s 1.7s forwards;
+  position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+  padding:2rem 2.4rem; background:rgba(20,24,38,.78); border-radius:28px;
+  z-index:120; font-family:'Poppins',sans-serif; text-align:center;
+  box-shadow:0 10px 40px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  font-size:clamp(1.1rem,3.8vw,1.9rem); font-weight:700; line-height:1.25;
+  opacity:0; transform:translate(-50%,-52%) scale(.985);
+  animation:introIn .6s ease-out .15s forwards, introHide 3.2s 1.7s forwards; 
 }
-
-.intro .t{ 
-  background:linear-gradient(120deg, #30ffe4 0%, #FF0080 50%, #FFD700 100%); 
-  background-size: 200% 200%;
-  -webkit-background-clip:text; 
-  -webkit-text-fill-color:transparent;
-  animation: fire-move 4s ease infinite;
-  text-shadow: none;
-}
-
+.intro .t{ background:linear-gradient(120deg,#c9fff2,#30ffe4 40%,#9dd5ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
 @keyframes introIn{ to{opacity:1; transform:translate(-50%,-50%) scale(1)} }
 @keyframes introHide{ to{opacity:0; visibility:hidden; transform:translate(-50%,-80%) scale(.985)} }
-</style>
 
-<!-- ═══════════════════════════════════════════════════════════════════════
-     🎯 SECCIÓN 3: GRID SYSTEM
-     Sistema de cuadrícula principal 2x2 o 4x1
-     MODIFICAR: Layout, espaciado, responsiveness del grid
-     ═══════════════════════════════════════════════════════════════════════ -->
-<style id="grid-system">
-.grid{
-  position:absolute;
-  inset:5vh 1.5vw;
-  display:grid;
-  gap:1vw;
-}
+/* Grid */
+.grid{position:absolute;inset:5vh 1.5vw;display:grid;gap:1vw}
 @media(orientation:landscape){.grid{grid-template-columns:repeat(4,1fr)}}
 @media(orientation:portrait){.grid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr)}}
-</style>
 
-<!-- ═══════════════════════════════════════════════════════════════════════
-     🃏 SECCIÓN 4: BLOCK CARDS - ULTRA FLUIDO
-     Tarjetas principales del grid (las 4 cards)
-     MODIFICAR: Estilos de las cards, efectos hover, transiciones
-     ═══════════════════════════════════════════════════════════════════════ -->
-<style id="block-cards">
 .block{
-  position:relative; 
-  display:flex; 
-  align-items:center; 
-  justify-content:center;
-  padding:1rem; 
-  border-radius:24px;
-  font-weight:700; 
-  cursor:pointer;
+  position:relative; display:flex; align-items:center; justify-content:center;
+  padding:1rem; border-radius:22px; font-weight:700; cursor:pointer;
   background-size:320% 320%;
-  transition: transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  overflow:hidden; 
-  isolation:isolate;
-  
-  /* BORDER NIVEL APPLE - Ultra definido */
-  box-shadow: 
-    inset 0 0 0 1.5px rgba(255,255,255,.15),
-    0 4px 6px rgba(0,0,0,.15),
-    0 12px 32px rgba(0,0,0,.35);
+  transition:background-position 4s linear, transform .15s ease, filter .2s ease;
+  overflow:hidden; isolation:isolate;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.06), 0 8px 22px rgba(0,0,0,.28);
 }
+.block:hover{ background-position:100% 100%; filter:saturate(1.05) contrast(1.02); }
+.block:active{ transform:scale(.97); }
+.block::before{ content:"";position:absolute;inset:0;border-radius:inherit; background:linear-gradient(180deg,rgba(255,255,255,.14),transparent 62%); mix-blend-mode:soft-light;pointer-events:none; }
 
-/* Glassmorphism overlay PREMIUM */
-.block::before{ 
-  content:"";
-  position:absolute;
-  inset:0;
-  border-radius:inherit; 
-  background: linear-gradient(
-    145deg,
-    rgba(255,255,255,.18) 0%,
-    rgba(255,255,255,.08) 40%,
-    transparent 100%
-  );
-  pointer-events:none;
-  z-index: 1;
-}
+.label, .frase { z-index:2; text-align:center; transition:opacity .25s, transform .25s; }
+.label { opacity:1; transform:translateY(0); font-size:clamp(1rem, 3vw, 1.6rem); font-weight:700; line-height:1.3; letter-spacing:0.3px; }
+.frase { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:1rem; opacity:0; transform:translateY(6px); font-size:clamp(0.95rem, 2.8vw, 1.4rem); font-weight:600; }
+.block.show .label { opacity:0; transform:translateY(-6px); }
+.block.show .frase { opacity:1; transform:translateY(0); }
 
-/* Subtle inner glow para profundidad */
-.block::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: radial-gradient(
-    ellipse at 50% 0%,
-    rgba(255,255,255,.12),
-    transparent 60%
-  );
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: 0;
-}
+/* Portada */
+.portada{ position:absolute; inset:0; display:none; align-items:center; justify-content:center; flex-direction:column; padding:1rem; animation:pop .6s ease-out forwards; max-height:90%; }
+@keyframes pop{ 0%{transform:scale(.8);opacity:0} 100%{transform:scale(1);opacity:1} }
+.portada img{ max-width:94%; max-height:76%; border-radius:18px; box-shadow:0 12px 32px rgba(0,0,0,.55); }
+.port-text h2{ font-size:clamp(2rem,6vw,3.5rem); font-weight:800; text-shadow:0 2px 6px rgba(0,0,0,.35); text-align:center;}
+.port-text p{ font-size:clamp(1.2rem,4vw,1.8rem); font-weight:600; opacity:.9; }
+.emoji-big{ font-size:clamp(1.6rem,5vw,2.8rem); filter:drop-shadow(0 4px 8px rgba(0,0,0,.3)); }
 
-.block:hover::after {
-  opacity: 1;
-}
-
-.block:hover{ 
-  transform: translateY(-2px) scale(1.005);
-  box-shadow: 
-    inset 0 0 0 1.5px rgba(255,255,255,.22),
-    0 6px 12px rgba(0,0,0,.2),
-    0 16px 48px rgba(0,0,0,.45);
-}
-
-.block:active{ 
-  transform: translateY(0) scale(0.995); 
-  transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.label, .frase { 
-  z-index:2; 
-  text-align:center; 
-  transition: opacity 0.25s ease, transform 0.25s ease;
-  /* TIPOGRAFÍA CRYSTAL CLEAR - Sin text-shadow */
-  text-shadow: none;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-.label { 
-  opacity:1; 
-  transform:translateY(0); 
-  font-size:clamp(1.05rem, 3.2vw, 1.7rem);
-  font-weight:700; 
-  line-height:1.35; 
-  letter-spacing:0.2px;
-}
-
-.frase { 
-  position:absolute; 
-  inset:0; 
-  display:flex; 
-  align-items:center; 
-  justify-content:center; 
-  padding:1rem; 
-  opacity:0; 
-  transform:translateY(6px); 
-  font-size:clamp(1rem, 3vw, 1.5rem);
-  font-weight:600;
-  line-height: 1.4;
-}
-
-.block.show .label { 
-  opacity:0; 
-  transform:translateY(-6px); 
-}
-
-.block.show .frase { 
-  opacity:1; 
-  transform:translateY(0); 
-}
-</style>
-
-<!-- ═══════════════════════════════════════════════════════════════════════
-     📖 SECCIÓN 5: PORTADA (Cover Display)
-     Modal de portada del libro dentro del block
-     MODIFICAR: Estilos de portada, animación pop, tamaños
-     ═══════════════════════════════════════════════════════════════════════ -->
-<style id="portada-cover">
-.portada{ 
-  position:absolute; 
-  inset:0; 
-  display:none; 
-  align-items:center; 
-  justify-content:center; 
-  flex-direction:column; 
-  padding:1rem; 
-  animation:pop .6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  max-height:90%;
-}
-
-@keyframes pop{ 
-  0%{transform:scale(.85);opacity:0} 
-  100%{transform:scale(1);opacity:1} 
-}
-
-.portada img{ 
-  max-width:94%; 
-  max-height:76%; 
-  border-radius:20px;
-  box-shadow:
-    0 20px 60px rgba(0,0,0,.65),
-    0 0 0 1px rgba(255,255,255,.1);
-}
-
-.port-text h2{ 
-  font-size:clamp(2rem,6vw,3.5rem); 
-  font-weight:800; 
-  text-shadow: none;
-  text-align:center;
-  -webkit-font-smoothing: antialiased;
-}
-
-.port-text p{ 
-  font-size:clamp(1.2rem,4vw,1.8rem); 
-  font-weight:600; 
-  opacity:.95;
-  text-shadow: none;
-}
-
-.emoji-big{ 
-  font-size:clamp(1.6rem,5vw,2.8rem); 
-  filter:drop-shadow(0 4px 12px rgba(0,0,0,.4));
-}
-</style>
-
-<!-- ═══════════════════════════════════════════════════════════════════════
-     🎮 SECCIÓN 6: CTA BUTTONS (4 Botones Inferiores)
-     Botones flotantes: Otro, Físico, Share, Like
-     MODIFICAR: Colores, tamaños, posición de los 4 botones
-     ═══════════════════════════════════════════════════════════════════════ -->
-<style id="cta-buttons">
+/* CTA (4 Botones) */
 .cta{ 
-  position:fixed; 
-  bottom:3vh; 
-  left:50%; 
-  transform:translateX(-50%); 
-  z-index:100; 
-  display:none; 
-  gap: clamp(0.5rem, 2vw, 0.9rem); 
-  justify-content:center; 
+  position:fixed; bottom:3vh; left:50%; transform:translateX(-50%); z-index:100; 
+  display:none; gap: clamp(0.5rem, 2vw, 0.9rem); justify-content:center; 
 }
-
 .cta button{
-  width:clamp(3.5rem,min(8vw,8vh),4.5rem); 
-  height:clamp(3.5rem,min(8vw,8vh),4.5rem);
-  border:none; 
-  border-radius:50%; 
-  display:flex; 
-  align-items:center; 
-  justify-content:center;
-  font-size:clamp(1.5rem,3.5vw,2rem); 
-  cursor:pointer; 
-  background-size:200% 200%;
-  box-shadow: 
-    0 0 0 1px rgba(255,255,255,.15),
-    0 6px 18px rgba(0,0,0,.35);
-  backdrop-filter:blur(6px);
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  width:clamp(3.5rem,min(8vw,8vh),4.5rem); height:clamp(3.5rem,min(8vw,8vh),4.5rem);
+  border:none; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:clamp(1.5rem,3.5vw,2rem); cursor:pointer; background-size:200% 200%;
+  box-shadow: 0 4px 12px rgba(0,0,0,.3); backdrop-filter:blur(8px);
 }
-
-.cta button:hover {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 
-    0 0 0 1px rgba(255,255,255,.25),
-    0 8px 24px rgba(0,0,0,.45);
-}
-
-.cta button:active {
-  transform: translateY(0) scale(0.95);
-  transition: transform 0.1s ease;
-}
-
 #otro{ background:linear-gradient(135deg,#5fbfff,#1e90ff); color:#fff; }
 #fisico{ background:linear-gradient(135deg,#b2f8c8,#42d97c); color:#000; }
 #share{ background:linear-gradient(135deg,#ff8a00,#ff3d3d); color:#fff; }
 #like{ background:linear-gradient(135deg, #ff416c, #ff4b2b); color:#fff; }
-</style>
 
-<!-- ═══════════════════════════════════════════════════════════════════════
-     💎 SECCIÓN 7: TARJETA OVERLAY (Card Modal Suprema)
-     Overlay y tarjeta detallada del libro
-     MODIFICAR: Estilos del overlay, animaciones de entrada/salida
-     ═══════════════════════════════════════════════════════════════════════ -->
-<style id="tarjeta-overlay">
+/* 💎 TARJETA SUPREMA (DEFINITIVA) */
 #tarjetaOverlay { 
-  display:none; 
-  position:fixed; 
-  inset:0; 
-  z-index:999; 
-  align-items:center; 
-  justify-content:center; 
+  display:none; position:fixed; inset:0; z-index:999; 
+  align-items:center; justify-content:center; 
   background: rgba(0,0,0,0.88); 
-  backdrop-filter: blur(8px); 
-  -webkit-backdrop-filter: blur(8px);
-  opacity: 0; 
-  transition: opacity 0.3s ease; 
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  opacity: 0; transition: opacity 0.3s ease; 
   cursor: pointer;
 }
-
 #tarjetaOverlay.visible { opacity: 1; }
 
 #tarjetaCard { 
   /* Dimensiones Inmersivas */
-  width: 94%; 
-  max-width: 500px;
-  height: auto; 
-  max-height: 85vh;
+  width: 94%; max-width: 500px;
+  height: auto; max-height: 85vh;
   
   /* Scroll Invisible */
   overflow-y: auto; 
@@ -475,7 +193,7 @@ function getRealisticUserCount() {
   scrollbar-width: none;
   
   /* Estilo Físico */
-  border-radius: 24px; 
+  border-radius: 20px; 
   position: relative;
   transform: scale(0.94) translateY(15px);
   opacity: 0;
@@ -486,581 +204,191 @@ function getRealisticUserCount() {
   color: var(--ink-col);
   
   /* Sombra Profunda */
-  box-shadow: 
-    0 60px 120px -30px rgba(0, 0, 0, 0.85), 
-    0 0 0 1px rgba(255,255,255,0.08);
+  box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255,255,255,0.06);
   cursor: default;
 }
-
 #tarjetaCard::-webkit-scrollbar { display: none; }
 
 /* Textura de papel "Grain" */
 #tarjetaCard::after {
-  content: ""; 
-  position: absolute; 
-  inset: 0; 
-  pointer-events: none; 
-  z-index: 0;
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 0;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
   mix-blend-mode: overlay;
   opacity: 0.04;
-  border-radius: 24px;
+  border-radius: 20px;
 }
 
-#tarjetaOverlay.visible #tarjetaCard { 
-  transform: scale(1) translateY(0); 
-  opacity: 1; 
-}
+#tarjetaOverlay.visible #tarjetaCard { transform: scale(1) translateY(0); opacity: 1; }
+body.webview #tarjetaCard { max-height: 90vh; padding-bottom: 25px; }
 
-body.webview #tarjetaCard { 
-  max-height: 90vh; 
-  padding-bottom: 25px; 
-}
-</style>
-
-<!-- ═══════════════════════════════════════════════════════════════════════
-     📄 SECCIÓN 8: CARD CONTENT (Contenido de la Tarjeta)
-     Estructura interna y tipografía de la tarjeta
-     MODIFICAR: Layout interno, tipografías, espaciados de la tarjeta
-     ═══════════════════════════════════════════════════════════════════════ -->
-<style id="card-content">
 /* Estructura Interna */
 .card-content-wrap {
-  position: relative; 
-  z-index: 2; 
-  padding: 36px 28px;
-  display: flex; 
-  flex-direction: column; 
-  min-height: 100%; 
-  box-sizing: border-box;
+  position: relative; z-index: 2; padding: 36px 28px;
+  display: flex; flex-direction: column; min-height: 100%; box-sizing: border-box;
 }
 
 /* Tipografía */
 .card-header { text-align: center; margin-bottom: 28px; }
-
 .card-title { 
-  font-family: var(--serif-font); 
-  font-style: italic; 
-  font-weight: 800; 
-  font-size: clamp(26px, 7vw, 36px); 
-  line-height: 1.05; 
-  margin-bottom: 12px; 
-  letter-spacing: -0.5px;
-  -webkit-font-smoothing: antialiased;
-  text-shadow: none;
+  font-family: var(--serif-font); font-style: italic; font-weight: 800; 
+  font-size: clamp(26px, 7vw, 36px); line-height: 1.05; 
+  margin-bottom: 12px; letter-spacing: -0.5px; 
 }
-
 .card-author { 
-  font-family: var(--sans-font); 
-  font-size: 11px; 
-  text-transform: uppercase; 
-  letter-spacing: 2.5px; 
-  opacity: 0.7; 
-  font-weight: 800;
-  -webkit-font-smoothing: antialiased;
+  font-family: var(--sans-font); font-size: 11px; 
+  text-transform: uppercase; letter-spacing: 2.5px; 
+  opacity: 0.7; font-weight: 800; 
 }
-
 /* Divisor sutil para elegancia editorial */
-.card-divider { 
-  width: 40px; 
-  height: 1px; 
-  background: currentColor; 
-  opacity: 0.15; 
-  margin: 18px auto 0; 
-}
+.card-divider { width: 40px; height: 1px; background: currentColor; opacity: 0.15; margin: 18px auto 0; }
 
 .card-body { 
-  font-family: var(--serif-font); 
-  font-size: 19px; 
-  line-height: 1.6; 
-  opacity: 0.95; 
-  margin-bottom: 32px;
-  -webkit-font-smoothing: antialiased;
+  font-family: var(--serif-font); font-size: 19px; 
+  line-height: 1.6; opacity: 0.95; margin-bottom: 32px; 
 }
-
 .card-highlight { 
-  font-family: var(--sans-font); 
-  font-weight: 700; 
-  font-size: 20px; 
-  margin: 26px 0; 
-  line-height: 1.4; 
-  color: var(--accent-col); 
-  text-align: center;
-  -webkit-font-smoothing: antialiased;
-  text-shadow: none;
+  font-family: var(--sans-font); font-weight: 700; 
+  font-size: 20px; margin: 26px 0; line-height: 1.4; 
+  color: var(--accent-col); text-align: center;
 }
-</style>
 
-<!-- ═══════════════════════════════════════════════════════════════════════
-     🔘 SECCIÓN 9: CARD ACTION BUTTONS (Botones Buscalibre/Explorar)
-     🔥 OPTIMIZACIÓN NIVEL DIOS: Sin animación de brillo para zoom fluido
-     MODIFICAR: Estilos de botones de la tarjeta (Comprar/Explorar)
-     ═══════════════════════════════════════════════════════════════════════ -->
-<style id="card-action-buttons">
-.card-actions { 
-  display: flex; 
-  flex-direction: column; 
-  gap: 14px; 
-  margin-top: auto; 
-}
+/* --- BOTONES DE ACCIÓN (DISEÑO SUPREMO) --- */
+.card-actions { display: flex; flex-direction: column; gap: 14px; margin-top: auto; }
 
 /* Estilo Base Botón */
 .btn-action {
-  position: relative; 
-  z-index: 10;
-  width: 100%; 
-  height: 52px;
+  position: relative; z-index: 10;
+  width: 100%; height: 52px; /* Altura Fija Exacta para ambos */
   border-radius: 14px;
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
-  gap: 12px;
-  text-decoration: none; 
-  cursor: pointer;
-  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  text-decoration: none; cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.2s, background-color 0.2s;
   box-sizing: border-box;
 }
-
 .btn-action:active { transform: scale(0.97); }
 
-/* 🔥 BOTÓN BUSCALIBRE OPTIMIZADO - SIN ANIMACIÓN DE BRILLO
-   ══════════════════════════════════════════════════════════
-   ANTES: Brillo animado (shiny animation) → Causaba lag al hacer zoom
-   DESPUÉS: Negro puro con sombra profunda → FLUIDO PERFECTO
-   
-   El botón sigue viéndose PREMIUM sin el brillo:
-   ✅ Negro intenso (#080808)
-   ✅ Sombra profunda y elegante
-   ✅ Logo de Buscalibre destacado
-   ✅ CERO lag al hacer zoom
-   ✅ Mejor rendimiento en todos los dispositivos
-*/
+/* 1. Botón Buscalibre (Pure Black + Brillo Sutil) */
 .btn-buscalibre {
-  background: #080808;
+  background: #080808; /* Negro Puro y Elegante */
   color: white;
   border: none;
-  box-shadow: 
-    0 8px 25px -6px rgba(0,0,0, 0.5),
-    0 0 0 1px rgba(255,255,255, 0.08);
+  box-shadow: 0 8px 25px -6px rgba(0,0,0, 0.5);
+  overflow: hidden;
 }
 
-/* Hover sutil para interactividad */
-.btn-buscalibre:hover {
-  box-shadow: 
-    0 12px 30px -6px rgba(0,0,0, 0.6),
-    0 0 0 1px rgba(255,255,255, 0.12);
+/* Animación de Brillo "Shine" (Más sutil) */
+.btn-buscalibre::after {
+  content: ""; position: absolute; top: 0; left: -150%; width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  transform: skewX(-20deg);
+  animation: shiny 4s infinite; pointer-events: none;
+}
+@keyframes shiny { 
+  0% { left: -150%; } 
+  20% { left: 150%; } 
+  100% { left: 150%; } 
 }
 
-/* 2. Botón Explorar */
+/* 2. Botón Explorar (Gemelo en tamaño, estilo secundario) */
 .btn-explore {
   background: rgba(125,125,125,0.06);
   border: 1px solid rgba(0,0,0,0.08);
-  color: inherit;
+  color: inherit; /* Hereda color de tinta (negro o blanco) */
 }
-
-.btn-explore:active { background: rgba(125,125,125,0.12); }
+.btn-explore:active { background: rgba(125,125,125,0.12); } /* Feedback táctil */
 
 .card-dark-mode .btn-explore {
   background: rgba(255,255,255,0.08);
   border: 1px solid rgba(255,255,255,0.15);
 }
-
 .card-dark-mode .btn-explore:active { background: rgba(255,255,255,0.15); }
 
 .btn-txt { 
-  font-family: 'Archivo', sans-serif; 
-  font-weight: 700; 
-  font-size: 16px; 
-  letter-spacing: 0.1px; 
-  white-space: nowrap;
+  font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 16px; 
+  letter-spacing: 0.1px; white-space: nowrap; /* NO SALTO DE LÍNEA */
 }
 
-/* Logo Triggui Footer */
+/* Logo Triggui Footer - Aumentado */
 .triggui-logo-footer {
-  margin-top: 22px; 
-  display: flex; 
-  justify-content: center; 
-  opacity: 0.5;
+  margin-top: 22px; display: flex; justify-content: center; opacity: 0.5;
   transition: opacity 0.3s;
 }
+.triggui-logo-footer img { height: 22px; width: auto; display: block; }
 
-.triggui-logo-footer img { 
-  height: 22px; 
-  width: auto; 
-  display: block; 
-}
-</style>
-
-<!-- ═══════════════════════════════════════════════════════════════════════
-     🏷️ SECCIÓN 10: PROGRESS BADGE (Badge Superior)
-     Badge de progreso con estadísticas
-     MODIFICAR: Estilos del badge de progreso superior
-     ═══════════════════════════════════════════════════════════════════════ -->
-<style id="progress-badge">
+/* Badge */
 #progressBadge {
-  position: fixed; 
-  top: 15px; 
-  left: 0; 
-  right: 0; 
-  margin: 0 auto; 
-  width: fit-content; 
-  max-width: 90vw; 
-  z-index: 150;
-  background: rgba(20,24,38,0.92); 
-  border: 1px solid rgba(48,255,228,0.2);
-  padding: 6px 20px; 
-  border-radius: 99px; 
-  color: #dfe9ff;
-  backdrop-filter: blur(10px); 
-  -webkit-backdrop-filter: blur(10px);
-  opacity: 0; 
-  animation: badgeDrop 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-  box-shadow: 
-    0 6px 24px rgba(0,0,0,0.4),
-    0 0 0 1px rgba(255,255,255,0.08),
-    inset 0 1px 0 rgba(255,255,255,0.12);
-  text-align: center; 
-  cursor: pointer; 
-  user-select: none; 
-  pointer-events: auto;
+  position: fixed; top: 15px; left: 0; right: 0; margin: 0 auto; width: fit-content; max-width: 90vw; z-index: 150;
+  background: rgba(20,24,38,0.90); border: 1px solid rgba(255,255,255,0.12);
+  padding: 6px 20px; border-radius: 99px; color: #dfe9ff;
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  opacity: 0; animation: badgeDrop 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3); text-align: center; cursor: pointer; user-select: none; pointer-events: auto;
 }
+@keyframes badgeDrop { 0% { opacity: 0; transform: translateY(-40px); } 100% { opacity: 1; transform: translateY(0); } }
+#progressBadge .line1 { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; opacity: 0.65; margin-bottom: 3px; font-weight: 700; color: #a0aec0; }
+#progressBadge .line2 { display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; font-size: 13px; font-weight: 700; color: #fff; line-height: 1.2; }
+#progressBadge .dot { width: 2px; height: 2px; background: rgba(255,255,255,0.4); border-radius: 50%; display: inline-block; margin: 0 2px; }
+.highlight-txt { color: #30ffe4; text-shadow: 0 0 10px rgba(48,255,228,0.25); }
 
-@keyframes badgeDrop { 
-  0% { opacity: 0; transform: translateY(-40px); } 
-  100% { opacity: 1; transform: translateY(0); } 
-}
-
-#progressBadge .line1 { 
-  display: block; 
-  font-size: 10px; 
-  text-transform: uppercase; 
-  letter-spacing: 1.2px; 
-  opacity: 0.65; 
-  margin-bottom: 3px; 
-  font-weight: 700; 
-  color: #a0aec0;
-  -webkit-font-smoothing: antialiased;
-}
-
-#progressBadge .line2 { 
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
-  gap: 6px; 
-  flex-wrap: wrap; 
-  font-size: 13px; 
-  font-weight: 700; 
-  color: #fff; 
-  line-height: 1.2;
-  -webkit-font-smoothing: antialiased;
-}
-
-#progressBadge .dot { 
-  width: 2px; 
-  height: 2px; 
-  background: rgba(255,255,255,0.4); 
-  border-radius: 50%; 
-  display: inline-block; 
-  margin: 0 2px; 
-}
-
-.highlight-txt { 
-  background: linear-gradient(120deg, #30ffe4 0%, #FF0080 50%, #FFD700 100%);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: fire-move 4s ease infinite;
-  text-shadow: none;
-}
-
-@keyframes fire-move {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-</style>
-
-<!-- ═══════════════════════════════════════════════════════════════════════
-     💬 SECCIÓN 11: TOAST NOTIFICATIONS
-     Sistema de notificaciones toast
-     MODIFICAR: Estilos de mensajes toast
-     ═══════════════════════════════════════════════════════════════════════ -->
-<style id="toast-notifications">
+/* Toast */
 #toast {
-  position: fixed; 
-  top: 90px; 
-  left: 50%; 
-  transform: translateX(-50%) translateY(-20px); 
-  z-index: 160;
-  background: rgba(20,24,38,0.95); 
-  border: 1px solid rgba(255,255,255,0.12);
-  padding: 12px 24px; 
-  border-radius: 16px; 
-  font-size: 15px; 
-  color: #fff;
-  backdrop-filter: blur(8px); 
-  font-weight: 600; 
-  opacity: 0; 
-  pointer-events: none;
-  transition: all 0.3s ease; 
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4); 
-  text-align: center; 
-  max-width: 80%;
+  position: fixed; top: 90px; left: 50%; transform: translateX(-50%) translateY(-20px); z-index: 160;
+  background: rgba(20,24,38,0.95); border: 1px solid rgba(255,255,255,0.1);
+  padding: 12px 24px; border-radius: 16px; font-size: 15px; color: #fff;
+  backdrop-filter: blur(12px); font-weight: 600; opacity: 0; pointer-events: none;
+  transition: all 0.3s ease; box-shadow: 0 8px 24px rgba(0,0,0,0.4); text-align: center; max-width: 80%;
 }
+#toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-#toast.visible { 
-  opacity: 1; 
-  transform: translateX(-50%) translateY(0); 
-}
-</style>
-
-<!-- ═══════════════════════════════════════════════════════════════════════
-     🎭 SECCIÓN 12: MODAL SYSTEM (Modal Unificado) - ULTRA FLUIDO
-     Sistema de modales para mensajes
-     MODIFICAR: Estilos del sistema de modales
-     ═══════════════════════════════════════════════════════════════════════ -->
-<style id="modal-system">
-#appModal { 
-  display: none; 
-  position: fixed; 
-  inset: 0; 
-  z-index: 9999; 
-  align-items: center; 
-  justify-content: center; 
-  background: rgba(0,0,0,0.88); 
-  backdrop-filter: blur(8px); 
-  opacity: 0; 
-  transition: opacity 0.3s ease; 
-}
-
-#appModal.visible { 
-  display: flex; 
-  opacity: 1; 
-}
-
+/* Modal Unificado */
+#appModal { display: none; position: fixed; inset: 0; z-index: 9999; align-items: center; justify-content: center; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.3s ease; }
+#appModal.visible { display: flex; opacity: 1; }
 .modal-glass {
-  background: linear-gradient(145deg, rgba(30,34,50,0.96), rgba(10,12,20,0.98));
-  border: 1px solid rgba(48,255,228,0.25);
-  border-radius: 28px; 
-  padding: 32px; 
-  width: 88%; 
-  max-width: 400px;
-  text-align: center; 
-  transform: scale(0.92);
-  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 
-    0 30px 80px rgba(0,0,0,0.8),
-    0 0 0 1px rgba(255,255,255,0.08),
-    inset 0 1px 0 rgba(255,255,255,0.15);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: linear-gradient(145deg, rgba(30,34,50,0.98), rgba(10,12,20,0.99));
+  border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 28px; width: 88%; max-width: 380px;
+  text-align: center; transform: scale(0.95); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.7);
 }
+#appModal.visible .modal-glass { transform: scale(1); }
+.m-emoji { font-size: 46px; margin-bottom: 14px; display: block; animation: bounce 1s infinite; }
+@keyframes bounce { 0%, 100% {transform:translateY(0);} 50% {transform:translateY(-10px);} }
+.m-title { font-size: 22px; font-weight: 800; margin-bottom: 8px; color: #fff; letter-spacing: 0.2px; }
+.m-text { font-size: 16px; color: #b0b5c0; line-height: 1.5; margin-bottom: 22px; }
+.m-highlight { color: #30ffe4; font-weight: 600; display: block; margin-top: 4px; font-size: 14px; }
+.m-buttons { display: flex; flex-direction: column; gap: 10px; }
+.m-btn { padding: 14px; border-radius: 14px; font-size: 16px; font-weight: 700; border: none; cursor: pointer; transition: transform 0.1s; text-decoration: none; display: flex; align-items: center; justify-content: center; }
+.m-btn:active { transform: scale(0.98); }
+.btn-primary { background: linear-gradient(135deg, #ff0080, #7928ca); color: white; box-shadow: 0 4px 15px rgba(255,0,128,0.3); }
+.btn-secondary { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
 
-#appModal.visible .modal-glass { 
-  transform: scale(1); 
-}
-
-.m-emoji { 
-  font-size: 52px; 
-  margin-bottom: 16px; 
-  display: block; 
-  animation: bounce 2s ease infinite;
-  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
-}
-
-@keyframes bounce { 
-  0%, 100% {transform:translateY(0);} 
-  50% {transform:translateY(-12px);} 
-}
-
-.m-title { 
-  font-size: 24px; 
-  font-weight: 800; 
-  margin-bottom: 10px; 
-  color: #fff; 
-  letter-spacing: 0.2px;
-  -webkit-font-smoothing: antialiased;
-  text-shadow: none;
-}
-
-.m-text { 
-  font-size: 16px; 
-  color: #b0b5c0; 
-  line-height: 1.6; 
-  margin-bottom: 26px;
-  -webkit-font-smoothing: antialiased;
-}
-
-.m-highlight { 
-  background: linear-gradient(120deg, #30ffe4 0%, #FF0080 50%, #FFD700 100%);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: fire-move 4s ease infinite;
-  font-weight: 700; 
-  display: block; 
-  margin-top: 8px; 
-  font-size: 15px;
-  text-shadow: none;
-}
-
-.m-buttons { 
-  display: flex; 
-  flex-direction: column; 
-  gap: 12px; 
-}
-
-.m-btn { 
-  padding: 16px; 
-  border-radius: 16px; 
-  font-size: 16px; 
-  font-weight: 700; 
-  border: none; 
-  cursor: pointer; 
-  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  text-decoration: none; 
-  display: flex; 
-  align-items: center; 
-  justify-content: center;
-  -webkit-font-smoothing: antialiased;
-}
-
-.m-btn:active { transform: scale(0.96); }
-
-.btn-primary { 
-  background: linear-gradient(135deg, #FF0080, #FF4500, #FFD700);
-  background-size: 200% 200%;
-  color: white; 
-  box-shadow: 
-    0 0 0 1px rgba(255,255,255,0.15),
-    0 6px 20px rgba(255,0,128,0.4);
-  animation: fire-move 8s ease infinite;
-}
-
-.btn-secondary { 
-  background: rgba(255,255,255,0.06); 
-  color: #fff; 
-  border: 1px solid rgba(255,255,255,0.15);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-}
-
-.btn-secondary:hover {
-  background: rgba(255,255,255,0.1);
-}
-</style>
-
-<!-- ═══════════════════════════════════════════════════════════════════════
-     ✨ SECCIÓN 13: FLOATING HEARTS (Animación de Like)
-     Partículas flotantes al dar like
-     MODIFICAR: Animación de corazones flotantes
-     ═══════════════════════════════════════════════════════════════════════ -->
-<style id="floating-hearts">
+/* ✨ PARTÍCULAS LIKE */
 .floating-heart {
-  position: fixed; 
-  pointer-events: none; 
-  z-index: 200; 
-  font-size: 24px; 
-  opacity: 0;
+  position: fixed; pointer-events: none; z-index: 200; font-size: 24px; opacity: 0;
   animation: floatUp 1.2s ease-out forwards;
-  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
 }
-
 @keyframes floatUp {
-  0% { 
-    transform: translate(0, 0) scale(0.5) rotate(0deg); 
-    opacity: 0; 
-  }
-  20% { 
-    opacity: 1; 
-    transform: translate(var(--tx), -40px) scale(1.2) rotate(15deg); 
-  }
-  100% { 
-    opacity: 0; 
-    transform: translate(var(--tx), -150px) scale(1) rotate(30deg); 
-  }
-}
-</style>
-
-<!-- ═══════════════════════════════════════════════════════════════════════
-     🎉 SECCIÓN 14: CELEBRATION OVERLAY
-     Pantalla de celebración
-     MODIFICAR: Estilos de overlay de celebración
-     ═══════════════════════════════════════════════════════════════════════ -->
-<style id="celebration-overlay">
-.cele{ 
-  position:fixed; 
-  inset:0; 
-  background:rgba(0,0,0,.92); 
-  display:none; 
-  align-items:center; 
-  justify-content:center; 
-  z-index:110; 
-  flex-direction: column;
-  backdrop-filter: blur(6px);
+  0% { transform: translate(0, 0) scale(0.5); opacity: 0; }
+  20% { opacity: 1; transform: translate(var(--tx), -40px) scale(1.2); }
+  100% { opacity: 0; transform: translate(var(--tx), -150px) scale(1); }
 }
 
-.cele-msg{ 
-  font-family:'Poppins'; 
-  font-size:2rem; 
-  text-align:center; 
-  background: linear-gradient(145deg, rgba(30,34,50,0.9), rgba(10,12,20,0.95));
-  border: 1px solid rgba(48,255,228,0.3);
-  padding:2.5rem 3.5rem; 
-  border-radius:24px;
-  box-shadow: 
-    0 30px 80px rgba(0,0,0,0.7),
-    0 0 0 1px rgba(255,255,255,0.08),
-    inset 0 1px 0 rgba(255,255,255,0.15);
-  backdrop-filter: blur(12px);
-  -webkit-font-smoothing: antialiased;
-}
+/* Celebración */
+.cele{ position:fixed; inset:0; background:rgba(0,0,0,.88); display:none; align-items:center; justify-content:center; z-index:110; flex-direction: column; }
+.cele-msg{ font-family:'Poppins'; font-size:2rem; text-align:center; background:rgba(255,255,255,.05); padding:2rem 3rem; border-radius:20px; }
+.num{ color:#30ffe4; font-weight:900; font-size:2.8rem; }
 
-.num{ 
-  background: linear-gradient(120deg, #30ffe4 0%, #FF0080 50%, #FFD700 100%);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: fire-move 4s ease infinite;
-  font-weight:900; 
-  font-size:3.2rem;
-  text-shadow: none;
-}
-</style>
-
-<!-- ═══════════════════════════════════════════════════════════════════════
-     📱 SECCIÓN 15: RESPONSIVE
-     Media queries para mobile
-     MODIFICAR: Comportamiento responsive
-     ═══════════════════════════════════════════════════════════════════════ -->
-<style id="responsive">
 @media (max-width: 480px) {
-  #progressBadge { 
-    padding: 6px 14px; 
-    top: 12px; 
-  }
-  #progressBadge .line2 { 
-    font-size: 11px; 
-    gap: 4px; 
-  }
+  #progressBadge { padding: 6px 14px; top: 12px; }
+  #progressBadge .line2 { font-size: 11px; gap: 4px; }
   .grid { gap: 1vw; } 
-  .cele-msg { 
-    font-size: 1.5rem; 
-    padding: 1.8rem 2.2rem; 
-  }
-  .num {
-    font-size: 2.6rem;
-  }
+  .cele-msg { font-size: 1.5rem; padding: 1.5rem 2rem; }
 }
 </style>
-
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════════════════════════════════
-     🎯 HTML STRUCTURE
-     ═══════════════════════════════════════════════════════════════════════ -->
-
 <div id="progressBadge">
-  <span class="line1">Tu chispa acumulada</span>
+  <span class="line1">Tu avance acumulado</span>
   <span class="line2" id="badgeContent">Cargando...</span>
 </div>
 
@@ -1091,10 +419,7 @@ body.webview #tarjetaCard {
 
 <div class="cele" id="cele"><div class="cele-msg" id="celeMsg"></div></div>
 
-<!-- ═══════════════════════════════════════════════════════════════════════
-     🧠 JAVASCRIPT - MODAL SYSTEM
-     ═══════════════════════════════════════════════════════════════════════ -->
-<script id="js-modal-system">
+<script>
 // ========================================
 // SISTEMA MODAL
 // ========================================
@@ -1138,12 +463,7 @@ const Modal = {
     setTimeout(() => { this.el.style.display = 'none'; }, 300);
   }
 };
-</script>
 
-<!-- ═══════════════════════════════════════════════════════════════════════
-     🧠 JAVASCRIPT - APP LOGIC
-     ═══════════════════════════════════════════════════════════════════════ -->
-<script id="js-app-logic">
 // ========================================
 // LOGICA APP
 // ========================================
@@ -1160,7 +480,7 @@ const ANG = [115,205,35,320];
 const grad = i => `linear-gradient(${ANG[i%4]}deg,${libro.colores[i]},${libro.colores[(i+1)%4]})`;
 
 // INTRO
-const frasesIntro = ["La chispa. El impulso.", "El libro correcto. El momento exacto.", "30 segundos. Ya."];
+const frasesIntro = ["¿Qué sientes y qué buscas ahora?", "¿Qué sientes y qué buscas ahora?", "¿Qué sientes y qué buscas ahora?"];
 document.getElementById("intro").innerHTML=`<span class="t">${frasesIntro[Math.floor(Math.random()*frasesIntro.length)]}</span>`;
 
 // === TRIPLE TAP RESET ===
@@ -1195,7 +515,7 @@ function updateBadge() {
   const librosTexto = books === 1 ? 'libro' : 'libros';
   
   document.getElementById('badgeContent').innerHTML = 
-    `🔥 ${streak} ${diasTexto} <span class="dot"></span> 📚 ${books} ${librosTexto} <span class="dot"></span> <span class="highlight-txt">⚡ ${concepts} impulsos activados</span>`;
+    `🔥 ${streak} ${diasTexto} <span class="dot"></span> 📚 ${books} ${librosTexto} <span class="dot"></span> <span class="highlight-txt">🤓 ${concepts} conceptos absorbidos - ¡Aplícalos hoy!</span>`;
 }
 
 // BUILDERS
@@ -1271,39 +591,26 @@ function handleBookReveal() {
 
   if (booksCount === 2) {
     setTimeout(() => Modal.show({
-      emoji: '🔥', 
-      title: 'La chispa ya está', 
-      text: 'Elimina la fricción cada semana.<span class="m-highlight">El libro correcto. El momento exacto.</span>',
-      btnText: 'Quiero mi chispa semanal', 
-      onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
-      showCancel: true, 
-      cancelText: 'Seguir explorando'
+      emoji: '📬', title: '¡2 Libros!', text: '¿Te gustaría recibir estas joyas por WhatsApp cada lunes?',
+      btnText: 'Ver cómo funciona', onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
+      showCancel: true, cancelText: 'Seguir explorando'
     }), delay);
   } else if (booksCount === 5) {
     setTimeout(() => Modal.show({
-      emoji: '⚡', 
-      title: 'El impulso funciona', 
-      text: 'La chispa semanal que elimina la fricción.<span class="m-highlight">$149/mes · Cancela cuando quieras</span>',
-      btnText: 'Activar ahora', 
-      onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
+      emoji: '🎯', title: '5 Libros Descubiertos', text: 'Recibe páginas seleccionadas para tu momento exacto.<br><span class="m-highlight">Precio lanzamiento: $100/mes</span>',
+      btnText: 'Quiero recibirlos', onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
       showCancel: true
     }), delay);
   } else if (booksCount === 10) {
     setTimeout(() => Modal.show({
-      emoji: '🧠', 
-      title: 'Empezar ya no es difícil', 
-      text: `${userCount} personas eliminaron la fricción hoy.<span class="m-highlight">Únete por WhatsApp</span>`,
-      btnText: 'Suscribirme', 
-      onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
+      emoji: '🔥', title: '¡Estás en racha!', text: `Ya llevas <b>10 libros</b> y <b>50 conceptos absorbidos</b>. ${userCount} personas están aplicando esto hoy. <br>Únete al grupo de WhatsApp.`,
+      btnText: 'Suscribirme', onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
       showCancel: true
     }), delay);
   } else if ([15, 20, 30, 50, 75, 100].includes(booksCount)) {
     setTimeout(() => Modal.show({
-      emoji: '💎', 
-      title: `${booksCount} impulsos activados`, 
-      text: 'Empezar ya no se siente pesado.<span class="m-highlight">Precio de lanzamiento hoy</span>',
-      btnText: 'Ver planes', 
-      onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
+      emoji: '🧠', title: `${booksCount} Libros Descubiertos`, text: 'Tu mente se está expandiendo. No pierdas el ritmo.<br><span class="m-highlight">Asegura tu precio de por vida hoy.</span>',
+      btnText: 'Ver planes', onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
       showCancel: true
     }), delay);
   }
@@ -1337,12 +644,9 @@ btnLike.onclick = (e) => {
 
   setTimeout(() => {
     Modal.show({
-      emoji: '📸', 
-      title: 'Guárdalo', 
-      text: 'Screenshot + Close Friends.<span class="m-highlight">Este mensaje llegó para ti</span>',
-      btnText: 'Listo', 
-      onConfirm: () => {}, 
-      showCancel: false
+      emoji: '📸', title: '¡Guárdalo!',
+      text: '<b>Toma Screenshot</b> y súbelo a close friends.<br><span class="m-highlight">Este mensaje te encontró por algo.</span>',
+      btnText: 'Listo', onConfirm: () => {}, showCancel: false
     });
   }, 1500);
 };
@@ -1361,8 +665,8 @@ function createFloatingHeart(x, y) {
 // HANDLERS
 btnOtro.onclick = () => { location.reload(); track('reload_clicked'); };
 btnLibro.onclick = async() => {
-  btnLibro.disabled=true; cele.style.display="flex"; celeMsg.innerHTML='<span class="num">...</span><br>impulsos activados juntos';
-  try{ const r=await fetch("https://triggui-api.vercel.app/api/increment"); const d=await r.json(); celeMsg.innerHTML=`⚡ <span class="num">${d.total.toLocaleString("es-MX")}</span><br>impulsos activados juntos`; track('physical_book_opened', { total: d.total }); }catch{}
+  btnLibro.disabled=true; cele.style.display="flex"; celeMsg.innerHTML='<span class="num">...</span><br>libros abiertos juntos';
+  try{ const r=await fetch("https://triggui-api.vercel.app/api/increment"); const d=await r.json(); celeMsg.innerHTML=`✨ <span class="num">${d.total.toLocaleString("es-MX")}</span><br>libros abiertos juntos`; track('physical_book_opened', { total: d.total }); }catch{}
   setTimeout(()=>{ cele.style.display="none"; btnLibro.disabled=false; },2300);
 };
 
@@ -1444,10 +748,12 @@ btnShare.onclick = () => {
 
 // LOGICA DE CIERRE (MÁXIMA PRIORIDAD)
 window.handleCardClick = function(e) {
+  // Si click en link/botón, no hacer nada (dejar navegar)
   if (e.target.closest('a') || e.target.closest('button')) {
     e.stopPropagation();
     return;
   }
+  // Click en cualquier otro lado -> Cerrar
   window.closeCard();
 }
 
@@ -1482,10 +788,7 @@ function pickLibroNoRepetido(libros){
 })();
 </script>
 
-<!-- ═══════════════════════════════════════════════════════════════════════
-     🧠 JAVASCRIPT - REACT NATIVE BRIDGE
-     ═══════════════════════════════════════════════════════════════════════ -->
-<script id="js-react-native-bridge">
+<script>
   const signalFirstPaint = () => { requestAnimationFrame(() => { try { window.ReactNativeWebView?.postMessage("FIRST_PAINT"); } catch (_) {} }); };
   if (document.readyState === "interactive" || document.readyState === "complete") { signalFirstPaint(); } else { document.addEventListener("DOMContentLoaded", signalFirstPaint, { once: true }); }
 </script>
