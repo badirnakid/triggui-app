@@ -7,17 +7,40 @@
 
 <!-- ═══════════════════════════════════════════════════════════════════════
      🎨 SECCIÓN 1: BASE STYLES (HTML & BODY)
+     Estilos fundamentales del documento
+     MODIFICAR: Solo si necesitas cambiar colores base o comportamiento del body
      ═══════════════════════════════════════════════════════════════════════ -->
 <style id="base-styles">
-  html, body { background:#0e0f1b !important; color:#fff; margin:0; padding:0; height:100%; font-family:'Archivo',sans-serif; -webkit-overflow-scrolling:touch; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overflow: hidden; }
-  /* Fondo animado sutil "Nebula" MEJORADO */
-  body::before { 
-    content:""; position:fixed; inset:0; 
-    background:radial-gradient(circle at 50% 50%, rgba(48,255,228,0.08), rgba(255,0,128,0.04) 50%, transparent 80%); 
-    z-index:-1; pointer-events:none; 
-    animation: nebula-pulse 8s ease-in-out infinite;
+  html, body { 
+    background:#0e0f1b !important; 
+    color:#fff; 
+    margin:0; 
+    padding:0; 
+    height:100%; 
+    font-family:'Archivo',sans-serif; 
+    -webkit-overflow-scrolling:touch; 
+    -webkit-text-size-adjust: 100%; 
+    text-size-adjust: 100%; 
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
-  @keyframes nebula-pulse {
+  
+  /* Fondo animado OPTIMIZADO "Deep Space" */
+  body::before { 
+    content:""; 
+    position:fixed; 
+    inset:0; 
+    background:
+      radial-gradient(ellipse at 30% 20%, rgba(48,255,228,0.08), transparent 50%),
+      radial-gradient(ellipse at 70% 80%, rgba(255,0,128,0.06), transparent 50%);
+    z-index:-1; 
+    pointer-events:none;
+    will-change: opacity;
+    animation: nebula-breathe 12s ease-in-out infinite;
+  }
+  
+  @keyframes nebula-breathe {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.7; }
   }
@@ -42,6 +65,8 @@
 
 <!-- ═══════════════════════════════════════════════════════════════════════
      🧠 CORE LOGIC - LOCAL STORAGE & UTILITIES
+     Funciones de datos y localStorage
+     MODIFICAR: Solo si necesitas cambiar lógica de persistencia
      ═══════════════════════════════════════════════════════════════════════ -->
 <script id="core-logic">
 // ========================================
@@ -128,147 +153,291 @@ function getRealisticUserCount() {
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,500;1,700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 
 <!-- ═══════════════════════════════════════════════════════════════════════
-     💫 SECCIÓN 2: INTRO ANIMATION NIVEL DIOS
+     💫 SECCIÓN 2: INTRO ANIMATION
+     Mensaje de introducción temporal
+     MODIFICAR: Texto, animación, timing del intro
      ═══════════════════════════════════════════════════════════════════════ -->
 <style id="intro-animation">
 .intro{
-  position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
-  padding:2.2rem 2.8rem; 
-  background: linear-gradient(145deg, rgba(30,34,50,0.95), rgba(10,12,20,0.98));
-  border: 1px solid rgba(48,255,228,0.2);
+  position:fixed; 
+  top:50%; 
+  left:50%; 
+  transform:translate(-50%,-50%);
+  padding:2rem 2.4rem; 
+  background:rgba(20,24,38,.92); 
   border-radius:28px;
-  z-index:120; font-family:'Poppins',sans-serif; text-align:center;
-  box-shadow:0 20px 60px rgba(0,0,0,.5), 
-             0 0 40px rgba(48,255,228,0.15),
-             inset 0 1px 0 rgba(255,255,255,.08);
-  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-  font-size:clamp(1.1rem,3.8vw,1.9rem); font-weight:700; line-height:1.25;
-  opacity:0; transform:translate(-50%,-52%) scale(.985);
-  animation:introIn .6s ease-out .15s forwards, introHide 3.2s 1.7s forwards; 
+  border: 1px solid rgba(48,255,228,0.25);
+  z-index:120; 
+  font-family:'Poppins',sans-serif; 
+  text-align:center;
+  box-shadow:
+    0 20px 60px rgba(0,0,0,.5),
+    0 0 0 1px rgba(255,255,255,.08),
+    inset 0 1px 0 rgba(255,255,255,.12);
+  backdrop-filter: blur(20px); 
+  -webkit-backdrop-filter: blur(20px);
+  font-size:clamp(1.1rem,3.8vw,1.9rem); 
+  font-weight:700; 
+  line-height:1.25;
+  opacity:0; 
+  transform:translate(-50%,-52%) scale(.985);
+  animation:introIn .6s ease-out .15s forwards, introHide 3.2s 1.7s forwards;
+  will-change: transform, opacity;
 }
+
 .intro .t{ 
-  background:linear-gradient(120deg,#30ffe4,#FF0080 40%,#FFD700); 
+  background:linear-gradient(120deg, #30ffe4 0%, #FF0080 50%, #FFD700 100%); 
   background-size: 200% 200%;
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-  animation: fire-shimmer 3s ease infinite;
+  -webkit-background-clip:text; 
+  -webkit-text-fill-color:transparent;
+  animation: fire-move 3s ease infinite;
+  text-shadow: none;
 }
-@keyframes fire-shimmer {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
+
 @keyframes introIn{ to{opacity:1; transform:translate(-50%,-50%) scale(1)} }
 @keyframes introHide{ to{opacity:0; visibility:hidden; transform:translate(-50%,-80%) scale(.985)} }
 </style>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
      🎯 SECCIÓN 3: GRID SYSTEM
+     Sistema de cuadrícula principal 2x2 o 4x1
+     MODIFICAR: Layout, espaciado, responsiveness del grid
      ═══════════════════════════════════════════════════════════════════════ -->
 <style id="grid-system">
-.grid{position:absolute;inset:5vh 1.5vw;display:grid;gap:1vw}
+.grid{
+  position:absolute;
+  inset:5vh 1.5vw;
+  display:grid;
+  gap:1vw;
+}
 @media(orientation:landscape){.grid{grid-template-columns:repeat(4,1fr)}}
 @media(orientation:portrait){.grid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr)}}
 </style>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
-     🃏 SECCIÓN 4: BLOCK CARDS NIVEL SUPREMO
+     🃏 SECCIÓN 4: BLOCK CARDS - ULTRA SUPREMO
+     Tarjetas principales del grid (las 4 cards)
+     MODIFICAR: Estilos de las cards, efectos hover, transiciones
      ═══════════════════════════════════════════════════════════════════════ -->
 <style id="block-cards">
 .block{
-  position:relative; display:flex; align-items:center; justify-content:center;
-  padding:1rem; border-radius:24px; font-weight:700; cursor:pointer;
+  position:relative; 
+  display:flex; 
+  align-items:center; 
+  justify-content:center;
+  padding:1rem; 
+  border-radius:24px;
+  font-weight:700; 
+  cursor:pointer;
   background-size:320% 320%;
-  transition:background-position 4s linear, transform .15s ease, filter .2s ease, box-shadow .3s ease;
-  overflow:hidden; isolation:isolate;
-  box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.1), 
-              0 12px 32px rgba(0,0,0,.35),
-              0 0 60px rgba(48,255,228,0.05);
-  border: 1px solid rgba(255,255,255,0.08);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow:hidden; 
+  isolation:isolate;
+  will-change: transform;
+  
+  /* BORDER NIVEL APPLE - Ultra definido */
+  box-shadow: 
+    inset 0 0 0 1.5px rgba(255,255,255,.15),
+    0 4px 6px rgba(0,0,0,.15),
+    0 12px 32px rgba(0,0,0,.35);
 }
-.block:hover{ 
-  background-position:100% 100%; 
-  filter:saturate(1.08) contrast(1.03) brightness(1.05); 
-  box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.15), 
-              0 20px 60px rgba(0,0,0,.45),
-              0 0 80px rgba(48,255,228,0.15);
-  transform: translateY(-2px);
-}
-.block:active{ transform:scale(.97); }
 
-/* Glassmorphism overlay */
+/* Glassmorphism overlay PREMIUM */
 .block::before{ 
-  content:"";position:absolute;inset:0;border-radius:inherit; 
-  background:linear-gradient(180deg,rgba(255,255,255,.18),transparent 62%); 
-  mix-blend-mode:soft-light;pointer-events:none; 
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit; 
+  background: linear-gradient(
+    145deg,
+    rgba(255,255,255,.18) 0%,
+    rgba(255,255,255,.08) 40%,
+    transparent 100%
+  );
+  pointer-events:none;
+  z-index: 1;
 }
 
-/* Shine effect nivel DIOS */
+/* Subtle inner glow para profundidad */
 .block::after {
-  content: '';
+  content: "";
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
-  transform: rotate(45deg);
-  animation: block-shine 8s ease-in-out infinite;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    ellipse at 50% 0%,
+    rgba(255,255,255,.12),
+    transparent 60%
+  );
   pointer-events: none;
-}
-@keyframes block-shine {
-  0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-  100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
 }
 
-.label, .frase { z-index:2; text-align:center; transition:opacity .25s, transform .25s; text-shadow: 0 2px 8px rgba(0,0,0,0.5); }
-.label { opacity:1; transform:translateY(0); font-size:clamp(1rem, 3vw, 1.6rem); font-weight:700; line-height:1.3; letter-spacing:0.3px; }
-.frase { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:1rem; opacity:0; transform:translateY(6px); font-size:clamp(0.95rem, 2.8vw, 1.4rem); font-weight:600; }
-.block.show .label { opacity:0; transform:translateY(-6px); }
-.block.show .frase { opacity:1; transform:translateY(0); }
+.block:hover::after {
+  opacity: 1;
+}
+
+.block:hover{ 
+  transform: translateY(-2px) scale(1.005);
+  box-shadow: 
+    inset 0 0 0 1.5px rgba(255,255,255,.22),
+    0 6px 12px rgba(0,0,0,.2),
+    0 16px 48px rgba(0,0,0,.45);
+}
+
+.block:active{ 
+  transform: translateY(0) scale(0.995); 
+  transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.label, .frase { 
+  z-index:2; 
+  text-align:center; 
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  /* TIPOGRAFÍA CRYSTAL CLEAR - Sin text-shadow */
+  text-shadow: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.label { 
+  opacity:1; 
+  transform:translateY(0); 
+  font-size:clamp(1.05rem, 3.2vw, 1.7rem);
+  font-weight:700; 
+  line-height:1.35; 
+  letter-spacing:0.2px;
+}
+
+.frase { 
+  position:absolute; 
+  inset:0; 
+  display:flex; 
+  align-items:center; 
+  justify-content:center; 
+  padding:1rem; 
+  opacity:0; 
+  transform:translateY(6px); 
+  font-size:clamp(1rem, 3vw, 1.5rem);
+  font-weight:600;
+  line-height: 1.4;
+}
+
+.block.show .label { 
+  opacity:0; 
+  transform:translateY(-6px); 
+}
+
+.block.show .frase { 
+  opacity:1; 
+  transform:translateY(0); 
+}
 </style>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
-     📖 SECCIÓN 5: PORTADA
+     📖 SECCIÓN 5: PORTADA (Cover Display)
+     Modal de portada del libro dentro del block
+     MODIFICAR: Estilos de portada, animación pop, tamaños
      ═══════════════════════════════════════════════════════════════════════ -->
 <style id="portada-cover">
-.portada{ position:absolute; inset:0; display:none; align-items:center; justify-content:center; flex-direction:column; padding:1rem; animation:pop .6s ease-out forwards; max-height:90%; }
-@keyframes pop{ 0%{transform:scale(.8);opacity:0} 100%{transform:scale(1);opacity:1} }
-.portada img{ max-width:94%; max-height:76%; border-radius:20px; box-shadow:0 20px 60px rgba(0,0,0,.65), 0 0 40px rgba(48,255,228,0.1); border: 1px solid rgba(255,255,255,0.1); }
-.port-text h2{ font-size:clamp(2rem,6vw,3.5rem); font-weight:800; text-shadow:0 4px 12px rgba(0,0,0,.5); text-align:center;}
-.port-text p{ font-size:clamp(1.2rem,4vw,1.8rem); font-weight:600; opacity:.95; text-shadow:0 2px 6px rgba(0,0,0,0.4); }
-.emoji-big{ font-size:clamp(1.6rem,5vw,2.8rem); filter:drop-shadow(0 6px 12px rgba(0,0,0,.4)); }
+.portada{ 
+  position:absolute; 
+  inset:0; 
+  display:none; 
+  align-items:center; 
+  justify-content:center; 
+  flex-direction:column; 
+  padding:1rem; 
+  animation:pop .6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  max-height:90%;
+  will-change: transform, opacity;
+}
+
+@keyframes pop{ 
+  0%{transform:scale(.85);opacity:0} 
+  100%{transform:scale(1);opacity:1} 
+}
+
+.portada img{ 
+  max-width:94%; 
+  max-height:76%; 
+  border-radius:20px;
+  box-shadow:
+    0 20px 60px rgba(0,0,0,.65),
+    0 0 0 1px rgba(255,255,255,.1);
+}
+
+.port-text h2{ 
+  font-size:clamp(2rem,6vw,3.5rem); 
+  font-weight:800; 
+  text-shadow: none;
+  text-align:center;
+  -webkit-font-smoothing: antialiased;
+}
+
+.port-text p{ 
+  font-size:clamp(1.2rem,4vw,1.8rem); 
+  font-weight:600; 
+  opacity:.95;
+  text-shadow: none;
+}
+
+.emoji-big{ 
+  font-size:clamp(1.6rem,5vw,2.8rem); 
+  filter:drop-shadow(0 4px 12px rgba(0,0,0,.4));
+}
 </style>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
-     🎮 SECCIÓN 6: CTA BUTTONS NIVEL FIRE
+     🎮 SECCIÓN 6: CTA BUTTONS (4 Botones Inferiores)
+     Botones flotantes: Otro, Físico, Share, Like
+     MODIFICAR: Colores, tamaños, posición de los 4 botones
      ═══════════════════════════════════════════════════════════════════════ -->
 <style id="cta-buttons">
 .cta{ 
-  position:fixed; bottom:3vh; left:50%; transform:translateX(-50%); z-index:100; 
-  display:none; gap: clamp(0.6rem, 2.5vw, 1rem); justify-content:center; 
+  position:fixed; 
+  bottom:3vh; 
+  left:50%; 
+  transform:translateX(-50%); 
+  z-index:100; 
+  display:none; 
+  gap: clamp(0.5rem, 2vw, 0.9rem); 
+  justify-content:center; 
 }
+
 .cta button{
-  width:clamp(3.5rem,min(8vw,8vh),4.5rem); height:clamp(3.5rem,min(8vw,8vh),4.5rem);
-  border:none; border-radius:50%; display:flex; align-items:center; justify-content:center;
-  font-size:clamp(1.5rem,3.5vw,2rem); cursor:pointer; background-size:200% 200%;
-  box-shadow: 0 8px 20px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,0.2); 
-  backdrop-filter:blur(10px);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
+  width:clamp(3.5rem,min(8vw,8vh),4.5rem); 
+  height:clamp(3.5rem,min(8vw,8vh),4.5rem);
+  border:none; 
+  border-radius:50%; 
+  display:flex; 
+  align-items:center; 
+  justify-content:center;
+  font-size:clamp(1.5rem,3.5vw,2rem); 
+  cursor:pointer; 
+  background-size:200% 200%;
+  box-shadow: 
+    0 0 0 1px rgba(255,255,255,.15),
+    0 6px 18px rgba(0,0,0,.35);
+  backdrop-filter:blur(8px);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform;
 }
-.cta button::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(255,255,255,0.2), transparent);
-  border-radius: 50%;
-  pointer-events: none;
-}
+
 .cta button:hover {
-  transform: translateY(-4px) scale(1.05);
-  box-shadow: 0 12px 32px rgba(0,0,0,.5), 0 0 20px rgba(255,255,255,0.3);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 
+    0 0 0 1px rgba(255,255,255,.25),
+    0 8px 24px rgba(0,0,0,.45);
 }
-.cta button:active{ transform:scale(.95); }
+
+.cta button:active {
+  transform: translateY(0) scale(0.95);
+  transition: transform 0.1s ease;
+}
+
 #otro{ background:linear-gradient(135deg,#5fbfff,#1e90ff); color:#fff; }
 #fisico{ background:linear-gradient(135deg,#b2f8c8,#42d97c); color:#000; }
 #share{ background:linear-gradient(135deg,#ff8a00,#ff3d3d); color:#fff; }
@@ -276,101 +445,190 @@ function getRealisticUserCount() {
 </style>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
-     💎 SECCIÓN 7: TARJETA OVERLAY
+     💎 SECCIÓN 7: TARJETA OVERLAY (Card Modal Suprema)
+     Overlay y tarjeta detallada del libro
+     MODIFICAR: Estilos del overlay, animaciones de entrada/salida
      ═══════════════════════════════════════════════════════════════════════ -->
 <style id="tarjeta-overlay">
 #tarjetaOverlay { 
-  display:none; position:fixed; inset:0; z-index:999; 
-  align-items:center; justify-content:center; 
-  background: rgba(0,0,0,0.92); 
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  opacity: 0; transition: opacity 0.3s ease; 
+  display:none; 
+  position:fixed; 
+  inset:0; 
+  z-index:999; 
+  align-items:center; 
+  justify-content:center; 
+  background: rgba(0,0,0,0.88); 
+  backdrop-filter: blur(12px); 
+  -webkit-backdrop-filter: blur(12px);
+  opacity: 0; 
+  transition: opacity 0.3s ease; 
   cursor: pointer;
 }
+
 #tarjetaOverlay.visible { opacity: 1; }
 
 #tarjetaCard { 
-  width: 94%; max-width: 500px;
-  height: auto; max-height: 85vh;
+  /* Dimensiones Inmersivas */
+  width: 94%; 
+  max-width: 500px;
+  height: auto; 
+  max-height: 85vh;
+  
+  /* Scroll Invisible */
   overflow-y: auto; 
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  border-radius: 22px; 
+  
+  /* Estilo Físico */
+  border-radius: 24px; 
   position: relative;
   transform: scale(0.94) translateY(15px);
   opacity: 0;
   transition: transform 0.45s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.4s ease;
+  
+  /* Color dinámico */
   background-color: var(--paper-col);
   color: var(--ink-col);
-  box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.85), 
-              0 0 60px rgba(48,255,228,0.1),
-              0 0 0 1px rgba(255,255,255,0.08);
+  
+  /* Sombra Profunda */
+  box-shadow: 
+    0 60px 120px -30px rgba(0, 0, 0, 0.85), 
+    0 0 0 1px rgba(255,255,255,0.08);
   cursor: default;
 }
+
 #tarjetaCard::-webkit-scrollbar { display: none; }
 
+/* Textura de papel "Grain" */
 #tarjetaCard::after {
-  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  content: ""; 
+  position: absolute; 
+  inset: 0; 
+  pointer-events: none; 
+  z-index: 0;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
   mix-blend-mode: overlay;
   opacity: 0.04;
-  border-radius: 22px;
+  border-radius: 24px;
 }
 
-#tarjetaOverlay.visible #tarjetaCard { transform: scale(1) translateY(0); opacity: 1; }
-body.webview #tarjetaCard { max-height: 90vh; padding-bottom: 25px; }
+#tarjetaOverlay.visible #tarjetaCard { 
+  transform: scale(1) translateY(0); 
+  opacity: 1; 
+}
+
+body.webview #tarjetaCard { 
+  max-height: 90vh; 
+  padding-bottom: 25px; 
+}
 </style>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
-     📄 SECCIÓN 8: CARD CONTENT
+     📄 SECCIÓN 8: CARD CONTENT (Contenido de la Tarjeta)
+     Estructura interna y tipografía de la tarjeta
+     MODIFICAR: Layout interno, tipografías, espaciados de la tarjeta
      ═══════════════════════════════════════════════════════════════════════ -->
 <style id="card-content">
+/* Estructura Interna */
 .card-content-wrap {
-  position: relative; z-index: 2; padding: 36px 28px;
-  display: flex; flex-direction: column; min-height: 100%; box-sizing: border-box;
+  position: relative; 
+  z-index: 2; 
+  padding: 36px 28px;
+  display: flex; 
+  flex-direction: column; 
+  min-height: 100%; 
+  box-sizing: border-box;
 }
 
+/* Tipografía */
 .card-header { text-align: center; margin-bottom: 28px; }
+
 .card-title { 
-  font-family: var(--serif-font); font-style: italic; font-weight: 800; 
-  font-size: clamp(26px, 7vw, 36px); line-height: 1.05; 
-  margin-bottom: 12px; letter-spacing: -0.5px; 
+  font-family: var(--serif-font); 
+  font-style: italic; 
+  font-weight: 800; 
+  font-size: clamp(26px, 7vw, 36px); 
+  line-height: 1.05; 
+  margin-bottom: 12px; 
+  letter-spacing: -0.5px;
+  -webkit-font-smoothing: antialiased;
+  text-shadow: none;
 }
+
 .card-author { 
-  font-family: var(--sans-font); font-size: 11px; 
-  text-transform: uppercase; letter-spacing: 2.5px; 
-  opacity: 0.7; font-weight: 800; 
+  font-family: var(--sans-font); 
+  font-size: 11px; 
+  text-transform: uppercase; 
+  letter-spacing: 2.5px; 
+  opacity: 0.7; 
+  font-weight: 800;
+  -webkit-font-smoothing: antialiased;
 }
-.card-divider { width: 40px; height: 1px; background: currentColor; opacity: 0.15; margin: 18px auto 0; }
+
+/* Divisor sutil para elegancia editorial */
+.card-divider { 
+  width: 40px; 
+  height: 1px; 
+  background: currentColor; 
+  opacity: 0.15; 
+  margin: 18px auto 0; 
+}
 
 .card-body { 
-  font-family: var(--serif-font); font-size: 19px; 
-  line-height: 1.6; opacity: 0.95; margin-bottom: 32px; 
+  font-family: var(--serif-font); 
+  font-size: 19px; 
+  line-height: 1.6; 
+  opacity: 0.95; 
+  margin-bottom: 32px;
+  -webkit-font-smoothing: antialiased;
 }
+
 .card-highlight { 
-  font-family: var(--sans-font); font-weight: 700; 
-  font-size: 20px; margin: 26px 0; line-height: 1.4; 
-  color: var(--accent-col); text-align: center;
+  font-family: var(--sans-font); 
+  font-weight: 700; 
+  font-size: 20px; 
+  margin: 26px 0; 
+  line-height: 1.4; 
+  color: var(--accent-col); 
+  text-align: center;
+  -webkit-font-smoothing: antialiased;
+  text-shadow: none;
 }
 </style>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
-     🔘 SECCIÓN 9: CARD ACTION BUTTONS
+     🔘 SECCIÓN 9: CARD ACTION BUTTONS (Botones Buscalibre/Explorar)
+     Botones de acción dentro de la tarjeta
+     MODIFICAR: Estilos de botones de la tarjeta (Comprar/Explorar)
      ═══════════════════════════════════════════════════════════════════════ -->
 <style id="card-action-buttons">
-.card-actions { display: flex; flex-direction: column; gap: 14px; margin-top: auto; }
+.card-actions { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 14px; 
+  margin-top: auto; 
+}
 
+/* Estilo Base Botón */
 .btn-action {
-  position: relative; z-index: 10;
-  width: 100%; height: 52px;
+  position: relative; 
+  z-index: 10;
+  width: 100%; 
+  height: 52px;
   border-radius: 14px;
-  display: flex; align-items: center; justify-content: center; gap: 12px;
-  text-decoration: none; cursor: pointer;
-  transition: transform 0.1s, box-shadow 0.2s, background-color 0.2s;
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  gap: 12px;
+  text-decoration: none; 
+  cursor: pointer;
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   box-sizing: border-box;
 }
+
 .btn-action:active { transform: scale(0.97); }
 
+/* 1. Botón Buscalibre (Pure Black + Brillo Sutil) */
 .btn-buscalibre {
   background: #080808;
   color: white;
@@ -379,229 +637,375 @@ body.webview #tarjetaCard { max-height: 90vh; padding-bottom: 25px; }
   overflow: hidden;
 }
 
+/* Animación de Brillo "Shine" */
 .btn-buscalibre::after {
-  content: ""; position: absolute; top: 0; left: -150%; width: 100%; height: 100%;
+  content: ""; 
+  position: absolute; 
+  top: 0; 
+  left: -150%; 
+  width: 100%; 
+  height: 100%;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
   transform: skewX(-20deg);
-  animation: shiny 4s infinite; pointer-events: none;
+  animation: shiny 4s infinite; 
+  pointer-events: none;
 }
+
 @keyframes shiny { 
   0% { left: -150%; } 
   20% { left: 150%; } 
   100% { left: 150%; } 
 }
 
+/* 2. Botón Explorar */
 .btn-explore {
   background: rgba(125,125,125,0.06);
   border: 1px solid rgba(0,0,0,0.08);
   color: inherit;
 }
+
 .btn-explore:active { background: rgba(125,125,125,0.12); }
 
 .card-dark-mode .btn-explore {
   background: rgba(255,255,255,0.08);
   border: 1px solid rgba(255,255,255,0.15);
 }
+
 .card-dark-mode .btn-explore:active { background: rgba(255,255,255,0.15); }
 
 .btn-txt { 
-  font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 16px; 
-  letter-spacing: 0.1px; white-space: nowrap;
+  font-family: 'Archivo', sans-serif; 
+  font-weight: 700; 
+  font-size: 16px; 
+  letter-spacing: 0.1px; 
+  white-space: nowrap;
 }
 
+/* Logo Triggui Footer */
 .triggui-logo-footer {
-  margin-top: 22px; display: flex; justify-content: center; opacity: 0.5;
+  margin-top: 22px; 
+  display: flex; 
+  justify-content: center; 
+  opacity: 0.5;
   transition: opacity 0.3s;
 }
-.triggui-logo-footer img { height: 22px; width: auto; display: block; }
+
+.triggui-logo-footer img { 
+  height: 22px; 
+  width: auto; 
+  display: block; 
+}
 </style>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
-     🏷️ SECCIÓN 10: PROGRESS BADGE PREMIUM
+     🏷️ SECCIÓN 10: PROGRESS BADGE (Badge Superior)
+     Badge de progreso con estadísticas
+     MODIFICAR: Estilos del badge de progreso superior
      ═══════════════════════════════════════════════════════════════════════ -->
 <style id="progress-badge">
 #progressBadge {
-  position: fixed; top: 15px; left: 0; right: 0; margin: 0 auto; width: fit-content; max-width: 90vw; z-index: 150;
-  background: linear-gradient(145deg, rgba(30,34,50,0.92), rgba(10,12,20,0.95));
+  position: fixed; 
+  top: 15px; 
+  left: 0; 
+  right: 0; 
+  margin: 0 auto; 
+  width: fit-content; 
+  max-width: 90vw; 
+  z-index: 150;
+  background: rgba(20,24,38,0.92); 
   border: 1px solid rgba(48,255,228,0.2);
-  padding: 8px 22px; border-radius: 99px; color: #dfe9ff;
-  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-  opacity: 0; animation: badgeDrop 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.4), 
-              0 0 40px rgba(48,255,228,0.1),
-              inset 0 1px 0 rgba(255,255,255,0.1); 
-  text-align: center; cursor: pointer; user-select: none; pointer-events: auto;
+  padding: 6px 20px; 
+  border-radius: 99px; 
+  color: #dfe9ff;
+  backdrop-filter: blur(16px); 
+  -webkit-backdrop-filter: blur(16px);
+  opacity: 0; 
+  animation: badgeDrop 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  box-shadow: 
+    0 6px 24px rgba(0,0,0,0.4),
+    0 0 0 1px rgba(255,255,255,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.12);
+  text-align: center; 
+  cursor: pointer; 
+  user-select: none; 
+  pointer-events: auto;
+  will-change: transform, opacity;
 }
-@keyframes badgeDrop { 0% { opacity: 0; transform: translateY(-40px); } 100% { opacity: 1; transform: translateY(0); } }
-#progressBadge .line1 { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 1.4px; opacity: 0.7; margin-bottom: 4px; font-weight: 700; color: #a0aec0; }
-#progressBadge .line2 { display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; font-size: 13px; font-weight: 700; color: #fff; line-height: 1.2; }
-#progressBadge .dot { width: 2px; height: 2px; background: rgba(255,255,255,0.4); border-radius: 50%; display: inline-block; margin: 0 2px; }
+
+@keyframes badgeDrop { 
+  0% { opacity: 0; transform: translateY(-40px); } 
+  100% { opacity: 1; transform: translateY(0); } 
+}
+
+#progressBadge .line1 { 
+  display: block; 
+  font-size: 10px; 
+  text-transform: uppercase; 
+  letter-spacing: 1.2px; 
+  opacity: 0.65; 
+  margin-bottom: 3px; 
+  font-weight: 700; 
+  color: #a0aec0;
+  -webkit-font-smoothing: antialiased;
+}
+
+#progressBadge .line2 { 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  gap: 6px; 
+  flex-wrap: wrap; 
+  font-size: 13px; 
+  font-weight: 700; 
+  color: #fff; 
+  line-height: 1.2;
+  -webkit-font-smoothing: antialiased;
+}
+
+#progressBadge .dot { 
+  width: 2px; 
+  height: 2px; 
+  background: rgba(255,255,255,0.4); 
+  border-radius: 50%; 
+  display: inline-block; 
+  margin: 0 2px; 
+}
+
 .highlight-txt { 
-  color: #30ffe4; 
-  text-shadow: 0 0 15px rgba(48,255,228,0.4); 
-  font-weight: 800;
+  background: linear-gradient(120deg, #30ffe4 0%, #FF0080 50%, #FFD700 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: fire-move 3s ease infinite;
+  text-shadow: none;
+}
+
+@keyframes fire-move {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 </style>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
      💬 SECCIÓN 11: TOAST NOTIFICATIONS
+     Sistema de notificaciones toast
+     MODIFICAR: Estilos de mensajes toast
      ═══════════════════════════════════════════════════════════════════════ -->
 <style id="toast-notifications">
 #toast {
-  position: fixed; top: 90px; left: 50%; transform: translateX(-50%) translateY(-20px); z-index: 160;
-  background: linear-gradient(145deg, rgba(30,34,50,0.98), rgba(10,12,20,0.99));
-  border: 1px solid rgba(48,255,228,0.2);
-  padding: 14px 26px; border-radius: 18px; font-size: 15px; color: #fff;
-  backdrop-filter: blur(16px); font-weight: 600; opacity: 0; pointer-events: none;
+  position: fixed; 
+  top: 90px; 
+  left: 50%; 
+  transform: translateX(-50%) translateY(-20px); 
+  z-index: 160;
+  background: rgba(20,24,38,0.95); 
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 12px 24px; 
+  border-radius: 16px; 
+  font-size: 15px; 
+  color: #fff;
+  backdrop-filter: blur(12px); 
+  font-weight: 600; 
+  opacity: 0; 
+  pointer-events: none;
   transition: all 0.3s ease; 
-  box-shadow: 0 12px 32px rgba(0,0,0,0.5), 0 0 30px rgba(48,255,228,0.15); 
-  text-align: center; max-width: 80%;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4); 
+  text-align: center; 
+  max-width: 80%;
 }
-#toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+#toast.visible { 
+  opacity: 1; 
+  transform: translateX(-50%) translateY(0); 
+}
 </style>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
-     🎭 SECCIÓN 12: MODAL SYSTEM NIVEL DIOS
+     🎭 SECCIÓN 12: MODAL SYSTEM (Modal Unificado) - ULTRA PREMIUM
+     Sistema de modales para mensajes
+     MODIFICAR: Estilos del sistema de modales
      ═══════════════════════════════════════════════════════════════════════ -->
 <style id="modal-system">
 #appModal { 
-  display: none; position: fixed; inset: 0; z-index: 9999; 
-  align-items: center; justify-content: center; 
+  display: none; 
+  position: fixed; 
+  inset: 0; 
+  z-index: 9999; 
+  align-items: center; 
+  justify-content: center; 
   background: rgba(0,0,0,0.88); 
   backdrop-filter: blur(12px); 
-  opacity: 0; transition: opacity 0.3s ease; 
+  opacity: 0; 
+  transition: opacity 0.3s ease; 
 }
-#appModal.visible { display: flex; opacity: 1; }
+
+#appModal.visible { 
+  display: flex; 
+  opacity: 1; 
+}
 
 .modal-glass {
-  background: linear-gradient(145deg, rgba(30,34,50,0.98), rgba(10,12,20,0.99));
+  background: linear-gradient(145deg, rgba(30,34,50,0.96), rgba(10,12,20,0.98));
   border: 1px solid rgba(48,255,228,0.25);
   border-radius: 28px; 
   padding: 32px; 
   width: 88%; 
   max-width: 400px;
   text-align: center; 
-  transform: scale(0.95); 
+  transform: scale(0.92);
   transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 0 30px 80px rgba(0,0,0,0.8), 
-              0 0 60px rgba(48,255,228,0.15),
-              inset 0 1px 0 rgba(255,255,255,0.1);
+  box-shadow: 
+    0 30px 80px rgba(0,0,0,0.8),
+    0 0 0 1px rgba(255,255,255,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
-#appModal.visible .modal-glass { transform: scale(1); }
+
+#appModal.visible .modal-glass { 
+  transform: scale(1); 
+}
 
 .m-emoji { 
   font-size: 52px; 
-  margin-bottom: 18px; 
+  margin-bottom: 16px; 
   display: block; 
-  animation: bounce 1s infinite; 
+  animation: bounce 1.5s ease infinite;
   filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
 }
-@keyframes bounce { 0%, 100% {transform:translateY(0);} 50% {transform:translateY(-12px);} }
+
+@keyframes bounce { 
+  0%, 100% {transform:translateY(0);} 
+  50% {transform:translateY(-12px);} 
+}
 
 .m-title { 
   font-size: 24px; 
   font-weight: 800; 
   margin-bottom: 10px; 
   color: #fff; 
-  letter-spacing: -0.3px;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  letter-spacing: 0.2px;
+  -webkit-font-smoothing: antialiased;
+  text-shadow: none;
 }
 
 .m-text { 
   font-size: 16px; 
-  color: #c0c5d0; 
+  color: #b0b5c0; 
   line-height: 1.6; 
-  margin-bottom: 26px; 
+  margin-bottom: 26px;
+  -webkit-font-smoothing: antialiased;
 }
 
 .m-highlight { 
-  background: linear-gradient(120deg, #30ffe4, #FF0080, #FFD700);
+  background: linear-gradient(120deg, #30ffe4 0%, #FF0080 50%, #FFD700 100%);
   background-size: 200% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  animation: fire-move 3s ease infinite;
   font-weight: 700; 
   display: block; 
   margin-top: 8px; 
   font-size: 15px;
-  animation: fire-shimmer 3s ease infinite;
+  text-shadow: none;
 }
 
-.m-buttons { display: flex; flex-direction: column; gap: 12px; }
+.m-buttons { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 12px; 
+}
 
 .m-btn { 
   padding: 16px; 
   border-radius: 16px; 
-  font-size: 17px; 
+  font-size: 16px; 
   font-weight: 700; 
   border: none; 
   cursor: pointer; 
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   text-decoration: none; 
   display: flex; 
   align-items: center; 
   justify-content: center;
-  position: relative;
-  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
-.m-btn::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(255,255,255,0.1), transparent);
-  pointer-events: none;
-}
-
-.m-btn:active { transform: scale(0.97); }
-.m-btn:hover { transform: translateY(-2px); }
+.m-btn:active { transform: scale(0.96); }
 
 .btn-primary { 
-  background: linear-gradient(135deg, #FF0080, #FF8C00, #FFD700); 
+  background: linear-gradient(135deg, #FF0080, #FF4500, #FFD700);
   background-size: 200% 200%;
   color: white; 
-  box-shadow: 0 8px 24px rgba(255,0,128,0.4), 
-              0 0 40px rgba(255,140,0,0.2);
-  animation: fire-shimmer 4s ease infinite;
+  box-shadow: 
+    0 0 0 1px rgba(255,255,255,0.15),
+    0 6px 20px rgba(255,0,128,0.4);
+  animation: fire-move 6s ease infinite;
 }
 
 .btn-secondary { 
   background: rgba(255,255,255,0.06); 
   color: #fff; 
-  border: 1px solid rgba(255,255,255,0.12); 
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
+
 .btn-secondary:hover {
-  background: rgba(255,255,255,0.1); 
-  border-color: rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.1);
 }
 </style>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
-     ✨ SECCIÓN 13: FLOATING HEARTS
+     ✨ SECCIÓN 13: FLOATING HEARTS (Animación de Like)
+     Partículas flotantes al dar like
+     MODIFICAR: Animación de corazones flotantes
      ═══════════════════════════════════════════════════════════════════════ -->
 <style id="floating-hearts">
 .floating-heart {
-  position: fixed; pointer-events: none; z-index: 200; font-size: 28px; opacity: 0;
+  position: fixed; 
+  pointer-events: none; 
+  z-index: 200; 
+  font-size: 24px; 
+  opacity: 0;
   animation: floatUp 1.2s ease-out forwards;
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+  will-change: transform, opacity;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
 }
+
 @keyframes floatUp {
-  0% { transform: translate(0, 0) scale(0.5); opacity: 0; }
-  20% { opacity: 1; transform: translate(var(--tx), -40px) scale(1.3); }
-  100% { opacity: 0; transform: translate(var(--tx), -150px) scale(1); }
+  0% { 
+    transform: translate(0, 0) scale(0.5) rotate(0deg); 
+    opacity: 0; 
+  }
+  20% { 
+    opacity: 1; 
+    transform: translate(var(--tx), -40px) scale(1.2) rotate(15deg); 
+  }
+  100% { 
+    opacity: 0; 
+    transform: translate(var(--tx), -150px) scale(1) rotate(30deg); 
+  }
 }
 </style>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
-     🎉 SECCIÓN 14: CELEBRATION OVERLAY SUPREMO
+     🎉 SECCIÓN 14: CELEBRATION OVERLAY
+     Pantalla de celebración
+     MODIFICAR: Estilos de overlay de celebración
      ═══════════════════════════════════════════════════════════════════════ -->
 <style id="celebration-overlay">
 .cele{ 
-  position:fixed; inset:0; 
-  background: linear-gradient(145deg, rgba(0,0,0,0.92), rgba(10,12,20,0.95)); 
-  backdrop-filter: blur(12px);
-  display:none; align-items:center; justify-content:center; z-index:110; flex-direction: column; 
+  position:fixed; 
+  inset:0; 
+  background:rgba(0,0,0,.92); 
+  display:none; 
+  align-items:center; 
+  justify-content:center; 
+  z-index:110; 
+  flex-direction: column;
+  backdrop-filter: blur(8px);
 }
+
 .cele-msg{ 
   font-family:'Poppins'; 
   font-size:2rem; 
@@ -610,31 +1014,49 @@ body.webview #tarjetaCard { max-height: 90vh; padding-bottom: 25px; }
   border: 1px solid rgba(48,255,228,0.3);
   padding:2.5rem 3.5rem; 
   border-radius:24px;
-  box-shadow: 0 30px 80px rgba(0,0,0,0.6),
-              0 0 60px rgba(48,255,228,0.2),
-              inset 0 1px 0 rgba(255,255,255,0.1);
+  box-shadow: 
+    0 30px 80px rgba(0,0,0,0.7),
+    0 0 0 1px rgba(255,255,255,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.15);
+  backdrop-filter: blur(20px);
+  -webkit-font-smoothing: antialiased;
 }
+
 .num{ 
-  background: linear-gradient(120deg, #30ffe4, #FF0080, #FFD700);
+  background: linear-gradient(120deg, #30ffe4 0%, #FF0080 50%, #FFD700 100%);
   background-size: 200% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  animation: fire-move 3s ease infinite;
   font-weight:900; 
   font-size:3.2rem;
-  animation: fire-shimmer 3s ease infinite;
-  filter: drop-shadow(0 4px 12px rgba(48,255,228,0.3));
+  text-shadow: none;
 }
 </style>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
      📱 SECCIÓN 15: RESPONSIVE
+     Media queries para mobile
+     MODIFICAR: Comportamiento responsive
      ═══════════════════════════════════════════════════════════════════════ -->
 <style id="responsive">
 @media (max-width: 480px) {
-  #progressBadge { padding: 7px 16px; top: 12px; }
-  #progressBadge .line2 { font-size: 11px; gap: 4px; }
+  #progressBadge { 
+    padding: 6px 14px; 
+    top: 12px; 
+  }
+  #progressBadge .line2 { 
+    font-size: 11px; 
+    gap: 4px; 
+  }
   .grid { gap: 1vw; } 
-  .cele-msg { font-size: 1.6rem; padding: 2rem 2.5rem; }
+  .cele-msg { 
+    font-size: 1.5rem; 
+    padding: 1.8rem 2.2rem; 
+  }
+  .num {
+    font-size: 2.6rem;
+  }
 }
 </style>
 
@@ -781,7 +1203,7 @@ function updateBadge() {
   const librosTexto = books === 1 ? 'libro' : 'libros';
   
   document.getElementById('badgeContent').innerHTML = 
-    `🔥 ${streak} ${diasTexto} <span class="dot"></span> 📚 ${books} ${librosTexto} <span class="dot"></span> <span class="highlight-txt">🧠 ${concepts} ideas absorbidas</span>`;
+    `🔥 ${streak} ${diasTexto} <span class="dot"></span> 📚 ${books} ${librosTexto} <span class="dot"></span> <span class="highlight-txt">💡 ${concepts} ideas absorbidas</span>`;
 }
 
 // BUILDERS
@@ -845,7 +1267,7 @@ function render(){
   }
 }
 
-// LOGICA ENGAGEMENT - COPIES NIVEL DIOS
+// LOGICA ENGAGEMENT
 function handleBookReveal() {
   const booksCount = incrementBooks();
   addConcepts(4); 
@@ -859,8 +1281,8 @@ function handleBookReveal() {
     setTimeout(() => Modal.show({
       emoji: '🔥', 
       title: 'Vas en racha', 
-      text: 'Dos libros descubiertos.<br><span class="m-highlight">¿Te gustaría recibir ideas así cada lunes por WhatsApp?</span>',
-      btnText: 'Sí, quiero crecer', 
+      text: '¿Te gustaría recibir ideas así cada lunes por WhatsApp?<span class="m-highlight">La sincronicidad no es coincidencia</span>',
+      btnText: 'Quiero recibirlas', 
       onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
       showCancel: true, 
       cancelText: 'Seguir explorando'
@@ -869,31 +1291,28 @@ function handleBookReveal() {
     setTimeout(() => Modal.show({
       emoji: '⚡', 
       title: '5 Libros Abiertos', 
-      text: 'Tu mente ya está absorbiendo.<br><span class="m-highlight">Activa tu crecimiento semanal: $149/mes</span>',
+      text: 'Activa tu crecimiento semanal.<span class="m-highlight">$149/mes · Cancela cuando quieras</span>',
       btnText: 'Activar ahora', 
       onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
-      showCancel: true,
-      cancelText: 'Más tarde'
+      showCancel: true
     }), delay);
   } else if (booksCount === 10) {
     setTimeout(() => Modal.show({
       emoji: '🧠', 
       title: '10 Libros · 50 Ideas', 
-      text: `<b>${userCount} personas</b> están creciendo hoy con Triggui.<br><span class="m-highlight">No pierdas el ritmo.</span>`,
-      btnText: 'Unirme al grupo', 
+      text: `${userCount} personas están creciendo hoy.<span class="m-highlight">Únete al grupo de WhatsApp</span>`,
+      btnText: 'Suscribirme', 
       onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
-      showCancel: true,
-      cancelText: 'Seguir solo'
+      showCancel: true
     }), delay);
   } else if ([15, 20, 30, 50, 75, 100].includes(booksCount)) {
     setTimeout(() => Modal.show({
       emoji: '💎', 
       title: `${booksCount} Libros Descubiertos`, 
-      text: 'Estás absorbiendo conocimiento real.<br><span class="m-highlight">Asegura tu precio de lanzamiento hoy.</span>',
+      text: 'Tu mente se está expandiendo.<span class="m-highlight">Asegura tu precio de lanzamiento hoy</span>',
       btnText: 'Ver planes', 
       onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
-      showCancel: true,
-      cancelText: 'Cerrar'
+      showCancel: true
     }), delay);
   }
 }
@@ -927,8 +1346,8 @@ btnLike.onclick = (e) => {
   setTimeout(() => {
     Modal.show({
       emoji: '📸', 
-      title: 'Guárdalo',
-      text: 'Screenshot + Close Friends.<br><span class="m-highlight">Este mensaje llegó para ti.</span>',
+      title: 'Guárdalo', 
+      text: 'Screenshot + Close Friends.<span class="m-highlight">Este mensaje llegó para ti</span>',
       btnText: 'Listo', 
       onConfirm: () => {}, 
       showCancel: false
