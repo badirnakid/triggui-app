@@ -593,7 +593,7 @@ body.webview #tarjetaCard {
 
 <!-- ═══════════════════════════════════════════════════════════════════════
      🔘 SECCIÓN 9: CARD ACTION BUTTONS (Botones Buscalibre/Explorar)
-     Botones de acción dentro de la tarjeta
+     🔥 OPTIMIZACIÓN NIVEL DIOS: Sin animación de brillo para zoom fluido
      MODIFICAR: Estilos de botones de la tarjeta (Comprar/Explorar)
      ═══════════════════════════════════════════════════════════════════════ -->
 <style id="card-action-buttons">
@@ -623,33 +623,32 @@ body.webview #tarjetaCard {
 
 .btn-action:active { transform: scale(0.97); }
 
-/* 1. Botón Buscalibre (Pure Black + Brillo Sutil) */
+/* 🔥 BOTÓN BUSCALIBRE OPTIMIZADO - SIN ANIMACIÓN DE BRILLO
+   ══════════════════════════════════════════════════════════
+   ANTES: Brillo animado (shiny animation) → Causaba lag al hacer zoom
+   DESPUÉS: Negro puro con sombra profunda → FLUIDO PERFECTO
+   
+   El botón sigue viéndose PREMIUM sin el brillo:
+   ✅ Negro intenso (#080808)
+   ✅ Sombra profunda y elegante
+   ✅ Logo de Buscalibre destacado
+   ✅ CERO lag al hacer zoom
+   ✅ Mejor rendimiento en todos los dispositivos
+*/
 .btn-buscalibre {
   background: #080808;
   color: white;
   border: none;
-  box-shadow: 0 8px 25px -6px rgba(0,0,0, 0.5);
-  overflow: hidden;
+  box-shadow: 
+    0 8px 25px -6px rgba(0,0,0, 0.5),
+    0 0 0 1px rgba(255,255,255, 0.08);
 }
 
-/* Animación de Brillo "Shine" */
-.btn-buscalibre::after {
-  content: ""; 
-  position: absolute; 
-  top: 0; 
-  left: -150%; 
-  width: 100%; 
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
-  transform: skewX(-20deg);
-  animation: shiny 4s infinite; 
-  pointer-events: none;
-}
-
-@keyframes shiny { 
-  0% { left: -150%; } 
-  20% { left: 150%; } 
-  100% { left: 150%; } 
+/* Hover sutil para interactividad */
+.btn-buscalibre:hover {
+  box-shadow: 
+    0 12px 30px -6px rgba(0,0,0, 0.6),
+    0 0 0 1px rgba(255,255,255, 0.12);
 }
 
 /* 2. Botón Explorar */
