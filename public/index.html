@@ -5,7 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, shrink-to-fit=no">
 <title>Triggui — Abre un libro físico. Aquí y ahora.</title>
 
-<style>
+<!-- ═══════════════════════════════════════════════════════════════════════
+     🎨 SECCIÓN 1: BASE STYLES (HTML & BODY)
+     Estilos fundamentales del documento
+     MODIFICAR: Solo si necesitas cambiar colores base o comportamiento del body
+     ═══════════════════════════════════════════════════════════════════════ -->
+<style id="base-styles">
   html, body { background:#0e0f1b !important; color:#fff; margin:0; padding:0; height:100%; font-family:'Archivo',sans-serif; -webkit-overflow-scrolling:touch; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overflow: hidden; }
   /* Fondo animado sutil "Nebula" */
   body::before { content:""; position:fixed; inset:0; background:radial-gradient(circle at 50% 50%, rgba(48,255,228,0.04), transparent 80%); z-index:-1; pointer-events:none; }
@@ -17,6 +22,9 @@
 <meta property="og:url" content="https://triggui.com">
 <meta property="og:type" content="website">
 
+<!-- ═══════════════════════════════════════════════════════════════════════
+     📊 GOOGLE ANALYTICS
+     ═══════════════════════════════════════════════════════════════════════ -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-CLK554FCNM"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -25,7 +33,12 @@
   gtag('config', 'G-CLK554FCNM');
 </script>
 
-<script>
+<!-- ═══════════════════════════════════════════════════════════════════════
+     🧠 CORE LOGIC - LOCAL STORAGE & UTILITIES
+     Funciones de datos y localStorage
+     MODIFICAR: Solo si necesitas cambiar lógica de persistencia
+     ═══════════════════════════════════════════════════════════════════════ -->
+<script id="core-logic">
 // ========================================
 // 🧠 LOGICA DE DATOS (CORE BLINDADO)
 // ========================================
@@ -104,12 +117,17 @@ function getRealisticUserCount() {
 }
 </script>
 
+<!-- ═══════════════════════════════════════════════════════════════════════
+     🔤 GOOGLE FONTS
+     ═══════════════════════════════════════════════════════════════════════ -->
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,500;1,700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 
-<style>
-/* ========================================
-   🎨 ESTILOS UI (NIVEL DIOS)
-   ======================================== */
+<!-- ═══════════════════════════════════════════════════════════════════════
+     💫 SECCIÓN 2: INTRO ANIMATION
+     Mensaje de introducción temporal
+     MODIFICAR: Texto, animación, timing del intro
+     ═══════════════════════════════════════════════════════════════════════ -->
+<style id="intro-animation">
 .intro{
   position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
   padding:2rem 2.4rem; background:rgba(20,24,38,.78); border-radius:28px;
@@ -123,12 +141,25 @@ function getRealisticUserCount() {
 .intro .t{ background:linear-gradient(120deg,#c9fff2,#30ffe4 40%,#9dd5ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
 @keyframes introIn{ to{opacity:1; transform:translate(-50%,-50%) scale(1)} }
 @keyframes introHide{ to{opacity:0; visibility:hidden; transform:translate(-50%,-80%) scale(.985)} }
+</style>
 
-/* Grid */
+<!-- ═══════════════════════════════════════════════════════════════════════
+     🎯 SECCIÓN 3: GRID SYSTEM
+     Sistema de cuadrícula principal 2x2 o 4x1
+     MODIFICAR: Layout, espaciado, responsiveness del grid
+     ═══════════════════════════════════════════════════════════════════════ -->
+<style id="grid-system">
 .grid{position:absolute;inset:5vh 1.5vw;display:grid;gap:1vw}
 @media(orientation:landscape){.grid{grid-template-columns:repeat(4,1fr)}}
 @media(orientation:portrait){.grid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr)}}
+</style>
 
+<!-- ═══════════════════════════════════════════════════════════════════════
+     🃏 SECCIÓN 4: BLOCK CARDS
+     Tarjetas principales del grid (las 4 cards)
+     MODIFICAR: Estilos de las cards, efectos hover, transiciones
+     ═══════════════════════════════════════════════════════════════════════ -->
+<style id="block-cards">
 .block{
   position:relative; display:flex; align-items:center; justify-content:center;
   padding:1rem; border-radius:22px; font-weight:700; cursor:pointer;
@@ -146,16 +177,28 @@ function getRealisticUserCount() {
 .frase { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:1rem; opacity:0; transform:translateY(6px); font-size:clamp(0.95rem, 2.8vw, 1.4rem); font-weight:600; }
 .block.show .label { opacity:0; transform:translateY(-6px); }
 .block.show .frase { opacity:1; transform:translateY(0); }
+</style>
 
-/* Portada */
+<!-- ═══════════════════════════════════════════════════════════════════════
+     📖 SECCIÓN 5: PORTADA (Cover Display)
+     Modal de portada del libro dentro del block
+     MODIFICAR: Estilos de portada, animación pop, tamaños
+     ═══════════════════════════════════════════════════════════════════════ -->
+<style id="portada-cover">
 .portada{ position:absolute; inset:0; display:none; align-items:center; justify-content:center; flex-direction:column; padding:1rem; animation:pop .6s ease-out forwards; max-height:90%; }
 @keyframes pop{ 0%{transform:scale(.8);opacity:0} 100%{transform:scale(1);opacity:1} }
 .portada img{ max-width:94%; max-height:76%; border-radius:18px; box-shadow:0 12px 32px rgba(0,0,0,.55); }
 .port-text h2{ font-size:clamp(2rem,6vw,3.5rem); font-weight:800; text-shadow:0 2px 6px rgba(0,0,0,.35); text-align:center;}
 .port-text p{ font-size:clamp(1.2rem,4vw,1.8rem); font-weight:600; opacity:.9; }
 .emoji-big{ font-size:clamp(1.6rem,5vw,2.8rem); filter:drop-shadow(0 4px 8px rgba(0,0,0,.3)); }
+</style>
 
-/* CTA (4 Botones) */
+<!-- ═══════════════════════════════════════════════════════════════════════
+     🎮 SECCIÓN 6: CTA BUTTONS (4 Botones Inferiores)
+     Botones flotantes: Otro, Físico, Share, Like
+     MODIFICAR: Colores, tamaños, posición de los 4 botones
+     ═══════════════════════════════════════════════════════════════════════ -->
+<style id="cta-buttons">
 .cta{ 
   position:fixed; bottom:3vh; left:50%; transform:translateX(-50%); z-index:100; 
   display:none; gap: clamp(0.5rem, 2vw, 0.9rem); justify-content:center; 
@@ -170,8 +213,14 @@ function getRealisticUserCount() {
 #fisico{ background:linear-gradient(135deg,#b2f8c8,#42d97c); color:#000; }
 #share{ background:linear-gradient(135deg,#ff8a00,#ff3d3d); color:#fff; }
 #like{ background:linear-gradient(135deg, #ff416c, #ff4b2b); color:#fff; }
+</style>
 
-/* 💎 TARJETA SUPREMA (DEFINITIVA) */
+<!-- ═══════════════════════════════════════════════════════════════════════
+     💎 SECCIÓN 7: TARJETA OVERLAY (Card Modal Suprema)
+     Overlay y tarjeta detallada del libro
+     MODIFICAR: Estilos del overlay, animaciones de entrada/salida
+     ═══════════════════════════════════════════════════════════════════════ -->
+<style id="tarjeta-overlay">
 #tarjetaOverlay { 
   display:none; position:fixed; inset:0; z-index:999; 
   align-items:center; justify-content:center; 
@@ -220,7 +269,14 @@ function getRealisticUserCount() {
 
 #tarjetaOverlay.visible #tarjetaCard { transform: scale(1) translateY(0); opacity: 1; }
 body.webview #tarjetaCard { max-height: 90vh; padding-bottom: 25px; }
+</style>
 
+<!-- ═══════════════════════════════════════════════════════════════════════
+     📄 SECCIÓN 8: CARD CONTENT (Contenido de la Tarjeta)
+     Estructura interna y tipografía de la tarjeta
+     MODIFICAR: Layout interno, tipografías, espaciados de la tarjeta
+     ═══════════════════════════════════════════════════════════════════════ -->
+<style id="card-content">
 /* Estructura Interna */
 .card-content-wrap {
   position: relative; z-index: 2; padding: 36px 28px;
@@ -251,14 +307,20 @@ body.webview #tarjetaCard { max-height: 90vh; padding-bottom: 25px; }
   font-size: 20px; margin: 26px 0; line-height: 1.4; 
   color: var(--accent-col); text-align: center;
 }
+</style>
 
-/* --- BOTONES DE ACCIÓN (DISEÑO SUPREMO) --- */
+<!-- ═══════════════════════════════════════════════════════════════════════
+     🔘 SECCIÓN 9: CARD ACTION BUTTONS (Botones Buscalibre/Explorar)
+     Botones de acción dentro de la tarjeta
+     MODIFICAR: Estilos de botones de la tarjeta (Comprar/Explorar)
+     ═══════════════════════════════════════════════════════════════════════ -->
+<style id="card-action-buttons">
 .card-actions { display: flex; flex-direction: column; gap: 14px; margin-top: auto; }
 
 /* Estilo Base Botón */
 .btn-action {
   position: relative; z-index: 10;
-  width: 100%; height: 52px; /* Altura Fija Exacta para ambos */
+  width: 100%; height: 52px;
   border-radius: 14px;
   display: flex; align-items: center; justify-content: center; gap: 12px;
   text-decoration: none; cursor: pointer;
@@ -269,14 +331,14 @@ body.webview #tarjetaCard { max-height: 90vh; padding-bottom: 25px; }
 
 /* 1. Botón Buscalibre (Pure Black + Brillo Sutil) */
 .btn-buscalibre {
-  background: #080808; /* Negro Puro y Elegante */
+  background: #080808;
   color: white;
   border: none;
   box-shadow: 0 8px 25px -6px rgba(0,0,0, 0.5);
   overflow: hidden;
 }
 
-/* Animación de Brillo "Shine" (Más sutil) */
+/* Animación de Brillo "Shine" */
 .btn-buscalibre::after {
   content: ""; position: absolute; top: 0; left: -150%; width: 100%; height: 100%;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
@@ -289,13 +351,13 @@ body.webview #tarjetaCard { max-height: 90vh; padding-bottom: 25px; }
   100% { left: 150%; } 
 }
 
-/* 2. Botón Explorar (Gemelo en tamaño, estilo secundario) */
+/* 2. Botón Explorar */
 .btn-explore {
   background: rgba(125,125,125,0.06);
   border: 1px solid rgba(0,0,0,0.08);
-  color: inherit; /* Hereda color de tinta (negro o blanco) */
+  color: inherit;
 }
-.btn-explore:active { background: rgba(125,125,125,0.12); } /* Feedback táctil */
+.btn-explore:active { background: rgba(125,125,125,0.12); }
 
 .card-dark-mode .btn-explore {
   background: rgba(255,255,255,0.08);
@@ -305,17 +367,23 @@ body.webview #tarjetaCard { max-height: 90vh; padding-bottom: 25px; }
 
 .btn-txt { 
   font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 16px; 
-  letter-spacing: 0.1px; white-space: nowrap; /* NO SALTO DE LÍNEA */
+  letter-spacing: 0.1px; white-space: nowrap;
 }
 
-/* Logo Triggui Footer - Aumentado */
+/* Logo Triggui Footer */
 .triggui-logo-footer {
   margin-top: 22px; display: flex; justify-content: center; opacity: 0.5;
   transition: opacity 0.3s;
 }
 .triggui-logo-footer img { height: 22px; width: auto; display: block; }
+</style>
 
-/* Badge */
+<!-- ═══════════════════════════════════════════════════════════════════════
+     🏷️ SECCIÓN 10: PROGRESS BADGE (Badge Superior)
+     Badge de progreso con estadísticas
+     MODIFICAR: Estilos del badge de progreso superior
+     ═══════════════════════════════════════════════════════════════════════ -->
+<style id="progress-badge">
 #progressBadge {
   position: fixed; top: 15px; left: 0; right: 0; margin: 0 auto; width: fit-content; max-width: 90vw; z-index: 150;
   background: rgba(20,24,38,0.90); border: 1px solid rgba(255,255,255,0.12);
@@ -329,8 +397,14 @@ body.webview #tarjetaCard { max-height: 90vh; padding-bottom: 25px; }
 #progressBadge .line2 { display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; font-size: 13px; font-weight: 700; color: #fff; line-height: 1.2; }
 #progressBadge .dot { width: 2px; height: 2px; background: rgba(255,255,255,0.4); border-radius: 50%; display: inline-block; margin: 0 2px; }
 .highlight-txt { color: #30ffe4; text-shadow: 0 0 10px rgba(48,255,228,0.25); }
+</style>
 
-/* Toast */
+<!-- ═══════════════════════════════════════════════════════════════════════
+     💬 SECCIÓN 11: TOAST NOTIFICATIONS
+     Sistema de notificaciones toast
+     MODIFICAR: Estilos de mensajes toast
+     ═══════════════════════════════════════════════════════════════════════ -->
+<style id="toast-notifications">
 #toast {
   position: fixed; top: 90px; left: 50%; transform: translateX(-50%) translateY(-20px); z-index: 160;
   background: rgba(20,24,38,0.95); border: 1px solid rgba(255,255,255,0.1);
@@ -339,8 +413,14 @@ body.webview #tarjetaCard { max-height: 90vh; padding-bottom: 25px; }
   transition: all 0.3s ease; box-shadow: 0 8px 24px rgba(0,0,0,0.4); text-align: center; max-width: 80%;
 }
 #toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
 
-/* Modal Unificado */
+<!-- ═══════════════════════════════════════════════════════════════════════
+     🎭 SECCIÓN 12: MODAL SYSTEM (Modal Unificado)
+     Sistema de modales para mensajes
+     MODIFICAR: Estilos del sistema de modales
+     ═══════════════════════════════════════════════════════════════════════ -->
+<style id="modal-system">
 #appModal { display: none; position: fixed; inset: 0; z-index: 9999; align-items: center; justify-content: center; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.3s ease; }
 #appModal.visible { display: flex; opacity: 1; }
 .modal-glass {
@@ -360,8 +440,14 @@ body.webview #tarjetaCard { max-height: 90vh; padding-bottom: 25px; }
 .m-btn:active { transform: scale(0.98); }
 .btn-primary { background: linear-gradient(135deg, #ff0080, #7928ca); color: white; box-shadow: 0 4px 15px rgba(255,0,128,0.3); }
 .btn-secondary { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
+</style>
 
-/* ✨ PARTÍCULAS LIKE */
+<!-- ═══════════════════════════════════════════════════════════════════════
+     ✨ SECCIÓN 13: FLOATING HEARTS (Animación de Like)
+     Partículas flotantes al dar like
+     MODIFICAR: Animación de corazones flotantes
+     ═══════════════════════════════════════════════════════════════════════ -->
+<style id="floating-hearts">
 .floating-heart {
   position: fixed; pointer-events: none; z-index: 200; font-size: 24px; opacity: 0;
   animation: floatUp 1.2s ease-out forwards;
@@ -371,12 +457,25 @@ body.webview #tarjetaCard { max-height: 90vh; padding-bottom: 25px; }
   20% { opacity: 1; transform: translate(var(--tx), -40px) scale(1.2); }
   100% { opacity: 0; transform: translate(var(--tx), -150px) scale(1); }
 }
+</style>
 
-/* Celebración */
+<!-- ═══════════════════════════════════════════════════════════════════════
+     🎉 SECCIÓN 14: CELEBRATION OVERLAY
+     Pantalla de celebración
+     MODIFICAR: Estilos de overlay de celebración
+     ═══════════════════════════════════════════════════════════════════════ -->
+<style id="celebration-overlay">
 .cele{ position:fixed; inset:0; background:rgba(0,0,0,.88); display:none; align-items:center; justify-content:center; z-index:110; flex-direction: column; }
 .cele-msg{ font-family:'Poppins'; font-size:2rem; text-align:center; background:rgba(255,255,255,.05); padding:2rem 3rem; border-radius:20px; }
 .num{ color:#30ffe4; font-weight:900; font-size:2.8rem; }
+</style>
 
+<!-- ═══════════════════════════════════════════════════════════════════════
+     📱 SECCIÓN 15: RESPONSIVE
+     Media queries para mobile
+     MODIFICAR: Comportamiento responsive
+     ═══════════════════════════════════════════════════════════════════════ -->
+<style id="responsive">
 @media (max-width: 480px) {
   #progressBadge { padding: 6px 14px; top: 12px; }
   #progressBadge .line2 { font-size: 11px; gap: 4px; }
@@ -384,8 +483,13 @@ body.webview #tarjetaCard { max-height: 90vh; padding-bottom: 25px; }
   .cele-msg { font-size: 1.5rem; padding: 1.5rem 2rem; }
 }
 </style>
+
 </head>
 <body>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     🎯 HTML STRUCTURE
+     ═══════════════════════════════════════════════════════════════════════ -->
 
 <div id="progressBadge">
   <span class="line1">Tu avance acumulado</span>
@@ -419,7 +523,10 @@ body.webview #tarjetaCard { max-height: 90vh; padding-bottom: 25px; }
 
 <div class="cele" id="cele"><div class="cele-msg" id="celeMsg"></div></div>
 
-<script>
+<!-- ═══════════════════════════════════════════════════════════════════════
+     🧠 JAVASCRIPT - MODAL SYSTEM
+     ═══════════════════════════════════════════════════════════════════════ -->
+<script id="js-modal-system">
 // ========================================
 // SISTEMA MODAL
 // ========================================
@@ -463,7 +570,12 @@ const Modal = {
     setTimeout(() => { this.el.style.display = 'none'; }, 300);
   }
 };
+</script>
 
+<!-- ═══════════════════════════════════════════════════════════════════════
+     🧠 JAVASCRIPT - APP LOGIC
+     ═══════════════════════════════════════════════════════════════════════ -->
+<script id="js-app-logic">
 // ========================================
 // LOGICA APP
 // ========================================
@@ -748,12 +860,10 @@ btnShare.onclick = () => {
 
 // LOGICA DE CIERRE (MÁXIMA PRIORIDAD)
 window.handleCardClick = function(e) {
-  // Si click en link/botón, no hacer nada (dejar navegar)
   if (e.target.closest('a') || e.target.closest('button')) {
     e.stopPropagation();
     return;
   }
-  // Click en cualquier otro lado -> Cerrar
   window.closeCard();
 }
 
@@ -788,7 +898,10 @@ function pickLibroNoRepetido(libros){
 })();
 </script>
 
-<script>
+<!-- ═══════════════════════════════════════════════════════════════════════
+     🧠 JAVASCRIPT - REACT NATIVE BRIDGE
+     ═══════════════════════════════════════════════════════════════════════ -->
+<script id="js-react-native-bridge">
   const signalFirstPaint = () => { requestAnimationFrame(() => { try { window.ReactNativeWebView?.postMessage("FIRST_PAINT"); } catch (_) {} }); };
   if (document.readyState === "interactive" || document.readyState === "complete") { signalFirstPaint(); } else { document.addEventListener("DOMContentLoaded", signalFirstPaint, { once: true }); }
 </script>
