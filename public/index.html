@@ -213,7 +213,7 @@ function getRealisticUserCount() {
 </style>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
-     🃏 SECCIÓN 4: BLOCK CARDS - ULTRA FLUIDO
+     🃏 SECCIÓN 4: BLOCK CARDS - ULTRA FLUIDO + MICRO-HINT
      Tarjetas principales del grid (las 4 cards)
      MODIFICAR: Estilos de las cards, efectos hover, transiciones
      ═══════════════════════════════════════════════════════════════════════ -->
@@ -330,6 +330,20 @@ function getRealisticUserCount() {
 .block.show .frase { 
   opacity:1; 
   transform:translateY(0); 
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   🎯 MICRO-HINT VISUAL - Solo primera visita (NIVEL DIOS ONBOARDING)
+   Compatible iOS/Android/Web - CSS puro - Sin riesgo
+   ═══════════════════════════════════════════════════════════════════════ */
+@keyframes first-visit-hint {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-3px) scale(1.015); }
+}
+
+.block.first-visit-hint {
+  animation: first-visit-hint 1.8s ease-in-out 1;
+  animation-delay: 2s;
 }
 </style>
 
@@ -1181,8 +1195,12 @@ const isURL = s => /^https?:\/\//i.test(s || "");
 const ANG = [115,205,35,320];
 const grad = i => `linear-gradient(${ANG[i%4]}deg,${libro.colores[i]},${libro.colores[(i+1)%4]})`;
 
-// INTRO - NARRATIVA NIVEL DIOS (Alineada con triggui.com)
+// ═══════════════════════════════════════════════════════════════════════
+// INTRO - NARRATIVA NIVEL DIOS (CON MICRO-HINT ACCIONABLE)
+// CAMBIO 1 DE 3: Primera frase más accionable
+// ═══════════════════════════════════════════════════════════════════════
 const frasesIntro = [
+  "Toca. Descubre. El libro te espera.",  // ← NUEVA: Más accionable
   "Cuando el impulso llega, el libro ya te espera.",
   "No busques libros. Deja que te encuentren.",
   "Si no puedes leerlo ahora, ahí se queda esperando.",
@@ -1524,6 +1542,19 @@ function pickLibroNoRepetido(libros){
     render(); 
     updateBadge();
     track('app_loaded', {streak:getLocal('streak',0), books:getLocal('books_opened',0)});
+    
+    // ═══════════════════════════════════════════════════════════════════════
+    // MICRO-HINT VISUAL - Solo primera visita (NIVEL DIOS ONBOARDING)
+    // CAMBIO 3 DE 3: Activar animación sutil después de render
+    // Compatible iOS/Android/Web - localStorage ya en uso - Sin riesgo
+    // ═══════════════════════════════════════════════════════════════════════
+    if (!getLocal('has_visited')) {
+      setTimeout(() => {
+        document.querySelectorAll('.block').forEach(b => b.classList.add('first-visit-hint'));
+        saveLocal('has_visited', true);
+      }, 100);
+    }
+    
   }catch(e){ 
     console.error(e);
   }
