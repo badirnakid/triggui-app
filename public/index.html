@@ -571,6 +571,19 @@ body.webview #tarjetaCard {
   box-sizing: border-box;
 }
 
+/* Logo Triggui Header (ARRIBA) */
+.card-header-logo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.card-header-logo img {
+  height: 20px;
+  width: auto;
+  opacity: 0.85;
+}
+
 /* Tipografía */
 .card-header { text-align: center; margin-bottom: 28px; }
 
@@ -628,41 +641,23 @@ body.webview #tarjetaCard {
 </style>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
-     🔘 SECCIÓN 9: CARD ACTION BUTTONS (Botones Buscalibre/Enviaflores)
+     🔘 SECCIÓN 9: CARD ACTION BUTTONS (Arquitectura Nueva Nivel Dios)
      MODIFICAR: Estilos de botones de la tarjeta
      ═══════════════════════════════════════════════════════════════════════ -->
 <style id="card-action-buttons">
 .card-actions { 
   display: flex; 
   flex-direction: column; 
-  gap: 20px; 
+  gap: 16px; 
   margin-top: auto; 
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   🎯 BLOQUE BUSCALIBRE - LOGO FUERA + 2 BOTONES HORIZONTALES
+   🎯 BLOQUE BUSCALIBRE - COMPRAR (ANCHO) + EXPLORAR (CUADRITO)
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-.partner-section {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.partner-logo-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.partner-logo-row img {
-  height: 20px;
-  width: auto;
-  opacity: 0.85;
-}
-
-.partner-buttons-row {
+.buscalibre-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 2fr 1fr;
   gap: 10px;
 }
 
@@ -688,8 +683,8 @@ body.webview #tarjetaCard {
 
 .btn-action:active { transform: scale(0.97); }
 
-/* Botón Negro Premium (Buscalibre - Comprar) */
-.btn-black {
+/* Botón Comprar - Negro con logo Buscalibre dentro */
+.btn-comprar {
   background: #080808;
   color: white;
   border: none;
@@ -698,30 +693,42 @@ body.webview #tarjetaCard {
     0 0 0 1px rgba(255,255,255, 0.08);
 }
 
-.btn-black:hover {
+.btn-comprar:hover {
   box-shadow: 
     0 8px 24px -6px rgba(0,0,0, 0.5),
     0 0 0 1px rgba(255,255,255, 0.12);
 }
 
-/* Botón Outline Sutil (Buscalibre - Explorar) */
-.btn-outline {
+.btn-comprar img {
+  height: 18px;
+  width: auto;
+  display: block;
+}
+
+/* Botón Explorar - Cuadrito con emoji */
+.btn-explorar {
   background: rgba(125,125,125,0.06);
   border: 1px solid rgba(0,0,0,0.08);
   color: inherit;
+  aspect-ratio: 1;
+  padding: 0;
 }
 
-.btn-outline:active { background: rgba(125,125,125,0.12); }
+.btn-explorar:active { 
+  background: rgba(125,125,125,0.12); 
+}
 
-.card-dark-mode .btn-outline {
+.card-dark-mode .btn-explorar {
   background: rgba(255,255,255,0.08);
   border: 1px solid rgba(255,255,255,0.15);
 }
 
-.card-dark-mode .btn-outline:active { background: rgba(255,255,255,0.15); }
+.card-dark-mode .btn-explorar:active { 
+  background: rgba(255,255,255,0.15); 
+}
 
-.btn-icon {
-  font-size: 16px;
+.btn-emoji {
+  font-size: 20px;
   line-height: 1;
 }
 
@@ -753,21 +760,6 @@ body.webview #tarjetaCard {
 }
 /* FIN BLOQUE ENVIAFLORES */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-
-/* Logo Triggui Footer */
-.triggui-logo-footer {
-  margin-top: 22px; 
-  display: flex; 
-  justify-content: center; 
-  opacity: 0.5;
-  transition: opacity 0.3s;
-}
-
-.triggui-logo-footer img { 
-  height: 20px; 
-  width: auto; 
-  display: block; 
-}
 </style>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
@@ -1528,12 +1520,19 @@ btnShare.onclick = () => {
   else { card.classList.remove('card-dark-mode'); }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🎯 RENDER HTML - BLOQUES MODULARES ACTIVABLES
+  // 🎯 RENDER HTML - ARQUITECTURA NUEVA NIVEL DIOS
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   const randomEnviafloresURL = getRandomEnviafloresURL();
   
   card.innerHTML = `
     <div class="card-content-wrap">
+      
+      <!-- Logo Triggui ARRIBA -->
+      <div class="card-header-logo">
+        <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png" 
+             alt="Triggui"
+             style="filter: ${isDark ? 'invert(1) brightness(1.5)' : 'none'};">
+      </div>
       
       <div class="card-header">
         <div class="card-title">${libro.titulo}</div>
@@ -1550,35 +1549,26 @@ btnShare.onclick = () => {
       <div class="card-actions">
         
         <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-             🎯 BLOQUE BUSCALIBRE - ACTIVADO
-             Copiar/pegar completo para activar/desactivar
+             🎯 BLOQUE BUSCALIBRE - COMPRAR (ANCHO) + EXPLORAR (CUADRITO)
              ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-        <!-- INICIO BLOQUE BUSCALIBRE -->
-        <div class="partner-section">
-          <div class="partner-logo-row">
-            <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/buscalibre.png" 
-                 alt="Buscalibre">
-          </div>
-          <div class="partner-buttons-row">
-            <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(libro.titulo + ' ' + libro.autor)}" 
-               target="_blank" 
-               class="btn-action btn-black">
-               <span class="btn-icon">📖</span>
-               <span>Comprar</span>
-            </a>
-            <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(p)}" 
-               target="_blank" 
-               class="btn-action btn-outline">
-               <span class="btn-icon">✨</span>
-               <span>Explorar</span>
-            </a>
-          </div>
+        <div class="buscalibre-row">
+          <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(libro.titulo + ' ' + libro.autor)}" 
+             target="_blank" 
+             class="btn-action btn-comprar">
+             <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/buscalibre.png" 
+                  alt="Buscalibre">
+             <span>Comprar</span>
+          </a>
+          
+          <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(p)}" 
+             target="_blank" 
+             class="btn-action btn-explorar">
+             <span class="btn-emoji">🎲</span>
+          </a>
         </div>
-        <!-- FIN BLOQUE BUSCALIBRE -->
         
         <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-             🌺 BLOQUE ENVIAFLORES - ACTIVADO (LOGO DENTRO DEL BOTÓN)
-             Copiar/pegar completo para activar/desactivar
+             🌺 BLOQUE ENVIAFLORES - LOGO DENTRO DEL BOTÓN
              ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
         <!-- INICIO BLOQUE ENVIAFLORES -->
         <a href="${randomEnviafloresURL}" 
@@ -1589,12 +1579,7 @@ btnShare.onclick = () => {
            <span>Únelo a un detalle</span>
         </a>
         <!-- FIN BLOQUE ENVIAFLORES -->
-
-        <div class="triggui-logo-footer">
-           <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png" 
-                alt="Triggui"
-                style="filter: ${isDark ? 'invert(1) brightness(1.5)' : 'none'};">
-        </div>
+        
       </div>
     </div>
   `;
