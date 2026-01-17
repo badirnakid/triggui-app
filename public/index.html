@@ -628,8 +628,7 @@ body.webview #tarjetaCard {
 </style>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
-     🔘 SECCIÓN 9: CARD ACTION BUTTONS (Botones Buscalibre/Explorar/Enviaflores)
-     🔥 INTEGRACIÓN ENVIAFLORES - BLOQUE MODULAR ACTIVABLE
+     🔘 SECCIÓN 9: CARD ACTION BUTTONS (Botones Buscalibre/Enviaflores)
      MODIFICAR: Estilos de botones de la tarjeta
      ═══════════════════════════════════════════════════════════════════════ -->
 <style id="card-action-buttons">
@@ -641,7 +640,7 @@ body.webview #tarjetaCard {
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   🎯 BLOQUE BUSCALIBRE - LOGO + 2 BOTONES HORIZONTALES
+   🎯 BLOQUE BUSCALIBRE - LOGO FUERA + 2 BOTONES HORIZONTALES
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 .partner-section {
   display: flex;
@@ -689,7 +688,7 @@ body.webview #tarjetaCard {
 
 .btn-action:active { transform: scale(0.97); }
 
-/* Botón Negro Premium (Buscalibre) */
+/* Botón Negro Premium (Buscalibre - Comprar) */
 .btn-black {
   background: #080808;
   color: white;
@@ -705,7 +704,7 @@ body.webview #tarjetaCard {
     0 0 0 1px rgba(255,255,255, 0.12);
 }
 
-/* Botón Outline Sutil (Explorar/Regalo) */
+/* Botón Outline Sutil (Buscalibre - Explorar) */
 .btn-outline {
   background: rgba(125,125,125,0.06);
   border: 1px solid rgba(0,0,0,0.08);
@@ -727,28 +726,10 @@ body.webview #tarjetaCard {
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   🌺 BLOQUE ENVIAFLORES - LOGO + 1 BOTÓN (ACTIVABLE)
+   🌺 BLOQUE ENVIAFLORES - LOGO DENTRO DEL BOTÓN (ACTIVABLE)
    COPIAR/PEGAR este bloque completo para activar/desactivar Enviaflores
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 /* INICIO BLOQUE ENVIAFLORES */
-.enviaflores-section {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.enviaflores-logo-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.enviaflores-logo-row img {
-  height: 22px;
-  width: auto;
-  opacity: 0.85;
-}
-
 .btn-enviaflores {
   width: 100%;
   background: linear-gradient(135deg, #E91E63, #FF6B9D);
@@ -763,6 +744,12 @@ body.webview #tarjetaCard {
   box-shadow: 
     0 8px 24px -6px rgba(233, 30, 99, 0.5),
     0 0 0 1px rgba(255,255,255, 0.15);
+}
+
+.btn-enviaflores img {
+  height: 18px;
+  width: auto;
+  display: block;
 }
 /* FIN BLOQUE ENVIAFLORES */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
@@ -1253,7 +1240,9 @@ const grad = i => `linear-gradient(${ANG[i%4]}deg,${libro.colores[i]},${libro.co
 
 // ═══════════════════════════════════════════════════════════════════════
 // 🌺 ENVIAFLORES RANDOM URL SELECTOR
+// COPIAR/PEGAR este bloque completo para activar/desactivar Enviaflores
 // ═══════════════════════════════════════════════════════════════════════
+/* INICIO BLOQUE ENVIAFLORES - JAVASCRIPT */
 const ENVIAFLORES_URLS = [
   "https://www.enviaflores.com/florerias-nuevo-leon/san-pedro-garza-garcia/todas-las-canastas",
   "https://www.enviaflores.com/florerias-nuevo-leon/san-pedro-garza-garcia/todo-cumpleanos",
@@ -1267,6 +1256,7 @@ const ENVIAFLORES_URLS = [
 function getRandomEnviafloresURL() {
   return ENVIAFLORES_URLS[Math.floor(Math.random() * ENVIAFLORES_URLS.length)];
 }
+/* FIN BLOQUE ENVIAFLORES - JAVASCRIPT */
 
 // ═══════════════════════════════════════════════════════════════════════
 // INTRO - NARRATIVA NIVEL DIOS (CON MICRO-HINT ACCIONABLE)
@@ -1567,8 +1557,7 @@ btnShare.onclick = () => {
         <div class="partner-section">
           <div class="partner-logo-row">
             <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/buscalibre.png" 
-                 alt="Buscalibre"
-                 style="filter: ${isDark ? 'invert(1) brightness(1.2)' : 'none'};">
+                 alt="Buscalibre">
           </div>
           <div class="partner-buttons-row">
             <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(libro.titulo + ' ' + libro.autor)}" 
@@ -1588,23 +1577,17 @@ btnShare.onclick = () => {
         <!-- FIN BLOQUE BUSCALIBRE -->
         
         <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-             🌺 BLOQUE ENVIAFLORES - ACTIVADO
+             🌺 BLOQUE ENVIAFLORES - ACTIVADO (LOGO DENTRO DEL BOTÓN)
              Copiar/pegar completo para activar/desactivar
              ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
         <!-- INICIO BLOQUE ENVIAFLORES -->
-        <div class="enviaflores-section">
-          <div class="enviaflores-logo-row">
-            <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/enviaflores-logo.png" 
-                 alt="Envía Flores"
-                 style="filter: ${isDark ? 'invert(1) brightness(1.2)' : 'none'};">
-          </div>
-          <a href="${randomEnviafloresURL}" 
-             target="_blank" 
-             class="btn-action btn-enviaflores">
-             <span class="btn-icon">🎁</span>
-             <span>Únelo a un detalle</span>
-          </a>
-        </div>
+        <a href="${randomEnviafloresURL}" 
+           target="_blank" 
+           class="btn-action btn-enviaflores">
+           <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/enviaflores-logo.png" 
+                alt="Envía Flores">
+           <span>Únelo a un detalle</span>
+        </a>
         <!-- FIN BLOQUE ENVIAFLORES -->
 
         <div class="triggui-logo-footer">
