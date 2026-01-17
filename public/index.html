@@ -23,6 +23,7 @@
     overflow: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    touch-action: manipulation; /* FIX: Elimina el retraso de 300ms al tocar */
   }
   
   /* Fondo animado OPTIMIZADO "Deep Space" - Colores de triggui.com */
@@ -306,9 +307,9 @@ function getRealisticUserCount() {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   🎯 MICRO-HINT VISUAL - Solo primera visita (NIVEL DIOS ONBOARDING)
-   Compatible iOS/Android/Web - CSS puro - Sin riesgo
-   ═══════════════════════════════════════════════════════════════════════ */
+  🎯 MICRO-HINT VISUAL - Solo primera visita (NIVEL DIOS ONBOARDING)
+  Compatible iOS/Android/Web - CSS puro - Sin riesgo
+  ═══════════════════════════════════════════════════════════════════════ */
 @keyframes first-visit-hint {
   0%, 100% { transform: translateY(0) scale(1); }
   50% { transform: translateY(-3px) scale(1.015); }
@@ -418,6 +419,7 @@ function getRealisticUserCount() {
     0 6px 18px rgba(0,0,0,.35);
   backdrop-filter:blur(6px);
   transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  touch-action: manipulation; /* FIX: Respuesta instantánea */
 }
 
 .cta button:hover {
@@ -602,9 +604,9 @@ body.webview #tarjetaCard {
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   🎯 BLOQUE BUSCALIBRE - COMPRAR (ANCHO) + EXPLORAR (CUADRITO)
-   Ajuste de precisión para alineación perfecta con botón inferior
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  🎯 BLOQUE BUSCALIBRE - COMPRAR (ANCHO) + EXPLORAR (CUADRITO)
+  Ajuste de precisión para alineación perfecta con botón inferior
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 .buscalibre-row {
   display: grid;
   grid-template-columns: 1fr 48px;
@@ -629,6 +631,8 @@ body.webview #tarjetaCard {
   font-weight: 700; 
   font-size: 14px; 
   letter-spacing: 0.1px;
+  touch-action: manipulation; /* FIX: Elimina tap delay */
+  will-change: transform; /* FIX: Pre-renderiza en GPU */
 }
 
 .btn-action:active { transform: scale(0.97); }
@@ -683,9 +687,9 @@ body.webview #tarjetaCard {
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   🌺 BLOQUE ENVIAFLORES - LOGO DENTRO DEL BOTÓN (ACTIVABLE)
-   COPIAR/PEGAR este bloque completo para activar/desactivar Enviaflores
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  🌺 BLOQUE ENVIAFLORES - LOGO DENTRO DEL BOTÓN (ACTIVABLE)
+  COPIAR/PEGAR este bloque completo para activar/desactivar Enviaflores
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 /* INICIO BLOQUE ENVIAFLORES */
 .btn-enviaflores {
   width: 100%;
