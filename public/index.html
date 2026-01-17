@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Triggui — Cuando el impulso llega, el libro ya te espera</title>
 
+<link rel="preconnect" href="https://www.enviaflores.com">
+<link rel="preconnect" href="https://www.buscalibre.com.mx">
+<link rel="dns-prefetch" href="https://www.enviaflores.com">
+
 <style id="base-styles">
   html, body { 
     background:#000000 !important; 
@@ -599,6 +603,7 @@ body.webview #tarjetaCard {
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    🎯 BLOQUE BUSCALIBRE - COMPRAR (ANCHO) + EXPLORAR (CUADRITO)
+   Ajuste de precisión para alineación perfecta con botón inferior
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 .buscalibre-row {
   display: grid;
@@ -1425,7 +1430,7 @@ btnShare.onclick = () => {
   else { card.classList.remove('card-dark-mode'); }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🎯 RENDER HTML - ARQUITECTURA NUEVA NIVEL DIOS
+  // 🎯 RENDER HTML - OPTIMIZADO PARA CARGA INSTANTÁNEA (REL NOOPENER)
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   const randomEnviafloresURL = getRandomEnviafloresURL();
   
@@ -1455,6 +1460,7 @@ btnShare.onclick = () => {
         <div class="buscalibre-row">
           <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(libro.titulo + ' ' + libro.autor)}" 
              target="_blank" 
+             rel="noopener noreferrer"
              class="btn-action btn-comprar">
              <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/buscalibre.png" 
                   alt="Buscalibre">
@@ -1463,6 +1469,7 @@ btnShare.onclick = () => {
           
           <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(p)}" 
              target="_blank" 
+             rel="noopener noreferrer"
              class="btn-action btn-explorar">
              <span class="btn-emoji">🎲</span>
           </a>
@@ -1470,6 +1477,7 @@ btnShare.onclick = () => {
         
         <a href="${randomEnviafloresURL}" 
            target="_blank" 
+           rel="noopener noreferrer"
            class="btn-action btn-enviaflores">
            <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/enviaflores-logo.png" 
                 alt="Envía Flores">
