@@ -628,88 +628,144 @@ body.webview #tarjetaCard {
 </style>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
-     🔘 SECCIÓN 9: CARD ACTION BUTTONS (Botones Buscalibre/Explorar)
-     🔥 OPTIMIZACIÓN NIVEL DIOS: Sin animación de brillo para zoom fluido
-     MODIFICAR: Estilos de botones de la tarjeta (Comprar/Explorar)
+     🔘 SECCIÓN 9: CARD ACTION BUTTONS (Botones Buscalibre/Explorar/Enviaflores)
+     🔥 INTEGRACIÓN ENVIAFLORES - BLOQUE MODULAR ACTIVABLE
+     MODIFICAR: Estilos de botones de la tarjeta
      ═══════════════════════════════════════════════════════════════════════ -->
 <style id="card-action-buttons">
 .card-actions { 
   display: flex; 
   flex-direction: column; 
-  gap: 14px; 
+  gap: 20px; 
   margin-top: auto; 
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   🎯 BLOQUE BUSCALIBRE - LOGO + 2 BOTONES HORIZONTALES
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.partner-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.partner-logo-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.partner-logo-row img {
+  height: 20px;
+  width: auto;
+  opacity: 0.85;
+}
+
+.partner-buttons-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
 
 /* Estilo Base Botón */
 .btn-action {
   position: relative; 
   z-index: 10;
-  width: 100%; 
-  height: 52px;
-  border-radius: 14px;
+  height: 48px;
+  border-radius: 12px;
   display: flex; 
   align-items: center; 
   justify-content: center; 
-  gap: 12px;
+  gap: 8px;
   text-decoration: none; 
   cursor: pointer;
   transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   box-sizing: border-box;
+  font-family: 'Archivo', sans-serif; 
+  font-weight: 700; 
+  font-size: 14px; 
+  letter-spacing: 0.1px;
 }
 
 .btn-action:active { transform: scale(0.97); }
 
-/* 🔥 BOTÓN BUSCALIBRE OPTIMIZADO - SIN ANIMACIÓN DE BRILLO
-   ══════════════════════════════════════════════════════════
-   ANTES: Brillo animado (shiny animation) → Causaba lag al hacer zoom
-   DESPUÉS: Negro puro con sombra profunda → FLUIDO PERFECTO
-   
-   El botón sigue viéndose PREMIUM sin el brillo:
-   ✅ Negro intenso (#080808)
-   ✅ Sombra profunda y elegante
-   ✅ Logo de Buscalibre destacado
-   ✅ CERO lag al hacer zoom
-   ✅ Mejor rendimiento en todos los dispositivos
-*/
-.btn-buscalibre {
+/* Botón Negro Premium (Buscalibre) */
+.btn-black {
   background: #080808;
   color: white;
   border: none;
   box-shadow: 
-    0 8px 25px -6px rgba(0,0,0, 0.5),
+    0 6px 20px -6px rgba(0,0,0, 0.4),
     0 0 0 1px rgba(255,255,255, 0.08);
 }
 
-/* Hover sutil para interactividad */
-.btn-buscalibre:hover {
+.btn-black:hover {
   box-shadow: 
-    0 12px 30px -6px rgba(0,0,0, 0.6),
+    0 8px 24px -6px rgba(0,0,0, 0.5),
     0 0 0 1px rgba(255,255,255, 0.12);
 }
 
-/* 2. Botón Explorar */
-.btn-explore {
+/* Botón Outline Sutil (Explorar/Regalo) */
+.btn-outline {
   background: rgba(125,125,125,0.06);
   border: 1px solid rgba(0,0,0,0.08);
   color: inherit;
 }
 
-.btn-explore:active { background: rgba(125,125,125,0.12); }
+.btn-outline:active { background: rgba(125,125,125,0.12); }
 
-.card-dark-mode .btn-explore {
+.card-dark-mode .btn-outline {
   background: rgba(255,255,255,0.08);
   border: 1px solid rgba(255,255,255,0.15);
 }
 
-.card-dark-mode .btn-explore:active { background: rgba(255,255,255,0.15); }
+.card-dark-mode .btn-outline:active { background: rgba(255,255,255,0.15); }
 
-.btn-txt { 
-  font-family: 'Archivo', sans-serif; 
-  font-weight: 700; 
-  font-size: 16px; 
-  letter-spacing: 0.1px; 
-  white-space: nowrap;
+.btn-icon {
+  font-size: 16px;
+  line-height: 1;
 }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   🌺 BLOQUE ENVIAFLORES - LOGO + 1 BOTÓN (ACTIVABLE)
+   COPIAR/PEGAR este bloque completo para activar/desactivar Enviaflores
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* INICIO BLOQUE ENVIAFLORES */
+.enviaflores-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.enviaflores-logo-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.enviaflores-logo-row img {
+  height: 22px;
+  width: auto;
+  opacity: 0.85;
+}
+
+.btn-enviaflores {
+  width: 100%;
+  background: linear-gradient(135deg, #E91E63, #FF6B9D);
+  color: white;
+  border: none;
+  box-shadow: 
+    0 6px 20px -6px rgba(233, 30, 99, 0.4),
+    0 0 0 1px rgba(255,255,255, 0.1);
+}
+
+.btn-enviaflores:hover {
+  box-shadow: 
+    0 8px 24px -6px rgba(233, 30, 99, 0.5),
+    0 0 0 1px rgba(255,255,255, 0.15);
+}
+/* FIN BLOQUE ENVIAFLORES */
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 /* Logo Triggui Footer */
 .triggui-logo-footer {
@@ -1196,11 +1252,27 @@ const ANG = [115,205,35,320];
 const grad = i => `linear-gradient(${ANG[i%4]}deg,${libro.colores[i]},${libro.colores[(i+1)%4]})`;
 
 // ═══════════════════════════════════════════════════════════════════════
+// 🌺 ENVIAFLORES RANDOM URL SELECTOR
+// ═══════════════════════════════════════════════════════════════════════
+const ENVIAFLORES_URLS = [
+  "https://www.enviaflores.com/florerias-nuevo-leon/san-pedro-garza-garcia/todas-las-canastas",
+  "https://www.enviaflores.com/florerias-nuevo-leon/san-pedro-garza-garcia/todo-cumpleanos",
+  "https://www.enviaflores.com/florerias-nuevo-leon/san-pedro-garza-garcia/todos-los-productos",
+  "https://www.enviaflores.com/florerias-nuevo-leon/san-pedro-garza-garcia/ver-todo",
+  "https://www.enviaflores.com/florerias-nuevo-leon/san-pedro-garza-garcia/todo-personalizado",
+  "https://www.enviaflores.com/florerias-nuevo-leon/san-pedro-garza-garcia/todos-los-regalos",
+  "https://www.enviaflores.com/florerias-nuevo-leon/san-pedro-garza-garcia/mas-vendidos"
+];
+
+function getRandomEnviafloresURL() {
+  return ENVIAFLORES_URLS[Math.floor(Math.random() * ENVIAFLORES_URLS.length)];
+}
+
+// ═══════════════════════════════════════════════════════════════════════
 // INTRO - NARRATIVA NIVEL DIOS (CON MICRO-HINT ACCIONABLE)
-// CAMBIO 1 DE 3: Primera frase más accionable
 // ═══════════════════════════════════════════════════════════════════════
 const frasesIntro = [
-  "Toca. Descubre. El libro te espera.",  // ← NUEVA: Más accionable
+  "Toca. Descubre. El libro te espera.",
   "Cuando el impulso llega, el libro ya te espera.",
   "No busques libros. Deja que te encuentren.",
   "Si no puedes leerlo ahora, ahí se queda esperando.",
@@ -1465,7 +1537,11 @@ btnShare.onclick = () => {
   if (isDark) { card.classList.add('card-dark-mode'); } 
   else { card.classList.remove('card-dark-mode'); }
 
-  // Render HTML
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🎯 RENDER HTML - BLOQUES MODULARES ACTIVABLES
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  const randomEnviafloresURL = getRandomEnviafloresURL();
+  
   card.innerHTML = `
     <div class="card-content-wrap">
       
@@ -1482,17 +1558,54 @@ btnShare.onclick = () => {
       </div>
 
       <div class="card-actions">
-        <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(libro.titulo + ' ' + libro.autor)}" 
-           target="_blank" class="btn-action btn-buscalibre">
-           <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/buscalibre.png" alt="Buscalibre" style="height:18px; width:auto; display:block;">
-           <span class="btn-txt">Comprar libro</span>
-        </a>
         
-        <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(p)}" 
-           target="_blank" class="btn-action btn-explore">
-           <span class="icon" style="font-size:18px;">✨</span>
-           <span class="btn-txt">Explora posibilidades</span>
-        </a>
+        <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+             🎯 BLOQUE BUSCALIBRE - ACTIVADO
+             Copiar/pegar completo para activar/desactivar
+             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+        <!-- INICIO BLOQUE BUSCALIBRE -->
+        <div class="partner-section">
+          <div class="partner-logo-row">
+            <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/buscalibre.png" 
+                 alt="Buscalibre"
+                 style="filter: ${isDark ? 'invert(1) brightness(1.2)' : 'none'};">
+          </div>
+          <div class="partner-buttons-row">
+            <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(libro.titulo + ' ' + libro.autor)}" 
+               target="_blank" 
+               class="btn-action btn-black">
+               <span class="btn-icon">📖</span>
+               <span>Comprar</span>
+            </a>
+            <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(p)}" 
+               target="_blank" 
+               class="btn-action btn-outline">
+               <span class="btn-icon">✨</span>
+               <span>Explorar</span>
+            </a>
+          </div>
+        </div>
+        <!-- FIN BLOQUE BUSCALIBRE -->
+        
+        <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+             🌺 BLOQUE ENVIAFLORES - ACTIVADO
+             Copiar/pegar completo para activar/desactivar
+             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+        <!-- INICIO BLOQUE ENVIAFLORES -->
+        <div class="enviaflores-section">
+          <div class="enviaflores-logo-row">
+            <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/enviaflores-logo.png" 
+                 alt="Envía Flores"
+                 style="filter: ${isDark ? 'invert(1) brightness(1.2)' : 'none'};">
+          </div>
+          <a href="${randomEnviafloresURL}" 
+             target="_blank" 
+             class="btn-action btn-enviaflores">
+             <span class="btn-icon">🎁</span>
+             <span>Únelo a un detalle</span>
+          </a>
+        </div>
+        <!-- FIN BLOQUE ENVIAFLORES -->
 
         <div class="triggui-logo-footer">
            <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png" 
@@ -1543,11 +1656,6 @@ function pickLibroNoRepetido(libros){
     updateBadge();
     track('app_loaded', {streak:getLocal('streak',0), books:getLocal('books_opened',0)});
     
-    // ═══════════════════════════════════════════════════════════════════════
-    // MICRO-HINT VISUAL - Solo primera visita (NIVEL DIOS ONBOARDING)
-    // CAMBIO 3 DE 3: Activar animación sutil después de render
-    // Compatible iOS/Android/Web - localStorage ya en uso - Sin riesgo
-    // ═══════════════════════════════════════════════════════════════════════
     if (!getLocal('has_visited')) {
       setTimeout(() => {
         document.querySelectorAll('.block').forEach(b => b.classList.add('first-visit-hint'));
