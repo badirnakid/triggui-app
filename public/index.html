@@ -9,6 +9,11 @@
 <link rel="preconnect" href="https://www.buscalibre.com.mx" crossorigin>
 <link rel="dns-prefetch" href="https://www.enviaflores.com">
 
+<!-- 🎯 PRE-CARGA CRÍTICA DE IMÁGENES (NIVEL DIOS) -->
+<link rel="preload" as="image" href="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png">
+<link rel="preload" as="image" href="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/buscalibre.png">
+<link rel="preload" as="image" href="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/enviaflores-logo.png">
+
 <style id="base-styles">
   html, body { 
     background:#000000 !important; 
@@ -657,6 +662,13 @@ body.webview #tarjetaCard {
   height: 18px;
   width: auto;
   display: block;
+}
+
+/* 🎯 ESTADO DE CARGA BUSCALIBRE (NIVEL DIOS) */
+.btn-comprar.is-opening {
+  opacity: 0.7;
+  transform: scale(0.96);
+  pointer-events: none;
 }
 
 /* Botón Explorar - Cuadrito con emoji */
@@ -1410,7 +1422,10 @@ btnLibro.onclick = async() => {
 function luminance(hex) { try { const c = hex.replace("#","").match(/.{1,2}/g).map(x=>parseInt(x,16)/255); const f = v => v<=.03928 ? v/12.92 : Math.pow((v+.055)/1.055,2.4); return 0.2126*f(c[0])+0.7152*f(c[1])+0.0722*f(c[2]); } catch { return 0; } }
 function pickTextColor(bg) { try { return luminance(bg) > 0.35 ? "#000" : "#fff"; } catch { return "#fff"; } }
 
-// SHARE & TARJETA
+// ═══════════════════════════════════════════════════════════════════════
+// 🎯 SHARE & TARJETA - OPTIMIZADO NIVEL DIOS (CARGA INSTANTÁNEA)
+// Template pre-construido + Event delegation + Feedback táctil perfecto
+// ═══════════════════════════════════════════════════════════════════════
 btnShare.onclick = () => {
   const t = libro.tarjeta; 
   const overlay = document.getElementById("tarjetaOverlay");
@@ -1440,11 +1455,14 @@ btnShare.onclick = () => {
   if (isDark) { card.classList.add('card-dark-mode'); } 
   else { card.classList.remove('card-dark-mode'); }
 
+  // URLs precalculadas
+  const buscarlibreURL = `https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(libro.titulo + ' ' + libro.autor)}`;
+  const explorarURL = `https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(p)}`;
+  const enviafloresURL = getRandomEnviafloresURL();
+
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🎯 RENDER HTML - OPTIMIZADO PARA CARGA INSTANTÁNEA (REL NOOPENER)
+  // 🚀 RENDER OPTIMIZADO - Template literal con imágenes pre-cargadas
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  const randomEnviafloresURL = getRandomEnviafloresURL();
-  
   card.innerHTML = `
     <div class="card-content-wrap">
       
@@ -1469,27 +1487,30 @@ btnShare.onclick = () => {
       <div class="card-actions">
         
         <div class="buscalibre-row">
-          <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(libro.titulo + ' ' + libro.autor)}" 
+          <a href="${buscarlibreURL}" 
              target="_blank" 
              rel="noopener noreferrer"
-             class="btn-action btn-comprar">
+             class="btn-action btn-comprar"
+             data-action="buscalibre-comprar">
              <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/buscalibre.png" 
                   alt="Buscalibre">
              <span>Comprar</span>
           </a>
           
-          <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(p)}" 
+          <a href="${explorarURL}" 
              target="_blank" 
              rel="noopener noreferrer"
-             class="btn-action btn-explorar">
-             <span class="btn-emoji">🎲</span>
+             class="btn-action btn-explorar"
+             data-action="buscalibre-explorar">
+             <span class="btn-emoji">🎁</span>
           </a>
         </div>
         
-        <a href="${randomEnviafloresURL}" 
+        <a href="${enviafloresURL}" 
            target="_blank" 
            rel="noopener noreferrer"
-           class="btn-action btn-enviaflores">
+           class="btn-action btn-enviaflores"
+           data-action="enviaflores">
            <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/enviaflores-logo.png" 
                 alt="Envía Flores">
            <span>Únelo a un regalo</span>
@@ -1498,29 +1519,45 @@ btnShare.onclick = () => {
     </div>
   `;
 
-  // --- LÓGICA ULTRA-RÁPIDA (NIVEL DIOS) PARA ENVIAFLORES ---
-  const efBtn = card.querySelector('.btn-enviaflores');
-  if (efBtn) {
-    let efLocked = false;
-    efBtn.addEventListener('click', function(e) {
-      if (efLocked) { e.preventDefault(); return; }
-      efLocked = true;
-      // Respuesta táctil y visual instantánea
-      try { if(navigator.vibrate) navigator.vibrate(15); } catch(_) {}
-      this.classList.add('is-opening');
-      const span = this.querySelector('span');
-      if (span) span.textContent = 'Abriendo...';
-      // Tracking asíncrono
-      try { track('enviaflores_clicked', { book: libro.titulo }); } catch(_) {}
-      // Timeout de seguridad para resetear si el usuario vuelve
-      setTimeout(() => {
-        this.classList.remove('is-opening');
-        if (span) span.textContent = 'Únelo a un regalo';
-        efLocked = false;
-      }, 2500);
-    });
-  }
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🎯 EVENT DELEGATION PERFECTO (NIVEL DIOS) - Un solo listener
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  card.addEventListener('click', function(e) {
+    const target = e.target.closest('[data-action]');
+    if (!target) return;
+    
+    e.stopPropagation();
+    
+    const action = target.dataset.action;
+    const isLocked = target.classList.contains('is-opening');
+    
+    if (isLocked) {
+      e.preventDefault();
+      return;
+    }
+    
+    // Feedback táctil instantáneo
+    try { if(navigator.vibrate) navigator.vibrate(15); } catch(_) {}
+    
+    // Estado visual inmediato
+    target.classList.add('is-opening');
+    const span = target.querySelector('span:not(.btn-emoji)');
+    const originalText = span ? span.textContent : '';
+    if (span) span.textContent = 'Abriendo...';
+    
+    // Tracking asíncrono
+    try { 
+      track(`${action}_clicked`, { book: libro.titulo }); 
+    } catch(_) {}
+    
+    // Reset después de que el link se abre
+    setTimeout(() => {
+      target.classList.remove('is-opening');
+      if (span) span.textContent = originalText;
+    }, 2500);
+  }, true); // useCapture para mayor prioridad
 
+  // Mostrar overlay
   overlay.style.display="flex";
   setTimeout(() => overlay.classList.add('visible'), 10);
   track('card_viewed', { book: libro.titulo });
