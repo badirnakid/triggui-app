@@ -10,20 +10,20 @@
 <link rel="dns-prefetch" href="https://www.enviaflores.com">
 
 <style id="base-styles">
-  html, body { 
-    background:#000000 !important; 
-    color:#fff; 
-    margin:0; 
-    padding:0; 
-    height:100%; 
-    font-family:'Archivo',sans-serif; 
-    -webkit-overflow-scrolling:touch; 
-    -webkit-text-size-adjust: 100%; 
-    text-size-adjust: 100%; 
-    overflow: hidden;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    touch-action: manipulation; /* FIX: Elimina el retraso de 300ms al tocar */
+  html, body { 
+    background:#000000 !important; 
+    color:#fff; 
+    margin:0; 
+    padding:0; 
+    height:100%; 
+    font-family:'Archivo',sans-serif; 
+    -webkit-overflow-scrolling:touch; 
+    -webkit-text-size-adjust: 100%; 
+    text-size-adjust: 100%; 
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    touch-action: manipulation; /* FIX: Elimina el retraso de 300ms al tocar */
   }
   
   /* Fondo animado OPTIMIZADO "Deep Space" - Colores de triggui.com */
@@ -625,7 +625,7 @@ body.webview #tarjetaCard {
   gap: 8px;
   text-decoration: none; 
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   box-sizing: border-box;
   font-family: 'Archivo', sans-serif; 
   font-weight: 700; 
@@ -636,6 +636,13 @@ body.webview #tarjetaCard {
 }
 
 .btn-action:active { transform: scale(0.97); }
+
+/* FEEDBACK GLOBAL PARA ESTADO CARGANDO */
+.btn-action.is-opening {
+  opacity: 0.7 !important;
+  transform: scale(0.96) !important;
+  pointer-events: none !important;
+}
 
 /* Botón Comprar - Negro con logo Buscalibre dentro */
 .btn-comprar {
@@ -705,13 +712,6 @@ body.webview #tarjetaCard {
   box-shadow: 
     0 8px 24px -6px rgba(0, 0, 0, 0.5), 
     0 0 0 1px rgba(255,255,255, 0.15);
-}
-
-/* FEEDBACK NIVEL DIOS */
-.btn-enviaflores.is-opening {
-  opacity: 0.7;
-  transform: scale(0.96);
-  pointer-events: none;
 }
 
 .btn-enviaflores img {
@@ -1482,7 +1482,7 @@ btnShare.onclick = () => {
              target="_blank" 
              rel="noopener noreferrer"
              class="btn-action btn-explorar">
-             <span class="btn-emoji">🎲</span>
+             <span class="btn-emoji">✨</span>
           </a>
         </div>
         
@@ -1498,28 +1498,58 @@ btnShare.onclick = () => {
     </div>
   `;
 
-  // --- LÓGICA ULTRA-RÁPIDA (NIVEL DIOS) PARA ENVIAFLORES ---
-  const efBtn = card.querySelector('.btn-enviaflores');
-  if (efBtn) {
-    let efLocked = false;
-    efBtn.addEventListener('click', function(e) {
-      if (efLocked) { e.preventDefault(); return; }
-      efLocked = true;
-      // Respuesta táctil y visual instantánea
-      try { if(navigator.vibrate) navigator.vibrate(15); } catch(_) {}
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🎯 SISTEMA NIVEL DIOS TODOPODEROSO (ULTRA-PRECISO)
+  // Inteligencia de Foco para Redirecciones Externas
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  const instantLinkFix = (btnSelector, loadingText, originalText, trackingEvent) => {
+    const btn = card.querySelector(btnSelector);
+    if (!btn) return;
+
+    let isLocked = false;
+    let fallbackTimer = null;
+
+    const resetBtn = () => {
+      btn.classList.remove('is-opening');
+      const s = btn.querySelector('span');
+      if (s) s.textContent = originalText;
+      isLocked = false;
+      if (fallbackTimer) clearTimeout(fallbackTimer);
+    };
+
+    btn.addEventListener('click', function(e) {
+      if (isLocked) { e.preventDefault(); return; }
+      isLocked = true;
+
+      // 1. Vibración Háptica (Respuesta Sensorial)
+      try { if(navigator.vibrate) navigator.vibrate(18); } catch(_) {}
+
+      // 2. Estado Visual Inmediato
       this.classList.add('is-opening');
       const span = this.querySelector('span');
-      if (span) span.textContent = 'Abriendo...';
-      // Tracking asíncrono
-      try { track('enviaflores_clicked', { book: libro.titulo }); } catch(_) {}
-      // Timeout de seguridad para resetear si el usuario vuelve
-      setTimeout(() => {
-        this.classList.remove('is-opening');
-        if (span) span.textContent = 'Únelo a un regalo';
-        efLocked = false;
-      }, 2500);
+      if (span) span.textContent = loadingText;
+
+      // 3. Tracking Asíncrono
+      try { track(trackingEvent, { book: libro.titulo }); } catch(_) {}
+
+      // 4. MONITOR DE FOCO (La Clave Nivel Dios)
+      // Si la página se oculta, significa que la redirección funcionó.
+      // Si pasan 6 segundos y seguimos aquí, liberamos el botón (fallo de red/sistema).
+      fallbackTimer = setTimeout(() => {
+        if (!document.hidden) resetBtn();
+      }, 6000);
+
+      // Si el usuario regresa a la pestaña, reseteamos para que pueda picar de nuevo.
+      window.addEventListener('visibilitychange', () => {
+        if (!document.hidden && isLocked) resetBtn();
+      }, { once: true });
     });
-  }
+  };
+
+  // Activar para los 3 botones de la tarjeta
+  instantLinkFix('.btn-enviaflores', 'Abriendo...', 'Únelo a un regalo', 'enviaflores_clicked');
+  instantLinkFix('.btn-comprar', 'Buscando...', 'Comprar', 'buscalibre_clicked');
+  instantLinkFix('.btn-explorar', 'Explorando...', '✨', 'explorar_clicked');
 
   overlay.style.display="flex";
   setTimeout(() => overlay.classList.add('visible'), 10);
