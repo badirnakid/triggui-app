@@ -10,39 +10,39 @@
 <link rel="dns-prefetch" href="https://www.enviaflores.com">
 
 <style id="base-styles">
-  html, body { 
-    background:#000000 !important; 
-    color:#fff; 
-    margin:0; 
-    padding:0; 
-    height:100%; 
-    font-family:'Archivo',sans-serif; 
-    -webkit-overflow-scrolling:touch; 
-    -webkit-text-size-adjust: 100%; 
-    text-size-adjust: 100%; 
-    overflow: hidden;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    touch-action: manipulation; /* FIX: Elimina el retraso de 300ms al tocar */
-  }
-  
-  /* Fondo animado OPTIMIZADO "Deep Space" - Colores de triggui.com */
-  body::before { 
-    content:""; 
-    position:fixed; 
-    inset:0; 
-    background:
-      radial-gradient(ellipse at 30% 20%, rgba(255, 0, 85, 0.18), transparent 65%),
-      radial-gradient(ellipse at 70% 80%, rgba(255, 94, 0, 0.08), transparent 65%);
-    z-index:-1; 
-    pointer-events:none;
-    animation: nebula-breathe 20s ease-in-out infinite;
-  }
-  
-  @keyframes nebula-breathe {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
-  }
+  html, body { 
+    background:#000000 !important; 
+    color:#fff; 
+    margin:0; 
+    padding:0; 
+    height:100%; 
+    font-family:'Archivo',sans-serif; 
+    -webkit-overflow-scrolling:touch; 
+    -webkit-text-size-adjust: 100%; 
+    text-size-adjust: 100%; 
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    touch-action: manipulation; /* FIX: Elimina el retraso de 300ms al tocar */
+  }
+  
+  /* Fondo animado OPTIMIZADO "Deep Space" - Colores de triggui.com */
+  body::before { 
+    content:""; 
+    position:fixed; 
+    inset:0; 
+    background:
+      radial-gradient(ellipse at 30% 20%, rgba(255, 0, 85, 0.18), transparent 65%),
+      radial-gradient(ellipse at 70% 80%, rgba(255, 94, 0, 0.08), transparent 65%);
+    z-index:-1; 
+    pointer-events:none;
+    animation: nebula-breathe 20s ease-in-out infinite;
+  }
+  
+  @keyframes nebula-breathe {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
 </style>
 
 <meta property="og:title" content="Cuando el impulso llega, el libro ya te espera">
@@ -53,10 +53,10 @@
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-CLK554FCNM"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-CLK554FCNM');
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-CLK554FCNM');
 </script>
 
 <script id="core-logic">
@@ -67,74 +67,74 @@ function saveLocal(key, value) { try { localStorage.setItem('triggui_' + key, JS
 function getLocal(key, defaultValue = null) { try { const data = localStorage.getItem('triggui_' + key); return data ? JSON.parse(data) : defaultValue; } catch(e) { return defaultValue; } }
 
 function getPlatform() {
-  const ua = navigator.userAgent || navigator.vendor || window.opera;
-  if (/wv|WebView/i.test(ua) || (ua.includes("Android") && ua.includes("Version/"))) return "App/WebView";
-  if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) return "iOS Web";
-  if (/android/i.test(ua)) return "Android Web";
-  return "Desktop";
+  const ua = navigator.userAgent || navigator.vendor || window.opera;
+  if (/wv|WebView/i.test(ua) || (ua.includes("Android") && ua.includes("Version/"))) return "App/WebView";
+  if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) return "iOS Web";
+  if (/android/i.test(ua)) return "Android Web";
+  return "Desktop";
 }
 
 window.reset = function() {
-  localStorage.removeItem('triggui_books_opened');
-  localStorage.removeItem('triggui_concepts');
-  localStorage.removeItem('triggui_last_book_time');
-  localStorage.removeItem('triggui_streak');
-  localStorage.removeItem('triggui_last_visit');
-  console.log('✅ Reset completo.');
+  localStorage.removeItem('triggui_books_opened');
+  localStorage.removeItem('triggui_concepts');
+  localStorage.removeItem('triggui_last_book_time');
+  localStorage.removeItem('triggui_streak');
+  localStorage.removeItem('triggui_last_visit');
+  console.log('✅ Reset completo.');
 }
 
 let tapCount = 0;
 let tapTimer = null;
-let cardOpenedThisSession = false; 
+let cardOpenedThisSession = false; 
 
 function track(event, data = {}) {
-  if (typeof gtag !== 'undefined') gtag('event', event, { event_category: 'app_engagement', ...data });
+  if (typeof gtag !== 'undefined') gtag('event', event, { event_category: 'app_engagement', ...data });
 }
 
 function updateStreak() {
-  const today = new Date().toDateString();
-  const lastVisit = getLocal('last_visit');
-  let streak = getLocal('streak', 0);
+  const today = new Date().toDateString();
+  const lastVisit = getLocal('last_visit');
+  let streak = getLocal('streak', 0);
 
-  if (streak === 0) {
-    streak = 1;
-    saveLocal('streak', 1);
-    saveLocal('last_visit', today);
-    return 1;
-  }
+  if (streak === 0) {
+    streak = 1;
+    saveLocal('streak', 1);
+    saveLocal('last_visit', today);
+    return 1;
+  }
 
-  if (lastVisit === today) return streak;
+  if (lastVisit === today) return streak;
 
-  const yesterday = new Date(Date.now() - 86400000).toDateString();
-  const newStreak = (lastVisit === yesterday) ? streak + 1 : 1;
-    
-  saveLocal('streak', newStreak);
-  saveLocal('last_visit', today);
-  track('streak_updated', { streak: newStreak });
-  return newStreak;
+  const yesterday = new Date(Date.now() - 86400000).toDateString();
+  const newStreak = (lastVisit === yesterday) ? streak + 1 : 1;
+    
+  saveLocal('streak', newStreak);
+  saveLocal('last_visit', today);
+  track('streak_updated', { streak: newStreak });
+  return newStreak;
 }
 
 function incrementBooks() {
-  const count = getLocal('books_opened', 0) + 1;
-  saveLocal('books_opened', count);
-  saveLocal('last_book_time', Date.now());
-  track('book_opened', { total: count });
-  return count;
+  const count = getLocal('books_opened', 0) + 1;
+  saveLocal('books_opened', count);
+  saveLocal('last_book_time', Date.now());
+  track('book_opened', { total: count });
+  return count;
 }
 
 function addConcepts(amount) {
-  let current = getLocal('concepts', 0);
-  const books = getLocal('books_opened', 0);
-  if (current === 0 && books > 1) { current = books * 5; }
-  const newVal = current + amount;
-  saveLocal('concepts', newVal);
-  return newVal;
+  let current = getLocal('concepts', 0);
+  const books = getLocal('books_opened', 0);
+  if (current === 0 && books > 1) { current = books * 5; }
+  const newVal = current + amount;
+  saveLocal('concepts', newVal);
+  return newVal;
 }
 
 function getRealisticUserCount() {
-  const base = 28;
-  const variance = Math.floor(Math.random() * 8);
-  return base + variance;
+  const base = 28;
+  const variance = Math.floor(Math.random() * 8);
+  return base + variance;
 }
 </script>
 
@@ -142,38 +142,38 @@ function getRealisticUserCount() {
 
 <style id="intro-animation">
 .intro{
-  position:fixed; 
-  top:50%; 
-  left:50%; 
-  transform:translate(-50%,-50%);
-  padding:2rem 2.4rem; 
-  background:rgba(20,24,38,.92); 
-  border-radius:28px;
-  border: 1px solid rgba(255, 0, 85, 0.25);
-  z-index:120; 
-  font-family:'Poppins',sans-serif; 
-  text-align:center;
-  box-shadow:
-    0 20px 60px rgba(0,0,0,.5),
-    0 0 0 1px rgba(255,255,255,.08),
-    inset 0 1px 0 rgba(255,255,255,.12);
-  backdrop-filter: blur(8px); 
-  -webkit-backdrop-filter: blur(8px);
-  font-size:clamp(1.1rem,3.8vw,1.9rem); 
-  font-weight:700; 
-  line-height:1.25;
-  opacity:0; 
-  transform:translate(-50%,-52%) scale(.985);
-  animation:introIn .6s ease-out .15s forwards, introHide 3.2s 1.7s forwards;
+  position:fixed; 
+  top:50%; 
+  left:50%; 
+  transform:translate(-50%,-50%);
+  padding:2rem 2.4rem; 
+  background:rgba(20,24,38,.92); 
+  border-radius:28px;
+  border: 1px solid rgba(255, 0, 85, 0.25);
+  z-index:120; 
+  font-family:'Poppins',sans-serif; 
+  text-align:center;
+  box-shadow:
+    0 20px 60px rgba(0,0,0,.5),
+    0 0 0 1px rgba(255,255,255,.08),
+    inset 0 1px 0 rgba(255,255,255,.12);
+  backdrop-filter: blur(8px); 
+  -webkit-backdrop-filter: blur(8px);
+  font-size:clamp(1.1rem,3.8vw,1.9rem); 
+  font-weight:700; 
+  line-height:1.25;
+  opacity:0; 
+  transform:translate(-50%,-52%) scale(.985);
+  animation:introIn .6s ease-out .15s forwards, introHide 3.2s 1.7s forwards;
 }
 
-.intro .t{ 
-  background: linear-gradient(135deg, #FF0055 0%, #FF5E00 50%, #FFD700 100%);
-  background-size: 200% 200%;
-  -webkit-background-clip:text; 
-  -webkit-text-fill-color:transparent;
-  animation: fire-move 4s ease infinite;
-  text-shadow: none;
+.intro .t{ 
+  background: linear-gradient(135deg, #FF0055 0%, #FF5E00 50%, #FFD700 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip:text; 
+  -webkit-text-fill-color:transparent;
+  animation: fire-move 4s ease infinite;
+  text-shadow: none;
 }
 
 @keyframes introIn{ to{opacity:1; transform:translate(-50%,-50%) scale(1)} }
@@ -182,10 +182,10 @@ function getRealisticUserCount() {
 
 <style id="grid-system">
 .grid{
-  position:absolute;
-  inset:5vh 1.5vw;
-  display:grid;
-  gap:1vw;
+  position:absolute;
+  inset:5vh 1.5vw;
+  display:grid;
+  gap:1vw;
 }
 @media(orientation:landscape){.grid{grid-template-columns:repeat(4,1fr)}}
 @media(orientation:portrait){.grid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr)}}
@@ -193,245 +193,245 @@ function getRealisticUserCount() {
 
 <style id="block-cards">
 .block{
-  position:relative; 
-  display:flex; 
-  align-items:center; 
-  justify-content:center;
-  padding:1rem; 
-  border-radius:24px;
-  font-weight:700; 
-  cursor:pointer;
-  background-size:320% 320%;
-  transition: transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  overflow:hidden; 
-  isolation:isolate;
-  
-  /* BORDER NIVEL APPLE - Ultra definido */
-  box-shadow: 
-    inset 0 0 0 1.5px rgba(255,255,255,.15),
-    0 4px 6px rgba(0,0,0,.15),
-    0 12px 32px rgba(0,0,0,.35);
+  position:relative; 
+  display:flex; 
+  align-items:center; 
+  justify-content:center;
+  padding:1rem; 
+  border-radius:24px;
+  font-weight:700; 
+  cursor:pointer;
+  background-size:320% 320%;
+  transition: transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  overflow:hidden; 
+  isolation:isolate;
+  
+  /* BORDER NIVEL APPLE - Ultra definido */
+  box-shadow: 
+    inset 0 0 0 1.5px rgba(255,255,255,.15),
+    0 4px 6px rgba(0,0,0,.15),
+    0 12px 32px rgba(0,0,0,.35);
 }
 
 /* Glassmorphism overlay PREMIUM */
-.block::before{ 
-  content:"";
-  position:absolute;
-  inset:0;
-  border-radius:inherit; 
-  background: linear-gradient(
-    145deg,
-    rgba(255,255,255,.18) 0%,
-    rgba(255,255,255,.08) 40%,
-    transparent 100%
-  );
-  pointer-events:none;
-  z-index: 1;
+.block::before{ 
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit; 
+  background: linear-gradient(
+    145deg,
+    rgba(255,255,255,.18) 0%,
+    rgba(255,255,255,.08) 40%,
+    transparent 100%
+  );
+  pointer-events:none;
+  z-index: 1;
 }
 
 /* Subtle inner glow para profundidad */
 .block::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: radial-gradient(
-    ellipse at 50% 0%,
-    rgba(255,255,255,.12),
-    transparent 60%
-  );
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: 0;
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    ellipse at 50% 0%,
+    rgba(255,255,255,.12),
+    transparent 60%
+  );
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
 }
 
 .block:hover::after {
-  opacity: 1;
+  opacity: 1;
 }
 
-.block:hover{ 
-  transform: translateY(-2px) scale(1.005);
-  box-shadow: 
-    inset 0 0 0 1.5px rgba(255,255,255,.22),
-    0 6px 12px rgba(0,0,0,.2),
-    0 16px 48px rgba(0,0,0,.45);
+.block:hover{ 
+  transform: translateY(-2px) scale(1.005);
+  box-shadow: 
+    inset 0 0 0 1.5px rgba(255,255,255,.22),
+    0 6px 12px rgba(0,0,0,.2),
+    0 16px 48px rgba(0,0,0,.45);
 }
 
-.block:active{ 
-  transform: translateY(0) scale(0.995); 
-  transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+.block:active{ 
+  transform: translateY(0) scale(0.995); 
+  transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.label, .frase { 
-  z-index:2; 
-  text-align:center; 
-  transition: opacity 0.25s ease, transform 0.25s ease;
-  /* TIPOGRAFÍA CRYSTAL CLEAR - Sin text-shadow */
-  text-shadow: none;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.label, .frase { 
+  z-index:2; 
+  text-align:center; 
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  /* TIPOGRAFÍA CRYSTAL CLEAR - Sin text-shadow */
+  text-shadow: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.label { 
-  opacity:1; 
-  transform:translateY(0); 
-  font-size:clamp(1.05rem, 3.2vw, 1.7rem);
-  font-weight:700; 
-  line-height:1.35; 
-  letter-spacing:0.2px;
+.label { 
+  opacity:1; 
+  transform:translateY(0); 
+  font-size:clamp(1.05rem, 3.2vw, 1.7rem);
+  font-weight:700; 
+  line-height:1.35; 
+  letter-spacing:0.2px;
 }
 
-.frase { 
-  position:absolute; 
-  inset:0; 
-  display:flex; 
-  align-items:center; 
-  justify-content:center; 
-  padding:1rem; 
-  opacity:0; 
-  transform:translateY(6px); 
-  font-size:clamp(1rem, 3vw, 1.5rem);
-  font-weight:600;
-  line-height: 1.4;
+.frase { 
+  position:absolute; 
+  inset:0; 
+  display:flex; 
+  align-items:center; 
+  justify-content:center; 
+  padding:1rem; 
+  opacity:0; 
+  transform:translateY(6px); 
+  font-size:clamp(1rem, 3vw, 1.5rem);
+  font-weight:600;
+  line-height: 1.4;
 }
 
-.block.show .label { 
-  opacity:0; 
-  transform:translateY(-6px); 
+.block.show .label { 
+  opacity:0; 
+  transform:translateY(-6px); 
 }
 
-.block.show .frase { 
-  opacity:1; 
-  transform:translateY(0); 
+.block.show .frase { 
+  opacity:1; 
+  transform:translateY(0); 
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-  🎯 MICRO-HINT VISUAL - Solo primera visita (NIVEL DIOS ONBOARDING)
-  Compatible iOS/Android/Web - CSS puro - Sin riesgo
-  ═══════════════════════════════════════════════════════════════════════ */
+  🎯 MICRO-HINT VISUAL - Solo primera visita (NIVEL DIOS ONBOARDING)
+  Compatible iOS/Android/Web - CSS puro - Sin riesgo
+  ═══════════════════════════════════════════════════════════════════════ */
 @keyframes first-visit-hint {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-3px) scale(1.015); }
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-3px) scale(1.015); }
 }
 
 .block.first-visit-hint {
-  animation: first-visit-hint 1.8s ease-in-out 1;
-  animation-delay: 2s;
+  animation: first-visit-hint 1.8s ease-in-out 1;
+  animation-delay: 2s;
 }
 </style>
 
 <style id="portada-cover">
-.portada{ 
-  position:absolute; 
-  inset:0; 
-  display:none; 
-  align-items:center; 
-  justify-content:center; 
-  flex-direction:column; 
-  padding:1rem; 
-  animation:pop .6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  max-height:90%;
+.portada{ 
+  position:absolute; 
+  inset:0; 
+  display:none; 
+  align-items:center; 
+  justify-content:center; 
+  flex-direction:column; 
+  padding:1rem; 
+  animation:pop .6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  max-height:90%;
 }
 
-@keyframes pop{ 
-  0%{transform:scale(.85);opacity:0} 
-  100%{transform:scale(1);opacity:1} 
+@keyframes pop{ 
+  0%{transform:scale(.85);opacity:0} 
+  100%{transform:scale(1);opacity:1} 
 }
 
-.portada img{ 
-  max-width:94%; 
-  max-height:76%; 
-  border-radius:20px;
-  box-shadow:
-    0 20px 60px rgba(0,0,0,.65),
-    0 0 0 1px rgba(255,255,255,.1);
+.portada img{ 
+  max-width:94%; 
+  max-height:76%; 
+  border-radius:20px;
+  box-shadow:
+    0 20px 60px rgba(0,0,0,.65),
+    0 0 0 1px rgba(255,255,255,.1);
 }
 
 /* ==================== PULSE + GLOW PORTADA (Nivel Dios) ==================== */
 @keyframes trigguiPulse {
-  0% {
-    transform: scale(1);
-    filter: drop-shadow(0 0 0px rgba(255,255,255,0));
-  }
-  50% {
-    transform: scale(1.035);
-    filter: drop-shadow(0 0 20px rgba(255,255,255,0.15));
-  }
-  100% {
-    transform: scale(1);
-    filter: drop-shadow(0 0 0px rgba(255,255,255,0));
-  }
+  0% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0px rgba(255,255,255,0));
+  }
+  50% {
+    transform: scale(1.035);
+    filter: drop-shadow(0 0 20px rgba(255,255,255,0.15));
+  }
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0px rgba(255,255,255,0));
+  }
 }
 
 .portada.reveal-pulse img {
-  animation: trigguiPulse 2.4s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
-  will-change: transform, filter;
+  animation: trigguiPulse 2.4s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
+  will-change: transform, filter;
 }
 /* ======================================================================== */
 
-.port-text h2{ 
-  font-size:clamp(2rem,6vw,3.5rem); 
-  font-weight:800; 
-  text-shadow: none;
-  text-align:center;
-  -webkit-font-smoothing: antialiased;
+.port-text h2{ 
+  font-size:clamp(2rem,6vw,3.5rem); 
+  font-weight:800; 
+  text-shadow: none;
+  text-align:center;
+  -webkit-font-smoothing: antialiased;
 }
 
-.port-text p{ 
-  font-size:clamp(1.2rem,4vw,1.8rem); 
-  font-weight:600; 
-  opacity:.95;
-  text-shadow: none;
+.port-text p{ 
+  font-size:clamp(1.2rem,4vw,1.8rem); 
+  font-weight:600; 
+  opacity:.95;
+  text-shadow: none;
 }
 
-.emoji-big{ 
-  font-size:clamp(1.6rem,5vw,2.8rem); 
-  filter:drop-shadow(0 4px 12px rgba(0,0,0,.4));
+.emoji-big{ 
+  font-size:clamp(1.6rem,5vw,2.8rem); 
+  filter:drop-shadow(0 4px 12px rgba(0,0,0,.4));
 }
 </style>
 
 <style id="cta-buttons">
-.cta{ 
-  position:fixed; 
-  bottom:3vh; 
-  left:50%; 
-  transform:translateX(-50%); 
-  z-index:100; 
-  display:none; 
-  gap: clamp(0.5rem, 2vw, 0.9rem); 
-  justify-content:center; 
+.cta{ 
+  position:fixed; 
+  bottom:3vh; 
+  left:50%; 
+  transform:translateX(-50%); 
+  z-index:100; 
+  display:none; 
+  gap: clamp(0.5rem, 2vw, 0.9rem); 
+  justify-content:center; 
 }
 
 .cta button{
-  width:clamp(3.5rem,min(8vw,8vh),4.5rem); 
-  height:clamp(3.5rem,min(8vw,8vh),4.5rem);
-  border:none; 
-  border-radius:50%; 
-  display:flex; 
-  align-items:center; 
-  justify-content:center;
-  font-size:clamp(1.5rem,3.5vw,2rem); 
-  cursor:pointer; 
-  background-size:200% 200%;
-  box-shadow: 
-    0 0 0 1px rgba(255,255,255,.15),
-    0 6px 18px rgba(0,0,0,.35);
-  backdrop-filter:blur(6px);
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-  touch-action: manipulation; /* FIX: Respuesta instantánea */
+  width:clamp(3.5rem,min(8vw,8vh),4.5rem); 
+  height:clamp(3.5rem,min(8vw,8vh),4.5rem);
+  border:none; 
+  border-radius:50%; 
+  display:flex; 
+  align-items:center; 
+  justify-content:center;
+  font-size:clamp(1.5rem,3.5vw,2rem); 
+  cursor:pointer; 
+  background-size:200% 200%;
+  box-shadow: 
+    0 0 0 1px rgba(255,255,255,.15),
+    0 6px 18px rgba(0,0,0,.35);
+  backdrop-filter:blur(6px);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  touch-action: manipulation; /* FIX: Respuesta instantánea */
 }
 
 .cta button:hover {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 
-    0 0 0 1px rgba(255,255,255,.25),
-    0 8px 24px rgba(0,0,0,.45);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 
+    0 0 0 1px rgba(255,255,255,.25),
+    0 8px 24px rgba(0,0,0,.45);
 }
 
 .cta button:active {
-  transform: translateY(0) scale(0.95);
-  transition: transform 0.1s ease;
+  transform: translateY(0) scale(0.95);
+  transition: transform 0.1s ease;
 }
 
 #otro{ background:linear-gradient(135deg,#5fbfff,#1e90ff); color:#fff; }
@@ -441,283 +441,283 @@ function getRealisticUserCount() {
 </style>
 
 <style id="tarjeta-overlay">
-#tarjetaOverlay { 
-  display:none; 
-  position:fixed; 
-  inset:0; 
-  z-index:999; 
-  align-items:center; 
-  justify-content:center; 
-  background: rgba(0,0,0,0.88); 
-  backdrop-filter: blur(8px); 
-  -webkit-backdrop-filter: blur(8px);
-  opacity: 0; 
-  transition: opacity 0.3s ease; 
-  cursor: pointer;
+#tarjetaOverlay { 
+  display:none; 
+  position:fixed; 
+  inset:0; 
+  z-index:999; 
+  align-items:center; 
+  justify-content:center; 
+  background: rgba(0,0,0,0.88); 
+  backdrop-filter: blur(8px); 
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 0; 
+  transition: opacity 0.3s ease; 
+  cursor: pointer;
 }
 
 #tarjetaOverlay.visible { opacity: 1; }
 
-#tarjetaCard { 
-  /* Dimensiones Inmersivas */
-  width: 94%; 
-  max-width: 500px;
-  height: auto; 
-  max-height: 85vh;
-  
-  /* Scroll Invisible */
-  overflow-y: auto; 
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  
-  /* Estilo Físico */
-  border-radius: 24px; 
-  position: relative;
-  transform: scale(0.94) translateY(15px);
-  opacity: 0;
-  transition: transform 0.45s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.4s ease;
-  
-  /* Color dinámico */
-  background-color: var(--paper-col);
-  color: var(--ink-col);
-  
-  /* Sombra Profunda */
-  box-shadow: 
-    0 60px 120px -30px rgba(0, 0, 0, 0.85), 
-    0 0 0 1px rgba(255,255,255,0.08);
-  cursor: default;
+#tarjetaCard { 
+  /* Dimensiones Inmersivas */
+  width: 94%; 
+  max-width: 500px;
+  height: auto; 
+  max-height: 85vh;
+  
+  /* Scroll Invisible */
+  overflow-y: auto; 
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  
+  /* Estilo Físico */
+  border-radius: 24px; 
+  position: relative;
+  transform: scale(0.94) translateY(15px);
+  opacity: 0;
+  transition: transform 0.45s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.4s ease;
+  
+  /* Color dinámico */
+  background-color: var(--paper-col);
+  color: var(--ink-col);
+  
+  /* Sombra Profunda */
+  box-shadow: 
+    0 60px 120px -30px rgba(0, 0, 0, 0.85), 
+    0 0 0 1px rgba(255,255,255,0.08);
+  cursor: default;
 }
 
 #tarjetaCard::-webkit-scrollbar { display: none; }
 
 /* Textura de papel "Grain" */
 #tarjetaCard::after {
-  content: ""; 
-  position: absolute; 
-  inset: 0; 
-  pointer-events: none; 
-  z-index: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
-  mix-blend-mode: overlay;
-  opacity: 0.04;
-  border-radius: 24px;
+  content: ""; 
+  position: absolute; 
+  inset: 0; 
+  pointer-events: none; 
+  z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+  opacity: 0.04;
+  border-radius: 24px;
 }
 
-#tarjetaOverlay.visible #tarjetaCard { 
-  transform: scale(1) translateY(0); 
-  opacity: 1; 
+#tarjetaOverlay.visible #tarjetaCard { 
+  transform: scale(1) translateY(0); 
+  opacity: 1; 
 }
 
-body.webview #tarjetaCard { 
-  max-height: 90vh; 
-  padding-bottom: 25px; 
+body.webview #tarjetaCard { 
+  max-height: 90vh; 
+  padding-bottom: 25px; 
 }
 </style>
 
 <style id="card-content">
 /* Estructura Interna */
 .card-content-wrap {
-  position: relative; 
-  z-index: 2; 
-  padding: 36px 28px;
-  display: flex; 
-  flex-direction: column; 
-  min-height: 100%; 
-  box-sizing: border-box;
+  position: relative; 
+  z-index: 2; 
+  padding: 36px 28px;
+  display: flex; 
+  flex-direction: column; 
+  min-height: 100%; 
+  box-sizing: border-box;
 }
 
 /* Logo Triggui Header (ARRIBA) */
 .card-header-logo {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 24px;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
 }
 
 .card-header-logo img {
-  height: 20px;
-  width: auto;
-  opacity: 0.85;
+  height: 20px;
+  width: auto;
+  opacity: 0.85;
 }
 
 /* Tipografía */
 .card-header { text-align: center; margin-bottom: 28px; }
 
-.card-title { 
-  font-family: var(--serif-font); 
-  font-style: italic; 
-  font-weight: 800; 
-  font-size: clamp(26px, 7vw, 36px); 
-  line-height: 1.05; 
-  margin-bottom: 12px; 
-  letter-spacing: -0.5px;
-  -webkit-font-smoothing: antialiased;
-  text-shadow: none;
+.card-title { 
+  font-family: var(--serif-font); 
+  font-style: italic; 
+  font-weight: 800; 
+  font-size: clamp(26px, 7vw, 36px); 
+  line-height: 1.05; 
+  margin-bottom: 12px; 
+  letter-spacing: -0.5px;
+  -webkit-font-smoothing: antialiased;
+  text-shadow: none;
 }
 
-.card-author { 
-  font-family: var(--sans-font); 
-  font-size: 11px; 
-  text-transform: uppercase; 
-  letter-spacing: 2.5px; 
-  opacity: 0.7; 
-  font-weight: 800;
-  -webkit-font-smoothing: antialiased;
+.card-author { 
+  font-family: var(--sans-font); 
+  font-size: 11px; 
+  text-transform: uppercase; 
+  letter-spacing: 2.5px; 
+  opacity: 0.7; 
+  font-weight: 800;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* Divisor sutil para elegancia editorial */
-.card-divider { 
-  width: 40px; 
-  height: 1px; 
-  background: currentColor; 
-  opacity: 0.15; 
-  margin: 18px auto 0; 
+.card-divider { 
+  width: 40px; 
+  height: 1px; 
+  background: currentColor; 
+  opacity: 0.15; 
+  margin: 18px auto 0; 
 }
 
-.card-body { 
-  font-family: var(--serif-font); 
-  font-size: 19px; 
-  line-height: 1.6; 
-  opacity: 0.95; 
-  margin-bottom: 32px;
-  -webkit-font-smoothing: antialiased;
+.card-body { 
+  font-family: var(--serif-font); 
+  font-size: 19px; 
+  line-height: 1.6; 
+  opacity: 0.95; 
+  margin-bottom: 32px;
+  -webkit-font-smoothing: antialiased;
 }
 
-.card-highlight { 
-  font-family: var(--sans-font); 
-  font-weight: 700; 
-  font-size: 20px; 
-  margin: 26px 0; 
-  line-height: 1.4; 
-  color: var(--accent-col); 
-  text-align: center;
-  -webkit-font-smoothing: antialiased;
-  text-shadow: none;
+.card-highlight { 
+  font-family: var(--sans-font); 
+  font-weight: 700; 
+  font-size: 20px; 
+  margin: 26px 0; 
+  line-height: 1.4; 
+  color: var(--accent-col); 
+  text-align: center;
+  -webkit-font-smoothing: antialiased;
+  text-shadow: none;
 }
 </style>
 
 <style id="card-action-buttons">
-.card-actions { 
-  display: flex; 
-  flex-direction: column; 
-  gap: 16px; 
-  margin-top: auto; 
+.card-actions { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 16px; 
+  margin-top: auto; 
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  🎯 BLOQUE BUSCALIBRE - COMPRAR (ANCHO) + EXPLORAR (CUADRITO)
-  Ajuste de precisión para alineación perfecta con botón inferior
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  🎯 BLOQUE BUSCALIBRE - COMPRAR (ANCHO) + EXPLORAR (CUADRITO)
+  Ajuste de precisión para alineación perfecta con botón inferior
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 .buscalibre-row {
-  display: grid;
-  grid-template-columns: 1fr 48px;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: 1fr 48px;
+  gap: 10px;
 }
 
 /* Estilo Base Botón */
 .btn-action {
-  position: relative; 
-  z-index: 10;
-  height: 48px;
-  border-radius: 12px;
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
-  gap: 8px;
-  text-decoration: none; 
-  cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  box-sizing: border-box;
-  font-family: 'Archivo', sans-serif; 
-  font-weight: 700; 
-  font-size: 14px; 
-  letter-spacing: 0.1px;
-  touch-action: manipulation; /* FIX: Elimina tap delay */
-  will-change: transform, opacity; /* FIX: Pre-renderiza en GPU */
+  position: relative; 
+  z-index: 10;
+  height: 48px;
+  border-radius: 12px;
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  gap: 8px;
+  text-decoration: none; 
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+  font-family: 'Archivo', sans-serif; 
+  font-weight: 700; 
+  font-size: 14px; 
+  letter-spacing: 0.1px;
+  touch-action: manipulation; /* FIX: Elimina tap delay */
+  will-change: transform, opacity; /* FIX: Pre-renderiza en GPU */
 }
 
 .btn-action:active { transform: scale(0.97); }
 
-/* FEEDBACK GLOBAL CARGANDO (NIVEL DIOS) */
-.btn-action.is-opening {
-  opacity: 0.7 !important;
-  transform: scale(0.96) !important;
-  pointer-events: none !important;
-}
-
 /* Botón Comprar - Negro con logo Buscalibre dentro */
 .btn-comprar {
-  background: #080808;
-  color: white;
-  border: none;
-  box-shadow: 
-    0 6px 20px -6px rgba(0,0,0, 0.4), 
-    0 0 0 1px rgba(255,255,255, 0.08);
+  background: #080808;
+  color: white;
+  border: none;
+  box-shadow: 
+    0 6px 20px -6px rgba(0,0,0, 0.4), 
+    0 0 0 1px rgba(255,255,255, 0.08);
 }
 
 .btn-comprar:hover {
-  box-shadow: 
-    0 8px 24px -6px rgba(0,0,0, 0.5), 
-    0 0 0 1px rgba(255,255,255, 0.12);
+  box-shadow: 
+    0 8px 24px -6px rgba(0,0,0, 0.5), 
+    0 0 0 1px rgba(255,255,255, 0.12);
 }
 
 .btn-comprar img {
-  height: 18px;
-  width: auto;
-  display: block;
+  height: 18px;
+  width: auto;
+  display: block;
 }
 
 /* Botón Explorar - Cuadrito con emoji */
 .btn-explorar {
-  background: rgba(125,125,125,0.06);
-  border: 1px solid rgba(0,0,0,0.08);
-  color: inherit;
-  height: 48px;
-  padding: 0;
+  background: rgba(125,125,125,0.06);
+  border: 1px solid rgba(0,0,0,0.08);
+  color: inherit;
+  height: 48px;
+  padding: 0;
 }
 
-.btn-explorar:active { 
-  background: rgba(125,125,125,0.12); 
+.btn-explorar:active { 
+  background: rgba(125,125,125,0.12); 
 }
 
 .card-dark-mode .btn-explorar {
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
 }
 
-.card-dark-mode .btn-explorar:active { 
-  background: rgba(255,255,255,0.15); 
+.card-dark-mode .btn-explorar:active { 
+  background: rgba(255,255,255,0.15); 
 }
 
 .btn-emoji {
-  font-size: 20px;
-  line-height: 1;
+  font-size: 20px;
+  line-height: 1;
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  🌺 BLOQUE ENVIAFLORES - LOGO DENTRO DEL BOTÓN (ACTIVABLE)
-  COPIAR/PEGAR este bloque completo para activar/desactivar Enviaflores
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  🌺 BLOQUE ENVIAFLORES - LOGO DENTRO DEL BOTÓN (ACTIVABLE)
+  COPIAR/PEGAR este bloque completo para activar/desactivar Enviaflores
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 /* INICIO BLOQUE ENVIAFLORES */
 .btn-enviaflores {
-  width: 100%;
-  background: #080808;
-  color: white;
-  border: none;
-  box-shadow: 
-    0 6px 20px -6px rgba(0, 0, 0, 0.4), 
-    0 0 0 1px rgba(255,255,255, 0.1);
+  width: 100%;
+  background: #080808;
+  color: white;
+  border: none;
+  box-shadow: 
+    0 6px 20px -6px rgba(0, 0, 0, 0.4), 
+    0 0 0 1px rgba(255,255,255, 0.1);
 }
 
 .btn-enviaflores:hover {
-  box-shadow: 
-    0 8px 24px -6px rgba(0, 0, 0, 0.5), 
-    0 0 0 1px rgba(255,255,255, 0.15);
+  box-shadow: 
+    0 8px 24px -6px rgba(0, 0, 0, 0.5), 
+    0 0 0 1px rgba(255,255,255, 0.15);
+}
+
+/* FEEDBACK NIVEL DIOS */
+.btn-enviaflores.is-opening {
+  opacity: 0.7;
+  transform: scale(0.96);
+  pointer-events: none;
 }
 
 .btn-enviaflores img {
-  height: 23px;
-  width: auto;
-  display: block;
+  height: 23px;
+  width: auto;
+  display: block;
 }
 /* FIN BLOQUE ENVIAFLORES */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
@@ -725,332 +725,332 @@ body.webview #tarjetaCard { 
 
 <style id="progress-badge">
 #progressBadge {
-  position: fixed; 
-  top: 15px; 
-  left: 0; 
-  right: 0; 
-  margin: 0 auto; 
-  width: fit-content; 
-  max-width: 90vw; 
-  z-index: 150;
-  background: rgba(20,24,38,0.92); 
-  border: 1px solid rgba(255, 0, 85, 0.2);
-  padding: 6px 20px; 
-  border-radius: 99px; 
-  color: #dfe9ff;
-  backdrop-filter: blur(10px); 
-  -webkit-backdrop-filter: blur(10px);
-  opacity: 0; 
-  animation: badgeDrop 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-  box-shadow: 
-    0 6px 24px rgba(0,0,0,0.4),
-    0 0 0 1px rgba(255,255,255,0.08),
-    inset 0 1px 0 rgba(255,255,255,0.12);
-  text-align: center; 
-  cursor: pointer; 
-  user-select: none; 
-  pointer-events: auto;
+  position: fixed; 
+  top: 15px; 
+  left: 0; 
+  right: 0; 
+  margin: 0 auto; 
+  width: fit-content; 
+  max-width: 90vw; 
+  z-index: 150;
+  background: rgba(20,24,38,0.92); 
+  border: 1px solid rgba(255, 0, 85, 0.2);
+  padding: 6px 20px; 
+  border-radius: 99px; 
+  color: #dfe9ff;
+  backdrop-filter: blur(10px); 
+  -webkit-backdrop-filter: blur(10px);
+  opacity: 0; 
+  animation: badgeDrop 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  box-shadow: 
+    0 6px 24px rgba(0,0,0,0.4),
+    0 0 0 1px rgba(255,255,255,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.12);
+  text-align: center; 
+  cursor: pointer; 
+  user-select: none; 
+  pointer-events: auto;
 }
 
-@keyframes badgeDrop { 
-  0% { opacity: 0; transform: translateY(-40px); } 
-  100% { opacity: 1; transform: translateY(0); } 
+@keyframes badgeDrop { 
+  0% { opacity: 0; transform: translateY(-40px); } 
+  100% { opacity: 1; transform: translateY(0); } 
 }
 
-#progressBadge .line1 { 
-  display: block; 
-  font-size: 10px; 
-  text-transform: uppercase; 
-  letter-spacing: 1.2px; 
-  opacity: 0.65; 
-  margin-bottom: 3px; 
-  font-weight: 700; 
-  color: #a0aec0;
-  -webkit-font-smoothing: antialiased;
+#progressBadge .line1 { 
+  display: block; 
+  font-size: 10px; 
+  text-transform: uppercase; 
+  letter-spacing: 1.2px; 
+  opacity: 0.65; 
+  margin-bottom: 3px; 
+  font-weight: 700; 
+  color: #a0aec0;
+  -webkit-font-smoothing: antialiased;
 }
 
-#progressBadge .line2 { 
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
-  gap: 6px; 
-  flex-wrap: wrap; 
-  font-size: 13px; 
-  font-weight: 700; 
-  color: #fff; 
-  line-height: 1.2;
-  -webkit-font-smoothing: antialiased;
+#progressBadge .line2 { 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  gap: 6px; 
+  flex-wrap: wrap; 
+  font-size: 13px; 
+  font-weight: 700; 
+  color: #fff; 
+  line-height: 1.2;
+  -webkit-font-smoothing: antialiased;
 }
 
-#progressBadge .dot { 
-  width: 2px; 
-  height: 2px; 
-  background: rgba(255,255,255,0.4); 
-  border-radius: 50%; 
-  display: inline-block; 
-  margin: 0 2px; 
+#progressBadge .dot { 
+  width: 2px; 
+  height: 2px; 
+  background: rgba(255,255,255,0.4); 
+  border-radius: 50%; 
+  display: inline-block; 
+  margin: 0 2px; 
 }
 
-.highlight-txt { 
-  background: linear-gradient(135deg, #FF0055 0%, #FF5E00 50%, #FFD700 100%);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: fire-move 4s ease infinite;
-  text-shadow: none;
+.highlight-txt { 
+  background: linear-gradient(135deg, #FF0055 0%, #FF5E00 50%, #FFD700 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: fire-move 4s ease infinite;
+  text-shadow: none;
 }
 
 @keyframes fire-move {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 </style>
 
 <style id="toast-notifications">
 #toast {
-  position: fixed; 
-  top: 90px; 
-  left: 50%; 
-  transform: translateX(-50%) translateY(-20px); 
-  z-index: 160;
-  background: rgba(20,24,38,0.95); 
-  border: 1px solid rgba(255,255,255,0.12);
-  padding: 12px 24px; 
-  border-radius: 16px; 
-  font-size: 15px; 
-  color: #fff;
-  backdrop-filter: blur(8px); 
-  font-weight: 600; 
-  opacity: 0; 
-  pointer-events: none;
-  transition: all 0.3s ease; 
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4); 
-  text-align: center; 
-  max-width: 80%;
+  position: fixed; 
+  top: 90px; 
+  left: 50%; 
+  transform: translateX(-50%) translateY(-20px); 
+  z-index: 160;
+  background: rgba(20,24,38,0.95); 
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 12px 24px; 
+  border-radius: 16px; 
+  font-size: 15px; 
+  color: #fff;
+  backdrop-filter: blur(8px); 
+  font-weight: 600; 
+  opacity: 0; 
+  pointer-events: none;
+  transition: all 0.3s ease; 
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4); 
+  text-align: center; 
+  max-width: 80%;
 }
 
-#toast.visible { 
-  opacity: 1; 
-  transform: translateX(-50%) translateY(0); 
+#toast.visible { 
+  opacity: 1; 
+  transform: translateX(-50%) translateY(0); 
 }
 </style>
 
 <style id="modal-system">
-#appModal { 
-  display: none; 
-  position: fixed; 
-  inset: 0; 
-  z-index: 9999; 
-  align-items: center; 
-  justify-content: center; 
-  background: rgba(0,0,0,0.88); 
-  backdrop-filter: blur(8px); 
-  opacity: 0; 
-  transition: opacity 0.3s ease; 
+#appModal { 
+  display: none; 
+  position: fixed; 
+  inset: 0; 
+  z-index: 9999; 
+  align-items: center; 
+  justify-content: center; 
+  background: rgba(0,0,0,0.88); 
+  backdrop-filter: blur(8px); 
+  opacity: 0; 
+  transition: opacity 0.3s ease; 
 }
 
-#appModal.visible { 
-  display: flex; 
-  opacity: 1; 
+#appModal.visible { 
+  display: flex; 
+  opacity: 1; 
 }
 
 .modal-glass {
-  background: linear-gradient(145deg, rgba(30,34,50,0.96), rgba(10,12,20,0.98));
-  border: 1px solid rgba(255, 0, 85, 0.25);
-  border-radius: 28px; 
-  padding: 32px; 
-  width: 88%; 
-  max-width: 400px;
-  text-align: center; 
-  transform: scale(0.92);
-  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 
-    0 30px 80px rgba(0,0,0,0.8),
-    0 0 0 1px rgba(255,255,255,0.08),
-    inset 0 1px 0 rgba(255,255,255,0.15);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: linear-gradient(145deg, rgba(30,34,50,0.96), rgba(10,12,20,0.98));
+  border: 1px solid rgba(255, 0, 85, 0.25);
+  border-radius: 28px; 
+  padding: 32px; 
+  width: 88%; 
+  max-width: 400px;
+  text-align: center; 
+  transform: scale(0.92);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 
+    0 30px 80px rgba(0,0,0,0.8),
+    0 0 0 1px rgba(255,255,255,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
-#appModal.visible .modal-glass { 
-  transform: scale(1); 
+#appModal.visible .modal-glass { 
+  transform: scale(1); 
 }
 
-.m-emoji { 
-  font-size: 52px; 
-  margin-bottom: 16px; 
-  display: block; 
-  animation: bounce 2s ease infinite;
-  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+.m-emoji { 
+  font-size: 52px; 
+  margin-bottom: 16px; 
+  display: block; 
+  animation: bounce 2s ease infinite;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
 }
 
-@keyframes bounce { 
-  0%, 100% {transform:translateY(0);} 
-  50% {transform:translateY(-12px);} 
+@keyframes bounce { 
+  0%, 100% {transform:translateY(0);} 
+  50% {transform:translateY(-12px);} 
 }
 
-.m-title { 
-  font-size: 24px; 
-  font-weight: 800; 
-  margin-bottom: 10px; 
-  color: #fff; 
-  letter-spacing: 0.2px;
-  -webkit-font-smoothing: antialiased;
-  text-shadow: none;
+.m-title { 
+  font-size: 24px; 
+  font-weight: 800; 
+  margin-bottom: 10px; 
+  color: #fff; 
+  letter-spacing: 0.2px;
+  -webkit-font-smoothing: antialiased;
+  text-shadow: none;
 }
 
-.m-text { 
-  font-size: 16px; 
-  color: #b0b5c0; 
-  line-height: 1.6; 
-  margin-bottom: 26px;
-  -webkit-font-smoothing: antialiased;
+.m-text { 
+  font-size: 16px; 
+  color: #b0b5c0; 
+  line-height: 1.6; 
+  margin-bottom: 26px;
+  -webkit-font-smoothing: antialiased;
 }
 
-.m-highlight { 
-  background: linear-gradient(135deg, #FF0055 0%, #FF5E00 50%, #FFD700 100%);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: fire-move 4s ease infinite;
-  font-weight: 700; 
-  display: block; 
-  margin-top: 8px; 
-  font-size: 15px;
-  text-shadow: none;
+.m-highlight { 
+  background: linear-gradient(135deg, #FF0055 0%, #FF5E00 50%, #FFD700 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: fire-move 4s ease infinite;
+  font-weight: 700; 
+  display: block; 
+  margin-top: 8px; 
+  font-size: 15px;
+  text-shadow: none;
 }
 
-.m-buttons { 
-  display: flex; 
-  flex-direction: column; 
-  gap: 12px; 
+.m-buttons { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 12px; 
 }
 
-.m-btn { 
-  padding: 16px; 
-  border-radius: 16px; 
-  font-size: 16px; 
-  font-weight: 700; 
-  border: none; 
-  cursor: pointer; 
-  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  text-decoration: none; 
-  display: flex; 
-  align-items: center; 
-  justify-content: center;
-  -webkit-font-smoothing: antialiased;
+.m-btn { 
+  padding: 16px; 
+  border-radius: 16px; 
+  font-size: 16px; 
+  font-weight: 700; 
+  border: none; 
+  cursor: pointer; 
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  -webkit-font-smoothing: antialiased;
 }
 
 .m-btn:active { transform: scale(0.96); }
 
-.btn-primary { 
-  background: linear-gradient(135deg, #FF0055, #FF5E00, #FFD700);
-  background-size: 200% 200%;
-  color: white; 
-  box-shadow: 
-    0 0 0 1px rgba(255,255,255,0.15),
-    0 6px 20px rgba(255,0,85,0.4);
-  animation: fire-move 8s ease infinite;
+.btn-primary { 
+  background: linear-gradient(135deg, #FF0055, #FF5E00, #FFD700);
+  background-size: 200% 200%;
+  color: white; 
+  box-shadow: 
+    0 0 0 1px rgba(255,255,255,0.15),
+    0 6px 20px rgba(255,0,85,0.4);
+  animation: fire-move 8s ease infinite;
 }
 
-.btn-secondary { 
-  background: rgba(255,255,255,0.06); 
-  color: #fff; 
-  border: 1px solid rgba(255,255,255,0.15);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+.btn-secondary { 
+  background: rgba(255,255,255,0.06); 
+  color: #fff; 
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
 .btn-secondary:hover {
-  background: rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.1);
 }
 </style>
 
 <style id="floating-hearts">
 .floating-heart {
-  position: fixed; 
-  pointer-events: none; 
-  z-index: 200; 
-  font-size: 24px; 
-  opacity: 0;
-  animation: floatUp 1.2s ease-out forwards;
-  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
+  position: fixed; 
+  pointer-events: none; 
+  z-index: 200; 
+  font-size: 24px; 
+  opacity: 0;
+  animation: floatUp 1.2s ease-out forwards;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
 }
 
 @keyframes floatUp {
-  0% { 
-    transform: translate(0, 0) scale(0.5) rotate(0deg); 
-    opacity: 0; 
-  }
-  20% { 
-    opacity: 1; 
-    transform: translate(var(--tx), -40px) scale(1.2) rotate(15deg); 
-  }
-  100% { 
-    opacity: 0; 
-    transform: translate(var(--tx), -150px) scale(1) rotate(30deg); 
-  }
+  0% { 
+    transform: translate(0, 0) scale(0.5) rotate(0deg); 
+    opacity: 0; 
+  }
+  20% { 
+    opacity: 1; 
+    transform: translate(var(--tx), -40px) scale(1.2) rotate(15deg); 
+  }
+  100% { 
+    opacity: 0; 
+    transform: translate(var(--tx), -150px) scale(1) rotate(30deg); 
+  }
 }
 </style>
 
 <style id="celebration-overlay">
-.cele{ 
-  position:fixed; 
-  inset:0; 
-  background:rgba(0,0,0,.92); 
-  display:none; 
-  align-items:center; 
-  justify-content:center; 
-  z-index:110; 
-  flex-direction: column;
-  backdrop-filter: blur(6px);
+.cele{ 
+  position:fixed; 
+  inset:0; 
+  background:rgba(0,0,0,.92); 
+  display:none; 
+  align-items:center; 
+  justify-content:center; 
+  z-index:110; 
+  flex-direction: column;
+  backdrop-filter: blur(6px);
 }
 
-.cele-msg{ 
-  font-family:'Poppins'; 
-  font-size:2rem; 
-  text-align:center; 
-  background: linear-gradient(145deg, rgba(30,34,50,0.9), rgba(10,12,20,0.95));
-  border: 1px solid rgba(255, 0, 85, 0.3);
-  padding:2.5rem 3.5rem; 
-  border-radius:24px;
-  box-shadow: 
-    0 30px 80px rgba(0,0,0,0.7),
-    0 0 0 1px rgba(255,255,255,0.08),
-    inset 0 1px 0 rgba(255,255,255,0.15);
-  backdrop-filter: blur(12px);
-  -webkit-font-smoothing: antialiased;
+.cele-msg{ 
+  font-family:'Poppins'; 
+  font-size:2rem; 
+  text-align:center; 
+  background: linear-gradient(145deg, rgba(30,34,50,0.9), rgba(10,12,20,0.95));
+  border: 1px solid rgba(255, 0, 85, 0.3);
+  padding:2.5rem 3.5rem; 
+  border-radius:24px;
+  box-shadow: 
+    0 30px 80px rgba(0,0,0,0.7),
+    0 0 0 1px rgba(255,255,255,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.15);
+  backdrop-filter: blur(12px);
+  -webkit-font-smoothing: antialiased;
 }
 
-.num{ 
-  background: linear-gradient(135deg, #FF0055 0%, #FF5E00 50%, #FFD700 100%);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: fire-move 4s ease infinite;
-  font-weight:900; 
-  font-size:3.2rem;
-  text-shadow: none;
+.num{ 
+  background: linear-gradient(135deg, #FF0055 0%, #FF5E00 50%, #FFD700 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: fire-move 4s ease infinite;
+  font-weight:900; 
+  font-size:3.2rem;
+  text-shadow: none;
 }
 </style>
 
 <style id="responsive">
 @media (max-width: 480px) {
-  #progressBadge { 
-    padding: 6px 14px; 
-    top: 12px; 
-  }
-  #progressBadge .line2 { 
-    font-size: 11px; 
-    gap: 4px; 
-  }
-  .grid { gap: 1vw; } 
-  .cele-msg { 
-    font-size: 1.5rem; 
-    padding: 1.8rem 2.2rem; 
-  }
-  .num {
-    font-size: 2.6rem;
-  }
+  #progressBadge { 
+    padding: 6px 14px; 
+    top: 12px; 
+  }
+  #progressBadge .line2 { 
+    font-size: 11px; 
+    gap: 4px; 
+  }
+  .grid { gap: 1vw; } 
+  .cele-msg { 
+    font-size: 1.5rem; 
+    padding: 1.8rem 2.2rem; 
+  }
+  .num {
+    font-size: 2.6rem;
+  }
 }
 </style>
 
@@ -1058,20 +1058,20 @@ body.webview #tarjetaCard { 
 <body>
 
 <div id="progressBadge">
-  <span class="line1">Tu chispa acumulada</span>
-  <span class="line2" id="badgeContent">Cargando...</span>
+  <span class="line1">Tu chispa acumulada</span>
+  <span class="line2" id="badgeContent">Cargando...</span>
 </div>
 
 <div id="appModal">
-  <div class="modal-glass">
-    <span class="m-emoji" id="mEmoji">👋</span>
-    <div class="m-title" id="mTitle">Título</div>
-    <div class="m-text" id="mText">Texto</div>
-    <div class="m-buttons">
-      <button id="mBtnPrimary" class="m-btn btn-primary">Aceptar</button>
-      <button id="mBtnSecondary" class="m-btn btn-secondary">Cancelar</button>
-    </div>
-  </div>
+  <div class="modal-glass">
+    <span class="m-emoji" id="mEmoji">👋</span>
+    <div class="m-title" id="mTitle">Título</div>
+    <div class="m-text" id="mText">Texto</div>
+    <div class="m-buttons">
+      <button id="mBtnPrimary" class="m-btn btn-primary">Aceptar</button>
+      <button id="mBtnSecondary" class="m-btn btn-secondary">Cancelar</button>
+    </div>
+  </div>
 </div>
 
 <div id="toast"></div>
@@ -1079,10 +1079,10 @@ body.webview #tarjetaCard { 
 <div class="grid" id="grid"></div>
 
 <div class="cta" id="cta">
-  <button id="otro"><span class="icon">🎲</span></button>
-  <button id="fisico"><span class="icon">🔟</span></button>
-  <button id="share"><span class="icon">📖</span></button>
-  <button id="like"><span class="icon">😍</span></button>
+  <button id="otro"><span class="icon">🎲</span></button>
+  <button id="fisico"><span class="icon">🔟</span></button>
+  <button id="share"><span class="icon">📖</span></button>
+  <button id="like"><span class="icon">😍</span></button>
 </div>
 
 <div id="tarjetaOverlay" onclick="closeCard()"><div id="tarjetaCard" onclick="handleCardClick(event)"></div></div>
@@ -1094,44 +1094,44 @@ body.webview #tarjetaCard { 
 // SISTEMA MODAL
 // ========================================
 const Modal = {
-  el: document.getElementById('appModal'),
-  emoji: document.getElementById('mEmoji'),
-  title: document.getElementById('mTitle'),
-  text: document.getElementById('mText'),
-  pBtn: document.getElementById('mBtnPrimary'),
-  sBtn: document.getElementById('mBtnSecondary'),
-    
-  show: function(config) {
-    this.emoji.innerText = config.emoji || '✨';
-    this.title.innerText = config.title || 'Triggui';
-    this.text.innerHTML = config.text || '';
-    this.pBtn.innerText = config.btnText || 'Continuar';
-    this.pBtn.onclick = null; this.sBtn.onclick = null;
+  el: document.getElementById('appModal'),
+  emoji: document.getElementById('mEmoji'),
+  title: document.getElementById('mTitle'),
+  text: document.getElementById('mText'),
+  pBtn: document.getElementById('mBtnPrimary'),
+  sBtn: document.getElementById('mBtnSecondary'),
+    
+  show: function(config) {
+    this.emoji.innerText = config.emoji || '✨';
+    this.title.innerText = config.title || 'Triggui';
+    this.text.innerHTML = config.text || '';
+    this.pBtn.innerText = config.btnText || 'Continuar';
+    this.pBtn.onclick = null; this.sBtn.onclick = null;
 
-    this.pBtn.onclick = () => {
-      this.close();
-      if(config.onConfirm) config.onConfirm();
-    };
-    
-    if(config.showCancel) {
-      this.sBtn.style.display = 'flex';
-      this.sBtn.innerText = config.cancelText || 'Cerrar';
-      this.sBtn.onclick = () => {
-        this.close();
-        if(config.onCancel) config.onCancel();
-      };
-    } else {
-      this.sBtn.style.display = 'none';
-    }
+    this.pBtn.onclick = () => {
+      this.close();
+      if(config.onConfirm) config.onConfirm();
+    };
+    
+    if(config.showCancel) {
+      this.sBtn.style.display = 'flex';
+      this.sBtn.innerText = config.cancelText || 'Cerrar';
+      this.sBtn.onclick = () => {
+        this.close();
+        if(config.onCancel) config.onCancel();
+      };
+    } else {
+      this.sBtn.style.display = 'none';
+    }
 
-    this.el.style.display = 'flex';
-    setTimeout(() => this.el.classList.add('visible'), 10);
-  },
-    
-  close: function() {
-    this.el.classList.remove('visible');
-    setTimeout(() => { this.el.style.display = 'none'; }, 300);
-  }
+    this.el.style.display = 'flex';
+    setTimeout(() => this.el.classList.add('visible'), 10);
+  },
+    
+  close: function() {
+    this.el.classList.remove('visible');
+    setTimeout(() => { this.el.style.display = 'none'; }, 300);
+  }
 };
 </script>
 
@@ -1140,13 +1140,13 @@ const Modal = {
 // LOGICA APP
 // ========================================
 const grid=document.getElementById("grid"), cta=document.getElementById("cta"),
-      btnOtro=document.getElementById("otro"), btnLibro=document.getElementById("fisico"), btnShare=document.getElementById("share"), btnLike=document.getElementById("like"),
-      cele=document.getElementById("cele"), celeMsg=document.getElementById("celeMsg"),
-      progressBadge=document.getElementById("progressBadge"), toast=document.getElementById("toast");
+      btnOtro=document.getElementById("otro"), btnLibro=document.getElementById("fisico"), btnShare=document.getElementById("share"), btnLike=document.getElementById("like"),
+      cele=document.getElementById("cele"), celeMsg=document.getElementById("celeMsg"),
+      progressBadge=document.getElementById("progressBadge"), toast=document.getElementById("toast");
 
 let libro=null, revealed=false;
 const portIdx=Math.floor(Math.random()*4),
-      emojis=["🌊","🛡️","🧠","✨","📘","🔮","❤️","🪞"];
+      emojis=["🌊","🛡️","🧠","✨","📘","🔮","❤️","🪞"];
 const isURL = s => /^https?:\/\//i.test(s || "");
 const ANG = [115,205,35,320];
 const grad = i => `linear-gradient(${ANG[i%4]}deg,${libro.colores[i]},${libro.colores[(i+1)%4]})`;
@@ -1157,17 +1157,17 @@ const grad = i => `linear-gradient(${ANG[i%4]}deg,${libro.colores[i]},${libro.co
 // ═══════════════════════════════════════════════════════════════════════
 /* INICIO BLOQUE ENVIAFLORES - JAVASCRIPT */
 const ENVIAFLORES_URLS = [
-  "https://www.enviaflores.com/florerias-nuevo-leon/san-pedro-garza-garcia/todas-las-canastas",
-  "https://www.enviaflores.com/florerias-nuevo-leon/san-pedro-garza-garcia/todo-cumpleanos",
-  "https://www.enviaflores.com/florerias-nuevo-leon/san-pedro-garza-garcia/todos-los-productos",
-  "https://www.enviaflores.com/florerias-nuevo-leon/san-pedro-garza-garcia/ver-todo",
-  "https://www.enviaflores.com/florerias-nuevo-leon/san-pedro-garza-garcia/todo-personalizado",
-  "https://www.enviaflores.com/florerias-nuevo-leon/san-pedro-garza-garcia/todos-los-regalos",
-  "https://www.enviaflores.com/florerias-nuevo-leon/san-pedro-garza-garcia/mas-vendidos"
+  "https://www.enviaflores.com/florerias-nuevo-leon/san-pedro-garza-garcia/todas-las-canastas",
+  "https://www.enviaflores.com/florerias-nuevo-leon/san-pedro-garza-garcia/todo-cumpleanos",
+  "https://www.enviaflores.com/florerias-nuevo-leon/san-pedro-garza-garcia/todos-los-productos",
+  "https://www.enviaflores.com/florerias-nuevo-leon/san-pedro-garza-garcia/ver-todo",
+  "https://www.enviaflores.com/florerias-nuevo-leon/san-pedro-garza-garcia/todo-personalizado",
+  "https://www.enviaflores.com/florerias-nuevo-leon/san-pedro-garza-garcia/todos-los-regalos",
+  "https://www.enviaflores.com/florerias-nuevo-leon/san-pedro-garza-garcia/mas-vendidos"
 ];
 
 function getRandomEnviafloresURL() {
-  return ENVIAFLORES_URLS[Math.floor(Math.random() * ENVIAFLORES_URLS.length)];
+  return ENVIAFLORES_URLS[Math.floor(Math.random() * ENVIAFLORES_URLS.length)];
 }
 /* FIN BLOQUE ENVIAFLORES - JAVASCRIPT */
 
@@ -1175,236 +1175,236 @@ function getRandomEnviafloresURL() {
 // INTRO - NARRATIVA NIVEL DIOS (CON MICRO-HINT ACCIONABLE)
 // ═══════════════════════════════════════════════════════════════════════
 const frasesIntro = [
-  "Toca. Descubre. El libro te espera.",
-  "Cuando el impulso llega, el libro ya te espera.",
-  "No busques libros. Deja que te encuentren.",
-  "Si no puedes leerlo ahora, ahí se queda esperando.",
-  "La persistencia del impulso.",
-  "WhatsApp es la memoria de tu intención.",
-  "La chispa. El impulso.", 
-  "El libro correcto. El momento exacto.", 
-  "30 segundos. Ya.", 
-  "Empezar es lo más difícil.", 
-  "La fricción desaparece.", 
-  "El impulso que te activa.", 
-  "Ya entraste.", 
-  "La chispa que elimina la fricción.", 
-  "Elimina la fricción de empezar.", 
-  "El micro-hábito más fácil.", 
-  "Una idea. 30 segundos.", 
-  "Sin abrir nada más.", 
-  "El impulso. Ahora.", 
-  "La frase que te activa.", 
-  "Ya empezaste.", 
-  "Como ponerte los tenis.", 
-  "El primer paso.", 
-  "La chispa. Ya.", 
-  "Elimina la fricción.", 
-  "El libro. El momento."
+  "Toca. Descubre. El libro te espera.",
+  "Cuando el impulso llega, el libro ya te espera.",
+  "No busques libros. Deja que te encuentren.",
+  "Si no puedes leerlo ahora, ahí se queda esperando.",
+  "La persistencia del impulso.",
+  "WhatsApp es la memoria de tu intención.",
+  "La chispa. El impulso.", 
+  "El libro correcto. El momento exacto.", 
+  "30 segundos. Ya.", 
+  "Empezar es lo más difícil.", 
+  "La fricción desaparece.", 
+  "El impulso que te activa.", 
+  "Ya entraste.", 
+  "La chispa que elimina la fricción.", 
+  "Elimina la fricción de empezar.", 
+  "El micro-hábito más fácil.", 
+  "Una idea. 30 segundos.", 
+  "Sin abrir nada más.", 
+  "El impulso. Ahora.", 
+  "La frase que te activa.", 
+  "Ya empezaste.", 
+  "Como ponerte los tenis.", 
+  "El primer paso.", 
+  "La chispa. Ya.", 
+  "Elimina la fricción.", 
+  "El libro. El momento."
 ];
 document.getElementById("intro").innerHTML=`<span class="t">${frasesIntro[Math.floor(Math.random()*frasesIntro.length)]}</span>`;
 
 // === TRIPLE TAP RESET ===
 progressBadge.addEventListener('click', () => {
-  tapCount++;
-  if (tapCount === 1) tapTimer = setTimeout(() => { tapCount = 0; }, 800);
-  if (tapCount === 3) {
-    clearTimeout(tapTimer); tapCount = 0;
-    Modal.show({
-      emoji: '🔄', title: '¿Reiniciar Contadores?', text: 'Esto pondrá tus estadísticas a cero.',
-      btnText: 'Sí, Reiniciar', showCancel: true, cancelText: 'Cancelar',
-      onConfirm: () => {
-        window.reset();
-        location.reload();
-      }
-    });
-  }
+  tapCount++;
+  if (tapCount === 1) tapTimer = setTimeout(() => { tapCount = 0; }, 800);
+  if (tapCount === 3) {
+    clearTimeout(tapTimer); tapCount = 0;
+    Modal.show({
+      emoji: '🔄', title: '¿Reiniciar Contadores?', text: 'Esto pondrá tus estadísticas a cero.',
+      btnText: 'Sí, Reiniciar', showCancel: true, cancelText: 'Cancelar',
+      onConfirm: () => {
+        window.reset();
+        location.reload();
+      }
+    });
+  }
 });
 
 function showToast(msg, duration=3000) {
-  toast.textContent = msg; toast.classList.add('visible');
-  setTimeout(() => toast.classList.remove('visible'), duration);
+  toast.textContent = msg; toast.classList.add('visible');
+  setTimeout(() => toast.classList.remove('visible'), duration);
 }
 
 // ✨ UPDATE BADGE (Chispas activadas)
 function updateBadge() {
-  const streak = updateStreak(); 
-  const books = getLocal('books_opened', 0);
-  const concepts = getLocal('concepts', books * 5); 
-  
-  const diasTexto = streak === 1 ? 'día' : 'días';
-  const librosTexto = books === 1 ? 'libro' : 'libros';
-  
-  document.getElementById('badgeContent').innerHTML = 
-    `🔥 ${streak} ${diasTexto} <span class="dot"></span> 📚 ${books} ${librosTexto} <span class="dot"></span> <span class="highlight-txt">⚡ ${concepts} chispas activadas</span>`;
+  const streak = updateStreak(); 
+  const books = getLocal('books_opened', 0);
+  const concepts = getLocal('concepts', books * 5); 
+  
+  const diasTexto = streak === 1 ? 'día' : 'días';
+  const librosTexto = books === 1 ? 'libro' : 'libros';
+  
+  document.getElementById('badgeContent').innerHTML = 
+    `🔥 ${streak} ${diasTexto} <span class="dot"></span> 📚 ${books} ${librosTexto} <span class="dot"></span> <span class="highlight-txt">⚡ ${concepts} chispas activadas</span>`;
 }
 
 // BUILDERS
 function adjustScale(wrap){
-  const parent=wrap.closest(".portada"); if(!parent)return;
-  const avail=parent.clientHeight-40; let scale=1;
-  wrap.style.transform="scale(1)";
-  while(wrap.scrollHeight>avail&&scale>0.55){ scale-=.02; wrap.style.transform=`scale(${scale})`; }
+  const parent=wrap.closest(".portada"); if(!parent)return;
+  const avail=parent.clientHeight-40; let scale=1;
+  wrap.style.transform="scale(1)";
+  while(wrap.scrollHeight>avail&&scale>0.55){ scale-=.02; wrap.style.transform=`scale(${scale})`; }
 }
 
 function buildPort(i){
-  const d=document.createElement("div"); d.className="portada";
-  const wrap=document.createElement("div"); wrap.className="port-text-wrap";
-  const box=document.createElement("div"); box.className="port-text";
-  box.innerHTML=`<h2>${libro.titulo}</h2><p>${libro.autor}</p>`;
-  const emoji=document.createElement("div"); emoji.className="emoji-big";
-  emoji.textContent=emojis[i%emojis.length];
-  wrap.append(box,emoji);
-  if(isURL(libro.portada)){ d.append(Object.assign(new Image(),{src:libro.portada,loading:"lazy"})); }
-  else{ d.append(wrap); setTimeout(()=>adjustScale(wrap),0); }
-  d.addEventListener("click", e => { e.stopPropagation(); btnShare.click(); });
-  return d;
+  const d=document.createElement("div"); d.className="portada";
+  const wrap=document.createElement("div"); wrap.className="port-text-wrap";
+  const box=document.createElement("div"); box.className="port-text";
+  box.innerHTML=`<h2>${libro.titulo}</h2><p>${libro.autor}</p>`;
+  const emoji=document.createElement("div"); emoji.className="emoji-big";
+  emoji.textContent=emojis[i%emojis.length];
+  wrap.append(box,emoji);
+  if(isURL(libro.portada)){ d.append(Object.assign(new Image(),{src:libro.portada,loading:"lazy"})); }
+  else{ d.append(wrap); setTimeout(()=>adjustScale(wrap),0); }
+  d.addEventListener("click", e => { e.stopPropagation(); btnShare.click(); });
+  return d;
 }
 
 function render(){
-  grid.innerHTML="";
-  for(let i=0;i<4;i++){
-    const card=document.createElement("div"); card.className="block"; card.style.background=grad(i);
-    const label=document.createElement("div"); label.className="label";
-    label.textContent=`${emojis[i%emojis.length]} ${libro.palabras[i]}`;
-    label.style.color=libro.textColors?.[i]||"#fff";
-    const frase=document.createElement("div"); frase.className="frase";
-    frase.textContent=libro.frases[i]; frase.style.color=libro.textColors?.[i]||"#fff";
-    const port=buildPort(i);
+  grid.innerHTML="";
+  for(let i=0;i<4;i++){
+    const card=document.createElement("div"); card.className="block"; card.style.background=grad(i);
+    const label=document.createElement("div"); label.className="label";
+    label.textContent=`${emojis[i%emojis.length]} ${libro.palabras[i]}`;
+    label.style.color=libro.textColors?.[i]||"#fff";
+    const frase=document.createElement("div"); frase.className="frase";
+    frase.textContent=libro.frases[i]; frase.style.color=libro.textColors?.[i]||"#fff";
+    const port=buildPort(i);
 
-    if(i===portIdx){
-      card.append(port, label, frase);
-      card.onclick = e => {
-        if(!revealed){
-          label.style.display="none"; port.style.display="flex"; port.classList.add("reveal-pulse");
-          [...grid.children].forEach((c,j)=>j!==portIdx&&c.classList.add("show"));
-          cta.style.display="flex"; revealed=true;
-          const c = libro.colores;
-          document.getElementById("otro").style.background = `linear-gradient(135deg, ${c[0]}, ${c[1]})`;
-          document.getElementById("fisico").style.background = `linear-gradient(135deg, ${c[1]}, ${c[2]})`;
-          document.getElementById("share").style.background = `linear-gradient(135deg, ${c[2]}, ${c[3]})`;
-          
-          document.getElementById("like").style.background = `linear-gradient(135deg, #ff416c, #ff4b2b)`;
+    if(i===portIdx){
+      card.append(port, label, frase);
+      card.onclick = e => {
+        if(!revealed){
+          label.style.display="none"; port.style.display="flex"; port.classList.add("reveal-pulse");
+          [...grid.children].forEach((c,j)=>j!==portIdx&&c.classList.add("show"));
+          cta.style.display="flex"; revealed=true;
+          const c = libro.colores;
+          document.getElementById("otro").style.background = `linear-gradient(135deg, ${c[0]}, ${c[1]})`;
+          document.getElementById("fisico").style.background = `linear-gradient(135deg, ${c[1]}, ${c[2]})`;
+          document.getElementById("share").style.background = `linear-gradient(135deg, ${c[2]}, ${c[3]})`;
+          
+          document.getElementById("like").style.background = `linear-gradient(135deg, #ff416c, #ff4b2b)`;
 
-          document.getElementById("otro").style.color = pickTextColor(c[0]);
-          document.getElementById("fisico").style.color = pickTextColor(c[1]);
-          document.getElementById("share").style.color = pickTextColor(c[2]);
-          handleBookReveal();
-        } else { e.stopPropagation(); btnShare.click(); }
-      };
-    } else {
-      card.append(label, frase);
-      card.onclick = () => { if(revealed) location.reload(); else card.classList.toggle("show"); };
-    }
-    grid.append(card);
-  }
+          document.getElementById("otro").style.color = pickTextColor(c[0]);
+          document.getElementById("fisico").style.color = pickTextColor(c[1]);
+          document.getElementById("share").style.color = pickTextColor(c[2]);
+          handleBookReveal();
+        } else { e.stopPropagation(); btnShare.click(); }
+      };
+    } else {
+      card.append(label, frase);
+      card.onclick = () => { if(revealed) location.reload(); else card.classList.toggle("show"); };
+    }
+    grid.append(card);
+  }
 }
 
 // LOGICA ENGAGEMENT - NARRATIVA NIVEL DIOS
 function handleBookReveal() {
-  const booksCount = incrementBooks();
-  addConcepts(4); 
-  updateBadge();
-  fetch("https://triggui-api.vercel.app/api/increment", {cache:"no-store"}).catch(()=>{});
+  const booksCount = incrementBooks();
+  addConcepts(4); 
+  updateBadge();
+  fetch("https://triggui-api.vercel.app/api/increment", {cache:"no-store"}).catch(()=>{});
 
-  const delay = 1500;
-  const userCount = getRealisticUserCount();
+  const delay = 1500;
+  const userCount = getRealisticUserCount();
 
-  if (booksCount === 2) {
-    setTimeout(() => Modal.show({
-      emoji: '🔥', 
-      title: 'Cuando el impulso llega', 
-      text: 'El libro ya te espera en WhatsApp.<span class="m-highlight">Si no puedes leerlo ahora, ahí se queda esperando.</span>',
-      btnText: 'Quiero mi chispa semanal', 
-      onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
-      showCancel: true, 
-      cancelText: 'Seguir explorando'
-    }), delay);
-  } else if (booksCount === 5) {
-    setTimeout(() => Modal.show({
-      emoji: '⚡', 
-      title: 'La persistencia del impulso', 
-      text: 'Una idea por semana. Directo a tu WhatsApp. 30 segundos.<span class="m-highlight">$149/mes · Cancela cuando quieras</span>',
-      btnText: 'Activar ahora', 
-      onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
-      showCancel: true
-    }), delay);
-  } else if (booksCount === 10) {
-    setTimeout(() => Modal.show({
-      emoji: '🧠', 
-      title: 'No es falta de ganas', 
-      text: `Es fricción de empezar. ${userCount} personas lo eliminaron hoy.<span class="m-highlight">El libro te encuentra por WhatsApp</span>`,
-      btnText: 'Suscribirme', 
-      onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
-      showCancel: true
-    }), delay);
-  } else if ([15, 20, 30, 50, 75, 100].includes(booksCount)) {
-    setTimeout(() => Modal.show({
-      emoji: '💎', 
-      title: `${booksCount} chispas activadas`, 
-      text: 'Empezar ya no se siente pesado.<span class="m-highlight">Precio de lanzamiento hoy</span>',
-      btnText: 'Ver planes', 
-      onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
-      showCancel: true
-    }), delay);
-  }
+  if (booksCount === 2) {
+    setTimeout(() => Modal.show({
+      emoji: '🔥', 
+      title: 'Cuando el impulso llega', 
+      text: 'El libro ya te espera en WhatsApp.<span class="m-highlight">Si no puedes leerlo ahora, ahí se queda esperando.</span>',
+      btnText: 'Quiero mi chispa semanal', 
+      onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
+      showCancel: true, 
+      cancelText: 'Seguir explorando'
+    }), delay);
+  } else if (booksCount === 5) {
+    setTimeout(() => Modal.show({
+      emoji: '⚡', 
+      title: 'La persistencia del impulso', 
+      text: 'Una idea por semana. Directo a tu WhatsApp. 30 segundos.<span class="m-highlight">$149/mes · Cancela cuando quieras</span>',
+      btnText: 'Activar ahora', 
+      onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
+      showCancel: true
+    }), delay);
+  } else if (booksCount === 10) {
+    setTimeout(() => Modal.show({
+      emoji: '🧠', 
+      title: 'No es falta de ganas', 
+      text: `Es fricción de empezar. ${userCount} personas lo eliminaron hoy.<span class="m-highlight">El libro te encuentra por WhatsApp</span>`,
+      btnText: 'Suscribirme', 
+      onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
+      showCancel: true
+    }), delay);
+  } else if ([15, 20, 30, 50, 75, 100].includes(booksCount)) {
+    setTimeout(() => Modal.show({
+      emoji: '💎', 
+      title: `${booksCount} chispas activadas`, 
+      text: 'Empezar ya no se siente pesado.<span class="m-highlight">Precio de lanzamiento hoy</span>',
+      btnText: 'Ver planes', 
+      onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
+      showCancel: true
+    }), delay);
+  }
 }
 
 // === LIKE & SHARE ===
 btnLike.onclick = (e) => {
-  const rect = btnLike.getBoundingClientRect();
-  const centerX = rect.left + rect.width / 2;
-  const centerY = rect.top + rect.height / 2;
-  for (let i = 0; i < 8; i++) { createFloatingHeart(centerX, centerY); }
-  
-  const rachaActual = getLocal('streak', 0);
-  const totalLibros = getLocal('books_opened', 0);
-  const conceptosActuales = getLocal('concepts', 0);
-  const tipoDispositivo = getPlatform();
+  const rect = btnLike.getBoundingClientRect();
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+  for (let i = 0; i < 8; i++) { createFloatingHeart(centerX, centerY); }
+  
+  const rachaActual = getLocal('streak', 0);
+  const totalLibros = getLocal('books_opened', 0);
+  const conceptosActuales = getLocal('concepts', 0);
+  const tipoDispositivo = getPlatform();
 
-  try {
-    const frasesVistas = libro.frases.join(" | ");
-    const urlScript = "https://script.google.com/macros/s/AKfycbyJdF6QZ4b321MUzzkpkvNLEL4-ZJDdgzs7gXTS6bhtI0HMgnJQnAm7tZMeo7u8oatE/exec";
-    fetch(urlScript, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        "action": "like", "book": libro.titulo, "author": libro.autor, "phrases": frasesVistas, "streak": rachaActual,
-        "total_books": totalLibros, "platform": tipoDispositivo, "concepts": conceptosActuales, "source": "like-button"
-      })
-    });
-    track('like_clicked', { book: libro.titulo, streak: rachaActual });
-  } catch (err) { console.log("Error enviando like:", err); }
+  try {
+    const frasesVistas = libro.frases.join(" | ");
+    const urlScript = "https://script.google.com/macros/s/AKfycbyJdF6QZ4b321MUzzkpkvNLEL4-ZJDdgzs7gXTS6bhtI0HMgnJQnAm7tZMeo7u8oatE/exec";
+    fetch(urlScript, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        "action": "like", "book": libro.titulo, "author": libro.autor, "phrases": frasesVistas, "streak": rachaActual,
+        "total_books": totalLibros, "platform": tipoDispositivo, "concepts": conceptosActuales, "source": "like-button"
+      })
+    });
+    track('like_clicked', { book: libro.titulo, streak: rachaActual });
+  } catch (err) { console.log("Error enviando like:", err); }
 
-  setTimeout(() => {
-    Modal.show({
-      emoji: '📸', 
-      title: 'Este momento es tuyo', 
-      text: 'Guárdalo. Compártelo.<span class="m-highlight">Cuando el impulso llega, el libro ya te espera</span>',
-      btnText: 'Listo', 
-      onConfirm: () => {}, 
-      showCancel: false
-    });
-  }, 1500);
+  setTimeout(() => {
+    Modal.show({
+      emoji: '📸', 
+      title: 'Este momento es tuyo', 
+      text: 'Guárdalo. Compártelo.<span class="m-highlight">Cuando el impulso llega, el libro ya te espera</span>',
+      btnText: 'Listo', 
+      onConfirm: () => {}, 
+      showCancel: false
+    });
+  }, 1500);
 };
 
 function createFloatingHeart(x, y) {
-  const heart = document.createElement('div');
-  heart.classList.add('floating-heart');
-  heart.innerText = ['❤️', '😍', '🔥'][Math.floor(Math.random() * 3)];
-  document.body.appendChild(heart);
-  const randomX = (Math.random() - 0.5) * 60; 
-  heart.style.left = `${x}px`; heart.style.top = `${y}px`;
-  heart.style.setProperty('--tx', `${randomX}px`);
-  setTimeout(() => heart.remove(), 1200);
+  const heart = document.createElement('div');
+  heart.classList.add('floating-heart');
+  heart.innerText = ['❤️', '😍', '🔥'][Math.floor(Math.random() * 3)];
+  document.body.appendChild(heart);
+  const randomX = (Math.random() - 0.5) * 60; 
+  heart.style.left = `${x}px`; heart.style.top = `${y}px`;
+  heart.style.setProperty('--tx', `${randomX}px`);
+  setTimeout(() => heart.remove(), 1200);
 }
 
 // HANDLERS
 btnOtro.onclick = () => { location.reload(); track('reload_clicked'); };
 btnLibro.onclick = async() => {
-  btnLibro.disabled=true; cele.style.display="flex"; celeMsg.innerHTML='<span class="num">...</span><br>chispas activadas juntos';
-  try{ const r=await fetch("https://triggui-api.vercel.app/api/increment"); const d=await r.json(); celeMsg.innerHTML=`⚡ <span class="num">${d.total.toLocaleString("es-MX")}</span><br>chispas activadas juntos`; track('physical_book_opened', { total: d.total }); }catch{}
-  setTimeout(()=>{ cele.style.display="none"; btnLibro.disabled=false; },2300);
+  btnLibro.disabled=true; cele.style.display="flex"; celeMsg.innerHTML='<span class="num">...</span><br>chispas activadas juntos';
+  try{ const r=await fetch("https://triggui-api.vercel.app/api/increment"); const d=await r.json(); celeMsg.innerHTML=`⚡ <span class="num">${d.total.toLocaleString("es-MX")}</span><br>chispas activadas juntos`; track('physical_book_opened', { total: d.total }); }catch{}
+  setTimeout(()=>{ cele.style.display="none"; btnLibro.disabled=false; },2300);
 };
 
 function luminance(hex) { try { const c = hex.replace("#","").match(/.{1,2}/g).map(x=>parseInt(x,16)/255); const f = v => v<=.03928 ? v/12.92 : Math.pow((v+.055)/1.055,2.4); return 0.2126*f(c[0])+0.7152*f(c[1])+0.0722*f(c[2]); } catch { return 0; } }
@@ -1412,161 +1412,133 @@ function pickTextColor(bg) { try { return luminance(bg) > 0.35 ? "#000" : "#fff"
 
 // SHARE & TARJETA
 btnShare.onclick = () => {
-  const t = libro.tarjeta; 
-  const overlay = document.getElementById("tarjetaOverlay");
-  const card = document.getElementById("tarjetaCard");
-  
-  if (!cardOpenedThisSession) {
-    addConcepts(1); updateBadge(); cardOpenedThisSession = true;
-  }
+  const t = libro.tarjeta; 
+  const overlay = document.getElementById("tarjetaOverlay");
+  const card = document.getElementById("tarjetaCard");
+  
+  if (!cardOpenedThisSession) {
+    addConcepts(1); updateBadge(); cardOpenedThisSession = true;
+  }
 
-  // Estilos del JSON
-  const sPaper = t.style.paper || "#fff"; 
-  const sInk = t.style.ink || "#111"; 
-  const sAccent = t.style.accent || "#30ffe4";
-  const sSerif = t.style.serif || "'Playfair Display', serif";
-  const sSans = t.style.sans || "'Archivo', sans-serif";
-  const p = libro.palabras && libro.palabras.length > 0 ? libro.palabras[Math.floor(Math.random()*libro.palabras.length)] : "";
+  // Estilos del JSON
+  const sPaper = t.style.paper || "#fff"; 
+  const sInk = t.style.ink || "#111"; 
+  const sAccent = t.style.accent || "#30ffe4";
+  const sSerif = t.style.serif || "'Playfair Display', serif";
+  const sSans = t.style.sans || "'Archivo', sans-serif";
+  const p = libro.palabras && libro.palabras.length > 0 ? libro.palabras[Math.floor(Math.random()*libro.palabras.length)] : "";
 
-  // Inyectar variables CSS
-  card.style.setProperty('--paper-col', sPaper);
-  card.style.setProperty('--ink-col', sInk);
-  card.style.setProperty('--accent-col', sAccent);
-  card.style.setProperty('--serif-font', sSerif);
-  card.style.setProperty('--sans-font', sSans);
+  // Inyectar variables CSS
+  card.style.setProperty('--paper-col', sPaper);
+  card.style.setProperty('--ink-col', sInk);
+  card.style.setProperty('--accent-col', sAccent);
+  card.style.setProperty('--serif-font', sSerif);
+  card.style.setProperty('--sans-font', sSans);
 
-  // Modo Oscuro
-  const isDark = pickTextColor(sPaper) === '#fff';
-  if (isDark) { card.classList.add('card-dark-mode'); } 
-  else { card.classList.remove('card-dark-mode'); }
+  // Modo Oscuro
+  const isDark = pickTextColor(sPaper) === '#fff';
+  if (isDark) { card.classList.add('card-dark-mode'); } 
+  else { card.classList.remove('card-dark-mode'); }
 
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🎯 RENDER HTML - OPTIMIZADO PARA CARGA INSTANTÁNEA (REL NOOPENER)
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  const randomEnviafloresURL = getRandomEnviafloresURL();
-  
-  card.innerHTML = `
-    <div class="card-content-wrap">
-      
-      <div class="card-header-logo">
-        <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png" 
-             alt="Triggui"
-             style="filter: ${isDark ? 'invert(1) brightness(1.5)' : 'none'};">
-      </div>
-      
-      <div class="card-header">
-        <div class="card-title">${libro.titulo}</div>
-        <div class="card-author">${libro.autor}</div>
-        <div class="card-divider"></div>
-      </div>
-      
-      <div class="card-body">
-        <div style="margin-bottom:18px;">${t.parrafoTop}</div>
-        <div class="card-highlight">${t.subtitulo}</div>
-        <div>${t.parrafoBot}</div>
-      </div>
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🎯 RENDER HTML - OPTIMIZADO PARA CARGA INSTANTÁNEA (REL NOOPENER)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  const randomEnviafloresURL = getRandomEnviafloresURL();
+  
+  card.innerHTML = `
+    <div class="card-content-wrap">
+      
+      <div class="card-header-logo">
+        <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png" 
+             alt="Triggui"
+             style="filter: ${isDark ? 'invert(1) brightness(1.5)' : 'none'};">
+      </div>
+      
+      <div class="card-header">
+        <div class="card-title">${libro.titulo}</div>
+        <div class="card-author">${libro.autor}</div>
+        <div class="card-divider"></div>
+      </div>
+      
+      <div class="card-body">
+        <div style="margin-bottom:18px;">${t.parrafoTop}</div>
+        <div class="card-highlight">${t.subtitulo}</div>
+        <div>${t.parrafoBot}</div>
+      </div>
 
-      <div class="card-actions">
-        
-        <div class="buscalibre-row">
-          <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(libro.titulo + ' ' + libro.autor)}" 
-             target="_blank" 
-             rel="noopener noreferrer"
-             class="btn-action btn-comprar">
-             <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/buscalibre.png" 
-                  alt="Buscalibre">
-             <span>Comprar</span>
-          </a>
-          
-          <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(p)}" 
-             target="_blank" 
-             rel="noopener noreferrer"
-             class="btn-action btn-explorar">
-             <span class="btn-emoji">✨</span>
-          </a>
-        </div>
-        
-        <a href="${randomEnviafloresURL}" 
-           target="_blank" 
-           rel="noopener noreferrer"
-           class="btn-action btn-enviaflores">
-           <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/enviaflores-logo.png" 
-                alt="Envía Flores">
-           <span>Únelo a un regalo</span>
-        </a>
-        </div>
-    </div>
-  `;
+      <div class="card-actions">
+        
+        <div class="buscalibre-row">
+          <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(libro.titulo + ' ' + libro.autor)}" 
+             target="_blank" 
+             rel="noopener noreferrer"
+             class="btn-action btn-comprar">
+             <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/buscalibre.png" 
+                  alt="Buscalibre">
+             <span>Comprar</span>
+          </a>
+          
+          <a href="https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(p)}" 
+             target="_blank" 
+             rel="noopener noreferrer"
+             class="btn-action btn-explorar">
+             <span class="btn-emoji">🎲</span>
+          </a>
+        </div>
+        
+        <a href="${randomEnviafloresURL}" 
+           target="_blank" 
+           rel="noopener noreferrer"
+           class="btn-action btn-enviaflores">
+           <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/enviaflores-logo.png" 
+                alt="Envía Flores">
+           <span>Únelo a un regalo</span>
+        </a>
+        </div>
+    </div>
+  `;
 
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🎯 SISTEMA NIVEL DIOS TODOPODEROSO (ULTRA-PRECISO)
-  // Inteligencia de Foco para Redirecciones Externas
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  const instantLinkFix = (btnSelector, loadingText, originalText, trackingEvent) => {
-    const btn = card.querySelector(btnSelector);
-    if (!btn) return;
-
-    let isLocked = false;
-    let fallbackTimer = null;
-
-    const resetBtn = () => {
-      btn.classList.remove('is-opening');
-      const s = btn.querySelector('span');
-      if (s) s.textContent = originalText;
-      isLocked = false;
-      if (fallbackTimer) clearTimeout(fallbackTimer);
-    };
-
-    btn.addEventListener('click', function(e) {
-      if (isLocked) { e.preventDefault(); return; }
-      isLocked = true;
-
-      // 1. Vibración Háptica
-      try { if(navigator.vibrate) navigator.vibrate(18); } catch(_) {}
-
-      // 2. Feedback Visual
+  // --- LÓGICA ULTRA-RÁPIDA (NIVEL DIOS) PARA ENVIAFLORES ---
+  const efBtn = card.querySelector('.btn-enviaflores');
+  if (efBtn) {
+    let efLocked = false;
+    efBtn.addEventListener('click', function(e) {
+      if (efLocked) { e.preventDefault(); return; }
+      efLocked = true;
+      // Respuesta táctil y visual instantánea
+      try { if(navigator.vibrate) navigator.vibrate(15); } catch(_) {}
       this.classList.add('is-opening');
       const span = this.querySelector('span');
-      if (span) span.textContent = loadingText;
-
-      // 3. Tracking
-      try { track(trackingEvent, { book: libro.titulo }); } catch(_) {}
-
-      // 4. MONITOR DE FOCO (Evita el reset prematuro)
-      // Si pasan 6 segundos y seguimos aquí, liberamos (fallo o red lenta)
-      fallbackTimer = setTimeout(() => {
-        if (!document.hidden) resetBtn();
-      }, 6000);
-
-      // Si el usuario regresa a la pestaña o el WebView recupera el foco
-      window.addEventListener('visibilitychange', () => {
-        if (!document.hidden && isLocked) resetBtn();
-      }, { once: true });
+      if (span) span.textContent = 'Abriendo...';
+      // Tracking asíncrono
+      try { track('enviaflores_clicked', { book: libro.titulo }); } catch(_) {}
+      // Timeout de seguridad para resetear si el usuario vuelve
+      setTimeout(() => {
+        this.classList.remove('is-opening');
+        if (span) span.textContent = 'Únelo a un regalo';
+        efLocked = false;
+      }, 2500);
     });
-  };
+  }
 
-  instantLinkFix('.btn-enviaflores', 'Abriendo...', 'Únelo a un regalo', 'enviaflores_clicked');
-  instantLinkFix('.btn-comprar', 'Buscando...', 'Comprar', 'buscalibre_clicked');
-  instantLinkFix('.btn-explorar', 'Sorpresa...', '✨', 'explorar_clicked');
-
-  overlay.style.display="flex";
-  setTimeout(() => overlay.classList.add('visible'), 10);
-  track('card_viewed', { book: libro.titulo });
+  overlay.style.display="flex";
+  setTimeout(() => overlay.classList.add('visible'), 10);
+  track('card_viewed', { book: libro.titulo });
 };
 
 // LOGICA DE CIERRE (MÁXIMA PRIORIDAD)
 window.handleCardClick = function(e) {
-  if (e.target.closest('a') || e.target.closest('button')) {
-    e.stopPropagation();
-    return;
-  }
-  window.closeCard();
+  if (e.target.closest('a') || e.target.closest('button')) {
+    e.stopPropagation();
+    return;
+  }
+  window.closeCard();
 }
 
 window.closeCard = function() {
-  const overlay = document.getElementById("tarjetaOverlay");
-  overlay.classList.remove('visible');
-  setTimeout(() => { overlay.style.display="none"; }, 300);
+  const overlay = document.getElementById("tarjetaOverlay");
+  overlay.classList.remove('visible');
+  setTimeout(() => { overlay.style.display="none"; }, 300);
 }
 
 // INIT
@@ -1574,37 +1546,37 @@ function isWebView(){ const ua=navigator.userAgent||navigator.vendor||window.ope
 if(isWebView()) document.body.classList.add("webview");
 
 function pickLibroNoRepetido(libros){
-  let last=sessionStorage.getItem("lastLibroIdx"); if(last!==null)last=parseInt(last);
-  let idx=Math.floor(Math.random()*libros.length);
-  if(idx===last){ idx=Math.floor(Math.random()*libros.length); if(idx===last)idx=(idx+1)%libros.length; }
-  sessionStorage.setItem("lastLibroIdx", idx); return idx;
+  let last=sessionStorage.getItem("lastLibroIdx"); if(last!==null)last=parseInt(last);
+  let idx=Math.floor(Math.random()*libros.length);
+  if(idx===last){ idx=Math.floor(Math.random()*libros.length); if(idx===last)idx=(idx+1)%libros.length; }
+  sessionStorage.setItem("lastLibroIdx", idx); return idx;
 }
 
 (async()=>{
-  try{
-    const r=await fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json?ts="+Date.now());
-    const data=await r.json();
-    libro=data.libros[pickLibroNoRepetido(data.libros)];
-    render(); 
-    updateBadge();
-    track('app_loaded', {streak:getLocal('streak',0), books:getLocal('books_opened',0)});
-    
-    if (!getLocal('has_visited')) {
-      setTimeout(() => {
-        document.querySelectorAll('.block').forEach(b => b.classList.add('first-visit-hint'));
-        saveLocal('has_visited', true);
-      }, 100);
-    }
-    
-  }catch(e){ 
-    console.error(e);
-  }
+  try{
+    const r=await fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json?ts="+Date.now());
+    const data=await r.json();
+    libro=data.libros[pickLibroNoRepetido(data.libros)];
+    render(); 
+    updateBadge();
+    track('app_loaded', {streak:getLocal('streak',0), books:getLocal('books_opened',0)});
+    
+    if (!getLocal('has_visited')) {
+      setTimeout(() => {
+        document.querySelectorAll('.block').forEach(b => b.classList.add('first-visit-hint'));
+        saveLocal('has_visited', true);
+      }, 100);
+    }
+    
+  }catch(e){ 
+    console.error(e);
+  }
 })();
 </script>
 
 <script id="js-react-native-bridge">
-  const signalFirstPaint = () => { requestAnimationFrame(() => { try { window.ReactNativeWebView?.postMessage("FIRST_PAINT"); } catch (_) {} }); };
-  if (document.readyState === "interactive" || document.readyState === "complete") { signalFirstPaint(); } else { document.addEventListener("DOMContentLoaded", signalFirstPaint, { once: true }); }
+  const signalFirstPaint = () => { requestAnimationFrame(() => { try { window.ReactNativeWebView?.postMessage("FIRST_PAINT"); } catch (_) {} }); };
+  if (document.readyState === "interactive" || document.readyState === "complete") { signalFirstPaint(); } else { document.addEventListener("DOMContentLoaded", signalFirstPaint, { once: true }); }
 </script>
 
 </body>
