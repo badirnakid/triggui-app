@@ -710,6 +710,15 @@ body.webview #tarjetaCard {
   }
 }
 
+/* 🎯 ESTADO OPENING: Detiene animación y da feedback visual */
+.btn-explorar.is-opening {
+  animation: none;
+  opacity: 0.7;
+  transform: scale(0.96);
+  pointer-events: none;
+  background: rgba(125,125,125,0.12);
+}
+
 .btn-explorar:active { 
   background: rgba(125,125,125,0.12);
   animation: none; /* Detiene animación en active */
@@ -733,6 +742,13 @@ body.webview #tarjetaCard {
 
 .card-dark-mode .btn-explorar {
   animation: btn-breathe-dark 2.5s ease-in-out infinite;
+}
+
+.card-dark-mode .btn-explorar.is-opening {
+  animation: none;
+  opacity: 0.7;
+  transform: scale(0.96);
+  background: rgba(255,255,255,0.15);
 }
 
 .card-dark-mode .btn-explorar:active { 
@@ -1485,10 +1501,16 @@ const resetAllButtons = () => {
   document.querySelectorAll('.btn-action.is-opening').forEach(btn => {
     btn.classList.remove('is-opening');
     const span = btn.querySelector('span:not(.btn-emoji)');
+    const emojiSpan = btn.querySelector('.btn-emoji');
     const action = btn.dataset.action;
+    
     if (span && action) {
+      // Botones con texto (Comprar, Enviaflores)
       if (action === 'enviaflores') span.textContent = 'Únelo a un regalo';
       else if (action === 'buscalibre-comprar') span.textContent = 'Comprar';
+    } else if (emojiSpan && action === 'buscalibre-explorar') {
+      // Botón explorar (solo emoji)
+      emojiSpan.textContent = '🔮';
     }
   });
   activeResetTimers.forEach(timer => clearTimeout(timer));
@@ -1645,9 +1667,22 @@ btnShare.onclick = () => {
     
     // Estado visual inmediato
     target.classList.add('is-opening');
+    
+    // 🎯 MANEJO INTELIGENTE: Botones con texto vs botón solo emoji
     const span = target.querySelector('span:not(.btn-emoji)');
-    const originalText = span ? span.textContent : '';
-    if (span) span.textContent = 'Abriendo...';
+    const emojiSpan = target.querySelector('.btn-emoji');
+    
+    let originalText = '';
+    
+    if (span) {
+      // Botones con texto (Comprar, Enviaflores)
+      originalText = span.textContent;
+      span.textContent = 'Abriendo...';
+    } else if (emojiSpan && action === 'buscalibre-explorar') {
+      // Botón explorar (solo emoji): 🔮 → ⏳
+      originalText = emojiSpan.textContent;
+      emojiSpan.textContent = '⏳';
+    }
     
     // Tracking asíncrono
     try { 
@@ -1659,7 +1694,11 @@ btnShare.onclick = () => {
     
     const timerId = setTimeout(() => {
       target.classList.remove('is-opening');
-      if (span) span.textContent = originalText;
+      if (span) {
+        span.textContent = originalText;
+      } else if (emojiSpan) {
+        emojiSpan.textContent = originalText;
+      }
       activeResetTimers.delete(target);
     }, timeoutDuration);
     
