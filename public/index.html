@@ -1425,7 +1425,50 @@ function pickTextColor(bg) { try { return luminance(bg) > 0.35 ? "#000" : "#fff"
 // ═══════════════════════════════════════════════════════════════════════
 // 🎯 SHARE & TARJETA - OPTIMIZADO NIVEL DIOS (CARGA INSTANTÁNEA)
 // Template pre-construido + Event delegation + Feedback táctil perfecto
+// Sistema de limpieza automática sin memory leaks
 // ═══════════════════════════════════════════════════════════════════════
+
+// 🔥 SISTEMA DE GESTIÓN DE BOTONES (DECLARADO UNA SOLA VEZ)
+let activeResetTimers = new Map();
+let visibilityHandler = null;
+let pagehideHandler = null;
+let cardClickHandler = null;
+
+const resetAllButtons = () => {
+  document.querySelectorAll('.btn-action.is-opening').forEach(btn => {
+    btn.classList.remove('is-opening');
+    const span = btn.querySelector('span:not(.btn-emoji)');
+    const action = btn.dataset.action;
+    if (span && action) {
+      if (action === 'enviaflores') span.textContent = 'Únelo a un regalo';
+      else if (action === 'buscalibre-comprar') span.textContent = 'Comprar';
+    }
+  });
+  activeResetTimers.forEach(timer => clearTimeout(timer));
+  activeResetTimers.clear();
+};
+
+const cleanupCardListeners = () => {
+  const card = document.getElementById("tarjetaCard");
+  
+  // Remover event listeners
+  if (visibilityHandler) {
+    document.removeEventListener('visibilitychange', visibilityHandler);
+    visibilityHandler = null;
+  }
+  if (pagehideHandler) {
+    window.removeEventListener('pagehide', pagehideHandler);
+    pagehideHandler = null;
+  }
+  if (cardClickHandler && card) {
+    card.removeEventListener('click', cardClickHandler, true);
+    cardClickHandler = null;
+  }
+  
+  // Limpiar timers y estado
+  resetAllButtons();
+};
+
 btnShare.onclick = () => {
   const t = libro.tarjeta; 
   const overlay = document.getElementById("tarjetaOverlay");
@@ -1434,6 +1477,9 @@ btnShare.onclick = () => {
   if (!cardOpenedThisSession) {
     addConcepts(1); updateBadge(); cardOpenedThisSession = true;
   }
+
+  // Limpiar listeners previos si existen
+  cleanupCardListeners();
 
   // Estilos del JSON
   const sPaper = t.style.paper || "#fff"; 
@@ -1521,38 +1567,19 @@ btnShare.onclick = () => {
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // 🎯 EVENT DELEGATION SUPREMO (NIVEL DIOS TODOPODEROSO)
-  // Sistema inteligente que detecta cuando el usuario regresa y resetea INMEDIATAMENTE
+  // Sistema inteligente SIN MEMORY LEAKS - Listeners se remueven al cerrar
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  let activeResetTimers = new Map(); // Almacena timers activos por botón
   
-  // 🔥 SISTEMA DE RESET AUTOMÁTICO AL REGRESAR (NIVEL SUPREMO)
-  const resetAllButtons = () => {
-    document.querySelectorAll('.btn-action.is-opening').forEach(btn => {
-      btn.classList.remove('is-opening');
-      const span = btn.querySelector('span:not(.btn-emoji)');
-      const action = btn.dataset.action;
-      if (span && action) {
-        if (action === 'enviaflores') span.textContent = 'Únelo a un regalo';
-        else if (action === 'buscalibre-comprar') span.textContent = 'Comprar';
-      }
-    });
-    // Limpiar todos los timers pendientes
-    activeResetTimers.forEach(timer => clearTimeout(timer));
-    activeResetTimers.clear();
-  };
-  
-  // Detectar cuando el usuario regresa (funciona en todos los navegadores/apps)
-  document.addEventListener('visibilitychange', () => {
+  // Crear handlers únicos para esta apertura
+  visibilityHandler = () => {
     if (document.visibilityState === 'visible') {
       resetAllButtons();
     }
-  });
+  };
   
-  // Respaldo para iOS/Safari (cuando la página se oculta)
-  window.addEventListener('pagehide', resetAllButtons);
+  pagehideHandler = resetAllButtons;
   
-  // Click handler con reset inteligente
-  card.addEventListener('click', function(e) {
+  cardClickHandler = function(e) {
     const target = e.target.closest('[data-action]');
     if (!target) return;
     
@@ -1581,7 +1608,6 @@ btnShare.onclick = () => {
     } catch(_) {}
     
     // Reset con timeout extendido (4000ms para sitios lentos como Enviaflores)
-    // Y almacenar timer para poder cancelarlo si el usuario regresa antes
     const timerId = setTimeout(() => {
       target.classList.remove('is-opening');
       if (span) span.textContent = originalText;
@@ -1589,7 +1615,12 @@ btnShare.onclick = () => {
     }, 4000);
     
     activeResetTimers.set(target, timerId);
-  }, true); // useCapture para máxima prioridad
+  };
+  
+  // Registrar listeners
+  document.addEventListener('visibilitychange', visibilityHandler);
+  window.addEventListener('pagehide', pagehideHandler);
+  card.addEventListener('click', cardClickHandler, true);
 
   // Mostrar overlay
   overlay.style.display="flex";
@@ -1597,7 +1628,7 @@ btnShare.onclick = () => {
   track('card_viewed', { book: libro.titulo });
 };
 
-// LOGICA DE CIERRE (MÁXIMA PRIORIDAD)
+// LOGICA DE CIERRE (MÁXIMA PRIORIDAD + LIMPIEZA DE MEMORIA)
 window.handleCardClick = function(e) {
   if (e.target.closest('a') || e.target.closest('button')) {
     e.stopPropagation();
@@ -1609,7 +1640,11 @@ window.handleCardClick = function(e) {
 window.closeCard = function() {
   const overlay = document.getElementById("tarjetaOverlay");
   overlay.classList.remove('visible');
-  setTimeout(() => { overlay.style.display="none"; }, 300);
+  setTimeout(() => { 
+    overlay.style.display="none";
+    // Limpiar listeners y timers al cerrar
+    cleanupCardListeners();
+  }, 300);
 }
 
 // INIT
