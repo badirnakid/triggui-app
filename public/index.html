@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Triggui — Cuando el impulso llega, el libro ya te espera</title>
 
-<link rel="preconnect" href="https://www.enviaflores.com">
-<link rel="preconnect" href="https://www.buscalibre.com.mx">
+<link rel="preconnect" href="https://www.enviaflores.com" crossorigin>
+<link rel="preconnect" href="https://www.buscalibre.com.mx" crossorigin>
 <link rel="dns-prefetch" href="https://www.enviaflores.com">
 
 <style id="base-styles">
@@ -625,14 +625,14 @@ body.webview #tarjetaCard {
   gap: 8px;
   text-decoration: none; 
   cursor: pointer;
-  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   box-sizing: border-box;
   font-family: 'Archivo', sans-serif; 
   font-weight: 700; 
   font-size: 14px; 
   letter-spacing: 0.1px;
   touch-action: manipulation; /* FIX: Elimina tap delay */
-  will-change: transform; /* FIX: Pre-renderiza en GPU */
+  will-change: transform, opacity; /* FIX: Pre-renderiza en GPU */
 }
 
 .btn-action:active { transform: scale(0.97); }
@@ -643,13 +643,13 @@ body.webview #tarjetaCard {
   color: white;
   border: none;
   box-shadow: 
-    0 6px 20px -6px rgba(0,0,0, 0.4),
+    0 6px 20px -6px rgba(0,0,0, 0.4), 
     0 0 0 1px rgba(255,255,255, 0.08);
 }
 
 .btn-comprar:hover {
   box-shadow: 
-    0 8px 24px -6px rgba(0,0,0, 0.5),
+    0 8px 24px -6px rgba(0,0,0, 0.5), 
     0 0 0 1px rgba(255,255,255, 0.12);
 }
 
@@ -697,14 +697,21 @@ body.webview #tarjetaCard {
   color: white;
   border: none;
   box-shadow: 
-    0 6px 20px -6px rgba(0, 0, 0, 0.4),
+    0 6px 20px -6px rgba(0, 0, 0, 0.4), 
     0 0 0 1px rgba(255,255,255, 0.1);
 }
 
 .btn-enviaflores:hover {
   box-shadow: 
-    0 8px 24px -6px rgba(0, 0, 0, 0.5),
+    0 8px 24px -6px rgba(0, 0, 0, 0.5), 
     0 0 0 1px rgba(255,255,255, 0.15);
+}
+
+/* FEEDBACK NIVEL DIOS */
+.btn-enviaflores.is-opening {
+  opacity: 0.7;
+  transform: scale(0.96);
+  pointer-events: none;
 }
 
 .btn-enviaflores img {
@@ -1490,6 +1497,29 @@ btnShare.onclick = () => {
         </div>
     </div>
   `;
+
+  // --- LÓGICA ULTRA-RÁPIDA (NIVEL DIOS) PARA ENVIAFLORES ---
+  const efBtn = card.querySelector('.btn-enviaflores');
+  if (efBtn) {
+    let efLocked = false;
+    efBtn.addEventListener('click', function(e) {
+      if (efLocked) { e.preventDefault(); return; }
+      efLocked = true;
+      // Respuesta táctil y visual instantánea
+      try { if(navigator.vibrate) navigator.vibrate(15); } catch(_) {}
+      this.classList.add('is-opening');
+      const span = this.querySelector('span');
+      if (span) span.textContent = 'Abriendo...';
+      // Tracking asíncrono
+      try { track('enviaflores_clicked', { book: libro.titulo }); } catch(_) {}
+      // Timeout de seguridad para resetear si el usuario vuelve
+      setTimeout(() => {
+        this.classList.remove('is-opening');
+        if (span) span.textContent = 'Únelo a un regalo';
+        efLocked = false;
+      }, 2500);
+    });
+  }
 
   overlay.style.display="flex";
   setTimeout(() => overlay.classList.add('visible'), 10);
