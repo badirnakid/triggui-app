@@ -1608,12 +1608,14 @@ btnShare.onclick = () => {
       track(`${action}_clicked`, { book: libro.titulo }); 
     } catch(_) {}
     
-    // Reset con timeout extendido (4000ms para sitios lentos como Enviaflores)
+    // 🎯 TIMEOUT DINÁMICO: Enviaflores necesita más tiempo porque su sitio es lento
+    const timeoutDuration = action === 'enviaflores' ? 8000 : 4000;
+    
     const timerId = setTimeout(() => {
       target.classList.remove('is-opening');
       if (span) span.textContent = originalText;
       activeResetTimers.delete(target);
-    }, 4000);
+    }, timeoutDuration);
     
     activeResetTimers.set(target, timerId);
   };
