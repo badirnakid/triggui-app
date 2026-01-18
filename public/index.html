@@ -1502,7 +1502,7 @@ btnShare.onclick = () => {
              rel="noopener noreferrer"
              class="btn-action btn-explorar"
              data-action="buscalibre-explorar">
-             <span class="btn-emoji">🎁</span>
+             <span class="btn-emoji">🎉</span>
           </a>
         </div>
         
@@ -1520,8 +1520,38 @@ btnShare.onclick = () => {
   `;
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🎯 EVENT DELEGATION PERFECTO (NIVEL DIOS) - Un solo listener
+  // 🎯 EVENT DELEGATION SUPREMO (NIVEL DIOS TODOPODEROSO)
+  // Sistema inteligente que detecta cuando el usuario regresa y resetea INMEDIATAMENTE
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  let activeResetTimers = new Map(); // Almacena timers activos por botón
+  
+  // 🔥 SISTEMA DE RESET AUTOMÁTICO AL REGRESAR (NIVEL SUPREMO)
+  const resetAllButtons = () => {
+    document.querySelectorAll('.btn-action.is-opening').forEach(btn => {
+      btn.classList.remove('is-opening');
+      const span = btn.querySelector('span:not(.btn-emoji)');
+      const action = btn.dataset.action;
+      if (span && action) {
+        if (action === 'enviaflores') span.textContent = 'Únelo a un regalo';
+        else if (action === 'buscalibre-comprar') span.textContent = 'Comprar';
+      }
+    });
+    // Limpiar todos los timers pendientes
+    activeResetTimers.forEach(timer => clearTimeout(timer));
+    activeResetTimers.clear();
+  };
+  
+  // Detectar cuando el usuario regresa (funciona en todos los navegadores/apps)
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      resetAllButtons();
+    }
+  });
+  
+  // Respaldo para iOS/Safari (cuando la página se oculta)
+  window.addEventListener('pagehide', resetAllButtons);
+  
+  // Click handler con reset inteligente
   card.addEventListener('click', function(e) {
     const target = e.target.closest('[data-action]');
     if (!target) return;
@@ -1550,12 +1580,16 @@ btnShare.onclick = () => {
       track(`${action}_clicked`, { book: libro.titulo }); 
     } catch(_) {}
     
-    // Reset después de que el link se abre
-    setTimeout(() => {
+    // Reset con timeout extendido (4000ms para sitios lentos como Enviaflores)
+    // Y almacenar timer para poder cancelarlo si el usuario regresa antes
+    const timerId = setTimeout(() => {
       target.classList.remove('is-opening');
       if (span) span.textContent = originalText;
-    }, 2500);
-  }, true); // useCapture para mayor prioridad
+      activeResetTimers.delete(target);
+    }, 4000);
+    
+    activeResetTimers.set(target, timerId);
+  }, true); // useCapture para máxima prioridad
 
   // Mostrar overlay
   overlay.style.display="flex";
