@@ -2,10 +2,10 @@
   "expo": {
     "name": "Triggui",
     "slug": "trigguiapp",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "default",
     "icon": "./assets/adaptive-icon-1024.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -13,23 +13,47 @@
     },
     "android": {
       "package": "com.triggui.app",
+      "versionCode": 2,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon-1024.png",
         "backgroundColor": "#000000"
       }
     },
-   "ios": {
-  "bundleIdentifier": "com.triggui.app",
-  "buildNumber": "1.0.4",
-  "supportsTablet": true,
-  "infoPlist": {
-    "NSAppTransportSecurity": { "NSAllowsArbitraryLoads": false },
-    "ITSAppUsesNonExemptEncryption": false
-  }
-},
+    "ios": {
+      "bundleIdentifier": "com.triggui.app",
+      "buildNumber": "1.0.5",
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSAppTransportSecurity": { 
+          "NSAllowsArbitraryLoads": false 
+        },
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 35,
+            "targetSdkVersion": 35,
+            "buildToolsVersion": "35.0.0",
+            "ndkVersion": "27.1.12297006",
+            "packagingOptions": {
+              "jniLibs": {
+                "useLegacyPackaging": false
+              }
+            }
+          },
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ]
+    ],
     "extra": {
       "eas": {
         "projectId": "1417880a-2431-4ef5-a6a0-c5962b11ddd4"
