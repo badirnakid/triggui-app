@@ -14,7 +14,7 @@
     },
     "android": {
       "package": "com.triggui.app",
-      "versionCode": 2,
+      "versionCode": 3,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon-1024.png",
         "backgroundColor": "#000000"
@@ -25,7 +25,7 @@
     },
     "ios": {
       "bundleIdentifier": "com.triggui.app",
-      "buildNumber": "1.0.5",
+      "buildNumber": "1.0.6",
       "supportsTablet": true,
       "userInterfaceStyle": "dark",
       "backgroundColor": "#000000",
@@ -57,11 +57,7 @@
             "targetSdkVersion": 35,
             "buildToolsVersion": "35.0.0",
             "ndkVersion": "27.1.12297006",
-            "packagingOptions": {
-              "jniLibs": {
-                "useLegacyPackaging": false
-              }
-            }
+            "newArchEnabled": false
           },
           "ios": {
             "useFrameworks": "static"
