@@ -3,9 +3,10 @@
     "name": "Triggui",
     "slug": "trigguiapp",
     "version": "1.0.1",
-    "orientation": "default",
+    "orientation": "portrait",
     "icon": "./assets/adaptive-icon-1024.png",
     "userInterfaceStyle": "dark",
+    "backgroundColor": "#000000",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -17,15 +18,20 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon-1024.png",
         "backgroundColor": "#000000"
-      }
+      },
+      "userInterfaceStyle": "dark",
+      "backgroundColor": "#000000",
+      "jsEngine": "hermes"
     },
     "ios": {
       "bundleIdentifier": "com.triggui.app",
       "buildNumber": "1.0.5",
       "supportsTablet": true,
+      "userInterfaceStyle": "dark",
+      "backgroundColor": "#000000",
       "infoPlist": {
-        "NSAppTransportSecurity": { 
-          "NSAllowsArbitraryLoads": false 
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": false
         },
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -34,6 +40,15 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
+      [
+        "expo-navigation-bar",
+        {
+          "position": "absolute",
+          "visibility": "hidden",
+          "behavior": "inset-swipe",
+          "backgroundColor": "#000000"
+        }
+      ],
       [
         "expo-build-properties",
         {
