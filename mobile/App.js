@@ -1,71 +1,49 @@
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView, Platform, BackHandler, View, TouchableOpacity, Text, Animated, StyleSheet, Image, Easing } from 'react-native';
+import { SafeAreaView, Platform, BackHandler, View, TouchableOpacity, Text, Animated, StyleSheet, Image, Easing, Dimensions } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { useRef, useEffect, useState, useCallback } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// 🎯 TRIGGUI APP.JS - NIVEL DIOS ULTRACUÁNTICO TODOPODEROSO
-// ═══════════════════════════════════════════════════════════════════════════════
-//
-// ✨ SECUENCIA "EL DESPERTAR"
-//
-// [Tap icono - imagotipo]
-//        ↓
-// [OS Splash: splashmoon.png - mismo imagotipo]
-//        ↓ (imperceptible)
-// [Mi Splash: imagotipo cobra vida - glow + breathing]
-//        ↓
-// [Chispa aparece → explota]
-//        ↓
-// [Imagotipo se eleva]
-//        ↓
-// [Letras "triggui" emergen desde abajo]
-//        ↓
-// [Partículas flotan]
-//        ↓
-// [Zoom out → App]
-//
-// DOBLE BARRERA ANTI-FLASH:
-// 1. WebView con opacity 0 hasta que esté listo
-// 2. Overlay animado encima
-//
-// PERFORMANCE ANDROID:
-// - androidLayerType="hardware" (GPU rendering)
-// - cacheEnabled + cacheMode (evita recargas)
-//
+// 🎯 TRIGGUI APP.JS - NIVEL DIOS (CORREGIDO PARA FORZAR ANIMACIÓN)
 // ═══════════════════════════════════════════════════════════════════════════════
 
+// Mantener el splash nativo visible hasta que nosotros digamos
 SplashScreen.preventAutoHideAsync().catch(() => {});
+
+const { width, height } = Dimensions.get('window');
 
 export default function App() {
   const uri = 'https://app.triggui.com';
   const webViewRef = useRef(null);
-  const [isReady, setIsReady] = useState(false);
+  
+  // ESTADOS DE CONTROL DE FLUJO
   const [canGoBack, setCanGoBack] = useState(false);
+  const [webViewReady, setWebViewReady] = useState(false); // ¿El webview ya cargó?
+  const [animationFinished, setAnimationFinished] = useState(false); // ¿La intro ya acabó?
+  const [exitTriggered, setExitTriggered] = useState(false); // Para evitar dobles ejecuciones
   const [showSplashContent, setShowSplashContent] = useState(true);
-  const hasHiddenOverlay = useRef(false);
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // 🎨 SISTEMA DE ANIMACIÓN
+  // 🎨 VALORES ANIMADOS
   // ═══════════════════════════════════════════════════════════════════════════
   const overlayOpacity = useRef(new Animated.Value(1)).current;
   
-  // Imagotipo
+  // Logo Principal (Imagotipo)
   const logoOpacity = useRef(new Animated.Value(1)).current;
   const logoScale = useRef(new Animated.Value(1)).current;
   const logoTranslateY = useRef(new Animated.Value(0)).current;
   const logoPulse = useRef(new Animated.Value(1)).current;
   
-  // Chispa y burst
+  // Efectos (Chispa y Explosión)
   const sparkOpacity = useRef(new Animated.Value(0)).current;
   const sparkScale = useRef(new Animated.Value(0)).current;
   const burstOpacity = useRef(new Animated.Value(0)).current;
   const burstScale = useRef(new Animated.Value(0)).current;
   
-  // Letras "triggui"
+  // Texto "Triggui"
   const textLogoOpacity = useRef(new Animated.Value(0)).current;
-  const textLogoTranslateY = useRef(new Animated.Value(30)).current;
+  const textLogoTranslateY = useRef(new Animated.Value(40)).current;
   const textLogoScale = useRef(new Animated.Value(0.9)).current;
   
   // Partículas
@@ -75,210 +53,163 @@ export default function App() {
     translateX: new Animated.Value(0),
     scale: new Animated.Value(0),
   }))).current;
-  
-  // Exit
+
+  // Zoom de Salida
   const exitScale = useRef(new Animated.Value(1)).current;
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // ✨ ANIMACIÓN "EL DESPERTAR"
+  // 🎬 SECUENCIA MAESTRA DE ANIMACIÓN
   // ═══════════════════════════════════════════════════════════════════════════
   useEffect(() => {
-    // FASE 1: Logo breathing (inmediato - continuidad con OS splash)
-    Animated.loop(
+    // 1. Ocultar Splash Nativo RÁPIDO para que nuestra View tome el control
+    const hideNativeSplash = async () => {
+      try {
+        await new Promise(resolve => setTimeout(resolve, 150)); // Pequeña espera para asegurar render
+        await SplashScreen.hideAsync();
+      } catch (e) {
+        console.warn(e);
+      }
+    };
+    hideNativeSplash();
+
+    // 2. Iniciar Secuencia "El Despertar"
+    // FASE A: Breathing del logo (mientras esperamos)
+    const pulseAnim = Animated.loop(
       Animated.sequence([
-        Animated.timing(logoPulse, {
-          toValue: 1.04,
-          duration: 1000,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: true,
-        }),
-        Animated.timing(logoPulse, {
-          toValue: 1,
-          duration: 1000,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: true,
-        }),
+        Animated.timing(logoPulse, { toValue: 1.05, duration: 1000, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+        Animated.timing(logoPulse, { toValue: 1, duration: 1000, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
       ])
-    ).start();
+    );
+    pulseAnim.start();
 
-    // FASE 2: Chispa aparece (400ms)
+    // SECUENCIA PRINCIPAL (TIEMPO TOTAL APROX: 2500ms)
     Animated.sequence([
-      Animated.delay(400),
+      // Pausa inicial para que el usuario procese el logo estático
+      Animated.delay(300), 
+
+      // FASE B: Chispa (El Impulso)
       Animated.parallel([
-        Animated.timing(sparkOpacity, {
-          toValue: 1,
-          duration: 100,
-          useNativeDriver: true,
-        }),
-        Animated.spring(sparkScale, {
-          toValue: 1,
-          tension: 200,
-          friction: 10,
-          useNativeDriver: true,
-        }),
+        Animated.timing(sparkOpacity, { toValue: 1, duration: 100, useNativeDriver: true }),
+        Animated.spring(sparkScale, { toValue: 1, tension: 200, friction: 10, useNativeDriver: true }),
       ]),
-    ]).start();
 
-    // FASE 3: Chispa explota + logo se eleva (500ms)
-    Animated.sequence([
-      Animated.delay(500),
+      // FASE C: Explosión y Elevación
       Animated.parallel([
-        // Burst expande
-        Animated.timing(burstScale, {
-          toValue: 1,
-          duration: 350,
-          easing: Easing.out(Easing.cubic),
-          useNativeDriver: true,
-        }),
-        // Burst fade
+        // Burst
+        Animated.timing(burstScale, { toValue: 1, duration: 400, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
         Animated.sequence([
-          Animated.timing(burstOpacity, {
-            toValue: 0.7,
-            duration: 100,
-            useNativeDriver: true,
-          }),
-          Animated.timing(burstOpacity, {
-            toValue: 0,
-            duration: 250,
-            useNativeDriver: true,
-          }),
+          Animated.timing(burstOpacity, { toValue: 0.8, duration: 100, useNativeDriver: true }),
+          Animated.timing(burstOpacity, { toValue: 0, duration: 300, useNativeDriver: true }),
         ]),
-        // Chispa desaparece
-        Animated.timing(sparkOpacity, {
-          toValue: 0,
-          duration: 150,
-          useNativeDriver: true,
-        }),
-        // Logo se eleva
-        Animated.timing(logoTranslateY, {
-          toValue: -50,
-          duration: 500,
-          easing: Easing.out(Easing.cubic),
-          useNativeDriver: true,
-        }),
+        // Apagar chispa
+        Animated.timing(sparkOpacity, { toValue: 0, duration: 100, useNativeDriver: true }),
+        // Elevar Logo
+        Animated.timing(logoTranslateY, { toValue: -60, duration: 600, easing: Easing.out(Easing.quart), useNativeDriver: true }),
       ]),
-    ]).start();
 
-    // FASE 4: Letras "triggui" emergen (800ms)
-    Animated.sequence([
-      Animated.delay(800),
+      // FASE D: Aparición de Letras
       Animated.parallel([
-        Animated.timing(textLogoOpacity, {
-          toValue: 1,
-          duration: 400,
-          useNativeDriver: true,
-        }),
-        Animated.spring(textLogoTranslateY, {
-          toValue: 0,
-          tension: 60,
-          friction: 8,
-          useNativeDriver: true,
-        }),
-        Animated.spring(textLogoScale, {
-          toValue: 1,
-          tension: 60,
-          friction: 8,
-          useNativeDriver: true,
-        }),
+        Animated.timing(textLogoOpacity, { toValue: 1, duration: 500, useNativeDriver: true }),
+        Animated.spring(textLogoTranslateY, { toValue: 0, tension: 50, friction: 7, useNativeDriver: true }),
+        Animated.spring(textLogoScale, { toValue: 1, tension: 50, friction: 7, useNativeDriver: true }),
       ]),
-    ]).start();
 
-    // FASE 5: Partículas (500ms+)
+      // FASE E: Partículas Mágicas
+      Animated.delay(100), // Pequeña pausa antes de partículas
+    ]).start(() => {
+      // 🚩 MARCANDO EL FIN DE LA INTRO
+      // Esto le dice al sistema: "Ya acabé mi show, ahora sí podemos irnos si el webview está listo"
+      setAnimationFinished(true);
+    });
+
+    // Disparar partículas independientemente para no bloquear la secuencia
     particles.forEach((particle, index) => {
-      const delay = 500 + (index * 100);
-      const randomX = (Math.random() - 0.5) * 140;
-      const randomEndY = -60 - (Math.random() * 80);
-      const duration = 1200 + (Math.random() * 600);
+      const delay = 900 + (index * 120);
+      const randomX = (Math.random() - 0.5) * 160;
+      const randomEndY = -80 - (Math.random() * 80);
+      const duration = 1500 + (Math.random() * 500);
       
       Animated.sequence([
         Animated.delay(delay),
         Animated.parallel([
-          Animated.timing(particle.opacity, {
-            toValue: 1,
-            duration: 150,
-            useNativeDriver: true,
-          }),
-          Animated.timing(particle.scale, {
-            toValue: 1,
-            duration: 150,
-            useNativeDriver: true,
-          }),
-        ]),
-      ]).start();
-
-      Animated.sequence([
-        Animated.delay(delay),
-        Animated.parallel([
-          Animated.timing(particle.translateY, {
-            toValue: randomEndY,
-            duration: duration,
-            easing: Easing.out(Easing.quad),
-            useNativeDriver: true,
-          }),
-          Animated.timing(particle.translateX, {
-            toValue: randomX,
-            duration: duration,
-            easing: Easing.inOut(Easing.sin),
-            useNativeDriver: true,
-          }),
+          Animated.timing(particle.opacity, { toValue: 0.8, duration: 200, useNativeDriver: true }),
+          Animated.timing(particle.scale, { toValue: 1, duration: 200, useNativeDriver: true }),
+          Animated.timing(particle.translateY, { toValue: randomEndY, duration: duration, easing: Easing.out(Easing.quad), useNativeDriver: true }),
+          Animated.timing(particle.translateX, { toValue: randomX, duration: duration, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
           Animated.sequence([
-            Animated.delay(duration * 0.5),
-            Animated.timing(particle.opacity, {
-              toValue: 0,
-              duration: duration * 0.5,
-              useNativeDriver: true,
-            }),
+            Animated.delay(duration * 0.4),
+            Animated.timing(particle.opacity, { toValue: 0, duration: duration * 0.6, useNativeDriver: true }),
           ]),
         ]),
       ]).start();
     });
+
   }, []);
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // 🔥 HIDE OVERLAY - Unificado con protección contra doble llamada
+  // 🚪 SALIDA COORDINADA (The Gatekeeper)
   // ═══════════════════════════════════════════════════════════════════════════
-  const hideOverlay = useCallback(async () => {
-    if (hasHiddenOverlay.current) return;
-    hasHiddenOverlay.current = true;
-    
-    setIsReady(true);
-    await SplashScreen.hideAsync();
-    
-    // Salida cinematográfica
+  useEffect(() => {
+    // Solo salimos si AMBAS cosas sucedieron:
+    // 1. La animación terminó (setAnimationFinished(true))
+    // 2. El WebView cargó (setWebViewReady(true))
+    if (animationFinished && webViewReady && !exitTriggered) {
+      setExitTriggered(true);
+      performExitAnimation();
+    }
+  }, [animationFinished, webViewReady, exitTriggered]);
+
+  const performExitAnimation = () => {
     Animated.parallel([
       Animated.timing(exitScale, {
-        toValue: 0.9,
-        duration: 400,
+        toValue: 1.2, // Zoom IN ligero antes de desaparecer (efecto cámara)
+        duration: 150,
         easing: Easing.in(Easing.cubic),
         useNativeDriver: true,
       }),
       Animated.timing(overlayOpacity, {
         toValue: 0,
-        duration: 400,
+        duration: 500,
         useNativeDriver: true,
-      }),
+      })
     ]).start(() => {
       setShowSplashContent(false);
     });
-  }, [overlayOpacity, exitScale]);
+  };
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // ⏱️ FALLBACK TIMER - Diferenciado por plataforma
+  // ⏱️ FALLBACK DE SEGURIDAD (Por si el WebView falla en avisar)
   // ═══════════════════════════════════════════════════════════════════════════
   useEffect(() => {
-    const fallbackDelay = Platform.OS === 'android' ? 3500 : 2500;
     const timer = setTimeout(() => {
-      if (!hasHiddenOverlay.current) {
-        console.log('[Triggui] Fallback triggered');
-        hideOverlay();
+      // Si pasaron 6 segundos y no hemos salido, forzamos salida
+      if (!exitTriggered) {
+        console.log('[Triggui] Fallback de seguridad activado');
+        setWebViewReady(true); 
+        setAnimationFinished(true); // Forzamos true para activar el useEffect de salida
       }
-    }, fallbackDelay);
+    }, 6000); 
     return () => clearTimeout(timer);
-  }, [hideOverlay]);
+  }, [exitTriggered]);
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // 🔙 BACK BUTTON ANDROID
+  // 📨 ON MESSAGE - FIRST_PAINT desde WebView
   // ═══════════════════════════════════════════════════════════════════════════
+  const handleMessage = useCallback((event) => {
+    if (event.nativeEvent.data === "FIRST_PAINT") {
+      console.log('[Triggui] FIRST_PAINT recibido');
+      setWebViewReady(true);
+    }
+  }, []);
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🧭 NAVIGATION & BACK HANDLER
+  // ═══════════════════════════════════════════════════════════════════════════
+  const handleNavigationStateChange = useCallback((navState) => {
+    const isHome = navState.url === uri || navState.url === uri + '/';
+    setCanGoBack(!isHome && navState.canGoBack);
+  }, []);
+
   useEffect(() => {
     if (Platform.OS !== 'android') return;
     const backAction = () => {
@@ -291,24 +222,6 @@ export default function App() {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
     return () => backHandler.remove();
   }, [canGoBack]);
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // 📨 ON MESSAGE - FIRST_PAINT desde WebView
-  // ═══════════════════════════════════════════════════════════════════════════
-  const handleMessage = useCallback((event) => {
-    if (event.nativeEvent.data === "FIRST_PAINT") {
-      console.log('[Triggui] FIRST_PAINT received');
-      hideOverlay();
-    }
-  }, [hideOverlay]);
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // 🧭 NAVIGATION STATE
-  // ═══════════════════════════════════════════════════════════════════════════
-  const handleNavigationStateChange = useCallback((navState) => {
-    const isHome = navState.url === uri || navState.url === uri + '/';
-    setCanGoBack(!isHome && navState.canGoBack);
-  }, []);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // 💉 INJECTED JS
@@ -330,6 +243,7 @@ export default function App() {
       document.head.appendChild(style);
       
       if (window.ReactNativeWebView) {
+        // Avisar inmediatamente, React Native decidirá cuándo mostrar
         requestAnimationFrame(function() {
           window.ReactNativeWebView.postMessage("FIRST_PAINT");
         });
@@ -346,21 +260,11 @@ export default function App() {
         <WebView
           ref={webViewRef}
           source={{ uri }}
-          
-          // ═══════════════════════════════════════════════════════════════
-          // 🎯 DOBLE BARRERA: opacity 0 hasta ready + overlay encima
-          // ═══════════════════════════════════════════════════════════════
-          style={[styles.webview, { opacity: isReady ? 1 : 0 }]}
+          style={[styles.webview, { opacity: exitTriggered ? 1 : 0 }]} // Opacidad controlada por el trigger final
           containerStyle={styles.webviewContainer}
-          
-          // ═══════════════════════════════════════════════════════════════
-          // 🔥 PERFORMANCE ANDROID CRÍTICO
-          // ═══════════════════════════════════════════════════════════════
           androidLayerType="hardware"
           cacheEnabled={true}
           cacheMode="LOAD_CACHE_ELSE_NETWORK"
-          
-          // Configuración base
           originWhitelist={['*']}
           allowsInlineMediaPlayback
           javaScriptEnabled
@@ -369,14 +273,10 @@ export default function App() {
           overScrollMode="never"
           allowsBackForwardNavigationGestures={true}
           decelerationRate="normal"
-          
-          // Cookies y media
           thirdPartyCookiesEnabled={true}
           sharedCookiesEnabled={true}
           mediaPlaybackRequiresUserAction={false}
           allowsFullscreenVideo={true}
-          
-          // Handlers
           onMessage={handleMessage}
           onNavigationStateChange={handleNavigationStateChange}
           injectedJavaScript={injectedJS}
@@ -398,7 +298,7 @@ export default function App() {
           <Animated.View 
             style={[
               styles.splashContent,
-              { transform: [{ scale: exitScale }] }
+              { transform: [{ scale: exitScale }] } // Zoom de cámara al salir
             ]}
           >
             {/* 🔥 CHISPA */}
@@ -457,6 +357,7 @@ export default function App() {
                 }
               ]}
             >
+              {/* NOTA: Ajusté el width/height para intentar igualar el tamaño visual del splash OS */}
               <Image
                 source={require('./assets/Moonshot_logo_primary isotype white_C.png')}
                 style={styles.logo}
@@ -546,28 +447,30 @@ const styles = StyleSheet.create({
   },
   spark: {
     position: 'absolute',
-    width: 14,
-    height: 14,
-    borderRadius: 7,
-    backgroundColor: '#FF5E00',
+    width: 20, // Más grande para mejor efecto
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#ffffff', // Centro blanco caliente
     shadowColor: '#FF5E00',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 1,
-    shadowRadius: 20,
-    elevation: 20,
+    shadowRadius: 25,
+    elevation: 25,
+    zIndex: 20,
   },
   burst: {
     position: 'absolute',
-    width: 180,
-    height: 180,
-    borderRadius: 90,
+    width: 200,
+    height: 200,
+    borderRadius: 100,
     backgroundColor: 'transparent',
     borderWidth: 2,
     borderColor: '#FF5E00',
     shadowColor: '#FF5E00',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.8,
-    shadowRadius: 25,
+    shadowRadius: 30,
+    zIndex: 10,
   },
   particle: {
     position: 'absolute',
@@ -577,29 +480,37 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 5,
     elevation: 5,
+    zIndex: 5,
   },
   logoContainer: {
     marginBottom: 20,
     shadowColor: '#FF5E00',
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 35,
-    elevation: 15,
+    shadowOpacity: 0.3, // Glow sutil inicial
+    shadowRadius: 20,
+    elevation: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 15,
   },
   logo: {
-    width: 90,
-    height: 90,
+    // ⚠️ AJUSTE CRÍTICO:
+    // Aumenté el tamaño para intentar igualar el splash nativo. 
+    // Si aún se ve chico, sube estos valores (ej: 140x140).
+    width: 120, 
+    height: 120,
   },
   textLogoContainer: {
-    marginTop: 10,
+    marginTop: 15,
+    zIndex: 15,
   },
   textLogo: {
-    width: 160,
-    height: 45,
+    width: 180,
+    height: 50,
   },
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // 🔙 BACK BUTTON - Pill Premium
+  // 🔙 BOTÓN BACK - Pill Premium
   // ═══════════════════════════════════════════════════════════════════════════
   backButtonContainer: {
     position: 'absolute',
@@ -610,17 +521,17 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   backButton: {
-    backgroundColor: 'rgba(28, 28, 30, 0.92)',
-    borderRadius: 24,
-    paddingVertical: 14,
-    paddingHorizontal: 28,
-    borderWidth: 0.5,
-    borderColor: 'rgba(255, 255, 255, 0.12)',
+    backgroundColor: 'rgba(20, 20, 24, 0.95)', // Casi negro sólido para mejor contraste
+    borderRadius: 30,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
     shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.4,
-    shadowRadius: 16,
-    elevation: 12,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.5,
+    shadowRadius: 20,
+    elevation: 15,
   },
   backButtonInner: {
     flexDirection: 'row',
@@ -629,15 +540,15 @@ const styles = StyleSheet.create({
   },
   backChevron: {
     color: '#FFFFFF',
-    fontSize: 24,
-    fontWeight: '300',
-    marginRight: 6,
+    fontSize: 22,
+    fontWeight: '400',
+    marginRight: 4,
     marginTop: -2,
   },
   backText: {
     color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '500',
-    letterSpacing: 0.3,
+    fontSize: 15,
+    fontWeight: '600',
+    letterSpacing: 0.5,
   },
 });
