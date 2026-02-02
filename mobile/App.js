@@ -5,7 +5,7 @@ import { useRef, useEffect, useState, useCallback } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// TRIGGUI APP.JS - MOONRISE
+// TRIGGUI - APPROACHING STAR
 // ═══════════════════════════════════════════════════════════════════════════════
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -21,24 +21,24 @@ export default function App() {
   const [showSplashContent, setShowSplashContent] = useState(true);
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // VALORES ANIMADOS - SOLO LO ESENCIAL
+  // VALORES ANIMADOS
   // ═══════════════════════════════════════════════════════════════════════════
   const overlayOpacity = useRef(new Animated.Value(1)).current;
   
-  // Isotipo - empieza visible y centrado (match con splash nativo)
+  // Isotipo - empieza pequeño (lejano), se acerca y gira
   const isoOpacity = useRef(new Animated.Value(1)).current;
-  const isoTranslateY = useRef(new Animated.Value(0)).current;
+  const isoScale = useRef(new Animated.Value(0.7)).current;
+  const isoRotate = useRef(new Animated.Value(0)).current;
   
-  // Texto - empieza invisible, aparecerá debajo
+  // Texto - empieza invisible, aparece cuando el iso desaparece
   const textOpacity = useRef(new Animated.Value(0)).current;
-  const textTranslateY = useRef(new Animated.Value(15)).current;
+  const textScale = useRef(new Animated.Value(0.85)).current;
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // MOONRISE - La luna sube, revela el nombre
+  // APPROACHING STAR - Viene hacia ti, gira, se transforma
   // ═══════════════════════════════════════════════════════════════════════════
   useEffect(() => {
     const runAnimation = async () => {
-      // Sincronizar con splash nativo
       await new Promise(resolve => setTimeout(resolve, 100));
       
       try {
@@ -47,50 +47,69 @@ export default function App() {
         console.warn(e); 
       }
 
-      // Pequeña pausa para que el ojo se asiente
-      await new Promise(resolve => setTimeout(resolve, 200));
+      // Pequeña pausa
+      await new Promise(resolve => setTimeout(resolve, 150));
 
-      // LA REVELACIÓN - Un solo movimiento coordinado
+      // FASE 1: El isotipo se acerca girando
       Animated.parallel([
-        // El isotipo sube suavemente
-        Animated.timing(isoTranslateY, {
-          toValue: -35,
-          duration: 600,
+        // Se acerca (scale up)
+        Animated.timing(isoScale, {
+          toValue: 1,
+          duration: 800,
           easing: Easing.out(Easing.cubic),
           useNativeDriver: true,
         }),
-        
-        // El texto aparece con fade y sube ligeramente
-        Animated.sequence([
-          Animated.delay(150), // Empieza un poco después
-          Animated.parallel([
-            Animated.timing(textOpacity, {
-              toValue: 1,
-              duration: 450,
-              easing: Easing.out(Easing.cubic),
-              useNativeDriver: true,
-            }),
-            Animated.timing(textTranslateY, {
-              toValue: 0,
-              duration: 450,
-              easing: Easing.out(Easing.cubic),
-              useNativeDriver: true,
-            }),
-          ]),
-        ]),
+        // Gira sutilmente (media vuelta elegante)
+        Animated.timing(isoRotate, {
+          toValue: 1,
+          duration: 800,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
       ]).start(() => {
-        // Pausa para leer la marca
-        setTimeout(() => {
-          setAnimationFinished(true);
-        }, 600);
+        
+        // FASE 2: Transformación - iso desaparece, texto aparece
+        Animated.parallel([
+          // Iso se desvanece
+          Animated.timing(isoOpacity, {
+            toValue: 0,
+            duration: 250,
+            easing: Easing.out(Easing.cubic),
+            useNativeDriver: true,
+          }),
+          // Texto aparece y crece ligeramente
+          Animated.timing(textOpacity, {
+            toValue: 1,
+            duration: 300,
+            easing: Easing.out(Easing.cubic),
+            useNativeDriver: true,
+          }),
+          Animated.timing(textScale, {
+            toValue: 1,
+            duration: 300,
+            easing: Easing.out(Easing.cubic),
+            useNativeDriver: true,
+          }),
+        ]).start(() => {
+          // Pausa para leer la marca
+          setTimeout(() => {
+            setAnimationFinished(true);
+          }, 700);
+        });
       });
     };
 
     runAnimation();
   }, []);
 
+  // Interpolación de rotación
+  const rotation = isoRotate.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '180deg'],
+  });
+
   // ═══════════════════════════════════════════════════════════════════════════
-  // SALIDA - Fade limpio hacia la app
+  // SALIDA
   // ═══════════════════════════════════════════════════════════════════════════
   useEffect(() => {
     if (animationFinished && webViewReady && !exitTriggered) {
@@ -98,14 +117,14 @@ export default function App() {
       
       Animated.timing(overlayOpacity, {
         toValue: 0,
-        duration: 400,
+        duration: 350,
         easing: Easing.out(Easing.cubic),
         useNativeDriver: true,
       }).start(() => setShowSplashContent(false));
     }
   }, [animationFinished, webViewReady, exitTriggered]);
 
-  // Fallback de seguridad
+  // Fallback
   useEffect(() => {
     const timer = setTimeout(() => {
       if (!exitTriggered) {
@@ -193,15 +212,18 @@ export default function App() {
         ]}
       >
         {showSplashContent && (
-          <View style={styles.brandContainer}>
+          <View style={styles.centerContainer}>
             
-            {/* ISOTIPO */}
+            {/* ISOTIPO - Se acerca y gira */}
             <Animated.View
               style={[
-                styles.isoContainer,
+                styles.logoContainer,
                 {
                   opacity: isoOpacity,
-                  transform: [{ translateY: isoTranslateY }],
+                  transform: [
+                    { scale: isoScale },
+                    { rotate: rotation },
+                  ],
                 }
               ]}
             >
@@ -213,13 +235,14 @@ export default function App() {
               />
             </Animated.View>
 
-            {/* TEXTO */}
+            {/* TEXTO - Aparece cuando el iso desaparece */}
             <Animated.View
               style={[
-                styles.textContainer,
+                styles.logoContainer,
+                styles.textAbsolute,
                 {
                   opacity: textOpacity,
-                  transform: [{ translateY: textTranslateY }],
+                  transform: [{ scale: textScale }],
                 }
               ]}
             >
@@ -278,29 +301,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  brandContainer: {
+  centerContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: '100%',
+  },
+
+  logoContainer: {
     alignItems: 'center',
     justifyContent: 'center',
   },
-
-  isoContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
+  
+  textAbsolute: {
+    position: 'absolute',
   },
   
   logoIso: {
-    width: 120,
-    height: 120,
+    width: 90,
+    height: 90,
   },
 
-  textContainer: {
-    marginTop: 20,
-    alignItems: 'center',
-  },
-  
   logoText: {
-    width: 180,
-    height: 50,
+    width: 140,
+    height: 40,
   },
 
   // Back Button
