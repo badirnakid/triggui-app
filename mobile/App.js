@@ -5,7 +5,7 @@ import { useRef, useEffect, useState, useCallback } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// TRIGGUI - APPROACHING STAR
+// TRIGGUI - DIVINE FLOW
 // ═══════════════════════════════════════════════════════════════════════════════
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -25,91 +25,114 @@ export default function App() {
   // ═══════════════════════════════════════════════════════════════════════════
   const overlayOpacity = useRef(new Animated.Value(1)).current;
   
-  // Isotipo - empieza pequeño (lejano), se acerca y gira
-  const isoOpacity = useRef(new Animated.Value(1)).current;
-  const isoScale = useRef(new Animated.Value(0.7)).current;
+  // Isotipo - entra desde lejos, girando
+  const isoOpacity = useRef(new Animated.Value(0)).current;
+  const isoScale = useRef(new Animated.Value(0.3)).current;
   const isoRotate = useRef(new Animated.Value(0)).current;
   
-  // Texto - empieza invisible, aparece cuando el iso desaparece
+  // Texto - aparece con spring elegante
   const textOpacity = useRef(new Animated.Value(0)).current;
-  const textScale = useRef(new Animated.Value(0.85)).current;
+  const textScale = useRef(new Animated.Value(0.6)).current;
+  const textTranslateY = useRef(new Animated.Value(20)).current;
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // APPROACHING STAR - Viene hacia ti, gira, se transforma
+  // DIVINE FLOW - Física orgánica pura
   // ═══════════════════════════════════════════════════════════════════════════
   useEffect(() => {
     const runAnimation = async () => {
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
+      // Ocultar splash nativo inmediatamente
       try {
         await SplashScreen.hideAsync();
       } catch (e) { 
         console.warn(e); 
       }
 
-      // Pequeña pausa
-      await new Promise(resolve => setTimeout(resolve, 150));
+      // Pequeña pausa para que el sistema se estabilice
+      await new Promise(resolve => setTimeout(resolve, 50));
 
-      // FASE 1: El isotipo se acerca girando
-      Animated.parallel([
-        // Se acerca (scale up)
-        Animated.timing(isoScale, {
-          toValue: 1,
-          duration: 800,
-          easing: Easing.out(Easing.cubic),
+      // ═══════════════════════════════════════════════════════════════════════
+      // FASE 1: El isotipo NACE - emerge girando desde el infinito
+      // ═══════════════════════════════════════════════════════════════════════
+      
+      // Fade in suave del isotipo
+      Animated.timing(isoOpacity, {
+        toValue: 1,
+        duration: 400,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: true,
+      }).start();
+
+      // El isotipo se acerca con spring (física de resorte real)
+      Animated.spring(isoScale, {
+        toValue: 1,
+        friction: 8,      // Resistencia - más alto = menos rebote
+        tension: 40,      // Fuerza - más alto = más rápido
+        useNativeDriver: true,
+      }).start();
+
+      // Rotación dramática pero elegante (540° = vuelta y media)
+      Animated.timing(isoRotate, {
+        toValue: 1,
+        duration: 1000,
+        easing: Easing.bezier(0.25, 0.1, 0.25, 1), // Curva suave tipo Apple
+        useNativeDriver: true,
+      }).start();
+
+      // ═══════════════════════════════════════════════════════════════════════
+      // FASE 2: TRANSFORMACIÓN - El isotipo se desvanece, el texto florece
+      // ═══════════════════════════════════════════════════════════════════════
+      setTimeout(() => {
+        // El isotipo se desvanece suavemente
+        Animated.timing(isoOpacity, {
+          toValue: 0,
+          duration: 300,
+          easing: Easing.inOut(Easing.quad),
           useNativeDriver: true,
-        }),
-        // Gira sutilmente (media vuelta elegante)
-        Animated.timing(isoRotate, {
-          toValue: 1,
-          duration: 800,
-          easing: Easing.out(Easing.cubic),
-          useNativeDriver: true,
-        }),
-      ]).start(() => {
-        
-        // FASE 2: Transformación - iso desaparece, texto aparece
+        }).start();
+
+        // El texto aparece con SPRING - como si aterrizara suavemente
         Animated.parallel([
-          // Iso se desvanece
-          Animated.timing(isoOpacity, {
-            toValue: 0,
-            duration: 250,
-            easing: Easing.out(Easing.cubic),
-            useNativeDriver: true,
-          }),
-          // Texto aparece y crece ligeramente
+          // Fade in
           Animated.timing(textOpacity, {
             toValue: 1,
-            duration: 300,
+            duration: 400,
             easing: Easing.out(Easing.cubic),
             useNativeDriver: true,
           }),
-          Animated.timing(textScale, {
+          // Scale con spring - rebote natural
+          Animated.spring(textScale, {
             toValue: 1,
-            duration: 300,
-            easing: Easing.out(Easing.cubic),
+            friction: 6,    // Menos fricción = más rebote elegante
+            tension: 50,
+            useNativeDriver: true,
+          }),
+          // Sube ligeramente con spring
+          Animated.spring(textTranslateY, {
+            toValue: 0,
+            friction: 7,
+            tension: 40,
             useNativeDriver: true,
           }),
         ]).start(() => {
-          // Pausa para leer la marca
+          // Pausa para apreciar la marca
           setTimeout(() => {
             setAnimationFinished(true);
-          }, 700);
+          }, 800);
         });
-      });
+      }, 900); // Empieza justo antes de que termine la rotación
     };
 
     runAnimation();
   }, []);
 
-  // Interpolación de rotación
+  // Interpolación de rotación (540° = 1.5 vueltas)
   const rotation = isoRotate.interpolate({
     inputRange: [0, 1],
-    outputRange: ['0deg', '180deg'],
+    outputRange: ['0deg', '540deg'],
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // SALIDA
+  // SALIDA - Fade elegante
   // ═══════════════════════════════════════════════════════════════════════════
   useEffect(() => {
     if (animationFinished && webViewReady && !exitTriggered) {
@@ -117,7 +140,7 @@ export default function App() {
       
       Animated.timing(overlayOpacity, {
         toValue: 0,
-        duration: 350,
+        duration: 400,
         easing: Easing.out(Easing.cubic),
         useNativeDriver: true,
       }).start(() => setShowSplashContent(false));
@@ -214,7 +237,7 @@ export default function App() {
         {showSplashContent && (
           <View style={styles.centerContainer}>
             
-            {/* ISOTIPO - Se acerca y gira */}
+            {/* ISOTIPO - Emerge girando desde el infinito */}
             <Animated.View
               style={[
                 styles.logoContainer,
@@ -235,14 +258,17 @@ export default function App() {
               />
             </Animated.View>
 
-            {/* TEXTO - Aparece cuando el iso desaparece */}
+            {/* TEXTO - Florece con spring */}
             <Animated.View
               style={[
                 styles.logoContainer,
                 styles.textAbsolute,
                 {
                   opacity: textOpacity,
-                  transform: [{ scale: textScale }],
+                  transform: [
+                    { scale: textScale },
+                    { translateY: textTranslateY },
+                  ],
                 }
               ]}
             >
@@ -318,13 +344,13 @@ const styles = StyleSheet.create({
   },
   
   logoIso: {
-    width: 90,
-    height: 90,
+    width: 80,
+    height: 80,
   },
 
   logoText: {
-    width: 140,
-    height: 40,
+    width: 130,
+    height: 36,
   },
 
   // Back Button
