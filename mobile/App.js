@@ -5,7 +5,7 @@ import { useRef, useEffect, useState, useCallback } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// 🎯 TRIGGUI APP.JS - NIVEL DIOS (TRANSICIÓN CINEMÁTICA)
+// 🎯 TRIGGUI APP.JS - NIVEL DIOS "LIQUID MOTION"
 // ═══════════════════════════════════════════════════════════════════════════════
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -23,28 +23,30 @@ export default function App() {
   const [exitTriggered, setExitTriggered] = useState(false); 
   const [showSplashContent, setShowSplashContent] = useState(true);
 
-  // VALORES ANIMADOS
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🎨 VALORES ANIMADOS (FÍSICA DE FLUIDOS)
+  // ═══════════════════════════════════════════════════════════════════════════
   const overlayOpacity = useRef(new Animated.Value(1)).current;
   
-  // Imagotipo (logo_iso)
-  const logoOpacity = useRef(new Animated.Value(1)).current;
-  const logoScale = useRef(new Animated.Value(1)).current;
-  const logoTranslateY = useRef(new Animated.Value(0)).current; // Empieza en 0 (centro exacto)
-  const logoPulse = useRef(new Animated.Value(1)).current;
+  // Imagotipo (Comienza invisible para evitar flash)
+  const logoOpacity = useRef(new Animated.Value(0)).current; 
+  // Escala inicial pequeña para igualar tu splashmoon.png chico
+  const logoScale = useRef(new Animated.Value(0.6)).current; 
+  const logoTranslateY = useRef(new Animated.Value(0)).current;
   
-  // Texto (logo_text)
-  const textOpacity = useRef(new Animated.Value(0)).current; // Invisible al inicio
-  const textTranslateY = useRef(new Animated.Value(20)).current; // Ligeramente abajo
-  const textScale = useRef(new Animated.Value(0.95)).current;
+  // Texto
+  const textOpacity = useRef(new Animated.Value(0)).current;
+  const textTranslateY = useRef(new Animated.Value(20)).current;
+  const textScale = useRef(new Animated.Value(0.9)).current;
   
-  // Efectos
-  const sparkOpacity = useRef(new Animated.Value(0)).current;
-  const sparkScale = useRef(new Animated.Value(0)).current;
+  // Efectos Atmosféricos
+  const burstScale = useRef(new Animated.Value(0.1)).current;
   const burstOpacity = useRef(new Animated.Value(0)).current;
-  const burstScale = useRef(new Animated.Value(0)).current;
+  const glowOpacity = useRef(new Animated.Value(0)).current;
   const exitScale = useRef(new Animated.Value(1)).current;
   
-  const particles = useRef([...Array(6)].map(() => ({
+  // Partículas (Flotación orgánica)
+  const particles = useRef([...Array(8)].map(() => ({
     opacity: new Animated.Value(0),
     translateY: new Animated.Value(0),
     translateX: new Animated.Value(0),
@@ -52,113 +54,144 @@ export default function App() {
   }))).current;
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // 🎬 SECUENCIA MAESTRA
+  // 🎬 COREOGRAFÍA "THE BIG BANG"
   // ═══════════════════════════════════════════════════════════════════════════
   useEffect(() => {
-    const hideNativeSplash = async () => {
+    const runAnimation = async () => {
+      // 1. Ocultar Splash Nativo SUAVEMENTE
       try {
-        await new Promise(resolve => setTimeout(resolve, 100)); // Muy rápido para continuidad
+        await new Promise(resolve => setTimeout(resolve, 100));
         await SplashScreen.hideAsync();
+        // Aparecer nuestro logo instantáneamente (match visual)
+        logoOpacity.setValue(1); 
       } catch (e) { console.warn(e); }
-    };
-    hideNativeSplash();
 
-    // 1. Latido inicial (Continuidad visual con el icono pulsado)
-    Animated.loop(
+      // 2. SECUENCIA CINEMÁTICA
       Animated.sequence([
-        Animated.timing(logoPulse, { toValue: 1.05, duration: 1500, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
-        Animated.timing(logoPulse, { toValue: 1, duration: 1500, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
-      ])
-    ).start();
-
-    // 2. Secuencia de Transformación
-    Animated.sequence([
-      Animated.delay(400), // Pausa dramática inicial
-
-      // A. Chispa sutil (El "Trigger")
-      Animated.parallel([
-        Animated.timing(sparkOpacity, { toValue: 0.8, duration: 200, useNativeDriver: true }),
-        Animated.spring(sparkScale, { toValue: 1, tension: 100, useNativeDriver: true }),
-      ]),
-
-      // B. Explosión + Movimiento (El despliegue)
-      Animated.parallel([
-        // Burst expande
-        Animated.timing(burstScale, { toValue: 1, duration: 600, easing: Easing.out(Easing.quad), useNativeDriver: true }),
-        Animated.sequence([
-          Animated.timing(burstOpacity, { toValue: 0.5, duration: 100, useNativeDriver: true }),
-          Animated.timing(burstOpacity, { toValue: 0, duration: 500, useNativeDriver: true }),
-        ]),
-        // Apagar chispa
-        Animated.timing(sparkOpacity, { toValue: 0, duration: 200, useNativeDriver: true }),
-        
-        // MOVER IMAGOTIPO HACIA ARRIBA (Para hacer espacio al texto)
-        Animated.spring(logoTranslateY, { 
-          toValue: -50, // Sube 50px
-          tension: 40, 
-          friction: 8, 
-          useNativeDriver: true 
-        }),
-
-        // APARECER TEXTO (Entra suave desde abajo)
-        Animated.timing(textOpacity, { toValue: 1, duration: 600, useNativeDriver: true }),
-        Animated.spring(textTranslateY, { 
-          toValue: 20, // Se queda posicionado debajo del logo
-          tension: 40, 
-          friction: 8, 
-          useNativeDriver: true 
-        }),
-      ]),
-
-      Animated.delay(300), // Pausa para admirar el logo completo
-    ]).start(() => setAnimationFinished(true));
-
-    // Partículas (Ambiente mágico)
-    particles.forEach((particle, index) => {
-      const delay = 800 + (index * 150);
-      const randomX = (Math.random() - 0.5) * 120;
-      const randomEndY = -100 - (Math.random() * 60);
-      const duration = 2000 + (Math.random() * 500);
-      
-      Animated.sequence([
-        Animated.delay(delay),
+        // FASE A: ANTICIPACIÓN (Inhalar)
+        // El logo se contrae ligeramente y brilla, acumulando energía
         Animated.parallel([
-          Animated.timing(particle.opacity, { toValue: 0.5, duration: 400, useNativeDriver: true }),
-          Animated.timing(particle.translateY, { toValue: randomEndY, duration: duration, easing: Easing.out(Easing.quad), useNativeDriver: true }),
-          Animated.timing(particle.translateX, { toValue: randomX, duration: duration, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+          Animated.timing(logoScale, {
+            toValue: 0.55, // Se encoge un poco más
+            duration: 600,
+            easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+            useNativeDriver: true,
+          }),
+          Animated.timing(glowOpacity, {
+            toValue: 0.6,
+            duration: 600,
+            useNativeDriver: true,
+          }),
+        ]),
+
+        // FASE B: DETONACIÓN (Exhalar)
+        // El logo dispara hacia arriba, crece y revela el texto
+        Animated.parallel([
+          // 1. El Logo crece y sube (Elástico)
+          Animated.spring(logoScale, {
+            toValue: 1, // Tamaño final heroico
+            friction: 6, // Rebote bajo (pesado)
+            tension: 40, // Velocidad
+            useNativeDriver: true,
+          }),
+          Animated.timing(logoTranslateY, {
+            toValue: -60, // Sube para dejar espacio
+            duration: 800,
+            easing: Easing.bezier(0.1, 0.57, 0.1, 1), // Curva exponencial suave
+            useNativeDriver: true,
+          }),
+
+          // 2. Onda expansiva (Burst)
           Animated.sequence([
-            Animated.delay(duration * 0.4),
-            Animated.timing(particle.opacity, { toValue: 0, duration: duration * 0.6, useNativeDriver: true }),
+            Animated.parallel([
+              Animated.timing(burstOpacity, { toValue: 0.4, duration: 100, useNativeDriver: true }),
+              Animated.timing(burstScale, { toValue: 1.5, duration: 600, easing: Easing.out(Easing.quad), useNativeDriver: true }),
+            ]),
+            Animated.timing(burstOpacity, { toValue: 0, duration: 400, useNativeDriver: true }),
+          ]),
+
+          // 3. El Texto se despliega (Staggered - un poco después del inicio)
+          Animated.sequence([
+            Animated.delay(150), // Espera a que el logo empiece a subir
+            Animated.parallel([
+              Animated.timing(textOpacity, { 
+                toValue: 1, 
+                duration: 600, 
+                useNativeDriver: true 
+              }),
+              Animated.spring(textTranslateY, { 
+                toValue: 0, 
+                friction: 7, 
+                tension: 40, 
+                useNativeDriver: true 
+              }),
+              Animated.spring(textScale, { 
+                toValue: 1, 
+                friction: 7, 
+                useNativeDriver: true 
+              }),
+            ]),
           ]),
         ]),
-      ]).start();
-    });
+        
+        // FASE C: ESTABILIZACIÓN (Breathing final)
+        Animated.delay(200),
+      ]).start(() => setAnimationFinished(true));
+
+      // FASE D: AMBIENTE (Partículas en segundo plano)
+      // Se mueven más lento y orgánico
+      particles.forEach((p, i) => {
+        const delay = 400 + (i * 100);
+        Animated.sequence([
+          Animated.delay(delay),
+          Animated.parallel([
+            Animated.timing(p.opacity, { toValue: 0.6, duration: 500, useNativeDriver: true }),
+            Animated.timing(p.translateY, { 
+              toValue: -150 - (Math.random() * 100), 
+              duration: 2500, 
+              easing: Easing.out(Easing.cubic), 
+              useNativeDriver: true 
+            }),
+            Animated.timing(p.scale, { toValue: 1, duration: 500, useNativeDriver: true }),
+            Animated.timing(p.opacity, { 
+              toValue: 0, 
+              duration: 1500, 
+              delay: 500, 
+              useNativeDriver: true 
+            }),
+          ])
+        ]).start();
+      });
+    };
+
+    runAnimation();
   }, []);
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // 🚪 SALIDA
+  // 🚪 SALIDA: "THE PORTAL"
   // ═══════════════════════════════════════════════════════════════════════════
   useEffect(() => {
     if (animationFinished && webViewReady && !exitTriggered) {
       setExitTriggered(true);
       Animated.parallel([
-        // Zoom IN sutil (efecto inmersivo hacia la app)
+        // Zoom IN inmersivo (entras a la app)
         Animated.timing(exitScale, { 
-          toValue: 1.1, 
-          duration: 400, 
+          toValue: 5, // Zoom exagerado para efecto de "entrar"
+          duration: 600, 
           easing: Easing.in(Easing.cubic), 
           useNativeDriver: true 
         }),
         Animated.timing(overlayOpacity, { 
           toValue: 0, 
-          duration: 500, 
+          duration: 400, 
+          delay: 100, // Espera un poco a que empiece el zoom
           useNativeDriver: true 
         })
       ]).start(() => setShowSplashContent(false));
     }
   }, [animationFinished, webViewReady, exitTriggered]);
 
-  // Fallback
+  // Fallback de seguridad (8s)
   useEffect(() => {
     const timer = setTimeout(() => {
       if (!exitTriggered) {
@@ -243,11 +276,13 @@ export default function App() {
         {showSplashContent && (
           <Animated.View style={[styles.splashContent, { transform: [{ scale: exitScale }] }]}>
             
-            {/* Spark & Burst */}
-            <Animated.View style={[styles.spark, { opacity: sparkOpacity, transform: [{ scale: sparkScale }] }]} />
+            {/* Glow de Fondo (Ambiental) */}
+            <Animated.View style={[styles.glow, { opacity: glowOpacity }]} />
+
+            {/* Onda Expansiva */}
             <Animated.View style={[styles.burst, { opacity: burstOpacity, transform: [{ scale: burstScale }] }]} />
             
-            {/* Particles */}
+            {/* Partículas */}
             {particles.map((p, i) => (
               <Animated.View key={i} style={[styles.particle, {
                 opacity: p.opacity,
@@ -258,15 +293,14 @@ export default function App() {
             ))}
 
             {/* CONTENEDOR CENTRAL */}
-            {/* Aquí está la clave: todo centrado verticalmente */}
             <View style={styles.centerContainer}>
               
-              {/* IMAGOTIPO */}
+              {/* IMAGOTIPO (Iso) */}
               <Animated.View style={[styles.logoContainer, {
                 opacity: logoOpacity,
                 transform: [
                   { translateY: logoTranslateY }, 
-                  { scale: Animated.multiply(logoScale, logoPulse) }
+                  { scale: logoScale } // Scale animado por spring
                 ]
               }]}>
                 <Image
@@ -277,8 +311,8 @@ export default function App() {
                 />
               </Animated.View>
 
-              {/* LETRAS */}
-              {/* Posicionadas absolutamente respecto al centro para control total */}
+              {/* LETRAS (Texto) */}
+              {/* Posicionado absolutamente para control preciso */}
               <Animated.View style={[styles.textLogoContainer, {
                 opacity: textOpacity,
                 transform: [
@@ -339,58 +373,60 @@ const styles = StyleSheet.create({
   centerContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    // Esto asegura que el centro geométrico sea la referencia
     position: 'absolute', 
     top: 0, bottom: 0, left: 0, right: 0,
   },
   
-  // Elementos
-  spark: {
+  // Elementos Atmosféricos
+  glow: {
     position: 'absolute',
-    width: 24, height: 24, borderRadius: 12,
-    backgroundColor: '#ffffff',
-    shadowColor: '#FF5E00', shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 1, shadowRadius: 25, elevation: 25,
-    zIndex: 20,
+    width: 300, height: 300,
+    borderRadius: 150,
+    backgroundColor: '#FF5E00',
+    opacity: 0, // Controlado por animación
+    transform: [{ scale: 1.5 }],
+    zIndex: 5,
+    // Hack para blur en Android sin tronar memoria
+    shadowColor: '#FF5E00', shadowOffset: {width: 0, height: 0}, shadowOpacity: 0.2, shadowRadius: 50, elevation: 0
   },
   burst: {
     position: 'absolute',
-    width: 250, height: 250, borderRadius: 125,
+    width: 300, height: 300, borderRadius: 150,
     backgroundColor: 'transparent',
-    borderWidth: 2, borderColor: '#FF5E00',
-    shadowColor: '#FF5E00', shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8, shadowRadius: 30,
+    borderWidth: 2, borderColor: '#ffffff',
     zIndex: 10,
   },
   particle: {
     position: 'absolute',
     borderRadius: 5,
-    zIndex: 5,
+    zIndex: 12,
   },
   
+  // Logos
   logoContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    zIndex: 15,
-    // Eliminamos margin bottom fijo para controlar posición con animated values
+    zIndex: 20,
   },
   logo: {
-    // TAMAÑO PERFECTO: Debe coincidir con splash nativo
-    // 180 es un buen punto de partida para resizeMode="cover" en splash nativo
+    // 🔥 AJUSTE CRÍTICO: 
+    // Empezamos con un tamaño de renderizado generoso (180), 
+    // PERO la animación 'logoScale' lo inicia en 0.6 (108px) para igualar tu splash chico.
+    // Luego crece a 1.0 (180px) majestuosamente.
     width: 180, 
     height: 180,
   },
   
   textLogoContainer: {
-    position: 'absolute', // Absoluto para que nazca "detrás/debajo" del centro
-    top: '50%', // Centrado vertical inicial
-    zIndex: 14, // Debajo del logo_iso
+    position: 'absolute', 
+    top: '50%', // Centro vertical
+    marginTop: 65, // Offset para quedar bajo el iso tras la animación
+    zIndex: 19,
     alignItems: 'center',
   },
   textLogo: {
-    width: 180, // Ancho proporcional
-    height: 50,
-    marginTop: 60, // Offset inicial para que no se traslape con el iso al inicio
+    width: 200, 
+    height: 60,
   },
 
   // Back Button
