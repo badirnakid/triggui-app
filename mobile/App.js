@@ -5,10 +5,9 @@ import { useRef, useEffect, useState, useCallback } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// 🎯 TRIGGUI APP.JS - NIVEL DIOS (CORREGIDO: ASSETS SEGUROS Y TAMAÑO)
+// 🎯 TRIGGUI APP.JS - NIVEL DIOS (OPTIMIZADO PARA MEMORIA Y ESTABILIDAD)
 // ═══════════════════════════════════════════════════════════════════════════════
 
-// Mantener el splash nativo visible hasta que nosotros digamos
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
 const { width, height } = Dimensions.get('window');
@@ -28,25 +27,19 @@ export default function App() {
   // 🎨 VALORES ANIMADOS
   // ═══════════════════════════════════════════════════════════════════════════
   const overlayOpacity = useRef(new Animated.Value(1)).current;
-  
-  // Logo Principal (Imagotipo)
   const logoOpacity = useRef(new Animated.Value(1)).current;
   const logoScale = useRef(new Animated.Value(1)).current;
   const logoTranslateY = useRef(new Animated.Value(0)).current;
   const logoPulse = useRef(new Animated.Value(1)).current;
-  
-  // Efectos (Chispa y Explosión)
   const sparkOpacity = useRef(new Animated.Value(0)).current;
   const sparkScale = useRef(new Animated.Value(0)).current;
   const burstOpacity = useRef(new Animated.Value(0)).current;
   const burstScale = useRef(new Animated.Value(0)).current;
-  
-  // Texto "Triggui"
   const textLogoOpacity = useRef(new Animated.Value(0)).current;
   const textLogoTranslateY = useRef(new Animated.Value(40)).current;
   const textLogoScale = useRef(new Animated.Value(0.9)).current;
+  const exitScale = useRef(new Animated.Value(1)).current;
   
-  // Partículas
   const particles = useRef([...Array(6)].map(() => ({
     opacity: new Animated.Value(0),
     translateY: new Animated.Value(0),
@@ -54,88 +47,78 @@ export default function App() {
     scale: new Animated.Value(0),
   }))).current;
 
-  // Zoom de Salida
-  const exitScale = useRef(new Animated.Value(1)).current;
-
   // ═══════════════════════════════════════════════════════════════════════════
-  // 🎬 SECUENCIA MAESTRA DE ANIMACIÓN
+  // 🎬 SECUENCIA MAESTRA
   // ═══════════════════════════════════════════════════════════════════════════
   useEffect(() => {
-    // 1. Ocultar Splash Nativo RÁPIDO
     const hideNativeSplash = async () => {
       try {
-        await new Promise(resolve => setTimeout(resolve, 150)); 
+        await new Promise(resolve => setTimeout(resolve, 200)); 
         await SplashScreen.hideAsync();
-      } catch (e) {
-        console.warn(e);
-      }
+      } catch (e) { console.warn(e); }
     };
     hideNativeSplash();
 
-    // 2. Iniciar Secuencia
-    const pulseAnim = Animated.loop(
+    // Breathing loop
+    Animated.loop(
       Animated.sequence([
-        Animated.timing(logoPulse, { toValue: 1.05, duration: 1000, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
-        Animated.timing(logoPulse, { toValue: 1, duration: 1000, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+        Animated.timing(logoPulse, { toValue: 1.05, duration: 1500, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+        Animated.timing(logoPulse, { toValue: 1, duration: 1500, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
       ])
-    );
-    pulseAnim.start();
+    ).start();
 
-    // SECUENCIA PRINCIPAL
+    // Secuencia Principal
     Animated.sequence([
       Animated.delay(300), 
 
-      // FASE B: Chispa
+      // Chispa
       Animated.parallel([
-        Animated.timing(sparkOpacity, { toValue: 1, duration: 100, useNativeDriver: true }),
-        Animated.spring(sparkScale, { toValue: 1, tension: 200, friction: 10, useNativeDriver: true }),
+        Animated.timing(sparkOpacity, { toValue: 1, duration: 150, useNativeDriver: true }),
+        Animated.spring(sparkScale, { toValue: 1, tension: 180, friction: 12, useNativeDriver: true }),
       ]),
 
-      // FASE C: Explosión y Elevación
+      // Explosión y Elevación
       Animated.parallel([
-        Animated.timing(burstScale, { toValue: 1, duration: 400, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
+        Animated.timing(burstScale, { toValue: 1, duration: 500, easing: Easing.out(Easing.quad), useNativeDriver: true }),
         Animated.sequence([
-          Animated.timing(burstOpacity, { toValue: 0.8, duration: 100, useNativeDriver: true }),
-          Animated.timing(burstOpacity, { toValue: 0, duration: 300, useNativeDriver: true }),
+          Animated.timing(burstOpacity, { toValue: 0.6, duration: 100, useNativeDriver: true }),
+          Animated.timing(burstOpacity, { toValue: 0, duration: 400, useNativeDriver: true }),
         ]),
-        Animated.timing(sparkOpacity, { toValue: 0, duration: 100, useNativeDriver: true }),
-        Animated.timing(logoTranslateY, { toValue: -60, duration: 600, easing: Easing.out(Easing.quart), useNativeDriver: true }),
+        Animated.timing(sparkOpacity, { toValue: 0, duration: 150, useNativeDriver: true }),
+        Animated.timing(logoTranslateY, { toValue: -70, duration: 700, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
       ]),
 
-      // FASE D: Aparición de Letras
+      // Texto
       Animated.parallel([
-        Animated.timing(textLogoOpacity, { toValue: 1, duration: 500, useNativeDriver: true }),
-        Animated.spring(textLogoTranslateY, { toValue: 0, tension: 50, friction: 7, useNativeDriver: true }),
-        Animated.spring(textLogoScale, { toValue: 1, tension: 50, friction: 7, useNativeDriver: true }),
+        Animated.timing(textLogoOpacity, { toValue: 1, duration: 600, useNativeDriver: true }),
+        Animated.spring(textLogoTranslateY, { toValue: 0, tension: 40, friction: 8, useNativeDriver: true }),
+        Animated.spring(textLogoScale, { toValue: 1, tension: 40, friction: 8, useNativeDriver: true }),
       ]),
 
-      Animated.delay(100), 
-    ]).start(() => {
-      setAnimationFinished(true);
-    });
+      Animated.delay(200), 
+    ]).start(() => setAnimationFinished(true));
 
-    // Partículas
+    // Partículas (Optimizadas)
     particles.forEach((particle, index) => {
-      const delay = 900 + (index * 120);
-      const randomX = (Math.random() - 0.5) * 160;
-      const randomEndY = -80 - (Math.random() * 80);
-      const duration = 1500 + (Math.random() * 500);
+      const delay = 1000 + (index * 150);
+      const randomX = (Math.random() - 0.5) * 140;
+      const randomEndY = -100 - (Math.random() * 60);
+      const duration = 1800 + (Math.random() * 600);
       
       Animated.sequence([
         Animated.delay(delay),
         Animated.parallel([
-          Animated.timing(particle.opacity, { toValue: 0.8, duration: 200, useNativeDriver: true }),
-          Animated.timing(particle.scale, { toValue: 1, duration: 200, useNativeDriver: true }),
+          Animated.timing(particle.opacity, { toValue: 0.6, duration: 300, useNativeDriver: true }),
+          Animated.timing(particle.scale, { toValue: 1, duration: 300, useNativeDriver: true }),
           Animated.timing(particle.translateY, { toValue: randomEndY, duration: duration, easing: Easing.out(Easing.quad), useNativeDriver: true }),
           Animated.timing(particle.translateX, { toValue: randomX, duration: duration, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
           Animated.sequence([
-            Animated.delay(duration * 0.4),
-            Animated.timing(particle.opacity, { toValue: 0, duration: duration * 0.6, useNativeDriver: true }),
+            Animated.delay(duration * 0.3),
+            Animated.timing(particle.opacity, { toValue: 0, duration: duration * 0.7, useNativeDriver: true }),
           ]),
         ]),
       ]).start();
     });
-
   }, []);
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -144,47 +127,28 @@ export default function App() {
   useEffect(() => {
     if (animationFinished && webViewReady && !exitTriggered) {
       setExitTriggered(true);
-      performExitAnimation();
+      Animated.parallel([
+        Animated.timing(exitScale, { toValue: 1.3, duration: 400, easing: Easing.in(Easing.cubic), useNativeDriver: true }),
+        Animated.timing(overlayOpacity, { toValue: 0, duration: 500, useNativeDriver: true })
+      ]).start(() => setShowSplashContent(false));
     }
   }, [animationFinished, webViewReady, exitTriggered]);
 
-  const performExitAnimation = () => {
-    Animated.parallel([
-      Animated.timing(exitScale, {
-        toValue: 1.5, // Zoom OUT más agresivo (efecto entrar a la app)
-        duration: 300,
-        easing: Easing.in(Easing.cubic),
-        useNativeDriver: true,
-      }),
-      Animated.timing(overlayOpacity, {
-        toValue: 0,
-        duration: 400,
-        useNativeDriver: true,
-      })
-    ]).start(() => {
-      setShowSplashContent(false);
-    });
-  };
-
-  // Fallback
+  // Fallback de seguridad extendido
   useEffect(() => {
     const timer = setTimeout(() => {
       if (!exitTriggered) {
         setWebViewReady(true); 
         setAnimationFinished(true); 
       }
-    }, 6000); 
+    }, 8000); 
     return () => clearTimeout(timer);
   }, [exitTriggered]);
 
-  // Mensaje del WebView
   const handleMessage = useCallback((event) => {
-    if (event.nativeEvent.data === "FIRST_PAINT") {
-      setWebViewReady(true);
-    }
+    if (event.nativeEvent.data === "FIRST_PAINT") setWebViewReady(true);
   }, []);
 
-  // Navegación
   const handleNavigationStateChange = useCallback((navState) => {
     const isHome = navState.url === uri || navState.url === uri + '/';
     setCanGoBack(!isHome && navState.canGoBack);
@@ -192,14 +156,13 @@ export default function App() {
 
   useEffect(() => {
     if (Platform.OS !== 'android') return;
-    const backAction = () => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
       if (webViewRef.current && canGoBack) {
         webViewRef.current.goBack();
         return true;
       }
       return false;
-    };
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+    });
     return () => backHandler.remove();
   }, [canGoBack]);
 
@@ -251,108 +214,57 @@ export default function App() {
 
       <Animated.View
         pointerEvents="none"
-        style={[
-          StyleSheet.absoluteFillObject,
-          styles.overlay,
-          { opacity: overlayOpacity }
-        ]}
+        style={[StyleSheet.absoluteFillObject, styles.overlay, { opacity: overlayOpacity }]}
       >
         {showSplashContent && (
-          <Animated.View 
-            style={[
-              styles.splashContent,
-              { transform: [{ scale: exitScale }] }
-            ]}
-          >
-            {/* 🔥 CHISPA */}
-            <Animated.View
-              style={[
-                styles.spark,
-                { opacity: sparkOpacity, transform: [{ scale: sparkScale }] }
-              ]}
-            />
-
-            {/* 💥 BURST */}
-            <Animated.View
-              style={[
-                styles.burst,
-                { opacity: burstOpacity, transform: [{ scale: burstScale }] }
-              ]}
-            />
-
-            {/* ✦ PARTÍCULAS */}
-            {particles.map((particle, index) => (
-              <Animated.View
-                key={index}
-                style={[
-                  styles.particle,
-                  {
-                    opacity: particle.opacity,
-                    transform: [
-                      { translateX: particle.translateX },
-                      { translateY: particle.translateY },
-                      { scale: particle.scale },
-                    ],
-                    width: 3 + (index % 3) * 2,
-                    height: 3 + (index % 3) * 2,
-                    backgroundColor: index % 2 === 0 ? '#FF5E00' : '#FF0055',
-                  }
-                ]}
-              />
+          <Animated.View style={[styles.splashContent, { transform: [{ scale: exitScale }] }]}>
+            {/* Spark - Elevation reducida para evitar bugs gráficos */}
+            <Animated.View style={[styles.spark, { opacity: sparkOpacity, transform: [{ scale: sparkScale }] }]} />
+            <Animated.View style={[styles.burst, { opacity: burstOpacity, transform: [{ scale: burstScale }] }]} />
+            
+            {particles.map((p, i) => (
+              <Animated.View key={i} style={[styles.particle, {
+                opacity: p.opacity,
+                transform: [{ translateX: p.translateX }, { translateY: p.translateY }, { scale: p.scale }],
+                backgroundColor: i % 2 === 0 ? '#FF5E00' : '#FF0055',
+                width: 4 + (i % 2), height: 4 + (i % 2)
+              }]} />
             ))}
 
-            {/* 🎯 IMAGOTIPO - CORREGIDO (NUEVO NOMBRE SIN ESPACIOS) */}
-            <Animated.View
-              style={[
-                styles.logoContainer,
-                {
-                  opacity: logoOpacity,
-                  transform: [
-                    { translateY: logoTranslateY },
-                    { scale: Animated.multiply(logoScale, logoPulse) },
-                  ],
-                }
-              ]}
-            >
+            {/* IMAGOTIPO */}
+            <Animated.View style={[styles.logoContainer, {
+              opacity: logoOpacity,
+              transform: [{ translateY: logoTranslateY }, { scale: Animated.multiply(logoScale, logoPulse) }]
+            }]}>
               <Image
-                // ⚠️ AQUÍ ESTABA EL ERROR FATAL: Nombres con espacios truenan Android
                 source={require('./assets/logo_iso.png')} 
                 style={styles.logo}
                 resizeMode="contain"
+                fadeDuration={0} // Evita parpadeo en Android
               />
             </Animated.View>
 
-            {/* 📝 LETRAS - CORREGIDO (NUEVO NOMBRE SIN ESPACIOS) */}
-            <Animated.View
-              style={[
-                styles.textLogoContainer,
-                {
-                  opacity: textLogoOpacity,
-                  transform: [
-                    { translateY: textLogoTranslateY },
-                    { scale: textLogoScale },
-                  ],
-                }
-              ]}
-            >
+            {/* LETRAS */}
+            <Animated.View style={[styles.textLogoContainer, {
+              opacity: textLogoOpacity,
+              transform: [{ translateY: textLogoTranslateY }, { scale: textLogoScale }]
+            }]}>
               <Image
-                // ⚠️ AQUÍ ESTABA EL ERROR FATAL: Nombres con espacios truenan Android
                 source={require('./assets/logo_text.png')}
                 style={styles.textLogo}
                 resizeMode="contain"
+                fadeDuration={0} // Evita parpadeo en Android
               />
             </Animated.View>
           </Animated.View>
         )}
       </Animated.View>
 
-      {/* 🔙 BOTÓN BACK */}
       {canGoBack && (
         <View style={styles.backButtonContainer}>
           <TouchableOpacity
             onPress={() => webViewRef.current && webViewRef.current.goBack()}
             style={styles.backButton}
-            accessibilityLabel="Regresar"
             activeOpacity={0.8}
           >
             <View style={styles.backButtonInner}>
@@ -366,9 +278,6 @@ export default function App() {
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// 🎨 ESTILOS (Aumentados para corregir "lejano")
-// ═══════════════════════════════════════════════════════════════════════════════
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#000000' },
   webviewWrapper: { flex: 1, backgroundColor: '#000000' },
@@ -389,55 +298,44 @@ const styles = StyleSheet.create({
   },
   spark: {
     position: 'absolute',
-    width: 24, // Aumentado
-    height: 24,
-    borderRadius: 12,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
     backgroundColor: '#ffffff',
     shadowColor: '#FF5E00',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 1,
-    shadowRadius: 25,
-    elevation: 25,
+    shadowRadius: 10,
+    elevation: 10, // Reducido para estabilidad
     zIndex: 20,
   },
   burst: {
     position: 'absolute',
-    width: 250, // Aumentado
-    height: 250,
-    borderRadius: 125,
+    width: 220,
+    height: 220,
+    borderRadius: 110,
     backgroundColor: 'transparent',
     borderWidth: 2,
     borderColor: '#FF5E00',
     shadowColor: '#FF5E00',
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 30,
+    shadowOpacity: 0.6,
+    shadowRadius: 10,
     zIndex: 10,
   },
   particle: {
     position: 'absolute',
-    borderRadius: 10,
-    shadowColor: '#FF5E00',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 1,
-    shadowRadius: 5,
-    elevation: 5,
+    borderRadius: 5,
     zIndex: 5,
   },
   logoContainer: {
     marginBottom: 20,
-    shadowColor: '#FF5E00',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 20,
-    elevation: 10,
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 15,
   },
   logo: {
-    // 🔥 AJUSTE DE TAMAÑO: De 120 a 180 para que no se vea "lejano"
-    width: 180, 
+    width: 180, // Tamaño grande nivel dios
     height: 180,
   },
   textLogoContainer: {
@@ -445,11 +343,9 @@ const styles = StyleSheet.create({
     zIndex: 15,
   },
   textLogo: {
-    width: 220, // Aumentado proporcionalmente
-    height: 60,
+    width: 200,
+    height: 55,
   },
-
-  // Estilos del Botón Back
   backButtonContainer: {
     position: 'absolute',
     bottom: Platform.OS === 'ios' ? 40 : 24,
@@ -466,10 +362,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
     shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 10 },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.5,
-    shadowRadius: 20,
-    elevation: 15,
+    shadowRadius: 10,
+    elevation: 6,
   },
   backButtonInner: {
     flexDirection: 'row',
