@@ -40,15 +40,8 @@ export default function App() {
   // ═══════════════════════════════════════════════════════════════════════════
   useEffect(() => {
     const runAnimation = async () => {
-      // Ocultar splash nativo inmediatamente
-      try {
-        await SplashScreen.hideAsync();
-      } catch (e) { 
-        console.warn(e); 
-      }
-
-      // Pequeña pausa para que el sistema se estabilice
-      await new Promise(resolve => setTimeout(resolve, 50));
+      // Ocultar splash nativo y arrancar animación simultáneamente
+      SplashScreen.hideAsync().catch(() => {});
 
       // ═══════════════════════════════════════════════════════════════════════
       // FASE 1: El isotipo NACE - emerge girando desde el infinito
@@ -65,8 +58,8 @@ export default function App() {
       // El isotipo se acerca con spring (física de resorte real)
       Animated.spring(isoScale, {
         toValue: 1,
-        friction: 8,      // Resistencia - más alto = menos rebote
-        tension: 40,      // Fuerza - más alto = más rápido
+        friction: 8,
+        tension: 40,
         useNativeDriver: true,
       }).start();
 
@@ -74,7 +67,7 @@ export default function App() {
       Animated.timing(isoRotate, {
         toValue: 1,
         duration: 1000,
-        easing: Easing.bezier(0.25, 0.1, 0.25, 1), // Curva suave tipo Apple
+        easing: Easing.bezier(0.25, 0.1, 0.25, 1),
         useNativeDriver: true,
       }).start();
 
@@ -92,21 +85,18 @@ export default function App() {
 
         // El texto aparece con SPRING - como si aterrizara suavemente
         Animated.parallel([
-          // Fade in
           Animated.timing(textOpacity, {
             toValue: 1,
             duration: 400,
             easing: Easing.out(Easing.cubic),
             useNativeDriver: true,
           }),
-          // Scale con spring - rebote natural
           Animated.spring(textScale, {
             toValue: 1,
-            friction: 6,    // Menos fricción = más rebote elegante
+            friction: 6,
             tension: 50,
             useNativeDriver: true,
           }),
-          // Sube ligeramente con spring
           Animated.spring(textTranslateY, {
             toValue: 0,
             friction: 7,
@@ -114,12 +104,11 @@ export default function App() {
             useNativeDriver: true,
           }),
         ]).start(() => {
-          // Pausa para apreciar la marca
           setTimeout(() => {
             setAnimationFinished(true);
           }, 800);
         });
-      }, 900); // Empieza justo antes de que termine la rotación
+      }, 900);
     };
 
     runAnimation();
@@ -132,7 +121,7 @@ export default function App() {
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // SALIDA - Fade elegante
+  // SALIDA
   // ═══════════════════════════════════════════════════════════════════════════
   useEffect(() => {
     if (animationFinished && webViewReady && !exitTriggered) {
