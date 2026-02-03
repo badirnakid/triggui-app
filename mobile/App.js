@@ -25,8 +25,8 @@ export default function App() {
   // ═══════════════════════════════════════════════════════════════════════════
   const overlayOpacity = useRef(new Animated.Value(1)).current;
   
-  // Isotipo - entra desde lejos, girando
-  const isoOpacity = useRef(new Animated.Value(0)).current;
+  // Isotipo - empieza visible, gira y crece
+  const isoOpacity = useRef(new Animated.Value(1)).current;
   const isoScale = useRef(new Animated.Value(0.3)).current;
   const isoRotate = useRef(new Animated.Value(0)).current;
   
@@ -46,14 +46,6 @@ export default function App() {
       // ═══════════════════════════════════════════════════════════════════════
       // FASE 1: El isotipo NACE - emerge girando desde el infinito
       // ═══════════════════════════════════════════════════════════════════════
-      
-      // Fade in suave del isotipo
-      Animated.timing(isoOpacity, {
-        toValue: 1,
-        duration: 400,
-        easing: Easing.out(Easing.quad),
-        useNativeDriver: true,
-      }).start();
 
       // El isotipo se acerca con spring (física de resorte real)
       Animated.spring(isoScale, {
