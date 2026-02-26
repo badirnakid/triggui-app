@@ -5,15 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Triggui — Cuando el impulso llega, el libro ya te espera</title>
 
-<link rel="preconnect" href="https://www.enviaflores.com" crossorigin>
+<link rel="preconnect" href="https://anahuac.primo.exlibrisgroup.com" crossorigin>
 <link rel="preconnect" href="https://www.buscalibre.com.mx" crossorigin>
-<link rel="dns-prefetch" href="https://www.enviaflores.com">
+<link rel="dns-prefetch" href="https://anahuac.primo.exlibrisgroup.com">
 <link rel="dns-prefetch" href="https://www.buscalibre.com.mx">
 
 <!-- 🎯 PRE-CARGA CRÍTICA DE IMÁGENES (NIVEL DIOS) -->
 <link rel="preload" as="image" href="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png">
 <link rel="preload" as="image" href="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/buscalibre.png">
-<link rel="preload" as="image" href="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/enviaflores-logo.png">
+<link rel="preload" as="image" href="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/logoanahuacwhite.png">
 
 <style id="base-styles">
   html, body { 
@@ -742,11 +742,11 @@ body.webview #tarjetaCard {
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  🌺 BLOQUE ENVIAFLORES - LOGO DENTRO DEL BOTÓN (ACTIVABLE)
-  COPIAR/PEGAR este bloque completo para activar/desactivar Enviaflores
+  🏛️ BLOQUE ANÁHUAC BIBLIOTECA - LOGO DENTRO DEL BOTÓN (ACTIVABLE)
+  COPIAR/PEGAR este bloque completo para activar/desactivar Anáhuac
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-/* INICIO BLOQUE ENVIAFLORES */
-.btn-enviaflores {
+/* INICIO BLOQUE ANÁHUAC */
+.btn-anahuac {
   width: 100%;
   background: #080808;
   color: white;
@@ -756,25 +756,25 @@ body.webview #tarjetaCard {
     0 0 0 1px rgba(255,255,255, 0.1);
 }
 
-.btn-enviaflores:hover {
+.btn-anahuac:hover {
   box-shadow: 
     0 8px 24px -6px rgba(0, 0, 0, 0.5), 
     0 0 0 1px rgba(255,255,255, 0.15);
 }
 
 /* FEEDBACK NIVEL DIOS */
-.btn-enviaflores.is-opening {
+.btn-anahuac.is-opening {
   opacity: 0.7;
   transform: scale(0.96);
   pointer-events: none;
 }
 
-.btn-enviaflores img {
+.btn-anahuac img {
   height: 23px;
   width: auto;
   display: block;
 }
-/* FIN BLOQUE ENVIAFLORES */
+/* FIN BLOQUE ANÁHUAC */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 </style>
 
@@ -1198,24 +1198,14 @@ const ANG = [115,205,35,320];
 const grad = i => `linear-gradient(${ANG[i%4]}deg,${libro.colores[i]},${libro.colores[(i+1)%4]})`;
 
 // ═══════════════════════════════════════════════════════════════════════
-// 🌺 ENVIAFLORES RANDOM URL SELECTOR
-// COPIAR/PEGAR este bloque completo para activar/desactivar Enviaflores
+// 🏛️ ANÁHUAC BIBLIOTECA - URL BUILDER
+// COPIAR/PEGAR este bloque completo para activar/desactivar Anáhuac
 // ═══════════════════════════════════════════════════════════════════════
-/* INICIO BLOQUE ENVIAFLORES - JAVASCRIPT */
-const ENVIAFLORES_URLS = [
-  "https://www.enviaflores.com/florerias-nuevo-leon/san-pedro-garza-garcia/todas-las-canastas",
-  "https://www.enviaflores.com/florerias-nuevo-leon/san-pedro-garza-garcia/todo-cumpleanos",
-  "https://www.enviaflores.com/florerias-nuevo-leon/san-pedro-garza-garcia/todos-los-productos",
-  "https://www.enviaflores.com/florerias-nuevo-leon/san-pedro-garza-garcia/ver-todo",
-  "https://www.enviaflores.com/florerias-nuevo-leon/san-pedro-garza-garcia/todo-personalizado",
-  "https://www.enviaflores.com/florerias-nuevo-leon/san-pedro-garza-garcia/todos-los-regalos",
-  "https://www.enviaflores.com/florerias-nuevo-leon/san-pedro-garza-garcia/mas-vendidos"
-];
-
-function getRandomEnviafloresURL() {
-  return ENVIAFLORES_URLS[Math.floor(Math.random() * ENVIAFLORES_URLS.length)];
+/* INICIO BLOQUE ANÁHUAC - JAVASCRIPT */
+function getAnahuacCatalogURL(searchTerms) {
+  return "https://anahuac.primo.exlibrisgroup.com/discovery/search?institution=52ANAHUAC_INST&vid=52ANAHUAC_INST:UAMX&tab=Todo&mode=Basic&displayMode=full&bulkSize=10&highlight=true&dum=true&query=any,contains," + encodeURIComponent(searchTerms) + "&displayField=all&pcAvailabiltyMode=true";
 }
-/* FIN BLOQUE ENVIAFLORES - JAVASCRIPT */
+/* FIN BLOQUE ANÁHUAC - JAVASCRIPT */
 
 // ═══════════════════════════════════════════════════════════════════════
 // INTRO - NARRATIVA NIVEL DIOS (CON MICRO-HINT ACCIONABLE)
@@ -1476,8 +1466,8 @@ const resetAllButtons = () => {
     const action = btn.dataset.action;
     
     if (span && action) {
-      // Botones con texto (Comprar, Enviaflores)
-      if (action === 'enviaflores') span.textContent = 'Únelo a un regalo';
+      // Botones con texto (Comprar, Anáhuac)
+      if (action === 'anahuac') span.textContent = 'Buscar en Biblioteca';
       else if (action === 'buscalibre-comprar') span.textContent = 'Comprar';
     } else if (emojiSpan && action === 'buscalibre-explorar') {
       // Botón explorar (solo emoji)
@@ -1544,7 +1534,7 @@ btnShare.onclick = () => {
   // URLs precalculadas
   const buscarlibreURL = `https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(libro.titulo + ' ' + libro.autor)}`;
   const explorarURL = `https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(p)}`;
-  const enviafloresURL = getRandomEnviafloresURL();
+  const anahuacURL = getAnahuacCatalogURL(libro.titulo + ' ' + libro.autor);
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // 🚀 RENDER OPTIMIZADO - Template literal con imágenes pre-cargadas
@@ -1592,14 +1582,14 @@ btnShare.onclick = () => {
           </a>
         </div>
         
-        <a href="${enviafloresURL}" 
+        <a href="${anahuacURL}" 
            target="_blank" 
            rel="noopener noreferrer"
-           class="btn-action btn-enviaflores"
-           data-action="enviaflores">
-           <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/enviaflores-logo.png" 
-                alt="Envía Flores">
-           <span>Únelo a un regalo</span>
+           class="btn-action btn-anahuac"
+           data-action="anahuac">
+           <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/logoanahuac.png" 
+                alt="Biblioteca Anáhuac">
+           <span>Buscar en Biblioteca</span>
         </a>
         </div>
     </div>
@@ -1646,7 +1636,7 @@ btnShare.onclick = () => {
     let originalText = '';
     
     if (span) {
-      // Botones con texto (Comprar, Enviaflores)
+      // Botones con texto (Comprar, Anáhuac)
       originalText = span.textContent;
       span.textContent = 'Abriendo...';
     } else if (emojiSpan && action === 'buscalibre-explorar') {
@@ -1660,8 +1650,8 @@ btnShare.onclick = () => {
       track(`${action}_clicked`, { book: libro.titulo }); 
     } catch(_) {}
     
-    // 🎯 TIMEOUT DINÁMICO: Enviaflores necesita más tiempo porque su sitio es lento
-    const timeoutDuration = action === 'enviaflores' ? 8000 : 4000;
+    // 🎯 TIMEOUT DINÁMICO: Anáhuac catalog puede tardar un poco
+    const timeoutDuration = action === 'anahuac' ? 6000 : 4000;
     
     const timerId = setTimeout(() => {
       target.classList.remove('is-opening');
