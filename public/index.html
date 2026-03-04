@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Triggui — Cuando el impulso llega, el libro ya te espera</title>
 
-<link rel="preconnect" href="https://anahuac.primo.exlibrisgroup.com" crossorigin>
+<link rel="preconnect" href="https://www.penguinlibros.com" crossorigin>
 <link rel="preconnect" href="https://www.buscalibre.com.mx" crossorigin>
-<link rel="dns-prefetch" href="https://anahuac.primo.exlibrisgroup.com">
+<link rel="dns-prefetch" href="https://www.penguinlibros.com">
 <link rel="dns-prefetch" href="https://www.buscalibre.com.mx">
 
 <link rel="preload" as="image" href="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png">
 <link rel="preload" as="image" href="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/buscalibre.png">
-<link rel="preload" as="image" href="logoanahuacwhite3.png">
+<link rel="preload" as="image" href="logopenguin.png">
 
 <style id="base-styles">
   html, body { 
@@ -741,9 +741,9 @@ body.webview #tarjetaCard {
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  🌺 BLOQUE ANAHUAC - LOGO DENTRO DEL BOTÓN
+  🌺 BLOQUE PENGUIN - LOGO DENTRO DEL BOTÓN
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-.btn-anahuac {
+.btn-penguin {
   width: 100%;
   background: #080808;
   color: white;
@@ -753,20 +753,20 @@ body.webview #tarjetaCard {
     0 0 0 1px rgba(255,255,255, 0.1);
 }
 
-.btn-anahuac:hover {
+.btn-penguin:hover {
   box-shadow: 
     0 8px 24px -6px rgba(0, 0, 0, 0.5), 
     0 0 0 1px rgba(255,255,255, 0.15);
 }
 
 /* FEEDBACK NIVEL DIOS */
-.btn-anahuac.is-opening {
+.btn-penguin.is-opening {
   opacity: 0.7;
   transform: scale(0.96);
   pointer-events: none;
 }
 
-.btn-anahuac img {
+.btn-penguin img {
   height: 23px;
   width: auto;
   display: block;
@@ -1452,8 +1452,8 @@ const resetAllButtons = () => {
     const action = btn.dataset.action;
     
     if (span && action) {
-      // Botones con texto (Comprar, Anahuac)
-      if (action === 'anahuac') span.textContent = 'Explorar en Anáhuac';
+      // Botones con texto (Comprar, Penguin)
+      if (action === 'penguin') span.textContent = 'Explorar en Penguin';
       else if (action === 'buscalibre-comprar') span.textContent = 'Comprar';
     } else if (emojiSpan && action === 'buscalibre-explorar') {
       // Botón explorar (solo emoji)
@@ -1520,7 +1520,7 @@ btnShare.onclick = () => {
   // URLs precalculadas
   const buscarlibreURL = `https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(libro.titulo + ' ' + libro.autor)}`;
   const explorarURL = `https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(p)}`;
-  const anahuacURL = `https://anahuac.primo.exlibrisgroup.com/discovery/search?institution=52ANAHUAC_INST&vid=52ANAHUAC_INST:UAMX&tab=Todo&mode=Basic&displayMode=full&bulkSize=10&highlight=true&dum=true&query=any,contains,${encodeURIComponent(p)}&displayField=all&pcAvailabiltyMode=true`;
+  const penguinURL = `https://www.penguinlibros.com/mx/?mot_q=${encodeURIComponent(p)}`;
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // 🚀 RENDER OPTIMIZADO - Template literal con imágenes pre-cargadas
@@ -1568,14 +1568,14 @@ btnShare.onclick = () => {
           </a>
         </div>
         
-        <a href="${anahuacURL}" 
+        <a href="${penguinURL}" 
            target="_blank" 
            rel="noopener noreferrer"
-           class="btn-action btn-anahuac"
-           data-action="anahuac">
-           <img src="logoanahuacwhite3.png" 
-                alt="Anáhuac">
-           <span>Explorar Biblioteca</span>
+           class="btn-action btn-penguin"
+           data-action="penguin">
+           <img src="logopenguin.png" 
+                alt="Penguin Random House">
+           <span>Explorar en Penguin</span>
         </a>
         </div>
     </div>
@@ -1622,7 +1622,7 @@ btnShare.onclick = () => {
     let originalText = '';
     
     if (span) {
-      // Botones con texto (Comprar, Anahuac)
+      // Botones con texto (Comprar, Penguin)
       originalText = span.textContent;
       span.textContent = 'Abriendo...';
     } else if (emojiSpan && action === 'buscalibre-explorar') {
@@ -1636,8 +1636,8 @@ btnShare.onclick = () => {
       track(`${action}_clicked`, { book: libro.titulo }); 
     } catch(_) {}
     
-    // 🎯 TIMEOUT DINÁMICO: Anáhuac (antes enviaflores) puede necesitar más tiempo
-    const timeoutDuration = action === 'anahuac' ? 8000 : 4000;
+    // 🎯 TIMEOUT DINÁMICO: Penguin (antes enviaflores) puede necesitar más tiempo
+    const timeoutDuration = action === 'penguin' ? 8000 : 4000;
     
     const timerId = setTimeout(() => {
       target.classList.remove('is-opening');
