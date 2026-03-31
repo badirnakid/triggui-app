@@ -256,6 +256,24 @@
       display: block;
     }
 
+    .stage.silence .asset-panel {
+      display: none;
+    }
+
+    .stage.silence .actions {
+      display: none;
+    }
+
+    .stage.silence .book-kicker {
+      opacity: .38;
+    }
+
+    .stage.silence .book-call {
+      font-size: 22px;
+      line-height: 1.55;
+      color: rgba(255,255,255,.98);
+    }
+
     @media (max-width: 840px) {
       .grid {
         grid-template-columns: 1fr;
@@ -320,6 +338,8 @@
     const reveal = document.getElementById('reveal');
     const success = document.getElementById('success');
     const btnFisico = document.getElementById('btnFisico');
+    const stage = document.querySelector('.stage');
+    const bookCall = document.querySelector('.book-call');
 
     function getChronoOrder(hour) {
       if (hour >= 4 && hour <= 6) return [3, 2, 1, 0];
@@ -370,6 +390,9 @@
     }
 
     btnFisico.addEventListener('click', () => {
+      stage.classList.add('silence');
+      bookCall.textContent = 'Bien. Ahora sal de la pantalla. Abre el libro.';
+      success.textContent = 'Eso es Triggui.';
       success.classList.add('show');
     });
 
