@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Triggui 2.0 · Edición Viva</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      font-family: Arial, sans-serif;
+      background: #0a0d1a;
+      color: #fff;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 760px;
+    }
+
+    .card {
+      background: radial-gradient(circle at top left, #1a2147 0%, #0d1229 55%, #090d1d 100%);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 28px;
+      padding: 32px;
+      box-shadow: 0 24px 70px rgba(0,0,0,.45);
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      opacity: .65;
+      margin-bottom: 16px;
+    }
+
+    .word {
+      display: inline-block;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #4fd1ff, #7c5cff);
+      color: #fff;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      font-size: 44px;
+      line-height: 1.02;
+      margin: 0 0 10px 0;
+    }
+
+    .author {
+      font-size: 18px;
+      opacity: .78;
+      margin-bottom: 24px;
+    }
+
+    .desc {
+      font-size: 20px;
+      line-height: 1.55;
+      color: rgba(255,255,255,.9);
+      margin-bottom: 24px;
+    }
+
+    .meta {
+      font-size: 13px;
+      opacity: .55;
+    }
+
+    .error {
+      color: #ffb4b4;
+      font-weight: 700;
+    }
+
+    @media (max-width: 640px) {
+      .card {
+        padding: 24px;
+        border-radius: 22px;
+      }
+
+      h1 {
+        font-size: 34px;
+      }
+
+      .desc {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card" id="app">
+      <div class="eyebrow">Triggui 2.0 · Edición Viva</div>
+      <div>Cargando edición...</div>
+    </section>
+  </main>
+
+  <script>
+    const app = document.getElementById('app');
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+
+    async function cargar() {
+      if (!id) {
+        app.innerHTML = `
+          <div class="eyebrow">Triggui 2.0 · Edición Viva</div>
+          <div class="error">Falta el parámetro ?id=...</div>
+        `;
+        return;
+      }
+
+      try {
+        const res = await fetch('/lab/ediciones.json', { cache: 'no-store' });
+        const data = await res.json();
+        const edicion = (data.ediciones || []).find(e => e.id === id);
+
+        if (!edicion) {
+          app.innerHTML = `
+            <div class="eyebrow">Triggui 2.0 · Edición Viva</div>
+            <div class="error">No encontré la edición ${id}</div>
+          `;
+          return;
+        }
+
+        app.innerHTML = `
+          <div class="eyebrow">Triggui 2.0 · Edición Viva</div>
+          <div class="word">${edicion.palabra}</div>
+          <h1>${edicion.titulo}</h1>
+          <div class="author">${edicion.autor}</div>
+          <div class="desc">${edicion.descripcion}</div>
+          <div class="meta">id: ${edicion.id}</div>
+        `;
+      } catch (err) {
+        app.innerHTML = `
+          <div class="eyebrow">Triggui 2.0 · Edición Viva</div>
+          <div class="error">Error cargando la edición.</div>
+        `;
+      }
+    }
+
+    cargar();
+  </script>
+</body>
+</html>
