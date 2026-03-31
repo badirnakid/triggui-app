@@ -1,0 +1,30 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630">
+      <stop stop-color="#10181B"/>
+      <stop offset="0.5" stop-color="#13252A"/>
+      <stop offset="1" stop-color="#0B1114"/>
+    </linearGradient>
+    <linearGradient id="pill" x1="90" y1="120" x2="300" y2="120">
+      <stop stop-color="#47E5C2"/>
+      <stop offset="1" stop-color="#4E8BFF"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="60" y="50" width="1080" height="530" rx="34" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.08)"/>
+
+  <text x="92" y="98" fill="white" fill-opacity="0.56" font-family="Arial, Helvetica, sans-serif" font-size="22" letter-spacing="3">TRIGGUI 2.0 · EDICIÓN VIVA</text>
+
+  <rect x="92" y="122" width="180" height="58" rx="29" fill="url(#pill)"/>
+  <text x="182" y="159" text-anchor="middle" fill="white" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700">Enfoque</text>
+
+  <text x="92" y="250" fill="white" font-family="Arial, Helvetica, sans-serif" font-size="76" font-weight="700">El poder de la</text>
+  <text x="92" y="332" fill="white" font-family="Arial, Helvetica, sans-serif" font-size="76" font-weight="700">concentración</text>
+  <text x="92" y="414" fill="white" font-family="Arial, Helvetica, sans-serif" font-size="76" font-weight="700">absoluta</text>
+
+  <text x="92" y="462" fill="white" fill-opacity="0.72" font-family="Arial, Helvetica, sans-serif" font-size="34">Dandapani</text>
+
+  <text x="92" y="528" fill="white" fill-opacity="0.92" font-family="Arial, Helvetica, sans-serif" font-size="30">La claridad mental transforma tus acciones en</text>
+  <text x="92" y="566" fill="white" fill-opacity="0.92" font-family="Arial, Helvetica, sans-serif" font-size="30">logros extraordinarios.</text>
+</svg>

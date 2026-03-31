@@ -164,7 +164,7 @@ def render_edicion(edicion):
         </div>
 
         <div class="preview">
-          <img src="/lab/og-demo.svg" alt="Vista previa OG" />
+          <img src="{og_image}" alt="Vista previa OG" />
         </div>
       </div>
     </section>
