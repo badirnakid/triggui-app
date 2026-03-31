@@ -368,18 +368,30 @@ def render_edicion(edicion):
     const reveal = document.getElementById('reveal');
     const success = document.getElementById('success');
     const btnFisico = document.getElementById('btnFisico');
+
+    function getChronoOrder(hour) {{
+      if (hour >= 4 && hour <= 6) return [3, 2, 1, 0];
+      if (hour >= 7 && hour <= 11) return [0, 2, 1, 3];
+      if (hour >= 12 && hour <= 16) return [2, 0, 1, 3];
+      if (hour >= 17 && hour <= 20) return [1, 3, 2, 0];
+      return [3, 1, 2, 0];
+    }}
+
+    const currentHour = new Date().getHours();
+    const chronoOrder = getChronoOrder(currentHour);
     const revealIndex = Math.floor(Math.random() * 4);
 
     function renderBlocks() {{
-      grid.innerHTML = state.palabras.map((palabra, idx) => `
+      grid.innerHTML = chronoOrder.map((realIdx, idx) => `
         <button
           class="block"
           data-idx="${{idx}}"
-          style="background:${{state.colores[idx]}}; color:${{state.textColors[idx]}}"
+          data-real-idx="${{realIdx}}"
+          style="background:${{state.colores[realIdx]}}; color:${{state.textColors[realIdx]}}"
         >
           <div class="word-chip">Bloque ${{idx + 1}}</div>
-          <div class="label">${{palabra}}</div>
-          <div class="phrase">${{state.frases[idx]}}</div>
+          <div class="label">${{state.palabras[realIdx]}}</div>
+          <div class="phrase">${{state.frases[realIdx]}}</div>
         </button>
       `).join('');
 
