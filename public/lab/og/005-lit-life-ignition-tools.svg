@@ -1,0 +1,29 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630">
+      <stop stop-color="#0D1229"/>
+      <stop offset="0.5" stop-color="#111833"/>
+      <stop offset="1" stop-color="#090D1D"/>
+    </linearGradient>
+    <linearGradient id="pill" x1="90" y1="120" x2="340" y2="120">
+      <stop stop-color="#4FD1FF"/>
+      <stop offset="1" stop-color="#7C5CFF"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="60" y="50" width="1080" height="530" rx="34" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.08)"/>
+
+  <text x="92" y="98" fill="white" fill-opacity="0.56" font-family="Arial, Helvetica, sans-serif" font-size="22" letter-spacing="3">TRIGGUI 2.0 · EDICIÓN VIVA</text>
+
+  <rect x="92" y="122" width="240" height="58" rx="29" fill="url(#pill)"/>
+  <text x="212" y="159" text-anchor="middle" fill="white" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700">entusiasmo</text>
+
+  <text x="92" y="250" fill="white" font-family="Arial, Helvetica, sans-serif" font-size="74" font-weight="700">LIT Life ignition</text><text x="92" y="328" fill="white" font-family="Arial, Helvetica, sans-serif" font-size="74" font-weight="700">tools</text>
+
+  <text x="92" y="428" fill="white" fill-opacity="0.72" font-family="Arial, Helvetica, sans-serif" font-size="34">Jeff Karp</text>
+
+  <text x="92" y="488" fill="white" fill-opacity="0.92" font-family="Arial, Helvetica, sans-serif" font-size="30">✨ Explora nuevas ideas en solo un minuto.</text>
+
+  <text x="92" y="540" fill="white" fill-opacity="0.44" font-family="Arial, Helvetica, sans-serif" font-size="22">Abre. Un Libro. Físico.</text>
+</svg>

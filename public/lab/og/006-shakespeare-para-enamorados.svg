@@ -1,0 +1,29 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630">
+      <stop stop-color="#10181B"/>
+      <stop offset="0.5" stop-color="#13252A"/>
+      <stop offset="1" stop-color="#0B1114"/>
+    </linearGradient>
+    <linearGradient id="pill" x1="90" y1="120" x2="340" y2="120">
+      <stop stop-color="#47E5C2"/>
+      <stop offset="1" stop-color="#4E8BFF"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="60" y="50" width="1080" height="530" rx="34" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.08)"/>
+
+  <text x="92" y="98" fill="white" fill-opacity="0.56" font-family="Arial, Helvetica, sans-serif" font-size="22" letter-spacing="3">TRIGGUI 2.0 · EDICIÓN VIVA</text>
+
+  <rect x="92" y="122" width="240" height="58" rx="29" fill="url(#pill)"/>
+  <text x="212" y="159" text-anchor="middle" fill="white" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700">anhelo</text>
+
+  <text x="92" y="250" fill="white" font-family="Arial, Helvetica, sans-serif" font-size="74" font-weight="700">Shakespeare para</text><text x="92" y="328" fill="white" font-family="Arial, Helvetica, sans-serif" font-size="74" font-weight="700">enamorados</text>
+
+  <text x="92" y="428" fill="white" fill-opacity="0.72" font-family="Arial, Helvetica, sans-serif" font-size="34">Allan Percy</text>
+
+  <text x="92" y="488" fill="white" fill-opacity="0.92" font-family="Arial, Helvetica, sans-serif" font-size="30">💔 Reflexiona sobre un amor perdido hoy.</text>
+
+  <text x="92" y="540" fill="white" fill-opacity="0.44" font-family="Arial, Helvetica, sans-serif" font-size="22">Abre. Un Libro. Físico.</text>
+</svg>
