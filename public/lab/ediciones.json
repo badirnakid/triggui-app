@@ -1,19 +1,51 @@
 {
   "ediciones": [
     {
-      "id": "demo-001",
-      "titulo": "El cisne negro",
-      "autor": "Nassim Nicholas Taleb",
-      "palabra": "Incertidumbre",
-      "descripcion": "Abraza la incertidumbre y transforma el riesgo en oportunidad.",
+      "id": "001-el-libro-del-niksen",
+      "titulo": "El libro del Niksen",
+      "autor": "Olga Mecking",
+      "palabra": "tranquilidad",
+      "descripcion": "🌱 Respira y siente el momento presente.",
       "ogImage": "/lab/og-demo-001.svg"
     },
     {
-      "id": "demo-002",
-      "titulo": "El poder de la concentración absoluta",
-      "autor": "Dandapani",
-      "palabra": "Enfoque",
-      "descripcion": "La claridad mental transforma tus acciones en logros extraordinarios.",
+      "id": "002-aprende-a-silenciar-la-mente",
+      "titulo": "Aprende a silenciar la mente",
+      "autor": "Osho",
+      "palabra": "serenidad",
+      "descripcion": "🧘‍♂️ Observa tu respiración por un minuto.",
+      "ogImage": "/lab/og-demo-002.svg"
+    },
+    {
+      "id": "003-piensa-como-un-monje",
+      "titulo": "Piensa como un monje",
+      "autor": "Jay Shetty",
+      "palabra": "introspección",
+      "descripcion": "🧘‍♂️ Medita sobre tus pensamientos hoy.",
+      "ogImage": "/lab/og-demo-001.svg"
+    },
+    {
+      "id": "004-enam-rate-del-problema-no-de-la-solu",
+      "titulo": "Enamórate del problema no de la solución",
+      "autor": "Uri Levine",
+      "palabra": "desasosiego",
+      "descripcion": "🔍 Identifica un problema real hoy mismo.",
+      "ogImage": "/lab/og-demo-002.svg"
+    },
+    {
+      "id": "005-lit-life-ignition-tools",
+      "titulo": "LIT Life ignition tools",
+      "autor": "Jeff Karp",
+      "palabra": "entusiasmo",
+      "descripcion": "✨ Explora nuevas ideas en solo un minuto.",
+      "ogImage": "/lab/og-demo-001.svg"
+    },
+    {
+      "id": "006-shakespeare-para-enamorados",
+      "titulo": "Shakespeare para enamorados",
+      "autor": "Allan Percy",
+      "palabra": "anhelo",
+      "descripcion": "💔 Reflexiona sobre un amor perdido hoy.",
       "ogImage": "/lab/og-demo-002.svg"
     }
   ]
