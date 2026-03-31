@@ -1,0 +1,51 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0D1229"/>
+      <stop offset="0.5" stop-color="#111833"/>
+      <stop offset="1" stop-color="#090D1D"/>
+    </linearGradient>
+    <linearGradient id="pill" x1="180" y1="170" x2="470" y2="170" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4FD1FF"/>
+      <stop offset="1" stop-color="#7C5CFF"/>
+    </linearGradient>
+    <radialGradient id="glow1" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1030 120) rotate(90) scale(220 260)">
+      <stop stop-color="#4FD1FF" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#4FD1FF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(170 540) rotate(90) scale(240 300)">
+      <stop stop-color="#7C5CFF" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#7C5CFF" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow" x="0" y="0" width="1200" height="630" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="20" stdDeviation="40" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="630" rx="0" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow1)"/>
+  <rect width="1200" height="630" fill="url(#glow2)"/>
+
+  <g filter="url(#shadow)">
+    <rect x="60" y="50" width="1080" height="530" rx="34" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.08)"/>
+  </g>
+
+  <text x="92" y="106" fill="white" fill-opacity="0.56" font-family="Arial, Helvetica, sans-serif" font-size="22" letter-spacing="3.5">TRIGGUI 2.0 · EDICIÓN VIVA</text>
+
+  <rect x="92" y="136" width="236" height="58" rx="29" fill="url(#pill)"/>
+  <text x="210" y="173" text-anchor="middle" fill="white" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700">Incertidumbre</text>
+
+  <text x="92" y="280" fill="white" font-family="Arial, Helvetica, sans-serif" font-size="86" font-weight="700">El cisne negro</text>
+  <text x="92" y="334" fill="white" fill-opacity="0.72" font-family="Arial, Helvetica, sans-serif" font-size="34">Nassim Nicholas Taleb</text>
+
+  <foreignObject x="92" y="380" width="760" height="120">
+    <div xmlns="http://www.w3.org/1999/xhtml" style="color: rgba(255,255,255,.92); font-family: Arial, Helvetica, sans-serif; font-size: 34px; line-height: 1.35;">
+      Abraza la incertidumbre y transforma el riesgo en oportunidad.
+    </div>
+  </foreignObject>
+
+  <text x="92" y="546" fill="white" fill-opacity="0.44" font-family="Arial, Helvetica, sans-serif" font-size="22">Abre. Un Libro. Físico.</text>
+
+  <circle cx="1038" cy="470" r="56" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)"/>
+  <text x="1038" y="482" text-anchor="middle" fill="white" font-family="Arial, Helvetica, sans-serif" font-size="44">📖</text>
+</svg>
