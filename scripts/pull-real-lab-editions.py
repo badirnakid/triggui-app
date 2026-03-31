@@ -25,15 +25,19 @@ ediciones = []
 for i, libro in enumerate(libros[:LIMIT], start=1):
     titulo = clean_text(libro.get("titulo"))
     autor = clean_text(libro.get("autor"))
-    palabras = libro.get("palabras") or []
-    frases = libro.get("frases") or []
 
-    palabra = clean_text(palabras[0] if palabras else "Señal")
-    descripcion = clean_text(frases[0] if frases else "Abre un libro físico que tengas cerca.")
+    palabras = [clean_text(x) for x in (libro.get("palabras") or [])][:4]
+    frases = [clean_text(x) for x in (libro.get("frases") or [])][:4]
+
+    while len(palabras) < 4:
+        palabras.append(f"Señal {len(palabras)+1}")
+
+    while len(frases) < 4:
+        frases.append("Abre un libro físico que tengas cerca.")
+
+    palabra = palabras[0]
+    descripcion = frases[0]
     edicion_id = f"{i:03d}-{slugify(titulo)[:36]}"
-
-    # por ahora seguimos usando assets del lab
-    og_image = "/lab/og-demo-001.svg" if i % 2 else "/lab/og-demo-002.svg"
 
     ediciones.append({
         "id": edicion_id,
@@ -41,7 +45,12 @@ for i, libro in enumerate(libros[:LIMIT], start=1):
         "autor": autor,
         "palabra": palabra,
         "descripcion": descripcion,
-        "ogImage": og_image
+        "palabras": palabras,
+        "frases": frases,
+        "fondo": libro.get("fondo", "#0a0d1a"),
+        "colores": (libro.get("colores") or ["#4FD1FF", "#7C5CFF", "#47E5C2", "#FFD166"])[:4],
+        "textColors": (libro.get("textColors") or ["#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF"])[:4],
+        "ogImage": f"/lab/og/{edicion_id}.svg"
     })
 
 payload = {"ediciones": ediciones}
@@ -49,4 +58,4 @@ OUT_FILE.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding=
 
 print(f"OK: {OUT_FILE} generado con {len(ediciones)} edición(es) reales")
 for e in ediciones:
-    print(f"- {e['id']} -> {e['titulo']}")
+    print(f'- {e["id"]} -> {e["titulo"]}')

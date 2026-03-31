@@ -6,6 +6,31 @@
       "autor": "Olga Mecking",
       "palabra": "tranquilidad",
       "descripcion": "🌱 Respira y siente el momento presente.",
+      "palabras": [
+        "tranquilidad",
+        "presencia",
+        "autenticidad",
+        "resiliencia"
+      ],
+      "frases": [
+        "🌱 Respira y siente el momento presente.",
+        "☕ Tómate un instante para disfrutar tu café.",
+        "📖 Lee una página de un libro sin prisa.",
+        "🧘‍♀️ Cierra los ojos y escucha tus pensamientos."
+      ],
+      "fondo": "#2A2A2A",
+      "colores": [
+        "#A8DADC",
+        "#457B9D",
+        "#F1FAEE",
+        "#FDC500"
+      ],
+      "textColors": [
+        "#000000",
+        "#FFFFFF",
+        "#000000",
+        "#000000"
+      ],
       "ogImage": "/lab/og/001-el-libro-del-niksen.svg"
     },
     {
@@ -14,6 +39,31 @@
       "autor": "Osho",
       "palabra": "serenidad",
       "descripcion": "🧘‍♂️ Observa tu respiración por un minuto.",
+      "palabras": [
+        "serenidad",
+        "autoobservación",
+        "liberación",
+        "conexión"
+      ],
+      "frases": [
+        "🧘‍♂️ Observa tu respiración por un minuto.",
+        "🌱 Siembra una semilla de gratitud hoy.",
+        "🌊 Escucha el sonido del agua durante 60 seg.",
+        "✨ Cierra los ojos y siente tu cuerpo en calma."
+      ],
+      "fondo": "#1A1A1A",
+      "colores": [
+        "#B5E48C",
+        "#99D98C",
+        "#F9C74F",
+        "#F94144"
+      ],
+      "textColors": [
+        "#000000",
+        "#000000",
+        "#000000",
+        "#FFFFFF"
+      ],
       "ogImage": "/lab/og/002-aprende-a-silenciar-la-mente.svg"
     },
     {
@@ -22,6 +72,31 @@
       "autor": "Jay Shetty",
       "palabra": "introspección",
       "descripcion": "🧘‍♂️ Medita sobre tus pensamientos hoy.",
+      "palabras": [
+        "introspección",
+        "transformación",
+        "autodisciplina",
+        "propósito"
+      ],
+      "frases": [
+        "🧘‍♂️ Medita sobre tus pensamientos hoy.",
+        "🌱 Cultiva un nuevo hábito positivo ahora.",
+        "🔍 Reflexiona sobre tu propósito vital.",
+        "📖 Lee una página que te inspire hoy."
+      ],
+      "fondo": "#1D3557",
+      "colores": [
+        "#2A9D8F",
+        "#E9C46A",
+        "#F4A261",
+        "#264653"
+      ],
+      "textColors": [
+        "#FFFFFF",
+        "#000000",
+        "#000000",
+        "#FFFFFF"
+      ],
       "ogImage": "/lab/og/003-piensa-como-un-monje.svg"
     },
     {
@@ -30,6 +105,31 @@
       "autor": "Uri Levine",
       "palabra": "desasosiego",
       "descripcion": "🔍 Identifica un problema real hoy mismo.",
+      "palabras": [
+        "desasosiego",
+        "frustración",
+        "anhelo",
+        "despertar"
+      ],
+      "frases": [
+        "🔍 Identifica un problema real hoy mismo.",
+        "💡 Reflexiona sobre lo que realmente necesitas.",
+        "📊 Anota las ineficiencias que te rodean.",
+        "🚀 Piensa en soluciones creativas para esos problemas."
+      ],
+      "fondo": "#1A1A1A",
+      "colores": [
+        "#2A9D8F",
+        "#F4A261",
+        "#E9C46A",
+        "#264653"
+      ],
+      "textColors": [
+        "#FFFFFF",
+        "#000000",
+        "#000000",
+        "#FFFFFF"
+      ],
       "ogImage": "/lab/og/004-enam-rate-del-problema-no-de-la-solu.svg"
     },
     {
@@ -38,6 +138,31 @@
       "autor": "Jeff Karp",
       "palabra": "entusiasmo",
       "descripcion": "✨ Explora nuevas ideas en solo un minuto.",
+      "palabras": [
+        "entusiasmo",
+        "inspiración",
+        "curiosidad",
+        "energía"
+      ],
+      "frases": [
+        "✨ Explora nuevas ideas en solo un minuto.",
+        "🔥 Despierta tu creatividad con una breve pausa.",
+        "🚀 Comparte tus pensamientos y siente la conexión.",
+        "🌟 Imagina tu futuro ideal en menos de un minuto."
+      ],
+      "fondo": "#2a2a2a",
+      "colores": [
+        "#1D3557",
+        "#F1FAEE",
+        "#A8DADC",
+        "#F4A261"
+      ],
+      "textColors": [
+        "#FFFFFF",
+        "#000000",
+        "#000000",
+        "#000000"
+      ],
       "ogImage": "/lab/og/005-lit-life-ignition-tools.svg"
     },
     {
@@ -46,6 +171,31 @@
       "autor": "Allan Percy",
       "palabra": "anhelo",
       "descripcion": "💔 Reflexiona sobre un amor perdido hoy.",
+      "palabras": [
+        "anhelo",
+        "desilusión",
+        "seducción",
+        "celos"
+      ],
+      "frases": [
+        "💔 Reflexiona sobre un amor perdido hoy.",
+        "🌹 Escribe una carta a tu amor ideal ahora.",
+        "🔥 Practica una técnica de seducción sencilla.",
+        "😟 Identifica un celos que te afecta y suéltalo."
+      ],
+      "fondo": "#1A1A1A",
+      "colores": [
+        "#D94F3B",
+        "#F1A7A2",
+        "#FFEB84",
+        "#6C9CD0"
+      ],
+      "textColors": [
+        "#FFFFFF",
+        "#000000",
+        "#000000",
+        "#FFFFFF"
+      ],
       "ogImage": "/lab/og/006-shakespeare-para-enamorados.svg"
     }
   ]
