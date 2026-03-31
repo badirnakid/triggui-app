@@ -25,133 +25,343 @@
       padding: 0;
       min-height: 100%;
       font-family: Arial, sans-serif;
-      background: #0a0d1a;
+      background: #2a2a2a;
       color: #fff;
     }
 
     body {
-      display: flex;
-      align-items: center;
-      justify-content: center;
       padding: 24px;
     }
 
     .wrap {
       width: 100%;
-      max-width: 900px;
+      max-width: 1100px;
+      margin: 0 auto;
     }
 
-    .card {
-      background: radial-gradient(circle at top left, #1a2147 0%, #0d1229 55%, #090d1d 100%);
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 28px;
-      padding: 32px;
-      box-shadow: 0 24px 70px rgba(0,0,0,.45);
+    .top {
+      margin-bottom: 22px;
     }
 
     .eyebrow {
       font-size: 12px;
       letter-spacing: .14em;
       text-transform: uppercase;
-      opacity: .65;
-      margin-bottom: 16px;
-    }
-
-    .word {
-      display: inline-block;
-      padding: 10px 16px;
-      border-radius: 999px;
-      background: linear-gradient(135deg, #4fd1ff, #7c5cff);
-      color: #fff;
-      font-weight: 700;
-      margin-bottom: 18px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: 1.1fr .9fr;
-      gap: 28px;
-      align-items: center;
+      opacity: .6;
+      margin-bottom: 12px;
     }
 
     h1 {
-      font-size: 44px;
+      font-size: 42px;
       line-height: 1.02;
-      margin: 0 0 10px 0;
+      margin: 0 0 8px 0;
     }
 
     .author {
       font-size: 18px;
-      opacity: .78;
-      margin-bottom: 24px;
+      opacity: .74;
+      margin-bottom: 12px;
     }
 
-    .desc {
-      font-size: 20px;
+    .hint {
+      font-size: 16px;
       line-height: 1.55;
-      color: rgba(255,255,255,.9);
-      margin-bottom: 24px;
+      color: rgba(255,255,255,.78);
+      max-width: 760px;
+      margin: 0;
     }
 
-    .meta {
-      font-size: 13px;
-      opacity: .55;
+    .stage {
+      background: radial-gradient(circle at top left, rgba(255,255,255,.05) 0%, rgba(255,255,255,.02) 60%, rgba(255,255,255,.01) 100%);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 28px;
+      padding: 24px;
+      box-shadow: 0 24px 70px rgba(0,0,0,.35);
+      overflow: hidden;
     }
 
-    .preview {
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .block {
+      appearance: none;
+      border: none;
       width: 100%;
-      border-radius: 22px;
+      min-height: 200px;
+      border-radius: 24px;
+      padding: 20px;
+      text-align: left;
+      font: inherit;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 16px 36px rgba(0,0,0,.16);
+      transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+    }
+
+    .block:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 40px rgba(0,0,0,.22);
+    }
+
+    .block.dim {
+      opacity: .82;
+    }
+
+    .word-chip {
+      display: inline-block;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.16);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .label {
+      font-size: 34px;
+      line-height: 1.02;
+      font-weight: 800;
+      max-width: 90%;
+    }
+
+    .phrase {
+      display: none;
+      font-size: 24px;
+      line-height: 1.35;
+      font-weight: 700;
+      max-width: 92%;
+      margin-top: 8px;
+    }
+
+    .block.show-phrase .label,
+    .block.show-phrase .word-chip {
+      display: none;
+    }
+
+    .block.show-phrase .phrase {
+      display: block;
+    }
+
+    .reveal {
+      display: none;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .reveal.show {
+      display: grid;
+    }
+
+    .book-panel {
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 24px;
+      padding: 24px;
+    }
+
+    .book-kicker {
+      font-size: 12px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      opacity: .58;
+      margin-bottom: 14px;
+    }
+
+    .book-title {
+      font-size: 42px;
+      line-height: 1.02;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .book-author {
+      font-size: 20px;
+      opacity: .74;
+      margin-bottom: 18px;
+    }
+
+    .book-desc {
+      font-size: 20px;
+      line-height: 1.5;
+      color: rgba(255,255,255,.86);
+      margin-bottom: 20px;
+    }
+
+    .book-call {
+      font-size: 18px;
+      line-height: 1.5;
+      color: rgba(255,255,255,.95);
+      margin-bottom: 22px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      appearance: none;
+      border: none;
+      display: inline-block;
+      text-decoration: none;
+      border-radius: 999px;
+      padding: 12px 16px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .btn-main {
+      background: linear-gradient(135deg, #4fd1ff, #7c5cff);
+      color: #fff;
+    }
+
+    .btn-sub {
+      background: rgba(255,255,255,.08);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,.1);
+    }
+
+    .asset-panel {
+      border-radius: 24px;
       overflow: hidden;
       border: 1px solid rgba(255,255,255,.08);
-      box-shadow: 0 20px 60px rgba(0,0,0,.35);
       background: rgba(255,255,255,.02);
+      box-shadow: 0 20px 60px rgba(0,0,0,.25);
     }
 
-    .preview img {
+    .asset-panel img {
       display: block;
       width: 100%;
       height: auto;
     }
 
-    @media (max-width: 760px) {
+    .success {
+      display: none;
+      margin-top: 18px;
+      font-size: 16px;
+      color: #b8ffcf;
+      font-weight: 700;
+    }
+
+    .success.show {
+      display: block;
+    }
+
+    @media (max-width: 840px) {
       .grid {
         grid-template-columns: 1fr;
       }
 
-      .card {
-        padding: 24px;
-        border-radius: 22px;
+      .reveal.show {
+        grid-template-columns: 1fr;
       }
 
-      h1 {
+      .label {
+        font-size: 28px;
+      }
+
+      .phrase {
+        font-size: 22px;
+      }
+
+      .book-title {
         font-size: 34px;
-      }
-
-      .desc {
-        font-size: 18px;
       }
     }
   </style>
 </head>
 <body>
   <main class="wrap">
-    <section class="card">
+    <section class="top">
       <div class="eyebrow">Triggui 2.0 · Edición Viva</div>
+      <h1>LIT Life ignition tools</h1>
+      <div class="author">Jeff Karp</div>
+      <p class="hint">Elige una palabra. Verás un libro. Abre uno físico que tengas cerca.</p>
+    </section>
 
-      <div class="grid">
-        <div>
-          <div class="word">entusiasmo</div>
-          <h1>LIT Life ignition tools</h1>
-          <div class="author">Jeff Karp</div>
-          <div class="desc">✨ Explora nuevas ideas en solo un minuto.</div>
-          <div class="meta">id: 005-lit-life-ignition-tools</div>
+    <section class="stage">
+      <div id="grid" class="grid"></div>
+
+      <div id="reveal" class="reveal">
+        <div class="book-panel">
+          <div class="book-kicker">Revelación</div>
+          <div class="book-title">LIT Life ignition tools</div>
+          <div class="book-author">Jeff Karp</div>
+          <div class="book-desc">✨ Explora nuevas ideas en solo un minuto.</div>
+          <div class="book-call">Cierra esto. Abre un libro físico que tengas cerca.</div>
+
+          <div class="actions">
+            <a class="btn btn-sub" href="/lab/">Volver al laboratorio</a>
+            <button class="btn btn-main" id="btnFisico">📖 Abrí un libro físico</button>
+          </div>
+
+          <div id="success" class="success">Bien. Eso es Triggui.</div>
         </div>
 
-        <div class="preview">
-          <img src="/lab/og/005-lit-life-ignition-tools.svg" alt="Vista previa OG" />
+        <div class="asset-panel">
+          <img src="/lab/og/005-lit-life-ignition-tools.svg" alt="Vista previa de la edición" />
         </div>
       </div>
     </section>
   </main>
+
+  <script>
+    const state = {"id": "005-lit-life-ignition-tools", "titulo": "LIT Life ignition tools", "autor": "Jeff Karp", "palabra": "entusiasmo", "descripcion": "✨ Explora nuevas ideas en solo un minuto.", "palabras": ["entusiasmo", "inspiración", "curiosidad", "energía"], "frases": ["✨ Explora nuevas ideas en solo un minuto.", "🔥 Despierta tu creatividad con una breve pausa.", "🚀 Comparte tus pensamientos y siente la conexión.", "🌟 Imagina tu futuro ideal en menos de un minuto."], "colores": ["#1D3557", "#F1FAEE", "#A8DADC", "#F4A261"], "textColors": ["#FFFFFF", "#000000", "#000000", "#000000"], "fondo": "#2a2a2a", "ogImage": "/lab/og/005-lit-life-ignition-tools.svg"};
+    const grid = document.getElementById('grid');
+    const reveal = document.getElementById('reveal');
+    const success = document.getElementById('success');
+    const btnFisico = document.getElementById('btnFisico');
+    const revealIndex = Math.floor(Math.random() * 4);
+
+    function renderBlocks() {
+      grid.innerHTML = state.palabras.map((palabra, idx) => `
+        <button
+          class="block"
+          data-idx="${idx}"
+          style="background:${state.colores[idx]}; color:${state.textColors[idx]}"
+        >
+          <div class="word-chip">Bloque ${idx + 1}</div>
+          <div class="label">${palabra}</div>
+          <div class="phrase">${state.frases[idx]}</div>
+        </button>
+      `).join('');
+
+      const blocks = [...grid.querySelectorAll('.block')];
+
+      blocks.forEach((block, idx) => {
+        block.addEventListener('click', () => {
+          if (idx === revealIndex) {
+            grid.style.display = 'none';
+            reveal.classList.add('show');
+            return;
+          }
+
+          const already = block.classList.contains('show-phrase');
+          blocks.forEach(b => b.classList.remove('show-phrase', 'dim'));
+          if (!already) {
+            block.classList.add('show-phrase');
+            blocks.forEach((b, j) => {
+              if (j !== idx) b.classList.add('dim');
+            });
+          }
+        });
+      });
+    }
+
+    btnFisico.addEventListener('click', () => {
+      success.classList.add('show');
+    });
+
+    renderBlocks();
+  </script>
 </body>
 </html>
