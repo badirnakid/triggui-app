@@ -3,76 +3,198 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Triggui 2.0 Lab</title>
+  <title>Triggui 2.0 Lab · Índice interno</title>
   <style>
     * { box-sizing: border-box; }
+
     html, body {
       margin: 0;
       padding: 0;
       min-height: 100%;
       font-family: Arial, sans-serif;
-      background: #0e0f1b;
-      color: #ffffff;
+      background: #0a0d1a;
+      color: #fff;
     }
+
     body {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
+      padding: 28px;
     }
-    .card {
+
+    .wrap {
       width: 100%;
-      max-width: 720px;
-      background: linear-gradient(135deg, #16182a 0%, #101223 100%);
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 24px;
-      padding: 32px;
-      box-shadow: 0 20px 60px rgba(0,0,0,.35);
+      max-width: 1100px;
+      margin: 0 auto;
     }
+
+    .top {
+      margin-bottom: 28px;
+    }
+
     .eyebrow {
       font-size: 12px;
-      letter-spacing: .12em;
+      letter-spacing: .14em;
       text-transform: uppercase;
-      opacity: .7;
-      margin-bottom: 16px;
+      opacity: .6;
+      margin-bottom: 12px;
     }
+
     h1 {
-      font-size: 40px;
-      line-height: 1.05;
-      margin: 0 0 16px 0;
+      font-size: 42px;
+      line-height: 1.02;
+      margin: 0 0 12px 0;
     }
-    p {
+
+    .lead {
       font-size: 18px;
       line-height: 1.6;
-      margin: 0 0 14px 0;
-      color: rgba(255,255,255,.86);
+      color: rgba(255,255,255,.8);
+      max-width: 760px;
+      margin: 0;
     }
-    .ok {
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+      margin-top: 28px;
+    }
+
+    .card {
+      background: radial-gradient(circle at top left, #1a2147 0%, #0d1229 55%, #090d1d 100%);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 18px 50px rgba(0,0,0,.35);
+    }
+
+    .word {
       display: inline-block;
-      margin-top: 18px;
-      padding: 10px 16px;
+      padding: 8px 14px;
       border-radius: 999px;
-      background: linear-gradient(135deg, #55d6ff, #7a5cff);
-      color: white;
+      background: linear-gradient(135deg, #4fd1ff, #7c5cff);
+      color: #fff;
       font-weight: 700;
       font-size: 14px;
-      text-decoration: none;
+      margin-bottom: 16px;
     }
-    .small {
-      margin-top: 18px;
-      font-size: 13px;
-      opacity: .65;
+
+    .title {
+      font-size: 28px;
+      line-height: 1.05;
+      font-weight: 700;
+      margin: 0 0 8px 0;
+    }
+
+    .author {
+      font-size: 16px;
+      opacity: .72;
+      margin-bottom: 16px;
+    }
+
+    .desc {
+      font-size: 16px;
+      line-height: 1.55;
+      color: rgba(255,255,255,.86);
+      margin-bottom: 18px;
+      min-height: 72px;
+    }
+
+    .meta {
+      font-size: 12px;
+      opacity: .5;
+      margin-bottom: 16px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 10px 14px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .btn-main {
+      background: linear-gradient(135deg, #4fd1ff, #7c5cff);
+      color: #fff;
+    }
+
+    .btn-sub {
+      border: 1px solid rgba(255,255,255,.14);
+      color: rgba(255,255,255,.82);
+    }
+
+    .status {
+      margin-top: 24px;
+      font-size: 14px;
+      opacity: .62;
+    }
+
+    .error {
+      color: #ffb4b4;
+      font-weight: 700;
+      margin-top: 24px;
     }
   </style>
 </head>
 <body>
-  <main class="card">
-    <div class="eyebrow">Triggui 2.0 · Laboratorio</div>
-    <h1>Fase 0 viva.<br>Sin tocar 1.0.</h1>
-    <p>Este laboratorio existe para construir Triggui 2.0 al lado de la experiencia actual.</p>
-    <p>Si ves esta página en Vercel preview, vamos bien.</p>
-    <a class="ok" href="/lab/ediciones.json">Ver ediciones.json</a>
-    <div class="small">Ruta segura: /lab/</div>
+  <main class="wrap">
+    <section class="top">
+      <div class="eyebrow">Triggui 2.0 · Laboratorio interno</div>
+      <h1>Índice vivo de ediciones</h1>
+      <p class="lead">
+        Esto no es producto final. Es mesa de trabajo para revisar rápido las ediciones vivas
+        sin tocar Triggui 1.0.
+      </p>
+      <div class="status" id="status">Cargando ediciones...</div>
+    </section>
+
+    <section class="grid" id="grid"></section>
   </main>
+
+  <script>
+    const grid = document.getElementById('grid');
+    const status = document.getElementById('status');
+
+    async function cargar() {
+      try {
+        const res = await fetch('/lab/ediciones.json', { cache: 'no-store' });
+        const data = await res.json();
+        const ediciones = data.ediciones || [];
+
+        status.textContent = `${ediciones.length} edición(es) cargada(s)`;
+
+        if (!ediciones.length) {
+          grid.innerHTML = '<div class="error">No hay ediciones disponibles.</div>';
+          return;
+        }
+
+        grid.innerHTML = ediciones.map(e => `
+          <article class="card">
+            <div class="word">${e.palabra || ''}</div>
+            <h2 class="title">${e.titulo || ''}</h2>
+            <div class="author">${e.autor || ''}</div>
+            <div class="desc">${e.descripcion || ''}</div>
+            <div class="meta">id: ${e.id || ''}</div>
+            <div class="actions">
+              <a class="btn btn-main" href="/lab/t/${e.id}/">Abrir edición</a>
+              <a class="btn btn-sub" href="${e.ogImage || '/lab/og-demo.png'}" target="_blank" rel="noopener noreferrer">Ver asset</a>
+            </div>
+          </article>
+        `).join('');
+      } catch (err) {
+        status.textContent = 'Error';
+        grid.innerHTML = '<div class="error">Error cargando el índice interno.</div>';
+      }
+    }
+
+    cargar();
+  </script>
 </body>
 </html>
