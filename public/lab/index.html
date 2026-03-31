@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Triggui 2.0 Lab</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      font-family: Arial, sans-serif;
+      background: #0e0f1b;
+      color: #ffffff;
+    }
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      width: 100%;
+      max-width: 720px;
+      background: linear-gradient(135deg, #16182a 0%, #101223 100%);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 24px;
+      padding: 32px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.35);
+    }
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      opacity: .7;
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-size: 40px;
+      line-height: 1.05;
+      margin: 0 0 16px 0;
+    }
+    p {
+      font-size: 18px;
+      line-height: 1.6;
+      margin: 0 0 14px 0;
+      color: rgba(255,255,255,.86);
+    }
+    .ok {
+      display: inline-block;
+      margin-top: 18px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #55d6ff, #7a5cff);
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+      text-decoration: none;
+    }
+    .small {
+      margin-top: 18px;
+      font-size: 13px;
+      opacity: .65;
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="eyebrow">Triggui 2.0 · Laboratorio</div>
+    <h1>Fase 0 viva.<br>Sin tocar 1.0.</h1>
+    <p>Este laboratorio existe para construir Triggui 2.0 al lado de la experiencia actual.</p>
+    <p>Si ves esta página en Vercel preview, vamos bien.</p>
+    <a class="ok" href="/lab/ediciones.json">Ver ediciones.json</a>
+    <div class="small">Ruta segura: /lab/</div>
+  </main>
+</body>
+</html>
