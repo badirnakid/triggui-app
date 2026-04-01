@@ -39,11 +39,7 @@ html, body {
   touch-action: manipulation;
 }
 
-/* Kill Vercel injected toolbar */
-vercel-live-feedback,
-[data-vercel-toolbar],
-#__vercel_live_token,
-vercel-toolbar { display: none !important; height: 0 !important; overflow: hidden !important; }
+vercel-live-feedback,[data-vercel-toolbar],#__vercel_live_token,vercel-toolbar{display:none!important;height:0!important;overflow:hidden!important;}
 
 body::before {
   content: "";
@@ -92,41 +88,28 @@ body::before {
   transition: opacity .4s ease;
 }
 .grid.hidden { opacity: 0; pointer-events: none; }
-
 @media(orientation:landscape) { .grid { grid-template-columns: repeat(4,1fr); grid-template-rows: 1fr; } }
 
 /* ═══ BLOCKS ═══ */
 .block {
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
   padding: 1rem;
   border-radius: 24px;
-  font-weight: 700;
-  cursor: pointer;
+  font-weight: 700; cursor: pointer;
   background-size: 320% 320%;
   transition: transform 0.25s cubic-bezier(0.25,0.46,0.45,0.94);
-  overflow: hidden;
-  isolation: isolate;
-  border: none;
-  appearance: none;
-  font: inherit;
-  color: inherit;
-  width: 100%;
+  overflow: hidden; isolation: isolate;
+  border: none; appearance: none; font: inherit; color: inherit; width: 100%;
   box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.15), 0 4px 6px rgba(0,0,0,.15), 0 12px 32px rgba(0,0,0,.35);
 }
 .block::before {
-  content: "";
-  position: absolute; inset: 0;
-  border-radius: inherit;
+  content: ""; position: absolute; inset: 0; border-radius: inherit;
   background: linear-gradient(145deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,.08) 40%, transparent 100%);
   pointer-events: none; z-index: 1;
 }
 .block::after {
-  content: "";
-  position: absolute; inset: 0;
-  border-radius: inherit;
+  content: ""; position: absolute; inset: 0; border-radius: inherit;
   background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.12), transparent 60%);
   pointer-events: none; opacity: 0; transition: opacity 0.3s ease; z-index: 0;
 }
@@ -144,7 +127,7 @@ body::before {
 /* ═══ REVEAL OVERLAY ═══ */
 .reveal-overlay {
   position: fixed; inset: 0; z-index: 200;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  display: flex; flex-direction: column; align-items: center;
   background: rgba(0,0,0,0.92);
   opacity: 0; pointer-events: none;
   transition: opacity .3s ease;
@@ -158,7 +141,7 @@ body::before {
 
 .reveal-card {
   width: 100%; max-width: 520px;
-  margin: 0;
+  margin: auto 0;
   border-radius: 22px;
   position: relative;
   background-color: #1A1A1A;
@@ -172,19 +155,29 @@ body::before {
 }
 .reveal-overlay.visible .reveal-card { transform: scale(1) translateY(0); opacity: 1; }
 
-/* Grain texture */
 .reveal-card::after {
-  content: "";
-  position: absolute; inset: 0;
-  pointer-events: none; z-index: 0;
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 0;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-  mix-blend-mode: overlay;
-  opacity: 0.04;
-  border-radius: 22px;
+  mix-blend-mode: overlay; opacity: 0.04; border-radius: 22px;
 }
 
 .card-inner { position: relative; z-index: 2; padding: 0; }
 
+/* ═══ CLOSE × ═══ */
+.btn-close {
+  position: absolute; top: 12px; right: 12px; z-index: 20;
+  width: 32px; height: 32px;
+  border: none; border-radius: 50%;
+  background: rgba(0,0,0,.35); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  color: rgba(255,255,255,.7); font-size: 18px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: background .2s ease, color .2s ease;
+  padding: 0; touch-action: manipulation;
+}
+.btn-close:hover { background: rgba(0,0,0,.55); color: #fff; }
+.btn-close:active { transform: scale(0.9); }
+
+/* ═══ EDITORIAL BLOCKS ═══ */
 .ed-block {
   margin: 0 5px;
   background: linear-gradient(145deg, #6A9CFF0A 0%, rgba(255,255,255,0.03) 100%);
@@ -193,213 +186,110 @@ body::before {
   padding: 20px 22px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.03);
 }
-
-.ed-block:first-child {
-  margin-top: 18px;
-}
+.ed-block:first-child { margin-top: 18px; }
 
 .ed-block .ed-title {
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: 24px;
-  line-height: 1.3;
-  font-weight: 400;
-  color: #E0E0E0;
-  letter-spacing: 0.5px;
-  margin: 0 0 6px 0;
+  font-size: 24px; line-height: 1.3; font-weight: 400;
+  color: #E0E0E0; letter-spacing: 0.5px; margin: 0 0 6px 0;
 }
-
 .ed-block .ed-chip {
-  display: inline-block;
-  font-family: 'Archivo', sans-serif;
-  font-size: 15px;
-  line-height: 1;
-  font-weight: 700;
-  background: #6A9CFF;
-  color: #fff;
-  padding: 4px 11px;
-  border-radius: 12px;
-  letter-spacing: 0.3px;
+  display: inline-block; font-family: 'Archivo', sans-serif;
+  font-size: 15px; line-height: 1; font-weight: 700;
+  background: #6A9CFF; color: #fff;
+  padding: 4px 11px; border-radius: 12px; letter-spacing: 0.3px;
   margin: 4px 0 8px 0;
 }
-
 .ed-block .ed-para {
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: 18px;
-  line-height: 1.7;
-  font-weight: 400;
-  color: rgba(255,255,255, 0.8);
-  letter-spacing: 0.2px;
-  margin: 0;
+  font-size: 18px; line-height: 1.7; font-weight: 400;
+  color: rgba(255,255,255, 0.8); letter-spacing: 0.2px; margin: 0;
 }
-
 .ed-block .ed-sub {
   font-family: 'Archivo', sans-serif;
-  font-size: 18px;
-  line-height: 1.4;
-  font-weight: 600;
-  color: #6A9CFF;
-  letter-spacing: 0.15px;
-  margin: 0 0 8px 0;
+  font-size: 18px; line-height: 1.4; font-weight: 600;
+  color: #6A9CFF; letter-spacing: 0.15px; margin: 0 0 8px 0;
 }
 
-.ed-cover {
-  display: block;
+/* ═══ COVER CTA ═══ */
+.ed-cover-wrap {
   float: right;
-  width: 110px;
-  margin: 0 0 10px 18px;
+  margin: 0 0 12px 18px;
+  cursor: pointer;
+  position: relative;
+  touch-action: manipulation;
+}
+.ed-cover-wrap img {
+  display: block; width: 110px; height: auto;
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 4px;
   box-shadow: 0 15px 35px #6A9CFF30;
+  animation: coverBreathe 2.8s cubic-bezier(0.32,0.01,0.16,1) infinite;
+  will-change: transform, filter;
 }
-
-/* Logo strip between blocks */
-.logo-strip {
-  padding: 12px 16px;
-  text-align: center;
-  opacity: 0.9;
+@keyframes coverBreathe {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0px rgba(255,255,255,0)); }
+  50% { transform: scale(1.04); filter: drop-shadow(0 0 6px #6A9CFF40); }
 }
-.logo-strip a { text-decoration: none; }
-.logo-strip img { height: 22px; display: block; margin: 0 auto 4px auto; }
-.logo-strip .strip-links {
-  font-family: 'Archivo', sans-serif;
-  font-size: 12px;
-  color: rgba(255,255,255, 0.45);
+.cover-hint {
+  display: block; text-align: center;
+  font-family: 'Poppins', sans-serif;
+  font-size: 10px; font-weight: 600;
+  color: rgba(255,255,255, 0.3);
+  margin-top: 6px; letter-spacing: 0.3px;
+  animation: hintFade 4s ease forwards;
 }
-.logo-strip .strip-links a { color: inherit; text-decoration: none; margin: 0 6px; }
+@keyframes hintFade {
+  0%, 70% { opacity: 1; }
+  100% { opacity: 0; }
+}
 
 .ed-gap { height: 14px; }
 
-/* ═══ ACTION BUTTONS (replica app.triggui.com) ═══ */
+/* ═══ ACTION BUTTONS — Uniform grid ═══ */
 .card-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding: 20px 22px 28px;
+  padding: 16px 18px 22px;
+  display: flex; flex-direction: column; gap: 10px;
 }
 
-.buscalibre-row {
+.btn-row {
   display: grid;
-  grid-template-columns: 1fr 48px;
-  gap: 10px;
+  gap: 8px;
 }
+.btn-row-2 { grid-template-columns: 1fr 48px; }
+.btn-row-3 { grid-template-columns: 1fr 48px 1fr; }
 
-.btn-action {
-  position: relative; z-index: 10;
-  height: 48px;
+.btn-icon {
+  height: 46px;
   border-radius: 12px;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
   text-decoration: none; cursor: pointer;
+  background: #0a0a0a;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 4px 16px -4px rgba(0,0,0,0.4);
   transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
-  font-family: 'Archivo', sans-serif;
-  font-weight: 700; font-size: 14px; letter-spacing: 0.1px;
   touch-action: manipulation;
+  color: #fff;
 }
-.btn-action:active { transform: scale(0.97); }
+.btn-icon:active { transform: scale(0.97); }
+.btn-icon img { height: 18px; width: auto; display: block; }
+.btn-icon .btn-ig { font-size: 18px; }
+.btn-icon.btn-penguin-icon img { height: 36px; }
 
-.btn-comprar {
-  background: #080808;
-  color: white;
-  border: none;
-  box-shadow: 0 6px 20px -6px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.08);
-}
-.btn-comprar img { height: 18px; width: auto; display: block; }
-
-.btn-explorar {
+.btn-icon.btn-crystal {
   background: rgba(125,125,125,0.06);
   border: 1px solid rgba(255,255,255,0.1);
-  color: inherit;
-  height: 48px;
-  padding: 0;
   animation: btn-breathe 3s ease-in-out infinite;
 }
 @keyframes btn-breathe {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.05); }
 }
-.btn-emoji { font-size: 20px; line-height: 1; }
+.btn-crystal .btn-emoji { font-size: 20px; line-height: 1; }
 
-.btn-penguin {
-  width: 100%;
-  background: #101010;
-  color: white;
-  border: none;
-  box-shadow: 0 6px 20px -6px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.1);
-}
-.btn-penguin img { height: 44px; width: auto; display: block; }
-
-.btn-fisico {
-  appearance: none; border: none;
-  width: 100%; 
-  border-radius: 14px;
-  display: flex; align-items: center; justify-content: center; 
-  gap: 10px;
-  padding: 16px 20px;
-  font-family: 'Poppins', sans-serif;
-  font-size: 15px; font-weight: 600;
-  cursor: pointer; 
-  color: rgba(255,255,255,.9);
-  background: transparent;
-  border: 1px solid rgba(255,255,255,.12);
-  transition: all 0.3s ease;
-  touch-action: manipulation;
-  letter-spacing: 0.2px;
-  position: relative;
-  overflow: hidden;
-}
-.btn-fisico::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(135deg, rgba(255,255,255,.04) 0%, rgba(255,255,255,.01) 100%);
-  pointer-events: none;
-}
-.btn-fisico:hover {
-  border-color: rgba(255,255,255,.25);
-  color: #fff;
-  background: rgba(255,255,255,.04);
-}
-.btn-fisico:active { transform: scale(0.98); transition: transform 0.1s ease; }
-.btn-fisico:disabled { opacity: .5; cursor: default; transform: none; }
-.btn-fisico .fisico-emoji { font-size: 20px; }
-.btn-fisico .fisico-text { opacity: .75; }
-.btn-fisico .fisico-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: #6A9CFF;
-  animation: fisicoPulse 2s ease-in-out infinite;
-  flex-shrink: 0;
-}
-@keyframes fisicoPulse {
-  0%, 100% { opacity: .4; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.3); }
-}
-
-/* ═══ CLOSE × + SUCCESS ═══ */
-.btn-close {
-  position: absolute;
-  top: 12px; right: 12px;
-  z-index: 20;
-  width: 32px; height: 32px;
-  border: none;
-  border-radius: 50%;
-  background: rgba(0,0,0,.35);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  color: rgba(255,255,255,.7);
-  font-size: 18px;
-  line-height: 1;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-  transition: background .2s ease, color .2s ease;
-  padding: 0;
-  touch-action: manipulation;
-}
-.btn-close:hover { background: rgba(0,0,0,.55); color: #fff; }
-.btn-close:active { transform: scale(0.9); }
-
+/* ═══ SUCCESS ═══ */
 .success {
-  margin: 14px 0 0;
+  margin: 12px 0 0; padding: 0 18px;
   font-family: 'Poppins', sans-serif;
   font-size: 14px; font-weight: 600;
   color: #fff; text-align: center;
@@ -418,31 +308,62 @@ body::before {
 /* ═══ SILENCE ═══ */
 .reveal-overlay.silence { background: rgba(0,0,0,0.98); }
 .reveal-overlay.silence .reveal-card { display: none; }
-.reveal-overlay.silence .btn-close { display: none; }
-.silence-msg {
+
+.silence-screen {
   display: none;
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  padding: 0 28px;
-  width: 100%;
-  max-width: 500px;
-  animation: silPop .6s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  position: absolute; inset: 0;
+  flex-direction: column; align-items: center; justify-content: center;
+  padding: 0 32px;
+  pointer-events: none;
 }
-@keyframes silPop { 0% { transform: scale(.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-.reveal-overlay.silence .silence-msg { display: block; }
-.silence-msg .sil-title {
+.reveal-overlay.silence .silence-screen { display: flex; }
+
+.silence-screen .sil-cover {
+  width: 140px; height: auto;
+  border-radius: 8px;
+  opacity: 0.6;
+  box-shadow: 0 20px 50px rgba(0,0,0,.5);
+  margin-bottom: 32px;
+  animation: silCoverIn .8s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+@keyframes silCoverIn {
+  0% { transform: scale(.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 0.6; }
+}
+
+.silence-screen .sil-title {
   font-family: 'Playfair Display', serif; font-style: italic;
-  font-size: clamp(18px,4.5vw,26px); opacity: .35; margin-bottom: 24px; font-weight: 700;
+  font-size: clamp(16px,4vw,22px); opacity: .3; margin-bottom: 20px;
+  font-weight: 700; text-align: center;
 }
-.silence-msg .sil-call {
+
+.silence-screen .sil-call {
   font-family: 'Poppins', sans-serif;
-  font-size: clamp(20px,5.5vw,30px); font-weight: 700;
-  line-height: 1.5; color: rgba(255,255,255,.95); margin-bottom: 24px;
+  font-size: clamp(24px,6.5vw,36px); font-weight: 700;
+  line-height: 1.3; color: rgba(255,255,255,.95);
+  margin-bottom: 20px; text-align: center;
+  animation: silCallIn 1s ease .3s both;
 }
-.silence-msg .sil-mark { opacity: 0.3; }
-.silence-msg .sil-mark img { height: 24px; width: auto; display: block; margin: 0 auto; filter: invert(1) brightness(1.5); }
+@keyframes silCallIn {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.silence-screen .sil-pulse {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px; font-weight: 600;
+  margin-bottom: 28px; text-align: center;
+  animation: silCallIn 1s ease .6s both;
+}
+
+.silence-screen .sil-mark {
+  opacity: 0.2;
+  animation: silCallIn 1s ease .9s both;
+}
+.silence-screen .sil-mark img {
+  height: 22px; width: auto; display: block; margin: 0 auto;
+  filter: invert(1) brightness(1.5);
+}
 
 /* ═══ RESPONSIVE ═══ */
 @media (max-width: 640px) {
@@ -454,13 +375,12 @@ body::before {
   .reveal-card::after { border-radius: 18px; }
   .ed-block { padding: 20px 20px; margin: 0 4px; }
   .ed-block:first-child { margin-top: 12px; }
-  .ed-cover { width: 100px; }
-  .ed-block .ed-title { font-size: 22px; line-height: 1.3; }
+  .ed-cover-wrap img { width: 95px; }
+  .ed-block .ed-title { font-size: 22px; }
   .ed-block .ed-para { font-size: 18px; line-height: 1.65; }
-  .ed-block .ed-sub { font-size: 18px; line-height: 1.4; }
+  .ed-block .ed-sub { font-size: 18px; }
   .ed-block .ed-chip { font-size: 15px; }
-  .card-actions { padding: 18px 20px 28px; }
-  .logo-strip { padding: 14px 20px; }
+  .card-actions { padding: 14px 14px 20px; }
   .btn-close { top: 8px; right: 8px; }
 }
 </style>
@@ -470,14 +390,17 @@ body::before {
 <div id="pulseLine" class="pulse-line"></div>
 <div class="grid" id="grid"></div>
 
-<div id="revealOverlay" class="reveal-overlay" onclick="if(event.target===this)btnBack.click()">
+<div id="revealOverlay" class="reveal-overlay" onclick="if(event.target===this)document.getElementById('btnBack').click()">
   <div class="reveal-card" onclick="event.stopPropagation()">
     <button class="btn-close" id="btnBack" aria-label="Cerrar">×</button>
     <div class="card-inner">
 
       <div class="ed-block">
         <div style="overflow:hidden;">
-          <img class="ed-cover" src="https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/7d/4f/9e/7d4f9eb7-8776-fda9-0442-a9c05ad39f0c/1038891568.jpg/626x0w.jpg" alt="Portada" />
+          <div class="ed-cover-wrap" id="coverCTA">
+            <img src="https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/7d/4f/9e/7d4f9eb7-8776-fda9-0442-a9c05ad39f0c/1038891568.jpg/626x0w.jpg" alt="Máxima conexión" />
+            <span class="cover-hint">Toca el libro</span>
+          </div>
           <div class="ed-title">Conexión fundamental</div>
           <div class="ed-chip">Brad Stulberg</div>
           <div class="ed-para">Reconozco que mi búsqueda de felicidad trasciende lo superficial.</div>
@@ -490,44 +413,27 @@ body::before {
         <div class="ed-para">Después de compartir mis logros, tómate 30 segundos para anotar cómo estos te han acercado a un propósito significativo.</div>
       </div>
 
-      <div class="logo-strip">
-        <a href="https://triggui.com" target="_blank">
-          <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png"
-               alt="Triggui" style="filter: invert(1) brightness(1.5);">
-        </a>
-        <div class="strip-links">
-          <a href="https://www.instagram.com/triggui/" target="_blank">@triggui</a> |
-          <a href="https://triggui.com" target="_blank">triggui.com</a>
-        </div>
-      </div>
-
       <div class="card-actions">
-        <div class="buscalibre-row">
-          <a class="btn-action btn-comprar"
-             href="https://www.buscalibre.com.mx/libros/search/?q=M%C3%A1xima%20conexi%C3%B3n%20Brad%20Stulberg"
-             target="_blank" rel="noopener noreferrer">
-            <img src="/buscalibre.png" alt="Buscalibre">
-            <span>Comprar</span>
+        <div class="btn-row btn-row-2">
+          <a class="btn-icon" href="https://triggui.com" target="_blank" rel="noopener noreferrer">
+            <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png" alt="Triggui" style="filter:invert(1) brightness(1.5); height:16px;">
           </a>
-          <a class="btn-action btn-explorar"
-             href="https://www.buscalibre.com.mx/libros/search/?q=plenitud"
-             target="_blank" rel="noopener noreferrer">
+          <a class="btn-icon" href="https://www.instagram.com/triggui/" target="_blank" rel="noopener noreferrer">
+            <span class="btn-ig">📸</span>
+          </a>
+        </div>
+
+        <div class="btn-row btn-row-3">
+          <a class="btn-icon" href="https://www.buscalibre.com.mx/libros/search/?q=M%C3%A1xima%20conexi%C3%B3n%20Brad%20Stulberg" target="_blank" rel="noopener noreferrer">
+            <img src="/buscalibre.png" alt="Buscalibre">
+          </a>
+          <a class="btn-icon btn-crystal" href="https://www.buscalibre.com.mx/libros/search/?q=plenitud" target="_blank" rel="noopener noreferrer">
             <span class="btn-emoji">🔮</span>
           </a>
+          <a class="btn-icon btn-penguin-icon" href="https://www.penguinlibros.com/mx/?mot_q=plenitud" target="_blank" rel="noopener noreferrer">
+            <img src="/logopenguin.png" alt="Penguin">
+          </a>
         </div>
-
-        <a class="btn-action btn-penguin"
-           href="https://www.penguinlibros.com/mx/?mot_q=plenitud"
-           target="_blank" rel="noopener noreferrer">
-          <img src="/logopenguin.png" alt="Penguin Random House">
-          <span>Explorar en Penguin</span>
-        </a>
-
-        <button class="btn-fisico" id="btnFisico">
-          <span class="fisico-emoji">📖</span>
-          <span class="fisico-text">Abrí un libro físico</span>
-          <span class="fisico-dot"></span>
-        </button>
 
         <div class="success" id="success"></div>
       </div>
@@ -535,9 +441,11 @@ body::before {
     </div>
   </div>
 
-  <div class="silence-msg" id="silenceMsg">
+  <div class="silence-screen" id="silenceScreen">
+    <img class="sil-cover" src="https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/7d/4f/9e/7d4f9eb7-8776-fda9-0442-a9c05ad39f0c/1038891568.jpg/626x0w.jpg" alt="Máxima conexión" />
     <div class="sil-title">Máxima conexión</div>
-    <div class="sil-call">Bien. Ahora sal de la pantalla. Abre el libro.</div>
+    <div class="sil-call">Ahora, ábrelo.</div>
+    <div class="sil-pulse" id="silPulse"></div>
     <div class="sil-mark">
       <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png" alt="Triggui">
     </div>
@@ -548,9 +456,9 @@ body::before {
 const state = {"id": "005-m-xima-conexi-n", "titulo": "Máxima conexión", "autor": "Brad Stulberg", "palabra": "plenitud", "descripcion": "🌱 Medita un instante sobre lo que verdaderamente anhelas.", "palabras": ["plenitud", "autenticidad", "equilibrio", "anhelo"], "frases": ["🌱 Medita un instante sobre lo que verdaderamente anhelas.", "💬 Comparte con alguien tus logros y celebra tu autenticidad.", "🔄 Reevalúa tus metas y ajusta tu camino hacia el equilibrio.", "📝 Escribe tres cosas que te llenen de plenitud en este momento."], "colores": ["#6BBE44", "#F9B2A1", "#FFAB91", "#4DB6AC"], "textColors": ["#000000", "#000000", "#000000", "#000000"], "fondo": "#1A1A1A", "ogImage": "/lab/og/005-m-xima-conexi-n.svg", "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/7d/4f/9e/7d4f9eb7-8776-fda9-0442-a9c05ad39f0c/1038891568.jpg/626x0w.jpg", "tagline": "El éxito promociones premios dinero fallan sistemáticamente en proporcionarnos felicidad duradera Por más trofeos que añadamos a nuestra colección seguimos anhelando algo y sintiéndonos vacíos Groundedness significa poseer una base firme y estable tener un claro sentido del yo gracias al cual podamos encontrar un éxito profundo y duradero en vez de superficial y efímero"};
 const grid = document.getElementById('grid');
 const revealOverlay = document.getElementById('revealOverlay');
-const btnFisico = document.getElementById('btnFisico');
 const btnBack = document.getElementById('btnBack');
 const success = document.getElementById('success');
+const coverCTA = document.getElementById('coverCTA');
 const pulseEditionKey = `triggui_lab_opened_${state.id}`;
 
 const ANG = [115,205,35,320];
@@ -630,36 +538,36 @@ btnBack.addEventListener('click', () => {
   setTimeout(() => grid.classList.remove('hidden'), 200);
 });
 
-btnFisico.addEventListener('click', async () => {
-  btnFisico.disabled = true;
-  btnFisico.querySelector('.fisico-text').textContent = 'Registrando...';
-  btnFisico.querySelector('.fisico-dot').style.display = 'none';
-  const result = await registerCollectivePhysicalOpen();
-  revealOverlay.classList.add('silence');
-  let msg = '';
-  if (!result.ok) {
-    msg = 'Se registró el acto.';
-  } else if (result.repeated) {
-    msg = `Ya lo habías marcado. Hoy van <span class="total">${result.count}</span> libros abiertos.`;
-  } else {
-    msg = `Eso es Triggui. Hoy van <span class="total">${result.count}</span> libros abiertos.`;
-  }
-  success.innerHTML = msg;
-  success.classList.add('visible');
-});
+// Cover CTA → register pulse → silence
+if (coverCTA) {
+  coverCTA.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    coverCTA.style.pointerEvents = 'none';
+    coverCTA.querySelector('.cover-hint').textContent = '...';
+
+    const result = await registerCollectivePhysicalOpen();
+
+    // Show pulse on silence screen
+    const silPulse = document.getElementById('silPulse');
+    if (result.ok && result.count) {
+      const word = result.repeated ? 'Ya lo habías marcado.' : 'Eso es Triggui.';
+      silPulse.innerHTML = `${word} Hoy van <span class="total">${result.count}</span> libros abiertos.`;
+    }
+
+    revealOverlay.classList.add('silence');
+  });
+}
 
 renderBlocks();
 
-// Nuke Vercel injected toolbar
-(function nukeVercelToolbar() {
-  const kill = () => {
-    document.querySelectorAll('vercel-live-feedback, vercel-toolbar, [data-vercel-toolbar]').forEach(el => el.remove());
-    const vt = document.getElementById('__vercel_live_token'); if (vt) vt.remove();
+// Nuke Vercel toolbar
+(function() {
+  const k = () => {
+    document.querySelectorAll('vercel-live-feedback,vercel-toolbar,[data-vercel-toolbar]').forEach(el => el.remove());
+    const v = document.getElementById('__vercel_live_token'); if(v) v.remove();
   };
-  kill();
-  setTimeout(kill, 500);
-  setTimeout(kill, 2000);
-  new MutationObserver(() => kill()).observe(document.documentElement, { childList: true, subtree: true });
+  k(); setTimeout(k,500); setTimeout(k,2000);
+  new MutationObserver(() => k()).observe(document.documentElement, {childList:true,subtree:true});
 })();
 
 (async () => {
