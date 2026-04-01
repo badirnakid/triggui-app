@@ -646,7 +646,8 @@ function renderBlocks() {{
 }}
 
 btnBack.addEventListener('click', () => {{
-  revealOverlay.classList.remove('visible');
+  revealOverlay.classList.remove('visible', 'silence');
+  if (coverCTA) coverCTA.style.pointerEvents = 'auto';
   setTimeout(() => grid.classList.remove('hidden'), 200);
 }});
 
