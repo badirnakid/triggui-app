@@ -1,194 +1,29 @@
 {
   "ediciones": [
     {
-      "id": "001-el-libro-del-niksen",
-      "titulo": "El libro del Niksen",
-      "autor": "Olga Mecking",
-      "palabra": "tranquilidad",
-      "descripcion": "🌱 Respira y siente el momento presente.",
+      "id": "001-los-h-bitos-secretos-de-los-genios",
+      "titulo": "Los hábitos secretos de los genios",
+      "autor": "Craig Wright",
+      "palabra": "curiosidad",
+      "descripcion": "🔍 Explora un nuevo tema que despierte tu curiosidad.",
       "palabras": [
-        "tranquilidad",
-        "presencia",
-        "autenticidad",
-        "resiliencia"
-      ],
-      "frases": [
-        "🌱 Respira y siente el momento presente.",
-        "☕ Tómate un instante para disfrutar tu café.",
-        "📖 Lee una página de un libro sin prisa.",
-        "🧘‍♀️ Cierra los ojos y escucha tus pensamientos."
-      ],
-      "fondo": "#2A2A2A",
-      "colores": [
-        "#A8DADC",
-        "#457B9D",
-        "#F1FAEE",
-        "#FDC500"
-      ],
-      "textColors": [
-        "#000000",
-        "#FFFFFF",
-        "#000000",
-        "#000000"
-      ],
-      "ogImage": "/lab/og/001-el-libro-del-niksen.svg"
-    },
-    {
-      "id": "002-aprende-a-silenciar-la-mente",
-      "titulo": "Aprende a silenciar la mente",
-      "autor": "Osho",
-      "palabra": "serenidad",
-      "descripcion": "🧘‍♂️ Observa tu respiración por un minuto.",
-      "palabras": [
-        "serenidad",
-        "autoobservación",
-        "liberación",
-        "conexión"
-      ],
-      "frases": [
-        "🧘‍♂️ Observa tu respiración por un minuto.",
-        "🌱 Siembra una semilla de gratitud hoy.",
-        "🌊 Escucha el sonido del agua durante 60 seg.",
-        "✨ Cierra los ojos y siente tu cuerpo en calma."
-      ],
-      "fondo": "#1A1A1A",
-      "colores": [
-        "#B5E48C",
-        "#99D98C",
-        "#F9C74F",
-        "#F94144"
-      ],
-      "textColors": [
-        "#000000",
-        "#000000",
-        "#000000",
-        "#FFFFFF"
-      ],
-      "ogImage": "/lab/og/002-aprende-a-silenciar-la-mente.svg"
-    },
-    {
-      "id": "003-piensa-como-un-monje",
-      "titulo": "Piensa como un monje",
-      "autor": "Jay Shetty",
-      "palabra": "introspección",
-      "descripcion": "🧘‍♂️ Medita sobre tus pensamientos hoy.",
-      "palabras": [
-        "introspección",
-        "transformación",
-        "autodisciplina",
-        "propósito"
-      ],
-      "frases": [
-        "🧘‍♂️ Medita sobre tus pensamientos hoy.",
-        "🌱 Cultiva un nuevo hábito positivo ahora.",
-        "🔍 Reflexiona sobre tu propósito vital.",
-        "📖 Lee una página que te inspire hoy."
-      ],
-      "fondo": "#1D3557",
-      "colores": [
-        "#2A9D8F",
-        "#E9C46A",
-        "#F4A261",
-        "#264653"
-      ],
-      "textColors": [
-        "#FFFFFF",
-        "#000000",
-        "#000000",
-        "#FFFFFF"
-      ],
-      "ogImage": "/lab/og/003-piensa-como-un-monje.svg"
-    },
-    {
-      "id": "004-enam-rate-del-problema-no-de-la-solu",
-      "titulo": "Enamórate del problema no de la solución",
-      "autor": "Uri Levine",
-      "palabra": "desasosiego",
-      "descripcion": "🔍 Identifica un problema real hoy mismo.",
-      "palabras": [
-        "desasosiego",
-        "frustración",
-        "anhelo",
-        "despertar"
-      ],
-      "frases": [
-        "🔍 Identifica un problema real hoy mismo.",
-        "💡 Reflexiona sobre lo que realmente necesitas.",
-        "📊 Anota las ineficiencias que te rodean.",
-        "🚀 Piensa en soluciones creativas para esos problemas."
-      ],
-      "fondo": "#1A1A1A",
-      "colores": [
-        "#2A9D8F",
-        "#F4A261",
-        "#E9C46A",
-        "#264653"
-      ],
-      "textColors": [
-        "#FFFFFF",
-        "#000000",
-        "#000000",
-        "#FFFFFF"
-      ],
-      "ogImage": "/lab/og/004-enam-rate-del-problema-no-de-la-solu.svg"
-    },
-    {
-      "id": "005-lit-life-ignition-tools",
-      "titulo": "LIT Life ignition tools",
-      "autor": "Jeff Karp",
-      "palabra": "entusiasmo",
-      "descripcion": "✨ Explora nuevas ideas en solo un minuto.",
-      "palabras": [
-        "entusiasmo",
-        "inspiración",
         "curiosidad",
-        "energía"
+        "disciplina",
+        "resiliencia",
+        "innovación"
       ],
       "frases": [
-        "✨ Explora nuevas ideas en solo un minuto.",
-        "🔥 Despierta tu creatividad con una breve pausa.",
-        "🚀 Comparte tus pensamientos y siente la conexión.",
-        "🌟 Imagina tu futuro ideal en menos de un minuto."
+        "🔍 Explora un nuevo tema que despierte tu curiosidad.",
+        "📅 Establece una rutina diaria de aprendizaje y práctica.",
+        "💪 Enfrenta un obstáculo con resiliencia, no te rindas.",
+        "💡 Comparte una idea innovadora con alguien cercano."
       ],
-      "fondo": "#2a2a2a",
+      "fondo": "#1C1C1C",
       "colores": [
-        "#1D3557",
-        "#F1FAEE",
-        "#A8DADC",
-        "#F4A261"
-      ],
-      "textColors": [
-        "#FFFFFF",
-        "#000000",
-        "#000000",
-        "#000000"
-      ],
-      "ogImage": "/lab/og/005-lit-life-ignition-tools.svg"
-    },
-    {
-      "id": "006-shakespeare-para-enamorados",
-      "titulo": "Shakespeare para enamorados",
-      "autor": "Allan Percy",
-      "palabra": "anhelo",
-      "descripcion": "💔 Reflexiona sobre un amor perdido hoy.",
-      "palabras": [
-        "anhelo",
-        "desilusión",
-        "seducción",
-        "celos"
-      ],
-      "frases": [
-        "💔 Reflexiona sobre un amor perdido hoy.",
-        "🌹 Escribe una carta a tu amor ideal ahora.",
-        "🔥 Practica una técnica de seducción sencilla.",
-        "😟 Identifica un celos que te afecta y suéltalo."
-      ],
-      "fondo": "#1A1A1A",
-      "colores": [
-        "#D94F3B",
-        "#F1A7A2",
-        "#FFEB84",
-        "#6C9CD0"
+        "#4A90E2",
+        "#F5A623",
+        "#7ED321",
+        "#D0021B"
       ],
       "textColors": [
         "#FFFFFF",
@@ -196,7 +31,256 @@
         "#000000",
         "#FFFFFF"
       ],
-      "ogImage": "/lab/og/006-shakespeare-para-enamorados.svg"
+      "ogImage": "/lab/og/001-los-h-bitos-secretos-de-los-genios.svg",
+      "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/85/77/b0/8577b0f2-3a45-e840-f08e-638cbd60818a/9780062892720.jpg/626x0w.jpg",
+      "tagline": "Los 14 rasgos de las mentes más brillantes de la historia",
+      "tarjeta": {
+        "titulo": "El impulso de la genialidad",
+        "parrafoTop": "He aprendido que el enfoque en la práctica deliberada transforma mis habilidades.",
+        "subtitulo": "¿Estoy dedicando el tiempo necesario para pulir mi talento?",
+        "parrafoBot": "Enfoca 20 minutos hoy en una habilidad específica y siente cómo avanza tu maestría.",
+        "style": {
+          "accent": "#6A5ACD",
+          "ink": "#ffffff",
+          "paper": "#1a1a1a",
+          "border": "#333333"
+        }
+      }
+    },
+    {
+      "id": "002-relentless",
+      "titulo": "Relentless",
+      "autor": "Tim S. Grover",
+      "palabra": "impulso",
+      "descripcion": "⚡ Siente el impulso y da ese primer paso hoy mismo.",
+      "palabras": [
+        "impulso",
+        "conquista",
+        "fuerza",
+        "desenfreno"
+      ],
+      "frases": [
+        "⚡ Siente el impulso y da ese primer paso hoy mismo.",
+        "🏆 Conquista tus miedos, toma una decisión valiente ahora.",
+        "💪 Encuentra tu fuerza interior y compite contigo mismo.",
+        "🔥 Deja atrás los límites y actúa sin reservas en este instante."
+      ],
+      "fondo": "#1A1A1A",
+      "colores": [
+        "#E94E77",
+        "#F9AFAF",
+        "#FFCE54",
+        "#1D6B99"
+      ],
+      "textColors": [
+        "#FFFFFF",
+        "#000000",
+        "#000000",
+        "#FFFFFF"
+      ],
+      "ogImage": "/lab/og/002-relentless.svg",
+      "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/58/eb/7e/58eb7e2f-81fe-32a5-95d5-ee6728a5d7e9/9781476714219.jpg/626x0w.jpg",
+      "tagline": "From good to great to unstoppable",
+      "tarjeta": {
+        "titulo": "La mentalidad del imparable",
+        "parrafoTop": "Me reconozco en cada desafío y elijo ser más fuerte.",
+        "subtitulo": "¿Estoy dispuesto a convertirme en la mejor versión de mí mismo?",
+        "parrafoBot": "Respira profundamente y toma un momento para visualizar tu éxito en 30 segundos.",
+        "style": {
+          "accent": "#8B0000",
+          "ink": "#FFFFFF",
+          "paper": "#1A1A1A",
+          "border": "#333333"
+        }
+      }
+    },
+    {
+      "id": "003-no-pongas-un-punto-donde-dios-puso-u",
+      "titulo": "No pongas un punto donde Dios puso una coma",
+      "autor": "Shiva Ryu",
+      "palabra": "reconciliación",
+      "descripcion": "🌱 Reflexiona sobre lo que realmente deseas en tu vida.",
+      "palabras": [
+        "reconciliación",
+        "aceptación",
+        "introspección",
+        "renacimiento"
+      ],
+      "frases": [
+        "🌱 Reflexiona sobre lo que realmente deseas en tu vida.",
+        "💫 Acepta los cambios inesperados como oportunidades.",
+        "🔍 Dedica un momento a explorar tus pensamientos internos.",
+        "🌅 Encuentra belleza en los giros inesperados de tu camino."
+      ],
+      "fondo": "#1A1A1A",
+      "colores": [
+        "#FFC107",
+        "#FF5722",
+        "#8BC34A",
+        "#3F51B5"
+      ],
+      "textColors": [
+        "#000000",
+        "#FFFFFF",
+        "#000000",
+        "#FFFFFF"
+      ],
+      "ogImage": "/lab/og/003-no-pongas-un-punto-donde-dios-puso-u.svg",
+      "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/32/af/11/32af11b2-d6f0-18f6-4be7-0b8d1fb33671/9788411190046.jpg/626x0w.jpg",
+      "tagline": "que podemos aprender a reconocer lo bueno en lo supuestamente malo. Aunque a veces la vida parece llevarnos por un camino que no es parte de nuestro plan ese camino incomprensible para nuestra cabeza es precisamente el que anhela nuestro corazón.",
+      "tarjeta": {
+        "titulo": "Un giro inesperado es una nueva oportunidad",
+        "parrafoTop": "He aprendido a ver cada cambio como un regalo para mi crecimiento.",
+        "subtitulo": "¿Estoy dispuesto a permitir que la vida me sorprenda?",
+        "parrafoBot": "Tómate 30 segundos para escribir tres cosas positivas que surgieron de un cambio reciente en tu vida.",
+        "style": {
+          "accent": "#5C6BC0",
+          "ink": "#E0E0E0",
+          "paper": "#1C1C1C",
+          "border": "#424242"
+        }
+      }
+    },
+    {
+      "id": "004-viaje-a-las-emociones",
+      "titulo": "Viaje a las emociones",
+      "autor": "Eduardo Punset",
+      "palabra": "empatía",
+      "descripcion": "🤝 Conéctate con alguien y comparte tus emociones en 30 seg",
+      "palabras": [
+        "empatía",
+        "asombro",
+        "entusiasmo",
+        "sorpresa"
+      ],
+      "frases": [
+        "🤝 Conéctate con alguien y comparte tus emociones en 30 seg",
+        "🌌 Observa el cielo, deja que la belleza te asombre en 60 seg",
+        "🎉 Haz una lista de cosas que te emocionen hoy en 15 seg",
+        "🎈 Tómate un momento para celebrar pequeñas sorpresas cotidianas en 45 seg"
+      ],
+      "fondo": "#1A1A1A",
+      "colores": [
+        "#FFC0CB",
+        "#FFB6C1",
+        "#FFD700",
+        "#90EE90"
+      ],
+      "textColors": [
+        "#000000",
+        "#000000",
+        "#000000",
+        "#000000"
+      ],
+      "ogImage": "/lab/og/004-viaje-a-las-emociones.svg",
+      "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/75/ba/f6/75baf65a-33da-86ea-5550-32b63c234d70/9788423327935.jpg/626x0w.jpg",
+      "tagline": "La trilogía que ha apasionado a más de medio millón de lectores en un solo volumen. Un recorrido por la felicidad el amor y el poder: las tres claves que mueven el mundo.",
+      "tarjeta": {
+        "titulo": "Emoción como motor del cambio",
+        "parrafoTop": "Reconozco que mis emociones son brújulas hacia mi verdadero yo.",
+        "subtitulo": "¿Estoy permitiendo que mis sentimientos guíen mi vida y decisiones?",
+        "parrafoBot": "Después de celebrar las pequeñas sorpresas, tómate 30 segundos para escribir cómo una emoción te ha transformado hoy.",
+        "style": {
+          "accent": "#6A5ACD",
+          "ink": "#E0E0E0",
+          "paper": "#1C1C1C",
+          "border": "#333333"
+        }
+      }
+    },
+    {
+      "id": "005-m-xima-conexi-n",
+      "titulo": "Máxima conexión",
+      "autor": "Brad Stulberg",
+      "palabra": "plenitud",
+      "descripcion": "🌱 Medita un instante sobre lo que verdaderamente anhelas.",
+      "palabras": [
+        "plenitud",
+        "autenticidad",
+        "equilibrio",
+        "anhelo"
+      ],
+      "frases": [
+        "🌱 Medita un instante sobre lo que verdaderamente anhelas.",
+        "💬 Comparte con alguien tus logros y celebra tu autenticidad.",
+        "🔄 Reevalúa tus metas y ajusta tu camino hacia el equilibrio.",
+        "📝 Escribe tres cosas que te llenen de plenitud en este momento."
+      ],
+      "fondo": "#1A1A1A",
+      "colores": [
+        "#6BBE44",
+        "#F9B2A1",
+        "#FFAB91",
+        "#4DB6AC"
+      ],
+      "textColors": [
+        "#000000",
+        "#000000",
+        "#000000",
+        "#000000"
+      ],
+      "ogImage": "/lab/og/005-m-xima-conexi-n.svg",
+      "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/7d/4f/9e/7d4f9eb7-8776-fda9-0442-a9c05ad39f0c/1038891568.jpg/626x0w.jpg",
+      "tagline": "El éxito promociones premios dinero fallan sistemáticamente en proporcionarnos felicidad duradera Por más trofeos que añadamos a nuestra colección seguimos anhelando algo y sintiéndonos vacíos Groundedness significa poseer una base firme y estable tener un claro sentido del yo gracias al cual podamos encontrar un éxito profundo y duradero en vez de superficial y efímero",
+      "tarjeta": {
+        "titulo": "Conexión fundamental",
+        "parrafoTop": "Reconozco que mi búsqueda de felicidad trasciende lo superficial.",
+        "subtitulo": "¿Realmente estoy construyendo una base sólida para mi vida?",
+        "parrafoBot": "Después de compartir mis logros, tómate 30 segundos para anotar cómo estos te han acercado a un propósito significativo.",
+        "style": {
+          "accent": "#6A9CFF",
+          "ink": "#E0E0E0",
+          "paper": "#1A1A1A",
+          "border": "#333333"
+        }
+      }
+    },
+    {
+      "id": "006-aprendiendo-de-los-mejores",
+      "titulo": "Aprendiendo de los mejores",
+      "autor": "Francisco Alcaide Hernández",
+      "palabra": "inspiración",
+      "descripcion": "✨ Reflexiona sobre un líder que te inspira hoy.",
+      "palabras": [
+        "inspiración",
+        "resiliencia",
+        "transformación",
+        "sabiduría"
+      ],
+      "frases": [
+        "✨ Reflexiona sobre un líder que te inspira hoy.",
+        "💪 Anota una lección de vida que resuene en ti.",
+        "🌱 Comparte un pequeño cambio que deseas implementar.",
+        "📚 Dedica unos minutos a leer una frase motivadora."
+      ],
+      "fondo": "#1a1a1a",
+      "colores": [
+        "#f9d76b",
+        "#4caf50",
+        "#2196f3",
+        "#ff9800"
+      ],
+      "textColors": [
+        "#000000",
+        "#FFFFFF",
+        "#FFFFFF",
+        "#000000"
+      ],
+      "ogImage": "/lab/og/006-aprendiendo-de-los-mejores.svg",
+      "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication128/v4/a4/85/f3/a485f368-f4a3-c28d-da91-3d92222a56a6/9788416928651.jpg/626x0w.jpg",
+      "tagline": "libro de cabecera de muchas personas por su capacidad de sintetizar y explicar una ingente cantidad de conocimiento y sabiduría sobre el mundo del desarrollo personal los negocios el liderazgo la libertad financiera o la espiritualidad",
+      "tarjeta": {
+        "titulo": "Aprender de los errores de otros",
+        "parrafoTop": "Hoy reconozco que cada fracaso es una lección valiosa.",
+        "subtitulo": "¿Qué pasaría si decidiera aprender de las experiencias ajenas?",
+        "parrafoBot": "En los próximos 30 segundos, anotaré un error de alguien a quien admiro y reflexionaré sobre su enseñanza.",
+        "style": {
+          "accent": "#ffcc00",
+          "ink": "#e0e0e0",
+          "paper": "#1a1a1a",
+          "border": "#333333"
+        }
+      }
     }
   ]
 }

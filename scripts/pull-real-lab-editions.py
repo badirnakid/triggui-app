@@ -39,6 +39,21 @@ for i, libro in enumerate(libros[:LIMIT], start=1):
     descripcion = frases[0]
     edicion_id = f"{i:03d}-{slugify(titulo)[:36]}"
 
+    # Tarjeta editorial
+    tarjeta_raw = libro.get("tarjeta") or {}
+    tarjeta = {
+        "titulo": clean_text(tarjeta_raw.get("titulo")),
+        "parrafoTop": clean_text(tarjeta_raw.get("parrafoTop")),
+        "subtitulo": clean_text(tarjeta_raw.get("subtitulo")),
+        "parrafoBot": clean_text(tarjeta_raw.get("parrafoBot")),
+        "style": {
+            "accent": (tarjeta_raw.get("style") or {}).get("accent", "#30ffe4"),
+            "ink": (tarjeta_raw.get("style") or {}).get("ink", "#ffffff"),
+            "paper": (tarjeta_raw.get("style") or {}).get("paper", "#1a1a1a"),
+            "border": (tarjeta_raw.get("style") or {}).get("border", "#333333"),
+        },
+    }
+
     ediciones.append({
         "id": edicion_id,
         "titulo": titulo,
@@ -50,7 +65,10 @@ for i, libro in enumerate(libros[:LIMIT], start=1):
         "fondo": libro.get("fondo", "#0a0d1a"),
         "colores": (libro.get("colores") or ["#4FD1FF", "#7C5CFF", "#47E5C2", "#FFD166"])[:4],
         "textColors": (libro.get("textColors") or ["#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF"])[:4],
-        "ogImage": f"/lab/og/{edicion_id}.svg"
+        "ogImage": f"/lab/og/{edicion_id}.svg",
+        "portada": clean_text(libro.get("portada")),
+        "tagline": clean_text(libro.get("tagline")),
+        "tarjeta": tarjeta,
     })
 
 payload = {"ediciones": ediciones}
@@ -58,4 +76,6 @@ OUT_FILE.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding=
 
 print(f"OK: {OUT_FILE} generado con {len(ediciones)} edición(es) reales")
 for e in ediciones:
-    print(f'- {e["id"]} -> {e["titulo"]}')
+    portada_status = "✓ portada" if e.get("portada") else "✗ sin portada"
+    tarjeta_status = "✓ tarjeta" if e.get("tarjeta", {}).get("parrafoTop") else "✗ sin tarjeta"
+    print(f"  {e['id']} — {portada_status} — {tarjeta_status}")
