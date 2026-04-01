@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "toolbar": false,
   "routes": [
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/public/index.html" }
