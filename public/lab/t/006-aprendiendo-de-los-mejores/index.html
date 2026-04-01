@@ -165,7 +165,7 @@ body::before {
 
 /* ═══ CLOSE × ═══ */
 .btn-close {
-  position: absolute; top: 12px; right: 12px; z-index: 20;
+  position: absolute; top: 12px; left: 12px; z-index: 20;
   width: 32px; height: 32px;
   border: none; border-radius: 50%;
   background: rgba(0,0,0,.35); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
@@ -220,16 +220,16 @@ body::before {
   touch-action: manipulation;
 }
 .ed-cover-wrap img {
-  display: block; width: 110px; height: auto;
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 4px;
-  box-shadow: 0 15px 35px #ffcc0030;
+  display: block; width: 130px; height: auto;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px;
+  box-shadow: 0 15px 35px #ffcc0030, 0 0 0 1px rgba(255,255,255,0.06);
   animation: coverBreathe 2.8s cubic-bezier(0.32,0.01,0.16,1) infinite;
   will-change: transform, filter;
 }
 @keyframes coverBreathe {
   0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0px rgba(255,255,255,0)); }
-  50% { transform: scale(1.04); filter: drop-shadow(0 0 6px #ffcc0040); }
+  50% { transform: scale(1.05); filter: drop-shadow(0 0 10px #ffcc0050); }
 }
 .cover-hint {
   display: block; text-align: center;
@@ -272,8 +272,10 @@ body::before {
   color: #fff;
 }
 .btn-icon:active { transform: scale(0.97); }
-.btn-icon img { height: 18px; width: auto; display: block; }
-.btn-icon .btn-ig { font-size: 18px; }
+.btn-icon img { height: 16px; width: auto; display: block; }
+.btn-icon .btn-triggui-logo { height: 20px; }
+.btn-icon .btn-busca-logo { height: 14px; }
+.btn-icon .btn-ig-icon { width: 18px; height: 18px; }
 .btn-icon.btn-penguin-icon img { height: 36px; }
 
 .btn-icon.btn-crystal {
@@ -319,16 +321,19 @@ body::before {
 .reveal-overlay.silence .silence-screen { display: flex; }
 
 .silence-screen .sil-cover {
-  width: 140px; height: auto;
+  width: 160px; height: auto;
   border-radius: 8px;
-  opacity: 0.6;
-  box-shadow: 0 20px 50px rgba(0,0,0,.5);
-  margin-bottom: 32px;
+  opacity: 0.7;
+  box-shadow: 0 24px 60px rgba(0,0,0,.5), 0 0 30px #ffcc0020;
+  margin-bottom: 36px;
+  cursor: pointer;
   animation: silCoverIn .8s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  transition: transform .2s ease;
 }
+.silence-screen .sil-cover:active { transform: scale(0.96); }
 @keyframes silCoverIn {
   0% { transform: scale(.8); opacity: 0; }
-  100% { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(1); opacity: 0.7; }
 }
 
 .silence-screen .sil-title {
@@ -339,10 +344,18 @@ body::before {
 
 .silence-screen .sil-call {
   font-family: 'Poppins', sans-serif;
-  font-size: clamp(24px,6.5vw,36px); font-weight: 700;
-  line-height: 1.3; color: rgba(255,255,255,.95);
-  margin-bottom: 20px; text-align: center;
+  font-size: clamp(18px,5vw,26px); font-weight: 600;
+  line-height: 1.5; color: rgba(255,255,255,.85);
+  margin-bottom: 8px; text-align: center;
   animation: silCallIn 1s ease .3s both;
+}
+
+.silence-screen .sil-sub {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(14px,3.5vw,18px); font-weight: 500;
+  line-height: 1.4; color: rgba(255,255,255,.45);
+  margin-bottom: 24px; text-align: center;
+  animation: silCallIn 1s ease .5s both;
 }
 @keyframes silCallIn {
   0% { opacity: 0; transform: translateY(10px); }
@@ -351,14 +364,31 @@ body::before {
 
 .silence-screen .sil-pulse {
   font-family: 'Poppins', sans-serif;
-  font-size: 14px; font-weight: 600;
   margin-bottom: 28px; text-align: center;
-  animation: silCallIn 1s ease .6s both;
+  animation: silCallIn 1s ease .7s both;
+}
+.sil-pulse .pulse-num {
+  display: block;
+  font-size: clamp(36px,9vw,52px);
+  font-weight: 800;
+  line-height: 1;
+  background: linear-gradient(135deg, #FF0055 0%, #FF5E00 50%, #FFD700 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: fire-move 4s ease infinite;
+  margin-bottom: 4px;
+}
+.sil-pulse .pulse-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,.4);
+  letter-spacing: 0.5px;
 }
 
 .silence-screen .sil-mark {
   opacity: 0.2;
-  animation: silCallIn 1s ease .9s both;
+  animation: silCallIn 1s ease 1s both;
 }
 .silence-screen .sil-mark img {
   height: 22px; width: auto; display: block; margin: 0 auto;
@@ -375,13 +405,13 @@ body::before {
   .reveal-card::after { border-radius: 18px; }
   .ed-block { padding: 20px 20px; margin: 0 4px; }
   .ed-block:first-child { margin-top: 12px; }
-  .ed-cover-wrap img { width: 95px; }
+  .ed-cover-wrap img { width: 120px; }
   .ed-block .ed-title { font-size: 22px; }
   .ed-block .ed-para { font-size: 18px; line-height: 1.65; }
   .ed-block .ed-sub { font-size: 18px; }
   .ed-block .ed-chip { font-size: 15px; }
   .card-actions { padding: 14px 14px 20px; }
-  .btn-close { top: 8px; right: 8px; }
+  .btn-close { top: 8px; left: 8px; }
 }
 </style>
 </head>
@@ -416,16 +446,20 @@ body::before {
       <div class="card-actions">
         <div class="btn-row btn-row-2">
           <a class="btn-icon" href="https://triggui.com" target="_blank" rel="noopener noreferrer">
-            <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png" alt="Triggui" style="filter:invert(1) brightness(1.5); height:16px;">
+            <img class="btn-triggui-logo" src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png" alt="Triggui" style="filter:invert(1) brightness(1.5);">
           </a>
           <a class="btn-icon" href="https://www.instagram.com/triggui/" target="_blank" rel="noopener noreferrer">
-            <span class="btn-ig">📸</span>
+            <svg class="btn-ig-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="2" width="20" height="20" rx="6" stroke="white" stroke-width="1.8"/>
+              <circle cx="12" cy="12" r="5" stroke="white" stroke-width="1.8"/>
+              <circle cx="17.5" cy="6.5" r="1.2" fill="white"/>
+            </svg>
           </a>
         </div>
 
         <div class="btn-row btn-row-3">
           <a class="btn-icon" href="https://www.buscalibre.com.mx/libros/search/?q=Aprendiendo%20de%20los%20mejores%20Francisco%20Alcaide%20Hern%C3%A1ndez" target="_blank" rel="noopener noreferrer">
-            <img src="/buscalibre.png" alt="Buscalibre">
+            <img class="btn-busca-logo" src="/buscalibre.png" alt="Buscalibre">
           </a>
           <a class="btn-icon btn-crystal" href="https://www.buscalibre.com.mx/libros/search/?q=inspiraci%C3%B3n" target="_blank" rel="noopener noreferrer">
             <span class="btn-emoji">🔮</span>
@@ -442,9 +476,10 @@ body::before {
   </div>
 
   <div class="silence-screen" id="silenceScreen">
-    <img class="sil-cover" src="https://is1-ssl.mzstatic.com/image/thumb/Publication128/v4/a4/85/f3/a485f368-f4a3-c28d-da91-3d92222a56a6/9788416928651.jpg/626x0w.jpg" alt="Aprendiendo de los mejores" />
+    <img class="sil-cover" id="silCover" src="https://is1-ssl.mzstatic.com/image/thumb/Publication128/v4/a4/85/f3/a485f368-f4a3-c28d-da91-3d92222a56a6/9788416928651.jpg/626x0w.jpg" alt="Aprendiendo de los mejores" />
     <div class="sil-title">Aprendiendo de los mejores</div>
-    <div class="sil-call">Ahora, ábrelo.</div>
+    <div class="sil-call">Queremos que te den ganas<br>de abrir un libro.</div>
+    <div class="sil-sub">Eso es Triggui.</div>
     <div class="sil-pulse" id="silPulse"></div>
     <div class="sil-mark">
       <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png" alt="Triggui">
@@ -550,11 +585,22 @@ if (coverCTA) {
     // Show pulse on silence screen
     const silPulse = document.getElementById('silPulse');
     if (result.ok && result.count) {
-      const word = result.repeated ? 'Ya lo habías marcado.' : 'Eso es Triggui.';
-      silPulse.innerHTML = `${word} Hoy van <span class="total">${result.count}</span> libros abiertos.`;
+      silPulse.innerHTML = `<span class="pulse-num">${result.count}</span><span class="pulse-label">libros abiertos hoy</span>`;
+    } else {
+      silPulse.innerHTML = `<span class="pulse-label">Se registró el acto.</span>`;
     }
 
     revealOverlay.classList.add('silence');
+  });
+}
+
+// Silence cover click → back to card
+const silCover = document.getElementById('silCover');
+if (silCover) {
+  silCover.addEventListener('click', (e) => {
+    e.stopPropagation();
+    revealOverlay.classList.remove('silence');
+    coverCTA.style.pointerEvents = 'auto';
   });
 }
 
