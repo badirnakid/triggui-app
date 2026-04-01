@@ -340,6 +340,23 @@
     const btnFisico = document.getElementById('btnFisico');
     const stage = document.querySelector('.stage');
     const bookCall = document.querySelector('.book-call');
+    const pulseKey = 'triggui_lab_pulse_total';
+    const pulseEditionKey = `triggui_lab_opened_${state.id}`;
+
+    function getLabPulse() {
+      return Number(localStorage.getItem(pulseKey) || '0');
+    }
+
+    function registerPhysicalOpen() {
+      if (localStorage.getItem(pulseEditionKey) === '1') {
+        return { count: getLabPulse(), repeated: true };
+      }
+
+      const next = getLabPulse() + 1;
+      localStorage.setItem(pulseKey, String(next));
+      localStorage.setItem(pulseEditionKey, '1');
+      return { count: next, repeated: false };
+    }
 
     function getChronoOrder(hour) {
       if (hour >= 4 && hour <= 6) return [3, 2, 1, 0];
@@ -390,9 +407,16 @@
     }
 
     btnFisico.addEventListener('click', () => {
+      const result = registerPhysicalOpen();
       stage.classList.add('silence');
       bookCall.textContent = 'Bien. Ahora sal de la pantalla. Abre el libro.';
-      success.textContent = 'Eso es Triggui.';
+
+      if (result.repeated) {
+        success.textContent = `Ya estaba registrado en este dispositivo. Pulso de laboratorio: ${result.count}.`;
+      } else {
+        success.textContent = `Eso es Triggui. Pulso de laboratorio: ${result.count}.`;
+      }
+
       success.classList.add('show');
     });
 
