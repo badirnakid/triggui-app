@@ -385,17 +385,13 @@ body::before {{
 }}
 
 /* ═══ SILENCE ═══ */
-.reveal-overlay.silence {{ background: rgba(0,0,0,0.98); }}
-.reveal-overlay.silence .reveal-card {{ display: none; }}
-
 .silence-screen {{
   display: none;
   position: absolute; inset: 0;
   flex-direction: column; align-items: center; justify-content: center;
   padding: 0 32px;
-  pointer-events: none;
+  background: rgba(0,0,0,0.98);
 }}
-.reveal-overlay.silence .silence-screen {{ display: flex; }}
 
 .silence-screen .sil-cover {{
   width: 160px; height: auto;
@@ -404,7 +400,6 @@ body::before {{
   box-shadow: 0 24px 60px rgba(0,0,0,.5), 0 0 30px {esc(t_accent)}20;
   margin-bottom: 36px;
   cursor: pointer;
-  animation: silCoverIn .8s cubic-bezier(0.34,1.56,0.64,1) forwards;
   transition: transform .2s ease;
 }}
 .silence-screen .sil-cover:active {{ transform: scale(0.96); }}
@@ -492,12 +487,12 @@ body::before {{
 }}
 </style>
 </head>
-<body>
+<body data-lab-v="6">
 
 <div id="pulseLine" class="pulse-line"></div>
 <div class="grid" id="grid"></div>
 
-<div id="revealOverlay" class="reveal-overlay" onclick="if(event.target===this)document.getElementById('btnBack').click()">
+<div id="revealOverlay" class="reveal-overlay">
   <div class="reveal-card" onclick="event.stopPropagation()">
     <button class="btn-close" id="btnBack" aria-label="Cerrar">×</button>
     <div class="card-inner">
@@ -571,11 +566,46 @@ const revealOverlay = document.getElementById('revealOverlay');
 const btnBack = document.getElementById('btnBack');
 const success = document.getElementById('success');
 const coverCTA = document.getElementById('coverCTA');
+const revealCard = document.querySelector('.reveal-card');
+const silenceScreen = document.getElementById('silenceScreen');
 const pulseEditionKey = `triggui_lab_opened_${{state.id}}`;
 
 const ANG = [115,205,35,320];
 function grad(i) {{ return `linear-gradient(${{ANG[i%4]}}deg,${{state.colores[i]}},${{state.colores[(i+1)%4]}})`; }}
 
+// ═══ STATE CONTROL — Direct style, no CSS classes ═══
+function showCard() {{
+  revealCard.style.display = '';
+  silenceScreen.style.display = 'none';
+  if (coverCTA) {{
+    coverCTA.style.pointerEvents = 'auto';
+    const hint = coverCTA.querySelector('.cover-hint');
+    if (hint) hint.textContent = 'Toca el libro';
+  }}
+}}
+
+function showSilence() {{
+  revealCard.style.display = 'none';
+  silenceScreen.style.display = 'flex';
+}}
+
+function openOverlay() {{
+  showCard();
+  revealOverlay.style.opacity = '1';
+  revealOverlay.style.pointerEvents = 'auto';
+  revealCard.style.transform = 'scale(1) translateY(0)';
+  revealCard.style.opacity = '1';
+}}
+
+function closeOverlay() {{
+  revealOverlay.style.opacity = '0';
+  revealOverlay.style.pointerEvents = 'none';
+  revealCard.style.transform = 'scale(0.94) translateY(15px)';
+  revealCard.style.opacity = '0';
+  showCard();
+}}
+
+// ═══ API ═══
 async function getCollectivePulse() {{
   try {{
     const res = await fetch('/api/get-lab', {{ cache: 'no-store' }});
@@ -606,6 +636,7 @@ async function registerCollectivePhysicalOpen() {{
   }}
 }}
 
+// ═══ CHRONO ═══
 function getChronoOrder(hour) {{
   if (hour >= 4 && hour <= 6) return [3,2,1,0];
   if (hour >= 7 && hour <= 11) return [0,2,1,3];
@@ -619,6 +650,7 @@ const chronoOrder = getChronoOrder(currentHour);
 const revealIndex = Math.floor(Math.random() * 4);
 const emojis = ['🌊','🛡️','🧠','✨'];
 
+// ═══ BLOCKS ═══
 function renderBlocks() {{
   grid.innerHTML = chronoOrder.map((realIdx, idx) => `
     <button class="block" data-idx="${{idx}}" data-real-idx="${{realIdx}}" style="background:${{grad(realIdx)}}">
@@ -632,13 +664,7 @@ function renderBlocks() {{
     block.addEventListener('click', () => {{
       if (idx === revealIndex) {{
         grid.classList.add('hidden');
-        revealOverlay.className = 'reveal-overlay';
-        if (coverCTA) {{
-          coverCTA.style.pointerEvents = 'auto';
-          const hint = coverCTA.querySelector('.cover-hint');
-          if (hint) hint.textContent = 'Toca el libro';
-        }}
-        setTimeout(() => revealOverlay.classList.add('visible'), 200);
+        setTimeout(() => openOverlay(), 200);
         return;
       }}
       const already = block.classList.contains('show');
@@ -651,17 +677,17 @@ function renderBlocks() {{
   }});
 }}
 
+// ═══ CLOSE ═══
 btnBack.addEventListener('click', () => {{
-  revealOverlay.className = 'reveal-overlay';
-  if (coverCTA) {{
-    coverCTA.style.pointerEvents = 'auto';
-    const hint = coverCTA.querySelector('.cover-hint');
-    if (hint) hint.textContent = 'Toca el libro';
-  }}
+  closeOverlay();
   setTimeout(() => grid.classList.remove('hidden'), 200);
 }});
 
-// Cover CTA → register pulse → silence
+revealOverlay.addEventListener('click', (e) => {{
+  if (e.target === revealOverlay) btnBack.click();
+}});
+
+// ═══ COVER → SILENCE ═══
 if (coverCTA) {{
   coverCTA.addEventListener('click', async (e) => {{
     e.stopPropagation();
@@ -670,7 +696,6 @@ if (coverCTA) {{
 
     const result = await registerCollectivePhysicalOpen();
 
-    // Show pulse on silence screen
     const silPulse = document.getElementById('silPulse');
     if (result.ok && result.count) {{
       silPulse.innerHTML = `<span class="pulse-num">${{result.count}}</span><span class="pulse-label">libros abiertos hoy</span>`;
@@ -678,19 +703,16 @@ if (coverCTA) {{
       silPulse.innerHTML = `<span class="pulse-label">Se registró el acto.</span>`;
     }}
 
-    revealOverlay.classList.add('silence');
+    showSilence();
   }});
 }}
 
-// Silence cover click → back to card
+// ═══ SILENCE COVER → BACK TO CARD ═══
 const silCover = document.getElementById('silCover');
-if (silCover) {{
-  silCover.addEventListener('click', (e) => {{
-    e.stopPropagation();
-    revealOverlay.classList.remove('silence');
-    coverCTA.style.pointerEvents = 'auto';
-  }});
-}}
+silenceScreen.addEventListener('click', (e) => {{
+  e.stopPropagation();
+  showCard();
+}});
 
 renderBlocks();
 
