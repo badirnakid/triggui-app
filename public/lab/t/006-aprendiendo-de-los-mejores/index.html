@@ -150,16 +150,16 @@ body::before {
   transition: opacity .3s ease;
   overflow-y: auto; -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  padding: max(12px, env(safe-area-inset-top, 12px)) 3vw max(12px, env(safe-area-inset-bottom, 12px));
+  padding: max(6px, env(safe-area-inset-top, 6px)) 6px max(6px, env(safe-area-inset-bottom, 6px));
   cursor: pointer;
 }
 .reveal-overlay::-webkit-scrollbar { display: none; }
 .reveal-overlay.visible { opacity: 1; pointer-events: auto; }
 
 .reveal-card {
-  width: 100%; max-width: 500px;
+  width: 100%; max-width: 520px;
   margin: auto;
-  border-radius: 20px;
+  border-radius: 22px;
   position: relative;
   background-color: #1a1a1a;
   color: #e0e0e0;
@@ -180,7 +180,7 @@ body::before {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
   mix-blend-mode: overlay;
   opacity: 0.04;
-  border-radius: 20px;
+  border-radius: 22px;
 }
 
 .card-inner { position: relative; z-index: 2; padding: 0; }
@@ -440,15 +440,15 @@ body::before {
 .silence-msg .sil-mark img { height: 24px; width: auto; display: block; margin: 0 auto; filter: invert(1) brightness(1.5); }
 
 /* ═══ RESPONSIVE ═══ */
-@media (max-width: 480px) {
+@media (max-width: 640px) {
   .grid { gap: 1.2vw; }
   .label { font-size: clamp(0.95rem,4vw,1.4rem); }
   .frase { font-size: clamp(0.9rem,3.5vw,1.3rem); }
-  .reveal-overlay { padding: env(safe-area-inset-top, 0) 0 env(safe-area-inset-bottom, 0) 0; }
-  .reveal-card { border-radius: 0; margin: 0; width: 100%; max-width: 100%; }
-  .reveal-card::after { border-radius: 0; }
-  .ed-block { padding: 20px 20px; margin: 0; border-radius: 0; }
-  .ed-block:first-child { margin-top: 0; }
+  .reveal-overlay { padding: max(4px, env(safe-area-inset-top, 4px)) 4px max(4px, env(safe-area-inset-bottom, 4px)); }
+  .reveal-card { border-radius: 18px; max-width: 100%; }
+  .reveal-card::after { border-radius: 18px; }
+  .ed-block { padding: 20px 20px; margin: 0 4px; }
+  .ed-block:first-child { margin-top: 12px; }
   .ed-cover { width: 100px; }
   .ed-block .ed-title { font-size: 22px; line-height: 1.3; }
   .ed-block .ed-para { font-size: 18px; line-height: 1.65; }
@@ -456,7 +456,7 @@ body::before {
   .ed-block .ed-chip { font-size: 15px; }
   .card-actions { padding: 18px 20px 28px; }
   .logo-strip { padding: 14px 20px; }
-  .btn-close { top: 10px; right: 10px; }
+  .btn-close { top: 8px; right: 8px; }
 }
 </style>
 </head>
