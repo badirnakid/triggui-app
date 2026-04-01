@@ -632,7 +632,7 @@ function renderBlocks() {{
     block.addEventListener('click', () => {{
       if (idx === revealIndex) {{
         grid.classList.add('hidden');
-        revealOverlay.classList.remove('silence');
+        revealOverlay.className = 'reveal-overlay';
         if (coverCTA) {{
           coverCTA.style.pointerEvents = 'auto';
           const hint = coverCTA.querySelector('.cover-hint');
@@ -652,8 +652,12 @@ function renderBlocks() {{
 }}
 
 btnBack.addEventListener('click', () => {{
-  revealOverlay.classList.remove('visible', 'silence');
-  if (coverCTA) coverCTA.style.pointerEvents = 'auto';
+  revealOverlay.className = 'reveal-overlay';
+  if (coverCTA) {{
+    coverCTA.style.pointerEvents = 'auto';
+    const hint = coverCTA.querySelector('.cover-hint');
+    if (hint) hint.textContent = 'Toca el libro';
+  }}
   setTimeout(() => grid.classList.remove('hidden'), 200);
 }});
 
