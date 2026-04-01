@@ -272,7 +272,7 @@ body::before {{
 
 .ed-block .ed-title {{
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: 22px;
+  font-size: 24px;
   line-height: 1.3;
   font-weight: 400;
   color: {esc(t_ink)};
@@ -283,7 +283,7 @@ body::before {{
 .ed-block .ed-chip {{
   display: inline-block;
   font-family: 'Archivo', sans-serif;
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1;
   font-weight: 700;
   background: {esc(t_accent)};
@@ -296,7 +296,7 @@ body::before {{
 
 .ed-block .ed-para {{
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: 17px;
+  font-size: 18px;
   line-height: 1.7;
   font-weight: 400;
   color: rgba({("0,0,0" if t_ink == "#000000" or t_ink == "#1A1A1A" else "255,255,255")}, 0.8);
@@ -306,7 +306,7 @@ body::before {{
 
 .ed-block .ed-sub {{
   font-family: 'Archivo', sans-serif;
-  font-size: 17px;
+  font-size: 18px;
   line-height: 1.4;
   font-weight: 600;
   color: {esc(t_accent)};
@@ -516,16 +516,19 @@ body::before {{
   .grid {{ gap: 1.2vw; }}
   .label {{ font-size: clamp(0.95rem,4vw,1.4rem); }}
   .frase {{ font-size: clamp(0.9rem,3.5vw,1.3rem); }}
-  .reveal-overlay {{ padding-left: 0; padding-right: 0; }}
-  .reveal-card {{ border-radius: 16px; margin: auto 6px; }}
-  .reveal-card::after {{ border-radius: 16px; }}
-  .ed-block {{ padding: 16px 18px; margin: 0 4px; }}
-  .ed-block:first-child {{ margin-top: 14px; }}
-  .ed-cover {{ width: 90px; }}
-  .ed-block .ed-title {{ font-size: 19px; }}
-  .ed-block .ed-para {{ font-size: 15px; }}
-  .ed-block .ed-sub {{ font-size: 15px; }}
-  .card-actions {{ padding: 16px 16px 22px; }}
+  .reveal-overlay {{ padding: env(safe-area-inset-top, 0) 0 env(safe-area-inset-bottom, 0) 0; }}
+  .reveal-card {{ border-radius: 0; margin: 0; width: 100%; max-width: 100%; }}
+  .reveal-card::after {{ border-radius: 0; }}
+  .ed-block {{ padding: 20px 20px; margin: 0; border-radius: 0; }}
+  .ed-block:first-child {{ margin-top: 0; }}
+  .ed-cover {{ width: 100px; }}
+  .ed-block .ed-title {{ font-size: 22px; line-height: 1.3; }}
+  .ed-block .ed-para {{ font-size: 18px; line-height: 1.65; }}
+  .ed-block .ed-sub {{ font-size: 18px; line-height: 1.4; }}
+  .ed-block .ed-chip {{ font-size: 15px; }}
+  .card-actions {{ padding: 18px 20px 28px; }}
+  .logo-strip {{ padding: 14px 20px; }}
+  .btn-close {{ top: 10px; right: 10px; }}
 }}
 </style>
 </head>
