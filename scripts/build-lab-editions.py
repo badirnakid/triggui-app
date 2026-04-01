@@ -388,22 +388,51 @@ def render_edicion(edicion):
     const btnFisico = document.getElementById('btnFisico');
     const stage = document.querySelector('.stage');
     const bookCall = document.querySelector('.book-call');
-    const pulseKey = 'triggui_lab_pulse_total';
     const pulseEditionKey = `triggui_lab_opened_${{state.id}}`;
 
-    function getLabPulse() {{
-      return Number(localStorage.getItem(pulseKey) || '0');
+    async function getCollectivePulse() {{
+      try {{
+        const res = await fetch('/api/get-lab', {{ cache: 'no-store' }});
+        if (!res.ok) throw new Error('get-lab failed');
+        const data = await res.json();
+        return Number(data.total || 0);
+      }} catch (err) {{
+        console.error(err);
+        return null;
+      }}
     }}
 
-    function registerPhysicalOpen() {{
+    async function registerCollectivePhysicalOpen() {{
       if (localStorage.getItem(pulseEditionKey) === '1') {{
-        return {{ count: getLabPulse(), repeated: true }};
+        const count = await getCollectivePulse();
+        return {{ count, repeated: true, ok: count !== null }};
       }}
 
-      const next = getLabPulse() + 1;
-      localStorage.setItem(pulseKey, String(next));
-      localStorage.setItem(pulseEditionKey, '1');
-      return {{ count: next, repeated: false }};
+      try {{
+        const res = await fetch('/api/increment-lab', {{
+          method: 'POST',
+          headers: {{ 'Content-Type': 'application/json' }},
+          body: JSON.stringify({{ editionId: state.id }}),
+        }});
+
+        if (!res.ok) throw new Error('increment-lab failed');
+
+        const data = await res.json();
+        localStorage.setItem(pulseEditionKey, '1');
+
+        return {{
+          count: Number(data.total || 0),
+          repeated: false,
+          ok: true,
+        }};
+      }} catch (err) {{
+        console.error(err);
+        return {{
+          count: null,
+          repeated: false,
+          ok: false,
+        }};
+      }}
     }}
 
     function getChronoOrder(hour) {{
@@ -454,15 +483,21 @@ def render_edicion(edicion):
       }});
     }}
 
-    btnFisico.addEventListener('click', () => {{
-      const result = registerPhysicalOpen();
+    btnFisico.addEventListener('click', async () => {{
+      btnFisico.disabled = true;
+      btnFisico.textContent = 'Registrando...';
+
+      const result = await registerCollectivePhysicalOpen();
+
       stage.classList.add('silence');
       bookCall.textContent = 'Bien. Ahora sal de la pantalla. Abre el libro.';
 
-      if (result.repeated) {{
-        success.textContent = `Ya estaba registrado en este dispositivo. Pulso de laboratorio: ${{result.count}}.`;
+      if (!result.ok) {{
+        success.textContent = 'Se registró el acto, pero el pulso colectivo no respondió.';
+      }} else if (result.repeated) {{
+        success.textContent = `Ya estaba registrado en este dispositivo. Pulso colectivo: ${{result.count}}.`;
       }} else {{
-        success.textContent = `Eso es Triggui. Pulso de laboratorio: ${{result.count}}.`;
+        success.textContent = `Eso es Triggui. Pulso colectivo: ${{result.count}}.`;
       }}
 
       success.classList.add('show');
