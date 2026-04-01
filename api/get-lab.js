@@ -12,17 +12,56 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
+  if (!process.env.GITHUB_TOKEN) {
+    return res.status(500).json({
+      success: false,
+      error: "Missing GITHUB_TOKEN",
+    });
+  }
+
   try {
-    const url = "https://raw.githubusercontent.com/badirnakid/triggui-content/main/lab-pulse.json";
-    const response = await fetch(url, { cache: "no-store" });
+    const { Octokit } = await import("@octokit/rest");
 
-    if (!response.ok) {
-      return res.status(200).json({ total: 0 });
+    const owner = "badirnakid";
+    const repo = "triggui-content";
+    const path = "lab-pulse.json";
+
+    const octokit = new Octokit({
+      auth: process.env.GITHUB_TOKEN,
+    });
+
+    try {
+      const { data: file } = await octokit.repos.getContent({
+        owner,
+        repo,
+        path,
+      });
+
+      const content = Buffer.from(file.content, "base64").toString("utf8");
+      const json = JSON.parse(content);
+
+      return res.status(200).json({
+        total: Number(json.total || 0),
+      });
+    } catch (err) {
+      if (err.status === 404) {
+        return res.status(200).json({ total: 0 });
+      }
+      throw err;
     }
-
-    const data = await response.json();
-    return res.status(200).json({ total: Number(data.total || 0) });
   } catch (err) {
-    return res.status(200).json({ total: 0 });
+    console.error("get-lab error:", {
+      message: err.message,
+      status: err.status,
+      name: err.name,
+      response: err.response?.data || null,
+    });
+
+    return res.status(500).json({
+      success: false,
+      error: err.message || "Error obteniendo lab pulse",
+      status: err.status || null,
+      name: err.name || null,
+    });
   }
 }
