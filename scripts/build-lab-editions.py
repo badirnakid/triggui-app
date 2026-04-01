@@ -304,6 +304,19 @@ def render_edicion(edicion):
       display: block;
     }}
 
+    .pulse-line {{
+      font-size: 13px;
+      opacity: 0;
+      color: rgba(255,255,255,.5);
+      margin-bottom: 18px;
+      transition: opacity .6s ease;
+      min-height: 20px;
+    }}
+
+    .pulse-line.visible {{
+      opacity: 1;
+    }}
+
     .stage.silence .asset-panel {{
       display: none;
     }}
@@ -355,6 +368,7 @@ def render_edicion(edicion):
     </section>
 
     <section class="stage">
+      <div id="pulseLine" class="pulse-line"></div>
       <div id="grid" class="grid"></div>
 
       <div id="reveal" class="reveal">
@@ -493,17 +507,26 @@ def render_edicion(edicion):
       bookCall.textContent = 'Bien. Ahora sal de la pantalla. Abre el libro.';
 
       if (!result.ok) {{
-        success.textContent = 'Se registró el acto, pero el pulso colectivo no respondió.';
+        success.textContent = 'Se registró el acto.';
       }} else if (result.repeated) {{
-        success.textContent = `Ya estaba registrado en este dispositivo. Pulso colectivo: ${{result.count}}.`;
+        success.textContent = `Ya lo habías marcado. Hoy van ${{result.count}} libros abiertos.`;
       }} else {{
-        success.textContent = `Eso es Triggui. Pulso colectivo: ${{result.count}}.`;
+        success.textContent = `Eso es Triggui. Hoy van ${{result.count}} libros abiertos.`;
       }}
 
       success.classList.add('show');
     }});
 
     renderBlocks();
+
+    (async () => {{
+      const total = await getCollectivePulse();
+      const el = document.getElementById('pulseLine');
+      if (total !== null && total > 0) {{
+        el.textContent = `Hoy se abrieron ${{total}} libros.`;
+        el.classList.add('visible');
+      }}
+    }})();
   </script>
 </body>
 </html>
