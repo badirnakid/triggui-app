@@ -47,487 +47,571 @@ def render_edicion(edicion):
     }
 
     return f"""<!doctype html>
-<html lang="es">
+<html lang="es" style="background:#0e0f1b;">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 
-  <title>{esc(palabra)} · {esc(titulo)} · Triggui</title>
+<title>{esc(palabra)} · {esc(titulo)} · Triggui</title>
 
-  <meta property="og:title" content="{esc(palabra)} · {esc(titulo)}" />
-  <meta property="og:description" content="{esc(descripcion)}" />
-  <meta property="og:image" content="{esc(og_image)}" />
-  <meta property="og:url" content="/lab/t/{esc(edicion_id)}/" />
-  <meta property="og:type" content="article" />
+<meta property="og:title" content="{esc(palabra)} · {esc(titulo)}" />
+<meta property="og:description" content="{esc(descripcion)}" />
+<meta property="og:image" content="{esc(og_image)}" />
+<meta property="og:url" content="/lab/t/{esc(edicion_id)}/" />
+<meta property="og:type" content="article" />
 
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="{esc(palabra)} · {esc(titulo)}" />
-  <meta name="twitter:description" content="{esc(descripcion)}" />
-  <meta name="twitter:image" content="{esc(og_image)}" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="{esc(palabra)} · {esc(titulo)}" />
+<meta name="twitter:description" content="{esc(descripcion)}" />
+<meta name="twitter:image" content="{esc(og_image)}" />
 
-  <style>
-    * {{ box-sizing: border-box; }}
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,500;1,700&display=swap" rel="stylesheet">
 
-    html, body {{
-      margin: 0;
-      padding: 0;
-      min-height: 100%;
-      font-family: Arial, sans-serif;
-      background: {esc(fondo)};
-      color: #fff;
-    }}
+<style>
+*, *::before, *::after {{ box-sizing: border-box; }}
 
-    body {{
-      padding: 24px;
-    }}
+html, body {{
+  background: #0e0f1b !important;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Archivo', sans-serif;
+  -webkit-overflow-scrolling: touch;
+  -webkit-text-size-adjust: 100%;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+}}
 
-    .wrap {{
-      width: 100%;
-      max-width: 1100px;
-      margin: 0 auto;
-    }}
+body::before {{
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(48,255,228,0.08), transparent 50%),
+    radial-gradient(ellipse at 70% 80%, rgba(255,0,128,0.06), transparent 50%);
+  z-index: -1;
+  pointer-events: none;
+  animation: nebula-breathe 20s ease-in-out infinite;
+}}
 
-    .top {{
-      margin-bottom: 22px;
-    }}
+@keyframes nebula-breathe {{
+  0%, 100% {{ opacity: 1; }}
+  50% {{ opacity: 0.7; }}
+}}
 
-    .eyebrow {{
-      font-size: 12px;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      opacity: .6;
-      margin-bottom: 12px;
-    }}
+.pulse-line {{
+  position: fixed;
+  top: 16px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: rgba(255,255,255,.4);
+  z-index: 50;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity .8s ease, transform .8s ease;
+  pointer-events: none;
+}}
 
-    h1 {{
-      font-size: 42px;
-      line-height: 1.02;
-      margin: 0 0 8px 0;
-    }}
+.pulse-line.visible {{
+  opacity: 1;
+  transform: translateY(0);
+}}
 
-    .author {{
-      font-size: 18px;
-      opacity: .74;
-      margin-bottom: 12px;
-    }}
+.grid {{
+  position: absolute;
+  inset: 5vh 1.5vw;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(4, 1fr);
+  gap: 1vw;
+  transition: opacity .4s ease;
+}}
 
-    .hint {{
-      font-size: 16px;
-      line-height: 1.55;
-      color: rgba(255,255,255,.78);
-      max-width: 760px;
-      margin: 0;
-    }}
+.grid.hidden {{
+  opacity: 0;
+  pointer-events: none;
+}}
 
-    .stage {{
-      background: radial-gradient(circle at top left, rgba(255,255,255,.05) 0%, rgba(255,255,255,.02) 60%, rgba(255,255,255,.01) 100%);
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 28px;
-      padding: 24px;
-      box-shadow: 0 24px 70px rgba(0,0,0,.35);
-      overflow: hidden;
-    }}
+.block {{
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  border-radius: 24px;
+  font-weight: 700;
+  cursor: pointer;
+  background-size: 320% 320%;
+  transition: transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  overflow: hidden;
+  isolation: isolate;
+  border: none;
+  appearance: none;
+  font: inherit;
+  color: inherit;
+  width: 100%;
+  box-shadow:
+    inset 0 0 0 1.5px rgba(255,255,255,.15),
+    0 4px 6px rgba(0,0,0,.15),
+    0 12px 32px rgba(0,0,0,.35);
+}}
 
-    .grid {{
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-    }}
+.block::before {{
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(145deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,.08) 40%, transparent 100%);
+  pointer-events: none;
+  z-index: 1;
+}}
 
-    .block {{
-      appearance: none;
-      border: none;
-      width: 100%;
-      min-height: 200px;
-      border-radius: 24px;
-      padding: 20px;
-      text-align: left;
-      font: inherit;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 16px 36px rgba(0,0,0,.16);
-      transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
-    }}
+.block::after {{
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.12), transparent 60%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
+}}
 
-    .block:hover {{
-      transform: translateY(-2px);
-      box-shadow: 0 20px 40px rgba(0,0,0,.22);
-    }}
+.block:hover::after {{ opacity: 1; }}
 
-    .block.dim {{
-      opacity: .82;
-    }}
+.block:hover {{
+  transform: translateY(-2px) scale(1.005);
+  box-shadow:
+    inset 0 0 0 1.5px rgba(255,255,255,.22),
+    0 6px 12px rgba(0,0,0,.2),
+    0 16px 48px rgba(0,0,0,.45);
+}}
 
-    .word-chip {{
-      display: inline-block;
-      padding: 8px 12px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.16);
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      margin-bottom: 16px;
-    }}
+.block:active {{
+  transform: translateY(0) scale(0.995);
+  transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+}}
 
-    .label {{
-      font-size: 34px;
-      line-height: 1.02;
-      font-weight: 800;
-      max-width: 90%;
-    }}
+.block.dim {{
+  opacity: 0.6;
+  transform: scale(0.98);
+}}
 
-    .phrase {{
-      display: none;
-      font-size: 24px;
-      line-height: 1.35;
-      font-weight: 700;
-      max-width: 92%;
-      margin-top: 8px;
-    }}
+.label, .frase {{
+  z-index: 2;
+  text-align: center;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  text-shadow: none;
+  -webkit-font-smoothing: antialiased;
+}}
 
-    .block.show-phrase .label,
-    .block.show-phrase .word-chip {{
-      display: none;
-    }}
+.label {{
+  opacity: 1;
+  transform: translateY(0);
+  font-size: clamp(1.05rem, 3.2vw, 1.7rem);
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: 0.2px;
+}}
 
-    .block.show-phrase .phrase {{
-      display: block;
-    }}
+.frase {{
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  opacity: 0;
+  transform: translateY(6px);
+  font-size: clamp(1rem, 3vw, 1.5rem);
+  font-weight: 600;
+  line-height: 1.4;
+}}
 
-    .reveal {{
-      display: none;
-      grid-template-columns: 1.05fr .95fr;
-      gap: 24px;
-      align-items: center;
-    }}
+.block.show .label {{ opacity: 0; transform: translateY(-6px); }}
+.block.show .frase {{ opacity: 1; transform: translateY(0); }}
 
-    .reveal.show {{
-      display: grid;
-    }}
+.reveal-overlay {{
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background: rgba(14,15,27,0.97);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .5s ease;
+  padding: 5vh 6vw;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}}
 
-    .book-panel {{
-      background: rgba(255,255,255,.04);
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 24px;
-      padding: 24px;
-    }}
+.reveal-overlay.visible {{
+  opacity: 1;
+  pointer-events: auto;
+}}
 
-    .book-kicker {{
-      font-size: 12px;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      opacity: .58;
-      margin-bottom: 14px;
-    }}
+.reveal-glass {{
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+  transform: scale(0.92) translateY(20px);
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+  opacity: 0;
+}}
 
-    .book-title {{
-      font-size: 42px;
-      line-height: 1.02;
-      font-weight: 800;
-      margin-bottom: 10px;
-    }}
+.reveal-overlay.visible .reveal-glass {{
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}}
 
-    .book-author {{
-      font-size: 20px;
-      opacity: .74;
-      margin-bottom: 18px;
-    }}
+.reveal-og {{
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto 28px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,.65), 0 0 0 1px rgba(255,255,255,.1);
+  animation: portPop .6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}}
 
-    .book-desc {{
-      font-size: 20px;
-      line-height: 1.5;
-      color: rgba(255,255,255,.86);
-      margin-bottom: 20px;
-    }}
+@keyframes portPop {{
+  0% {{ transform: scale(.85); opacity: 0; }}
+  100% {{ transform: scale(1); opacity: 1; }}
+}}
 
-    .book-call {{
-      font-size: 18px;
-      line-height: 1.5;
-      color: rgba(255,255,255,.95);
-      margin-bottom: 22px;
-    }}
+.reveal-og img {{ display: block; width: 100%; height: auto; }}
 
-    .actions {{
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }}
+.reveal-kicker {{
+  font-family: 'Archivo', sans-serif;
+  font-size: 11px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  opacity: .5;
+  font-weight: 800;
+  margin-bottom: 16px;
+}}
 
-    .btn {{
-      appearance: none;
-      border: none;
-      display: inline-block;
-      text-decoration: none;
-      border-radius: 999px;
-      padding: 12px 16px;
-      font-weight: 800;
-      font-size: 14px;
-      cursor: pointer;
-    }}
+.reveal-title {{
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-weight: 800;
+  font-size: clamp(28px, 7vw, 42px);
+  line-height: 1.05;
+  margin: 0 0 10px 0;
+  letter-spacing: -0.5px;
+}}
 
-    .btn-main {{
-      background: linear-gradient(135deg, #4fd1ff, #7c5cff);
-      color: #fff;
-    }}
+.reveal-author {{
+  font-family: 'Archivo', sans-serif;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  opacity: .6;
+  font-weight: 700;
+  margin-bottom: 20px;
+}}
 
-    .btn-sub {{
-      background: rgba(255,255,255,.08);
-      color: #fff;
-      border: 1px solid rgba(255,255,255,.1);
-    }}
+.reveal-divider {{
+  width: 40px;
+  height: 1px;
+  background: rgba(255,255,255,.2);
+  margin: 0 auto 20px;
+}}
 
-    .asset-panel {{
-      border-radius: 24px;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,.08);
-      background: rgba(255,255,255,.02);
-      box-shadow: 0 20px 60px rgba(0,0,0,.25);
-    }}
+.reveal-desc {{
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  line-height: 1.6;
+  opacity: .85;
+  margin-bottom: 28px;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}}
 
-    .asset-panel img {{
-      display: block;
-      width: 100%;
-      height: auto;
-    }}
+.reveal-call {{
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: rgba(255,255,255,.9);
+  margin-bottom: 24px;
+  transition: all .4s ease;
+}}
 
-    .success {{
-      display: none;
-      margin-top: 18px;
-      font-size: 16px;
-      color: #b8ffcf;
-      font-weight: 700;
-    }}
+.btn-fisico {{
+  appearance: none;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 32px;
+  border-radius: 999px;
+  font-family: 'Archivo', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #fff;
+  background: linear-gradient(135deg, #30ffe4, #7c5cff);
+  box-shadow: 0 0 0 1px rgba(255,255,255,.15), 0 6px 20px rgba(48,255,228,0.3);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+  -webkit-font-smoothing: antialiased;
+}}
 
-    .success.show {{
-      display: block;
-    }}
+.btn-fisico:hover {{
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 0 0 1px rgba(255,255,255,.25), 0 8px 28px rgba(48,255,228,0.4);
+}}
 
-    .pulse-line {{
-      font-size: 13px;
-      opacity: 0;
-      color: rgba(255,255,255,.5);
-      margin-bottom: 18px;
-      transition: opacity .6s ease;
-      min-height: 20px;
-    }}
+.btn-fisico:active {{
+  transform: translateY(0) scale(0.97);
+  transition: transform 0.1s ease;
+}}
 
-    .pulse-line.visible {{
-      opacity: 1;
-    }}
+.btn-fisico:disabled {{
+  opacity: .6;
+  cursor: default;
+  transform: none;
+}}
 
-    .stage.silence .asset-panel {{
-      display: none;
-    }}
+.btn-back {{
+  appearance: none;
+  border: 1px solid rgba(255,255,255,.15);
+  background: rgba(255,255,255,.06);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 999px;
+  font-family: 'Archivo', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: background .2s ease;
+  -webkit-font-smoothing: antialiased;
+}}
 
-    .stage.silence .actions {{
-      display: none;
-    }}
+.btn-back:hover {{ background: rgba(255,255,255,.1); }}
 
-    .stage.silence .book-kicker {{
-      opacity: .38;
-    }}
+.success {{
+  margin-top: 20px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity .6s ease;
+}}
 
-    .stage.silence .book-call {{
-      font-size: 22px;
-      line-height: 1.55;
-      color: rgba(255,255,255,.98);
-    }}
+.success.visible {{ opacity: 1; }}
 
-    @media (max-width: 840px) {{
-      .grid {{
-        grid-template-columns: 1fr;
-      }}
+.success .total {{
+  background: linear-gradient(120deg, #30ffe4 0%, #FF0080 50%, #FFD700 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: fire-move 4s ease infinite;
+  font-weight: 800;
+  text-shadow: none;
+}}
 
-      .reveal.show {{
-        grid-template-columns: 1fr;
-      }}
+@keyframes fire-move {{
+  0%, 100% {{ background-position: 0% 50%; }}
+  50% {{ background-position: 100% 50%; }}
+}}
 
-      .label {{
-        font-size: 28px;
-      }}
+.reveal-overlay.silence .reveal-og,
+.reveal-overlay.silence .reveal-kicker,
+.reveal-overlay.silence .reveal-author,
+.reveal-overlay.silence .reveal-divider,
+.reveal-overlay.silence .reveal-desc,
+.reveal-overlay.silence .btn-fisico,
+.reveal-overlay.silence .btn-back {{
+  display: none;
+}}
 
-      .phrase {{
-        font-size: 22px;
-      }}
+.reveal-overlay.silence .reveal-title {{
+  font-size: clamp(22px, 5.5vw, 32px);
+  margin-bottom: 16px;
+  opacity: .4;
+}}
 
-      .book-title {{
-        font-size: 34px;
-      }}
-    }}
-  </style>
+.reveal-overlay.silence .reveal-call {{
+  font-size: clamp(20px, 5vw, 28px);
+  color: rgba(255,255,255,.98);
+  line-height: 1.55;
+}}
+
+@media (max-width: 480px) {{
+  .grid {{ gap: 1.2vw; }}
+  .label {{ font-size: clamp(0.95rem, 4vw, 1.4rem); }}
+  .frase {{ font-size: clamp(0.9rem, 3.5vw, 1.3rem); }}
+}}
+
+@media (orientation: landscape) {{
+  .grid {{
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: 1fr;
+  }}
+}}
+</style>
 </head>
 <body>
-  <main class="wrap">
-    <section class="top">
-      <div class="eyebrow">Triggui 2.0 · Edición Viva</div>
-      <h1>{esc(titulo)}</h1>
-      <div class="author">{esc(autor)}</div>
-      <p class="hint">Elige una palabra. Verás un libro. Abre uno físico que tengas cerca.</p>
-    </section>
 
-    <section class="stage">
-      <div id="pulseLine" class="pulse-line"></div>
-      <div id="grid" class="grid"></div>
+<div id="pulseLine" class="pulse-line"></div>
+<div class="grid" id="grid"></div>
 
-      <div id="reveal" class="reveal">
-        <div class="book-panel">
-          <div class="book-kicker">Revelación</div>
-          <div class="book-title">{esc(titulo)}</div>
-          <div class="book-author">{esc(autor)}</div>
-          <div class="book-desc">{esc(descripcion)}</div>
-          <div class="book-call">Cierra esto. Abre un libro físico que tengas cerca.</div>
+<div id="revealOverlay" class="reveal-overlay">
+  <div class="reveal-glass">
+    <div class="reveal-og">
+      <img src="{esc(og_image)}" alt="{esc(titulo)}" />
+    </div>
+    <div class="reveal-kicker">Revelación</div>
+    <h1 class="reveal-title">{esc(titulo)}</h1>
+    <div class="reveal-author">{esc(autor)}</div>
+    <div class="reveal-divider"></div>
+    <div class="reveal-desc">{esc(descripcion)}</div>
+    <div class="reveal-call">Cierra esto. Abre un libro físico que tengas cerca.</div>
+    <button class="btn-fisico" id="btnFisico">📖 Abrí un libro físico</button>
+    <button class="btn-back" id="btnBack">Volver</button>
+    <div class="success" id="success"></div>
+  </div>
+</div>
 
-          <div class="actions">
-            <a class="btn btn-sub" href="/lab/">Volver al laboratorio</a>
-            <button class="btn btn-main" id="btnFisico">📖 Abrí un libro físico</button>
-          </div>
+<script>
+const state = {js_string(state)};
+const grid = document.getElementById('grid');
+const revealOverlay = document.getElementById('revealOverlay');
+const btnFisico = document.getElementById('btnFisico');
+const btnBack = document.getElementById('btnBack');
+const success = document.getElementById('success');
+const revealCall = document.querySelector('.reveal-call');
+const pulseEditionKey = `triggui_lab_opened_${{state.id}}`;
 
-          <div id="success" class="success">Bien. Eso es Triggui.</div>
-        </div>
+const ANG = [115, 205, 35, 320];
+function grad(i) {{
+  return `linear-gradient(${{ANG[i % 4]}}deg, ${{state.colores[i]}}, ${{state.colores[(i + 1) % 4]}})`;
+}}
 
-        <div class="asset-panel">
-          <img src="{esc(og_image)}" alt="Vista previa de la edición" />
-        </div>
-      </div>
-    </section>
-  </main>
+async function getCollectivePulse() {{
+  try {{
+    const res = await fetch('/api/get-lab', {{ cache: 'no-store' }});
+    if (!res.ok) throw new Error('get-lab failed');
+    const data = await res.json();
+    return Number(data.total || 0);
+  }} catch (err) {{
+    console.error(err);
+    return null;
+  }}
+}}
 
-  <script>
-    const state = {js_string(state)};
-    const grid = document.getElementById('grid');
-    const reveal = document.getElementById('reveal');
-    const success = document.getElementById('success');
-    const btnFisico = document.getElementById('btnFisico');
-    const stage = document.querySelector('.stage');
-    const bookCall = document.querySelector('.book-call');
-    const pulseEditionKey = `triggui_lab_opened_${{state.id}}`;
-
-    async function getCollectivePulse() {{
-      try {{
-        const res = await fetch('/api/get-lab', {{ cache: 'no-store' }});
-        if (!res.ok) throw new Error('get-lab failed');
-        const data = await res.json();
-        return Number(data.total || 0);
-      }} catch (err) {{
-        console.error(err);
-        return null;
-      }}
-    }}
-
-    async function registerCollectivePhysicalOpen() {{
-      if (localStorage.getItem(pulseEditionKey) === '1') {{
-        const count = await getCollectivePulse();
-        return {{ count, repeated: true, ok: count !== null }};
-      }}
-
-      try {{
-        const res = await fetch('/api/increment-lab', {{
-          method: 'POST',
-          headers: {{ 'Content-Type': 'application/json' }},
-          body: JSON.stringify({{ editionId: state.id }}),
-        }});
-
-        if (!res.ok) throw new Error('increment-lab failed');
-
-        const data = await res.json();
-        localStorage.setItem(pulseEditionKey, '1');
-
-        return {{
-          count: Number(data.total || 0),
-          repeated: false,
-          ok: true,
-        }};
-      }} catch (err) {{
-        console.error(err);
-        return {{
-          count: null,
-          repeated: false,
-          ok: false,
-        }};
-      }}
-    }}
-
-    function getChronoOrder(hour) {{
-      if (hour >= 4 && hour <= 6) return [3, 2, 1, 0];
-      if (hour >= 7 && hour <= 11) return [0, 2, 1, 3];
-      if (hour >= 12 && hour <= 16) return [2, 0, 1, 3];
-      if (hour >= 17 && hour <= 20) return [1, 3, 2, 0];
-      return [3, 1, 2, 0];
-    }}
-
-    const currentHour = new Date().getHours();
-    const chronoOrder = getChronoOrder(currentHour);
-    const revealIndex = Math.floor(Math.random() * 4);
-
-    function renderBlocks() {{
-      grid.innerHTML = chronoOrder.map((realIdx, idx) => `
-        <button
-          class="block"
-          data-idx="${{idx}}"
-          data-real-idx="${{realIdx}}"
-          style="background:${{state.colores[realIdx]}}; color:${{state.textColors[realIdx]}}"
-        >
-          <div class="word-chip">Bloque ${{idx + 1}}</div>
-          <div class="label">${{state.palabras[realIdx]}}</div>
-          <div class="phrase">${{state.frases[realIdx]}}</div>
-        </button>
-      `).join('');
-
-      const blocks = [...grid.querySelectorAll('.block')];
-
-      blocks.forEach((block, idx) => {{
-        block.addEventListener('click', () => {{
-          if (idx === revealIndex) {{
-            grid.style.display = 'none';
-            reveal.classList.add('show');
-            return;
-          }}
-
-          const already = block.classList.contains('show-phrase');
-          blocks.forEach(b => b.classList.remove('show-phrase', 'dim'));
-          if (!already) {{
-            block.classList.add('show-phrase');
-            blocks.forEach((b, j) => {{
-              if (j !== idx) b.classList.add('dim');
-            }});
-          }}
-        }});
-      }});
-    }}
-
-    btnFisico.addEventListener('click', async () => {{
-      btnFisico.disabled = true;
-      btnFisico.textContent = 'Registrando...';
-
-      const result = await registerCollectivePhysicalOpen();
-
-      stage.classList.add('silence');
-      bookCall.textContent = 'Bien. Ahora sal de la pantalla. Abre el libro.';
-
-      if (!result.ok) {{
-        success.textContent = 'Se registró el acto.';
-      }} else if (result.repeated) {{
-        success.textContent = `Ya lo habías marcado. Hoy van ${{result.count}} libros abiertos.`;
-      }} else {{
-        success.textContent = `Eso es Triggui. Hoy van ${{result.count}} libros abiertos.`;
-      }}
-
-      success.classList.add('show');
+async function registerCollectivePhysicalOpen() {{
+  if (localStorage.getItem(pulseEditionKey) === '1') {{
+    const count = await getCollectivePulse();
+    return {{ count, repeated: true, ok: count !== null }};
+  }}
+  try {{
+    const res = await fetch('/api/increment-lab', {{
+      method: 'POST',
+      headers: {{ 'Content-Type': 'application/json' }},
+      body: JSON.stringify({{ editionId: state.id }}),
     }});
+    if (!res.ok) throw new Error('increment-lab failed');
+    const data = await res.json();
+    localStorage.setItem(pulseEditionKey, '1');
+    return {{ count: Number(data.total || 0), repeated: false, ok: true }};
+  }} catch (err) {{
+    console.error(err);
+    return {{ count: null, repeated: false, ok: false }};
+  }}
+}}
 
-    renderBlocks();
+function getChronoOrder(hour) {{
+  if (hour >= 4 && hour <= 6) return [3, 2, 1, 0];
+  if (hour >= 7 && hour <= 11) return [0, 2, 1, 3];
+  if (hour >= 12 && hour <= 16) return [2, 0, 1, 3];
+  if (hour >= 17 && hour <= 20) return [1, 3, 2, 0];
+  return [3, 1, 2, 0];
+}}
 
-    (async () => {{
-      const total = await getCollectivePulse();
-      const el = document.getElementById('pulseLine');
-      if (total !== null && total > 0) {{
-        el.textContent = `Hoy se abrieron ${{total}} libros.`;
-        el.classList.add('visible');
+const currentHour = new Date().getHours();
+const chronoOrder = getChronoOrder(currentHour);
+const revealIndex = Math.floor(Math.random() * 4);
+const emojis = ['🌊', '🛡️', '🧠', '✨'];
+
+function renderBlocks() {{
+  grid.innerHTML = chronoOrder.map((realIdx, idx) => `
+    <button class="block" data-idx="${{idx}}" data-real-idx="${{realIdx}}" style="background:${{grad(realIdx)}}">
+      <div class="label" style="color:${{state.textColors[realIdx]}}">${{emojis[realIdx % 4]}} ${{state.palabras[realIdx]}}</div>
+      <div class="frase" style="color:${{state.textColors[realIdx]}}">${{state.frases[realIdx]}}</div>
+    </button>
+  `).join('');
+
+  const blocks = [...grid.querySelectorAll('.block')];
+  blocks.forEach((block, idx) => {{
+    block.addEventListener('click', () => {{
+      if (idx === revealIndex) {{
+        grid.classList.add('hidden');
+        setTimeout(() => revealOverlay.classList.add('visible'), 200);
+        return;
       }}
-    }})();
-  </script>
+      const already = block.classList.contains('show');
+      blocks.forEach(b => b.classList.remove('show', 'dim'));
+      if (!already) {{
+        block.classList.add('show');
+        blocks.forEach((b, j) => {{ if (j !== idx) b.classList.add('dim'); }});
+      }}
+    }});
+  }});
+}}
+
+btnBack.addEventListener('click', () => {{
+  revealOverlay.classList.remove('visible');
+  setTimeout(() => grid.classList.remove('hidden'), 200);
+}});
+
+btnFisico.addEventListener('click', async () => {{
+  btnFisico.disabled = true;
+  btnFisico.textContent = 'Registrando...';
+  const result = await registerCollectivePhysicalOpen();
+  revealOverlay.classList.add('silence');
+  revealCall.textContent = 'Bien. Ahora sal de la pantalla. Abre el libro.';
+  let msg = '';
+  if (!result.ok) {{
+    msg = 'Se registró el acto.';
+  }} else if (result.repeated) {{
+    msg = `Ya lo habías marcado. Hoy van <span class="total">${{result.count}}</span> libros abiertos.`;
+  }} else {{
+    msg = `Eso es Triggui. Hoy van <span class="total">${{result.count}}</span> libros abiertos.`;
+  }}
+  success.innerHTML = msg;
+  success.classList.add('visible');
+}});
+
+renderBlocks();
+
+(async () => {{
+  const total = await getCollectivePulse();
+  const el = document.getElementById('pulseLine');
+  if (total !== null && total > 0) {{
+    el.textContent = `Hoy se abrieron ${{total}} libros.`;
+    el.classList.add('visible');
+  }}
+}})();
+</script>
 </body>
 </html>
 """
