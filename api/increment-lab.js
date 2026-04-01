@@ -1,5 +1,3 @@
-import { Octokit } from "@octokit/rest";
-
 export default async function handler(req, res) {
   const origin = req.headers.origin;
 
@@ -18,15 +16,24 @@ export default async function handler(req, res) {
     return res.status(405).json({ success: false, error: "Method not allowed" });
   }
 
-  const owner = "badirnakid";
-  const repo = "triggui-content";
-  const path = "lab-pulse.json";
-
-  const octokit = new Octokit({
-    auth: process.env.GITHUB_TOKEN,
-  });
+  if (!process.env.GITHUB_TOKEN) {
+    return res.status(500).json({
+      success: false,
+      error: "Missing GITHUB_TOKEN",
+    });
+  }
 
   try {
+    const { Octokit } = await import("@octokit/rest");
+
+    const owner = "badirnakid";
+    const repo = "triggui-content";
+    const path = "lab-pulse.json";
+
+    const octokit = new Octokit({
+      auth: process.env.GITHUB_TOKEN,
+    });
+
     let currentTotal = 0;
     let sha;
 
@@ -55,7 +62,9 @@ export default async function handler(req, res) {
       updatedAt: new Date().toISOString(),
     };
 
-    const encoded = Buffer.from(JSON.stringify(payload, null, 2)).toString("base64");
+    const encoded = Buffer.from(
+      JSON.stringify(payload, null, 2)
+    ).toString("base64");
 
     await octokit.repos.createOrUpdateFileContents({
       owner,
@@ -68,10 +77,18 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ success: true, total });
   } catch (err) {
-    console.error(err);
+    console.error("increment-lab error:", {
+      message: err.message,
+      status: err.status,
+      name: err.name,
+      response: err.response?.data || null,
+    });
+
     return res.status(500).json({
       success: false,
       error: err.message || "Error incrementando lab pulse",
+      status: err.status || null,
+      name: err.name || null,
     });
   }
 }
