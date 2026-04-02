@@ -221,7 +221,7 @@ body::before {
   background-color: #1A1A1A;
   color: #E0E0E0;
   box-shadow: 0 60px 120px -30px rgba(0,0,0,0.85), 0 0 0 1px #6A9CFF22, 0 0 40px #6A9CFF15;
-  overflow: hidden;
+  overflow: visible; /* AQUI ESTA EL EXORCISMO PARA EL PADRE */
   cursor: default;
   transform: scale(0.94) translateY(15px);
   opacity: 0;
@@ -325,6 +325,8 @@ body::before {
   cursor: pointer;
   position: relative;
   touch-action: manipulation;
+  /* Le damos un padcito para que respire sin chocar */
+  padding: 8px; 
 }
 .ed-cover-wrap img {
   display: block;
@@ -401,6 +403,7 @@ body::before {
 }
 .btn-crystal .btn-emoji { font-size: 20px; line-height: 1; }
 
+/* === MAGIA NIVEL DIOS PARA LA PANTALLA DE SILENCIO === */
 .silence-screen {
   display: none;
   position: absolute;
@@ -410,35 +413,66 @@ body::before {
   justify-content: center;
   padding: 0 32px;
   background: rgba(0,0,0,0.98);
+  overflow: hidden;
 }
+
+/* El orbe brillante de fondo */
+.silence-screen::before {
+  content: "";
+  position: absolute;
+  top: 35%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 280px; height: 280px;
+  background: radial-gradient(circle, #6A9CFF30 0%, transparent 65%);
+  filter: blur(35px);
+  z-index: 0;
+  pointer-events: none;
+  animation: pulseGlow 4s ease-in-out infinite;
+}
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.9); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+}
+
+.silence-screen > * { position: relative; z-index: 1; }
+
 .silence-screen .sil-cover {
-  width: 160px;
+  width: 180px;
   height: auto;
-  border-radius: 8px;
-  opacity: 0.7;
-  box-shadow: 0 24px 60px rgba(0,0,0,.5), 0 0 30px #6A9CFF20;
-  margin-bottom: 36px;
+  border-radius: 12px;
+  opacity: 1; /* 100% brillo de tarjeta de poder */
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 30px 60px -10px rgba(0,0,0,0.9), 0 0 40px #6A9CFF40;
+  margin-bottom: 40px;
   cursor: pointer;
-  transition: transform .2s ease;
+  animation: floatMagic 5s ease-in-out infinite; /* Levitación */
 }
-.silence-screen .sil-cover:active { transform: scale(0.96); }
+@keyframes floatMagic {
+  0%, 100% { transform: translateY(0); box-shadow: 0 30px 60px -10px rgba(0,0,0,0.9), 0 0 40px #6A9CFF40; }
+  50% { transform: translateY(-12px); box-shadow: 0 40px 70px -10px rgba(0,0,0,0.7), 0 0 60px #6A9CFF60; }
+}
+
+.silence-screen .sil-cover:active { transform: scale(0.96) translateY(0); transition: transform .1s; }
+
 .silence-screen .sil-title {
   font-family: 'Playfair Display', serif;
   font-style: italic;
   font-size: clamp(16px,4vw,22px);
-  opacity: .3;
+  opacity: .5;
   margin-bottom: 20px;
   font-weight: 700;
   text-align: center;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
 }
 .silence-screen .sil-call {
   font-family: 'Poppins', sans-serif;
   font-size: clamp(18px,5vw,26px);
   font-weight: 600;
   line-height: 1.5;
-  color: rgba(255,255,255,.85);
+  color: rgba(255,255,255,.9);
   margin-bottom: 8px;
   text-align: center;
+  text-shadow: 0 2px 15px rgba(0,0,0,0.5);
   animation: silCallIn 1s ease .3s both;
 }
 .silence-screen .sil-sub {
@@ -446,7 +480,7 @@ body::before {
   font-size: clamp(14px,3.5vw,18px);
   font-weight: 500;
   line-height: 1.4;
-  color: rgba(255,255,255,.45);
+  color: rgba(255,255,255,.5);
   margin-bottom: 24px;
   text-align: center;
   animation: silCallIn 1s ease .5s both;
@@ -476,7 +510,7 @@ body::before {
 .sil-pulse .pulse-label {
   font-size: 13px;
   font-weight: 600;
-  color: rgba(255,255,255,.4);
+  color: rgba(255,255,255,.5);
   letter-spacing: 0.5px;
 }
 .silence-screen .sil-mark { opacity: 0.2; animation: silCallIn 1s ease 1s both; }
@@ -504,6 +538,7 @@ body::before {
   .ed-block .ed-chip { font-size: 15px; }
   .card-actions { padding: 14px 14px 20px; }
   .btn-close { top: 8px; left: 8px; }
+  .silence-screen .sil-cover { width: 150px; }
 }
 </style>
 </head>
@@ -518,7 +553,7 @@ body::before {
     <div class="card-inner">
 
       <div class="ed-block">
-        <div style="overflow:hidden;">
+        <div style="display: flow-root; overflow: visible; padding: 4px;">
           <div class="ed-cover-wrap" id="coverCTA">
             <img src="https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/7d/4f/9e/7d4f9eb7-8776-fda9-0442-a9c05ad39f0c/1038891568.jpg/626x0w.jpg" alt="Máxima conexión" />
             <span class="cover-hint">Toca el libro</span>
