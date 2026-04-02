@@ -564,45 +564,95 @@ const state = {js_string(state)};
 const grid = document.getElementById('grid');
 const revealOverlay = document.getElementById('revealOverlay');
 const btnBack = document.getElementById('btnBack');
-const success = document.getElementById('success');
 const coverCTA = document.getElementById('coverCTA');
+const coverHint = coverCTA ? coverCTA.querySelector('.cover-hint') : null;
 const revealCard = document.querySelector('.reveal-card');
 const silenceScreen = document.getElementById('silenceScreen');
-const pulseEditionKey = `triggui_lab_opened_${{state.id}}`;
+const silCover = document.getElementById('silCover');
+const silPulse = document.getElementById('silPulse');
+const pulseEditionKey = `triggui_lab_opened_${state.id}`;
 
 const ANG = [115,205,35,320];
-function grad(i) {{ return `linear-gradient(${{ANG[i%4]}}deg,${{state.colores[i]}},${{state.colores[(i+1)%4]}})`; }}
+function grad(i) {{ return `linear-gradient(${{ANG[i % 4]}}deg,${{state.colores[i]}},${{state.colores[(i + 1) % 4]}})`; }}
 
-// ═══ STATE CONTROL — Direct style, no CSS classes ═══
-function showCard() {{
-  revealCard.style.display = '';
-  silenceScreen.style.display = 'none';
-  if (coverCTA) {{
-    coverCTA.style.pointerEvents = 'auto';
-    const hint = coverCTA.querySelector('.cover-hint');
-    if (hint) hint.textContent = 'Toca el libro';
+// ═══ SINGLE SOURCE OF TRUTH ═══
+let overlayView = 'blocks'; // blocks | card | silence
+let coverBusy = false;
+
+function clearBlockStates() {{
+  grid.querySelectorAll('.block').forEach((block) => {{
+    block.classList.remove('show', 'dim');
+  }});
+}}
+
+function hideGrid() {{
+  grid.classList.add('hidden');
+}}
+
+function showGrid() {{
+  clearBlockStates();
+  grid.classList.remove('hidden');
+}}
+
+function resetCardState() {{
+  coverBusy = false;
+  if (coverCTA) coverCTA.style.pointerEvents = 'auto';
+  if (coverHint) coverHint.textContent = 'Toca el libro';
+}}
+
+function setOverlayView(next) {{
+  overlayView = next;
+  revealOverlay.dataset.view = next;
+
+  const overlayVisible = next !== 'blocks';
+  revealOverlay.style.opacity = overlayVisible ? '1' : '0';
+  revealOverlay.style.pointerEvents = overlayVisible ? 'auto' : 'none';
+
+  if (next === 'blocks') {{
+    resetCardState();
+    revealCard.style.display = '';
+    silenceScreen.style.display = 'none';
+    revealCard.style.transform = 'scale(0.94) translateY(15px)';
+    revealCard.style.opacity = '0';
+    return;
+  }}
+
+  if (next === 'card') {{
+    resetCardState();
+    revealCard.style.display = '';
+    silenceScreen.style.display = 'none';
+    revealCard.style.transform = 'scale(0.98) translateY(10px)';
+    revealCard.style.opacity = '0';
+
+    requestAnimationFrame(() => {{
+      revealCard.style.transform = 'scale(1) translateY(0)';
+      revealCard.style.opacity = '1';
+    }});
+    return;
+  }}
+
+  if (next === 'silence') {{
+    revealCard.style.display = 'none';
+    silenceScreen.style.display = 'flex';
   }}
 }}
 
-function showSilence() {{
-  revealCard.style.display = 'none';
-  silenceScreen.style.display = 'flex';
-}}
-
 function openOverlay() {{
-  showCard();
-  revealOverlay.style.opacity = '1';
-  revealOverlay.style.pointerEvents = 'auto';
-  revealCard.style.transform = 'scale(1) translateY(0)';
-  revealCard.style.opacity = '1';
+  hideGrid();
+  setOverlayView('card');
 }}
 
-function closeOverlay() {{
-  revealOverlay.style.opacity = '0';
-  revealOverlay.style.pointerEvents = 'none';
-  revealCard.style.transform = 'scale(0.94) translateY(15px)';
-  revealCard.style.opacity = '0';
-  showCard();
+function closeOverlayToBlocks() {{
+  setOverlayView('blocks');
+  setTimeout(() => showGrid(), 180);
+}}
+
+function moveToSilence() {{
+  setOverlayView('silence');
+}}
+
+function returnToCard() {{
+  setOverlayView('card');
 }}
 
 // ═══ API ═══
@@ -612,7 +662,10 @@ async function getCollectivePulse() {{
     if (!res.ok) throw new Error('fail');
     const data = await res.json();
     return Number(data.total || 0);
-  }} catch (e) {{ console.error(e); return null; }}
+  }} catch (e) {{
+    console.error(e);
+    return null;
+  }}
 }}
 
 async function registerCollectivePhysicalOpen() {{
@@ -620,13 +673,16 @@ async function registerCollectivePhysicalOpen() {{
     const count = await getCollectivePulse();
     return {{ count, repeated: true, ok: count !== null }};
   }}
+
   try {{
     const res = await fetch('/api/increment-lab', {{
       method: 'POST',
       headers: {{ 'Content-Type': 'application/json' }},
       body: JSON.stringify({{ editionId: state.id }}),
     }});
+
     if (!res.ok) throw new Error('fail');
+
     const data = await res.json();
     localStorage.setItem(pulseEditionKey, '1');
     return {{ count: Number(data.total || 0), repeated: false, ok: true }};
@@ -638,99 +694,137 @@ async function registerCollectivePhysicalOpen() {{
 
 // ═══ CHRONO ═══
 function getChronoOrder(hour) {{
-  if (hour >= 4 && hour <= 6) return [3,2,1,0];
-  if (hour >= 7 && hour <= 11) return [0,2,1,3];
-  if (hour >= 12 && hour <= 16) return [2,0,1,3];
-  if (hour >= 17 && hour <= 20) return [1,3,2,0];
-  return [3,1,2,0];
+  if (hour >= 4 && hour <= 6) return [3, 2, 1, 0];
+  if (hour >= 7 && hour <= 11) return [0, 2, 1, 3];
+  if (hour >= 12 && hour <= 16) return [2, 0, 1, 3];
+  if (hour >= 17 && hour <= 20) return [1, 3, 2, 0];
+  return [3, 1, 2, 0];
 }}
 
 const currentHour = new Date().getHours();
 const chronoOrder = getChronoOrder(currentHour);
 const revealIndex = Math.floor(Math.random() * 4);
-const emojis = ['🌊','🛡️','🧠','✨'];
+const emojis = ['🌊', '🛡️', '🧠', '✨'];
 
 // ═══ BLOCKS ═══
 function renderBlocks() {{
   grid.innerHTML = chronoOrder.map((realIdx, idx) => `
     <button class="block" data-idx="${{idx}}" data-real-idx="${{realIdx}}" style="background:${{grad(realIdx)}}">
-      <div class="label" style="color:${{state.textColors[realIdx]}}">${{emojis[realIdx%4]}} ${{state.palabras[realIdx]}}</div>
+      <div class="label" style="color:${{state.textColors[realIdx]}}">${{emojis[realIdx % 4]}} ${{state.palabras[realIdx]}}</div>
       <div class="frase" style="color:${{state.textColors[realIdx]}}">${{state.frases[realIdx]}}</div>
     </button>
   `).join('');
 
   const blocks = [...grid.querySelectorAll('.block')];
+
   blocks.forEach((block, idx) => {{
-    block.addEventListener('click', () => {{
+    block.addEventListener('click', (e) => {{
+      e.preventDefault();
+      e.stopPropagation();
+
       if (idx === revealIndex) {{
-        grid.classList.add('hidden');
-        setTimeout(() => openOverlay(), 200);
+        openOverlay();
         return;
       }}
+
       const already = block.classList.contains('show');
-      blocks.forEach(b => b.classList.remove('show','dim'));
+      clearBlockStates();
+
       if (!already) {{
         block.classList.add('show');
-        blocks.forEach((b,j) => {{ if (j !== idx) b.classList.add('dim'); }});
+        blocks.forEach((otherBlock, otherIdx) => {{
+          if (otherIdx !== idx) otherBlock.classList.add('dim');
+        }});
       }}
     }});
   }});
 }}
 
-// ═══ CLOSE ═══
-btnBack.addEventListener('click', () => {{
-  closeOverlay();
-  setTimeout(() => grid.classList.remove('hidden'), 200);
+// ═══ NAVIGATION ═══
+btnBack.addEventListener('click', (e) => {{
+  e.preventDefault();
+  e.stopPropagation();
+  closeOverlayToBlocks();
 }});
 
 revealOverlay.addEventListener('click', (e) => {{
-  if (e.target === revealOverlay) btnBack.click();
+  if (e.target === revealOverlay && overlayView === 'card') {{
+    closeOverlayToBlocks();
+  }}
 }});
 
-// ═══ COVER → SILENCE ═══
 if (coverCTA) {{
   coverCTA.addEventListener('click', async (e) => {{
+    e.preventDefault();
     e.stopPropagation();
+
+    if (overlayView !== 'card' || coverBusy) return;
+
+    coverBusy = true;
     coverCTA.style.pointerEvents = 'none';
-    coverCTA.querySelector('.cover-hint').textContent = '...';
+    if (coverHint) coverHint.textContent = '...';
 
     const result = await registerCollectivePhysicalOpen();
 
-    const silPulse = document.getElementById('silPulse');
-    if (result.ok && result.count) {{
-      silPulse.innerHTML = `<span class="pulse-num">${{result.count}}</span><span class="pulse-label">libros abiertos hoy</span>`;
+    if (result.ok && result.count !== null) {{
+      silPulse.innerHTML = `<span class="pulse-num">${{result.count}}</span><span class="pulse-label">libros abiertos</span>`;
     }} else {{
       silPulse.innerHTML = `<span class="pulse-label">Se registró el acto.</span>`;
     }}
 
-    showSilence();
+    moveToSilence();
   }});
 }}
 
-// ═══ SILENCE COVER → BACK TO CARD ═══
-const silCover = document.getElementById('silCover');
+if (silCover) {{
+  silCover.addEventListener('click', (e) => {{
+    e.preventDefault();
+    e.stopPropagation();
+    if (overlayView === 'silence') returnToCard();
+  }});
+}}
+
 silenceScreen.addEventListener('click', (e) => {{
+  e.preventDefault();
   e.stopPropagation();
-  showCard();
+  if (overlayView === 'silence') returnToCard();
 }});
 
+document.addEventListener('keydown', (e) => {{
+  if (e.key !== 'Escape') return;
+
+  if (overlayView === 'silence') {{
+    returnToCard();
+    return;
+  }}
+
+  if (overlayView === 'card') {{
+    closeOverlayToBlocks();
+  }}
+}});
+
+// ═══ BOOT ═══
 renderBlocks();
+setOverlayView('blocks');
 
 // Nuke Vercel toolbar
 (function() {{
   const k = () => {{
-    document.querySelectorAll('vercel-live-feedback,vercel-toolbar,[data-vercel-toolbar]').forEach(el => el.remove());
-    const v = document.getElementById('__vercel_live_token'); if(v) v.remove();
+    document.querySelectorAll('vercel-live-feedback,vercel-toolbar,[data-vercel-toolbar]').forEach((el) => el.remove());
+    const v = document.getElementById('__vercel_live_token');
+    if (v) v.remove();
   }};
-  k(); setTimeout(k,500); setTimeout(k,2000);
-  new MutationObserver(() => k()).observe(document.documentElement, {{childList:true,subtree:true}});
+  k();
+  setTimeout(k, 500);
+  setTimeout(k, 2000);
+  new MutationObserver(() => k()).observe(document.documentElement, {{ childList: true, subtree: true }});
 }})();
 
 (async () => {{
   const total = await getCollectivePulse();
   const el = document.getElementById('pulseLine');
   if (total !== null && total > 0) {{
-    el.textContent = `Hoy se abrieron ${{total}} libros.`;
+    el.textContent = `Ya van ${{total}} libros abiertos.`;
     el.classList.add('visible');
   }}
 }})();
