@@ -93,32 +93,67 @@ body::before {
 /* ═══ BLOCKS ═══ */
 .block {
   position: relative;
-  display: flex; align-items: center; justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 1rem;
   border-radius: 24px;
-  font-weight: 700; cursor: pointer;
+  font-weight: 700;
+  cursor: pointer;
   background-size: 320% 320%;
   transition: transform 0.25s cubic-bezier(0.25,0.46,0.45,0.94);
-  overflow: hidden; isolation: isolate;
-  border: none; appearance: none; font: inherit; color: inherit; width: 100%;
+  overflow: hidden;
+  isolation: isolate;
+  width: 100%;
   touch-action: manipulation;
-  z-index: 1;
-  box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.15), 0 4px 6px rgba(0,0,0,.15), 0 12px 32px rgba(0,0,0,.35);
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
+  box-shadow:
+    inset 0 0 0 1.5px rgba(255,255,255,.15),
+    0 4px 6px rgba(0,0,0,.15),
+    0 12px 32px rgba(0,0,0,.35);
 }
 .block::before {
-  content: ""; position: absolute; inset: 0; border-radius: inherit;
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
   background: linear-gradient(145deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,.08) 40%, transparent 100%);
-  pointer-events: none; z-index: 1;
+  pointer-events: none;
+  z-index: 1;
 }
 .block::after {
-  content: ""; position: absolute; inset: 0; border-radius: inherit;
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
   background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.12), transparent 60%);
-  pointer-events: none; opacity: 0; transition: opacity 0.3s ease; z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
 }
 .block:hover::after { opacity: 1; }
-.block:hover { transform: translateY(-2px) scale(1.005); box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.22), 0 6px 12px rgba(0,0,0,.2), 0 16px 48px rgba(0,0,0,.45); }
+.block:hover {
+  transform: translateY(-2px) scale(1.005);
+  box-shadow:
+    inset 0 0 0 1.5px rgba(255,255,255,.22),
+    0 6px 12px rgba(0,0,0,.2),
+    0 16px 48px rgba(0,0,0,.45);
+}
 .block:active { transform: translateY(0) scale(0.995); transition: transform 0.1s cubic-bezier(0.4,0,0.2,1); }
 .block.dim { opacity: 0.6; transform: scale(0.98); }
+
+.block-hit {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  border-radius: inherit;
+  background: transparent;
+  pointer-events: auto;
+  touch-action: manipulation;
+}
 
 .label, .frase {
   z-index: 2;
@@ -632,15 +667,19 @@ const emojis = ['🌊','🛡️','🧠','✨'];
 
 function renderBlocks() {
   grid.innerHTML = chronoOrder.map((realIdx, idx) => `
-    <button class="block" data-idx="${idx}" data-real-idx="${realIdx}" style="background:${grad(realIdx)}">
+    <div class="block" data-idx="${idx}" data-real-idx="${realIdx}" style="background:${grad(realIdx)}">
+      <span class="block-hit" aria-hidden="true"></span>
       <div class="label" style="color:${state.textColors[realIdx]}">${emojis[realIdx % 4]} ${state.palabras[realIdx]}</div>
       <div class="frase" style="color:${state.textColors[realIdx]}">${state.frases[realIdx]}</div>
-    </button>
+    </div>
   `).join('');
 }
 
-grid.addEventListener('click', (e) => {
-  const block = e.target.closest('.block');
+function handleBlockActivate(e) {
+  const hit = e.target.closest('.block-hit, .block');
+  if (!hit) return;
+
+  const block = hit.closest('.block');
   if (!block) return;
 
   e.preventDefault();
@@ -663,7 +702,9 @@ grid.addEventListener('click', (e) => {
       if (otherIdx !== idx) otherBlock.classList.add('dim');
     });
   }
-});
+}
+
+grid.addEventListener('pointerup', handleBlockActivate);
 
 btnBack.addEventListener('click', (e) => {
   e.preventDefault();
