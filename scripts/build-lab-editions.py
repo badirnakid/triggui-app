@@ -385,13 +385,17 @@ body::before {{
 }}
 
 /* ═══ SILENCE ═══ */
+.reveal-overlay.silence {{ background: rgba(0,0,0,0.98); }}
+.reveal-overlay.silence .reveal-card {{ display: none; }}
+
 .silence-screen {{
   display: none;
   position: absolute; inset: 0;
   flex-direction: column; align-items: center; justify-content: center;
   padding: 0 32px;
-  background: rgba(0,0,0,0.98);
+  pointer-events: none;
 }}
+.reveal-overlay.silence .silence-screen {{ display: flex; }}
 
 .silence-screen .sil-cover {{
   width: 160px; height: auto;
@@ -400,6 +404,7 @@ body::before {{
   box-shadow: 0 24px 60px rgba(0,0,0,.5), 0 0 30px {esc(t_accent)}20;
   margin-bottom: 36px;
   cursor: pointer;
+  animation: silCoverIn .8s cubic-bezier(0.34,1.56,0.64,1) forwards;
   transition: transform .2s ease;
 }}
 .silence-screen .sil-cover:active {{ transform: scale(0.96); }}
@@ -487,12 +492,12 @@ body::before {{
 }}
 </style>
 </head>
-<body data-lab-v="6">
+<body>
 
 <div id="pulseLine" class="pulse-line"></div>
 <div class="grid" id="grid"></div>
 
-<div id="revealOverlay" class="reveal-overlay">
+<div id="revealOverlay" class="reveal-overlay" onclick="if(event.target===this)document.getElementById('btnBack').click()">
   <div class="reveal-card" onclick="event.stopPropagation()">
     <button class="btn-close" id="btnBack" aria-label="Cerrar">×</button>
     <div class="card-inner">
@@ -609,8 +614,8 @@ function setOverlayView(next) {{
 
   if (next === 'blocks') {{
     resetCardState();
-    silenceScreen.style.display = 'none';
     revealCard.style.display = '';
+    silenceScreen.style.display = 'none';
     revealCard.style.transform = 'scale(0.94) translateY(15px)';
     revealCard.style.opacity = '0';
     return;
@@ -618,8 +623,9 @@ function setOverlayView(next) {{
 
   if (next === 'card') {{
     resetCardState();
-    silenceScreen.style.display = 'none';
     revealCard.style.display = '';
+    silenceScreen.style.display = 'none';
+
     revealCard.style.transform = 'scale(0.98) translateY(10px)';
     revealCard.style.opacity = '0';
 
@@ -705,7 +711,7 @@ const emojis = ['🌊','🛡️','🧠','✨'];
 function renderBlocks() {{
   grid.innerHTML = chronoOrder.map((realIdx, idx) => `
     <button class="block" data-idx="${{idx}}" data-real-idx="${{realIdx}}" style="background:${{grad(realIdx)}}">
-      <div class="label" style="color:${{state.textColors[realIdx]}}">${{emojis[realIdx%4]}} ${{state.palabras[realIdx]}}</div>
+      <div class="label" style="color:${{state.textColors[realIdx]}}">${{emojis[realIdx % 4]}} ${{state.palabras[realIdx]}}</div>
       <div class="frase" style="color:${{state.textColors[realIdx]}}">${{state.frases[realIdx]}}</div>
     </button>
   `).join('');
@@ -735,7 +741,7 @@ function renderBlocks() {{
   }});
 }}
 
-// ═══ CLOSE / OUTSIDE CLICK ═══
+// ═══ NAVIGATION ═══
 btnBack.addEventListener('click', (e) => {{
   e.preventDefault();
   e.stopPropagation();
@@ -748,7 +754,6 @@ revealOverlay.addEventListener('click', (e) => {{
   }}
 }});
 
-// ═══ COVER → SILENCE ═══
 if (coverCTA) {{
   coverCTA.addEventListener('click', async (e) => {{
     e.preventDefault();
@@ -763,7 +768,7 @@ if (coverCTA) {{
     const result = await registerCollectivePhysicalOpen();
 
     if (result.ok && result.count !== null) {{
-      silPulse.innerHTML = `<span class="pulse-num">${{result.count}}</span><span class="pulse-label">libros abiertos hoy</span>`;
+      silPulse.innerHTML = `<span class="pulse-num">${{result.count}}</span><span class="pulse-label">libros abiertos</span>`;
     }} else {{
       silPulse.innerHTML = `<span class="pulse-label">Se registró el acto.</span>`;
     }}
@@ -772,7 +777,6 @@ if (coverCTA) {{
   }});
 }}
 
-// ═══ SILENCE → BLOCKS ═══
 silenceScreen.addEventListener('click', (e) => {{
   e.preventDefault();
   e.stopPropagation();
@@ -810,12 +814,11 @@ setOverlayView('blocks');
   const total = await getCollectivePulse();
   const el = document.getElementById('pulseLine');
   if (total !== null && total > 0) {{
-    el.textContent = `Hoy se abrieron ${{total}} libros.`;
+    el.textContent = `Ya van ${{total}} libros abiertos.`;
     el.classList.add('visible');
   }}
 }})();
 </script>
-
 </body>
 </html>
 """
