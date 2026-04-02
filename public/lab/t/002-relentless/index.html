@@ -147,7 +147,7 @@ body::before {
 }
 .reveal-overlay::-webkit-scrollbar { display: none; }
 
-/* === ESTÉTICA "ORGANIC SYNAPSE" APLICADA AL WEB OVERLAY === */
+/* === ESTÉTICA "ORGANIC SYNAPSE" === */
 .reveal-card {
   width: 100%;
   max-width: 520px;
@@ -275,10 +275,10 @@ body::before {
 
 /* =========================================================================
    SISTEMA DE BOTONES BIFÁSICO (Claros arriba, Oscuros abajo)
-   Cero filtros destructivos. Calidad 100% intacta.
+   CERO FILTROS DESTRUCTIVOS. CERO MIX-BLEND. CALIDAD ORIGINAL.
    ========================================================================= */
 
-/* Fila 1: Botones Claros (Branding) */
+/* Fila 1: Branding (Blancos) */
 .btn-light {
   height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 6px;
   text-decoration: none; cursor: pointer; 
@@ -296,37 +296,39 @@ body::before {
 .btn-ig-icon rect, .btn-ig-icon circle { stroke: #1A1A1A; }
 .btn-ig-icon circle[fill="white"] { fill: #1A1A1A; }
 
-/* Fila 2: Botones Oscuros (Acciones de salida) */
+/* Fila 2: Acciones (Oscuros) */
 .btn-dark {
   height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 6px;
   text-decoration: none; cursor: pointer; 
-  background: #1A1A1A; /* Graphite Ink */
-  border: 1px solid #111;
+  background: #1A1A1A; /* Negro tinta elegante para Buscalibre y Crystal */
+  border: 1px solid rgba(255,255,255,0.05);
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
 }
-.btn-dark:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); border-color: #333; }
+.btn-dark:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); border-color: rgba(255,255,255,0.1); }
 .btn-dark:active { transform: scale(0.97); }
 
-/* Buscalibre sobre negro: Calidad original intacta, el naranja brilla libre */
+/* BUSCALIBRE: Intacto, naranja original vivo sobre fondo negro */
 .btn-dark .btn-busca-logo { 
   height: 14px; 
-  filter: none; /* Nada de filtros */
+  filter: none; 
   opacity: 0.95;
 }
 
-/* Penguin sobre negro: Screen mode evapora la caja negra original, deja la letra blanca nítida */
-.btn-dark.btn-penguin-icon img { 
+/* PENGUIN: Magia de camuflaje. El botón asume el gris oscuro del logo (#222222) */
+.btn-penguin-icon {
+  background: #222222 !important; /* Mismo color de tu imagen */
+  border: 1px solid #222222 !important;
+}
+.btn-penguin-icon img { 
   height: 36px; 
-  filter: none; /* Nada de filtros destructivos */
-  mix-blend-mode: screen; /* Magia pura */
-  opacity: 0.95;
+  filter: none; /* CERO DISTORSIÓN */
+  mix-blend-mode: normal; /* CERO EFECTOS RAROS */
+  opacity: 1;
 }
 
 /* Bola de cristal */
-.btn-crystal.btn-dark {
-  background: #1A1A1A;
-}
+.btn-crystal.btn-dark { background: #1A1A1A; }
 .btn-crystal .btn-emoji { font-size: 20px; line-height: 1; }
 
 /* === PANTALLA DE SILENCIO === */
@@ -435,9 +437,11 @@ body::before {
           <a class="btn-dark" href="https://www.buscalibre.com.mx/libros/search/?q=Relentless%20Tim%20S.%20Grover" target="_blank" rel="noopener noreferrer">
             <img class="btn-busca-logo" src="/buscalibre.png" alt="Buscalibre">
           </a>
+          
           <a class="btn-dark btn-crystal" href="https://www.buscalibre.com.mx/libros/search/?q=impulso" target="_blank" rel="noopener noreferrer">
             <span class="btn-emoji">🔮</span>
           </a>
+          
           <a class="btn-dark btn-penguin-icon" href="https://www.penguinlibros.com/mx/?mot_q=impulso" target="_blank" rel="noopener noreferrer">
             <img src="/logopenguin.png" alt="Penguin">
           </a>
