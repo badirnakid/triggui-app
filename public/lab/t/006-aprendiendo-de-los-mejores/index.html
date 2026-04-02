@@ -499,55 +499,100 @@ const state = {"id": "006-aprendiendo-de-los-mejores", "titulo": "Aprendiendo de
 const grid = document.getElementById('grid');
 const revealOverlay = document.getElementById('revealOverlay');
 const btnBack = document.getElementById('btnBack');
-const success = document.getElementById('success');
 const coverCTA = document.getElementById('coverCTA');
+const coverHint = coverCTA ? coverCTA.querySelector('.cover-hint') : null;
 const revealCard = document.querySelector('.reveal-card');
 const silenceScreen = document.getElementById('silenceScreen');
+const silPulse = document.getElementById('silPulse');
 const pulseEditionKey = `triggui_lab_opened_${state.id}`;
 
 const ANG = [115,205,35,320];
 function grad(i) { return `linear-gradient(${ANG[i%4]}deg,${state.colores[i]},${state.colores[(i+1)%4]})`; }
 
-// ═══ STATE CONTROL — Direct style, no CSS classes ═══
-function showCard() {
-  revealCard.style.display = '';
-  silenceScreen.style.display = 'none';
-  if (coverCTA) {
-    coverCTA.style.pointerEvents = 'auto';
-    const hint = coverCTA.querySelector('.cover-hint');
-    if (hint) hint.textContent = 'Toca el libro';
+let overlayView = 'blocks';
+let coverBusy = false;
+
+function clearBlockStates() {
+  grid.querySelectorAll('.block').forEach((block) => {
+    block.classList.remove('show', 'dim');
+  });
+}
+
+function hideGrid() {
+  grid.classList.add('hidden');
+}
+
+function showGrid() {
+  clearBlockStates();
+  grid.classList.remove('hidden');
+}
+
+function resetCardState() {
+  coverBusy = false;
+  if (coverCTA) coverCTA.style.pointerEvents = 'auto';
+  if (coverHint) coverHint.textContent = 'Toca el libro';
+}
+
+function setOverlayView(next) {
+  overlayView = next;
+  revealOverlay.dataset.view = next;
+
+  const visible = next !== 'blocks';
+  revealOverlay.style.opacity = visible ? '1' : '0';
+  revealOverlay.style.pointerEvents = visible ? 'auto' : 'none';
+
+  if (next === 'blocks') {
+    resetCardState();
+    revealCard.style.display = '';
+    silenceScreen.style.display = 'none';
+    revealCard.style.transform = 'scale(0.94) translateY(15px)';
+    revealCard.style.opacity = '0';
+    return;
+  }
+
+  if (next === 'card') {
+    resetCardState();
+    revealCard.style.display = '';
+    silenceScreen.style.display = 'none';
+    revealCard.style.transform = 'scale(0.98) translateY(10px)';
+    revealCard.style.opacity = '0';
+    requestAnimationFrame(() => {
+      revealCard.style.transform = 'scale(1) translateY(0)';
+      revealCard.style.opacity = '1';
+    });
+    return;
+  }
+
+  if (next === 'silence') {
+    revealCard.style.display = 'none';
+    silenceScreen.style.display = 'flex';
   }
 }
 
-function showSilence() {
-  revealCard.style.display = 'none';
-  silenceScreen.style.display = 'flex';
+function openOverlayFromBlocks() {
+  hideGrid();
+  setOverlayView('card');
 }
 
-function openOverlay() {
-  showCard();
-  revealOverlay.style.opacity = '1';
-  revealOverlay.style.pointerEvents = 'auto';
-  revealCard.style.transform = 'scale(1) translateY(0)';
-  revealCard.style.opacity = '1';
+function closeOverlayToBlocks() {
+  setOverlayView('blocks');
+  setTimeout(() => showGrid(), 180);
 }
 
-function closeOverlay() {
-  revealOverlay.style.opacity = '0';
-  revealOverlay.style.pointerEvents = 'none';
-  revealCard.style.transform = 'scale(0.94) translateY(15px)';
-  revealCard.style.opacity = '0';
-  showCard();
+function moveToSilence() {
+  setOverlayView('silence');
 }
 
-// ═══ API ═══
 async function getCollectivePulse() {
   try {
     const res = await fetch('/api/get-lab', { cache: 'no-store' });
     if (!res.ok) throw new Error('fail');
     const data = await res.json();
     return Number(data.total || 0);
-  } catch (e) { console.error(e); return null; }
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
 }
 
 async function registerCollectivePhysicalOpen() {
@@ -555,6 +600,7 @@ async function registerCollectivePhysicalOpen() {
     const count = await getCollectivePulse();
     return { count, repeated: true, ok: count !== null };
   }
+
   try {
     const res = await fetch('/api/increment-lab', {
       method: 'POST',
@@ -571,7 +617,6 @@ async function registerCollectivePhysicalOpen() {
   }
 }
 
-// ═══ CHRONO ═══
 function getChronoOrder(hour) {
   if (hour >= 4 && hour <= 6) return [3,2,1,0];
   if (hour >= 7 && hour <= 11) return [0,2,1,3];
@@ -585,7 +630,6 @@ const chronoOrder = getChronoOrder(currentHour);
 const revealIndex = Math.floor(Math.random() * 4);
 const emojis = ['🌊','🛡️','🧠','✨'];
 
-// ═══ BLOCKS ═══
 function renderBlocks() {
   grid.innerHTML = chronoOrder.map((realIdx, idx) => `
     <button class="block" data-idx="${idx}" data-real-idx="${realIdx}" style="background:${grad(realIdx)}">
@@ -621,7 +665,6 @@ grid.addEventListener('click', (e) => {
   }
 });
 
-// ═══ NAVIGATION ═══
 btnBack.addEventListener('click', (e) => {
   e.preventDefault();
   e.stopPropagation();
@@ -667,17 +710,14 @@ silenceScreen.addEventListener('click', (e) => {
 
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
-
   if (overlayView === 'silence' || overlayView === 'card') {
     closeOverlayToBlocks();
   }
 });
 
-// ═══ BOOT ═══
 renderBlocks();
 setOverlayView('blocks');
 
-// Nuke Vercel toolbar
 (function() {
   const k = () => {
     document.querySelectorAll('vercel-live-feedback,vercel-toolbar,[data-vercel-toolbar]').forEach((el) => el.remove());
