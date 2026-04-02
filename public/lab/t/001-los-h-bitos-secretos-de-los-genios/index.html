@@ -277,34 +277,54 @@ body::before {
 .btn-row-2 { grid-template-columns: 1fr 48px; }
 .btn-row-3 { grid-template-columns: 1fr 48px 1fr; }
 
+/* === BOTONES CLÍNICOS CON MAGIA CSS EN LOGOS === */
 .btn-icon {
   height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 6px;
   text-decoration: none; cursor: pointer; 
-  background: #FFFFFF; /* Botones blancos clínicos */
+  background: #FFFFFF; /* Base blanca ultra limpia */
   border: 1px solid rgba(26,26,26,0.08);
   box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-  transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+  transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
   color: #1A1A1A;
 }
+.btn-icon:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.06); }
 .btn-icon:active { transform: scale(0.97); }
+
 .btn-icon img { height: 16px; width: auto; display: block; }
-.btn-icon .btn-triggui-logo { height: 20px; filter: none; } /* Logo negro nativo */
-.btn-icon .btn-ig-icon { width: 18px; height: 18px; }
-/* Adaptación de SVG de Instagram para modo claro */
+
+/* Logo Triggui nativo (negro) */
+.btn-icon .btn-triggui-logo { height: 20px; filter: none; opacity: 0.85; } 
+
+/* Instagram trazos negros */
+.btn-icon .btn-ig-icon { width: 18px; height: 18px; opacity: 0.85; }
 .btn-ig-icon rect, .btn-ig-icon circle { stroke: #1A1A1A; }
 .btn-ig-icon circle[fill="white"] { fill: #1A1A1A; }
 
-.btn-icon.btn-penguin-icon img { height: 36px; filter: grayscale(1) brightness(0.2); }
+/* MAGIA BUSCALIBRE: Silueta pura */
+.btn-icon .btn-busca-logo { 
+  height: 14px; 
+  filter: brightness(0); /* Colores a cero = Negro puro */
+  opacity: 0.85; 
+}
 
+/* MAGIA PENGUIN: Exorcismo de la caja negra */
+.btn-icon.btn-penguin-icon img { 
+  height: 36px; 
+  filter: invert(1) contrast(150%); /* Caja blanca, texto negro */
+  mix-blend-mode: multiply; /* Caja blanca desaparece */
+  opacity: 0.85;
+}
+
+/* Bola de cristal (Soft canvas background) */
 .btn-icon.btn-crystal {
-  background: rgba(26,26,26,0.02);
+  background: #F7F7F5;
   border: 1px solid rgba(26,26,26,0.05);
   animation: btn-breathe 3s ease-in-out infinite;
 }
 @keyframes btn-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
 .btn-crystal .btn-emoji { font-size: 20px; line-height: 1; }
 
-/* === PANTALLA DE SILENCIO (Se mantiene cinematográfica y oscura) === */
+/* === PANTALLA DE SILENCIO === */
 .silence-screen {
   display: none; position: absolute; inset: 0; flex-direction: column; align-items: center; justify-content: center;
   padding: 0 32px; background: radial-gradient(circle at 50% 35%, rgba(20,25,40,0.95) 0%, rgba(0,0,0,1) 80%);
