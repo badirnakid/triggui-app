@@ -614,7 +614,6 @@ function showGrid() {
 
 function resetCardState() {
   coverBusy = false;
-  // EL FIX EXACTO: Limpiar el estilo para no anular el padre
   if (coverCTA) coverCTA.style.pointerEvents = '';
   if (coverHint) coverHint.textContent = 'Toca el libro';
 }
@@ -792,7 +791,7 @@ revealOverlay.addEventListener('click', (e) => {
 });
 
 if (coverCTA) {
-  coverCTA.addEventListener('click', async (e) => {
+  coverCTA.addEventListener('click', (e) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -802,15 +801,20 @@ if (coverCTA) {
     coverCTA.style.pointerEvents = 'none';
     if (coverHint) coverHint.textContent = '...';
 
-    const result = await registerCollectivePhysicalOpen();
-
-    if (result.ok && result.count !== null) {
-      silPulse.innerHTML = `<span class="pulse-num">${result.count}</span><span class="pulse-label">libros abiertos</span>`;
-    } else {
-      silPulse.innerHTML = `<span class="pulse-label">Se registró el acto.</span>`;
-    }
-
     moveToSilence();
+
+    silPulse.innerHTML = `<span class="pulse-label">Conectando...</span>`;
+
+    registerCollectivePhysicalOpen().then((result) => {
+      if (result.ok && result.count !== null) {
+        silPulse.innerHTML = `<span class="pulse-num">${result.count}</span><span class="pulse-label">libros abiertos</span>`;
+      } else {
+        silPulse.innerHTML = `<span class="pulse-label">Se registró el acto.</span>`;
+      }
+    }).catch(err => {
+      console.error(err);
+      silPulse.innerHTML = `<span class="pulse-label">Se registró el acto.</span>`;
+    });
   });
 }
 
