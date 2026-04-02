@@ -221,7 +221,7 @@ body::before {
   background-color: #1a1a1a;
   color: #ffffff;
   box-shadow: 0 60px 120px -30px rgba(0,0,0,0.85), 0 0 0 1px #6A5ACD22, 0 0 40px #6A5ACD15;
-  overflow: visible; /* AQUI ESTA EL EXORCISMO PARA EL PADRE */
+  overflow: visible; 
   cursor: default;
   transform: scale(0.94) translateY(15px);
   opacity: 0;
@@ -325,7 +325,6 @@ body::before {
   cursor: pointer;
   position: relative;
   touch-action: manipulation;
-  /* Le damos un padcito para que respire sin chocar */
   padding: 8px; 
 }
 .ed-cover-wrap img {
@@ -403,7 +402,7 @@ body::before {
 }
 .btn-crystal .btn-emoji { font-size: 20px; line-height: 1; }
 
-/* === MAGIA NIVEL DIOS PARA LA PANTALLA DE SILENCIO === */
+/* === MAGIA CINEMATOGRAFICA: PANTALLA DE SILENCIO === */
 .silence-screen {
   display: none;
   position: absolute;
@@ -412,7 +411,8 @@ body::before {
   align-items: center;
   justify-content: center;
   padding: 0 32px;
-  background: rgba(0,0,0,0.98);
+  /* Fondo cinematográfico nivel dios */
+  background: radial-gradient(circle at 50% 35%, rgba(20,25,40,0.95) 0%, rgba(0,0,0,1) 80%);
   overflow: hidden;
 }
 
@@ -423,15 +423,15 @@ body::before {
   top: 35%; left: 50%;
   transform: translate(-50%, -50%);
   width: 280px; height: 280px;
-  background: radial-gradient(circle, #6A5ACD30 0%, transparent 65%);
-  filter: blur(35px);
+  background: radial-gradient(circle, #6A5ACD35 0%, transparent 70%);
+  filter: blur(40px);
   z-index: 0;
   pointer-events: none;
   animation: pulseGlow 4s ease-in-out infinite;
 }
 @keyframes pulseGlow {
-  0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.9); }
-  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+  0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(0.95); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
 }
 
 .silence-screen > * { position: relative; z-index: 1; }
@@ -440,16 +440,16 @@ body::before {
   width: 180px;
   height: auto;
   border-radius: 12px;
-  opacity: 1; /* 100% brillo de tarjeta de poder */
+  opacity: 1; 
   border: 1px solid rgba(255,255,255,0.15);
-  box-shadow: 0 30px 60px -10px rgba(0,0,0,0.9), 0 0 40px #6A5ACD40;
+  box-shadow: 0 30px 60px -10px rgba(0,0,0,0.9), 0 0 50px #6A5ACD40;
   margin-bottom: 40px;
   cursor: pointer;
-  animation: floatMagic 5s ease-in-out infinite; /* Levitación */
+  animation: floatMagic 5s ease-in-out infinite;
 }
 @keyframes floatMagic {
-  0%, 100% { transform: translateY(0); box-shadow: 0 30px 60px -10px rgba(0,0,0,0.9), 0 0 40px #6A5ACD40; }
-  50% { transform: translateY(-12px); box-shadow: 0 40px 70px -10px rgba(0,0,0,0.7), 0 0 60px #6A5ACD60; }
+  0%, 100% { transform: translateY(0); box-shadow: 0 30px 60px -10px rgba(0,0,0,0.9), 0 0 50px #6A5ACD40; }
+  50% { transform: translateY(-12px); box-shadow: 0 45px 75px -10px rgba(0,0,0,0.7), 0 0 70px #6A5ACD65; }
 }
 
 .silence-screen .sil-cover:active { transform: scale(0.96) translateY(0); transition: transform .1s; }
@@ -458,21 +458,24 @@ body::before {
   font-family: 'Playfair Display', serif;
   font-style: italic;
   font-size: clamp(16px,4vw,22px);
-  opacity: .5;
+  color: rgba(255,255,255,0.9);
   margin-bottom: 20px;
   font-weight: 700;
   text-align: center;
-  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  text-shadow: 0 4px 20px rgba(255,255,255,0.4);
+  letter-spacing: 1px;
 }
 .silence-screen .sil-call {
   font-family: 'Poppins', sans-serif;
   font-size: clamp(18px,5vw,26px);
   font-weight: 600;
   line-height: 1.5;
-  color: rgba(255,255,255,.9);
+  background: linear-gradient(180deg, #FFFFFF 0%, rgba(255,255,255,0.75) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   margin-bottom: 8px;
   text-align: center;
-  text-shadow: 0 2px 15px rgba(0,0,0,0.5);
+  filter: drop-shadow(0 4px 15px rgba(0,0,0,0.6));
   animation: silCallIn 1s ease .3s both;
 }
 .silence-screen .sil-sub {
@@ -489,30 +492,62 @@ body::before {
   0% { opacity: 0; transform: translateY(10px); }
   100% { opacity: 1; transform: translateY(0); }
 }
+
+/* FIX ANTI-SALTO: Contenedor con altura reservada y Flexbox */
 .silence-screen .sil-pulse {
   font-family: 'Poppins', sans-serif;
   margin-bottom: 28px;
   text-align: center;
   animation: silCallIn 1s ease .7s both;
+  min-height: 120px; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
-.sil-pulse .pulse-num {
+
+/* Efecto Neón y Animación Explosiva para el número */
+.pulse-num {
   display: block;
-  font-size: clamp(36px,9vw,52px);
+  font-size: clamp(48px,11vw,72px);
   font-weight: 800;
   line-height: 1;
   background: linear-gradient(135deg, #FF0055 0%, #FF5E00 50%, #FFD700 100%);
   background-size: 200% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: fire-move 4s ease infinite;
   margin-bottom: 4px;
+  filter: drop-shadow(0 10px 25px rgba(255,0,85,0.5));
+  animation: fire-move 4s ease infinite, popNumber 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
-.sil-pulse .pulse-label {
-  font-size: 13px;
+@keyframes popNumber {
+  0% { opacity: 0; transform: scale(0.4) translateY(20px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.pulse-label {
+  font-size: 14px;
   font-weight: 600;
-  color: rgba(255,255,255,.5);
-  letter-spacing: 0.5px;
+  color: rgba(255,255,255,.6);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  animation: popNumber 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: 0.1s; /* Aparece justito después del número */
 }
+
+/* Efecto de respiración suave mientras carga */
+.loading-text {
+  animation: breatheLoading 1.5s infinite ease-in-out;
+  color: rgba(255,255,255,0.5);
+  font-size: 15px;
+  letter-spacing: 1.5px;
+}
+@keyframes breatheLoading {
+  0%, 100% { opacity: 0.3; transform: scale(0.98); }
+  50% { opacity: 1; transform: scale(1.02); }
+}
+
 .silence-screen .sil-mark { opacity: 0.2; animation: silCallIn 1s ease 1s both; }
 .silence-screen .sil-mark img {
   height: 22px;
@@ -538,7 +573,8 @@ body::before {
   .ed-block .ed-chip { font-size: 15px; }
   .card-actions { padding: 14px 14px 20px; }
   .btn-close { top: 8px; left: 8px; }
-  .silence-screen .sil-cover { width: 150px; }
+  .silence-screen .sil-cover { width: 140px; margin-bottom: 25px; }
+  .silence-screen .sil-pulse { min-height: 100px; }
 }
 </style>
 </head>
@@ -838,11 +874,13 @@ if (coverCTA) {
 
     moveToSilence();
 
-    silPulse.innerHTML = `<span class="pulse-label">Conectando...</span>`;
+    /* INYECTAMOS EL TEXTO RESPIRABLE DE CARGA */
+    silPulse.innerHTML = `<span class="pulse-label loading-text">Conectando...</span>`;
 
     registerCollectivePhysicalOpen().then((result) => {
       if (result.ok && result.count !== null) {
-        silPulse.innerHTML = `<span class="pulse-num">${result.count}</span><span class="pulse-label">libros abiertos</span>`;
+        /* AQUI OCURRE LA MAGIA DEL POP-IN DEL NÚMERO Y NO HAY SALTO */
+        silPulse.innerHTML = `<span class="pulse-num">${result.count}</span><span class="pulse-label">libros abiertos en el mundo</span>`;
       } else {
         silPulse.innerHTML = `<span class="pulse-label">Se registró el acto.</span>`;
       }
