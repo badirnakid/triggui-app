@@ -196,7 +196,6 @@ body::before {{
   z-index: 1;
 }}
 
-/* Blindaje total: nada dentro del bloque puede recibir clicks */
 .block * {{
   pointer-events: none !important;
 }}
@@ -277,7 +276,7 @@ body::before {{
   position: fixed;
   inset: 0;
   z-index: 200;
-  display: flex;
+  display: none;
   flex-direction: column;
   align-items: center;
   background: rgba(0,0,0,0.92);
@@ -694,7 +693,8 @@ function showGrid() {{
 
 function resetCardState() {{
   coverBusy = false;
-  if (coverCTA) coverCTA.style.pointerEvents = 'auto';
+  // EL FIX EXACTO: Limpiar el estilo para no anular el padre
+  if (coverCTA) coverCTA.style.pointerEvents = '';
   if (coverHint) coverHint.textContent = 'Toca el libro';
 }}
 
@@ -702,6 +702,12 @@ function setOverlayView(next) {{
   overlayView = next;
 
   const overlayVisible = next !== 'blocks';
+
+  if (overlayVisible) {{
+    revealOverlay.style.display = 'flex';
+    void revealOverlay.offsetWidth;
+  }}
+
   revealOverlay.style.opacity = overlayVisible ? '1' : '0';
   revealOverlay.style.pointerEvents = overlayVisible ? 'auto' : 'none';
 
@@ -711,6 +717,12 @@ function setOverlayView(next) {{
     silenceScreen.style.display = 'none';
     revealCard.style.transform = 'scale(0.94) translateY(15px)';
     revealCard.style.opacity = '0';
+
+    setTimeout(() => {{
+      if (overlayView === 'blocks') {{
+        revealOverlay.style.display = 'none';
+      }}
+    }}, 350);
     return;
   }}
 
