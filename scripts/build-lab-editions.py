@@ -345,55 +345,61 @@ body::before {{
 .btn-row-2 {{ grid-template-columns: 1fr 48px; }}
 .btn-row-3 {{ grid-template-columns: 1fr 48px 1fr; }}
 
-/* === BOTONES CLÍNICOS BLANCO PURO === */
-.btn-icon {{
+/* =========================================================================
+   SISTEMA DE BOTONES BIFÁSICO (Claros arriba, Oscuros abajo)
+   Cero filtros destructivos. Calidad 100% intacta.
+   ========================================================================= */
+
+/* Fila 1: Botones Claros (Branding) */
+.btn-light {{
   height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 6px;
   text-decoration: none; cursor: pointer; 
   background: #FFFFFF;
   border: 1px solid rgba(26,26,26,0.08);
   box-shadow: 0 4px 12px rgba(0,0,0,0.02);
   transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
-  color: #1A1A1A;
 }}
-.btn-icon:hover {{ transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.05); border-color: rgba(26,26,26,0.15); }}
-.btn-icon:active {{ transform: scale(0.97); }}
+.btn-light:hover {{ transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.05); border-color: rgba(26,26,26,0.15); }}
+.btn-light:active {{ transform: scale(0.97); }}
 
-.btn-icon img {{ height: 16px; width: auto; display: block; }}
-
-.btn-icon .btn-triggui-logo {{ height: 20px; opacity: 0.9; }} 
-
-.btn-icon .btn-ig-icon {{ width: 18px; height: 18px; opacity: 0.9; }}
+.btn-light img {{ height: 16px; width: auto; display: block; }}
+.btn-light .btn-triggui-logo {{ height: 20px; opacity: 0.9; }} 
+.btn-light .btn-ig-icon {{ width: 18px; height: 18px; opacity: 0.9; }}
 .btn-ig-icon rect, .btn-ig-icon circle {{ stroke: #1A1A1A; }}
 .btn-ig-icon circle[fill="white"] {{ fill: #1A1A1A; }}
 
-/* ════════════════════════════════════════════════════════════════
-   🔥 MAGIA BUSCALIBRE: RESURRECCIÓN DEL NARANJA
-   Invertimos a negro, rotamos 180° y le metemos esteroides al color 
-   (saturate 400%) para que el avioncito brille en su naranja original.
-   ════════════════════════════════════════════════════════════════ */
-.btn-icon .btn-busca-logo {{ 
+/* Fila 2: Botones Oscuros (Acciones de salida) */
+.btn-dark {{
+  height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 6px;
+  text-decoration: none; cursor: pointer; 
+  background: #1A1A1A; /* Graphite Ink */
+  border: 1px solid #111;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+}}
+.btn-dark:hover {{ transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); border-color: #333; }}
+.btn-dark:active {{ transform: scale(0.97); }}
+
+/* Buscalibre sobre negro: Calidad original intacta, el naranja brilla libre */
+.btn-dark .btn-busca-logo {{ 
   height: 14px; 
-  filter: invert(1) hue-rotate(185deg) saturate(400%) contrast(110%); 
-  opacity: 0.9;
+  filter: none; /* Nada de filtros */
+  opacity: 0.95;
 }}
 
-/* ════════════════════════════════════════════════════════════════
-   🔥 MAGIA PENGUIN: ANIQUILACIÓN DEL GRIS
-   grayscale(1) y contrast(1000%) obligan a la caja a ser blanco 100% puro. 
-   Multiply la evapora en el aire, dejando solo el pingüino y texto negro.
-   ════════════════════════════════════════════════════════════════ */
-.btn-icon.btn-penguin-icon img {{ 
+/* Penguin sobre negro: Screen mode evapora la caja negra original, deja la letra blanca nítida */
+.btn-dark.btn-penguin-icon img {{ 
   height: 36px; 
-  filter: invert(1) grayscale(1) contrast(1000%); 
-  mix-blend-mode: multiply; 
-  opacity: 0.9;
+  filter: none; /* Nada de filtros destructivos */
+  mix-blend-mode: screen; /* Magia pura */
+  opacity: 0.95;
 }}
 
 /* Bola de cristal */
-.btn-icon.btn-crystal {{
-  background: #FFFFFF;
+.btn-crystal.btn-dark {{
+  background: #1A1A1A;
 }}
-.btn-crystal .btn-emoji {{ font-size: 20px; line-height: 1; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }}
+.btn-crystal .btn-emoji {{ font-size: 20px; line-height: 1; }}
 
 /* === PANTALLA DE SILENCIO === */
 .silence-screen {{
@@ -485,10 +491,10 @@ body::before {{
 
       <div class="card-actions">
         <div class="btn-row btn-row-2">
-          <a class="btn-icon" href="https://triggui.com" target="_blank" rel="noopener noreferrer">
+          <a class="btn-light" href="https://triggui.com" target="_blank" rel="noopener noreferrer">
             <img class="btn-triggui-logo" src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png" alt="Triggui">
           </a>
-          <a class="btn-icon" href="https://www.instagram.com/triggui/" target="_blank" rel="noopener noreferrer">
+          <a class="btn-light" href="https://www.instagram.com/triggui/" target="_blank" rel="noopener noreferrer">
             <svg class="btn-ig-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect x="2" y="2" width="20" height="20" rx="6" stroke="white" stroke-width="1.8"/>
               <circle cx="12" cy="12" r="5" stroke="white" stroke-width="1.8"/>
@@ -498,13 +504,13 @@ body::before {{
         </div>
 
         <div class="btn-row btn-row-3">
-          <a class="btn-icon" href="https://www.buscalibre.com.mx/libros/search/?q={busca_comprar}" target="_blank" rel="noopener noreferrer">
+          <a class="btn-dark" href="https://www.buscalibre.com.mx/libros/search/?q={busca_comprar}" target="_blank" rel="noopener noreferrer">
             <img class="btn-busca-logo" src="/buscalibre.png" alt="Buscalibre">
           </a>
-          <a class="btn-icon btn-crystal" href="https://www.buscalibre.com.mx/libros/search/?q={busca_explorar}" target="_blank" rel="noopener noreferrer">
+          <a class="btn-dark btn-crystal" href="https://www.buscalibre.com.mx/libros/search/?q={busca_explorar}" target="_blank" rel="noopener noreferrer">
             <span class="btn-emoji">🔮</span>
           </a>
-          <a class="btn-icon btn-penguin-icon" href="https://www.penguinlibros.com/mx/?mot_q={penguin_q}" target="_blank" rel="noopener noreferrer">
+          <a class="btn-dark btn-penguin-icon" href="https://www.penguinlibros.com/mx/?mot_q={penguin_q}" target="_blank" rel="noopener noreferrer">
             <img src="/logopenguin.png" alt="Penguin">
           </a>
         </div>
