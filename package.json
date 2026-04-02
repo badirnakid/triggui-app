@@ -1,5 +1,25 @@
 {
   "dependencies": {
-    "@octokit/rest": "^22.0.1"
-  }
+    "@octokit/rest": "^22.0.1",
+    "puppeteer": "^24.40.0"
+  },
+  "name": "triggui-app",
+  "version": "1.0.0",
+  "description": "Versión web desplegada directamente desde `/public/index.html` con Vercel.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/badirnakid/triggui-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/badirnakid/triggui-app/issues"
+  },
+  "homepage": "https://github.com/badirnakid/triggui-app#readme"
 }

@@ -8,13 +8,13 @@
 
 <meta property="og:title" content="empatía · Viaje a las emociones" />
 <meta property="og:description" content="🤝 Conéctate con alguien y comparte tus emociones en 30 seg" />
-<meta property="og:image" content="/lab/og/004-viaje-a-las-emociones.svg" />
+<meta property="og:image" content="https://triggui-app-git-feat-triggui-2-fase-0-badirs-projects.vercel.app/lab/t/004-viaje-a-las-emociones/og.png" />
 <meta property="og:url" content="/lab/t/004-viaje-a-las-emociones/" />
 <meta property="og:type" content="article" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="empatía · Viaje a las emociones" />
 <meta name="twitter:description" content="🤝 Conéctate con alguien y comparte tus emociones en 30 seg" />
-<meta name="twitter:image" content="/lab/og/004-viaje-a-las-emociones.svg" />
+<meta name="twitter:image" content="https://triggui-app-git-feat-triggui-2-fase-0-badirs-projects.vercel.app/lab/t/004-viaje-a-las-emociones/og.png" />
 
 <link rel="preconnect" href="https://www.penguinlibros.com" crossorigin>
 <link rel="preconnect" href="https://www.buscalibre.com.mx" crossorigin>
@@ -411,12 +411,10 @@ body::before {
   align-items: center;
   justify-content: center;
   padding: 0 32px;
-  /* Fondo cinematográfico nivel dios */
   background: radial-gradient(circle at 50% 35%, rgba(20,25,40,0.95) 0%, rgba(0,0,0,1) 80%);
   overflow: hidden;
 }
 
-/* El orbe brillante de fondo */
 .silence-screen::before {
   content: "";
   position: absolute;
@@ -493,7 +491,6 @@ body::before {
   100% { opacity: 1; transform: translateY(0); }
 }
 
-/* FIX ANTI-SALTO: Contenedor con altura reservada y Flexbox */
 .silence-screen .sil-pulse {
   font-family: 'Poppins', sans-serif;
   margin-bottom: 28px;
@@ -507,7 +504,6 @@ body::before {
   width: 100%;
 }
 
-/* Efecto Neón y Animación Explosiva para el número */
 .pulse-num {
   display: block;
   font-size: clamp(48px,11vw,72px);
@@ -533,10 +529,9 @@ body::before {
   letter-spacing: 0.8px;
   text-transform: uppercase;
   animation: popNumber 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-  animation-delay: 0.1s; /* Aparece justito después del número */
+  animation-delay: 0.1s; 
 }
 
-/* Efecto de respiración suave mientras carga */
 .loading-text {
   animation: breatheLoading 1.5s infinite ease-in-out;
   color: rgba(255,255,255,0.5);
@@ -649,7 +644,7 @@ body::before {
 </div>
 
 <script>
-const state = {"id": "004-viaje-a-las-emociones", "titulo": "Viaje a las emociones", "autor": "Eduardo Punset", "palabra": "empatía", "descripcion": "🤝 Conéctate con alguien y comparte tus emociones en 30 seg", "palabras": ["empatía", "asombro", "entusiasmo", "sorpresa"], "frases": ["🤝 Conéctate con alguien y comparte tus emociones en 30 seg", "🌌 Observa el cielo, deja que la belleza te asombre en 60 seg", "🎉 Haz una lista de cosas que te emocionen hoy en 15 seg", "🎈 Tómate un momento para celebrar pequeñas sorpresas cotidianas en 45 seg"], "colores": ["#FFC0CB", "#FFB6C1", "#FFD700", "#90EE90"], "textColors": ["#000000", "#000000", "#000000", "#000000"], "fondo": "#1A1A1A", "ogImage": "/lab/og/004-viaje-a-las-emociones.svg", "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/75/ba/f6/75baf65a-33da-86ea-5550-32b63c234d70/9788423327935.jpg/626x0w.jpg", "tagline": "La trilogía que ha apasionado a más de medio millón de lectores en un solo volumen. Un recorrido por la felicidad el amor y el poder: las tres claves que mueven el mundo."};
+const state = {"id": "004-viaje-a-las-emociones", "titulo": "Viaje a las emociones", "autor": "Eduardo Punset", "palabra": "empatía", "descripcion": "🤝 Conéctate con alguien y comparte tus emociones en 30 seg", "palabras": ["empatía", "asombro", "entusiasmo", "sorpresa"], "frases": ["🤝 Conéctate con alguien y comparte tus emociones en 30 seg", "🌌 Observa el cielo, deja que la belleza te asombre en 60 seg", "🎉 Haz una lista de cosas que te emocionen hoy en 15 seg", "🎈 Tómate un momento para celebrar pequeñas sorpresas cotidianas en 45 seg"], "colores": ["#FFC0CB", "#FFB6C1", "#FFD700", "#90EE90"], "textColors": ["#000000", "#000000", "#000000", "#000000"], "fondo": "#1A1A1A", "ogImage": "https://triggui-app-git-feat-triggui-2-fase-0-badirs-projects.vercel.app/lab/t/004-viaje-a-las-emociones/og.png", "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/75/ba/f6/75baf65a-33da-86ea-5550-32b63c234d70/9788423327935.jpg/626x0w.jpg", "tagline": "La trilogía que ha apasionado a más de medio millón de lectores en un solo volumen. Un recorrido por la felicidad el amor y el poder: las tres claves que mueven el mundo."};
 const grid = document.getElementById('grid');
 const revealOverlay = document.getElementById('revealOverlay');
 const btnBack = document.getElementById('btnBack');
@@ -874,12 +869,10 @@ if (coverCTA) {
 
     moveToSilence();
 
-    /* INYECTAMOS EL TEXTO RESPIRABLE DE CARGA */
     silPulse.innerHTML = `<span class="pulse-label loading-text">Conectando...</span>`;
 
     registerCollectivePhysicalOpen().then((result) => {
       if (result.ok && result.count !== null) {
-        /* AQUI OCURRE LA MAGIA DEL POP-IN DEL NÚMERO Y NO HAY SALTO */
         silPulse.innerHTML = `<span class="pulse-num">${result.count}</span><span class="pulse-label">libros abiertos en el mundo</span>`;
       } else {
         silPulse.innerHTML = `<span class="pulse-label">Se registró el acto.</span>`;

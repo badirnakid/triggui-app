@@ -8,13 +8,13 @@
 
 <meta property="og:title" content="impulso · Relentless" />
 <meta property="og:description" content="⚡ Siente el impulso y da ese primer paso hoy mismo." />
-<meta property="og:image" content="/lab/og/002-relentless.svg" />
+<meta property="og:image" content="https://triggui-app-git-feat-triggui-2-fase-0-badirs-projects.vercel.app/lab/t/002-relentless/og.png" />
 <meta property="og:url" content="/lab/t/002-relentless/" />
 <meta property="og:type" content="article" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="impulso · Relentless" />
 <meta name="twitter:description" content="⚡ Siente el impulso y da ese primer paso hoy mismo." />
-<meta name="twitter:image" content="/lab/og/002-relentless.svg" />
+<meta name="twitter:image" content="https://triggui-app-git-feat-triggui-2-fase-0-badirs-projects.vercel.app/lab/t/002-relentless/og.png" />
 
 <link rel="preconnect" href="https://www.penguinlibros.com" crossorigin>
 <link rel="preconnect" href="https://www.buscalibre.com.mx" crossorigin>
@@ -411,12 +411,10 @@ body::before {
   align-items: center;
   justify-content: center;
   padding: 0 32px;
-  /* Fondo cinematográfico nivel dios */
   background: radial-gradient(circle at 50% 35%, rgba(20,25,40,0.95) 0%, rgba(0,0,0,1) 80%);
   overflow: hidden;
 }
 
-/* El orbe brillante de fondo */
 .silence-screen::before {
   content: "";
   position: absolute;
@@ -493,7 +491,6 @@ body::before {
   100% { opacity: 1; transform: translateY(0); }
 }
 
-/* FIX ANTI-SALTO: Contenedor con altura reservada y Flexbox */
 .silence-screen .sil-pulse {
   font-family: 'Poppins', sans-serif;
   margin-bottom: 28px;
@@ -507,7 +504,6 @@ body::before {
   width: 100%;
 }
 
-/* Efecto Neón y Animación Explosiva para el número */
 .pulse-num {
   display: block;
   font-size: clamp(48px,11vw,72px);
@@ -533,10 +529,9 @@ body::before {
   letter-spacing: 0.8px;
   text-transform: uppercase;
   animation: popNumber 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-  animation-delay: 0.1s; /* Aparece justito después del número */
+  animation-delay: 0.1s; 
 }
 
-/* Efecto de respiración suave mientras carga */
 .loading-text {
   animation: breatheLoading 1.5s infinite ease-in-out;
   color: rgba(255,255,255,0.5);
@@ -649,7 +644,7 @@ body::before {
 </div>
 
 <script>
-const state = {"id": "002-relentless", "titulo": "Relentless", "autor": "Tim S. Grover", "palabra": "impulso", "descripcion": "⚡ Siente el impulso y da ese primer paso hoy mismo.", "palabras": ["impulso", "conquista", "fuerza", "desenfreno"], "frases": ["⚡ Siente el impulso y da ese primer paso hoy mismo.", "🏆 Conquista tus miedos, toma una decisión valiente ahora.", "💪 Encuentra tu fuerza interior y compite contigo mismo.", "🔥 Deja atrás los límites y actúa sin reservas en este instante."], "colores": ["#E94E77", "#F9AFAF", "#FFCE54", "#1D6B99"], "textColors": ["#FFFFFF", "#000000", "#000000", "#FFFFFF"], "fondo": "#1A1A1A", "ogImage": "/lab/og/002-relentless.svg", "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/58/eb/7e/58eb7e2f-81fe-32a5-95d5-ee6728a5d7e9/9781476714219.jpg/626x0w.jpg", "tagline": "From good to great to unstoppable"};
+const state = {"id": "002-relentless", "titulo": "Relentless", "autor": "Tim S. Grover", "palabra": "impulso", "descripcion": "⚡ Siente el impulso y da ese primer paso hoy mismo.", "palabras": ["impulso", "conquista", "fuerza", "desenfreno"], "frases": ["⚡ Siente el impulso y da ese primer paso hoy mismo.", "🏆 Conquista tus miedos, toma una decisión valiente ahora.", "💪 Encuentra tu fuerza interior y compite contigo mismo.", "🔥 Deja atrás los límites y actúa sin reservas en este instante."], "colores": ["#E94E77", "#F9AFAF", "#FFCE54", "#1D6B99"], "textColors": ["#FFFFFF", "#000000", "#000000", "#FFFFFF"], "fondo": "#1A1A1A", "ogImage": "https://triggui-app-git-feat-triggui-2-fase-0-badirs-projects.vercel.app/lab/t/002-relentless/og.png", "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/58/eb/7e/58eb7e2f-81fe-32a5-95d5-ee6728a5d7e9/9781476714219.jpg/626x0w.jpg", "tagline": "From good to great to unstoppable"};
 const grid = document.getElementById('grid');
 const revealOverlay = document.getElementById('revealOverlay');
 const btnBack = document.getElementById('btnBack');
@@ -874,12 +869,10 @@ if (coverCTA) {
 
     moveToSilence();
 
-    /* INYECTAMOS EL TEXTO RESPIRABLE DE CARGA */
     silPulse.innerHTML = `<span class="pulse-label loading-text">Conectando...</span>`;
 
     registerCollectivePhysicalOpen().then((result) => {
       if (result.ok && result.count !== null) {
-        /* AQUI OCURRE LA MAGIA DEL POP-IN DEL NÚMERO Y NO HAY SALTO */
         silPulse.innerHTML = `<span class="pulse-num">${result.count}</span><span class="pulse-label">libros abiertos en el mundo</span>`;
       } else {
         silPulse.innerHTML = `<span class="pulse-label">Se registró el acto.</span>`;

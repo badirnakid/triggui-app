@@ -8,13 +8,13 @@
 
 <meta property="og:title" content="inspiración · Aprendiendo de los mejores" />
 <meta property="og:description" content="✨ Reflexiona sobre un líder que te inspira hoy." />
-<meta property="og:image" content="/lab/og/006-aprendiendo-de-los-mejores.svg" />
+<meta property="og:image" content="https://triggui-app-git-feat-triggui-2-fase-0-badirs-projects.vercel.app/lab/t/006-aprendiendo-de-los-mejores/og.png" />
 <meta property="og:url" content="/lab/t/006-aprendiendo-de-los-mejores/" />
 <meta property="og:type" content="article" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="inspiración · Aprendiendo de los mejores" />
 <meta name="twitter:description" content="✨ Reflexiona sobre un líder que te inspira hoy." />
-<meta name="twitter:image" content="/lab/og/006-aprendiendo-de-los-mejores.svg" />
+<meta name="twitter:image" content="https://triggui-app-git-feat-triggui-2-fase-0-badirs-projects.vercel.app/lab/t/006-aprendiendo-de-los-mejores/og.png" />
 
 <link rel="preconnect" href="https://www.penguinlibros.com" crossorigin>
 <link rel="preconnect" href="https://www.buscalibre.com.mx" crossorigin>
@@ -411,12 +411,10 @@ body::before {
   align-items: center;
   justify-content: center;
   padding: 0 32px;
-  /* Fondo cinematográfico nivel dios */
   background: radial-gradient(circle at 50% 35%, rgba(20,25,40,0.95) 0%, rgba(0,0,0,1) 80%);
   overflow: hidden;
 }
 
-/* El orbe brillante de fondo */
 .silence-screen::before {
   content: "";
   position: absolute;
@@ -493,7 +491,6 @@ body::before {
   100% { opacity: 1; transform: translateY(0); }
 }
 
-/* FIX ANTI-SALTO: Contenedor con altura reservada y Flexbox */
 .silence-screen .sil-pulse {
   font-family: 'Poppins', sans-serif;
   margin-bottom: 28px;
@@ -507,7 +504,6 @@ body::before {
   width: 100%;
 }
 
-/* Efecto Neón y Animación Explosiva para el número */
 .pulse-num {
   display: block;
   font-size: clamp(48px,11vw,72px);
@@ -533,10 +529,9 @@ body::before {
   letter-spacing: 0.8px;
   text-transform: uppercase;
   animation: popNumber 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-  animation-delay: 0.1s; /* Aparece justito después del número */
+  animation-delay: 0.1s; 
 }
 
-/* Efecto de respiración suave mientras carga */
 .loading-text {
   animation: breatheLoading 1.5s infinite ease-in-out;
   color: rgba(255,255,255,0.5);
@@ -649,7 +644,7 @@ body::before {
 </div>
 
 <script>
-const state = {"id": "006-aprendiendo-de-los-mejores", "titulo": "Aprendiendo de los mejores", "autor": "Francisco Alcaide Hernández", "palabra": "inspiración", "descripcion": "✨ Reflexiona sobre un líder que te inspira hoy.", "palabras": ["inspiración", "resiliencia", "transformación", "sabiduría"], "frases": ["✨ Reflexiona sobre un líder que te inspira hoy.", "💪 Anota una lección de vida que resuene en ti.", "🌱 Comparte un pequeño cambio que deseas implementar.", "📚 Dedica unos minutos a leer una frase motivadora."], "colores": ["#f9d76b", "#4caf50", "#2196f3", "#ff9800"], "textColors": ["#000000", "#FFFFFF", "#FFFFFF", "#000000"], "fondo": "#1a1a1a", "ogImage": "/lab/og/006-aprendiendo-de-los-mejores.svg", "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication128/v4/a4/85/f3/a485f368-f4a3-c28d-da91-3d92222a56a6/9788416928651.jpg/626x0w.jpg", "tagline": "libro de cabecera de muchas personas por su capacidad de sintetizar y explicar una ingente cantidad de conocimiento y sabiduría sobre el mundo del desarrollo personal los negocios el liderazgo la libertad financiera o la espiritualidad"};
+const state = {"id": "006-aprendiendo-de-los-mejores", "titulo": "Aprendiendo de los mejores", "autor": "Francisco Alcaide Hernández", "palabra": "inspiración", "descripcion": "✨ Reflexiona sobre un líder que te inspira hoy.", "palabras": ["inspiración", "resiliencia", "transformación", "sabiduría"], "frases": ["✨ Reflexiona sobre un líder que te inspira hoy.", "💪 Anota una lección de vida que resuene en ti.", "🌱 Comparte un pequeño cambio que deseas implementar.", "📚 Dedica unos minutos a leer una frase motivadora."], "colores": ["#f9d76b", "#4caf50", "#2196f3", "#ff9800"], "textColors": ["#000000", "#FFFFFF", "#FFFFFF", "#000000"], "fondo": "#1a1a1a", "ogImage": "https://triggui-app-git-feat-triggui-2-fase-0-badirs-projects.vercel.app/lab/t/006-aprendiendo-de-los-mejores/og.png", "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication128/v4/a4/85/f3/a485f368-f4a3-c28d-da91-3d92222a56a6/9788416928651.jpg/626x0w.jpg", "tagline": "libro de cabecera de muchas personas por su capacidad de sintetizar y explicar una ingente cantidad de conocimiento y sabiduría sobre el mundo del desarrollo personal los negocios el liderazgo la libertad financiera o la espiritualidad"};
 const grid = document.getElementById('grid');
 const revealOverlay = document.getElementById('revealOverlay');
 const btnBack = document.getElementById('btnBack');
@@ -874,12 +869,10 @@ if (coverCTA) {
 
     moveToSilence();
 
-    /* INYECTAMOS EL TEXTO RESPIRABLE DE CARGA */
     silPulse.innerHTML = `<span class="pulse-label loading-text">Conectando...</span>`;
 
     registerCollectivePhysicalOpen().then((result) => {
       if (result.ok && result.count !== null) {
-        /* AQUI OCURRE LA MAGIA DEL POP-IN DEL NÚMERO Y NO HAY SALTO */
         silPulse.innerHTML = `<span class="pulse-num">${result.count}</span><span class="pulse-label">libros abiertos en el mundo</span>`;
       } else {
         silPulse.innerHTML = `<span class="pulse-label">Se registró el acto.</span>`;

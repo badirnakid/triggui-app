@@ -8,13 +8,13 @@
 
 <meta property="og:title" content="plenitud · Máxima conexión" />
 <meta property="og:description" content="🌱 Medita un instante sobre lo que verdaderamente anhelas." />
-<meta property="og:image" content="/lab/og/005-m-xima-conexi-n.svg" />
+<meta property="og:image" content="https://triggui-app-git-feat-triggui-2-fase-0-badirs-projects.vercel.app/lab/t/005-m-xima-conexi-n/og.png" />
 <meta property="og:url" content="/lab/t/005-m-xima-conexi-n/" />
 <meta property="og:type" content="article" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="plenitud · Máxima conexión" />
 <meta name="twitter:description" content="🌱 Medita un instante sobre lo que verdaderamente anhelas." />
-<meta name="twitter:image" content="/lab/og/005-m-xima-conexi-n.svg" />
+<meta name="twitter:image" content="https://triggui-app-git-feat-triggui-2-fase-0-badirs-projects.vercel.app/lab/t/005-m-xima-conexi-n/og.png" />
 
 <link rel="preconnect" href="https://www.penguinlibros.com" crossorigin>
 <link rel="preconnect" href="https://www.buscalibre.com.mx" crossorigin>
@@ -411,12 +411,10 @@ body::before {
   align-items: center;
   justify-content: center;
   padding: 0 32px;
-  /* Fondo cinematográfico nivel dios */
   background: radial-gradient(circle at 50% 35%, rgba(20,25,40,0.95) 0%, rgba(0,0,0,1) 80%);
   overflow: hidden;
 }
 
-/* El orbe brillante de fondo */
 .silence-screen::before {
   content: "";
   position: absolute;
@@ -493,7 +491,6 @@ body::before {
   100% { opacity: 1; transform: translateY(0); }
 }
 
-/* FIX ANTI-SALTO: Contenedor con altura reservada y Flexbox */
 .silence-screen .sil-pulse {
   font-family: 'Poppins', sans-serif;
   margin-bottom: 28px;
@@ -507,7 +504,6 @@ body::before {
   width: 100%;
 }
 
-/* Efecto Neón y Animación Explosiva para el número */
 .pulse-num {
   display: block;
   font-size: clamp(48px,11vw,72px);
@@ -533,10 +529,9 @@ body::before {
   letter-spacing: 0.8px;
   text-transform: uppercase;
   animation: popNumber 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-  animation-delay: 0.1s; /* Aparece justito después del número */
+  animation-delay: 0.1s; 
 }
 
-/* Efecto de respiración suave mientras carga */
 .loading-text {
   animation: breatheLoading 1.5s infinite ease-in-out;
   color: rgba(255,255,255,0.5);
@@ -649,7 +644,7 @@ body::before {
 </div>
 
 <script>
-const state = {"id": "005-m-xima-conexi-n", "titulo": "Máxima conexión", "autor": "Brad Stulberg", "palabra": "plenitud", "descripcion": "🌱 Medita un instante sobre lo que verdaderamente anhelas.", "palabras": ["plenitud", "autenticidad", "equilibrio", "anhelo"], "frases": ["🌱 Medita un instante sobre lo que verdaderamente anhelas.", "💬 Comparte con alguien tus logros y celebra tu autenticidad.", "🔄 Reevalúa tus metas y ajusta tu camino hacia el equilibrio.", "📝 Escribe tres cosas que te llenen de plenitud en este momento."], "colores": ["#6BBE44", "#F9B2A1", "#FFAB91", "#4DB6AC"], "textColors": ["#000000", "#000000", "#000000", "#000000"], "fondo": "#1A1A1A", "ogImage": "/lab/og/005-m-xima-conexi-n.svg", "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/7d/4f/9e/7d4f9eb7-8776-fda9-0442-a9c05ad39f0c/1038891568.jpg/626x0w.jpg", "tagline": "El éxito promociones premios dinero fallan sistemáticamente en proporcionarnos felicidad duradera Por más trofeos que añadamos a nuestra colección seguimos anhelando algo y sintiéndonos vacíos Groundedness significa poseer una base firme y estable tener un claro sentido del yo gracias al cual podamos encontrar un éxito profundo y duradero en vez de superficial y efímero"};
+const state = {"id": "005-m-xima-conexi-n", "titulo": "Máxima conexión", "autor": "Brad Stulberg", "palabra": "plenitud", "descripcion": "🌱 Medita un instante sobre lo que verdaderamente anhelas.", "palabras": ["plenitud", "autenticidad", "equilibrio", "anhelo"], "frases": ["🌱 Medita un instante sobre lo que verdaderamente anhelas.", "💬 Comparte con alguien tus logros y celebra tu autenticidad.", "🔄 Reevalúa tus metas y ajusta tu camino hacia el equilibrio.", "📝 Escribe tres cosas que te llenen de plenitud en este momento."], "colores": ["#6BBE44", "#F9B2A1", "#FFAB91", "#4DB6AC"], "textColors": ["#000000", "#000000", "#000000", "#000000"], "fondo": "#1A1A1A", "ogImage": "https://triggui-app-git-feat-triggui-2-fase-0-badirs-projects.vercel.app/lab/t/005-m-xima-conexi-n/og.png", "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/7d/4f/9e/7d4f9eb7-8776-fda9-0442-a9c05ad39f0c/1038891568.jpg/626x0w.jpg", "tagline": "El éxito promociones premios dinero fallan sistemáticamente en proporcionarnos felicidad duradera Por más trofeos que añadamos a nuestra colección seguimos anhelando algo y sintiéndonos vacíos Groundedness significa poseer una base firme y estable tener un claro sentido del yo gracias al cual podamos encontrar un éxito profundo y duradero en vez de superficial y efímero"};
 const grid = document.getElementById('grid');
 const revealOverlay = document.getElementById('revealOverlay');
 const btnBack = document.getElementById('btnBack');
@@ -874,12 +869,10 @@ if (coverCTA) {
 
     moveToSilence();
 
-    /* INYECTAMOS EL TEXTO RESPIRABLE DE CARGA */
     silPulse.innerHTML = `<span class="pulse-label loading-text">Conectando...</span>`;
 
     registerCollectivePhysicalOpen().then((result) => {
       if (result.ok && result.count !== null) {
-        /* AQUI OCURRE LA MAGIA DEL POP-IN DEL NÚMERO Y NO HAY SALTO */
         silPulse.innerHTML = `<span class="pulse-num">${result.count}</span><span class="pulse-label">libros abiertos en el mundo</span>`;
       } else {
         silPulse.innerHTML = `<span class="pulse-label">Se registró el acto.</span>`;

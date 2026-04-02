@@ -29,9 +29,12 @@ def render_edicion(edicion):
     edicion_id = edicion.get("id", "")
     palabra = edicion.get("palabra", "")
     descripcion = edicion.get("descripcion", "")
-    og_image = edicion.get("ogImage", "/lab/og-demo-001.svg")
     portada = edicion.get("portada", "")
     tagline = edicion.get("tagline", "")
+
+    # ¡LA MAGIA AQUI! Apuntamos WhatsApp al nuevo PNG generado.
+    # Usamos tu URL actual de Vercel para que WhatsApp pueda leerlo hoy mismo.
+    og_image = f"https://triggui-app-git-feat-triggui-2-fase-0-badirs-projects.vercel.app/lab/t/{edicion_id}/og.png"
 
     palabras = pad_list(edicion.get("palabras"), 4, "Señal")
     frases = pad_list(edicion.get("frases"), 4, "Abre un libro físico que tengas cerca.")
@@ -490,12 +493,10 @@ body::before {{
   align-items: center;
   justify-content: center;
   padding: 0 32px;
-  /* Fondo cinematográfico nivel dios */
   background: radial-gradient(circle at 50% 35%, rgba(20,25,40,0.95) 0%, rgba(0,0,0,1) 80%);
   overflow: hidden;
 }}
 
-/* El orbe brillante de fondo */
 .silence-screen::before {{
   content: "";
   position: absolute;
@@ -572,7 +573,6 @@ body::before {{
   100% {{ opacity: 1; transform: translateY(0); }}
 }}
 
-/* FIX ANTI-SALTO: Contenedor con altura reservada y Flexbox */
 .silence-screen .sil-pulse {{
   font-family: 'Poppins', sans-serif;
   margin-bottom: 28px;
@@ -586,7 +586,6 @@ body::before {{
   width: 100%;
 }}
 
-/* Efecto Neón y Animación Explosiva para el número */
 .pulse-num {{
   display: block;
   font-size: clamp(48px,11vw,72px);
@@ -612,10 +611,9 @@ body::before {{
   letter-spacing: 0.8px;
   text-transform: uppercase;
   animation: popNumber 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-  animation-delay: 0.1s; /* Aparece justito después del número */
+  animation-delay: 0.1s; 
 }}
 
-/* Efecto de respiración suave mientras carga */
 .loading-text {{
   animation: breatheLoading 1.5s infinite ease-in-out;
   color: rgba(255,255,255,0.5);
@@ -953,12 +951,10 @@ if (coverCTA) {{
 
     moveToSilence();
 
-    /* INYECTAMOS EL TEXTO RESPIRABLE DE CARGA */
     silPulse.innerHTML = `<span class="pulse-label loading-text">Conectando...</span>`;
 
     registerCollectivePhysicalOpen().then((result) => {{
       if (result.ok && result.count !== null) {{
-        /* AQUI OCURRE LA MAGIA DEL POP-IN DEL NÚMERO Y NO HAY SALTO */
         silPulse.innerHTML = `<span class="pulse-num">${{result.count}}</span><span class="pulse-label">libros abiertos en el mundo</span>`;
       }} else {{
         silPulse.innerHTML = `<span class="pulse-label">Se registró el acto.</span>`;
