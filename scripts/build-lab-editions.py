@@ -568,15 +568,14 @@ const coverCTA = document.getElementById('coverCTA');
 const coverHint = coverCTA ? coverCTA.querySelector('.cover-hint') : null;
 const revealCard = document.querySelector('.reveal-card');
 const silenceScreen = document.getElementById('silenceScreen');
-const silCover = document.getElementById('silCover');
 const silPulse = document.getElementById('silPulse');
-const pulseEditionKey = `triggui_lab_opened_${state.id}`;
+const pulseEditionKey = `triggui_lab_opened_${{state.id}}`;
 
 const ANG = [115,205,35,320];
-function grad(i) {{ return `linear-gradient(${{ANG[i % 4]}}deg,${{state.colores[i]}},${{state.colores[(i + 1) % 4]}})`; }}
+function grad(i) {{ return `linear-gradient(${{ANG[i%4]}}deg,${{state.colores[i]}},${{state.colores[(i+1)%4]}})`; }}
 
 // ═══ SINGLE SOURCE OF TRUTH ═══
-let overlayView = 'blocks'; // blocks | card | silence
+let overlayView = 'blocks';   // blocks | card | silence
 let coverBusy = false;
 
 function clearBlockStates() {{
@@ -610,8 +609,8 @@ function setOverlayView(next) {{
 
   if (next === 'blocks') {{
     resetCardState();
-    revealCard.style.display = '';
     silenceScreen.style.display = 'none';
+    revealCard.style.display = '';
     revealCard.style.transform = 'scale(0.94) translateY(15px)';
     revealCard.style.opacity = '0';
     return;
@@ -619,8 +618,8 @@ function setOverlayView(next) {{
 
   if (next === 'card') {{
     resetCardState();
-    revealCard.style.display = '';
     silenceScreen.style.display = 'none';
+    revealCard.style.display = '';
     revealCard.style.transform = 'scale(0.98) translateY(10px)';
     revealCard.style.opacity = '0';
 
@@ -637,7 +636,7 @@ function setOverlayView(next) {{
   }}
 }}
 
-function openOverlay() {{
+function openOverlayFromBlocks() {{
   hideGrid();
   setOverlayView('card');
 }}
@@ -649,10 +648,6 @@ function closeOverlayToBlocks() {{
 
 function moveToSilence() {{
   setOverlayView('silence');
-}}
-
-function returnToCard() {{
-  setOverlayView('card');
 }}
 
 // ═══ API ═══
@@ -694,23 +689,23 @@ async function registerCollectivePhysicalOpen() {{
 
 // ═══ CHRONO ═══
 function getChronoOrder(hour) {{
-  if (hour >= 4 && hour <= 6) return [3, 2, 1, 0];
-  if (hour >= 7 && hour <= 11) return [0, 2, 1, 3];
-  if (hour >= 12 && hour <= 16) return [2, 0, 1, 3];
-  if (hour >= 17 && hour <= 20) return [1, 3, 2, 0];
-  return [3, 1, 2, 0];
+  if (hour >= 4 && hour <= 6) return [3,2,1,0];
+  if (hour >= 7 && hour <= 11) return [0,2,1,3];
+  if (hour >= 12 && hour <= 16) return [2,0,1,3];
+  if (hour >= 17 && hour <= 20) return [1,3,2,0];
+  return [3,1,2,0];
 }}
 
 const currentHour = new Date().getHours();
 const chronoOrder = getChronoOrder(currentHour);
 const revealIndex = Math.floor(Math.random() * 4);
-const emojis = ['🌊', '🛡️', '🧠', '✨'];
+const emojis = ['🌊','🛡️','🧠','✨'];
 
 // ═══ BLOCKS ═══
 function renderBlocks() {{
   grid.innerHTML = chronoOrder.map((realIdx, idx) => `
     <button class="block" data-idx="${{idx}}" data-real-idx="${{realIdx}}" style="background:${{grad(realIdx)}}">
-      <div class="label" style="color:${{state.textColors[realIdx]}}">${{emojis[realIdx % 4]}} ${{state.palabras[realIdx]}}</div>
+      <div class="label" style="color:${{state.textColors[realIdx]}}">${{emojis[realIdx%4]}} ${{state.palabras[realIdx]}}</div>
       <div class="frase" style="color:${{state.textColors[realIdx]}}">${{state.frases[realIdx]}}</div>
     </button>
   `).join('');
@@ -723,7 +718,7 @@ function renderBlocks() {{
       e.stopPropagation();
 
       if (idx === revealIndex) {{
-        openOverlay();
+        openOverlayFromBlocks();
         return;
       }}
 
@@ -740,7 +735,7 @@ function renderBlocks() {{
   }});
 }}
 
-// ═══ NAVIGATION ═══
+// ═══ CLOSE / OUTSIDE CLICK ═══
 btnBack.addEventListener('click', (e) => {{
   e.preventDefault();
   e.stopPropagation();
@@ -753,6 +748,7 @@ revealOverlay.addEventListener('click', (e) => {{
   }}
 }});
 
+// ═══ COVER → SILENCE ═══
 if (coverCTA) {{
   coverCTA.addEventListener('click', async (e) => {{
     e.preventDefault();
@@ -767,7 +763,7 @@ if (coverCTA) {{
     const result = await registerCollectivePhysicalOpen();
 
     if (result.ok && result.count !== null) {{
-      silPulse.innerHTML = `<span class="pulse-num">${{result.count}}</span><span class="pulse-label">libros abiertos</span>`;
+      silPulse.innerHTML = `<span class="pulse-num">${{result.count}}</span><span class="pulse-label">libros abiertos hoy</span>`;
     }} else {{
       silPulse.innerHTML = `<span class="pulse-label">Se registró el acto.</span>`;
     }}
@@ -776,29 +772,19 @@ if (coverCTA) {{
   }});
 }}
 
-if (silCover) {{
-  silCover.addEventListener('click', (e) => {{
-    e.preventDefault();
-    e.stopPropagation();
-    if (overlayView === 'silence') returnToCard();
-  }});
-}}
-
+// ═══ SILENCE → BLOCKS ═══
 silenceScreen.addEventListener('click', (e) => {{
   e.preventDefault();
   e.stopPropagation();
-  if (overlayView === 'silence') returnToCard();
+  if (overlayView === 'silence') {{
+    closeOverlayToBlocks();
+  }}
 }});
 
 document.addEventListener('keydown', (e) => {{
   if (e.key !== 'Escape') return;
 
-  if (overlayView === 'silence') {{
-    returnToCard();
-    return;
-  }}
-
-  if (overlayView === 'card') {{
+  if (overlayView === 'silence' || overlayView === 'card') {{
     closeOverlayToBlocks();
   }}
 }});
@@ -824,11 +810,12 @@ setOverlayView('blocks');
   const total = await getCollectivePulse();
   const el = document.getElementById('pulseLine');
   if (total !== null && total > 0) {{
-    el.textContent = `Ya van ${{total}} libros abiertos.`;
+    el.textContent = `Hoy se abrieron ${{total}} libros.`;
     el.classList.add('visible');
   }}
 }})();
 </script>
+
 </body>
 </html>
 """
