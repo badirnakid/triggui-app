@@ -49,7 +49,7 @@ jobs:
           SINGLE_BOOK: ${{ steps.validate.outputs.book_json }}
         run: |
           cd triggui-content
-          npm ci
+          npm install
           node scripts/build-contenido.js
           cp contenido.json ../contenido.json
 

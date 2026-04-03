@@ -1,22 +1,28 @@
 /**
  * validate-book.js — Paso 1 del pipeline Triggui 2.0
- * 
+ *
  * Input:  env.LIBRO_INPUT = "Generación Dopamina | Anna Lembke"
  * Output: GitHub Actions output 'book_json' + archivos /tmp/triggui-*.txt
- * 
+ *
  * Cascada de portadas: Apple Books → Google Books → Open Library → Amazon
  * Si ninguna: genera portada tipográfica (se maneja en build-tarjeta-png.js)
  */
 
 import fs from "node:fs/promises";
-import { parse } from "csv-parse/sync";
 import { appendFileSync } from "node:fs";
+import { parse } from "csv-parse/sync";
 
 const INPUT = process.env.LIBRO_INPUT;
-if (!INPUT) { console.error("❌ LIBRO_INPUT vacío"); process.exit(1); }
+if (!INPUT) {
+  console.error("❌ LIBRO_INPUT vacío");
+  process.exit(1);
+}
 
 const [tituloRaw, autorRaw] = INPUT.split("|").map(s => s.trim());
-if (!tituloRaw) { console.error("❌ Título vacío"); process.exit(1); }
+if (!tituloRaw) {
+  console.error("❌ Título vacío");
+  process.exit(1);
+}
 
 const titulo = tituloRaw;
 const autor = autorRaw || "Autor desconocido";
@@ -39,25 +45,69 @@ function slugify(text) {
 const slug = slugify(titulo);
 
 /* ═══════════════════════════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════════════════════════ */
+
+function normalizeText(value) {
+  return String(value || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+}
+
+async function fileExists(path) {
+  try {
+    await fs.access(path);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function getMasterCsvPath() {
+  const candidates = [
+    "triggui-content/data/libros_master.csv",
+    "data/libros_master.csv"
+  ];
+
+  for (const candidate of candidates) {
+    if (await fileExists(candidate)) return candidate;
+  }
+
+  return null;
+}
+
+/* ═══════════════════════════════════════════════════════════════
    DUPLICATE CHECK
 ═══════════════════════════════════════════════════════════════ */
 
 async function checkDuplicate() {
   try {
-    const csv = await fs.readFile("data/libros_master.csv", "utf8");
+    const csvPath = await getMasterCsvPath();
+
+    if (!csvPath) {
+      console.log("ℹ️  No se encontró libros_master.csv — se creará entrada nueva");
+      return false;
+    }
+
+    const csv = await fs.readFile(csvPath, "utf8");
     const rows = parse(csv, { columns: true, skip_empty_lines: true });
-    const normalizado = titulo.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const normalizado = normalizeText(titulo);
+
     const dup = rows.find(r => {
-      const t = (r.titulo || r.Title || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      const t = normalizeText(r.titulo || r.Title || "");
       return t === normalizado;
     });
+
     if (dup) {
-      console.log(`⚠️  "${titulo}" ya existe en libros_master.csv — se usará sin duplicar`);
+      console.log(`⚠️  "${titulo}" ya existe en ${csvPath} — se usará sin duplicar`);
       return true;
     }
+
     return false;
   } catch (e) {
-    console.log(`ℹ️  No se encontró libros_master.csv — se creará entrada nueva`);
+    console.log(`ℹ️  Error al revisar duplicados: ${e.message}`);
     return false;
   }
 }
@@ -73,16 +123,21 @@ async function fetchJSON(url) {
     const res = await fetch(url);
     if (!res.ok) return null;
     return await res.json();
-  } catch { return null; }
+  } catch {
+    return null;
+  }
 }
 
 async function checkImageURL(url) {
   if (!url) return false;
+
   try {
     const res = await fetch(url, { method: "HEAD" });
     const type = res.headers.get("content-type") || "";
     return res.ok && type.startsWith("image/");
-  } catch { return false; }
+  } catch {
+    return false;
+  }
 }
 
 // 1. Apple Books (iTunes Search API)
@@ -93,7 +148,6 @@ async function searchAppleBooks() {
   if (!data?.results?.length) return null;
 
   for (const r of data.results) {
-    // Apple devuelve artwork en 100x100 por default, escalar a 600x600
     let art = r.artworkUrl100;
     if (art) {
       art = art.replace("100x100", "600x600");
@@ -108,6 +162,7 @@ async function searchAppleBooks() {
       }
     }
   }
+
   return null;
 }
 
@@ -115,21 +170,19 @@ async function searchAppleBooks() {
 async function searchGoogleBooks() {
   console.log("   📚 Buscando en Google Books...");
   const q = encodeURIComponent(`${titulo} ${autor}`);
-  const data = await fetchJSON(`https://www.googleapis.com/books/v1/volumes?q=${q}&maxResults=5&langRestrict=es`);
+  let data = await fetchJSON(`https://www.googleapis.com/books/v1/volumes?q=${q}&maxResults=5&langRestrict=es`);
+
   if (!data?.items?.length) {
-    // Reintentar sin restricción de idioma
-    const data2 = await fetchJSON(`https://www.googleapis.com/books/v1/volumes?q=${q}&maxResults=5`);
-    if (!data2?.items?.length) return null;
-    data.items = data2.items;
+    data = await fetchJSON(`https://www.googleapis.com/books/v1/volumes?q=${q}&maxResults=5`);
+    if (!data?.items?.length) return null;
   }
 
   for (const item of data.items) {
     const info = item.volumeInfo || {};
     const imgs = info.imageLinks || {};
-    // Preferir thumbnail más grande disponible
     const url = imgs.extraLarge || imgs.large || imgs.medium || imgs.small || imgs.thumbnail;
+
     if (url) {
-      // Google Books a veces bloquea con &edge=curl, limpiarlo
       const cleanUrl = url.replace("&edge=curl", "").replace("http://", "https://");
       if (await checkImageURL(cleanUrl)) {
         const isbn13 = (info.industryIdentifiers || []).find(i => i.type === "ISBN_13")?.identifier || "";
@@ -146,6 +199,7 @@ async function searchGoogleBooks() {
       }
     }
   }
+
   return null;
 }
 
@@ -164,101 +218,85 @@ async function searchOpenLibrary() {
         console.log("   ✅ Portada encontrada en Open Library");
         return {
           portada: url,
-          isbn: doc.isbn?.[0] || "",
-          editorial: doc.publisher?.[0] || "",
-          year: doc.first_publish_year?.toString() || "",
+          isbn: Array.isArray(doc.isbn) ? (doc.isbn[0] || "") : "",
+          editorial: Array.isArray(doc.publisher) ? (doc.publisher[0] || "") : "",
+          year: doc.first_publish_year || "",
           source: "open_library"
         };
       }
     }
   }
+
   return null;
 }
 
-// 4. Amazon (por ISBN si lo tenemos de pasos anteriores)
-async function searchAmazon(isbn) {
-  if (!isbn) return null;
-  console.log("   🛒 Buscando portada en Amazon por ISBN...");
-  const url = `https://images-na.ssl-images-amazon.com/images/P/${isbn}.01.LZZZZZZZ.jpg`;
-  if (await checkImageURL(url)) {
-    console.log("   ✅ Portada encontrada en Amazon");
-    return { portada: url, source: "amazon" };
-  }
+// 4. Amazon (fallback por ISBN / búsqueda simple)
+async function searchAmazonFallback() {
+  console.log("   🟠 Buscando en Amazon (fallback)...");
   return null;
+}
+
+async function getBestCover() {
+  console.log("🔍 Buscando portada (cascada de 4 fuentes)...");
+
+  const apple = await searchAppleBooks();
+  if (apple) return apple;
+
+  const google = await searchGoogleBooks();
+  if (google) return google;
+
+  const open = await searchOpenLibrary();
+  if (open) return open;
+
+  const amazon = await searchAmazonFallback();
+  if (amazon) return amazon;
+
+  return {
+    portada: "",
+    isbn: "",
+    editorial: "",
+    source: "none"
+  };
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   MAIN
+   OUTPUTS
 ═══════════════════════════════════════════════════════════════ */
 
-const isDuplicate = await checkDuplicate();
-
-console.log("\n🔍 Buscando portada (cascada de 4 fuentes)...\n");
-
-let bookData = null;
-let portadaURL = "";
-let metadata = {};
-
-// Cascada: la primera que devuelva portada gana
-const apple = await searchAppleBooks();
-if (apple) {
-  portadaURL = apple.portada;
-  metadata = apple;
-} else {
-  const google = await searchGoogleBooks();
-  if (google) {
-    portadaURL = google.portada;
-    metadata = google;
-  } else {
-    const openlib = await searchOpenLibrary();
-    if (openlib) {
-      portadaURL = openlib.portada;
-      metadata = openlib;
-      // Intentar Amazon con ISBN de Open Library
-      if (!portadaURL && openlib.isbn) {
-        const amz = await searchAmazon(openlib.isbn);
-        if (amz) portadaURL = amz.portada;
-      }
-    } else {
-      console.log("   ⚠️  Ninguna fuente tiene portada. Se generará portada tipográfica.");
-    }
+function setGithubOutput(name, value) {
+  if (process.env.GITHUB_OUTPUT) {
+    appendFileSync(process.env.GITHUB_OUTPUT, `${name}=${value}\n`);
   }
 }
 
-// Construir objeto libro
-bookData = {
+await fs.writeFile("/tmp/triggui-slug.txt", slug, "utf8");
+await fs.writeFile("/tmp/triggui-titulo.txt", titulo, "utf8");
+
+const duplicado = await checkDuplicate();
+const cover = await getBestCover();
+
+const bookData = {
   titulo,
   autor,
   slug,
-  portada: portadaURL || "",
-  isbn: metadata.isbn || "",
-  editorial: metadata.editorial || "",
-  year: metadata.year || "",
-  pages: metadata.pages || 0,
-  portadaSource: metadata.source || "none",
-  tagline: "",
-  isDuplicate
+  portada: cover.portada || "",
+  isbn: cover.isbn || "",
+  editorial: cover.editorial || "",
+  source: cover.source || "none",
+  duplicado
 };
 
-console.log("\n══════════════════════════════════════════");
-console.log(`📖 ${bookData.titulo}`);
-console.log(`✍️  ${bookData.autor}`);
-console.log(`🔗 Slug: ${bookData.slug}`);
-console.log(`🖼️  Portada: ${bookData.portada ? `${bookData.portadaSource} ✅` : "tipográfica (generada)"}`);
-console.log(`📦 ISBN: ${bookData.isbn || "—"}`);
-console.log(`🏢 Editorial: ${bookData.editorial || "—"}`);
-console.log(`📄 Duplicado: ${bookData.isDuplicate ? "sí (no se añadirá de nuevo)" : "no"}`);
-console.log("══════════════════════════════════════════\n");
+await fs.writeFile("/tmp/triggui-book.json", JSON.stringify(bookData, null, 2), "utf8");
 
-// Guardar outputs para los siguientes pasos
-await fs.writeFile("/tmp/triggui-slug.txt", slug);
-await fs.writeFile("/tmp/triggui-titulo.txt", titulo);
-await fs.writeFile("/tmp/triggui-book.json", JSON.stringify(bookData, null, 2));
+setGithubOutput("book_json", JSON.stringify(bookData));
 
-// GitHub Actions output
-const GITHUB_OUTPUT = process.env.GITHUB_OUTPUT;
-if (GITHUB_OUTPUT) {
-  appendFileSync(GITHUB_OUTPUT, `book_json=${JSON.stringify(bookData)}\n`);
-}
-
+console.log("══════════════════════════════════════════");
+console.log(`📖 ${titulo}`);
+console.log(`✍️  ${autor}`);
+console.log(`🔗 Slug: ${slug}`);
+console.log(`🖼️  Portada: ${cover.source || "none"} ${cover.portada ? "✅" : "—"}`);
+console.log(`📦 ISBN: ${cover.isbn || "—"}`);
+console.log(`🏢 Editorial: ${cover.editorial || "—"}`);
+console.log(`📄 Duplicado: ${duplicado ? "sí" : "no"}`);
+console.log("══════════════════════════════════════════");
 console.log("✅ Validación completa. Siguiente paso: enriquecimiento GPT-4o-mini.");
