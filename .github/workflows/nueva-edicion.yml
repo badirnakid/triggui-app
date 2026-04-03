@@ -1,0 +1,91 @@
+name: Nueva Edición Triggui
+
+on:
+  workflow_dispatch:
+    inputs:
+      libro:
+        description: 'Título del libro | Autor (ej: Generación Dopamina | Anna Lembke)'
+        required: true
+        type: string
+
+jobs:
+  nueva-edicion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout triggui-app
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout triggui-content
+        uses: actions/checkout@v4
+        with:
+          repository: badirnakid/triggui-content
+          token: ${{ secrets.CONTENT_REPO_TOKEN }}
+          path: triggui-content
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          npx playwright install chromium --with-deps
+
+      - name: Paso 1 — Validar libro y obtener portada
+        id: validate
+        env:
+          LIBRO_INPUT: ${{ github.event.inputs.libro }}
+        run: node scripts/validate-book.js
+
+      - name: Paso 2 — Enriquecer con GPT-4o-mini (modo SINGLE)
+        env:
+          OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
+          SINGLE_MODE: "true"
+          SINGLE_BOOK: ${{ steps.validate.outputs.book_json }}
+        run: node scripts/build-contenido.js
+
+      - name: Paso 3 — Generar edición viva HTML
+        run: python3 scripts/build-editions.py
+
+      - name: Paso 4 — Generar tarjeta PNG (1080×1920)
+        run: node scripts/build-tarjeta-png.js
+
+      - name: Paso 5 — Generar OG image PNG (1200×630)
+        run: node scripts/build-og-image.js
+
+      - name: Paso 6 — Commit y push
+        run: |
+          SLUG=$(cat /tmp/triggui-slug.txt)
+          
+          git config user.name "Triggui Bot"
+          git config user.email "bot@triggui.com"
+          
+          git add public/t/ public/og/ data/
+          git commit -m "✨ Nueva edición: ${SLUG}" || echo "No changes to commit in triggui-app"
+          git push
+          
+          cd triggui-content
+          git config user.name "Triggui Bot"
+          git config user.email "bot@triggui.com"
+          git add contenido.json contenido_manual.json
+          git commit -m "📚 Contenido: ${SLUG}" || echo "No changes to commit in triggui-content"
+          git push
+
+      - name: Paso 7 — Notificación
+        run: |
+          SLUG=$(cat /tmp/triggui-slug.txt)
+          TITULO=$(cat /tmp/triggui-titulo.txt)
+          echo "══════════════════════════════════════════"
+          echo "✅ EDICIÓN LISTA"
+          echo "📖 ${TITULO}"
+          echo "🔗 Edición viva: https://app.triggui.com/t/${SLUG}/"
+          echo "🖼️  Tarjeta PNG: public/t/${SLUG}/tarjeta.png"
+          echo "══════════════════════════════════════════"
+          echo ""
+          echo "Descarga la tarjeta PNG y mándala por WhatsApp."
+          echo "Después manda el link de la edición viva."
