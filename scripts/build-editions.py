@@ -1,11 +1,18 @@
-from pathlib import Path
+import sys
 import json
 import html
 import urllib.parse
+from pathlib import Path
 
-BASE_DIR = Path("public/lab")
-DATA_FILE = BASE_DIR / "ediciones.json"
-OUT_DIR = BASE_DIR / "t"
+# Configuración Lab
+LAB_BASE_DIR = Path("public/lab")
+LAB_DATA_FILE = LAB_BASE_DIR / "ediciones.json"
+LAB_OUT_DIR = LAB_BASE_DIR / "t"
+
+# Configuración Single (Pipeline)
+TMP_BOOK_FILE = Path("/tmp/triggui-book.json")
+CONTENIDO_FILE = Path("contenido.json")
+SINGLE_OUT_DIR = Path("public/t")
 
 
 def esc(value):
@@ -23,7 +30,7 @@ def pad_list(values, size, fallback):
     return values[:size]
 
 
-def render_edicion(edicion):
+def render_edicion(edicion, mode="lab"):
     titulo = edicion.get("titulo", "")
     autor = edicion.get("autor", "")
     edicion_id = edicion.get("id", "")
@@ -32,8 +39,13 @@ def render_edicion(edicion):
     portada = edicion.get("portada", "")
     tagline = edicion.get("tagline", "")
 
-    # Apuntamos a la OG Image PNG
-    og_image = f"https://triggui-app-git-feat-triggui-2-fase-0-badirs-projects.vercel.app/lab/t/{edicion_id}/og.png"
+    # Rutas dinámicas según el entorno
+    if mode == "single":
+        og_image = f"https://app.triggui.com/t/{edicion_id}/og.png"
+        og_url = f"https://app.triggui.com/t/{esc(edicion_id)}/"
+    else:
+        og_image = f"https://triggui-app-git-feat-triggui-2-fase-0-badirs-projects.vercel.app/lab/t/{edicion_id}/og.png"
+        og_url = f"/lab/t/{esc(edicion_id)}/"
 
     palabras = pad_list(edicion.get("palabras"), 4, "Señal")
     frases = pad_list(edicion.get("frases"), 4, "Abre un libro físico que tengas cerca.")
@@ -81,7 +93,7 @@ def render_edicion(edicion):
 <meta property="og:title" content="{esc(palabra)} · {esc(titulo)}" />
 <meta property="og:description" content="{esc(descripcion)}" />
 <meta property="og:image" content="{esc(og_image)}" />
-<meta property="og:url" content="/lab/t/{esc(edicion_id)}/" />
+<meta property="og:url" content="{esc(og_url)}" />
 <meta property="og:type" content="article" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="{esc(palabra)} · {esc(titulo)}" />
@@ -818,26 +830,87 @@ setOverlayView('blocks');
 '''
 
 
-def main():
-    if not DATA_FILE.exists():
-        raise SystemExit(f"No existe {DATA_FILE}")
+def build_lab():
+    if not LAB_DATA_FILE.exists():
+        raise SystemExit(f"No existe {LAB_DATA_FILE}")
 
-    data = json.loads(DATA_FILE.read_text(encoding="utf-8"))
+    data = json.loads(LAB_DATA_FILE.read_text(encoding="utf-8"))
     ediciones = data.get("ediciones", [])
 
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    LAB_OUT_DIR.mkdir(parents=True, exist_ok=True)
 
     for edicion in ediciones:
         edicion_id = edicion.get("id")
         if not edicion_id:
             continue
 
-        destino = OUT_DIR / edicion_id
+        destino = LAB_OUT_DIR / edicion_id
         destino.mkdir(parents=True, exist_ok=True)
 
         html_file = destino / "index.html"
-        html_file.write_text(render_edicion(edicion), encoding="utf-8")
-        print(f"OK -> {html_file}")
+        html_file.write_text(render_edicion(edicion, mode="lab"), encoding="utf-8")
+        print(f"OK (Lab) -> {html_file}")
+
+
+def build_single():
+    if not CONTENIDO_FILE.exists():
+        print(f"❌ Error: {CONTENIDO_FILE} no existe. Abortando build_single.")
+        sys.exit(1)
+
+    book_meta = json.loads(TMP_BOOK_FILE.read_text(encoding="utf-8"))
+    contenido = json.loads(CONTENIDO_FILE.read_text(encoding="utf-8"))
+
+    if not contenido.get("libros") or len(contenido["libros"]) == 0:
+        print("❌ Error: contenido.json no tiene libros. Abortando.")
+        sys.exit(1)
+
+    libro_data = contenido["libros"][0]
+    slug = book_meta.get("slug")
+
+    if not slug:
+        print("❌ Error: No hay slug en book_meta.")
+        sys.exit(1)
+
+    print(f"🏗️  Construyendo edición viva SINGLE para: {slug}")
+
+    # Extraemos la palabra dominante para los títulos y fallbacks
+    palabra_dominante = libro_data.get("tarjeta", {}).get("titulo")
+    if not palabra_dominante and libro_data.get("palabras"):
+        palabra_dominante = libro_data["palabras"][0]
+
+    # Construimos el diccionario exacto que requiere el template HTML
+    edicion_single = {
+        "id": slug,
+        "titulo": book_meta.get("titulo", libro_data.get("titulo", "")),
+        "autor": book_meta.get("autor", libro_data.get("autor", "")),
+        "palabra": palabra_dominante,
+        "descripcion": libro_data.get("tarjeta", {}).get("parrafoTop", ""),
+        "portada": book_meta.get("portada") or libro_data.get("portada", ""),
+        "tagline": book_meta.get("tagline", ""),
+        "palabras": libro_data.get("palabras", []),
+        "frases": libro_data.get("frases", []),
+        "colores": libro_data.get("colores", []),
+        "textColors": ["#FFFFFF"] * 4, # Fallback seguro de lectura
+        "fondo": libro_data.get("fondo", "#0a0a0a"),
+        "tarjeta": libro_data.get("tarjeta", {})
+    }
+
+    html_content = render_edicion(edicion_single, mode="single")
+
+    out_dir = SINGLE_OUT_DIR / slug
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    html_file = out_dir / "index.html"
+    html_file.write_text(html_content, encoding="utf-8")
+    print(f"✅ Edición viva generada: {html_file}")
+
+
+def main():
+    # El Doble Cerebro: Si existe el archivo efímero, estamos en Pipeline automatizado.
+    if TMP_BOOK_FILE.exists():
+        build_single()
+    else:
+        build_lab()
 
 
 if __name__ == "__main__":
