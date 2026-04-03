@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wght@700&family=Inter:wght@400;500&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 1200px;
+    height: 630px;
+    background: var(--bg, #0a0a0a);
+    display: flex;
+    align-items: center;
+    padding: 0 72px;
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+  }
+
+  .content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .brand {
+    font-size: 14px;
+    color: rgba(255,255,255,0.35);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    font-weight: 500;
+  }
+
+  .word {
+    font-family: 'Noto Serif Display', Georgia, serif;
+    font-size: 72px;
+    font-weight: 700;
+    color: var(--accent, #ffffff);
+    line-height: 1.1;
+    margin-bottom: 24px;
+    max-width: 650px;
+  }
+
+  .hint {
+    font-size: 18px;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.5;
+    max-width: 550px;
+  }
+
+  .cover-wrapper {
+    width: 160px;
+    flex-shrink: 0;
+    margin-left: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .cover {
+    width: 150px;
+    border-radius: 10px;
+    box-shadow: 0 8px 32px var(--glow, rgba(255,255,255,0.15));
+  }
+
+  .footer {
+    position: absolute;
+    bottom: 28px;
+    right: 72px;
+    font-size: 16px;
+    color: rgba(255,255,255,0.2);
+    font-weight: 500;
+    letter-spacing: -0.3px;
+  }
+</style>
+</head>
+<body>
+  <div class="content">
+    <div class="brand">TRIGGUI</div>
+    <div class="word">{{PALABRA}}</div>
+    <div class="hint">{{HINT}}</div>
+  </div>
+
+  <div class="cover-wrapper">
+    <img class="cover" src="{{PORTADA_URL}}" alt="" />
+  </div>
+
+  <div class="footer">triggui.com</div>
+</body>
+</html>

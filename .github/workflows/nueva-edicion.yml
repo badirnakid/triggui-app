@@ -47,7 +47,11 @@ jobs:
           OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
           SINGLE_MODE: "true"
           SINGLE_BOOK: ${{ steps.validate.outputs.book_json }}
-        run: node scripts/build-contenido.js
+        run: |
+          cd triggui-content
+          npm install
+          node scripts/build-contenido.js
+          cp contenido.json ../contenido.json
 
       - name: Paso 3 — Generar edición viva HTML
         run: python3 scripts/build-editions.py
