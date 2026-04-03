@@ -1,8 +1,4 @@
 {
-  "dependencies": {
-    "@octokit/rest": "^22.0.1",
-    "puppeteer": "^24.40.0"
-  },
   "name": "triggui-app",
   "version": "1.0.0",
   "description": "Versión web desplegada directamente desde `/public/index.html` con Vercel.",
@@ -21,5 +17,11 @@
   "bugs": {
     "url": "https://github.com/badirnakid/triggui-app/issues"
   },
-  "homepage": "https://github.com/badirnakid/triggui-app#readme"
+  "homepage": "https://github.com/badirnakid/triggui-app#readme",
+  "dependencies": {
+    "@octokit/rest": "^22.0.1",
+    "csv-parse": "^5.5.3",
+    "playwright": "^1.53.0",
+    "puppeteer": "^24.40.0"
+  }
 }
