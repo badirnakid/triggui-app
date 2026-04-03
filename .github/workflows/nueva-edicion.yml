@@ -31,7 +31,7 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install dependencies
+      - name: Install dependencies (triggui-app)
         run: |
           npm ci
           npx playwright install chromium --with-deps
@@ -49,7 +49,7 @@ jobs:
           SINGLE_BOOK: ${{ steps.validate.outputs.book_json }}
         run: |
           cd triggui-content
-          npm install
+          npm ci
           node scripts/build-contenido.js
           cp contenido.json ../contenido.json
 
@@ -65,18 +65,19 @@ jobs:
       - name: Paso 6 — Commit y push
         run: |
           SLUG=$(cat /tmp/triggui-slug.txt)
-          
+
           git config user.name "Triggui Bot"
           git config user.email "bot@triggui.com"
-          
-          git add public/t/ public/og/ data/
+
+          git add public/t/ contenido.json
           git commit -m "✨ Nueva edición: ${SLUG}" || echo "No changes to commit in triggui-app"
           git push
-          
+
           cd triggui-content
           git config user.name "Triggui Bot"
           git config user.email "bot@triggui.com"
-          git add contenido.json contenido_manual.json
+
+          git add contenido.json
           git commit -m "📚 Contenido: ${SLUG}" || echo "No changes to commit in triggui-content"
           git push
 
