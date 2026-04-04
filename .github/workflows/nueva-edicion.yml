@@ -8,6 +8,9 @@ on:
         required: true
         type: string
 
+permissions:
+  contents: write
+
 jobs:
   nueva-edicion:
     runs-on: ubuntu-latest
@@ -54,7 +57,15 @@ jobs:
           cp contenido.json ../contenido.json
 
       - name: Paso 3 — Generar edición viva HTML
-        run: python3 scripts/build-editions.py
+        run: |
+          if [ "${GITHUB_REF_NAME}" = "main" ]; then
+            export BASE_URL="https://app.triggui.com"
+          else
+            export BASE_URL="https://beta.app.triggui.com"
+          fi
+
+          echo "BASE_URL=${BASE_URL}"
+          python3 scripts/build-editions.py
 
       - name: Paso 4 — Generar tarjeta PNG (1080×1920)
         run: node scripts/build-tarjeta-png.js
@@ -84,11 +95,17 @@ jobs:
       - name: Paso 7 — Notificación
         run: |
           SLUG=$(cat /tmp/triggui-slug.txt)
-          TITULO=$(cat /tmp/triggui-titulo.txt)
+
+          if [ "${GITHUB_REF_NAME}" = "main" ]; then
+            BASE_URL="https://app.triggui.com"
+          else
+            BASE_URL="https://beta.app.triggui.com"
+          fi
+
           echo "══════════════════════════════════════════"
           echo "✅ EDICIÓN LISTA"
-          echo "📖 ${TITULO}"
-          echo "🔗 Edición viva: https://app.triggui.com/t/${SLUG}/"
+          echo "📖 ${SLUG}"
+          echo "🔗 Edición viva: ${BASE_URL}/t/${SLUG}/"
           echo "🖼️  Tarjeta PNG: public/t/${SLUG}/tarjeta.png"
           echo "══════════════════════════════════════════"
           echo ""

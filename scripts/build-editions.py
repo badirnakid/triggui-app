@@ -1,3 +1,4 @@
+import os
 import sys
 import json
 import html
@@ -13,6 +14,11 @@ LAB_OUT_DIR = LAB_BASE_DIR / "t"
 TMP_BOOK_FILE = Path("/tmp/triggui-book.json")
 CONTENIDO_FILE = Path("contenido.json")
 SINGLE_OUT_DIR = Path("public/t")
+
+# Base URL dinámica:
+# - main -> https://app.triggui.com
+# - previews -> https://beta.app.triggui.com
+BASE_URL = os.environ.get("BASE_URL", "https://app.triggui.com").rstrip("/")
 
 
 def esc(value):
@@ -41,8 +47,8 @@ def render_edicion(edicion, mode="lab"):
 
     # Rutas dinámicas según el entorno
     if mode == "single":
-        og_image = f"https://app.triggui.com/t/{edicion_id}/og.png"
-        og_url = f"https://app.triggui.com/t/{esc(edicion_id)}/"
+        og_image = f"{BASE_URL}/t/{edicion_id}/og.png"
+        og_url = f"{BASE_URL}/t/{edicion_id}/"
     else:
         og_image = f"https://triggui-app-git-feat-triggui-2-fase-0-badirs-projects.vercel.app/lab/t/{edicion_id}/og.png"
         og_url = f"/lab/t/{esc(edicion_id)}/"
@@ -231,24 +237,22 @@ body::before {{
 }}
 .reveal-overlay::-webkit-scrollbar {{ display: none; }}
 
-/* === ESTÉTICA "ORGANIC SYNAPSE" APLICADA AL WEB OVERLAY === */
 .reveal-card {{
   width: 100%;
   max-width: 520px;
   margin: auto 0;
   border-radius: 20px;
   position: relative;
-  background-color: #F7F7F5; /* Soft Canvas */
-  color: #1A1A1A; /* Graphite Ink */
+  background-color: #F7F7F5;
+  color: #1A1A1A;
   box-shadow: 0 25px 60px rgba(0,0,0,0.06), 0 0 0 1px rgba(227,93,48,0.05);
-  overflow: visible; 
+  overflow: visible;
   cursor: default;
   transform: scale(0.94) translateY(15px);
   opacity: 0;
   transition: transform 0.45s cubic-bezier(0.19,1,0.22,1), opacity 0.4s ease;
 }}
 
-/* Grano sutil estilo papel */
 .reveal-card::after {{
   content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 0;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
@@ -260,7 +264,7 @@ body::before {{
 .btn-close {{
   position: absolute; top: 12px; left: 12px; z-index: 20;
   width: 32px; height: 32px; border: none; border-radius: 50%;
-  background: rgba(0,0,0,0.06); 
+  background: rgba(0,0,0,0.06);
   color: #1A1A1A;
   font-size: 18px; line-height: 1; display: flex; align-items: center; justify-content: center;
   cursor: pointer; transition: background .2s ease, transform .2s ease; padding: 0; touch-action: manipulation;
@@ -325,7 +329,7 @@ body::before {{
   cursor: pointer;
   position: relative;
   touch-action: manipulation;
-  padding: 8px; 
+  padding: 8px;
 }}
 .ed-cover-wrap img {{
   display: block;
@@ -358,14 +362,9 @@ body::before {{
 .btn-row-2 {{ grid-template-columns: 1fr 48px; }}
 .btn-row-3 {{ grid-template-columns: 1fr 48px 1fr; }}
 
-/* =========================================================================
-   SISTEMA DE BOTONES BIFÁSICO (Claros arriba, Oscuros abajo)
-   ========================================================================= */
-
-/* Fila 1: Branding (Blancos) */
 .btn-light {{
   height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 6px;
-  text-decoration: none; cursor: pointer; 
+  text-decoration: none; cursor: pointer;
   background: #FFFFFF;
   border: 1px solid rgba(26,26,26,0.08);
   box-shadow: 0 4px 12px rgba(0,0,0,0.02);
@@ -375,16 +374,15 @@ body::before {{
 .btn-light:active {{ transform: scale(0.97); }}
 
 .btn-light img {{ height: 16px; width: auto; display: block; }}
-.btn-light .btn-triggui-logo {{ height: 20px; opacity: 0.9; }} 
+.btn-light .btn-triggui-logo {{ height: 20px; opacity: 0.9; }}
 .btn-light .btn-ig-icon {{ width: 18px; height: 18px; opacity: 0.9; }}
 .btn-ig-icon rect, .btn-ig-icon circle {{ stroke: #1A1A1A; }}
 .btn-ig-icon circle[fill="white"] {{ fill: #1A1A1A; }}
 
-/* Fila 2: Acciones (Oscuros) */
 .btn-dark {{
   height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 6px;
-  text-decoration: none; cursor: pointer; 
-  background: #1A1A1A; /* Graphite Ink puro */
+  text-decoration: none; cursor: pointer;
+  background: #1A1A1A;
   border: 1px solid rgba(255,255,255,0.05);
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
@@ -392,30 +390,22 @@ body::before {{
 .btn-dark:hover {{ transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); border-color: rgba(255,255,255,0.1); }}
 .btn-dark:active {{ transform: scale(0.97); }}
 
-/* BUSCALIBRE: Intacto, naranja original y blanco sobre botón Graphite Ink */
-.btn-dark .btn-busca-logo {{ 
-  height: 14px; 
-  filter: none; 
+.btn-dark .btn-busca-logo {{
+  height: 14px;
+  filter: none;
   opacity: 0.95;
 }}
 
-/* PENGUIN: EL BORRADO QUIRÚRGICO.
-   El original es un cuadro negro. 
-   mix-blend-mode: screen; desaparece el negro del fondo y deja las letras blancas intactas.
-   contrast(120%) asegura que el fondo sea puro negro para que se borre perfecto sin bordes.
-*/
-.btn-dark.btn-penguin-icon img {{ 
-  height: 36px; 
+.btn-dark.btn-penguin-icon img {{
+  height: 36px;
   mix-blend-mode: screen;
   filter: contrast(120%) grayscale(1);
   opacity: 0.95;
 }}
 
-/* Bola de cristal */
 .btn-crystal.btn-dark {{ background: #1A1A1A; }}
 .btn-crystal .btn-emoji {{ font-size: 20px; line-height: 1; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }}
 
-/* === PANTALLA DE SILENCIO (Se mantiene oscura) === */
 .silence-screen {{
   display: none; position: absolute; inset: 0; flex-direction: column; align-items: center; justify-content: center;
   padding: 0 32px; background: radial-gradient(circle at 50% 35%, rgba(20,25,40,0.95) 0%, rgba(0,0,0,1) 80%);
@@ -872,13 +862,12 @@ def build_single():
         sys.exit(1)
 
     print(f"🏗️  Construyendo edición viva SINGLE para: {slug}")
+    print(f"🌐 BASE_URL: {BASE_URL}")
 
-    # Extraemos la palabra dominante para los títulos y fallbacks
     palabra_dominante = libro_data.get("tarjeta", {}).get("titulo")
     if not palabra_dominante and libro_data.get("palabras"):
         palabra_dominante = libro_data["palabras"][0]
 
-    # Construimos el diccionario exacto que requiere el template HTML
     edicion_single = {
         "id": slug,
         "titulo": book_meta.get("titulo", libro_data.get("titulo", "")),
@@ -890,7 +879,7 @@ def build_single():
         "palabras": libro_data.get("palabras", []),
         "frases": libro_data.get("frases", []),
         "colores": libro_data.get("colores", []),
-        "textColors": ["#FFFFFF"] * 4, # Fallback seguro de lectura
+        "textColors": ["#FFFFFF"] * 4,
         "fondo": libro_data.get("fondo", "#0a0a0a"),
         "tarjeta": libro_data.get("tarjeta", {})
     }
@@ -906,7 +895,6 @@ def build_single():
 
 
 def main():
-    # El Doble Cerebro: Si existe el archivo efímero, estamos en Pipeline automatizado.
     if TMP_BOOK_FILE.exists():
         build_single()
     else:
