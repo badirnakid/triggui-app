@@ -3,20 +3,13 @@
 <head>
 <meta charset="utf-8">
 <style>
-  /* ══════════════════════════════════════════════════════════════
-     TRIGGUI TARJETA TEMPLATE v4.0
-     Diseño: Réplica exacta de Apps Script v9.6 (Cannes Supreme)
-     Renderizado por Puppeteer a 1080×1920px
-     CSS ES MATEMÁTICAS — cada valor es una ecuación deliberada
-  ══════════════════════════════════════════════════════════════ */
-
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600&display=swap');
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
     width: 1080px;
-    height: 1920px;
+    height: 1400px;
     background: var(--bg, #f5f0eb);
     display: flex;
     align-items: center;
@@ -26,8 +19,6 @@
 
   .card {
     width: 1020px;
-    min-height: 1760px;
-    max-height: 1800px;
     background: var(--paper, #ffffff);
     border-radius: 36px;
     border: 2px solid var(--border, #eaeaea);
@@ -35,135 +26,120 @@
     padding: 10px;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
   }
 
-  /* ── BLOQUE 1: Título + Portada + Párrafo superior ── */
   .block-1 {
     background: var(--block-bg, #fafafa);
     border-radius: 28px;
     border: 2px solid var(--block-border, #f0f0f0);
     box-shadow: 0 6px 16px rgba(0,0,0,0.04);
-    padding: 36px 36px 30px;
-    flex-shrink: 0;
+    padding: 48px 48px 42px;
   }
 
   .block-1-inner {
     overflow: hidden;
+    min-height: 440px;
   }
 
   .cover {
     float: right;
-    width: 280px;
-    margin: 0 0 20px 24px;
-    border-radius: 24px;
+    width: 300px;
+    margin: 0 0 24px 32px;
+    border-radius: 18px;
     border: 2px solid var(--cover-border, #eaeaea);
-    box-shadow: 0 12px 36px rgba(0,0,0,0.1);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.12);
     display: block;
   }
 
   .title {
     font-family: 'Noto Serif Display', Georgia, 'Times New Roman', serif;
-    font-size: 44px;
-    line-height: 1.25;
+    font-size: 54px;
+    line-height: 1.2;
     font-weight: 700;
     color: var(--title-color, #0E7490);
     letter-spacing: 0.2px;
-    margin-bottom: 14px;
+    margin-bottom: 18px;
   }
 
   .author-chip {
     display: inline-block;
     font-family: 'Inter', sans-serif;
-    font-size: 28px;
+    font-size: 32px;
     line-height: 1;
     font-weight: 500;
     background: var(--chip-bg, #e0f2fe);
     color: var(--chip-color, #0c4a6e);
-    padding: 10px 22px;
-    border-radius: 20px;
+    padding: 14px 26px;
+    border-radius: 24px;
     letter-spacing: 0.3px;
-    margin-bottom: 16px;
+    margin-bottom: 24px;
   }
 
   .paragraph {
     font-family: 'Noto Serif Display', Georgia, serif;
-    font-size: 36px;
-    line-height: 1.5;
+    font-size: 42px;
+    line-height: 1.55;
     font-weight: 400;
     color: var(--paragraph-color, #111827);
-    letter-spacing: 0px;
   }
 
-  /* ── GAP ── */
-  .gap {
-    height: 20px;
-    flex-shrink: 0;
-  }
+  .gap { height: 14px; }
 
-  /* ── BLOQUE 2: Subtítulo + Párrafo inferior ── */
   .block-2 {
     background: var(--block-bg, #fafafa);
     border-radius: 28px;
     border: 2px solid var(--block-border, #f0f0f0);
     box-shadow: 0 6px 16px rgba(0,0,0,0.04);
-    padding: 30px 36px;
-    flex-shrink: 0;
+    padding: 42px 48px;
   }
 
   .subtitle {
     font-family: 'Inter', sans-serif;
-    font-size: 36px;
-    line-height: 1.4;
+    font-size: 42px;
+    line-height: 1.3;
     font-weight: 600;
     color: var(--subtitle-color, #B91C1C);
-    letter-spacing: 0.1px;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
   }
 
-  /* ── HIGHLIGHT (reemplaza [H]...[/H]) ── */
   .highlight {
-    background: var(--highlight-bg, rgba(14,116,144,0.08));
+    background: var(--highlight-bg, rgba(14,116,144,0.1));
     color: var(--highlight-color, #064e3b);
-    padding: 2px 6px;
+    padding: 3px 8px;
     border-radius: 6px;
     font-weight: 600;
   }
 
-  /* ── LOGO STRIP ── */
   .logo-strip {
-    margin-top: auto;
-    padding: 20px 0 10px;
+    padding: 32px 0 24px;
     text-align: center;
-    flex-shrink: 0;
   }
 
   .logo-triggui {
     font-family: 'Inter', sans-serif;
-    font-size: 42px;
+    font-size: 48px;
     font-weight: 700;
     color: #111827;
     letter-spacing: -0.5px;
   }
 
   .logo-sup {
-    font-size: 20px;
+    font-size: 24px;
     vertical-align: super;
     font-weight: 400;
   }
 
   .logo-sub {
     font-family: 'Inter', sans-serif;
-    font-size: 24px;
+    font-size: 28px;
     color: #94a3b8;
-    margin-top: 4px;
+    margin-top: 6px;
     font-style: italic;
   }
 </style>
 </head>
 <body>
   <div class="card">
-    <!-- BLOQUE 1 -->
     <div class="block-1">
       <div class="block-1-inner">
         <img class="cover" src="{{PORTADA_URL}}" alt="Portada" />
@@ -172,16 +148,11 @@
         <div class="paragraph">{{PARRAFO_TOP}}</div>
       </div>
     </div>
-
     <div class="gap"></div>
-
-    <!-- BLOQUE 2 -->
     <div class="block-2">
       <div class="subtitle">{{SUBTITULO}}</div>
       <div class="paragraph">{{PARRAFO_BOT}}</div>
     </div>
-
-    <!-- LOGO -->
     <div class="logo-strip">
       <div class="logo-triggui">triggui<span class="logo-sup">®</span></div>
       <div class="logo-sub">@triggui | triggui.com</div>

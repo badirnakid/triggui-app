@@ -24,7 +24,7 @@ console.log(`🖼️  Generando OG image: "${libro.titulo}"`);
 const template = await fs.readFile("scripts/templates/og-image.html", "utf8");
 
 // La palabra dominante es la primera del array de palabras
-const palabra = libro.tarjeta?.titulo || libro.palabras?.[0] || libro.titulo;
+const palabra = libro.palabras?.[0] || libro.titulo;
 const hint = libro.tagline || libro.tarjeta?.parrafoTop?.substring(0, 120) || "";
 const accent = libro.tarjeta?.style?.accent || libro.colores?.[0] || "#ffffff";
 const portadaURL = bookMeta.portada || libro.portada || "";

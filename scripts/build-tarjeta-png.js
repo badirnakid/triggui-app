@@ -137,7 +137,7 @@ const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage();
 
 // Viewport exacto: 1080×1920 (vertical, WhatsApp/Story)
-await page.setViewportSize({ width: 1080, height: 1920 });
+await page.setViewportSize({ width: 1080, height: 1400 });
 
 await page.setContent(html, { waitUntil: "networkidle" });
 
@@ -157,7 +157,7 @@ const outPath = path.join(outDir, "tarjeta.png");
 await page.screenshot({
   path: outPath,
   type: "png",
-  clip: { x: 0, y: 0, width: 1080, height: 1920 }
+  clip: { x: 0, y: 0, width: 1080, height: 1400 }
 });
 
 await browser.close();
