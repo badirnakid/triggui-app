@@ -586,13 +586,27 @@ body.webview #tarjetaCard {
   text-shadow: none;
 }
 
-.inline-highlight {
+.marker-highlight {
+  color: inherit;
   font-weight: 700;
-  text-decoration-line: underline;
-  text-decoration-color: var(--accent-col);
-  text-decoration-thickness: 0.14em;
-  text-underline-offset: 0.12em;
-  text-decoration-skip-ink: none;
+  padding: 0 0.14em;
+  border-radius: 0.18em;
+  background-image: linear-gradient(
+    180deg,
+    transparent 0 22%,
+    rgba(var(--marker-rgb, 255, 214, 10), 0) 22%,
+    rgba(var(--marker-rgb, 255, 214, 10), 0.18) 28%,
+    rgba(var(--marker-rgb, 255, 214, 10), 0.62) 46%,
+    rgba(var(--marker-rgb, 255, 214, 10), 0.82) 63%,
+    rgba(var(--marker-rgb, 255, 214, 10), 0.42) 88%,
+    transparent 100%
+  );
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  box-shadow:
+    inset 0 -0.02em 0 rgba(255,255,255,0.18),
+    0 0.04em 0.18em rgba(0,0,0,0.08);
+  text-shadow: none;
 }
 </style>
 
@@ -1440,11 +1454,25 @@ btnLibro.onclick = async() => {
 
 function luminance(hex) { try { const c = hex.replace("#","").match(/.{1,2}/g).map(x=>parseInt(x,16)/255); const f = v => v<=.03928 ? v/12.92 : Math.pow((v+.055)/1.055,2.4); return 0.2126*f(c[0])+0.7152*f(c[1])+0.0722*f(c[2]); } catch { return 0; } }
 function pickTextColor(bg) { try { return luminance(bg) > 0.35 ? "#000" : "#fff"; } catch { return "#fff"; } }
-function escapeHtml(s) { return String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;"); }
-function stripHighlightTokens(s) { return String(s ?? "").replace(/\[H\]|\[\/H\]/gi, ""); }
-function renderHighlightedText(s) {
-  const safe = escapeHtml(String(s ?? ""));
-  return safe.replace(/\[H\]([\s\S]*?)\[\/H\]/gi, '<span class="inline-highlight">$1</span>');
+function stripHighlightTokens(text) { return String(text || "").replace(/\[H\]|\[\/H\]/gi, ""); }
+function renderMarkerHighlight(text) {
+  return String(text || "")
+    .replace(/\[H\]([\s\S]*?)\[\/H\]/gi, '<span class="marker-highlight">$1</span>')
+    .replace(/\[H\]|\[\/H\]/gi, "");
+}
+function markerRgbFromAccent(hex) {
+  try {
+    const clean = String(hex || "").replace("#", "");
+    const full = clean.length === 3 ? clean.split("").map(c => c + c).join("") : clean;
+    if (!/^[0-9a-fA-F]{6}$/.test(full)) return "255, 214, 10";
+    let r = parseInt(full.slice(0, 2), 16);
+    let g = parseInt(full.slice(2, 4), 16);
+    let b = parseInt(full.slice(4, 6), 16);
+    r = Math.round(r * 0.72 + 255 * 0.28);
+    g = Math.round(g * 0.72 + 236 * 0.28);
+    b = Math.round(b * 0.72 + 120 * 0.28);
+    return `${r}, ${g}, ${b}`;
+  } catch { return "255, 214, 10"; }
 }
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -1526,6 +1554,7 @@ btnShare.onclick = () => {
   card.style.setProperty('--accent-col', sAccent);
   card.style.setProperty('--serif-font', sSerif);
   card.style.setProperty('--sans-font', sSans);
+  card.style.setProperty('--marker-rgb', markerRgbFromAccent(sAccent));
 
   // Modo Oscuro
   const isDark = pickTextColor(sPaper) === '#fff';
@@ -1556,9 +1585,9 @@ btnShare.onclick = () => {
       </div>
       
       <div class="card-body">
-        <div style="margin-bottom:18px;">${renderHighlightedText(t.parrafoTop)}</div>
+        <div style="margin-bottom:18px;">${renderMarkerHighlight(t.parrafoTop)}</div>
         <div class="card-highlight">${stripHighlightTokens(t.subtitulo)}</div>
-        <div>${renderHighlightedText(t.parrafoBot)}</div>
+        <div>${renderMarkerHighlight(t.parrafoBot)}</div>
       </div>
 
       <div class="card-actions">
