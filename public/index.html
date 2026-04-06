@@ -585,6 +585,15 @@ body.webview #tarjetaCard {
   -webkit-font-smoothing: antialiased;
   text-shadow: none;
 }
+
+.inline-highlight {
+  font-weight: 700;
+  text-decoration-line: underline;
+  text-decoration-color: var(--accent-col);
+  text-decoration-thickness: 0.14em;
+  text-underline-offset: 0.12em;
+  text-decoration-skip-ink: none;
+}
 </style>
 
 <style id="card-action-buttons">
@@ -1431,6 +1440,12 @@ btnLibro.onclick = async() => {
 
 function luminance(hex) { try { const c = hex.replace("#","").match(/.{1,2}/g).map(x=>parseInt(x,16)/255); const f = v => v<=.03928 ? v/12.92 : Math.pow((v+.055)/1.055,2.4); return 0.2126*f(c[0])+0.7152*f(c[1])+0.0722*f(c[2]); } catch { return 0; } }
 function pickTextColor(bg) { try { return luminance(bg) > 0.35 ? "#000" : "#fff"; } catch { return "#fff"; } }
+function escapeHtml(s) { return String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;"); }
+function stripHighlightTokens(s) { return String(s ?? "").replace(/\[H\]|\[\/H\]/gi, ""); }
+function renderHighlightedText(s) {
+  const safe = escapeHtml(String(s ?? ""));
+  return safe.replace(/\[H\]([\s\S]*?)\[\/H\]/gi, '<span class="inline-highlight">$1</span>');
+}
 
 // ═══════════════════════════════════════════════════════════════════════
 // 🎯 SHARE & TARJETA - OPTIMIZADO NIVEL DIOS (CARGA INSTANTÁNEA)
@@ -1541,9 +1556,9 @@ btnShare.onclick = () => {
       </div>
       
       <div class="card-body">
-        <div style="margin-bottom:18px;">${t.parrafoTop}</div>
-        <div class="card-highlight">${t.subtitulo}</div>
-        <div>${t.parrafoBot}</div>
+        <div style="margin-bottom:18px;">${renderHighlightedText(t.parrafoTop)}</div>
+        <div class="card-highlight">${stripHighlightTokens(t.subtitulo)}</div>
+        <div>${renderHighlightedText(t.parrafoBot)}</div>
       </div>
 
       <div class="card-actions">
