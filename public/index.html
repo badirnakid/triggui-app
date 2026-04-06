@@ -586,6 +586,22 @@ body.webview #tarjetaCard {
   text-shadow: none;
 }
 
+.card-copy-top {
+  min-height: 0;
+}
+
+.card-cover-float {
+  float: right;
+  width: clamp(104px, 24vw, 132px);
+  max-width: 36%;
+  height: auto;
+  border-radius: 14px;
+  margin: 0 0 14px 18px;
+  box-shadow:
+    0 14px 34px rgba(0,0,0,.20),
+    0 0 0 1px rgba(255,255,255,.08);
+  object-fit: cover;
+}
 
 .marker-highlight {
   background: var(--marker-col, rgba(255, 232, 115, 0.38));
@@ -1103,6 +1119,12 @@ body.webview #tarjetaCard {
   .num {
     font-size: 2.6rem;
   }
+
+  .card-cover-float {
+    width: 104px;
+    margin: 0 0 12px 14px;
+    border-radius: 12px;
+  }
 }
 </style>
 
@@ -1551,6 +1573,9 @@ btnShare.onclick = () => {
   const buscarlibreURL = `https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(libro.titulo + ' ' + libro.autor)}`;
   const explorarURL = `https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(p)}`;
   const penguinURL = `https://www.penguinlibros.com/mx/?mot_q=${encodeURIComponent(p)}`;
+  const portadaCardHTML = isURL(libro.portada)
+    ? `<img src="${libro.portada}" alt="${libro.titulo}" class="card-cover-float" loading="lazy">`
+    : "";
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // 🚀 RENDER OPTIMIZADO - Template literal con imágenes pre-cargadas
@@ -1571,7 +1596,7 @@ btnShare.onclick = () => {
       </div>
       
       <div class="card-body">
-        <div style="margin-bottom:18px;">${renderMarkerHTML(t.parrafoTop)}</div>
+        <div class="card-copy-top" style="margin-bottom:18px;">${portadaCardHTML}${renderMarkerHTML(t.parrafoTop)}</div>
         <div class="card-highlight">${cleanHighlightTokens(t.subtitulo)}</div>
         <div>${renderMarkerHTML(t.parrafoBot)}</div>
       </div>
