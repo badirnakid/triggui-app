@@ -1,7 +1,7 @@
-
 import os
 import sys
 import json
+import re
 import html
 import urllib.parse
 from pathlib import Path
@@ -22,7 +22,7 @@ SINGLE_OUT_DIR = Path("public/t")
 # - previews -> https://beta.app.triggui.com
 BASE_URL = os.environ.get("BASE_URL", "https://app.triggui.com").rstrip("/")
 
-# Nuevo: archivo canónico del pipeline single-book
+# Archivo canónico del pipeline single-book
 TRIGGUI_EDICION_JSON_ENV = os.environ.get("TRIGGUI_EDICION_JSON", "").strip()
 
 
@@ -39,6 +39,13 @@ def pad_list(values, size, fallback):
     while len(values) < size:
         values.append(fallback)
     return values[:size]
+
+
+def with_alpha(hex_color, alpha="2e"):
+    clean = str(hex_color or "").strip()
+    if re.fullmatch(r"#[0-9a-fA-F]{6}", clean):
+        return f"{clean}{alpha}"
+    return clean or "#E35D302e"
 
 
 def resolve_single_json_file():
@@ -83,6 +90,86 @@ def resolve_palabra_dominante(libro_data):
     )
 
 
+def strip_highlight_tags(text):
+    return re.sub(r"\[/?H\]", "", str(text or ""), flags=re.IGNORECASE)
+
+
+def normalize_highlight_syntax(text):
+    value = str(text or "").strip()
+    if not value:
+        return ""
+
+    # {{H}}...{{/H}} -> [H]...[/H]
+    value = re.sub(r"\{\{H\}\}", "[H]", value, flags=re.IGNORECASE)
+    value = re.sub(r"\{\{\/H\}\}", "[/H]", value, flags=re.IGNORECASE)
+
+    # minúsculas -> mayúsculas
+    value = re.sub(r"\[h\]", "[H]", value)
+    value = re.sub(r"\[\/h\]", "[/H]", value)
+
+    # legacy roto: [H]...[H] => alternar open/close
+    toggle_open = True
+
+    def replace_open(_match):
+        nonlocal toggle_open
+        token = "[H]" if toggle_open else "[/H]"
+        toggle_open = not toggle_open
+        return token
+
+    value = re.sub(r"\[H\]", replace_open, value)
+
+    opens = len(re.findall(r"\[H\]", value))
+    closes = len(re.findall(r"\[/H\]", value))
+
+    if opens > closes:
+        value += "[/H]" * (opens - closes)
+
+    if closes > opens:
+        extra = closes - opens
+        while extra > 0:
+            idx = value.rfind("[/H]")
+            if idx == -1:
+                break
+            value = value[:idx] + value[idx + 4 :]
+            extra -= 1
+
+    # limpia highlights vacíos
+    value = re.sub(r"\[H\]\s*\[/H\]", "", value)
+    value = re.sub(r"[ \t]{2,}", " ", value).strip()
+    return value
+
+
+def escape_with_breaks(text):
+    return esc(text).replace("\n", "<br>")
+
+
+def render_highlight_html(text):
+    normalized = normalize_highlight_syntax(text)
+    if not normalized:
+        return ""
+
+    pattern = re.compile(r"\[H\](.*?)\[/H\]", flags=re.IGNORECASE | re.DOTALL)
+    parts = []
+    last = 0
+
+    for match in pattern.finditer(normalized):
+        before = normalized[last : match.start()]
+        if before:
+            parts.append(escape_with_breaks(before))
+
+        inner = match.group(1).strip()
+        if inner:
+            parts.append(f'<span class="tg-hl">{escape_with_breaks(inner)}</span>')
+
+        last = match.end()
+
+    after = normalized[last:]
+    if after:
+        parts.append(escape_with_breaks(after))
+
+    return "".join(parts)
+
+
 def render_edicion(edicion, mode="lab"):
     titulo = edicion.get("titulo", "")
     autor = edicion.get("autor", "")
@@ -103,13 +190,26 @@ def render_edicion(edicion, mode="lab"):
     frases = pad_list(edicion.get("frases"), 4, "Abre un libro físico que tengas cerca.")
     colores = pad_list(edicion.get("colores"), 4, "#4FD1FF")
     text_colors = pad_list(edicion.get("textColors"), 4, "#FFFFFF")
-    fondo = edicion.get("fondo", "#0a0d1a")
 
     tarjeta = edicion.get("tarjeta", {}) or {}
-    t_titulo = tarjeta.get("titulo", "")
-    t_parrafo_top = tarjeta.get("parrafoTop", "")
-    t_subtitulo = tarjeta.get("subtitulo", "")
-    t_parrafo_bot = tarjeta.get("parrafoBot", "")
+    t_titulo = str(tarjeta.get("titulo", "") or "").strip()
+    t_parrafo_top = normalize_highlight_syntax(tarjeta.get("parrafoTop", "") or "")
+    t_subtitulo = str(tarjeta.get("subtitulo", "") or "").strip()
+    t_parrafo_bot = normalize_highlight_syntax(tarjeta.get("parrafoBot", "") or "")
+
+    style = tarjeta.get("style", {}) or {}
+    accent = style.get("accent") or "#E35D30"
+    marker = with_alpha(accent, "30")
+    chip_bg = with_alpha(accent, "14")
+    card_paper = "#F7F7F5"
+    card_ink = "#1A1A1A"
+    card_border = "rgba(26,26,26,0.06)"
+
+    description_plain = strip_highlight_tags(t_parrafo_top or descripcion).strip()
+    if not description_plain:
+        description_plain = strip_highlight_tags(t_parrafo_bot).strip()
+    if not description_plain:
+        description_plain = palabra or titulo
 
     busca_comprar = urllib.parse.quote(f"{titulo} {autor}")
     busca_explorar = urllib.parse.quote(palabra) if palabra else busca_comprar
@@ -124,12 +224,11 @@ def render_edicion(edicion, mode="lab"):
         "titulo": titulo,
         "autor": autor,
         "palabra": palabra,
-        "descripcion": descripcion,
+        "descripcion": description_plain,
         "palabras": palabras,
         "frases": frases,
         "colores": colores,
         "textColors": text_colors,
-        "fondo": fondo,
         "ogImage": og_image,
         "portada": portada,
         "tagline": tagline,
@@ -149,7 +248,7 @@ def render_edicion(edicion, mode="lab"):
       <div class="ed-gap"></div>
       <div class="ed-block">
         <div class="ed-sub">{esc(t_subtitulo)}</div>
-        <div class="ed-para">{esc(t_parrafo_bot)}</div>
+        <div class="ed-para">{render_highlight_html(t_parrafo_bot)}</div>
       </div>"""
 
     silence_cover_html = ""
@@ -157,32 +256,50 @@ def render_edicion(edicion, mode="lab"):
         silence_cover_html = f"""
     <img class="sil-cover" id="silCover" src="{esc(cover_src)}" alt="{esc(titulo)}" />"""
 
-    html_output = f"""<!doctype html>
+    top_html = render_highlight_html(t_parrafo_top or descripcion)
+
+    body_style = (
+        f"--accent:{esc(accent)};"
+        f"--marker:{esc(marker)};"
+        f"--chip-bg:{esc(chip_bg)};"
+        f"--card-paper:{esc(card_paper)};"
+        f"--card-ink:{esc(card_ink)};"
+        f"--card-border:{esc(card_border)};"
+    )
+
+    html_output = """<!doctype html>
 <html lang="es" style="background:#000;">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 
-<title>{esc(palabra)} · {esc(titulo)} · Triggui</title>
+<title>__TITLE_PAGE__</title>
+<meta name="description" content="__META_DESCRIPTION__" />
+<link rel="canonical" href="__OG_URL__" />
 
-<meta property="og:title" content="{esc(palabra)} · {esc(titulo)}" />
-<meta property="og:description" content="{esc(descripcion)}" />
-<meta property="og:image" content="{esc(og_image)}" />
-<meta property="og:url" content="{esc(og_url)}" />
+<meta property="og:title" content="__OG_TITLE__" />
+<meta property="og:description" content="__META_DESCRIPTION__" />
+<meta property="og:image" content="__OG_IMAGE__" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:url" content="__OG_URL__" />
 <meta property="og:type" content="article" />
+<meta property="og:site_name" content="Triggui" />
+<meta property="og:locale" content="es_MX" />
+
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="{esc(palabra)} · {esc(titulo)}" />
-<meta name="twitter:description" content="{esc(descripcion)}" />
-<meta name="twitter:image" content="{esc(og_image)}" />
+<meta name="twitter:title" content="__OG_TITLE__" />
+<meta name="twitter:description" content="__META_DESCRIPTION__" />
+<meta name="twitter:image" content="__OG_IMAGE__" />
 
 <link rel="preconnect" href="https://www.penguinlibros.com" crossorigin>
 <link rel="preconnect" href="https://www.buscalibre.com.mx" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,500;1,700&display=swap" rel="stylesheet">
 
 <style>
-*, *::before, *::after {{ box-sizing: border-box; }}
+*, *::before, *::after { box-sizing: border-box; }
 
-html, body {{
+html, body {
   background: #000 !important;
   color: #fff;
   margin: 0;
@@ -196,11 +313,11 @@ html, body {{
   -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
-}}
+}
 
-vercel-live-feedback,[data-vercel-toolbar],#__vercel_live_token,vercel-toolbar{{display:none!important;height:0!important;overflow:hidden!important;}}
+vercel-live-feedback,[data-vercel-toolbar],#__vercel_live_token,vercel-toolbar{display:none!important;height:0!important;overflow:hidden!important;}
 
-body::before {{
+body::before {
   content: "";
   position: fixed;
   inset: 0;
@@ -210,14 +327,14 @@ body::before {{
   z-index: -1;
   pointer-events: none;
   opacity: 0.85;
-}}
+}
 
-@keyframes fire-move {{
-  0%, 100% {{ background-position: 0% 50%; }}
-  50% {{ background-position: 100% 50%; }}
-}}
+@keyframes fire-move {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
 
-.pulse-line {{
+.pulse-line {
   position: fixed;
   top: 16px;
   left: 0;
@@ -234,10 +351,10 @@ body::before {{
   transition: opacity .8s ease, transform .8s ease;
   pointer-events: none;
   user-select: none;
-}}
-.pulse-line.visible {{ opacity: 1; transform: translateY(0); }}
+}
+.pulse-line.visible { opacity: 1; transform: translateY(0); }
 
-.grid {{
+.grid {
   position: absolute;
   inset: 5vh 1.5vw;
   display: grid;
@@ -245,11 +362,11 @@ body::before {{
   grid-template-rows: repeat(4, 1fr);
   gap: 1vw;
   transition: opacity .4s ease;
-}}
-.grid.hidden {{ opacity: 0; pointer-events: none; }}
-@media(orientation:landscape) {{ .grid {{ grid-template-columns: repeat(4,1fr); grid-template-rows: 1fr; }} }}
+}
+.grid.hidden { opacity: 0; pointer-events: none; }
+@media(orientation:landscape) { .grid { grid-template-columns: repeat(4,1fr); grid-template-rows: 1fr; } }
 
-.block {{
+.block {
   position: relative;
   display: flex;
   align-items: center;
@@ -269,19 +386,19 @@ body::before {{
   user-select: none;
   box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.15), 0 4px 6px rgba(0,0,0,.15), 0 12px 32px rgba(0,0,0,.35);
   z-index: 1;
-}}
+}
 
-.block * {{ pointer-events: none !important; }}
+.block * { pointer-events: none !important; }
 
-.block::before {{
+.block::before {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
   background: linear-gradient(145deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,.08) 40%, transparent 100%);
   z-index: 1;
-}}
-.block::after {{
+}
+.block::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -290,13 +407,13 @@ body::before {{
   opacity: 0;
   transition: opacity 0.3s ease;
   z-index: 0;
-}}
-.block:hover::after {{ opacity: 1; }}
-.block:hover {{ transform: translateY(-2px) scale(1.005); }}
-.block:active {{ transform: translateY(0) scale(0.995); transition: transform 0.1s; }}
-.block.dim {{ opacity: 0.6; transform: scale(0.98); }}
+}
+.block:hover::after { opacity: 1; }
+.block:hover { transform: translateY(-2px) scale(1.005); }
+.block:active { transform: translateY(0) scale(0.995); transition: transform 0.1s; }
+.block.dim { opacity: 0.6; transform: scale(0.98); }
 
-.label, .frase {{
+.label, .frase {
   position: absolute;
   inset: 0;
   display: flex;
@@ -306,13 +423,13 @@ body::before {{
   z-index: 2;
   text-align: center;
   transition: opacity 0.25s ease, transform 0.25s ease;
-}}
-.label {{ opacity: 1; transform: translateY(0); font-size: clamp(1.05rem, 3.2vw, 1.7rem); line-height: 1.35; }}
-.frase {{ opacity: 0; transform: translateY(6px); font-size: clamp(1rem, 3vw, 1.5rem); font-weight: 600; line-height: 1.4; }}
-.block.show .label {{ opacity: 0; transform: translateY(-6px); }}
-.block.show .frase {{ opacity: 1; transform: translateY(0); }}
+}
+.label { opacity: 1; transform: translateY(0); font-size: clamp(1.05rem, 3.2vw, 1.7rem); line-height: 1.35; }
+.frase { opacity: 0; transform: translateY(6px); font-size: clamp(1rem, 3vw, 1.5rem); font-weight: 600; line-height: 1.4; }
+.block.show .label { opacity: 0; transform: translateY(-6px); }
+.block.show .frase { opacity: 1; transform: translateY(0); }
 
-.reveal-overlay {{
+.reveal-overlay {
   position: fixed;
   inset: 0;
   z-index: 200;
@@ -328,26 +445,26 @@ body::before {{
   scrollbar-width: none;
   padding: max(6px, env(safe-area-inset-top, 6px)) 6px max(6px, env(safe-area-inset-bottom, 6px));
   cursor: pointer;
-}}
-.reveal-overlay::-webkit-scrollbar {{ display: none; }}
+}
+.reveal-overlay::-webkit-scrollbar { display: none; }
 
-.reveal-card {{
+.reveal-card {
   width: 100%;
   max-width: 520px;
   margin: auto 0;
   border-radius: 20px;
   position: relative;
-  background-color: #F7F7F5;
-  color: #1A1A1A;
-  box-shadow: 0 25px 60px rgba(0,0,0,0.06), 0 0 0 1px rgba(227,93,48,0.05);
+  background-color: var(--card-paper);
+  color: var(--card-ink);
+  box-shadow: 0 25px 60px rgba(0,0,0,0.06), 0 0 0 1px var(--card-border);
   overflow: visible;
   cursor: default;
   transform: scale(0.94) translateY(15px);
   opacity: 0;
   transition: transform 0.45s cubic-bezier(0.19,1,0.22,1), opacity 0.4s ease;
-}}
+}
 
-.reveal-card::after {{
+.reveal-card::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -357,11 +474,11 @@ body::before {{
   mix-blend-mode: multiply;
   opacity: 0.03;
   border-radius: 20px;
-}}
+}
 
-.card-inner {{ position: relative; z-index: 2; padding: 0; }}
+.card-inner { position: relative; z-index: 2; padding: 0; }
 
-.btn-close {{
+.btn-close {
   position: absolute;
   top: 12px;
   left: 12px;
@@ -381,21 +498,21 @@ body::before {{
   transition: background .2s ease, transform .2s ease;
   padding: 0;
   touch-action: manipulation;
-}}
-.btn-close:hover {{ background: rgba(0,0,0,0.12); }}
-.btn-close:active {{ transform: scale(0.9); }}
+}
+.btn-close:hover { background: rgba(0,0,0,0.12); }
+.btn-close:active { transform: scale(0.9); }
 
-.ed-block {{
+.ed-block {
   margin: 0 5px;
   background: linear-gradient(145deg, #FFFFFF 0%, #F0F0EE 100%);
   border: 1px solid rgba(26,26,26,0.05);
   border-radius: 16px;
   padding: 22px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.03);
-}}
-.ed-block:first-child {{ margin-top: 18px; }}
+}
+.ed-block:first-child { margin-top: 18px; }
 
-.ed-block .ed-title {{
+.ed-block .ed-title {
   font-family: Georgia, 'Times New Roman', serif;
   font-size: 24px;
   line-height: 1.3;
@@ -403,21 +520,23 @@ body::before {{
   color: #1A1A1A;
   letter-spacing: 0.5px;
   margin: 0 0 8px 0;
-}}
-.ed-block .ed-chip {{
+}
+
+.ed-block .ed-chip {
   display: inline-block;
   font-family: 'Archivo', sans-serif;
   font-size: 15px;
   line-height: 1;
   font-weight: 700;
-  background: #E35D30;
-  color: #FFFFFF;
+  background: var(--chip-bg);
+  color: var(--accent);
   padding: 4px 11px;
   border-radius: 12px;
   letter-spacing: 0.3px;
   margin: 0 0 12px 0;
-}}
-.ed-block .ed-para {{
+}
+
+.ed-block .ed-para {
   font-family: Georgia, 'Times New Roman', serif;
   font-size: 18px;
   line-height: 1.7;
@@ -425,26 +544,44 @@ body::before {{
   color: #4A4A4A;
   letter-spacing: 0.2px;
   margin: 0;
-}}
-.ed-block .ed-sub {{
+}
+
+.ed-block .ed-sub {
   font-family: 'Archivo', sans-serif;
   font-size: 18px;
   line-height: 1.4;
   font-weight: 600;
-  color: #E35D30;
+  color: var(--accent);
   letter-spacing: 0.15px;
   margin: 0 0 8px 0;
-}}
+}
 
-.ed-cover-wrap {{
+.tg-hl {
+  color: inherit;
+  font-weight: 600;
+  background:
+    linear-gradient(
+      180deg,
+      transparent 0%,
+      transparent 56%,
+      var(--marker) 56%,
+      var(--marker) 100%
+    );
+  padding: 0 0.08em;
+  border-radius: 0.12em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.ed-cover-wrap {
   float: right;
   margin: 0 0 12px 18px;
   cursor: pointer;
   position: relative;
   touch-action: manipulation;
   padding: 8px;
-}}
-.ed-cover-wrap img {{
+}
+.ed-cover-wrap img {
   display: block;
   width: 120px;
   height: auto;
@@ -453,12 +590,12 @@ body::before {{
   box-shadow: 0 15px 35px rgba(0,0,0,0.12);
   animation: coverBreathe 2.8s cubic-bezier(0.32,0.01,0.16,1) infinite;
   will-change: transform, filter;
-}}
-@keyframes coverBreathe {{
-  0%, 100% {{ transform: scale(1); filter: drop-shadow(0 0 0px rgba(0,0,0,0)); }}
-  50% {{ transform: scale(1.03); filter: drop-shadow(0 10px 20px rgba(227,93,48,0.25)); }}
-}}
-.cover-hint {{
+}
+@keyframes coverBreathe {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0px rgba(0,0,0,0)); }
+  50% { transform: scale(1.03); filter: drop-shadow(0 10px 20px rgba(227,93,48,0.25)); }
+}
+.cover-hint {
   display: block;
   text-align: center;
   font-family: 'Poppins', sans-serif;
@@ -468,22 +605,22 @@ body::before {{
   margin-top: 6px;
   letter-spacing: 0.3px;
   animation: hintFade 4s ease forwards;
-}}
-@keyframes hintFade {{ 0%, 70% {{ opacity: 1; }} 100% {{ opacity: 0; }} }}
+}
+@keyframes hintFade { 0%, 70% { opacity: 1; } 100% { opacity: 0; } }
 
-.ed-gap {{ height: 14px; }}
+.ed-gap { height: 14px; }
 
-.card-actions {{
+.card-actions {
   padding: 16px 22px 22px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-}}
-.btn-row {{ display: grid; gap: 8px; }}
-.btn-row-2 {{ grid-template-columns: 1fr 48px; }}
-.btn-row-3 {{ grid-template-columns: 1fr 48px 1fr; }}
+}
+.btn-row { display: grid; gap: 8px; }
+.btn-row-2 { grid-template-columns: 1fr 48px; }
+.btn-row-3 { grid-template-columns: 1fr 48px 1fr; }
 
-.btn-light {{
+.btn-light {
   height: 46px;
   border-radius: 12px;
   display: flex;
@@ -496,17 +633,17 @@ body::before {{
   border: 1px solid rgba(26,26,26,0.08);
   box-shadow: 0 4px 12px rgba(0,0,0,0.02);
   transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
-}}
-.btn-light:hover {{ transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.05); border-color: rgba(26,26,26,0.15); }}
-.btn-light:active {{ transform: scale(0.97); }}
+}
+.btn-light:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.05); border-color: rgba(26,26,26,0.15); }
+.btn-light:active { transform: scale(0.97); }
 
-.btn-light img {{ height: 16px; width: auto; display: block; }}
-.btn-light .btn-triggui-logo {{ height: 20px; opacity: 0.9; }}
-.btn-light .btn-ig-icon {{ width: 18px; height: 18px; opacity: 0.9; }}
-.btn-ig-icon rect, .btn-ig-icon circle {{ stroke: #1A1A1A; }}
-.btn-ig-icon circle[fill="white"] {{ fill: #1A1A1A; }}
+.btn-light img { height: 16px; width: auto; display: block; }
+.btn-light .btn-triggui-logo { height: 20px; opacity: 0.9; }
+.btn-light .btn-ig-icon { width: 18px; height: 18px; opacity: 0.9; }
+.btn-ig-icon rect, .btn-ig-icon circle { stroke: #1A1A1A; }
+.btn-ig-icon circle[fill="white"] { fill: #1A1A1A; }
 
-.btn-dark {{
+.btn-dark {
   height: 46px;
   border-radius: 12px;
   display: flex;
@@ -519,27 +656,27 @@ body::before {{
   border: 1px solid rgba(255,255,255,0.05);
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
-}}
-.btn-dark:hover {{ transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); border-color: rgba(255,255,255,0.1); }}
-.btn-dark:active {{ transform: scale(0.97); }}
+}
+.btn-dark:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); border-color: rgba(255,255,255,0.1); }
+.btn-dark:active { transform: scale(0.97); }
 
-.btn-dark .btn-busca-logo {{
+.btn-dark .btn-busca-logo {
   height: 14px;
   filter: none;
   opacity: 0.95;
-}}
+}
 
-.btn-dark.btn-penguin-icon img {{
+.btn-dark.btn-penguin-icon img {
   height: 36px;
   mix-blend-mode: screen;
   filter: contrast(120%) grayscale(1);
   opacity: 0.95;
-}}
+}
 
-.btn-crystal.btn-dark {{ background: #1A1A1A; }}
-.btn-crystal .btn-emoji {{ font-size: 20px; line-height: 1; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }}
+.btn-crystal.btn-dark { background: #1A1A1A; }
+.btn-crystal .btn-emoji { font-size: 20px; line-height: 1; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
 
-.silence-screen {{
+.silence-screen {
   display: none;
   position: absolute;
   inset: 0;
@@ -549,8 +686,8 @@ body::before {{
   padding: 0 32px;
   background: radial-gradient(circle at 50% 35%, rgba(20,25,40,0.95) 0%, rgba(0,0,0,1) 80%);
   overflow: hidden;
-}}
-.silence-screen::before {{
+}
+.silence-screen::before {
   content: "";
   position: absolute;
   top: 35%;
@@ -563,11 +700,11 @@ body::before {{
   z-index: 0;
   pointer-events: none;
   animation: pulseGlow 4s ease-in-out infinite;
-}}
-@keyframes pulseGlow {{ 0%, 100% {{ opacity: 0.6; transform: translate(-50%, -50%) scale(0.95); }} 50% {{ opacity: 1; transform: translate(-50%, -50%) scale(1.05); }} }}
+}
+@keyframes pulseGlow { 0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(0.95); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); } }
 
-.silence-screen > * {{ position: relative; z-index: 1; }}
-.silence-screen .sil-cover {{
+.silence-screen > * { position: relative; z-index: 1; }
+.silence-screen .sil-cover {
   width: 180px;
   height: auto;
   border-radius: 6px;
@@ -577,13 +714,13 @@ body::before {{
   margin-bottom: 40px;
   cursor: pointer;
   animation: floatMagic 5s ease-in-out infinite;
-}}
-@keyframes floatMagic {{
-  0%, 100% {{ transform: translateY(0); box-shadow: 0 30px 60px -10px rgba(0,0,0,0.9), 0 0 50px rgba(227,93,48,0.4); }}
-  50% {{ transform: translateY(-12px); box-shadow: 0 45px 75px -10px rgba(0,0,0,0.7), 0 0 70px rgba(227,93,48,0.65); }}
-}}
-.silence-screen .sil-cover:active {{ transform: scale(0.96) translateY(0); transition: transform .1s; }}
-.silence-screen .sil-title {{
+}
+@keyframes floatMagic {
+  0%, 100% { transform: translateY(0); box-shadow: 0 30px 60px -10px rgba(0,0,0,0.9), 0 0 50px rgba(227,93,48,0.4); }
+  50% { transform: translateY(-12px); box-shadow: 0 45px 75px -10px rgba(0,0,0,0.7), 0 0 70px rgba(227,93,48,0.65); }
+}
+.silence-screen .sil-cover:active { transform: scale(0.96) translateY(0); transition: transform .1s; }
+.silence-screen .sil-title {
   font-family: 'Playfair Display', serif;
   font-style: italic;
   font-size: clamp(16px,4vw,22px);
@@ -593,8 +730,8 @@ body::before {{
   text-align: center;
   text-shadow: 0 4px 20px rgba(255,255,255,0.4);
   letter-spacing: 1px;
-}}
-.silence-screen .sil-call {{
+}
+.silence-screen .sil-call {
   font-family: 'Poppins', sans-serif;
   font-size: clamp(18px,5vw,26px);
   font-weight: 600;
@@ -606,8 +743,8 @@ body::before {{
   text-align: center;
   filter: drop-shadow(0 4px 15px rgba(0,0,0,0.6));
   animation: silCallIn 1s ease .3s both;
-}}
-.silence-screen .sil-sub {{
+}
+.silence-screen .sil-sub {
   font-family: 'Poppins', sans-serif;
   font-size: clamp(14px,3.5vw,18px);
   font-weight: 500;
@@ -616,10 +753,10 @@ body::before {{
   margin-bottom: 24px;
   text-align: center;
   animation: silCallIn 1s ease .5s both;
-}}
-@keyframes silCallIn {{ 0% {{ opacity: 0; transform: translateY(10px); }} 100% {{ opacity: 1; transform: translateY(0); }} }}
+}
+@keyframes silCallIn { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
 
-.silence-screen .sil-pulse {{
+.silence-screen .sil-pulse {
   font-family: 'Poppins', sans-serif;
   margin-bottom: 28px;
   text-align: center;
@@ -630,8 +767,8 @@ body::before {{
   align-items: center;
   justify-content: center;
   width: 100%;
-}}
-.pulse-num {{
+}
+.pulse-num {
   display: block;
   font-size: clamp(48px,11vw,72px);
   font-weight: 800;
@@ -643,9 +780,9 @@ body::before {{
   margin-bottom: 4px;
   filter: drop-shadow(0 10px 25px rgba(255,0,85,0.5));
   animation: fire-move 4s ease infinite, popNumber 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-}}
-@keyframes popNumber {{ 0% {{ opacity: 0; transform: scale(0.4) translateY(20px); }} 100% {{ opacity: 1; transform: scale(1) translateY(0); }} }}
-.pulse-label {{
+}
+@keyframes popNumber { 0% { opacity: 0; transform: scale(0.4) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+.pulse-label {
   font-size: 14px;
   font-weight: 600;
   color: rgba(255,255,255,.6);
@@ -653,35 +790,35 @@ body::before {{
   text-transform: uppercase;
   animation: popNumber 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
   animation-delay: 0.1s;
-}}
-.loading-text {{ animation: breatheLoading 1.5s infinite ease-in-out; color: rgba(255,255,255,0.5); font-size: 15px; letter-spacing: 1.5px; }}
-@keyframes breatheLoading {{ 0%, 100% {{ opacity: 0.3; transform: scale(0.98); }} 50% {{ opacity: 1; transform: scale(1.02); }} }}
+}
+.loading-text { animation: breatheLoading 1.5s infinite ease-in-out; color: rgba(255,255,255,0.5); font-size: 15px; letter-spacing: 1.5px; }
+@keyframes breatheLoading { 0%, 100% { opacity: 0.3; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1.02); } }
 
-.silence-screen .sil-mark {{ opacity: 0.2; animation: silCallIn 1s ease 1s both; }}
-.silence-screen .sil-mark img {{ height: 22px; width: auto; display: block; margin: 0 auto; filter: invert(1) brightness(1.5); }}
+.silence-screen .sil-mark { opacity: 0.2; animation: silCallIn 1s ease 1s both; }
+.silence-screen .sil-mark img { height: 22px; width: auto; display: block; margin: 0 auto; filter: invert(1) brightness(1.5); }
 
-@media (max-width: 640px) {{
-  .grid {{ gap: 1.2vw; }}
-  .label {{ font-size: clamp(0.95rem,4vw,1.4rem); }}
-  .frase {{ font-size: clamp(0.9rem,3.5vw,1.3rem); }}
-  .reveal-overlay {{ padding: max(4px, env(safe-area-inset-top, 4px)) 4px max(4px, env(safe-area-inset-bottom, 4px)); }}
-  .reveal-card {{ border-radius: 18px; max-width: 100%; }}
-  .reveal-card::after {{ border-radius: 18px; }}
-  .ed-block {{ padding: 20px 18px; margin: 0 4px; }}
-  .ed-block:first-child {{ margin-top: 12px; }}
-  .ed-cover-wrap img {{ width: 110px; }}
-  .ed-block .ed-title {{ font-size: 22px; }}
-  .ed-block .ed-para {{ font-size: 18px; line-height: 1.65; }}
-  .ed-block .ed-sub {{ font-size: 18px; }}
-  .ed-block .ed-chip {{ font-size: 14px; margin-bottom: 10px; }}
-  .card-actions {{ padding: 14px 18px 20px; }}
-  .btn-close {{ top: 8px; left: 8px; }}
-  .silence-screen .sil-cover {{ width: 140px; margin-bottom: 25px; }}
-  .silence-screen .sil-pulse {{ min-height: 100px; }}
-}}
+@media (max-width: 640px) {
+  .grid { gap: 1.2vw; }
+  .label { font-size: clamp(0.95rem,4vw,1.4rem); }
+  .frase { font-size: clamp(0.9rem,3.5vw,1.3rem); }
+  .reveal-overlay { padding: max(4px, env(safe-area-inset-top, 4px)) 4px max(4px, env(safe-area-inset-bottom, 4px)); }
+  .reveal-card { border-radius: 18px; max-width: 100%; }
+  .reveal-card::after { border-radius: 18px; }
+  .ed-block { padding: 20px 18px; margin: 0 4px; }
+  .ed-block:first-child { margin-top: 12px; }
+  .ed-cover-wrap img { width: 110px; }
+  .ed-block .ed-title { font-size: 22px; }
+  .ed-block .ed-para { font-size: 18px; line-height: 1.65; }
+  .ed-block .ed-sub { font-size: 18px; }
+  .ed-block .ed-chip { font-size: 14px; margin-bottom: 10px; }
+  .card-actions { padding: 14px 18px 20px; }
+  .btn-close { top: 8px; left: 8px; }
+  .silence-screen .sil-cover { width: 140px; margin-bottom: 25px; }
+  .silence-screen .sil-pulse { min-height: 100px; }
+}
 </style>
 </head>
-<body data-lab-v="final-direct-block-click">
+<body data-lab-v="live-edition-card-v2" style="__BODY_STYLE__">
 
 <div id="pulseLine" class="pulse-line"></div>
 <div class="grid" id="grid"></div>
@@ -692,12 +829,12 @@ body::before {{
     <div class="card-inner">
 
       <div class="ed-block">
-        <div style="display: flow-root; overflow: visible; padding: 4px;">{cover_cta_html}
-          <div class="ed-title">{esc(t_titulo or titulo)}</div>
-          <div class="ed-chip">{esc(autor)}</div>
-          <div class="ed-para">{esc(t_parrafo_top or descripcion)}</div>
+        <div style="display: flow-root; overflow: visible; padding: 4px;">__COVER_CTA_HTML__
+          <div class="ed-title">__CARD_TITLE__</div>
+          <div class="ed-chip">__CARD_AUTHOR__</div>
+          <div class="ed-para">__TOP_HTML__</div>
         </div>
-      </div>{second_block_html}
+      </div>__SECOND_BLOCK_HTML__
 
       <div class="card-actions">
         <div class="btn-row btn-row-2">
@@ -714,15 +851,15 @@ body::before {{
         </div>
 
         <div class="btn-row btn-row-3">
-          <a class="btn-dark" href="https://www.buscalibre.com.mx/libros/search/?q={busca_comprar}" target="_blank" rel="noopener noreferrer">
+          <a class="btn-dark" href="https://www.buscalibre.com.mx/libros/search/?q=__BUSCA_COMPRAR__" target="_blank" rel="noopener noreferrer">
             <img class="btn-busca-logo" src="/buscalibre.png" alt="Buscalibre">
           </a>
 
-          <a class="btn-dark btn-crystal" href="https://www.buscalibre.com.mx/libros/search/?q={busca_explorar}" target="_blank" rel="noopener noreferrer">
+          <a class="btn-dark btn-crystal" href="https://www.buscalibre.com.mx/libros/search/?q=__BUSCA_EXPLORAR__" target="_blank" rel="noopener noreferrer">
             <span class="btn-emoji">🔮</span>
           </a>
 
-          <a class="btn-dark btn-penguin-icon" href="https://www.penguinlibros.com/mx/?mot_q={penguin_q}" target="_blank" rel="noopener noreferrer">
+          <a class="btn-dark btn-penguin-icon" href="https://www.penguinlibros.com/mx/?mot_q=__PENGUIN_Q__" target="_blank" rel="noopener noreferrer">
             <img src="/logopenguin.png" alt="Penguin">
           </a>
         </div>
@@ -731,8 +868,8 @@ body::before {{
     </div>
   </div>
 
-  <div class="silence-screen" id="silenceScreen">{silence_cover_html}
-    <div class="sil-title">{esc(titulo)}</div>
+  <div class="silence-screen" id="silenceScreen">__SILENCE_COVER_HTML__
+    <div class="sil-title">__SILENCE_TITLE__</div>
     <div class="sil-call">Queremos que te den ganas<br>de abrir un libro.</div>
     <div class="sil-sub">Eso es Triggui.</div>
     <div class="sil-pulse" id="silPulse"></div>
@@ -743,7 +880,7 @@ body::before {{
 </div>
 
 <script>
-const state = {js_string(state)};
+const state = __STATE_JSON__;
 const grid = document.getElementById('grid');
 const revealOverlay = document.getElementById('revealOverlay');
 const btnBack = document.getElementById('btnBack');
@@ -755,148 +892,148 @@ const silPulse = document.getElementById('silPulse');
 const pulseEditionKey = 'triggui_lab_opened_' + state.id;
 
 const ANG = [115, 205, 35, 320];
-function grad(i) {{
+function grad(i) {
   return 'linear-gradient(' + ANG[i % 4] + 'deg,' + state.colores[i] + ',' + state.colores[(i + 1) % 4] + ')';
-}}
+}
 
 let overlayView = 'blocks';
 let coverBusy = false;
 const revealIndex = Math.floor(Math.random() * 4);
 const emojis = ['🌊', '🛡️', '🧠', '✨'];
 
-function clearBlockStates() {{
-  Array.from(grid.children).forEach((block) => {{
+function clearBlockStates() {
+  Array.from(grid.children).forEach((block) => {
     block.classList.remove('show', 'dim');
-  }});
-}}
+  });
+}
 
-function hideGrid() {{
+function hideGrid() {
   grid.classList.add('hidden');
-}}
+}
 
-function showGrid() {{
+function showGrid() {
   clearBlockStates();
   grid.classList.remove('hidden');
-}}
+}
 
-function resetCardState() {{
+function resetCardState() {
   coverBusy = false;
   if (coverCTA) coverCTA.style.pointerEvents = '';
   if (coverHint) coverHint.textContent = 'Toca el libro';
-}}
+}
 
-function setOverlayView(next) {{
+function setOverlayView(next) {
   overlayView = next;
   const overlayVisible = next !== 'blocks';
 
-  if (overlayVisible) {{
+  if (overlayVisible) {
     revealOverlay.style.display = 'flex';
     void revealOverlay.offsetWidth;
-  }}
+  }
 
   revealOverlay.style.opacity = overlayVisible ? '1' : '0';
   revealOverlay.style.pointerEvents = overlayVisible ? 'auto' : 'none';
 
-  if (next === 'blocks') {{
+  if (next === 'blocks') {
     resetCardState();
     revealCard.style.display = '';
     silenceScreen.style.display = 'none';
     revealCard.style.transform = 'scale(0.94) translateY(15px)';
     revealCard.style.opacity = '0';
 
-    setTimeout(() => {{
-      if (overlayView === 'blocks') {{
+    setTimeout(() => {
+      if (overlayView === 'blocks') {
         revealOverlay.style.display = 'none';
-      }}
-    }}, 350);
+      }
+    }, 350);
     return;
-  }}
+  }
 
-  if (next === 'card') {{
+  if (next === 'card') {
     resetCardState();
     revealCard.style.display = '';
     silenceScreen.style.display = 'none';
     revealCard.style.transform = 'scale(0.98) translateY(10px)';
     revealCard.style.opacity = '0';
 
-    requestAnimationFrame(() => {{
+    requestAnimationFrame(() => {
       revealCard.style.transform = 'scale(1) translateY(0)';
       revealCard.style.opacity = '1';
-    }});
+    });
     return;
-  }}
+  }
 
-  if (next === 'silence') {{
+  if (next === 'silence') {
     revealCard.style.display = 'none';
     silenceScreen.style.display = 'flex';
-  }}
-}}
+  }
+}
 
-function openOverlayFromBlocks() {{
+function openOverlayFromBlocks() {
   hideGrid();
   setOverlayView('card');
-}}
+}
 
-function closeOverlayToBlocks() {{
+function closeOverlayToBlocks() {
   setOverlayView('blocks');
   setTimeout(() => showGrid(), 180);
-}}
+}
 
-function moveToSilence() {{
+function moveToSilence() {
   setOverlayView('silence');
-}}
+}
 
-async function getCollectivePulse() {{
-  try {{
-    const res = await fetch('/api/get-lab', {{ cache: 'no-store' }});
+async function getCollectivePulse() {
+  try {
+    const res = await fetch('/api/get-lab', { cache: 'no-store' });
     if (!res.ok) throw new Error('fail');
     const data = await res.json();
     return Number(data.total || 0);
-  }} catch (e) {{
+  } catch (e) {
     console.error(e);
     return null;
-  }}
-}}
+  }
+}
 
-async function registerCollectivePhysicalOpen() {{
-  if (localStorage.getItem(pulseEditionKey) === '1') {{
+async function registerCollectivePhysicalOpen() {
+  if (localStorage.getItem(pulseEditionKey) === '1') {
     const count = await getCollectivePulse();
-    return {{ count, repeated: true, ok: count !== null }};
-  }}
+    return { count, repeated: true, ok: count !== null };
+  }
 
-  try {{
-    const res = await fetch('/api/increment-lab', {{
+  try {
+    const res = await fetch('/api/increment-lab', {
       method: 'POST',
-      headers: {{ 'Content-Type': 'application/json' }},
-      body: JSON.stringify({{ editionId: state.id }})
-    }});
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ editionId: state.id })
+    });
 
     if (!res.ok) throw new Error('fail');
 
     const data = await res.json();
     localStorage.setItem(pulseEditionKey, '1');
-    return {{ count: Number(data.total || 0), repeated: false, ok: true }};
-  }} catch (e) {{
+    return { count: Number(data.total || 0), repeated: false, ok: true };
+  } catch (e) {
     console.error(e);
-    return {{ count: null, repeated: false, ok: false }};
-  }}
-}}
+    return { count: null, repeated: false, ok: false };
+  }
+}
 
-function getChronoOrder(hour) {{
+function getChronoOrder(hour) {
   if (hour >= 4 && hour <= 6) return [3, 2, 1, 0];
   if (hour >= 7 && hour <= 11) return [0, 2, 1, 3];
   if (hour >= 12 && hour <= 16) return [2, 0, 1, 3];
   if (hour >= 17 && hour <= 20) return [1, 3, 2, 0];
   return [3, 1, 2, 0];
-}}
+}
 
 const currentHour = new Date().getHours();
 const chronoOrder = getChronoOrder(currentHour);
 
-function renderBlocks() {{
+function renderBlocks() {
   grid.innerHTML = '';
 
-  for (let visualIdx = 0; visualIdx < 4; visualIdx++) {{
+  for (let visualIdx = 0; visualIdx < 4; visualIdx++) {
     const realIdx = chronoOrder[visualIdx];
 
     const card = document.createElement('div');
@@ -917,46 +1054,46 @@ function renderBlocks() {{
 
     card.append(label, frase);
 
-    card.onclick = (e) => {{
+    card.onclick = (e) => {
       e.preventDefault();
       e.stopPropagation();
 
       const blocks = Array.from(grid.children);
 
-      if (visualIdx === revealIndex) {{
+      if (visualIdx === revealIndex) {
         openOverlayFromBlocks();
         return;
-      }}
+      }
 
       const already = card.classList.contains('show');
       clearBlockStates();
 
-      if (!already) {{
+      if (!already) {
         card.classList.add('show');
-        blocks.forEach((b, j) => {{
+        blocks.forEach((b, j) => {
           if (j !== visualIdx) b.classList.add('dim');
-        }});
-      }}
-    }};
+        });
+      }
+    };
 
     grid.append(card);
-  }}
-}}
+  }
+}
 
-btnBack.addEventListener('click', (e) => {{
+btnBack.addEventListener('click', (e) => {
   e.preventDefault();
   e.stopPropagation();
   closeOverlayToBlocks();
-}});
+});
 
-revealOverlay.addEventListener('click', (e) => {{
-  if (e.target === revealOverlay && overlayView === 'card') {{
+revealOverlay.addEventListener('click', (e) => {
+  if (e.target === revealOverlay && overlayView === 'card') {
     closeOverlayToBlocks();
-  }}
-}});
+  }
+});
 
-if (coverCTA) {{
-  coverCTA.addEventListener('click', (e) => {{
+if (coverCTA) {
+  coverCTA.addEventListener('click', (e) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -969,61 +1106,85 @@ if (coverCTA) {{
     moveToSilence();
     silPulse.innerHTML = '<span class="pulse-label loading-text">Conectando...</span>';
 
-    registerCollectivePhysicalOpen().then((result) => {{
-      if (result.ok && result.count !== null) {{
+    registerCollectivePhysicalOpen().then((result) => {
+      if (result.ok && result.count !== null) {
         silPulse.innerHTML = '<span class="pulse-num">' + result.count + '</span><span class="pulse-label">libros abiertos en el mundo</span>';
-      }} else {{
+      } else {
         silPulse.innerHTML = '<span class="pulse-label">Se registró el acto.</span>';
-      }}
-    }}).catch((err) => {{
+      }
+    }).catch((err) => {
       console.error(err);
       silPulse.innerHTML = '<span class="pulse-label">Se registró el acto.</span>';
-    }});
-  }});
-}}
+    });
+  });
+}
 
-silenceScreen.addEventListener('click', (e) => {{
+silenceScreen.addEventListener('click', (e) => {
   e.preventDefault();
   e.stopPropagation();
-  if (overlayView === 'silence') {{
+  if (overlayView === 'silence') {
     closeOverlayToBlocks();
-  }}
-}});
+  }
+});
 
-document.addEventListener('keydown', (e) => {{
+document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
-  if (overlayView === 'silence' || overlayView === 'card') {{
+  if (overlayView === 'silence' || overlayView === 'card') {
     closeOverlayToBlocks();
-  }}
-}});
+  }
+});
 
 renderBlocks();
 setOverlayView('blocks');
 
-(function() {{
-  const k = () => {{
+(function() {
+  const k = () => {
     document.querySelectorAll('vercel-live-feedback,vercel-toolbar,[data-vercel-toolbar]').forEach((el) => el.remove());
     const v = document.getElementById('__vercel_live_token');
     if (v) v.remove();
-  }};
+  };
   k();
   setTimeout(k, 500);
   setTimeout(k, 2000);
-  new MutationObserver(() => k()).observe(document.documentElement, {{ childList: true, subtree: true }});
-}})();
+  new MutationObserver(() => k()).observe(document.documentElement, { childList: true, subtree: true });
+})();
 
-(async () => {{
+(async () => {
   const total = await getCollectivePulse();
   const el = document.getElementById('pulseLine');
-  if (total !== null && total > 0) {{
+  if (total !== null && total > 0) {
     el.textContent = 'Ya van ' + total + ' libros abiertos.';
     el.classList.add('visible');
-  }}
-}})();
+  }
+})();
 </script>
 </body>
 </html>
 """
+
+    replacements = {
+        "__TITLE_PAGE__": esc(f"{palabra} · {titulo} · Triggui"),
+        "__OG_TITLE__": esc(f"{palabra} · {titulo}"),
+        "__META_DESCRIPTION__": esc(description_plain),
+        "__OG_IMAGE__": esc(og_image),
+        "__OG_URL__": esc(og_url),
+        "__BODY_STYLE__": esc(body_style),
+        "__STATE_JSON__": js_string(state),
+        "__COVER_CTA_HTML__": cover_cta_html,
+        "__CARD_TITLE__": esc(t_titulo or titulo),
+        "__CARD_AUTHOR__": esc(autor),
+        "__TOP_HTML__": top_html,
+        "__SECOND_BLOCK_HTML__": second_block_html,
+        "__BUSCA_COMPRAR__": esc(busca_comprar),
+        "__BUSCA_EXPLORAR__": esc(busca_explorar),
+        "__PENGUIN_Q__": esc(penguin_q),
+        "__SILENCE_COVER_HTML__": silence_cover_html,
+        "__SILENCE_TITLE__": esc(titulo),
+    }
+
+    for key, value in replacements.items():
+        html_output = html_output.replace(key, value)
+
     return html_output
 
 
@@ -1083,12 +1244,16 @@ def build_single():
     portada = resolve_cover(book_meta, libro_data)
     palabra_dominante = resolve_palabra_dominante(libro_data)
 
+    tarjeta = libro_data.get("tarjeta", {}) or {}
+    tarjeta["parrafoTop"] = normalize_highlight_syntax(tarjeta.get("parrafoTop", ""))
+    tarjeta["parrafoBot"] = normalize_highlight_syntax(tarjeta.get("parrafoBot", ""))
+
     edicion_single = {
         "id": slug,
         "titulo": book_meta.get("titulo", libro_data.get("titulo", "")),
         "autor": book_meta.get("autor", libro_data.get("autor", "")),
         "palabra": palabra_dominante,
-        "descripcion": (libro_data.get("tarjeta", {}) or {}).get("parrafoTop", ""),
+        "descripcion": strip_highlight_tags((tarjeta or {}).get("parrafoTop", "")),
         "portada": portada,
         "tagline": book_meta.get("tagline", libro_data.get("tagline", "")),
         "palabras": pad_list(libro_data.get("palabras"), 4, "Señal"),
@@ -1096,7 +1261,7 @@ def build_single():
         "colores": colores,
         "textColors": text_colors,
         "fondo": libro_data.get("fondo", "#0a0a0a"),
-        "tarjeta": libro_data.get("tarjeta", {}) or {},
+        "tarjeta": tarjeta,
     }
 
     html_content = render_edicion(edicion_single, mode="single")
