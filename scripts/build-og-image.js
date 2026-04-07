@@ -2,8 +2,8 @@
  * build-og-image.js — Paso 5 del pipeline Triggui 2.0
  *
  * Genera OG image PNG 1200×630 para preview de link en WhatsApp.
- * Su función NO es ser el anzuelo principal.
- * Su función es que el link se vea coherente, limpio y profesional.
+ * Su función NO es competir con la tarjeta.
+ * Su función es que el link se vea serio, editorial y claro.
  *
  * Lee el artefacto canónico single-book:
  *   1) TRIGGUI_EDICION_JSON
@@ -47,7 +47,7 @@ async function resolveContenidoPath() {
 }
 
 function escapeHTML(text) {
-  if (!text) return "";
+  if (text == null) return "";
   return String(text)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -55,12 +55,51 @@ function escapeHTML(text) {
     .replace(/"/g, "&quot;");
 }
 
-function withAlpha(hex, alpha = "40") {
+function withAlpha(hex, alpha = "30") {
   const clean = String(hex || "").trim();
   if (/^#[0-9a-fA-F]{6}$/.test(clean)) {
     return `${clean}${alpha}`;
   }
   return clean || "";
+}
+
+function normalizeHighlightSyntax(input) {
+  let text = String(input || "").trim();
+  if (!text) return "";
+
+  text = text
+    .replace(/\{\{H\}\}/gi, "[H]")
+    .replace(/\{\{\/H\}\}/gi, "[/H]")
+    .replace(/\[h\]/g, "[H]")
+    .replace(/\[\/h\]/g, "[/H]");
+
+  let toggleOpen = true;
+  text = text.replace(/\[H\]/g, () => {
+    const token = toggleOpen ? "[H]" : "[/H]";
+    toggleOpen = !toggleOpen;
+    return token;
+  });
+
+  const opens = (text.match(/\[H\]/g) || []).length;
+  const closes = (text.match(/\[\/H\]/g) || []).length;
+
+  if (opens > closes) {
+    text += "[/H]".repeat(opens - closes);
+  }
+
+  let extraClose = (text.match(/\[\/H\]/g) || []).length - (text.match(/\[H\]/g) || []).length;
+  while (extraClose > 0) {
+    const idx = text.lastIndexOf("[/H]");
+    if (idx === -1) break;
+    text = text.slice(0, idx) + text.slice(idx + 4);
+    extraClose -= 1;
+  }
+
+  return text.replace(/\[H\]\s*\[\/H\]/g, "").replace(/[ \t]{2,}/g, " ").trim();
+}
+
+function stripHighlightTags(text) {
+  return normalizeHighlightSyntax(text).replace(/\[H\]|\[\/H\]/gi, "");
 }
 
 function resolvePortadaURL(bookMeta, libro) {
@@ -83,23 +122,43 @@ function resolvePortadaSource(bookMeta, libro, portadaURL) {
   );
 }
 
-function resolvePalabra(libro, bookMeta) {
+function resolveAccent(libro) {
   return (
-    libro.palabras?.[0] ||
-    libro.tarjeta?.titulo ||
+    libro?.tarjeta?.style?.accent ||
+    libro?.colores?.[0] ||
+    "#E35D30"
+  );
+}
+
+function resolveEyebrow(bookMeta, libro) {
+  const author = bookMeta.autor || libro.autor || "";
+  return author || "Triggui";
+}
+
+function resolveHeadline(bookMeta, libro) {
+  const tarjeta = libro.tarjeta || {};
+  return (
+    tarjeta.titulo ||
     bookMeta.titulo ||
     libro.titulo ||
     "Triggui"
   );
 }
 
-function resolveHint(libro) {
-  return (
-    libro.tagline ||
-    libro.tarjeta?.parrafoTop ||
-    libro.tarjeta?.parrafoBot ||
-    ""
-  );
+function resolveSubheadline(bookMeta, libro) {
+  const tarjeta = libro.tarjeta || {};
+  const subtitulo = String(tarjeta.subtitulo || "").trim();
+  const top = stripHighlightTags(tarjeta.parrafoTop || "").trim();
+  const bot = stripHighlightTags(tarjeta.parrafoBot || "").trim();
+
+  let text = subtitulo || top || bot || bookMeta.titulo || libro.titulo || "";
+  text = text.replace(/\s+/g, " ").trim();
+
+  if (text.length > 160) {
+    text = `${text.slice(0, 157).trim()}...`;
+  }
+
+  return text;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -109,6 +168,11 @@ function resolveHint(libro) {
 const contenidoPath = await resolveContenidoPath();
 if (!contenidoPath) {
   console.error("❌ No existe TRIGGUI_EDICION_JSON, contenido_edicion.json ni contenido.json");
+  process.exit(1);
+}
+
+if (!(await fileExists("/tmp/triggui-book.json"))) {
+  console.error("❌ No existe /tmp/triggui-book.json");
   process.exit(1);
 }
 
@@ -139,37 +203,37 @@ console.log(`🧾 Fuente JSON: ${contenidoPath}`);
 
 const template = await fs.readFile("scripts/templates/og-image.html", "utf8");
 
-const palabra = resolvePalabra(libro, bookMeta);
-const hintRaw = resolveHint(libro);
-const hint = hintRaw.length > 140 ? `${hintRaw.slice(0, 137).trim()}...` : hintRaw;
-
-const accent =
-  libro.tarjeta?.style?.accent ||
-  libro.colores?.[0] ||
-  "#ffffff";
+const accent = resolveAccent(libro);
+const accentSoft = withAlpha(accent, "26") || "#E35D3026";
+const accentGlow = withAlpha(accent, "45") || "#E35D3045";
 
 const portadaURL = resolvePortadaURL(bookMeta, libro);
 const portadaSource = resolvePortadaSource(bookMeta, libro, portadaURL);
-const glowColor = withAlpha(accent, "40") || "#ffffff40";
+
+const headline = resolveHeadline(bookMeta, libro);
+const eyebrow = resolveEyebrow(bookMeta, libro);
+const subheadline = resolveSubheadline(bookMeta, libro);
+
+const coverSection = portadaURL
+  ? `<img class="cover" src="${portadaURL}" alt="Portada de ${escapeHTML(bookMeta.titulo || libro.titulo || "")}" />`
+  : `<div class="cover-fallback">TRIGGUI</div>`;
 
 let html = template
-  .replace("{{PALABRA}}", escapeHTML(palabra))
-  .replace("{{HINT}}", escapeHTML(hint))
-  .replace("{{PORTADA_URL}}", portadaURL);
+  .replace("{{EYEBROW}}", escapeHTML(eyebrow))
+  .replace("{{HEADLINE}}", escapeHTML(headline))
+  .replace("{{SUBHEADLINE}}", escapeHTML(subheadline))
+  .replace("{{COVER_SECTION}}", coverSection);
 
-// CSS variables
 const cssVars = [
-  "--bg: #0a0a0a",
+  "--bg: #09090B",
+  "--paper: #111114",
+  "--ink: #F7F4EF",
   `--accent: ${accent}`,
-  `--glow: ${glowColor}`
+  `--accent-soft: ${accentSoft}`,
+  `--accent-glow: ${accentGlow}`
 ].join("; ");
 
 html = html.replace("<body>", `<body style="${cssVars}">`);
-
-// Si no hay portada, ocultar wrapper
-if (!portadaURL) {
-  html = html.replace('class="cover-wrapper"', 'class="cover-wrapper" style="display:none"');
-}
 
 /* ═══════════════════════════════════════════════════════════════
    RENDER WITH PLAYWRIGHT
@@ -203,4 +267,4 @@ await browser.close();
 const stats = await fs.stat(outPath);
 console.log(`   ✅ OG image: ${outPath} (${(stats.size / 1024).toFixed(0)} KB)`);
 console.log(`   🖼️  Portada: ${portadaURL ? portadaSource : "tipográfica"}`);
-console.log(`   ✨ Palabra dominante: ${palabra}`);
+console.log(`   ✨ Headline: ${headline}`);
