@@ -1,3 +1,4 @@
+
 import os
 import sys
 import json
@@ -12,13 +13,17 @@ LAB_OUT_DIR = LAB_BASE_DIR / "t"
 
 # Configuración Single (Pipeline)
 TMP_BOOK_FILE = Path("/tmp/triggui-book.json")
-CONTENIDO_FILE = Path("contenido.json")
+DEFAULT_SINGLE_JSON = Path("contenido_edicion.json")
+FALLBACK_SINGLE_JSON = Path("contenido.json")
 SINGLE_OUT_DIR = Path("public/t")
 
 # Base URL dinámica:
 # - main -> https://app.triggui.com
 # - previews -> https://beta.app.triggui.com
 BASE_URL = os.environ.get("BASE_URL", "https://app.triggui.com").rstrip("/")
+
+# Nuevo: archivo canónico del pipeline single-book
+TRIGGUI_EDICION_JSON_ENV = os.environ.get("TRIGGUI_EDICION_JSON", "").strip()
 
 
 def esc(value):
@@ -36,6 +41,48 @@ def pad_list(values, size, fallback):
     return values[:size]
 
 
+def resolve_single_json_file():
+    candidates = []
+
+    if TRIGGUI_EDICION_JSON_ENV:
+        candidates.append(Path(TRIGGUI_EDICION_JSON_ENV))
+
+    candidates.append(DEFAULT_SINGLE_JSON)
+    candidates.append(FALLBACK_SINGLE_JSON)
+
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+
+    return None
+
+
+def resolve_cover(book_meta, libro_data):
+    return (
+        book_meta.get("portada_url")
+        or book_meta.get("portada")
+        or libro_data.get("portada_url")
+        or libro_data.get("portada")
+        or ""
+    )
+
+
+def resolve_text_colors(libro_data, colores):
+    text_colors = libro_data.get("textColors") or []
+    if text_colors:
+        return pad_list(text_colors, 4, "#FFFFFF")
+    return ["#FFFFFF"] * len(colores)
+
+
+def resolve_palabra_dominante(libro_data):
+    tarjeta = libro_data.get("tarjeta", {}) or {}
+    return (
+        tarjeta.get("titulo")
+        or (libro_data.get("palabras") or [None])[0]
+        or libro_data.get("titulo", "")
+    )
+
+
 def render_edicion(edicion, mode="lab"):
     titulo = edicion.get("titulo", "")
     autor = edicion.get("autor", "")
@@ -45,13 +92,12 @@ def render_edicion(edicion, mode="lab"):
     portada = edicion.get("portada", "")
     tagline = edicion.get("tagline", "")
 
-    # Rutas dinámicas según el entorno
     if mode == "single":
         og_image = f"{BASE_URL}/t/{edicion_id}/og.png"
         og_url = f"{BASE_URL}/t/{edicion_id}/"
     else:
-        og_image = f"https://triggui-app-git-feat-triggui-2-fase-0-badirs-projects.vercel.app/lab/t/{edicion_id}/og.png"
-        og_url = f"/lab/t/{esc(edicion_id)}/"
+        og_image = f"{BASE_URL}/lab/t/{edicion_id}/og.png"
+        og_url = f"{BASE_URL}/lab/t/{edicion_id}/"
 
     palabras = pad_list(edicion.get("palabras"), 4, "Señal")
     frases = pad_list(edicion.get("frases"), 4, "Abre un libro físico que tengas cerca.")
@@ -59,10 +105,11 @@ def render_edicion(edicion, mode="lab"):
     text_colors = pad_list(edicion.get("textColors"), 4, "#FFFFFF")
     fondo = edicion.get("fondo", "#0a0d1a")
 
-    t_titulo = edicion.get("tarjeta", {}).get("titulo", "")
-    t_parrafo_top = edicion.get("tarjeta", {}).get("parrafoTop", "")
-    t_subtitulo = edicion.get("tarjeta", {}).get("subtitulo", "")
-    t_parrafo_bot = edicion.get("tarjeta", {}).get("parrafoBot", "")
+    tarjeta = edicion.get("tarjeta", {}) or {}
+    t_titulo = tarjeta.get("titulo", "")
+    t_parrafo_top = tarjeta.get("parrafoTop", "")
+    t_subtitulo = tarjeta.get("subtitulo", "")
+    t_parrafo_bot = tarjeta.get("parrafoBot", "")
 
     busca_comprar = urllib.parse.quote(f"{titulo} {autor}")
     busca_explorar = urllib.parse.quote(palabra) if palabra else busca_comprar
@@ -88,7 +135,29 @@ def render_edicion(edicion, mode="lab"):
         "tagline": tagline,
     }
 
-    return f'''<!doctype html>
+    cover_cta_html = ""
+    if has_portada:
+        cover_cta_html = f"""
+          <div class="ed-cover-wrap" id="coverCTA">
+            <img src="{esc(cover_src)}" alt="{esc(titulo)}" />
+            <span class="cover-hint">Toca el libro</span>
+          </div>"""
+
+    second_block_html = ""
+    if has_tarjeta and (t_subtitulo or t_parrafo_bot):
+        second_block_html = f"""
+      <div class="ed-gap"></div>
+      <div class="ed-block">
+        <div class="ed-sub">{esc(t_subtitulo)}</div>
+        <div class="ed-para">{esc(t_parrafo_bot)}</div>
+      </div>"""
+
+    silence_cover_html = ""
+    if has_portada:
+        silence_cover_html = f"""
+    <img class="sil-cover" id="silCover" src="{esc(cover_src)}" alt="{esc(titulo)}" />"""
+
+    html_output = f"""<!doctype html>
 <html lang="es" style="background:#000;">
 <head>
 <meta charset="UTF-8">
@@ -205,14 +274,22 @@ body::before {{
 .block * {{ pointer-events: none !important; }}
 
 .block::before {{
-  content: ""; position: absolute; inset: 0; border-radius: inherit;
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
   background: linear-gradient(145deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,.08) 40%, transparent 100%);
   z-index: 1;
 }}
 .block::after {{
-  content: ""; position: absolute; inset: 0; border-radius: inherit;
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
   background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.12), transparent 60%);
-  opacity: 0; transition: opacity 0.3s ease; z-index: 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
 }}
 .block:hover::after {{ opacity: 1; }}
 .block:hover {{ transform: translateY(-2px) scale(1.005); }}
@@ -220,8 +297,15 @@ body::before {{
 .block.dim {{ opacity: 0.6; transform: scale(0.98); }}
 
 .label, .frase {{
-  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-  padding: 1rem; z-index: 2; text-align: center; transition: opacity 0.25s ease, transform 0.25s ease;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 2;
+  text-align: center;
+  transition: opacity 0.25s ease, transform 0.25s ease;
 }}
 .label {{ opacity: 1; transform: translateY(0); font-size: clamp(1.05rem, 3.2vw, 1.7rem); line-height: 1.35; }}
 .frase {{ opacity: 0; transform: translateY(6px); font-size: clamp(1rem, 3vw, 1.5rem); font-weight: 600; line-height: 1.4; }}
@@ -229,9 +313,19 @@ body::before {{
 .block.show .frase {{ opacity: 1; transform: translateY(0); }}
 
 .reveal-overlay {{
-  position: fixed; inset: 0; z-index: 200; display: none; flex-direction: column; align-items: center;
-  background: rgba(0,0,0,0.92); opacity: 0; pointer-events: none; transition: opacity .3s ease;
-  overflow-y: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(0,0,0,0.92);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s ease;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
   padding: max(6px, env(safe-area-inset-top, 6px)) 6px max(6px, env(safe-area-inset-bottom, 6px));
   cursor: pointer;
 }}
@@ -254,20 +348,39 @@ body::before {{
 }}
 
 .reveal-card::after {{
-  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-  mix-blend-mode: multiply; opacity: 0.03; border-radius: 20px;
+  mix-blend-mode: multiply;
+  opacity: 0.03;
+  border-radius: 20px;
 }}
 
 .card-inner {{ position: relative; z-index: 2; padding: 0; }}
 
 .btn-close {{
-  position: absolute; top: 12px; left: 12px; z-index: 20;
-  width: 32px; height: 32px; border: none; border-radius: 50%;
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 20;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
   background: rgba(0,0,0,0.06);
   color: #1A1A1A;
-  font-size: 18px; line-height: 1; display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: background .2s ease, transform .2s ease; padding: 0; touch-action: manipulation;
+  font-size: 18px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background .2s ease, transform .2s ease;
+  padding: 0;
+  touch-action: manipulation;
 }}
 .btn-close:hover {{ background: rgba(0,0,0,0.12); }}
 .btn-close:active {{ transform: scale(0.9); }}
@@ -346,9 +459,15 @@ body::before {{
   50% {{ transform: scale(1.03); filter: drop-shadow(0 10px 20px rgba(227,93,48,0.25)); }}
 }}
 .cover-hint {{
-  display: block; text-align: center; font-family: 'Poppins', sans-serif;
-  font-size: 10px; font-weight: 600; color: rgba(26,26,26,0.4);
-  margin-top: 6px; letter-spacing: 0.3px; animation: hintFade 4s ease forwards;
+  display: block;
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(26,26,26,0.4);
+  margin-top: 6px;
+  letter-spacing: 0.3px;
+  animation: hintFade 4s ease forwards;
 }}
 @keyframes hintFade {{ 0%, 70% {{ opacity: 1; }} 100% {{ opacity: 0; }} }}
 
@@ -356,15 +475,23 @@ body::before {{
 
 .card-actions {{
   padding: 16px 22px 22px;
-  display: flex; flex-direction: column; gap: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }}
 .btn-row {{ display: grid; gap: 8px; }}
 .btn-row-2 {{ grid-template-columns: 1fr 48px; }}
 .btn-row-3 {{ grid-template-columns: 1fr 48px 1fr; }}
 
 .btn-light {{
-  height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 6px;
-  text-decoration: none; cursor: pointer;
+  height: 46px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+  cursor: pointer;
   background: #FFFFFF;
   border: 1px solid rgba(26,26,26,0.08);
   box-shadow: 0 4px 12px rgba(0,0,0,0.02);
@@ -380,8 +507,14 @@ body::before {{
 .btn-ig-icon circle[fill="white"] {{ fill: #1A1A1A; }}
 
 .btn-dark {{
-  height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 6px;
-  text-decoration: none; cursor: pointer;
+  height: 46px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+  cursor: pointer;
   background: #1A1A1A;
   border: 1px solid rgba(255,255,255,0.05);
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
@@ -407,37 +540,120 @@ body::before {{
 .btn-crystal .btn-emoji {{ font-size: 20px; line-height: 1; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }}
 
 .silence-screen {{
-  display: none; position: absolute; inset: 0; flex-direction: column; align-items: center; justify-content: center;
-  padding: 0 32px; background: radial-gradient(circle at 50% 35%, rgba(20,25,40,0.95) 0%, rgba(0,0,0,1) 80%);
+  display: none;
+  position: absolute;
+  inset: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 32px;
+  background: radial-gradient(circle at 50% 35%, rgba(20,25,40,0.95) 0%, rgba(0,0,0,1) 80%);
   overflow: hidden;
 }}
 .silence-screen::before {{
-  content: ""; position: absolute; top: 35%; left: 50%; transform: translate(-50%, -50%);
-  width: 280px; height: 280px; background: radial-gradient(circle, rgba(227,93,48,0.35) 0%, transparent 70%);
-  filter: blur(40px); z-index: 0; pointer-events: none; animation: pulseGlow 4s ease-in-out infinite;
+  content: "";
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle, rgba(227,93,48,0.35) 0%, transparent 70%);
+  filter: blur(40px);
+  z-index: 0;
+  pointer-events: none;
+  animation: pulseGlow 4s ease-in-out infinite;
 }}
 @keyframes pulseGlow {{ 0%, 100% {{ opacity: 0.6; transform: translate(-50%, -50%) scale(0.95); }} 50% {{ opacity: 1; transform: translate(-50%, -50%) scale(1.05); }} }}
 
 .silence-screen > * {{ position: relative; z-index: 1; }}
 .silence-screen .sil-cover {{
-  width: 180px; height: auto; border-radius: 6px; opacity: 1; border: 1px solid rgba(255,255,255,0.15);
+  width: 180px;
+  height: auto;
+  border-radius: 6px;
+  opacity: 1;
+  border: 1px solid rgba(255,255,255,0.15);
   box-shadow: 0 30px 60px -10px rgba(0,0,0,0.9), 0 0 50px rgba(227,93,48,0.4);
-  margin-bottom: 40px; cursor: pointer; animation: floatMagic 5s ease-in-out infinite;
+  margin-bottom: 40px;
+  cursor: pointer;
+  animation: floatMagic 5s ease-in-out infinite;
 }}
 @keyframes floatMagic {{
   0%, 100% {{ transform: translateY(0); box-shadow: 0 30px 60px -10px rgba(0,0,0,0.9), 0 0 50px rgba(227,93,48,0.4); }}
   50% {{ transform: translateY(-12px); box-shadow: 0 45px 75px -10px rgba(0,0,0,0.7), 0 0 70px rgba(227,93,48,0.65); }}
 }}
 .silence-screen .sil-cover:active {{ transform: scale(0.96) translateY(0); transition: transform .1s; }}
-.silence-screen .sil-title {{ font-family: 'Playfair Display', serif; font-style: italic; font-size: clamp(16px,4vw,22px); color: rgba(255,255,255,0.9); margin-bottom: 20px; font-weight: 700; text-align: center; text-shadow: 0 4px 20px rgba(255,255,255,0.4); letter-spacing: 1px; }}
-.silence-screen .sil-call {{ font-family: 'Poppins', sans-serif; font-size: clamp(18px,5vw,26px); font-weight: 600; line-height: 1.5; background: linear-gradient(180deg, #FFFFFF 0%, rgba(255,255,255,0.75) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; text-align: center; filter: drop-shadow(0 4px 15px rgba(0,0,0,0.6)); animation: silCallIn 1s ease .3s both; }}
-.silence-screen .sil-sub {{ font-family: 'Poppins', sans-serif; font-size: clamp(14px,3.5vw,18px); font-weight: 500; line-height: 1.4; color: rgba(255,255,255,.5); margin-bottom: 24px; text-align: center; animation: silCallIn 1s ease .5s both; }}
+.silence-screen .sil-title {{
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: clamp(16px,4vw,22px);
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 20px;
+  font-weight: 700;
+  text-align: center;
+  text-shadow: 0 4px 20px rgba(255,255,255,0.4);
+  letter-spacing: 1px;
+}}
+.silence-screen .sil-call {{
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(18px,5vw,26px);
+  font-weight: 600;
+  line-height: 1.5;
+  background: linear-gradient(180deg, #FFFFFF 0%, rgba(255,255,255,0.75) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+  text-align: center;
+  filter: drop-shadow(0 4px 15px rgba(0,0,0,0.6));
+  animation: silCallIn 1s ease .3s both;
+}}
+.silence-screen .sil-sub {{
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(14px,3.5vw,18px);
+  font-weight: 500;
+  line-height: 1.4;
+  color: rgba(255,255,255,.5);
+  margin-bottom: 24px;
+  text-align: center;
+  animation: silCallIn 1s ease .5s both;
+}}
 @keyframes silCallIn {{ 0% {{ opacity: 0; transform: translateY(10px); }} 100% {{ opacity: 1; transform: translateY(0); }} }}
 
-.silence-screen .sil-pulse {{ font-family: 'Poppins', sans-serif; margin-bottom: 28px; text-align: center; animation: silCallIn 1s ease .7s both; min-height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; }}
-.pulse-num {{ display: block; font-size: clamp(48px,11vw,72px); font-weight: 800; line-height: 1; background: linear-gradient(135deg, #FF0055 0%, #FF5E00 50%, #FFD700 100%); background-size: 200% 200%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4px; filter: drop-shadow(0 10px 25px rgba(255,0,85,0.5)); animation: fire-move 4s ease infinite, popNumber 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both; }}
+.silence-screen .sil-pulse {{
+  font-family: 'Poppins', sans-serif;
+  margin-bottom: 28px;
+  text-align: center;
+  animation: silCallIn 1s ease .7s both;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}}
+.pulse-num {{
+  display: block;
+  font-size: clamp(48px,11vw,72px);
+  font-weight: 800;
+  line-height: 1;
+  background: linear-gradient(135deg, #FF0055 0%, #FF5E00 50%, #FFD700 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 4px;
+  filter: drop-shadow(0 10px 25px rgba(255,0,85,0.5));
+  animation: fire-move 4s ease infinite, popNumber 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}}
 @keyframes popNumber {{ 0% {{ opacity: 0; transform: scale(0.4) translateY(20px); }} 100% {{ opacity: 1; transform: scale(1) translateY(0); }} }}
-.pulse-label {{ font-size: 14px; font-weight: 600; color: rgba(255,255,255,.6); letter-spacing: 0.8px; text-transform: uppercase; animation: popNumber 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both; animation-delay: 0.1s; }}
+.pulse-label {{
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255,255,255,.6);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  animation: popNumber 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: 0.1s;
+}}
 .loading-text {{ animation: breatheLoading 1.5s infinite ease-in-out; color: rgba(255,255,255,0.5); font-size: 15px; letter-spacing: 1.5px; }}
 @keyframes breatheLoading {{ 0%, 100% {{ opacity: 0.3; transform: scale(0.98); }} 50% {{ opacity: 1; transform: scale(1.02); }} }}
 
@@ -476,22 +692,12 @@ body::before {{
     <div class="card-inner">
 
       <div class="ed-block">
-        <div style="display: flow-root; overflow: visible; padding: 4px;">
-          {f'''<div class="ed-cover-wrap" id="coverCTA">
-            <img src="{esc(cover_src)}" alt="{esc(titulo)}" />
-            <span class="cover-hint">Toca el libro</span>
-          </div>''' if has_portada else ''}
+        <div style="display: flow-root; overflow: visible; padding: 4px;">{cover_cta_html}
           <div class="ed-title">{esc(t_titulo or titulo)}</div>
           <div class="ed-chip">{esc(autor)}</div>
           <div class="ed-para">{esc(t_parrafo_top or descripcion)}</div>
         </div>
-      </div>
-
-      {f'''<div class="ed-gap"></div>
-      <div class="ed-block">
-        <div class="ed-sub">{esc(t_subtitulo)}</div>
-        <div class="ed-para">{esc(t_parrafo_bot)}</div>
-      </div>''' if has_tarjeta and (t_subtitulo or t_parrafo_bot) else ''}
+      </div>{second_block_html}
 
       <div class="card-actions">
         <div class="btn-row btn-row-2">
@@ -511,11 +717,11 @@ body::before {{
           <a class="btn-dark" href="https://www.buscalibre.com.mx/libros/search/?q={busca_comprar}" target="_blank" rel="noopener noreferrer">
             <img class="btn-busca-logo" src="/buscalibre.png" alt="Buscalibre">
           </a>
-          
+
           <a class="btn-dark btn-crystal" href="https://www.buscalibre.com.mx/libros/search/?q={busca_explorar}" target="_blank" rel="noopener noreferrer">
             <span class="btn-emoji">🔮</span>
           </a>
-          
+
           <a class="btn-dark btn-penguin-icon" href="https://www.penguinlibros.com/mx/?mot_q={penguin_q}" target="_blank" rel="noopener noreferrer">
             <img src="/logopenguin.png" alt="Penguin">
           </a>
@@ -525,8 +731,7 @@ body::before {{
     </div>
   </div>
 
-  <div class="silence-screen" id="silenceScreen">
-    {f'<img class="sil-cover" id="silCover" src="{esc(cover_src)}" alt="{esc(titulo)}" />' if has_portada else ''}
+  <div class="silence-screen" id="silenceScreen">{silence_cover_html}
     <div class="sil-title">{esc(titulo)}</div>
     <div class="sil-call">Queremos que te den ganas<br>de abrir un libro.</div>
     <div class="sil-sub">Eso es Triggui.</div>
@@ -547,18 +752,20 @@ const coverHint = coverCTA ? coverCTA.querySelector('.cover-hint') : null;
 const revealCard = document.querySelector('.reveal-card');
 const silenceScreen = document.getElementById('silenceScreen');
 const silPulse = document.getElementById('silPulse');
-const pulseEditionKey = `triggui_lab_opened_${{state.id}}`;
+const pulseEditionKey = 'triggui_lab_opened_' + state.id;
 
-const ANG = [115,205,35,320];
-function grad(i) {{ return `linear-gradient(${{ANG[i%4]}}deg,${{state.colores[i]}},${{state.colores[(i+1)%4]}})`; }}
+const ANG = [115, 205, 35, 320];
+function grad(i) {{
+  return 'linear-gradient(' + ANG[i % 4] + 'deg,' + state.colores[i] + ',' + state.colores[(i + 1) % 4] + ')';
+}}
 
 let overlayView = 'blocks';
 let coverBusy = false;
 const revealIndex = Math.floor(Math.random() * 4);
-const emojis = ['🌊','🛡️','🧠','✨'];
+const emojis = ['🌊', '🛡️', '🧠', '✨'];
 
 function clearBlockStates() {{
-  [...grid.children].forEach((block) => {{
+  Array.from(grid.children).forEach((block) => {{
     block.classList.remove('show', 'dim');
   }});
 }}
@@ -661,7 +868,7 @@ async function registerCollectivePhysicalOpen() {{
     const res = await fetch('/api/increment-lab', {{
       method: 'POST',
       headers: {{ 'Content-Type': 'application/json' }},
-      body: JSON.stringify({{ editionId: state.id }}),
+      body: JSON.stringify({{ editionId: state.id }})
     }});
 
     if (!res.ok) throw new Error('fail');
@@ -676,11 +883,11 @@ async function registerCollectivePhysicalOpen() {{
 }}
 
 function getChronoOrder(hour) {{
-  if (hour >= 4 && hour <= 6) return [3,2,1,0];
-  if (hour >= 7 && hour <= 11) return [0,2,1,3];
-  if (hour >= 12 && hour <= 16) return [2,0,1,3];
-  if (hour >= 17 && hour <= 20) return [1,3,2,0];
-  return [3,1,2,0];
+  if (hour >= 4 && hour <= 6) return [3, 2, 1, 0];
+  if (hour >= 7 && hour <= 11) return [0, 2, 1, 3];
+  if (hour >= 12 && hour <= 16) return [2, 0, 1, 3];
+  if (hour >= 17 && hour <= 20) return [1, 3, 2, 0];
+  return [3, 1, 2, 0];
 }}
 
 const currentHour = new Date().getHours();
@@ -700,7 +907,7 @@ function renderBlocks() {{
 
     const label = document.createElement('div');
     label.className = 'label';
-    label.textContent = `${{emojis[realIdx % emojis.length]}} ${{state.palabras[realIdx]}}`;
+    label.textContent = emojis[realIdx % emojis.length] + ' ' + state.palabras[realIdx];
     label.style.color = state.textColors[realIdx] || '#fff';
 
     const frase = document.createElement('div');
@@ -714,7 +921,7 @@ function renderBlocks() {{
       e.preventDefault();
       e.stopPropagation();
 
-      const blocks = [...grid.children];
+      const blocks = Array.from(grid.children);
 
       if (visualIdx === revealIndex) {{
         openOverlayFromBlocks();
@@ -760,18 +967,17 @@ if (coverCTA) {{
     if (coverHint) coverHint.textContent = '...';
 
     moveToSilence();
-
-    silPulse.innerHTML = `<span class="pulse-label loading-text">Conectando...</span>`;
+    silPulse.innerHTML = '<span class="pulse-label loading-text">Conectando...</span>';
 
     registerCollectivePhysicalOpen().then((result) => {{
       if (result.ok && result.count !== null) {{
-        silPulse.innerHTML = `<span class="pulse-num">${{result.count}}</span><span class="pulse-label">libros abiertos en el mundo</span>`;
+        silPulse.innerHTML = '<span class="pulse-num">' + result.count + '</span><span class="pulse-label">libros abiertos en el mundo</span>';
       }} else {{
-        silPulse.innerHTML = `<span class="pulse-label">Se registró el acto.</span>`;
+        silPulse.innerHTML = '<span class="pulse-label">Se registró el acto.</span>';
       }}
-    }}).catch(err => {{
+    }}).catch((err) => {{
       console.error(err);
-      silPulse.innerHTML = `<span class="pulse-label">Se registró el acto.</span>`;
+      silPulse.innerHTML = '<span class="pulse-label">Se registró el acto.</span>';
     }});
   }});
 }}
@@ -810,14 +1016,15 @@ setOverlayView('blocks');
   const total = await getCollectivePulse();
   const el = document.getElementById('pulseLine');
   if (total !== null && total > 0) {{
-    el.textContent = `Ya van ${{total}} libros abiertos.`;
+    el.textContent = 'Ya van ' + total + ' libros abiertos.';
     el.classList.add('visible');
   }}
 }})();
 </script>
 </body>
 </html>
-'''
+"""
+    return html_output
 
 
 def build_lab():
@@ -843,45 +1050,53 @@ def build_lab():
 
 
 def build_single():
-    if not CONTENIDO_FILE.exists():
-        print(f"❌ Error: {CONTENIDO_FILE} no existe. Abortando build_single.")
+    contenido_file = resolve_single_json_file()
+
+    if not contenido_file:
+        print("❌ Error: no existe TRIGGUI_EDICION_JSON ni contenido_edicion.json ni contenido.json. Abortando build_single.")
+        sys.exit(1)
+
+    if not TMP_BOOK_FILE.exists():
+        print(f"❌ Error: {TMP_BOOK_FILE} no existe. Abortando build_single.")
         sys.exit(1)
 
     book_meta = json.loads(TMP_BOOK_FILE.read_text(encoding="utf-8"))
-    contenido = json.loads(CONTENIDO_FILE.read_text(encoding="utf-8"))
+    contenido = json.loads(contenido_file.read_text(encoding="utf-8"))
 
     if not contenido.get("libros") or len(contenido["libros"]) == 0:
-        print("❌ Error: contenido.json no tiene libros. Abortando.")
+        print(f"❌ Error: {contenido_file} no tiene libros. Abortando.")
         sys.exit(1)
 
     libro_data = contenido["libros"][0]
-    slug = book_meta.get("slug")
+    slug = book_meta.get("slug") or libro_data.get("slug")
 
     if not slug:
-        print("❌ Error: No hay slug en book_meta.")
+        print("❌ Error: No hay slug en book_meta/libro_data.")
         sys.exit(1)
 
     print(f"🏗️  Construyendo edición viva SINGLE para: {slug}")
+    print(f"📚 Fuente single: {contenido_file}")
     print(f"🌐 BASE_URL: {BASE_URL}")
 
-    palabra_dominante = libro_data.get("tarjeta", {}).get("titulo")
-    if not palabra_dominante and libro_data.get("palabras"):
-        palabra_dominante = libro_data["palabras"][0]
+    colores = pad_list(libro_data.get("colores"), 4, "#4FD1FF")
+    text_colors = resolve_text_colors(libro_data, colores)
+    portada = resolve_cover(book_meta, libro_data)
+    palabra_dominante = resolve_palabra_dominante(libro_data)
 
     edicion_single = {
         "id": slug,
         "titulo": book_meta.get("titulo", libro_data.get("titulo", "")),
         "autor": book_meta.get("autor", libro_data.get("autor", "")),
         "palabra": palabra_dominante,
-        "descripcion": libro_data.get("tarjeta", {}).get("parrafoTop", ""),
-        "portada": book_meta.get("portada") or libro_data.get("portada", ""),
-        "tagline": book_meta.get("tagline", ""),
-        "palabras": libro_data.get("palabras", []),
-        "frases": libro_data.get("frases", []),
-        "colores": libro_data.get("colores", []),
-        "textColors": ["#FFFFFF"] * 4,
+        "descripcion": (libro_data.get("tarjeta", {}) or {}).get("parrafoTop", ""),
+        "portada": portada,
+        "tagline": book_meta.get("tagline", libro_data.get("tagline", "")),
+        "palabras": pad_list(libro_data.get("palabras"), 4, "Señal"),
+        "frases": pad_list(libro_data.get("frases"), 4, "Abre un libro físico que tengas cerca."),
+        "colores": colores,
+        "textColors": text_colors,
         "fondo": libro_data.get("fondo", "#0a0a0a"),
-        "tarjeta": libro_data.get("tarjeta", {})
+        "tarjeta": libro_data.get("tarjeta", {}) or {},
     }
 
     html_content = render_edicion(edicion_single, mode="single")

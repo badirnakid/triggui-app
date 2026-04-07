@@ -1,12 +1,65 @@
 name: Nueva Edición Triggui
 
+run-name: >-
+  Nueva edición ·
+  ${{ inputs.modo_entrada || 'book' }} ·
+  ${{ inputs.selector_mode || 'direct' }} ·
+  ${{ inputs.entrada || inputs.libro }}
+
 on:
   workflow_dispatch:
     inputs:
       libro:
-        description: 'Título del libro | Autor (ej: Generación Dopamina | Anna Lembke)'
-        required: true
+        description: 'LEGACY opcional: Título del libro | Autor (ej: Generación Dopamina | Anna Lembke)'
+        required: false
         type: string
+
+      modo_entrada:
+        description: 'Tipo de entrada'
+        required: true
+        default: 'book'
+        type: choice
+        options:
+          - book
+          - trigger
+
+      selector_mode:
+        description: 'Cómo resolver el libro'
+        required: true
+        default: 'direct'
+        type: choice
+        options:
+          - direct
+          - constrained
+          - discover
+
+      entrada:
+        description: 'Libro o trigger (ej: Hábitos atómicos | James Clear, o una inquietud real)'
+        required: false
+        type: string
+
+      autor:
+        description: 'Autor opcional si en modo book no lo incluyes en "entrada"'
+        required: false
+        type: string
+
+      catalog_scope:
+        description: 'Catálogo a usar cuando selector_mode=constrained'
+        required: true
+        default: 'libros_master_csv'
+        type: choice
+        options:
+          - libros_master_csv
+          - none
+
+      editorial_mode:
+        description: 'Qué prompt editorial usar en build-contenido'
+        required: true
+        default: 'legacy'
+        type: choice
+        options:
+          - legacy
+          - external
 
 permissions:
   contents: write
@@ -14,7 +67,7 @@ permissions:
 jobs:
   nueva-edicion:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
 
     steps:
       - name: Checkout triggui-app
@@ -39,10 +92,101 @@ jobs:
           npm ci
           npx playwright install chromium --with-deps
 
+      - name: Paso 0 — Resolver contrato de entrada
+        id: contract
+        shell: bash
+        env:
+          INPUT_LIBRO: ${{ inputs.libro }}
+          INPUT_MODO: ${{ inputs.modo_entrada }}
+          INPUT_SELECTOR: ${{ inputs.selector_mode }}
+          INPUT_ENTRADA: ${{ inputs.entrada }}
+          INPUT_AUTOR: ${{ inputs.autor }}
+          INPUT_CATALOG_SCOPE: ${{ inputs.catalog_scope }}
+          INPUT_EDITORIAL_MODE: ${{ inputs.editorial_mode }}
+        run: |
+          set -euo pipefail
+
+          LEGACY_BOOK="${INPUT_LIBRO}"
+          INPUT_MODE_RAW="${INPUT_MODO}"
+          INPUT_SELECTOR_RAW="${INPUT_SELECTOR}"
+          INPUT_ENTRADA_RAW="${INPUT_ENTRADA}"
+          INPUT_AUTOR_RAW="${INPUT_AUTOR}"
+          INPUT_CATALOG_SCOPE_RAW="${INPUT_CATALOG_SCOPE}"
+          INPUT_EDITORIAL_MODE_RAW="${INPUT_EDITORIAL_MODE}"
+
+          # Prioridad de entrada:
+          # 1) si viene libro legacy y entrada está vacía -> usa libro legacy
+          # 2) si viene entrada -> usa entrada
+          if [ -n "${LEGACY_BOOK}" ] && [ -z "${INPUT_ENTRADA_RAW}" ]; then
+            MODO_EFFECTIVE="book"
+            SELECTOR_EFFECTIVE="direct"
+            ENTRADA_EFFECTIVE="${LEGACY_BOOK}"
+            LIBRO_INPUT="${LEGACY_BOOK}"
+          else
+            MODO_EFFECTIVE="${INPUT_MODE_RAW}"
+            SELECTOR_EFFECTIVE="${INPUT_SELECTOR_RAW}"
+            ENTRADA_EFFECTIVE="${INPUT_ENTRADA_RAW}"
+            LIBRO_INPUT=""
+          fi
+
+          if [ -z "${ENTRADA_EFFECTIVE}" ]; then
+            echo "❌ Debes proporcionar 'entrada' o 'libro'"
+            exit 1
+          fi
+
+          if [ "${MODO_EFFECTIVE}" = "book" ]; then
+            SELECTOR_EFFECTIVE="direct"
+
+            if [[ -n "${INPUT_AUTOR_RAW}" && "${ENTRADA_EFFECTIVE}" != *"|"* ]]; then
+              LIBRO_INPUT="${ENTRADA_EFFECTIVE} | ${INPUT_AUTOR_RAW}"
+            else
+              LIBRO_INPUT="${ENTRADA_EFFECTIVE}"
+            fi
+          else
+            if [ "${SELECTOR_EFFECTIVE}" = "direct" ]; then
+              echo "❌ selector_mode=direct no tiene sentido con modo_entrada=trigger"
+              exit 1
+            fi
+          fi
+
+          if [ "${INPUT_EDITORIAL_MODE_RAW}" = "external" ]; then
+            USE_EXTERNAL_EDITORIAL_PROMPTS="true"
+          else
+            USE_EXTERNAL_EDITORIAL_PROMPTS="false"
+          fi
+
+          {
+            echo "input_mode=${MODO_EFFECTIVE}"
+            echo "selector_mode=${SELECTOR_EFFECTIVE}"
+            echo "entrada_raw=${ENTRADA_EFFECTIVE}"
+            echo "libro_input=${LIBRO_INPUT}"
+            echo "catalog_scope=${INPUT_CATALOG_SCOPE_RAW}"
+            echo "editorial_mode=${INPUT_EDITORIAL_MODE_RAW}"
+            echo "use_external_editorial_prompts=${USE_EXTERNAL_EDITORIAL_PROMPTS}"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "══════════════════════════════════════════"
+          echo "🧠 CONTRATO DE ENTRADA RESUELTO"
+          echo "legacy libro      = ${LEGACY_BOOK}"
+          echo "modo_entrada      = ${MODO_EFFECTIVE}"
+          echo "selector_mode     = ${SELECTOR_EFFECTIVE}"
+          echo "entrada_raw       = ${ENTRADA_EFFECTIVE}"
+          echo "libro_input       = ${LIBRO_INPUT}"
+          echo "catalog_scope     = ${INPUT_CATALOG_SCOPE_RAW}"
+          echo "editorial_mode    = ${INPUT_EDITORIAL_MODE_RAW}"
+          echo "prompts externos  = ${USE_EXTERNAL_EDITORIAL_PROMPTS}"
+          echo "══════════════════════════════════════════"
+
       - name: Paso 1 — Validar libro y obtener portada
         id: validate
         env:
-          LIBRO_INPUT: ${{ github.event.inputs.libro }}
+          INPUT_MODE: ${{ steps.contract.outputs.input_mode }}
+          SELECTOR_MODE: ${{ steps.contract.outputs.selector_mode }}
+          ENTRADA_RAW: ${{ steps.contract.outputs.entrada_raw }}
+          LIBRO_INPUT: ${{ steps.contract.outputs.libro_input }}
+          CATALOG_SCOPE: ${{ steps.contract.outputs.catalog_scope }}
+          CATALOG_CSV_PATH: triggui-content/data/libros_master.csv
+          OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
         run: node scripts/validate-book.js
 
       - name: Paso 2 — Enriquecer con GPT-4o-mini (modo SINGLE)
@@ -50,14 +194,29 @@ jobs:
           OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
           SINGLE_MODE: "true"
           SINGLE_BOOK: ${{ steps.validate.outputs.book_json }}
+          USE_EXTERNAL_EDITORIAL_PROMPTS: ${{ steps.contract.outputs.use_external_editorial_prompts }}
         run: |
+          set -euo pipefail
+
           cd triggui-content
           npm install
           node scripts/build-contenido.js
+
+          # Artefacto canónico nuevo del pipeline single-book
+          cp contenido.json contenido_edicion.json
+
+          # Copias hacia triggui-app:
+          # - contenido.json se conserva por backward compatibility
+          # - contenido_edicion.json será el carril canónico nuevo
           cp contenido.json ../contenido.json
+          cp contenido_edicion.json ../contenido_edicion.json
 
       - name: Paso 3 — Generar edición viva HTML
+        env:
+          TRIGGUI_EDICION_JSON: contenido_edicion.json
         run: |
+          set -euo pipefail
+
           if [ "${GITHUB_REF_NAME}" = "main" ]; then
             export BASE_URL="https://app.triggui.com"
           else
@@ -65,22 +224,29 @@ jobs:
           fi
 
           echo "BASE_URL=${BASE_URL}"
+          echo "TRIGGUI_EDICION_JSON=${TRIGGUI_EDICION_JSON}"
           python3 scripts/build-editions.py
 
       - name: Paso 4 — Generar tarjeta PNG (1080×1920)
+        env:
+          TRIGGUI_EDICION_JSON: contenido_edicion.json
         run: node scripts/build-tarjeta-png.js
 
       - name: Paso 5 — Generar OG image PNG (1200×630)
+        env:
+          TRIGGUI_EDICION_JSON: contenido_edicion.json
         run: node scripts/build-og-image.js
 
       - name: Paso 6 — Commit y push
         run: |
+          set -euo pipefail
+
           SLUG=$(cat /tmp/triggui-slug.txt)
 
           git config user.name "Triggui Bot"
           git config user.email "bot@triggui.com"
 
-          git add public/t/ contenido.json
+          git add public/t/ contenido.json contenido_edicion.json
           git commit -m "✨ Nueva edición: ${SLUG}" || echo "No changes to commit in triggui-app"
           git push
 
@@ -88,12 +254,14 @@ jobs:
           git config user.name "Triggui Bot"
           git config user.email "bot@triggui.com"
 
-          git add contenido.json
-          git commit -m "📚 Contenido: ${SLUG}" || echo "No changes to commit in triggui-content"
+          git add contenido.json contenido_edicion.json
+          git commit -m "📚 Contenido edición: ${SLUG}" || echo "No changes to commit in triggui-content"
           git push
 
       - name: Paso 7 — Notificación
         run: |
+          set -euo pipefail
+
           SLUG=$(cat /tmp/triggui-slug.txt)
 
           if [ "${GITHUB_REF_NAME}" = "main" ]; then
@@ -104,9 +272,13 @@ jobs:
 
           echo "══════════════════════════════════════════"
           echo "✅ EDICIÓN LISTA"
+          echo "🧭 modo_entrada:   ${{ steps.contract.outputs.input_mode }}"
+          echo "🧠 selector_mode:  ${{ steps.contract.outputs.selector_mode }}"
+          echo "📝 editorial_mode: ${{ steps.contract.outputs.editorial_mode }}"
           echo "📖 ${SLUG}"
           echo "🔗 Edición viva: ${BASE_URL}/t/${SLUG}/"
           echo "🖼️  Tarjeta PNG: public/t/${SLUG}/tarjeta.png"
+          echo "🧾 JSON canónico: contenido_edicion.json"
           echo "══════════════════════════════════════════"
           echo ""
           echo "Descarga la tarjeta PNG y mándala por WhatsApp."
