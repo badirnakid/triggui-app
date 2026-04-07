@@ -1475,12 +1475,47 @@ function hexToRgba(hex, alpha) {
   }
 }
 
+function normalizeHighlightSyntax(text) {
+  let value = String(text || '').trim();
+  if (!value) return '';
+
+  value = value
+    .replace(/\{\{H\}\}/gi, '[H]')
+    .replace(/\{\{\/H\}\}/gi, '[/H]')
+    .replace(/\[h\]/g, '[H]')
+    .replace(/\[\/h\]/g, '[/H]');
+
+  let toggleOpen = true;
+  value = value.replace(/\[H\]/g, () => {
+    const token = toggleOpen ? '[H]' : '[/H]';
+    toggleOpen = !toggleOpen;
+    return token;
+  });
+
+  const openCount = (value.match(/\[H\]/g) || []).length;
+  const closeCount = (value.match(/\[\/H\]/g) || []).length;
+
+  if (openCount > closeCount) {
+    value += '[/H]'.repeat(openCount - closeCount);
+  }
+
+  let extraClose = (value.match(/\[\/H\]/g) || []).length - (value.match(/\[H\]/g) || []).length;
+  while (extraClose > 0) {
+    const idx = value.lastIndexOf('[/H]');
+    if (idx === -1) break;
+    value = value.slice(0, idx) + value.slice(idx + 4);
+    extraClose--;
+  }
+
+  return value.replace(/\[H\]\s*\[\/H\]/g, '').replace(/[ \t]{2,}/g, ' ').trim();
+}
+
 function cleanHighlightTokens(text) {
-  return String(text || '').replace(/\[H\]|\[\/H\]/gi, '');
+  return normalizeHighlightSyntax(text).replace(/\[H\]|\[\/H\]/gi, '');
 }
 
 function renderMarkerHTML(text) {
-  return String(text || '').replace(/\[H\]([\s\S]*?)\[\/H\]/gi, '<span class="marker-highlight">$1</span>');
+  return normalizeHighlightSyntax(text).replace(/\[H\]([\s\S]*?)\[\/H\]/gi, '<span class="marker-highlight">$1</span>');
 }
 
 // ═══════════════════════════════════════════════════════════════════════
