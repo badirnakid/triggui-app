@@ -3,7 +3,8 @@
  *
  * Genera OG image PNG 1200×630 para preview de link en WhatsApp.
  * Su función NO es competir con la tarjeta.
- * Su función es que el link se vea serio, editorial y claro.
+ * Su función es que el link se vea serio, editorial, claro
+ * y lo suficientemente deseable para que quieran abrirlo.
  *
  * Lee el artefacto canónico single-book:
  *   1) TRIGGUI_EDICION_JSON
@@ -102,6 +103,50 @@ function stripHighlightTags(text) {
   return normalizeHighlightSyntax(text).replace(/\[H\]|\[\/H\]/gi, "");
 }
 
+function normalizeText(text) {
+  return String(text || "").replace(/\s+/g, " ").trim();
+}
+
+function clampText(text, max) {
+  const clean = normalizeText(text);
+  if (!clean) return "";
+  if (clean.length <= max) return clean;
+  return `${clean.slice(0, max - 3).trim()}...`;
+}
+
+function toArrayOfStrings(value) {
+  if (!value) return [];
+  if (Array.isArray(value)) {
+    return value
+      .flatMap((item) => toArrayOfStrings(item))
+      .map((item) => normalizeText(item))
+      .filter(Boolean);
+  }
+
+  if (typeof value === "string") {
+    return value
+      .split(/[|•,;/]+/g)
+      .map((item) => normalizeText(item))
+      .filter(Boolean);
+  }
+
+  return [];
+}
+
+function uniqueStrings(values) {
+  const seen = new Set();
+  const output = [];
+
+  for (const value of values) {
+    const key = value.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    output.push(value);
+  }
+
+  return output;
+}
+
 function resolvePortadaURL(bookMeta, libro) {
   return (
     bookMeta.portada_url ||
@@ -131,34 +176,64 @@ function resolveAccent(libro) {
 }
 
 function resolveEyebrow(bookMeta, libro) {
-  const author = bookMeta.autor || libro.autor || "";
-  return author || "Triggui";
+  const candidates = uniqueStrings([
+    ...toArrayOfStrings(libro?.palabras),
+    ...toArrayOfStrings(libro?.hawkins),
+    ...toArrayOfStrings(libro?.palabras_hawkins),
+    ...toArrayOfStrings(libro?.emociones),
+    ...toArrayOfStrings(bookMeta?.palabras)
+  ]);
+
+  if (candidates.length >= 2) {
+    return clampText(`${candidates[0]} • ${candidates[1]}`, 42);
+  }
+
+  if (candidates.length === 1) {
+    return clampText(candidates[0], 28);
+  }
+
+  return "Triggui";
 }
 
 function resolveHeadline(bookMeta, libro) {
-  const tarjeta = libro.tarjeta || {};
-  return (
-    tarjeta.titulo ||
-    bookMeta.titulo ||
-    libro.titulo ||
+  const tarjeta = libro?.tarjeta || {};
+  const candidates = [
+    tarjeta.titulo,
+    tarjeta.subtitulo,
+    stripHighlightTags(tarjeta.parrafoTop || ""),
+    stripHighlightTags(tarjeta.parrafoBot || ""),
+    bookMeta?.titulo,
+    libro?.titulo,
     "Triggui"
-  );
-}
+  ];
 
-function resolveSubheadline(bookMeta, libro) {
-  const tarjeta = libro.tarjeta || {};
-  const subtitulo = String(tarjeta.subtitulo || "").trim();
-  const top = stripHighlightTags(tarjeta.parrafoTop || "").trim();
-  const bot = stripHighlightTags(tarjeta.parrafoBot || "").trim();
-
-  let text = subtitulo || top || bot || bookMeta.titulo || libro.titulo || "";
-  text = text.replace(/\s+/g, " ").trim();
-
-  if (text.length > 160) {
-    text = `${text.slice(0, 157).trim()}...`;
+  for (const candidate of candidates) {
+    const clean = clampText(candidate, 84);
+    if (clean) return clean;
   }
 
-  return text;
+  return "Triggui";
+}
+
+function resolveSubheadline(bookMeta, libro, headline) {
+  const tarjeta = libro?.tarjeta || {};
+  const candidates = [
+    stripHighlightTags(tarjeta.parrafoTop || ""),
+    tarjeta.subtitulo,
+    stripHighlightTags(tarjeta.parrafoBot || ""),
+    bookMeta?.titulo,
+    libro?.titulo,
+    ""
+  ];
+
+  for (const candidate of candidates) {
+    const clean = clampText(candidate, 168);
+    if (!clean) continue;
+    if (normalizeText(clean).toLowerCase() === normalizeText(headline).toLowerCase()) continue;
+    return clean;
+  }
+
+  return "";
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -210,12 +285,12 @@ const accentGlow = withAlpha(accent, "45") || "#E35D3045";
 const portadaURL = resolvePortadaURL(bookMeta, libro);
 const portadaSource = resolvePortadaSource(bookMeta, libro, portadaURL);
 
-const headline = resolveHeadline(bookMeta, libro);
 const eyebrow = resolveEyebrow(bookMeta, libro);
-const subheadline = resolveSubheadline(bookMeta, libro);
+const headline = resolveHeadline(bookMeta, libro);
+const subheadline = resolveSubheadline(bookMeta, libro, headline);
 
 const coverSection = portadaURL
-  ? `<img class="cover" src="${portadaURL}" alt="Portada de ${escapeHTML(bookMeta.titulo || libro.titulo || "")}" />`
+  ? `<img class="cover" src="${portadaURL}" alt="Portada editorial" />`
   : `<div class="cover-fallback">TRIGGUI</div>`;
 
 let html = template
@@ -246,6 +321,12 @@ const page = await browser.newPage();
 await page.setViewportSize({ width: 1200, height: 630 });
 await page.setContent(html, { waitUntil: "networkidle" });
 
+await page.evaluate(async () => {
+  if (document.fonts?.ready) {
+    await document.fonts.ready;
+  }
+});
+
 if (portadaURL) {
   try {
     await page.waitForSelector(".cover", { state: "visible", timeout: 8000 });
@@ -253,6 +334,8 @@ if (portadaURL) {
   } catch {
     console.log("   ⚠️  Portada no cargó — OG sin portada");
   }
+} else {
+  await page.waitForTimeout(250);
 }
 
 const outPath = path.join(outDir, "og.png");
