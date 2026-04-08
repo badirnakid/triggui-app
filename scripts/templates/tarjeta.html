@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap');
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -15,33 +15,31 @@
 
   body {
     background:
-      radial-gradient(circle at 20% 10%, rgba(255,255,255,0.035), transparent 30%),
-      radial-gradient(circle at 80% 90%, rgba(255,255,255,0.03), transparent 28%),
+      radial-gradient(circle at 18% 8%, rgba(255,255,255,0.035), transparent 28%),
+      radial-gradient(circle at 84% 88%, rgba(255,255,255,0.025), transparent 26%),
+      linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0)),
       var(--bg, #0B0B0C);
-    display: flex;
-    align-items: center;
-    justify-content: center;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
     color: var(--ink, #1A1A1A);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
   }
 
   .frame {
-    width: 1000px;
-    height: 1840px;
-    border-radius: 42px;
-    background: var(--paper, #F7F7F5);
-    border: 1.5px solid var(--border-color, #E7E3DE);
-    box-shadow:
-      0 42px 120px rgba(0,0,0,0.38),
-      0 0 0 1px rgba(255,255,255,0.04);
+    width: 1080px;
+    height: 1920px;
     position: relative;
     overflow: hidden;
+    background:
+      radial-gradient(circle at 16% 10%, rgba(255,255,255,0.03), transparent 28%),
+      radial-gradient(circle at 82% 88%, rgba(255,255,255,0.025), transparent 24%),
+      var(--bg, #0B0B0C);
   }
 
   .paper-noise {
     position: absolute;
     inset: 0;
-    opacity: 0.035;
+    opacity: 0.03;
     pointer-events: none;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     mix-blend-mode: multiply;
@@ -51,131 +49,179 @@
     position: relative;
     z-index: 1;
     height: 100%;
-    padding: 42px 42px 36px;
+    padding: 58px 34px 42px;
     display: flex;
     flex-direction: column;
+    gap: 18px;
   }
 
   .card-block {
-    background: linear-gradient(145deg, #FFFFFF 0%, #F2F0EC 100%);
+    background:
+      linear-gradient(145deg, rgba(255,255,255,0.96) 0%, rgba(242,240,236,0.98) 100%);
     border: 1px solid rgba(26,26,26,0.05);
     border-radius: 30px;
-    box-shadow: 0 12px 36px rgba(0,0,0,0.04);
+    box-shadow:
+      0 14px 42px rgba(0,0,0,0.055),
+      inset 0 1px 0 rgba(255,255,255,0.4);
+    overflow: hidden;
   }
 
   .top {
-    padding: 50px 46px 44px;
-    min-height: 1000px;
+    flex: 1 1 0;
+    min-height: 0;
+    padding: 46px 42px 34px;
   }
 
   .top-flow {
-    display: flow-root;
     height: 100%;
+    overflow: hidden;
+    display: flow-root;
   }
 
   .cover {
     float: right;
-    width: 280px;
+    width: 262px;
     height: auto;
-    margin: 0 0 24px 30px;
+    margin: 2px 0 18px 28px;
     border-radius: 18px;
     border: 1px solid var(--cover-border, #EAEAEA);
     box-shadow:
-      0 20px 48px rgba(0,0,0,0.16),
-      0 0 0 1px rgba(255,255,255,0.25);
+      0 22px 54px rgba(0,0,0,0.16),
+      0 0 0 1px rgba(255,255,255,0.28);
     display: block;
     object-fit: cover;
+    object-position: center;
+    background: rgba(0,0,0,0.03);
   }
 
   .title {
     font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
-    font-size: 64px;
-    line-height: 1.14;
+    font-size: 72px;
+    line-height: 1.02;
     font-weight: 700;
-    letter-spacing: -0.35px;
+    letter-spacing: -0.75px;
     color: var(--title-color, #1A1A1A);
     margin-bottom: 20px;
+    max-width: 610px;
+    text-wrap: balance;
   }
 
   .author-chip {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 54px;
+    min-height: 52px;
     padding: 0 22px;
     border-radius: 999px;
     background: var(--chip-bg, #FBE7DF);
     color: var(--chip-color, #E35D30);
-    font-size: 28px;
+    font-size: 27px;
     line-height: 1;
-    font-weight: 700;
-    letter-spacing: 0.15px;
-    margin-bottom: 30px;
+    font-weight: 800;
+    letter-spacing: 0.1px;
+    margin-bottom: 28px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.28);
   }
 
   .paragraph {
     font-family: 'Playfair Display', Georgia, serif;
-    font-size: 42px;
-    line-height: 1.58;
-    font-weight: 400;
     color: var(--paragraph-color, #4A4A4A);
-    letter-spacing: 0.15px;
+    letter-spacing: 0.05px;
   }
 
-  .gap {
-    height: 20px;
-    flex: 0 0 auto;
+  .paragraph-top {
+    font-size: 40px;
+    line-height: 1.48;
+    font-weight: 600;
   }
 
   .bottom {
-    padding: 40px 46px 40px;
-    min-height: 470px;
+    flex: 0 0 auto;
+    min-height: 0;
+    padding: 34px 40px 34px;
+  }
+
+  .bottom-inner {
+    min-height: 0;
+    overflow: hidden;
   }
 
   .subtitle {
-    font-size: 38px;
-    line-height: 1.28;
-    font-weight: 700;
+    font-size: 34px;
+    line-height: 1.22;
+    font-weight: 800;
     color: var(--subtitle-color, #E35D30);
     margin-bottom: 18px;
-    letter-spacing: 0.1px;
+    letter-spacing: 0.05px;
+    text-wrap: balance;
+  }
+
+  .paragraph-bottom {
+    font-size: 36px;
+    line-height: 1.5;
+    font-weight: 500;
   }
 
   .highlight {
-    background: linear-gradient(
-      180deg,
-      transparent 0%,
-      transparent 55%,
-      var(--highlight-bg, rgba(227,93,48,0.17)) 55%,
-      var(--highlight-bg, rgba(227,93,48,0.17)) 100%
-    );
+    display: inline;
     color: var(--highlight-color, inherit);
-    padding: 0 0.08em;
-    border-radius: 0.1em;
-    font-weight: 600;
+    font-weight: 700;
+    background:
+      linear-gradient(
+        180deg,
+        transparent 0%,
+        transparent 16%,
+        var(--highlight-bg, rgba(227,93,48,0.17)) 16%,
+        var(--highlight-bg, rgba(227,93,48,0.17)) 92%,
+        transparent 92%,
+        transparent 100%
+      );
+    box-shadow: inset 0 -0.04em 0 var(--highlight-edge, rgba(227,93,48,0.26));
+    padding: 0 0.1em 0.02em;
+    border-radius: 0.14em;
     box-decoration-break: clone;
     -webkit-box-decoration-break: clone;
   }
 
-  .brand {
-    margin-top: auto;
-    padding-top: 26px;
-    text-align: center;
+  .footer-card {
+    flex: 0 0 auto;
+    min-height: 118px;
+    padding: 22px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  .brand-mark {
-    font-size: 46px;
+  .brand-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .brand-logo {
+    display: block;
+    max-width: 280px;
+    width: 100%;
+    height: auto;
+    max-height: 48px;
+    object-fit: contain;
+  }
+
+  .brand-fallback {
+    font-size: 42px;
     font-weight: 800;
-    letter-spacing: -0.6px;
+    letter-spacing: -0.7px;
     color: #121212;
   }
 
   .brand-sub {
-    margin-top: 8px;
-    font-size: 24px;
-    color: #8D96A3;
+    font-size: 22px;
+    color: #7D8795;
     font-style: italic;
-    letter-spacing: 0.1px;
+    letter-spacing: 0.08px;
   }
 </style>
 </head>
@@ -189,20 +235,19 @@
           {{PORTADA_SECTION}}
           <div class="title">{{TITULO}}</div>
           <div class="author-chip">{{AUTOR}}</div>
-          <div class="paragraph">{{PARRAFO_TOP}}</div>
+          <div class="paragraph paragraph-top">{{PARRAFO_TOP}}</div>
         </div>
       </div>
 
-      <div class="gap"></div>
-
       <div class="card-block bottom">
-        <div class="subtitle">{{SUBTITULO}}</div>
-        <div class="paragraph">{{PARRAFO_BOT}}</div>
+        <div class="bottom-inner">
+          <div class="subtitle">{{SUBTITULO}}</div>
+          <div class="paragraph paragraph-bottom">{{PARRAFO_BOT}}</div>
+        </div>
       </div>
 
-      <div class="brand">
-        <div class="brand-mark">triggui®</div>
-        <div class="brand-sub">@triggui | triggui.com</div>
+      <div class="card-block footer-card">
+        {{BRAND_SECTION}}
       </div>
     </div>
   </div>
