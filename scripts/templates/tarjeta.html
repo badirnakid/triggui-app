@@ -8,58 +8,50 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   html, body {
-    width: 1080px;
-    height: 1920px;
+    width: var(--canvas-width, 1040px);
+    height: var(--canvas-height, 1200px);
     overflow: hidden;
   }
 
   body {
-    background: var(--canvas-bg, #050505);
+    background: var(--background, #FFFFFF);
     color: var(--title-color, #1A1A1A);
     -webkit-font-smoothing: antialiased;
     text-rendering: geometricPrecision;
   }
 
   .frame {
-    width: 1080px;
-    height: 1920px;
-    background:
-      radial-gradient(circle at 18% 8%, rgba(255,255,255,0.03), transparent 28%),
-      radial-gradient(circle at 82% 92%, rgba(255,255,255,0.015), transparent 22%),
-      var(--canvas-bg, #050505);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    padding: var(--outer-pad, 10px);
+    background: var(--background, #FFFFFF);
   }
 
   .shell {
-    width: var(--shell-width, 900px);
-    height: var(--shell-height, 1038px);
-    background: var(--shell-bg, #F9F9F9);
-    border: 1px solid var(--shell-border, rgba(255,255,255,0.08));
-    border-radius: var(--shell-radius, 35px);
-    box-shadow:
-      0 26px 64px rgba(0,0,0,0.28),
-      inset 0 1px 0 rgba(255,255,255,0.36);
+    width: 100%;
+    height: 100%;
+    background: var(--paper, #F9F9F9);
+    border: 1px solid var(--border, #F39200);
+    border-radius: var(--shell-radius, 40px);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.06);
     overflow: hidden;
   }
 
   .shell-body {
     width: 100%;
     height: 100%;
-    padding: var(--outer-pad, 9px);
+    padding: var(--outer-pad, 10px);
     display: flex;
     flex-direction: column;
-    gap: var(--gap-between-blocks, 24px);
+    gap: var(--gap-between-blocks, 28px);
   }
 
   .card {
     width: 100%;
-    background: var(--card-bg, linear-gradient(145deg, #FFFFFF 0%, #F5F5F5 100%));
-    border: 1px solid var(--card-border, rgba(26, 26, 26, 0.05));
-    border-radius: var(--card-radius, 28px);
-    box-shadow: var(--card-shadow, 0 8px 24px rgba(0,0,0,0.03));
+    background: var(--block-background, linear-gradient(145deg, #FFFFFF 0%, #F5F5F5 100%));
+    border: 1px solid var(--card-border, rgba(26,26,26,0.05));
+    border-radius: var(--block-radius, 32px);
+    box-shadow: var(--block-shadow, 0 8px 24px rgba(0,0,0,0.03));
     overflow: hidden;
     flex: 0 0 auto;
   }
@@ -68,63 +60,81 @@
   .action-card {}
 
   .footer-card {
-    height: var(--footer-height, 128px);
+    height: var(--footer-height, 148px);
   }
 
   .hero-content {
     width: 100%;
     height: 100%;
-    padding: var(--hero-pad-y, 35px) var(--hero-pad-x, 38px);
+    padding: var(--hero-pad-y, 40px) var(--hero-pad-x, 44px);
     overflow: hidden;
   }
 
-  .action-content {
+  .hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--cover-margin-left, 36px);
+    align-items: start;
     width: 100%;
-    height: 100%;
-    padding: var(--action-pad-y, 35px) var(--action-pad-x, 38px);
-    overflow: hidden;
   }
 
-  .hero-flow {
+  .hero-copy {
+    min-width: 0;
+  }
+
+  .hero-cover {
+    width: var(--cover-width, 240px);
+    flex: 0 0 var(--cover-width, 240px);
+  }
+
+  .cover,
+  .cover-fallback {
     width: 100%;
-    overflow: hidden;
+    max-height: var(--cover-max-height, 560px);
+    border-radius: var(--cover-radius, 8px);
+    border: 1px solid #EAEAEA;
+    box-shadow: var(--cover-shadow, 0 15px 35px rgba(243,146,0,0.15));
+    display: block;
+    background: #FFFFFF;
   }
 
   .cover {
-    float: right;
-    width: var(--cover-width, 208px);
-    max-height: var(--cover-max-height, 484px);
     height: auto;
-    margin: 0 0 var(--cover-margin-bottom, 17px) var(--cover-margin-left, 31px);
-    border: 1px solid #EAEAEA;
-    border-radius: var(--cover-radius, 7px);
-    box-shadow: var(--cover-shadow, 0 15px 35px rgba(243,146,0,0.15));
-    display: block;
     object-fit: cover;
-    background: #FFFFFF;
+  }
+
+  .cover-fallback {
+    aspect-ratio: 0.72 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    font-size: calc(var(--footer-size, 28px) * 1.2);
+    font-weight: 800;
+    color: #777;
   }
 
   .title {
     font-family: Georgia, "Times New Roman", serif;
-    font-size: var(--title-size, 48px);
+    font-size: var(--title-size, 56px);
     line-height: 1.2;
     font-weight: 700;
     letter-spacing: -0.5px;
     color: var(--title-color, #1A1A1A);
-    margin: 0 0 14px 0;
+    margin: 0 0 12px 0;
   }
 
   .author-chip {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: calc(var(--author-chip-pad-y, 7px) * 2 + 1em);
-    padding: var(--author-chip-pad-y, 7px) var(--author-chip-pad-x, 19px);
-    border-radius: var(--author-chip-radius, 21px);
+    min-height: calc(var(--author-chip-pad-y, 8px) * 2 + 1em);
+    padding: var(--author-chip-pad-y, 8px) var(--author-chip-pad-x, 20px);
+    border-radius: var(--author-chip-radius, 24px);
     background: var(--author-chip-bg, #FFF3E0);
     color: var(--author-chip-color, #E65100);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
-    font-size: var(--author-size, 28px);
+    font-size: var(--author-chip-size, 28px);
     line-height: 1;
     font-weight: 700;
     letter-spacing: 0.3px;
@@ -133,7 +143,7 @@
 
   .paragraph {
     font-family: Georgia, "Times New Roman", serif;
-    font-size: var(--paragraph-size, 31px);
+    font-size: var(--paragraph-size, 36px);
     line-height: 1.7;
     font-weight: 400;
     letter-spacing: 0.2px;
@@ -141,9 +151,16 @@
     margin: 0;
   }
 
+  .action-content {
+    width: 100%;
+    height: 100%;
+    padding: var(--action-pad-y, 40px) var(--action-pad-x, 44px);
+    overflow: hidden;
+  }
+
   .subtitle {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
-    font-size: var(--subtitle-size, 31px);
+    font-size: var(--subtitle-size, 30px);
     line-height: 1.4;
     font-weight: 600;
     letter-spacing: 0.15px;
@@ -159,7 +176,7 @@
   .footer-content {
     width: 100%;
     height: 100%;
-    padding: 16px 24px;
+    padding: 18px 20px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -176,7 +193,7 @@
   }
 
   .footer-brand img {
-    height: var(--footer-logo-height, 42px);
+    height: var(--footer-logo-height, 48px);
     width: auto;
     object-fit: contain;
     display: block;
@@ -184,7 +201,7 @@
 
   .footer-fallback {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
-    font-size: calc(var(--footer-size, 24px) * 1.7);
+    font-size: calc(var(--footer-size, 28px) * 1.7);
     font-weight: 800;
     letter-spacing: -0.5px;
     color: #1A1A1A;
@@ -192,7 +209,7 @@
 
   .footer-meta {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
-    font-size: var(--footer-size, 24px);
+    font-size: var(--footer-size, 28px);
     line-height: 1.4;
     font-weight: 400;
     color: var(--footer-color, #8B8880);
@@ -201,15 +218,15 @@
 
   .highlight {
     display: inline;
-    background-color: var(--highlight-bg, rgba(243,146,0,0.18));
-    color: var(--highlight-ink, #111111);
-    font-weight: 700;
+    background-color: var(--highlight-bg, #F39200);
+    color: var(--highlight-ink, #FFFFFF);
     padding:
-      var(--highlight-pad-y, 5px)
-      var(--highlight-pad-x, 17px)
-      calc(var(--highlight-pad-y, 5px) + 1px);
-    border-radius: var(--highlight-radius, 10px);
-    box-shadow: var(--highlight-shadow, 0 4px 12px rgba(0,0,0,0.10));
+      var(--highlight-pad-y, 6px)
+      var(--highlight-pad-x, 18px)
+      calc(var(--highlight-pad-y, 6px) + 1px);
+    border-radius: var(--highlight-radius, 12px);
+    box-shadow: var(--highlight-shadow, 0 4px 12px rgba(243,146,0,0.1));
+    font-weight: 700;
     line-height: inherit;
     box-decoration-break: clone;
     -webkit-box-decoration-break: clone;
@@ -218,15 +235,19 @@
 </head>
 <body>
   <div class="frame">
-    <div class="shell">
+    <div class="shell" id="shell">
       <div class="shell-body" id="shellBody">
         <div class="card hero-card" id="heroCard">
           <div class="hero-content" id="heroContent">
-            <div class="hero-flow">
-              {{PORTADA_SECTION}}
-              <div class="title" id="title">{{TITULO}}</div>
-              <div class="author-chip" id="authorChip">{{AUTOR}}</div>
-              <div class="paragraph" id="parrafoTop">{{PARRAFO_TOP}}</div>
+            <div class="hero-grid">
+              <div class="hero-copy">
+                <div class="title" id="title">{{TITULO}}</div>
+                <div class="author-chip" id="authorChip">{{AUTOR}}</div>
+                <div class="paragraph" id="parrafoTop">{{PARRAFO_TOP}}</div>
+              </div>
+              <div class="hero-cover">
+                {{PORTADA_SECTION}}
+              </div>
             </div>
           </div>
         </div>
