@@ -1,9 +1,9 @@
 /**
- * build-tarjeta-png.js — Paso 4 del pipeline Triggui 2.0
+ * build-tarjeta-png.js — Triggui 2.0
  *
- * PNG 1080x1920 homologada contra la tarjeta viva usando
- * las proporciones maestras del Apps Script original.
- * Solo cambia el footer: logo + @triggui | triggui.com
+ * PNG definitiva homologada al Apps Script original.
+ * Proporción real: 520×600 → escala 2x = 1040×1200
+ * Sin float roto. Highlight altura completa. Footer propio PNG.
  */
 
 import fs from "node:fs/promises";
@@ -11,72 +11,78 @@ import path from "node:path";
 import { chromium } from "playwright";
 
 /* ═══════════════════════════════════════════════════════════════
-   BASE MAESTRA — EXTRAÍDA DEL APPS SCRIPT OBJECT.ASSIGN
+   MAESTRO APPS SCRIPT — RATIONAL ORANGE
 ═══════════════════════════════════════════════════════════════ */
 
-const APP_BASE = {
+const APP = {
   cardWidth: 520,
   cardHeight: 600,
+  scale: 2,
+
+  background: "#FFFFFF",
+  paper: "#F9F9F9",
+  ink: "#1A1A1A",
+  border: "#F39200",
   cardRadius: 20,
+
+  blockRadius: 16,
+  blockBackground: "linear-gradient(145deg, #FFFFFF 0%, #F5F5F5 100%)",
+  blockBorder: "rgba(26, 26, 26, 0.05)",
+  blockShadow: "0 8px 24px rgba(0, 0, 0, 0.03)",
 
   paddingCard: 5,
   gapBetweenBlocks: 14,
 
-  blockRadius: 16,
   block1PaddingY: 20,
   block1PaddingX: 22,
   block2PaddingY: 20,
   block2PaddingX: 22,
 
   coverWidth: 120,
-  coverMaxHeight: 280,
   coverRadius: 4,
+  coverBorder: "#EAEAEA",
+  coverMaxHeight: 280,
   coverMarginBottom: 10,
   coverMarginLeft: 18,
-
-  titleSize: 28,
-  titleLine: 1.2,
-  titleWeight: 700,
-
-  subtitleSize: 18,
-  subtitleLine: 1.4,
-  subtitleWeight: 600,
-
-  paragraphSize: 18,
-  paragraphLine: 1.7,
-  paragraphWeight: 400,
-
-  footerSize: 14,
-  footerLine: 1.4,
-
-  authorChipSize: 16,
-  authorChipWeight: 700,
-  authorChipPadY: 4,
-  authorChipPadX: 11,
-  authorChipRadius: 12,
-
-  highlightPadY: 3,
-  highlightPadX: 10,
-  highlightRadius: 6,
+  coverShadow: "0 15px 35px rgba(243, 146, 0, 0.15)",
 
   titleColor: "#1A1A1A",
   subtitleColor: "#F39200",
   paragraphColor: "#4A4A4A",
   footerTextColor: "#8B8880",
 
+  titleFontSize: 28,
+  titleLineHeight: 1.2,
+  titleWeight: 700,
+  titleLetterSpacing: "-0.5px",
+
+  subtitleFontSize: 18,
+  subtitleLineHeight: 1.4,
+  subtitleWeight: 600,
+  subtitleLetterSpacing: "0.15px",
+
+  paragraphFontSize: 18,
+  paragraphLineHeight: 1.7,
+  paragraphWeight: 400,
+  paragraphLetterSpacing: "0.2px",
+
+  footerFontSize: 14,
+  footerLineHeight: 1.4,
+
   authorChipBg: "#FFF3E0",
   authorChipColor: "#E65100",
+  authorChipPaddingY: 4,
+  authorChipPaddingX: 11,
+  authorChipRadius: 12,
+  authorChipWeight: 700,
+  authorChipSize: 16,
+  authorChipLetterSpacing: "0.3px",
 
-  paper: "#F9F9F9",
-  background: "#FFFFFF",
-  border: "#F39200",
-
-  blockBackground: "linear-gradient(145deg, #FFFFFF 0%, #F5F5F5 100%)",
-  blockBorder: "rgba(26, 26, 26, 0.05)",
-  blockShadow: "0 8px 24px rgba(0, 0, 0, 0.03)",
-
-  coverBorder: "#EAEAEA",
-  coverShadow: "0 15px 35px rgba(243, 146, 0, 0.15)",
+  highlightPaddingY: 3,
+  highlightPaddingX: 10,
+  highlightRadius: 6,
+  highlightWeight: 700,
+  highlightShadow: "0 4px 12px rgba(243, 146, 0, 0.1)",
 
   universalPalette: [
     { name: "Clarity Orange", bg: "#F39200", ink: "#FFFFFF" },
@@ -84,64 +90,59 @@ const APP_BASE = {
     { name: "Logic Blue", bg: "#0284C7", ink: "#FFFFFF" },
     { name: "Graphite Truth", bg: "#2C2C2C", ink: "#FFFFFF" },
     { name: "Morning Yellow", bg: "#FBBF24", ink: "#1A1A1A" }
-  ]
+  ],
+
+  minContrastAA: 8.0
 };
 
-const PNG = {
-  canvasWidth: 1080,
-  canvasHeight: 1920,
-  scale: 1.73
-};
+const PX = {
+  canvasWidth: APP.cardWidth * APP.scale,
+  canvasHeight: APP.cardHeight * APP.scale,
 
-const SCALED = {
-  shellWidth: Math.round(APP_BASE.cardWidth * PNG.scale),
-  shellHeight: Math.round(APP_BASE.cardHeight * PNG.scale),
-  shellRadius: Math.round(APP_BASE.cardRadius * PNG.scale),
+  outerPad: APP.paddingCard * APP.scale,
+  gap: APP.gapBetweenBlocks * APP.scale,
 
-  outerPad: Math.round(APP_BASE.paddingCard * PNG.scale),
-  gap: Math.round(APP_BASE.gapBetweenBlocks * PNG.scale),
+  radius: APP.cardRadius * APP.scale,
+  blockRadius: APP.blockRadius * APP.scale,
 
-  blockRadius: Math.round(APP_BASE.blockRadius * PNG.scale),
+  block1PadY: APP.block1PaddingY * APP.scale,
+  block1PadX: APP.block1PaddingX * APP.scale,
+  block2PadY: APP.block2PaddingY * APP.scale,
+  block2PadX: APP.block2PaddingX * APP.scale,
 
-  block1PadY: Math.round(APP_BASE.block1PaddingY * PNG.scale),
-  block1PadX: Math.round(APP_BASE.block1PaddingX * PNG.scale),
-  block2PadY: Math.round(APP_BASE.block2PaddingY * PNG.scale),
-  block2PadX: Math.round(APP_BASE.block2PaddingX * PNG.scale),
+  coverWidth: APP.coverWidth * APP.scale,
+  coverMinWidth: Math.round(APP.coverWidth * APP.scale * 0.84),
+  coverMaxHeight: APP.coverMaxHeight * APP.scale,
+  coverRadius: APP.coverRadius * APP.scale,
+  coverMarginBottom: APP.coverMarginBottom * APP.scale,
+  coverMarginLeft: APP.coverMarginLeft * APP.scale,
 
-  coverWidth: Math.round(APP_BASE.coverWidth * PNG.scale),
-  coverMinWidth: Math.round(APP_BASE.coverWidth * 1.35),
-  coverMaxHeight: Math.round(APP_BASE.coverMaxHeight * PNG.scale),
-  coverRadius: Math.round(APP_BASE.coverRadius * PNG.scale),
-  coverMarginBottom: Math.round(APP_BASE.coverMarginBottom * PNG.scale),
-  coverMarginLeft: Math.round(APP_BASE.coverMarginLeft * PNG.scale),
+  titleSize: APP.titleFontSize * APP.scale,
+  titleMinSize: Math.round(APP.titleFontSize * APP.scale * 0.82),
 
-  titleSize: Math.round(APP_BASE.titleSize * PNG.scale),
-  titleMinSize: Math.round(APP_BASE.titleSize * PNG.scale * 0.84),
+  subtitleSize: APP.subtitleFontSize * APP.scale,
+  subtitleMinSize: Math.round(APP.subtitleFontSize * APP.scale * 0.84),
 
-  subtitleSize: Math.round(APP_BASE.subtitleSize * PNG.scale),
-  subtitleMinSize: Math.round(APP_BASE.subtitleSize * PNG.scale * 0.86),
+  paragraphSize: APP.paragraphFontSize * APP.scale,
+  paragraphMinSize: Math.round(APP.paragraphFontSize * APP.scale * 0.84),
 
-  paragraphSize: Math.round(APP_BASE.paragraphSize * PNG.scale),
-  paragraphMinSize: Math.round(APP_BASE.paragraphSize * PNG.scale * 0.86),
+  footerSize: APP.footerFontSize * APP.scale,
+  footerLogoHeight: 24 * APP.scale,
+  footerHeight: 74 * APP.scale,
 
-  authorChipSize: Math.round(APP_BASE.authorChipSize * PNG.scale),
-  authorChipMinSize: Math.round(APP_BASE.authorChipSize * PNG.scale * 0.85),
+  authorChipSize: APP.authorChipSize * APP.scale,
+  authorChipMinSize: Math.round(APP.authorChipSize * APP.scale * 0.84),
+  authorChipPadY: APP.authorChipPaddingY * APP.scale,
+  authorChipPadX: APP.authorChipPaddingX * APP.scale,
+  authorChipRadius: APP.authorChipRadius * APP.scale,
 
-  authorChipPadY: Math.round(APP_BASE.authorChipPadY * PNG.scale),
-  authorChipPadX: Math.round(APP_BASE.authorChipPadX * PNG.scale),
-  authorChipRadius: Math.round(APP_BASE.authorChipRadius * PNG.scale),
-
-  footerHeight: Math.round(74 * PNG.scale),
-  footerLogoHeight: Math.round(24 * PNG.scale),
-  footerTextSize: Math.round(APP_BASE.footerSize * PNG.scale),
-
-  highlightPadY: Math.max(2, Math.round(APP_BASE.highlightPadY * PNG.scale)),
-  highlightPadX: Math.max(4, Math.round(APP_BASE.highlightPadX * PNG.scale)),
-  highlightRadius: Math.round(APP_BASE.highlightRadius * PNG.scale)
+  highlightPadY: Math.max(2, APP.highlightPaddingY * APP.scale),
+  highlightPadX: Math.max(4, APP.highlightPaddingX * APP.scale),
+  highlightRadius: APP.highlightRadius * APP.scale
 };
 
 /* ═══════════════════════════════════════════════════════════════
-   HELPERS DE ARCHIVO
+   HELPERS
 ═══════════════════════════════════════════════════════════════ */
 
 async function fileExists(filePath) {
@@ -163,44 +164,6 @@ async function resolveContenidoPath() {
 
   return null;
 }
-
-async function fileToDataURL(filePath) {
-  const absPath = path.resolve(filePath);
-  const ext = path.extname(absPath).toLowerCase();
-
-  const mime =
-    ext === ".png" ? "image/png" :
-    ext === ".jpg" || ext === ".jpeg" ? "image/jpeg" :
-    ext === ".webp" ? "image/webp" :
-    null;
-
-  if (!mime) return "";
-
-  const buffer = await fs.readFile(absPath);
-  return `data:${mime};base64,${buffer.toString("base64")}`;
-}
-
-async function resolveLogoDataURL() {
-  const candidates = [
-    "public/trigguiletrascolor3.png",
-    "public/trigguiletras2.png",
-    "public/trigguiletras.png",
-    "public/trigguiletrasblanco.png",
-    "public/trigguiletrasblanco2.png"
-  ];
-
-  for (const candidate of candidates) {
-    if (await fileExists(candidate)) {
-      return await fileToDataURL(candidate);
-    }
-  }
-
-  return "";
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   HELPERS DE TEXTO
-═══════════════════════════════════════════════════════════════ */
 
 function escapeHTML(text) {
   if (text == null) return "";
@@ -275,7 +238,7 @@ function ensureOneHighlight(text) {
   const segments = plain
     .split(/(?<=[.!?])\s+/)
     .map((s) => s.trim())
-    .filter((s) => s.length >= 22);
+    .filter((s) => s.length >= 18);
 
   const chosen = segments[0] || plain;
   if (!chosen) return normalized;
@@ -290,40 +253,18 @@ function sanitizeShortText(text, fallback = "") {
     .replace(/\s+/g, " ")
     .trim()
     .replace(/^[,.;:!?·\-\s]+|[,.;:!?·\-\s]+$/g, "");
-
   return value || fallback;
 }
 
-function renderHighlightHTML(text) {
-  const normalized = ensureOneHighlight(text);
-  if (!normalized) return "";
-
-  const re = /\[H\](.*?)\[\/H\]/gis;
-  let out = "";
-  let last = 0;
-  let match;
-
-  while ((match = re.exec(normalized)) !== null) {
-    const before = normalized.slice(last, match.index);
-    if (before) out += escapeWithBreaks(before);
-
-    const inner = String(match[1] || "").trim();
-    if (inner) {
-      out += `<span class="highlight">${escapeWithBreaks(inner)}</span>`;
-    }
-
-    last = re.lastIndex;
-  }
-
-  const after = normalized.slice(last);
-  if (after) out += escapeWithBreaks(after);
-
-  return out;
+function hexToRgb(hex) {
+  const clean = String(hex || "").trim();
+  if (!/^#[0-9a-fA-F]{6}$/.test(clean)) return null;
+  return {
+    r: parseInt(clean.slice(1, 3), 16),
+    g: parseInt(clean.slice(3, 5), 16),
+    b: parseInt(clean.slice(5, 7), 16)
+  };
 }
-
-/* ═══════════════════════════════════════════════════════════════
-   HELPERS DE COLOR
-═══════════════════════════════════════════════════════════════ */
 
 function luminance(hex) {
   const safe = /^#[0-9a-fA-F]{6}$/.test(String(hex || "")) ? String(hex) : "#000000";
@@ -342,43 +283,11 @@ function contrastRatio(hex1, hex2) {
   return (lighter + 0.05) / (darker + 0.05);
 }
 
-function bestInkFor(bg, preferred, minAA = 7) {
+function bestInkFor(bg, preferred, minAA = APP.minContrastAA) {
   if (preferred && contrastRatio(preferred, bg) >= minAA) return preferred;
   const black = "#000000";
   const white = "#FFFFFF";
   return contrastRatio(black, bg) >= contrastRatio(white, bg) ? black : white;
-}
-
-function hexToRgb(hex) {
-  const clean = String(hex || "").trim();
-  if (!/^#[0-9a-fA-F]{6}$/.test(clean)) return null;
-
-  return {
-    r: parseInt(clean.slice(1, 3), 16),
-    g: parseInt(clean.slice(3, 5), 16),
-    b: parseInt(clean.slice(5, 7), 16)
-  };
-}
-
-function toRgba(hex, alpha = 1) {
-  const rgb = hexToRgb(hex);
-  if (!rgb) return `rgba(0,0,0,${alpha})`;
-  return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
-}
-
-function mixHex(hexA, hexB, weight = 0.5) {
-  const a = hexToRgb(hexA);
-  const b = hexToRgb(hexB);
-  if (!a || !b) return hexA || hexB || "#000000";
-
-  const w = Math.max(0, Math.min(1, weight));
-  const rgb = {
-    r: Math.round(a.r * (1 - w) + b.r * w),
-    g: Math.round(a.g * (1 - w) + b.g * w),
-    b: Math.round(a.b * (1 - w) + b.b * w)
-  };
-
-  return `#${[rgb.r, rgb.g, rgb.b].map((v) => v.toString(16).padStart(2, "0")).join("")}`;
 }
 
 function hash32(s) {
@@ -412,16 +321,69 @@ function shuffleDeterministic(arr, seed) {
 
 function pickHighlightStyle(seedText) {
   const seed = hash32(seedText || "triggui");
-  const preset = shuffleDeterministic(APP_BASE.universalPalette, seed)[0];
+  const preset = shuffleDeterministic(APP.universalPalette, seed)[0];
   return {
     bg: preset.bg,
-    ink: bestInkFor(preset.bg, preset.ink, 7)
+    ink: bestInkFor(preset.bg, preset.ink, APP.minContrastAA)
   };
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   HELPERS DE CONTENIDO
-═══════════════════════════════════════════════════════════════ */
+async function fileToDataURL(filePath) {
+  const absPath = path.resolve(filePath);
+  const ext = path.extname(absPath).toLowerCase();
+  const mime =
+    ext === ".png" ? "image/png" :
+    ext === ".jpg" || ext === ".jpeg" ? "image/jpeg" :
+    ext === ".webp" ? "image/webp" :
+    null;
+
+  if (!mime) return "";
+  const buffer = await fs.readFile(absPath);
+  return `data:${mime};base64,${buffer.toString("base64")}`;
+}
+
+async function resolveLogoDataURL() {
+  const candidates = [
+    "public/trigguiletrascolor3.png",
+    "public/trigguiletras2.png",
+    "public/trigguiletras.png",
+    "public/trigguiletrasblanco.png",
+    "public/trigguiletrasblanco2.png"
+  ];
+
+  for (const candidate of candidates) {
+    if (await fileExists(candidate)) return fileToDataURL(candidate);
+  }
+
+  return "";
+}
+
+function renderHighlightHTML(text) {
+  const normalized = ensureOneHighlight(text);
+  if (!normalized) return "";
+
+  const re = /\[H\](.*?)\[\/H\]/gis;
+  let out = "";
+  let last = 0;
+  let match;
+
+  while ((match = re.exec(normalized)) !== null) {
+    const before = normalized.slice(last, match.index);
+    if (before) out += escapeWithBreaks(before);
+
+    const inner = String(match[1] || "").trim();
+    if (inner) {
+      out += `<span class="highlight">${escapeWithBreaks(inner)}</span>`;
+    }
+
+    last = re.lastIndex;
+  }
+
+  const after = normalized.slice(last);
+  if (after) out += escapeWithBreaks(after);
+
+  return out;
+}
 
 function resolvePortadaURL(bookMeta, libro) {
   return (
@@ -472,8 +434,8 @@ if (!(await fileExists("/tmp/triggui-book.json"))) {
 
 const bookMeta = JSON.parse(await fs.readFile("/tmp/triggui-book.json", "utf8"));
 const contenido = JSON.parse(await fs.readFile(contenidoPath, "utf8"));
-
 const libro = contenido?.libros?.[0];
+
 if (!libro) {
   console.error(`❌ No hay libro en ${contenidoPath}`);
   process.exit(1);
@@ -492,7 +454,7 @@ console.log(`🎨 Generando tarjeta PNG: "${bookMeta.titulo || libro.titulo}"`);
 console.log(`🧾 Fuente JSON: ${contenidoPath}`);
 
 /* ═══════════════════════════════════════════════════════════════
-   BUILD HTML FROM TEMPLATE
+   HTML
 ═══════════════════════════════════════════════════════════════ */
 
 const template = await fs.readFile("scripts/templates/tarjeta.html", "utf8");
@@ -503,15 +465,19 @@ const logoDataURL = await resolveLogoDataURL();
 const display = buildPresentationCopy(libro, bookMeta);
 const style = libro?.tarjeta?.style || libro?.tarjeta_presentacion?.style || {};
 
-const accent = style.accent || APP_BASE.subtitleColor;
+const accent = style.accent || APP.subtitleColor;
 const subtitleColor = style.subtitleColor || accent;
-const authorChipBg = style.authorChipBg || mixHex(accent, "#FFFFFF", 0.82);
-const authorChipColor = style.authorChipColor || mixHex(accent, "#7A3C00", 0.18);
+const titleColor = style.titleColor || APP.titleColor;
+const paragraphColor = style.paragraphColor || APP.paragraphColor;
+
+const chipBg = style.authorChipBg || APP.authorChipBg;
+const chipColor = style.authorChipColor || APP.authorChipColor;
+
 const highlight = pickHighlightStyle(`${slug}__${display.top}__${display.bottom}`);
 
 const portadaSection = portadaURL
   ? `<img class="cover" src="${portadaURL}" alt="Portada de ${escapeHTML(bookMeta.titulo || libro.titulo || "")}" />`
-  : "";
+  : `<div class="cover-fallback">Triggui</div>`;
 
 const footerSection = logoDataURL
   ? `
@@ -535,73 +501,72 @@ let html = template
   .replace("{{FOOTER_SECTION}}", footerSection);
 
 const cssVars = [
-  `--canvas-bg: ${toRgba("#000000", 0.98)}`,
-  `--shell-width: ${SCALED.shellWidth}px`,
-  `--shell-height: ${SCALED.shellHeight}px`,
-  `--shell-radius: ${SCALED.shellRadius}px`,
-  `--shell-bg: ${APP_BASE.paper}`,
-  `--shell-border: rgba(255,255,255,0.08)`,
+  `--canvas-width: ${PX.canvasWidth}px`,
+  `--canvas-height: ${PX.canvasHeight}px`,
+  `--outer-pad: ${PX.outerPad}px`,
+  `--gap-between-blocks: ${PX.gap}px`,
+  `--shell-radius: ${PX.radius}px`,
+  `--block-radius: ${PX.blockRadius}px`,
 
-  `--outer-pad: ${SCALED.outerPad}px`,
-  `--gap-between-blocks: ${SCALED.gap}px`,
+  `--hero-pad-y: ${PX.block1PadY}px`,
+  `--hero-pad-x: ${PX.block1PadX}px`,
+  `--action-pad-y: ${PX.block2PadY}px`,
+  `--action-pad-x: ${PX.block2PadX}px`,
 
-  `--card-bg: ${APP_BASE.blockBackground}`,
-  `--card-border: ${APP_BASE.blockBorder}`,
-  `--card-shadow: ${APP_BASE.blockShadow}`,
-  `--card-radius: ${SCALED.blockRadius}px`,
+  `--cover-width: ${PX.coverWidth}px`,
+  `--cover-max-height: ${PX.coverMaxHeight}px`,
+  `--cover-radius: ${PX.coverRadius}px`,
+  `--cover-margin-bottom: ${PX.coverMarginBottom}px`,
+  `--cover-margin-left: ${PX.coverMarginLeft}px`,
 
-  `--hero-pad-y: ${SCALED.block1PadY}px`,
-  `--hero-pad-x: ${SCALED.block1PadX}px`,
-  `--action-pad-y: ${SCALED.block2PadY}px`,
-  `--action-pad-x: ${SCALED.block2PadX}px`,
+  `--title-size: ${PX.titleSize}px`,
+  `--subtitle-size: ${PX.subtitleSize}px`,
+  `--paragraph-size: ${PX.paragraphSize}px`,
+  `--footer-size: ${PX.footerSize}px`,
+  `--footer-height: ${PX.footerHeight}px`,
+  `--footer-logo-height: ${PX.footerLogoHeight}px`,
 
-  `--cover-width: ${SCALED.coverWidth}px`,
-  `--cover-max-height: ${SCALED.coverMaxHeight}px`,
-  `--cover-radius: ${SCALED.coverRadius}px`,
-  `--cover-margin-bottom: ${SCALED.coverMarginBottom}px`,
-  `--cover-margin-left: ${SCALED.coverMarginLeft}px`,
-  `--cover-shadow: ${APP_BASE.coverShadow}`,
+  `--author-chip-size: ${PX.authorChipSize}px`,
+  `--author-chip-pad-y: ${PX.authorChipPadY}px`,
+  `--author-chip-pad-x: ${PX.authorChipPadX}px`,
+  `--author-chip-radius: ${PX.authorChipRadius}px`,
 
-  `--title-size: ${SCALED.titleSize}px`,
-  `--author-size: ${SCALED.authorChipSize}px`,
-  `--subtitle-size: ${SCALED.subtitleSize}px`,
-  `--paragraph-size: ${SCALED.paragraphSize}px`,
-  `--footer-size: ${SCALED.footerTextSize}px`,
-  `--footer-height: ${SCALED.footerHeight}px`,
-  `--footer-logo-height: ${SCALED.footerLogoHeight}px`,
+  `--highlight-pad-y: ${PX.highlightPadY}px`,
+  `--highlight-pad-x: ${PX.highlightPadX}px`,
+  `--highlight-radius: ${PX.highlightRadius}px`,
 
-  `--title-color: ${style.titleColor || APP_BASE.titleColor}`,
+  `--paper: ${APP.paper}`,
+  `--background: ${APP.background}`,
+  `--border: ${APP.border}`,
+  `--block-background: ${APP.blockBackground}`,
+  `--block-border: ${APP.blockBorder}`,
+  `--block-shadow: ${APP.blockShadow}`,
+  `--cover-shadow: ${APP.coverShadow}`,
+
+  `--title-color: ${titleColor}`,
   `--subtitle-color: ${subtitleColor}`,
-  `--paragraph-color: ${style.paragraphColor || APP_BASE.paragraphColor}`,
-  `--footer-color: ${APP_BASE.footerTextColor}`,
-
-  `--author-chip-bg: ${authorChipBg}`,
-  `--author-chip-color: ${authorChipColor}`,
-  `--author-chip-pad-y: ${SCALED.authorChipPadY}px`,
-  `--author-chip-pad-x: ${SCALED.authorChipPadX}px`,
-  `--author-chip-radius: ${SCALED.authorChipRadius}px`,
+  `--paragraph-color: ${paragraphColor}`,
+  `--footer-color: ${APP.footerTextColor}`,
+  `--author-chip-bg: ${chipBg}`,
+  `--author-chip-color: ${chipColor}`,
 
   `--highlight-bg: ${highlight.bg}`,
   `--highlight-ink: ${highlight.ink}`,
-  `--highlight-pad-y: ${SCALED.highlightPadY}px`,
-  `--highlight-pad-x: ${SCALED.highlightPadX}px`,
-  `--highlight-radius: ${SCALED.highlightRadius}px`,
-  `--highlight-shadow: 0 4px 12px rgba(0,0,0,0.10)`
+  `--highlight-shadow: ${APP.highlightShadow}`
 ].join("; ");
 
 html = html.replace("<body>", `<body style="${cssVars}">`);
 
 /* ═══════════════════════════════════════════════════════════════
-   RENDER CON PLAYWRIGHT
+   RENDER
 ═══════════════════════════════════════════════════════════════ */
 
-console.log("   🖥️  Iniciando Chrome headless...");
 const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage();
 
 await page.setViewportSize({
-  width: PNG.canvasWidth,
-  height: PNG.canvasHeight
+  width: PX.canvasWidth,
+  height: PX.canvasHeight
 });
 
 await page.setContent(html, { waitUntil: "networkidle" });
@@ -615,80 +580,62 @@ await page.evaluate(async () => {
 if (portadaURL) {
   try {
     await page.waitForSelector(".cover", { state: "visible", timeout: 10000 });
-    await page.waitForTimeout(250);
+    await page.waitForTimeout(200);
   } catch {
-    console.log("   ⚠️  Portada no cargó en 10s — continuando sin ella");
+    console.log("   ⚠️ Portada no cargó en 10s — continuando");
   }
 }
 
 await page.evaluate((limits) => {
-  const shellBody = document.getElementById("shellBody");
-  const heroCard = document.getElementById("heroCard");
+  const shell = document.getElementById("shell");
+  const body = document.getElementById("shellBody");
+  const hero = document.getElementById("heroCard");
   const heroContent = document.getElementById("heroContent");
-  const actionCard = document.getElementById("actionCard");
+  const action = document.getElementById("actionCard");
   const actionContent = document.getElementById("actionContent");
-  const footerCard = document.getElementById("footerCard");
+  const footer = document.getElementById("footerCard");
 
   const title = document.getElementById("title");
-  const authorChip = document.getElementById("authorChip");
-  const topParagraph = document.getElementById("parrafoTop");
+  const author = document.getElementById("authorChip");
   const subtitle = document.getElementById("subtitle");
-  const bottomParagraph = document.getElementById("parrafoBot");
+  const top = document.getElementById("parrafoTop");
+  const bottom = document.getElementById("parrafoBot");
   const cover = document.querySelector(".cover");
 
-  const px = (el, prop) => {
-    if (!el) return 0;
-    return parseFloat(getComputedStyle(el)[prop]) || 0;
-  };
-
-  const setPx = (el, prop, value) => {
-    if (!el) return;
-    el.style[prop] = `${value}px`;
-  };
+  const px = (el, prop) => el ? (parseFloat(getComputedStyle(el)[prop]) || 0) : 0;
+  const setPx = (el, prop, value) => { if (el) el.style[prop] = `${value}px`; };
 
   let guard = 0;
-  while (
-    (
-      (heroContent && heroContent.scrollHeight > heroContent.clientHeight) ||
-      (actionContent && actionContent.scrollHeight > actionContent.clientHeight) ||
-      (shellBody && shellBody.scrollHeight > shellBody.clientHeight)
-    ) &&
-    guard < 240
-  ) {
+  while (body.scrollHeight > body.clientHeight && guard < 220) {
     let changed = false;
 
     const titleSize = px(title, "fontSize");
-    const authorSize = px(authorChip, "fontSize");
-    const subtitleSize = px(subtitle, "fontSize");
-    const topSize = px(topParagraph, "fontSize");
-    const bottomSize = px(bottomParagraph, "fontSize");
+    const paraTop = px(top, "fontSize");
+    const paraBottom = px(bottom, "fontSize");
+    const subSize = px(subtitle, "fontSize");
+    const authorSize = px(author, "fontSize");
     const coverWidth = px(cover, "width");
 
     if (title && titleSize > limits.titleMin) {
       setPx(title, "fontSize", titleSize - 0.45);
       changed = true;
     }
-
-    if (topParagraph && topSize > limits.paragraphMin) {
-      setPx(topParagraph, "fontSize", topSize - 0.18);
+    if (top && paraTop > limits.paragraphMin) {
+      setPx(top, "fontSize", paraTop - 0.18);
       changed = true;
     }
-
-    if (bottomParagraph && bottomSize > limits.paragraphMin) {
-      setPx(bottomParagraph, "fontSize", bottomSize - 0.18);
+    if (bottom && paraBottom > limits.paragraphMin) {
+      setPx(bottom, "fontSize", paraBottom - 0.18);
       changed = true;
     }
-
-    if (subtitle && subtitleSize > limits.subtitleMin && guard % 2 === 0) {
-      setPx(subtitle, "fontSize", subtitleSize - 0.16);
+    if (subtitle && subSize > limits.subtitleMin && guard % 2 === 0) {
+      setPx(subtitle, "fontSize", subSize - 0.14);
       changed = true;
     }
-
-    if (authorChip && authorSize > limits.authorMin && guard % 3 === 0) {
-      setPx(authorChip, "fontSize", authorSize - 0.10);
+    if (author && authorSize > limits.authorMin && guard % 3 === 0) {
+      setPx(author, "fontSize", authorSize - 0.10);
       changed = true;
     }
-
     if (cover && coverWidth > limits.coverMin && guard % 3 === 0) {
       setPx(cover, "width", coverWidth - 0.5);
       changed = true;
@@ -698,42 +645,40 @@ await page.evaluate((limits) => {
     guard += 1;
   }
 
-  const totalHeight = shellBody.clientHeight;
-  const gap = parseFloat(getComputedStyle(shellBody).gap) || 18;
-  const footerHeight = footerCard.getBoundingClientRect().height;
-  const remaining = totalHeight - footerHeight - gap * 2;
+  const gap = parseFloat(getComputedStyle(body).gap) || 28;
+  const footerHeight = footer.getBoundingClientRect().height;
+  const available = body.clientHeight - footerHeight - gap * 2;
 
-  const heroDesired = Math.ceil(heroContent.scrollHeight + 12);
-  const actionDesired = Math.ceil(actionContent.scrollHeight + 12);
+  const heroNeed = Math.ceil(heroContent.scrollHeight + 8);
+  const actionNeed = Math.ceil(actionContent.scrollHeight + 8);
 
-  let heroHeight;
-  let actionHeight;
+  let heroHeight = heroNeed;
+  let actionHeight = actionNeed;
 
-  if (heroDesired + actionDesired <= remaining) {
-    const extra = remaining - (heroDesired + actionDesired);
-    heroHeight = heroDesired + Math.round(extra * 0.50);
-    actionHeight = actionDesired + (extra - Math.round(extra * 0.50));
+  if (heroNeed + actionNeed <= available) {
+    const extra = available - (heroNeed + actionNeed);
+    heroHeight += Math.round(extra * 0.48);
+    actionHeight += extra - Math.round(extra * 0.48);
   } else {
-    heroHeight = Math.max(300, Math.round(remaining * 0.55));
-    actionHeight = remaining - heroHeight;
+    heroHeight = Math.max(360, Math.round(available * 0.56));
+    actionHeight = available - heroHeight;
   }
 
-  heroCard.style.height = `${heroHeight}px`;
-  actionCard.style.height = `${actionHeight}px`;
+  hero.style.height = `${heroHeight}px`;
+  action.style.height = `${actionHeight}px`;
 
   let guardBottom = 0;
-  while (actionContent && actionContent.scrollHeight > actionContent.clientHeight && guardBottom < 120) {
+  while (actionContent.scrollHeight > actionContent.clientHeight && guardBottom < 100) {
     let changed = false;
-    const subtitleSize = px(subtitle, "fontSize");
-    const bottomSize = px(bottomParagraph, "fontSize");
+    const subSize = px(subtitle, "fontSize");
+    const bottomSize = px(bottom, "fontSize");
 
-    if (subtitle && subtitleSize > limits.subtitleMin) {
-      setPx(subtitle, "fontSize", subtitleSize - 0.14);
+    if (subtitle && subSize > limits.subtitleMin) {
+      setPx(subtitle, "fontSize", subSize - 0.12);
       changed = true;
     }
-
-    if (bottomParagraph && bottomSize > limits.paragraphMin) {
-      setPx(bottomParagraph, "fontSize", bottomSize - 0.18);
+    if (bottom && bottomSize > limits.paragraphMin) {
+      setPx(bottom, "fontSize", bottomSize - 0.15);
       changed = true;
     }
 
@@ -741,36 +686,31 @@ await page.evaluate((limits) => {
     guardBottom += 1;
   }
 
-  if (actionContent && actionContent.scrollHeight > actionContent.clientHeight && bottomParagraph) {
-    const available = actionContent.clientHeight - (subtitle ? subtitle.getBoundingClientRect().height : 0) - 8;
-    const lineHeight = px(bottomParagraph, "lineHeight") || (px(bottomParagraph, "fontSize") * 1.7);
-    const lines = Math.max(4, Math.floor(available / lineHeight));
+  if (actionContent.scrollHeight > actionContent.clientHeight && bottom) {
+    const availableBottom = actionContent.clientHeight - (subtitle ? subtitle.getBoundingClientRect().height : 0) - 8;
+    const lineHeight = px(bottom, "lineHeight") || (px(bottom, "fontSize") * 1.7);
+    const lines = Math.max(3, Math.floor(availableBottom / lineHeight));
 
-    bottomParagraph.style.display = "-webkit-box";
-    bottomParagraph.style.webkitBoxOrient = "vertical";
-    bottomParagraph.style.webkitLineClamp = String(lines);
-    bottomParagraph.style.overflow = "hidden";
+    bottom.style.display = "-webkit-box";
+    bottom.style.webkitBoxOrient = "vertical";
+    bottom.style.webkitLineClamp = String(lines);
+    bottom.style.overflow = "hidden";
   }
 }, {
-  titleMin: SCALED.titleMinSize,
-  subtitleMin: SCALED.subtitleMinSize,
-  paragraphMin: SCALED.paragraphMinSize,
-  authorMin: SCALED.authorChipMinSize,
-  coverMin: SCALED.coverMinWidth
+  titleMin: PX.titleMinSize,
+  subtitleMin: PX.subtitleMinSize,
+  paragraphMin: PX.paragraphMinSize,
+  authorMin: PX.authorChipMinSize,
+  coverMin: PX.coverMinWidth
 });
 
-await page.waitForTimeout(220);
+await page.waitForTimeout(180);
 
 const outPath = path.join(outDir, "tarjeta.png");
 await page.screenshot({
   path: outPath,
   type: "png",
-  clip: {
-    x: 0,
-    y: 0,
-    width: PNG.canvasWidth,
-    height: PNG.canvasHeight
-  }
+  clip: { x: 0, y: 0, width: PX.canvasWidth, height: PX.canvasHeight }
 });
 
 await browser.close();
@@ -778,10 +718,10 @@ await browser.close();
 const stats = await fs.stat(outPath);
 const sizeMB = (stats.size / 1024 / 1024).toFixed(2);
 
-console.log(`\n   ✅ Tarjeta generada: ${outPath}`);
-console.log(`   📏 ${sizeMB} MB | ${PNG.canvasWidth}×${PNG.canvasHeight}px`);
-console.log(`   🎨 Título visible: "${display.title}"`);
-console.log(`   ✍️  Autor: ${display.author}`);
-console.log(`   🖼️  Portada: ${portadaURL ? portadaSource : "tipográfica"}`);
-console.log(`   📝 Top: ${stripHighlightTags(display.top)}`);
-console.log(`   ⚡ Bottom: ${stripHighlightTags(display.bottom)}`);
+console.log(`✅ Tarjeta generada: ${outPath}`);
+console.log(`📏 ${sizeMB} MB | ${PX.canvasWidth}×${PX.canvasHeight}px`);
+console.log(`🎨 Título visible: "${display.title}"`);
+console.log(`✍️ Autor: ${display.author}`);
+console.log(`🖼️ Portada: ${portadaURL ? portadaSource : "tipográfica"}`);
+console.log(`📝 Top: ${stripHighlightTags(display.top)}`);
+console.log(`⚡ Bottom: ${stripHighlightTags(display.bottom)}`);
