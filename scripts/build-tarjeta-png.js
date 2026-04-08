@@ -112,18 +112,22 @@ const PX = {
 
   coverWidth: Math.round(APP.coverWidth * SCALE),
   coverMinWidth: Math.round(APP.coverWidth * SCALE * 0.78),
+  coverMaxWidth: Math.round(APP.coverWidth * SCALE * 1.08),
   coverMaxHeight: Math.round(APP.coverMaxHeight * SCALE),
   coverMarginBottom: Math.round(APP.coverMarginBottom * SCALE),
   coverMarginLeft: Math.round(APP.coverMarginLeft * SCALE),
 
   titleSize: APP.fontTitleSize * SCALE,
   titleMinSize: APP.fontTitleSize * SCALE * 0.78,
+  titleMaxSize: APP.fontTitleSize * SCALE * 1.16,
 
   paragraphSize: APP.fontParagraphSize * SCALE,
   paragraphMinSize: APP.fontParagraphSize * SCALE * 0.80,
+  paragraphMaxSize: APP.fontParagraphSize * SCALE * 1.12,
 
   authorChipSize: APP.authorChipSize * SCALE,
   authorChipMinSize: APP.authorChipSize * SCALE * 0.84,
+  authorChipMaxSize: APP.authorChipSize * SCALE * 1.08,
   authorChipPadY: APP.authorChipPadY * SCALE,
   authorChipPadX: APP.authorChipPadX * SCALE,
   authorChipRadius: APP.authorChipRadius * SCALE,
@@ -209,6 +213,29 @@ function escapeWithBreaks(text) {
 
 function normalizeText(text) {
   return String(text || "").replace(/\s+/g, " ").trim();
+}
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function lerp(start, end, t) {
+  return start + ((end - start) * t);
+}
+
+function computeInitialLayoutMetrics(display, hasCover) {
+  const titleLen = normalizeText(display.title).length;
+  const authorLen = normalizeText(display.author).length;
+  const bodyLen = normalizeText(display.bodyPlain).length;
+  const density = (titleLen * 1.9) + (authorLen * 0.5) + bodyLen + (hasCover ? 36 : 0);
+  const ratio = clamp((density - 175) / 255, 0, 1);
+
+  return {
+    titleSize: clamp(lerp(PX.titleMaxSize, PX.titleSize * 0.96, ratio), PX.titleMinSize, PX.titleMaxSize),
+    paragraphSize: clamp(lerp(PX.paragraphMaxSize, PX.paragraphSize * 0.93, ratio), PX.paragraphMinSize, PX.paragraphMaxSize),
+    authorSize: clamp(lerp(PX.authorChipMaxSize, PX.authorChipSize * 0.96, ratio), PX.authorChipMinSize, PX.authorChipMaxSize),
+    coverWidth: clamp(lerp(PX.coverMaxWidth, PX.coverWidth * 0.90, ratio), PX.coverMinWidth, PX.coverMaxWidth)
+  };
 }
 
 function normalizeHighlightSyntax(input) {
@@ -494,6 +521,8 @@ const chipBg = style.authorChipBg || APP.authorChipBg;
 const chipColor = style.authorChipColor || APP.authorChipColor;
 const highlight = pickHighlightStyle(`${slug}__${display.bodyPlain}`);
 
+const initialLayout = computeInitialLayoutMetrics(display, Boolean(portadaURL));
+
 const portadaSection = portadaURL
   ? `<img class="cover" src="${portadaURL}" alt="Portada de ${escapeHTML(bookMeta.titulo || libro.titulo || "")}" />`
   : `<div class="cover-fallback">Triggui</div>`;
@@ -525,13 +554,13 @@ const cssVars = [
   `--block-radius:${PX.blockRadius}px`,
   `--block-pad-y:${PX.blockPadY}px`,
   `--block-pad-x:${PX.blockPadX}px`,
-  `--cover-width:${PX.coverWidth}px`,
+  `--cover-width:${initialLayout.coverWidth}px`,
   `--cover-max-height:${PX.coverMaxHeight}px`,
   `--cover-margin-bottom:${PX.coverMarginBottom}px`,
   `--cover-margin-left:${PX.coverMarginLeft}px`,
-  `--title-size:${PX.titleSize}px`,
-  `--paragraph-size:${PX.paragraphSize}px`,
-  `--author-chip-size:${PX.authorChipSize}px`,
+  `--title-size:${initialLayout.titleSize}px`,
+  `--paragraph-size:${initialLayout.paragraphSize}px`,
+  `--author-chip-size:${initialLayout.authorSize}px`,
   `--author-chip-pad-y:${PX.authorChipPadY}px`,
   `--author-chip-pad-x:${PX.authorChipPadX}px`,
   `--author-chip-radius:${PX.authorChipRadius}px`,
@@ -595,48 +624,117 @@ await page.evaluate((limits) => {
   const title = document.getElementById("title");
   const author = document.getElementById("authorChip");
   const body = document.getElementById("bodyText");
-  const cover = document.querySelector(".cover");
+  const coverWrap = document.getElementById("coverWrap");
 
   const px = (el, prop) => el ? (parseFloat(getComputedStyle(el)[prop]) || 0) : 0;
   const setPx = (el, prop, value) => { if (el) el.style[prop] = `${value}px`; };
+  const hasOverflow = () => content && (content.scrollHeight - content.clientHeight) > 0.5;
+  const slack = () => content ? (content.clientHeight - content.scrollHeight) : 0;
+
+  const textGapToCover = () => {
+    if (!coverWrap || coverWrap.offsetHeight <= 0) return 0;
+    const coverRect = coverWrap.getBoundingClientRect();
+    const candidates = [title, author, body].filter(Boolean);
+    if (!candidates.length) return 0;
+    const textBottom = Math.max(...candidates.map((el) => el.getBoundingClientRect().bottom));
+    return coverRect.bottom - textBottom;
+  };
+
+  const snapshot = () => ({
+    title: px(title, "fontSize"),
+    body: px(body, "fontSize"),
+    author: px(author, "fontSize"),
+    cover: px(coverWrap, "width")
+  });
+
+  const apply = (state) => {
+    if (title) setPx(title, "fontSize", state.title);
+    if (body) setPx(body, "fontSize", state.body);
+    if (author) setPx(author, "fontSize", state.author);
+    if (coverWrap) setPx(coverWrap, "width", state.cover);
+  };
 
   let guard = 0;
-  while (content && content.scrollHeight > content.clientHeight && guard < 240) {
+  while (hasOverflow() && guard < 260) {
+    const state = snapshot();
     let changed = false;
 
-    const titleSize = px(title, "fontSize");
-    const bodySize = px(body, "fontSize");
-    const authorSize = px(author, "fontSize");
-    const coverWidth = px(cover, "width");
-
-    if (title && titleSize > limits.titleMin) {
-      setPx(title, "fontSize", titleSize - 0.5);
+    if (title && state.title > limits.titleMin) {
+      state.title = Math.max(limits.titleMin, state.title - 0.45);
       changed = true;
     }
 
-    if (body && bodySize > limits.bodyMin) {
-      setPx(body, "fontSize", bodySize - 0.18);
+    if (body && state.body > limits.bodyMin) {
+      state.body = Math.max(limits.bodyMin, state.body - 0.18);
       changed = true;
     }
 
-    if (author && authorSize > limits.authorMin && guard % 2 === 0) {
-      setPx(author, "fontSize", authorSize - 0.10);
+    if (author && state.author > limits.authorMin && guard % 2 === 0) {
+      state.author = Math.max(limits.authorMin, state.author - 0.10);
       changed = true;
     }
 
-    if (cover && coverWidth > limits.coverMin && guard % 3 === 0) {
-      setPx(cover, "width", coverWidth - 0.5);
+    if (coverWrap && state.cover > limits.coverMin && guard % 3 === 0) {
+      state.cover = Math.max(limits.coverMin, state.cover - 0.5);
       changed = true;
     }
 
     if (!changed) break;
+    apply(state);
+    guard += 1;
+  }
+
+  guard = 0;
+  while (!hasOverflow() && guard < 220) {
+    const enoughVerticalUse = slack() <= limits.targetSlack;
+    const enoughCoverWrap = !coverWrap || textGapToCover() <= limits.coverGapTarget;
+    if (enoughVerticalUse && enoughCoverWrap) break;
+
+    const before = snapshot();
+    const next = { ...before };
+    let changed = false;
+
+    if (body && next.body < limits.bodyMax) {
+      next.body = Math.min(limits.bodyMax, next.body + 0.16);
+      changed = true;
+    }
+
+    if (title && next.title < limits.titleMax) {
+      next.title = Math.min(limits.titleMax, next.title + 0.24);
+      changed = true;
+    }
+
+    if (author && next.author < limits.authorMax && guard % 2 === 0) {
+      next.author = Math.min(limits.authorMax, next.author + 0.08);
+      changed = true;
+    }
+
+    if (coverWrap && next.cover < limits.coverMax && guard % 2 === 0) {
+      next.cover = Math.min(limits.coverMax, next.cover + 0.4);
+      changed = true;
+    }
+
+    if (!changed) break;
+
+    apply(next);
+    if (hasOverflow()) {
+      apply(before);
+      break;
+    }
+
     guard += 1;
   }
 }, {
   titleMin: PX.titleMinSize,
+  titleMax: PX.titleMaxSize,
   bodyMin: PX.paragraphMinSize,
+  bodyMax: PX.paragraphMaxSize,
   authorMin: PX.authorChipMinSize,
-  coverMin: PX.coverMinWidth
+  authorMax: PX.authorChipMaxSize,
+  coverMin: PX.coverMinWidth,
+  coverMax: PX.coverMaxWidth,
+  targetSlack: 18,
+  coverGapTarget: 14
 });
 
 await page.waitForTimeout(120);
