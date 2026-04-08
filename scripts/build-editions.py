@@ -94,6 +94,112 @@ def strip_highlight_tags(text):
     return re.sub(r"\[/?H\]", "", str(text or ""), flags=re.IGNORECASE)
 
 
+def normalize_text(text):
+    return re.sub(r"\s+", " ", str(text or "")).strip()
+
+
+def truncate_text(text, limit):
+    value = normalize_text(text)
+    if not value:
+        return ""
+    if len(value) <= limit:
+        return value
+    return value[: max(0, limit - 3)].rstrip(" ,.;:!?-–—") + "..."
+
+
+def strip_explicit_book_refs(text, titulo="", autor=""):
+    value = normalize_text(strip_highlight_tags(text))
+    if not value:
+        return ""
+
+    for term in [titulo, autor]:
+        clean_term = normalize_text(term)
+        if not clean_term:
+            continue
+        value = re.sub(re.escape(clean_term), "", value, flags=re.IGNORECASE)
+
+    value = re.sub(r"\(\s*\)", "", value)
+    value = re.sub(r"\s+([,.;:!?])", r"\1", value)
+    value = re.sub(r"[ \t]{2,}", " ", value)
+    value = value.strip(" \t\n\r,.;:!?·-–—")
+    value = re.sub(r"[ \t]{2,}", " ", value).strip()
+    return value
+
+
+def unique_nonempty(values):
+    out = []
+    seen = set()
+
+    for value in values or []:
+        clean = normalize_text(value)
+        if not clean:
+            continue
+        key = clean.casefold()
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(clean)
+
+    return out
+
+
+def build_og_title(edicion):
+    palabras = unique_nonempty(edicion.get("palabras") or [])
+    if palabras:
+        parts = []
+        total_len = 0
+
+        for palabra in palabras:
+            projected = total_len + len(palabra) + (3 if parts else 0)
+            if len(parts) >= 3 or projected > 58:
+                break
+            parts.append(palabra)
+            total_len = projected
+
+        if parts:
+            return " · ".join(parts)
+
+    frases = unique_nonempty(edicion.get("frases") or [])
+    if frases:
+        return truncate_text(frases[0], 72)
+
+    palabra = normalize_text(edicion.get("palabra", ""))
+    if palabra:
+        return truncate_text(palabra, 72)
+
+    return "Triggui"
+
+
+def build_og_description(edicion):
+    titulo = edicion.get("titulo", "")
+    autor = edicion.get("autor", "")
+    tarjeta = edicion.get("tarjeta", {}) or {}
+
+    candidates = [
+        tarjeta.get("parrafoTop", ""),
+        tarjeta.get("parrafoBot", ""),
+        tarjeta.get("subtitulo", ""),
+        edicion.get("descripcion", ""),
+    ]
+
+    for candidate in candidates:
+        cleaned = strip_explicit_book_refs(candidate, titulo=titulo, autor=autor)
+        if cleaned:
+            return truncate_text(cleaned, 180)
+
+    frases = unique_nonempty(edicion.get("frases") or [])
+    for frase in frases:
+        cleaned = strip_explicit_book_refs(frase, titulo=titulo, autor=autor)
+        if cleaned:
+            return truncate_text(cleaned, 180)
+
+    palabras = unique_nonempty(edicion.get("palabras") or [])
+    if palabras:
+        return truncate_text(" · ".join(palabras[:3]), 180)
+
+    return "Abre esta edición viva de Triggui."
+
+
 def normalize_highlight_syntax(text):
     value = str(text or "").strip()
     if not value:
@@ -210,6 +316,9 @@ def render_edicion(edicion, mode="lab"):
         description_plain = strip_highlight_tags(t_parrafo_bot).strip()
     if not description_plain:
         description_plain = palabra or titulo
+
+    og_title = build_og_title(edicion)
+    og_description = build_og_description(edicion)
 
     busca_comprar = urllib.parse.quote(f"{titulo} {autor}")
     busca_explorar = urllib.parse.quote(palabra) if palabra else busca_comprar
@@ -1164,8 +1273,8 @@ setOverlayView('blocks');
 
     replacements = {
         "__TITLE_PAGE__": esc(f"{palabra} · {titulo} · Triggui"),
-        "__OG_TITLE__": esc(f"{palabra} · {titulo}"),
-        "__META_DESCRIPTION__": esc(description_plain),
+        "__OG_TITLE__": esc(og_title),
+        "__META_DESCRIPTION__": esc(og_description),
         "__OG_IMAGE__": esc(og_image),
         "__OG_URL__": esc(og_url),
         "__BODY_STYLE__": esc(body_style),
