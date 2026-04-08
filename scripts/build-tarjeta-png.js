@@ -1,13 +1,12 @@
 /**
  * build-tarjeta-png.js — Paso 4 del pipeline Triggui 2.0
  *
- * Renderiza una tarjeta PNG vertical real para WhatsApp / Stories.
- * Calibrado para acercarse visualmente a la tarjeta viva:
- * más grande, más cerca, más legible, menos aire inútil.
- *
- * Además:
- * - corrige el error de renderHighlightHTML faltante
- * - evita repetición entre párrafo 1 y párrafo 2 usando fallback inteligente
+ * PNG 1080x1920 homologada visualmente contra la tarjeta viva:
+ * - misma densidad editorial
+ * - misma escala general
+ * - portada y texto más cercanos
+ * - highlight de altura completa
+ * - footer propio PNG con logo + @triggui | triggui.com
  */
 
 import fs from "node:fs/promises";
@@ -15,45 +14,49 @@ import path from "node:path";
 import { chromium } from "playwright";
 
 /* ═══════════════════════════════════════════════════════════════
-   CONFIG VISUAL
+   CONFIG VISUAL HOMOLOGADA A TARJETA VIVA
 ═══════════════════════════════════════════════════════════════ */
 
 const PNG_STYLE = {
-  canvasBg: "#050505",
-  shellBg: "#F7F6F3",
-  shellBorder: "rgba(255,255,255,0.08)",
+  canvasWidth: 1080,
+  canvasHeight: 1920,
+
+  shellWidth: 748,
+  shellHeight: 1820,
   shellRadius: 38,
 
-  heroCardBg: "#FBFAF8",
-  actionCardBg: "#FBFAF8",
-  footerCardBg: "#FBFAF8",
+  shellBg: "#F7F6F3",
+  shellBorder: "rgba(255,255,255,0.08)",
+  canvasBg: "#050505",
+
+  cardBg: "#FBFAF8",
+  cardBorder: "rgba(0,0,0,0.05)",
 
   titleColor: "#1D1D1B",
-  paragraphColor: "#4B4B4B",
-  footerColor: "#8A8A8A",
+  paragraphColor: "#4C4C4C",
+  footerColor: "#8B8B8B",
 
-  outerWidth: 760,
-  outerHeight: 1820,
+  titleSize: 58,
+  titleMinSize: 48,
 
-  coverWidth: 246,
-  coverMinWidth: 188,
+  authorSize: 21,
+  authorMinSize: 18,
+
+  topSize: 28,
+  topMinSize: 24,
+
+  subtitleSize: 23,
+  subtitleMinSize: 20,
+
+  bottomSize: 27,
+  bottomMinSize: 23,
+
+  coverWidth: 164,
+  coverMinWidth: 148,
   coverRadius: 6,
-  coverShadow: "0 16px 34px rgba(0,0,0,0.10)",
+  coverShadow: "0 14px 28px rgba(0,0,0,0.11)",
 
-  titleSize: 72,
-  titleMinSize: 54,
-
-  authorSize: 27,
-  authorMinSize: 20,
-
-  topSize: 36,
-  topMinSize: 28,
-
-  subtitleSize: 31,
-  subtitleMinSize: 24,
-
-  bottomSize: 34,
-  bottomMinSize: 27
+  footerHeight: 186
 };
 
 /* ═══════════════════════════════════════════════════════════════
@@ -135,44 +138,6 @@ function normalizeText(text) {
   return String(text || "").replace(/\s+/g, " ").trim();
 }
 
-function cleanGuidance(text) {
-  let value = normalizeText(text);
-  if (!value) return "";
-
-  value = value.replace(/^\s*(?:[\(\[]?\d+[\)\]]?[\.\-:]?\s*)+/, "");
-  value = value.replace(/^\s*\[?\s*(t[ií]tulo|subt[ií]tulo|p[aá]rrafo(?:\s+breve)?|acci[oó]n)\s*\]?\s*[:\-–]?\s*/i, "");
-  value = value.replace(/^\s*(?:una\s+l[ií]nea\s+de\s+)?(?:t[ií]tulo|subt[ií]tulo|p[aá]rrafo(?:\s+breve)?|acci[oó]n)\s*[:\-–]\s*/i, "");
-
-  return normalizeText(value);
-}
-
-function stripExplicitBookRefs(text, titulo = "", autor = "") {
-  let value = normalizeText(text);
-  if (!value) return "";
-
-  for (const term of [titulo, autor]) {
-    const clean = normalizeText(term);
-    if (!clean) continue;
-    const safe = clean.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    value = value.replace(new RegExp(safe, "gi"), "");
-  }
-
-  value = value
-    .replace(/\s+([,.;:!?])/g, "$1")
-    .replace(/[ \t]{2,}/g, " ")
-    .trim()
-    .replace(/^[,.;:!?·\-\s]+|[,.;:!?·\-\s]+$/g, "");
-
-  return normalizeText(value);
-}
-
-function ensureSentence(text) {
-  const value = normalizeText(text);
-  if (!value) return "";
-  if (/[.!?…]$/.test(value)) return value;
-  return `${value}.`;
-}
-
 function normalizeHighlightSyntax(input) {
   let text = String(input || "").trim();
   if (!text) return "";
@@ -205,7 +170,10 @@ function normalizeHighlightSyntax(input) {
     extraClose -= 1;
   }
 
-  return text.replace(/\[H\]\s*\[\/H\]/g, "").replace(/[ \t]{2,}/g, " ").trim();
+  return text
+    .replace(/\[H\]\s*\[\/H\]/g, "")
+    .replace(/[ \t]{2,}/g, " ")
+    .trim();
 }
 
 function stripHighlightTags(text) {
@@ -226,7 +194,7 @@ function ensureOneHighlight(text) {
   const segments = plain
     .split(/(?<=[.!?])\s+/)
     .map((s) => s.trim())
-    .filter((s) => s.length >= 24);
+    .filter((s) => s.length >= 22);
 
   const chosen = segments[0] || plain;
   if (!chosen) return normalized;
@@ -235,43 +203,40 @@ function ensureOneHighlight(text) {
   return normalizeHighlightSyntax(normalized.replace(new RegExp(safe), `[H]${chosen}[/H]`));
 }
 
-function comparableText(text) {
-  return stripHighlightTags(text)
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9\s]/gi, " ")
+function renderHighlightHTML(text) {
+  const normalized = ensureOneHighlight(text);
+  if (!normalized) return "";
+
+  const re = /\[H\](.*?)\[\/H\]/gis;
+  let out = "";
+  let last = 0;
+  let match;
+
+  while ((match = re.exec(normalized)) !== null) {
+    const before = normalized.slice(last, match.index);
+    if (before) out += escapeWithBreaks(before);
+
+    const inner = String(match[1] || "").trim();
+    if (inner) {
+      out += `<span class="highlight">${escapeWithBreaks(inner)}</span>`;
+    }
+
+    last = re.lastIndex;
+  }
+
+  const after = normalized.slice(last);
+  if (after) out += escapeWithBreaks(after);
+
+  return out;
+}
+
+function sanitizeShortText(text, fallback = "") {
+  const value = stripHighlightTags(String(text || ""))
+    .replace(/\n+/g, " ")
     .replace(/\s+/g, " ")
     .trim();
-}
 
-function tooSimilar(a, b) {
-  const aa = comparableText(a);
-  const bb = comparableText(b);
-
-  if (!aa || !bb) return false;
-  if (aa === bb) return true;
-
-  if ((aa.includes(bb) || bb.includes(aa)) && Math.min(aa.length, bb.length) > 42) {
-    return true;
-  }
-
-  const tokensA = new Set(aa.split(" ").filter(Boolean));
-  const tokensB = new Set(bb.split(" ").filter(Boolean));
-  const intersection = [...tokensA].filter((t) => tokensB.has(t)).length;
-  const union = new Set([...tokensA, ...tokensB]).size || 1;
-  const jaccard = intersection / union;
-
-  return jaccard >= 0.78;
-}
-
-function firstDifferentCandidate(base, candidates) {
-  for (const candidate of candidates) {
-    const clean = normalizeText(candidate);
-    if (!clean) continue;
-    if (!tooSimilar(base, clean)) return clean;
-  }
-  return "";
+  return value || fallback;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -334,159 +299,15 @@ function resolvePortadaSource(bookMeta, libro, portadaURL) {
   );
 }
 
-function toArrayOfStrings(value) {
-  if (!value) return [];
-  if (Array.isArray(value)) {
-    return value
-      .flatMap((item) => toArrayOfStrings(item))
-      .map((item) => normalizeText(item))
-      .filter(Boolean);
-  }
-
-  if (typeof value === "string") {
-    return value
-      .split(/[|•,;/]+/g)
-      .map((item) => normalizeText(item))
-      .filter(Boolean);
-  }
-
-  return [];
-}
-
-function uniqueStrings(values) {
-  const seen = new Set();
-  const output = [];
-
-  for (const value of values) {
-    const clean = normalizeText(value);
-    if (!clean) continue;
-
-    const key = clean.toLowerCase();
-    if (seen.has(key)) continue;
-
-    seen.add(key);
-    output.push(clean);
-  }
-
-  return output;
-}
-
-function coerceStructureFromTarjeta(tarjeta, libro) {
-  const tituloLibro = libro?.titulo || "";
-  const autorLibro = libro?.autor || "";
-
-  let titulo = cleanGuidance(stripHighlightTags(normalizeHighlightSyntax(tarjeta?.titulo || "")));
-  let parrafoTop = cleanGuidance(normalizeHighlightSyntax(tarjeta?.parrafoTop || ""));
-  let subtitulo = cleanGuidance(stripHighlightTags(normalizeHighlightSyntax(tarjeta?.subtitulo || "")));
-  let parrafoBot = cleanGuidance(normalizeHighlightSyntax(tarjeta?.parrafoBot || ""));
-
-  titulo = stripExplicitBookRefs(titulo, tituloLibro, "");
-  subtitulo = stripExplicitBookRefs(subtitulo, tituloLibro, "");
-  parrafoTop = stripExplicitBookRefs(parrafoTop, tituloLibro, autorLibro);
-  parrafoBot = stripExplicitBookRefs(parrafoBot, tituloLibro, autorLibro);
-
-  if (!titulo) titulo = "Una idea que te acomoda por dentro";
-  if (!subtitulo) subtitulo = "Hazlo ahora";
-  if (!parrafoTop) parrafoTop = ensureOneHighlight("[H]Hay libros que no se leen: te corrigen.[/H]");
-  if (!parrafoBot) parrafoBot = ensureOneHighlight("[H]Abre una página y ejecuta una sola acción hoy.[/H]");
-
-  parrafoTop = ensureOneHighlight(ensureSentence(parrafoTop));
-  parrafoBot = ensureOneHighlight(ensureSentence(parrafoBot));
-
-  return {
-    title: titulo,
-    top: parrafoTop,
-    subtitle: subtitulo,
-    bottom: parrafoBot
-  };
-}
-
-function deriveBottomFallbacks(libro, bookMeta, baseTop, structuredBase) {
-  const tituloLibro = bookMeta.titulo || libro.titulo || "";
-  const autorLibro = bookMeta.autor || libro.autor || "";
-
-  const frases = uniqueStrings(toArrayOfStrings(libro.frases))
-    .map((f) => stripExplicitBookRefs(cleanGuidance(f), tituloLibro, autorLibro))
-    .map((f) => ensureSentence(f))
-    .filter(Boolean);
-
-  const candidates = [
-    structuredBase?.bottom,
-    structuredBase?.top,
-    ...frases
-  ].filter(Boolean);
-
-  const chosen = firstDifferentCandidate(baseTop, candidates);
-  return chosen ? ensureOneHighlight(chosen) : "";
-}
-
 function buildPresentationCopy(libro, bookMeta) {
-  const tarjetaLive = libro.tarjeta_presentacion || libro.tarjeta || {};
-  const tarjetaBase = libro.tarjeta_base || {};
+  const source = libro.tarjeta_presentacion || libro.tarjeta || {};
+  const title = sanitizeShortText(source.titulo, sanitizeShortText(libro.tagline, "Una idea útil"));
+  const author = sanitizeShortText(bookMeta.autor || libro.autor, "");
+  const top = ensureOneHighlight(source.parrafoTop || "");
+  const subtitle = sanitizeShortText(source.subtitulo, "Hazlo ahora");
+  const bottom = ensureOneHighlight(source.parrafoBot || "");
 
-  const live = coerceStructureFromTarjeta(tarjetaLive, {
-    titulo: bookMeta.titulo || libro.titulo || "",
-    autor: bookMeta.autor || libro.autor || ""
-  });
-
-  const base = coerceStructureFromTarjeta(tarjetaBase, {
-    titulo: bookMeta.titulo || libro.titulo || "",
-    autor: bookMeta.autor || libro.autor || ""
-  });
-
-  let title = live.title || base.title;
-  let top = live.top || base.top;
-  let subtitle = live.subtitle || base.subtitle || "Hazlo ahora";
-  let bottom = live.bottom || base.bottom;
-
-  if (tooSimilar(top, bottom)) {
-    const replacement = deriveBottomFallbacks(libro, bookMeta, top, base);
-    if (replacement) bottom = replacement;
-  }
-
-  if (tooSimilar(top, bottom)) {
-    bottom = ensureOneHighlight("[H]Abre el libro y haz una sola prueba real hoy.[/H]");
-  }
-
-  const keywords = uniqueStrings([
-    ...toArrayOfStrings(libro.palabras),
-    ...toArrayOfStrings(bookMeta.palabras)
-  ]).slice(0, 4);
-
-  return {
-    title,
-    top,
-    subtitle,
-    bottom,
-    keywords
-  };
-}
-
-function renderHighlightHTML(text) {
-  const normalized = ensureOneHighlight(text);
-  if (!normalized) return "";
-
-  const re = /\[H\](.*?)\[\/H\]/gis;
-  let out = "";
-  let last = 0;
-  let match;
-
-  while ((match = re.exec(normalized)) !== null) {
-    const before = normalized.slice(last, match.index);
-    if (before) out += escapeWithBreaks(before);
-
-    const inner = String(match[1] || "").trim();
-    if (inner) {
-      out += `<span class="highlight">${escapeWithBreaks(inner)}</span>`;
-    }
-
-    last = re.lastIndex;
-  }
-
-  const after = normalized.slice(last);
-  if (after) out += escapeWithBreaks(after);
-
-  return out;
+  return { title, author, top, subtitle, bottom };
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -534,18 +355,16 @@ const portadaURL = resolvePortadaURL(bookMeta, libro);
 const portadaSource = resolvePortadaSource(bookMeta, libro, portadaURL);
 const logoDataURL = await resolveLogoDataURL();
 
-const autorLibro = bookMeta.autor || libro.autor || "";
 const display = buildPresentationCopy(libro, bookMeta);
 
 const style = libro?.tarjeta?.style || libro?.tarjeta_presentacion?.style || {};
 const accent = style.accent || "#8F4CC2";
-const subtitleColor = style.subtitleColor || accent;
-const chipBg = mixHex(accent, "#FFFFFF", 0.82);
-const chipColor = mixHex(accent, "#5E2D91", 0.18);
-const highlightBg = toRgba(accent, 0.16);
-const highlightLine = toRgba(accent, 0.34);
+const subtitleColor = style.subtitleColor || "#2F6FB7";
+const chipBg = mixHex(accent, "#FFFFFF", 0.84);
+const chipColor = mixHex(accent, "#355F9C", 0.20);
+const highlightBg = toRgba(accent, 0.18);
 const highlightInk = style.paragraphColor || PNG_STYLE.paragraphColor;
-const borderSoft = toRgba(accent, 0.10);
+const borderSoft = toRgba("#000000", 0.05);
 
 const portadaSection = portadaURL
   ? `<img class="cover" src="${portadaURL}" alt="Portada de ${escapeHTML(bookMeta.titulo || libro.titulo || "")}" />`
@@ -566,7 +385,7 @@ const footerSection = logoDataURL
 let html = template
   .replace("{{PORTADA_SECTION}}", portadaSection)
   .replace("{{TITULO}}", escapeHTML(display.title))
-  .replace("{{AUTOR}}", escapeHTML(autorLibro))
+  .replace("{{AUTOR}}", escapeHTML(display.author))
   .replace("{{PARRAFO_TOP}}", renderHighlightHTML(display.top))
   .replace("{{SUBTITULO}}", escapeHTML(display.subtitle))
   .replace("{{PARRAFO_BOT}}", renderHighlightHTML(display.bottom))
@@ -576,9 +395,8 @@ const cssVars = [
   `--canvas-bg: ${PNG_STYLE.canvasBg}`,
   `--shell-bg: ${PNG_STYLE.shellBg}`,
   `--shell-border: ${PNG_STYLE.shellBorder}`,
-  `--hero-card-bg: ${PNG_STYLE.heroCardBg}`,
-  `--action-card-bg: ${PNG_STYLE.actionCardBg}`,
-  `--footer-card-bg: ${PNG_STYLE.footerCardBg}`,
+  `--card-bg: ${PNG_STYLE.cardBg}`,
+  `--card-border: ${PNG_STYLE.cardBorder}`,
   `--title-color: ${style.titleColor || PNG_STYLE.titleColor}`,
   `--paragraph-color: ${style.paragraphColor || PNG_STYLE.paragraphColor}`,
   `--subtitle-color: ${subtitleColor}`,
@@ -586,13 +404,13 @@ const cssVars = [
   `--chip-color: ${chipColor}`,
   `--footer-color: ${PNG_STYLE.footerColor}`,
   `--highlight-bg: ${highlightBg}`,
-  `--highlight-line: ${highlightLine}`,
   `--highlight-ink: ${highlightInk}`,
   `--card-border-soft: ${borderSoft}`,
   `--cover-shadow: ${PNG_STYLE.coverShadow}`,
   `--cover-radius: ${PNG_STYLE.coverRadius}px`,
-  `--outer-width: ${PNG_STYLE.outerWidth}px`,
-  `--outer-height: ${PNG_STYLE.outerHeight}px`,
+  `--shell-width: ${PNG_STYLE.shellWidth}px`,
+  `--shell-height: ${PNG_STYLE.shellHeight}px`,
+  `--footer-height: ${PNG_STYLE.footerHeight}px`,
   `--title-size: ${PNG_STYLE.titleSize}px`,
   `--author-size: ${PNG_STYLE.authorSize}px`,
   `--top-size: ${PNG_STYLE.topSize}px`,
@@ -611,7 +429,11 @@ console.log("   🖥️  Iniciando Chrome headless...");
 const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage();
 
-await page.setViewportSize({ width: 1080, height: 1920 });
+await page.setViewportSize({
+  width: PNG_STYLE.canvasWidth,
+  height: PNG_STYLE.canvasHeight
+});
+
 await page.setContent(html, { waitUntil: "networkidle" });
 
 await page.evaluate(async () => {
@@ -623,7 +445,7 @@ await page.evaluate(async () => {
 if (portadaURL) {
   try {
     await page.waitForSelector(".cover", { state: "visible", timeout: 10000 });
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(280);
   } catch {
     console.log("   ⚠️  Portada no cargó en 10s — continuando sin ella");
   }
@@ -657,10 +479,10 @@ await page.evaluate((limits) => {
   let guard = 0;
   while (
     (
-      (heroContent && heroContent.scrollHeight > 960) ||
-      (actionContent && actionContent.scrollHeight > 460)
+      (heroContent && heroContent.scrollHeight > 440) ||
+      (actionContent && actionContent.scrollHeight > 360)
     ) &&
-    guard < 260
+    guard < 220
   ) {
     let changed = false;
 
@@ -672,32 +494,32 @@ await page.evaluate((limits) => {
     const coverWidth = px(cover, "width");
 
     if (title && titleSize > limits.titleMin) {
-      setPx(title, "fontSize", titleSize - 0.7);
+      setPx(title, "fontSize", titleSize - 0.55);
       changed = true;
     }
 
     if (topParagraph && topSize > limits.topMin) {
-      setPx(topParagraph, "fontSize", topSize - 0.30);
+      setPx(topParagraph, "fontSize", topSize - 0.22);
       changed = true;
     }
 
     if (bottomParagraph && bottomSize > limits.bottomMin) {
-      setPx(bottomParagraph, "fontSize", bottomSize - 0.28);
+      setPx(bottomParagraph, "fontSize", bottomSize - 0.22);
       changed = true;
     }
 
     if (subtitle && subtitleSize > limits.subtitleMin && guard % 2 === 0) {
-      setPx(subtitle, "fontSize", subtitleSize - 0.22);
+      setPx(subtitle, "fontSize", subtitleSize - 0.18);
       changed = true;
     }
 
     if (authorChip && authorSize > limits.authorMin && guard % 3 === 0) {
-      setPx(authorChip, "fontSize", authorSize - 0.18);
+      setPx(authorChip, "fontSize", authorSize - 0.12);
       changed = true;
     }
 
     if (cover && coverWidth > limits.coverMin && guard % 3 === 0) {
-      setPx(cover, "width", coverWidth - 0.6);
+      setPx(cover, "width", coverWidth - 0.4);
       changed = true;
     }
 
@@ -705,33 +527,24 @@ await page.evaluate((limits) => {
     guard += 1;
   }
 
-  const gap = parseFloat(getComputedStyle(shellBody).gap) || 20;
   const totalHeight = shellBody.clientHeight;
-  const footerHeight = Math.max(132, footerCard.getBoundingClientRect().height);
+  const gap = parseFloat(getComputedStyle(shellBody).gap) || 18;
+  const footerHeight = footerCard.getBoundingClientRect().height;
   const remaining = totalHeight - footerHeight - gap * 2;
 
-  const desiredHero = Math.ceil(heroContent.scrollHeight + 36);
-  const desiredAction = Math.ceil(actionContent.scrollHeight + 26);
+  const heroDesired = Math.max(305, Math.ceil(heroContent.scrollHeight + 18));
+  const actionDesired = Math.max(245, Math.ceil(actionContent.scrollHeight + 18));
+  const desiredSum = heroDesired + actionDesired;
 
-  let heroHeight = desiredHero;
-  let actionHeight = desiredAction;
+  let heroHeight;
+  let actionHeight;
 
-  if (desiredHero + desiredAction < remaining) {
-    const extra = remaining - (desiredHero + desiredAction);
-    heroHeight = desiredHero + Math.round(extra * 0.72);
-    actionHeight = remaining - heroHeight;
+  if (desiredSum <= remaining) {
+    const extra = remaining - desiredSum;
+    heroHeight = heroDesired + Math.round(extra * 0.52);
+    actionHeight = actionDesired + (extra - Math.round(extra * 0.52));
   } else {
-    heroHeight = Math.round(remaining * 0.66);
-    actionHeight = remaining - heroHeight;
-  }
-
-  if (actionHeight < 300) {
-    actionHeight = 300;
-    heroHeight = remaining - actionHeight;
-  }
-
-  if (heroHeight < 760) {
-    heroHeight = 760;
+    heroHeight = Math.max(300, Math.round(remaining * 0.53));
     actionHeight = remaining - heroHeight;
   }
 
@@ -739,19 +552,19 @@ await page.evaluate((limits) => {
   actionCard.style.height = `${actionHeight}px`;
 
   let guardBottom = 0;
-  while (actionContent && actionContent.scrollHeight > actionContent.clientHeight && guardBottom < 140) {
+  while (actionContent && actionContent.scrollHeight > actionContent.clientHeight && guardBottom < 100) {
     let changed = false;
 
     const subtitleSize = px(subtitle, "fontSize");
     const bottomSize = px(bottomParagraph, "fontSize");
 
     if (subtitle && subtitleSize > limits.subtitleMin) {
-      setPx(subtitle, "fontSize", subtitleSize - 0.20);
+      setPx(subtitle, "fontSize", subtitleSize - 0.15);
       changed = true;
     }
 
     if (bottomParagraph && bottomSize > limits.bottomMin) {
-      setPx(bottomParagraph, "fontSize", bottomSize - 0.25);
+      setPx(bottomParagraph, "fontSize", bottomSize - 0.20);
       changed = true;
     }
 
@@ -760,9 +573,9 @@ await page.evaluate((limits) => {
   }
 
   if (actionContent && actionContent.scrollHeight > actionContent.clientHeight && bottomParagraph) {
-    const available = actionContent.clientHeight - (subtitle ? subtitle.getBoundingClientRect().height : 0) - 12;
-    const lineHeight = px(bottomParagraph, "lineHeight") || (px(bottomParagraph, "fontSize") * 1.38);
-    const lines = Math.max(3, Math.floor(available / lineHeight));
+    const available = actionContent.clientHeight - (subtitle ? subtitle.getBoundingClientRect().height : 0) - 8;
+    const lineHeight = px(bottomParagraph, "lineHeight") || (px(bottomParagraph, "fontSize") * 1.36);
+    const lines = Math.max(4, Math.floor(available / lineHeight));
 
     bottomParagraph.style.display = "-webkit-box";
     bottomParagraph.style.webkitBoxOrient = "vertical";
@@ -778,13 +591,13 @@ await page.evaluate((limits) => {
   coverMin: PNG_STYLE.coverMinWidth
 });
 
-await page.waitForTimeout(250);
+await page.waitForTimeout(220);
 
 const outPath = path.join(outDir, "tarjeta.png");
 await page.screenshot({
   path: outPath,
   type: "png",
-  clip: { x: 0, y: 0, width: 1080, height: 1920 }
+  clip: { x: 0, y: 0, width: PNG_STYLE.canvasWidth, height: PNG_STYLE.canvasHeight }
 });
 
 await browser.close();
@@ -793,9 +606,9 @@ const stats = await fs.stat(outPath);
 const sizeMB = (stats.size / 1024 / 1024).toFixed(2);
 
 console.log(`\n   ✅ Tarjeta generada: ${outPath}`);
-console.log(`   📏 ${sizeMB} MB | 1080×1920px`);
+console.log(`   📏 ${sizeMB} MB | ${PNG_STYLE.canvasWidth}×${PNG_STYLE.canvasHeight}px`);
 console.log(`   🎨 Título visible: "${display.title}"`);
-console.log(`   ✍️  Autor: ${autorLibro}`);
+console.log(`   ✍️  Autor: ${display.author}`);
 console.log(`   🖼️  Portada: ${portadaURL ? portadaSource : "tipográfica"}`);
 console.log(`   📝 Top: ${stripHighlightTags(display.top)}`);
 console.log(`   ⚡ Bottom: ${stripHighlightTags(display.bottom)}`);
