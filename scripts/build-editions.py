@@ -719,18 +719,29 @@ body::before {
   background: linear-gradient(145deg, #FFFFFF 0%, #F0F0EE 100%);
   border: 1px solid rgba(26,26,26,0.05);
   border-radius: 16px;
-  padding: 22px;
+  padding: 20px 22px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.03);
 }
 .ed-block:first-child { margin-top: 18px; }
 
+.ed-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 136px;
+  gap: 18px;
+  align-items: start;
+}
+
+.ed-hero-copy {
+  min-width: 0;
+}
+
 .ed-block .ed-title {
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: 24px;
-  line-height: 1.3;
-  font-weight: 400;
+  font-size: 28px;
+  line-height: 1.2;
+  font-weight: 700;
   color: #1A1A1A;
-  letter-spacing: 0.5px;
+  letter-spacing: -0.5px;
   margin: 0 0 8px 0;
 }
 
@@ -769,34 +780,28 @@ body::before {
 }
 
 .tg-hl {
+  display: inline;
   color: inherit;
   font-weight: 600;
-  background:
-    linear-gradient(
-      180deg,
-      transparent 0%,
-      transparent 56%,
-      var(--marker) 56%,
-      var(--marker) 100%
-    );
-  padding: 0 0.08em;
-  border-radius: 0.12em;
+  background: var(--marker);
+  padding: 0.03em 0.10em 0.08em;
+  border-radius: 0.14em;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
 }
 
 .ed-cover-wrap {
-  float: right;
-  margin: 0 0 12px 18px;
+  width: 136px;
   cursor: pointer;
   position: relative;
   touch-action: manipulation;
-  padding: 8px;
+  padding: 0;
 }
 .ed-cover-wrap img {
   display: block;
   width: 120px;
   height: auto;
+  margin-left: auto;
   border: 1px solid #EAEAEA;
   border-radius: 4px;
   box-shadow: 0 15px 35px rgba(0,0,0,0.12);
@@ -1018,8 +1023,10 @@ body::before {
   .reveal-card::after { border-radius: 18px; }
   .ed-block { padding: 20px 18px; margin: 0 4px; }
   .ed-block:first-child { margin-top: 12px; }
+  .ed-hero-grid { grid-template-columns: minmax(0, 1fr) 122px; gap: 14px; }
+  .ed-cover-wrap { width: 122px; }
   .ed-cover-wrap img { width: 110px; }
-  .ed-block .ed-title { font-size: 22px; }
+  .ed-block .ed-title { font-size: 24px; line-height: 1.18; }
   .ed-block .ed-para { font-size: 18px; line-height: 1.65; }
   .ed-block .ed-sub { font-size: 18px; }
   .ed-block .ed-chip { font-size: 14px; margin-bottom: 10px; }
@@ -1030,7 +1037,7 @@ body::before {
 }
 </style>
 </head>
-<body data-lab-v="live-edition-card-v2" style="__BODY_STYLE__">
+<body data-lab-v="live-edition-card-v3" style="__BODY_STYLE__">
 
 <div id="pulseLine" class="pulse-line"></div>
 <div class="grid" id="grid"></div>
@@ -1041,10 +1048,13 @@ body::before {
     <div class="card-inner">
 
       <div class="ed-block">
-        <div style="display: flow-root; overflow: visible; padding: 4px;">__COVER_CTA_HTML__
-          <div class="ed-title">__CARD_TITLE__</div>
-          <div class="ed-chip">__CARD_AUTHOR__</div>
-          <div class="ed-para">__TOP_HTML__</div>
+        <div class="ed-hero-grid">
+          <div class="ed-hero-copy">
+            <div class="ed-title">__CARD_TITLE__</div>
+            <div class="ed-chip">__CARD_AUTHOR__</div>
+            <div class="ed-para">__TOP_HTML__</div>
+          </div>
+          __COVER_CTA_HTML__
         </div>
       </div>__SECOND_BLOCK_HTML__
 
