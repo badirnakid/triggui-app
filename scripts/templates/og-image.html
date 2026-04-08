@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@400;500;600;700;800&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@500;600;700;800&display=swap');
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -27,7 +27,7 @@
   .stage {
     width: 1200px;
     height: 630px;
-    padding: 16px;
+    padding: 10px;
   }
 
   .card {
@@ -38,16 +38,16 @@
     border-radius: 32px;
     border: 1px solid rgba(255,255,255,0.06);
     background:
-      linear-gradient(135deg, rgba(255,255,255,0.025), rgba(255,255,255,0.008)),
-      linear-gradient(180deg, rgba(17,17,20,0.96), rgba(12,12,15,0.98));
+      linear-gradient(135deg, rgba(255,255,255,0.024), rgba(255,255,255,0.008)),
+      linear-gradient(180deg, rgba(17,17,20,0.96), rgba(12,12,15,0.985));
     box-shadow:
       0 32px 90px rgba(0,0,0,0.42),
       inset 0 1px 0 rgba(255,255,255,0.05);
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 336px;
-    gap: 24px;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 18px;
     align-items: stretch;
-    padding: 18px 18px 18px 34px;
+    padding: 12px 12px 12px 28px;
   }
 
   .card::before {
@@ -56,8 +56,8 @@
     inset: 0;
     background:
       radial-gradient(circle at 8% 10%, var(--accent-soft, rgba(227,93,48,0.15)), transparent 30%),
-      radial-gradient(circle at 92% 20%, rgba(255,255,255,0.025), transparent 24%),
-      linear-gradient(90deg, rgba(255,255,255,0.015), transparent 22%, transparent 72%, rgba(255,255,255,0.01));
+      radial-gradient(circle at 92% 18%, rgba(255,255,255,0.024), transparent 22%),
+      linear-gradient(90deg, rgba(255,255,255,0.014), transparent 22%, transparent 74%, rgba(255,255,255,0.008));
     pointer-events: none;
   }
 
@@ -68,32 +68,32 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 8px 8px 46px 0;
+    padding: 8px 8px 42px 0;
   }
 
   .eyebrow {
     display: inline-flex;
     align-items: center;
     align-self: flex-start;
-    min-height: 40px;
-    padding: 0 16px;
+    min-height: 38px;
+    padding: 0 14px;
     border-radius: 999px;
     border: 1px solid rgba(255,255,255,0.07);
     background: rgba(255,255,255,0.05);
-    color: rgba(247,244,239,0.82);
-    font-size: 17px;
+    color: rgba(247,244,239,0.84);
+    font-size: 15px;
     font-weight: 800;
-    letter-spacing: -0.15px;
-    margin-bottom: 20px;
+    letter-spacing: -0.12px;
+    margin-bottom: 16px;
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.035);
   }
 
   .headline {
     font-family: 'Playfair Display', Georgia, serif;
-    font-size: 74px;
-    line-height: 0.94;
+    font-size: 90px;
+    line-height: 0.92;
     font-weight: 800;
-    letter-spacing: -1.8px;
+    letter-spacing: -2px;
     color: var(--ink, #F7F4EF);
     max-width: 760px;
     margin-bottom: 18px;
@@ -101,28 +101,32 @@
   }
 
   .accent-line {
-    width: 112px;
+    width: 118px;
     height: 6px;
     border-radius: 999px;
-    margin-bottom: 20px;
-    background: linear-gradient(90deg, var(--accent, #E35D30), rgba(255,255,255,0.18));
+    margin-bottom: 12px;
+    background: linear-gradient(90deg, var(--accent, #E35D30), rgba(255,255,255,0.16));
     box-shadow: 0 0 28px var(--accent-glow, rgba(227,93,48,0.28));
   }
 
   .subheadline {
-    font-size: 29px;
-    line-height: 1.22;
-    font-weight: 500;
-    color: rgba(247,244,239,0.77);
+    font-size: 24px;
+    line-height: 1.2;
+    font-weight: 600;
+    color: rgba(247,244,239,0.72);
     max-width: 700px;
     text-wrap: balance;
+  }
+
+  .subheadline:empty {
+    display: none;
   }
 
   .cover-wrap {
     position: relative;
     z-index: 1;
     height: 100%;
-    width: 336px;
+    width: 360px;
     display: flex;
     align-items: stretch;
     justify-content: flex-end;
@@ -137,7 +141,7 @@
     border: 1px solid rgba(255,255,255,0.08);
     background: #0D0D10;
     box-shadow:
-      0 26px 54px rgba(0,0,0,0.40),
+      0 26px 54px rgba(0,0,0,0.4),
       0 0 42px var(--accent-glow, rgba(227,93,48,0.22));
   }
 
@@ -157,19 +161,29 @@
     letter-spacing: 0.8px;
     color: rgba(247,244,239,0.34);
     box-shadow:
-      0 26px 54px rgba(0,0,0,0.40),
+      0 26px 54px rgba(0,0,0,0.4),
       0 0 42px var(--accent-glow, rgba(227,93,48,0.22));
   }
 
   .brand {
     position: absolute;
-    left: 34px;
-    bottom: 22px;
+    left: 28px;
+    bottom: 18px;
     z-index: 2;
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 800;
     letter-spacing: -0.35px;
     color: rgba(247,244,239,0.96);
+  }
+
+  .url {
+    position: absolute;
+    right: 20px;
+    bottom: 18px;
+    z-index: 2;
+    font-size: 15px;
+    font-weight: 700;
+    color: rgba(247,244,239,0.36);
   }
 </style>
 </head>
@@ -188,6 +202,7 @@
       </div>
 
       <div class="brand">triggui</div>
+      <div class="url">triggui.com</div>
     </div>
   </div>
 </body>
