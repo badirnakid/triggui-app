@@ -11,72 +11,72 @@
       "slug": "autobiografia-de-un-yogui",
       "contexto_2026": {},
       "lente_activo": "",
-      "dimension": "personal",
-      "punto": "reflexión",
+      "dimension": "medium",
+      "punto": "inspiración",
       "palabras": [
-        "trascendencia",
+        "iluminación",
         "meditación",
-        "conciencia",
-        "iluminación"
+        "trascendencia",
+        "autoconocimiento"
       ],
       "frases": [
-        "🌱 Siéntate en un lugar tranquilo y cierra los ojos por un momento.",
-        "🧘‍♂️ Practica la respiración profunda durante un minuto, sintiendo cada inhalación y exhalación.",
-        "📖 Dedica cinco minutos a leer un pasaje inspirador del libro.",
-        "✨ Reflexiona sobre cómo puedes aplicar una enseñanza de la obra en tu vida diaria."
+        "🧘‍♂️ Dedica un momento a respirar profundamente y sentir tu cuerpo.",
+        "📖 Abre el libro en cualquier página y permite que las palabras te guíen.",
+        "🌌 Observa el cielo, busca ese instante de conexión con lo divino.",
+        "✨ Reflexiona sobre una experiencia que te haya transformado recientemente."
       ],
       "colores": [
-        "#1E1E1E",
-        "#FFFFFF",
-        "#FFCC00",
-        "#007ACC"
+        "#4A148C",
+        "#D50000",
+        "#FFEB3B",
+        "#1E88E5"
       ],
-      "fondo": "#000000",
+      "fondo": "#121212",
       "textColors": [
         "#FFFFFF",
-        "#000000",
+        "#FFFFFF",
         "#000000",
         "#FFFFFF"
       ],
       "tarjeta": {
-        "titulo": "Lo que Paramahansa corrige",
-        "parrafoTop": "La búsqueda de la [H]trascendencia y la conciencia[/H] se encuentra en las enseñanzas de Yogananda, donde la meditación es una puerta hacia la iluminación personal.",
-        "subtitulo": "Hazlo ahora",
-        "parrafoBot": "Dedicar unos minutos a la [H]práctica de la respiración profunda[/H] puede transformar momentos ordinarios en instantes sagrados. Haz una pausa hoy: cierra los ojos y respira profundamente durante un minuto. Luego, lee un pasaje del libro que te inspire.",
+        "titulo": "Encuentra la conexión interior",
+        "parrafoTop": "La búsqueda de la [H]iluminación y el autoconocimiento[/H] se transforma en una experiencia palpable a través de la meditación. Este viaje es un recordatorio de que cada momento tiene el potencial para trascender lo ordinario.",
+        "subtitulo": "Prueba abrir el libro en cualquier página y",
+        "parrafoBot": "Este viaje es un recordatorio de que cada momento tiene el potencial para [H]trascender lo ordinario[/H]. Prueba abrir el libro en cualquier página y siente cómo las palabras te inspiran hoy.",
         "style": {
-          "accent": "#4a90e2",
-          "ink": "#e0e0e0",
+          "accent": "#7b1fa2",
+          "ink": "#ffffff",
           "paper": "#121212",
-          "border": "#333333"
+          "border": "#424242"
         },
         "promptFlavor": "appscript-second-pass",
-        "seed": "Dedicar unos minutos a reflexionar sobre las enseñanzas de Yogananda puede ofrecer nuevas perspectivas. Siéntese en silencio y permita que sus palabras resuenen, integrando sus lecciones en la vida diaria."
+        "seed": "Tomar un momento para abrir el libro y dejar que las palabras resuenen en la mente puede ser el primer paso hacia una nueva percepción del ser."
       },
       "tarjeta_base": {
         "titulo": "Autobiografía de un yogui",
-        "parrafoTop": "La obra de Paramahansa Yogananda presenta una narrativa que invita a [H]explorar la conexión entre el ser humano y lo divino[/H]. A través de experiencias personales, se abre un camino hacia el entendimiento profundo del propósito vital.",
-        "subtitulo": "Un viaje hacia el autodescubrimiento",
-        "parrafoBot": "Dedicar unos minutos a [H]reflexionar sobre las enseñanzas de Yogananda[/H] puede ofrecer nuevas perspectivas. Siéntese en silencio y permita que sus palabras resuenen, integrando sus lecciones en la vida diaria.",
+        "parrafoTop": "La obra de Paramahansa Yogananda invita a [H]explorar el viaje interno de la búsqueda espiritual[/H], donde las experiencias personales se entrelazan con enseñanzas universales.",
+        "subtitulo": "Un camino hacia el entendimiento profundo",
+        "parrafoBot": "Tomar un momento para [H]abrir el libro y dejar que las palabras resuenen en la mente[/H] puede ser el primer paso hacia una nueva percepción del ser.",
         "style": {
-          "accent": "#4a90e2",
-          "ink": "#e0e0e0",
+          "accent": "#7b1fa2",
+          "ink": "#ffffff",
           "paper": "#121212",
-          "border": "#333333"
+          "border": "#424242"
         }
       },
       "tarjeta_presentacion": {
-        "titulo": "Lo que Paramahansa corrige",
-        "parrafoTop": "La búsqueda de la [H]trascendencia y la conciencia[/H] se encuentra en las enseñanzas de Yogananda, donde la meditación es una puerta hacia la iluminación personal.",
-        "subtitulo": "Hazlo ahora",
-        "parrafoBot": "Dedicar unos minutos a la [H]práctica de la respiración profunda[/H] puede transformar momentos ordinarios en instantes sagrados. Haz una pausa hoy: cierra los ojos y respira profundamente durante un minuto. Luego, lee un pasaje del libro que te inspire.",
+        "titulo": "Encuentra la conexión interior",
+        "parrafoTop": "La búsqueda de la [H]iluminación y el autoconocimiento[/H] se transforma en una experiencia palpable a través de la meditación. Este viaje es un recordatorio de que cada momento tiene el potencial para trascender lo ordinario.",
+        "subtitulo": "Prueba abrir el libro en cualquier página y",
+        "parrafoBot": "Este viaje es un recordatorio de que cada momento tiene el potencial para [H]trascender lo ordinario[/H]. Prueba abrir el libro en cualquier página y siente cómo las palabras te inspiran hoy.",
         "style": {
-          "accent": "#4a90e2",
-          "ink": "#e0e0e0",
+          "accent": "#7b1fa2",
+          "ink": "#ffffff",
           "paper": "#121212",
-          "border": "#333333"
+          "border": "#424242"
         },
         "promptFlavor": "appscript-second-pass",
-        "seed": "Dedicar unos minutos a reflexionar sobre las enseñanzas de Yogananda puede ofrecer nuevas perspectivas. Siéntese en silencio y permita que sus palabras resuenen, integrando sus lecciones en la vida diaria."
+        "seed": "Tomar un momento para abrir el libro y dejar que las palabras resuenen en la mente puede ser el primer paso hacia una nueva percepción del ser."
       },
       "videoUrl": "https://duckduckgo.com/?q=!ducky+site:youtube.com+Autobiografia%20de%20un%20yogui%20Paramahansa%20entrevista%20espa%C3%B1ol"
     },
