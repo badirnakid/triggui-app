@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -14,12 +14,8 @@
   }
 
   body {
-    background:
-      radial-gradient(circle at 18% 8%, rgba(255,255,255,0.03), transparent 28%),
-      radial-gradient(circle at 82% 88%, rgba(255,255,255,0.02), transparent 24%),
-      var(--bg, #FFFFFF);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
-    color: var(--ink, #111111);
+    background: var(--canvas-bg, #050505);
+    color: var(--title-color, #1D1D1B);
     -webkit-font-smoothing: antialiased;
     text-rendering: geometricPrecision;
   }
@@ -27,15 +23,32 @@
   .frame {
     width: 1080px;
     height: 1920px;
-    position: relative;
+    background:
+      radial-gradient(circle at 18% 7%, rgba(255,255,255,0.035), transparent 26%),
+      radial-gradient(circle at 82% 92%, rgba(255,255,255,0.018), transparent 22%),
+      var(--canvas-bg, #050505);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     overflow: hidden;
-    background: var(--bg, #FFFFFF);
   }
 
-  .inner {
-    position: relative;
+  .shell {
+    width: var(--outer-width, 760px);
+    height: var(--outer-height, 1820px);
+    background: var(--shell-bg, #F7F6F3);
+    border: 1px solid var(--shell-border, rgba(255,255,255,0.08));
+    border-radius: 38px;
+    box-shadow:
+      0 32px 80px rgba(0,0,0,0.30),
+      inset 0 1px 0 rgba(255,255,255,0.42);
+    overflow: hidden;
+  }
+
+  .shell-body {
+    width: 100%;
     height: 100%;
-    padding: 24px 18px;
+    padding: 18px;
     display: flex;
     flex-direction: column;
     gap: 18px;
@@ -43,138 +56,113 @@
 
   .card {
     width: 100%;
-    background: var(--paper, #FFFFFF);
-    border: 1px solid var(--border, #F39200);
-    border-radius: 20px;
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.06);
+    border-radius: 26px;
+    border: 1px solid var(--card-border-soft, rgba(0,0,0,0.06));
+    box-shadow:
+      0 12px 28px rgba(0,0,0,0.04),
+      inset 0 1px 0 rgba(255,255,255,0.55);
     overflow: hidden;
     flex: 0 0 auto;
   }
 
-  .block {
-    background: linear-gradient(145deg, #FFFFFF 0%, #F5F5F5 100%);
-    border: 1px solid rgba(26, 26, 26, 0.05);
-    border-radius: 16px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
+  .hero-card {
+    background: var(--hero-card-bg, #FBFAF8);
   }
 
-  .hero {
-    padding: 12px;
+  .action-card {
+    background: var(--action-card-bg, #FBFAF8);
+  }
+
+  .footer-card {
+    background: var(--footer-card-bg, #FBFAF8);
   }
 
   .hero-content {
-    padding: 20px 22px;
-    min-height: 100%;
+    padding: 26px 28px 24px;
+    width: 100%;
+    height: 100%;
     overflow: hidden;
   }
 
   .hero-flow {
+    width: 100%;
     overflow: hidden;
   }
 
   .cover {
     float: right;
-    width: 120px;
-    max-height: 280px;
+    width: var(--cover-width, 246px);
+    max-height: 360px;
     height: auto;
-    margin: 0 0 10px 18px;
-    border: 1px solid #EAEAEA;
-    border-radius: 4px;
-    box-shadow: 0 15px 35px rgba(243, 146, 0, 0.15);
+    margin: 0 0 14px 24px;
+    border-radius: var(--cover-radius, 6px);
+    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: var(--cover-shadow, 0 16px 34px rgba(0,0,0,0.10));
     display: block;
     object-fit: cover;
-    background: #fff;
+    background: #FFFFFF;
+  }
+
+  .cover-note {
+    clear: right;
   }
 
   .title {
-    font-family: Georgia, 'Times New Roman', serif;
-    font-size: 60px;
-    line-height: 1.08;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: var(--title-size, 72px);
+    line-height: 0.98;
     font-weight: 700;
-    letter-spacing: -0.6px;
-    color: var(--title-color, #1A1A1A);
-    margin: 0 0 14px 0;
+    letter-spacing: -0.85px;
+    color: var(--title-color, #1D1D1B);
+    margin: 0 0 16px;
+    max-width: 100%;
   }
 
   .author-chip {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 42px;
-    padding: 0 14px;
-    border-radius: 12px;
-    background: var(--chip-bg, #FFF3E0);
-    color: var(--chip-color, #E65100);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
-    font-size: 22px;
+    min-height: 48px;
+    padding: 0 18px;
+    border-radius: 999px;
+    background: var(--chip-bg, #EFE7F6);
+    color: var(--chip-color, #7F3DB8);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    font-size: var(--author-size, 27px);
     line-height: 1;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-    margin: 0 0 14px 0;
+    font-weight: 800;
+    letter-spacing: 0.1px;
+    margin: 0 0 16px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.42);
   }
 
   .paragraph {
-    font-family: Georgia, 'Times New Roman', serif;
-    font-size: 34px;
-    line-height: 1.44;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: var(--top-size, 36px);
+    line-height: 1.47;
     font-weight: 400;
-    color: var(--paragraph-color, #111827);
-    letter-spacing: 0.02px;
+    letter-spacing: 0.01px;
+    color: var(--paragraph-color, #4B4B4B);
     margin: 0;
+  }
+
+  .paragraph-bottom {
+    font-size: var(--bottom-size, 34px);
+    line-height: 1.42;
   }
 
   .paragraph p {
     margin: 0;
   }
 
-  .paragraph p + p {
-    margin-top: 0.2em;
-  }
-
-  .logo-strip {
-    margin-top: 16px;
-    padding: 12px 16px;
-    background: transparent;
-    text-align: center;
-    opacity: 0.92;
-  }
-
-  .logo-strip img {
-    height: 32px;
-    width: auto;
-    display: block;
-    margin: 0 auto 8px auto;
-    object-fit: contain;
-  }
-
-  .logo-strip .meta {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
-    font-size: 18px;
-    line-height: 1.4;
-    font-weight: 400;
-    color: var(--footer-color, #8B8880);
-    font-style: italic;
-    letter-spacing: 0;
-  }
-
-  .action {
-    padding: 12px;
-  }
-
-  .action-content {
-    padding: 20px 22px;
-    min-height: 100%;
-    overflow: hidden;
-  }
-
   .subtitle {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
-    font-size: 32px;
-    line-height: 1.26;
-    font-weight: 600;
-    color: var(--subtitle-color, #F39200);
-    letter-spacing: 0.1px;
-    margin: 0 0 10px 0;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    font-size: var(--subtitle-size, 31px);
+    line-height: 1.15;
+    font-weight: 800;
+    letter-spacing: -0.2px;
+    color: var(--subtitle-color, #8F4CC2);
+    margin: 0 0 14px;
   }
 
   .subtitle:empty {
@@ -182,47 +170,73 @@
     margin: 0;
   }
 
-  .footer {
-    padding: 12px;
+  .action-content {
+    padding: 22px 26px 22px;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
   }
 
   .footer-content {
     min-height: 132px;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
     align-items: center;
-    padding: 10px 16px;
+    justify-content: center;
+    padding: 14px 22px;
   }
 
-  .footer-content img {
+  .footer-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .footer-brand img {
     height: 42px;
     width: auto;
-    display: block;
-    margin: 0 auto 10px auto;
     object-fit: contain;
+    display: block;
   }
 
-  .footer-content .meta {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  .footer-fallback {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    font-size: 38px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: #1D1D1B;
+  }
+
+  .footer-meta {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
     font-size: 22px;
-    line-height: 1.35;
+    line-height: 1.2;
     font-weight: 400;
-    color: var(--footer-color, #8B8880);
+    color: var(--footer-color, #8A8A8A);
     font-style: italic;
-    letter-spacing: 0;
     text-align: center;
   }
 
   .highlight {
     display: inline;
-    background: var(--highlight-bg, #FFF3E0);
-    color: var(--highlight-ink, #111111);
-    padding: 0.04em 0.14em 0.08em;
-    border-radius: 8px;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+    color: var(--highlight-ink, #4B4B4B);
     font-weight: 700;
-    letter-spacing: 0.02em;
+    background:
+      linear-gradient(
+        to bottom,
+        transparent 0%,
+        transparent 46%,
+        var(--highlight-bg, rgba(143,76,194,0.16)) 46%,
+        var(--highlight-bg, rgba(143,76,194,0.16)) 92%,
+        transparent 92%,
+        transparent 100%
+      );
+    box-shadow:
+      inset 0 -0.065em 0 var(--highlight-line, rgba(143,76,194,0.30));
+    padding: 0 0.06em 0.02em;
+    border-radius: 0.10em;
     box-decoration-break: clone;
     -webkit-box-decoration-break: clone;
   }
@@ -230,29 +244,30 @@
 </head>
 <body>
   <div class="frame">
-    <div class="inner" id="inner">
-      <div class="card hero" id="heroCard">
-        <div class="block hero-content" id="heroContent">
-          <div class="hero-flow">
-            {{PORTADA_SECTION}}
-            <div class="title" id="title">{{TITULO}}</div>
-            <div class="author-chip" id="authorChip">{{AUTOR}}</div>
-            <div class="paragraph" id="parrafoTop">{{PARRAFO_TOP}}</div>
+    <div class="shell">
+      <div class="shell-body" id="shellBody">
+        <div class="card hero-card" id="heroCard">
+          <div class="hero-content" id="heroContent">
+            <div class="hero-flow">
+              {{PORTADA_SECTION}}
+              <div class="title" id="title">{{TITULO}}</div>
+              <div class="author-chip" id="authorChip">{{AUTOR}}</div>
+              <div class="paragraph" id="parrafoTop">{{PARRAFO_TOP}}</div>
+            </div>
           </div>
-          {{HERO_LOGO_SECTION}}
         </div>
-      </div>
 
-      <div class="card action" id="actionCard">
-        <div class="block action-content" id="actionContent">
-          <div class="subtitle" id="subtitle">{{SUBTITULO}}</div>
-          <div class="paragraph" id="parrafoBot">{{PARRAFO_BOT}}</div>
+        <div class="card action-card" id="actionCard">
+          <div class="action-content" id="actionContent">
+            <div class="subtitle" id="subtitle">{{SUBTITULO}}</div>
+            <div class="paragraph paragraph-bottom" id="parrafoBot">{{PARRAFO_BOT}}</div>
+          </div>
         </div>
-      </div>
 
-      <div class="card footer" id="footerCard">
-        <div class="block footer-content">
-          {{FOOTER_LOGO_SECTION}}
+        <div class="card footer-card" id="footerCard">
+          <div class="footer-content">
+            {{FOOTER_SECTION}}
+          </div>
         </div>
       </div>
     </div>
