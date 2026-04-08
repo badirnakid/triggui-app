@@ -48,27 +48,21 @@
     flex-direction: column;
   }
 
-  .hero-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: var(--cover-margin-left, 37px);
-    align-items: start;
+  .content-flow {
     min-height: 0;
+    overflow: hidden;
   }
 
-  .copy {
-    min-width: 0;
-    min-height: 0;
-  }
-
-  .cover-col {
+  .cover-wrap {
+    float: right;
     width: var(--cover-width, 246px);
-    flex: 0 0 var(--cover-width, 246px);
+    margin: 0 0 var(--cover-margin-bottom, 21px) var(--cover-margin-left, 37px);
   }
 
   .cover,
   .cover-fallback {
     width: 100%;
+    max-width: 100%;
     max-height: var(--cover-max-height, 574px);
     border: 1px solid #EAEAEA;
     border-radius: 4px;
@@ -193,15 +187,13 @@
   <div class="frame">
     <div class="card">
       <div class="hero" id="content">
-        <div class="hero-grid">
-          <div class="copy">
-            <div class="title" id="title">{{TITULO}}</div>
-            <div class="author-chip" id="authorChip">{{AUTOR}}</div>
-            <div class="body-text" id="bodyText">{{BODY_HTML}}</div>
-          </div>
-          <div class="cover-col">
+        <div class="content-flow" id="contentFlow">
+          <div class="cover-wrap" id="coverWrap">
             {{PORTADA_SECTION}}
           </div>
+          <div class="title" id="title">{{TITULO}}</div>
+          <div class="author-chip" id="authorChip">{{AUTOR}}</div>
+          <div class="body-text" id="bodyText">{{BODY_HTML}}</div>
         </div>
       </div>
 
