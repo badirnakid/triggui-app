@@ -4,6 +4,10 @@
  * Renderiza una tarjeta PNG vertical real para WhatsApp / Stories.
  * Calibrado para acercarse visualmente a la tarjeta viva:
  * más grande, más cerca, más legible, menos aire inútil.
+ *
+ * Además:
+ * - corrige el error de renderHighlightHTML faltante
+ * - evita repetición entre párrafo 1 y párrafo 2 usando fallback inteligente
  */
 
 import fs from "node:fs/promises";
@@ -27,10 +31,6 @@ const PNG_STYLE = {
   titleColor: "#1D1D1B",
   paragraphColor: "#4B4B4B",
   footerColor: "#8A8A8A",
-
-  titleFont: "Georgia, 'Times New Roman', serif",
-  bodyFont: "Georgia, 'Times New Roman', serif",
-  uiFont: "'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif",
 
   outerWidth: 760,
   outerHeight: 1820,
@@ -235,6 +235,45 @@ function ensureOneHighlight(text) {
   return normalizeHighlightSyntax(normalized.replace(new RegExp(safe), `[H]${chosen}[/H]`));
 }
 
+function comparableText(text) {
+  return stripHighlightTags(text)
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s]/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function tooSimilar(a, b) {
+  const aa = comparableText(a);
+  const bb = comparableText(b);
+
+  if (!aa || !bb) return false;
+  if (aa === bb) return true;
+
+  if ((aa.includes(bb) || bb.includes(aa)) && Math.min(aa.length, bb.length) > 42) {
+    return true;
+  }
+
+  const tokensA = new Set(aa.split(" ").filter(Boolean));
+  const tokensB = new Set(bb.split(" ").filter(Boolean));
+  const intersection = [...tokensA].filter((t) => tokensB.has(t)).length;
+  const union = new Set([...tokensA, ...tokensB]).size || 1;
+  const jaccard = intersection / union;
+
+  return jaccard >= 0.78;
+}
+
+function firstDifferentCandidate(base, candidates) {
+  for (const candidate of candidates) {
+    const clean = normalizeText(candidate);
+    if (!clean) continue;
+    if (!tooSimilar(base, clean)) return clean;
+  }
+  return "";
+}
+
 /* ═══════════════════════════════════════════════════════════════
    HELPERS DE COLOR
 ═══════════════════════════════════════════════════════════════ */
@@ -362,13 +401,52 @@ function coerceStructureFromTarjeta(tarjeta, libro) {
   };
 }
 
-function buildPresentationCopy(libro, bookMeta) {
-  const tarjeta = libro.tarjeta_presentacion || libro.tarjeta || {};
+function deriveBottomFallbacks(libro, bookMeta, baseTop, structuredBase) {
+  const tituloLibro = bookMeta.titulo || libro.titulo || "";
+  const autorLibro = bookMeta.autor || libro.autor || "";
 
-  const structured = coerceStructureFromTarjeta(tarjeta, {
+  const frases = uniqueStrings(toArrayOfStrings(libro.frases))
+    .map((f) => stripExplicitBookRefs(cleanGuidance(f), tituloLibro, autorLibro))
+    .map((f) => ensureSentence(f))
+    .filter(Boolean);
+
+  const candidates = [
+    structuredBase?.bottom,
+    structuredBase?.top,
+    ...frases
+  ].filter(Boolean);
+
+  const chosen = firstDifferentCandidate(baseTop, candidates);
+  return chosen ? ensureOneHighlight(chosen) : "";
+}
+
+function buildPresentationCopy(libro, bookMeta) {
+  const tarjetaLive = libro.tarjeta_presentacion || libro.tarjeta || {};
+  const tarjetaBase = libro.tarjeta_base || {};
+
+  const live = coerceStructureFromTarjeta(tarjetaLive, {
     titulo: bookMeta.titulo || libro.titulo || "",
     autor: bookMeta.autor || libro.autor || ""
   });
+
+  const base = coerceStructureFromTarjeta(tarjetaBase, {
+    titulo: bookMeta.titulo || libro.titulo || "",
+    autor: bookMeta.autor || libro.autor || ""
+  });
+
+  let title = live.title || base.title;
+  let top = live.top || base.top;
+  let subtitle = live.subtitle || base.subtitle || "Hazlo ahora";
+  let bottom = live.bottom || base.bottom;
+
+  if (tooSimilar(top, bottom)) {
+    const replacement = deriveBottomFallbacks(libro, bookMeta, top, base);
+    if (replacement) bottom = replacement;
+  }
+
+  if (tooSimilar(top, bottom)) {
+    bottom = ensureOneHighlight("[H]Abre el libro y haz una sola prueba real hoy.[/H]");
+  }
 
   const keywords = uniqueStrings([
     ...toArrayOfStrings(libro.palabras),
@@ -376,9 +454,39 @@ function buildPresentationCopy(libro, bookMeta) {
   ]).slice(0, 4);
 
   return {
-    ...structured,
+    title,
+    top,
+    subtitle,
+    bottom,
     keywords
   };
+}
+
+function renderHighlightHTML(text) {
+  const normalized = ensureOneHighlight(text);
+  if (!normalized) return "";
+
+  const re = /\[H\](.*?)\[\/H\]/gis;
+  let out = "";
+  let last = 0;
+  let match;
+
+  while ((match = re.exec(normalized)) !== null) {
+    const before = normalized.slice(last, match.index);
+    if (before) out += escapeWithBreaks(before);
+
+    const inner = String(match[1] || "").trim();
+    if (inner) {
+      out += `<span class="highlight">${escapeWithBreaks(inner)}</span>`;
+    }
+
+    last = re.lastIndex;
+  }
+
+  const after = normalized.slice(last);
+  if (after) out += escapeWithBreaks(after);
+
+  return out;
 }
 
 /* ═══════════════════════════════════════════════════════════════
