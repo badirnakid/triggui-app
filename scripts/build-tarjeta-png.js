@@ -2,8 +2,8 @@
  * build-tarjeta-png.js — Paso 4 del pipeline Triggui 2.0
  *
  * Renderiza una tarjeta PNG vertical real para WhatsApp / Stories.
- * Trasplante de la lógica editorial y visual del Apps Script original,
- * adaptado con bisturí al pipeline PNG sin romper lo demás.
+ * Calibrado para acercarse visualmente a la tarjeta viva:
+ * más grande, más cerca, más legible, menos aire inútil.
  */
 
 import fs from "node:fs/promises";
@@ -11,46 +11,49 @@ import path from "node:path";
 import { chromium } from "playwright";
 
 /* ═══════════════════════════════════════════════════════════════
-   CONFIG NIVEL DIOS — APPS SCRIPT TRANSCODIFICADO A PNG
+   CONFIG VISUAL
 ═══════════════════════════════════════════════════════════════ */
 
-const TRIGGUI_STYLE_CONFIG = {
-  name: "Rational Orange · Logic Brain Edition",
-  version: "png-1.0",
+const PNG_STYLE = {
+  canvasBg: "#050505",
+  shellBg: "#F7F6F3",
+  shellBorder: "rgba(255,255,255,0.08)",
+  shellRadius: 38,
 
-  background: "#FFFFFF",
-  paper: "#F9F9F9",
-  ink: "#1A1A1A",
-  border: "#F39200",
+  heroCardBg: "#FBFAF8",
+  actionCardBg: "#FBFAF8",
+  footerCardBg: "#FBFAF8",
 
-  coverWidth: 230,
-  coverBorder: "#EAEAEA",
-  coverRadius: 10,
-  coverMaxHeight: 420,
-  coverMargin: "0 0 12px 18px",
-  coverShadow: "0 15px 35px rgba(243, 146, 0, 0.15)",
+  titleColor: "#1D1D1B",
+  paragraphColor: "#4B4B4B",
+  footerColor: "#8A8A8A",
 
-  titleColor: "#1A1A1A",
-  subtitleColor: "#F39200",
-  paragraphColor: "#4A4A4A",
-  footerTextColor: "#8B8880",
+  titleFont: "Georgia, 'Times New Roman', serif",
+  bodyFont: "Georgia, 'Times New Roman', serif",
+  uiFont: "'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif",
 
-  authorChipEnabled: true,
-  authorChipBg: "#FFF3E0",
-  authorChipColor: "#E65100",
+  outerWidth: 760,
+  outerHeight: 1820,
 
-  highlightStrategy: "universal_random",
-  highlightPaletteSize: 5,
-  universalPalette: [
-    { name: "Clarity Orange", bg: "#F39200", ink: "#FFFFFF" },
-    { name: "Stoic Charcoal", bg: "#333333", ink: "#FFFFFF" },
-    { name: "Logic Blue", bg: "#0284C7", ink: "#FFFFFF" },
-    { name: "Graphite Truth", bg: "#2C2C2C", ink: "#FFFFFF" },
-    { name: "Morning Yellow", bg: "#FBBF24", ink: "#1A1A1A" }
-  ],
+  coverWidth: 246,
+  coverMinWidth: 188,
+  coverRadius: 6,
+  coverShadow: "0 16px 34px rgba(0,0,0,0.10)",
 
-  minContrastAA: 7.0,
-  autoAdjustInk: true
+  titleSize: 72,
+  titleMinSize: 54,
+
+  authorSize: 27,
+  authorMinSize: 20,
+
+  topSize: 36,
+  topMinSize: 28,
+
+  subtitleSize: 31,
+  subtitleMinSize: 24,
+
+  bottomSize: 34,
+  bottomMinSize: 27
 };
 
 /* ═══════════════════════════════════════════════════════════════
@@ -80,6 +83,7 @@ async function resolveContenidoPath() {
 async function fileToDataURL(filePath) {
   const absPath = path.resolve(filePath);
   const ext = path.extname(absPath).toLowerCase();
+
   const mime =
     ext === ".png" ? "image/png" :
     ext === ".jpg" || ext === ".jpeg" ? "image/jpeg" :
@@ -87,6 +91,7 @@ async function fileToDataURL(filePath) {
     null;
 
   if (!mime) return "";
+
   const buffer = await fs.readFile(absPath);
   return `data:${mime};base64,${buffer.toString("base64")}`;
 }
@@ -101,14 +106,16 @@ async function resolveLogoDataURL() {
   ];
 
   for (const candidate of candidates) {
-    if (await fileExists(candidate)) return fileToDataURL(candidate);
+    if (await fileExists(candidate)) {
+      return await fileToDataURL(candidate);
+    }
   }
 
   return "";
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   HELPERS DE TEXTO / CONTRASTE
+   HELPERS DE TEXTO
 ═══════════════════════════════════════════════════════════════ */
 
 function escapeHTML(text) {
@@ -129,13 +136,14 @@ function normalizeText(text) {
 }
 
 function cleanGuidance(text) {
-  let t = normalizeText(text);
-  if (!t) return "";
+  let value = normalizeText(text);
+  if (!value) return "";
 
-  t = t.replace(/^\s*(?:[\(\[]?\d+[\)\]]?[\.\-:]?\s*)+/, "");
-  t = t.replace(/^\s*\[?\s*(t[ií]tulo|subt[ií]tulo|p[aá]rrafo(?:\s+breve)?|acci[oó]n)\s*\]?\s*[:\-–]?\s*/i, "");
-  t = t.replace(/^\s*(?:una\s+l[ií]nea\s+de\s+)?(?:t[ií]tulo|subt[ií]tulo|p[aá]rrafo(?:\s+breve)?|acci[oó]n)\s*[:\-–]\s*/i, "");
-  return normalizeText(t);
+  value = value.replace(/^\s*(?:[\(\[]?\d+[\)\]]?[\.\-:]?\s*)+/, "");
+  value = value.replace(/^\s*\[?\s*(t[ií]tulo|subt[ií]tulo|p[aá]rrafo(?:\s+breve)?|acci[oó]n)\s*\]?\s*[:\-–]?\s*/i, "");
+  value = value.replace(/^\s*(?:una\s+l[ií]nea\s+de\s+)?(?:t[ií]tulo|subt[ií]tulo|p[aá]rrafo(?:\s+breve)?|acci[oó]n)\s*[:\-–]\s*/i, "");
+
+  return normalizeText(value);
 }
 
 function stripExplicitBookRefs(text, titulo = "", autor = "") {
@@ -185,7 +193,9 @@ function normalizeHighlightSyntax(input) {
   const opens = (text.match(/\[H\]/g) || []).length;
   const closes = (text.match(/\[\/H\]/g) || []).length;
 
-  if (opens > closes) text += "[/H]".repeat(opens - closes);
+  if (opens > closes) {
+    text += "[/H]".repeat(opens - closes);
+  }
 
   let extraClose = (text.match(/\[\/H\]/g) || []).length - (text.match(/\[H\]/g) || []).length;
   while (extraClose > 0) {
@@ -214,71 +224,55 @@ function ensureOneHighlight(text) {
 
   const plain = stripHighlightTags(normalized);
   const segments = plain
-    .split(/(?<=[\.\!\?])\s+/)
+    .split(/(?<=[.!?])\s+/)
     .map((s) => s.trim())
-    .filter((s) => s.length >= 26);
+    .filter((s) => s.length >= 24);
 
   const chosen = segments[0] || plain;
   if (!chosen) return normalized;
+
   const safe = chosen.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   return normalizeHighlightSyntax(normalized.replace(new RegExp(safe), `[H]${chosen}[/H]`));
 }
 
-function luminance(hex) {
-  const safe = /^#[0-9a-fA-F]{6}$/.test(String(hex || "")) ? String(hex) : "#000000";
-  const [r, g, b] = safe.slice(1).match(/../g).map((x) => {
-    const v = parseInt(x, 16) / 255;
-    return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
-  });
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-}
+/* ═══════════════════════════════════════════════════════════════
+   HELPERS DE COLOR
+═══════════════════════════════════════════════════════════════ */
 
-function contrastRatio(hex1, hex2) {
-  const l1 = luminance(hex1);
-  const l2 = luminance(hex2);
-  const lighter = Math.max(l1, l2);
-  const darker = Math.min(l1, l2);
-  return (lighter + 0.05) / (darker + 0.05);
-}
+function hexToRgb(hex) {
+  const clean = String(hex || "").trim();
+  if (!/^#[0-9a-fA-F]{6}$/.test(clean)) return null;
 
-function bestInkFor(bg, preferred, minAA = 7) {
-  if (preferred && contrastRatio(preferred, bg) >= minAA) return preferred;
-  const black = "#000000";
-  const white = "#FFFFFF";
-  return contrastRatio(black, bg) >= contrastRatio(white, bg) ? black : white;
-}
-
-function hash32(s) {
-  let h = 2166136261 >>> 0;
-  const text = String(s || "");
-  for (let i = 0; i < text.length; i += 1) {
-    h ^= text.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return h >>> 0;
-}
-
-function mulberry32(a) {
-  return function rng() {
-    let t = a += 0x6D2B79F5;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  return {
+    r: parseInt(clean.slice(1, 3), 16),
+    g: parseInt(clean.slice(3, 5), 16),
+    b: parseInt(clean.slice(5, 7), 16)
   };
 }
 
-function shuffleDeterministic(arr, seed) {
-  const copy = arr.slice();
-  const rnd = mulberry32(seed || 123456789);
-  for (let i = copy.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(rnd() * (i + 1));
-    [copy[i], copy[j]] = [copy[j], copy[i]];
-  }
-  return copy;
+function toRgba(hex, alpha = 1) {
+  const rgb = hexToRgb(hex);
+  if (!rgb) return `rgba(0,0,0,${alpha})`;
+  return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
+}
+
+function mixHex(hexA, hexB, weight = 0.5) {
+  const a = hexToRgb(hexA);
+  const b = hexToRgb(hexB);
+  if (!a || !b) return hexA || hexB || "#000000";
+
+  const w = Math.max(0, Math.min(1, weight));
+  const rgb = {
+    r: Math.round(a.r * (1 - w) + b.r * w),
+    g: Math.round(a.g * (1 - w) + b.g * w),
+    b: Math.round(a.b * (1 - w) + b.b * w)
+  };
+
+  return `#${[rgb.r, rgb.g, rgb.b].map((v) => v.toString(16).padStart(2, "0")).join("")}`;
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   HELPERS DE CONTENIDO / ESTRUCTURA
+   HELPERS DE CONTENIDO
 ═══════════════════════════════════════════════════════════════ */
 
 function resolvePortadaURL(bookMeta, libro) {
@@ -304,25 +298,37 @@ function resolvePortadaSource(bookMeta, libro, portadaURL) {
 function toArrayOfStrings(value) {
   if (!value) return [];
   if (Array.isArray(value)) {
-    return value.flatMap((item) => toArrayOfStrings(item)).map((item) => normalizeText(item)).filter(Boolean);
+    return value
+      .flatMap((item) => toArrayOfStrings(item))
+      .map((item) => normalizeText(item))
+      .filter(Boolean);
   }
+
   if (typeof value === "string") {
-    return value.split(/[|•,;/]+/g).map((item) => normalizeText(item)).filter(Boolean);
+    return value
+      .split(/[|•,;/]+/g)
+      .map((item) => normalizeText(item))
+      .filter(Boolean);
   }
+
   return [];
 }
 
 function uniqueStrings(values) {
   const seen = new Set();
   const output = [];
+
   for (const value of values) {
     const clean = normalizeText(value);
     if (!clean) continue;
+
     const key = clean.toLowerCase();
     if (seen.has(key)) continue;
+
     seen.add(key);
     output.push(clean);
   }
+
   return output;
 }
 
@@ -330,75 +336,35 @@ function coerceStructureFromTarjeta(tarjeta, libro) {
   const tituloLibro = libro?.titulo || "";
   const autorLibro = libro?.autor || "";
 
-  let t = cleanGuidance(stripHighlightTags(normalizeHighlightSyntax(tarjeta?.titulo || "")));
-  let p1 = cleanGuidance(normalizeHighlightSyntax(tarjeta?.parrafoTop || ""));
-  let s = cleanGuidance(stripHighlightTags(normalizeHighlightSyntax(tarjeta?.subtitulo || "")));
-  let p2 = cleanGuidance(normalizeHighlightSyntax(tarjeta?.parrafoBot || ""));
+  let titulo = cleanGuidance(stripHighlightTags(normalizeHighlightSyntax(tarjeta?.titulo || "")));
+  let parrafoTop = cleanGuidance(normalizeHighlightSyntax(tarjeta?.parrafoTop || ""));
+  let subtitulo = cleanGuidance(stripHighlightTags(normalizeHighlightSyntax(tarjeta?.subtitulo || "")));
+  let parrafoBot = cleanGuidance(normalizeHighlightSyntax(tarjeta?.parrafoBot || ""));
 
-  t = stripExplicitBookRefs(t, tituloLibro, "");
-  s = stripExplicitBookRefs(s, tituloLibro, "");
-  p1 = stripExplicitBookRefs(p1, tituloLibro, autorLibro);
-  p2 = stripExplicitBookRefs(p2, tituloLibro, autorLibro);
+  titulo = stripExplicitBookRefs(titulo, tituloLibro, "");
+  subtitulo = stripExplicitBookRefs(subtitulo, tituloLibro, "");
+  parrafoTop = stripExplicitBookRefs(parrafoTop, tituloLibro, autorLibro);
+  parrafoBot = stripExplicitBookRefs(parrafoBot, tituloLibro, autorLibro);
 
-  if (!t) t = "Una idea que te acomoda por dentro";
-  if (!s) s = "Hazlo ahora";
-  if (!p1) p1 = ensureOneHighlight("[H]Hay libros que no se leen: te corrigen.[/H]");
-  if (!p2) p2 = ensureOneHighlight("[H]Abre una página y ejecuta una sola acción hoy.[/H]");
+  if (!titulo) titulo = "Una idea que te acomoda por dentro";
+  if (!subtitulo) subtitulo = "Hazlo ahora";
+  if (!parrafoTop) parrafoTop = ensureOneHighlight("[H]Hay libros que no se leen: te corrigen.[/H]");
+  if (!parrafoBot) parrafoBot = ensureOneHighlight("[H]Abre una página y ejecuta una sola acción hoy.[/H]");
 
-  p1 = ensureOneHighlight(ensureSentence(p1));
-  p2 = ensureOneHighlight(ensureSentence(p2));
+  parrafoTop = ensureOneHighlight(ensureSentence(parrafoTop));
+  parrafoBot = ensureOneHighlight(ensureSentence(parrafoBot));
 
   return {
-    title: t,
-    top: p1,
-    subtitle: s,
-    bottom: p2
+    title: titulo,
+    top: parrafoTop,
+    subtitle: subtitulo,
+    bottom: parrafoBot
   };
-}
-
-function pickHighlightStyle(seedBase) {
-  const palette = TRIGGUI_STYLE_CONFIG.universalPalette.slice(0, TRIGGUI_STYLE_CONFIG.highlightPaletteSize);
-  const seed = hash32(seedBase || "triggui");
-  const shuffled = shuffleDeterministic(palette, seed);
-  const picked = shuffled[0];
-  return {
-    name: picked.name,
-    bg: picked.bg,
-    ink: TRIGGUI_STYLE_CONFIG.autoAdjustInk
-      ? bestInkFor(picked.bg, picked.ink, TRIGGUI_STYLE_CONFIG.minContrastAA)
-      : picked.ink
-  };
-}
-
-function renderHighlightHTML(text, highlightStyle) {
-  const normalized = ensureOneHighlight(text);
-  if (!normalized) return "";
-
-  const re = /\[H\](.*?)\[\/H\]/gis;
-  let out = "";
-  let last = 0;
-  let match;
-
-  while ((match = re.exec(normalized)) !== null) {
-    const before = normalized.slice(last, match.index);
-    if (before) out += escapeWithBreaks(before);
-
-    const inner = String(match[1] || "").trim();
-    if (inner) {
-      out += `<span class="highlight" data-highlight-name="${escapeHTML(highlightStyle.name)}">${escapeWithBreaks(inner)}</span>`;
-    }
-
-    last = re.lastIndex;
-  }
-
-  const after = normalized.slice(last);
-  if (after) out += escapeWithBreaks(after);
-
-  return out;
 }
 
 function buildPresentationCopy(libro, bookMeta) {
   const tarjeta = libro.tarjeta_presentacion || libro.tarjeta || {};
+
   const structured = coerceStructureFromTarjeta(tarjeta, {
     titulo: bookMeta.titulo || libro.titulo || "",
     autor: bookMeta.autor || libro.autor || ""
@@ -459,59 +425,75 @@ const template = await fs.readFile("scripts/templates/tarjeta.html", "utf8");
 const portadaURL = resolvePortadaURL(bookMeta, libro);
 const portadaSource = resolvePortadaSource(bookMeta, libro, portadaURL);
 const logoDataURL = await resolveLogoDataURL();
+
 const autorLibro = bookMeta.autor || libro.autor || "";
-
 const display = buildPresentationCopy(libro, bookMeta);
-const highlightStyle = pickHighlightStyle(`${slug}__${display.title}__${display.top}__${display.bottom}`);
 
-const highlightBg = highlightStyle.bg;
-const highlightInk = highlightStyle.ink;
+const style = libro?.tarjeta?.style || libro?.tarjeta_presentacion?.style || {};
+const accent = style.accent || "#8F4CC2";
+const subtitleColor = style.subtitleColor || accent;
+const chipBg = mixHex(accent, "#FFFFFF", 0.82);
+const chipColor = mixHex(accent, "#5E2D91", 0.18);
+const highlightBg = toRgba(accent, 0.16);
+const highlightLine = toRgba(accent, 0.34);
+const highlightInk = style.paragraphColor || PNG_STYLE.paragraphColor;
+const borderSoft = toRgba(accent, 0.10);
 
 const portadaSection = portadaURL
   ? `<img class="cover" src="${portadaURL}" alt="Portada de ${escapeHTML(bookMeta.titulo || libro.titulo || "")}" />`
   : "";
 
-const heroLogoSection = logoDataURL
+const footerSection = logoDataURL
   ? `
-  <div class="logo-strip">
-    <img src="${logoDataURL}" alt="Triggui" />
-    <div class="meta">Queremos que te den ganas de abrir un libro.</div>
-  </div>`
-  : "";
-
-const footerLogoSection = logoDataURL
-  ? `
-    <img src="${logoDataURL}" alt="Triggui" />
-    <div class="meta">@triggui | triggui.com</div>`
+    <div class="footer-brand">
+      <img src="${logoDataURL}" alt="Triggui" />
+      <div class="footer-meta">@triggui | triggui.com</div>
+    </div>`
   : `
-    <div class="meta">triggui®<br>@triggui | triggui.com</div>`;
+    <div class="footer-brand">
+      <div class="footer-fallback">triggui®</div>
+      <div class="footer-meta">@triggui | triggui.com</div>
+    </div>`;
 
 let html = template
   .replace("{{PORTADA_SECTION}}", portadaSection)
   .replace("{{TITULO}}", escapeHTML(display.title))
   .replace("{{AUTOR}}", escapeHTML(autorLibro))
-  .replace("{{PARRAFO_TOP}}", renderHighlightHTML(display.top, highlightStyle))
+  .replace("{{PARRAFO_TOP}}", renderHighlightHTML(display.top))
   .replace("{{SUBTITULO}}", escapeHTML(display.subtitle))
-  .replace("{{PARRAFO_BOT}}", renderHighlightHTML(display.bottom, highlightStyle))
-  .replace("{{HERO_LOGO_SECTION}}", heroLogoSection)
-  .replace("{{FOOTER_LOGO_SECTION}}", footerLogoSection);
+  .replace("{{PARRAFO_BOT}}", renderHighlightHTML(display.bottom))
+  .replace("{{FOOTER_SECTION}}", footerSection);
 
-const vars = [
-  `--bg: ${TRIGGUI_STYLE_CONFIG.background}`,
-  `--paper: ${TRIGGUI_STYLE_CONFIG.paper}`,
-  `--ink: ${TRIGGUI_STYLE_CONFIG.ink}`,
-  `--border: ${TRIGGUI_STYLE_CONFIG.border}`,
-  `--title-color: ${TRIGGUI_STYLE_CONFIG.titleColor}`,
-  `--subtitle-color: ${TRIGGUI_STYLE_CONFIG.subtitleColor}`,
-  `--paragraph-color: ${TRIGGUI_STYLE_CONFIG.paragraphColor}`,
-  `--footer-color: ${TRIGGUI_STYLE_CONFIG.footerTextColor}`,
-  `--chip-bg: ${TRIGGUI_STYLE_CONFIG.authorChipBg}`,
-  `--chip-color: ${TRIGGUI_STYLE_CONFIG.authorChipColor}`,
+const cssVars = [
+  `--canvas-bg: ${PNG_STYLE.canvasBg}`,
+  `--shell-bg: ${PNG_STYLE.shellBg}`,
+  `--shell-border: ${PNG_STYLE.shellBorder}`,
+  `--hero-card-bg: ${PNG_STYLE.heroCardBg}`,
+  `--action-card-bg: ${PNG_STYLE.actionCardBg}`,
+  `--footer-card-bg: ${PNG_STYLE.footerCardBg}`,
+  `--title-color: ${style.titleColor || PNG_STYLE.titleColor}`,
+  `--paragraph-color: ${style.paragraphColor || PNG_STYLE.paragraphColor}`,
+  `--subtitle-color: ${subtitleColor}`,
+  `--chip-bg: ${chipBg}`,
+  `--chip-color: ${chipColor}`,
+  `--footer-color: ${PNG_STYLE.footerColor}`,
   `--highlight-bg: ${highlightBg}`,
-  `--highlight-ink: ${highlightInk}`
+  `--highlight-line: ${highlightLine}`,
+  `--highlight-ink: ${highlightInk}`,
+  `--card-border-soft: ${borderSoft}`,
+  `--cover-shadow: ${PNG_STYLE.coverShadow}`,
+  `--cover-radius: ${PNG_STYLE.coverRadius}px`,
+  `--outer-width: ${PNG_STYLE.outerWidth}px`,
+  `--outer-height: ${PNG_STYLE.outerHeight}px`,
+  `--title-size: ${PNG_STYLE.titleSize}px`,
+  `--author-size: ${PNG_STYLE.authorSize}px`,
+  `--top-size: ${PNG_STYLE.topSize}px`,
+  `--subtitle-size: ${PNG_STYLE.subtitleSize}px`,
+  `--bottom-size: ${PNG_STYLE.bottomSize}px`,
+  `--cover-width: ${PNG_STYLE.coverWidth}px`
 ].join("; ");
 
-html = html.replace("<body>", `<body style="${vars}">`);
+html = html.replace("<body>", `<body style="${cssVars}">`);
 
 /* ═══════════════════════════════════════════════════════════════
    RENDER WITH PLAYWRIGHT
@@ -539,8 +521,8 @@ if (portadaURL) {
   }
 }
 
-await page.evaluate(() => {
-  const inner = document.getElementById("inner");
+await page.evaluate((limits) => {
+  const shellBody = document.getElementById("shellBody");
   const heroCard = document.getElementById("heroCard");
   const heroContent = document.getElementById("heroContent");
   const actionCard = document.getElementById("actionCard");
@@ -565,42 +547,48 @@ await page.evaluate(() => {
   };
 
   let guard = 0;
-  while (heroContent && heroContent.scrollHeight > 880 && guard < 240) {
+  while (
+    (
+      (heroContent && heroContent.scrollHeight > 960) ||
+      (actionContent && actionContent.scrollHeight > 460)
+    ) &&
+    guard < 260
+  ) {
     let changed = false;
 
-    const tSize = px(title, "fontSize");
-    const pSize = px(topParagraph, "fontSize");
-    const sSize = px(subtitle, "fontSize");
-    const bSize = px(bottomParagraph, "fontSize");
-    const chipSize = px(authorChip, "fontSize");
+    const titleSize = px(title, "fontSize");
+    const authorSize = px(authorChip, "fontSize");
+    const topSize = px(topParagraph, "fontSize");
+    const subtitleSize = px(subtitle, "fontSize");
+    const bottomSize = px(bottomParagraph, "fontSize");
     const coverWidth = px(cover, "width");
 
-    if (title && tSize > 42) {
-      setPx(title, "fontSize", tSize - 0.7);
+    if (title && titleSize > limits.titleMin) {
+      setPx(title, "fontSize", titleSize - 0.7);
       changed = true;
     }
 
-    if (topParagraph && pSize > 25) {
-      setPx(topParagraph, "fontSize", pSize - 0.35);
+    if (topParagraph && topSize > limits.topMin) {
+      setPx(topParagraph, "fontSize", topSize - 0.30);
       changed = true;
     }
 
-    if (subtitle && sSize > 22 && guard % 2 === 0) {
-      setPx(subtitle, "fontSize", sSize - 0.25);
+    if (bottomParagraph && bottomSize > limits.bottomMin) {
+      setPx(bottomParagraph, "fontSize", bottomSize - 0.28);
       changed = true;
     }
 
-    if (bottomParagraph && bSize > 23 && guard % 2 === 0) {
-      setPx(bottomParagraph, "fontSize", bSize - 0.3);
+    if (subtitle && subtitleSize > limits.subtitleMin && guard % 2 === 0) {
+      setPx(subtitle, "fontSize", subtitleSize - 0.22);
       changed = true;
     }
 
-    if (authorChip && chipSize > 18 && guard % 3 === 0) {
-      setPx(authorChip, "fontSize", chipSize - 0.2);
+    if (authorChip && authorSize > limits.authorMin && guard % 3 === 0) {
+      setPx(authorChip, "fontSize", authorSize - 0.18);
       changed = true;
     }
 
-    if (cover && coverWidth > 170 && guard % 3 === 0) {
+    if (cover && coverWidth > limits.coverMin && guard % 3 === 0) {
       setPx(cover, "width", coverWidth - 0.6);
       changed = true;
     }
@@ -609,21 +597,34 @@ await page.evaluate(() => {
     guard += 1;
   }
 
-  const gap = 18 * 2;
-  const totalHeight = inner.clientHeight;
-  const footerHeight = Math.max(150, footerCard.getBoundingClientRect().height);
-  const remaining = totalHeight - footerHeight - gap;
+  const gap = parseFloat(getComputedStyle(shellBody).gap) || 20;
+  const totalHeight = shellBody.clientHeight;
+  const footerHeight = Math.max(132, footerCard.getBoundingClientRect().height);
+  const remaining = totalHeight - footerHeight - gap * 2;
 
-  const desiredHero = Math.ceil(heroContent.scrollHeight + 24);
-  const minHero = 700;
-  const maxHero = 1120;
+  const desiredHero = Math.ceil(heroContent.scrollHeight + 36);
+  const desiredAction = Math.ceil(actionContent.scrollHeight + 26);
 
-  let heroHeight = Math.max(minHero, Math.min(maxHero, desiredHero));
-  let actionHeight = remaining - heroHeight;
+  let heroHeight = desiredHero;
+  let actionHeight = desiredAction;
 
-  if (actionHeight < 340) {
-    actionHeight = 340;
+  if (desiredHero + desiredAction < remaining) {
+    const extra = remaining - (desiredHero + desiredAction);
+    heroHeight = desiredHero + Math.round(extra * 0.72);
+    actionHeight = remaining - heroHeight;
+  } else {
+    heroHeight = Math.round(remaining * 0.66);
+    actionHeight = remaining - heroHeight;
+  }
+
+  if (actionHeight < 300) {
+    actionHeight = 300;
     heroHeight = remaining - actionHeight;
+  }
+
+  if (heroHeight < 760) {
+    heroHeight = 760;
+    actionHeight = remaining - heroHeight;
   }
 
   heroCard.style.height = `${heroHeight}px`;
@@ -632,15 +633,17 @@ await page.evaluate(() => {
   let guardBottom = 0;
   while (actionContent && actionContent.scrollHeight > actionContent.clientHeight && guardBottom < 140) {
     let changed = false;
-    const sSize = px(subtitle, "fontSize");
-    const bSize = px(bottomParagraph, "fontSize");
 
-    if (subtitle && sSize > 21) {
-      setPx(subtitle, "fontSize", sSize - 0.25);
+    const subtitleSize = px(subtitle, "fontSize");
+    const bottomSize = px(bottomParagraph, "fontSize");
+
+    if (subtitle && subtitleSize > limits.subtitleMin) {
+      setPx(subtitle, "fontSize", subtitleSize - 0.20);
       changed = true;
     }
-    if (bottomParagraph && bSize > 22) {
-      setPx(bottomParagraph, "fontSize", bSize - 0.35);
+
+    if (bottomParagraph && bottomSize > limits.bottomMin) {
+      setPx(bottomParagraph, "fontSize", bottomSize - 0.25);
       changed = true;
     }
 
@@ -649,8 +652,8 @@ await page.evaluate(() => {
   }
 
   if (actionContent && actionContent.scrollHeight > actionContent.clientHeight && bottomParagraph) {
-    const available = actionContent.clientHeight - (subtitle ? subtitle.getBoundingClientRect().height : 0) - 8;
-    const lineHeight = px(bottomParagraph, "lineHeight") || (px(bottomParagraph, "fontSize") * 1.4);
+    const available = actionContent.clientHeight - (subtitle ? subtitle.getBoundingClientRect().height : 0) - 12;
+    const lineHeight = px(bottomParagraph, "lineHeight") || (px(bottomParagraph, "fontSize") * 1.38);
     const lines = Math.max(3, Math.floor(available / lineHeight));
 
     bottomParagraph.style.display = "-webkit-box";
@@ -658,6 +661,13 @@ await page.evaluate(() => {
     bottomParagraph.style.webkitLineClamp = String(lines);
     bottomParagraph.style.overflow = "hidden";
   }
+}, {
+  titleMin: PNG_STYLE.titleMinSize,
+  authorMin: PNG_STYLE.authorMinSize,
+  topMin: PNG_STYLE.topMinSize,
+  subtitleMin: PNG_STYLE.subtitleMinSize,
+  bottomMin: PNG_STYLE.bottomMinSize,
+  coverMin: PNG_STYLE.coverMinWidth
 });
 
 await page.waitForTimeout(250);
