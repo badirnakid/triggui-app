@@ -2,9 +2,10 @@
  * build-og-image.js — Paso 5 del pipeline Triggui 2.0
  *
  * Genera OG image PNG 1200×630 para preview de link en WhatsApp.
- * Su función NO es competir con la tarjeta.
- * Su función es que el link se vea serio, editorial, claro
- * y lo suficientemente deseable para que quieran abrirlo.
+ * Prioriza:
+ * - una frase fuerte dentro de la imagen
+ * - palabras del libro para el eyebrow
+ * - cero copy editorial flojo
  *
  * Lee el artefacto canónico single-book:
  *   1) TRIGGUI_EDICION_JSON
@@ -138,13 +139,132 @@ function uniqueStrings(values) {
   const output = [];
 
   for (const value of values) {
-    const key = value.toLowerCase();
+    const clean = normalizeText(value);
+    if (!clean) continue;
+    const key = clean.toLowerCase();
     if (seen.has(key)) continue;
     seen.add(key);
-    output.push(value);
+    output.push(clean);
   }
 
   return output;
+}
+
+function stripExplicitBookRefs(text, titulo = "", autor = "") {
+  let value = normalizeText(stripHighlightTags(text));
+  if (!value) return "";
+
+  for (const term of [titulo, autor]) {
+    const cleanTerm = normalizeText(term);
+    if (!cleanTerm) continue;
+    value = value.replace(new RegExp(cleanTerm.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"), "");
+  }
+
+  value = value
+    .replace(/\s+([,.;:!?])/g, "$1")
+    .replace(/[ \t]{2,}/g, " ")
+    .trim()
+    .replace(/^[,.;:!?·\-\s]+|[,.;:!?·\-\s]+$/g, "");
+
+  return normalizeText(value);
+}
+
+function phraseIsWeak(text) {
+  const value = normalizeText(text).toLowerCase();
+
+  if (!value) return true;
+
+  const weakPatterns = [
+    /\binvita a\b/,
+    /\binvitar a\b/,
+    /\bexplora\b/,
+    /\bexplorar\b/,
+    /\bdescubre\b/,
+    /\bdescubrir\b/,
+    /\breflexiona\b/,
+    /\breflexionar\b/,
+    /\bnos recuerda\b/,
+    /\bnos muestra\b/,
+    /\bhabla de\b/,
+    /\btrata de\b/,
+    /\bpropone\b/,
+    /\bpropone una\b/,
+    /\buna reflexión\b/,
+    /\buna mirada\b/,
+    /\bmuestra cómo\b/,
+    /\bpermite\b.+\balcanzar\b/
+  ];
+
+  return weakPatterns.some((re) => re.test(value));
+}
+
+function scorePhrase(text) {
+  const value = normalizeText(text);
+  if (!value) return -999;
+
+  let score = 0;
+  const len = value.length;
+
+  if (len >= 22 && len <= 74) score += 40;
+  else if (len >= 16 && len <= 88) score += 22;
+  else score -= 18;
+
+  if (len >= 28 && len <= 58) score += 16;
+  if (!/[,:;()]/.test(value)) score += 10;
+  if ((value.match(/,/g) || []).length === 0) score += 8;
+  if (/[áéíóúñ]/i.test(value)) score += 2;
+
+  const strongPatterns = [
+    /\bdeja\b/,
+    /\bprotege\b/,
+    /\brecupera\b/,
+    /\bordena\b/,
+    /\bdetén\b/,
+    /\bsuelta\b/,
+    /\brespira\b/,
+    /\bcorta\b/,
+    /\belige\b/,
+    /\bquita\b/,
+    /\bpon\b/,
+    /\babre\b/,
+    /\brenuncia\b/,
+    /\bvuelve\b/,
+    /\bhabita\b/,
+    /\bdeténte\b/,
+    /\baprende\b/,
+    /\bcuida\b/,
+    /\bescucha\b/
+  ];
+
+  if (strongPatterns.some((re) => re.test(value.toLowerCase()))) score += 10;
+  if (phraseIsWeak(value)) score -= 55;
+  if (len > 90) score -= 14;
+  if (len < 18) score -= 18;
+
+  return score;
+}
+
+function pickOgPhrases(bookMeta, libro) {
+  const titulo = bookMeta?.titulo || libro?.titulo || "";
+  const autor = bookMeta?.autor || libro?.autor || "";
+
+  const frases = uniqueStrings([
+    ...toArrayOfStrings(libro?.frases),
+    ...toArrayOfStrings(bookMeta?.frases)
+  ])
+    .map((item) => stripExplicitBookRefs(item, titulo, autor))
+    .filter(Boolean);
+
+  const ranked = frases
+    .map((phrase) => ({ phrase, score: scorePhrase(phrase) }))
+    .sort((a, b) => b.score - a.score);
+
+  const headline = clampText((ranked[0]?.phrase || "").trim(), 82);
+
+  const secondary = ranked.find((item) => item.phrase.toLowerCase() !== headline.toLowerCase())?.phrase || "";
+  const description = clampText(secondary, 120);
+
+  return { headline, description };
 }
 
 function resolvePortadaURL(bookMeta, libro) {
@@ -176,64 +296,43 @@ function resolveAccent(libro) {
 }
 
 function resolveEyebrow(bookMeta, libro) {
-  const candidates = uniqueStrings([
+  const palabras = uniqueStrings([
     ...toArrayOfStrings(libro?.palabras),
-    ...toArrayOfStrings(libro?.hawkins),
-    ...toArrayOfStrings(libro?.palabras_hawkins),
-    ...toArrayOfStrings(libro?.emociones),
     ...toArrayOfStrings(bookMeta?.palabras)
-  ]);
+  ]).slice(0, 2);
 
-  if (candidates.length >= 2) {
-    return clampText(`${candidates[0]} • ${candidates[1]}`, 42);
+  if (palabras.length === 2) {
+    return clampText(`${palabras[0]} · ${palabras[1]}`, 40);
   }
 
-  if (candidates.length === 1) {
-    return clampText(candidates[0], 28);
+  if (palabras.length === 1) {
+    return clampText(palabras[0], 22);
   }
 
   return "Triggui";
 }
 
 function resolveHeadline(bookMeta, libro) {
+  const { headline } = pickOgPhrases(bookMeta, libro);
+  if (headline) return headline;
+
   const tarjeta = libro?.tarjeta || {};
-  const candidates = [
-    tarjeta.titulo,
-    tarjeta.subtitulo,
-    stripHighlightTags(tarjeta.parrafoTop || ""),
-    stripHighlightTags(tarjeta.parrafoBot || ""),
-    bookMeta?.titulo,
-    libro?.titulo,
-    "Triggui"
-  ];
+  const fallback = stripExplicitBookRefs(
+    tarjeta.titulo || tarjeta.subtitulo || stripHighlightTags(tarjeta.parrafoTop || "") || "",
+    bookMeta?.titulo || libro?.titulo || "",
+    bookMeta?.autor || libro?.autor || ""
+  );
 
-  for (const candidate of candidates) {
-    const clean = clampText(candidate, 84);
-    if (clean) return clean;
-  }
-
-  return "Triggui";
+  return clampText(fallback || "Triggui", 82);
 }
 
 function resolveSubheadline(bookMeta, libro, headline) {
-  const tarjeta = libro?.tarjeta || {};
-  const candidates = [
-    stripHighlightTags(tarjeta.parrafoTop || ""),
-    tarjeta.subtitulo,
-    stripHighlightTags(tarjeta.parrafoBot || ""),
-    bookMeta?.titulo,
-    libro?.titulo,
-    ""
-  ];
+  const { description } = pickOgPhrases(bookMeta, libro);
+  const clean = normalizeText(description);
 
-  for (const candidate of candidates) {
-    const clean = clampText(candidate, 168);
-    if (!clean) continue;
-    if (normalizeText(clean).toLowerCase() === normalizeText(headline).toLowerCase()) continue;
-    return clean;
-  }
-
-  return "";
+  if (!clean) return "";
+  if (clean.toLowerCase() === normalizeText(headline).toLowerCase()) return "";
+  return clampText(clean, 110);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -296,7 +395,7 @@ const coverSection = portadaURL
 let html = template
   .replace("{{EYEBROW}}", escapeHTML(eyebrow))
   .replace("{{HEADLINE}}", escapeHTML(headline))
-  .replace("{{SUBHEADLINE}}", escapeHTML(subheadline))
+  .replace("{{SUBHEADLINE}}", escapeHTML(""))
   .replace("{{COVER_SECTION}}", coverSection);
 
 const cssVars = [
@@ -330,13 +429,37 @@ await page.evaluate(async () => {
 if (portadaURL) {
   try {
     await page.waitForSelector(".cover", { state: "visible", timeout: 8000 });
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(350);
   } catch {
     console.log("   ⚠️  Portada no cargó — OG sin portada");
   }
-} else {
-  await page.waitForTimeout(250);
 }
+
+await page.evaluate(() => {
+  const headline = document.querySelector(".headline");
+  const content = document.querySelector(".content");
+  const coverWrap = document.querySelector(".cover-wrap");
+
+  const px = (el, prop) => parseFloat(getComputedStyle(el)[prop]) || 0;
+  const setPx = (el, prop, value) => { if (el) el.style[prop] = `${value}px`; };
+
+  let guard = 0;
+  while (headline && content && content.scrollHeight > content.clientHeight && guard < 80) {
+    const size = px(headline, "fontSize");
+    const line = px(headline, "lineHeight");
+    if (size <= 72) break;
+    setPx(headline, "fontSize", size - 1);
+    if (line > 0) setPx(headline, "lineHeight", Math.max(size - 6, line - 1));
+    guard += 1;
+  }
+
+  if (coverWrap && headline && px(headline, "fontSize") > 84) {
+    const width = px(coverWrap, "width");
+    if (width > 350) setPx(coverWrap, "width", 350);
+  }
+});
+
+await page.waitForTimeout(180);
 
 const outPath = path.join(outDir, "og.png");
 await page.screenshot({
@@ -351,3 +474,4 @@ const stats = await fs.stat(outPath);
 console.log(`   ✅ OG image: ${outPath} (${(stats.size / 1024).toFixed(0)} KB)`);
 console.log(`   🖼️  Portada: ${portadaURL ? portadaSource : "tipográfica"}`);
 console.log(`   ✨ Headline: ${headline}`);
+console.log(`   📝 Secondary: ${subheadline || "—"}`);
