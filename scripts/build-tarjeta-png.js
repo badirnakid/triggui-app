@@ -1,19 +1,12 @@
+### `scripts/build-tarjeta-png.js`
+
+```javascript
 /**
  * build-tarjeta-png.js — Paso 4 del pipeline Triggui 2.0
  *
  * Renderiza una tarjeta PNG vertical real para WhatsApp / Stories.
- * Canon:
- *   1) TRIGGUI_EDICION_JSON
- *   2) contenido_edicion.json
- *   3) contenido.json
- *
- * + /tmp/triggui-book.json como metadata upstream
- *
- * Output:
- *   public/t/[slug]/tarjeta.png
- *
- * Tamaño real:
- *   1080×1920px
+ * Trasplante de la lógica editorial y visual del Apps Script original,
+ * adaptado con bisturí al pipeline PNG sin romper lo demás.
  */
 
 import fs from "node:fs/promises";
@@ -21,7 +14,50 @@ import path from "node:path";
 import { chromium } from "playwright";
 
 /* ═══════════════════════════════════════════════════════════════
-   HELPERS
+   CONFIG NIVEL DIOS — APPS SCRIPT TRANSCODIFICADO A PNG
+═══════════════════════════════════════════════════════════════ */
+
+const TRIGGUI_STYLE_CONFIG = {
+  name: "Rational Orange · Logic Brain Edition",
+  version: "png-1.0",
+
+  background: "#FFFFFF",
+  paper: "#F9F9F9",
+  ink: "#1A1A1A",
+  border: "#F39200",
+
+  coverWidth: 230,
+  coverBorder: "#EAEAEA",
+  coverRadius: 10,
+  coverMaxHeight: 420,
+  coverMargin: "0 0 12px 18px",
+  coverShadow: "0 15px 35px rgba(243, 146, 0, 0.15)",
+
+  titleColor: "#1A1A1A",
+  subtitleColor: "#F39200",
+  paragraphColor: "#4A4A4A",
+  footerTextColor: "#8B8880",
+
+  authorChipEnabled: true,
+  authorChipBg: "#FFF3E0",
+  authorChipColor: "#E65100",
+
+  highlightStrategy: "universal_random",
+  highlightPaletteSize: 5,
+  universalPalette: [
+    { name: "Clarity Orange", bg: "#F39200", ink: "#FFFFFF" },
+    { name: "Stoic Charcoal", bg: "#333333", ink: "#FFFFFF" },
+    { name: "Logic Blue", bg: "#0284C7", ink: "#FFFFFF" },
+    { name: "Graphite Truth", bg: "#2C2C2C", ink: "#FFFFFF" },
+    { name: "Morning Yellow", bg: "#FBBF24", ink: "#1A1A1A" }
+  ],
+
+  minContrastAA: 7.0,
+  autoAdjustInk: true
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   HELPERS DE ARCHIVO
 ═══════════════════════════════════════════════════════════════ */
 
 async function fileExists(filePath) {
@@ -35,12 +71,7 @@ async function fileExists(filePath) {
 
 async function resolveContenidoPath() {
   const envPath = String(process.env.TRIGGUI_EDICION_JSON || "").trim();
-
-  const candidates = [
-    envPath,
-    "contenido_edicion.json",
-    "contenido.json"
-  ].filter(Boolean);
+  const candidates = [envPath, "contenido_edicion.json", "contenido.json"].filter(Boolean);
 
   for (const candidate of candidates) {
     if (await fileExists(candidate)) return candidate;
@@ -48,6 +79,40 @@ async function resolveContenidoPath() {
 
   return null;
 }
+
+async function fileToDataURL(filePath) {
+  const absPath = path.resolve(filePath);
+  const ext = path.extname(absPath).toLowerCase();
+  const mime =
+    ext === ".png" ? "image/png" :
+    ext === ".jpg" || ext === ".jpeg" ? "image/jpeg" :
+    ext === ".webp" ? "image/webp" :
+    null;
+
+  if (!mime) return "";
+  const buffer = await fs.readFile(absPath);
+  return `data:${mime};base64,${buffer.toString("base64")}`;
+}
+
+async function resolveLogoDataURL() {
+  const candidates = [
+    "public/trigguiletrascolor3.png",
+    "public/trigguiletras2.png",
+    "public/trigguiletras.png",
+    "public/trigguiletrasblanco.png",
+    "public/trigguiletrasblanco2.png"
+  ];
+
+  for (const candidate of candidates) {
+    if (await fileExists(candidate)) return fileToDataURL(candidate);
+  }
+
+  return "";
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HELPERS DE TEXTO / CONTRASTE
+═══════════════════════════════════════════════════════════════ */
 
 function escapeHTML(text) {
   if (text == null) return "";
@@ -62,89 +127,45 @@ function escapeWithBreaks(text) {
   return escapeHTML(text).replace(/\n/g, "<br>");
 }
 
-function withAlpha(hex, alpha = "24") {
-  const clean = String(hex || "").trim();
-  if (/^#[0-9a-fA-F]{6}$/.test(clean)) {
-    return `${clean}${alpha}`;
-  }
-  return clean || "";
-}
-
-function hexToRgb(hex) {
-  const clean = String(hex || "").trim();
-  if (!/^#[0-9a-fA-F]{6}$/.test(clean)) return null;
-
-  return {
-    r: parseInt(clean.slice(1, 3), 16),
-    g: parseInt(clean.slice(3, 5), 16),
-    b: parseInt(clean.slice(5, 7), 16)
-  };
-}
-
-function rgbToHex({ r, g, b }) {
-  const clamp = (v) => Math.max(0, Math.min(255, Math.round(v)));
-  return `#${[clamp(r), clamp(g), clamp(b)]
-    .map((v) => v.toString(16).padStart(2, "0"))
-    .join("")}`;
-}
-
-function mixHex(hexA, hexB, weight = 0.5) {
-  const a = hexToRgb(hexA);
-  const b = hexToRgb(hexB);
-  if (!a || !b) return hexA || hexB || "#000000";
-
-  const w = Math.max(0, Math.min(1, weight));
-  return rgbToHex({
-    r: a.r * (1 - w) + b.r * w,
-    g: a.g * (1 - w) + b.g * w,
-    b: a.b * (1 - w) + b.b * w
-  });
-}
-
 function normalizeText(text) {
   return String(text || "").replace(/\s+/g, " ").trim();
 }
 
-function clampText(text, max) {
-  const clean = normalizeText(text);
-  if (!clean) return "";
-  if (clean.length <= max) return clean;
-  return `${clean.slice(0, max - 3).trim()}...`;
+function cleanGuidance(text) {
+  let t = normalizeText(text);
+  if (!t) return "";
+
+  t = t.replace(/^\s*(?:[\(\[]?\d+[\)\]]?[\.\-:]?\s*)+/, "");
+  t = t.replace(/^\s*\[?\s*(t[ií]tulo|subt[ií]tulo|p[aá]rrafo(?:\s+breve)?|acci[oó]n)\s*\]?\s*[:\-–]?\s*/i, "");
+  t = t.replace(/^\s*(?:una\s+l[ií]nea\s+de\s+)?(?:t[ií]tulo|subt[ií]tulo|p[aá]rrafo(?:\s+breve)?|acci[oó]n)\s*[:\-–]\s*/i, "");
+  return normalizeText(t);
 }
 
-function toArrayOfStrings(value) {
-  if (!value) return [];
-  if (Array.isArray(value)) {
-    return value
-      .flatMap((item) => toArrayOfStrings(item))
-      .map((item) => normalizeText(item))
-      .filter(Boolean);
-  }
+function stripExplicitBookRefs(text, titulo = "", autor = "") {
+  let value = normalizeText(text);
+  if (!value) return "";
 
-  if (typeof value === "string") {
-    return value
-      .split(/[|•,;/]+/g)
-      .map((item) => normalizeText(item))
-      .filter(Boolean);
-  }
-
-  return [];
-}
-
-function uniqueStrings(values) {
-  const seen = new Set();
-  const output = [];
-
-  for (const value of values) {
-    const clean = normalizeText(value);
+  for (const term of [titulo, autor]) {
+    const clean = normalizeText(term);
     if (!clean) continue;
-    const key = clean.toLowerCase();
-    if (seen.has(key)) continue;
-    seen.add(key);
-    output.push(clean);
+    const safe = clean.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    value = value.replace(new RegExp(safe, "gi"), "");
   }
 
-  return output;
+  value = value
+    .replace(/\s+([,.;:!?])/g, "$1")
+    .replace(/[ \t]{2,}/g, " ")
+    .trim()
+    .replace(/^[,.;:!?·\-\s]+|[,.;:!?·\-\s]+$/g, "");
+
+  return normalizeText(value);
+}
+
+function ensureSentence(text) {
+  const value = normalizeText(text);
+  if (!value) return "";
+  if (/[.!?…]$/.test(value)) return value;
+  return `${value}.`;
 }
 
 function normalizeHighlightSyntax(input) {
@@ -167,9 +188,7 @@ function normalizeHighlightSyntax(input) {
   const opens = (text.match(/\[H\]/g) || []).length;
   const closes = (text.match(/\[\/H\]/g) || []).length;
 
-  if (opens > closes) {
-    text += "[/H]".repeat(opens - closes);
-  }
+  if (opens > closes) text += "[/H]".repeat(opens - closes);
 
   let extraClose = (text.match(/\[\/H\]/g) || []).length - (text.match(/\[H\]/g) || []).length;
   while (extraClose > 0) {
@@ -179,259 +198,33 @@ function normalizeHighlightSyntax(input) {
     extraClose -= 1;
   }
 
-  text = text
-    .replace(/\[H\]\s*\[\/H\]/g, "")
-    .replace(/[ \t]{2,}/g, " ")
-    .trim();
-
-  return text;
+  return text.replace(/\[H\]\s*\[\/H\]/g, "").replace(/[ \t]{2,}/g, " ").trim();
 }
 
 function stripHighlightTags(text) {
   return normalizeHighlightSyntax(text).replace(/\[H\]|\[\/H\]/gi, "");
 }
 
-function renderHighlightHTML(text) {
-  const normalized = normalizeHighlightSyntax(text);
-  if (!normalized) return "";
-
-  const re = /\[H\](.*?)\[\/H\]/gis;
-  let out = "";
-  let last = 0;
-  let match;
-
-  while ((match = re.exec(normalized)) !== null) {
-    const before = normalized.slice(last, match.index);
-    if (before) out += escapeWithBreaks(before);
-
-    const inner = String(match[1] || "").trim();
-    if (inner) {
-      out += `<span class="highlight">${escapeWithBreaks(inner)}</span>`;
-    }
-
-    last = re.lastIndex;
-  }
-
-  const after = normalized.slice(last);
-  if (after) out += escapeWithBreaks(after);
-
-  return out;
+function countHighlights(text) {
+  return (normalizeHighlightSyntax(text).match(/\[H\](.*?)\[\/H\]/gis) || [])
+    .map((m) => m.replace(/\[H\]|\[\/H\]/gi, "").trim())
+    .filter(Boolean).length;
 }
 
-function stripExplicitBookRefs(text, titulo = "", autor = "") {
-  let value = normalizeText(stripHighlightTags(text));
-  if (!value) return "";
+function ensureOneHighlight(text) {
+  let normalized = normalizeHighlightSyntax(text);
+  if (countHighlights(normalized) >= 1) return normalized;
 
-  for (const term of [titulo, autor]) {
-    const cleanTerm = normalizeText(term);
-    if (!cleanTerm) continue;
-    const safe = cleanTerm.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    value = value.replace(new RegExp(safe, "gi"), "");
-  }
+  const plain = stripHighlightTags(normalized);
+  const segments = plain
+    .split(/(?<=[\.\!\?])\s+/)
+    .map((s) => s.trim())
+    .filter((s) => s.length >= 26);
 
-  value = value
-    .replace(/\s+([,.;:!?])/g, "$1")
-    .replace(/[ \t]{2,}/g, " ")
-    .trim()
-    .replace(/^[,.;:!?·\-\s]+|[,.;:!?·\-\s]+$/g, "");
-
-  return normalizeText(value);
-}
-
-function sentenceCase(text) {
-  const value = normalizeText(text);
-  if (!value) return "";
-  return value.charAt(0).toUpperCase() + value.slice(1);
-}
-
-function ensurePeriod(text) {
-  const value = normalizeText(text);
-  if (!value) return "";
-  if (/[.!?…]$/.test(value)) return value;
-  return `${value}.`;
-}
-
-function phraseIsWeak(text) {
-  const value = normalizeText(text).toLowerCase();
-  if (!value) return true;
-
-  const weakPatterns = [
-    /\binvita a\b/,
-    /\binvitar a\b/,
-    /\bexplora\b/,
-    /\bexplorar\b/,
-    /\bdescubre\b/,
-    /\bdescubrir\b/,
-    /\breflexiona\b/,
-    /\breflexionar\b/,
-    /\bnos recuerda\b/,
-    /\bnos muestra\b/,
-    /\bhabla de\b/,
-    /\btrata de\b/,
-    /\bpropone\b/,
-    /\buna reflexión\b/,
-    /\buna mirada\b/,
-    /\bmuestra cómo\b/
-  ];
-
-  return weakPatterns.some((re) => re.test(value));
-}
-
-function cleanLeadParagraph(text, titulo = "", autor = "") {
-  let value = stripExplicitBookRefs(text, titulo, autor);
-  if (!value) return "";
-
-  const patterns = [
-    /^\s*invita a explorar la idea de\s+/i,
-    /^\s*invita a explorar\s+/i,
-    /^\s*invita a\s+/i,
-    /^\s*explora la idea de\s+/i,
-    /^\s*explora\s+/i,
-    /^\s*explorar\s+/i,
-    /^\s*nos recuerda que\s+/i,
-    /^\s*nos muestra que\s+/i,
-    /^\s*este libro\s+/i,
-    /^\s*este enfoque transformador\s+/i,
-    /^\s*este enfoque\s+/i
-  ];
-
-  for (const pattern of patterns) {
-    value = value.replace(pattern, "");
-  }
-
-  value = value
-    .replace(/^\s*(la idea de|el acto de)\s+/i, "")
-    .replace(/[ \t]{2,}/g, " ")
-    .trim();
-
-  value = sentenceCase(value);
-  value = ensurePeriod(value);
-
-  return clampText(value, 230);
-}
-
-function scoreActionPhrase(text) {
-  const value = normalizeText(text);
-  if (!value) return -999;
-
-  let score = 0;
-
-  const actionablePatterns = [
-    /\babre\b/i,
-    /\brespira\b/i,
-    /\btoma\b/i,
-    /\bdetén\b/i,
-    /\bdetente\b/i,
-    /\bprueba\b/i,
-    /\bobserva\b/i,
-    /\bquita\b/i,
-    /\bcierra\b/i,
-    /\belige\b/i,
-    /\bescribe\b/i,
-    /\bvuelve\b/i,
-    /\bdeja\b/i,
-    /\bhaz\b/i,
-    /\bpon\b/i,
-    /\bordena\b/i,
-    /\bempieza\b/i,
-    /\bpermite\b/i,
-    /\bsuelta\b/i
-  ];
-
-  if (actionablePatterns.some((re) => re.test(value))) score += 28;
-  if (!phraseIsWeak(value)) score += 14;
-
-  const len = value.length;
-  if (len >= 40 && len <= 150) score += 16;
-  else if (len >= 22 && len <= 180) score += 8;
-  else score -= 12;
-
-  if (/[.!?]$/.test(value)) score += 2;
-
-  return score;
-}
-
-function selectCardTitle(tarjeta, libro, tituloLibro = "") {
-  const titulo = normalizeText(tarjeta?.titulo || "");
-  if (titulo && titulo.toLowerCase() !== normalizeText(tituloLibro).toLowerCase() && titulo.length <= 42 && !phraseIsWeak(titulo)) {
-    return titulo;
-  }
-
-  const subtitulo = normalizeText(tarjeta?.subtitulo || "");
-  if (subtitulo && subtitulo.length <= 42 && !phraseIsWeak(subtitulo)) {
-    return subtitulo;
-  }
-
-  const palabras = uniqueStrings(toArrayOfStrings(libro?.palabras)).slice(0, 2);
-  if (palabras.length === 2) {
-    return `${palabras[0]} y ${palabras[1].toLowerCase()}`;
-  }
-  if (palabras.length === 1) {
-    return palabras[0];
-  }
-
-  return clampText(tituloLibro || "Triggui", 42);
-}
-
-function selectLeadCopy(tarjeta, libro, tituloLibro = "", autorLibro = "") {
-  const candidateTop = cleanLeadParagraph(tarjeta?.parrafoTop || "", tituloLibro, autorLibro);
-  if (candidateTop && !phraseIsWeak(candidateTop)) {
-    return candidateTop;
-  }
-
-  const candidateBot = cleanLeadParagraph(tarjeta?.parrafoBot || "", tituloLibro, autorLibro);
-  if (candidateBot && !phraseIsWeak(candidateBot)) {
-    return candidateBot;
-  }
-
-  const frases = uniqueStrings(toArrayOfStrings(libro?.frases))
-    .map((frase) => cleanLeadParagraph(frase, tituloLibro, autorLibro))
-    .filter(Boolean);
-
-  const best = frases.find((frase) => !phraseIsWeak(frase));
-  return best || candidateTop || candidateBot || "";
-}
-
-function selectActionSubtitle(tarjeta, libro) {
-  const subtitle = normalizeText(tarjeta?.subtitulo || "");
-  if (subtitle && subtitle.length <= 44 && !phraseIsWeak(subtitle)) {
-    return subtitle;
-  }
-
-  const palabras = uniqueStrings(toArrayOfStrings(libro?.palabras)).slice(0, 3);
-  if (palabras.length >= 2) {
-    return `Haz espacio para ${palabras[0].toLowerCase()} y ${palabras[1].toLowerCase()}`;
-  }
-
-  return "";
-}
-
-function selectActionCopy(tarjeta, libro, tituloLibro = "", autorLibro = "", leadCopy = "") {
-  const candidates = [];
-
-  const parrafoBot = stripExplicitBookRefs(tarjeta?.parrafoBot || "", tituloLibro, autorLibro);
-  if (parrafoBot) candidates.push(parrafoBot);
-
-  for (const frase of uniqueStrings(toArrayOfStrings(libro?.frases))) {
-    const clean = stripExplicitBookRefs(frase, tituloLibro, autorLibro);
-    if (clean) candidates.push(clean);
-  }
-
-  const ranked = candidates
-    .map((text) => ({
-      text: ensurePeriod(sentenceCase(text)),
-      score: scoreActionPhrase(text)
-    }))
-    .filter((item) => item.text && item.text.toLowerCase() !== normalizeText(leadCopy).toLowerCase())
-    .sort((a, b) => b.score - a.score);
-
-  const chosen = ranked[0]?.text || ensurePeriod(sentenceCase(parrafoBot));
-  return clampText(chosen || "", 180);
-}
-
-function buildKeywords(libro) {
-  const palabras = uniqueStrings(toArrayOfStrings(libro?.palabras)).slice(0, 4);
-  return palabras.map((word) => `<span class="keyword">${escapeHTML(word.toLowerCase())}</span>`).join("");
+  const chosen = segments[0] || plain;
+  if (!chosen) return normalized;
+  const safe = chosen.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return normalizeHighlightSyntax(normalized.replace(new RegExp(safe), `[H]${chosen}[/H]`));
 }
 
 function luminance(hex) {
@@ -450,6 +243,50 @@ function contrastRatio(hex1, hex2) {
   const darker = Math.min(l1, l2);
   return (lighter + 0.05) / (darker + 0.05);
 }
+
+function bestInkFor(bg, preferred, minAA = 7) {
+  if (preferred && contrastRatio(preferred, bg) >= minAA) return preferred;
+  const black = "#000000";
+  const white = "#FFFFFF";
+  return contrastRatio(black, bg) >= contrastRatio(white, bg) ? black : white;
+}
+
+function hash32(s) {
+  let h = 2166136261 >>> 0;
+  const text = String(s || "");
+  for (let i = 0; i < text.length; i += 1) {
+    h ^= text.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+function mulberry32(a) {
+  return function rng() {
+    let t = a += 0x6D2B79F5;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function shuffleDeterministic(arr, seed) {
+  const copy = arr.slice();
+  const rnd = mulberry32(seed || 123456789);
+  for (let i = copy.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(rnd() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function parseFontSizeToPx(size) {
+  return parseFloat(String(size).replace("px", "")) || 16;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HELPERS DE CONTENIDO / ESTRUCTURA
+═══════════════════════════════════════════════════════════════ */
 
 function resolvePortadaURL(bookMeta, libro) {
   return (
@@ -471,37 +308,118 @@ function resolvePortadaSource(bookMeta, libro, portadaURL) {
   );
 }
 
-async function fileToDataURL(filePath) {
-  const absPath = path.resolve(filePath);
-  const ext = path.extname(absPath).toLowerCase();
-  const mime =
-    ext === ".png" ? "image/png" :
-    ext === ".jpg" || ext === ".jpeg" ? "image/jpeg" :
-    ext === ".webp" ? "image/webp" :
-    null;
-
-  if (!mime) return "";
-
-  const buffer = await fs.readFile(absPath);
-  return `data:${mime};base64,${buffer.toString("base64")}`;
+function toArrayOfStrings(value) {
+  if (!value) return [];
+  if (Array.isArray(value)) {
+    return value.flatMap((item) => toArrayOfStrings(item)).map((item) => normalizeText(item)).filter(Boolean);
+  }
+  if (typeof value === "string") {
+    return value.split(/[|•,;/]+/g).map((item) => normalizeText(item)).filter(Boolean);
+  }
+  return [];
 }
 
-async function resolveBrandLogoDataURL() {
-  const candidates = [
-    "public/trigguiletras2.png",
-    "public/trigguiletras.png",
-    "public/trigguiletrascolor3.png",
-    "public/trigguiletrasblanco.png",
-    "public/trigguiletrasblanco2.png"
-  ];
+function uniqueStrings(values) {
+  const seen = new Set();
+  const output = [];
+  for (const value of values) {
+    const clean = normalizeText(value);
+    if (!clean) continue;
+    const key = clean.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    output.push(clean);
+  }
+  return output;
+}
 
-  for (const candidate of candidates) {
-    if (await fileExists(candidate)) {
-      return await fileToDataURL(candidate);
+function coerceStructureFromTarjeta(tarjeta, libro) {
+  const tituloLibro = libro?.titulo || "";
+  const autorLibro = libro?.autor || "";
+
+  let t = cleanGuidance(stripHighlightTags(normalizeHighlightSyntax(tarjeta?.titulo || "")));
+  let p1 = cleanGuidance(normalizeHighlightSyntax(tarjeta?.parrafoTop || ""));
+  let s = cleanGuidance(stripHighlightTags(normalizeHighlightSyntax(tarjeta?.subtitulo || "")));
+  let p2 = cleanGuidance(normalizeHighlightSyntax(tarjeta?.parrafoBot || ""));
+
+  t = stripExplicitBookRefs(t, tituloLibro, "");
+  s = stripExplicitBookRefs(s, tituloLibro, "");
+  p1 = stripExplicitBookRefs(p1, tituloLibro, autorLibro);
+  p2 = stripExplicitBookRefs(p2, tituloLibro, autorLibro);
+
+  if (!t) t = "Una idea que te acomoda por dentro";
+  if (!s) s = "Hazlo ahora";
+  if (!p1) p1 = ensureOneHighlight("[H]Hay libros que no se leen: te corrigen.[/H]");
+  if (!p2) p2 = ensureOneHighlight("[H]Abre una página y ejecuta una sola acción hoy.[/H]");
+
+  p1 = ensureOneHighlight(ensureSentence(p1));
+  p2 = ensureOneHighlight(ensureSentence(p2));
+
+  return {
+    title: t,
+    top: p1,
+    subtitle: s,
+    bottom: p2
+  };
+}
+
+function pickHighlightStyle(seedBase) {
+  const palette = TRIGGUI_STYLE_CONFIG.universalPalette.slice(0, TRIGGUI_STYLE_CONFIG.highlightPaletteSize);
+  const seed = hash32(seedBase || "triggui");
+  const shuffled = shuffleDeterministic(palette, seed);
+  const picked = shuffled[0];
+  return {
+    name: picked.name,
+    bg: picked.bg,
+    ink: TRIGGUI_STYLE_CONFIG.autoAdjustInk
+      ? bestInkFor(picked.bg, picked.ink, TRIGGUI_STYLE_CONFIG.minContrastAA)
+      : picked.ink
+  };
+}
+
+function renderHighlightHTML(text, highlightStyle) {
+  const normalized = ensureOneHighlight(text);
+  if (!normalized) return "";
+
+  const re = /\[H\](.*?)\[\/H\]/gis;
+  let out = "";
+  let last = 0;
+  let match;
+
+  while ((match = re.exec(normalized)) !== null) {
+    const before = normalized.slice(last, match.index);
+    if (before) out += escapeWithBreaks(before);
+
+    const inner = String(match[1] || "").trim();
+    if (inner) {
+      out += `<span class="highlight" data-highlight-name="${escapeHTML(highlightStyle.name)}">${escapeWithBreaks(inner)}</span>`;
     }
+
+    last = re.lastIndex;
   }
 
-  return "";
+  const after = normalized.slice(last);
+  if (after) out += escapeWithBreaks(after);
+
+  return out;
+}
+
+function buildPresentationCopy(libro, bookMeta) {
+  const tarjeta = libro.tarjeta_presentacion || libro.tarjeta || {};
+  const structured = coerceStructureFromTarjeta(tarjeta, {
+    titulo: bookMeta.titulo || libro.titulo || "",
+    autor: bookMeta.autor || libro.autor || ""
+  });
+
+  const keywords = uniqueStrings([
+    ...toArrayOfStrings(libro.palabras),
+    ...toArrayOfStrings(bookMeta.palabras)
+  ]).slice(0, 4);
+
+  return {
+    ...structured,
+    keywords
+  };
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -545,100 +463,61 @@ console.log(`🧾 Fuente JSON: ${contenidoPath}`);
 ═══════════════════════════════════════════════════════════════ */
 
 const template = await fs.readFile("scripts/templates/tarjeta.html", "utf8");
-
-const tarjeta = libro.tarjeta || {};
-const style = tarjeta.style || {};
-
-const tituloLibro = bookMeta.titulo || libro.titulo || "";
-const autorLibro = bookMeta.autor || libro.autor || "";
-
-const accent = style.accent || "#E35D30";
-const paper = style.paper || "#F7F7F5";
-const ink = style.ink || "#1A1A1A";
-const borderColor = style.border || "#E7E3DE";
-
-const titleColor = style.titleColor || "#1A1A1A";
-const subtitleColor = style.subtitleColor || accent;
-const paragraphColor = style.paragraphColor || "#4A4A4A";
-
-const pastelHighlight = mixHex(accent, "#FFFFFF", 0.78);
-const pastelEdge = mixHex(accent, "#FFFFFF", 0.62);
-const pastelChip = mixHex(accent, "#FFFFFF", 0.80);
-const pastelKeywordBorder = mixHex(accent, "#FFFFFF", 0.66);
-const pastelKeywordText = mixHex(accent, "#3F4855", 0.52);
-
-const chipBg = pastelChip;
-const chipColor = mixHex(accent, "#31568A", 0.38);
-const highlightBg = withAlpha(pastelHighlight, "FF");
-const highlightEdge = withAlpha(pastelEdge, "E6");
-const highlightText = "#2F343C";
-const coverBorder = withAlpha(accent, "18") || "#EAEAEA";
-
-const titleContrast = contrastRatio(titleColor, paper);
-const subtitleContrast = contrastRatio(subtitleColor, paper);
-console.log(`   📐 Contraste título/fondo: ${titleContrast.toFixed(2)}:1 ${titleContrast >= 4.5 ? "✅" : "⚠️"}`);
-console.log(`   📐 Contraste subtítulo/fondo: ${subtitleContrast.toFixed(2)}:1 ${subtitleContrast >= 3 ? "✅" : "⚠️"}`);
-
-const selectedTitle = selectCardTitle(tarjeta, libro, tituloLibro);
-const selectedLead = selectLeadCopy(tarjeta, libro, tituloLibro, autorLibro);
-const selectedActionTitle = selectActionSubtitle(tarjeta, libro);
-const selectedAction = selectActionCopy(tarjeta, libro, tituloLibro, autorLibro, selectedLead);
-
-const parrafoTopHTML = renderHighlightHTML(selectedLead);
-const parrafoBotHTML = renderHighlightHTML(selectedAction);
-
 const portadaURL = resolvePortadaURL(bookMeta, libro);
 const portadaSource = resolvePortadaSource(bookMeta, libro, portadaURL);
+const logoDataURL = await resolveLogoDataURL();
+
+const display = buildPresentationCopy(libro, bookMeta);
+const highlightStyle = pickHighlightStyle(`${slug}__${display.title}__${display.top}__${display.bottom}`);
+
+const highlightBg = highlightStyle.bg;
+const highlightInk = highlightStyle.ink;
 
 const portadaSection = portadaURL
-  ? `<img class="cover" src="${portadaURL}" alt="Portada de ${escapeHTML(tituloLibro)}" />`
+  ? `<img class="cover" src="${portadaURL}" alt="Portada de ${escapeHTML(bookMeta.titulo || libro.titulo || "")}" />`
   : "";
 
-const keywordsSection = buildKeywords(libro);
-
-const brandLogoDataURL = await resolveBrandLogoDataURL();
-const brandSection = brandLogoDataURL
+const heroLogoSection = logoDataURL
   ? `
-    <div class="brand-wrap">
-      <img class="brand-logo" src="${brandLogoDataURL}" alt="Triggui" />
-      <div class="brand-sub">@triggui | triggui.com</div>
-    </div>`
+  <div class="logo-strip">
+    <img src="${logoDataURL}" alt="Triggui" />
+    <div class="meta">Queremos que te den ganas de abrir un libro.</div>
+  </div>`
+  : "";
+
+const footerLogoSection = logoDataURL
+  ? `
+    <img src="${logoDataURL}" alt="Triggui" />
+    <div class="meta">@triggui | triggui.com</div>`
   : `
-    <div class="brand-wrap">
-      <div class="brand-fallback">triggui®</div>
-      <div class="brand-sub">@triggui | triggui.com</div>
-    </div>`;
+    <div class="meta">triggui®<br>@triggui | triggui.com</div>`;
 
 let html = template
   .replace("{{PORTADA_SECTION}}", portadaSection)
-  .replace("{{TITULO}}", escapeHTML(selectedTitle))
-  .replace("{{AUTOR}}", escapeHTML(autorLibro))
-  .replace("{{PARRAFO_TOP}}", parrafoTopHTML)
-  .replace("{{KEYWORDS_SECTION}}", keywordsSection)
-  .replace("{{SUBTITULO}}", escapeHTML(selectedActionTitle))
-  .replace("{{PARRAFO_BOT}}", parrafoBotHTML)
-  .replace("{{BRAND_SECTION}}", brandSection);
+  .replace("{{TITULO}}", escapeHTML(display.title))
+  .replace("{{AUTOR}}", escapeHTML(bookMeta.autor || libro.autor || ""))
+  .replace("{{PARRAFO_TOP}}", renderHighlightHTML(display.top, highlightStyle))
+  .replace("{{SUBTITULO}}", escapeHTML(display.subtitle))
+  .replace("{{PARRAFO_BOT}}", renderHighlightHTML(display.bottom, highlightStyle))
+  .replace("{{HERO_LOGO_SECTION}}", heroLogoSection)
+  .replace("{{FOOTER_LOGO_SECTION}}", footerLogoSection);
 
-const cssVars = [
-  `--bg: #0B0B0C`,
-  `--paper: ${paper}`,
-  `--ink: ${ink}`,
-  `--title-color: ${titleColor}`,
-  `--subtitle-color: ${subtitleColor}`,
-  `--paragraph-color: ${paragraphColor}`,
-  `--chip-bg: ${chipBg}`,
-  `--chip-color: ${chipColor}`,
+const vars = [
+  `--bg: ${TRIGGUI_STYLE_CONFIG.background}`,
+  `--paper: ${TRIGGUI_STYLE_CONFIG.paper}`,
+  `--ink: ${TRIGGUI_STYLE_CONFIG.ink}`,
+  `--border: ${TRIGGUI_STYLE_CONFIG.border}`,
+  `--title-color: ${TRIGGUI_STYLE_CONFIG.titleColor}`,
+  `--subtitle-color: ${TRIGGUI_STYLE_CONFIG.subtitleColor}`,
+  `--paragraph-color: ${TRIGGUI_STYLE_CONFIG.paragraphColor}`,
+  `--footer-color: ${TRIGGUI_STYLE_CONFIG.footerTextColor}`,
+  `--chip-bg: ${TRIGGUI_STYLE_CONFIG.authorChipBg}`,
+  `--chip-color: ${TRIGGUI_STYLE_CONFIG.authorChipColor}`,
   `--highlight-bg: ${highlightBg}`,
-  `--highlight-edge: ${highlightEdge}`,
-  `--highlight-color: ${highlightText}`,
-  `--border-color: ${borderColor}`,
-  `--cover-border: ${coverBorder}`,
-  `--keyword-border: ${pastelKeywordBorder}`,
-  `--keyword-color: ${pastelKeywordText}`,
-  `--accent: ${accent}`
+  `--highlight-ink: ${highlightInk}`
 ].join("; ");
 
-html = html.replace("<body>", `<body style="${cssVars}">`);
+html = html.replace("<body>", `<body style="${vars}">`);
 
 /* ═══════════════════════════════════════════════════════════════
    RENDER WITH PLAYWRIGHT
@@ -660,13 +539,28 @@ await page.evaluate(async () => {
 if (portadaURL) {
   try {
     await page.waitForSelector(".cover", { state: "visible", timeout: 10000 });
-    await page.waitForTimeout(350);
+    await page.waitForTimeout(300);
   } catch {
     console.log("   ⚠️  Portada no cargó en 10s — continuando sin ella");
   }
 }
 
 await page.evaluate(() => {
+  const inner = document.getElementById("inner");
+  const heroCard = document.getElementById("heroCard");
+  const heroContent = document.getElementById("heroContent");
+  const actionCard = document.getElementById("actionCard");
+  const actionContent = document.getElementById("actionContent");
+  const footerCard = document.getElementById("footerCard");
+
+  const title = document.getElementById("title");
+  const authorChip = document.getElementById("authorChip");
+  const topParagraph = document.getElementById("parrafoTop");
+  const subtitle = document.getElementById("subtitle");
+  const bottomParagraph = document.getElementById("parrafoBot");
+  const cover = document.querySelector(".cover");
+  const heroLogo = document.querySelector(".logo-strip");
+
   const px = (el, prop) => {
     if (!el) return 0;
     return parseFloat(getComputedStyle(el)[prop]) || 0;
@@ -677,102 +571,96 @@ await page.evaluate(() => {
     el.style[prop] = `${value}px`;
   };
 
-  const hero = document.querySelector(".hero");
-  const heroCopy = document.querySelector(".hero-copy");
-  const title = document.querySelector(".title");
-  const chip = document.querySelector(".author-chip");
-  const topParagraph = document.querySelector(".paragraph-top");
-  const cover = document.querySelector(".cover");
-  const keywords = document.querySelector(".keywords");
-
-  let guardHero = 0;
-  while (hero && hero.scrollHeight > hero.clientHeight && guardHero < 220) {
+  // Paso 1: compacta tipografía hasta que el héroe sea razonable
+  let guard = 0;
+  while (heroContent && heroContent.scrollHeight > 880 && guard < 240) {
     let changed = false;
 
-    const titleSize = px(title, "fontSize");
-    const titleLine = px(title, "lineHeight");
-    const chipSize = px(chip, "fontSize");
-    const chipHeight = px(chip, "minHeight");
-    const topSize = px(topParagraph, "fontSize");
-    const topLine = px(topParagraph, "lineHeight");
-    const coverWidth = px(cover, "maxWidth") || px(cover, "width");
-    const keywordSize = keywords ? px(keywords.querySelector(".keyword"), "fontSize") : 0;
+    const tSize = px(title, "fontSize");
+    const pSize = px(topParagraph, "fontSize");
+    const sSize = px(subtitle, "fontSize");
+    const bSize = px(bottomParagraph, "fontSize");
+    const chipSize = px(authorChip, "fontSize");
+    const coverWidth = px(cover, "width");
 
-    if (title && titleSize > 60) {
-      setPx(title, "fontSize", titleSize - 1);
-      if (titleLine > 0) setPx(title, "lineHeight", Math.max(titleLine - 1, titleSize - 4));
+    if (title && tSize > 42) {
+      setPx(title, "fontSize", tSize - 0.7);
       changed = true;
     }
 
-    if (topParagraph && topSize > 27) {
-      setPx(topParagraph, "fontSize", topSize - 0.45);
-      if (topLine > 0) setPx(topParagraph, "lineHeight", Math.max(topLine - 0.7, topSize * 1.32));
+    if (topParagraph && pSize > 25) {
+      setPx(topParagraph, "fontSize", pSize - 0.35);
       changed = true;
     }
 
-    if (chip && chipSize > 24 && guardHero % 2 === 0) {
-      setPx(chip, "fontSize", chipSize - 0.35);
-      if (chipHeight > 46) setPx(chip, "minHeight", chipHeight - 0.35);
+    if (subtitle && sSize > 22 && guard % 2 === 0) {
+      setPx(subtitle, "fontSize", sSize - 0.25);
       changed = true;
     }
 
-    if (cover && coverWidth > 238 && guardHero % 2 === 0) {
-      cover.style.maxWidth = `${coverWidth - 0.9}px`;
+    if (bottomParagraph && bSize > 23 && guard % 2 === 0) {
+      setPx(bottomParagraph, "fontSize", bSize - 0.3);
       changed = true;
     }
 
-    if (keywords && keywordSize > 16 && guardHero % 3 === 0) {
-      keywords.querySelectorAll(".keyword").forEach((el) => {
-        const fs = px(el, "fontSize");
-        const mh = px(el, "minHeight");
-        const pl = px(el, "paddingLeft");
-        const pr = px(el, "paddingRight");
-        if (fs > 16) setPx(el, "fontSize", fs - 0.35);
-        if (mh > 32) setPx(el, "minHeight", mh - 0.35);
-        if (pl > 10) {
-          setPx(el, "paddingLeft", pl - 0.2);
-          setPx(el, "paddingRight", pr - 0.2);
-        }
-      });
+    if (authorChip && chipSize > 18 && guard % 3 === 0) {
+      setPx(authorChip, "fontSize", chipSize - 0.2);
+      changed = true;
+    }
+
+    if (cover && coverWidth > 170 && guard % 3 === 0) {
+      setPx(cover, "width", coverWidth - 0.6);
       changed = true;
     }
 
     if (!changed) break;
-    guardHero += 1;
+    guard += 1;
   }
 
-  const action = document.querySelector(".action");
-  const actionTitle = document.querySelector(".action-title");
-  const bottomParagraph = document.querySelector(".paragraph-bottom");
+  // Paso 2: fija alturas dinámicas para evitar huecos inútiles
+  const gap = 18 * 2;
+  const totalHeight = inner.clientHeight;
+  const footerHeight = Math.max(150, footerCard.getBoundingClientRect().height);
+  const remaining = totalHeight - footerHeight - gap;
 
-  let guardAction = 0;
-  while (action && action.scrollHeight > action.clientHeight && guardAction < 180) {
+  const desiredHero = Math.ceil(heroContent.scrollHeight + 24);
+  const minHero = 700;
+  const maxHero = 1120;
+
+  let heroHeight = Math.max(minHero, Math.min(maxHero, desiredHero));
+  let actionHeight = remaining - heroHeight;
+
+  if (actionHeight < 340) {
+    actionHeight = 340;
+    heroHeight = remaining - actionHeight;
+  }
+
+  heroCard.style.height = `${heroHeight}px`;
+  actionCard.style.height = `${actionHeight}px`;
+
+  // Paso 3: si el bloque 2 todavía desborda, reduce suavemente y clamp
+  let guardBottom = 0;
+  while (actionContent && actionContent.scrollHeight > actionContent.clientHeight && guardBottom < 140) {
     let changed = false;
+    const sSize = px(subtitle, "fontSize");
+    const bSize = px(bottomParagraph, "fontSize");
 
-    const actionTitleSize = px(actionTitle, "fontSize");
-    const actionTitleLine = px(actionTitle, "lineHeight");
-    const bottomSize = px(bottomParagraph, "fontSize");
-    const bottomLine = px(bottomParagraph, "lineHeight");
-
-    if (actionTitle && actionTitle.textContent.trim() && actionTitleSize > 24) {
-      setPx(actionTitle, "fontSize", actionTitleSize - 0.35);
-      if (actionTitleLine > 0) setPx(actionTitle, "lineHeight", Math.max(actionTitleLine - 0.35, actionTitleSize * 1.12));
+    if (subtitle && sSize > 21) {
+      setPx(subtitle, "fontSize", sSize - 0.25);
       changed = true;
     }
-
-    if (bottomParagraph && bottomSize > 24) {
-      setPx(bottomParagraph, "fontSize", bottomSize - 0.45);
-      if (bottomLine > 0) setPx(bottomParagraph, "lineHeight", Math.max(bottomLine - 0.6, bottomSize * 1.3));
+    if (bottomParagraph && bSize > 22) {
+      setPx(bottomParagraph, "fontSize", bSize - 0.35);
       changed = true;
     }
 
     if (!changed) break;
-    guardAction += 1;
+    guardBottom += 1;
   }
 
-  if (action && action.scrollHeight > action.clientHeight && bottomParagraph) {
-    const available = action.clientHeight - (actionTitle ? actionTitle.getBoundingClientRect().height : 0) - 10;
-    const lineHeight = px(bottomParagraph, "lineHeight") || (px(bottomParagraph, "fontSize") * 1.35);
+  if (actionContent && actionContent.scrollHeight > actionContent.clientHeight && bottomParagraph) {
+    const available = actionContent.clientHeight - (subtitle ? subtitle.getBoundingClientRect().height : 0) - 8;
+    const lineHeight = px(bottomParagraph, "lineHeight") || (px(bottomParagraph, "fontSize") * 1.4);
     const lines = Math.max(3, Math.floor(available / lineHeight));
 
     bottomParagraph.style.display = "-webkit-box";
@@ -780,13 +668,9 @@ await page.evaluate(() => {
     bottomParagraph.style.webkitLineClamp = String(lines);
     bottomParagraph.style.overflow = "hidden";
   }
-
-  if (heroCopy && keywords && keywords.children.length === 0) {
-    keywords.style.display = "none";
-  }
 });
 
-await page.waitForTimeout(220);
+await page.waitForTimeout(250);
 
 const outPath = path.join(outDir, "tarjeta.png");
 await page.screenshot({
@@ -802,8 +686,275 @@ const sizeMB = (stats.size / 1024 / 1024).toFixed(2);
 
 console.log(`\n   ✅ Tarjeta generada: ${outPath}`);
 console.log(`   📏 ${sizeMB} MB | 1080×1920px`);
-console.log(`   🎨 Título: "${selectedTitle}"`);
+console.log(`   🎨 Título visible: "${display.title}"`);
 console.log(`   ✍️  Autor: ${autorLibro}`);
 console.log(`   🖼️  Portada: ${portadaURL ? portadaSource : "tipográfica"}`);
-console.log(`   📝 Lead: ${selectedLead}`);
-console.log(`   ⚡ Action: ${selectedAction}`);
+console.log(`   📝 Top: ${stripHighlightTags(display.top)}`);
+console.log(`   ⚡ Bottom: ${stripHighlightTags(display.bottom)}`);
+```
+
+### `scripts/templates/tarjeta.html`
+
+```html
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 1080px;
+    height: 1920px;
+    overflow: hidden;
+  }
+
+  body {
+    background:
+      radial-gradient(circle at 18% 8%, rgba(255,255,255,0.03), transparent 28%),
+      radial-gradient(circle at 82% 88%, rgba(255,255,255,0.02), transparent 24%),
+      var(--bg, #FFFFFF);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    color: var(--ink, #111111);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
+  }
+
+  .frame {
+    width: 1080px;
+    height: 1920px;
+    position: relative;
+    overflow: hidden;
+    background: var(--bg, #FFFFFF);
+  }
+
+  .inner {
+    position: relative;
+    height: 100%;
+    padding: 24px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .card {
+    width: 100%;
+    background: var(--paper, #FFFFFF);
+    border: 1px solid var(--border, #F39200);
+    border-radius: 20px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    flex: 0 0 auto;
+  }
+
+  .block {
+    background: linear-gradient(145deg, #FFFFFF 0%, #F5F5F5 100%);
+    border: 1px solid rgba(26, 26, 26, 0.05);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
+  }
+
+  .hero {
+    padding: 12px;
+  }
+
+  .hero-content {
+    padding: 20px 22px;
+    min-height: 100%;
+    overflow: hidden;
+  }
+
+  .hero-flow {
+    overflow: hidden;
+  }
+
+  .cover {
+    float: right;
+    width: 120px;
+    max-height: 280px;
+    height: auto;
+    margin: 0 0 10px 18px;
+    border: 1px solid #EAEAEA;
+    border-radius: 4px;
+    box-shadow: 0 15px 35px rgba(243, 146, 0, 0.15);
+    display: block;
+    object-fit: cover;
+    background: #fff;
+  }
+
+  .title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 60px;
+    line-height: 1.08;
+    font-weight: 700;
+    letter-spacing: -0.6px;
+    color: var(--title-color, #1A1A1A);
+    margin: 0 0 14px 0;
+  }
+
+  .author-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 0 14px;
+    border-radius: 12px;
+    background: var(--chip-bg, #FFF3E0);
+    color: var(--chip-color, #E65100);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 22px;
+    line-height: 1;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    margin: 0 0 14px 0;
+  }
+
+  .paragraph {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 34px;
+    line-height: 1.44;
+    font-weight: 400;
+    color: var(--paragraph-color, #111827);
+    letter-spacing: 0.02px;
+    margin: 0;
+  }
+
+  .paragraph p {
+    margin: 0;
+  }
+
+  .paragraph p + p {
+    margin-top: 0.2em;
+  }
+
+  .logo-strip {
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: transparent;
+    text-align: center;
+    opacity: 0.92;
+  }
+
+  .logo-strip img {
+    height: 32px;
+    width: auto;
+    display: block;
+    margin: 0 auto 8px auto;
+    object-fit: contain;
+  }
+
+  .logo-strip .meta {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 18px;
+    line-height: 1.4;
+    font-weight: 400;
+    color: var(--footer-color, #8B8880);
+    font-style: italic;
+    letter-spacing: 0;
+  }
+
+  .action {
+    padding: 12px;
+  }
+
+  .action-content {
+    padding: 20px 22px;
+    min-height: 100%;
+    overflow: hidden;
+  }
+
+  .subtitle {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 32px;
+    line-height: 1.26;
+    font-weight: 600;
+    color: var(--subtitle-color, #F39200);
+    letter-spacing: 0.1px;
+    margin: 0 0 10px 0;
+  }
+
+  .subtitle:empty {
+    display: none;
+    margin: 0;
+  }
+
+  .footer {
+    padding: 12px;
+  }
+
+  .footer-content {
+    min-height: 132px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 16px;
+  }
+
+  .footer-content img {
+    height: 42px;
+    width: auto;
+    display: block;
+    margin: 0 auto 10px auto;
+    object-fit: contain;
+  }
+
+  .footer-content .meta {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 22px;
+    line-height: 1.35;
+    font-weight: 400;
+    color: var(--footer-color, #8B8880);
+    font-style: italic;
+    letter-spacing: 0;
+    text-align: center;
+  }
+
+  .highlight {
+    display: inline;
+    background: var(--highlight-bg, #FFF3E0);
+    color: var(--highlight-ink, #111111);
+    padding: 0.04em 0.14em 0.08em;
+    border-radius: 8px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+</style>
+</head>
+<body>
+  <div class="frame">
+    <div class="inner" id="inner">
+      <div class="card hero" id="heroCard">
+        <div class="block hero-content" id="heroContent">
+          <div class="hero-flow">
+            {{PORTADA_SECTION}}
+            <div class="title" id="title">{{TITULO}}</div>
+            <div class="author-chip" id="authorChip">{{AUTOR}}</div>
+            <div class="paragraph" id="parrafoTop">{{PARRAFO_TOP}}</div>
+          </div>
+          {{HERO_LOGO_SECTION}}
+        </div>
+      </div>
+
+      <div class="card action" id="actionCard">
+        <div class="block action-content" id="actionContent">
+          <div class="subtitle" id="subtitle">{{SUBTITULO}}</div>
+          <div class="paragraph" id="parrafoBot">{{PARRAFO_BOT}}</div>
+        </div>
+      </div>
+
+      <div class="card footer" id="footerCard">
+        <div class="block footer-content">
+          {{FOOTER_LOGO_SECTION}}
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+```
