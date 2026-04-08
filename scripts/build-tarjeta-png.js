@@ -1,9 +1,9 @@
 /**
  * build-tarjeta-png.js — Triggui 2.0
  *
- * PNG definitiva homologada al Apps Script original.
- * Proporción real: 520×600 → escala 2x = 1040×1200
- * Sin float roto. Highlight altura completa. Footer propio PNG.
+ * PNG definitiva estilo Apps Script.
+ * Tamaño exacto: 1066 × 1600
+ * Una sola tarjeta continua, tipografía y proporciones copiadas del Apps Script.
  */
 
 import fs from "node:fs/promises";
@@ -11,78 +11,82 @@ import path from "node:path";
 import { chromium } from "playwright";
 
 /* ═══════════════════════════════════════════════════════════════
-   MAESTRO APPS SCRIPT — RATIONAL ORANGE
+   CONFIG MAESTRA — APPS SCRIPT (Rational Orange)
 ═══════════════════════════════════════════════════════════════ */
 
 const APP = {
-  cardWidth: 520,
-  cardHeight: 600,
-  scale: 2,
+  baseWidth: 520,
+  targetWidth: 1066,
+  targetHeight: 1600,
 
   background: "#FFFFFF",
   paper: "#F9F9F9",
   ink: "#1A1A1A",
   border: "#F39200",
   cardRadius: 20,
-
-  blockRadius: 16,
-  blockBackground: "linear-gradient(145deg, #FFFFFF 0%, #F5F5F5 100%)",
-  blockBorder: "rgba(26, 26, 26, 0.05)",
-  blockShadow: "0 8px 24px rgba(0, 0, 0, 0.03)",
-
-  paddingCard: 5,
-  gapBetweenBlocks: 14,
-
-  block1PaddingY: 20,
-  block1PaddingX: 22,
-  block2PaddingY: 20,
-  block2PaddingX: 22,
+  cardShadow: "0 12px 28px rgba(0,0,0,0.05)",
 
   coverWidth: 120,
-  coverRadius: 4,
   coverBorder: "#EAEAEA",
+  coverRadius: 4,
   coverMaxHeight: 280,
+  coverMarginTop: 0,
+  coverMarginRight: 0,
   coverMarginBottom: 10,
   coverMarginLeft: 18,
-  coverShadow: "0 15px 35px rgba(243, 146, 0, 0.15)",
+  coverShadow: "0 15px 35px rgba(243,146,0,0.15)",
+
+  serif: "Georgia, 'Times New Roman', serif",
+  sans: "'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif",
+
+  fontTitleSize: 28,
+  fontTitleLine: 1.2,
+  fontTitleWeight: 700,
+
+  fontSubtitleSize: 18,
+  fontSubtitleLine: 1.4,
+  fontSubtitleWeight: 600,
+
+  fontParagraphSize: 18,
+  fontParagraphLine: 1.7,
+  fontParagraphWeight: 400,
+
+  fontFooterSize: 14,
+  fontFooterLine: 1.4,
+
+  titleLetterSpacing: -0.5,
+  subtitleLetterSpacing: 0.15,
+  paragraphLetterSpacing: 0.2,
 
   titleColor: "#1A1A1A",
   subtitleColor: "#F39200",
   paragraphColor: "#4A4A4A",
   footerTextColor: "#8B8880",
 
-  titleFontSize: 28,
-  titleLineHeight: 1.2,
-  titleWeight: 700,
-  titleLetterSpacing: "-0.5px",
+  paddingCard: 5,
+  gapBetweenBlocks: 14,
 
-  subtitleFontSize: 18,
-  subtitleLineHeight: 1.4,
-  subtitleWeight: 600,
-  subtitleLetterSpacing: "0.15px",
+  blockRadius: 16,
+  blockBorder: "rgba(26,26,26,0.05)",
+  blockBackground: "linear-gradient(145deg, #FFFFFF 0%, #F5F5F5 100%)",
+  blockShadow: "0 8px 24px rgba(0,0,0,0.03)",
+  block1PaddingY: 20,
+  block1PaddingX: 22,
 
-  paragraphFontSize: 18,
-  paragraphLineHeight: 1.7,
-  paragraphWeight: 400,
-  paragraphLetterSpacing: "0.2px",
-
-  footerFontSize: 14,
-  footerLineHeight: 1.4,
-
+  authorChipEnabled: true,
   authorChipBg: "#FFF3E0",
   authorChipColor: "#E65100",
-  authorChipPaddingY: 4,
-  authorChipPaddingX: 11,
-  authorChipRadius: 12,
-  authorChipWeight: 700,
   authorChipSize: 16,
-  authorChipLetterSpacing: "0.3px",
+  authorChipWeight: 700,
+  authorChipPadY: 4,
+  authorChipPadX: 11,
+  authorChipRadius: 12,
 
+  highlightWeight: 700,
   highlightPaddingY: 3,
   highlightPaddingX: 10,
   highlightRadius: 6,
-  highlightWeight: 700,
-  highlightShadow: "0 4px 12px rgba(243, 146, 0, 0.1)",
+  highlightShadow: "0 4px 12px rgba(243,146,0,0.1)",
 
   universalPalette: [
     { name: "Clarity Orange", bg: "#F39200", ink: "#FFFFFF" },
@@ -90,55 +94,47 @@ const APP = {
     { name: "Logic Blue", bg: "#0284C7", ink: "#FFFFFF" },
     { name: "Graphite Truth", bg: "#2C2C2C", ink: "#FFFFFF" },
     { name: "Morning Yellow", bg: "#FBBF24", ink: "#1A1A1A" }
-  ],
-
-  minContrastAA: 8.0
+  ]
 };
 
+const SCALE = APP.targetWidth / APP.baseWidth;
+
 const PX = {
-  canvasWidth: APP.cardWidth * APP.scale,
-  canvasHeight: APP.cardHeight * APP.scale,
+  width: APP.targetWidth,
+  height: APP.targetHeight,
 
-  outerPad: APP.paddingCard * APP.scale,
-  gap: APP.gapBetweenBlocks * APP.scale,
+  cardRadius: Math.round(APP.cardRadius * SCALE),
+  outerPad: Math.round(APP.paddingCard * SCALE),
 
-  radius: APP.cardRadius * APP.scale,
-  blockRadius: APP.blockRadius * APP.scale,
+  blockRadius: Math.round(APP.blockRadius * SCALE),
+  blockPadY: Math.round(APP.block1PaddingY * SCALE),
+  blockPadX: Math.round(APP.block1PaddingX * SCALE),
 
-  block1PadY: APP.block1PaddingY * APP.scale,
-  block1PadX: APP.block1PaddingX * APP.scale,
-  block2PadY: APP.block2PaddingY * APP.scale,
-  block2PadX: APP.block2PaddingX * APP.scale,
+  coverWidth: Math.round(APP.coverWidth * SCALE),
+  coverMinWidth: Math.round(APP.coverWidth * SCALE * 0.78),
+  coverMaxHeight: Math.round(APP.coverMaxHeight * SCALE),
+  coverMarginBottom: Math.round(APP.coverMarginBottom * SCALE),
+  coverMarginLeft: Math.round(APP.coverMarginLeft * SCALE),
 
-  coverWidth: APP.coverWidth * APP.scale,
-  coverMinWidth: Math.round(APP.coverWidth * APP.scale * 0.84),
-  coverMaxHeight: APP.coverMaxHeight * APP.scale,
-  coverRadius: APP.coverRadius * APP.scale,
-  coverMarginBottom: APP.coverMarginBottom * APP.scale,
-  coverMarginLeft: APP.coverMarginLeft * APP.scale,
+  titleSize: APP.fontTitleSize * SCALE,
+  titleMinSize: APP.fontTitleSize * SCALE * 0.78,
 
-  titleSize: APP.titleFontSize * APP.scale,
-  titleMinSize: Math.round(APP.titleFontSize * APP.scale * 0.82),
+  paragraphSize: APP.fontParagraphSize * SCALE,
+  paragraphMinSize: APP.fontParagraphSize * SCALE * 0.80,
 
-  subtitleSize: APP.subtitleFontSize * APP.scale,
-  subtitleMinSize: Math.round(APP.subtitleFontSize * APP.scale * 0.84),
+  authorChipSize: APP.authorChipSize * SCALE,
+  authorChipMinSize: APP.authorChipSize * SCALE * 0.84,
+  authorChipPadY: APP.authorChipPadY * SCALE,
+  authorChipPadX: APP.authorChipPadX * SCALE,
+  authorChipRadius: APP.authorChipRadius * SCALE,
 
-  paragraphSize: APP.paragraphFontSize * APP.scale,
-  paragraphMinSize: Math.round(APP.paragraphFontSize * APP.scale * 0.84),
+  footerSize: APP.fontFooterSize * SCALE,
+  footerHeight: Math.round(82 * SCALE),
+  footerLogoHeight: Math.round(24 * SCALE),
 
-  footerSize: APP.footerFontSize * APP.scale,
-  footerLogoHeight: 24 * APP.scale,
-  footerHeight: 74 * APP.scale,
-
-  authorChipSize: APP.authorChipSize * APP.scale,
-  authorChipMinSize: Math.round(APP.authorChipSize * APP.scale * 0.84),
-  authorChipPadY: APP.authorChipPaddingY * APP.scale,
-  authorChipPadX: APP.authorChipPaddingX * APP.scale,
-  authorChipRadius: APP.authorChipRadius * APP.scale,
-
-  highlightPadY: Math.max(2, APP.highlightPaddingY * APP.scale),
-  highlightPadX: Math.max(4, APP.highlightPaddingX * APP.scale),
-  highlightRadius: APP.highlightRadius * APP.scale
+  highlightPadY: Math.max(2, Math.round(APP.highlightPaddingY * SCALE)),
+  highlightPadX: Math.max(4, Math.round(APP.highlightPaddingX * SCALE)),
+  highlightRadius: Math.round(APP.highlightRadius * SCALE)
 };
 
 /* ═══════════════════════════════════════════════════════════════
@@ -163,6 +159,39 @@ async function resolveContenidoPath() {
   }
 
   return null;
+}
+
+async function fileToDataURL(filePath) {
+  const absPath = path.resolve(filePath);
+  const ext = path.extname(absPath).toLowerCase();
+  const mime =
+    ext === ".png" ? "image/png" :
+    ext === ".jpg" || ext === ".jpeg" ? "image/jpeg" :
+    ext === ".webp" ? "image/webp" :
+    null;
+
+  if (!mime) return "";
+
+  const buffer = await fs.readFile(absPath);
+  return `data:${mime};base64,${buffer.toString("base64")}`;
+}
+
+async function resolveLogoDataURL() {
+  const candidates = [
+    "public/trigguiletrascolor3.png",
+    "public/trigguiletras2.png",
+    "public/trigguiletras.png",
+    "public/trigguiletrasblanco.png",
+    "public/trigguiletrasblanco2.png"
+  ];
+
+  for (const candidate of candidates) {
+    if (await fileExists(candidate)) {
+      return await fileToDataURL(candidate);
+    }
+  }
+
+  return "";
 }
 
 function escapeHTML(text) {
@@ -256,6 +285,25 @@ function sanitizeShortText(text, fallback = "") {
   return value || fallback;
 }
 
+function comparableText(text) {
+  return stripHighlightTags(String(text || ""))
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s]/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function tooSimilar(a, b) {
+  const aa = comparableText(a);
+  const bb = comparableText(b);
+  if (!aa || !bb) return false;
+  if (aa === bb) return true;
+  if ((aa.includes(bb) || bb.includes(aa)) && Math.min(aa.length, bb.length) > 38) return true;
+  return false;
+}
+
 function hexToRgb(hex) {
   const clean = String(hex || "").trim();
   if (!/^#[0-9a-fA-F]{6}$/.test(clean)) return null;
@@ -283,7 +331,7 @@ function contrastRatio(hex1, hex2) {
   return (lighter + 0.05) / (darker + 0.05);
 }
 
-function bestInkFor(bg, preferred, minAA = APP.minContrastAA) {
+function bestInkFor(bg, preferred, minAA = 7) {
   if (preferred && contrastRatio(preferred, bg) >= minAA) return preferred;
   const black = "#000000";
   const white = "#FFFFFF";
@@ -324,38 +372,8 @@ function pickHighlightStyle(seedText) {
   const preset = shuffleDeterministic(APP.universalPalette, seed)[0];
   return {
     bg: preset.bg,
-    ink: bestInkFor(preset.bg, preset.ink, APP.minContrastAA)
+    ink: bestInkFor(preset.bg, preset.ink, 7)
   };
-}
-
-async function fileToDataURL(filePath) {
-  const absPath = path.resolve(filePath);
-  const ext = path.extname(absPath).toLowerCase();
-  const mime =
-    ext === ".png" ? "image/png" :
-    ext === ".jpg" || ext === ".jpeg" ? "image/jpeg" :
-    ext === ".webp" ? "image/webp" :
-    null;
-
-  if (!mime) return "";
-  const buffer = await fs.readFile(absPath);
-  return `data:${mime};base64,${buffer.toString("base64")}`;
-}
-
-async function resolveLogoDataURL() {
-  const candidates = [
-    "public/trigguiletrascolor3.png",
-    "public/trigguiletras2.png",
-    "public/trigguiletras.png",
-    "public/trigguiletrasblanco.png",
-    "public/trigguiletrasblanco2.png"
-  ];
-
-  for (const candidate of candidates) {
-    if (await fileExists(candidate)) return fileToDataURL(candidate);
-  }
-
-  return "";
 }
 
 function renderHighlightHTML(text) {
@@ -372,10 +390,7 @@ function renderHighlightHTML(text) {
     if (before) out += escapeWithBreaks(before);
 
     const inner = String(match[1] || "").trim();
-    if (inner) {
-      out += `<span class="highlight">${escapeWithBreaks(inner)}</span>`;
-    }
-
+    if (inner) out += `<span class="highlight">${escapeWithBreaks(inner)}</span>`;
     last = re.lastIndex;
   }
 
@@ -408,12 +423,20 @@ function resolvePortadaSource(bookMeta, libro, portadaURL) {
 function buildPresentationCopy(libro, bookMeta) {
   const source = libro.tarjeta_presentacion || libro.tarjeta || {};
 
+  const title = sanitizeShortText(source.titulo, sanitizeShortText(libro.tagline, "Una idea útil"));
+  const author = sanitizeShortText(bookMeta.autor || libro.autor || "", "");
+  const top = ensureOneHighlight(source.parrafoTop || "");
+  const bottom = ensureOneHighlight(source.parrafoBot || "");
+
+  const bodyParts = [];
+  if (top) bodyParts.push(renderHighlightHTML(top));
+  if (bottom && !tooSimilar(top, bottom)) bodyParts.push(renderHighlightHTML(bottom));
+
   return {
-    title: sanitizeShortText(source.titulo, sanitizeShortText(libro.tagline, "Una idea útil")),
-    author: sanitizeShortText(bookMeta.autor || libro.autor || "", ""),
-    top: ensureOneHighlight(source.parrafoTop || ""),
-    subtitle: sanitizeShortText(source.subtitulo, "Hazlo ahora"),
-    bottom: ensureOneHighlight(source.parrafoBot || "")
+    title,
+    author,
+    bodyHTML: bodyParts.join(" "),
+    bodyPlain: [stripHighlightTags(top), stripHighlightTags(bottom)].filter(Boolean).join(" ")
   };
 }
 
@@ -454,7 +477,7 @@ console.log(`🎨 Generando tarjeta PNG: "${bookMeta.titulo || libro.titulo}"`);
 console.log(`🧾 Fuente JSON: ${contenidoPath}`);
 
 /* ═══════════════════════════════════════════════════════════════
-   HTML
+   BUILD HTML
 ═══════════════════════════════════════════════════════════════ */
 
 const template = await fs.readFile("scripts/templates/tarjeta.html", "utf8");
@@ -465,15 +488,11 @@ const logoDataURL = await resolveLogoDataURL();
 const display = buildPresentationCopy(libro, bookMeta);
 const style = libro?.tarjeta?.style || libro?.tarjeta_presentacion?.style || {};
 
-const accent = style.accent || APP.subtitleColor;
-const subtitleColor = style.subtitleColor || accent;
 const titleColor = style.titleColor || APP.titleColor;
 const paragraphColor = style.paragraphColor || APP.paragraphColor;
-
 const chipBg = style.authorChipBg || APP.authorChipBg;
 const chipColor = style.authorChipColor || APP.authorChipColor;
-
-const highlight = pickHighlightStyle(`${slug}__${display.top}__${display.bottom}`);
+const highlight = pickHighlightStyle(`${slug}__${display.bodyPlain}`);
 
 const portadaSection = portadaURL
   ? `<img class="cover" src="${portadaURL}" alt="Portada de ${escapeHTML(bookMeta.titulo || libro.titulo || "")}" />`
@@ -495,65 +514,50 @@ let html = template
   .replace("{{PORTADA_SECTION}}", portadaSection)
   .replace("{{TITULO}}", escapeHTML(display.title))
   .replace("{{AUTOR}}", escapeHTML(display.author))
-  .replace("{{PARRAFO_TOP}}", renderHighlightHTML(display.top))
-  .replace("{{SUBTITULO}}", escapeHTML(display.subtitle))
-  .replace("{{PARRAFO_BOT}}", renderHighlightHTML(display.bottom))
+  .replace("{{BODY_HTML}}", display.bodyHTML)
   .replace("{{FOOTER_SECTION}}", footerSection);
 
 const cssVars = [
-  `--canvas-width: ${PX.canvasWidth}px`,
-  `--canvas-height: ${PX.canvasHeight}px`,
-  `--outer-pad: ${PX.outerPad}px`,
-  `--gap-between-blocks: ${PX.gap}px`,
-  `--shell-radius: ${PX.radius}px`,
-  `--block-radius: ${PX.blockRadius}px`,
-
-  `--hero-pad-y: ${PX.block1PadY}px`,
-  `--hero-pad-x: ${PX.block1PadX}px`,
-  `--action-pad-y: ${PX.block2PadY}px`,
-  `--action-pad-x: ${PX.block2PadX}px`,
-
-  `--cover-width: ${PX.coverWidth}px`,
-  `--cover-max-height: ${PX.coverMaxHeight}px`,
-  `--cover-radius: ${PX.coverRadius}px`,
-  `--cover-margin-bottom: ${PX.coverMarginBottom}px`,
-  `--cover-margin-left: ${PX.coverMarginLeft}px`,
-
-  `--title-size: ${PX.titleSize}px`,
-  `--subtitle-size: ${PX.subtitleSize}px`,
-  `--paragraph-size: ${PX.paragraphSize}px`,
-  `--footer-size: ${PX.footerSize}px`,
-  `--footer-height: ${PX.footerHeight}px`,
-  `--footer-logo-height: ${PX.footerLogoHeight}px`,
-
-  `--author-chip-size: ${PX.authorChipSize}px`,
-  `--author-chip-pad-y: ${PX.authorChipPadY}px`,
-  `--author-chip-pad-x: ${PX.authorChipPadX}px`,
-  `--author-chip-radius: ${PX.authorChipRadius}px`,
-
-  `--highlight-pad-y: ${PX.highlightPadY}px`,
-  `--highlight-pad-x: ${PX.highlightPadX}px`,
-  `--highlight-radius: ${PX.highlightRadius}px`,
-
-  `--paper: ${APP.paper}`,
-  `--background: ${APP.background}`,
-  `--border: ${APP.border}`,
-  `--block-background: ${APP.blockBackground}`,
-  `--block-border: ${APP.blockBorder}`,
-  `--block-shadow: ${APP.blockShadow}`,
-  `--cover-shadow: ${APP.coverShadow}`,
-
-  `--title-color: ${titleColor}`,
-  `--subtitle-color: ${subtitleColor}`,
-  `--paragraph-color: ${paragraphColor}`,
-  `--footer-color: ${APP.footerTextColor}`,
-  `--author-chip-bg: ${chipBg}`,
-  `--author-chip-color: ${chipColor}`,
-
-  `--highlight-bg: ${highlight.bg}`,
-  `--highlight-ink: ${highlight.ink}`,
-  `--highlight-shadow: ${APP.highlightShadow}`
-].join("; ");
+  `--canvas-width:${PX.width}px`,
+  `--canvas-height:${PX.height}px`,
+  `--outer-pad:${PX.outerPad}px`,
+  `--card-radius:${PX.cardRadius}px`,
+  `--block-radius:${PX.blockRadius}px`,
+  `--block-pad-y:${PX.blockPadY}px`,
+  `--block-pad-x:${PX.blockPadX}px`,
+  `--cover-width:${PX.coverWidth}px`,
+  `--cover-max-height:${PX.coverMaxHeight}px`,
+  `--cover-margin-bottom:${PX.coverMarginBottom}px`,
+  `--cover-margin-left:${PX.coverMarginLeft}px`,
+  `--title-size:${PX.titleSize}px`,
+  `--paragraph-size:${PX.paragraphSize}px`,
+  `--author-chip-size:${PX.authorChipSize}px`,
+  `--author-chip-pad-y:${PX.authorChipPadY}px`,
+  `--author-chip-pad-x:${PX.authorChipPadX}px`,
+  `--author-chip-radius:${PX.authorChipRadius}px`,
+  `--footer-size:${PX.footerSize}px`,
+  `--footer-height:${PX.footerHeight}px`,
+  `--footer-logo-height:${PX.footerLogoHeight}px`,
+  `--highlight-pad-y:${PX.highlightPadY}px`,
+  `--highlight-pad-x:${PX.highlightPadX}px`,
+  `--highlight-radius:${PX.highlightRadius}px`,
+  `--paper:${APP.paper}`,
+  `--background:${APP.background}`,
+  `--border:${APP.border}`,
+  `--card-shadow:${APP.cardShadow}`,
+  `--block-background:${APP.blockBackground}`,
+  `--block-border:${APP.blockBorder}`,
+  `--block-shadow:${APP.blockShadow}`,
+  `--cover-shadow:${APP.coverShadow}`,
+  `--title-color:${titleColor}`,
+  `--paragraph-color:${paragraphColor}`,
+  `--footer-color:${APP.footerTextColor}`,
+  `--author-chip-bg:${chipBg}`,
+  `--author-chip-color:${chipColor}`,
+  `--highlight-bg:${highlight.bg}`,
+  `--highlight-ink:${highlight.ink}`,
+  `--highlight-shadow:${APP.highlightShadow}`
+].join(";");
 
 html = html.replace("<body>", `<body style="${cssVars}">`);
 
@@ -565,8 +569,8 @@ const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage();
 
 await page.setViewportSize({
-  width: PX.canvasWidth,
-  height: PX.canvasHeight
+  width: PX.width,
+  height: PX.height
 });
 
 await page.setContent(html, { waitUntil: "networkidle" });
@@ -580,62 +584,46 @@ await page.evaluate(async () => {
 if (portadaURL) {
   try {
     await page.waitForSelector(".cover", { state: "visible", timeout: 10000 });
-    await page.waitForTimeout(200);
+    await page.waitForTimeout(180);
   } catch {
     console.log("   ⚠️ Portada no cargó en 10s — continuando");
   }
 }
 
 await page.evaluate((limits) => {
-  const shell = document.getElementById("shell");
-  const body = document.getElementById("shellBody");
-  const hero = document.getElementById("heroCard");
-  const heroContent = document.getElementById("heroContent");
-  const action = document.getElementById("actionCard");
-  const actionContent = document.getElementById("actionContent");
-  const footer = document.getElementById("footerCard");
-
+  const content = document.getElementById("content");
   const title = document.getElementById("title");
   const author = document.getElementById("authorChip");
-  const subtitle = document.getElementById("subtitle");
-  const top = document.getElementById("parrafoTop");
-  const bottom = document.getElementById("parrafoBot");
+  const body = document.getElementById("bodyText");
   const cover = document.querySelector(".cover");
 
   const px = (el, prop) => el ? (parseFloat(getComputedStyle(el)[prop]) || 0) : 0;
   const setPx = (el, prop, value) => { if (el) el.style[prop] = `${value}px`; };
 
   let guard = 0;
-  while (body.scrollHeight > body.clientHeight && guard < 220) {
+  while (content && content.scrollHeight > content.clientHeight && guard < 240) {
     let changed = false;
 
     const titleSize = px(title, "fontSize");
-    const paraTop = px(top, "fontSize");
-    const paraBottom = px(bottom, "fontSize");
-    const subSize = px(subtitle, "fontSize");
+    const bodySize = px(body, "fontSize");
     const authorSize = px(author, "fontSize");
     const coverWidth = px(cover, "width");
 
     if (title && titleSize > limits.titleMin) {
-      setPx(title, "fontSize", titleSize - 0.45);
+      setPx(title, "fontSize", titleSize - 0.5);
       changed = true;
     }
-    if (top && paraTop > limits.paragraphMin) {
-      setPx(top, "fontSize", paraTop - 0.18);
+
+    if (body && bodySize > limits.bodyMin) {
+      setPx(body, "fontSize", bodySize - 0.18);
       changed = true;
     }
-    if (bottom && paraBottom > limits.paragraphMin) {
-      setPx(bottom, "fontSize", paraBottom - 0.18);
-      changed = true;
-    }
-    if (subtitle && subSize > limits.subtitleMin && guard % 2 === 0) {
-      setPx(subtitle, "fontSize", subSize - 0.14);
-      changed = true;
-    }
-    if (author && authorSize > limits.authorMin && guard % 3 === 0) {
+
+    if (author && authorSize > limits.authorMin && guard % 2 === 0) {
       setPx(author, "fontSize", authorSize - 0.10);
       changed = true;
     }
+
     if (cover && coverWidth > limits.coverMin && guard % 3 === 0) {
       setPx(cover, "width", coverWidth - 0.5);
       changed = true;
@@ -644,73 +632,20 @@ await page.evaluate((limits) => {
     if (!changed) break;
     guard += 1;
   }
-
-  const gap = parseFloat(getComputedStyle(body).gap) || 28;
-  const footerHeight = footer.getBoundingClientRect().height;
-  const available = body.clientHeight - footerHeight - gap * 2;
-
-  const heroNeed = Math.ceil(heroContent.scrollHeight + 8);
-  const actionNeed = Math.ceil(actionContent.scrollHeight + 8);
-
-  let heroHeight = heroNeed;
-  let actionHeight = actionNeed;
-
-  if (heroNeed + actionNeed <= available) {
-    const extra = available - (heroNeed + actionNeed);
-    heroHeight += Math.round(extra * 0.48);
-    actionHeight += extra - Math.round(extra * 0.48);
-  } else {
-    heroHeight = Math.max(360, Math.round(available * 0.56));
-    actionHeight = available - heroHeight;
-  }
-
-  hero.style.height = `${heroHeight}px`;
-  action.style.height = `${actionHeight}px`;
-
-  let guardBottom = 0;
-  while (actionContent.scrollHeight > actionContent.clientHeight && guardBottom < 100) {
-    let changed = false;
-    const subSize = px(subtitle, "fontSize");
-    const bottomSize = px(bottom, "fontSize");
-
-    if (subtitle && subSize > limits.subtitleMin) {
-      setPx(subtitle, "fontSize", subSize - 0.12);
-      changed = true;
-    }
-    if (bottom && bottomSize > limits.paragraphMin) {
-      setPx(bottom, "fontSize", bottomSize - 0.15);
-      changed = true;
-    }
-
-    if (!changed) break;
-    guardBottom += 1;
-  }
-
-  if (actionContent.scrollHeight > actionContent.clientHeight && bottom) {
-    const availableBottom = actionContent.clientHeight - (subtitle ? subtitle.getBoundingClientRect().height : 0) - 8;
-    const lineHeight = px(bottom, "lineHeight") || (px(bottom, "fontSize") * 1.7);
-    const lines = Math.max(3, Math.floor(availableBottom / lineHeight));
-
-    bottom.style.display = "-webkit-box";
-    bottom.style.webkitBoxOrient = "vertical";
-    bottom.style.webkitLineClamp = String(lines);
-    bottom.style.overflow = "hidden";
-  }
 }, {
   titleMin: PX.titleMinSize,
-  subtitleMin: PX.subtitleMinSize,
-  paragraphMin: PX.paragraphMinSize,
+  bodyMin: PX.paragraphMinSize,
   authorMin: PX.authorChipMinSize,
   coverMin: PX.coverMinWidth
 });
 
-await page.waitForTimeout(180);
+await page.waitForTimeout(120);
 
 const outPath = path.join(outDir, "tarjeta.png");
 await page.screenshot({
   path: outPath,
   type: "png",
-  clip: { x: 0, y: 0, width: PX.canvasWidth, height: PX.canvasHeight }
+  clip: { x: 0, y: 0, width: PX.width, height: PX.height }
 });
 
 await browser.close();
@@ -719,9 +654,8 @@ const stats = await fs.stat(outPath);
 const sizeMB = (stats.size / 1024 / 1024).toFixed(2);
 
 console.log(`✅ Tarjeta generada: ${outPath}`);
-console.log(`📏 ${sizeMB} MB | ${PX.canvasWidth}×${PX.canvasHeight}px`);
+console.log(`📏 ${sizeMB} MB | ${PX.width}×${PX.height}px`);
 console.log(`🎨 Título visible: "${display.title}"`);
 console.log(`✍️ Autor: ${display.author}`);
 console.log(`🖼️ Portada: ${portadaURL ? portadaSource : "tipográfica"}`);
-console.log(`📝 Top: ${stripHighlightTags(display.top)}`);
-console.log(`⚡ Bottom: ${stripHighlightTags(display.bottom)}`);
+console.log(`📝 Body: ${display.bodyPlain}`);
