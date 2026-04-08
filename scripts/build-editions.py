@@ -143,59 +143,162 @@ def unique_nonempty(values):
     return out
 
 
+def phrase_is_weak(text):
+    value = normalize_text(text).lower()
+    if not value:
+        return True
+
+    weak_patterns = [
+        r"\binvita a\b",
+        r"\binvitar a\b",
+        r"\bexplora\b",
+        r"\bexplorar\b",
+        r"\bdescubre\b",
+        r"\bdescubrir\b",
+        r"\breflexiona\b",
+        r"\breflexionar\b",
+        r"\bnos recuerda\b",
+        r"\bnos muestra\b",
+        r"\bhabla de\b",
+        r"\btrata de\b",
+        r"\bpropone\b",
+        r"\bpropone una\b",
+        r"\buna reflexión\b",
+        r"\buna mirada\b",
+        r"\bmuestra cómo\b",
+        r"\bpermite\b.+\balcanzar\b",
+    ]
+
+    return any(re.search(pattern, value) for pattern in weak_patterns)
+
+
+def score_phrase(text):
+    value = normalize_text(text)
+    if not value:
+        return -999
+
+    score = 0
+    length = len(value)
+
+    if 22 <= length <= 74:
+        score += 40
+    elif 16 <= length <= 88:
+        score += 22
+    else:
+        score -= 18
+
+    if 28 <= length <= 58:
+        score += 16
+
+    if not re.search(r"[,:;()]", value):
+        score += 10
+
+    if value.count(",") == 0:
+        score += 8
+
+    strong_patterns = [
+        r"\bdeja\b",
+        r"\bprotege\b",
+        r"\brecupera\b",
+        r"\bordena\b",
+        r"\bdetén\b",
+        r"\bsuelta\b",
+        r"\brespira\b",
+        r"\bcorta\b",
+        r"\belige\b",
+        r"\bquita\b",
+        r"\bpon\b",
+        r"\babre\b",
+        r"\brenuncia\b",
+        r"\bvuelve\b",
+        r"\bhabita\b",
+        r"\baprende\b",
+        r"\bcuida\b",
+        r"\bescucha\b",
+    ]
+
+    if any(re.search(pattern, value.lower()) for pattern in strong_patterns):
+        score += 10
+
+    if phrase_is_weak(value):
+        score -= 55
+
+    if length > 90:
+        score -= 14
+
+    if length < 18:
+        score -= 18
+
+    return score
+
+
+def pick_og_phrases(edicion):
+    titulo = edicion.get("titulo", "")
+    autor = edicion.get("autor", "")
+
+    frases = unique_nonempty(edicion.get("frases") or [])
+    frases = [
+        strip_explicit_book_refs(frase, titulo=titulo, autor=autor)
+        for frase in frases
+    ]
+    frases = [frase for frase in frases if frase]
+
+    ranked = sorted(
+        [{"phrase": frase, "score": score_phrase(frase)} for frase in frases],
+        key=lambda item: item["score"],
+        reverse=True,
+    )
+
+    headline = truncate_text((ranked[0]["phrase"] if ranked else ""), 82)
+
+    secondary = ""
+    for item in ranked:
+        if normalize_text(item["phrase"]).casefold() != normalize_text(headline).casefold():
+            secondary = item["phrase"]
+            break
+
+    secondary = truncate_text(secondary, 180)
+    return headline, secondary
+
+
 def build_og_title(edicion):
     palabras = unique_nonempty(edicion.get("palabras") or [])
     if palabras:
-        parts = []
-        total_len = 0
-
-        for palabra in palabras:
-            projected = total_len + len(palabra) + (3 if parts else 0)
-            if len(parts) >= 3 or projected > 58:
-                break
-            parts.append(palabra)
-            total_len = projected
-
-        if parts:
-            return " · ".join(parts)
-
-    frases = unique_nonempty(edicion.get("frases") or [])
-    if frases:
-        return truncate_text(frases[0], 72)
+        lowered = [palabra.lower() for palabra in palabras[:4]]
+        return truncate_text(" · ".join(lowered), 90)
 
     palabra = normalize_text(edicion.get("palabra", ""))
     if palabra:
-        return truncate_text(palabra, 72)
+        return truncate_text(palabra.lower(), 90)
 
-    return "Triggui"
+    return "triggui"
 
 
 def build_og_description(edicion):
-    titulo = edicion.get("titulo", "")
-    autor = edicion.get("autor", "")
-    tarjeta = edicion.get("tarjeta", {}) or {}
+    headline, secondary = pick_og_phrases(edicion)
 
+    if secondary:
+        return truncate_text(secondary, 180)
+
+    if headline:
+        return truncate_text(headline, 180)
+
+    tarjeta = edicion.get("tarjeta", {}) or {}
     candidates = [
-        tarjeta.get("parrafoTop", ""),
-        tarjeta.get("parrafoBot", ""),
         tarjeta.get("subtitulo", ""),
+        tarjeta.get("parrafoBot", ""),
+        tarjeta.get("parrafoTop", ""),
         edicion.get("descripcion", ""),
     ]
 
     for candidate in candidates:
-        cleaned = strip_explicit_book_refs(candidate, titulo=titulo, autor=autor)
-        if cleaned:
+        cleaned = strip_explicit_book_refs(
+            candidate,
+            titulo=edicion.get("titulo", ""),
+            autor=edicion.get("autor", ""),
+        )
+        if cleaned and not phrase_is_weak(cleaned):
             return truncate_text(cleaned, 180)
-
-    frases = unique_nonempty(edicion.get("frases") or [])
-    for frase in frases:
-        cleaned = strip_explicit_book_refs(frase, titulo=titulo, autor=autor)
-        if cleaned:
-            return truncate_text(cleaned, 180)
-
-    palabras = unique_nonempty(edicion.get("palabras") or [])
-    if palabras:
-        return truncate_text(" · ".join(palabras[:3]), 180)
 
     return "Abre esta edición viva de Triggui."
 
