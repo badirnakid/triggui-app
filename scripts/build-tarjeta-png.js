@@ -1,6 +1,3 @@
-### `scripts/build-tarjeta-png.js`
-
-```javascript
 /**
  * build-tarjeta-png.js — Paso 4 del pipeline Triggui 2.0
  *
@@ -120,7 +117,7 @@ function escapeHTML(text) {
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
+    .replace(/\"/g, "&quot;");
 }
 
 function escapeWithBreaks(text) {
@@ -559,7 +556,6 @@ await page.evaluate(() => {
   const subtitle = document.getElementById("subtitle");
   const bottomParagraph = document.getElementById("parrafoBot");
   const cover = document.querySelector(".cover");
-  const heroLogo = document.querySelector(".logo-strip");
 
   const px = (el, prop) => {
     if (!el) return 0;
@@ -571,7 +567,6 @@ await page.evaluate(() => {
     el.style[prop] = `${value}px`;
   };
 
-  // Paso 1: compacta tipografía hasta que el héroe sea razonable
   let guard = 0;
   while (heroContent && heroContent.scrollHeight > 880 && guard < 240) {
     let changed = false;
@@ -617,7 +612,6 @@ await page.evaluate(() => {
     guard += 1;
   }
 
-  // Paso 2: fija alturas dinámicas para evitar huecos inútiles
   const gap = 18 * 2;
   const totalHeight = inner.clientHeight;
   const footerHeight = Math.max(150, footerCard.getBoundingClientRect().height);
@@ -638,7 +632,6 @@ await page.evaluate(() => {
   heroCard.style.height = `${heroHeight}px`;
   actionCard.style.height = `${actionHeight}px`;
 
-  // Paso 3: si el bloque 2 todavía desborda, reduce suavemente y clamp
   let guardBottom = 0;
   while (actionContent && actionContent.scrollHeight > actionContent.clientHeight && guardBottom < 140) {
     let changed = false;
@@ -691,270 +684,3 @@ console.log(`   ✍️  Autor: ${autorLibro}`);
 console.log(`   🖼️  Portada: ${portadaURL ? portadaSource : "tipográfica"}`);
 console.log(`   📝 Top: ${stripHighlightTags(display.top)}`);
 console.log(`   ⚡ Bottom: ${stripHighlightTags(display.bottom)}`);
-```
-
-### `scripts/templates/tarjeta.html`
-
-```html
-<!doctype html>
-<html>
-<head>
-<meta charset="utf-8">
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap');
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  html, body {
-    width: 1080px;
-    height: 1920px;
-    overflow: hidden;
-  }
-
-  body {
-    background:
-      radial-gradient(circle at 18% 8%, rgba(255,255,255,0.03), transparent 28%),
-      radial-gradient(circle at 82% 88%, rgba(255,255,255,0.02), transparent 24%),
-      var(--bg, #FFFFFF);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
-    color: var(--ink, #111111);
-    -webkit-font-smoothing: antialiased;
-    text-rendering: geometricPrecision;
-  }
-
-  .frame {
-    width: 1080px;
-    height: 1920px;
-    position: relative;
-    overflow: hidden;
-    background: var(--bg, #FFFFFF);
-  }
-
-  .inner {
-    position: relative;
-    height: 100%;
-    padding: 24px 18px;
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-  }
-
-  .card {
-    width: 100%;
-    background: var(--paper, #FFFFFF);
-    border: 1px solid var(--border, #F39200);
-    border-radius: 20px;
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.06);
-    overflow: hidden;
-    flex: 0 0 auto;
-  }
-
-  .block {
-    background: linear-gradient(145deg, #FFFFFF 0%, #F5F5F5 100%);
-    border: 1px solid rgba(26, 26, 26, 0.05);
-    border-radius: 16px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
-  }
-
-  .hero {
-    padding: 12px;
-  }
-
-  .hero-content {
-    padding: 20px 22px;
-    min-height: 100%;
-    overflow: hidden;
-  }
-
-  .hero-flow {
-    overflow: hidden;
-  }
-
-  .cover {
-    float: right;
-    width: 120px;
-    max-height: 280px;
-    height: auto;
-    margin: 0 0 10px 18px;
-    border: 1px solid #EAEAEA;
-    border-radius: 4px;
-    box-shadow: 0 15px 35px rgba(243, 146, 0, 0.15);
-    display: block;
-    object-fit: cover;
-    background: #fff;
-  }
-
-  .title {
-    font-family: Georgia, 'Times New Roman', serif;
-    font-size: 60px;
-    line-height: 1.08;
-    font-weight: 700;
-    letter-spacing: -0.6px;
-    color: var(--title-color, #1A1A1A);
-    margin: 0 0 14px 0;
-  }
-
-  .author-chip {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 42px;
-    padding: 0 14px;
-    border-radius: 12px;
-    background: var(--chip-bg, #FFF3E0);
-    color: var(--chip-color, #E65100);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
-    font-size: 22px;
-    line-height: 1;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-    margin: 0 0 14px 0;
-  }
-
-  .paragraph {
-    font-family: Georgia, 'Times New Roman', serif;
-    font-size: 34px;
-    line-height: 1.44;
-    font-weight: 400;
-    color: var(--paragraph-color, #111827);
-    letter-spacing: 0.02px;
-    margin: 0;
-  }
-
-  .paragraph p {
-    margin: 0;
-  }
-
-  .paragraph p + p {
-    margin-top: 0.2em;
-  }
-
-  .logo-strip {
-    margin-top: 16px;
-    padding: 12px 16px;
-    background: transparent;
-    text-align: center;
-    opacity: 0.92;
-  }
-
-  .logo-strip img {
-    height: 32px;
-    width: auto;
-    display: block;
-    margin: 0 auto 8px auto;
-    object-fit: contain;
-  }
-
-  .logo-strip .meta {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
-    font-size: 18px;
-    line-height: 1.4;
-    font-weight: 400;
-    color: var(--footer-color, #8B8880);
-    font-style: italic;
-    letter-spacing: 0;
-  }
-
-  .action {
-    padding: 12px;
-  }
-
-  .action-content {
-    padding: 20px 22px;
-    min-height: 100%;
-    overflow: hidden;
-  }
-
-  .subtitle {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
-    font-size: 32px;
-    line-height: 1.26;
-    font-weight: 600;
-    color: var(--subtitle-color, #F39200);
-    letter-spacing: 0.1px;
-    margin: 0 0 10px 0;
-  }
-
-  .subtitle:empty {
-    display: none;
-    margin: 0;
-  }
-
-  .footer {
-    padding: 12px;
-  }
-
-  .footer-content {
-    min-height: 132px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 10px 16px;
-  }
-
-  .footer-content img {
-    height: 42px;
-    width: auto;
-    display: block;
-    margin: 0 auto 10px auto;
-    object-fit: contain;
-  }
-
-  .footer-content .meta {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
-    font-size: 22px;
-    line-height: 1.35;
-    font-weight: 400;
-    color: var(--footer-color, #8B8880);
-    font-style: italic;
-    letter-spacing: 0;
-    text-align: center;
-  }
-
-  .highlight {
-    display: inline;
-    background: var(--highlight-bg, #FFF3E0);
-    color: var(--highlight-ink, #111111);
-    padding: 0.04em 0.14em 0.08em;
-    border-radius: 8px;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    box-decoration-break: clone;
-    -webkit-box-decoration-break: clone;
-  }
-</style>
-</head>
-<body>
-  <div class="frame">
-    <div class="inner" id="inner">
-      <div class="card hero" id="heroCard">
-        <div class="block hero-content" id="heroContent">
-          <div class="hero-flow">
-            {{PORTADA_SECTION}}
-            <div class="title" id="title">{{TITULO}}</div>
-            <div class="author-chip" id="authorChip">{{AUTOR}}</div>
-            <div class="paragraph" id="parrafoTop">{{PARRAFO_TOP}}</div>
-          </div>
-          {{HERO_LOGO_SECTION}}
-        </div>
-      </div>
-
-      <div class="card action" id="actionCard">
-        <div class="block action-content" id="actionContent">
-          <div class="subtitle" id="subtitle">{{SUBTITULO}}</div>
-          <div class="paragraph" id="parrafoBot">{{PARRAFO_BOT}}</div>
-        </div>
-      </div>
-
-      <div class="card footer" id="footerCard">
-        <div class="block footer-content">
-          {{FOOTER_LOGO_SECTION}}
-        </div>
-      </div>
-    </div>
-  </div>
-</body>
-</html>
-```
