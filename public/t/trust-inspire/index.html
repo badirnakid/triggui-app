@@ -1,0 +1,903 @@
+<!doctype html>
+<html lang="es" style="background:#000;">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+
+<title>Conectar y crecer juntos · Trust &amp; Inspire · Triggui</title>
+<meta name="description" content="📖 Lee una página de un libro que te motive y escribe una idea clave" />
+<link rel="canonical" href="https://beta.app.triggui.com/t/trust-inspire/" />
+
+<meta property="og:title" content="confianza · inspirar · conexión · crecimiento" />
+<meta property="og:description" content="📖 Lee una página de un libro que te motive y escribe una idea clave" />
+<meta property="og:image" content="https://beta.app.triggui.com/t/trust-inspire/og.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:url" content="https://beta.app.triggui.com/t/trust-inspire/" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Triggui" />
+<meta property="og:locale" content="es_MX" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="confianza · inspirar · conexión · crecimiento" />
+<meta name="twitter:description" content="📖 Lee una página de un libro que te motive y escribe una idea clave" />
+<meta name="twitter:image" content="https://beta.app.triggui.com/t/trust-inspire/og.png" />
+
+<link rel="preconnect" href="https://www.penguinlibros.com" crossorigin>
+<link rel="preconnect" href="https://www.buscalibre.com.mx" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,500;1,700&display=swap" rel="stylesheet">
+
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  background: #000 !important;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Archivo', sans-serif;
+  -webkit-overflow-scrolling: touch;
+  -webkit-text-size-adjust: 100%;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+vercel-live-feedback,[data-vercel-toolbar],#__vercel_live_token,vercel-toolbar{display:none!important;height:0!important;overflow:hidden!important;}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(255,0,85,0.18), transparent 65%),
+    radial-gradient(ellipse at 70% 80%, rgba(255,94,0,0.08), transparent 65%);
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+@keyframes fire-move {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.pulse-line {
+  position: fixed;
+  top: 16px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: rgba(255,255,255,.4);
+  z-index: 50;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity .8s ease, transform .8s ease;
+  pointer-events: none;
+  user-select: none;
+}
+.pulse-line.visible { opacity: 1; transform: translateY(0); }
+
+.grid {
+  position: absolute;
+  inset: 5vh 1.5vw;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(4, 1fr);
+  gap: 1vw;
+  transition: opacity .4s ease;
+}
+.grid.hidden { opacity: 0; pointer-events: none; }
+@media(orientation:landscape) { .grid { grid-template-columns: repeat(4,1fr); grid-template-rows: 1fr; } }
+
+.block {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  border-radius: 24px;
+  font-weight: 700;
+  cursor: pointer;
+  background-size: 320% 320%;
+  transition: transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  overflow: hidden;
+  isolation: isolate;
+  width: 100%;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+  box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.15), 0 4px 6px rgba(0,0,0,.15), 0 12px 32px rgba(0,0,0,.35);
+  z-index: 1;
+}
+
+.block * { pointer-events: none !important; }
+
+.block::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(145deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,.08) 40%, transparent 100%);
+  z-index: 1;
+}
+.block::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.12), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
+}
+.block:hover::after { opacity: 1; }
+.block:hover { transform: translateY(-2px) scale(1.005); }
+.block:active { transform: translateY(0) scale(0.995); transition: transform 0.1s; }
+.block.dim { opacity: 0.6; transform: scale(0.98); }
+
+.label, .frase {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 2;
+  text-align: center;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.label { opacity: 1; transform: translateY(0); font-size: clamp(1.05rem, 3.2vw, 1.7rem); line-height: 1.35; }
+.frase { opacity: 0; transform: translateY(6px); font-size: clamp(1rem, 3vw, 1.5rem); font-weight: 600; line-height: 1.4; }
+.block.show .label { opacity: 0; transform: translateY(-6px); }
+.block.show .frase { opacity: 1; transform: translateY(0); }
+
+.reveal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(0,0,0,0.92);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s ease;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: max(6px, env(safe-area-inset-top, 6px)) 6px max(6px, env(safe-area-inset-bottom, 6px));
+  cursor: pointer;
+}
+.reveal-overlay::-webkit-scrollbar { display: none; }
+
+.reveal-card {
+  width: 100%;
+  max-width: 520px;
+  margin: auto 0;
+  border-radius: 20px;
+  position: relative;
+  background-color: var(--card-paper);
+  color: var(--card-ink);
+  box-shadow: 0 25px 60px rgba(0,0,0,0.06), 0 0 0 1px var(--card-border);
+  overflow: visible;
+  cursor: default;
+  transform: scale(0.94) translateY(15px);
+  opacity: 0;
+  transition: transform 0.45s cubic-bezier(0.19,1,0.22,1), opacity 0.4s ease;
+}
+
+.reveal-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply;
+  opacity: 0.03;
+  border-radius: 20px;
+}
+
+.card-inner { position: relative; z-index: 2; padding: 0; }
+
+.btn-close {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 20;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.06);
+  color: #1A1A1A;
+  font-size: 18px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background .2s ease, transform .2s ease;
+  padding: 0;
+  touch-action: manipulation;
+}
+.btn-close:hover { background: rgba(0,0,0,0.12); }
+.btn-close:active { transform: scale(0.9); }
+
+.ed-block {
+  margin: 0 5px;
+  background: linear-gradient(145deg, #FFFFFF 0%, #F0F0EE 100%);
+  border: 1px solid rgba(26,26,26,0.05);
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.03);
+}
+.ed-block:first-child { margin-top: 18px; }
+
+.ed-block .ed-title {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 24px;
+  line-height: 1.3;
+  font-weight: 400;
+  color: #1A1A1A;
+  letter-spacing: 0.5px;
+  margin: 0 0 8px 0;
+}
+
+.ed-block .ed-chip {
+  display: inline-block;
+  font-family: 'Archivo', sans-serif;
+  font-size: 15px;
+  line-height: 1;
+  font-weight: 700;
+  background: var(--chip-bg);
+  color: var(--accent);
+  padding: 4px 11px;
+  border-radius: 12px;
+  letter-spacing: 0.3px;
+  margin: 0 0 12px 0;
+}
+
+.ed-block .ed-para {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 18px;
+  line-height: 1.7;
+  font-weight: 400;
+  color: #4A4A4A;
+  letter-spacing: 0.2px;
+  margin: 0;
+}
+
+.ed-block .ed-sub {
+  font-family: 'Archivo', sans-serif;
+  font-size: 18px;
+  line-height: 1.4;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.15px;
+  margin: 0 0 8px 0;
+}
+
+.tg-hl {
+  color: inherit;
+  font-weight: 600;
+  background:
+    linear-gradient(
+      180deg,
+      transparent 0%,
+      transparent 56%,
+      var(--marker) 56%,
+      var(--marker) 100%
+    );
+  padding: 0 0.08em;
+  border-radius: 0.12em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.ed-cover-wrap {
+  float: right;
+  margin: 0 0 12px 18px;
+  cursor: pointer;
+  position: relative;
+  touch-action: manipulation;
+  padding: 8px;
+}
+.ed-cover-wrap img {
+  display: block;
+  width: 120px;
+  height: auto;
+  border: 1px solid #EAEAEA;
+  border-radius: 4px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+  animation: coverBreathe 2.8s cubic-bezier(0.32,0.01,0.16,1) infinite;
+  will-change: transform, filter;
+}
+@keyframes coverBreathe {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0px rgba(0,0,0,0)); }
+  50% { transform: scale(1.03); filter: drop-shadow(0 10px 20px rgba(227,93,48,0.25)); }
+}
+.cover-hint {
+  display: block;
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(26,26,26,0.4);
+  margin-top: 6px;
+  letter-spacing: 0.3px;
+  animation: hintFade 4s ease forwards;
+}
+@keyframes hintFade { 0%, 70% { opacity: 1; } 100% { opacity: 0; } }
+
+.ed-gap { height: 14px; }
+
+.card-actions {
+  padding: 16px 22px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.btn-row { display: grid; gap: 8px; }
+.btn-row-2 { grid-template-columns: 1fr 48px; }
+.btn-row-3 { grid-template-columns: 1fr 48px 1fr; }
+
+.btn-light {
+  height: 46px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+  cursor: pointer;
+  background: #FFFFFF;
+  border: 1px solid rgba(26,26,26,0.08);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+  transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+.btn-light:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.05); border-color: rgba(26,26,26,0.15); }
+.btn-light:active { transform: scale(0.97); }
+
+.btn-light img { height: 16px; width: auto; display: block; }
+.btn-light .btn-triggui-logo { height: 20px; opacity: 0.9; }
+.btn-light .btn-ig-icon { width: 18px; height: 18px; opacity: 0.9; }
+.btn-ig-icon rect, .btn-ig-icon circle { stroke: #1A1A1A; }
+.btn-ig-icon circle[fill="white"] { fill: #1A1A1A; }
+
+.btn-dark {
+  height: 46px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+  cursor: pointer;
+  background: #1A1A1A;
+  border: 1px solid rgba(255,255,255,0.05);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+.btn-dark:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); border-color: rgba(255,255,255,0.1); }
+.btn-dark:active { transform: scale(0.97); }
+
+.btn-dark .btn-busca-logo {
+  height: 14px;
+  filter: none;
+  opacity: 0.95;
+}
+
+.btn-dark.btn-penguin-icon img {
+  height: 36px;
+  mix-blend-mode: screen;
+  filter: contrast(120%) grayscale(1);
+  opacity: 0.95;
+}
+
+.btn-crystal.btn-dark { background: #1A1A1A; }
+.btn-crystal .btn-emoji { font-size: 20px; line-height: 1; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+
+.silence-screen {
+  display: none;
+  position: absolute;
+  inset: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 32px;
+  background: radial-gradient(circle at 50% 35%, rgba(20,25,40,0.95) 0%, rgba(0,0,0,1) 80%);
+  overflow: hidden;
+}
+.silence-screen::before {
+  content: "";
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle, rgba(227,93,48,0.35) 0%, transparent 70%);
+  filter: blur(40px);
+  z-index: 0;
+  pointer-events: none;
+  animation: pulseGlow 4s ease-in-out infinite;
+}
+@keyframes pulseGlow { 0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(0.95); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); } }
+
+.silence-screen > * { position: relative; z-index: 1; }
+.silence-screen .sil-cover {
+  width: 180px;
+  height: auto;
+  border-radius: 6px;
+  opacity: 1;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 30px 60px -10px rgba(0,0,0,0.9), 0 0 50px rgba(227,93,48,0.4);
+  margin-bottom: 40px;
+  cursor: pointer;
+  animation: floatMagic 5s ease-in-out infinite;
+}
+@keyframes floatMagic {
+  0%, 100% { transform: translateY(0); box-shadow: 0 30px 60px -10px rgba(0,0,0,0.9), 0 0 50px rgba(227,93,48,0.4); }
+  50% { transform: translateY(-12px); box-shadow: 0 45px 75px -10px rgba(0,0,0,0.7), 0 0 70px rgba(227,93,48,0.65); }
+}
+.silence-screen .sil-cover:active { transform: scale(0.96) translateY(0); transition: transform .1s; }
+.silence-screen .sil-title {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: clamp(16px,4vw,22px);
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 20px;
+  font-weight: 700;
+  text-align: center;
+  text-shadow: 0 4px 20px rgba(255,255,255,0.4);
+  letter-spacing: 1px;
+}
+.silence-screen .sil-call {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(18px,5vw,26px);
+  font-weight: 600;
+  line-height: 1.5;
+  background: linear-gradient(180deg, #FFFFFF 0%, rgba(255,255,255,0.75) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+  text-align: center;
+  filter: drop-shadow(0 4px 15px rgba(0,0,0,0.6));
+  animation: silCallIn 1s ease .3s both;
+}
+.silence-screen .sil-sub {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(14px,3.5vw,18px);
+  font-weight: 500;
+  line-height: 1.4;
+  color: rgba(255,255,255,.5);
+  margin-bottom: 24px;
+  text-align: center;
+  animation: silCallIn 1s ease .5s both;
+}
+@keyframes silCallIn { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
+
+.silence-screen .sil-pulse {
+  font-family: 'Poppins', sans-serif;
+  margin-bottom: 28px;
+  text-align: center;
+  animation: silCallIn 1s ease .7s both;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+.pulse-num {
+  display: block;
+  font-size: clamp(48px,11vw,72px);
+  font-weight: 800;
+  line-height: 1;
+  background: linear-gradient(135deg, #FF0055 0%, #FF5E00 50%, #FFD700 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 4px;
+  filter: drop-shadow(0 10px 25px rgba(255,0,85,0.5));
+  animation: fire-move 4s ease infinite, popNumber 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes popNumber { 0% { opacity: 0; transform: scale(0.4) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+.pulse-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255,255,255,.6);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  animation: popNumber 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: 0.1s;
+}
+.loading-text { animation: breatheLoading 1.5s infinite ease-in-out; color: rgba(255,255,255,0.5); font-size: 15px; letter-spacing: 1.5px; }
+@keyframes breatheLoading { 0%, 100% { opacity: 0.3; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1.02); } }
+
+.silence-screen .sil-mark { opacity: 0.2; animation: silCallIn 1s ease 1s both; }
+.silence-screen .sil-mark img { height: 22px; width: auto; display: block; margin: 0 auto; filter: invert(1) brightness(1.5); }
+
+@media (max-width: 640px) {
+  .grid { gap: 1.2vw; }
+  .label { font-size: clamp(0.95rem,4vw,1.4rem); }
+  .frase { font-size: clamp(0.9rem,3.5vw,1.3rem); }
+  .reveal-overlay { padding: max(4px, env(safe-area-inset-top, 4px)) 4px max(4px, env(safe-area-inset-bottom, 4px)); }
+  .reveal-card { border-radius: 18px; max-width: 100%; }
+  .reveal-card::after { border-radius: 18px; }
+  .ed-block { padding: 20px 18px; margin: 0 4px; }
+  .ed-block:first-child { margin-top: 12px; }
+  .ed-cover-wrap img { width: 110px; }
+  .ed-block .ed-title { font-size: 22px; }
+  .ed-block .ed-para { font-size: 18px; line-height: 1.65; }
+  .ed-block .ed-sub { font-size: 18px; }
+  .ed-block .ed-chip { font-size: 14px; margin-bottom: 10px; }
+  .card-actions { padding: 14px 18px 20px; }
+  .btn-close { top: 8px; left: 8px; }
+  .silence-screen .sil-cover { width: 140px; margin-bottom: 25px; }
+  .silence-screen .sil-pulse { min-height: 100px; }
+}
+</style>
+</head>
+<body data-lab-v="live-edition-card-v2" style="--accent:#8e44ad;--marker:#8e44ad30;--chip-bg:#8e44ad14;--card-paper:#F7F7F5;--card-ink:#1A1A1A;--card-border:rgba(26,26,26,0.06);">
+
+<div id="pulseLine" class="pulse-line"></div>
+<div class="grid" id="grid"></div>
+
+<div id="revealOverlay" class="reveal-overlay">
+  <div class="reveal-card" onclick="event.stopPropagation()">
+    <button class="btn-close" id="btnBack" aria-label="Cerrar">×</button>
+    <div class="card-inner">
+
+      <div class="ed-block">
+        <div style="display: flow-root; overflow: visible; padding: 4px;">
+          <div class="ed-cover-wrap" id="coverCTA">
+            <img src="https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/bb/66/f8/bb66f87d-70c3-80a8-3acc-2cfca177a1bb/9781471195945.jpg/600x600bb.jpg" alt="Trust &amp; Inspire" />
+            <span class="cover-hint">Toca el libro</span>
+          </div>
+          <div class="ed-title">Conectar y crecer juntos</div>
+          <div class="ed-chip">Stephen Covey</div>
+          <div class="ed-para">La confianza se construye a través de gestos sinceros que inspiran a otros. <span class="tg-hl">Reconocer los logros de quienes nos rodean genera un ambiente positivo</span> que fomenta el crecimiento mutuo. Comparte un elogio genuino con alguien que aprecies hoy. Este pequeño acto puede transformar una relación y fortalecer la confianza..</div>
+        </div>
+      </div>
+      <div class="ed-gap"></div>
+      <div class="ed-block">
+        <div class="ed-sub">Hazlo ahora</div>
+        <div class="ed-para"><span class="tg-hl">Reconocer los logros de quienes nos rodean genera un ambiente positivo</span> que fomenta el crecimiento mutuo. Comparte un elogio genuino con alguien que aprecies hoy. Este pequeño acto puede transformar una relación y fortalecer la confianza..</div>
+      </div>
+
+      <div class="card-actions">
+        <div class="btn-row btn-row-2">
+          <a class="btn-light" href="https://triggui.com" target="_blank" rel="noopener noreferrer">
+            <img class="btn-triggui-logo" src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png" alt="Triggui">
+          </a>
+          <a class="btn-light" href="https://www.instagram.com/triggui/" target="_blank" rel="noopener noreferrer">
+            <svg class="btn-ig-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="2" width="20" height="20" rx="6" stroke="white" stroke-width="1.8"/>
+              <circle cx="12" cy="12" r="5" stroke="white" stroke-width="1.8"/>
+              <circle cx="17.5" cy="6.5" r="1.2" fill="white"/>
+            </svg>
+          </a>
+        </div>
+
+        <div class="btn-row btn-row-3">
+          <a class="btn-dark" href="https://www.buscalibre.com.mx/libros/search/?q=Trust%20%26%20Inspire%20Stephen%20Covey" target="_blank" rel="noopener noreferrer">
+            <img class="btn-busca-logo" src="/buscalibre.png" alt="Buscalibre">
+          </a>
+
+          <a class="btn-dark btn-crystal" href="https://www.buscalibre.com.mx/libros/search/?q=Conectar%20y%20crecer%20juntos" target="_blank" rel="noopener noreferrer">
+            <span class="btn-emoji">🔮</span>
+          </a>
+
+          <a class="btn-dark btn-penguin-icon" href="https://www.penguinlibros.com/mx/?mot_q=Conectar%20y%20crecer%20juntos" target="_blank" rel="noopener noreferrer">
+            <img src="/logopenguin.png" alt="Penguin">
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="silence-screen" id="silenceScreen">
+    <img class="sil-cover" id="silCover" src="https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/bb/66/f8/bb66f87d-70c3-80a8-3acc-2cfca177a1bb/9781471195945.jpg/600x600bb.jpg" alt="Trust &amp; Inspire" />
+    <div class="sil-title">Trust &amp; Inspire</div>
+    <div class="sil-call">Queremos que te den ganas<br>de abrir un libro.</div>
+    <div class="sil-sub">Eso es Triggui.</div>
+    <div class="sil-pulse" id="silPulse"></div>
+    <div class="sil-mark">
+      <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png" alt="Triggui">
+    </div>
+  </div>
+</div>
+
+<script>
+const state = {"id": "trust-inspire", "titulo": "Trust & Inspire", "autor": "Stephen Covey", "palabra": "Conectar y crecer juntos", "descripcion": "La confianza se construye a través de gestos sinceros que inspiran a otros. Reconocer los logros de quienes nos rodean genera un ambiente positivo que fomenta el crecimiento mutuo. Comparte un elogio genuino con alguien que aprecies hoy. Este pequeño acto puede transformar una relación y fortalecer la confianza..", "palabras": ["confianza", "inspirar", "conexión", "crecimiento"], "frases": ["🌱 Dedica un minuto a reflexionar sobre cómo puedes inspirar a alguien hoy.", "💬 Comparte un elogio genuino con un compañero de trabajo o amigo.", "🔗 Haz una lista de tres personas en tu vida que te inspiran y envíales un mensaje.", "📖 Lee una página de un libro que te motive y escribe una idea clave."], "colores": ["#4A90E2", "#50E3C2", "#F5A623", "#BFBFBF"], "textColors": ["#FFFFFF", "#000000", "#000000", "#000000"], "ogImage": "https://beta.app.triggui.com/t/trust-inspire/og.png", "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/bb/66/f8/bb66f87d-70c3-80a8-3acc-2cfca177a1bb/9781471195945.jpg/600x600bb.jpg", "tagline": ""};
+const grid = document.getElementById('grid');
+const revealOverlay = document.getElementById('revealOverlay');
+const btnBack = document.getElementById('btnBack');
+const coverCTA = document.getElementById('coverCTA');
+const coverHint = coverCTA ? coverCTA.querySelector('.cover-hint') : null;
+const revealCard = document.querySelector('.reveal-card');
+const silenceScreen = document.getElementById('silenceScreen');
+const silPulse = document.getElementById('silPulse');
+const pulseEditionKey = 'triggui_lab_opened_' + state.id;
+
+const ANG = [115, 205, 35, 320];
+function grad(i) {
+  return 'linear-gradient(' + ANG[i % 4] + 'deg,' + state.colores[i] + ',' + state.colores[(i + 1) % 4] + ')';
+}
+
+let overlayView = 'blocks';
+let coverBusy = false;
+const revealIndex = Math.floor(Math.random() * 4);
+const emojis = ['🌊', '🛡️', '🧠', '✨'];
+
+function clearBlockStates() {
+  Array.from(grid.children).forEach((block) => {
+    block.classList.remove('show', 'dim');
+  });
+}
+
+function hideGrid() {
+  grid.classList.add('hidden');
+}
+
+function showGrid() {
+  clearBlockStates();
+  grid.classList.remove('hidden');
+}
+
+function resetCardState() {
+  coverBusy = false;
+  if (coverCTA) coverCTA.style.pointerEvents = '';
+  if (coverHint) coverHint.textContent = 'Toca el libro';
+}
+
+function setOverlayView(next) {
+  overlayView = next;
+  const overlayVisible = next !== 'blocks';
+
+  if (overlayVisible) {
+    revealOverlay.style.display = 'flex';
+    void revealOverlay.offsetWidth;
+  }
+
+  revealOverlay.style.opacity = overlayVisible ? '1' : '0';
+  revealOverlay.style.pointerEvents = overlayVisible ? 'auto' : 'none';
+
+  if (next === 'blocks') {
+    resetCardState();
+    revealCard.style.display = '';
+    silenceScreen.style.display = 'none';
+    revealCard.style.transform = 'scale(0.94) translateY(15px)';
+    revealCard.style.opacity = '0';
+
+    setTimeout(() => {
+      if (overlayView === 'blocks') {
+        revealOverlay.style.display = 'none';
+      }
+    }, 350);
+    return;
+  }
+
+  if (next === 'card') {
+    resetCardState();
+    revealCard.style.display = '';
+    silenceScreen.style.display = 'none';
+    revealCard.style.transform = 'scale(0.98) translateY(10px)';
+    revealCard.style.opacity = '0';
+
+    requestAnimationFrame(() => {
+      revealCard.style.transform = 'scale(1) translateY(0)';
+      revealCard.style.opacity = '1';
+    });
+    return;
+  }
+
+  if (next === 'silence') {
+    revealCard.style.display = 'none';
+    silenceScreen.style.display = 'flex';
+  }
+}
+
+function openOverlayFromBlocks() {
+  hideGrid();
+  setOverlayView('card');
+}
+
+function closeOverlayToBlocks() {
+  setOverlayView('blocks');
+  setTimeout(() => showGrid(), 180);
+}
+
+function moveToSilence() {
+  setOverlayView('silence');
+}
+
+async function getCollectivePulse() {
+  try {
+    const res = await fetch('/api/get-lab', { cache: 'no-store' });
+    if (!res.ok) throw new Error('fail');
+    const data = await res.json();
+    return Number(data.total || 0);
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+}
+
+async function registerCollectivePhysicalOpen() {
+  if (localStorage.getItem(pulseEditionKey) === '1') {
+    const count = await getCollectivePulse();
+    return { count, repeated: true, ok: count !== null };
+  }
+
+  try {
+    const res = await fetch('/api/increment-lab', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ editionId: state.id })
+    });
+
+    if (!res.ok) throw new Error('fail');
+
+    const data = await res.json();
+    localStorage.setItem(pulseEditionKey, '1');
+    return { count: Number(data.total || 0), repeated: false, ok: true };
+  } catch (e) {
+    console.error(e);
+    return { count: null, repeated: false, ok: false };
+  }
+}
+
+function getChronoOrder(hour) {
+  if (hour >= 4 && hour <= 6) return [3, 2, 1, 0];
+  if (hour >= 7 && hour <= 11) return [0, 2, 1, 3];
+  if (hour >= 12 && hour <= 16) return [2, 0, 1, 3];
+  if (hour >= 17 && hour <= 20) return [1, 3, 2, 0];
+  return [3, 1, 2, 0];
+}
+
+const currentHour = new Date().getHours();
+const chronoOrder = getChronoOrder(currentHour);
+
+function renderBlocks() {
+  grid.innerHTML = '';
+
+  for (let visualIdx = 0; visualIdx < 4; visualIdx++) {
+    const realIdx = chronoOrder[visualIdx];
+
+    const card = document.createElement('div');
+    card.className = 'block';
+    card.style.background = grad(realIdx);
+    card.dataset.idx = String(visualIdx);
+    card.dataset.realIdx = String(realIdx);
+
+    const label = document.createElement('div');
+    label.className = 'label';
+    label.textContent = emojis[realIdx % emojis.length] + ' ' + state.palabras[realIdx];
+    label.style.color = state.textColors[realIdx] || '#fff';
+
+    const frase = document.createElement('div');
+    frase.className = 'frase';
+    frase.textContent = state.frases[realIdx];
+    frase.style.color = state.textColors[realIdx] || '#fff';
+
+    card.append(label, frase);
+
+    card.onclick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const blocks = Array.from(grid.children);
+
+      if (visualIdx === revealIndex) {
+        openOverlayFromBlocks();
+        return;
+      }
+
+      const already = card.classList.contains('show');
+      clearBlockStates();
+
+      if (!already) {
+        card.classList.add('show');
+        blocks.forEach((b, j) => {
+          if (j !== visualIdx) b.classList.add('dim');
+        });
+      }
+    };
+
+    grid.append(card);
+  }
+}
+
+btnBack.addEventListener('click', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  closeOverlayToBlocks();
+});
+
+revealOverlay.addEventListener('click', (e) => {
+  if (e.target === revealOverlay && overlayView === 'card') {
+    closeOverlayToBlocks();
+  }
+});
+
+if (coverCTA) {
+  coverCTA.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (overlayView !== 'card' || coverBusy) return;
+
+    coverBusy = true;
+    coverCTA.style.pointerEvents = 'none';
+    if (coverHint) coverHint.textContent = '...';
+
+    moveToSilence();
+    silPulse.innerHTML = '<span class="pulse-label loading-text">Conectando...</span>';
+
+    registerCollectivePhysicalOpen().then((result) => {
+      if (result.ok && result.count !== null) {
+        silPulse.innerHTML = '<span class="pulse-num">' + result.count + '</span><span class="pulse-label">libros abiertos en el mundo</span>';
+      } else {
+        silPulse.innerHTML = '<span class="pulse-label">Se registró el acto.</span>';
+      }
+    }).catch((err) => {
+      console.error(err);
+      silPulse.innerHTML = '<span class="pulse-label">Se registró el acto.</span>';
+    });
+  });
+}
+
+silenceScreen.addEventListener('click', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  if (overlayView === 'silence') {
+    closeOverlayToBlocks();
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  if (overlayView === 'silence' || overlayView === 'card') {
+    closeOverlayToBlocks();
+  }
+});
+
+renderBlocks();
+setOverlayView('blocks');
+
+(function() {
+  const k = () => {
+    document.querySelectorAll('vercel-live-feedback,vercel-toolbar,[data-vercel-toolbar]').forEach((el) => el.remove());
+    const v = document.getElementById('__vercel_live_token');
+    if (v) v.remove();
+  };
+  k();
+  setTimeout(k, 500);
+  setTimeout(k, 2000);
+  new MutationObserver(() => k()).observe(document.documentElement, { childList: true, subtree: true });
+})();
+
+(async () => {
+  const total = await getCollectivePulse();
+  const el = document.getElementById('pulseLine');
+  if (total !== null && total > 0) {
+    el.textContent = 'Ya van ' + total + ' libros abiertos.';
+    el.classList.add('visible');
+  }
+})();
+</script>
+</body>
+</html>
