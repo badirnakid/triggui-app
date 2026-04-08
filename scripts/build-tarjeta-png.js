@@ -70,21 +70,93 @@ function withAlpha(hex, alpha = "24") {
   return clean || "";
 }
 
+function hexToRgb(hex) {
+  const clean = String(hex || "").trim();
+  if (!/^#[0-9a-fA-F]{6}$/.test(clean)) return null;
+
+  return {
+    r: parseInt(clean.slice(1, 3), 16),
+    g: parseInt(clean.slice(3, 5), 16),
+    b: parseInt(clean.slice(5, 7), 16)
+  };
+}
+
+function rgbToHex({ r, g, b }) {
+  const clamp = (v) => Math.max(0, Math.min(255, Math.round(v)));
+  return `#${[clamp(r), clamp(g), clamp(b)]
+    .map((v) => v.toString(16).padStart(2, "0"))
+    .join("")}`;
+}
+
+function mixHex(hexA, hexB, weight = 0.5) {
+  const a = hexToRgb(hexA);
+  const b = hexToRgb(hexB);
+  if (!a || !b) return hexA || hexB || "#000000";
+
+  const w = Math.max(0, Math.min(1, weight));
+  return rgbToHex({
+    r: a.r * (1 - w) + b.r * w,
+    g: a.g * (1 - w) + b.g * w,
+    b: a.b * (1 - w) + b.b * w
+  });
+}
+
+function normalizeText(text) {
+  return String(text || "").replace(/\s+/g, " ").trim();
+}
+
+function clampText(text, max) {
+  const clean = normalizeText(text);
+  if (!clean) return "";
+  if (clean.length <= max) return clean;
+  return `${clean.slice(0, max - 3).trim()}...`;
+}
+
+function toArrayOfStrings(value) {
+  if (!value) return [];
+  if (Array.isArray(value)) {
+    return value
+      .flatMap((item) => toArrayOfStrings(item))
+      .map((item) => normalizeText(item))
+      .filter(Boolean);
+  }
+
+  if (typeof value === "string") {
+    return value
+      .split(/[|•,;/]+/g)
+      .map((item) => normalizeText(item))
+      .filter(Boolean);
+  }
+
+  return [];
+}
+
+function uniqueStrings(values) {
+  const seen = new Set();
+  const output = [];
+
+  for (const value of values) {
+    const clean = normalizeText(value);
+    if (!clean) continue;
+    const key = clean.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    output.push(clean);
+  }
+
+  return output;
+}
+
 function normalizeHighlightSyntax(input) {
   let text = String(input || "").trim();
   if (!text) return "";
 
-  // moustache -> canonical
   text = text
     .replace(/\{\{H\}\}/gi, "[H]")
-    .replace(/\{\{\/H\}\}/gi, "[/H]");
-
-  // lowercase -> uppercase
-  text = text
+    .replace(/\{\{\/H\}\}/gi, "[/H]")
     .replace(/\[h\]/g, "[H]")
     .replace(/\[\/h\]/g, "[/H]");
 
-  // legacy broken [H]...[H] -> alternate open/close
   let toggleOpen = true;
   text = text.replace(/\[H\]/g, () => {
     const token = toggleOpen ? "[H]" : "[/H]";
@@ -115,6 +187,10 @@ function normalizeHighlightSyntax(input) {
   return text;
 }
 
+function stripHighlightTags(text) {
+  return normalizeHighlightSyntax(text).replace(/\[H\]|\[\/H\]/gi, "");
+}
+
 function renderHighlightHTML(text) {
   const normalized = normalizeHighlightSyntax(text);
   if (!normalized) return "";
@@ -140,6 +216,222 @@ function renderHighlightHTML(text) {
   if (after) out += escapeWithBreaks(after);
 
   return out;
+}
+
+function stripExplicitBookRefs(text, titulo = "", autor = "") {
+  let value = normalizeText(stripHighlightTags(text));
+  if (!value) return "";
+
+  for (const term of [titulo, autor]) {
+    const cleanTerm = normalizeText(term);
+    if (!cleanTerm) continue;
+    const safe = cleanTerm.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    value = value.replace(new RegExp(safe, "gi"), "");
+  }
+
+  value = value
+    .replace(/\s+([,.;:!?])/g, "$1")
+    .replace(/[ \t]{2,}/g, " ")
+    .trim()
+    .replace(/^[,.;:!?·\-\s]+|[,.;:!?·\-\s]+$/g, "");
+
+  return normalizeText(value);
+}
+
+function sentenceCase(text) {
+  const value = normalizeText(text);
+  if (!value) return "";
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function ensurePeriod(text) {
+  const value = normalizeText(text);
+  if (!value) return "";
+  if (/[.!?…]$/.test(value)) return value;
+  return `${value}.`;
+}
+
+function phraseIsWeak(text) {
+  const value = normalizeText(text).toLowerCase();
+  if (!value) return true;
+
+  const weakPatterns = [
+    /\binvita a\b/,
+    /\binvitar a\b/,
+    /\bexplora\b/,
+    /\bexplorar\b/,
+    /\bdescubre\b/,
+    /\bdescubrir\b/,
+    /\breflexiona\b/,
+    /\breflexionar\b/,
+    /\bnos recuerda\b/,
+    /\bnos muestra\b/,
+    /\bhabla de\b/,
+    /\btrata de\b/,
+    /\bpropone\b/,
+    /\buna reflexión\b/,
+    /\buna mirada\b/,
+    /\bmuestra cómo\b/
+  ];
+
+  return weakPatterns.some((re) => re.test(value));
+}
+
+function cleanLeadParagraph(text, titulo = "", autor = "") {
+  let value = stripExplicitBookRefs(text, titulo, autor);
+  if (!value) return "";
+
+  const patterns = [
+    /^\s*invita a explorar la idea de\s+/i,
+    /^\s*invita a explorar\s+/i,
+    /^\s*invita a\s+/i,
+    /^\s*explora la idea de\s+/i,
+    /^\s*explora\s+/i,
+    /^\s*explorar\s+/i,
+    /^\s*nos recuerda que\s+/i,
+    /^\s*nos muestra que\s+/i,
+    /^\s*este libro\s+/i,
+    /^\s*este enfoque transformador\s+/i,
+    /^\s*este enfoque\s+/i
+  ];
+
+  for (const pattern of patterns) {
+    value = value.replace(pattern, "");
+  }
+
+  value = value
+    .replace(/^\s*(la idea de|el acto de)\s+/i, "")
+    .replace(/[ \t]{2,}/g, " ")
+    .trim();
+
+  value = sentenceCase(value);
+  value = ensurePeriod(value);
+
+  return clampText(value, 230);
+}
+
+function scoreActionPhrase(text) {
+  const value = normalizeText(text);
+  if (!value) return -999;
+
+  let score = 0;
+
+  const actionablePatterns = [
+    /\babre\b/i,
+    /\brespira\b/i,
+    /\btoma\b/i,
+    /\bdetén\b/i,
+    /\bdetente\b/i,
+    /\bprueba\b/i,
+    /\bobserva\b/i,
+    /\bquita\b/i,
+    /\bcierra\b/i,
+    /\belige\b/i,
+    /\bescribe\b/i,
+    /\bvuelve\b/i,
+    /\bdeja\b/i,
+    /\bhaz\b/i,
+    /\bpon\b/i,
+    /\bordena\b/i,
+    /\bempieza\b/i,
+    /\bpermite\b/i,
+    /\bsuelta\b/i
+  ];
+
+  if (actionablePatterns.some((re) => re.test(value))) score += 28;
+  if (!phraseIsWeak(value)) score += 14;
+
+  const len = value.length;
+  if (len >= 40 && len <= 150) score += 16;
+  else if (len >= 22 && len <= 180) score += 8;
+  else score -= 12;
+
+  if (/[.!?]$/.test(value)) score += 2;
+
+  return score;
+}
+
+function selectCardTitle(tarjeta, libro, tituloLibro = "") {
+  const titulo = normalizeText(tarjeta?.titulo || "");
+  if (titulo && titulo.toLowerCase() !== normalizeText(tituloLibro).toLowerCase() && titulo.length <= 42 && !phraseIsWeak(titulo)) {
+    return titulo;
+  }
+
+  const subtitulo = normalizeText(tarjeta?.subtitulo || "");
+  if (subtitulo && subtitulo.length <= 42 && !phraseIsWeak(subtitulo)) {
+    return subtitulo;
+  }
+
+  const palabras = uniqueStrings(toArrayOfStrings(libro?.palabras)).slice(0, 2);
+  if (palabras.length === 2) {
+    return `${palabras[0]} y ${palabras[1].toLowerCase()}`;
+  }
+  if (palabras.length === 1) {
+    return palabras[0];
+  }
+
+  return clampText(tituloLibro || "Triggui", 42);
+}
+
+function selectLeadCopy(tarjeta, libro, tituloLibro = "", autorLibro = "") {
+  const candidateTop = cleanLeadParagraph(tarjeta?.parrafoTop || "", tituloLibro, autorLibro);
+  if (candidateTop && !phraseIsWeak(candidateTop)) {
+    return candidateTop;
+  }
+
+  const candidateBot = cleanLeadParagraph(tarjeta?.parrafoBot || "", tituloLibro, autorLibro);
+  if (candidateBot && !phraseIsWeak(candidateBot)) {
+    return candidateBot;
+  }
+
+  const frases = uniqueStrings(toArrayOfStrings(libro?.frases))
+    .map((frase) => cleanLeadParagraph(frase, tituloLibro, autorLibro))
+    .filter(Boolean);
+
+  const best = frases.find((frase) => !phraseIsWeak(frase));
+  return best || candidateTop || candidateBot || "";
+}
+
+function selectActionSubtitle(tarjeta, libro) {
+  const subtitle = normalizeText(tarjeta?.subtitulo || "");
+  if (subtitle && subtitle.length <= 44 && !phraseIsWeak(subtitle)) {
+    return subtitle;
+  }
+
+  const palabras = uniqueStrings(toArrayOfStrings(libro?.palabras)).slice(0, 3);
+  if (palabras.length >= 2) {
+    return `Haz espacio para ${palabras[0].toLowerCase()} y ${palabras[1].toLowerCase()}`;
+  }
+
+  return "";
+}
+
+function selectActionCopy(tarjeta, libro, tituloLibro = "", autorLibro = "", leadCopy = "") {
+  const candidates = [];
+
+  const parrafoBot = stripExplicitBookRefs(tarjeta?.parrafoBot || "", tituloLibro, autorLibro);
+  if (parrafoBot) candidates.push(parrafoBot);
+
+  for (const frase of uniqueStrings(toArrayOfStrings(libro?.frases))) {
+    const clean = stripExplicitBookRefs(frase, tituloLibro, autorLibro);
+    if (clean) candidates.push(clean);
+  }
+
+  const ranked = candidates
+    .map((text) => ({
+      text: ensurePeriod(sentenceCase(text)),
+      score: scoreActionPhrase(text)
+    }))
+    .filter((item) => item.text && item.text.toLowerCase() !== normalizeText(leadCopy).toLowerCase())
+    .sort((a, b) => b.score - a.score);
+
+  const chosen = ranked[0]?.text || ensurePeriod(sentenceCase(parrafoBot));
+  return clampText(chosen || "", 180);
+}
+
+function buildKeywords(libro) {
+  const palabras = uniqueStrings(toArrayOfStrings(libro?.palabras)).slice(0, 4);
+  return palabras.map((word) => `<span class="keyword">${escapeHTML(word.toLowerCase())}</span>`).join("");
 }
 
 function luminance(hex) {
@@ -269,11 +561,17 @@ const titleColor = style.titleColor || "#1A1A1A";
 const subtitleColor = style.subtitleColor || accent;
 const paragraphColor = style.paragraphColor || "#4A4A4A";
 
-const chipBg = withAlpha(accent, "18") || "#FBE7DF";
-const chipColor = accent || "#A84322";
-const highlightBg = withAlpha(accent, "42") || "rgba(227,93,48,0.26)";
-const highlightEdge = withAlpha(accent, "58") || "rgba(227,93,48,0.35)";
-const highlightText = paragraphColor;
+const pastelHighlight = mixHex(accent, "#FFFFFF", 0.78);
+const pastelEdge = mixHex(accent, "#FFFFFF", 0.62);
+const pastelChip = mixHex(accent, "#FFFFFF", 0.80);
+const pastelKeywordBorder = mixHex(accent, "#FFFFFF", 0.66);
+const pastelKeywordText = mixHex(accent, "#3F4855", 0.52);
+
+const chipBg = pastelChip;
+const chipColor = mixHex(accent, "#31568A", 0.38);
+const highlightBg = withAlpha(pastelHighlight, "FF");
+const highlightEdge = withAlpha(pastelEdge, "E6");
+const highlightText = "#2F343C";
 const coverBorder = withAlpha(accent, "18") || "#EAEAEA";
 
 const titleContrast = contrastRatio(titleColor, paper);
@@ -281,8 +579,13 @@ const subtitleContrast = contrastRatio(subtitleColor, paper);
 console.log(`   📐 Contraste título/fondo: ${titleContrast.toFixed(2)}:1 ${titleContrast >= 4.5 ? "✅" : "⚠️"}`);
 console.log(`   📐 Contraste subtítulo/fondo: ${subtitleContrast.toFixed(2)}:1 ${subtitleContrast >= 3 ? "✅" : "⚠️"}`);
 
-const parrafoTopHTML = renderHighlightHTML(tarjeta.parrafoTop || "");
-const parrafoBotHTML = renderHighlightHTML(tarjeta.parrafoBot || "");
+const selectedTitle = selectCardTitle(tarjeta, libro, tituloLibro);
+const selectedLead = selectLeadCopy(tarjeta, libro, tituloLibro, autorLibro);
+const selectedActionTitle = selectActionSubtitle(tarjeta, libro);
+const selectedAction = selectActionCopy(tarjeta, libro, tituloLibro, autorLibro, selectedLead);
+
+const parrafoTopHTML = renderHighlightHTML(selectedLead);
+const parrafoBotHTML = renderHighlightHTML(selectedAction);
 
 const portadaURL = resolvePortadaURL(bookMeta, libro);
 const portadaSource = resolvePortadaSource(bookMeta, libro, portadaURL);
@@ -290,6 +593,8 @@ const portadaSource = resolvePortadaSource(bookMeta, libro, portadaURL);
 const portadaSection = portadaURL
   ? `<img class="cover" src="${portadaURL}" alt="Portada de ${escapeHTML(tituloLibro)}" />`
   : "";
+
+const keywordsSection = buildKeywords(libro);
 
 const brandLogoDataURL = await resolveBrandLogoDataURL();
 const brandSection = brandLogoDataURL
@@ -306,10 +611,11 @@ const brandSection = brandLogoDataURL
 
 let html = template
   .replace("{{PORTADA_SECTION}}", portadaSection)
-  .replace("{{TITULO}}", escapeHTML(tarjeta.titulo || tituloLibro))
+  .replace("{{TITULO}}", escapeHTML(selectedTitle))
   .replace("{{AUTOR}}", escapeHTML(autorLibro))
   .replace("{{PARRAFO_TOP}}", parrafoTopHTML)
-  .replace("{{SUBTITULO}}", escapeHTML(tarjeta.subtitulo || ""))
+  .replace("{{KEYWORDS_SECTION}}", keywordsSection)
+  .replace("{{SUBTITULO}}", escapeHTML(selectedActionTitle))
   .replace("{{PARRAFO_BOT}}", parrafoBotHTML)
   .replace("{{BRAND_SECTION}}", brandSection);
 
@@ -327,6 +633,8 @@ const cssVars = [
   `--highlight-color: ${highlightText}`,
   `--border-color: ${borderColor}`,
   `--cover-border: ${coverBorder}`,
+  `--keyword-border: ${pastelKeywordBorder}`,
+  `--keyword-color: ${pastelKeywordText}`,
   `--accent: ${accent}`
 ].join("; ");
 
@@ -352,7 +660,7 @@ await page.evaluate(async () => {
 if (portadaURL) {
   try {
     await page.waitForSelector(".cover", { state: "visible", timeout: 10000 });
-    await page.waitForTimeout(400);
+    await page.waitForTimeout(350);
   } catch {
     console.log("   ⚠️  Portada no cargó en 10s — continuando sin ella");
   }
@@ -369,101 +677,116 @@ await page.evaluate(() => {
     el.style[prop] = `${value}px`;
   };
 
-  const topBox = document.querySelector(".top");
-  const topFlow = document.querySelector(".top-flow");
+  const hero = document.querySelector(".hero");
+  const heroCopy = document.querySelector(".hero-copy");
   const title = document.querySelector(".title");
   const chip = document.querySelector(".author-chip");
   const topParagraph = document.querySelector(".paragraph-top");
   const cover = document.querySelector(".cover");
+  const keywords = document.querySelector(".keywords");
 
-  let guardTop = 0;
-  while (topBox && topFlow && topFlow.scrollHeight > topBox.clientHeight && guardTop < 180) {
+  let guardHero = 0;
+  while (hero && hero.scrollHeight > hero.clientHeight && guardHero < 220) {
     let changed = false;
 
     const titleSize = px(title, "fontSize");
     const titleLine = px(title, "lineHeight");
     const chipSize = px(chip, "fontSize");
-    const chipMinHeight = px(chip, "minHeight");
-    const topParagraphSize = px(topParagraph, "fontSize");
-    const topParagraphLine = px(topParagraph, "lineHeight");
-    const coverWidth = px(cover, "width");
+    const chipHeight = px(chip, "minHeight");
+    const topSize = px(topParagraph, "fontSize");
+    const topLine = px(topParagraph, "lineHeight");
+    const coverWidth = px(cover, "maxWidth") || px(cover, "width");
+    const keywordSize = keywords ? px(keywords.querySelector(".keyword"), "fontSize") : 0;
 
-    if (title && titleSize > 58) {
+    if (title && titleSize > 60) {
       setPx(title, "fontSize", titleSize - 1);
-      if (titleLine > 0) setPx(title, "lineHeight", Math.max(titleLine - 1, titleSize - 2));
+      if (titleLine > 0) setPx(title, "lineHeight", Math.max(titleLine - 1, titleSize - 4));
       changed = true;
     }
 
-    if (topParagraph && topParagraphSize > 33) {
-      setPx(topParagraph, "fontSize", topParagraphSize - 0.6);
-      if (topParagraphLine > 0) setPx(topParagraph, "lineHeight", Math.max(topParagraphLine - 1, topParagraphSize * 1.34));
+    if (topParagraph && topSize > 27) {
+      setPx(topParagraph, "fontSize", topSize - 0.45);
+      if (topLine > 0) setPx(topParagraph, "lineHeight", Math.max(topLine - 0.7, topSize * 1.32));
       changed = true;
     }
 
-    if (chip && chipSize > 22 && guardTop % 2 === 0) {
-      setPx(chip, "fontSize", chipSize - 0.5);
-      if (chipMinHeight > 44) setPx(chip, "minHeight", chipMinHeight - 0.5);
+    if (chip && chipSize > 24 && guardHero % 2 === 0) {
+      setPx(chip, "fontSize", chipSize - 0.35);
+      if (chipHeight > 46) setPx(chip, "minHeight", chipHeight - 0.35);
       changed = true;
     }
 
-    if (cover && coverWidth > 236 && guardTop % 2 === 0) {
-      setPx(cover, "width", coverWidth - 1.2);
+    if (cover && coverWidth > 238 && guardHero % 2 === 0) {
+      cover.style.maxWidth = `${coverWidth - 0.9}px`;
+      changed = true;
+    }
+
+    if (keywords && keywordSize > 16 && guardHero % 3 === 0) {
+      keywords.querySelectorAll(".keyword").forEach((el) => {
+        const fs = px(el, "fontSize");
+        const mh = px(el, "minHeight");
+        const pl = px(el, "paddingLeft");
+        const pr = px(el, "paddingRight");
+        if (fs > 16) setPx(el, "fontSize", fs - 0.35);
+        if (mh > 32) setPx(el, "minHeight", mh - 0.35);
+        if (pl > 10) {
+          setPx(el, "paddingLeft", pl - 0.2);
+          setPx(el, "paddingRight", pr - 0.2);
+        }
+      });
       changed = true;
     }
 
     if (!changed) break;
-    guardTop += 1;
+    guardHero += 1;
   }
 
-  const bottomBox = document.querySelector(".bottom-inner");
-  const subtitle = document.querySelector(".subtitle");
+  const action = document.querySelector(".action");
+  const actionTitle = document.querySelector(".action-title");
   const bottomParagraph = document.querySelector(".paragraph-bottom");
 
-  let guardBottom = 0;
-  while (bottomBox && bottomBox.scrollHeight > bottomBox.clientHeight && guardBottom < 160) {
+  let guardAction = 0;
+  while (action && action.scrollHeight > action.clientHeight && guardAction < 180) {
     let changed = false;
 
-    const subtitleSize = px(subtitle, "fontSize");
-    const subtitleLine = px(subtitle, "lineHeight");
-    const bottomParagraphSize = px(bottomParagraph, "fontSize");
-    const bottomParagraphLine = px(bottomParagraph, "lineHeight");
+    const actionTitleSize = px(actionTitle, "fontSize");
+    const actionTitleLine = px(actionTitle, "lineHeight");
+    const bottomSize = px(bottomParagraph, "fontSize");
+    const bottomLine = px(bottomParagraph, "lineHeight");
 
-    if (subtitle && subtitleSize > 28) {
-      setPx(subtitle, "fontSize", subtitleSize - 0.5);
-      if (subtitleLine > 0) setPx(subtitle, "lineHeight", Math.max(subtitleLine - 0.5, subtitleSize * 1.15));
+    if (actionTitle && actionTitle.textContent.trim() && actionTitleSize > 24) {
+      setPx(actionTitle, "fontSize", actionTitleSize - 0.35);
+      if (actionTitleLine > 0) setPx(actionTitle, "lineHeight", Math.max(actionTitleLine - 0.35, actionTitleSize * 1.12));
       changed = true;
     }
 
-    if (bottomParagraph && bottomParagraphSize > 30) {
-      setPx(bottomParagraph, "fontSize", bottomParagraphSize - 0.6);
-      if (bottomParagraphLine > 0) setPx(bottomParagraph, "lineHeight", Math.max(bottomParagraphLine - 1, bottomParagraphSize * 1.32));
+    if (bottomParagraph && bottomSize > 24) {
+      setPx(bottomParagraph, "fontSize", bottomSize - 0.45);
+      if (bottomLine > 0) setPx(bottomParagraph, "lineHeight", Math.max(bottomLine - 0.6, bottomSize * 1.3));
       changed = true;
     }
 
     if (!changed) break;
-    guardBottom += 1;
+    guardAction += 1;
   }
 
-  if (bottomBox && bottomBox.scrollHeight > bottomBox.clientHeight && bottomParagraph) {
-    const subtitleHeight = subtitle ? subtitle.getBoundingClientRect().height : 0;
-    const bottomStyle = getComputedStyle(bottomBox);
-    const lineHeight = px(bottomParagraph, "lineHeight") || (px(bottomParagraph, "fontSize") * 1.4);
-    const available =
-      bottomBox.clientHeight -
-      subtitleHeight -
-      parseFloat(bottomStyle.marginTop || "0") -
-      6;
-
-    const lines = Math.max(2, Math.floor(available / lineHeight));
+  if (action && action.scrollHeight > action.clientHeight && bottomParagraph) {
+    const available = action.clientHeight - (actionTitle ? actionTitle.getBoundingClientRect().height : 0) - 10;
+    const lineHeight = px(bottomParagraph, "lineHeight") || (px(bottomParagraph, "fontSize") * 1.35);
+    const lines = Math.max(3, Math.floor(available / lineHeight));
 
     bottomParagraph.style.display = "-webkit-box";
     bottomParagraph.style.webkitBoxOrient = "vertical";
     bottomParagraph.style.webkitLineClamp = String(lines);
     bottomParagraph.style.overflow = "hidden";
   }
+
+  if (heroCopy && keywords && keywords.children.length === 0) {
+    keywords.style.display = "none";
+  }
 });
 
-await page.waitForTimeout(250);
+await page.waitForTimeout(220);
 
 const outPath = path.join(outDir, "tarjeta.png");
 await page.screenshot({
@@ -479,6 +802,8 @@ const sizeMB = (stats.size / 1024 / 1024).toFixed(2);
 
 console.log(`\n   ✅ Tarjeta generada: ${outPath}`);
 console.log(`   📏 ${sizeMB} MB | 1080×1920px`);
-console.log(`   🎨 Título: "${tarjeta.titulo || tituloLibro}"`);
+console.log(`   🎨 Título: "${selectedTitle}"`);
 console.log(`   ✍️  Autor: ${autorLibro}`);
 console.log(`   🖼️  Portada: ${portadaURL ? portadaSource : "tipográfica"}`);
+console.log(`   📝 Lead: ${selectedLead}`);
+console.log(`   ⚡ Action: ${selectedAction}`);
