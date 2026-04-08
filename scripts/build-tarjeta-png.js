@@ -3,7 +3,7 @@
  *
  * PNG definitiva estilo Apps Script.
  * Tamaño exacto: 1066 × 1600
- * Una sola tarjeta continua, tipografía y proporciones copiadas del Apps Script.
+ * Portada flotada real + wrap natural + ajuste tipográfico dinámico.
  */
 
 import fs from "node:fs/promises";
@@ -64,14 +64,6 @@ const APP = {
   footerTextColor: "#8B8880",
 
   paddingCard: 5,
-  gapBetweenBlocks: 14,
-
-  blockRadius: 16,
-  blockBorder: "rgba(26,26,26,0.05)",
-  blockBackground: "linear-gradient(145deg, #FFFFFF 0%, #F5F5F5 100%)",
-  blockShadow: "0 8px 24px rgba(0,0,0,0.03)",
-  block1PaddingY: 20,
-  block1PaddingX: 22,
 
   authorChipEnabled: true,
   authorChipBg: "#FFF3E0",
@@ -103,37 +95,38 @@ const PX = {
   width: APP.targetWidth,
   height: APP.targetHeight,
 
-  cardRadius: Math.round(APP.cardRadius * SCALE),
   outerPad: Math.round(APP.paddingCard * SCALE),
+  cardRadius: Math.round(APP.cardRadius * SCALE),
 
-  blockRadius: Math.round(APP.blockRadius * SCALE),
-  blockPadY: Math.round(APP.block1PaddingY * SCALE),
-  blockPadX: Math.round(APP.block1PaddingX * SCALE),
+  heroPadTop: Math.round(20 * SCALE),
+  heroPadRight: Math.round(22 * SCALE),
+  heroPadBottom: Math.round(18 * SCALE),
+  heroPadLeft: Math.round(22 * SCALE),
 
   coverWidth: Math.round(APP.coverWidth * SCALE),
-  coverMinWidth: Math.round(APP.coverWidth * SCALE * 0.78),
-  coverMaxWidth: Math.round(APP.coverWidth * SCALE * 1.08),
+  coverMinWidth: Math.round(APP.coverWidth * SCALE * 0.84),
+  coverMaxWidth: Math.round(APP.coverWidth * SCALE * 1.04),
   coverMaxHeight: Math.round(APP.coverMaxHeight * SCALE),
   coverMarginBottom: Math.round(APP.coverMarginBottom * SCALE),
   coverMarginLeft: Math.round(APP.coverMarginLeft * SCALE),
 
   titleSize: APP.fontTitleSize * SCALE,
-  titleMinSize: APP.fontTitleSize * SCALE * 0.78,
-  titleMaxSize: APP.fontTitleSize * SCALE * 1.16,
+  titleMinSize: APP.fontTitleSize * SCALE * 0.90,
+  titleMaxSize: APP.fontTitleSize * SCALE * 1.08,
 
   paragraphSize: APP.fontParagraphSize * SCALE,
-  paragraphMinSize: APP.fontParagraphSize * SCALE * 0.80,
-  paragraphMaxSize: APP.fontParagraphSize * SCALE * 1.12,
+  paragraphMinSize: APP.fontParagraphSize * SCALE * 0.92,
+  paragraphMaxSize: APP.fontParagraphSize * SCALE * 1.08,
 
   authorChipSize: APP.authorChipSize * SCALE,
-  authorChipMinSize: APP.authorChipSize * SCALE * 0.84,
-  authorChipMaxSize: APP.authorChipSize * SCALE * 1.08,
+  authorChipMinSize: APP.authorChipSize * SCALE * 0.94,
+  authorChipMaxSize: APP.authorChipSize * SCALE * 1.06,
   authorChipPadY: APP.authorChipPadY * SCALE,
   authorChipPadX: APP.authorChipPadX * SCALE,
   authorChipRadius: APP.authorChipRadius * SCALE,
 
-  footerSize: APP.fontFooterSize * SCALE,
   footerHeight: Math.round(82 * SCALE),
+  footerSize: APP.fontFooterSize * SCALE,
   footerLogoHeight: Math.round(24 * SCALE),
 
   highlightPadY: Math.max(2, Math.round(APP.highlightPaddingY * SCALE)),
@@ -221,21 +214,6 @@ function clamp(value, min, max) {
 
 function lerp(start, end, t) {
   return start + ((end - start) * t);
-}
-
-function computeInitialLayoutMetrics(display, hasCover) {
-  const titleLen = normalizeText(display.title).length;
-  const authorLen = normalizeText(display.author).length;
-  const bodyLen = normalizeText(display.bodyPlain).length;
-  const density = (titleLen * 1.9) + (authorLen * 0.5) + bodyLen + (hasCover ? 36 : 0);
-  const ratio = clamp((density - 175) / 255, 0, 1);
-
-  return {
-    titleSize: clamp(lerp(PX.titleMaxSize, PX.titleSize * 0.96, ratio), PX.titleMinSize, PX.titleMaxSize),
-    paragraphSize: clamp(lerp(PX.paragraphMaxSize, PX.paragraphSize * 0.93, ratio), PX.paragraphMinSize, PX.paragraphMaxSize),
-    authorSize: clamp(lerp(PX.authorChipMaxSize, PX.authorChipSize * 0.96, ratio), PX.authorChipMinSize, PX.authorChipMaxSize),
-    coverWidth: clamp(lerp(PX.coverMaxWidth, PX.coverWidth * 0.90, ratio), PX.coverMinWidth, PX.coverMaxWidth)
-  };
 }
 
 function normalizeHighlightSyntax(input) {
@@ -329,16 +307,6 @@ function tooSimilar(a, b) {
   if (aa === bb) return true;
   if ((aa.includes(bb) || bb.includes(aa)) && Math.min(aa.length, bb.length) > 38) return true;
   return false;
-}
-
-function hexToRgb(hex) {
-  const clean = String(hex || "").trim();
-  if (!/^#[0-9a-fA-F]{6}$/.test(clean)) return null;
-  return {
-    r: parseInt(clean.slice(1, 3), 16),
-    g: parseInt(clean.slice(3, 5), 16),
-    b: parseInt(clean.slice(5, 7), 16)
-  };
 }
 
 function luminance(hex) {
@@ -467,6 +435,304 @@ function buildPresentationCopy(libro, bookMeta) {
   };
 }
 
+function computeInitialLayout(display, hasCover) {
+  const titleLen = normalizeText(display.title).length;
+  const authorLen = normalizeText(display.author).length;
+  const bodyLen = normalizeText(display.bodyPlain).length;
+
+  const weighted = (titleLen * 1.9) + (authorLen * 0.45) + bodyLen + (hasCover ? 26 : 0);
+  const t = clamp((weighted - 170) / 210, 0, 1);
+
+  return {
+    titleSize: clamp(lerp(PX.titleMaxSize, PX.titleSize, t), PX.titleMinSize, PX.titleMaxSize),
+    paragraphSize: clamp(lerp(PX.paragraphMaxSize, PX.paragraphSize, t), PX.paragraphMinSize, PX.paragraphMaxSize),
+    authorSize: clamp(lerp(PX.authorChipMaxSize, PX.authorChipSize, t), PX.authorChipMinSize, PX.authorChipMaxSize),
+    coverWidth: clamp(lerp(PX.coverMaxWidth, PX.coverWidth, t), PX.coverMinWidth, PX.coverMaxWidth)
+  };
+}
+
+function buildHTML({
+  display,
+  portadaURL,
+  logoDataURL,
+  titleColor,
+  paragraphColor,
+  chipBg,
+  chipColor,
+  highlight,
+  initial
+}) {
+  const portadaSection = portadaURL
+    ? `
+      <div class="cover-wrap" id="coverWrap">
+        <img class="cover" src="${portadaURL}" alt="Portada de ${escapeHTML(display.title)}" />
+      </div>`
+    : "";
+
+  const footerSection = logoDataURL
+    ? `
+      <div class="footer-brand">
+        <img src="${logoDataURL}" alt="Triggui" />
+        <div class="footer-meta">@triggui | triggui.com</div>
+      </div>`
+    : `
+      <div class="footer-brand">
+        <div class="footer-fallback">triggui®</div>
+        <div class="footer-meta">@triggui | triggui.com</div>
+      </div>`;
+
+  const authorHTML = display.author
+    ? `<div class="author-chip" id="authorChip">${escapeHTML(display.author)}</div>`
+    : `<div class="author-chip is-hidden" id="authorChip"></div>`;
+
+  const cssVars = [
+    `--canvas-width:${PX.width}px`,
+    `--canvas-height:${PX.height}px`,
+    `--outer-pad:${PX.outerPad}px`,
+    `--card-radius:${PX.cardRadius}px`,
+    `--hero-pad-top:${PX.heroPadTop}px`,
+    `--hero-pad-right:${PX.heroPadRight}px`,
+    `--hero-pad-bottom:${PX.heroPadBottom}px`,
+    `--hero-pad-left:${PX.heroPadLeft}px`,
+    `--cover-width:${initial.coverWidth}px`,
+    `--cover-max-height:${PX.coverMaxHeight}px`,
+    `--cover-margin-bottom:${PX.coverMarginBottom}px`,
+    `--cover-margin-left:${PX.coverMarginLeft}px`,
+    `--title-size:${initial.titleSize}px`,
+    `--paragraph-size:${initial.paragraphSize}px`,
+    `--author-chip-size:${initial.authorSize}px`,
+    `--author-chip-pad-y:${PX.authorChipPadY}px`,
+    `--author-chip-pad-x:${PX.authorChipPadX}px`,
+    `--author-chip-radius:${PX.authorChipRadius}px`,
+    `--footer-height:${PX.footerHeight}px`,
+    `--footer-size:${PX.footerSize}px`,
+    `--footer-logo-height:${PX.footerLogoHeight}px`,
+    `--highlight-pad-y:${PX.highlightPadY}px`,
+    `--highlight-pad-x:${PX.highlightPadX}px`,
+    `--highlight-radius:${PX.highlightRadius}px`,
+    `--paper:${APP.paper}`,
+    `--background:${APP.background}`,
+    `--border:${APP.border}`,
+    `--card-shadow:${APP.cardShadow}`,
+    `--cover-shadow:${APP.coverShadow}`,
+    `--title-color:${titleColor}`,
+    `--paragraph-color:${paragraphColor}`,
+    `--footer-color:${APP.footerTextColor}`,
+    `--author-chip-bg:${chipBg}`,
+    `--author-chip-color:${chipColor}`,
+    `--highlight-bg:${highlight.bg}`,
+    `--highlight-ink:${highlight.ink}`,
+    `--highlight-shadow:${APP.highlightShadow}`
+  ].join(";");
+
+  return `<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: var(--canvas-width);
+    height: var(--canvas-height);
+    overflow: hidden;
+    background: var(--background);
+  }
+
+  body {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
+  }
+
+  .frame {
+    width: 100%;
+    height: 100%;
+    padding: var(--outer-pad);
+    background: var(--background);
+  }
+
+  .card {
+    width: 100%;
+    height: 100%;
+    background: var(--paper);
+    border: 2px solid var(--border);
+    border-radius: var(--card-radius);
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hero {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding:
+      var(--hero-pad-top)
+      var(--hero-pad-right)
+      var(--hero-pad-bottom)
+      var(--hero-pad-left);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .flow {
+    width: 100%;
+    min-height: 0;
+    height: 100%;
+  }
+
+  .flow::after {
+    content: "";
+    display: block;
+    clear: both;
+  }
+
+  .cover-wrap {
+    float: right;
+    width: var(--cover-width);
+    margin:
+      0
+      0
+      var(--cover-margin-bottom)
+      var(--cover-margin-left);
+  }
+
+  .cover {
+    display: block;
+    width: 100%;
+    max-height: var(--cover-max-height);
+    height: auto;
+    border: 1px solid #EAEAEA;
+    border-radius: 4px;
+    box-shadow: var(--cover-shadow);
+    background: #fff;
+    object-fit: cover;
+  }
+
+  .title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: var(--title-size);
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--title-color);
+    margin: 0 0 14px 0;
+    text-wrap: balance;
+  }
+
+  .author-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(var(--author-chip-pad-y) * 2 + 1em);
+    padding: var(--author-chip-pad-y) var(--author-chip-pad-x);
+    border-radius: var(--author-chip-radius);
+    background: var(--author-chip-bg);
+    color: var(--author-chip-color);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    font-size: var(--author-chip-size);
+    line-height: 1;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    margin: 2px 0 18px 0;
+  }
+
+  .author-chip.is-hidden {
+    display: none;
+  }
+
+  .body-text {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: var(--paragraph-size);
+    line-height: 1.7;
+    font-weight: 400;
+    letter-spacing: 0.2px;
+    color: var(--paragraph-color);
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  .highlight {
+    display: inline;
+    background-color: var(--highlight-bg);
+    color: var(--highlight-ink);
+    font-weight: 700;
+    padding:
+      var(--highlight-pad-y)
+      var(--highlight-pad-x)
+      calc(var(--highlight-pad-y) + 1px);
+    border-radius: var(--highlight-radius);
+    box-shadow: var(--highlight-shadow);
+    line-height: inherit;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+
+  .footer {
+    flex: 0 0 var(--footer-height);
+    padding: 16px 24px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .footer-brand {
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .footer-brand img {
+    height: var(--footer-logo-height);
+    width: auto;
+    display: block;
+    object-fit: contain;
+  }
+
+  .footer-fallback {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 46px;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+    color: #1A1A1A;
+  }
+
+  .footer-meta {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    font-size: var(--footer-size);
+    line-height: 1.4;
+    font-weight: 400;
+    color: var(--footer-color);
+  }
+</style>
+</head>
+<body style="${cssVars}">
+  <div class="frame">
+    <div class="card">
+      <div class="hero" id="content">
+        <div class="flow">
+          ${portadaSection}
+          <div class="title" id="title">${escapeHTML(display.title)}</div>
+          ${authorHTML}
+          <div class="body-text" id="bodyText">${display.bodyHTML}</div>
+        </div>
+      </div>
+      <div class="footer">
+        ${footerSection}
+      </div>
+    </div>
+  </div>
+</body>
+</html>`;
+}
+
 /* ═══════════════════════════════════════════════════════════════
    LOAD DATA
 ═══════════════════════════════════════════════════════════════ */
@@ -507,7 +773,6 @@ console.log(`🧾 Fuente JSON: ${contenidoPath}`);
    BUILD HTML
 ═══════════════════════════════════════════════════════════════ */
 
-const template = await fs.readFile("scripts/templates/tarjeta.html", "utf8");
 const portadaURL = resolvePortadaURL(bookMeta, libro);
 const portadaSource = resolvePortadaSource(bookMeta, libro, portadaURL);
 const logoDataURL = await resolveLogoDataURL();
@@ -520,75 +785,19 @@ const paragraphColor = style.paragraphColor || APP.paragraphColor;
 const chipBg = style.authorChipBg || APP.authorChipBg;
 const chipColor = style.authorChipColor || APP.authorChipColor;
 const highlight = pickHighlightStyle(`${slug}__${display.bodyPlain}`);
+const initial = computeInitialLayout(display, Boolean(portadaURL));
 
-const initialLayout = computeInitialLayoutMetrics(display, Boolean(portadaURL));
-
-const portadaSection = portadaURL
-  ? `<img class="cover" src="${portadaURL}" alt="Portada de ${escapeHTML(bookMeta.titulo || libro.titulo || "")}" />`
-  : `<div class="cover-fallback">Triggui</div>`;
-
-const footerSection = logoDataURL
-  ? `
-    <div class="footer-brand">
-      <img src="${logoDataURL}" alt="Triggui" />
-      <div class="footer-meta">@triggui | triggui.com</div>
-    </div>`
-  : `
-    <div class="footer-brand">
-      <div class="footer-fallback">triggui®</div>
-      <div class="footer-meta">@triggui | triggui.com</div>
-    </div>`;
-
-let html = template
-  .replace("{{PORTADA_SECTION}}", portadaSection)
-  .replace("{{TITULO}}", escapeHTML(display.title))
-  .replace("{{AUTOR}}", escapeHTML(display.author))
-  .replace("{{BODY_HTML}}", display.bodyHTML)
-  .replace("{{FOOTER_SECTION}}", footerSection);
-
-const cssVars = [
-  `--canvas-width:${PX.width}px`,
-  `--canvas-height:${PX.height}px`,
-  `--outer-pad:${PX.outerPad}px`,
-  `--card-radius:${PX.cardRadius}px`,
-  `--block-radius:${PX.blockRadius}px`,
-  `--block-pad-y:${PX.blockPadY}px`,
-  `--block-pad-x:${PX.blockPadX}px`,
-  `--cover-width:${initialLayout.coverWidth}px`,
-  `--cover-max-height:${PX.coverMaxHeight}px`,
-  `--cover-margin-bottom:${PX.coverMarginBottom}px`,
-  `--cover-margin-left:${PX.coverMarginLeft}px`,
-  `--title-size:${initialLayout.titleSize}px`,
-  `--paragraph-size:${initialLayout.paragraphSize}px`,
-  `--author-chip-size:${initialLayout.authorSize}px`,
-  `--author-chip-pad-y:${PX.authorChipPadY}px`,
-  `--author-chip-pad-x:${PX.authorChipPadX}px`,
-  `--author-chip-radius:${PX.authorChipRadius}px`,
-  `--footer-size:${PX.footerSize}px`,
-  `--footer-height:${PX.footerHeight}px`,
-  `--footer-logo-height:${PX.footerLogoHeight}px`,
-  `--highlight-pad-y:${PX.highlightPadY}px`,
-  `--highlight-pad-x:${PX.highlightPadX}px`,
-  `--highlight-radius:${PX.highlightRadius}px`,
-  `--paper:${APP.paper}`,
-  `--background:${APP.background}`,
-  `--border:${APP.border}`,
-  `--card-shadow:${APP.cardShadow}`,
-  `--block-background:${APP.blockBackground}`,
-  `--block-border:${APP.blockBorder}`,
-  `--block-shadow:${APP.blockShadow}`,
-  `--cover-shadow:${APP.coverShadow}`,
-  `--title-color:${titleColor}`,
-  `--paragraph-color:${paragraphColor}`,
-  `--footer-color:${APP.footerTextColor}`,
-  `--author-chip-bg:${chipBg}`,
-  `--author-chip-color:${chipColor}`,
-  `--highlight-bg:${highlight.bg}`,
-  `--highlight-ink:${highlight.ink}`,
-  `--highlight-shadow:${APP.highlightShadow}`
-].join(";");
-
-html = html.replace("<body>", `<body style="${cssVars}">`);
+const html = buildHTML({
+  display,
+  portadaURL,
+  logoDataURL,
+  titleColor,
+  paragraphColor,
+  chipBg,
+  chipColor,
+  highlight,
+  initial
+});
 
 /* ═══════════════════════════════════════════════════════════════
    RENDER
@@ -628,17 +837,9 @@ await page.evaluate((limits) => {
 
   const px = (el, prop) => el ? (parseFloat(getComputedStyle(el)[prop]) || 0) : 0;
   const setPx = (el, prop, value) => { if (el) el.style[prop] = `${value}px`; };
-  const hasOverflow = () => content && (content.scrollHeight - content.clientHeight) > 0.5;
-  const slack = () => content ? (content.clientHeight - content.scrollHeight) : 0;
 
-  const textGapToCover = () => {
-    if (!coverWrap || coverWrap.offsetHeight <= 0) return 0;
-    const coverRect = coverWrap.getBoundingClientRect();
-    const candidates = [title, author, body].filter(Boolean);
-    if (!candidates.length) return 0;
-    const textBottom = Math.max(...candidates.map((el) => el.getBoundingClientRect().bottom));
-    return coverRect.bottom - textBottom;
-  };
+  const overflow = () => content ? (content.scrollHeight - content.clientHeight) : 0;
+  const slack = () => content ? (content.clientHeight - content.scrollHeight) : 0;
 
   const snapshot = () => ({
     title: px(title, "fontSize"),
@@ -650,12 +851,12 @@ await page.evaluate((limits) => {
   const apply = (state) => {
     if (title) setPx(title, "fontSize", state.title);
     if (body) setPx(body, "fontSize", state.body);
-    if (author) setPx(author, "fontSize", state.author);
+    if (author && !author.classList.contains("is-hidden")) setPx(author, "fontSize", state.author);
     if (coverWrap) setPx(coverWrap, "width", state.cover);
   };
 
   let guard = 0;
-  while (hasOverflow() && guard < 260) {
+  while (overflow() > 0.5 && guard < 260) {
     const state = snapshot();
     let changed = false;
 
@@ -669,13 +870,13 @@ await page.evaluate((limits) => {
       changed = true;
     }
 
-    if (author && state.author > limits.authorMin && guard % 2 === 0) {
+    if (author && !author.classList.contains("is-hidden") && state.author > limits.authorMin && guard % 2 === 0) {
       state.author = Math.max(limits.authorMin, state.author - 0.10);
       changed = true;
     }
 
     if (coverWrap && state.cover > limits.coverMin && guard % 3 === 0) {
-      state.cover = Math.max(limits.coverMin, state.cover - 0.5);
+      state.cover = Math.max(limits.coverMin, state.cover - 0.45);
       changed = true;
     }
 
@@ -685,39 +886,36 @@ await page.evaluate((limits) => {
   }
 
   guard = 0;
-  while (!hasOverflow() && guard < 220) {
-    const enoughVerticalUse = slack() <= limits.targetSlack;
-    const enoughCoverWrap = !coverWrap || textGapToCover() <= limits.coverGapTarget;
-    if (enoughVerticalUse && enoughCoverWrap) break;
-
+  while (slack() > limits.targetSlack && guard < 220) {
     const before = snapshot();
-    const next = { ...before };
+    const state = { ...before };
     let changed = false;
 
-    if (body && next.body < limits.bodyMax) {
-      next.body = Math.min(limits.bodyMax, next.body + 0.16);
+    if (body && state.body < limits.bodyMax) {
+      state.body = Math.min(limits.bodyMax, state.body + 0.14);
       changed = true;
     }
 
-    if (title && next.title < limits.titleMax) {
-      next.title = Math.min(limits.titleMax, next.title + 0.24);
+    if (title && state.title < limits.titleMax) {
+      state.title = Math.min(limits.titleMax, state.title + 0.20);
       changed = true;
     }
 
-    if (author && next.author < limits.authorMax && guard % 2 === 0) {
-      next.author = Math.min(limits.authorMax, next.author + 0.08);
+    if (author && !author.classList.contains("is-hidden") && state.author < limits.authorMax && guard % 2 === 0) {
+      state.author = Math.min(limits.authorMax, state.author + 0.06);
       changed = true;
     }
 
-    if (coverWrap && next.cover < limits.coverMax && guard % 2 === 0) {
-      next.cover = Math.min(limits.coverMax, next.cover + 0.4);
+    if (coverWrap && state.cover < limits.coverMax && guard % 3 === 0) {
+      state.cover = Math.min(limits.coverMax, state.cover + 0.30);
       changed = true;
     }
 
     if (!changed) break;
 
-    apply(next);
-    if (hasOverflow()) {
+    apply(state);
+
+    if (overflow() > 0.5) {
       apply(before);
       break;
     }
@@ -733,8 +931,7 @@ await page.evaluate((limits) => {
   authorMax: PX.authorChipMaxSize,
   coverMin: PX.coverMinWidth,
   coverMax: PX.coverMaxWidth,
-  targetSlack: 18,
-  coverGapTarget: 14
+  targetSlack: 30
 });
 
 await page.waitForTimeout(120);
