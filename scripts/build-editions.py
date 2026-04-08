@@ -98,6 +98,56 @@ def normalize_text(text):
     return re.sub(r"\s+", " ", str(text or "")).strip()
 
 
+def clamp(number, minimum, maximum):
+    return max(minimum, min(number, maximum))
+
+
+def lerp(start, end, amount):
+    return start + ((end - start) * amount)
+
+
+def compute_editorial_layout_metrics(title, author, top, subtitle, bottom, has_cover):
+    title_len = len(normalize_text(strip_highlight_tags(title)))
+    author_len = len(normalize_text(strip_highlight_tags(author)))
+    top_len = len(normalize_text(strip_highlight_tags(top)))
+    subtitle_len = len(normalize_text(strip_highlight_tags(subtitle)))
+    bottom_len = len(normalize_text(strip_highlight_tags(bottom)))
+
+    density = (
+        (title_len * 1.9)
+        + (author_len * 0.4)
+        + top_len
+        + (subtitle_len * 0.65)
+        + (bottom_len * 0.9)
+        + (36 if has_cover else 0)
+    )
+    ratio = clamp((density - 120) / 220, 0.0, 1.0)
+
+    title_size = round(clamp(lerp(30.4, 25.4, ratio), 23.8, 31.2), 2)
+    title_size_mobile = round(clamp(lerp(26.0, 22.8, ratio), 21.8, 26.4), 2)
+    para_size = round(clamp(lerp(19.4, 17.4, ratio), 16.8, 19.8), 2)
+    para_size_mobile = round(clamp(lerp(18.8, 17.0, ratio), 16.4, 19.2), 2)
+    sub_size = round(clamp(lerp(18.8, 17.2, ratio), 16.8, 19.0), 2)
+    sub_size_mobile = round(clamp(lerp(18.4, 16.8, ratio), 16.0, 18.6), 2)
+    chip_size = round(clamp(lerp(15.8, 14.3, ratio), 13.6, 16.0), 2)
+    chip_size_mobile = round(clamp(lerp(14.8, 13.6, ratio), 13.0, 15.0), 2)
+    cover_width = round(clamp(lerp(128.0, 110.0, ratio), 104.0, 132.0), 2)
+    cover_width_mobile = round(clamp(lerp(116.0, 98.0, ratio), 94.0, 118.0), 2)
+
+    return {
+        "title": title_size,
+        "title_mobile": title_size_mobile,
+        "para": para_size,
+        "para_mobile": para_size_mobile,
+        "sub": sub_size,
+        "sub_mobile": sub_size_mobile,
+        "chip": chip_size,
+        "chip_mobile": chip_size_mobile,
+        "cover": cover_width,
+        "cover_mobile": cover_width_mobile,
+    }
+
+
 def truncate_text(text, limit):
     value = normalize_text(text)
     if not value:
@@ -430,6 +480,14 @@ def render_edicion(edicion, mode="lab"):
     has_portada = portada.startswith("http")
     cover_src = portada if has_portada else ""
     has_tarjeta = bool(t_parrafo_top)
+    layout_metrics = compute_editorial_layout_metrics(
+        t_titulo or titulo,
+        autor,
+        t_parrafo_top or descripcion,
+        t_subtitulo,
+        t_parrafo_bot,
+        has_portada,
+    )
 
     state = {
         "id": edicion_id,
@@ -458,9 +516,9 @@ def render_edicion(edicion, mode="lab"):
     if has_tarjeta and (t_subtitulo or t_parrafo_bot):
         second_block_html = f"""
       <div class="ed-gap"></div>
-      <div class="ed-block">
-        <div class="ed-sub">{esc(t_subtitulo)}</div>
-        <div class="ed-para">{render_highlight_html(t_parrafo_bot)}</div>
+      <div class="ed-block" id="editorialBlockBottom">
+        <div class="ed-sub" id="editorialSub">{esc(t_subtitulo)}</div>
+        <div class="ed-para" id="editorialBottomPara">{render_highlight_html(t_parrafo_bot)}</div>
       </div>"""
 
     silence_cover_html = ""
@@ -477,6 +535,16 @@ def render_edicion(edicion, mode="lab"):
         f"--card-paper:{esc(card_paper)};"
         f"--card-ink:{esc(card_ink)};"
         f"--card-border:{esc(card_border)};"
+        f"--ed-title-size:{layout_metrics['title']}px;"
+        f"--ed-title-size-mobile:{layout_metrics['title_mobile']}px;"
+        f"--ed-para-size:{layout_metrics['para']}px;"
+        f"--ed-para-size-mobile:{layout_metrics['para_mobile']}px;"
+        f"--ed-sub-size:{layout_metrics['sub']}px;"
+        f"--ed-sub-size-mobile:{layout_metrics['sub_mobile']}px;"
+        f"--ed-chip-size:{layout_metrics['chip']}px;"
+        f"--ed-chip-size-mobile:{layout_metrics['chip_mobile']}px;"
+        f"--ed-cover-width:{layout_metrics['cover']}px;"
+        f"--ed-cover-width-mobile:{layout_metrics['cover_mobile']}px;"
     )
 
     html_output = """<!doctype html>
@@ -724,20 +792,13 @@ body::before {
 }
 .ed-block:first-child { margin-top: 18px; }
 
-.ed-hero-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 136px;
-  gap: 18px;
-  align-items: start;
-}
-
-.ed-hero-copy {
-  min-width: 0;
+.ed-flow {
+  overflow: hidden;
 }
 
 .ed-block .ed-title {
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: 28px;
+  font-size: var(--ed-title-size, 28px);
   line-height: 1.2;
   font-weight: 700;
   color: #1A1A1A;
@@ -748,7 +809,7 @@ body::before {
 .ed-block .ed-chip {
   display: inline-block;
   font-family: 'Archivo', sans-serif;
-  font-size: 15px;
+  font-size: var(--ed-chip-size, 15px);
   line-height: 1;
   font-weight: 700;
   background: var(--chip-bg);
@@ -761,7 +822,7 @@ body::before {
 
 .ed-block .ed-para {
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: 18px;
+  font-size: var(--ed-para-size, 18px);
   line-height: 1.7;
   font-weight: 400;
   color: #4A4A4A;
@@ -771,7 +832,7 @@ body::before {
 
 .ed-block .ed-sub {
   font-family: 'Archivo', sans-serif;
-  font-size: 18px;
+  font-size: var(--ed-sub-size, 18px);
   line-height: 1.4;
   font-weight: 600;
   color: var(--accent);
@@ -791,17 +852,18 @@ body::before {
 }
 
 .ed-cover-wrap {
-  width: 136px;
+  float: right;
+  width: var(--ed-cover-width, 120px);
   cursor: pointer;
   position: relative;
   touch-action: manipulation;
   padding: 0;
+  margin: 0 0 10px 18px;
 }
 .ed-cover-wrap img {
   display: block;
-  width: 120px;
+  width: 100%;
   height: auto;
-  margin-left: auto;
   border: 1px solid #EAEAEA;
   border-radius: 4px;
   box-shadow: 0 15px 35px rgba(0,0,0,0.12);
@@ -1023,13 +1085,11 @@ body::before {
   .reveal-card::after { border-radius: 18px; }
   .ed-block { padding: 20px 18px; margin: 0 4px; }
   .ed-block:first-child { margin-top: 12px; }
-  .ed-hero-grid { grid-template-columns: minmax(0, 1fr) 122px; gap: 14px; }
-  .ed-cover-wrap { width: 122px; }
-  .ed-cover-wrap img { width: 110px; }
-  .ed-block .ed-title { font-size: 24px; line-height: 1.18; }
-  .ed-block .ed-para { font-size: 18px; line-height: 1.65; }
-  .ed-block .ed-sub { font-size: 18px; }
-  .ed-block .ed-chip { font-size: 14px; margin-bottom: 10px; }
+  .ed-cover-wrap { width: var(--ed-cover-width-mobile, 110px); margin: 0 0 10px 14px; }
+  .ed-block .ed-title { font-size: var(--ed-title-size-mobile, 24px); line-height: 1.18; }
+  .ed-block .ed-para { font-size: var(--ed-para-size-mobile, 18px); line-height: 1.65; }
+  .ed-block .ed-sub { font-size: var(--ed-sub-size-mobile, 18px); }
+  .ed-block .ed-chip { font-size: var(--ed-chip-size-mobile, 14px); margin-bottom: 10px; }
   .card-actions { padding: 14px 18px 20px; }
   .btn-close { top: 8px; left: 8px; }
   .silence-screen .sil-cover { width: 140px; margin-bottom: 25px; }
@@ -1047,14 +1107,12 @@ body::before {
     <button class="btn-close" id="btnBack" aria-label="Cerrar">×</button>
     <div class="card-inner">
 
-      <div class="ed-block">
-        <div class="ed-hero-grid">
-          <div class="ed-hero-copy">
-            <div class="ed-title">__CARD_TITLE__</div>
-            <div class="ed-chip">__CARD_AUTHOR__</div>
-            <div class="ed-para">__TOP_HTML__</div>
-          </div>
+      <div class="ed-block" id="editorialBlockTop">
+        <div class="ed-flow" id="editorialFlowTop">
           __COVER_CTA_HTML__
+          <div class="ed-title" id="editorialTitle">__CARD_TITLE__</div>
+          <div class="ed-chip" id="editorialChip">__CARD_AUTHOR__</div>
+          <div class="ed-para" id="editorialTopPara">__TOP_HTML__</div>
         </div>
       </div>__SECOND_BLOCK_HTML__
 
@@ -1181,6 +1239,7 @@ function setOverlayView(next) {
     requestAnimationFrame(() => {
       revealCard.style.transform = 'scale(1) translateY(0)';
       revealCard.style.opacity = '1';
+      requestAnimationFrame(() => fitRevealTypography());
     });
     return;
   }
@@ -1251,6 +1310,79 @@ function getChronoOrder(hour) {
 
 const currentHour = new Date().getHours();
 const chronoOrder = getChronoOrder(currentHour);
+
+function fitRevealTypography() {
+  const title = document.getElementById('editorialTitle');
+  const chip = document.getElementById('editorialChip');
+  const topPara = document.getElementById('editorialTopPara');
+  const sub = document.getElementById('editorialSub');
+  const bottomPara = document.getElementById('editorialBottomPara');
+  const cover = document.getElementById('coverCTA');
+
+  if (!title || !topPara) return;
+
+  const rootStyles = getComputedStyle(document.body);
+  const px = (el, prop) => el ? (parseFloat(getComputedStyle(el)[prop]) || 0) : 0;
+  const setPx = (el, prop, value) => { if (el) el.style[prop] = `${value}px`; };
+  const readVar = (name, fallback) => {
+    const value = parseFloat(rootStyles.getPropertyValue(name));
+    return Number.isFinite(value) ? value : fallback;
+  };
+  const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+  const limits = {
+    titleMin: readVar('--ed-title-size', 28) * 0.88,
+    titleMax: readVar('--ed-title-size', 28) * 1.10,
+    chipMin: readVar('--ed-chip-size', 15) * 0.92,
+    chipMax: readVar('--ed-chip-size', 15) * 1.08,
+    paraMin: readVar('--ed-para-size', 18) * 0.92,
+    paraMax: readVar('--ed-para-size', 18) * 1.10,
+    subMin: readVar('--ed-sub-size', 18) * 0.92,
+    subMax: readVar('--ed-sub-size', 18) * 1.08,
+    coverMin: readVar('--ed-cover-width', 120) * 0.90,
+    coverMax: readVar('--ed-cover-width', 120) * 1.08,
+  };
+
+  const textGapToCover = () => {
+    if (!cover) return 0;
+    const coverRect = cover.getBoundingClientRect();
+    const candidates = [title, chip, topPara].filter(Boolean);
+    const bottom = Math.max(...candidates.map((el) => el.getBoundingClientRect().bottom));
+    return coverRect.bottom - bottom;
+  };
+
+  let guard = 0;
+  while (cover && textGapToCover() > 12 && guard < 120) {
+    const nextTitle = clamp(px(title, 'fontSize') + 0.20, limits.titleMin, limits.titleMax);
+    const nextChip = clamp(px(chip, 'fontSize') + 0.06, limits.chipMin, limits.chipMax);
+    const nextPara = clamp(px(topPara, 'fontSize') + 0.14, limits.paraMin, limits.paraMax);
+    const nextCover = clamp(px(cover, 'width') + (guard % 2 === 0 ? 0.35 : 0), limits.coverMin, limits.coverMax);
+
+    if (
+      nextTitle === px(title, 'fontSize')
+      && nextChip === px(chip, 'fontSize')
+      && nextPara === px(topPara, 'fontSize')
+      && nextCover === px(cover, 'width')
+    ) {
+      break;
+    }
+
+    setPx(title, 'fontSize', nextTitle);
+    setPx(chip, 'fontSize', nextChip);
+    setPx(topPara, 'fontSize', nextPara);
+    setPx(cover, 'width', nextCover);
+    guard += 1;
+  }
+
+  if (sub && bottomPara) {
+    const density = (sub.textContent.trim().length * 0.85) + bottomPara.textContent.trim().length;
+    const boost = clamp((145 - density) / 145, 0, 1);
+    if (boost > 0) {
+      setPx(sub, 'fontSize', clamp(px(sub, 'fontSize') + (boost * 0.7), limits.subMin, limits.subMax));
+      setPx(bottomPara, 'fontSize', clamp(px(bottomPara, 'fontSize') + (boost * 0.9), limits.paraMin, limits.paraMax));
+    }
+  }
+}
 
 function renderBlocks() {
   grid.innerHTML = '';
@@ -1353,6 +1485,12 @@ document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
   if (overlayView === 'silence' || overlayView === 'card') {
     closeOverlayToBlocks();
+  }
+});
+
+window.addEventListener('resize', () => {
+  if (overlayView === 'card') {
+    requestAnimationFrame(() => fitRevealTypography());
   }
 });
 
