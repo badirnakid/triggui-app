@@ -2,20 +2,21 @@
 <html>
 <head>
 <meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   html, body {
-    width: var(--canvas-width, 1040px);
-    height: var(--canvas-height, 1200px);
+    width: var(--canvas-width, 1066px);
+    height: var(--canvas-height, 1600px);
     overflow: hidden;
+    background: var(--background, #FFFFFF);
   }
 
   body {
-    background: var(--background, #FFFFFF);
-    color: var(--title-color, #1A1A1A);
     -webkit-font-smoothing: antialiased;
     text-rendering: geometricPrecision;
   }
@@ -27,75 +28,53 @@
     background: var(--background, #FFFFFF);
   }
 
-  .shell {
+  .card {
     width: 100%;
     height: 100%;
     background: var(--paper, #F9F9F9);
-    border: 1px solid var(--border, #F39200);
-    border-radius: var(--shell-radius, 40px);
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.06);
+    border: 2px solid var(--border, #F39200);
+    border-radius: var(--card-radius, 40px);
+    box-shadow: var(--card-shadow, 0 12px 28px rgba(0,0,0,0.05));
     overflow: hidden;
-  }
-
-  .shell-body {
-    width: 100%;
-    height: 100%;
-    padding: var(--outer-pad, 10px);
     display: flex;
     flex-direction: column;
-    gap: var(--gap-between-blocks, 28px);
   }
 
-  .card {
-    width: 100%;
-    background: var(--block-background, linear-gradient(145deg, #FFFFFF 0%, #F5F5F5 100%));
-    border: 1px solid var(--card-border, rgba(26,26,26,0.05));
-    border-radius: var(--block-radius, 32px);
-    box-shadow: var(--block-shadow, 0 8px 24px rgba(0,0,0,0.03));
-    overflow: hidden;
-    flex: 0 0 auto;
-  }
-
-  .hero-card {}
-  .action-card {}
-
-  .footer-card {
-    height: var(--footer-height, 148px);
-  }
-
-  .hero-content {
-    width: 100%;
-    height: 100%;
-    padding: var(--hero-pad-y, 40px) var(--hero-pad-x, 44px);
-    overflow: hidden;
+  .hero {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: var(--block-pad-y, 40px) var(--block-pad-x, 44px) 18px;
+    display: flex;
+    flex-direction: column;
   }
 
   .hero-grid {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
-    gap: var(--cover-margin-left, 36px);
+    gap: var(--cover-margin-left, 37px);
     align-items: start;
-    width: 100%;
+    min-height: 0;
   }
 
-  .hero-copy {
+  .copy {
     min-width: 0;
+    min-height: 0;
   }
 
-  .hero-cover {
-    width: var(--cover-width, 240px);
-    flex: 0 0 var(--cover-width, 240px);
+  .cover-col {
+    width: var(--cover-width, 246px);
+    flex: 0 0 var(--cover-width, 246px);
   }
 
   .cover,
   .cover-fallback {
     width: 100%;
-    max-height: var(--cover-max-height, 560px);
-    border-radius: var(--cover-radius, 8px);
+    max-height: var(--cover-max-height, 574px);
     border: 1px solid #EAEAEA;
+    border-radius: 4px;
     box-shadow: var(--cover-shadow, 0 15px 35px rgba(243,146,0,0.15));
     display: block;
-    background: #FFFFFF;
+    background: #fff;
   }
 
   .cover {
@@ -109,19 +88,20 @@
     align-items: center;
     justify-content: center;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
-    font-size: calc(var(--footer-size, 28px) * 1.2);
+    font-size: 34px;
     font-weight: 800;
     color: #777;
   }
 
   .title {
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: var(--title-size, 56px);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: var(--title-size, 57px);
     line-height: 1.2;
     font-weight: 700;
     letter-spacing: -0.5px;
     color: var(--title-color, #1A1A1A);
-    margin: 0 0 12px 0;
+    margin: 0 0 14px 0;
+    text-wrap: balance;
   }
 
   .author-chip {
@@ -129,141 +109,104 @@
     align-items: center;
     justify-content: center;
     min-height: calc(var(--author-chip-pad-y, 8px) * 2 + 1em);
-    padding: var(--author-chip-pad-y, 8px) var(--author-chip-pad-x, 20px);
-    border-radius: var(--author-chip-radius, 24px);
+    padding: var(--author-chip-pad-y, 8px) var(--author-chip-pad-x, 23px);
+    border-radius: var(--author-chip-radius, 25px);
     background: var(--author-chip-bg, #FFF3E0);
     color: var(--author-chip-color, #E65100);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
-    font-size: var(--author-chip-size, 28px);
+    font-size: var(--author-chip-size, 33px);
     line-height: 1;
     font-weight: 700;
     letter-spacing: 0.3px;
-    margin: 4px 0 12px 0;
+    margin: 2px 0 18px 0;
   }
 
-  .paragraph {
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: var(--paragraph-size, 36px);
+  .body-text {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: var(--paragraph-size, 37px);
     line-height: 1.7;
     font-weight: 400;
     letter-spacing: 0.2px;
     color: var(--paragraph-color, #4A4A4A);
     margin: 0;
-  }
-
-  .action-content {
-    width: 100%;
-    height: 100%;
-    padding: var(--action-pad-y, 40px) var(--action-pad-x, 44px);
-    overflow: hidden;
-  }
-
-  .subtitle {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
-    font-size: var(--subtitle-size, 30px);
-    line-height: 1.4;
-    font-weight: 600;
-    letter-spacing: 0.15px;
-    color: var(--subtitle-color, #F39200);
-    margin: 0 0 12px 0;
-  }
-
-  .subtitle:empty {
-    display: none;
-    margin: 0;
-  }
-
-  .footer-content {
-    width: 100%;
-    height: 100%;
-    padding: 18px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .footer-brand {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: 100%;
-    text-align: center;
-  }
-
-  .footer-brand img {
-    height: var(--footer-logo-height, 48px);
-    width: auto;
-    object-fit: contain;
-    display: block;
-  }
-
-  .footer-fallback {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
-    font-size: calc(var(--footer-size, 28px) * 1.7);
-    font-weight: 800;
-    letter-spacing: -0.5px;
-    color: #1A1A1A;
-  }
-
-  .footer-meta {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
-    font-size: var(--footer-size, 28px);
-    line-height: 1.4;
-    font-weight: 400;
-    color: var(--footer-color, #8B8880);
-    font-style: italic;
+    text-wrap: pretty;
   }
 
   .highlight {
     display: inline;
     background-color: var(--highlight-bg, #F39200);
     color: var(--highlight-ink, #FFFFFF);
+    font-weight: 700;
     padding:
       var(--highlight-pad-y, 6px)
-      var(--highlight-pad-x, 18px)
+      var(--highlight-pad-x, 20px)
       calc(var(--highlight-pad-y, 6px) + 1px);
     border-radius: var(--highlight-radius, 12px);
     box-shadow: var(--highlight-shadow, 0 4px 12px rgba(243,146,0,0.1));
-    font-weight: 700;
     line-height: inherit;
     box-decoration-break: clone;
     -webkit-box-decoration-break: clone;
+  }
+
+  .footer {
+    flex: 0 0 var(--footer-height, 168px);
+    padding: 16px 24px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .footer-brand {
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .footer-brand img {
+    height: var(--footer-logo-height, 49px);
+    width: auto;
+    display: block;
+    object-fit: contain;
+  }
+
+  .footer-fallback {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 46px;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+    color: #1A1A1A;
+  }
+
+  .footer-meta {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    font-size: var(--footer-size, 29px);
+    line-height: 1.4;
+    font-weight: 400;
+    color: var(--footer-color, #8B8880);
   }
 </style>
 </head>
 <body>
   <div class="frame">
-    <div class="shell" id="shell">
-      <div class="shell-body" id="shellBody">
-        <div class="card hero-card" id="heroCard">
-          <div class="hero-content" id="heroContent">
-            <div class="hero-grid">
-              <div class="hero-copy">
-                <div class="title" id="title">{{TITULO}}</div>
-                <div class="author-chip" id="authorChip">{{AUTOR}}</div>
-                <div class="paragraph" id="parrafoTop">{{PARRAFO_TOP}}</div>
-              </div>
-              <div class="hero-cover">
-                {{PORTADA_SECTION}}
-              </div>
-            </div>
+    <div class="card">
+      <div class="hero" id="content">
+        <div class="hero-grid">
+          <div class="copy">
+            <div class="title" id="title">{{TITULO}}</div>
+            <div class="author-chip" id="authorChip">{{AUTOR}}</div>
+            <div class="body-text" id="bodyText">{{BODY_HTML}}</div>
+          </div>
+          <div class="cover-col">
+            {{PORTADA_SECTION}}
           </div>
         </div>
+      </div>
 
-        <div class="card action-card" id="actionCard">
-          <div class="action-content" id="actionContent">
-            <div class="subtitle" id="subtitle">{{SUBTITULO}}</div>
-            <div class="paragraph" id="parrafoBot">{{PARRAFO_BOT}}</div>
-          </div>
-        </div>
-
-        <div class="card footer-card" id="footerCard">
-          <div class="footer-content">
-            {{FOOTER_SECTION}}
-          </div>
-        </div>
+      <div class="footer">
+        {{FOOTER_SECTION}}
       </div>
     </div>
   </div>
