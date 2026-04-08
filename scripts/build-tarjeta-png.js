@@ -117,7 +117,7 @@ function escapeHTML(text) {
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
-    .replace(/\"/g, "&quot;");
+    .replace(/"/g, "&quot;");
 }
 
 function escapeWithBreaks(text) {
@@ -275,10 +275,6 @@ function shuffleDeterministic(arr, seed) {
     [copy[i], copy[j]] = [copy[j], copy[i]];
   }
   return copy;
-}
-
-function parseFontSizeToPx(size) {
-  return parseFloat(String(size).replace("px", "")) || 16;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -463,6 +459,7 @@ const template = await fs.readFile("scripts/templates/tarjeta.html", "utf8");
 const portadaURL = resolvePortadaURL(bookMeta, libro);
 const portadaSource = resolvePortadaSource(bookMeta, libro, portadaURL);
 const logoDataURL = await resolveLogoDataURL();
+const autorLibro = bookMeta.autor || libro.autor || "";
 
 const display = buildPresentationCopy(libro, bookMeta);
 const highlightStyle = pickHighlightStyle(`${slug}__${display.title}__${display.top}__${display.bottom}`);
@@ -492,7 +489,7 @@ const footerLogoSection = logoDataURL
 let html = template
   .replace("{{PORTADA_SECTION}}", portadaSection)
   .replace("{{TITULO}}", escapeHTML(display.title))
-  .replace("{{AUTOR}}", escapeHTML(bookMeta.autor || libro.autor || ""))
+  .replace("{{AUTOR}}", escapeHTML(autorLibro))
   .replace("{{PARRAFO_TOP}}", renderHighlightHTML(display.top, highlightStyle))
   .replace("{{SUBTITULO}}", escapeHTML(display.subtitle))
   .replace("{{PARRAFO_BOT}}", renderHighlightHTML(display.bottom, highlightStyle))
