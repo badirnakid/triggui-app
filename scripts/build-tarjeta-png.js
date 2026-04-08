@@ -1,7 +1,7 @@
 /**
  * build-tarjeta-png.js — Paso 4 del pipeline Triggui 2.0
  *
- * Renderiza una tarjeta PNG vertical real para WhatsApp.
+ * Renderiza una tarjeta PNG vertical real para WhatsApp / Stories.
  * Canon:
  *   1) TRIGGUI_EDICION_JSON
  *   2) contenido_edicion.json
@@ -165,7 +165,6 @@ function resolvePortadaURL(bookMeta, libro) {
     bookMeta.portada ||
     libro.portada_url ||
     libro.portada ||
-    libro.portada ||
     ""
   );
 }
@@ -178,6 +177,39 @@ function resolvePortadaSource(bookMeta, libro, portadaURL) {
     libro.source ||
     (portadaURL ? "unknown" : "tipográfica")
   );
+}
+
+async function fileToDataURL(filePath) {
+  const absPath = path.resolve(filePath);
+  const ext = path.extname(absPath).toLowerCase();
+  const mime =
+    ext === ".png" ? "image/png" :
+    ext === ".jpg" || ext === ".jpeg" ? "image/jpeg" :
+    ext === ".webp" ? "image/webp" :
+    null;
+
+  if (!mime) return "";
+
+  const buffer = await fs.readFile(absPath);
+  return `data:${mime};base64,${buffer.toString("base64")}`;
+}
+
+async function resolveBrandLogoDataURL() {
+  const candidates = [
+    "public/trigguiletras2.png",
+    "public/trigguiletras.png",
+    "public/trigguiletrascolor3.png",
+    "public/trigguiletrasblanco.png",
+    "public/trigguiletrasblanco2.png"
+  ];
+
+  for (const candidate of candidates) {
+    if (await fileExists(candidate)) {
+      return await fileToDataURL(candidate);
+    }
+  }
+
+  return "";
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -239,7 +271,8 @@ const paragraphColor = style.paragraphColor || "#4A4A4A";
 
 const chipBg = withAlpha(accent, "18") || "#FBE7DF";
 const chipColor = accent || "#A84322";
-const highlightBg = withAlpha(accent, "2B") || "rgba(227,93,48,0.17)";
+const highlightBg = withAlpha(accent, "42") || "rgba(227,93,48,0.26)";
+const highlightEdge = withAlpha(accent, "58") || "rgba(227,93,48,0.35)";
 const highlightText = paragraphColor;
 const coverBorder = withAlpha(accent, "18") || "#EAEAEA";
 
@@ -258,13 +291,27 @@ const portadaSection = portadaURL
   ? `<img class="cover" src="${portadaURL}" alt="Portada de ${escapeHTML(tituloLibro)}" />`
   : "";
 
+const brandLogoDataURL = await resolveBrandLogoDataURL();
+const brandSection = brandLogoDataURL
+  ? `
+    <div class="brand-wrap">
+      <img class="brand-logo" src="${brandLogoDataURL}" alt="Triggui" />
+      <div class="brand-sub">@triggui | triggui.com</div>
+    </div>`
+  : `
+    <div class="brand-wrap">
+      <div class="brand-fallback">triggui®</div>
+      <div class="brand-sub">@triggui | triggui.com</div>
+    </div>`;
+
 let html = template
   .replace("{{PORTADA_SECTION}}", portadaSection)
   .replace("{{TITULO}}", escapeHTML(tarjeta.titulo || tituloLibro))
   .replace("{{AUTOR}}", escapeHTML(autorLibro))
   .replace("{{PARRAFO_TOP}}", parrafoTopHTML)
   .replace("{{SUBTITULO}}", escapeHTML(tarjeta.subtitulo || ""))
-  .replace("{{PARRAFO_BOT}}", parrafoBotHTML);
+  .replace("{{PARRAFO_BOT}}", parrafoBotHTML)
+  .replace("{{BRAND_SECTION}}", brandSection);
 
 const cssVars = [
   `--bg: #0B0B0C`,
@@ -276,6 +323,7 @@ const cssVars = [
   `--chip-bg: ${chipBg}`,
   `--chip-color: ${chipColor}`,
   `--highlight-bg: ${highlightBg}`,
+  `--highlight-edge: ${highlightEdge}`,
   `--highlight-color: ${highlightText}`,
   `--border-color: ${borderColor}`,
   `--cover-border: ${coverBorder}`,
@@ -295,14 +343,127 @@ const page = await browser.newPage();
 await page.setViewportSize({ width: 1080, height: 1920 });
 await page.setContent(html, { waitUntil: "networkidle" });
 
+await page.evaluate(async () => {
+  if (document.fonts?.ready) {
+    await document.fonts.ready;
+  }
+});
+
 if (portadaURL) {
   try {
     await page.waitForSelector(".cover", { state: "visible", timeout: 10000 });
-    await page.waitForTimeout(600);
+    await page.waitForTimeout(400);
   } catch {
     console.log("   ⚠️  Portada no cargó en 10s — continuando sin ella");
   }
 }
+
+await page.evaluate(() => {
+  const px = (el, prop) => {
+    if (!el) return 0;
+    return parseFloat(getComputedStyle(el)[prop]) || 0;
+  };
+
+  const setPx = (el, prop, value) => {
+    if (!el) return;
+    el.style[prop] = `${value}px`;
+  };
+
+  const topBox = document.querySelector(".top");
+  const topFlow = document.querySelector(".top-flow");
+  const title = document.querySelector(".title");
+  const chip = document.querySelector(".author-chip");
+  const topParagraph = document.querySelector(".paragraph-top");
+  const cover = document.querySelector(".cover");
+
+  let guardTop = 0;
+  while (topBox && topFlow && topFlow.scrollHeight > topBox.clientHeight && guardTop < 180) {
+    let changed = false;
+
+    const titleSize = px(title, "fontSize");
+    const titleLine = px(title, "lineHeight");
+    const chipSize = px(chip, "fontSize");
+    const chipMinHeight = px(chip, "minHeight");
+    const topParagraphSize = px(topParagraph, "fontSize");
+    const topParagraphLine = px(topParagraph, "lineHeight");
+    const coverWidth = px(cover, "width");
+
+    if (title && titleSize > 58) {
+      setPx(title, "fontSize", titleSize - 1);
+      if (titleLine > 0) setPx(title, "lineHeight", Math.max(titleLine - 1, titleSize - 2));
+      changed = true;
+    }
+
+    if (topParagraph && topParagraphSize > 33) {
+      setPx(topParagraph, "fontSize", topParagraphSize - 0.6);
+      if (topParagraphLine > 0) setPx(topParagraph, "lineHeight", Math.max(topParagraphLine - 1, topParagraphSize * 1.34));
+      changed = true;
+    }
+
+    if (chip && chipSize > 22 && guardTop % 2 === 0) {
+      setPx(chip, "fontSize", chipSize - 0.5);
+      if (chipMinHeight > 44) setPx(chip, "minHeight", chipMinHeight - 0.5);
+      changed = true;
+    }
+
+    if (cover && coverWidth > 236 && guardTop % 2 === 0) {
+      setPx(cover, "width", coverWidth - 1.2);
+      changed = true;
+    }
+
+    if (!changed) break;
+    guardTop += 1;
+  }
+
+  const bottomBox = document.querySelector(".bottom-inner");
+  const subtitle = document.querySelector(".subtitle");
+  const bottomParagraph = document.querySelector(".paragraph-bottom");
+
+  let guardBottom = 0;
+  while (bottomBox && bottomBox.scrollHeight > bottomBox.clientHeight && guardBottom < 160) {
+    let changed = false;
+
+    const subtitleSize = px(subtitle, "fontSize");
+    const subtitleLine = px(subtitle, "lineHeight");
+    const bottomParagraphSize = px(bottomParagraph, "fontSize");
+    const bottomParagraphLine = px(bottomParagraph, "lineHeight");
+
+    if (subtitle && subtitleSize > 28) {
+      setPx(subtitle, "fontSize", subtitleSize - 0.5);
+      if (subtitleLine > 0) setPx(subtitle, "lineHeight", Math.max(subtitleLine - 0.5, subtitleSize * 1.15));
+      changed = true;
+    }
+
+    if (bottomParagraph && bottomParagraphSize > 30) {
+      setPx(bottomParagraph, "fontSize", bottomParagraphSize - 0.6);
+      if (bottomParagraphLine > 0) setPx(bottomParagraph, "lineHeight", Math.max(bottomParagraphLine - 1, bottomParagraphSize * 1.32));
+      changed = true;
+    }
+
+    if (!changed) break;
+    guardBottom += 1;
+  }
+
+  if (bottomBox && bottomBox.scrollHeight > bottomBox.clientHeight && bottomParagraph) {
+    const subtitleHeight = subtitle ? subtitle.getBoundingClientRect().height : 0;
+    const bottomStyle = getComputedStyle(bottomBox);
+    const lineHeight = px(bottomParagraph, "lineHeight") || (px(bottomParagraph, "fontSize") * 1.4);
+    const available =
+      bottomBox.clientHeight -
+      subtitleHeight -
+      parseFloat(bottomStyle.marginTop || "0") -
+      6;
+
+    const lines = Math.max(2, Math.floor(available / lineHeight));
+
+    bottomParagraph.style.display = "-webkit-box";
+    bottomParagraph.style.webkitBoxOrient = "vertical";
+    bottomParagraph.style.webkitLineClamp = String(lines);
+    bottomParagraph.style.overflow = "hidden";
+  }
+});
+
+await page.waitForTimeout(250);
 
 const outPath = path.join(outDir, "tarjeta.png");
 await page.screenshot({
