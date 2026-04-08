@@ -15,7 +15,7 @@
 
   body {
     background: var(--canvas-bg, #050505);
-    color: var(--title-color, #1D1D1B);
+    color: var(--title-color, #1A1A1A);
     -webkit-font-smoothing: antialiased;
     text-rendering: geometricPrecision;
   }
@@ -24,8 +24,8 @@
     width: 1080px;
     height: 1920px;
     background:
-      radial-gradient(circle at 18% 7%, rgba(255,255,255,0.035), transparent 26%),
-      radial-gradient(circle at 82% 92%, rgba(255,255,255,0.018), transparent 22%),
+      radial-gradient(circle at 18% 8%, rgba(255,255,255,0.03), transparent 28%),
+      radial-gradient(circle at 82% 92%, rgba(255,255,255,0.015), transparent 22%),
       var(--canvas-bg, #050505);
     display: flex;
     align-items: center;
@@ -34,34 +34,32 @@
   }
 
   .shell {
-    width: var(--shell-width, 748px);
-    height: var(--shell-height, 1820px);
-    background: var(--shell-bg, #F7F6F3);
+    width: var(--shell-width, 900px);
+    height: var(--shell-height, 1038px);
+    background: var(--shell-bg, #F9F9F9);
     border: 1px solid var(--shell-border, rgba(255,255,255,0.08));
-    border-radius: 38px;
+    border-radius: var(--shell-radius, 35px);
     box-shadow:
-      0 32px 84px rgba(0,0,0,0.30),
-      inset 0 1px 0 rgba(255,255,255,0.42);
+      0 26px 64px rgba(0,0,0,0.28),
+      inset 0 1px 0 rgba(255,255,255,0.36);
     overflow: hidden;
   }
 
   .shell-body {
     width: 100%;
     height: 100%;
-    padding: 18px;
+    padding: var(--outer-pad, 9px);
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: var(--gap-between-blocks, 24px);
   }
 
   .card {
     width: 100%;
-    background: var(--card-bg, #FBFAF8);
-    border: 1px solid var(--card-border-soft, rgba(0,0,0,0.05));
-    border-radius: 25px;
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.60),
-      0 8px 22px rgba(0,0,0,0.03);
+    background: var(--card-bg, linear-gradient(145deg, #FFFFFF 0%, #F5F5F5 100%));
+    border: 1px solid var(--card-border, rgba(26, 26, 26, 0.05));
+    border-radius: var(--card-radius, 28px);
+    box-shadow: var(--card-shadow, 0 8px 24px rgba(0,0,0,0.03));
     overflow: hidden;
     flex: 0 0 auto;
   }
@@ -70,13 +68,20 @@
   .action-card {}
 
   .footer-card {
-    height: var(--footer-height, 186px);
+    height: var(--footer-height, 128px);
   }
 
   .hero-content {
     width: 100%;
     height: 100%;
-    padding: 24px 28px 22px;
+    padding: var(--hero-pad-y, 35px) var(--hero-pad-x, 38px);
+    overflow: hidden;
+  }
+
+  .action-content {
+    width: 100%;
+    height: 100%;
+    padding: var(--action-pad-y, 35px) var(--action-pad-x, 38px);
     overflow: hidden;
   }
 
@@ -87,13 +92,13 @@
 
   .cover {
     float: right;
-    width: var(--cover-width, 164px);
-    max-height: 236px;
+    width: var(--cover-width, 208px);
+    max-height: var(--cover-max-height, 484px);
     height: auto;
-    margin: 0 0 10px 22px;
-    border-radius: 6px;
-    border: 1px solid rgba(0,0,0,0.04);
-    box-shadow: var(--cover-shadow, 0 14px 28px rgba(0,0,0,0.11));
+    margin: 0 0 var(--cover-margin-bottom, 17px) var(--cover-margin-left, 31px);
+    border: 1px solid #EAEAEA;
+    border-radius: var(--cover-radius, 7px);
+    box-shadow: var(--cover-shadow, 0 15px 35px rgba(243,146,0,0.15));
     display: block;
     object-fit: cover;
     background: #FFFFFF;
@@ -101,56 +106,49 @@
 
   .title {
     font-family: Georgia, "Times New Roman", serif;
-    font-size: var(--title-size, 58px);
-    line-height: 1.03;
-    font-weight: 400;
-    letter-spacing: -0.45px;
-    color: var(--title-color, #1D1D1B);
-    margin: 0 0 16px;
-    max-width: 100%;
+    font-size: var(--title-size, 48px);
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--title-color, #1A1A1A);
+    margin: 0 0 14px 0;
   }
 
   .author-chip {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 40px;
-    padding: 0 14px;
-    border-radius: 999px;
-    background: var(--chip-bg, #EFE7F6);
-    color: var(--chip-color, #7F3DB8);
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-    font-size: var(--author-size, 21px);
+    min-height: calc(var(--author-chip-pad-y, 7px) * 2 + 1em);
+    padding: var(--author-chip-pad-y, 7px) var(--author-chip-pad-x, 19px);
+    border-radius: var(--author-chip-radius, 21px);
+    background: var(--author-chip-bg, #FFF3E0);
+    color: var(--author-chip-color, #E65100);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    font-size: var(--author-size, 28px);
     line-height: 1;
-    font-weight: 800;
-    letter-spacing: 0.05px;
-    margin: 0 0 16px;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.44);
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    margin: 4px 0 12px 0;
   }
 
   .paragraph {
     font-family: Georgia, "Times New Roman", serif;
-    font-size: var(--top-size, 28px);
-    line-height: 1.44;
+    font-size: var(--paragraph-size, 31px);
+    line-height: 1.7;
     font-weight: 400;
-    letter-spacing: 0;
-    color: var(--paragraph-color, #4C4C4C);
+    letter-spacing: 0.2px;
+    color: var(--paragraph-color, #4A4A4A);
     margin: 0;
   }
 
-  .paragraph-bottom {
-    font-size: var(--bottom-size, 27px);
-    line-height: 1.45;
-  }
-
   .subtitle {
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-    font-size: var(--subtitle-size, 23px);
-    line-height: 1.15;
-    font-weight: 800;
-    letter-spacing: -0.12px;
-    color: var(--subtitle-color, #2F6FB7);
-    margin: 0 0 16px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    font-size: var(--subtitle-size, 31px);
+    line-height: 1.4;
+    font-weight: 600;
+    letter-spacing: 0.15px;
+    color: var(--subtitle-color, #F39200);
+    margin: 0 0 12px 0;
   }
 
   .subtitle:empty {
@@ -158,17 +156,10 @@
     margin: 0;
   }
 
-  .action-content {
-    width: 100%;
-    height: 100%;
-    padding: 22px 26px 22px;
-    overflow: hidden;
-  }
-
   .footer-content {
     width: 100%;
     height: 100%;
-    padding: 22px 24px;
+    padding: 16px 24px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -179,42 +170,47 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
     width: 100%;
     text-align: center;
   }
 
   .footer-brand img {
-    height: 46px;
+    height: var(--footer-logo-height, 42px);
     width: auto;
     object-fit: contain;
     display: block;
   }
 
   .footer-fallback {
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-    font-size: 38px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    font-size: calc(var(--footer-size, 24px) * 1.7);
     font-weight: 800;
     letter-spacing: -0.5px;
-    color: #1D1D1B;
+    color: #1A1A1A;
   }
 
   .footer-meta {
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-    font-size: 21px;
-    line-height: 1.2;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    font-size: var(--footer-size, 24px);
+    line-height: 1.4;
     font-weight: 400;
-    color: var(--footer-color, #8B8B8B);
+    color: var(--footer-color, #8B8880);
     font-style: italic;
   }
 
   .highlight {
     display: inline;
-    background-color: var(--highlight-bg, rgba(143,76,194,0.18));
-    color: var(--highlight-ink, #4C4C4C);
-    padding: 0.03em 0.08em 0.06em;
-    border-radius: 0.12em;
+    background-color: var(--highlight-bg, rgba(243,146,0,0.18));
+    color: var(--highlight-ink, #111111);
     font-weight: 700;
+    padding:
+      var(--highlight-pad-y, 5px)
+      var(--highlight-pad-x, 17px)
+      calc(var(--highlight-pad-y, 5px) + 1px);
+    border-radius: var(--highlight-radius, 10px);
+    box-shadow: var(--highlight-shadow, 0 4px 12px rgba(0,0,0,0.10));
+    line-height: inherit;
     box-decoration-break: clone;
     -webkit-box-decoration-break: clone;
   }
@@ -238,7 +234,7 @@
         <div class="card action-card" id="actionCard">
           <div class="action-content" id="actionContent">
             <div class="subtitle" id="subtitle">{{SUBTITULO}}</div>
-            <div class="paragraph paragraph-bottom" id="parrafoBot">{{PARRAFO_BOT}}</div>
+            <div class="paragraph" id="parrafoBot">{{PARRAFO_BOT}}</div>
           </div>
         </div>
 
