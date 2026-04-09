@@ -37,14 +37,15 @@ const SELECTOR = SELECTOR_MODE || (LIBRO_INPUT ? "direct" : "");
 const DEBUG_PATH = "/tmp/triggui-validate-debug.json";
 const MAX_DISCOVER_ATTEMPTS = 2;
 const MIN_EVIDENCE_MATCH_SCORE = 0.38;
-const MIN_SEMANTIC_FALLBACK_SCORE = 0.22;
+const MIN_SEMANTIC_FALLBACK_SCORE = 0.18;
+
 const HTML_HEADERS = {
-  "User-Agent": "triggui-validate-book/5.1",
+  "User-Agent": "triggui-validate-book/6.0",
   "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
 };
 
 const JSON_HEADERS = {
-  "User-Agent": "triggui-validate-book/5.1",
+  "User-Agent": "triggui-validate-book/6.0",
   "Accept": "application/json"
 };
 
@@ -73,7 +74,8 @@ const RECENCY_PATTERNS = [
   /posterior\s+a\s+(20\d{2})/i,
   /a\s+partir\s+de\s+(20\d{2})/i,
   /m[ií]nimo\s+(20\d{2})/i,
-  /desde\s+(20\d{2})/i
+  /desde\s+(20\d{2})/i,
+  /año\s+(20\d{2})/i
 ];
 
 const MAX_YEAR_PATTERNS = [
@@ -91,9 +93,30 @@ const PREFER_RECENT_PATTERNS = [
   /\bnuevas\b/gi,
   /\bactual\b/gi,
   /\bactuales\b/gi,
+  /\bmoderno\b/gi,
+  /\bmodernos\b/gi,
   /de\s+este\s+año/gi,
   /de\s+los\s+u?ltimos\s+años/gi
 ];
+
+const CONCEPT_GROUPS = {
+  ego: {
+    triggers: ["ego", "trascender", "trascendemos", "trascenderemos", "despertar", "conciencia", "consciencia", "presencia", "identidad", "yo", "dualidad", "desapego", "awareness", "awakening", "self", "selfhood"],
+    expansions: ["ego", "yo", "identidad", "conciencia", "consciencia", "presencia", "despertar", "awareness", "awakening", "self", "selfhood", "dualidad", "separacion", "ilusion", "apego"]
+  },
+  systems: {
+    triggers: ["variable", "variables", "evento", "eventos", "patron", "patrones", "causalidad", "causa", "efecto", "conectar", "conexion", "relacion", "relacionar", "sistema", "sistemas", "interconectado", "interdependencia"],
+    expansions: ["variables", "eventos", "patrones", "causalidad", "causa", "efecto", "sistemas", "conexion", "relacion", "interdependencia", "interconectado", "systems", "patterns", "causality"]
+  },
+  spirituality: {
+    triggers: ["espiritualidad", "espiritual", "dharma", "meditacion", "meditación", "alma", "despertar", "consciencia", "conciencia", "presencia", "misticismo", "místico", "mistico"],
+    expansions: ["espiritualidad", "espiritual", "dharma", "meditacion", "conciencia", "presencia", "misticismo", "despertar", "alma", "transpersonal"]
+  },
+  philosophy: {
+    triggers: ["filosofia", "filosofía", "existencia", "existencial", "ser", "sentido", "realidad", "mente"],
+    expansions: ["filosofia", "existencia", "ser", "realidad", "mente", "identidad", "sentido", "metafisica"]
+  }
+};
 
 if (!MODE) {
   console.error("❌ INPUT_MODE vacío");
@@ -189,11 +212,40 @@ function scoreTextOverlap(a, b) {
   return overlap / tokensA.length;
 }
 
-function weightedSemanticScore(triggerText, titleText, descText = "") {
-  const titleScore = scoreTextOverlap(triggerText, titleText);
-  const descScore = scoreTextOverlap(triggerText, descText);
-  const inverseTitle = scoreTextOverlap(titleText, triggerText);
-  return Number(((titleScore * 0.55) + (descScore * 0.30) + (inverseTitle * 0.15)).toFixed(4));
+function detectConcepts(text) {
+  const norm = normalizeText(text);
+  const hits = [];
+  for (const [key, group] of Object.entries(CONCEPT_GROUPS)) {
+    if (group.triggers.some(trigger => norm.includes(normalizeText(trigger)))) {
+      hits.push(key);
+    }
+  }
+  return unique(hits);
+}
+
+function expandTextByConcepts(text, forcedConcepts = []) {
+  const concepts = unique([...detectConcepts(text), ...forcedConcepts]);
+  const tokens = tokenize(text);
+  const expansions = [];
+
+  for (const concept of concepts) {
+    const group = CONCEPT_GROUPS[concept];
+    if (group) expansions.push(...group.expansions);
+  }
+
+  return unique([...tokens, ...expansions]).join(" ");
+}
+
+function weightedSemanticScore(triggerText, titleText, descText = "", forcedConcepts = []) {
+  const expandedTrigger = expandTextByConcepts(triggerText, forcedConcepts);
+  const expandedTitle = expandTextByConcepts(titleText, forcedConcepts);
+  const expandedDesc = expandTextByConcepts(descText, forcedConcepts);
+
+  const titleScore = scoreTextOverlap(expandedTrigger, expandedTitle);
+  const descScore = scoreTextOverlap(expandedTrigger, expandedDesc);
+  const inverseTitle = scoreTextOverlap(expandedTitle, expandedTrigger);
+
+  return Number(((titleScore * 0.45) + (descScore * 0.40) + (inverseTitle * 0.15)).toFixed(4));
 }
 
 function looksLikeBookIntent(text) {
@@ -310,7 +362,7 @@ async function checkImageURL(url) {
   try {
     const res = await fetch(url, {
       method: "HEAD",
-      headers: { "User-Agent": "triggui-validate-book/5.1" }
+      headers: { "User-Agent": "triggui-validate-book/6.0" }
     });
     const type = res.headers.get("content-type") || "";
     return res.ok && type.startsWith("image/");
@@ -419,7 +471,7 @@ function pickFirst(obj, keys) {
 function extractYearMin(raw) {
   for (const pattern of RECENCY_PATTERNS) {
     const match = String(raw || "").match(pattern);
-    if (match?.[1]) return clampNumber(Number(match[1]) + 1, 1900, 2100);
+    if (match?.[1]) return clampNumber(Number(match[1]), 1900, 2100);
   }
   return null;
 }
@@ -427,7 +479,7 @@ function extractYearMin(raw) {
 function extractYearMax(raw) {
   for (const pattern of MAX_YEAR_PATTERNS) {
     const match = String(raw || "").match(pattern);
-    if (match?.[1]) return clampNumber(Number(match[1]) - 1, 1900, 2100);
+    if (match?.[1]) return clampNumber(Number(match[1]), 1900, 2100);
   }
   return null;
 }
@@ -449,6 +501,7 @@ function buildHeuristicSemanticQuery(raw) {
     .replace(/a\s+partir\s+de\s+20\d{2}/gi, " ")
     .replace(/antes\s+de\s+20\d{2}/gi, " ")
     .replace(/desde\s+20\d{2}/gi, " ")
+    .replace(/año\s+20\d{2}/gi, " ")
     .replace(/\s+/g, " ")
     .trim();
 
@@ -468,24 +521,32 @@ function extractDynamicSignals(raw) {
 }
 
 function buildSearchQueriesHeuristic(semanticQuery) {
-  const tokens = tokenize(semanticQuery).filter(token => token.length > 2 && !SPANISH_STOPWORDS.has(token));
-  const uniq = unique(tokens).slice(0, 8);
+  const concepts = detectConcepts(semanticQuery);
+  const expanded = expandTextByConcepts(semanticQuery, concepts);
+  const tokens = tokenize(expanded).filter(token => token.length > 2 && !SPANISH_STOPWORDS.has(token));
+  const uniq = unique(tokens).slice(0, 10);
 
   const queries = [];
   if (semanticQuery) queries.push(semanticQuery);
   if (uniq.length >= 3) queries.push(uniq.slice(0, 3).join(" "));
   if (uniq.length >= 5) queries.push(uniq.slice(0, 5).join(" "));
 
-  const norm = normalizeText(semanticQuery);
-  if (/variable/.test(norm) || /evento/.test(norm) || /patron/.test(norm) || /patrones/.test(norm)) {
+  if (concepts.includes("ego")) {
+    queries.push("ego consciousness awakening presence identity");
+    queries.push("trascender ego conciencia despertar");
+  }
+  if (concepts.includes("systems")) {
     queries.push("systems thinking causality pattern recognition");
     queries.push("causality systems patterns events");
   }
-  if (/conexion|conectar|relacion/.test(norm)) {
-    queries.push("connecting dots pattern recognition systems");
+  if (concepts.includes("spirituality")) {
+    queries.push("spiritual awakening consciousness ego");
+  }
+  if (concepts.includes("philosophy")) {
+    queries.push("self identity consciousness philosophy");
   }
 
-  return unique(queries).slice(0, 6);
+  return unique(queries).slice(0, 8);
 }
 
 async function normalizeTriggerRequestWithAI(raw) {
@@ -503,7 +564,8 @@ Devuelve:
 - supported_constraints.year_min
 - supported_constraints.year_max
 - supported_constraints.prefer_recent
-- search_queries: hasta 5 búsquedas cortas y útiles para buscar libros reales
+- search_queries: hasta 6 búsquedas cortas y útiles para buscar libros reales
+- concept_hints: conceptos como "ego", "systems", "spirituality", "philosophy" si aplican
 
 Responde SOLO JSON con:
 {
@@ -517,7 +579,8 @@ Responde SOLO JSON con:
     "year_max": null,
     "prefer_recent": false
   },
-  "search_queries": ["..."]
+  "search_queries": ["..."],
+  "concept_hints": ["..."]
 }
 `.trim();
 
@@ -536,7 +599,8 @@ Responde SOLO JSON con:
         year_max: toNumberOrNull(json?.supported_constraints?.year_max),
         prefer_recent: Boolean(json?.supported_constraints?.prefer_recent)
       },
-      search_queries: safeArray(json?.search_queries).map(v => sanitizeSentenceSpacing(String(v || ""))).filter(Boolean)
+      search_queries: safeArray(json?.search_queries).map(v => sanitizeSentenceSpacing(String(v || ""))).filter(Boolean),
+      concept_hints: safeArray(json?.concept_hints).map(v => String(v || "").trim()).filter(Boolean)
     };
   } catch (e) {
     console.log(`ℹ️  Normalizador AI no disponible, fallback heurístico: ${e.message}`);
@@ -558,8 +622,8 @@ async function analyzeTriggerInput(raw) {
   const semanticHeuristic = buildHeuristicSemanticQuery(raw);
   const ai = await normalizeTriggerRequestWithAI(raw);
 
-  const yearMinCandidates = [yearMinHeuristic, toNumberOrNull(ai?.supported_constraints?.year_min)].filter(Number.isFinite);
-  const yearMaxCandidates = [yearMaxHeuristic, toNumberOrNull(ai?.supported_constraints?.year_max)].filter(Number.isFinite);
+  const yearMinCandidates = [yearMinHeuristic, toNumberOrNull(ai?.supported_constraints?.year_min)].filter(n => Number.isFinite(n) && n > 1900);
+  const yearMaxCandidates = [yearMaxHeuristic, toNumberOrNull(ai?.supported_constraints?.year_max)].filter(n => Number.isFinite(n) && n > 1900);
 
   const semantic_query = sanitizeSentenceSpacing(ai?.semantic_query || semanticHeuristic || String(raw || "").trim());
   const intent_summary = sanitizeSentenceSpacing(ai?.intent_summary || semantic_query);
@@ -571,10 +635,15 @@ async function analyzeTriggerInput(raw) {
     ranking_preference === "best_sellers" ? "lista viva de best sellers" : ""
   ].filter(Boolean));
 
+  const concept_hints = unique([
+    ...safeArray(ai?.concept_hints),
+    ...detectConcepts(semantic_query)
+  ]);
+
   const search_queries = unique([
     ...safeArray(ai?.search_queries),
     ...buildSearchQueriesHeuristic(semantic_query)
-  ]).slice(0, 6);
+  ]).slice(0, 8);
 
   return {
     raw_input: String(raw || "").trim(),
@@ -590,6 +659,7 @@ async function analyzeTriggerInput(raw) {
       prefer_recent: Boolean(ai?.supported_constraints?.prefer_recent) || preferRecentHeuristic
     },
     search_queries,
+    concept_hints,
     clean_for_selection: semantic_query,
     notes: {
       used_ai_normalizer: Boolean(ai),
@@ -611,6 +681,7 @@ function logTriggerAnalysis(analysis) {
   console.log(`📚 year_max: ${analysis.supported_constraints.year_max || "—"}`);
   console.log(`⏱️ prefer_recent: ${analysis.supported_constraints.prefer_recent ? "sí" : "no"}`);
   console.log(`🔎 search_queries: ${analysis.search_queries.join(" | ") || "—"}`);
+  console.log(`🧩 concept_hints: ${analysis.concept_hints.join(" | ") || "—"}`);
   console.log(`✂️ editorial_requests: ${analysis.editorial_requests.length ? analysis.editorial_requests.join(" | ") : "—"}`);
   console.log(`🌐 unsupported_runtime_constraints: ${analysis.unsupported_runtime_constraints.length ? analysis.unsupported_runtime_constraints.join(" | ") : "—"}`);
   console.log(`🤖 ai_normalizer: ${analysis.notes.used_ai_normalizer ? "sí" : "no"}`);
@@ -1006,7 +1077,8 @@ function scoreLiveCandidate(rec, triggerAnalysis) {
   const semantic = weightedSemanticScore(
     triggerAnalysis.clean_for_selection,
     rec.titulo || "",
-    `${rec.tagline || ""} ${rec.motivo_corto || ""}`.trim()
+    `${rec.tagline || ""} ${rec.motivo_corto || ""}`.trim(),
+    triggerAnalysis.concept_hints
   );
 
   const year = toNumberOrNull(rec.published_year);
@@ -1039,10 +1111,14 @@ function scoreLiveCandidate(rec, triggerAnalysis) {
 }
 
 function scoreFallbackCandidate(row, triggerAnalysis) {
-  const semantic = weightedSemanticScore(
-    triggerAnalysis.clean_for_selection,
-    row.recommendation.titulo || "",
-    `${row.recommendation.tagline || ""} ${row.recommendation.motivo_corto || ""}`.trim()
+  const semantic = Math.max(
+    weightedSemanticScore(
+      triggerAnalysis.clean_for_selection,
+      row.recommendation.titulo || "",
+      `${row.recommendation.tagline || ""} ${row.recommendation.motivo_corto || ""}`.trim(),
+      triggerAnalysis.concept_hints
+    ),
+    toNumberOrNull(row.recommendation.ai_fit_score) || 0
   );
 
   let score = semantic * 100;
@@ -1057,15 +1133,112 @@ function scoreFallbackCandidate(row, triggerAnalysis) {
   return Number(score.toFixed(2));
 }
 
+async function rerankCandidatesWithAI(triggerAnalysis, candidates, stageLabel) {
+  if (!OPENAI_KEY || !candidates.length) return candidates;
+
+  const system = `
+Eres el reranker semántico de Triggui.
+No inventes libros.
+Solo reordena candidatos REALES ya dados.
+
+Tu tarea:
+- elegir cuáles responden mejor al trigger humano
+- priorizar ajuste semántico real
+- respetar año mínimo/máximo si es claro
+- preferir fuentes vivas recientes
+- NO elegir por fama ni por palabras sueltas
+
+Responde SOLO JSON con:
+{
+  "ranked": [
+    { "candidate_index": 1, "fit_score": 0.91, "reason": "..." }
+  ]
+}
+`.trim();
+
+  const candidateBlock = candidates.map((c, i) => {
+    return `${i + 1}. ${c.titulo} | Autor: ${c.autor || "—"} | Año: ${c.published_year || "—"} | Fuente: ${c.source_label || "—"} | Descripción: ${c.tagline || "—"}`;
+  }).join("\n");
+
+  const user = `
+TRIGGER HUMANO LIMPIO:
+${triggerAnalysis.clean_for_selection}
+
+INTENCIÓN RESUMIDA:
+${triggerAnalysis.intent_summary}
+
+CONCEPTOS:
+${triggerAnalysis.concept_hints.join(", ") || "—"}
+
+RESTRICCIONES:
+- año mínimo: ${triggerAnalysis.supported_constraints.year_min || "—"}
+- año máximo: ${triggerAnalysis.supported_constraints.year_max || "—"}
+- prefer_recent: ${triggerAnalysis.supported_constraints.prefer_recent ? "sí" : "no"}
+- source_preference: ${triggerAnalysis.source_preference || "—"}
+- ranking_preference: ${triggerAnalysis.ranking_preference || "—"}
+
+CANDIDATOS:
+${candidateBlock}
+
+Devuelve hasta 8 ordenados por mejor ajuste.
+`.trim();
+
+  try {
+    const { json } = await callOpenAIJson(system, user, 0.05, { stage: stageLabel });
+    const ranked = safeArray(json?.ranked)
+      .map(item => ({
+        idx: Number(item?.candidate_index),
+        fit_score: Math.max(0, Math.min(1, Number(item?.fit_score || 0))),
+        reason: String(item?.reason || "").trim()
+      }))
+      .filter(item => Number.isFinite(item.idx) && item.idx >= 1 && item.idx <= candidates.length);
+
+    if (!ranked.length) return candidates;
+
+    const byIndex = new Map();
+    for (const item of ranked) byIndex.set(item.idx - 1, item);
+
+    const reordered = candidates.map((candidate, idx) => {
+      const hit = byIndex.get(idx);
+      return {
+        ...candidate,
+        ai_fit_score: hit?.fit_score ?? 0,
+        ai_fit_reason: hit?.reason ?? ""
+      };
+    }).sort((a, b) => {
+      const aScore = Number(a.ai_fit_score || 0);
+      const bScore = Number(b.ai_fit_score || 0);
+      if (bScore !== aScore) return bScore - aScore;
+      return (b.live_score || 0) - (a.live_score || 0);
+    });
+
+    await appendDebugEvent("ai_rerank_candidates", {
+      stageLabel,
+      ranked
+    });
+
+    return reordered;
+  } catch (e) {
+    await appendDebugEvent("ai_rerank_failed", {
+      stageLabel,
+      error: e.message
+    });
+    return candidates;
+  }
+}
+
 async function inspectRecommendations(recommendations, triggerAnalysis, sourceLabel) {
   const inspected = [];
 
   for (const rec of dedupeRecommendations(recommendations)) {
-    const semantic_score = weightedSemanticScore(
+    const lexical_semantic = weightedSemanticScore(
       triggerAnalysis.clean_for_selection,
       rec.titulo || "",
-      `${rec.tagline || ""} ${rec.motivo_corto || ""}`.trim()
+      `${rec.tagline || ""} ${rec.motivo_corto || ""}`.trim(),
+      triggerAnalysis.concept_hints
     );
+
+    const semantic_score = Math.max(lexical_semantic, toNumberOrNull(rec.ai_fit_score) || 0);
 
     if (semantic_score < MIN_SEMANTIC_FALLBACK_SCORE) {
       console.log(`   🚫 Rechazado por baja relevancia semántica: ${rec.titulo} (${semantic_score})`);
@@ -1097,6 +1270,7 @@ async function inspectRecommendations(recommendations, triggerAnalysis, sourceLa
 
     console.log(`   🧪 ${rec.titulo} — ${rec.autor || "Autor desconocido"}`);
     console.log(`      semantic_score: ${semantic_score}`);
+    console.log(`      ai_fit_score: ${rec.ai_fit_score || 0}`);
     console.log(`      source: ${evidence.source || "none"}`);
     console.log(`      year: ${evidence.year || "—"}`);
     console.log(`      match_score: ${evidence.match_score || 0}`);
@@ -1143,13 +1317,14 @@ function resultFromInspectedRow(row, triggerAnalysis, selected_via, mode) {
     isbn: row.evidence.isbn || "",
     editorial: row.evidence.editorial || "",
     selected_via,
-    selection_reason: row.recommendation.motivo_corto || "",
+    selection_reason: row.recommendation.motivo_corto || row.recommendation.ai_fit_reason || "",
     trigger_input: triggerAnalysis.raw_input,
     cover_source: row.evidence.source || "none",
     trigger_analysis: triggerAnalysis,
     publication_year: row.evidence.year || row.recommendation.published_year || "",
     selection_validation: {
       semantic_score: row.semantic_score || 0,
+      ai_fit_score: row.recommendation.ai_fit_score || 0,
       match_score: row.evidence.match_score || 0,
       validation_source: row.evidence.source || "none",
       constraint_reason: row.constraintsCheck.reason,
@@ -1195,7 +1370,9 @@ async function searchGoogleBooksLiveCandidates(triggerAnalysis) {
         source_label: "google_books_newest",
         source_url: item.selfLink || "",
         published_year: publishedYear,
-        live_score: 0
+        live_score: 0,
+        ai_fit_score: 0,
+        ai_fit_reason: ""
       };
 
       rec.live_score = scoreLiveCandidate(rec, triggerAnalysis);
@@ -1255,7 +1432,9 @@ function parseBarnesAndNobleJsonLd(html) {
           motivo_corto: "Hallado en Barnes & Noble",
           tagline: "",
           published_year: null,
-          live_score: 0
+          live_score: 0,
+          ai_fit_score: 0,
+          ai_fit_reason: ""
         });
       }
     } catch {}
@@ -1280,7 +1459,9 @@ function parseBarnesAndNobleAnchors(html) {
       motivo_corto: "Hallado en Barnes & Noble",
       tagline: "",
       published_year: null,
-      live_score: 0
+      live_score: 0,
+      ai_fit_score: 0,
+      ai_fit_reason: ""
     });
   }
   return dedupeRecommendations(out);
@@ -1331,7 +1512,7 @@ async function searchBarnesAndNobleLiveCandidates(triggerAnalysis) {
   }
 
   candidates = candidates
-    .filter(rec => weightedSemanticScore(triggerAnalysis.clean_for_selection, rec.titulo || "", `${rec.tagline || ""} ${rec.motivo_corto || ""}`.trim()) >= MIN_SEMANTIC_FALLBACK_SCORE)
+    .filter(rec => weightedSemanticScore(triggerAnalysis.clean_for_selection, rec.titulo || "", `${rec.tagline || ""} ${rec.motivo_corto || ""}`.trim(), triggerAnalysis.concept_hints) >= MIN_SEMANTIC_FALLBACK_SCORE / 2)
     .sort((a, b) => (b.live_score || 0) - (a.live_score || 0))
     .slice(0, 12);
 
@@ -1369,10 +1550,12 @@ async function resolveLiveCandidates(triggerAnalysis) {
     if (googleNewest.length) groups.push(...googleNewest);
   }
 
-  const merged = dedupeRecommendations(groups)
+  let merged = dedupeRecommendations(groups)
     .map(rec => ({ ...rec, live_score: scoreLiveCandidate(rec, triggerAnalysis) }))
     .sort((a, b) => (b.live_score || 0) - (a.live_score || 0))
     .slice(0, 15);
+
+  merged = await rerankCandidatesWithAI(triggerAnalysis, merged, "live_candidates_rerank");
 
   await appendDebugEvent("live_candidates_merged", {
     count: merged.length,
@@ -1404,7 +1587,9 @@ function dedupeRecommendations(items) {
       source_label: String(item?.source_label || item?.source || "").trim(),
       source_url: String(item?.source_url || item?.url || "").trim(),
       published_year: toNumberOrNull(item?.published_year) || null,
-      live_score: toNumberOrNull(item?.live_score) || 0
+      live_score: toNumberOrNull(item?.live_score) || 0,
+      ai_fit_score: toNumberOrNull(item?.ai_fit_score) || 0,
+      ai_fit_reason: String(item?.ai_fit_reason || "").trim()
     });
   }
 
@@ -1441,6 +1626,9 @@ ${triggerAnalysis.clean_for_selection}
 
 INTENCIÓN RESUMIDA:
 ${triggerAnalysis.intent_summary}
+
+CONCEPTOS:
+${triggerAnalysis.concept_hints.join(", ") || "—"}
 
 RESTRICCIONES:
 ${lines.length ? lines.join("\n") : "- ninguna adicional"}
@@ -1509,7 +1697,7 @@ async function resolveDiscoverFromTrigger(triggerAnalysis) {
   console.log("🌌 Trigger discover — resolviendo con capa viva + GPT...");
   const allInspected = [];
 
-  const liveCandidates = await resolveLiveCandidates(triggerAnalysis);
+  let liveCandidates = await resolveLiveCandidates(triggerAnalysis);
   if (liveCandidates.length) {
     console.log(`🔢 Candidatos vivos: ${liveCandidates.length}`);
     const liveInspected = await inspectRecommendations(liveCandidates, triggerAnalysis, "live_candidates");
@@ -1528,8 +1716,10 @@ async function resolveDiscoverFromTrigger(triggerAnalysis) {
   }
 
   for (let attempt = 1; attempt <= MAX_DISCOVER_ATTEMPTS; attempt += 1) {
-    const gptCandidates = await runDiscoverAttempt(triggerAnalysis, attempt);
+    let gptCandidates = await runDiscoverAttempt(triggerAnalysis, attempt);
     if (!gptCandidates.length) continue;
+
+    gptCandidates = await rerankCandidatesWithAI(triggerAnalysis, gptCandidates, `discover_gpt_rerank_attempt_${attempt}`);
 
     console.log(`🔢 Recomendaciones GPT discover: ${gptCandidates.length}`);
     const gptInspected = await inspectRecommendations(gptCandidates, triggerAnalysis, `gpt_attempt_${attempt}`);
