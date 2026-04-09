@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@500;600;700;800&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800&display=swap');
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -15,8 +15,8 @@
 
   body {
     background:
-      radial-gradient(circle at 14% 14%, rgba(255,255,255,0.04), transparent 26%),
-      radial-gradient(circle at 88% 84%, rgba(255,255,255,0.03), transparent 22%),
+      radial-gradient(circle at 14% 14%, rgba(255,255,255,0.035), transparent 26%),
+      radial-gradient(circle at 88% 84%, rgba(255,255,255,0.025), transparent 22%),
       linear-gradient(180deg, #050507 0%, #09090B 100%);
     font-family: 'Inter', sans-serif;
     color: var(--ink, #F7F4EF);
@@ -38,16 +38,16 @@
     border-radius: 32px;
     border: 1px solid rgba(255,255,255,0.06);
     background:
-      linear-gradient(135deg, rgba(255,255,255,0.024), rgba(255,255,255,0.008)),
-      linear-gradient(180deg, rgba(17,17,20,0.96), rgba(12,12,15,0.985));
+      linear-gradient(135deg, rgba(255,255,255,0.022), rgba(255,255,255,0.006)),
+      linear-gradient(180deg, rgba(17,17,20,0.965), rgba(12,12,15,0.99));
     box-shadow:
       0 32px 90px rgba(0,0,0,0.42),
       inset 0 1px 0 rgba(255,255,255,0.05);
     display: grid;
     grid-template-columns: minmax(0, 1fr) 360px;
-    gap: 18px;
+    gap: 20px;
     align-items: stretch;
-    padding: 12px 12px 12px 28px;
+    padding: 18px 18px 18px 30px;
   }
 
   .card::before {
@@ -55,9 +55,9 @@
     position: absolute;
     inset: 0;
     background:
-      radial-gradient(circle at 8% 10%, var(--accent-soft, rgba(227,93,48,0.15)), transparent 30%),
-      radial-gradient(circle at 92% 18%, rgba(255,255,255,0.024), transparent 22%),
-      linear-gradient(90deg, rgba(255,255,255,0.014), transparent 22%, transparent 74%, rgba(255,255,255,0.008));
+      radial-gradient(circle at 8% 10%, var(--accent-soft, rgba(227,93,48,0.12)), transparent 30%),
+      radial-gradient(circle at 92% 18%, rgba(255,255,255,0.02), transparent 22%),
+      linear-gradient(90deg, rgba(255,255,255,0.012), transparent 22%, transparent 74%, rgba(255,255,255,0.006));
     pointer-events: none;
   }
 
@@ -68,58 +68,18 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 8px 8px 46px 0;
-  }
-
-  .eyebrow {
-    display: inline-flex;
-    align-items: center;
-    align-self: flex-start;
-    min-height: 38px;
-    padding: 0 14px;
-    border-radius: 999px;
-    border: 1px solid rgba(255,255,255,0.07);
-    background: rgba(255,255,255,0.05);
-    color: rgba(247,244,239,0.84);
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: -0.12px;
-    margin-bottom: 16px;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.035);
+    padding: 4px 8px 48px 0;
   }
 
   .headline {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-size: 90px;
-    line-height: 0.94;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 86px;
+    line-height: 0.96;
     font-weight: 700;
-    letter-spacing: -1.9px;
+    letter-spacing: -2px;
     color: var(--ink, #F7F4EF);
-    max-width: 760px;
-    margin-bottom: 18px;
+    max-width: 720px;
     text-wrap: balance;
-  }
-
-  .accent-line {
-    width: 118px;
-    height: 6px;
-    border-radius: 999px;
-    margin-bottom: 12px;
-    background: linear-gradient(90deg, var(--accent, #E35D30), rgba(255,255,255,0.16));
-    box-shadow: 0 0 28px var(--accent-glow, rgba(227,93,48,0.28));
-  }
-
-  .subheadline {
-    font-size: 24px;
-    line-height: 1.2;
-    font-weight: 550;
-    color: rgba(247,244,239,0.72);
-    max-width: 700px;
-    text-wrap: balance;
-  }
-
-  .subheadline:empty {
-    display: none;
   }
 
   .cover-wrap {
@@ -167,13 +127,13 @@
 
   .brand {
     position: absolute;
-    left: 28px;
-    bottom: 18px;
+    left: 30px;
+    bottom: 22px;
     z-index: 2;
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    min-height: 28px;
+    min-height: 30px;
   }
 
   .brand img {
@@ -185,20 +145,11 @@
   }
 
   .brand-fallback {
-    font-size: 17px;
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
     font-weight: 700;
     letter-spacing: -0.35px;
     color: rgba(247,244,239,0.96);
-  }
-
-  .url {
-    position: absolute;
-    right: 20px;
-    bottom: 18px;
-    z-index: 2;
-    font-size: 15px;
-    font-weight: 700;
-    color: rgba(247,244,239,0.36);
   }
 </style>
 </head>
@@ -206,10 +157,7 @@
   <div class="stage">
     <div class="card">
       <div class="content">
-        <div class="eyebrow">{{EYEBROW}}</div>
         <div class="headline">{{HEADLINE}}</div>
-        <div class="accent-line"></div>
-        <div class="subheadline">{{SUBHEADLINE}}</div>
       </div>
 
       <div class="cover-wrap">
@@ -217,7 +165,6 @@
       </div>
 
       <div class="brand">{{BRAND_SECTION}}</div>
-      <div class="url">triggui.com</div>
     </div>
   </div>
 </body>
