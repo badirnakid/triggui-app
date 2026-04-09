@@ -39,17 +39,17 @@ const MAX_DISCOVER_ATTEMPTS = 2;
 const MIN_EVIDENCE_MATCH_SCORE = 0.38;
 const MIN_SEMANTIC_FALLBACK_SCORE = 0.22;
 const HTML_HEADERS = {
-  "User-Agent": "triggui-validate-book/5.0",
+  "User-Agent": "triggui-validate-book/5.1",
   "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
 };
 
 const JSON_HEADERS = {
-  "User-Agent": "triggui-validate-book/5.0",
+  "User-Agent": "triggui-validate-book/5.1",
   "Accept": "application/json"
 };
 
 const SPANISH_STOPWORDS = new Set([
-  "de", "del", "la", "las", "el", "los", "un", "una", "unos", "unas", "y", "o", "u", "a", "al", "en", "con", "sin", "para", "por", "sobre", "segun", "según", "como", "que", "se", "su", "sus", "lo", "le", "les", "ya", "muy", "mas", "más", "algun", "algún", "alguna", "alguno", "alguna", "alguno", "evento", "eventos", "variables", "variable", "libro", "escrito", "publicado", "despues", "después", "partir", "top", "novedades", "barnes", "noble", "poner", "titulos", "títulos", "subtitulos", "subtítulos", "parrafos", "párrafos", "relevante", "quiero", "hable"
+  "de", "del", "la", "las", "el", "los", "un", "una", "unos", "unas", "y", "o", "u", "a", "al", "en", "con", "sin", "para", "por", "sobre", "segun", "según", "como", "que", "se", "su", "sus", "lo", "le", "les", "ya", "muy", "mas", "más", "algun", "algún", "alguna", "alguno", "evento", "eventos", "variables", "variable", "libro", "escrito", "publicado", "despues", "después", "partir", "top", "novedades", "barnes", "noble", "poner", "titulos", "títulos", "subtitulos", "subtítulos", "parrafos", "párrafos", "relevante", "quiero", "hable"
 ]);
 
 const EDITORIAL_NOISE_PATTERNS = [
@@ -196,6 +196,10 @@ function weightedSemanticScore(triggerText, titleText, descText = "") {
   return Number(((titleScore * 0.55) + (descScore * 0.30) + (inverseTitle * 0.15)).toFixed(4));
 }
 
+function looksLikeBookIntent(text) {
+  return /libro|book|autor|author|leer|lectura/.test(normalizeText(text));
+}
+
 function firstSentence(text, max = 180) {
   const clean = sanitizeSentenceSpacing(String(text || ""));
   if (!clean) return "";
@@ -306,7 +310,7 @@ async function checkImageURL(url) {
   try {
     const res = await fetch(url, {
       method: "HEAD",
-      headers: { "User-Agent": "triggui-validate-book/5.0" }
+      headers: { "User-Agent": "triggui-validate-book/5.1" }
     });
     const type = res.headers.get("content-type") || "";
     return res.ok && type.startsWith("image/");
@@ -1053,15 +1057,6 @@ function scoreFallbackCandidate(row, triggerAnalysis) {
   return Number(score.toFixed(2));
 }
 
-function recommendationIsSemanticallyDignified(rec, triggerAnalysis) {
-  const semantic = weightedSemanticScore(
-    triggerAnalysis.clean_for_selection,
-    rec.titulo || "",
-    `${rec.tagline || ""} ${rec.motivo_corto || ""}`.trim()
-  );
-  return semantic >= MIN_SEMANTIC_FALLBACK_SCORE;
-}
-
 async function inspectRecommendations(recommendations, triggerAnalysis, sourceLabel) {
   const inspected = [];
 
@@ -1118,7 +1113,7 @@ async function inspectRecommendations(recommendations, triggerAnalysis, sourceLa
   return { winner: null, inspected };
 }
 
-function chooseGracefulFallback(inspectedRows, triggerAnalysis) {
+function chooseGracefulFallback(inspectedRows) {
   const rows = safeArray(inspectedRows).filter(row => row?.recommendation?.titulo);
   if (!rows.length) return null;
 
@@ -1237,6 +1232,7 @@ function parseBarnesAndNobleJsonLd(html) {
     try {
       const parsed = JSON.parse(raw);
       const objects = collectJsonLdObjects(parsed, []);
+
       for (const obj of objects) {
         const type = String(obj?.["@type"] || "").toLowerCase();
         const name = String(obj?.name || obj?.item?.name || "").trim();
@@ -1390,35 +1386,6 @@ async function resolveLiveCandidates(triggerAnalysis) {
    DISCOVER GPT
 ═══════════════════════════════════════════════════════════════ */
 
-function buildDiscoverUserPrompt(triggerAnalysis, attemptNumber) {
-  const lines = [];
-  if (triggerAnalysis.supported_constraints.year_min) lines.push(`- año mínimo obligatorio: ${triggerAnalysis.supported_constraints.year_min}`);
-  if (triggerAnalysis.supported_constraints.year_max) lines.push(`- año máximo obligatorio: ${triggerAnalysis.supported_constraints.year_max}`);
-  if (triggerAnalysis.supported_constraints.prefer_recent) lines.push("- preferir libros recientes");
-  if (triggerAnalysis.source_preference === "barnes_and_noble") lines.push("- si conoces libros recientes visibles en Barnes & Noble, priorízalos");
-  if (triggerAnalysis.ranking_preference) lines.push(`- preferencia de ranking: ${triggerAnalysis.ranking_preference}`);
-  if (triggerAnalysis.editorial_requests.length) lines.push(`- ignora estas instrucciones editoriales: ${triggerAnalysis.editorial_requests.join(", ")}`);
-
-  return `
-TRIGGER HUMANO LIMPIO:
-${triggerAnalysis.clean_for_selection}
-
-INTENCIÓN RESUMIDA:
-${triggerAnalysis.intent_summary}
-
-RESTRICCIONES:
-${lines.length ? lines.join("\n") : "- ninguna adicional"}
-
-CONSULTAS ÚTILES:
-${triggerAnalysis.search_queries.join(" | ")}
-
-${attemptNumber === 1 ? "Propón hasta 3 libros reales y verificables." : "Reintento estricto: mejor 1 libro sólido que 3 dudosos."}
-No inventes.
-No metas relleno.
-No devuelvas estructura editorial.
-`.trim();
-}
-
 function dedupeRecommendations(items) {
   const seen = new Set();
   const output = [];
@@ -1457,6 +1424,35 @@ function salvageRecommendations(response) {
     }
   }
   return [];
+}
+
+function buildDiscoverUserPrompt(triggerAnalysis, attemptNumber) {
+  const lines = [];
+  if (triggerAnalysis.supported_constraints.year_min) lines.push(`- año mínimo obligatorio: ${triggerAnalysis.supported_constraints.year_min}`);
+  if (triggerAnalysis.supported_constraints.year_max) lines.push(`- año máximo obligatorio: ${triggerAnalysis.supported_constraints.year_max}`);
+  if (triggerAnalysis.supported_constraints.prefer_recent) lines.push("- preferir libros recientes");
+  if (triggerAnalysis.source_preference === "barnes_and_noble") lines.push("- si conoces libros recientes visibles en Barnes & Noble, priorízalos");
+  if (triggerAnalysis.ranking_preference) lines.push(`- preferencia de ranking: ${triggerAnalysis.ranking_preference}`);
+  if (triggerAnalysis.editorial_requests.length) lines.push(`- ignora estas instrucciones editoriales: ${triggerAnalysis.editorial_requests.join(", ")}`);
+
+  return `
+TRIGGER HUMANO LIMPIO:
+${triggerAnalysis.clean_for_selection}
+
+INTENCIÓN RESUMIDA:
+${triggerAnalysis.intent_summary}
+
+RESTRICCIONES:
+${lines.length ? lines.join("\n") : "- ninguna adicional"}
+
+CONSULTAS ÚTILES:
+${triggerAnalysis.search_queries.join(" | ")}
+
+${attemptNumber === 1 ? "Propón hasta 3 libros reales y verificables." : "Reintento estricto: mejor 1 libro sólido que 3 dudosos."}
+No inventes.
+No metas relleno.
+No devuelvas estructura editorial.
+`.trim();
 }
 
 async function runDiscoverAttempt(triggerAnalysis, attemptNumber) {
@@ -1546,7 +1542,7 @@ async function resolveDiscoverFromTrigger(triggerAnalysis) {
     }
   }
 
-  const graceful = chooseGracefulFallback(allInspected, triggerAnalysis);
+  const graceful = chooseGracefulFallback(allInspected);
   if (graceful) {
     const result = resultFromInspectedRow(graceful, triggerAnalysis, "discover_trigger_graceful_fallback", "graceful_fallback");
     result.selection_reason = `${result.selection_reason || "Selección por mejor ajuste disponible"}. ${buildGracefulCompromiseText(graceful, triggerAnalysis)}`.trim();
