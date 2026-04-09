@@ -216,6 +216,14 @@ function lerp(start, end, t) {
   return start + ((end - start) * t);
 }
 
+function withAlpha(hex, alpha = "30") {
+  const clean = String(hex || "").trim();
+  if (/^#[0-9a-fA-F]{6}$/.test(clean)) {
+    return `${clean}${alpha}`;
+  }
+  return "";
+}
+
 function normalizeHighlightSyntax(input) {
   let text = String(input || "").trim();
   if (!text) return "";
@@ -371,6 +379,16 @@ function pickHighlightStyle(seedText) {
   };
 }
 
+function buildLiveAccentHighlightStyle(accent, paragraphColor) {
+  const bg = withAlpha(accent || APP.border, "30") || withAlpha(APP.border, "30") || "#F3920030";
+  const shadowColor = withAlpha(accent || APP.border, "1a") || "rgba(243,146,0,0.10)";
+  return {
+    bg,
+    ink: paragraphColor || APP.paragraphColor,
+    shadow: `0 4px 12px ${shadowColor}`
+  };
+}
+
 function renderHighlightHTML(text) {
   const normalized = ensureOneHighlight(text);
   if (!normalized) return "";
@@ -522,7 +540,7 @@ function buildHTML({
     `--author-chip-color:${chipColor}`,
     `--highlight-bg:${highlight.bg}`,
     `--highlight-ink:${highlight.ink}`,
-    `--highlight-shadow:${APP.highlightShadow}`
+    `--highlight-shadow:${highlight.shadow}`
   ].join(";");
 
   return `<!doctype html>
@@ -784,7 +802,8 @@ const titleColor = style.titleColor || APP.titleColor;
 const paragraphColor = style.paragraphColor || APP.paragraphColor;
 const chipBg = style.authorChipBg || APP.authorChipBg;
 const chipColor = style.authorChipColor || APP.authorChipColor;
-const highlight = pickHighlightStyle(`${slug}__${display.bodyPlain}`);
+const accent = style.accent || APP.border;
+const highlight = buildLiveAccentHighlightStyle(accent, paragraphColor);
 const initial = computeInitialLayout(display, Boolean(portadaURL));
 
 const html = buildHTML({
