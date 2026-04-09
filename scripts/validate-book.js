@@ -6,17 +6,11 @@
  * 2) trigger + constrained -> elige SOLO dentro de libros_master.csv
  * 3) trigger + discover    -> resuelve libro con capa viva + GPT + validación
  *
- * Principio:
- * El usuario escribe lo que le nazca. El sistema separa:
- * - necesidad semántica real
- * - restricciones verificables
- * - preferencias de fuente/ranking
- * - instrucciones editoriales que NO pertenecen a la selección
- *
- * Luego intenta, en este orden:
- * 1. live candidates (Google Books newest + Barnes & Noble si aplica)
- * 2. GPT discover sobre trigger limpio
- * 3. graceful fallback al mejor candidato real disponible
+ * Filosofía:
+ * El usuario escribe lo que quiera en lenguaje humano.
+ * Este script separa intención semántica, ruido editorial y restricciones,
+ * busca candidatos reales en fuentes vivas, valida evidencia bibliográfica,
+ * y solo deja pasar libros dignos.
  *
  * Salida:
  * - GitHub Actions output: book_json
@@ -40,43 +34,36 @@ const OPENAI_KEY = String(process.env.OPENAI_KEY || "").trim();
 
 const MODE = INPUT_MODE || (LIBRO_INPUT ? "book" : "");
 const SELECTOR = SELECTOR_MODE || (LIBRO_INPUT ? "direct" : "");
-
 const DEBUG_PATH = "/tmp/triggui-validate-debug.json";
 const MAX_DISCOVER_ATTEMPTS = 2;
-const MIN_MATCH_SCORE = 0.38;
-const DEFAULT_YEAR_FRESHNESS_FLOOR = 2020;
+const MIN_EVIDENCE_MATCH_SCORE = 0.38;
+const MIN_SEMANTIC_FALLBACK_SCORE = 0.22;
 const HTML_HEADERS = {
-  "User-Agent": "triggui-validate-book/4.0",
+  "User-Agent": "triggui-validate-book/5.0",
   "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
 };
+
+const JSON_HEADERS = {
+  "User-Agent": "triggui-validate-book/5.0",
+  "Accept": "application/json"
+};
+
+const SPANISH_STOPWORDS = new Set([
+  "de", "del", "la", "las", "el", "los", "un", "una", "unos", "unas", "y", "o", "u", "a", "al", "en", "con", "sin", "para", "por", "sobre", "segun", "según", "como", "que", "se", "su", "sus", "lo", "le", "les", "ya", "muy", "mas", "más", "algun", "algún", "alguna", "alguno", "alguna", "alguno", "evento", "eventos", "variables", "variable", "libro", "escrito", "publicado", "despues", "después", "partir", "top", "novedades", "barnes", "noble", "poner", "titulos", "títulos", "subtitulos", "subtítulos", "parrafos", "párrafos", "relevante", "quiero", "hable"
+]);
 
 const EDITORIAL_NOISE_PATTERNS = [
   /poner\s+t[ií]tulos?\s+y\s+subt[ií]tulos?/gi,
   /t[ií]tulos?\s+y\s+subt[ií]tulos?/gi,
   /subt[ií]tulos?\s+de\s+los\s+p[aá]rrafos?/gi,
   /t[ií]tulos?\s+de\s+los\s+p[aá]rrafos?/gi,
-  /que\s+los\s+p[aá]rrafos?.{0,80}subt[ií]tulos?/gi,
+  /que\s+los\s+p[aá]rrafos?.{0,100}subt[ií]tulos?/gi,
   /algo\s+s[uú]per\s+relevante/gi,
-  /hazlo\s+relevante/gi,
-  /quiero\s+que\s+el\s+resultado\s+sea\s+editorial/gi,
   /copy\s+in/gi,
   /copy\s+out/gi,
   /headline/gi,
   /subheadline/gi,
   /p[aá]rrafos?/gi
-];
-
-const DYNAMIC_RUNTIME_PATTERNS = [
-  { regex: /barnes\s*(?:&|and|n)\s*noble/gi, label: "barnes_and_noble" },
-  { regex: /\bbarnes\b/gi, label: "barnes_and_noble" },
-  { regex: /top\s+en\s+novedades/gi, label: "new_releases" },
-  { regex: /top\s+de\s+novedades/gi, label: "new_releases" },
-  { regex: /\bnovedades\b/gi, label: "new_releases" },
-  { regex: /new\s+releases?/gi, label: "new_releases" },
-  { regex: /new\s+this\s+week/gi, label: "new_releases" },
-  { regex: /\bbest\s*sellers?\b/gi, label: "best_sellers" },
-  { regex: /\bbestsellers?\b/gi, label: "best_sellers" },
-  { regex: /\bm[aá]s\s+vendid[oa]s?\b/gi, label: "best_sellers" }
 ];
 
 const RECENCY_PATTERNS = [
@@ -104,8 +91,6 @@ const PREFER_RECENT_PATTERNS = [
   /\bnuevas\b/gi,
   /\bactual\b/gi,
   /\bactuales\b/gi,
-  /\bmoderno\b/gi,
-  /\bmodernos\b/gi,
   /de\s+este\s+año/gi,
   /de\s+los\s+u?ltimos\s+años/gi
 ];
@@ -161,25 +146,16 @@ function unique(arr) {
   return [...new Set(arr)];
 }
 
-function clampNumber(value, min, max) {
-  return Math.min(max, Math.max(min, value));
-}
-
-function pickFirst(obj, keys) {
-  for (const key of keys) {
-    if (obj[key] !== undefined && obj[key] !== null && String(obj[key]).trim() !== "") {
-      return String(obj[key]).trim();
-    }
-  }
-  return "";
-}
-
 function safeArray(value) {
   return Array.isArray(value) ? value : [];
 }
 
 function safeObject(value) {
   return value && typeof value === "object" ? value : {};
+}
+
+function clampNumber(value, min, max) {
+  return Math.min(max, Math.max(min, value));
 }
 
 function toNumberOrNull(value) {
@@ -195,22 +171,14 @@ function sanitizeSentenceSpacing(text) {
     .trim();
 }
 
-function removePatterns(text, patterns) {
-  let next = String(text || "");
-  for (const pattern of patterns) next = next.replace(pattern, " ");
-  return sanitizeSentenceSpacing(next);
-}
-
 function stripQuotedFragments(text) {
   return String(text || "").replace(/["“”'‘’]/g, "");
 }
 
-function firstSentence(text, max = 180) {
-  const clean = sanitizeSentenceSpacing(String(text || ""));
-  if (!clean) return "";
-  const parts = clean.split(/(?<=[.!?])\s+/);
-  const sentence = parts[0] || clean;
-  return sentence.length > max ? `${sentence.slice(0, max - 1).trim()}…` : sentence;
+function removePatterns(text, patterns) {
+  let next = String(text || "");
+  for (const pattern of patterns) next = next.replace(pattern, " ");
+  return sanitizeSentenceSpacing(next);
 }
 
 function scoreTextOverlap(a, b) {
@@ -221,8 +189,70 @@ function scoreTextOverlap(a, b) {
   return overlap / tokensA.length;
 }
 
-function looksLikeBookIntent(text) {
-  return /libro|book|autor|author|leer|lectura/.test(normalizeText(text));
+function weightedSemanticScore(triggerText, titleText, descText = "") {
+  const titleScore = scoreTextOverlap(triggerText, titleText);
+  const descScore = scoreTextOverlap(triggerText, descText);
+  const inverseTitle = scoreTextOverlap(titleText, triggerText);
+  return Number(((titleScore * 0.55) + (descScore * 0.30) + (inverseTitle * 0.15)).toFixed(4));
+}
+
+function firstSentence(text, max = 180) {
+  const clean = sanitizeSentenceSpacing(String(text || ""));
+  if (!clean) return "";
+  const parts = clean.split(/(?<=[.!?])\s+/);
+  const sentence = parts[0] || clean;
+  return sentence.length > max ? `${sentence.slice(0, max - 1).trim()}…` : sentence;
+}
+
+function decodeHtmlEntities(text) {
+  return String(text || "")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&rsquo;/g, "’")
+    .replace(/&lsquo;/g, "‘")
+    .replace(/&ldquo;/g, "“")
+    .replace(/&rdquo;/g, "”")
+    .replace(/&ndash;/g, "–")
+    .replace(/&mdash;/g, "—")
+    .replace(/&hellip;/g, "…")
+    .replace(/&#x27;/g, "'")
+    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)));
+}
+
+function stripHtml(text) {
+  return decodeHtmlEntities(String(text || "").replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ").trim();
+}
+
+function stripCodeFence(text) {
+  return String(text || "")
+    .replace(/^```(?:json)?\s*/i, "")
+    .replace(/```$/i, "")
+    .trim();
+}
+
+function extractJsonObjectLoose(text) {
+  const raw = stripCodeFence(String(text || "").trim());
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch {}
+
+  const firstBrace = raw.indexOf("{");
+  const lastBrace = raw.lastIndexOf("}");
+  if (firstBrace === -1 || lastBrace === -1 || lastBrace <= firstBrace) return null;
+
+  const candidate = raw.slice(firstBrace, lastBrace + 1)
+    .replace(/,\s*}/g, "}")
+    .replace(/,\s*]/g, "]");
+
+  try {
+    return JSON.parse(candidate);
+  } catch {
+    return null;
+  }
 }
 
 function setGithubOutput(name, value) {
@@ -248,10 +278,7 @@ async function fileExists(path) {
 async function fetchJSON(url, options = {}) {
   try {
     const res = await fetch(url, {
-      headers: {
-        "User-Agent": "triggui-validate-book/4.0",
-        "Accept": "application/json"
-      },
+      headers: JSON_HEADERS,
       ...options
     });
     if (!res.ok) return null;
@@ -279,66 +306,12 @@ async function checkImageURL(url) {
   try {
     const res = await fetch(url, {
       method: "HEAD",
-      headers: { "User-Agent": "triggui-validate-book/4.0" }
+      headers: { "User-Agent": "triggui-validate-book/5.0" }
     });
     const type = res.headers.get("content-type") || "";
     return res.ok && type.startsWith("image/");
   } catch {
     return false;
-  }
-}
-
-function decodeHtmlEntities(text) {
-  return String(text || "")
-    .replace(/&amp;/g, "&")
-    .replace(/&quot;/g, "\"")
-    .replace(/&#39;/g, "'")
-    .replace(/&apos;/g, "'")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&rsquo;/g, "’")
-    .replace(/&lsquo;/g, "‘")
-    .replace(/&ldquo;/g, "“")
-    .replace(/&rdquo;/g, "”")
-    .replace(/&ndash;/g, "–")
-    .replace(/&mdash;/g, "—")
-    .replace(/&hellip;/g, "…")
-    .replace(/&#x27;/g, "'")
-    .replace(/&#x2F;/g, "/")
-    .replace(/&#(\d+);/g, (_, n) => {
-      const code = Number(n);
-      return Number.isFinite(code) ? String.fromCharCode(code) : _;
-    });
-}
-
-function stripHtml(text) {
-  return decodeHtmlEntities(String(text || "").replace(/<[^>]+>/g, " "))
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function stripCodeFence(text) {
-  return String(text || "")
-    .replace(/^```(?:json)?\s*/i, "")
-    .replace(/```$/i, "")
-    .trim();
-}
-
-function extractJsonObjectLoose(text) {
-  const raw = stripCodeFence(String(text || "").trim());
-  if (!raw) return null;
-  try {
-    return JSON.parse(raw);
-  } catch {}
-  const firstBrace = raw.indexOf("{");
-  const lastBrace = raw.lastIndexOf("}");
-  if (firstBrace === -1 || lastBrace === -1 || lastBrace <= firstBrace) return null;
-  const candidate = raw.slice(firstBrace, lastBrace + 1)
-    .replace(/,\s*}/g, "}")
-    .replace(/,\s*]/g, "]");
-  try {
-    return JSON.parse(candidate);
-  } catch {
-    return null;
   }
 }
 
@@ -426,55 +399,18 @@ async function callOpenAIJson(system, user, temperature = 0.3, metadata = {}) {
   };
 }
 
-function dedupeRecommendations(items) {
-  const seen = new Set();
-  const output = [];
-  for (const item of safeArray(items)) {
-    const titulo = String(item?.titulo || item?.title || "").trim();
-    const autor = String(item?.autor || item?.author || "").trim();
-    const key = `${normalizeText(titulo)}__${normalizeText(autor)}`;
-    if (!titulo || seen.has(key)) continue;
-    seen.add(key);
-    output.push({
-      titulo,
-      autor,
-      motivo_corto: String(item?.motivo_corto || item?.reason || item?.motivo || "").trim(),
-      tagline: String(item?.tagline || item?.subtitle || item?.subtitulo || "").trim(),
-      source_label: String(item?.source_label || item?.source || "").trim(),
-      source_url: String(item?.source_url || item?.url || "").trim(),
-      published_year: toNumberOrNull(item?.published_year) || null
-    });
-  }
-  return output;
-}
-
-function salvageRecommendations(response) {
-  if (!response || typeof response !== "object") return [];
-  const directKeys = ["recommendations", "recomendaciones", "books", "libros", "results", "resultados", "candidates", "candidatos", "items"];
-  for (const key of directKeys) {
-    if (Array.isArray(response[key])) return dedupeRecommendations(response[key]);
-  }
-  for (const value of Object.values(response)) {
-    if (Array.isArray(value)) {
-      const recs = dedupeRecommendations(value);
-      if (recs.length) return recs;
+function pickFirst(obj, keys) {
+  for (const key of keys) {
+    if (obj[key] !== undefined && obj[key] !== null && String(obj[key]).trim() !== "") {
+      return String(obj[key]).trim();
     }
   }
-  return [];
+  return "";
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   INPUT NORMALIZATION
+   TRIGGER NORMALIZATION
 ═══════════════════════════════════════════════════════════════ */
-
-function extractPatternLabels(text, patterns) {
-  const out = [];
-  for (const entry of patterns) {
-    const matches = String(text || "").match(entry.regex);
-    if (matches?.length) out.push(entry.label);
-  }
-  return unique(out);
-}
 
 function extractYearMin(raw) {
   for (const pattern of RECENCY_PATTERNS) {
@@ -496,50 +432,74 @@ function buildHeuristicSemanticQuery(raw) {
   let next = stripQuotedFragments(String(raw || ""));
   next = removePatterns(next, EDITORIAL_NOISE_PATTERNS);
 
-  for (const entry of DYNAMIC_RUNTIME_PATTERNS) {
-    next = next.replace(entry.regex, " ");
-  }
-
   next = next
+    .replace(/barnes\s*(?:&|and|n)\s*noble/gi, " ")
+    .replace(/\btop\b/gi, " ")
+    .replace(/\bnovedades\b/gi, " ")
+    .replace(/new\s+releases?/gi, " ")
+    .replace(/best\s*sellers?/gi, " ")
     .replace(/libro\s+escrito\s+despu[eé]s\s+de\s+20\d{2}/gi, " ")
     .replace(/libro\s+publicado\s+despu[eé]s\s+de\s+20\d{2}/gi, " ")
     .replace(/despu[eé]s\s+de\s+20\d{2}/gi, " ")
     .replace(/posterior\s+a\s+20\d{2}/gi, " ")
     .replace(/a\s+partir\s+de\s+20\d{2}/gi, " ")
     .replace(/antes\s+de\s+20\d{2}/gi, " ")
-    .replace(/m[ií]nimo\s+20\d{2}/gi, " ")
     .replace(/desde\s+20\d{2}/gi, " ")
-    .replace(/\btop\b/gi, " ")
-    .replace(/\bnovedades\b/gi, " ")
-    .replace(/\bnuevo\b/gi, " ")
-    .replace(/\bnueva\b/gi, " ")
-    .replace(/\bnuevos\b/gi, " ")
-    .replace(/\bnuevas\b/gi, " ")
-    .replace(/\breciente\b/gi, " ")
-    .replace(/\bactual\b/gi, " ")
-    .replace(/\bactuales\b/gi, " ")
     .replace(/\s+/g, " ")
     .trim();
 
   return next || String(raw || "").trim();
 }
 
+function extractDynamicSignals(raw) {
+  const text = normalizeText(raw);
+  return {
+    source_preference: /barnes and noble|barnes n noble|barnes noble|barnes/.test(text) ? "barnes_and_noble" : null,
+    ranking_preference: /best seller|bestseller|mas vendido|mas vendida|mas vendidos/.test(text)
+      ? "best_sellers"
+      : /novedad|new release|new this week|top en novedades|top de novedades/.test(text)
+        ? "new_releases"
+        : null
+  };
+}
+
+function buildSearchQueriesHeuristic(semanticQuery) {
+  const tokens = tokenize(semanticQuery).filter(token => token.length > 2 && !SPANISH_STOPWORDS.has(token));
+  const uniq = unique(tokens).slice(0, 8);
+
+  const queries = [];
+  if (semanticQuery) queries.push(semanticQuery);
+  if (uniq.length >= 3) queries.push(uniq.slice(0, 3).join(" "));
+  if (uniq.length >= 5) queries.push(uniq.slice(0, 5).join(" "));
+
+  const norm = normalizeText(semanticQuery);
+  if (/variable/.test(norm) || /evento/.test(norm) || /patron/.test(norm) || /patrones/.test(norm)) {
+    queries.push("systems thinking causality pattern recognition");
+    queries.push("causality systems patterns events");
+  }
+  if (/conexion|conectar|relacion/.test(norm)) {
+    queries.push("connecting dots pattern recognition systems");
+  }
+
+  return unique(queries).slice(0, 6);
+}
+
 async function normalizeTriggerRequestWithAI(raw) {
   const system = `
 Eres el normalizador de triggers de Triggui.
-Tu tarea NO es escoger el libro.
-Tu tarea es separar una entrada humana mezclada en partes limpias.
+NO escoges el libro.
+Solo separas una entrada humana mezclada en piezas útiles.
 
-Extrae:
-- semantic_query: necesidad real del lector, limpia y útil para seleccionar libro
+Devuelve:
+- semantic_query: necesidad real del lector, limpia y útil para selección
 - intent_summary: resumen corto del corazón del pedido
-- editorial_requests: instrucciones de formato/editorial que NO pertenecen al selector
-- source_preference: "barnes_and_noble", "google_books", o null
-- ranking_preference: "new_releases", "best_sellers", o null
-- unsupported_runtime_constraints: cosas que suenan a ranking vivo, tienda o lista dinámica
+- editorial_requests: instrucciones editoriales que NO pertenecen al selector
+- source_preference: "barnes_and_noble" o null
+- ranking_preference: "new_releases", "best_sellers" o null
 - supported_constraints.year_min
 - supported_constraints.year_max
 - supported_constraints.prefer_recent
+- search_queries: hasta 5 búsquedas cortas y útiles para buscar libros reales
 
 Responde SOLO JSON con:
 {
@@ -548,12 +508,12 @@ Responde SOLO JSON con:
   "editorial_requests": ["..."],
   "source_preference": null,
   "ranking_preference": null,
-  "unsupported_runtime_constraints": ["..."],
   "supported_constraints": {
     "year_min": null,
     "year_max": null,
     "prefer_recent": false
-  }
+  },
+  "search_queries": ["..."]
 }
 `.trim();
 
@@ -567,12 +527,12 @@ Responde SOLO JSON con:
       editorial_requests: safeArray(json?.editorial_requests).map(v => sanitizeSentenceSpacing(String(v || ""))).filter(Boolean),
       source_preference: String(json?.source_preference || "").trim() || null,
       ranking_preference: String(json?.ranking_preference || "").trim() || null,
-      unsupported_runtime_constraints: safeArray(json?.unsupported_runtime_constraints).map(v => sanitizeSentenceSpacing(String(v || ""))).filter(Boolean),
       supported_constraints: {
         year_min: toNumberOrNull(json?.supported_constraints?.year_min),
         year_max: toNumberOrNull(json?.supported_constraints?.year_max),
         prefer_recent: Boolean(json?.supported_constraints?.prefer_recent)
-      }
+      },
+      search_queries: safeArray(json?.search_queries).map(v => sanitizeSentenceSpacing(String(v || ""))).filter(Boolean)
     };
   } catch (e) {
     console.log(`ℹ️  Normalizador AI no disponible, fallback heurístico: ${e.message}`);
@@ -587,32 +547,30 @@ async function analyzeTriggerInput(raw) {
     if (matches?.length) heuristicEditorial.push(...matches.map(m => sanitizeSentenceSpacing(m)));
   }
 
-  const labels = extractPatternLabels(raw, DYNAMIC_RUNTIME_PATTERNS);
+  const heurSignals = extractDynamicSignals(raw);
   const yearMinHeuristic = extractYearMin(raw);
   const yearMaxHeuristic = extractYearMax(raw);
-  const preferRecentHeuristic = PREFER_RECENT_PATTERNS.some(pattern => pattern.test(String(raw || "")));
+  const preferRecentHeuristic = PREFER_RECENT_PATTERNS.some(pattern => pattern.test(String(raw || ""))) || Boolean(yearMinHeuristic);
   const semanticHeuristic = buildHeuristicSemanticQuery(raw);
-
   const ai = await normalizeTriggerRequestWithAI(raw);
 
   const yearMinCandidates = [yearMinHeuristic, toNumberOrNull(ai?.supported_constraints?.year_min)].filter(Number.isFinite);
   const yearMaxCandidates = [yearMaxHeuristic, toNumberOrNull(ai?.supported_constraints?.year_max)].filter(Number.isFinite);
 
-  const source_preference = ai?.source_preference
-    || (labels.includes("barnes_and_noble") ? "barnes_and_noble" : null);
-
-  const ranking_preference = ai?.ranking_preference
-    || (labels.includes("best_sellers") ? "best_sellers" : labels.includes("new_releases") ? "new_releases" : null);
-
   const semantic_query = sanitizeSentenceSpacing(ai?.semantic_query || semanticHeuristic || String(raw || "").trim());
   const intent_summary = sanitizeSentenceSpacing(ai?.intent_summary || semantic_query);
-
+  const source_preference = ai?.source_preference || heurSignals.source_preference || null;
+  const ranking_preference = ai?.ranking_preference || heurSignals.ranking_preference || null;
   const unsupported_runtime_constraints = unique([
-    ...safeArray(ai?.unsupported_runtime_constraints),
-    ...(labels.includes("barnes_and_noble") ? ["ranking/curaduría viva de Barnes & Noble"] : []),
-    ...(labels.includes("new_releases") ? ["lista viva de novedades"] : []),
-    ...(labels.includes("best_sellers") ? ["lista viva de best sellers"] : [])
+    source_preference === "barnes_and_noble" ? "ranking/curaduría viva de Barnes & Noble" : "",
+    ranking_preference === "new_releases" ? "lista viva de novedades" : "",
+    ranking_preference === "best_sellers" ? "lista viva de best sellers" : ""
   ].filter(Boolean));
+
+  const search_queries = unique([
+    ...safeArray(ai?.search_queries),
+    ...buildSearchQueriesHeuristic(semantic_query)
+  ]).slice(0, 6);
 
   return {
     raw_input: String(raw || "").trim(),
@@ -625,8 +583,9 @@ async function analyzeTriggerInput(raw) {
     supported_constraints: {
       year_min: yearMinCandidates.length ? Math.max(...yearMinCandidates) : null,
       year_max: yearMaxCandidates.length ? Math.min(...yearMaxCandidates) : null,
-      prefer_recent: Boolean(ai?.supported_constraints?.prefer_recent) || preferRecentHeuristic || Boolean(yearMinHeuristic)
+      prefer_recent: Boolean(ai?.supported_constraints?.prefer_recent) || preferRecentHeuristic
     },
+    search_queries,
     clean_for_selection: semantic_query,
     notes: {
       used_ai_normalizer: Boolean(ai),
@@ -647,6 +606,7 @@ function logTriggerAnalysis(analysis) {
   console.log(`📚 year_min: ${analysis.supported_constraints.year_min || "—"}`);
   console.log(`📚 year_max: ${analysis.supported_constraints.year_max || "—"}`);
   console.log(`⏱️ prefer_recent: ${analysis.supported_constraints.prefer_recent ? "sí" : "no"}`);
+  console.log(`🔎 search_queries: ${analysis.search_queries.join(" | ") || "—"}`);
   console.log(`✂️ editorial_requests: ${analysis.editorial_requests.length ? analysis.editorial_requests.join(" | ") : "—"}`);
   console.log(`🌐 unsupported_runtime_constraints: ${analysis.unsupported_runtime_constraints.length ? analysis.unsupported_runtime_constraints.join(" | ") : "—"}`);
   console.log(`🤖 ai_normalizer: ${analysis.notes.used_ai_normalizer ? "sí" : "no"}`);
@@ -722,7 +682,6 @@ function scoreCatalogCandidate(trigger, row) {
   const triggerWords = triggerTokens.length || 1;
   const overlap = triggerTokens.filter(token => combinedTokens.has(token)).length / triggerWords;
   score += Math.round(overlap * 10);
-
   return score;
 }
 
@@ -730,9 +689,11 @@ async function checkDuplicate(titulo) {
   try {
     const csvPath = await getMasterCsvPath();
     if (!csvPath) return false;
+
     const csv = await fs.readFile(csvPath, "utf8");
     const rows = parse(csv, { columns: true, skip_empty_lines: true });
     const normalizado = normalizeText(titulo);
+
     const dup = rows.find(r => normalizeText(r.titulo || r.Title || r.title || "") === normalizado);
     if (dup) {
       console.log(`⚠️  "${titulo}" ya existe en ${csvPath}`);
@@ -816,6 +777,7 @@ Elige UNO.
     const { json } = await callOpenAIJson(system, user, 0.2, { stage: "constrained_selector" });
     const idx = Number(json?.candidate_index);
     motive = String(json?.motivo_corto || "").trim();
+
     if (Number.isFinite(idx) && idx >= 1 && idx <= top.length) {
       selected = top[idx - 1];
       console.log(`✅ Constrained selector eligió: ${selected.titulo} — ${selected.autor}`);
@@ -841,9 +803,10 @@ Elige UNO.
       aplicacion_badir_hoy: selected.contexto || "",
       trigger_diagnostics: {
         semantic_query: triggerAnalysis.semantic_query,
-        unsupported_runtime_constraints: triggerAnalysis.unsupported_runtime_constraints,
         editorial_requests: triggerAnalysis.editorial_requests,
-        supported_constraints: triggerAnalysis.supported_constraints
+        supported_constraints: triggerAnalysis.supported_constraints,
+        source_preference: triggerAnalysis.source_preference,
+        ranking_preference: triggerAnalysis.ranking_preference
       }
     },
     selected_via: "constrained_catalog",
@@ -863,7 +826,6 @@ function scoreBookMatch(targetTitle, targetAuthor, candidateTitle, candidateAuth
   const inverseTitleScore = scoreTextOverlap(candidateTitle, targetTitle);
   const authorTarget = normalizeText(targetAuthor);
   const authorsNorm = candidateAuthors.map(a => normalizeText(a)).filter(Boolean);
-
   const authorScore = authorTarget && authorsNorm.length
     ? Math.max(...authorsNorm.map(a => Math.max(scoreTextOverlap(authorTarget, a), scoreTextOverlap(a, authorTarget))))
     : 0.35;
@@ -893,7 +855,7 @@ async function searchAppleBooks(titulo, autor) {
   }).sort((a, b) => b.match_score - a.match_score);
 
   const best = candidates[0];
-  if (!best || best.match_score < MIN_MATCH_SCORE) return null;
+  if (!best || best.match_score < MIN_EVIDENCE_MATCH_SCORE) return null;
   if (best.portada && await checkImageURL(best.portada)) return best;
   return { ...best, portada: "" };
 }
@@ -913,9 +875,10 @@ async function searchGoogleBooks(titulo, autor) {
     const imgs = safeObject(info.imageLinks);
     const url = imgs.extraLarge || imgs.large || imgs.medium || imgs.small || imgs.thumbnail || "";
     const cleanUrl = url ? url.replace("&edge=curl", "").replace("http://", "https://") : "";
-    const identifiers = safeArray(info.industryIdentifiers);
-    const isbn13 = identifiers.find(i => i.type === "ISBN_13")?.identifier || "";
-    const isbn10 = identifiers.find(i => i.type === "ISBN_10")?.identifier || "";
+    const ids = safeArray(info.industryIdentifiers);
+    const isbn13 = ids.find(i => i.type === "ISBN_13")?.identifier || "";
+    const isbn10 = ids.find(i => i.type === "ISBN_10")?.identifier || "";
+
     return {
       portada: cleanUrl,
       isbn: isbn13 || isbn10,
@@ -930,7 +893,7 @@ async function searchGoogleBooks(titulo, autor) {
   }).sort((a, b) => b.match_score - a.match_score);
 
   const best = candidates[0];
-  if (!best || best.match_score < MIN_MATCH_SCORE) return null;
+  if (!best || best.match_score < MIN_EVIDENCE_MATCH_SCORE) return null;
   if (best.portada && await checkImageURL(best.portada)) return best;
   return best;
 }
@@ -957,7 +920,7 @@ async function searchOpenLibrary(titulo, autor) {
   }).sort((a, b) => b.match_score - a.match_score);
 
   const best = candidates[0];
-  if (!best || best.match_score < MIN_MATCH_SCORE) return null;
+  if (!best || best.match_score < MIN_EVIDENCE_MATCH_SCORE) return null;
   if (best.portada && await checkImageURL(best.portada)) return best;
   return best;
 }
@@ -1008,13 +971,17 @@ function evaluateEvidenceAgainstConstraints(evidence, triggerAnalysis) {
   const issues = [];
   const warnings = [];
 
-  if (yearMin && year && year < yearMin) issues.push(`Año ${year} no cumple mínimo ${yearMin}`);
-  else if (yearMin && !year) warnings.push(`No se pudo verificar el año mínimo ${yearMin}`);
+  if (yearMin) {
+    if (!year) issues.push(`No se pudo verificar el año mínimo ${yearMin}`);
+    else if (year < yearMin) issues.push(`Año ${year} no cumple mínimo ${yearMin}`);
+  }
 
-  if (yearMax && year && year > yearMax) issues.push(`Año ${year} no cumple máximo ${yearMax}`);
-  else if (yearMax && !year) warnings.push(`No se pudo verificar el año máximo ${yearMax}`);
+  if (yearMax) {
+    if (!year) issues.push(`No se pudo verificar el año máximo ${yearMax}`);
+    else if (year > yearMax) issues.push(`Año ${year} no cumple máximo ${yearMax}`);
+  }
 
-  if (preferRecent && year && year < DEFAULT_YEAR_FRESHNESS_FLOOR && !yearMin) {
+  if (preferRecent && year && !yearMin && year < 2020) {
     warnings.push(`Es válido, pero no especialmente reciente (año ${year})`);
   }
 
@@ -1032,65 +999,116 @@ function evaluateEvidenceAgainstConstraints(evidence, triggerAnalysis) {
 }
 
 function scoreLiveCandidate(rec, triggerAnalysis) {
-  const titleScore = scoreTextOverlap(triggerAnalysis.clean_for_selection, rec.titulo || "");
-  const tagScore = scoreTextOverlap(triggerAnalysis.clean_for_selection, rec.tagline || rec.motivo_corto || "");
+  const semantic = weightedSemanticScore(
+    triggerAnalysis.clean_for_selection,
+    rec.titulo || "",
+    `${rec.tagline || ""} ${rec.motivo_corto || ""}`.trim()
+  );
+
   const year = toNumberOrNull(rec.published_year);
   const yearMin = toNumberOrNull(triggerAnalysis.supported_constraints.year_min);
   const yearMax = toNumberOrNull(triggerAnalysis.supported_constraints.year_max);
 
-  let score = titleScore * 45 + tagScore * 18;
+  let score = semantic * 100;
 
-  if (rec.source_label === "google_books_newest") score += 8;
   if (rec.source_label === "barnes_and_noble") score += 12;
-  if (triggerAnalysis.source_preference === "barnes_and_noble" && rec.source_label === "barnes_and_noble") score += 14;
+  if (rec.source_label === "google_books_newest") score += 8;
+  if (triggerAnalysis.source_preference === "barnes_and_noble" && rec.source_label === "barnes_and_noble") score += 18;
   if (triggerAnalysis.ranking_preference === "new_releases" && rec.source_label === "barnes_and_noble") score += 10;
-  if (triggerAnalysis.supported_constraints.prefer_recent && year) score += Math.max(0, year - 2018) * 1.2;
-  if (yearMin && year && year >= yearMin) score += 18;
-  if (yearMax && year && year <= yearMax) score += 12;
-  if (yearMin && year && year < yearMin) score -= 25;
-  if (yearMax && year && year > yearMax) score -= 25;
-  if ((yearMin || yearMax) && !year) score -= 6;
+
+  if (yearMin) {
+    if (year && year >= yearMin) score += 25;
+    else if (year && year < yearMin) score -= 40;
+    else score -= 22;
+  }
+
+  if (yearMax) {
+    if (year && year <= yearMax) score += 10;
+    else if (year && year > yearMax) score -= 25;
+    else score -= 8;
+  }
+
+  if (triggerAnalysis.supported_constraints.prefer_recent && year) score += Math.max(0, year - 2018) * 1.5;
+  if (year && year < 2015) score -= 14;
 
   return Number(score.toFixed(2));
 }
 
-function scoreFallbackCandidate(rec, evidence, constraintsCheck, triggerAnalysis) {
-  let score = (evidence.match_score || 0) * 100;
-  if (evidence.source !== "none" || evidence.portada) score += 35;
-  if (constraintsCheck.exact_ok) score += 25;
-  else if (constraintsCheck.hard_ok) score += 12;
-  else score -= 18;
-  if (rec.source_label === "barnes_and_noble") score += 8;
-  if (triggerAnalysis.source_preference === "barnes_and_noble" && rec.source_label === "barnes_and_noble") score += 10;
+function scoreFallbackCandidate(row, triggerAnalysis) {
+  const semantic = weightedSemanticScore(
+    triggerAnalysis.clean_for_selection,
+    row.recommendation.titulo || "",
+    `${row.recommendation.tagline || ""} ${row.recommendation.motivo_corto || ""}`.trim()
+  );
+
+  let score = semantic * 100;
+  score += (row.evidence.match_score || 0) * 20;
+  if (row.evidence.source !== "none" || row.evidence.portada) score += 20;
+  if (row.constraintsCheck.exact_ok) score += 20;
+  else if (row.constraintsCheck.hard_ok) score += 6;
+  else score -= 80;
+  if (row.recommendation.source_label === "barnes_and_noble") score += 8;
+  if (triggerAnalysis.source_preference === "barnes_and_noble" && row.recommendation.source_label === "barnes_and_noble") score += 10;
+
   return Number(score.toFixed(2));
+}
+
+function recommendationIsSemanticallyDignified(rec, triggerAnalysis) {
+  const semantic = weightedSemanticScore(
+    triggerAnalysis.clean_for_selection,
+    rec.titulo || "",
+    `${rec.tagline || ""} ${rec.motivo_corto || ""}`.trim()
+  );
+  return semantic >= MIN_SEMANTIC_FALLBACK_SCORE;
 }
 
 async function inspectRecommendations(recommendations, triggerAnalysis, sourceLabel) {
   const inspected = [];
 
   for (const rec of dedupeRecommendations(recommendations)) {
+    const semantic_score = weightedSemanticScore(
+      triggerAnalysis.clean_for_selection,
+      rec.titulo || "",
+      `${rec.tagline || ""} ${rec.motivo_corto || ""}`.trim()
+    );
+
+    if (semantic_score < MIN_SEMANTIC_FALLBACK_SCORE) {
+      console.log(`   🚫 Rechazado por baja relevancia semántica: ${rec.titulo} (${semantic_score})`);
+      inspected.push({
+        recommendation: rec,
+        evidence: { source: "none", match_score: 0, portada: "", year: rec.published_year || "" },
+        constraintsCheck: { exact_ok: false, hard_ok: false, issues: ["Relevancia semántica insuficiente"], warnings: [], reason: "Relevancia semántica insuficiente" },
+        sourceLabel,
+        semantic_score,
+        fallback_score: -999
+      });
+      continue;
+    }
+
     const evidence = await getBestBookEvidence(rec.titulo, rec.autor || "Autor desconocido");
     const constraintsCheck = evaluateEvidenceAgainstConstraints(evidence, triggerAnalysis);
-    const fallback_score = scoreFallbackCandidate(rec, evidence, constraintsCheck, triggerAnalysis);
 
     const row = {
       recommendation: rec,
       evidence,
       constraintsCheck,
       sourceLabel,
-      fallback_score
+      semantic_score,
+      fallback_score: 0
     };
 
+    row.fallback_score = scoreFallbackCandidate(row, triggerAnalysis);
     inspected.push(row);
 
     console.log(`   🧪 ${rec.titulo} — ${rec.autor || "Autor desconocido"}`);
+    console.log(`      semantic_score: ${semantic_score}`);
     console.log(`      source: ${evidence.source || "none"}`);
     console.log(`      year: ${evidence.year || "—"}`);
     console.log(`      match_score: ${evidence.match_score || 0}`);
     console.log(`      exact_ok: ${constraintsCheck.exact_ok ? "sí" : "no"}`);
     console.log(`      hard_ok: ${constraintsCheck.hard_ok ? "sí" : "no"}`);
     console.log(`      reason: ${constraintsCheck.reason}`);
-    console.log(`      fallback_score: ${fallback_score}`);
+    console.log(`      fallback_score: ${row.fallback_score}`);
 
     if ((evidence.source !== "none" || evidence.portada) && constraintsCheck.exact_ok) {
       return { winner: row, inspected };
@@ -1100,19 +1118,25 @@ async function inspectRecommendations(recommendations, triggerAnalysis, sourceLa
   return { winner: null, inspected };
 }
 
-function chooseGracefulFallback(inspectedRows) {
+function chooseGracefulFallback(inspectedRows, triggerAnalysis) {
   const rows = safeArray(inspectedRows).filter(row => row?.recommendation?.titulo);
   if (!rows.length) return null;
 
-  const withEvidence = rows.filter(row => row.evidence && (row.evidence.source !== "none" || row.evidence.portada));
-  const pool = withEvidence.length ? withEvidence : rows;
-
-  pool.sort((a, b) => {
-    if (b.fallback_score !== a.fallback_score) return b.fallback_score - a.fallback_score;
-    return (b.evidence?.match_score || 0) - (a.evidence?.match_score || 0);
+  const eligible = rows.filter(row => {
+    const evidenceExists = row.evidence && (row.evidence.source !== "none" || row.evidence.portada);
+    const dignified = row.semantic_score >= MIN_SEMANTIC_FALLBACK_SCORE;
+    const hardOk = row.constraintsCheck?.hard_ok === true;
+    return evidenceExists && dignified && hardOk;
   });
 
-  return pool[0] || null;
+  if (!eligible.length) return null;
+
+  eligible.sort((a, b) => {
+    if (b.fallback_score !== a.fallback_score) return b.fallback_score - a.fallback_score;
+    return (b.semantic_score || 0) - (a.semantic_score || 0);
+  });
+
+  return eligible[0] || null;
 }
 
 function resultFromInspectedRow(row, triggerAnalysis, selected_via, mode) {
@@ -1130,6 +1154,7 @@ function resultFromInspectedRow(row, triggerAnalysis, selected_via, mode) {
     trigger_analysis: triggerAnalysis,
     publication_year: row.evidence.year || row.recommendation.published_year || "",
     selection_validation: {
+      semantic_score: row.semantic_score || 0,
       match_score: row.evidence.match_score || 0,
       validation_source: row.evidence.source || "none",
       constraint_reason: row.constraintsCheck.reason,
@@ -1140,16 +1165,8 @@ function resultFromInspectedRow(row, triggerAnalysis, selected_via, mode) {
   };
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   LIVE SOURCING — GOOGLE BOOKS NEWEST
-═══════════════════════════════════════════════════════════════ */
-
 async function searchGoogleBooksLiveCandidates(triggerAnalysis) {
-  const queries = unique([
-    triggerAnalysis.clean_for_selection,
-    triggerAnalysis.intent_summary
-  ].filter(Boolean));
-
+  const queries = unique(triggerAnalysis.search_queries.filter(Boolean));
   const all = [];
 
   for (const query of queries) {
@@ -1173,15 +1190,17 @@ async function searchGoogleBooksLiveCandidates(triggerAnalysis) {
 
       const autor = safeArray(info.authors).join(", ").trim();
       const publishedYear = toNumberOrNull(String(info.publishedDate || "").slice(0, 4));
+      const description = firstSentence(info.description || info.subtitle || "", 170);
 
       const rec = {
         titulo,
         autor,
         motivo_corto: "Hallado por búsqueda viva de Google Books ordenada por novedad",
-        tagline: firstSentence(info.description || info.subtitle || "", 170),
+        tagline: description,
         source_label: "google_books_newest",
         source_url: item.selfLink || "",
-        published_year: publishedYear
+        published_year: publishedYear,
+        live_score: 0
       };
 
       rec.live_score = scoreLiveCandidate(rec, triggerAnalysis);
@@ -1191,12 +1210,8 @@ async function searchGoogleBooksLiveCandidates(triggerAnalysis) {
 
   return dedupeRecommendations(all)
     .sort((a, b) => (b.live_score || 0) - (a.live_score || 0))
-    .slice(0, 12);
+    .slice(0, 15);
 }
-
-/* ═══════════════════════════════════════════════════════════════
-   LIVE SOURCING — BARNES & NOBLE
-═══════════════════════════════════════════════════════════════ */
 
 function collectJsonLdObjects(node, out = []) {
   if (!node) return out;
@@ -1222,7 +1237,6 @@ function parseBarnesAndNobleJsonLd(html) {
     try {
       const parsed = JSON.parse(raw);
       const objects = collectJsonLdObjects(parsed, []);
-
       for (const obj of objects) {
         const type = String(obj?.["@type"] || "").toLowerCase();
         const name = String(obj?.name || obj?.item?.name || "").trim();
@@ -1243,7 +1257,9 @@ function parseBarnesAndNobleJsonLd(html) {
           source_label: "barnes_and_noble",
           source_url: url.startsWith("http") ? url : (url ? `https://www.barnesandnoble.com${url}` : ""),
           motivo_corto: "Hallado en Barnes & Noble",
-          tagline: ""
+          tagline: "",
+          published_year: null,
+          live_score: 0
         });
       }
     } catch {}
@@ -1256,30 +1272,29 @@ function parseBarnesAndNobleAnchors(html) {
   const out = [];
   const regex = /<a[^>]+href=["'](\/w\/[^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
   let match;
-
   while ((match = regex.exec(String(html || "")))) {
     const href = String(match[1] || "").trim();
     const title = stripHtml(match[2] || "");
-    if (!title || title.length < 2) continue;
-
+    if (!title || title.length < 3) continue;
     out.push({
       titulo: title,
       autor: "",
       source_label: "barnes_and_noble",
       source_url: `https://www.barnesandnoble.com${href}`,
       motivo_corto: "Hallado en Barnes & Noble",
-      tagline: ""
+      tagline: "",
+      published_year: null,
+      live_score: 0
     });
   }
-
   return dedupeRecommendations(out);
 }
 
 async function enrichBarnesAndNobleCandidatesWithGoogleBooks(candidates) {
   const out = [];
-
   for (const candidate of candidates) {
-    const data = await fetchJSON(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(candidate.titulo)}&maxResults=3`);
+    const q = encodeURIComponent(candidate.titulo);
+    const data = await fetchJSON(`https://www.googleapis.com/books/v1/volumes?q=${q}&maxResults=3`);
     const items = safeArray(data?.items);
 
     if (items.length) {
@@ -1294,12 +1309,11 @@ async function enrichBarnesAndNobleCandidatesWithGoogleBooks(candidates) {
       out.push(candidate);
     }
   }
-
   return dedupeRecommendations(out);
 }
 
 async function searchBarnesAndNobleLiveCandidates(triggerAnalysis) {
-  const query = triggerAnalysis.clean_for_selection || triggerAnalysis.intent_summary;
+  const query = triggerAnalysis.search_queries[0] || triggerAnalysis.clean_for_selection || triggerAnalysis.intent_summary;
   const searchUrl = `https://www.barnesandnoble.com/s/${encodeURIComponent(query)}`;
   const html = await fetchText(searchUrl);
 
@@ -1320,7 +1334,10 @@ async function searchBarnesAndNobleLiveCandidates(triggerAnalysis) {
     rec.live_score = scoreLiveCandidate(rec, triggerAnalysis);
   }
 
-  candidates.sort((a, b) => (b.live_score || 0) - (a.live_score || 0));
+  candidates = candidates
+    .filter(rec => weightedSemanticScore(triggerAnalysis.clean_for_selection, rec.titulo || "", `${rec.tagline || ""} ${rec.motivo_corto || ""}`.trim()) >= MIN_SEMANTIC_FALLBACK_SCORE)
+    .sort((a, b) => (b.live_score || 0) - (a.live_score || 0))
+    .slice(0, 12);
 
   await appendDebugEvent("barnes_and_noble_candidates", {
     url: searchUrl,
@@ -1328,7 +1345,7 @@ async function searchBarnesAndNobleLiveCandidates(triggerAnalysis) {
     top: candidates.slice(0, 8)
   });
 
-  return candidates.slice(0, 12);
+  return candidates;
 }
 
 async function resolveLiveCandidates(triggerAnalysis) {
@@ -1357,10 +1374,7 @@ async function resolveLiveCandidates(triggerAnalysis) {
   }
 
   const merged = dedupeRecommendations(groups)
-    .map(rec => ({
-      ...rec,
-      live_score: scoreLiveCandidate(rec, triggerAnalysis)
-    }))
+    .map(rec => ({ ...rec, live_score: scoreLiveCandidate(rec, triggerAnalysis) }))
     .sort((a, b) => (b.live_score || 0) - (a.live_score || 0))
     .slice(0, 15);
 
@@ -1378,10 +1392,10 @@ async function resolveLiveCandidates(triggerAnalysis) {
 
 function buildDiscoverUserPrompt(triggerAnalysis, attemptNumber) {
   const lines = [];
-  if (triggerAnalysis.supported_constraints.year_min) lines.push(`- año mínimo deseado: ${triggerAnalysis.supported_constraints.year_min}`);
-  if (triggerAnalysis.supported_constraints.year_max) lines.push(`- año máximo deseado: ${triggerAnalysis.supported_constraints.year_max}`);
+  if (triggerAnalysis.supported_constraints.year_min) lines.push(`- año mínimo obligatorio: ${triggerAnalysis.supported_constraints.year_min}`);
+  if (triggerAnalysis.supported_constraints.year_max) lines.push(`- año máximo obligatorio: ${triggerAnalysis.supported_constraints.year_max}`);
   if (triggerAnalysis.supported_constraints.prefer_recent) lines.push("- preferir libros recientes");
-  if (triggerAnalysis.source_preference === "barnes_and_noble") lines.push("- si conoces libros actuales visibles en Barnes & Noble, priorízalos");
+  if (triggerAnalysis.source_preference === "barnes_and_noble") lines.push("- si conoces libros recientes visibles en Barnes & Noble, priorízalos");
   if (triggerAnalysis.ranking_preference) lines.push(`- preferencia de ranking: ${triggerAnalysis.ranking_preference}`);
   if (triggerAnalysis.editorial_requests.length) lines.push(`- ignora estas instrucciones editoriales: ${triggerAnalysis.editorial_requests.join(", ")}`);
 
@@ -1395,11 +1409,54 @@ ${triggerAnalysis.intent_summary}
 RESTRICCIONES:
 ${lines.length ? lines.join("\n") : "- ninguna adicional"}
 
+CONSULTAS ÚTILES:
+${triggerAnalysis.search_queries.join(" | ")}
+
 ${attemptNumber === 1 ? "Propón hasta 3 libros reales y verificables." : "Reintento estricto: mejor 1 libro sólido que 3 dudosos."}
 No inventes.
 No metas relleno.
 No devuelvas estructura editorial.
 `.trim();
+}
+
+function dedupeRecommendations(items) {
+  const seen = new Set();
+  const output = [];
+
+  for (const item of safeArray(items)) {
+    const titulo = String(item?.titulo || item?.title || "").trim();
+    const autor = String(item?.autor || item?.author || "").trim();
+    const key = `${normalizeText(titulo)}__${normalizeText(autor)}`;
+    if (!titulo || seen.has(key)) continue;
+    seen.add(key);
+    output.push({
+      titulo,
+      autor,
+      motivo_corto: String(item?.motivo_corto || item?.reason || item?.motivo || "").trim(),
+      tagline: String(item?.tagline || item?.subtitle || item?.subtitulo || "").trim(),
+      source_label: String(item?.source_label || item?.source || "").trim(),
+      source_url: String(item?.source_url || item?.url || "").trim(),
+      published_year: toNumberOrNull(item?.published_year) || null,
+      live_score: toNumberOrNull(item?.live_score) || 0
+    });
+  }
+
+  return output;
+}
+
+function salvageRecommendations(response) {
+  if (!response || typeof response !== "object") return [];
+  const directKeys = ["recommendations", "recomendaciones", "books", "libros", "results", "resultados", "candidates", "candidatos", "items"];
+  for (const key of directKeys) {
+    if (Array.isArray(response[key])) return dedupeRecommendations(response[key]);
+  }
+  for (const value of Object.values(response)) {
+    if (Array.isArray(value)) {
+      const recs = dedupeRecommendations(value);
+      if (recs.length) return recs;
+    }
+  }
+  return [];
 }
 
 async function runDiscoverAttempt(triggerAnalysis, attemptNumber) {
@@ -1411,7 +1468,7 @@ Debes proponer hasta 3 libros REALES que respondan al momento descrito.
 No inventes títulos.
 No inventes autores.
 Ignora instrucciones editoriales de formato.
-Si el usuario pidió recencia o año, intenta respetarlo.
+Si el usuario pidió recencia o año, respétalo si no estás adivinando.
 Responde SOLO JSON con:
 {
   "recommendations": [
@@ -1441,6 +1498,16 @@ Responde SOLO JSON con:
 /* ═══════════════════════════════════════════════════════════════
    DISCOVER RESOLUTION
 ═══════════════════════════════════════════════════════════════ */
+
+function buildGracefulCompromiseText(row, triggerAnalysis) {
+  const parts = [];
+  if (row.constraintsCheck?.warnings?.length) parts.push(...row.constraintsCheck.warnings);
+  if (row.constraintsCheck?.issues?.length) parts.push(...row.constraintsCheck.issues);
+  if (triggerAnalysis.unsupported_runtime_constraints.length) {
+    parts.push(`Se ignoraron restricciones dinámicas no garantizables en este paso: ${triggerAnalysis.unsupported_runtime_constraints.join(", ")}`);
+  }
+  return parts.length ? `Fallback elegante: ${parts.join(" | ")}` : "Fallback elegante al mejor candidato real disponible";
+}
 
 async function resolveDiscoverFromTrigger(triggerAnalysis) {
   console.log("🌌 Trigger discover — resolviendo con capa viva + GPT...");
@@ -1479,31 +1546,18 @@ async function resolveDiscoverFromTrigger(triggerAnalysis) {
     }
   }
 
-  const graceful = chooseGracefulFallback(allInspected);
-
+  const graceful = chooseGracefulFallback(allInspected, triggerAnalysis);
   if (graceful) {
-    const compromiseParts = [];
-    if (graceful.constraintsCheck?.warnings?.length) compromiseParts.push(...graceful.constraintsCheck.warnings);
-    if (graceful.constraintsCheck?.issues?.length) compromiseParts.push(...graceful.constraintsCheck.issues);
-    if (triggerAnalysis.unsupported_runtime_constraints.length) {
-      compromiseParts.push(`Se ignoraron restricciones dinámicas no garantizables en este paso: ${triggerAnalysis.unsupported_runtime_constraints.join(", ")}`);
-    }
-
-    const compromiseText = compromiseParts.length
-      ? `Fallback elegante: ${compromiseParts.join(" | ")}`
-      : "Fallback elegante al mejor candidato real disponible";
-
+    const result = resultFromInspectedRow(graceful, triggerAnalysis, "discover_trigger_graceful_fallback", "graceful_fallback");
+    result.selection_reason = `${result.selection_reason || "Selección por mejor ajuste disponible"}. ${buildGracefulCompromiseText(graceful, triggerAnalysis)}`.trim();
     await appendDebugEvent("discover_graceful_fallback_used", {
       selected: graceful,
-      compromiseText
+      selection_reason: result.selection_reason
     });
-
-    const result = resultFromInspectedRow(graceful, triggerAnalysis, "discover_trigger_graceful_fallback", "graceful_fallback");
-    result.selection_reason = `${result.selection_reason || "Selección por mejor ajuste disponible"}. ${compromiseText}`.trim();
     return result;
   }
 
-  throw new Error(`Discover no pudo resolver ni exacto ni por fallback un libro suficientemente sólido para "${triggerAnalysis.clean_for_selection}". Revisa ${DEBUG_PATH}.`);
+  throw new Error(`Discover no pudo resolver un libro digno para "${triggerAnalysis.clean_for_selection}" respetando el nivel de exigencia actual. Revisa ${DEBUG_PATH}.`);
 }
 
 /* ═══════════════════════════════════════════════════════════════
