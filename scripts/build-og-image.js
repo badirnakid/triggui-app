@@ -2,10 +2,10 @@
  * build-og-image.js — Paso 5 del pipeline Triggui 2.0
  *
  * Genera OG image PNG 1200×630 para preview de link en WhatsApp.
- * Prioriza:
- * - una frase fuerte dentro de la imagen
- * - palabras del libro para el eyebrow
- * - cero copy editorial flojo
+ * Composición final:
+ * - una sola frase fuerte y grande
+ * - portada del libro
+ * - logo blanco real de Triggui
  *
  * Lee el artefacto canónico single-book:
  *   1) TRIGGUI_EDICION_JSON
@@ -199,6 +199,19 @@ function stripExplicitBookRefs(text, titulo = "", autor = "") {
   return normalizeText(value);
 }
 
+function stripEmoji(text) {
+  let value = String(text || "");
+  try {
+    value = value.replace(/\p{Extended_Pictographic}/gu, "");
+  } catch {
+    value = value.replace(
+      /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu,
+      ""
+    );
+  }
+  return normalizeText(value);
+}
+
 function phraseIsWeak(text) {
   const value = normalizeText(text).toLowerCase();
 
@@ -274,7 +287,7 @@ function scorePhrase(text) {
   return score;
 }
 
-function pickOgPhrases(bookMeta, libro) {
+function pickOgHeadline(bookMeta, libro) {
   const titulo = bookMeta?.titulo || libro?.titulo || "";
   const autor = bookMeta?.autor || libro?.autor || "";
 
@@ -282,21 +295,30 @@ function pickOgPhrases(bookMeta, libro) {
     ...toArrayOfStrings(libro?.frases),
     ...toArrayOfStrings(bookMeta?.frases)
   ])
-    .map((item) => stripExplicitBookRefs(item, titulo, autor))
+    .map((item) => stripEmoji(stripExplicitBookRefs(item, titulo, autor)))
     .filter(Boolean);
 
   const ranked = frases
     .map((phrase) => ({ phrase, score: scorePhrase(phrase) }))
     .sort((a, b) => b.score - a.score);
 
-  const headline = clampText((ranked[0]?.phrase || "").trim(), 82);
+  const best = clampText((ranked[0]?.phrase || "").trim(), 78);
+  if (best) return best;
 
-  const secondary =
-    ranked.find((item) => normalizeText(item.phrase).toLowerCase() !== normalizeText(headline).toLowerCase())?.phrase || "";
+  const tarjeta = libro?.tarjeta || {};
+  const fallback = stripEmoji(
+    stripExplicitBookRefs(
+      tarjeta.titulo ||
+      tarjeta.subtitulo ||
+      stripHighlightTags(tarjeta.parrafoTop || "") ||
+      stripHighlightTags(tarjeta.parrafoBot || "") ||
+      "",
+      titulo,
+      autor
+    )
+  );
 
-  const description = clampText(secondary, 120);
-
-  return { headline, description };
+  return clampText(fallback || "Triggui", 78);
 }
 
 function resolvePortadaURL(bookMeta, libro) {
@@ -325,46 +347,6 @@ function resolveAccent(libro) {
     libro?.colores?.[0] ||
     "#E35D30"
   );
-}
-
-function resolveEyebrow(bookMeta, libro) {
-  const palabras = uniqueStrings([
-    ...toArrayOfStrings(libro?.palabras),
-    ...toArrayOfStrings(bookMeta?.palabras)
-  ]).slice(0, 2);
-
-  if (palabras.length === 2) {
-    return clampText(`${palabras[0]} · ${palabras[1]}`, 40);
-  }
-
-  if (palabras.length === 1) {
-    return clampText(palabras[0], 22);
-  }
-
-  return "Triggui";
-}
-
-function resolveHeadline(bookMeta, libro) {
-  const { headline } = pickOgPhrases(bookMeta, libro);
-  if (headline) return headline;
-
-  const tarjeta = libro?.tarjeta || {};
-  const fallback = stripExplicitBookRefs(
-    tarjeta.titulo || tarjeta.subtitulo || stripHighlightTags(tarjeta.parrafoTop || "") || "",
-    bookMeta?.titulo || libro?.titulo || "",
-    bookMeta?.autor || libro?.autor || ""
-  );
-
-  return clampText(fallback || "Triggui", 82);
-}
-
-function resolveSubheadline(bookMeta, libro, headline) {
-  const { description } = pickOgPhrases(bookMeta, libro);
-  const clean = normalizeText(description);
-
-  if (!clean) return "";
-  if (clean.toLowerCase() === normalizeText(headline).toLowerCase()) return "";
-  return clampText(clean, 110);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -410,16 +392,13 @@ console.log(`🧾 Fuente JSON: ${contenidoPath}`);
 const template = await fs.readFile("scripts/templates/og-image.html", "utf8");
 
 const accent = resolveAccent(libro);
-const accentSoft = withAlpha(accent, "26") || "#E35D3026";
-const accentGlow = withAlpha(accent, "45") || "#E35D3045";
+const accentSoft = withAlpha(accent, "24") || "#E35D3024";
+const accentGlow = withAlpha(accent, "42") || "#E35D3042";
 
 const portadaURL = resolvePortadaURL(bookMeta, libro);
 const portadaSource = resolvePortadaSource(bookMeta, libro, portadaURL);
 
-const eyebrow = resolveEyebrow(bookMeta, libro);
-const headline = resolveHeadline(bookMeta, libro);
-const subheadline = resolveSubheadline(bookMeta, libro, headline);
-
+const headline = pickOgHeadline(bookMeta, libro);
 const brandLogoDataURL = await resolveBrandLogoDataURL();
 
 const coverSection = portadaURL
@@ -431,9 +410,7 @@ const brandSection = brandLogoDataURL
   : `<div class="brand-fallback">triggui</div>`;
 
 let html = template
-  .replace("{{EYEBROW}}", escapeHTML(eyebrow))
   .replace("{{HEADLINE}}", escapeHTML(headline))
-  .replace("{{SUBHEADLINE}}", escapeHTML(subheadline))
   .replace("{{COVER_SECTION}}", coverSection)
   .replace("{{BRAND_SECTION}}", brandSection);
 
@@ -476,8 +453,6 @@ if (portadaURL) {
 
 await page.evaluate(() => {
   const headline = document.querySelector(".headline");
-  const subheadline = document.querySelector(".subheadline");
-  const eyebrow = document.querySelector(".eyebrow");
   const content = document.querySelector(".content");
   const coverWrap = document.querySelector(".cover-wrap");
 
@@ -485,38 +460,17 @@ await page.evaluate(() => {
   const setPx = (el, prop, value) => { if (el) el.style[prop] = `${value}px`; };
 
   let guard = 0;
-  while (content && content.scrollHeight > content.clientHeight && guard < 120) {
-    let changed = false;
+  while (headline && content && content.scrollHeight > content.clientHeight && guard < 120) {
+    const size = px(headline, "fontSize");
+    const line = px(headline, "lineHeight");
+    const spacing = px(headline, "letterSpacing");
 
-    if (headline) {
-      const size = px(headline, "fontSize");
-      const line = px(headline, "lineHeight");
-      if (size > 72) {
-        setPx(headline, "fontSize", size - 1);
-        if (line > 0) setPx(headline, "lineHeight", Math.max(68, line - 1));
-        changed = true;
-      }
-    }
+    if (size <= 68) break;
 
-    if (subheadline && content.scrollHeight > content.clientHeight) {
-      const size = px(subheadline, "fontSize");
-      const line = px(subheadline, "lineHeight");
-      if (size > 20) {
-        setPx(subheadline, "fontSize", size - 0.5);
-        if (line > 0) setPx(subheadline, "lineHeight", Math.max(24, line - 0.5));
-        changed = true;
-      }
-    }
+    setPx(headline, "fontSize", size - 1);
+    if (line > 0) setPx(headline, "lineHeight", Math.max(64, line - 1));
+    if (!Number.isNaN(spacing)) setPx(headline, "letterSpacing", Math.min(-0.6, spacing + 0.04));
 
-    if (eyebrow && content.scrollHeight > content.clientHeight) {
-      const size = px(eyebrow, "fontSize");
-      if (size > 14) {
-        setPx(eyebrow, "fontSize", size - 0.25);
-        changed = true;
-      }
-    }
-
-    if (!changed) break;
     guard += 1;
   }
 
@@ -541,4 +495,3 @@ const stats = await fs.stat(outPath);
 console.log(`   ✅ OG image: ${outPath} (${(stats.size / 1024).toFixed(0)} KB)`);
 console.log(`   🖼️  Portada: ${portadaURL ? portadaSource : "tipográfica"}`);
 console.log(`   ✨ Headline: ${headline}`);
-console.log(`   📝 Secondary: ${subheadline || "—"}`);
