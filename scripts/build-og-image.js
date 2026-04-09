@@ -48,6 +48,36 @@ async function resolveContenidoPath() {
   return null;
 }
 
+async function fileToDataURL(filePath) {
+  const absPath = path.resolve(filePath);
+  const ext = path.extname(absPath).toLowerCase();
+  const mime =
+    ext === ".png" ? "image/png" :
+    ext === ".jpg" || ext === ".jpeg" ? "image/jpeg" :
+    ext === ".webp" ? "image/webp" :
+    null;
+
+  if (!mime) return "";
+
+  const buffer = await fs.readFile(absPath);
+  return `data:${mime};base64,${buffer.toString("base64")}`;
+}
+
+async function resolveBrandLogoDataURL() {
+  const candidates = [
+    "public/trigguiletrasblanco2.png",
+    "public/trigguiletrasblanco.png"
+  ];
+
+  for (const candidate of candidates) {
+    if (await fileExists(candidate)) {
+      return await fileToDataURL(candidate);
+    }
+  }
+
+  return "";
+}
+
 function escapeHTML(text) {
   if (text == null) return "";
   return String(text)
@@ -261,7 +291,9 @@ function pickOgPhrases(bookMeta, libro) {
 
   const headline = clampText((ranked[0]?.phrase || "").trim(), 82);
 
-  const secondary = ranked.find((item) => item.phrase.toLowerCase() !== headline.toLowerCase())?.phrase || "";
+  const secondary =
+    ranked.find((item) => normalizeText(item.phrase).toLowerCase() !== normalizeText(headline).toLowerCase())?.phrase || "";
+
   const description = clampText(secondary, 120);
 
   return { headline, description };
@@ -388,15 +420,22 @@ const eyebrow = resolveEyebrow(bookMeta, libro);
 const headline = resolveHeadline(bookMeta, libro);
 const subheadline = resolveSubheadline(bookMeta, libro, headline);
 
+const brandLogoDataURL = await resolveBrandLogoDataURL();
+
 const coverSection = portadaURL
   ? `<img class="cover" src="${portadaURL}" alt="Portada editorial" />`
   : `<div class="cover-fallback">TRIGGUI</div>`;
 
+const brandSection = brandLogoDataURL
+  ? `<img src="${brandLogoDataURL}" alt="Triggui" />`
+  : `<div class="brand-fallback">triggui</div>`;
+
 let html = template
   .replace("{{EYEBROW}}", escapeHTML(eyebrow))
   .replace("{{HEADLINE}}", escapeHTML(headline))
-  .replace("{{SUBHEADLINE}}", escapeHTML(""))
-  .replace("{{COVER_SECTION}}", coverSection);
+  .replace("{{SUBHEADLINE}}", escapeHTML(subheadline))
+  .replace("{{COVER_SECTION}}", coverSection)
+  .replace("{{BRAND_SECTION}}", brandSection);
 
 const cssVars = [
   "--bg: #09090B",
@@ -437,6 +476,8 @@ if (portadaURL) {
 
 await page.evaluate(() => {
   const headline = document.querySelector(".headline");
+  const subheadline = document.querySelector(".subheadline");
+  const eyebrow = document.querySelector(".eyebrow");
   const content = document.querySelector(".content");
   const coverWrap = document.querySelector(".cover-wrap");
 
@@ -444,12 +485,38 @@ await page.evaluate(() => {
   const setPx = (el, prop, value) => { if (el) el.style[prop] = `${value}px`; };
 
   let guard = 0;
-  while (headline && content && content.scrollHeight > content.clientHeight && guard < 80) {
-    const size = px(headline, "fontSize");
-    const line = px(headline, "lineHeight");
-    if (size <= 72) break;
-    setPx(headline, "fontSize", size - 1);
-    if (line > 0) setPx(headline, "lineHeight", Math.max(size - 6, line - 1));
+  while (content && content.scrollHeight > content.clientHeight && guard < 120) {
+    let changed = false;
+
+    if (headline) {
+      const size = px(headline, "fontSize");
+      const line = px(headline, "lineHeight");
+      if (size > 72) {
+        setPx(headline, "fontSize", size - 1);
+        if (line > 0) setPx(headline, "lineHeight", Math.max(68, line - 1));
+        changed = true;
+      }
+    }
+
+    if (subheadline && content.scrollHeight > content.clientHeight) {
+      const size = px(subheadline, "fontSize");
+      const line = px(subheadline, "lineHeight");
+      if (size > 20) {
+        setPx(subheadline, "fontSize", size - 0.5);
+        if (line > 0) setPx(subheadline, "lineHeight", Math.max(24, line - 0.5));
+        changed = true;
+      }
+    }
+
+    if (eyebrow && content.scrollHeight > content.clientHeight) {
+      const size = px(eyebrow, "fontSize");
+      if (size > 14) {
+        setPx(eyebrow, "fontSize", size - 0.25);
+        changed = true;
+      }
+    }
+
+    if (!changed) break;
     guard += 1;
   }
 
