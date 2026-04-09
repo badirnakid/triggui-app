@@ -358,15 +358,11 @@ def normalize_highlight_syntax(text):
     if not value:
         return ""
 
-    # {{H}}...{{/H}} -> [H]...[/H]
     value = re.sub(r"\{\{H\}\}", "[H]", value, flags=re.IGNORECASE)
     value = re.sub(r"\{\{\/H\}\}", "[/H]", value, flags=re.IGNORECASE)
-
-    # minúsculas -> mayúsculas
     value = re.sub(r"\[h\]", "[H]", value)
     value = re.sub(r"\[\/h\]", "[/H]", value)
 
-    # legacy roto: [H]...[H] => alternar open/close
     toggle_open = True
 
     def replace_open(_match):
@@ -392,7 +388,6 @@ def normalize_highlight_syntax(text):
             value = value[:idx] + value[idx + 4 :]
             extra -= 1
 
-    # limpia highlights vacíos
     value = re.sub(r"\[H\]\s*\[/H\]", "", value)
     value = re.sub(r"[ \t]{2,}", " ", value).strip()
     return value
@@ -473,9 +468,10 @@ def render_edicion(edicion, mode="lab"):
     og_title = build_og_title(edicion)
     og_description = build_og_description(edicion)
 
+    primary_word_default = normalize_text((palabras[0] if palabras else "") or palabra or titulo)
     busca_comprar = urllib.parse.quote(f"{titulo} {autor}")
-    busca_explorar = urllib.parse.quote(palabra) if palabra else busca_comprar
-    penguin_q = urllib.parse.quote(palabra) if palabra else urllib.parse.quote(titulo)
+    busca_explorar = urllib.parse.quote(primary_word_default) if primary_word_default else busca_comprar
+    penguin_q = urllib.parse.quote(primary_word_default) if primary_word_default else urllib.parse.quote(titulo)
 
     has_portada = portada.startswith("http")
     cover_src = portada if has_portada else ""
@@ -486,7 +482,7 @@ def render_edicion(edicion, mode="lab"):
         t_parrafo_top or descripcion,
         t_subtitulo,
         t_parrafo_bot,
-        has_portada,
+        has_cover=has_portada,
     )
 
     state = {
@@ -1135,11 +1131,11 @@ body::before {
             <img class="btn-busca-logo" src="/buscalibre.png" alt="Buscalibre">
           </a>
 
-          <a class="btn-dark btn-crystal" href="https://www.buscalibre.com.mx/libros/search/?q=__BUSCA_EXPLORAR__" target="_blank" rel="noopener noreferrer">
+          <a class="btn-dark btn-crystal" id="btnCrystal" href="https://www.buscalibre.com.mx/libros/search/?q=__BUSCA_EXPLORAR__" target="_blank" rel="noopener noreferrer">
             <span class="btn-emoji">🔮</span>
           </a>
 
-          <a class="btn-dark btn-penguin-icon" href="https://www.penguinlibros.com/mx/?mot_q=__PENGUIN_Q__" target="_blank" rel="noopener noreferrer">
+          <a class="btn-dark btn-penguin-icon" id="btnPenguin" href="https://www.penguinlibros.com/mx/?mot_q=__PENGUIN_Q__" target="_blank" rel="noopener noreferrer">
             <img src="/logopenguin.png" alt="Penguin">
           </a>
         </div>
@@ -1170,6 +1166,8 @@ const revealCard = document.querySelector('.reveal-card');
 const silenceScreen = document.getElementById('silenceScreen');
 const silPulse = document.getElementById('silPulse');
 const pulseEditionKey = 'triggui_lab_opened_' + state.id;
+const btnCrystal = document.getElementById('btnCrystal');
+const btnPenguin = document.getElementById('btnPenguin');
 
 const ANG = [115, 205, 35, 320];
 function grad(i) {
@@ -1310,6 +1308,27 @@ function getChronoOrder(hour) {
 
 const currentHour = new Date().getHours();
 const chronoOrder = getChronoOrder(currentHour);
+
+function getPrimaryChronoWord() {
+  const idx = chronoOrder[0];
+  const candidate = (state.palabras && state.palabras[idx]) || state.palabra || state.titulo || '';
+  return String(candidate || '').trim();
+}
+
+function applyDynamicActionLinks() {
+  const word = getPrimaryChronoWord();
+  if (!word) return;
+
+  const encoded = encodeURIComponent(word);
+
+  if (btnCrystal) {
+    btnCrystal.href = 'https://www.buscalibre.com.mx/libros/search/?q=' + encoded;
+  }
+
+  if (btnPenguin) {
+    btnPenguin.href = 'https://www.penguinlibros.com/mx/?mot_q=' + encoded;
+  }
+}
 
 function fitRevealTypography() {
   const title = document.getElementById('editorialTitle');
@@ -1462,7 +1481,7 @@ if (coverCTA) {
 
     registerCollectivePhysicalOpen().then((result) => {
       if (result.ok && result.count !== null) {
-        silPulse.innerHTML = '<span class="pulse-num">' + result.count + '</span><span class="pulse-label">libros abiertos en el mundo</span>';
+        silPulse.innerHTML = '<span class="pulse-num">' + result.count + '</span><span class="pulse-label">libros abiertos en el mundo hoy</span>';
       } else {
         silPulse.innerHTML = '<span class="pulse-label">Se registró el acto.</span>';
       }
@@ -1495,6 +1514,7 @@ window.addEventListener('resize', () => {
 });
 
 renderBlocks();
+applyDynamicActionLinks();
 setOverlayView('blocks');
 
 (function() {
@@ -1512,15 +1532,31 @@ setOverlayView('blocks');
 (async () => {
   const total = await getCollectivePulse();
   const el = document.getElementById('pulseLine');
-  if (total !== null && total > 0) {
-    el.textContent = 'Ya van ' + total + ' libros abiertos.';
-    el.classList.add('visible');
-  }
+  if (total !== null and False):
+    pass
 })();
 </script>
 </body>
 </html>
 """
+
+    # Corrige el bloque anterior para Python: inserta JS intacto
+    html_output = html_output.replace(
+        """(async () => {
+  const total = await getCollectivePulse();
+  const el = document.getElementById('pulseLine');
+  if (total !== null and False):
+    pass
+})();""",
+        """(async () => {
+  const total = await getCollectivePulse();
+  const el = document.getElementById('pulseLine');
+  if (total !== null && total > 0) {
+    el.textContent = 'Ya van ' + total + ' libros abiertos.';
+    el.classList.add('visible');
+  }
+})();"""
+    )
 
     replacements = {
         "__TITLE_PAGE__": esc(f"{palabra} · {titulo} · Triggui"),
