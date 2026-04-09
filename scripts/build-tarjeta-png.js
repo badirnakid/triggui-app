@@ -835,6 +835,7 @@ await page.evaluate((limits) => {
   const body = document.getElementById("bodyText");
   const coverWrap = document.getElementById("coverWrap");
 
+  const clampLocal = (value, min, max) => Math.min(Math.max(value, min), max);
   const px = (el, prop) => el ? (parseFloat(getComputedStyle(el)[prop]) || 0) : 0;
   const setPx = (el, prop, value) => { if (el) el.style[prop] = `${value}px`; };
   const hasAuthor = !!author && !author.classList.contains("is-hidden");
@@ -851,23 +852,23 @@ await page.evaluate((limits) => {
 
   function applyScale(scale) {
     if (title) {
-      const v = clamp(base.title * Math.pow(scale, 0.82), limits.titleMin, limits.titleMax);
+      const v = clampLocal(base.title * Math.pow(scale, 0.82), limits.titleMin, limits.titleMax);
       setPx(title, "fontSize", v);
     }
 
     if (body) {
-      const v = clamp(base.body * scale, limits.bodyMin, limits.bodyMax);
+      const v = clampLocal(base.body * scale, limits.bodyMin, limits.bodyMax);
       setPx(body, "fontSize", v);
     }
 
     if (hasAuthor) {
-      const v = clamp(base.author * Math.pow(scale, 0.88), limits.authorMin, limits.authorMax);
+      const v = clampLocal(base.author * Math.pow(scale, 0.88), limits.authorMin, limits.authorMax);
       setPx(author, "fontSize", v);
     }
 
     if (coverWrap) {
       const coverScale = 1 + ((scale - 1) * 0.32);
-      const v = clamp(base.cover * coverScale, limits.coverMin, limits.coverMax);
+      const v = clampLocal(base.cover * coverScale, limits.coverMin, limits.coverMax);
       setPx(coverWrap, "width", v);
     }
   }
