@@ -34,7 +34,7 @@ on:
           - discover
 
       entrada:
-        description: 'Libro o trigger (puede venir mezclado; el pipeline ahora limpia la intención y separa ruido editorial)'
+        description: 'Libro o trigger libre. Puede venir mezclado y el pipeline intentará resolverlo automáticamente.'
         required: false
         type: string
 
