@@ -104,30 +104,30 @@ const PX = {
   heroPadLeft: Math.round(22 * SCALE),
 
   coverWidth: Math.round(APP.coverWidth * SCALE),
-  coverMinWidth: Math.round(APP.coverWidth * SCALE * 0.88),
-  coverMaxWidth: Math.round(APP.coverWidth * SCALE * 1.26),
-  coverMaxHeight: Math.round(APP.coverMaxHeight * SCALE * 1.02),
+  coverMinWidth: Math.round(APP.coverWidth * SCALE * 0.96),
+  coverMaxWidth: Math.round(APP.coverWidth * SCALE * 1.44),
+  coverMaxHeight: Math.round(APP.coverMaxHeight * SCALE * 1.12),
   coverMarginBottom: Math.round(APP.coverMarginBottom * SCALE),
   coverMarginLeft: Math.round(APP.coverMarginLeft * SCALE),
 
   titleSize: APP.fontTitleSize * SCALE,
-  titleMinSize: APP.fontTitleSize * SCALE * 0.92,
-  titleMaxSize: APP.fontTitleSize * SCALE * 1.24,
+  titleMinSize: APP.fontTitleSize * SCALE * 0.98,
+  titleMaxSize: APP.fontTitleSize * SCALE * 1.40,
 
   paragraphSize: APP.fontParagraphSize * SCALE,
-  paragraphMinSize: APP.fontParagraphSize * SCALE * 0.94,
-  paragraphMaxSize: APP.fontParagraphSize * SCALE * 1.42,
+  paragraphMinSize: APP.fontParagraphSize * SCALE * 1.00,
+  paragraphMaxSize: APP.fontParagraphSize * SCALE * 1.64,
 
   authorChipSize: APP.authorChipSize * SCALE,
-  authorChipMinSize: APP.authorChipSize * SCALE * 0.96,
-  authorChipMaxSize: APP.authorChipSize * SCALE * 1.14,
+  authorChipMinSize: APP.authorChipSize * SCALE * 1.00,
+  authorChipMaxSize: APP.authorChipSize * SCALE * 1.22,
   authorChipPadY: APP.authorChipPadY * SCALE,
   authorChipPadX: APP.authorChipPadX * SCALE,
   authorChipRadius: APP.authorChipRadius * SCALE,
 
-  footerHeight: Math.round(82 * SCALE),
-  footerSize: APP.fontFooterSize * SCALE,
-  footerLogoHeight: Math.round(24 * SCALE),
+  footerHeight: Math.round(94 * SCALE),
+  footerSize: APP.fontFooterSize * SCALE * 1.16,
+  footerLogoHeight: Math.round(32 * SCALE),
 
   highlightPadY: Math.max(2, Math.round(APP.highlightPaddingY * SCALE)),
   highlightPadX: Math.max(4, Math.round(APP.highlightPaddingX * SCALE)),
@@ -440,14 +440,14 @@ function computeInitialLayout(display, hasCover) {
   const authorLen = normalizeText(display.author).length;
   const bodyLen = normalizeText(display.bodyPlain).length;
 
-  const weighted = (titleLen * 2.0) + (authorLen * 0.30) + bodyLen + (hasCover ? 12 : 0);
-  const tightness = clamp((weighted - 135) / 235, 0, 1);
+  const weighted = (titleLen * 1.95) + (authorLen * 0.24) + bodyLen + (hasCover ? 8 : 0);
+  const tightness = clamp((weighted - 120) / 240, 0, 1);
 
   return {
-    titleSize: clamp(lerp(PX.titleMaxSize * 1.02, PX.titleSize * 1.02, tightness), PX.titleMinSize, PX.titleMaxSize),
-    paragraphSize: clamp(lerp(PX.paragraphMaxSize * 0.98, PX.paragraphSize * 1.03, tightness), PX.paragraphMinSize, PX.paragraphMaxSize),
-    authorSize: clamp(lerp(PX.authorChipMaxSize, PX.authorChipSize * 1.02, tightness), PX.authorChipMinSize, PX.authorChipMaxSize),
-    coverWidth: clamp(lerp(PX.coverMaxWidth * 0.98, PX.coverWidth * 1.02, tightness), PX.coverMinWidth, PX.coverMaxWidth)
+    titleSize: clamp(lerp(PX.titleMaxSize * 1.04, PX.titleSize * 1.06, tightness), PX.titleMinSize, PX.titleMaxSize),
+    paragraphSize: clamp(lerp(PX.paragraphMaxSize, PX.paragraphSize * 1.06, tightness), PX.paragraphMinSize, PX.paragraphMaxSize),
+    authorSize: clamp(lerp(PX.authorChipMaxSize * 1.02, PX.authorChipSize * 1.04, tightness), PX.authorChipMinSize, PX.authorChipMaxSize),
+    coverWidth: clamp(lerp(PX.coverMaxWidth, PX.coverWidth * 1.06, tightness), PX.coverMinWidth, PX.coverMaxWidth)
   };
 }
 
@@ -616,11 +616,11 @@ function buildHTML({
   .title {
     font-family: Georgia, 'Times New Roman', serif;
     font-size: var(--title-size);
-    line-height: 1.2;
+    line-height: 1.18;
     font-weight: 700;
     letter-spacing: -0.5px;
     color: var(--title-color);
-    margin: 0 0 14px 0;
+    margin: 0 0 16px 0;
     text-wrap: balance;
   }
 
@@ -638,7 +638,7 @@ function buildHTML({
     line-height: 1;
     font-weight: 700;
     letter-spacing: 0.3px;
-    margin: 2px 0 18px 0;
+    margin: 2px 0 20px 0;
   }
 
   .author-chip.is-hidden {
@@ -648,7 +648,7 @@ function buildHTML({
   .body-text {
     font-family: Georgia, 'Times New Roman', serif;
     font-size: var(--paragraph-size);
-    line-height: 1.7;
+    line-height: 1.68;
     font-weight: 400;
     letter-spacing: 0.2px;
     color: var(--paragraph-color);
@@ -674,7 +674,7 @@ function buildHTML({
 
   .footer {
     flex: 0 0 var(--footer-height);
-    padding: 16px 24px 20px;
+    padding: 18px 24px 22px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -686,7 +686,7 @@ function buildHTML({
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
   }
 
   .footer-brand img {
@@ -707,7 +707,7 @@ function buildHTML({
   .footer-meta {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
     font-size: var(--footer-size);
-    line-height: 1.4;
+    line-height: 1.35;
     font-weight: 400;
     color: var(--footer-color);
   }
@@ -852,7 +852,7 @@ await page.evaluate((limits) => {
 
   function applyScale(scale) {
     if (title) {
-      const v = clampLocal(base.title * Math.pow(scale, 0.83), limits.titleMin, limits.titleMax);
+      const v = clampLocal(base.title * Math.pow(scale, 0.84), limits.titleMin, limits.titleMax);
       setPx(title, "fontSize", v);
     }
 
@@ -862,12 +862,12 @@ await page.evaluate((limits) => {
     }
 
     if (hasAuthor) {
-      const v = clampLocal(base.author * Math.pow(scale, 0.90), limits.authorMin, limits.authorMax);
+      const v = clampLocal(base.author * Math.pow(scale, 0.92), limits.authorMin, limits.authorMax);
       setPx(author, "fontSize", v);
     }
 
     if (coverWrap) {
-      const coverScale = 1 + ((scale - 1) * 0.46);
+      const coverScale = 1 + ((scale - 1) * 0.58);
       const v = clampLocal(base.cover * coverScale, limits.coverMin, limits.coverMax);
       setPx(coverWrap, "width", v);
     }
@@ -876,7 +876,7 @@ await page.evaluate((limits) => {
   let low = limits.scaleMin;
   let high = limits.scaleMax;
 
-  for (let i = 0; i < 32; i += 1) {
+  for (let i = 0; i < 34; i += 1) {
     const mid = (low + high) / 2;
     applyScale(mid);
 
@@ -915,7 +915,7 @@ await page.evaluate((limits) => {
   }
 
   let guard = 0;
-  while (overflow() > 0.5 && guard < 30) {
+  while (overflow() > 0.5 && guard < 34) {
     bestScale -= 0.01;
     applyScale(bestScale);
     guard += 1;
@@ -929,8 +929,8 @@ await page.evaluate((limits) => {
   authorMax: PX.authorChipMaxSize,
   coverMin: PX.coverMinWidth,
   coverMax: PX.coverMaxWidth,
-  scaleMin: 0.92,
-  scaleMax: 1.52
+  scaleMin: 0.98,
+  scaleMax: 1.72
 });
 
 await page.waitForTimeout(120);
