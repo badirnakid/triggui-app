@@ -3,7 +3,7 @@
  *
  * PNG definitiva estilo Apps Script.
  * Tamaño exacto: 1066 × 1600
- * Portada flotada real + wrap natural + ajuste tipográfico dinámico.
+ * Portada flotada real + wrap natural + ajuste tipográfico dinámico nivel dios.
  */
 
 import fs from "node:fs/promises";
@@ -105,22 +105,22 @@ const PX = {
 
   coverWidth: Math.round(APP.coverWidth * SCALE),
   coverMinWidth: Math.round(APP.coverWidth * SCALE * 0.84),
-  coverMaxWidth: Math.round(APP.coverWidth * SCALE * 1.04),
+  coverMaxWidth: Math.round(APP.coverWidth * SCALE * 1.12),
   coverMaxHeight: Math.round(APP.coverMaxHeight * SCALE),
   coverMarginBottom: Math.round(APP.coverMarginBottom * SCALE),
   coverMarginLeft: Math.round(APP.coverMarginLeft * SCALE),
 
   titleSize: APP.fontTitleSize * SCALE,
   titleMinSize: APP.fontTitleSize * SCALE * 0.90,
-  titleMaxSize: APP.fontTitleSize * SCALE * 1.08,
+  titleMaxSize: APP.fontTitleSize * SCALE * 1.16,
 
   paragraphSize: APP.fontParagraphSize * SCALE,
   paragraphMinSize: APP.fontParagraphSize * SCALE * 0.92,
-  paragraphMaxSize: APP.fontParagraphSize * SCALE * 1.08,
+  paragraphMaxSize: APP.fontParagraphSize * SCALE * 1.24,
 
   authorChipSize: APP.authorChipSize * SCALE,
   authorChipMinSize: APP.authorChipSize * SCALE * 0.94,
-  authorChipMaxSize: APP.authorChipSize * SCALE * 1.06,
+  authorChipMaxSize: APP.authorChipSize * SCALE * 1.10,
   authorChipPadY: APP.authorChipPadY * SCALE,
   authorChipPadX: APP.authorChipPadX * SCALE,
   authorChipRadius: APP.authorChipRadius * SCALE,
@@ -440,14 +440,14 @@ function computeInitialLayout(display, hasCover) {
   const authorLen = normalizeText(display.author).length;
   const bodyLen = normalizeText(display.bodyPlain).length;
 
-  const weighted = (titleLen * 1.9) + (authorLen * 0.45) + bodyLen + (hasCover ? 26 : 0);
-  const t = clamp((weighted - 170) / 210, 0, 1);
+  const weighted = (titleLen * 2.1) + (authorLen * 0.35) + bodyLen + (hasCover ? 18 : 0);
+  const tightness = clamp((weighted - 150) / 230, 0, 1);
 
   return {
-    titleSize: clamp(lerp(PX.titleMaxSize, PX.titleSize, t), PX.titleMinSize, PX.titleMaxSize),
-    paragraphSize: clamp(lerp(PX.paragraphMaxSize, PX.paragraphSize, t), PX.paragraphMinSize, PX.paragraphMaxSize),
-    authorSize: clamp(lerp(PX.authorChipMaxSize, PX.authorChipSize, t), PX.authorChipMinSize, PX.authorChipMaxSize),
-    coverWidth: clamp(lerp(PX.coverMaxWidth, PX.coverWidth, t), PX.coverMinWidth, PX.coverMaxWidth)
+    titleSize: clamp(lerp(PX.titleMaxSize * 0.98, PX.titleSize, tightness), PX.titleMinSize, PX.titleMaxSize),
+    paragraphSize: clamp(lerp(PX.paragraphMaxSize * 0.98, PX.paragraphSize, tightness), PX.paragraphMinSize, PX.paragraphMaxSize),
+    authorSize: clamp(lerp(PX.authorChipMaxSize * 0.98, PX.authorChipSize, tightness), PX.authorChipMinSize, PX.authorChipMaxSize),
+    coverWidth: clamp(lerp(PX.coverMaxWidth * 0.96, PX.coverWidth, tightness), PX.coverMinWidth, PX.coverMaxWidth)
   };
 }
 
@@ -837,89 +837,86 @@ await page.evaluate((limits) => {
 
   const px = (el, prop) => el ? (parseFloat(getComputedStyle(el)[prop]) || 0) : 0;
   const setPx = (el, prop, value) => { if (el) el.style[prop] = `${value}px`; };
+  const hasAuthor = !!author && !author.classList.contains("is-hidden");
 
   const overflow = () => content ? (content.scrollHeight - content.clientHeight) : 0;
-  const slack = () => content ? (content.clientHeight - content.scrollHeight) : 0;
+  const usage = () => content ? (content.scrollHeight / content.clientHeight) : 0;
 
-  const snapshot = () => ({
+  const base = {
     title: px(title, "fontSize"),
     body: px(body, "fontSize"),
-    author: px(author, "fontSize"),
-    cover: px(coverWrap, "width")
-  });
-
-  const apply = (state) => {
-    if (title) setPx(title, "fontSize", state.title);
-    if (body) setPx(body, "fontSize", state.body);
-    if (author && !author.classList.contains("is-hidden")) setPx(author, "fontSize", state.author);
-    if (coverWrap) setPx(coverWrap, "width", state.cover);
+    author: hasAuthor ? px(author, "fontSize") : 0,
+    cover: coverWrap ? px(coverWrap, "width") : 0
   };
 
-  let guard = 0;
-  while (overflow() > 0.5 && guard < 260) {
-    const state = snapshot();
-    let changed = false;
-
-    if (title && state.title > limits.titleMin) {
-      state.title = Math.max(limits.titleMin, state.title - 0.45);
-      changed = true;
+  function applyScale(scale) {
+    if (title) {
+      const v = clamp(base.title * Math.pow(scale, 0.82), limits.titleMin, limits.titleMax);
+      setPx(title, "fontSize", v);
     }
 
-    if (body && state.body > limits.bodyMin) {
-      state.body = Math.max(limits.bodyMin, state.body - 0.18);
-      changed = true;
+    if (body) {
+      const v = clamp(base.body * scale, limits.bodyMin, limits.bodyMax);
+      setPx(body, "fontSize", v);
     }
 
-    if (author && !author.classList.contains("is-hidden") && state.author > limits.authorMin && guard % 2 === 0) {
-      state.author = Math.max(limits.authorMin, state.author - 0.10);
-      changed = true;
+    if (hasAuthor) {
+      const v = clamp(base.author * Math.pow(scale, 0.88), limits.authorMin, limits.authorMax);
+      setPx(author, "fontSize", v);
     }
 
-    if (coverWrap && state.cover > limits.coverMin && guard % 3 === 0) {
-      state.cover = Math.max(limits.coverMin, state.cover - 0.45);
-      changed = true;
+    if (coverWrap) {
+      const coverScale = 1 + ((scale - 1) * 0.32);
+      const v = clamp(base.cover * coverScale, limits.coverMin, limits.coverMax);
+      setPx(coverWrap, "width", v);
     }
-
-    if (!changed) break;
-    apply(state);
-    guard += 1;
   }
 
-  guard = 0;
-  while (slack() > limits.targetSlack && guard < 220) {
-    const before = snapshot();
-    const state = { ...before };
-    let changed = false;
+  let low = limits.scaleMin;
+  let high = limits.scaleMax;
 
-    if (body && state.body < limits.bodyMax) {
-      state.body = Math.min(limits.bodyMax, state.body + 0.14);
-      changed = true;
+  for (let i = 0; i < 28; i += 1) {
+    const mid = (low + high) / 2;
+    applyScale(mid);
+
+    if (overflow() <= 0.5) {
+      low = mid;
+    } else {
+      high = mid;
     }
+  }
 
-    if (title && state.title < limits.titleMax) {
-      state.title = Math.min(limits.titleMax, state.title + 0.20);
-      changed = true;
-    }
+  applyScale(low);
 
-    if (author && !author.classList.contains("is-hidden") && state.author < limits.authorMax && guard % 2 === 0) {
-      state.author = Math.min(limits.authorMax, state.author + 0.06);
-      changed = true;
-    }
+  let bestScale = low;
+  let bestUsage = usage();
 
-    if (coverWrap && state.cover < limits.coverMax && guard % 3 === 0) {
-      state.cover = Math.min(limits.coverMax, state.cover + 0.30);
-      changed = true;
-    }
+  let probe = low;
+  while (probe < limits.scaleMax) {
+    probe = Math.min(limits.scaleMax, probe + 0.01);
+    applyScale(probe);
 
-    if (!changed) break;
-
-    apply(state);
-
-    if (overflow() > 0.5) {
-      apply(before);
+    if (overflow() <= 0.5) {
+      const u = usage();
+      if (u >= bestUsage) {
+        bestUsage = u;
+        bestScale = probe;
+      }
+    } else {
       break;
     }
+  }
 
+  applyScale(bestScale);
+
+  if (overflow() > 0.5) {
+    applyScale(low);
+  }
+
+  let guard = 0;
+  while (overflow() > 0.5 && guard < 24) {
+    bestScale -= 0.01;
+    applyScale(bestScale);
     guard += 1;
   }
 }, {
@@ -931,7 +928,8 @@ await page.evaluate((limits) => {
   authorMax: PX.authorChipMaxSize,
   coverMin: PX.coverMinWidth,
   coverMax: PX.coverMaxWidth,
-  targetSlack: 30
+  scaleMin: 0.88,
+  scaleMax: 1.34
 });
 
 await page.waitForTimeout(120);
