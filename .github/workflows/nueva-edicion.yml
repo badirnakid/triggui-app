@@ -34,7 +34,7 @@ on:
           - discover
 
       entrada:
-        description: 'Libro o trigger (ej: Hábitos atómicos | James Clear, o una inquietud real)'
+        description: 'Libro o trigger (puede venir mezclado; el pipeline ahora limpia la intención y separa ruido editorial)'
         required: false
         type: string
 
@@ -185,6 +185,7 @@ jobs:
 
       - name: Paso 1 — Validar libro y obtener portada
         id: validate
+        continue-on-error: true
         env:
           INPUT_MODE: ${{ steps.contract.outputs.input_mode }}
           SELECTOR_MODE: ${{ steps.contract.outputs.selector_mode }}
@@ -195,7 +196,31 @@ jobs:
           OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
         run: node scripts/validate-book.js
 
+      - name: Paso 1.1 — Mostrar diagnóstico si validación falló
+        if: ${{ always() && steps.validate.outcome == 'failure' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          echo "══════════════════════════════════════════"
+          echo "❌ VALIDACIÓN FALLÓ"
+          echo "🧭 modo_entrada:   ${{ steps.contract.outputs.input_mode }}"
+          echo "🧠 selector_mode:  ${{ steps.contract.outputs.selector_mode }}"
+          echo "📝 editorial_mode: ${{ steps.contract.outputs.editorial_mode }}"
+          echo "📝 entrada_raw:    ${{ steps.contract.outputs.entrada_raw }}"
+          echo "══════════════════════════════════════════"
+
+          if [ -f /tmp/triggui-validate-debug.json ]; then
+            echo "🧪 DEBUG /tmp/triggui-validate-debug.json"
+            cat /tmp/triggui-validate-debug.json
+          else
+            echo "⚠️ No se encontró /tmp/triggui-validate-debug.json"
+          fi
+
+          exit 1
+
       - name: Paso 2 — Enriquecer con GPT-4o-mini (modo SINGLE)
+        if: ${{ steps.validate.outcome == 'success' }}
         env:
           OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
           SINGLE_MODE: "true"
@@ -218,6 +243,7 @@ jobs:
           cp contenido_edicion.json ../contenido_edicion.json
 
       - name: Paso 3 — Generar edición viva HTML
+        if: ${{ steps.validate.outcome == 'success' }}
         env:
           TRIGGUI_EDICION_JSON: contenido_edicion.json
         run: |
@@ -234,16 +260,19 @@ jobs:
           python3 scripts/build-editions.py
 
       - name: Paso 4 — Generar tarjeta PNG (1080×1920)
+        if: ${{ steps.validate.outcome == 'success' }}
         env:
           TRIGGUI_EDICION_JSON: contenido_edicion.json
         run: node scripts/build-tarjeta-png.js
 
       - name: Paso 5 — Generar OG image PNG (1200×630)
+        if: ${{ steps.validate.outcome == 'success' }}
         env:
           TRIGGUI_EDICION_JSON: contenido_edicion.json
         run: node scripts/build-og-image.js
 
       - name: Paso 6 — Commit y push
+        if: ${{ steps.validate.outcome == 'success' }}
         run: |
           set -euo pipefail
 
@@ -272,6 +301,7 @@ jobs:
           fi
 
       - name: Paso 7 — Notificación
+        if: ${{ steps.validate.outcome == 'success' }}
         run: |
           set -euo pipefail
 
@@ -288,10 +318,12 @@ jobs:
           echo "🧭 modo_entrada:   ${{ steps.contract.outputs.input_mode }}"
           echo "🧠 selector_mode:  ${{ steps.contract.outputs.selector_mode }}"
           echo "📝 editorial_mode: ${{ steps.contract.outputs.editorial_mode }}"
+          echo "🎯 trigger limpio: ${{ steps.validate.outputs.normalized_trigger || '—' }}"
           echo "📖 ${SLUG}"
           echo "🔗 Edición viva: ${BASE_URL}/t/${SLUG}/"
           echo "🖼️  Tarjeta PNG: public/t/${SLUG}/tarjeta.png"
           echo "🧾 JSON canónico: contenido_edicion.json"
+          echo "🧪 Debug validate: ${{ steps.validate.outputs.validation_debug_path || '/tmp/triggui-validate-debug.json' }}"
           echo "══════════════════════════════════════════"
           echo ""
           echo "Descarga la tarjeta PNG y mándala por WhatsApp."
