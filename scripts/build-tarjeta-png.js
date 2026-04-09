@@ -104,23 +104,23 @@ const PX = {
   heroPadLeft: Math.round(22 * SCALE),
 
   coverWidth: Math.round(APP.coverWidth * SCALE),
-  coverMinWidth: Math.round(APP.coverWidth * SCALE * 0.84),
-  coverMaxWidth: Math.round(APP.coverWidth * SCALE * 1.12),
-  coverMaxHeight: Math.round(APP.coverMaxHeight * SCALE),
+  coverMinWidth: Math.round(APP.coverWidth * SCALE * 0.88),
+  coverMaxWidth: Math.round(APP.coverWidth * SCALE * 1.26),
+  coverMaxHeight: Math.round(APP.coverMaxHeight * SCALE * 1.02),
   coverMarginBottom: Math.round(APP.coverMarginBottom * SCALE),
   coverMarginLeft: Math.round(APP.coverMarginLeft * SCALE),
 
   titleSize: APP.fontTitleSize * SCALE,
-  titleMinSize: APP.fontTitleSize * SCALE * 0.90,
-  titleMaxSize: APP.fontTitleSize * SCALE * 1.16,
+  titleMinSize: APP.fontTitleSize * SCALE * 0.92,
+  titleMaxSize: APP.fontTitleSize * SCALE * 1.24,
 
   paragraphSize: APP.fontParagraphSize * SCALE,
-  paragraphMinSize: APP.fontParagraphSize * SCALE * 0.92,
-  paragraphMaxSize: APP.fontParagraphSize * SCALE * 1.24,
+  paragraphMinSize: APP.fontParagraphSize * SCALE * 0.94,
+  paragraphMaxSize: APP.fontParagraphSize * SCALE * 1.42,
 
   authorChipSize: APP.authorChipSize * SCALE,
-  authorChipMinSize: APP.authorChipSize * SCALE * 0.94,
-  authorChipMaxSize: APP.authorChipSize * SCALE * 1.10,
+  authorChipMinSize: APP.authorChipSize * SCALE * 0.96,
+  authorChipMaxSize: APP.authorChipSize * SCALE * 1.14,
   authorChipPadY: APP.authorChipPadY * SCALE,
   authorChipPadX: APP.authorChipPadX * SCALE,
   authorChipRadius: APP.authorChipRadius * SCALE,
@@ -440,14 +440,14 @@ function computeInitialLayout(display, hasCover) {
   const authorLen = normalizeText(display.author).length;
   const bodyLen = normalizeText(display.bodyPlain).length;
 
-  const weighted = (titleLen * 2.1) + (authorLen * 0.35) + bodyLen + (hasCover ? 18 : 0);
-  const tightness = clamp((weighted - 150) / 230, 0, 1);
+  const weighted = (titleLen * 2.0) + (authorLen * 0.30) + bodyLen + (hasCover ? 12 : 0);
+  const tightness = clamp((weighted - 135) / 235, 0, 1);
 
   return {
-    titleSize: clamp(lerp(PX.titleMaxSize * 0.98, PX.titleSize, tightness), PX.titleMinSize, PX.titleMaxSize),
-    paragraphSize: clamp(lerp(PX.paragraphMaxSize * 0.98, PX.paragraphSize, tightness), PX.paragraphMinSize, PX.paragraphMaxSize),
-    authorSize: clamp(lerp(PX.authorChipMaxSize * 0.98, PX.authorChipSize, tightness), PX.authorChipMinSize, PX.authorChipMaxSize),
-    coverWidth: clamp(lerp(PX.coverMaxWidth * 0.96, PX.coverWidth, tightness), PX.coverMinWidth, PX.coverMaxWidth)
+    titleSize: clamp(lerp(PX.titleMaxSize * 1.02, PX.titleSize * 1.02, tightness), PX.titleMinSize, PX.titleMaxSize),
+    paragraphSize: clamp(lerp(PX.paragraphMaxSize * 0.98, PX.paragraphSize * 1.03, tightness), PX.paragraphMinSize, PX.paragraphMaxSize),
+    authorSize: clamp(lerp(PX.authorChipMaxSize, PX.authorChipSize * 1.02, tightness), PX.authorChipMinSize, PX.authorChipMaxSize),
+    coverWidth: clamp(lerp(PX.coverMaxWidth * 0.98, PX.coverWidth * 1.02, tightness), PX.coverMinWidth, PX.coverMaxWidth)
   };
 }
 
@@ -852,7 +852,7 @@ await page.evaluate((limits) => {
 
   function applyScale(scale) {
     if (title) {
-      const v = clampLocal(base.title * Math.pow(scale, 0.82), limits.titleMin, limits.titleMax);
+      const v = clampLocal(base.title * Math.pow(scale, 0.83), limits.titleMin, limits.titleMax);
       setPx(title, "fontSize", v);
     }
 
@@ -862,12 +862,12 @@ await page.evaluate((limits) => {
     }
 
     if (hasAuthor) {
-      const v = clampLocal(base.author * Math.pow(scale, 0.88), limits.authorMin, limits.authorMax);
+      const v = clampLocal(base.author * Math.pow(scale, 0.90), limits.authorMin, limits.authorMax);
       setPx(author, "fontSize", v);
     }
 
     if (coverWrap) {
-      const coverScale = 1 + ((scale - 1) * 0.32);
+      const coverScale = 1 + ((scale - 1) * 0.46);
       const v = clampLocal(base.cover * coverScale, limits.coverMin, limits.coverMax);
       setPx(coverWrap, "width", v);
     }
@@ -876,7 +876,7 @@ await page.evaluate((limits) => {
   let low = limits.scaleMin;
   let high = limits.scaleMax;
 
-  for (let i = 0; i < 28; i += 1) {
+  for (let i = 0; i < 32; i += 1) {
     const mid = (low + high) / 2;
     applyScale(mid);
 
@@ -898,9 +898,9 @@ await page.evaluate((limits) => {
     applyScale(probe);
 
     if (overflow() <= 0.5) {
-      const u = usage();
-      if (u >= bestUsage) {
-        bestUsage = u;
+      const currentUsage = usage();
+      if (currentUsage >= bestUsage) {
+        bestUsage = currentUsage;
         bestScale = probe;
       }
     } else {
@@ -915,7 +915,7 @@ await page.evaluate((limits) => {
   }
 
   let guard = 0;
-  while (overflow() > 0.5 && guard < 24) {
+  while (overflow() > 0.5 && guard < 30) {
     bestScale -= 0.01;
     applyScale(bestScale);
     guard += 1;
@@ -929,8 +929,8 @@ await page.evaluate((limits) => {
   authorMax: PX.authorChipMaxSize,
   coverMin: PX.coverMinWidth,
   coverMax: PX.coverMaxWidth,
-  scaleMin: 0.88,
-  scaleMax: 1.34
+  scaleMin: 0.92,
+  scaleMax: 1.52
 });
 
 await page.waitForTimeout(120);
