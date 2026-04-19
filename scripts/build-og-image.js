@@ -291,10 +291,19 @@ function pickOgHeadline(bookMeta, libro) {
   const titulo = bookMeta?.titulo || libro?.titulo || "";
   const autor = bookMeta?.autor || libro?.autor || "";
 
-  const frases = uniqueStrings([
+  // Pipeline nucleus: frases_og[] contiene frases cortas optimizadas para OG (40-70 chars).
+  // Fallback: si el JSON no tiene frases_og (contenido legacy de v9.7.4), usa frases[].
+  // Esto garantiza compatibilidad total con outputs anteriores.
+  const ogSource = [
+    ...toArrayOfStrings(libro?.frases_og),
+    ...toArrayOfStrings(bookMeta?.frases_og)
+  ];
+  const editionSource = [
     ...toArrayOfStrings(libro?.frases),
     ...toArrayOfStrings(bookMeta?.frases)
-  ])
+  ];
+
+  const frases = uniqueStrings(ogSource.length ? ogSource : editionSource)
     .map((item) => stripEmoji(stripExplicitBookRefs(item, titulo, autor)))
     .filter(Boolean);
 
