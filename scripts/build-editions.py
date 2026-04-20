@@ -1264,38 +1264,81 @@ function moveToSilence() {
 
 async function getCollectivePulse() {
   try {
-    const res = await fetch('/api/get-lab', { cache: 'no-store' });
-    if (!res.ok) throw new Error('fail');
+    const res = await fetch('https://triggui-api.vercel.app/api/get?cb=' + Date.now(), {
+      cache: 'no-store'
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
-    return Number(data.total || 0);
+    const total = Number(data && data.total ? data.total : 0);
+    if (!isFinite(total) || total <= 0) return null;
+    return total;
   } catch (e) {
-    console.error(e);
+    console.warn('[pulse] get failed:', e && e.message ? e.message : e);
     return null;
   }
 }
 
 async function registerCollectivePhysicalOpen() {
-  if (localStorage.getItem(pulseEditionKey) === '1') {
-    const count = await getCollectivePulse();
-    return { count, repeated: true, ok: count !== null };
+  try {
+    if (localStorage.getItem(pulseEditionKey) === '1') {
+      const count = await getCollectivePulse();
+      return { count: count, repeated: true, ok: count !== null };
+    }
+  } catch (e) {
+    // localStorage bloqueado (Safari private, cookies disabled): continuamos sin memoria
   }
 
   try {
-    const res = await fetch('/api/increment-lab', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ editionId: state.id })
+    const res = await fetch('https://triggui-api.vercel.app/api/increment', {
+      method: 'GET',
+      cache: 'no-store'
     });
-
-    if (!res.ok) throw new Error('fail');
-
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
-    localStorage.setItem(pulseEditionKey, '1');
-    return { count: Number(data.total || 0), repeated: false, ok: true };
+    const total = Number(data && data.total ? data.total : 0);
+
+    if (data && data.success !== false && total > 0) {
+      try { localStorage.setItem(pulseEditionKey, '1'); } catch (e) { /* ignore */ }
+      return { count: total, repeated: false, ok: true };
+    }
+    // Respuesta del servidor no OK semánticamente: fallback a get
+    const fallback = await getCollectivePulse();
+    return { count: fallback, repeated: false, ok: fallback !== null };
   } catch (e) {
-    console.error(e);
-    return { count: null, repeated: false, ok: false };
+    console.warn('[pulse] increment failed:', e && e.message ? e.message : e);
+    // Fallback graceful: si increment falla, lee el total actual
+    const fallback = await getCollectivePulse();
+    return { count: fallback, repeated: false, ok: fallback !== null };
   }
+}
+
+// Animación suave 0 -> target con easeOutQuart (1.2-1.5s típicos).
+// Safe: si element es null, targetNumber no-positivo, o el span cambia, no rompe.
+function animatePulseNumber(element, targetNumber, durationMs) {
+  if (!element || typeof targetNumber !== 'number' || !isFinite(targetNumber) || targetNumber <= 0) return;
+  var duration = (typeof durationMs === 'number' && durationMs > 0) ? durationMs : 1200;
+  var start = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+  var raf = (typeof requestAnimationFrame !== 'undefined') ? requestAnimationFrame : function (cb) { return setTimeout(cb, 16); };
+  var step = function (now) {
+    // Si el elemento fue removido del DOM, abortar limpio
+    if (!document.body.contains(element)) return;
+    var elapsed = now - start;
+    var progress = Math.min(elapsed / duration, 1);
+    var eased = 1 - Math.pow(1 - progress, 4);
+    var current = Math.floor(targetNumber * eased);
+    try {
+      element.textContent = current.toLocaleString('es-MX');
+    } catch (e) {
+      element.textContent = String(current);
+    }
+    if (progress < 1) {
+      raf(step);
+    } else {
+      try { element.textContent = targetNumber.toLocaleString('es-MX'); }
+      catch (e) { element.textContent = String(targetNumber); }
+    }
+  };
+  raf(step);
 }
 
 function getChronoOrder(hour) {
@@ -1479,14 +1522,18 @@ if (coverCTA) {
     moveToSilence();
     silPulse.innerHTML = '<span class="pulse-label loading-text">Conectando...</span>';
 
-    registerCollectivePhysicalOpen().then((result) => {
-      if (result.ok && result.count !== null) {
-        silPulse.innerHTML = '<span class="pulse-num">' + result.count + '</span><span class="pulse-label">libros abiertos en el mundo hoy</span>';
+    registerCollectivePhysicalOpen().then(function (result) {
+      if (result && result.ok && typeof result.count === 'number' && result.count > 0) {
+        // El CSS .pulse-num anima el span (gradiente fuego + popNumber bounce).
+        // El JS anima el textContent interno (0 -> total con easeOutQuart).
+        silPulse.innerHTML = '<span class="pulse-num" id="postTapNum">0</span><span class="pulse-label">libros abiertos juntos</span>';
+        var numEl = document.getElementById('postTapNum');
+        animatePulseNumber(numEl, result.count, 1400);
       } else {
         silPulse.innerHTML = '<span class="pulse-label">Se registró el acto.</span>';
       }
-    }).catch((err) => {
-      console.error(err);
+    }).catch(function (err) {
+      console.warn('[pulse] post-tap error:', err && err.message ? err.message : err);
       silPulse.innerHTML = '<span class="pulse-label">Se registró el acto.</span>';
     });
   });
@@ -1549,11 +1596,24 @@ setOverlayView('blocks');
     pass
 })();""",
         """(async () => {
-  const total = await getCollectivePulse();
-  const el = document.getElementById('pulseLine');
-  if (total !== null && total > 0) {
-    el.textContent = 'Ya van ' + total + ' libros abiertos.';
-    el.classList.add('visible');
+  // Precarga del contador global al cargar la edicion viva.
+  // Anima de 0 al total en 1.5s. Si la API falla, el pulseLine queda invisible.
+  try {
+    const total = await getCollectivePulse();
+    const el = document.getElementById('pulseLine');
+    if (!el) return;
+    if (total !== null && typeof total === 'number' && total > 0) {
+      el.innerHTML = 'Ya van <span id="pulseLineNum" style="font-weight:700;color:rgba(255,255,255,.75);">0</span> libros abiertos juntos.';
+      el.classList.add('visible');
+      const numEl = document.getElementById('pulseLineNum');
+      if (typeof animatePulseNumber === 'function') {
+        animatePulseNumber(numEl, total, 1500);
+      } else if (numEl) {
+        numEl.textContent = total.toLocaleString('es-MX');
+      }
+    }
+  } catch (e) {
+    console.warn('[pulse] preload error:', e && e.message ? e.message : e);
   }
 })();"""
     )
@@ -1679,4 +1739,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
