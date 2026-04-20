@@ -1,0 +1,238 @@
+name: Triggui Nucleus v3.2 — Manual
+
+on:
+  workflow_dispatch:
+    inputs:
+      modo:
+        description: '¿Qué quieres correr hoy?'
+        required: true
+        default: 'shadow_batch'
+        type: choice
+        options:
+          - shadow_batch
+          - production_batch
+          - single_book
+          - trigger_constrained
+          - trigger_discover
+      single_titulo:
+        description: '[SINGLE legacy] Título del libro'
+        required: false
+        type: string
+      single_autor:
+        description: '[SINGLE legacy] Autor del libro'
+        required: false
+        type: string
+      libro_input:
+        description: '[DIRECT v3.2] Libro explícito formato "Título | Autor"'
+        required: false
+        type: string
+      entrada_raw:
+        description: '[TRIGGER] Detonante humano en lenguaje natural (para constrained/discover)'
+        required: false
+        type: string
+      lens:
+        description: '🔍 Lente del día. Vacío = sin lente.'
+        required: false
+        type: string
+      book_context:
+        description: '📖 Contexto específico del libro (Tier 1, tu curaduría gana)'
+        required: false
+        type: string
+      seed:
+        description: '🎲 Seed opcional para batch'
+        required: false
+        type: string
+      crono_enabled:
+        description: '🕒 Activar cronobiología automática'
+        required: true
+        default: true
+        type: boolean
+
+concurrency:
+  group: triggui-nucleus-v32-manual
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      TZ: America/Mexico_City
+      OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
+      TRIGGUI_LENS: ${{ inputs.lens }}
+      TRIGGUI_BOOK_CONTEXT: ${{ inputs.book_context }}
+      TRIGGUI_SEED: ${{ inputs.seed }}
+      TRIGGUI_CRONO_ENABLED: ${{ inputs.crono_enabled }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        working-directory: experiments/nucleus
+        run: npm ci || npm install --no-audit --no-fund
+
+      - name: Linkear CSV
+        working-directory: experiments/nucleus
+        run: |
+          mkdir -p data
+          ln -sf "$GITHUB_WORKSPACE/data/libros_master.csv" data/libros_master.csv
+
+      # ═══ Modo DIRECT v3.2 (libro explícito via validate-book.js) ═══
+      - name: Validate libro DIRECT
+        if: ${{ inputs.modo == 'single_book' && inputs.libro_input != '' }}
+        working-directory: experiments/nucleus
+        env:
+          INPUT_MODE: book
+          SELECTOR_MODE: direct
+          LIBRO_INPUT: ${{ inputs.libro_input }}
+        run: node validate-book.js
+
+      # ═══ Modo CONSTRAINED v3.2 (GPT elige de tu CSV) ═══
+      - name: Validate libro CONSTRAINED (trigger + tu catálogo)
+        if: ${{ inputs.modo == 'trigger_constrained' }}
+        working-directory: experiments/nucleus
+        env:
+          INPUT_MODE: trigger
+          SELECTOR_MODE: constrained
+          ENTRADA_RAW: ${{ inputs.entrada_raw }}
+          CATALOG_SCOPE: libros_master_csv
+          CATALOG_CSV_PATH: data/libros_master.csv
+        run: node validate-book.js
+
+      # ═══ Modo DISCOVER v3.2 (GPT propone fuera del catálogo + BN scraping) ═══
+      - name: Validate libro DISCOVER (trigger + exploración abierta)
+        if: ${{ inputs.modo == 'trigger_discover' }}
+        working-directory: experiments/nucleus
+        env:
+          INPUT_MODE: trigger
+          SELECTOR_MODE: discover
+          ENTRADA_RAW: ${{ inputs.entrada_raw }}
+        run: node validate-book.js
+
+      # ═══ Modo SINGLE legacy (solo título+autor sin validate-book) ═══
+      - name: Preparar libro SINGLE legacy
+        if: ${{ inputs.modo == 'single_book' && inputs.libro_input == '' }}
+        working-directory: experiments/nucleus
+        env:
+          SINGLE_TITULO: ${{ inputs.single_titulo }}
+          SINGLE_AUTOR: ${{ inputs.single_autor }}
+        run: |
+          python - <<'PY'
+          import json, os
+          payload = {
+            "titulo": os.environ.get("SINGLE_TITULO", ""),
+            "autor": os.environ.get("SINGLE_AUTOR", "")
+          }
+          open("/tmp/triggui-book.json", "w", encoding="utf-8").write(json.dumps(payload, ensure_ascii=False))
+          PY
+
+      # ═══ Pipeline principal ═══
+      - name: Ejecutar pipeline v3.2
+        working-directory: experiments/nucleus
+        env:
+          SINGLE_MODE: ${{ (inputs.modo == 'single_book' || inputs.modo == 'trigger_constrained' || inputs.modo == 'trigger_discover') && 'true' || '' }}
+          SHADOW_MODE: ${{ inputs.modo == 'shadow_batch' && 'true' || '' }}
+        run: node build-contenido-nucleus.js
+
+      - name: Mover outputs a raíz
+        working-directory: experiments/nucleus
+        run: |
+          echo "📂 Estado en experiments/nucleus/ antes de mover:"
+          ls -la contenido*.json 2>/dev/null || echo "(sin contenido*.json)"
+          ls -la grounding-cache/ evidence-cache/ 2>/dev/null | head -10 || true
+          ls -la quality-reports/ 2>/dev/null | head -5 || true
+
+          if [ -f contenido.shadow.json ]; then
+            mv -v contenido.shadow.json "$GITHUB_WORKSPACE/contenido.shadow.json"
+          fi
+          if [ -f contenido.json ] && [ "${{ inputs.modo }}" = "production_batch" ]; then
+            mv -v contenido.json "$GITHUB_WORKSPACE/contenido.json"
+          fi
+          if [ -f contenido_edicion.json ]; then
+            mv -v contenido_edicion.json "$GITHUB_WORKSPACE/contenido_edicion.json"
+          fi
+
+          for dir in inputs-history metrics quality-reports grounding-cache evidence-cache; do
+            if [ -d "$dir" ]; then
+              mkdir -p "$GITHUB_WORKSPACE/$dir"
+              cp -rv "$dir"/* "$GITHUB_WORKSPACE/$dir/" 2>/dev/null || true
+            fi
+          done
+
+          # Debug de validate-book si existe
+          if [ -f /tmp/triggui-validate-debug.json ]; then
+            mkdir -p "$GITHUB_WORKSPACE/validate-debug"
+            cp /tmp/triggui-validate-debug.json "$GITHUB_WORKSPACE/validate-debug/$(date +%Y%m%d-%H%M%S)-debug.json"
+          fi
+
+          echo ""
+          echo "📦 Estado final en \$GITHUB_WORKSPACE:"
+          ls -la "$GITHUB_WORKSPACE"/contenido*.json 2>/dev/null || echo "(no contenido*.json)"
+
+      - name: Commit resultados
+        working-directory: ${{ github.workspace }}
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          [ -f contenido.shadow.json ] && git add contenido.shadow.json || true
+          [ -f contenido.json ] && git add contenido.json || true
+          [ -f contenido_edicion.json ] && git add contenido_edicion.json || true
+          [ -d inputs-history ] && git add inputs-history/ || true
+          [ -d metrics ] && git add metrics/ || true
+          [ -d quality-reports ] && git add quality-reports/ || true
+          [ -d grounding-cache ] && git add grounding-cache/ || true
+          [ -d evidence-cache ] && git add evidence-cache/ || true
+          [ -d validate-debug ] && git add validate-debug/ || true
+
+          if git diff --cached --quiet; then
+            echo "🟡 Working tree clean — no hay cambios."
+            exit 0
+          fi
+
+          git diff --cached --stat
+          git commit -m "🌒 nucleus-v3.2 ${{ inputs.modo }}"
+
+          BRANCH="${GITHUB_REF_NAME:-main}"
+          for i in 1 2 3; do
+            if git pull --rebase --autostash origin "$BRANCH" && git push origin "HEAD:$BRANCH"; then
+              echo "✅ Push exitoso en intento $i"
+              exit 0
+            fi
+            echo "⚠️  Intento $i falló, reintentando..."
+            sleep 3
+          done
+          echo "❌ Falló el push después de 3 intentos"
+          exit 1
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Triggui Nucleus v3.2 — Fusión Total" >> $GITHUB_STEP_SUMMARY
+          echo "**Modo:** ${{ inputs.modo }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Lente:** ${{ inputs.lens && 'sí' || 'vacío' }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Book context:** ${{ inputs.book_context && 'sí' || 'vacío' }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Trigger:** ${{ inputs.entrada_raw && 'sí' || 'vacío' }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Crono:** ${{ inputs.crono_enabled }}" >> $GITHUB_STEP_SUMMARY
+          [ -f "$GITHUB_WORKSPACE/contenido_edicion.json" ] && echo "**contenido_edicion.json:** ✅ generado" >> $GITHUB_STEP_SUMMARY
+          [ -f "$GITHUB_WORKSPACE/contenido.shadow.json" ] && echo "**contenido.shadow.json:** ✅ generado" >> $GITHUB_STEP_SUMMARY
+          [ -f "$GITHUB_WORKSPACE/contenido.json" ] && echo "**contenido.json:** ✅ generado" >> $GITHUB_STEP_SUMMARY
+          if [ -d "$GITHUB_WORKSPACE/quality-reports" ]; then
+            echo "**Quality reports generados:** ✅" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [ -d "$GITHUB_WORKSPACE/evidence-cache" ]; then
+            COUNT=$(ls "$GITHUB_WORKSPACE/evidence-cache/" 2>/dev/null | wc -l)
+            echo "**Evidence cache entries:** $COUNT" >> $GITHUB_STEP_SUMMARY
+          fi
