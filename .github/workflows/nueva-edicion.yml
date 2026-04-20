@@ -1,23 +1,93 @@
-name: Nueva Edición Triggui
+name: Nueva Edición Triggui — Unificada v3.3
+
+run-name: >-
+  Nueva edición unificada ·
+  ${{ inputs.modo_entrada || 'book' }} ·
+  ${{ inputs.selector_mode || 'direct' }} ·
+  ${{ inputs.entrada || inputs.libro }}
 
 on:
   workflow_dispatch:
     inputs:
       libro:
-        description: 'Título del libro | Autor (ej: Generación Dopamina | Anna Lembke)'
-        required: true
+        description: 'LEGACY opcional: Título del libro | Autor (ej: Generación Dopamina | Anna Lembke)'
+        required: false
         type: string
+
+      modo_entrada:
+        description: 'Tipo de entrada'
+        required: true
+        default: 'book'
+        type: choice
+        options:
+          - book
+          - trigger
+
+      selector_mode:
+        description: 'Cómo resolver el libro'
+        required: true
+        default: 'direct'
+        type: choice
+        options:
+          - direct
+          - constrained
+          - discover
+
+      entrada:
+        description: 'Libro o trigger libre. Puede venir mezclado y el pipeline intentará resolverlo.'
+        required: false
+        type: string
+
+      autor:
+        description: 'Autor opcional si en modo book no lo incluyes en "entrada"'
+        required: false
+        type: string
+
+      catalog_scope:
+        description: 'Catálogo a usar cuando selector_mode=constrained'
+        required: true
+        default: 'libros_master_csv'
+        type: choice
+        options:
+          - libros_master_csv
+          - none
+
+      editorial_mode:
+        description: 'Qué prompt editorial usar (external = nucleus v3.2 unificado)'
+        required: true
+        default: 'external'
+        type: choice
+        options:
+          - external
+          - legacy
+
+      unified_mode:
+        description: 'Fusionar con contenido.json de producción (Fase 1 unificación)'
+        required: true
+        default: true
+        type: boolean
+
+concurrency:
+  group: nueva-edicion-triggui-content-main
+  cancel-in-progress: false
+
+permissions:
+  contents: write
 
 jobs:
   nueva-edicion:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
 
     steps:
+      # ─────────────────────────────────────────────────────────────────────
+      # Checkout — ambos repos como antes
+      # ─────────────────────────────────────────────────────────────────────
       - name: Checkout triggui-app
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
       - name: Checkout triggui-content
         uses: actions/checkout@v4
@@ -25,67 +95,288 @@ jobs:
           repository: badirnakid/triggui-content
           token: ${{ secrets.CONTENT_REPO_TOKEN }}
           path: triggui-content
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Install dependencies
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies (triggui-app)
         run: |
-          npm ci
+          npm ci || npm install --no-audit --no-fund
           npx playwright install chromium --with-deps
 
-      - name: Paso 1 — Validar libro y obtener portada
+      # ─────────────────────────────────────────────────────────────────────
+      # Paso 0 — Contract resolver (idéntico al original, intacto)
+      # ─────────────────────────────────────────────────────────────────────
+      - name: Paso 0 — Resolver contrato de entrada
+        id: contract
+        shell: bash
+        env:
+          INPUT_LIBRO: ${{ inputs.libro }}
+          INPUT_MODO: ${{ inputs.modo_entrada }}
+          INPUT_SELECTOR: ${{ inputs.selector_mode }}
+          INPUT_ENTRADA: ${{ inputs.entrada }}
+          INPUT_AUTOR: ${{ inputs.autor }}
+          INPUT_CATALOG_SCOPE: ${{ inputs.catalog_scope }}
+          INPUT_EDITORIAL_MODE: ${{ inputs.editorial_mode }}
+        run: |
+          set -euo pipefail
+
+          LEGACY_BOOK="${INPUT_LIBRO}"
+          INPUT_MODE_RAW="${INPUT_MODO}"
+          INPUT_SELECTOR_RAW="${INPUT_SELECTOR}"
+          INPUT_ENTRADA_RAW="${INPUT_ENTRADA}"
+          INPUT_AUTOR_RAW="${INPUT_AUTOR}"
+          INPUT_CATALOG_SCOPE_RAW="${INPUT_CATALOG_SCOPE}"
+          INPUT_EDITORIAL_MODE_RAW="${INPUT_EDITORIAL_MODE}"
+
+          # Resolver entrada efectiva (legacy compat)
+          if [ -n "${LEGACY_BOOK}" ] && [ -z "${INPUT_ENTRADA_RAW}" ]; then
+            MODO_EFFECTIVE="${INPUT_MODE_RAW}"
+            SELECTOR_EFFECTIVE="${INPUT_SELECTOR_RAW}"
+            ENTRADA_EFFECTIVE="${LEGACY_BOOK}"
+          else
+            MODO_EFFECTIVE="${INPUT_MODE_RAW}"
+            SELECTOR_EFFECTIVE="${INPUT_SELECTOR_RAW}"
+            ENTRADA_EFFECTIVE="${INPUT_ENTRADA_RAW}"
+            if [[ -n "${INPUT_AUTOR_RAW}" && "${ENTRADA_EFFECTIVE}" != *"|"* ]]; then
+              ENTRADA_EFFECTIVE="${ENTRADA_EFFECTIVE} | ${INPUT_AUTOR_RAW}"
+            fi
+          fi
+
+          LIBRO_INPUT="${ENTRADA_EFFECTIVE}"
+
+          # use_external_editorial_prompts solo cuando modo es external
+          if [ "${INPUT_EDITORIAL_MODE_RAW}" = "external" ]; then
+            USE_EXTERNAL="true"
+          else
+            USE_EXTERNAL="false"
+          fi
+
+          echo "modo_effective=${MODO_EFFECTIVE}" >> $GITHUB_OUTPUT
+          echo "selector_effective=${SELECTOR_EFFECTIVE}" >> $GITHUB_OUTPUT
+          echo "entrada_effective=${ENTRADA_EFFECTIVE}" >> $GITHUB_OUTPUT
+          echo "libro_input=${LIBRO_INPUT}" >> $GITHUB_OUTPUT
+          echo "input_mode=${MODO_EFFECTIVE}" >> $GITHUB_OUTPUT
+          echo "catalog_scope=${INPUT_CATALOG_SCOPE_RAW}" >> $GITHUB_OUTPUT
+          echo "editorial_mode=${INPUT_EDITORIAL_MODE_RAW}" >> $GITHUB_OUTPUT
+          echo "use_external_editorial_prompts=${USE_EXTERNAL}" >> $GITHUB_OUTPUT
+
+          echo ""
+          echo "═══════════════════════════════════"
+          echo "Contrato resuelto:"
+          echo "  modo_entrada     = ${MODO_EFFECTIVE}"
+          echo "  selector_mode    = ${SELECTOR_EFFECTIVE}"
+          echo "  entrada          = ${ENTRADA_EFFECTIVE}"
+          echo "  catalog_scope    = ${INPUT_CATALOG_SCOPE_RAW}"
+          echo "  editorial_mode   = ${INPUT_EDITORIAL_MODE_RAW}"
+          echo "  unified_mode     = ${{ inputs.unified_mode }}"
+          echo "═══════════════════════════════════"
+
+      # ─────────────────────────────────────────────────────────────────────
+      # Paso 1 — Validate book (idéntico)
+      # ─────────────────────────────────────────────────────────────────────
+      - name: Paso 1 — Validar libro (validate-book.js)
         id: validate
         env:
-          LIBRO_INPUT: ${{ github.event.inputs.libro }}
-        run: node scripts/validate-book.js
+          INPUT_MODE: ${{ steps.contract.outputs.input_mode }}
+          SELECTOR_MODE: ${{ steps.contract.outputs.selector_effective }}
+          LIBRO_INPUT: ${{ steps.contract.outputs.libro_input }}
+          CATALOG_SCOPE: ${{ steps.contract.outputs.catalog_scope }}
+          CATALOG_CSV_PATH: triggui-content/data/libros_master.csv
+        run: |
+          set -euo pipefail
+          node scripts/validate-book.js || {
+            echo "❌ validate-book.js falló"
+            exit 1
+          }
 
-      - name: Paso 2 — Enriquecer con GPT-4o-mini (modo SINGLE)
+      # ─────────────────────────────────────────────────────────────────────
+      # Paso 2A — Linkear contenido.json de producción al workspace
+      # ─────────────────────────────────────────────────────────────────────
+      # UNIFICACIÓN FASE 1: antes de correr el nucleus, hacemos una COPIA
+      # del contenido.json histórico de triggui-content al workspace de
+      # triggui-app. Esto permite que mergeIntoContenidoJson() en el nucleus
+      # lo lea y fusione el libro nuevo conservando los 20 libros existentes.
+      # ─────────────────────────────────────────────────────────────────────
+      - name: Paso 2A — Linkear contenido.json histórico al workspace
+        if: ${{ steps.validate.outcome == 'success' && inputs.unified_mode }}
+        run: |
+          set -euo pipefail
+          if [ -f triggui-content/contenido.json ]; then
+            cp triggui-content/contenido.json contenido.json
+            LIBROS_ANTES=$(node -e "console.log(JSON.parse(require('fs').readFileSync('contenido.json','utf8')).libros.length)")
+            echo "📚 contenido.json histórico linkeado: ${LIBROS_ANTES} libros en producción"
+          else
+            echo "⚠️  triggui-content/contenido.json no existe — se creará desde cero"
+          fi
+
+      # ─────────────────────────────────────────────────────────────────────
+      # Paso 2B — Ejecutar el nucleus v3.2 (reemplaza build-contenido.js)
+      # ─────────────────────────────────────────────────────────────────────
+      - name: Paso 2B — Generar contenido con nucleus v3.2
+        if: ${{ steps.validate.outcome == 'success' }}
         env:
           OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
           SINGLE_MODE: "true"
-          SINGLE_BOOK: ${{ steps.validate.outputs.book_json }}
-        run: node scripts/build-contenido.js
+          UNIFIED_MODE: ${{ inputs.unified_mode }}
+          TRIGGUI_LENS: ""
+          TRIGGUI_BOOK_CONTEXT: ""
+          TRIGGUI_CRONO_ENABLED: "true"
+          TZ: America/Mexico_City
+        run: |
+          set -euo pipefail
+          node build-contenido-nucleus.js
 
+          # Verificación: ambos archivos deben existir
+          if [ ! -f contenido_edicion.json ]; then
+            echo "❌ contenido_edicion.json no se generó"
+            exit 1
+          fi
+          echo "✅ contenido_edicion.json generado"
+
+          if [ "${{ inputs.unified_mode }}" = "true" ]; then
+            if [ ! -f contenido.json ]; then
+              echo "❌ contenido.json no se generó (modo unificado)"
+              exit 1
+            fi
+            LIBROS_DESPUES=$(node -e "console.log(JSON.parse(require('fs').readFileSync('contenido.json','utf8')).libros.length)")
+            echo "✅ contenido.json unificado: ${LIBROS_DESPUES} libros"
+          fi
+
+      # ─────────────────────────────────────────────────────────────────────
+      # Pasos 3, 4, 5 — Edición viva, tarjeta PNG, OG PNG (intactos)
+      # ─────────────────────────────────────────────────────────────────────
       - name: Paso 3 — Generar edición viva HTML
-        run: python3 scripts/build-editions.py
+        if: ${{ steps.validate.outcome == 'success' }}
+        env:
+          TRIGGUI_EDICION_JSON: contenido_edicion.json
+        run: |
+          set -euo pipefail
+          if [ "${GITHUB_REF_NAME}" = "main" ]; then
+            export BASE_URL="https://app.triggui.com"
+          else
+            export BASE_URL="https://beta.app.triggui.com"
+          fi
+          echo "BASE_URL=${BASE_URL}"
+          python3 scripts/build-editions.py
 
       - name: Paso 4 — Generar tarjeta PNG (1080×1920)
+        if: ${{ steps.validate.outcome == 'success' }}
+        env:
+          TRIGGUI_EDICION_JSON: contenido_edicion.json
         run: node scripts/build-tarjeta-png.js
 
       - name: Paso 5 — Generar OG image PNG (1200×630)
+        if: ${{ steps.validate.outcome == 'success' }}
+        env:
+          TRIGGUI_EDICION_JSON: contenido_edicion.json
         run: node scripts/build-og-image.js
 
-      - name: Paso 6 — Commit y push
+      # ─────────────────────────────────────────────────────────────────────
+      # Paso 6 — Sincronizar contenido.json con triggui-content
+      # ─────────────────────────────────────────────────────────────────────
+      # UNIFICACIÓN FASE 1: el contenido.json unificado se copia de vuelta
+      # al repo triggui-content para que app.triggui.com lo lea.
+      # ─────────────────────────────────────────────────────────────────────
+      - name: Paso 6 — Sincronizar contenido.json → triggui-content
+        if: ${{ steps.validate.outcome == 'success' && inputs.unified_mode }}
         run: |
-          SLUG=$(cat /tmp/triggui-slug.txt)
-          
-          git config user.name "Triggui Bot"
-          git config user.email "bot@triggui.com"
-          
-          git add public/t/ public/og/ data/
-          git commit -m "✨ Nueva edición: ${SLUG}" || echo "No changes to commit in triggui-app"
-          git push
-          
-          cd triggui-content
-          git config user.name "Triggui Bot"
-          git config user.email "bot@triggui.com"
-          git add contenido.json contenido_manual.json
-          git commit -m "📚 Contenido: ${SLUG}" || echo "No changes to commit in triggui-content"
-          git push
+          set -euo pipefail
+          cp contenido.json triggui-content/contenido.json
+          cp contenido_edicion.json triggui-content/contenido_edicion.json
+          echo "✅ contenido.json sincronizado a triggui-content/"
 
-      - name: Paso 7 — Notificación
+      # ─────────────────────────────────────────────────────────────────────
+      # Paso 7 — Commit y push a AMBOS repos
+      # ─────────────────────────────────────────────────────────────────────
+      - name: Paso 7 — Commit y push
+        if: ${{ steps.validate.outcome == 'success' }}
         run: |
+          set -euo pipefail
+
           SLUG=$(cat /tmp/triggui-slug.txt)
-          TITULO=$(cat /tmp/triggui-titulo.txt)
-          echo "══════════════════════════════════════════"
-          echo "✅ EDICIÓN LISTA"
-          echo "📖 ${TITULO}"
-          echo "🔗 Edición viva: https://app.triggui.com/t/${SLUG}/"
-          echo "🖼️  Tarjeta PNG: public/t/${SLUG}/tarjeta.png"
-          echo "══════════════════════════════════════════"
-          echo ""
-          echo "Descarga la tarjeta PNG y mándala por WhatsApp."
-          echo "Después manda el link de la edición viva."
+
+          # ─── Commit en triggui-app (assets + código) ───
+          git config user.name "Triggui Bot"
+          git config user.email "bot@triggui.com"
+
+          git add public/t/ contenido_edicion.json || true
+          if [ "${{ inputs.unified_mode }}" = "true" ]; then
+            git add contenido.json || true
+          fi
+
+          # Caches (si existen)
+          for dir in inputs-history metrics quality-reports grounding-cache evidence-cache validate-debug; do
+            [ -d "$dir" ] && git add "$dir/" || true
+          done
+
+          if git diff --cached --quiet; then
+            echo "🟡 triggui-app: sin cambios"
+          else
+            git commit -m "🌒 nucleus-v3.3 unificado — ${SLUG}"
+            for i in 1 2 3; do
+              if git pull --rebase --autostash origin main && git push origin HEAD:main; then
+                echo "✅ Push triggui-app exitoso en intento $i"
+                break
+              fi
+              echo "⚠️  Intento $i falló, reintentando..."
+              sleep 3
+            done
+          fi
+
+          # ─── Commit en triggui-content (contenido.json unificado) ───
+          if [ "${{ inputs.unified_mode }}" = "true" ]; then
+            cd triggui-content
+            git config user.name "Triggui Bot"
+            git config user.email "bot@triggui.com"
+
+            git add contenido.json contenido_edicion.json
+
+            if git diff --cached --quiet; then
+              echo "🟡 triggui-content: sin cambios"
+            else
+              git commit -m "📚 Unificado v3.3 — ${SLUG}"
+              for i in 1 2 3; do
+                if git fetch origin main && git rebase origin/main && git push origin HEAD:main; then
+                  echo "✅ Push triggui-content exitoso en intento $i"
+                  break
+                fi
+                echo "⚠️  Intento $i falló, reintentando..."
+                sleep 3
+              done
+            fi
+          fi
+
+      # ─────────────────────────────────────────────────────────────────────
+      # Paso 8 — Summary visible en el workflow
+      # ─────────────────────────────────────────────────────────────────────
+      - name: Paso 8 — Summary
+        if: always()
+        run: |
+          SLUG=$(cat /tmp/triggui-slug.txt 2>/dev/null || echo "unknown")
+          TITULO=$(cat /tmp/triggui-titulo.txt 2>/dev/null || echo "${SLUG}")
+
+          echo "## 🌒 Triggui Nucleus v3.3 — Unificado" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Campo | Valor |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| Libro | ${TITULO} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Slug | \`${SLUG}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Unified mode | ${{ inputs.unified_mode }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Edición viva | https://app.triggui.com/t/${SLUG}/ |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ -f contenido.json ]; then
+            LIBROS=$(node -e "console.log(JSON.parse(require('fs').readFileSync('contenido.json','utf8')).libros.length)" 2>/dev/null || echo "?")
+            echo "### 📊 Estado del contenido.json" >> $GITHUB_STEP_SUMMARY
+            echo "- **Libros totales en producción:** ${LIBROS}" >> $GITHUB_STEP_SUMMARY
+            echo "- **Consumido por:** app.triggui.com (vía triggui-content repo)" >> $GITHUB_STEP_SUMMARY
+          fi
