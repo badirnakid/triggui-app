@@ -1,0 +1,124 @@
+{
+  "titulo_input": "El mito de Sísifo",
+  "autor_input": "Albert Camus",
+  "isbn_seed": "",
+  "isbn_discovered": "1542905952",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "El mito de Sísifo",
+      "matched_author": "Albert Camus"
+    },
+    "synopsis": "«No hay sino un problema filosófico realmente serio: el suicidio». El mito de Sísifo es el ensayo fundacional de la filosofía del absurdo, una obra mayúscula que dio a conocer el gran talento de Albert Camus. Publicada en 1942, el mismo año que El extranjero, fue una de las primeras obras que revelaron al público la inteligencia y la sensibilidad del autor. El título del ensayo hace referencia a un personaje de la mitología griega que enfadó a los dioses por su extraordinaria astucia y fue condenado a empujar perpetuamente una piedra enorme montaña arriba. Al llegar a la cima, la piedra volvía a caer hasta el valle, desde donde Sísifo debía volver a empujarla hasta la cumbre, y así eternamente. Por medio de esta alegoría, Camus discute la cuestión del suicidio y el valor de la vida, presentando a Sísifo como imagen del esfuerzo inútil e incesante del hombre. De este modo plantea la filosofía del absurdo, según la cual nuestras vidas son insignificantes y no tienen más valor que el de lo que creamos. Siendo el mundo tan fútil, pregunta Camus, ¿qué alternativa hay al suicidio?",
+    "synopsis_length": 1091,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/ad/96/18/ad961849-0048-888f-8fed-642ca75984c1/9788439738121.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/ad/96/18/ad961849-0048-888f-8fed-642ca75984c1/9788439738121.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/ad/96/18/ad961849-0048-888f-8fed-642ca75984c1/9788439738121.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/ad/96/18/ad961849-0048-888f-8fed-642ca75984c1/9788439738121.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "El mito de Sísifo",
+      "autor_completo": "Albert Camus",
+      "año": "2021",
+      "editorial": null,
+      "isbn": "1542905952",
+      "categorias": [
+        "Clásicos",
+        "Libros",
+        "Ficción y literatura"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/el-mito-de-s%C3%ADsifo/id1542905952?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": false,
+    "reason": "no_results",
+    "source": "openlibrary"
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/1542905952.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "1542905952",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/ad/96/18/ad961849-0048-888f-8fed-642ca75984c1/9788439738121.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/ad/96/18/ad961849-0048-888f-8fed-642ca75984c1/9788439738121.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/ad/96/18/ad961849-0048-888f-8fed-642ca75984c1/9788439738121.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/ad/96/18/ad961849-0048-888f-8fed-642ca75984c1/9788439738121.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/1542905952.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match",
+    "openlibrary:no_results"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 15752,
+    "phase2_isbn_chain_ms": 23777,
+    "cover_validation_ms": 1433,
+    "total_ms": 40962
+  },
+  "_cached_at": "2026-04-20T04:17:57.966Z"
+}

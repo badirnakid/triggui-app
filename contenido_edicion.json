@@ -1,329 +1,332 @@
 {
   "libros": [
     {
-      "titulo": "Las leyes de la naturaleza humana",
-      "autor": "Robert Greene",
-      "tagline": "",
-      "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/8f/8f/1c/8f8f1c54-1b11-61b1-f16c-6f027cc77bef/1029110002.jpg/3000x3000bb.jpg",
-      "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/8f/8f/1c/8f8f1c54-1b11-61b1-f16c-6f027cc77bef/1029110002.jpg/3000x3000bb.jpg",
-      "isbn": "1464648017",
-      "titulo_es": "Las leyes de la naturaleza humana",
-      "titulo_en": "The Laws of Human Nature",
-      "idioma_original": "en",
-      "dimension": "Conexion",
-      "punto": "Creativo",
+      "titulo": "El mito de Sísifo",
+      "autor": "Albert Camus",
+      "tagline": "Reflexiones sobre el vacío y la rebelión del ser humano.",
+      "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/ad/96/18/ad961849-0048-888f-8fed-642ca75984c1/9788439738121.jpg/3000x3000bb.jpg",
+      "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/ad/96/18/ad961849-0048-888f-8fed-642ca75984c1/9788439738121.jpg/3000x3000bb.jpg",
+      "isbn": "1542905952",
+      "titulo_es": "El mito de Sísifo",
+      "titulo_en": "The Myth of Sisyphus",
+      "idioma_original": "es",
+      "dimension": "Bienestar",
+      "punto": "Cero",
       "palabras": [
-        "perspicacia",
-        "control",
+        "melancolía",
+        "rebeldía",
         "reflexión",
-        "estrategia"
+        "vacío"
       ],
       "palabras_en": [
-        "insightful",
-        "powerful",
-        "influential",
-        "complex"
+        "existential",
+        "rebellion",
+        "meaning",
+        "despair"
       ],
       "frases": [
-        "🚶 Observa cómo cambian las dinámicas en una conversación.",
-        "🕰 ¿Qué emociones te dominan en momentos de conflicto?",
-        "🌅 Imagina un tablero de ajedrez donde cada pieza representa una estrategia.",
-        "🏛 El poder se encuentra en el control de las emociones ajenas."
+        "🧘 Inhala profundamente y siente el peso del absurdo en tu ser.",
+        "⏳ ¿Qué significado le das a tus luchas diarias?",
+        "🔭 Imagina a Sísifo empujando su roca eternamente.",
+        "🌌 La rebelión es el primer paso hacia la libertad."
       ],
       "frases_en": [
-        "👁 Visualize the intricate web of human interactions.",
-        "🗺 How do your surroundings shape your social strategies?",
-        "💫 Imagine a chessboard where every piece represents a human desire.",
-        "⏳ The passage of time reveals the true nature of relationships."
+        "💫 Feel the weight of existence pulling at your soul.",
+        "☀ What truths lie hidden in the shadows of your mind?",
+        "🗺 Picture a vast emptiness, echoing with the silence of unfulfilled dreams.",
+        "🌓 Time is both a companion and an adversary in our search for meaning."
       ],
       "frases_og": [
-        "🌓 La naturaleza humana revela sus secretos en cada interacción.",
-        "🪞 El poder reside en la comprensión de las motivaciones ajenas.",
-        "⚡ Las emociones son armas en el juego del poder.",
-        "🌿 La manipulación es un arte que se domina con práctica."
+        "⚡ La existencia sin sentido despierta la necesidad de rebelarse.",
+        "🌿 El absurdo es un aliado en la búsqueda de significado.",
+        "🧭 Cada ser humano enfrenta su propio desafío existencial.",
+        "🔍 La desesperanza puede ser un punto de partida para la creación."
       ],
       "frases_og_en": [
-        "🌓 Understanding emotions reveals the heart of human motivations.",
-        "🪞 Strategic manipulation can lead to effective influence.",
-        "⚡ Navigating relationships requires awareness of power dynamics.",
-        "🌿 Mastering human nature unlocks pathways to deeper connections."
+        "⚡ Confronting absurdity reveals the essence of our existence.",
+        "🌿 In the face of emptiness, we must create our own meaning.",
+        "🧭 Rebellion is the only response to a meaningless universe.",
+        "🔍 Finding significance is an act of defiance against despair."
       ],
       "colores": [
-        "#90DFD2",
-        "#4DC1CB",
-        "#2C5896",
-        "#192457"
+        "#332D53",
+        "#524785",
+        "#857AB8",
+        "#BCB6D8"
       ],
       "textColors": [
-        "#000000",
         "#FFFFFF",
         "#FFFFFF",
-        "#FFFFFF"
+        "#FFFFFF",
+        "#000000"
       ],
-      "fondo": "#CFD2D3",
+      "fondo": "#45444B",
       "tarjeta": {
-        "titulo": "Entender la naturaleza humana",
-        "parrafoTop": "Las emociones son la base de nuestras decisiones. [H]Explorar la naturaleza humana implica desentrañar las motivaciones que nos mueven.[/H]",
-        "subtitulo": "¿Qué estrategias utilizas en tus relaciones?",
-        "parrafoBot": "La manipulación no siempre es negativa; puede ser una herramienta para influir en el entorno. [H]Las estrategias de poder son esenciales para navegar conflictos y relaciones complejas.[/H>[/H]",
+        "titulo": "La rebelión ante el absurdo",
+        "parrafoTop": "La lucha del ser humano contra el absurdo es una constante en la vida. [H]El reconocimiento de esta lucha nos permite acercarnos a un sentido más profundo de existencia.[/H]",
+        "subtitulo": "¿Es posible encontrar significado en el vacío?",
+        "parrafoBot": "La búsqueda de significado en un mundo vacío no es solo un deseo, es una necesidad. [H]La rebelión individual ante la desesperanza se convierte en un acto de creación personal.[/H>[/H]",
         "style": {
-          "accent": "#1F99D6",
-          "paper": "#CFD2D3",
-          "ink": "#171A1C",
-          "border": "#7C7E7F"
+          "accent": "#7E6ECF",
+          "paper": "#45444B",
+          "ink": "#EFEEF1",
+          "border": "#66666B"
         }
       },
       "tarjeta_base": {
-        "titulo": "Entender la naturaleza humana",
-        "parrafoTop": "Las emociones son la base de nuestras decisiones. [H]Explorar la naturaleza humana implica desentrañar las motivaciones que nos mueven.[/H]",
-        "subtitulo": "¿Qué estrategias utilizas en tus relaciones?",
-        "parrafoBot": "La manipulación no siempre es negativa; puede ser una herramienta para influir en el entorno. [H]Las estrategias de poder son esenciales para navegar conflictos y relaciones complejas.[/H>[/H]",
+        "titulo": "La rebelión ante el absurdo",
+        "parrafoTop": "La lucha del ser humano contra el absurdo es una constante en la vida. [H]El reconocimiento de esta lucha nos permite acercarnos a un sentido más profundo de existencia.[/H]",
+        "subtitulo": "¿Es posible encontrar significado en el vacío?",
+        "parrafoBot": "La búsqueda de significado en un mundo vacío no es solo un deseo, es una necesidad. [H]La rebelión individual ante la desesperanza se convierte en un acto de creación personal.[/H>[/H]",
         "style": {
-          "accent": "#1F99D6",
-          "paper": "#CFD2D3",
-          "ink": "#171A1C",
-          "border": "#7C7E7F"
+          "accent": "#7E6ECF",
+          "paper": "#45444B",
+          "ink": "#EFEEF1",
+          "border": "#66666B"
         }
       },
       "tarjeta_presentacion": {
-        "titulo": "Entender la naturaleza humana",
-        "parrafoTop": "Las emociones son la base de nuestras decisiones. [H]Explorar la naturaleza humana implica desentrañar las motivaciones que nos mueven.[/H]",
-        "subtitulo": "¿Qué estrategias utilizas en tus relaciones?",
-        "parrafoBot": "La manipulación no siempre es negativa; puede ser una herramienta para influir en el entorno. [H]Las estrategias de poder son esenciales para navegar conflictos y relaciones complejas.[/H>[/H]",
+        "titulo": "La rebelión ante el absurdo",
+        "parrafoTop": "La lucha del ser humano contra el absurdo es una constante en la vida. [H]El reconocimiento de esta lucha nos permite acercarnos a un sentido más profundo de existencia.[/H]",
+        "subtitulo": "¿Es posible encontrar significado en el vacío?",
+        "parrafoBot": "La búsqueda de significado en un mundo vacío no es solo un deseo, es una necesidad. [H]La rebelión individual ante la desesperanza se convierte en un acto de creación personal.[/H>[/H]",
         "style": {
-          "accent": "#1F99D6",
-          "paper": "#CFD2D3",
-          "ink": "#171A1C",
-          "border": "#7C7E7F"
+          "accent": "#7E6ECF",
+          "paper": "#45444B",
+          "ink": "#EFEEF1",
+          "border": "#66666B"
         }
       },
       "tarjeta_en": {
-        "titulo": "Understanding Human Nature",
-        "parrafoTop": "Emotions form the foundation of our decisions. [H]Exploring human nature involves unraveling the motivations that drive us.[/H]",
-        "subtitulo": "What strategies do you use in your relationships?",
-        "parrafoBot": "Manipulation is not always negative; it can serve as a tool to influence the environment. [H]Power strategies are essential for navigating conflicts and complex relationships.[/H]",
+        "titulo": "The Rebellion Against the Absurd",
+        "parrafoTop": "The struggle of humanity against absurdity is a constant in life. [H]Recognizing this struggle brings us closer to a deeper sense of existence.[/H]",
+        "subtitulo": "Is it possible to find meaning in emptiness?",
+        "parrafoBot": "The quest for meaning in an empty world is not merely a desire, but a necessity. [H]The individual rebellion against despair becomes an act of personal creation.[/H>[/H]",
         "style": {
-          "accent": "#1F99D6",
-          "paper": "#CFD2D3",
-          "ink": "#171A1C",
-          "border": "#7C7E7F"
+          "accent": "#7E6ECF",
+          "paper": "#45444B",
+          "ink": "#EFEEF1",
+          "border": "#66666B"
         }
       },
       "tarjeta_base_en": {
-        "titulo": "Understanding Human Nature",
-        "parrafoTop": "Emotions form the foundation of our decisions. [H]Exploring human nature involves unraveling the motivations that drive us.[/H]",
-        "subtitulo": "What strategies do you use in your relationships?",
-        "parrafoBot": "Manipulation is not always negative; it can serve as a tool to influence the environment. [H]Power strategies are essential for navigating conflicts and complex relationships.[/H]",
+        "titulo": "The Rebellion Against the Absurd",
+        "parrafoTop": "The struggle of humanity against absurdity is a constant in life. [H]Recognizing this struggle brings us closer to a deeper sense of existence.[/H]",
+        "subtitulo": "Is it possible to find meaning in emptiness?",
+        "parrafoBot": "The quest for meaning in an empty world is not merely a desire, but a necessity. [H]The individual rebellion against despair becomes an act of personal creation.[/H>[/H]",
         "style": {
-          "accent": "#1F99D6",
-          "paper": "#CFD2D3",
-          "ink": "#171A1C",
-          "border": "#7C7E7F"
+          "accent": "#7E6ECF",
+          "paper": "#45444B",
+          "ink": "#EFEEF1",
+          "border": "#66666B"
         }
       },
       "tarjeta_presentacion_en": {
-        "titulo": "Understanding Human Nature",
-        "parrafoTop": "Emotions form the foundation of our decisions. [H]Exploring human nature involves unraveling the motivations that drive us.[/H]",
-        "subtitulo": "What strategies do you use in your relationships?",
-        "parrafoBot": "Manipulation is not always negative; it can serve as a tool to influence the environment. [H]Power strategies are essential for navigating conflicts and complex relationships.[/H]",
+        "titulo": "The Rebellion Against the Absurd",
+        "parrafoTop": "The struggle of humanity against absurdity is a constant in life. [H]Recognizing this struggle brings us closer to a deeper sense of existence.[/H]",
+        "subtitulo": "Is it possible to find meaning in emptiness?",
+        "parrafoBot": "The quest for meaning in an empty world is not merely a desire, but a necessity. [H]The individual rebellion against despair becomes an act of personal creation.[/H>[/H]",
         "style": {
-          "accent": "#1F99D6",
-          "paper": "#CFD2D3",
-          "ink": "#171A1C",
-          "border": "#7C7E7F"
+          "accent": "#7E6ECF",
+          "paper": "#45444B",
+          "ink": "#EFEEF1",
+          "border": "#66666B"
         }
       },
-      "videoUrl": "https://duckduckgo.com/?q=!ducky+site:youtube.com+Las%20leyes%20de%20la%20naturaleza%20humana%20Robert%20Greene%20entrevista%20espa%C3%B1ol",
-      "videoUrl_en": "https://duckduckgo.com/?q=!ducky+site:youtube.com+The%20Laws%20of%20Human%20Nature%20Robert%20Greene%20interview",
+      "videoUrl": "https://duckduckgo.com/?q=!ducky+site:youtube.com+El%20mito%20de%20S%C3%ADsifo%20Albert%20Camus%20entrevista%20espa%C3%B1ol",
+      "videoUrl_en": "https://duckduckgo.com/?q=!ducky+site:youtube.com+The%20Myth%20of%20Sisyphus%20Albert%20Camus%20interview",
       "_nucleus": {
         "book_identity": {
-          "titulo_es": "Las leyes de la naturaleza humana",
-          "titulo_en": "The Laws of Human Nature",
-          "autor_completo": "Robert Greene",
-          "idioma_original": "en"
+          "titulo_es": "El mito de Sísifo",
+          "titulo_en": "The Myth of Sisyphus",
+          "autor_completo": "Albert Camus",
+          "idioma_original": "es"
         },
         "book_grounding_anchors": {
           "concepts": [
-            "exploración de las motivaciones humanas",
-            "estrategias de poder en relaciones interpersonales",
-            "manipulación y persuasión en el comportamiento humano",
-            "análisis de la naturaleza humana en conflictos",
-            "tácticas para entender y manejar las emociones ajenas"
+            "la lucha del ser humano contra el absurdo",
+            "búsqueda de significado en un mundo vacío",
+            "la rebelión individual ante la desesperanza"
           ],
           "key_terms": [
-            "naturaleza humana",
-            "poder",
-            "manipulación",
-            "estrategias",
-            "comportamiento"
+            "absurdo",
+            "rebelión",
+            "vacío existencial",
+            "significado",
+            "condición humana"
           ],
-          "authorial_voice_notes": "La voz de Robert Greene es analítica y persuasiva, con un enfoque pragmático que invita a la reflexión y a la aplicación de sus conceptos."
+          "authorial_voice_notes": "Reflexiva, filosófica y melancólica, enfocada en la condición humana y la rebelión individual."
         },
         "lens_analysis": {
           "lens_provided": false,
-          "analysis": "La lente del curador no se aplica directamente a este libro, ya que no se ha proporcionado un marco específico que guíe la interpretación del contenido.",
+          "analysis": "La lente del curador no se aplica directamente, ya que el tema es inferido y no proviene de una fuente oficial.",
           "decision": "dont_apply_book_is_about_something_else"
         },
         "visual_intent": {
-          "hue_primary": 200,
-          "saturation": "balanced",
-          "lightness_paper": "medium_light",
+          "hue_primary": 250,
+          "saturation": "muted",
+          "lightness_paper": "medium_dark",
           "temperature_shift": 0,
-          "palette_strategy": "analogous",
-          "typography_family": "serif_moderno",
+          "palette_strategy": "monochromatic",
+          "typography_family": "serif_literario",
           "density": "equilibrado",
           "rhythm": "medio",
-          "era": "moderno",
+          "era": "contemporaneo",
           "genre_visual": "ensayo"
         },
         "surface_hints": {
-          "dimension": "Conexion",
-          "punto_hawkins": "Creativo",
-          "franja_ideal": "tarde"
+          "dimension": "Bienestar",
+          "punto_hawkins": "Cero",
+          "franja_ideal": "noche"
         },
         "card_es": {
-          "titulo": "Entender la naturaleza humana",
-          "parrafoTop": "Las emociones son la base de nuestras decisiones. [H]Explorar la naturaleza humana implica desentrañar las motivaciones que nos mueven.[/H]",
-          "subtitulo": "¿Qué estrategias utilizas en tus relaciones?",
-          "parrafoBot": "La manipulación no siempre es negativa; puede ser una herramienta para influir en el entorno. [H]Las estrategias de poder son esenciales para navegar conflictos y relaciones complejas.[/H>"
+          "titulo": "La rebelión ante el absurdo",
+          "parrafoTop": "La lucha del ser humano contra el absurdo es una constante en la vida. [H]El reconocimiento de esta lucha nos permite acercarnos a un sentido más profundo de existencia.[/H]",
+          "subtitulo": "¿Es posible encontrar significado en el vacío?",
+          "parrafoBot": "La búsqueda de significado en un mundo vacío no es solo un deseo, es una necesidad. [H]La rebelión individual ante la desesperanza se convierte en un acto de creación personal.[/H>"
         },
         "card_en": {
-          "titulo": "Understanding Human Nature",
-          "parrafoTop": "Emotions form the foundation of our decisions. [H]Exploring human nature involves unraveling the motivations that drive us.[/H]",
-          "subtitulo": "What strategies do you use in your relationships?",
-          "parrafoBot": "Manipulation is not always negative; it can serve as a tool to influence the environment. [H]Power strategies are essential for navigating conflicts and complex relationships.[/H]"
+          "titulo": "The Rebellion Against the Absurd",
+          "parrafoTop": "The struggle of humanity against absurdity is a constant in life. [H]Recognizing this struggle brings us closer to a deeper sense of existence.[/H]",
+          "subtitulo": "Is it possible to find meaning in emptiness?",
+          "parrafoBot": "The quest for meaning in an empty world is not merely a desire, but a necessity. [H]The individual rebellion against despair becomes an act of personal creation.[/H>"
         },
         "emotional_words_es": [
-          "perspicacia",
-          "control",
+          "melancolía",
+          "rebeldía",
           "reflexión",
-          "estrategia"
+          "vacío"
         ],
         "emotional_words_en": [
-          "insightful",
-          "powerful",
-          "influential",
-          "complex"
+          "existential",
+          "rebellion",
+          "meaning",
+          "despair"
         ],
         "og_phrases_es": [
-          "🌓 La naturaleza humana revela sus secretos en cada interacción.",
-          "🪞 El poder reside en la comprensión de las motivaciones ajenas.",
-          "⚡ Las emociones son armas en el juego del poder.",
-          "🌿 La manipulación es un arte que se domina con práctica."
+          "⚡ La existencia sin sentido despierta la necesidad de rebelarse.",
+          "🌿 El absurdo es un aliado en la búsqueda de significado.",
+          "🧭 Cada ser humano enfrenta su propio desafío existencial.",
+          "🔍 La desesperanza puede ser un punto de partida para la creación."
         ],
         "og_phrases_en": [
-          "🌓 Understanding emotions reveals the heart of human motivations.",
-          "🪞 Strategic manipulation can lead to effective influence.",
-          "⚡ Navigating relationships requires awareness of power dynamics.",
-          "🌿 Mastering human nature unlocks pathways to deeper connections."
+          "⚡ Confronting absurdity reveals the essence of our existence.",
+          "🌿 In the face of emptiness, we must create our own meaning.",
+          "🧭 Rebellion is the only response to a meaningless universe.",
+          "🔍 Finding significance is an act of defiance against despair."
         ],
         "edition_blocks_es": [
           {
             "gesture_type": "instruccion_sensorial",
-            "sensory_anchor": "movimiento",
-            "phrase": "🚶 Observa cómo cambian las dinámicas en una conversación."
+            "sensory_anchor": "respiracion",
+            "phrase": "🧘 Inhala profundamente y siente el peso del absurdo en tu ser."
           },
           {
             "gesture_type": "pregunta_directa",
             "sensory_anchor": "tiempo",
-            "phrase": "🕰 ¿Qué emociones te dominan en momentos de conflicto?"
+            "phrase": "⏳ ¿Qué significado le das a tus luchas diarias?"
           },
           {
             "gesture_type": "imagen_concreta",
             "sensory_anchor": "vista",
-            "phrase": "🌅 Imagina un tablero de ajedrez donde cada pieza representa una estrategia."
+            "phrase": "🔭 Imagina a Sísifo empujando su roca eternamente."
           },
           {
             "gesture_type": "aforismo_autorial",
             "sensory_anchor": "espacio",
-            "phrase": "🏛 El poder se encuentra en el control de las emociones ajenas."
+            "phrase": "🌌 La rebelión es el primer paso hacia la libertad."
           }
         ],
         "edition_blocks_en": [
           {
             "gesture_type": "sensory_instruction",
-            "sensory_anchor": "sight",
-            "phrase": "👁 Visualize the intricate web of human interactions."
+            "sensory_anchor": "movement",
+            "phrase": "💫 Feel the weight of existence pulling at your soul."
           },
           {
             "gesture_type": "direct_question",
-            "sensory_anchor": "space",
-            "phrase": "🗺 How do your surroundings shape your social strategies?"
+            "sensory_anchor": "light",
+            "phrase": "☀ What truths lie hidden in the shadows of your mind?"
           },
           {
             "gesture_type": "concrete_image",
-            "sensory_anchor": "movement",
-            "phrase": "💫 Imagine a chessboard where every piece represents a human desire."
+            "sensory_anchor": "space",
+            "phrase": "🗺 Picture a vast emptiness, echoing with the silence of unfulfilled dreams."
           },
           {
             "gesture_type": "authorial_aphorism",
             "sensory_anchor": "time",
-            "phrase": "⏳ The passage of time reveals the true nature of relationships."
+            "phrase": "🌓 Time is both a companion and an adversary in our search for meaning."
           }
         ],
         "confidence": {
-          "book_grounding": 0.6,
+          "book_grounding": 0.77,
           "voice_authenticity": 0.93,
           "specificity": 0.95,
-          "grounding_judge": 0.85,
-          "combined": 0.81,
+          "grounding_judge": 1,
+          "combined": 0.9,
           "signals": {
-            "bookIdentityConfidence": 0.6000000000000001,
+            "bookIdentityConfidence": 0.765,
             "voiceSignal": 0.9249999999999999,
             "specificitySignal": 0.95,
-            "judgeScore": 0.8500000000000001
+            "judgeScore": 1
           }
         }
       },
       "_grounding": {
         "source": "model_inference",
-        "tier_reached": 3,
-        "book_identity_confidence": 0.6000000000000001,
+        "tier_reached": 2.5,
+        "book_identity_confidence": 0.765,
         "resolution_path": [
           "evidence_fetched_0sources",
-          "tier3_conf_0.80"
+          "tier3_conf_0.90"
         ],
         "verified_identity": {
-          "titulo_real": "Las leyes de la naturaleza humana",
-          "autor_completo": "Robert Greene",
+          "titulo_real": "El mito de Sísifo",
+          "autor_completo": "Albert Camus",
           "año": null
         },
         "similar_books": [
           {
-            "titulo": "El arte de la guerra",
-            "autor": "Sun Tzu",
-            "razon": "Ambos libros abordan estrategias y tácticas en relaciones humanas y conflictos."
+            "titulo": "El extranjero",
+            "autor": "Albert Camus",
+            "razon": "Ambos libros son obras fundamentales de Camus y abordan la existencia humana y el absurdo."
           },
           {
-            "titulo": "Los 48 leyes del poder",
-            "autor": "Robert Greene",
-            "razon": "Otro libro del mismo autor que explora la manipulación y el poder en las interacciones humanas."
+            "titulo": "La náusea",
+            "autor": "Jean-Paul Sartre",
+            "razon": "Explora temas existenciales y la búsqueda de significado en un mundo absurdo."
           },
           {
-            "titulo": "La psicología del dinero",
-            "autor": "Morgan Housel",
-            "razon": "Explora la naturaleza humana en relación con el dinero y las decisiones financieras."
+            "titulo": "El ser y la nada",
+            "autor": "Jean-Paul Sartre",
+            "razon": "Profundiza en la filosofía existencialista y el vacío de la existencia."
           },
           {
-            "titulo": "Influence: The Psychology of Persuasion",
-            "autor": "Robert B. Cialdini",
-            "razon": "Aborda cómo las personas pueden ser influenciadas y manipuladas en sus decisiones."
+            "titulo": "La peste",
+            "autor": "Albert Camus",
+            "razon": "Otra obra de Camus que reflexiona sobre la condición humana y la lucha contra el absurdo."
+          },
+          {
+            "titulo": "El lobo estepario",
+            "autor": "Hermann Hesse",
+            "razon": "Aborda la dualidad del ser humano y la búsqueda de identidad en un mundo caótico."
           }
         ],
         "from_cache": false
       },
       "_grounding_judge": {
         "es": {
-          "grounded_score": 0.9,
+          "grounded_score": 1,
           "uses_book_specific_concepts": true,
           "could_apply_to_any_book": false,
-          "reason": "El contenido generado se ancla fuertemente en la exploración de la naturaleza humana y las dinámicas de poder, conceptos centrales en el ground truth. Frases como 'Las emociones son la base de nuestras decisiones' y 'La manipulación no siempre es negativa' reflejan directamente los temas de comportamiento y estrategias en relaciones interpersonales. Aunque el contenido es específico y relevante, y"
+          "reason": "The content directly addresses the struggle against absurdity and the search for meaning, which are central themes in the inferred ground truth. Phrases like 'la lucha del ser humano contra el absurdo' and 'la búsqueda de significado en un mundo vacío' explicitly reflect the philosophical focus on the human condition and individual rebellion. Additionally, the references to creation and personal, "
         },
         "en": {
-          "grounded_score": 0.8,
+          "grounded_score": 1,
           "uses_book_specific_concepts": true,
           "could_apply_to_any_book": false,
-          "reason": "The content specifically addresses themes of human nature, emotions, motivations, and power dynamics, which align closely with the inferred themes of the book. Phrases like 'Understanding emotions reveals the heart of human motivations' and 'Power strategies are essential for navigating conflicts' reflect the book's focus on interpersonal relationships and strategies. However, some phrases are a a"
+          "reason": "The generated content directly addresses the struggle against absurdity and the search for meaning, which are central themes in the inferred ground truth. Phrases like 'rebellion against despair' and 'creating our own meaning' specifically reflect the philosophical and existential focus of the book, making it highly relevant and anchored to the ground truth."
         }
       },
       "_voice_verdict": {
@@ -332,12 +335,12 @@
         "es": {
           "verdict": "pagina",
           "confidence": 0.9,
-          "reason": "Uso de preguntas directas y tono reflexivo propio del texto.",
-          "elapsed_ms": 1507,
+          "reason": "Voz directa y reflexiones sobre la existencia sin referencias externas.",
+          "elapsed_ms": 810,
           "usage": {
-            "prompt_tokens": 360,
+            "prompt_tokens": 370,
             "completion_tokens": 28,
-            "total_tokens": 388,
+            "total_tokens": 398,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -354,12 +357,12 @@
         "en": {
           "verdict": "pagina",
           "confidence": 0.8,
-          "reason": "Tono directo y preguntas personales sugieren voz del autor.",
-          "elapsed_ms": 845,
+          "reason": "Voz directa y reflexiones sobre la existencia sin referencias externas.",
+          "elapsed_ms": 777,
           "usage": {
-            "prompt_tokens": 350,
-            "completion_tokens": 27,
-            "total_tokens": 377,
+            "prompt_tokens": 362,
+            "completion_tokens": 28,
+            "total_tokens": 390,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -375,36 +378,36 @@
         },
         "circuit_tripped": false,
         "should_reextract": false,
-        "total_tokens": 765,
-        "total_ms": 1507
+        "total_tokens": 788,
+        "total_ms": 810
       },
       "_visual": {
         "synthesis_inputs": {
-          "hue_primary": 200,
-          "adjusted_hue": 200,
-          "saturation": "balanced",
-          "saturation_value": 0.55,
-          "lightness_paper": "medium_light",
-          "paper_lightness_value": 0.82,
+          "hue_primary": 250,
+          "adjusted_hue": 250,
+          "saturation": "muted",
+          "saturation_value": 0.3,
+          "lightness_paper": "medium_dark",
+          "paper_lightness_value": 0.28,
           "temperature_shift": 0,
-          "palette_strategy": "analogous"
+          "palette_strategy": "monochromatic"
         },
-        "contrast_ratio": "11.50",
-        "paper_is_dark": false,
+        "contrast_ratio": "8.33",
+        "paper_is_dark": true,
         "cssVars": {
-          "--palette-0": "#90DFD2",
-          "--palette-1": "#4DC1CB",
-          "--palette-2": "#2C5896",
-          "--palette-3": "#192457",
-          "--accent": "#1F99D6",
-          "--accent-soft": "#1F99D638",
-          "--accent-glow": "#1F99D66b",
-          "--paper": "#CFD2D3",
-          "--ink": "#171A1C",
-          "--border": "#7C7E7F",
-          "--highlight-bg": "#1B87BCd9",
-          "--highlight-ink": "#FFFFFF",
-          "--typography-stack": "'Source Serif Pro', Georgia, serif",
+          "--palette-0": "#332D53",
+          "--palette-1": "#524785",
+          "--palette-2": "#857AB8",
+          "--palette-3": "#BCB6D8",
+          "--accent": "#7E6ECF",
+          "--accent-soft": "#7E6ECF38",
+          "--accent-glow": "#7E6ECF6b",
+          "--paper": "#45444B",
+          "--ink": "#EFEEF1",
+          "--border": "#66666B",
+          "--highlight-bg": "#7E6ECFd9",
+          "--highlight-ink": "#45444B",
+          "--typography-stack": "'Crimson Pro', 'Source Serif Pro', Georgia, serif",
           "--line-height": 1.65,
           "--letter-spacing": 0.2,
           "--paragraph-gap": 1,
@@ -431,7 +434,7 @@
         "distinct_types_en": 4
       },
       "_quality_warning": null,
-      "_inputs_snapshot": "2026-04-20T04-11-39",
+      "_inputs_snapshot": "2026-04-20T04-17-58",
       "_crono": {
         "dia": "domingo",
         "hora": 22,
@@ -442,28 +445,28 @@
         "descripcion_franja": "Noche: melatonina en ascenso. Reflexivo, contemplativo, sin urgencia."
       },
       "_metrics": {
-        "tokens_total": 9610,
+        "tokens_total": 9738,
         "tokens_by_phase": {
-          "grounding": 525,
-          "anchors": 2265,
+          "grounding": 562,
+          "anchors": 2267,
           "palette": 0,
-          "content_es": 2496,
-          "judge_es": 810,
-          "content_en": 1978,
-          "judge_en": 771,
-          "voice": 765
+          "content_es": 2491,
+          "judge_es": 821,
+          "content_en": 2001,
+          "judge_en": 808,
+          "voice": 788
         },
-        "elapsed_ms_total": 56028,
+        "elapsed_ms_total": 58236,
         "elapsed_ms_by_phase": {
-          "grounding": 29358,
-          "anchors": 7129,
+          "grounding": 30027,
+          "anchors": 4875,
           "palette": 1,
           "cover_fallback": 0,
-          "content_es": 6526,
-          "judge_es": 2759,
-          "content_en": 6716,
-          "judge_en": 2029,
-          "voice": 1507,
+          "content_es": 6340,
+          "judge_es": 2321,
+          "content_en": 11998,
+          "judge_en": 1862,
+          "voice": 811,
           "post_processing": 5
         },
         "llm_calls_count": 8,

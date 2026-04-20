@@ -1,0 +1,47 @@
+{
+  "ground_truth": "TEMA INFERIDO (el modelo no conoce este libro directamente, infiere desde similares):\n\nLa lucha del ser humano contra el absurdo de la existencia y la búsqueda de significado en un mundo vacío.\n\nVOZ INFERIDA:\nReflexiva, filosófica y melancólica, con un enfoque en la condición humana y la rebelión individual.\n\nLIBROS SIMILARES QUE COMPARTEN ADN CON ESTE:\n- \"El extranjero\" (Albert Camus): Ambos libros son obras fundamentales de Camus y abordan la existencia humana y el absurdo.\n- \"La náusea\" (Jean-Paul Sartre): Explora temas existenciales y la búsqueda de significado en un mundo absurdo.\n- \"El ser y la nada\" (Jean-Paul Sartre): Profundiza en la filosofía existencialista y el vacío de la existencia.\n- \"La peste\" (Albert Camus): Otra obra de Camus que reflexiona sobre la condición humana y la lucha contra el absurdo.\n- \"El lobo estepario\" (Hermann Hesse): Aborda la dualidad del ser humano y la búsqueda de identidad en un mundo caótico.",
+  "grounding_source": "model_inference",
+  "book_identity_confidence": 0.765,
+  "verified_identity": {
+    "titulo_real": "El mito de Sísifo",
+    "autor_completo": "Albert Camus",
+    "año": null
+  },
+  "inference_confidence": 0.9,
+  "book_known_directly": true,
+  "rich_inference": true,
+  "similar_books": [
+    {
+      "titulo": "El extranjero",
+      "autor": "Albert Camus",
+      "razon": "Ambos libros son obras fundamentales de Camus y abordan la existencia humana y el absurdo."
+    },
+    {
+      "titulo": "La náusea",
+      "autor": "Jean-Paul Sartre",
+      "razon": "Explora temas existenciales y la búsqueda de significado en un mundo absurdo."
+    },
+    {
+      "titulo": "El ser y la nada",
+      "autor": "Jean-Paul Sartre",
+      "razon": "Profundiza en la filosofía existencialista y el vacío de la existencia."
+    },
+    {
+      "titulo": "La peste",
+      "autor": "Albert Camus",
+      "razon": "Otra obra de Camus que reflexiona sobre la condición humana y la lucha contra el absurdo."
+    },
+    {
+      "titulo": "El lobo estepario",
+      "autor": "Hermann Hesse",
+      "razon": "Aborda la dualidad del ser humano y la búsqueda de identidad en un mundo caótico."
+    }
+  ],
+  "resolution_path": [
+    "evidence_fetched_0sources",
+    "tier3_conf_0.90"
+  ],
+  "tier_reached": 2.5,
+  "cost_tokens": 562,
+  "cached_at": "2026-04-20T04:18:28.167Z"
+}
