@@ -205,6 +205,32 @@ CARD_ES
 - parrafoBot: 80-320 chars. Segunda idea del libro en la voz del autor.
 
 ═══════════════════════════════════════════════════════════════════
+HIGHLIGHTS [H]...[/H] EN PARRAFOS
+═══════════════════════════════════════════════════════════════════
+En parrafoTop y parrafoBot, marca UNA frase autocontenida con [H] al inicio y [/H] al final.
+
+La frase entre [H] y [/H] DEBE cumplir TODAS estas reglas:
+1. Cerrar con sentido completo — sujeto + verbo + complemento o idea cerrada
+2. Ser legible aislada — si alguien solo lee eso, debe entenderse por sí solo
+3. NO terminar en preposición, artículo o conector suelto
+   PROHIBIDO terminar en: a, de, en, con, por, para, el, la, los, las, un, una, y, o, que, como, cuando, donde, si, porque, su, sus, mi, mis
+4. Tener entre 5 y 14 palabras
+5. Solo UN [H]...[/H] por párrafo
+
+Ejemplos CORRECTOS (cierran con sentido):
+- "[H]La conexión emocional es el hilo que une a las personas.[/H] Cuando se logra, la conversación se transforma."
+- "El silencio es un instrumento. [H]Los supercomunicadores lo saben y lo aplican con maestría.[/H]"
+- "[H]Escuchar de verdad cambia la química del cuerpo.[/H] El cerebro responde a la atención recibida."
+
+Ejemplos INCORRECTOS (te van a rechazar):
+- "[H]La conexión emocional es el hilo que une a las[/H] personas..." ← corta en "las"
+- "[H]Los supercomunicadores[/H] lo saben..." ← trivial, 2 palabras
+- "[H]El silencio es un instrumento que[/H] los sabios..." ← termina en "que"
+- "[H]Cuando hablamos con alguien que conocemos y[/H] le damos..." ← termina en "y"
+
+Si no estás seguro de dónde cerrar, prefiere marcar la frase completa hasta el punto. Una frase cerrada es siempre mejor que un corte a la mitad.
+
+═══════════════════════════════════════════════════════════════════
 EMOTIONAL_WORDS_ES
 ═══════════════════════════════════════════════════════════════════
 Exactamente 4 palabras (3-25 chars cada una) que capturen el estado emocional que el libro evoca.
@@ -339,6 +365,32 @@ edition_blocks_en: exactly 4 blocks with different gesture_types, each 40-100 ch
 
 gesture_type enum: sensory_instruction | direct_question | concrete_image | authorial_aphorism
 sensory_anchor enum: sight | hearing | touch | smell | taste | movement | space | light | breath | time
+
+═══════════════════════════════════════════════════════════════════
+HIGHLIGHTS [H]...[/H] IN PARAGRAPHS
+═══════════════════════════════════════════════════════════════════
+In parrafoTop and parrafoBot, mark ONE self-contained phrase with [H] and [/H].
+
+The phrase between [H] and [/H] MUST follow ALL rules:
+1. Close with complete meaning — subject + verb + complement or finished idea
+2. Be readable in isolation — if someone only reads that, it must make sense on its own
+3. NEVER end in preposition, article, or loose connector
+   FORBIDDEN endings: a, an, the, of, in, on, at, by, for, with, from, to, and, or, but, that, which, who, if, when, where, my, your, his, her
+4. Be between 5 and 14 words
+5. Only ONE [H]...[/H] per paragraph
+
+Correct examples (close with meaning):
+- "[H]Emotional connection is the thread that binds people together.[/H] When it works, conversation transforms."
+- "Silence is an instrument. [H]Super-communicators know it and wield it with mastery.[/H]"
+- "[H]Real listening changes the body's chemistry.[/H] The brain responds to the attention received."
+
+Incorrect examples (will be rejected):
+- "[H]Emotional connection is the thread that binds[/H] people..." ← ends in "binds"... actually this IS fine, the bad one would be:
+- "[H]Emotional connection is the thread that binds people to[/H] each other..." ← ends in "to"
+- "[H]Super-communicators[/H] know it..." ← trivial, 1 word
+- "[H]Silence is an instrument that[/H] the wise..." ← ends in "that"
+
+If uncertain where to close, prefer marking the full phrase up to the period. A closed phrase beats a mid-sentence cut.
 
 ═══════════════════════════════════════════════════════════════════
 FORBIDDEN
