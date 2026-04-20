@@ -2,88 +2,159 @@
 <html>
 <head>
 <meta charset="utf-8">
+<title>Triggui OG</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wght@700&family=Inter:wght@400;500&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wght@0,700;0,800;1,700&family=Inter:wght@400;500;600&display=swap');
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  body {
+  html, body {
     width: 1200px;
     height: 630px;
-    background: var(--bg, #0a0a0a);
+    overflow: hidden;
+  }
+
+  body {
+    background: var(--bg, #09090B);
+    color: var(--ink, #F7F4EF);
     display: flex;
     align-items: center;
-    padding: 0 72px;
+    justify-content: space-between;
+    padding: 60px 72px;
     font-family: 'Inter', sans-serif;
-    overflow: hidden;
+    position: relative;
+  }
+
+  /* Glow difuso detrás, color del accent */
+  body::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(70% 55% at 20% 50%, var(--accent-glow, rgba(227,93,48,.26)) 0%, transparent 65%),
+      radial-gradient(55% 70% at 85% 40%, var(--accent-soft, rgba(227,93,48,.14)) 0%, transparent 70%);
+    pointer-events: none;
   }
 
   .content {
     flex: 1;
     min-width: 0;
+    max-width: 720px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+    max-height: 510px;
+    overflow: hidden;
   }
 
   .brand {
-    font-size: 14px;
-    color: rgba(255,255,255,0.35);
-    letter-spacing: 4px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.38);
+    letter-spacing: 5px;
     text-transform: uppercase;
-    margin-bottom: 20px;
+    margin-bottom: 22px;
+    font-weight: 500;
+  }
+  .brand img {
+    height: 20px;
+    width: auto;
+    opacity: 0.85;
+    filter: brightness(1.15);
+  }
+  .brand-fallback {
+    font-size: 13px;
+    color: rgba(255,255,255,0.38);
+    letter-spacing: 5px;
+    text-transform: uppercase;
     font-weight: 500;
   }
 
-  .word {
+  .headline {
     font-family: 'Noto Serif Display', Georgia, serif;
-    font-size: 72px;
-    font-weight: 700;
-    color: var(--accent, #ffffff);
-    line-height: 1.1;
-    margin-bottom: 24px;
-    max-width: 650px;
+    font-size: 86px;
+    font-weight: 800;
+    color: var(--ink, #F7F4EF);
+    line-height: 1.04;
+    letter-spacing: -0.8px;
+    margin-bottom: 20px;
+    max-width: 700px;
+  }
+
+  .headline .accent {
+    color: var(--accent, #E35D30);
   }
 
   .hint {
     font-size: 18px;
-    color: rgba(255,255,255,0.5);
+    color: rgba(255,255,255,0.55);
     line-height: 1.5;
-    max-width: 550px;
+    max-width: 580px;
+    font-weight: 500;
   }
 
-  .cover-wrapper {
-    width: 160px;
+  .cover-wrap {
+    width: 300px;
     flex-shrink: 0;
-    margin-left: 48px;
+    margin-left: 56px;
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+    z-index: 1;
   }
 
   .cover {
-    width: 150px;
-    border-radius: 10px;
-    box-shadow: 0 8px 32px var(--glow, rgba(255,255,255,0.15));
+    width: 100%;
+    height: auto;
+    max-height: 450px;
+    border-radius: 8px;
+    object-fit: cover;
+    box-shadow:
+      0 20px 60px rgba(0,0,0,0.55),
+      0 0 0 1px rgba(255,255,255,0.06),
+      0 0 80px var(--accent-glow, rgba(227,93,48,0.25));
+  }
+
+  .cover-fallback {
+    width: 300px;
+    height: 450px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--paper, #111114) 0%, var(--bg, #09090B) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Noto Serif Display', Georgia, serif;
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: 6px;
+    color: var(--accent, #E35D30);
+    box-shadow:
+      0 20px 60px rgba(0,0,0,0.55),
+      0 0 0 1px rgba(255,255,255,0.08);
   }
 
   .footer {
     position: absolute;
     bottom: 28px;
     right: 72px;
-    font-size: 16px;
-    color: rgba(255,255,255,0.2);
+    font-size: 14px;
+    color: rgba(255,255,255,0.28);
     font-weight: 500;
     letter-spacing: -0.3px;
+    z-index: 2;
   }
 </style>
 </head>
 <body>
   <div class="content">
-    <div class="brand">TRIGGUI</div>
-    <div class="word">{{PALABRA}}</div>
-    <div class="hint">{{HINT}}</div>
+    <div class="brand">{{BRAND_SECTION}}</div>
+    <div class="headline">{{HEADLINE}}</div>
   </div>
 
-  <div class="cover-wrapper">
-    <img class="cover" src="{{PORTADA_URL}}" alt="" />
+  <div class="cover-wrap">
+    {{COVER_SECTION}}
   </div>
 
   <div class="footer">triggui.com</div>
