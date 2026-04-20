@@ -452,60 +452,74 @@ await page.evaluate(async () => {
 });
 
 if (portadaURL) {
-  // 🛡️ NIVEL DIOS: retry inteligente con 3 fases
-  //   1. Precarga de la imagen (naturalWidth>0)
-  //   2. Espera activa del DOM (waitForSelector)
-  //   3. Retry con backoff exponencial si falla
+  // Retry nivel dios: 3 intentos con timeouts progresivos
+  // IMPORTANTE: page.evaluate solo acepta 1 argumento después del callback.
+  // Para pasar múltiples valores, usamos closures (variables del outer scope).
+  const timeouts = [10000, 16000, 22000];
   let coverLoaded = false;
-  const maxAttempts = 3;
-  const baseTimeout = 10000; // 10s primera vez, 15s segunda, 22s tercera
 
-  for (let attempt = 1; attempt <= maxAttempts && !coverLoaded; attempt++) {
-    const timeoutMs = baseTimeout + (attempt - 1) * 6000;
-    console.log(`   ⏳ Cargando portada — intento ${attempt}/${maxAttempts} (timeout ${timeoutMs/1000}s)`);
+  for (let attempt = 0; attempt < timeouts.length; attempt++) {
+    const currentTimeout = timeouts[attempt];
+    console.log(`   ⏳ Cargando portada — intento ${attempt + 1}/3 (timeout ${currentTimeout / 1000}s)`);
 
     try {
-      // Precarga real: crea un Image() y espera a que tenga naturalWidth>0
-      const loaded = await page.evaluate(async (url, timeout) => {
+      // Paso A: esperar que el selector esté visible en el DOM
+      await page.waitForSelector(".cover", { state: "visible", timeout: Math.min(currentTimeout, 8000) });
+
+      // Paso B: esperar que la imagen haya cargado completamente
+      // Usamos closure: portadaURL y timeoutMs como variables del outer scope NO se pasan.
+      // En su lugar, pasamos como argumento ÚNICO un objeto con ambos valores.
+      const remainingTimeout = Math.max(3000, currentTimeout - 8000);
+      const loaded = await page.evaluate(async (timeoutMs) => {
+        const img = document.querySelector(".cover");
+        if (!img) return false;
+        // Si la imagen ya está cargada y con dimensiones reales, OK
+        if (img.complete && img.naturalWidth > 0) return true;
+        // Si no, esperar load o error con timeout
         return await new Promise((resolve) => {
-          const img = new Image();
-          const start = Date.now();
-          img.onload = () => {
-            if (img.naturalWidth > 0) resolve(true);
-            else resolve(false);
-          };
-          img.onerror = () => resolve(false);
-          img.src = url;
-          // Fallback timer
-          setTimeout(() => {
-            if (img.complete && img.naturalWidth > 0) resolve(true);
-            else resolve(false);
-          }, timeout);
+          let done = false;
+          const finish = (val) => { if (!done) { done = true; resolve(val); } };
+          img.addEventListener("load", () => {
+            if (img.naturalWidth > 0) finish(true); else finish(false);
+          });
+          img.addEventListener("error", () => finish(false));
+          setTimeout(() => finish(false), timeoutMs);
         });
-      }, portadaURL, timeoutMs);
+      }, remainingTimeout);
 
       if (loaded) {
-        await page.waitForSelector(".cover", { state: "visible", timeout: 3000 });
-        await page.waitForTimeout(400);
+        await page.waitForTimeout(400); // pequeño margen post-load
         coverLoaded = true;
-        console.log(`   ✅ Portada cargada en intento ${attempt}`);
+        console.log(`   ✅ Portada cargada en intento ${attempt + 1}`);
+        break;
       } else {
-        throw new Error("naturalWidth=0");
+        console.log(`   ⚠️  Intento ${attempt + 1}: imagen no cargó dentro del timeout`);
       }
     } catch (err) {
-      console.log(`   ⚠️  Intento ${attempt} falló: ${err.message?.slice(0, 80) || "timeout"}`);
-      if (attempt < maxAttempts) {
-        await page.waitForTimeout(1500); // pausa antes de reintentar
-      }
+      const msg = String(err?.message || err).slice(0, 100);
+      console.log(`   ⚠️  Intento ${attempt + 1} falló: ${msg}`);
+    }
+
+    // Entre intentos, esperar 1.5s para que la red se recupere
+    if (attempt < timeouts.length - 1) {
+      await page.waitForTimeout(1500);
     }
   }
 
   if (!coverLoaded) {
-    console.log("   ⚠️  Portada no cargó en 3 intentos — OG sin portada");
-    // Ocultar el img roto para que no se vea X de imagen rota
+    console.log(`   ⚠️  Portada no cargó en ${timeouts.length} intentos — OG se generará sin portada`);
+    // Remover el elemento .cover del DOM para que no salga roto
     await page.evaluate(() => {
-      const cover = document.querySelector(".cover");
-      if (cover) cover.style.display = "none";
+      const img = document.querySelector(".cover");
+      if (img) img.remove();
+      // Si hay un fallback tipográfico preparado, activarlo
+      const wrap = document.querySelector(".cover-wrap");
+      if (wrap && !wrap.querySelector(".cover-fallback")) {
+        const fallback = document.createElement("div");
+        fallback.className = "cover-fallback";
+        fallback.textContent = "TRIGGUI";
+        wrap.appendChild(fallback);
+      }
     });
   }
 }
