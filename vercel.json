@@ -1,8 +1,54 @@
 {
   "version": 2,
   "public": true,
-  "builds": [],
-  "routes": [
-    { "src": "/(.*)", "dest": "/public/index.html" }
+  "cleanUrls": true,
+  "trailingSlash": true,
+  "rewrites": [
+    {
+      "source": "/t/:slug/",
+      "destination": "/public/t/:slug/index.html"
+    },
+    {
+      "source": "/t/:slug",
+      "destination": "/public/t/:slug/index.html"
+    },
+    {
+      "source": "/t/:slug/tarjeta.png",
+      "destination": "/public/t/:slug/tarjeta.png"
+    },
+    {
+      "source": "/t/:slug/og.png",
+      "destination": "/public/t/:slug/og.png"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "/api/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/public/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/t/:slug/og.png",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=3600, s-maxage=3600" },
+        { "key": "Content-Type", "value": "image/png" }
+      ]
+    },
+    {
+      "source": "/t/:slug/tarjeta.png",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=3600, s-maxage=3600" },
+        { "key": "Content-Type", "value": "image/png" }
+      ]
+    },
+    {
+      "source": "/t/:slug/",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=300, s-maxage=300" }
+      ]
+    }
   ]
 }
