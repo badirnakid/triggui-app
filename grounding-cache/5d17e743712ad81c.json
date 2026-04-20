@@ -1,0 +1,27 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nEl Libro de los Cinco Anillos (en japonés Go-rin no sho) es un tratado sobre el Kenjutsu escrito por Miyamoto Musashi en su vejez, durante su retiro de ermitaño en la Cueva de Reigendo en 1643, y finalizado el 19 de mayo de 1645, pocas semanas antes de su muerte. El libro está dedicado a su pupilo Terao Magonojo.\n\nMETADATA VERIFICADA:\n- Título: El Libro de los Cinco Anillos\n- Autor: Miyamoto Musashi\n- Año: 1980\n- Categorías: Ficción y literatura, Libros",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.9120689655172414,
+  "verified_identity": {
+    "titulo_real": "El Libro de los Cinco Anillos",
+    "autor_completo": "Miyamoto Musashi",
+    "año": "1980",
+    "editorial": null,
+    "isbn": "957209875",
+    "categorias": [
+      "Ficción y literatura",
+      "Libros"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/el-libro-de-los-cinco-anillos/id957209875?uo=4"
+  },
+  "match_score": 0.9051724137931034,
+  "other_sources_agreed": [
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_3sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-20T22:12:02.654Z"
+}

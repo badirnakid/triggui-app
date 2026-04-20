@@ -1,0 +1,173 @@
+{
+  "titulo_input": "Suficiente",
+  "autor_input": "John C. Bogle",
+  "isbn_seed": "",
+  "isbn_discovered": "6443325862",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Suficiente",
+      "matched_author": "John C. Bogle"
+    },
+    "synopsis": "Suficiente. Reflexiones sobre el dinero, los negocios y la vida John C. Bogle, el fundador de Vanguard Group, uno de los grupos de fondos comunes de inversión más grandes del mundo, nos brinda su visión acerca del sentido común en las inversiones, en los negocios, en la vida y la sociedad. Busca dotar de humanidad a los negocios y en especial a las inversiones, que se han convertido en algo innecesariamente complejo y lleno de fraudes. Este libro, escrito luego de la debacle del 2008, se ha convertido en un clásico de las inversiones y en un manifiesto para la vida.&#xa0;",
+    "synopsis_length": 578,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/3f/c0/bc/3fc0bc78-b53f-721b-34f8-3dad493cb9fb/9788419251077.jpeg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/3f/c0/bc/3fc0bc78-b53f-721b-34f8-3dad493cb9fb/9788419251077.jpeg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/3f/c0/bc/3fc0bc78-b53f-721b-34f8-3dad493cb9fb/9788419251077.jpeg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/3f/c0/bc/3fc0bc78-b53f-721b-34f8-3dad493cb9fb/9788419251077.jpeg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Suficiente",
+      "autor_completo": "John C. Bogle",
+      "año": "2022",
+      "editorial": null,
+      "isbn": "6443325862",
+      "categorias": [
+        "Finanzas personales",
+        "Libros",
+        "Negocios y finanzas personales",
+        "Finanzas"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/suficiente/id6443325862?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Suficiente",
+      "matched_author": "John C. Bogle"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2022.",
+    "synopsis_length": 65,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://covers.openlibrary.org/b/id/13988849-L.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://covers.openlibrary.org/b/id/13988849-M.jpg"
+      },
+      {
+        "size": "small",
+        "url": "https://covers.openlibrary.org/b/id/13988849-S.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Suficiente",
+      "autor_completo": "John C. Bogle",
+      "año": "2022",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": null,
+      "paginas": null
+    }
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/6443325862.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "6443325862",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/3f/c0/bc/3fc0bc78-b53f-721b-34f8-3dad493cb9fb/9788419251077.jpeg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/3f/c0/bc/3fc0bc78-b53f-721b-34f8-3dad493cb9fb/9788419251077.jpeg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/3f/c0/bc/3fc0bc78-b53f-721b-34f8-3dad493cb9fb/9788419251077.jpeg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/3f/c0/bc/3fc0bc78-b53f-721b-34f8-3dad493cb9fb/9788419251077.jpeg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "large",
+      "url": "https://covers.openlibrary.org/b/id/13988849-L.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "medium",
+      "url": "https://covers.openlibrary.org/b/id/13988849-M.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "small",
+      "url": "https://covers.openlibrary.org/b/id/13988849-S.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/6443325862.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "openlibrary",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 16212,
+    "phase2_isbn_chain_ms": 24343,
+    "cover_validation_ms": 955,
+    "total_ms": 41510
+  },
+  "_cached_at": "2026-04-20T22:24:40.374Z"
+}

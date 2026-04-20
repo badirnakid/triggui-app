@@ -1,0 +1,28 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nEl estrés y el agotamiento son los males de nuestro siglo. ¿El antídoto? El niksen, un concepto holandés que significa, literalmente, «no hacer nada». Pero, ¿cómo podemos estar ociosos sin sentirnos culpables? Nuestra necesidad constante de trabajar y de ser productivos nos genera aún más estrés, lo que conlleva una disminución de la productividad. Por lo tanto, practicar la holgazanería tiene muchos beneficios, tanto emocionales como físicos. En este ingenioso libro, Olga Mecking ofrece consejos para que adoptes el niksen en el trabajo, en casa y en tu tiempo libre, y da las claves para que disfrutes de las pequeñas pausas de la vida y logres ser más feliz, más productivo y más creativo.\n\nMETADATA VERIFICADA:\n- Título: El libro del Niksen\n- Autor: Olga Mecking\n- Año: 2021\n- Categorías: Superación personal, Libros, Salud, mente y cuerpo",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "El libro del Niksen",
+    "autor_completo": "Olga Mecking",
+    "año": "2021",
+    "editorial": null,
+    "isbn": "1579120004",
+    "categorias": [
+      "Superación personal",
+      "Libros",
+      "Salud, mente y cuerpo"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/el-libro-del-niksen/id1579120004?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_3sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-20T22:18:58.447Z"
+}

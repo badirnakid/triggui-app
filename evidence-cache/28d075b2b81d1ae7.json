@@ -1,0 +1,126 @@
+{
+  "titulo_input": "Insanely Simple: The Obsession That Drives Apple's Success",
+  "autor_input": "Ken Segall",
+  "isbn_seed": "",
+  "isbn_discovered": "479575147",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 0.5947368421052632,
+    "match_details": {
+      "matched_title": "Insanely Simple",
+      "matched_author": "Ken Segall"
+    },
+    "synopsis": "To Steve Jobs, Simplicity was a religion. It was also a weapon. Simplicity isn’t just a design principle at Apple—it’s a value that permeates every level of the organization. The obsession with Simplicity is what separates Apple from other technology companies. It’s what helped Apple recover from near death in 1997 to become the most valuable company on Earth in 2011. Thanks to Steve Jobs’s uncompromising ways, you can see Simplicity in everything Apple does: the way it’s structured, the way it innovates, and the way it speaks to its customers. It’s by crushing the forces of Complexity that the company remains on its stellar trajectory. As ad agency creative director, Ken Segall played a key role in Apple’s resurrection, helping to create such critical marketing campaigns as Think different. By naming the iMac, he also laid the foundation for naming waves of i-products to come. Segall has a unique perspective, given his years of experience creating campaigns for other iconic tech companies, including IBM, Intel, and Dell. It was the stark contrast of Apple’s ways that made Segall appreciate the power of Simplicity—and inspired him to help others benefit from it. In Insanely Simple, you’ll be a fly on the wall inside a conference room with Steve Jobs, and on the receiving end of his midnight phone calls. You’ll understand how his obsession with Simplicity helped Apple perform better and faster, sometimes saving millions in the process. You’ll also learn, for example, how to: • Think Minimal: Distilling choices to a minimum brings clarity to a company and its customers—as Jobs proved when he replaced over twenty product models with a lineup of four. • Think Small: Swearing allegiance to the concept of “small groups of smart people” raises both morale and productivity. • Think Motion: Keeping project teams in constant motion focuses creative thinking on well-defined goals and minimizes distractions. • Think Iconic: Using a simple, powerful image to symbolize the benefit of a product or idea creates a deeper impression in the minds of customers. • Think War: Giving yourself an unfair advantage—using every weapon at your disposal—is the best way to ensure that your ideas survive unscathed. Segall brings Apple’s quest for Simplicity to life using fascinating (and previously untold) stories from behind the scenes. Through his insight and wit, you’ll discover how companies that leverage this power can stand out from competitors—and individuals who master it can become critical assets to their organizations.",
+    "synopsis_length": 2544,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication/v4/05/ef/af/05efafa4-10d5-53fc-0985-2c38154be882/9781101572047.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication/v4/05/ef/af/05efafa4-10d5-53fc-0985-2c38154be882/9781101572047.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication/v4/05/ef/af/05efafa4-10d5-53fc-0985-2c38154be882/9781101572047.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication/v4/05/ef/af/05efafa4-10d5-53fc-0985-2c38154be882/9781101572047.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Insanely Simple",
+      "autor_completo": "Ken Segall",
+      "año": "2012",
+      "editorial": null,
+      "isbn": "479575147",
+      "categorias": [
+        "Mercadotecnia y ventas",
+        "Libros",
+        "Negocios y finanzas personales",
+        "Industrias y profesiones",
+        "Administración y liderazgo"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/insanely-simple/id479575147?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": false,
+    "reason": "no_results",
+    "source": "openlibrary"
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/479575147.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "479575147",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication/v4/05/ef/af/05efafa4-10d5-53fc-0985-2c38154be882/9781101572047.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication/v4/05/ef/af/05efafa4-10d5-53fc-0985-2c38154be882/9781101572047.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication/v4/05/ef/af/05efafa4-10d5-53fc-0985-2c38154be882/9781101572047.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication/v4/05/ef/af/05efafa4-10d5-53fc-0985-2c38154be882/9781101572047.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/479575147.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match",
+    "openlibrary:no_results"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 16492,
+    "phase2_isbn_chain_ms": 24420,
+    "cover_validation_ms": 853,
+    "total_ms": 41765
+  },
+  "_cached_at": "2026-04-20T22:09:43.744Z"
+}

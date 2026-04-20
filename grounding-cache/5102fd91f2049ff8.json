@@ -1,0 +1,26 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nEl prestigioso ex negociador internacional del FBI Chris Voss, especializado en secuestros con rehenes, nos enseña un método de negociación rompedor: tácticas para negociaciones duras que son aplicables en múltiples aspectos de nuestras vidas. Rompe la barrera del no es un manual de negociación imprescindible desarrollado y perfeccionado a lo largo de la extraordinaria carrera de Chris Voss como negociador en secuestros con rehenes y como reconocido profesor en las escuelas de negocio más prestigiosas del mundo. Voss ha puesto a prueba estas técnicas en todo tipo de situaciones y ha comprobado su efectividad, tanto en los inicios de su carrera cuando patrullaba las peligrosas calles de Kansas City como en los cursos que imparte en las mejores universidades. Entre las muchas y distintas personas que han aplicado sus enseñanzas, se encuentran desde clientes que han visto aumentar significativamente los beneficios de sus empresas hasta estudiantes de programas de MBA que han conseguido empleos mejores o incluso padres que tienen que vérselas con sus hijos. Rompe la barrera del no relata los entresijos de situaciones verdaderamente dramáticas y revela las mejores y más eficaces estrategias de negociación. Voss, uno de los mejores negociadores del mundo, nos enseña a emplear estas técnicas en cualquier aspecto de nuestra vida. Reseñas: «Este libro destaca la importancia de la inteligencia emocional sin sacrificar la necesidad de conseguir acuerdos. Escrito por un negociador de rehenes, alguien que no se podía permitir una respuesta negativa, este libro resulta una lectura fascinante y muy práctica. En él encontraremos las técnicas necesarias para alcanzar el acuerdo deseado.» Daniel H. Pink, autor del bestseller Vender es humano «Pocas personas gozan de la experiencia de Chris Voss, ex negociador del FBI en situaciones de secuestros con rehenes. Sus técnicas funcionan, tanto para los negocios como para la vida.» Joe Navarro, agente especial (retirado) del FBI y autor del bestseller internacional El cuerpo habla «Los negocios, y prácticamente todo en la vida, dependen de cómo encaramos determinadas conversaciones cruciales, y estas herramientas nos proporcionan la ventaja que necesitamos... Es una lectura obligatoria para mis empleados, porque yo utilizo las lecciones de este libro cada día, y me gustaría que ellos también lo hicieran.» Jason MacCarthy, CEO de Goruck\n\nMETADATA VERIFICADA:\n- Título: Rompe la barrera del no\n- Autor: Chris Voss\n- Año: 2016\n- Categorías: Administración y liderazgo, Libros, Negocios y finanzas personales",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Rompe la barrera del no",
+    "autor_completo": "Chris Voss",
+    "año": "2016",
+    "editorial": null,
+    "isbn": "1159881469",
+    "categorias": [
+      "Administración y liderazgo",
+      "Libros",
+      "Negocios y finanzas personales"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/rompe-la-barrera-del-no/id1159881469?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [],
+  "resolution_path": [
+    "evidence_fetched_2sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-20T22:26:56.850Z"
+}

@@ -1,0 +1,141 @@
+{
+  "titulo_input": "Cuerpo Cuántico",
+  "autor_input": "Deepak Chopra",
+  "isbn_seed": "",
+  "isbn_discovered": "6475700041",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Cuerpo Cuántico",
+      "matched_author": "Deepak Chopra, Jack Tuszynski & Brian Ferting"
+    },
+    "synopsis": "¿Cuál es la mejor manera de envejecer bien y vivir más? En una colaboración sin precedentes entre tres de las mentes más poderosas de la actualidad, Deepak Chopra se une al físico Jack Tuszynski y al endocrinólogo Brian Fertig para ofrecer una obra visionaria que profundiza en el innovador mundo de la ciencia cuántica. En ella nos muestran cómo podemos revolucionar nuestra forma de vivir y envejecer y, en última instancia, erradicar la enfermedad. La clave está en el cuerpo cuántico. A diferencia de nuestro cuerpo físico, que está sujeto al envejecimiento, las lesiones y la decadencia, el cuerpo cuántico es la fuente infinita e invisible de la realidad cotidiana que influye en nuestros pensamientos, sentimientos, sensaciones y respuestas biológicas. Sin cuerpo cuántico, no hay cuerpo físico. Y la falta de conciencia de la parte más crucial de nosotros mismos nos afecta negativamente cada día. A través de una poderosa combinación de ejercicios prescriptivos e investigación de vanguardia sobre el mundo cuántico, los autores revelan siete avances que revolucionarán el futuro de la salud para todos. Al aprovechar el poder del cuerpo cuántico, podemos mejorar significativamente nuestro bienestar físico y mental, y ampliar nuestra comprensión de lo que significa llevar una vida feliz y con propósito. Este libro pionero promete desafiar nuestra comprensión de la medicina moderna tal y como la conocemos.",
+    "synopsis_length": 1419,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/1d/57/3d/1d573d04-3859-52b7-0692-115aa6a733b0/9786073840378.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/1d/57/3d/1d573d04-3859-52b7-0692-115aa6a733b0/9786073840378.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/1d/57/3d/1d573d04-3859-52b7-0692-115aa6a733b0/9786073840378.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/1d/57/3d/1d573d04-3859-52b7-0692-115aa6a733b0/9786073840378.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Cuerpo Cuántico",
+      "autor_completo": "Deepak Chopra, Jack Tuszynski & Brian Ferting",
+      "año": "2024",
+      "editorial": null,
+      "isbn": "6475700041",
+      "categorias": [
+        "Salud, mente y cuerpo",
+        "Libros",
+        "Espiritualidad"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/cuerpo-cu%C3%A1ntico/id6475700041?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 0.5493975903614459,
+    "match_details": {
+      "matched_title": "Cuerpo Cuántico. la Nueva Ciencia para una Vida Más Larga, Sana y Vital / Quantu M Body",
+      "matched_author": "Deepak Chopra"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2024.",
+    "synopsis_length": 65,
+    "covers": [],
+    "verified_identity": {
+      "titulo_real": "Cuerpo Cuántico. la Nueva Ciencia para una Vida Más Larga, Sana y Vital / Quantu M Body",
+      "autor_completo": "Deepak Chopra",
+      "año": "2024",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": "spa",
+      "paginas": null
+    }
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/6475700041.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "6475700041",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/1d/57/3d/1d573d04-3859-52b7-0692-115aa6a733b0/9786073840378.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/1d/57/3d/1d573d04-3859-52b7-0692-115aa6a733b0/9786073840378.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/1d/57/3d/1d573d04-3859-52b7-0692-115aa6a733b0/9786073840378.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/1d/57/3d/1d573d04-3859-52b7-0692-115aa6a733b0/9786073840378.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/6475700041.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "openlibrary",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 16224,
+    "phase2_isbn_chain_ms": 24732,
+    "cover_validation_ms": 1076,
+    "total_ms": 42032
+  },
+  "_cached_at": "2026-04-20T22:16:48.880Z"
+}

@@ -1,0 +1,26 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\n«Todo hombre puede ser, si se lo propone, escultor de su propio cerebro».&#xa0;Santiago Ramón y Cajal El clásico de culto inmediato sobre el arte de reprogramar tu propio&#xa0;software&#xa0;psicológico. Una inmersión audaz y fascinante en los entresijos de la evolución psicológica,&#xa0;Diseña tu mente: los principios de la psiquitectura&#xa0;es en parte un manifiesto filosófico y en parte una guía práctica; todo ello basado en las enseñanzas de pensadores legendarios como Marco Aurelio, Lao Tse, Friedrich Nietzsche y Abraham Maslow. Todas las ideas y técnicas que ofrece están integradas en una teoría vital para ayudar a las personas a escalar las cumbres del autodominio y llevar una vida mejor. Esta guía visionaria sostiene que la mente puede compararse a un&#xa0;software, pues está formada por muchos algoritmos entrelazados que fueron programados originalmente por la selección natural. Aunque la mayoría de personas nunca aprende a alterar la programación que trae por defecto, es posible reconfigurar los sesgos cognitivos, cambiar los hábitos adquiridos y transformar las reacciones emocionales. El proceso de la psiquitectura te permite desconectar de tu propia mente, identificar los patrones subyacentes y convertirte en el arquitecto de tu propia iluminación.\n\nMETADATA VERIFICADA:\n- Título: Diseña tu mente\n- Autor: Ryan A. Bush\n- Año: 2023\n- Categorías: Superación personal, Libros, Salud, mente y cuerpo",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Diseña tu mente",
+    "autor_completo": "Ryan A. Bush",
+    "año": "2023",
+    "editorial": null,
+    "isbn": "6463623098",
+    "categorias": [
+      "Superación personal",
+      "Libros",
+      "Salud, mente y cuerpo"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/dise%C3%B1a-tu-mente/id6463623098?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [],
+  "resolution_path": [
+    "evidence_fetched_2sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-20T22:08:34.294Z"
+}

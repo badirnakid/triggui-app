@@ -1,0 +1,124 @@
+{
+  "titulo_input": "Eutanasia para vivir",
+  "autor_input": "Martín Achirica",
+  "isbn_seed": "",
+  "isbn_discovered": "1612107071",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Eutanasia para vivir",
+      "matched_author": "Martín Achirica"
+    },
+    "synopsis": "Hay palabras que impactan y EUTANASIA por su inmediata relación con la muerte, es una de ellas. Amar la vida, no es odiar la muerte; por el contrario, gracias a la muerte que me ha dado tanto… y es que, si no la hiciésemos presente no valoraríamos la vida que tenemos frente. Pero para muchos esta reflexión suele llegar demasiado tarde, cuando ya no queda nada por hacer. ¿Debemos entonces resignarnos a vivir en modo avión, en modo autómata y activar nuestra conciencia solo días o minutos antes de nuestra muerte? En Eutanasia para vivir, volver a la vida en la vida misma, Martín Achirica, nos comparte una visión de la muerte distinta; nos muestra un reflejo al espejo en 360 grados que nos provoca y reta a hacer un alto en el camino para poder sobrevivir, pero más que eso, nos alienta a realmente saber VIVIR abrazando la conciencia del morir. A través de sus páginas, realizaremos un viaje de muerte y vida, nos sorprenderemos ante la vinculación entre la ciencia y la espiritualidad, aquello que se ve y no se ve como parte de un todo encaminado al nuevo paradigma del bienestar y la salud integrativa. Un nuevo arquetipo para el sentido de la existencia.",
+    "synopsis_length": 1165,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/02/99/9a/02999a3a-82d5-4ec7-06da-461285320963/9788419251367.jpeg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/02/99/9a/02999a3a-82d5-4ec7-06da-461285320963/9788419251367.jpeg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/02/99/9a/02999a3a-82d5-4ec7-06da-461285320963/9788419251367.jpeg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/02/99/9a/02999a3a-82d5-4ec7-06da-461285320963/9788419251367.jpeg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Eutanasia para vivir",
+      "autor_completo": "Martín Achirica",
+      "año": "2022",
+      "editorial": null,
+      "isbn": "1612107071",
+      "categorias": [
+        "Superación personal",
+        "Libros",
+        "Salud, mente y cuerpo"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/eutanasia-para-vivir/id1612107071?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": false,
+    "reason": "no_results",
+    "source": "openlibrary"
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/1612107071.01._SCLZZZZZZZ_.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "1612107071",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/02/99/9a/02999a3a-82d5-4ec7-06da-461285320963/9788419251367.jpeg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/02/99/9a/02999a3a-82d5-4ec7-06da-461285320963/9788419251367.jpeg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/02/99/9a/02999a3a-82d5-4ec7-06da-461285320963/9788419251367.jpeg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/02/99/9a/02999a3a-82d5-4ec7-06da-461285320963/9788419251367.jpeg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/1612107071.01._SCLZZZZZZZ_.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match",
+    "openlibrary:no_results"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 16211,
+    "phase2_isbn_chain_ms": 28631,
+    "cover_validation_ms": 501,
+    "total_ms": 45343
+  },
+  "_cached_at": "2026-04-20T22:06:19.509Z"
+}

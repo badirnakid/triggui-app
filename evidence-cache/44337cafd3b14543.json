@@ -1,0 +1,124 @@
+{
+  "titulo_input": "Diseña tu mente",
+  "autor_input": "Ryan A. Bush",
+  "isbn_seed": "",
+  "isbn_discovered": "6463623098",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Diseña tu mente",
+      "matched_author": "Ryan A. Bush"
+    },
+    "synopsis": "«Todo hombre puede ser, si se lo propone, escultor de su propio cerebro».&#xa0;Santiago Ramón y Cajal El clásico de culto inmediato sobre el arte de reprogramar tu propio&#xa0;software&#xa0;psicológico. Una inmersión audaz y fascinante en los entresijos de la evolución psicológica,&#xa0;Diseña tu mente: los principios de la psiquitectura&#xa0;es en parte un manifiesto filosófico y en parte una guía práctica; todo ello basado en las enseñanzas de pensadores legendarios como Marco Aurelio, Lao Tse, Friedrich Nietzsche y Abraham Maslow. Todas las ideas y técnicas que ofrece están integradas en una teoría vital para ayudar a las personas a escalar las cumbres del autodominio y llevar una vida mejor. Esta guía visionaria sostiene que la mente puede compararse a un&#xa0;software, pues está formada por muchos algoritmos entrelazados que fueron programados originalmente por la selección natural. Aunque la mayoría de personas nunca aprende a alterar la programación que trae por defecto, es posible reconfigurar los sesgos cognitivos, cambiar los hábitos adquiridos y transformar las reacciones emocionales. El proceso de la psiquitectura te permite desconectar de tu propia mente, identificar los patrones subyacentes y convertirte en el arquitecto de tu propia iluminación.",
+    "synopsis_length": 1280,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/33/c3/a0/33c3a0f3-6847-8210-8bb8-c49634d14c47/9788441442634.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/33/c3/a0/33c3a0f3-6847-8210-8bb8-c49634d14c47/9788441442634.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/33/c3/a0/33c3a0f3-6847-8210-8bb8-c49634d14c47/9788441442634.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/33/c3/a0/33c3a0f3-6847-8210-8bb8-c49634d14c47/9788441442634.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Diseña tu mente",
+      "autor_completo": "Ryan A. Bush",
+      "año": "2023",
+      "editorial": null,
+      "isbn": "6463623098",
+      "categorias": [
+        "Superación personal",
+        "Libros",
+        "Salud, mente y cuerpo"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/dise%C3%B1a-tu-mente/id6463623098?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": false,
+    "reason": "no_results",
+    "source": "openlibrary"
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/6463623098.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "6463623098",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/33/c3/a0/33c3a0f3-6847-8210-8bb8-c49634d14c47/9788441442634.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/33/c3/a0/33c3a0f3-6847-8210-8bb8-c49634d14c47/9788441442634.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/33/c3/a0/33c3a0f3-6847-8210-8bb8-c49634d14c47/9788441442634.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/33/c3/a0/33c3a0f3-6847-8210-8bb8-c49634d14c47/9788441442634.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/6463623098.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match",
+    "openlibrary:no_results"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 16093,
+    "phase2_isbn_chain_ms": 25122,
+    "cover_validation_ms": 708,
+    "total_ms": 41923
+  },
+  "_cached_at": "2026-04-20T22:08:34.293Z"
+}

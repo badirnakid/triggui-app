@@ -1,0 +1,173 @@
+{
+  "titulo_input": "Aprendiendo de los mejores",
+  "autor_input": "Francisco Alcaide Hernández",
+  "isbn_seed": "",
+  "isbn_discovered": "1447701637",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Aprendiendo de los mejores",
+      "matched_author": "Francisco Alcaide Hernández"
+    },
+    "synopsis": "Decía Betrand Russell que «la mejor prueba de que algo puede hacerse es que antes alguien ya lo hizo». Por eso las personas inteligentes aprenden de la experiencia de los demás. En el libro encontrarás reflexiones y frases sobre el desarrollo personal, sobre la gestión de empresas y equipos, pero también sobre la vida misma. Personajes como Dale Carnegie, Napoleon Hill, Robert Kiyosaki, Richard Branson, John C. Maxwell, Steve Jobs, Jack Welch, Deepak Chopra, Eckhart Tolle, Brian Tracy... aparecen por estas páginas para enseñarte lo que ellos saben y lo que ellos también han aprendido anteriormente y que les ha hecho grandes.",
+    "synopsis_length": 632,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/5b/57/a6/5b57a675-852e-64ba-ca10-c030ed6b7edf/9786070755613.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/5b/57/a6/5b57a675-852e-64ba-ca10-c030ed6b7edf/9786070755613.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/5b/57/a6/5b57a675-852e-64ba-ca10-c030ed6b7edf/9786070755613.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/5b/57/a6/5b57a675-852e-64ba-ca10-c030ed6b7edf/9786070755613.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Aprendiendo de los mejores",
+      "autor_completo": "Francisco Alcaide Hernández",
+      "año": "2019",
+      "editorial": null,
+      "isbn": "1447701637",
+      "categorias": [
+        "Administración y liderazgo",
+        "Libros",
+        "Negocios y finanzas personales",
+        "Salud, mente y cuerpo"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/aprendiendo-de-los-mejores/id1447701637?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Aprendiendo de los mejores",
+      "matched_author": "Francisco Alcaide Hernández"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2016.",
+    "synopsis_length": 65,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://covers.openlibrary.org/b/id/12929469-L.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://covers.openlibrary.org/b/id/12929469-M.jpg"
+      },
+      {
+        "size": "small",
+        "url": "https://covers.openlibrary.org/b/id/12929469-S.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Aprendiendo de los mejores",
+      "autor_completo": "Francisco Alcaide Hernández",
+      "año": "2016",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": null,
+      "paginas": null
+    }
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/1447701637.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "1447701637",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/5b/57/a6/5b57a675-852e-64ba-ca10-c030ed6b7edf/9786070755613.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/5b/57/a6/5b57a675-852e-64ba-ca10-c030ed6b7edf/9786070755613.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/5b/57/a6/5b57a675-852e-64ba-ca10-c030ed6b7edf/9786070755613.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/5b/57/a6/5b57a675-852e-64ba-ca10-c030ed6b7edf/9786070755613.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "large",
+      "url": "https://covers.openlibrary.org/b/id/12929469-L.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "medium",
+      "url": "https://covers.openlibrary.org/b/id/12929469-M.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "small",
+      "url": "https://covers.openlibrary.org/b/id/12929469-S.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/1447701637.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "openlibrary",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 16105,
+    "phase2_isbn_chain_ms": 24286,
+    "cover_validation_ms": 1019,
+    "total_ms": 41410
+  },
+  "_cached_at": "2026-04-20T22:22:21.984Z"
+}

@@ -1,0 +1,28 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nUn mapa del despertar de la mano de la sabiduría de Osho Cuanto más consciente se vuelve uno, más se recuerda a sí mismo, con más cautela actúa, más alerta está, más heridas empiezan a desaparecer, hay menos brotes de ira, menos odio, menos celos y menos sentimientos posesivos. Cuanto más consciente se vuelve uno, más se afianzan la salud y la integridad. Un día, uno simplemente descubre que todo eso se ha vuelto irrelevante, ha pasado a ser historia, ya no se trata de cuestiones vivas sino de cuestiones muertas. En esto consiste el milagro de adquirir conciencia: en que todo lo que es erróneo empieza a desvanecerse y todo lo que es correcto empieza a suceder. Individualmente, y como sociedad, la cuestión primordial es decidir si preferimos estar dormidos o despiertos, inconscientes o conscientes.\n\nMETADATA VERIFICADA:\n- Título: Conciencia (Claves para una nueva forma de vivir)\n- Autor: Osho\n- Año: 2011\n- Categorías: Espiritualidad, Libros, Salud, mente y cuerpo",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.7768085106382979,
+  "verified_identity": {
+    "titulo_real": "Conciencia (Claves para una nueva forma de vivir)",
+    "autor_completo": "Osho",
+    "año": "2011",
+    "editorial": null,
+    "isbn": "469026857",
+    "categorias": [
+      "Espiritualidad",
+      "Libros",
+      "Salud, mente y cuerpo"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/conciencia-claves-para-una-nueva-forma-de-vivir/id469026857?uo=4"
+  },
+  "match_score": 0.5670212765957446,
+  "other_sources_agreed": [
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_3sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-20T22:23:33.300Z"
+}

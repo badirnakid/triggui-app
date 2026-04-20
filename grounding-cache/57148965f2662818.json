@@ -1,0 +1,29 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nDesde la constante reclamación de atención de la tecnología, hasta las 24 horas de titulares constantes y las abrumadoras exigencias del trabajo, a nuestra capacidad de concentración se le exige más que nunca. Estamos sufriendo un trastorno colectivo de déficit de atención que nos hace sentir dispersos, abrumados y ansiosos, pero incapaces de resistirse a distracciones como los correos electrónicos, las videollamadas, los mensajes o las notificaciones. En realidad, utilizamos toda nuestra atención en cada momento del día, pero la Dra. Jha ha descubierto que, a menos que creemos espacio en nuestra mente mediante una práctica diaria específica y dirigida, no podremos controlar lo que capta nuestra atención. Esto nos hace vulnerables a cualquier distracción, una experiencia que ella denomina «degradación de la atención». La nueva ciencia de la atención presenta la única técnica de entrenamiento cognitivo que ha demostrado mejorar la atención y el rendimiento: el de la atención plena. La Dra. Jha explica exactamente cómo aplicar este programa de doce minutos al día en la vida cotidiana. Inteligente y accesible, entrelazando la ciencia y las historias ilustrativas de personas de alto nivel que han utilizado con éxito sus técnicas, La nueva ciencia de la atención desmiente las suposiciones comunes y ofrece nuevas y sorprendentes herramientas para mejorar radicalmente nuestras vidas.\n\nMETADATA VERIFICADA:\n- Título: La nueva ciencia de la atención\n- Autor: Amishi Jha\n- Año: 2023\n- Categorías: Superación personal, Libros, Salud, mente y cuerpo, Psicología",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "La nueva ciencia de la atención",
+    "autor_completo": "Amishi Jha",
+    "año": "2023",
+    "editorial": null,
+    "isbn": "6445139502",
+    "categorias": [
+      "Superación personal",
+      "Libros",
+      "Salud, mente y cuerpo",
+      "Psicología"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/la-nueva-ciencia-de-la-atenci%C3%B3n/id6445139502?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_3sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-20T22:10:53.255Z"
+}
