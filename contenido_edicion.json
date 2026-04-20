@@ -1,52 +1,52 @@
 {
   "libros": [
     {
-      "titulo": "Cómo conocer a una persona",
-      "autor": "David Brooks",
+      "titulo": "supercomunicadores",
+      "autor": "charles duhigg",
       "tagline": "",
-      "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/54/cf/51/54cf5132-06c7-d163-2a63-2f5d0ef5b9c2/1044120648.jpg/3000x3000bb.jpg",
-      "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/54/cf/51/54cf5132-06c7-d163-2a63-2f5d0ef5b9c2/1044120648.jpg/3000x3000bb.jpg",
-      "isbn": "6736685037",
-      "titulo_es": "Cómo conocer a una persona",
-      "titulo_en": "How to Know a Person",
+      "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/4b/2a/2e/4b2a2e4e-6092-277d-98ea-0d75dd6354c6/9788419820198.jpg/3000x3000bb.jpg",
+      "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/4b/2a/2e/4b2a2e4e-6092-277d-98ea-0d75dd6354c6/9788419820198.jpg/3000x3000bb.jpg",
+      "isbn": "6475678784",
+      "titulo_es": "supercomunicadores",
+      "titulo_en": "Supercommunicators",
       "idioma_original": "es",
       "dimension": "Conexion",
-      "punto": "Creativo",
+      "punto": "Activo",
       "palabras": [
-        "reflexión",
-        "conexión",
         "empatía",
-        "comprensión"
+        "inspiración",
+        "conexión",
+        "persuasión"
       ],
       "palabras_en": [
-        "genuine",
-        "transformative",
-        "meaningful",
-        "authentic"
+        "impactful",
+        "connection",
+        "understanding",
+        "influence"
       ],
       "frases": [
-        "🧘 Respira profundamente y siente la energía de la conexión a tu alrededor.",
-        "⏳ ¿Cuándo fue la última vez que realmente escuchaste a alguien?",
-        "🔭 Imagina a dos personas compartiendo una risa genuina, uniendo sus mundos.",
-        "🌌 La empatía transforma el espacio entre los corazones."
+        "🗺 Imagina un espacio donde cada palabra resuena con significado.",
+        "🌓 ¿Qué historia compartes hoy que pueda influir en alguien más?",
+        "👁 Visualiza a un supercomunicador cautivando a su audiencia con cada gesto.",
+        "🔔 La voz del corazón siempre encuentra eco en el otro."
       ],
       "frases_en": [
-        "💫 Imagine stepping into another's shoes, feeling their journey.",
-        "☀ What if you viewed the world through someone else's eyes?",
-        "🔭 Picture the warmth of a shared smile in a crowded room.",
-        "🌓 True connection is timeless, transcending momentary distractions."
+        "🔭 Imagine the warmth of a genuine smile lighting up the room.",
+        "🧘 What truly resonates with you in a conversation?",
+        "🏛 Picture two people leaning in, fully engaged, sharing their stories.",
+        "🕰 True influence is a timeless art, crafted through connection."
       ],
       "frases_og": [
-        "🧭 La empatía es el puente hacia la conexión auténtica.",
-        "🔍 Las relaciones interpersonales florecen en la comprensión mutua.",
-        "💠 Desarrollar habilidades sociales enriquece nuestras vidas.",
-        "✨ Cada interacción es una oportunidad para profundizar la conexión."
+        "🛡 La influencia comienza con una escucha activa.",
+        "🎯 Cada conversación es una oportunidad para conectar.",
+        "🌱 Las técnicas de persuasión son herramientas de conexión.",
+        "🔮 Los supercomunicadores transforman palabras en acción."
       ],
       "frases_og_en": [
-        "🧭 Empathy bridges the gap in relationships.",
-        "🔍 Understanding emotions enhances connection.",
-        "💠 Social skills are a journey of discovery.",
-        "✨ Authentic bonds reshape our interactions."
+        "🛡 Every conversation can become meaningful with the right approach.",
+        "🎯 Empathy is the cornerstone of effective communication.",
+        "🌱 Mastering connection opens doors to influence.",
+        "🔮 Supercommunicators thrive on emotional resonance."
       ],
       "colores": [
         "#90DFD2",
@@ -62,10 +62,10 @@
       ],
       "fondo": "#CFD2D3",
       "tarjeta": {
-        "titulo": "La esencia de la empatía",
-        "parrafoTop": "[H]Conectar efectivamente con los demás requiere un profundo entendimiento de[/H] sus emociones y experiencias. La empatía se convierte en la herramienta que nos permite cruzar la barrera entre lo individual y lo colectivo, creando un lazo genuino en nuestras relaciones interpersonales.",
-        "subtitulo": "¿Cómo cultivamos la empatía en nuestras vidas?",
-        "parrafoBot": "Desarrollar habilidades sociales implica más que simplemente aprender a comunicarse; es un viaje hacia la comprensión de la psicología detrás de las interacciones humanas. [H]Este proceso transforma nuestras conexiones, haciéndolas más significativas y auténticas.[/H]",
+        "titulo": "La magia de la conexión emocional",
+        "parrafoTop": "[H]La conexión emocional es el hilo que une a las[/H] personas en una conversación. Cuando se logra, se transforma la simple charla en un intercambio significativo, donde cada palabra cuenta.",
+        "subtitulo": "¿Cómo estableces esa conexión en tus interacciones?",
+        "parrafoBot": "Utilizar técnicas que fomenten la empatía y el entendimiento puede ser la clave para influir efectivamente en los demás. [H]Los supercomunicadores lo saben y lo aplican con maestría.[/H]",
         "style": {
           "accent": "#1F99D6",
           "paper": "#CFD2D3",
@@ -74,10 +74,10 @@
         }
       },
       "tarjeta_base": {
-        "titulo": "La esencia de la empatía",
-        "parrafoTop": "[H]Conectar efectivamente con los demás requiere un profundo entendimiento de[/H] sus emociones y experiencias. La empatía se convierte en la herramienta que nos permite cruzar la barrera entre lo individual y lo colectivo, creando un lazo genuino en nuestras relaciones interpersonales.",
-        "subtitulo": "¿Cómo cultivamos la empatía en nuestras vidas?",
-        "parrafoBot": "Desarrollar habilidades sociales implica más que simplemente aprender a comunicarse; es un viaje hacia la comprensión de la psicología detrás de las interacciones humanas. [H]Este proceso transforma nuestras conexiones, haciéndolas más significativas y auténticas.[/H]",
+        "titulo": "La magia de la conexión emocional",
+        "parrafoTop": "[H]La conexión emocional es el hilo que une a las[/H] personas en una conversación. Cuando se logra, se transforma la simple charla en un intercambio significativo, donde cada palabra cuenta.",
+        "subtitulo": "¿Cómo estableces esa conexión en tus interacciones?",
+        "parrafoBot": "Utilizar técnicas que fomenten la empatía y el entendimiento puede ser la clave para influir efectivamente en los demás. [H]Los supercomunicadores lo saben y lo aplican con maestría.[/H]",
         "style": {
           "accent": "#1F99D6",
           "paper": "#CFD2D3",
@@ -86,10 +86,10 @@
         }
       },
       "tarjeta_presentacion": {
-        "titulo": "La esencia de la empatía",
-        "parrafoTop": "[H]Conectar efectivamente con los demás requiere un profundo entendimiento de[/H] sus emociones y experiencias. La empatía se convierte en la herramienta que nos permite cruzar la barrera entre lo individual y lo colectivo, creando un lazo genuino en nuestras relaciones interpersonales.",
-        "subtitulo": "¿Cómo cultivamos la empatía en nuestras vidas?",
-        "parrafoBot": "Desarrollar habilidades sociales implica más que simplemente aprender a comunicarse; es un viaje hacia la comprensión de la psicología detrás de las interacciones humanas. [H]Este proceso transforma nuestras conexiones, haciéndolas más significativas y auténticas.[/H]",
+        "titulo": "La magia de la conexión emocional",
+        "parrafoTop": "[H]La conexión emocional es el hilo que une a las[/H] personas en una conversación. Cuando se logra, se transforma la simple charla en un intercambio significativo, donde cada palabra cuenta.",
+        "subtitulo": "¿Cómo estableces esa conexión en tus interacciones?",
+        "parrafoBot": "Utilizar técnicas que fomenten la empatía y el entendimiento puede ser la clave para influir efectivamente en los demás. [H]Los supercomunicadores lo saben y lo aplican con maestría.[/H]",
         "style": {
           "accent": "#1F99D6",
           "paper": "#CFD2D3",
@@ -98,10 +98,10 @@
         }
       },
       "tarjeta_en": {
-        "titulo": "The Essence of Empathy",
-        "parrafoTop": "[H]To connect effectively with others requires a deep understanding of[/H] their emotions and experiences. Empathy becomes the tool that allows us to bridge the gap between the individual and the collective, forging a genuine bond in our interpersonal relationships.",
-        "subtitulo": "How do we cultivate empathy in our lives?",
-        "parrafoBot": "Developing social skills involves more than just learning to communicate; it is a journey into the psychology behind human interactions. [H]This process transforms our connections, making them more meaningful and authentic.[/H]",
+        "titulo": "The Power of Emotional Connection",
+        "parrafoTop": "[H]Emotional connection serves as the thread binding individuals within a conversation.[/H] When achieved, it transforms mere talk into a meaningful exchange, where every word resonates and leaves an impact.",
+        "subtitulo": "How do you create that connection in your interactions?",
+        "parrafoBot": "Employing techniques that nurture empathy and understanding can be the key to effectively influencing others. [H]Supercommunicators know this and wield it with skill.[/H]",
         "style": {
           "accent": "#1F99D6",
           "paper": "#CFD2D3",
@@ -110,10 +110,10 @@
         }
       },
       "tarjeta_base_en": {
-        "titulo": "The Essence of Empathy",
-        "parrafoTop": "[H]To connect effectively with others requires a deep understanding of[/H] their emotions and experiences. Empathy becomes the tool that allows us to bridge the gap between the individual and the collective, forging a genuine bond in our interpersonal relationships.",
-        "subtitulo": "How do we cultivate empathy in our lives?",
-        "parrafoBot": "Developing social skills involves more than just learning to communicate; it is a journey into the psychology behind human interactions. [H]This process transforms our connections, making them more meaningful and authentic.[/H]",
+        "titulo": "The Power of Emotional Connection",
+        "parrafoTop": "[H]Emotional connection serves as the thread binding individuals within a conversation.[/H] When achieved, it transforms mere talk into a meaningful exchange, where every word resonates and leaves an impact.",
+        "subtitulo": "How do you create that connection in your interactions?",
+        "parrafoBot": "Employing techniques that nurture empathy and understanding can be the key to effectively influencing others. [H]Supercommunicators know this and wield it with skill.[/H]",
         "style": {
           "accent": "#1F99D6",
           "paper": "#CFD2D3",
@@ -122,10 +122,10 @@
         }
       },
       "tarjeta_presentacion_en": {
-        "titulo": "The Essence of Empathy",
-        "parrafoTop": "[H]To connect effectively with others requires a deep understanding of[/H] their emotions and experiences. Empathy becomes the tool that allows us to bridge the gap between the individual and the collective, forging a genuine bond in our interpersonal relationships.",
-        "subtitulo": "How do we cultivate empathy in our lives?",
-        "parrafoBot": "Developing social skills involves more than just learning to communicate; it is a journey into the psychology behind human interactions. [H]This process transforms our connections, making them more meaningful and authentic.[/H]",
+        "titulo": "The Power of Emotional Connection",
+        "parrafoTop": "[H]Emotional connection serves as the thread binding individuals within a conversation.[/H] When achieved, it transforms mere talk into a meaningful exchange, where every word resonates and leaves an impact.",
+        "subtitulo": "How do you create that connection in your interactions?",
+        "parrafoBot": "Employing techniques that nurture empathy and understanding can be the key to effectively influencing others. [H]Supercommunicators know this and wield it with skill.[/H]",
         "style": {
           "accent": "#1F99D6",
           "paper": "#CFD2D3",
@@ -133,35 +133,34 @@
           "border": "#7C7E7F"
         }
       },
-      "videoUrl": "https://duckduckgo.com/?q=!ducky+site:youtube.com+C%C3%B3mo%20conocer%20a%20una%20persona%20David%20Brooks%20entrevista%20espa%C3%B1ol",
-      "videoUrl_en": "https://duckduckgo.com/?q=!ducky+site:youtube.com+How%20to%20Know%20a%20Person%20David%20Brooks%20interview",
+      "videoUrl": "https://duckduckgo.com/?q=!ducky+site:youtube.com+supercomunicadores%20charles%20duhigg%20entrevista%20espa%C3%B1ol",
+      "videoUrl_en": "https://duckduckgo.com/?q=!ducky+site:youtube.com+Supercommunicators%20charles%20duhigg%20interview",
       "_nucleus": {
         "book_identity": {
-          "titulo_es": "Cómo conocer a una persona",
-          "titulo_en": "How to Know a Person",
-          "autor_completo": "David Brooks",
+          "titulo_es": "supercomunicadores",
+          "titulo_en": "Supercommunicators",
+          "autor_completo": "Charles Duhigg",
           "idioma_original": "es"
         },
         "book_grounding_anchors": {
           "concepts": [
-            "comprensión de las relaciones interpersonales",
-            "conectar efectivamente con los demás",
-            "la importancia de la empatía",
-            "desarrollo de habilidades sociales",
-            "la psicología detrás de las interacciones humanas"
+            "técnicas para mejorar la comunicación interpersonal",
+            "habilidades para influir efectivamente en los demás",
+            "consejos prácticos para la comunicación",
+            "ejemplos de supercomunicadores en la vida real"
           ],
           "key_terms": [
-            "relaciones interpersonales",
-            "empatía",
-            "conexión",
-            "habilidades sociales",
-            "psicología social"
+            "comunicación efectiva",
+            "influencia",
+            "habilidades interpersonales",
+            "persuasión",
+            "conexión emocional"
           ],
-          "authorial_voice_notes": "La voz de David Brooks es reflexiva y orientada a la autoayuda, con un enfoque en la psicología y la sociología de las relaciones."
+          "authorial_voice_notes": "La voz del autor es práctica y motivacional, centrada en consejos aplicables y ejemplos reales."
         },
         "lens_analysis": {
           "lens_provided": false,
-          "analysis": "No se proporciona una lente específica para aplicar, pero el libro se alinea con temas de comprensión y conexión interpersonal.",
+          "analysis": "La lente del curador no se aplica directamente, ya que el libro no se basa en una perspectiva única o una teoría específica, sino que aborda un tema amplio de comunicación.",
           "decision": "dont_apply_book_is_about_something_else"
         },
         "visual_intent": {
@@ -170,107 +169,107 @@
           "lightness_paper": "medium_light",
           "temperature_shift": 0,
           "palette_strategy": "analogous",
-          "typography_family": "serif_moderno",
+          "typography_family": "sans_humanista",
           "density": "equilibrado",
           "rhythm": "medio",
-          "era": "contemporaneo",
+          "era": "moderno",
           "genre_visual": "ensayo"
         },
         "surface_hints": {
           "dimension": "Conexion",
-          "punto_hawkins": "Creativo",
+          "punto_hawkins": "Activo",
           "franja_ideal": "manana"
         },
         "card_es": {
-          "titulo": "La esencia de la empatía",
-          "parrafoTop": "Conectar efectivamente con los demás requiere un profundo entendimiento de sus emociones y experiencias. La empatía se convierte en la herramienta que nos permite cruzar la barrera entre lo individual y lo colectivo, creando un lazo genuino en nuestras relaciones interpersonales.",
-          "subtitulo": "¿Cómo cultivamos la empatía en nuestras vidas?",
-          "parrafoBot": "Desarrollar habilidades sociales implica más que simplemente aprender a comunicarse; es un viaje hacia la comprensión de la psicología detrás de las interacciones humanas. Este proceso transforma nuestras conexiones, haciéndolas más significativas y auténticas."
+          "titulo": "La magia de la conexión emocional",
+          "parrafoTop": "La conexión emocional es el hilo que une a las personas en una conversación. Cuando se logra, se transforma la simple charla en un intercambio significativo, donde cada palabra cuenta.",
+          "subtitulo": "¿Cómo estableces esa conexión en tus interacciones?",
+          "parrafoBot": "Utilizar técnicas que fomenten la empatía y el entendimiento puede ser la clave para influir efectivamente en los demás. Los supercomunicadores lo saben y lo aplican con maestría."
         },
         "card_en": {
-          "titulo": "The Essence of Empathy",
-          "parrafoTop": "To connect effectively with others requires a deep understanding of their emotions and experiences. Empathy becomes the tool that allows us to bridge the gap between the individual and the collective, forging a genuine bond in our interpersonal relationships.",
-          "subtitulo": "How do we cultivate empathy in our lives?",
-          "parrafoBot": "Developing social skills involves more than just learning to communicate; it is a journey into the psychology behind human interactions. This process transforms our connections, making them more meaningful and authentic."
+          "titulo": "The Power of Emotional Connection",
+          "parrafoTop": "Emotional connection serves as the thread binding individuals within a conversation. When achieved, it transforms mere talk into a meaningful exchange, where every word resonates and leaves an impact.",
+          "subtitulo": "How do you create that connection in your interactions?",
+          "parrafoBot": "Employing techniques that nurture empathy and understanding can be the key to effectively influencing others. Supercommunicators know this and wield it with skill."
         },
         "emotional_words_es": [
-          "reflexión",
-          "conexión",
           "empatía",
-          "comprensión"
+          "inspiración",
+          "conexión",
+          "persuasión"
         ],
         "emotional_words_en": [
-          "genuine",
-          "transformative",
-          "meaningful",
-          "authentic"
+          "impactful",
+          "connection",
+          "understanding",
+          "influence"
         ],
         "og_phrases_es": [
-          "🧭 La empatía es el puente hacia la conexión auténtica.",
-          "🔍 Las relaciones interpersonales florecen en la comprensión mutua.",
-          "💠 Desarrollar habilidades sociales enriquece nuestras vidas.",
-          "✨ Cada interacción es una oportunidad para profundizar la conexión."
+          "🛡 La influencia comienza con una escucha activa.",
+          "🎯 Cada conversación es una oportunidad para conectar.",
+          "🌱 Las técnicas de persuasión son herramientas de conexión.",
+          "🔮 Los supercomunicadores transforman palabras en acción."
         ],
         "og_phrases_en": [
-          "🧭 Empathy bridges the gap in relationships.",
-          "🔍 Understanding emotions enhances connection.",
-          "💠 Social skills are a journey of discovery.",
-          "✨ Authentic bonds reshape our interactions."
+          "🛡 Every conversation can become meaningful with the right approach.",
+          "🎯 Empathy is the cornerstone of effective communication.",
+          "🌱 Mastering connection opens doors to influence.",
+          "🔮 Supercommunicators thrive on emotional resonance."
         ],
         "edition_blocks_es": [
           {
             "gesture_type": "instruccion_sensorial",
-            "sensory_anchor": "respiracion",
-            "phrase": "🧘 Respira profundamente y siente la energía de la conexión a tu alrededor."
+            "sensory_anchor": "espacio",
+            "phrase": "🗺 Imagina un espacio donde cada palabra resuena con significado."
           },
           {
             "gesture_type": "pregunta_directa",
             "sensory_anchor": "tiempo",
-            "phrase": "⏳ ¿Cuándo fue la última vez que realmente escuchaste a alguien?"
+            "phrase": "🌓 ¿Qué historia compartes hoy que pueda influir en alguien más?"
           },
           {
             "gesture_type": "imagen_concreta",
             "sensory_anchor": "vista",
-            "phrase": "🔭 Imagina a dos personas compartiendo una risa genuina, uniendo sus mundos."
+            "phrase": "👁 Visualiza a un supercomunicador cautivando a su audiencia con cada gesto."
           },
           {
             "gesture_type": "aforismo_autorial",
-            "sensory_anchor": "espacio",
-            "phrase": "🌌 La empatía transforma el espacio entre los corazones."
+            "sensory_anchor": "oido",
+            "phrase": "🔔 La voz del corazón siempre encuentra eco en el otro."
           }
         ],
         "edition_blocks_en": [
           {
             "gesture_type": "sensory_instruction",
-            "sensory_anchor": "movement",
-            "phrase": "💫 Imagine stepping into another's shoes, feeling their journey."
+            "sensory_anchor": "sight",
+            "phrase": "🔭 Imagine the warmth of a genuine smile lighting up the room."
           },
           {
             "gesture_type": "direct_question",
-            "sensory_anchor": "light",
-            "phrase": "☀ What if you viewed the world through someone else's eyes?"
+            "sensory_anchor": "breath",
+            "phrase": "🧘 What truly resonates with you in a conversation?"
           },
           {
             "gesture_type": "concrete_image",
-            "sensory_anchor": "sight",
-            "phrase": "🔭 Picture the warmth of a shared smile in a crowded room."
+            "sensory_anchor": "space",
+            "phrase": "🏛 Picture two people leaning in, fully engaged, sharing their stories."
           },
           {
             "gesture_type": "authorial_aphorism",
             "sensory_anchor": "time",
-            "phrase": "🌓 True connection is timeless, transcending momentary distractions."
+            "phrase": "🕰 True influence is a timeless art, crafted through connection."
           }
         ],
         "confidence": {
-          "book_grounding": 0.52,
+          "book_grounding": 0.6,
           "voice_authenticity": 0.93,
-          "specificity": 0.95,
+          "specificity": 0.91,
           "grounding_judge": 0.85,
-          "combined": 0.79,
+          "combined": 0.8,
           "signals": {
-            "bookIdentityConfidence": 0.5249999999999999,
+            "bookIdentityConfidence": 0.6000000000000001,
             "voiceSignal": 0.9249999999999999,
-            "specificitySignal": 0.95,
+            "specificitySignal": 0.9071428571428571,
             "judgeScore": 0.8500000000000001
           }
         }
@@ -278,36 +277,36 @@
       "_grounding": {
         "source": "model_inference",
         "tier_reached": 3,
-        "book_identity_confidence": 0.5249999999999999,
+        "book_identity_confidence": 0.6000000000000001,
         "resolution_path": [
           "evidence_fetched_0sources",
-          "tier3_conf_0.70"
+          "tier3_conf_0.80"
         ],
         "verified_identity": {
-          "titulo_real": "Cómo conocer a una persona",
-          "autor_completo": "David Brooks",
+          "titulo_real": "supercomunicadores",
+          "autor_completo": "charles duhigg",
           "año": null
         },
         "similar_books": [
           {
-            "titulo": "El arte de amar",
-            "autor": "Erich Fromm",
-            "razon": "Explora las relaciones humanas y la comprensión del amor y la conexión entre las personas."
+            "titulo": "Hablar en público para Dummies",
+            "autor": "Julio César Fernández",
+            "razon": "Aborda técnicas de comunicación efectiva y habilidades para hablar en público."
           },
           {
-            "titulo": "Los hombres son de Marte, las mujeres son de Venus",
-            "autor": "John Gray",
-            "razon": "Aborda las diferencias en la comunicación y las relaciones entre hombres y mujeres."
+            "titulo": "Comunicación no violenta",
+            "autor": "Marshall B. Rosenberg",
+            "razon": "Explora la comunicación efectiva y empática, que puede relacionarse con el tema de la supercomunicación."
+          },
+          {
+            "titulo": "El arte de la comunicación",
+            "autor": "Thich Nhat Hanh",
+            "razon": "Se centra en la comunicación consciente y efectiva, un aspecto importante para ser un 'supercomunicador'."
           },
           {
             "titulo": "Cómo ganar amigos e influir sobre las personas",
             "autor": "Dale Carnegie",
-            "razon": "Se centra en las habilidades interpersonales y la construcción de relaciones efectivas."
-          },
-          {
-            "titulo": "Inteligencia emocional",
-            "autor": "Daniel Goleman",
-            "razon": "Analiza cómo las emociones afectan nuestras interacciones y relaciones."
+            "razon": "Un clásico sobre habilidades interpersonales y comunicación persuasiva."
           }
         ],
         "from_cache": false
@@ -317,13 +316,13 @@
           "grounded_score": 0.9,
           "uses_book_specific_concepts": true,
           "could_apply_to_any_book": false,
-          "reason": "The content is highly relevant to the inferred themes of the book, focusing on empathy and interpersonal relationships, which are central to understanding human connections. It uses specific concepts such as 'empatía', 'conexión auténtica', and 'habilidades sociales', aligning closely with the book's focus on psychology and sociology of relationships. The phrases and ideas presented are not so far"
+          "reason": "The content is highly relevant to the inferred themes of the book, focusing on emotional connection, empathy, and influence in communication. Phrases like 'la conexión emocional' and 'técnicas que fomenten la empatía' directly relate to the book's focus on interpersonal communication skills. The motivational tone and practical advice align well with the inferred voice of the author. While it is a "
         },
         "en": {
           "grounded_score": 0.8,
           "uses_book_specific_concepts": true,
           "could_apply_to_any_book": false,
-          "reason": "The content reflects the inferred themes of the book well, particularly through the focus on empathy and understanding emotions in relationships, which aligns with the psychological and sociological aspects of interpersonal connections. Phrases like 'Empathy bridges the gap in relationships' and 'Understanding emotions enhances connection' directly relate to the inferred ground truth. However, the"
+          "reason": "The content reflects the inferred theme of the book by focusing on emotional connection and empathy as key elements of effective communication. Phrases like 'emotional connection' and 'empathy is the cornerstone of effective communication' directly relate to the skills and techniques for improving interpersonal communication. However, while it is specific to the inferred themes, the language used,"
         }
       },
       "_voice_verdict": {
@@ -332,30 +331,8 @@
         "es": {
           "verdict": "pagina",
           "confidence": 0.9,
-          "reason": "Tono directo y reflexivo, sin referencias externas al libro.",
-          "elapsed_ms": 881,
-          "usage": {
-            "prompt_tokens": 391,
-            "completion_tokens": 28,
-            "total_tokens": 419,
-            "prompt_tokens_details": {
-              "cached_tokens": 0,
-              "audio_tokens": 0
-            },
-            "completion_tokens_details": {
-              "reasoning_tokens": 0,
-              "audio_tokens": 0,
-              "accepted_prediction_tokens": 0,
-              "rejected_prediction_tokens": 0
-            }
-          },
-          "error": null
-        },
-        "en": {
-          "verdict": "pagina",
-          "confidence": 0.9,
-          "reason": "El texto presenta ideas en primera persona sobre empatía y conexiones.",
-          "elapsed_ms": 749,
+          "reason": "Uso de voz directa y preguntas retóricas sin referencias externas.",
+          "elapsed_ms": 735,
           "usage": {
             "prompt_tokens": 367,
             "completion_tokens": 28,
@@ -373,10 +350,32 @@
           },
           "error": null
         },
+        "en": {
+          "verdict": "pagina",
+          "confidence": 0.9,
+          "reason": "Voz directa y enfoque en la conexión emocional sin referencias externas.",
+          "elapsed_ms": 886,
+          "usage": {
+            "prompt_tokens": 352,
+            "completion_tokens": 28,
+            "total_tokens": 380,
+            "prompt_tokens_details": {
+              "cached_tokens": 0,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "error": null
+        },
         "circuit_tripped": false,
         "should_reextract": false,
-        "total_tokens": 814,
-        "total_ms": 881
+        "total_tokens": 775,
+        "total_ms": 886
       },
       "_visual": {
         "synthesis_inputs": {
@@ -404,7 +403,7 @@
           "--border": "#7C7E7F",
           "--highlight-bg": "#1B87BCd9",
           "--highlight-ink": "#FFFFFF",
-          "--typography-stack": "'Source Serif Pro', Georgia, serif",
+          "--typography-stack": "'Work Sans', 'Open Sans', 'Segoe UI', sans-serif",
           "--line-height": 1.65,
           "--letter-spacing": 0.2,
           "--paragraph-gap": 1,
@@ -431,10 +430,10 @@
         "distinct_types_en": 4
       },
       "_quality_warning": null,
-      "_inputs_snapshot": "2026-04-20T02-38-08",
+      "_inputs_snapshot": "2026-04-20T03-12-42",
       "_crono": {
         "dia": "domingo",
-        "hora": 20,
+        "hora": 21,
         "franja": "noche",
         "energia": 0.8,
         "modo": "preparacion_semana",
@@ -442,28 +441,28 @@
         "descripcion_franja": "Noche: melatonina en ascenso. Reflexivo, contemplativo, sin urgencia."
       },
       "_metrics": {
-        "tokens_total": 8836,
+        "tokens_total": 8702,
         "tokens_by_phase": {
-          "grounding": 518,
-          "anchors": 2240,
+          "grounding": 526,
+          "anchors": 2248,
           "palette": 0,
-          "content_es": 2068,
-          "judge_es": 836,
-          "content_en": 1585,
-          "judge_en": 775,
-          "voice": 814
+          "content_es": 2025,
+          "judge_es": 810,
+          "content_en": 1542,
+          "judge_en": 776,
+          "voice": 775
         },
-        "elapsed_ms_total": 51612,
+        "elapsed_ms_total": 51234,
         "elapsed_ms_by_phase": {
-          "grounding": 29678,
-          "anchors": 5079,
+          "grounding": 28681,
+          "anchors": 6202,
           "palette": 1,
           "cover_fallback": 0,
-          "content_es": 6642,
-          "judge_es": 1848,
-          "content_en": 5126,
-          "judge_en": 2356,
-          "voice": 881,
+          "content_es": 5537,
+          "judge_es": 2513,
+          "content_en": 4934,
+          "judge_en": 2479,
+          "voice": 886,
           "post_processing": 5
         },
         "llm_calls_count": 8,
