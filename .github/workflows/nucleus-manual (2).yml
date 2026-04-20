@@ -1,4 +1,12 @@
-name: Triggui Nucleus v3.2 — Manual
+name: Triggui Nucleus v3.2 — End-to-End
+
+# Pipeline completo: JSON nucleus + edición viva HTML + tarjeta PNG + OG PNG
+# Modos:
+#   - single_book          → libro explícito via validate-book.js v3.2
+#   - trigger_constrained  → GPT elige de libros_master.csv
+#   - trigger_discover     → GPT explora libremente (BN scraping)
+#   - shadow_batch         → batch completo en modo shadow
+#   - production_batch     → batch completo production
 
 on:
   workflow_dispatch:
@@ -6,50 +14,43 @@ on:
       modo:
         description: '¿Qué quieres correr hoy?'
         required: true
-        default: 'shadow_batch'
+        default: 'single_book'
         type: choice
         options:
-          - shadow_batch
-          - production_batch
           - single_book
           - trigger_constrained
           - trigger_discover
-      single_titulo:
-        description: '[SINGLE legacy] Título del libro'
-        required: false
-        type: string
-      single_autor:
-        description: '[SINGLE legacy] Autor del libro'
-        required: false
-        type: string
+          - shadow_batch
+          - production_batch
       libro_input:
-        description: '[DIRECT v3.2] Libro explícito formato "Título | Autor"'
+        description: '[SINGLE] Libro explícito formato "Título | Autor"'
         required: false
         type: string
       entrada_raw:
-        description: '[TRIGGER] Detonante humano en lenguaje natural (para constrained/discover)'
+        description: '[TRIGGER] Detonante humano en lenguaje natural'
         required: false
         type: string
       lens:
-        description: '🔍 Lente del día. Vacío = sin lente.'
+        description: '🔍 Lente del día (opcional)'
         required: false
         type: string
       book_context:
-        description: '📖 Contexto específico del libro (Tier 1, tu curaduría gana)'
-        required: false
-        type: string
-      seed:
-        description: '🎲 Seed opcional para batch'
+        description: '📖 Contexto del libro (Tier 1 — tu curaduría manda)'
         required: false
         type: string
       crono_enabled:
-        description: '🕒 Activar cronobiología automática'
+        description: '🕒 Activar cronobiología'
+        required: true
+        default: true
+        type: boolean
+      generate_assets:
+        description: '🖼️ Generar edición viva HTML + tarjeta PNG + OG PNG (solo single/trigger)'
         required: true
         default: true
         type: boolean
 
 concurrency:
-  group: triggui-nucleus-v32-manual
+  group: triggui-nucleus-v32-e2e
   cancel-in-progress: false
 
 permissions:
@@ -64,8 +65,9 @@ jobs:
       OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
       TRIGGUI_LENS: ${{ inputs.lens }}
       TRIGGUI_BOOK_CONTEXT: ${{ inputs.book_context }}
-      TRIGGUI_SEED: ${{ inputs.seed }}
       TRIGGUI_CRONO_ENABLED: ${{ inputs.crono_enabled }}
+      # BASE_URL dinámica según branch: main → app.triggui.com, otras → beta
+      BASE_URL: ${{ github.ref_name == 'main' && 'https://app.triggui.com' || 'https://beta.app.triggui.com' }}
 
     steps:
       - name: Checkout
@@ -78,18 +80,36 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install dependencies
+      - name: Setup Python (para build-editions.py)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install nucleus dependencies
         working-directory: experiments/nucleus
         run: npm ci || npm install --no-audit --no-fund
 
-      - name: Linkear CSV
+      - name: Install root dependencies (Playwright para tarjeta+OG)
+        run: |
+          npm ci || npm install --no-audit --no-fund
+          npx playwright install chromium --with-deps
+
+      - name: Linkear CSV maestro
         working-directory: experiments/nucleus
         run: |
           mkdir -p data
-          ln -sf "$GITHUB_WORKSPACE/data/libros_master.csv" data/libros_master.csv
+          if [ -f "$GITHUB_WORKSPACE/data/libros_master.csv" ]; then
+            ln -sf "$GITHUB_WORKSPACE/data/libros_master.csv" data/libros_master.csv
+            echo "✓ CSV linkeado"
+          else
+            echo "⚠️ No existe data/libros_master.csv en root — modo constrained no funcionará"
+          fi
 
-      # ═══ Modo DIRECT v3.2 (libro explícito via validate-book.js) ═══
-      - name: Validate libro DIRECT
+      # ╔══════════════════════════════════════════════════════════════════╗
+      # ║  FASE 1: VALIDATE-BOOK v3.2 (según modo)                         ║
+      # ╚══════════════════════════════════════════════════════════════════╝
+
+      - name: 📖 Validate DIRECT (libro explícito)
         if: ${{ inputs.modo == 'single_book' && inputs.libro_input != '' }}
         working-directory: experiments/nucleus
         env:
@@ -98,8 +118,7 @@ jobs:
           LIBRO_INPUT: ${{ inputs.libro_input }}
         run: node validate-book.js
 
-      # ═══ Modo CONSTRAINED v3.2 (GPT elige de tu CSV) ═══
-      - name: Validate libro CONSTRAINED (trigger + tu catálogo)
+      - name: 📖 Validate CONSTRAINED (GPT elige de tu catálogo)
         if: ${{ inputs.modo == 'trigger_constrained' }}
         working-directory: experiments/nucleus
         env:
@@ -110,8 +129,7 @@ jobs:
           CATALOG_CSV_PATH: data/libros_master.csv
         run: node validate-book.js
 
-      # ═══ Modo DISCOVER v3.2 (GPT propone fuera del catálogo + BN scraping) ═══
-      - name: Validate libro DISCOVER (trigger + exploración abierta)
+      - name: 📖 Validate DISCOVER (GPT explora libremente + Barnes&Noble)
         if: ${{ inputs.modo == 'trigger_discover' }}
         working-directory: experiments/nucleus
         env:
@@ -120,49 +138,35 @@ jobs:
           ENTRADA_RAW: ${{ inputs.entrada_raw }}
         run: node validate-book.js
 
-      # ═══ Modo SINGLE legacy (solo título+autor sin validate-book) ═══
-      - name: Preparar libro SINGLE legacy
-        if: ${{ inputs.modo == 'single_book' && inputs.libro_input == '' }}
-        working-directory: experiments/nucleus
-        env:
-          SINGLE_TITULO: ${{ inputs.single_titulo }}
-          SINGLE_AUTOR: ${{ inputs.single_autor }}
-        run: |
-          python - <<'PY'
-          import json, os
-          payload = {
-            "titulo": os.environ.get("SINGLE_TITULO", ""),
-            "autor": os.environ.get("SINGLE_AUTOR", "")
-          }
-          open("/tmp/triggui-book.json", "w", encoding="utf-8").write(json.dumps(payload, ensure_ascii=False))
-          PY
+      # ╔══════════════════════════════════════════════════════════════════╗
+      # ║  FASE 2: NUCLEUS — generar contenido_edicion.json                ║
+      # ╚══════════════════════════════════════════════════════════════════╝
 
-      # ═══ Pipeline principal ═══
-      - name: Ejecutar pipeline v3.2
+      - name: 🧬 Ejecutar Nucleus v3.2
         working-directory: experiments/nucleus
         env:
           SINGLE_MODE: ${{ (inputs.modo == 'single_book' || inputs.modo == 'trigger_constrained' || inputs.modo == 'trigger_discover') && 'true' || '' }}
           SHADOW_MODE: ${{ inputs.modo == 'shadow_batch' && 'true' || '' }}
         run: node build-contenido-nucleus.js
 
-      - name: Mover outputs a raíz
+      - name: 📦 Mover JSON a raíz del workspace
         working-directory: experiments/nucleus
         run: |
-          echo "📂 Estado en experiments/nucleus/ antes de mover:"
+          echo "📂 Archivos generados:"
           ls -la contenido*.json 2>/dev/null || echo "(sin contenido*.json)"
-          ls -la grounding-cache/ evidence-cache/ 2>/dev/null | head -10 || true
-          ls -la quality-reports/ 2>/dev/null | head -5 || true
 
+          # contenido_edicion.json es el carril canónico para los pasos downstream
+          if [ -f contenido_edicion.json ]; then
+            cp -v contenido_edicion.json "$GITHUB_WORKSPACE/contenido_edicion.json"
+          fi
           if [ -f contenido.shadow.json ]; then
             mv -v contenido.shadow.json "$GITHUB_WORKSPACE/contenido.shadow.json"
           fi
           if [ -f contenido.json ] && [ "${{ inputs.modo }}" = "production_batch" ]; then
             mv -v contenido.json "$GITHUB_WORKSPACE/contenido.json"
           fi
-          if [ -f contenido_edicion.json ]; then
-            mv -v contenido_edicion.json "$GITHUB_WORKSPACE/contenido_edicion.json"
-          fi
 
+          # Cachés y reportes para commit
           for dir in inputs-history metrics quality-reports grounding-cache evidence-cache; do
             if [ -d "$dir" ]; then
               mkdir -p "$GITHUB_WORKSPACE/$dir"
@@ -170,26 +174,76 @@ jobs:
             fi
           done
 
-          # Debug de validate-book si existe
+          # Debug de validate-book
           if [ -f /tmp/triggui-validate-debug.json ]; then
             mkdir -p "$GITHUB_WORKSPACE/validate-debug"
             cp /tmp/triggui-validate-debug.json "$GITHUB_WORKSPACE/validate-debug/$(date +%Y%m%d-%H%M%S)-debug.json"
           fi
 
-          echo ""
-          echo "📦 Estado final en \$GITHUB_WORKSPACE:"
-          ls -la "$GITHUB_WORKSPACE"/contenido*.json 2>/dev/null || echo "(no contenido*.json)"
+      # ╔══════════════════════════════════════════════════════════════════╗
+      # ║  FASE 3: DOWNSTREAM — edición viva + tarjeta PNG + OG PNG         ║
+      # ║  Solo se corre en modos SINGLE/TRIGGER (no en batches)            ║
+      # ╚══════════════════════════════════════════════════════════════════╝
 
-      - name: Commit resultados
+      - name: 🌐 Generar edición viva HTML (build-editions.py)
+        if: ${{ inputs.generate_assets == true && (inputs.modo == 'single_book' || inputs.modo == 'trigger_constrained' || inputs.modo == 'trigger_discover') }}
+        env:
+          TRIGGUI_EDICION_JSON: ${{ github.workspace }}/contenido_edicion.json
+        run: |
+          if [ ! -f /tmp/triggui-book.json ]; then
+            echo "❌ /tmp/triggui-book.json no existe — validate-book.js no corrió"
+            exit 1
+          fi
+          if [ ! -f "$GITHUB_WORKSPACE/contenido_edicion.json" ]; then
+            echo "❌ contenido_edicion.json no existe en workspace"
+            exit 1
+          fi
+          echo "🌐 BASE_URL = $BASE_URL"
+          python3 scripts/build-editions.py
+          echo ""
+          echo "📄 HTML generado en:"
+          find public/t -name "index.html" 2>/dev/null | head -5
+
+      - name: 🎨 Generar tarjeta PNG 1066×1600 (build-tarjeta-png.js)
+        if: ${{ inputs.generate_assets == true && (inputs.modo == 'single_book' || inputs.modo == 'trigger_constrained' || inputs.modo == 'trigger_discover') }}
+        env:
+          TRIGGUI_EDICION_JSON: ${{ github.workspace }}/contenido_edicion.json
+        run: |
+          node scripts/build-tarjeta-png.js
+          echo ""
+          echo "🖼️ PNG generada:"
+          find public/t -name "tarjeta.png" 2>/dev/null | head -5
+
+      - name: 🖼️ Generar OG image PNG 1200×630 (build-og-image.js)
+        if: ${{ inputs.generate_assets == true && (inputs.modo == 'single_book' || inputs.modo == 'trigger_constrained' || inputs.modo == 'trigger_discover') }}
+        env:
+          TRIGGUI_EDICION_JSON: ${{ github.workspace }}/contenido_edicion.json
+        run: |
+          node scripts/build-og-image.js
+          echo ""
+          echo "🖼️ OG PNG generada:"
+          find public/t -name "og.png" 2>/dev/null | head -5
+
+      # ╔══════════════════════════════════════════════════════════════════╗
+      # ║  FASE 4: COMMIT Y PUSH                                           ║
+      # ╚══════════════════════════════════════════════════════════════════╝
+
+      - name: 💾 Commit resultados
         working-directory: ${{ github.workspace }}
         run: |
           set -e
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
+          # JSONs
           [ -f contenido.shadow.json ] && git add contenido.shadow.json || true
           [ -f contenido.json ] && git add contenido.json || true
           [ -f contenido_edicion.json ] && git add contenido_edicion.json || true
+
+          # Assets de la edición viva
+          [ -d public/t ] && git add public/t/ || true
+
+          # Cachés y reportes
           [ -d inputs-history ] && git add inputs-history/ || true
           [ -d metrics ] && git add metrics/ || true
           [ -d quality-reports ] && git add quality-reports/ || true
@@ -198,12 +252,13 @@ jobs:
           [ -d validate-debug ] && git add validate-debug/ || true
 
           if git diff --cached --quiet; then
-            echo "🟡 Working tree clean — no hay cambios."
+            echo "🟡 Working tree clean — sin cambios."
             exit 0
           fi
 
           git diff --cached --stat
-          git commit -m "🌒 nucleus-v3.2 ${{ inputs.modo }}"
+          SLUG=$([ -f /tmp/triggui-slug.txt ] && cat /tmp/triggui-slug.txt || echo "${{ inputs.modo }}")
+          git commit -m "🌒 nucleus-v3.2 ${{ inputs.modo }} — ${SLUG}"
 
           BRANCH="${GITHUB_REF_NAME:-main}"
           for i in 1 2 3; do
@@ -214,25 +269,44 @@ jobs:
             echo "⚠️  Intento $i falló, reintentando..."
             sleep 3
           done
-          echo "❌ Falló el push después de 3 intentos"
+          echo "❌ Falló push después de 3 intentos"
           exit 1
 
-      - name: Summary
+      # ╔══════════════════════════════════════════════════════════════════╗
+      # ║  FASE 5: RESUMEN Y LINK FINAL                                    ║
+      # ╚══════════════════════════════════════════════════════════════════╝
+
+      - name: 📋 Summary
         if: always()
         run: |
-          echo "## Triggui Nucleus v3.2 — Fusión Total" >> $GITHUB_STEP_SUMMARY
-          echo "**Modo:** ${{ inputs.modo }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Lente:** ${{ inputs.lens && 'sí' || 'vacío' }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Book context:** ${{ inputs.book_context && 'sí' || 'vacío' }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Trigger:** ${{ inputs.entrada_raw && 'sí' || 'vacío' }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Crono:** ${{ inputs.crono_enabled }}" >> $GITHUB_STEP_SUMMARY
-          [ -f "$GITHUB_WORKSPACE/contenido_edicion.json" ] && echo "**contenido_edicion.json:** ✅ generado" >> $GITHUB_STEP_SUMMARY
-          [ -f "$GITHUB_WORKSPACE/contenido.shadow.json" ] && echo "**contenido.shadow.json:** ✅ generado" >> $GITHUB_STEP_SUMMARY
-          [ -f "$GITHUB_WORKSPACE/contenido.json" ] && echo "**contenido.json:** ✅ generado" >> $GITHUB_STEP_SUMMARY
-          if [ -d "$GITHUB_WORKSPACE/quality-reports" ]; then
-            echo "**Quality reports generados:** ✅" >> $GITHUB_STEP_SUMMARY
+          echo "## 🌒 Triggui Nucleus v3.2 — End-to-End" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Campo | Valor |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| Modo | ${{ inputs.modo }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Libro | ${{ inputs.libro_input || inputs.entrada_raw || '(batch)' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| BASE_URL | $BASE_URL |" >> $GITHUB_STEP_SUMMARY
+          echo "| Assets generados | ${{ inputs.generate_assets }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ -f /tmp/triggui-slug.txt ]; then
+            SLUG=$(cat /tmp/triggui-slug.txt)
+            TITULO=$(cat /tmp/triggui-titulo.txt 2>/dev/null || echo "$SLUG")
+            echo "### 📖 Libro seleccionado" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**${TITULO}**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "- **Slug:** \`${SLUG}\`" >> $GITHUB_STEP_SUMMARY
+            echo "- **🔗 Edición viva:** ${BASE_URL}/t/${SLUG}/" >> $GITHUB_STEP_SUMMARY
+            echo "- **🖼️ Tarjeta PNG:** \`public/t/${SLUG}/tarjeta.png\`" >> $GITHUB_STEP_SUMMARY
+            echo "- **🖼️ OG PNG:** \`public/t/${SLUG}/og.png\`" >> $GITHUB_STEP_SUMMARY
           fi
-          if [ -d "$GITHUB_WORKSPACE/evidence-cache" ]; then
-            COUNT=$(ls "$GITHUB_WORKSPACE/evidence-cache/" 2>/dev/null | wc -l)
-            echo "**Evidence cache entries:** $COUNT" >> $GITHUB_STEP_SUMMARY
-          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📊 Archivos generados" >> $GITHUB_STEP_SUMMARY
+          [ -f "$GITHUB_WORKSPACE/contenido_edicion.json" ] && echo "- ✅ contenido_edicion.json" >> $GITHUB_STEP_SUMMARY
+          [ -f "$GITHUB_WORKSPACE/contenido.shadow.json" ] && echo "- ✅ contenido.shadow.json" >> $GITHUB_STEP_SUMMARY
+          [ -f "$GITHUB_WORKSPACE/contenido.json" ] && echo "- ✅ contenido.json" >> $GITHUB_STEP_SUMMARY
+          [ -d "$GITHUB_WORKSPACE/quality-reports" ] && echo "- ✅ quality-reports/" >> $GITHUB_STEP_SUMMARY
+          [ -d "$GITHUB_WORKSPACE/evidence-cache" ] && echo "- ✅ evidence-cache/" >> $GITHUB_STEP_SUMMARY
+          [ -d "$GITHUB_WORKSPACE/public/t" ] && echo "- ✅ public/t/ (HTML + PNGs)" >> $GITHUB_STEP_SUMMARY
