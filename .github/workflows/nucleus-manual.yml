@@ -89,9 +89,16 @@ jobs:
         working-directory: experiments/nucleus
         run: npm ci || npm install --no-audit --no-fund
 
-      - name: Install root dependencies (Playwright para tarjeta+OG)
+      - name: Install Playwright (para tarjeta+OG PNGs)
         run: |
-          npm ci || npm install --no-audit --no-fund
+          # Si existe package.json en root, úsalo. Si no, instala Playwright standalone.
+          if [ -f package.json ]; then
+            echo "✓ package.json detectado en root — usando npm install"
+            npm ci || npm install --no-audit --no-fund
+          else
+            echo "ℹ️  No hay package.json en root — instalando Playwright standalone"
+            npm install --no-save --no-audit --no-fund playwright@1.48.0
+          fi
           npx playwright install chromium --with-deps
 
       - name: Linkear CSV maestro
