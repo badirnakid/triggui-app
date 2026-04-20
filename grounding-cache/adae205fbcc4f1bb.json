@@ -1,0 +1,42 @@
+{
+  "ground_truth": "TEMA INFERIDO (el modelo no conoce este libro directamente, infiere desde similares):\n\nEl libro probablemente explora la naturaleza humana en términos de comportamiento, motivaciones y estrategias en las relaciones interpersonales y el poder.\n\nVOZ INFERIDA:\nEs probable que la voz del autor sea analítica, persuasiva y con un enfoque pragmático, similar a su estilo en otros trabajos.\n\nLIBROS SIMILARES QUE COMPARTEN ADN CON ESTE:\n- \"El arte de la guerra\" (Sun Tzu): Ambos libros abordan estrategias y tácticas en relaciones humanas y conflictos.\n- \"Los 48 leyes del poder\" (Robert Greene): Otro libro del mismo autor que explora la manipulación y el poder en las interacciones humanas.\n- \"La psicología del dinero\" (Morgan Housel): Explora la naturaleza humana en relación con el dinero y las decisiones financieras.\n- \"Influence: The Psychology of Persuasion\" (Robert B. Cialdini): Aborda cómo las personas pueden ser influenciadas y manipuladas en sus decisiones.",
+  "grounding_source": "model_inference",
+  "book_identity_confidence": 0.6000000000000001,
+  "verified_identity": {
+    "titulo_real": "Las leyes de la naturaleza humana",
+    "autor_completo": "Robert Greene",
+    "año": null
+  },
+  "inference_confidence": 0.8,
+  "book_known_directly": false,
+  "rich_inference": true,
+  "similar_books": [
+    {
+      "titulo": "El arte de la guerra",
+      "autor": "Sun Tzu",
+      "razon": "Ambos libros abordan estrategias y tácticas en relaciones humanas y conflictos."
+    },
+    {
+      "titulo": "Los 48 leyes del poder",
+      "autor": "Robert Greene",
+      "razon": "Otro libro del mismo autor que explora la manipulación y el poder en las interacciones humanas."
+    },
+    {
+      "titulo": "La psicología del dinero",
+      "autor": "Morgan Housel",
+      "razon": "Explora la naturaleza humana en relación con el dinero y las decisiones financieras."
+    },
+    {
+      "titulo": "Influence: The Psychology of Persuasion",
+      "autor": "Robert B. Cialdini",
+      "razon": "Aborda cómo las personas pueden ser influenciadas y manipuladas en sus decisiones."
+    }
+  ],
+  "resolution_path": [
+    "evidence_fetched_0sources",
+    "tier3_conf_0.80"
+  ],
+  "tier_reached": 3,
+  "cost_tokens": 525,
+  "cached_at": "2026-04-20T04:12:08.392Z"
+}
