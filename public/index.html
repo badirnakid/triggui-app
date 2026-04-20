@@ -180,19 +180,19 @@ const TriggguiI18n = {
   },
   strings: {
     es: {
+      'barra.eyebrow': 'pausa',
       'barra.question.fixed': '¿Cómo te sientes?',
-      'barra.question.lunes': '¿Qué necesitas hoy?',
-      'barra.question.martes': '¿Qué te pesa?',
-      'barra.question.miercoles': '¿Qué te inquieta?',
-      'barra.question.jueves': '¿Qué quieres mover?',
-      'barra.question.viernes': '¿Qué te enciende?',
-      'barra.question.sabado': '¿Qué te calma?',
-      'barra.question.domingo': '¿Qué sientes?',
-      'barra.placeholder': 'Escribe en una frase…',
-      'barra.skip': 'saltar → abrir libro del día',
-      'barra.micro.starting': 'Triggui apenas comienza. Abramos el primero.',
-      'barra.micro.growing': 'Catálogo creciendo día a día.',
-      'barra.micro.robust': '',
+      'barra.question.word1': '¿Cómo',
+      'barra.question.word2': 'te',
+      'barra.question.word3': 'sientes?',
+      'barra.placeholder.default': 'escribe con honestidad',
+      'barra.placeholder.returning': 'como siempre, sin editar',
+      'barra.placeholder.sunday': 'un momento para ti',
+      'barra.placeholder.ritual': 'ya eres parte del ritual',
+      'barra.skip': 'saltar →',
+      'barra.micro.starting': 'triggui elige <em>el primer libro</em>',
+      'barra.micro.growing': 'triggui elige <em>el libro correcto</em>',
+      'barra.micro.robust': 'triggui elige <em>el libro correcto</em>',
       'barra.loading': 'encontrando tu libro…',
       'toast.langChanged.es': 'Español activado',
       'toast.langChanged.en': 'English activated',
@@ -206,19 +206,19 @@ const TriggguiI18n = {
       'intro.default': 'Toca. Descubre. El libro te espera.',
     },
     en: {
+      'barra.eyebrow': 'pause',
       'barra.question.fixed': 'How are you feeling?',
-      'barra.question.lunes': 'What do you need today?',
-      'barra.question.martes': 'What\'s weighing on you?',
-      'barra.question.miercoles': 'What\'s on your mind?',
-      'barra.question.jueves': 'What do you want to shift?',
-      'barra.question.viernes': 'What lights you up?',
-      'barra.question.sabado': 'What calms you?',
-      'barra.question.domingo': 'What are you feeling?',
-      'barra.placeholder': 'Type in one sentence…',
-      'barra.skip': 'skip → open today\'s book',
-      'barra.micro.starting': 'Triggui is just beginning. Let\'s open the first one.',
-      'barra.micro.growing': 'Catalog growing every day.',
-      'barra.micro.robust': '',
+      'barra.question.word1': 'How',
+      'barra.question.word2': 'are',
+      'barra.question.word3': 'you feeling?',
+      'barra.placeholder.default': 'write honestly',
+      'barra.placeholder.returning': 'as always, without editing',
+      'barra.placeholder.sunday': 'a moment for you',
+      'barra.placeholder.ritual': 'you are part of the ritual',
+      'barra.skip': 'skip →',
+      'barra.micro.starting': 'triggui picks <em>the first book</em>',
+      'barra.micro.growing': 'triggui picks <em>the right book</em>',
+      'barra.micro.robust': 'triggui picks <em>the right book</em>',
       'barra.loading': 'finding your book…',
       'toast.langChanged.es': 'Español activado',
       'toast.langChanged.en': 'English activated',
@@ -1266,7 +1266,7 @@ body.webview #tarjetaCard {
   justify-content: center;
   padding: env(safe-area-inset-top, 0) 20px env(safe-area-inset-bottom, 0) 20px;
   opacity: 0;
-  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
 }
 
@@ -1279,113 +1279,276 @@ body.webview #tarjetaCard {
   content: "";
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(ellipse at 30% 20%, rgba(255, 0, 85, 0.12), transparent 60%),
-    radial-gradient(ellipse at 70% 80%, rgba(255, 94, 0, 0.06), transparent 60%);
+  background-image:
+    radial-gradient(ellipse 90% 60% at 50% -10%, rgba(255, 94, 0, 0.14) 0%, transparent 55%),
+    radial-gradient(ellipse 80% 50% at 50% 110%, rgba(255, 0, 85, 0.10) 0%, transparent 55%);
   pointer-events: none;
-  opacity: 0.9;
+  animation: bm-breathe 8s ease-in-out infinite;
+}
+
+@keyframes bm-breathe {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+#barraAurora {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0.35;
+  z-index: 1;
+}
+
+.bm-aurora-blob {
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  filter: blur(60px);
+  will-change: transform;
+}
+
+.bm-aurora-1 {
+  top: -100px;
+  left: -80px;
+  background: rgba(255, 94, 0, 0.5);
+  animation: bm-aurora-drift-1 22s ease-in-out infinite;
+}
+
+.bm-aurora-2 {
+  bottom: -80px;
+  right: -60px;
+  background: rgba(255, 0, 85, 0.45);
+  animation: bm-aurora-drift-2 26s ease-in-out infinite;
+}
+
+@keyframes bm-aurora-drift-1 {
+  0%, 100% { transform: translate(0, 0); }
+  33% { transform: translate(40px, 80px); }
+  66% { transform: translate(-30px, 50px); }
+}
+
+@keyframes bm-aurora-drift-2 {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-40px, -80px); }
+}
+
+#barraDust {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.bm-particle {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+}
+
+.bm-p1 { top: 12%; left: 22%; animation: bm-drift-1 14s ease-in-out infinite; }
+.bm-p2 { top: 28%; left: 78%; animation: bm-drift-2 18s ease-in-out infinite; }
+.bm-p3 { top: 58%; left: 8%;  animation: bm-drift-3 16s ease-in-out infinite; }
+.bm-p4 { top: 72%; left: 85%; animation: bm-drift-4 20s ease-in-out infinite; }
+.bm-p5 { top: 18%; left: 55%; animation: bm-drift-5 15s ease-in-out infinite; }
+.bm-p6 { top: 85%; left: 40%; animation: bm-drift-6 17s ease-in-out infinite; }
+.bm-p7 { top: 40%; left: 92%; animation: bm-drift-7 19s ease-in-out infinite; }
+.bm-p8 { top: 50%; left: 5%;  animation: bm-drift-8 21s ease-in-out infinite; }
+
+@keyframes bm-drift-1 { 0%,100% { opacity: 0.2; transform: translate(0,0); } 50% { opacity: 0.9; transform: translate(3px,-4px); } }
+@keyframes bm-drift-2 { 0%,100% { opacity: 0.3; transform: translate(0,0); } 50% { opacity: 0.8; transform: translate(-2px,5px); } }
+@keyframes bm-drift-3 { 0%,100% { opacity: 0.4; transform: translate(0,0); } 50% { opacity: 1; transform: translate(4px,-2px); } }
+@keyframes bm-drift-4 { 0%,100% { opacity: 0.2; transform: translate(0,0); } 50% { opacity: 0.7; transform: translate(-3px,-3px); } }
+@keyframes bm-drift-5 { 0%,100% { opacity: 0.3; transform: translate(0,0); } 50% { opacity: 0.85; transform: translate(2px,6px); } }
+@keyframes bm-drift-6 { 0%,100% { opacity: 0.25; transform: translate(0,0); } 50% { opacity: 0.75; transform: translate(-4px,-5px); } }
+@keyframes bm-drift-7 { 0%,100% { opacity: 0.2; transform: translate(0,0); } 50% { opacity: 0.6; transform: translate(-2px,3px); } }
+@keyframes bm-drift-8 { 0%,100% { opacity: 0.3; transform: translate(0,0); } 50% { opacity: 0.8; transform: translate(3px,-3px); } }
+
+#barraSparkIndicator {
+  position: absolute;
+  top: max(44px, calc(env(safe-area-inset-top, 0px) + 14px));
+  left: 50%;
+  transform: translateX(-50%);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #FFD700;
+  box-shadow: 0 0 10px 3px rgba(255, 215, 0, 0.7), 0 0 20px 6px rgba(255, 94, 0, 0.3);
+  z-index: 6;
+  animation: bm-spark-pulse 3s ease-in-out infinite, bm-fade-up 1.2s ease 0.1s both;
+}
+
+@keyframes bm-spark-pulse {
+  0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+  50% { opacity: 1; transform: translateX(-50%) scale(1.5); }
 }
 
 .barra-magica-inner {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   width: 100%;
-  max-width: min(560px, calc(100vw - 40px));
+  max-width: min(480px, calc(100vw - 40px));
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 28px;
-  animation: barra-rise 0.8s cubic-bezier(0.19, 1, 0.22, 1) 0.2s both;
+  gap: 0;
 }
 
-@keyframes barra-rise {
-  0% { opacity: 0; transform: translateY(24px); }
-  100% { opacity: 1; transform: translateY(0); }
+#barraEyebrow {
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Archivo', sans-serif;
+  font-size: 9.5px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: bm-fade-up 1s cubic-bezier(0.19, 1, 0.22, 1) 0.35s both;
+}
+
+#barraEyebrow::before,
+#barraEyebrow::after {
+  content: "";
+  width: 18px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
 }
 
 #barraQuestion {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 700;
-  font-size: clamp(1.6rem, 5.5vw, 2.6rem);
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Archivo', sans-serif;
+  font-weight: 300;
+  font-size: clamp(26px, 7.5vw, 34px);
+  line-height: 1.08;
   color: #fff;
   text-align: center;
-  line-height: 1.2;
-  letter-spacing: -0.5px;
-  background: linear-gradient(135deg, #FF0055 0%, #FF5E00 50%, #FFD700 100%);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: fire-move 6s ease infinite;
+  letter-spacing: -0.7px;
+  margin-bottom: 34px;
   -webkit-font-smoothing: antialiased;
+}
+
+#barraQuestion .bm-w {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(10px);
+  filter: blur(3px);
+  animation: bm-word-fade 1.2s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+}
+
+#barraQuestion .bm-w1 { animation-delay: 0.6s; }
+#barraQuestion .bm-w2 { animation-delay: 0.8s; }
+#barraQuestion .bm-w3 {
+  animation-delay: 1.05s;
+  position: relative;
+  font-weight: 400;
+  color: var(--bm-accent, #FF5E00);
+  transition: color 1.5s ease;
+}
+
+#barraQuestion .bm-w3::after {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: -4px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--bm-accent, rgba(255, 94, 0, 0.7)), transparent);
+  opacity: 0;
+  transform: scaleX(0);
+  animation: bm-underline 2.2s cubic-bezier(0.19, 1, 0.22, 1) 1.7s forwards;
+}
+
+@keyframes bm-word-fade {
+  0% { opacity: 0; transform: translateY(10px); filter: blur(3px); }
+  100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+@keyframes bm-underline {
+  0% { opacity: 0; transform: scaleX(0); }
+  50% { opacity: 1; transform: scaleX(1); }
+  100% { opacity: 0.65; transform: scaleX(1); }
 }
 
 #barraInputWrap {
   width: 100%;
   position: relative;
+  animation: bm-fade-up 1.2s cubic-bezier(0.19, 1, 0.22, 1) 0.95s both;
 }
 
 #barraInput {
   width: 100%;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.035);
+  border: 0.5px solid rgba(255, 255, 255, 0.13);
   border-radius: 20px;
-  padding: 20px 56px 20px 22px;
+  padding: 19px 62px 19px 22px;
   color: #fff;
-  font-family: 'Archivo', sans-serif;
+  font-family: -apple-system, 'SF Pro Text', 'Archivo', BlinkMacSystemFont, sans-serif;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 400;
   outline: none;
-  transition: border 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+  letter-spacing: -0.1px;
+  line-height: 1.4;
+  transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  box-shadow:
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.08),
+    0 12px 32px rgba(0, 0, 0, 0.3);
   -webkit-appearance: none;
   appearance: none;
   -webkit-font-smoothing: antialiased;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
 }
 
 #barraInput::placeholder {
-  color: rgba(255,255,255,0.35);
+  color: rgba(255, 255, 255, 0.3);
   font-weight: 400;
+  font-style: italic;
 }
 
 #barraInput:focus {
-  border-color: rgba(255, 0, 85, 0.4);
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.055);
+  border-color: rgba(255, 94, 0, 0.4);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.04),
-    0 0 0 3px rgba(255, 0, 85, 0.12);
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.1),
+    0 0 0 4px rgba(255, 94, 0, 0.1),
+    0 20px 50px rgba(255, 0, 85, 0.18);
 }
 
 #barraSubmit {
   position: absolute;
-  right: 10px;
+  right: 7px;
   top: 50%;
   transform: translateY(-50%);
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, #FF0055, #FF5E00);
+  width: 42px;
+  height: 42px;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #FF5E00 0%, #FF0055 100%);
   border: none;
   color: #fff;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   touch-action: manipulation;
   box-shadow:
-    0 0 0 1px rgba(255,255,255,0.12),
-    0 6px 18px rgba(255, 0, 85, 0.3);
+    0 6px 18px rgba(255, 94, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.15);
 }
 
 #barraSubmit:hover {
-  transform: translateY(-50%) scale(1.06);
+  transform: translateY(-50%) scale(1.08);
+  box-shadow:
+    0 8px 24px rgba(255, 94, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 #barraSubmit:active {
-  transform: translateY(-50%) scale(0.94);
+  transform: translateY(-50%) scale(0.95);
 }
 
 #barraSubmit:disabled {
@@ -1393,141 +1556,160 @@ body.webview #tarjetaCard {
   pointer-events: none;
 }
 
+#barraSubmit svg {
+  width: 15px;
+  height: 15px;
+  transition: transform 0.25s;
+}
+
+#barraSubmit:hover svg {
+  transform: translateX(2px);
+}
+
 #barraMicro {
-  font-family: 'Archivo', sans-serif;
-  font-size: 13px;
-  color: rgba(255,255,255,0.38);
+  font-family: 'SF Pro Text', -apple-system, 'Archivo', sans-serif;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.38);
+  letter-spacing: 0.3px;
+  margin-top: 22px;
   text-align: center;
-  font-weight: 400;
-  min-height: 16px;
-  letter-spacing: 0.2px;
+  min-height: 14px;
+  animation: bm-fade-up 1s ease 1.25s both;
+}
+
+#barraMicro em {
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.65);
 }
 
 #barraSkip {
-  font-family: 'Archivo', sans-serif;
-  font-size: 13px;
-  color: rgba(255,255,255,0.4);
-  background: transparent;
+  position: absolute;
+  bottom: max(96px, calc(env(safe-area-inset-bottom, 0px) + 76px));
+  left: 50%;
+  transform: translateX(-50%);
+  background: none;
   border: none;
-  cursor: pointer;
-  padding: 12px 20px;
-  margin-top: 4px;
-  transition: color 0.3s ease;
-  font-weight: 500;
+  color: rgba(255, 255, 255, 0.32);
+  font-family: 'SF Pro Text', -apple-system, 'Archivo', sans-serif;
+  font-size: 12px;
   letter-spacing: 0.3px;
-  text-decoration: underline;
-  text-decoration-color: rgba(255,255,255,0.12);
-  text-underline-offset: 4px;
+  cursor: pointer;
+  padding: 10px 18px;
+  transition: color 0.3s;
+  font-weight: 400;
   touch-action: manipulation;
+  animation: bm-fade-up 1s ease 1.5s both;
+  z-index: 3;
 }
 
-#barraSkip:hover {
-  color: rgba(255,255,255,0.7);
+#barraSkip:hover { color: rgba(255, 255, 255, 0.75); }
+
+#barraSkip .bm-arrow {
+  opacity: 0.55;
+  margin-left: 4px;
+  transition: transform 0.3s, opacity 0.3s;
+  display: inline-block;
 }
 
-#barraSkip:active {
-  opacity: 0.6;
+#barraSkip:hover .bm-arrow {
+  transform: translateX(4px);
+  opacity: 1;
 }
 
 #barraLangToggle {
   position: fixed;
-  top: max(18px, env(safe-area-inset-top, 18px));
-  right: 18px;
+  top: max(54px, calc(env(safe-area-inset-top, 0px) + 14px));
+  right: 16px;
   z-index: 9999;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.14);
-  border-radius: 99px;
-  color: #fff;
-  font-family: 'Archivo', sans-serif;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1.2px;
-  padding: 6px 14px;
-  cursor: pointer;
   display: flex;
+  background: rgba(255, 255, 255, 0.05);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 99px;
+  padding: 3px;
+  font-family: -apple-system, 'SF Pro Text', 'Archivo', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  cursor: pointer;
+  touch-action: manipulation;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2), inset 0 0.5px 0 rgba(255, 255, 255, 0.1);
+  opacity: 0;
+  animation: bm-fade-up 1s cubic-bezier(0.19, 1, 0.22, 1) 1.7s both;
+}
+
+#barraLangToggle span {
+  padding: 5px 11px;
+  border-radius: 99px;
+  transition: all 0.35s cubic-bezier(0.19, 1, 0.22, 1);
+  color: rgba(255, 255, 255, 0.45);
+}
+
+#barraLangToggle span.lang-active {
+  color: #000;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+#barraLangToggle span.lang-inactive,
+#barraLangToggle .lang-sep { display: none; }
+
+#barraStreak {
+  position: fixed;
+  top: max(54px, calc(env(safe-area-inset-top, 0px) + 14px));
+  left: 16px;
+  z-index: 9999;
+  display: none;
   align-items: center;
   gap: 6px;
-  transition: background 0.25s ease, border 0.25s ease;
-  touch-action: manipulation;
-  -webkit-font-smoothing: antialiased;
-  opacity: 0;
-  animation: barra-rise 0.8s ease 1s forwards;
+  background: rgba(255, 255, 255, 0.04);
+  border: 0.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 99px;
+  padding: 6px 12px;
+  font-family: -apple-system, 'SF Pro Text', 'Archivo', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
+  letter-spacing: 0.2px;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  animation: bm-fade-up 1s cubic-bezier(0.19, 1, 0.22, 1) 1.7s both;
 }
 
-#barraLangToggle:hover {
-  background: rgba(255,255,255,0.08);
-  border-color: rgba(255,255,255,0.25);
-}
+#barraStreak.visible { display: flex; }
 
-#barraLangToggle .lang-active {
-  color: #fff;
-  font-weight: 800;
-}
-
-#barraLangToggle .lang-inactive {
-  color: rgba(255,255,255,0.35);
-  font-weight: 500;
-}
-
-#barraLangToggle .lang-sep {
-  color: rgba(255,255,255,0.25);
-  font-weight: 400;
+#barraStreak .bm-flame {
+  font-size: 12px;
+  filter: drop-shadow(0 0 4px rgba(255, 94, 0, 0.6));
 }
 
 #barraFooterLogo {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: max(32px, calc(env(safe-area-inset-bottom, 0px) + 24px));
+  bottom: max(34px, calc(env(safe-area-inset-bottom, 0px) + 26px));
   z-index: 3;
-  width: clamp(110px, 28vw, 150px);
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-family: 'New York', 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-weight: 300;
+  font-size: 13px;
+  letter-spacing: 4px;
+  color: rgba(255, 255, 255, 0.3);
+  animation: bm-logo-breathe 6s ease-in-out infinite, bm-fade-up 1.5s ease 1.75s both;
   pointer-events: none;
+  user-select: none;
 }
 
-#barraFooterLogo .logo-layer {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  height: 100%;
-  width: auto;
-  max-width: 100%;
-  object-fit: contain;
-  transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+@keyframes bm-logo-breathe {
+  0%, 100% { opacity: 0.4; letter-spacing: 4px; }
+  50% { opacity: 0.85; letter-spacing: 5px; }
 }
 
-#barraFooterLogo .logo-blanco {
-  opacity: 0.9;
-  animation: logo-alternate-blanco 12s ease-in-out infinite;
-}
-
-#barraFooterLogo .logo-color {
-  opacity: 0;
-  animation: logo-alternate-color 12s ease-in-out infinite;
-}
-
-@keyframes logo-alternate-blanco {
-  0%, 42% { opacity: 0.9; }
-  50%, 92% { opacity: 0; }
-  100% { opacity: 0.9; }
-}
-
-@keyframes logo-alternate-color {
-  0%, 42% { opacity: 0; }
-  50%, 92% { opacity: 1; }
-  100% { opacity: 0; }
-}
-
-@media (max-width: 480px) {
-  #barraFooterLogo {
-    width: clamp(100px, 34vw, 140px);
-    height: 24px;
-    bottom: max(26px, calc(env(safe-area-inset-bottom, 0px) + 20px));
-  }
+@keyframes bm-fade-up {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 #barraLupaBtn {
@@ -1535,11 +1717,11 @@ body.webview #tarjetaCard {
   top: max(18px, calc(env(safe-area-inset-top, 0px) + 14px));
   right: max(16px, calc(env(safe-area-inset-right, 0px) + 14px));
   z-index: 180;
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: rgba(0,0,0,0.55);
-  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   color: #fff;
   cursor: pointer;
   display: none;
@@ -1550,33 +1732,31 @@ body.webview #tarjetaCard {
   touch-action: manipulation;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
 }
 
 #barraLupaBtn.visible {
   display: flex;
-  animation: barra-rise 0.6s ease both;
+  animation: bm-fade-up 0.6s ease both;
 }
 
 #barraLupaBtn:hover {
   transform: scale(1.08);
-  background: rgba(0,0,0,0.7);
+  background: rgba(0, 0, 0, 0.7);
 }
 
-#barraLupaBtn:active {
-  transform: scale(0.92);
-}
+#barraLupaBtn:active { transform: scale(0.92); }
 
 .card-lupa-btn {
   position: absolute;
   top: 16px;
   right: 18px;
   z-index: 10;
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  background: rgba(0,0,0,0.18);
-  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: inherit;
   cursor: pointer;
   display: flex;
@@ -1588,17 +1768,39 @@ body.webview #tarjetaCard {
   touch-action: manipulation;
 }
 
-.card-dark-mode .card-lupa-btn {
-  background: rgba(255,255,255,0.08);
-  border-color: rgba(255,255,255,0.25);
+.card-close-btn {
+  position: absolute;
+  top: 16px;
+  left: 18px;
+  z-index: 10;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  opacity: 0.55;
+  transition: opacity 0.25s, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  touch-action: manipulation;
 }
 
-.card-lupa-btn:hover {
+.card-dark-mode .card-lupa-btn,
+.card-dark-mode .card-close-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.card-lupa-btn:hover, .card-close-btn:hover {
   opacity: 1;
   transform: scale(1.08);
 }
 
-.card-lupa-btn:active {
+.card-lupa-btn:active, .card-close-btn:active {
   transform: scale(0.92);
 }
 
@@ -1614,39 +1816,64 @@ body.webview #tarjetaCard {
   border: 0;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  #barraMagicaOverlay *, #barraMagicaOverlay *::before, #barraMagicaOverlay *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .bm-aurora-blob, #barraDust, #barraSparkIndicator { display: none; }
+}
+
 @media (max-width: 480px) {
   #barraMagicaOverlay {
     padding-left: 20px;
     padding-right: 20px;
   }
-  .barra-magica-inner {
-    gap: 22px;
-  }
   #barraInput {
     font-size: 16px !important;
-    padding: 18px 52px 18px 18px;
+    padding: 18px 56px 18px 20px;
   }
   #barraSubmit {
     width: 40px;
     height: 40px;
-    font-size: 16px;
   }
   #barraLangToggle {
-    top: max(14px, env(safe-area-inset-top, 14px));
-    right: 14px;
     font-size: 10px;
-    padding: 5px 11px;
+    padding: 3px;
   }
-  #barraFooterLogo img {
-    height: 15px;
-  }
+  #barraLangToggle span { padding: 5px 10px; }
+  #barraStreak { font-size: 10px; padding: 5px 11px; }
+  #barraFooterLogo { font-size: 12px; letter-spacing: 3.5px; }
 }
 </style>
 
 </head>
 <body>
 
-<div id="barraMagicaOverlay" role="search" aria-label="Triggui - Barra mágica">
+<div id="barraMagicaOverlay" role="search" aria-label="Triggui">
+  <div id="barraAurora" aria-hidden="true">
+    <div class="bm-aurora-blob bm-aurora-1"></div>
+    <div class="bm-aurora-blob bm-aurora-2"></div>
+  </div>
+  <div id="barraDust" aria-hidden="true">
+    <div class="bm-particle bm-p1"></div>
+    <div class="bm-particle bm-p2"></div>
+    <div class="bm-particle bm-p3"></div>
+    <div class="bm-particle bm-p4"></div>
+    <div class="bm-particle bm-p5"></div>
+    <div class="bm-particle bm-p6"></div>
+    <div class="bm-particle bm-p7"></div>
+    <div class="bm-particle bm-p8"></div>
+  </div>
+
+  <div id="barraSparkIndicator" aria-hidden="true"></div>
+
+  <div id="barraStreak" aria-hidden="true">
+    <span class="bm-flame">🔥</span>
+    <span id="barraStreakNum">0</span>
+  </div>
+
   <button id="barraLangToggle" type="button" aria-label="Toggle language">
     <span id="langToggleEs" class="lang-active">ES</span>
     <span class="lang-sep">·</span>
@@ -1654,25 +1881,26 @@ body.webview #tarjetaCard {
   </button>
 
   <div class="barra-magica-inner">
-    <div id="barraQuestion" aria-live="polite"></div>
+    <div id="barraEyebrow">pausa</div>
+    <div id="barraQuestion" aria-live="polite">
+      <span class="bm-w bm-w1">¿Cómo</span> <span class="bm-w bm-w2">te</span> <span class="bm-w bm-w3">sientes?</span>
+    </div>
     <div id="barraInputWrap">
       <label for="barraInput" class="sr-only">Escribe cómo te sientes</label>
       <input id="barraInput" type="text" autocomplete="off" autocorrect="on" autocapitalize="sentences" spellcheck="false" inputmode="text" enterkeyhint="search" />
       <button id="barraSubmit" type="button" aria-label="Buscar libro">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M5 12h14"/>
           <path d="M13 5l7 7-7 7"/>
         </svg>
       </button>
     </div>
     <div id="barraMicro" aria-live="polite"></div>
-    <button id="barraSkip" type="button"></button>
   </div>
 
-  <div id="barraFooterLogo" aria-hidden="true">
-    <img class="logo-layer logo-blanco" src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletrasblanco2.png" alt="" loading="eager">
-    <img class="logo-layer logo-color" src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletrascolor3.png" alt="" loading="eager">
-  </div>
+  <button id="barraSkip" type="button"></button>
+
+  <div id="barraFooterLogo" aria-hidden="true">triggui</div>
 </div>
 
 <button id="barraLupaBtn" type="button" aria-label="Abrir barra mágica">
@@ -2237,6 +2465,12 @@ btnShare.onclick = () => {
     : "";
 
   card.innerHTML = `
+    <button class="card-close-btn" type="button" aria-label="Cerrar tarjeta" onclick="event.stopPropagation(); window.closeCard();">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M6 6l12 12"/>
+        <path d="M18 6L6 18"/>
+      </svg>
+    </button>
     <button class="card-lupa-btn" type="button" aria-label="Abrir barra mágica" onclick="event.stopPropagation(); window.closeCard(); setTimeout(function(){ BarraMagica.openOverlay(true); }, 350);">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <circle cx="11" cy="11" r="7"/>
@@ -2648,13 +2882,62 @@ BarraMagica.applyStrings = function() {
   const qEl = document.getElementById('barraQuestion');
   const iEl = document.getElementById('barraInput');
   const sEl = document.getElementById('barraSkip');
-  if (qEl) qEl.textContent = TriggguiI18n.get(this.getQuestionKey());
-  if (iEl) iEl.placeholder = TriggguiI18n.get('barra.placeholder');
+  const eyEl = document.getElementById('barraEyebrow');
+  const w1El = qEl ? qEl.querySelector('.bm-w1') : null;
+  const w2El = qEl ? qEl.querySelector('.bm-w2') : null;
+  const w3El = qEl ? qEl.querySelector('.bm-w3') : null;
+  if (eyEl) eyEl.textContent = TriggguiI18n.get('barra.eyebrow');
+  if (w1El) w1El.textContent = TriggguiI18n.get('barra.question.word1');
+  if (w2El) w2El.textContent = TriggguiI18n.get('barra.question.word2');
+  if (w3El) w3El.textContent = TriggguiI18n.get('barra.question.word3');
+
+  // 🎨 Color rotatorio "hermoso" tomado del catalogo real (style.accent de cada libro)
+  // Si no hay catalogo cargado, usa un color del brand de fallback
+  let accentColor = '#FF5E00';
+  try {
+    const data = window.__TRIGGUI_DATA__;
+    if (data && Array.isArray(data.libros) && data.libros.length > 0) {
+      const accents = data.libros
+        .map(l => l && l.tarjeta && l.tarjeta.style && l.tarjeta.style.accent)
+        .filter(c => typeof c === 'string' && /^#[0-9a-f]{3,8}$/i.test(c));
+      if (accents.length > 0) {
+        const today = new Date().toDateString();
+        let h = 5381;
+        for (let i = 0; i < today.length; i++) h = ((h * 33) ^ today.charCodeAt(i)) >>> 0;
+        accentColor = accents[h % accents.length];
+      }
+    }
+  } catch(_) {}
+  const overlay = document.getElementById('barraMagicaOverlay');
+  if (overlay) overlay.style.setProperty('--bm-accent', accentColor);
+
+  // Placeholder contextual: elige basado en comportamiento del usuario
+  if (iEl) {
+    const books = getLocal('books_opened', 0);
+    const dow = new Date().getDay();
+    let phKey = 'barra.placeholder.default';
+    if (books >= 10) phKey = 'barra.placeholder.ritual';
+    else if (dow === 0) phKey = 'barra.placeholder.sunday';
+    else if (books >= 5) phKey = 'barra.placeholder.returning';
+    iEl.placeholder = TriggguiI18n.get(phKey);
+  }
   if (sEl) sEl.textContent = TriggguiI18n.get('barra.skip');
   const microEl = document.getElementById('barraMicro');
   if (microEl && window.__TRIGGUI_DATA__ && window.__TRIGGUI_DATA__.libros) {
     const key = this.getMicroCopyKey(window.__TRIGGUI_DATA__.libros.length);
-    microEl.textContent = TriggguiI18n.get(key);
+    microEl.innerHTML = TriggguiI18n.get(key);
+  }
+  // Racha (solo si >= 2, no mostramos si es la primera visita)
+  const streakEl = document.getElementById('barraStreak');
+  const streakNumEl = document.getElementById('barraStreakNum');
+  if (streakEl && streakNumEl) {
+    const streak = getLocal('streak', 0);
+    if (streak >= 2) {
+      streakNumEl.textContent = String(streak);
+      streakEl.classList.add('visible');
+    } else {
+      streakEl.classList.remove('visible');
+    }
   }
   const esEl = document.getElementById('langToggleEs');
   const enEl = document.getElementById('langToggleEn');
