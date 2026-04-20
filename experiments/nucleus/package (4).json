@@ -1,0 +1,22 @@
+{
+  "name": "triggui-nucleus",
+  "version": "3.2.0",
+  "description": "FUSION TOTAL: evidence-fetcher unificado, identity-sealed grounding, SVG typographic fallback. validate-book.js refactorizado preservando 100% el cerebro (3 modos, BN scraping, rerank AI, graceful fallback) con cero llamadas duplicadas a APIs.",
+  "type": "module",
+  "main": "build-contenido-nucleus.js",
+  "scripts": {
+    "build": "node build-contenido-nucleus.js",
+    "validate": "node validate-book.js",
+    "test": "node test-end-to-end.js && node test-particles.js && node test-v32-integration.js",
+    "test:arch": "node test-end-to-end.js",
+    "test:particles": "node test-particles.js",
+    "test:v32": "node test-v32-integration.js"
+  },
+  "dependencies": {
+    "openai": "^4.67.0",
+    "csv-parse": "^5.5.6"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
