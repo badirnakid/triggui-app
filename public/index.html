@@ -180,6 +180,8 @@ const TriggguiI18n = {
   },
   strings: {
     es: {
+      'barra.streak.days': 'días',
+      'barra.streak.day': 'día',
       'barra.eyebrow': 'pausa',
       'barra.question.fixed': '¿Cómo te sientes?',
       'barra.question.word1': '¿Cómo',
@@ -206,6 +208,8 @@ const TriggguiI18n = {
       'intro.default': 'Toca. Descubre. El libro te espera.',
     },
     en: {
+      'barra.streak.days': 'days',
+      'barra.streak.day': 'day',
       'barra.eyebrow': 'pause',
       'barra.question.fixed': 'How are you feeling?',
       'barra.question.word1': 'How',
@@ -1671,15 +1675,15 @@ body.webview #tarjetaCard {
   z-index: 9999;
   display: none;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   background: rgba(255, 255, 255, 0.04);
   border: 0.5px solid rgba(255, 255, 255, 0.08);
   border-radius: 99px;
-  padding: 6px 12px;
+  padding: 6px 13px 6px 11px;
   font-family: -apple-system, 'SF Pro Text', 'Archivo', sans-serif;
   font-size: 11px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(255, 255, 255, 0.78);
   letter-spacing: 0.2px;
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
@@ -1690,8 +1694,20 @@ body.webview #tarjetaCard {
 #barraStreak.visible { display: flex; }
 
 #barraStreak .bm-flame {
-  font-size: 12px;
+  font-size: 13px;
   filter: drop-shadow(0 0 4px rgba(255, 94, 0, 0.6));
+  margin-right: 1px;
+}
+
+#barraStreak #barraStreakNum {
+  font-weight: 700;
+  color: #fff;
+}
+
+#barraStreak #barraStreakUnit {
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.3px;
 }
 
 #barraFooterLogo {
@@ -1703,26 +1719,53 @@ body.webview #tarjetaCard {
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 28px;
   pointer-events: none;
   user-select: none;
   animation: bm-fade-up 1.5s ease 1.75s both;
 }
 
-#barraFooterLogo .bm-logo-text {
-  font-family: 'New York', 'Playfair Display', Georgia, serif;
-  font-style: italic;
-  font-weight: 300;
-  font-size: 13px;
-  letter-spacing: 4px;
-  color: rgba(255, 255, 255, 0.3);
-  display: inline-block;
-  padding-right: 4px;
-  animation: bm-logo-breathe 6s ease-in-out infinite;
+#barraFooterLogo .bm-logo-stage {
+  position: relative;
+  width: clamp(110px, 28vw, 150px);
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-@keyframes bm-logo-breathe {
-  0%, 100% { opacity: 0.4; letter-spacing: 4px; padding-right: 4px; }
-  50% { opacity: 0.85; letter-spacing: 5px; padding-right: 5px; }
+#barraFooterLogo .bm-logo-layer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#barraFooterLogo .bm-logo-blanco {
+  opacity: 0.85;
+  animation: bm-logo-alt-blanco 12s ease-in-out infinite;
+}
+
+#barraFooterLogo .bm-logo-color {
+  opacity: 0;
+  animation: bm-logo-alt-color 12s ease-in-out infinite;
+}
+
+@keyframes bm-logo-alt-blanco {
+  0%, 42% { opacity: 0.85; }
+  50%, 92% { opacity: 0; }
+  100% { opacity: 0.85; }
+}
+
+@keyframes bm-logo-alt-color {
+  0%, 42% { opacity: 0; }
+  50%, 92% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 @keyframes bm-fade-up {
@@ -1862,7 +1905,14 @@ body.webview #tarjetaCard {
   }
   #barraLangToggle span { padding: 5px 10px; }
   #barraStreak { font-size: 10px; padding: 5px 11px; }
-  #barraFooterLogo .bm-logo-text { font-size: 12px; letter-spacing: 3.5px; padding-right: 3.5px; }
+  #barraFooterLogo .bm-logo-stage {
+    width: clamp(100px, 34vw, 140px);
+    height: 24px;
+  }
+  #barraFooterLogo {
+    height: 24px;
+    bottom: max(28px, calc(env(safe-area-inset-bottom, 0px) + 22px));
+  }
 }
 </style>
 
@@ -1890,6 +1940,7 @@ body.webview #tarjetaCard {
   <div id="barraStreak" aria-hidden="true">
     <span class="bm-flame">🔥</span>
     <span id="barraStreakNum">0</span>
+    <span id="barraStreakUnit">días</span>
   </div>
 
   <button id="barraLangToggle" type="button" aria-label="Toggle language">
@@ -1916,9 +1967,14 @@ body.webview #tarjetaCard {
     <div id="barraMicro" aria-live="polite"></div>
   </div>
 
-  <button id="barraSkip" type="button"><span class="bm-skip-inner"></span></button>
+  <button id="barraSkip" type="button" aria-label="Saltar y abrir libro del día"><span class="bm-skip-inner"></span></button>
 
-  <div id="barraFooterLogo" aria-hidden="true"><span class="bm-logo-text">triggui</span></div>
+  <div id="barraFooterLogo" aria-hidden="true">
+    <div class="bm-logo-stage">
+      <img class="bm-logo-layer bm-logo-blanco" src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletrasblanco2.png" alt="" loading="eager">
+      <img class="bm-logo-layer bm-logo-color" src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletrascolor3.png" alt="" loading="eager">
+    </div>
+  </div>
 </div>
 
 <button id="barraLupaBtn" type="button" aria-label="Abrir barra mágica">
@@ -1939,8 +1995,8 @@ body.webview #tarjetaCard {
     <div class="m-title" id="mTitle">Título</div>
     <div class="m-text" id="mText">Texto</div>
     <div class="m-buttons">
-      <button id="mBtnPrimary" class="m-btn btn-primary">Aceptar</button>
-      <button id="mBtnSecondary" class="m-btn btn-secondary">Cancelar</button>
+      <button id="mBtnPrimary" class="m-btn btn-primary" aria-label="Aceptar">Aceptar</button>
+      <button id="mBtnSecondary" class="m-btn btn-secondary" aria-label="Cancelar">Cancelar</button>
     </div>
   </div>
 </div>
@@ -1950,10 +2006,10 @@ body.webview #tarjetaCard {
 <div class="grid" id="grid"></div>
 
 <div class="cta" id="cta">
-  <button id="otro"><span class="icon">🎲</span></button>
+  <button id="otro" aria-label="Otro libro al azar"><span class="icon">🎲</span></button>
   <button id="fisico" aria-label="Abrir barra mágica"><span class="icon" aria-hidden="true">🔍</span></button>
-  <button id="share"><span class="icon">📖</span></button>
-  <button id="like"><span class="icon">😍</span></button>
+  <button id="share" aria-label="Abrir tarjeta del libro"><span class="icon">📖</span></button>
+  <button id="like" aria-label="Me encantó"><span class="icon">😍</span></button>
 </div>
 
 <div id="tarjetaOverlay" onclick="closeCard()"><div id="tarjetaCard" onclick="handleCardClick(event)"></div></div>
@@ -2952,10 +3008,15 @@ BarraMagica.applyStrings = function() {
   // Racha (solo si >= 2, no mostramos si es la primera visita)
   const streakEl = document.getElementById('barraStreak');
   const streakNumEl = document.getElementById('barraStreakNum');
+  const streakUnitEl = document.getElementById('barraStreakUnit');
   if (streakEl && streakNumEl) {
     const streak = getLocal('streak', 0);
     if (streak >= 2) {
       streakNumEl.textContent = String(streak);
+      if (streakUnitEl) {
+        const unitKey = streak === 1 ? 'barra.streak.day' : 'barra.streak.days';
+        streakUnitEl.textContent = TriggguiI18n.get(unitKey);
+      }
       streakEl.classList.add('visible');
     } else {
       streakEl.classList.remove('visible');
