@@ -549,6 +549,77 @@ async function loadSingle() {
   return null;
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   FUSIÓN CON contenido.json (para unificar carriles sin perder los 20 libros)
+
+   La estrategia:
+   - Leer contenido.json existente si hay
+   - Si el libro nuevo ya está (match por titulo+autor normalizado), lo reemplaza
+   - Si es nuevo, lo agrega al inicio del array (recién generado = más visible)
+   - Escribe de vuelta el contenido.json unificado
+
+   Nunca trona. Si algo falla, log y sigue — contenido_edicion.json siempre se escribe.
+────────────────────────────────────────────────────────────────────────────── */
+
+function normalizeBookKey(titulo, autor) {
+  return `${String(titulo || "").trim().toLowerCase()}__${String(autor || "").trim().toLowerCase()}`;
+}
+
+async function mergeIntoContenidoJson(newBook, targetPath) {
+  // Defensa total — si cualquier paso falla, regresa false pero NO trona
+  try {
+    const t0 = Date.now();
+
+    // Leer contenido.json existente (si hay)
+    let existing = { libros: [] };
+    if (await fileExists(targetPath)) {
+      try {
+        const raw = await fs.readFile(targetPath, "utf8");
+        existing = JSON.parse(raw);
+        if (!existing || !Array.isArray(existing.libros)) {
+          console.log(`   ⚠️  ${targetPath} tiene estructura inesperada, creando backup y empezando limpio`);
+          await fs.writeFile(`${targetPath}.backup-${Date.now()}`, raw, "utf8");
+          existing = { libros: [] };
+        }
+      } catch (err) {
+        console.log(`   ⚠️  ${targetPath} corrupto (${err.message}), creando backup y empezando limpio`);
+        await fs.writeFile(`${targetPath}.backup-${Date.now()}`, await fs.readFile(targetPath, "utf8").catch(() => ""), "utf8");
+        existing = { libros: [] };
+      }
+    } else {
+      console.log(`   ℹ️  ${targetPath} no existe todavía, creando nuevo`);
+    }
+
+    const beforeCount = existing.libros.length;
+    const newKey = normalizeBookKey(newBook.titulo, newBook.autor);
+
+    // Buscar si el libro ya está
+    const existingIndex = existing.libros.findIndex((b) => normalizeBookKey(b.titulo, b.autor) === newKey);
+
+    let action;
+    if (existingIndex >= 0) {
+      // Reemplaza in-place: el libro actualizado mantiene su posición
+      existing.libros[existingIndex] = newBook;
+      action = "reemplazado";
+    } else {
+      // Nuevo libro: se agrega al inicio (recién generado = más visible en el app)
+      existing.libros.unshift(newBook);
+      action = "agregado al inicio";
+    }
+
+    const afterCount = existing.libros.length;
+    await writeJSON(targetPath, existing);
+
+    const elapsedMs = Date.now() - t0;
+    console.log(`   🔗 Fusión ${targetPath}: libro ${action} — ${beforeCount} → ${afterCount} libros (${elapsedMs}ms)`);
+    return true;
+  } catch (err) {
+    console.error(`   ❌ mergeIntoContenidoJson falló: ${err.message}`);
+    console.error(`      contenido_edicion.json NO se ve afectado, solo contenido.json no se actualizó`);
+    return false;
+  }
+}
+
 async function snapshotInputs(inputs, crono) {
   const stamp = new Date().toISOString().replace(/[:]/g, "-").replace(/\..+$/, "");
   await fs.mkdir(CFG.files.inputsHistoryDir, { recursive: true });
@@ -654,9 +725,27 @@ async function runSingle() {
   console.log(`\n🚀 SINGLE v3: ${book.titulo}`);
 
   const result = await processBook(book, INPUTS, inputsSnapshot);
+
+  // Escribir contenido_edicion.json (solo este libro) — carril v3.2 (ediciones vivas)
   await fs.writeFile(CFG.files.outSingle, `${JSON.stringify({ libros: [result.mapped] }, null, 2)}\n`, "utf8");
-  const reportPath = await writeQualityReport(result, inputsSnapshot);
   console.log(`\n✅ ${CFG.files.outSingle}`);
+
+  // NUEVO en Fase 1 de unificación: fusionar con contenido.json unificado
+  // Este es el archivo que consume app.triggui.com vía triggui-content repo.
+  // Estrategia: si existe, se fusiona. Si no, se crea con este único libro.
+  // La fusión es idempotente: si el libro ya estaba, lo actualiza; si no, lo agrega.
+  //
+  // Controlado por env var UNIFIED_MODE. Default=true (unificación activa).
+  // Para desactivar temporalmente: UNIFIED_MODE=false en el workflow.
+  const unifiedMode = process.env.UNIFIED_MODE !== "false";
+  if (unifiedMode) {
+    await mergeIntoContenidoJson(result.mapped, CFG.files.outBatch);
+    console.log(`✅ ${CFG.files.outBatch} (carril unificado)`);
+  } else {
+    console.log(`🔕 UNIFIED_MODE=false — ${CFG.files.outBatch} no se actualizó`);
+  }
+
+  const reportPath = await writeQualityReport(result, inputsSnapshot);
   console.log(`📋 Quality report: ${reportPath}`);
 }
 
