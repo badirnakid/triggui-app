@@ -142,6 +142,84 @@ export function highlightCoverageRatio(text = "") {
   return highlighted ? highlighted.length / Math.max(plain.length, 1) : 0;
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   SEMANTIC HIGHLIGHT PLACEMENT (v3.2+ nivel dios)
+   Nunca corta en preposición/artículo colgante. Prefiere cierres gramaticales.
+────────────────────────────────────────────────────────────────────────────── */
+
+// Stopwords débiles: palabras que NO deben cerrar un highlight
+// ES: preposiciones, artículos, conectores, pronombres relativos, conjunciones
+// EN: prepositions, articles, connectors, relative pronouns, conjunctions
+const WEAK_TRAILING_WORDS_ES = new Set([
+  "a", "ante", "bajo", "con", "contra", "de", "del", "desde", "en", "entre",
+  "hacia", "hasta", "para", "por", "según", "sin", "so", "sobre", "tras",
+  "el", "la", "los", "las", "un", "una", "unos", "unas", "lo",
+  "y", "e", "o", "u", "ni", "pero", "sino", "mas", "aunque", "que",
+  "como", "cuando", "donde", "mientras", "si", "porque", "pues",
+  "mi", "tu", "su", "mis", "tus", "sus", "nuestro", "vuestra",
+  "este", "esta", "estos", "estas", "ese", "esa", "aquel", "aquella",
+  "al", "más", "muy", "tan", "tanto", "cada", "todo", "toda", "todos", "todas"
+]);
+
+const WEAK_TRAILING_WORDS_EN = new Set([
+  "a", "an", "the", "of", "in", "on", "at", "by", "for", "with", "from",
+  "to", "into", "onto", "upon", "about", "through", "over", "under",
+  "and", "or", "but", "nor", "yet", "so", "as", "because", "although",
+  "while", "when", "where", "if", "that", "which", "who", "whom", "whose",
+  "this", "these", "that", "those", "my", "your", "his", "her", "its",
+  "our", "their", "some", "any", "no", "all", "each", "every", "both"
+]);
+
+function isWeakTrailingWord(word) {
+  if (!word) return true;
+  const clean = word.toLowerCase().replace(/[.,;:!?"""''()—–-]+$/g, "").replace(/^[.,;:!?"""''()—–-]+/g, "");
+  if (!clean) return true;
+  return WEAK_TRAILING_WORDS_ES.has(clean) || WEAK_TRAILING_WORDS_EN.has(clean);
+}
+
+// Retrocede mientras la última palabra sea débil (hasta un mínimo de minWords).
+// Retorna el índice de corte FINAL (exclusive) dentro del array de palabras.
+function retreatFromWeakTrailing(words, endIndex, minWords = 4) {
+  let idx = endIndex;
+  while (idx > minWords && isWeakTrailingWord(words[idx - 1])) {
+    idx -= 1;
+  }
+  return idx;
+}
+
+// Busca el mejor punto de corte dentro de la ventana [minIdx, maxIdx] de palabras.
+// Prioriza en orden:
+//   1. Fin de cláusula (; : , + conector fuerte)
+//   2. Coma natural que no deje la frase incompleta
+//   3. Simplemente cortar en maxIdx retrocediendo de stopwords
+function findSmartCutIndex(words, minIdx, maxIdx) {
+  // 1. Buscar punto, signo fuerte o ; dentro del rango
+  for (let i = Math.min(maxIdx, words.length) - 1; i >= minIdx; i--) {
+    const w = words[i];
+    if (!w) continue;
+    if (/[.!?;]$/.test(w)) {
+      return i + 1; // incluir esa palabra, corte después
+    }
+  }
+
+  // 2. Buscar coma que no deje colgando (palabra anterior a coma no es débil)
+  for (let i = Math.min(maxIdx, words.length) - 1; i >= minIdx + 2; i--) {
+    const w = words[i];
+    if (!w) continue;
+    if (/,$/.test(w)) {
+      // La palabra con la coma termina la frase; validar que no sea débil sin la coma
+      const wordWithoutComma = w.replace(/,$/, "");
+      if (!isWeakTrailingWord(wordWithoutComma)) {
+        return i + 1;
+      }
+    }
+  }
+
+  // 3. Fallback: cortar en maxIdx retrocediendo stopwords débiles
+  const safeMax = Math.min(maxIdx, words.length);
+  return retreatFromWeakTrailing(words, safeMax, minIdx);
+}
+
 export function placeHighlightOnDensestSpan(text) {
   const plain = stripHighlightTags(text).replace(/\s+/g, " ").trim();
   if (!plain) return text;
@@ -164,17 +242,61 @@ export function placeHighlightOnDensestSpan(text) {
   scored.sort((a, b) => b.score - a.score);
   const best = scored[0];
   if (!best || best.words < 3) {
+    // Frase demasiado corta para marcar nada con sentido
     const portion = Math.min(plain.length, Math.max(30, Math.floor(plain.length * 0.35)));
-    return `[H]${plain.slice(0, portion).trim()}[/H]${plain.slice(portion)}`;
+    const slice = plain.slice(0, portion).trim();
+    // Retroceder desde final si termina en débil
+    const sliceWords = slice.split(/\s+/).filter(Boolean);
+    const safeIdx = retreatFromWeakTrailing(sliceWords, sliceWords.length, 3);
+    const safeTarget = sliceWords.slice(0, safeIdx).join(" ");
+    return `[H]${safeTarget}[/H]${plain.slice(safeTarget.length)}`;
   }
 
   let target = best.sentence;
-  const words = target.split(/\s+/);
-  if (words.length > 12) target = words.slice(0, 10).join(" ").replace(/[,:;]+$/g, "");
+  const words = target.split(/\s+/).filter(Boolean);
+
+  // Nivel dios: si la frase es corta (≤14 palabras) la usamos completa
+  if (words.length <= 14) {
+    // Antes de marcar, verificar que no termine en débil (por si la frase natural ya lo hace)
+    const safeIdx = retreatFromWeakTrailing(words, words.length, 4);
+    target = words.slice(0, safeIdx).join(" ");
+  } else {
+    // Frase larga: cortar inteligentemente en ventana [5, 12]
+    const cutIdx = findSmartCutIndex(words, 5, 12);
+    target = words.slice(0, cutIdx).join(" ");
+    // Limpiar puntuación débil al final (,:;) pero preservar .!?
+    target = target.replace(/[,:;]+$/g, "").trim();
+  }
+
+  // Guard final: si después de todo el target quedó vacío o demasiado corto, usar primeras 8 palabras
+  if (!target || target.split(/\s+/).filter(Boolean).length < 3) {
+    const safeIdx = retreatFromWeakTrailing(words, Math.min(8, words.length), 3);
+    target = words.slice(0, safeIdx).join(" ").replace(/[,:;]+$/g, "").trim();
+  }
+
   const escaped = target.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const re = new RegExp(escaped);
   if (re.test(plain)) return plain.replace(re, `[H]${target}[/H]`);
   return `[H]${target}[/H] ${plain}`.trim();
+}
+
+/* Validador: retorna { ok, reason } diciendo si un highlight específico es saludable.
+   Usado por quality-validator para decidir si re-extraer. */
+export function validateHighlightQuality(text) {
+  const segments = getHighlightSegments(text);
+  if (segments.length === 0) return { ok: false, reason: "no_highlight" };
+
+  for (const seg of segments) {
+    const words = seg.split(/\s+/).filter(Boolean);
+    if (words.length < 3) return { ok: false, reason: "too_short", segment: seg };
+    if (words.length > 16) return { ok: false, reason: "too_long", segment: seg };
+
+    const lastWord = words[words.length - 1];
+    if (isWeakTrailingWord(lastWord)) {
+      return { ok: false, reason: "weak_trailing_word", segment: seg, trailing: lastWord };
+    }
+  }
+  return { ok: true, count: segments.length };
 }
 
 export function densityToMultipliers(density) {
