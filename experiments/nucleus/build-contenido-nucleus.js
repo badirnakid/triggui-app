@@ -565,12 +565,15 @@ function normalizeBookKey(titulo, autor) {
   return `${String(titulo || "").trim().toLowerCase()}__${String(autor || "").trim().toLowerCase()}`;
 }
 
-async function mergeIntoContenidoJson(newBook, targetPath) {
-  // Defensa total — si cualquier paso falla, regresa false pero NO trona
+async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
+  // options.preserveManual (default true): si el libro existente tiene _manual:true
+  //   y el nuevo viene del batch sin _manual, se SALTA (protege curaduría).
+  // options.isFromBatch (default false): marca si el newBook viene de un batch.
   try {
     const t0 = Date.now();
+    const preserveManual = options.preserveManual !== false;
+    const isFromBatch = options.isFromBatch === true;
 
-    // Leer contenido.json existente (si hay)
     let existing = { libros: [] };
     if (await fileExists(targetPath)) {
       try {
@@ -592,19 +595,30 @@ async function mergeIntoContenidoJson(newBook, targetPath) {
 
     const beforeCount = existing.libros.length;
     const newKey = normalizeBookKey(newBook.titulo, newBook.autor);
-
-    // Buscar si el libro ya está
     const existingIndex = existing.libros.findIndex((b) => normalizeBookKey(b.titulo, b.autor) === newKey);
 
     let action;
     if (existingIndex >= 0) {
-      // Reemplaza in-place: el libro actualizado mantiene su posición
+      const existingBook = existing.libros[existingIndex];
+      const existingIsManual = existingBook._manual === true;
+      const newIsManual = newBook._manual === true;
+
+      // PROTECCIÓN: existente manual + nuevo viene de batch + preserveManual=true → saltar
+      if (existingIsManual && isFromBatch && preserveManual && !newIsManual) {
+        const elapsedMs = Date.now() - t0;
+        console.log(`   🛡️  PROTEGIDO manual: "${existingBook.titulo}" — no se reemplaza (${elapsedMs}ms)`);
+        return true;
+      }
+
       existing.libros[existingIndex] = newBook;
-      action = "reemplazado";
+      action = existingIsManual && newIsManual
+        ? "reemplazado (manual→manual)"
+        : existingIsManual && !newIsManual
+          ? "reemplazado (manual sobrescrito)"
+          : "reemplazado";
     } else {
-      // Nuevo libro: se agrega al inicio (recién generado = más visible en el app)
       existing.libros.unshift(newBook);
-      action = "agregado al inicio";
+      action = newBook._manual ? "agregado al inicio (manual)" : "agregado al inicio";
     }
 
     const afterCount = existing.libros.length;
@@ -615,7 +629,6 @@ async function mergeIntoContenidoJson(newBook, targetPath) {
     return true;
   } catch (err) {
     console.error(`   ❌ mergeIntoContenidoJson falló: ${err.message}`);
-    console.error(`      contenido_edicion.json NO se ve afectado, solo contenido.json no se actualizó`);
     return false;
   }
 }
@@ -685,7 +698,27 @@ async function runBatch() {
   }
 
   const exitosos = results.filter((r) => !r.mapped._fallback).map((r) => r.mapped);
-  await fs.writeFile(outputFile, `${JSON.stringify({ libros: exitosos }, null, 2)}\n`, "utf8");
+
+  // UNIFICACIÓN FASE 2: fusión libro por libro cuando UNIFIED_MODE=true y producción
+  const unifiedMode = process.env.UNIFIED_MODE !== "false";
+  const preserveManual = process.env.PRESERVE_MANUAL !== "false";
+
+  if (!CFG.shadowMode && unifiedMode) {
+    console.log(`\n🔗 FUSIÓN UNIFICADA — preservar manuales: ${preserveManual ? "SÍ" : "NO"}`);
+    for (const libro of exitosos) {
+      await mergeIntoContenidoJson(libro, CFG.files.outBatch, {
+        preserveManual,
+        isFromBatch: true
+      });
+    }
+    // También escribir el archivo consolidado del batch para auditoría
+    const finalRead = await fs.readFile(CFG.files.outBatch, "utf8");
+    const finalData = JSON.parse(finalRead);
+    console.log(`   🔗 Total en contenido.json: ${finalData.libros.length} libros`);
+  } else {
+    // Comportamiento legacy: sobrescribir archivo completo
+    await fs.writeFile(outputFile, `${JSON.stringify({ libros: exitosos }, null, 2)}\n`, "utf8");
+  }
 
   const runMs = Date.now() - t0;
   await fs.mkdir(CFG.files.metricsDir, { recursive: true });
@@ -726,21 +759,20 @@ async function runSingle() {
 
   const result = await processBook(book, INPUTS, inputsSnapshot);
 
+  // UNIFICACIÓN FASE 2: marcar libro como MANUAL (curación intencional del usuario)
+  // Este flag se usa por mergeIntoContenidoJson en batches futuros para NO sobrescribir
+  // libros curados manualmente.
+  result.mapped._manual = true;
+  result.mapped._manual_generated_at = new Date().toISOString();
+
   // Escribir contenido_edicion.json (solo este libro) — carril v3.2 (ediciones vivas)
   await fs.writeFile(CFG.files.outSingle, `${JSON.stringify({ libros: [result.mapped] }, null, 2)}\n`, "utf8");
   console.log(`\n✅ ${CFG.files.outSingle}`);
 
-  // NUEVO en Fase 1 de unificación: fusionar con contenido.json unificado
-  // Este es el archivo que consume app.triggui.com vía triggui-content repo.
-  // Estrategia: si existe, se fusiona. Si no, se crea con este único libro.
-  // La fusión es idempotente: si el libro ya estaba, lo actualiza; si no, lo agrega.
-  //
-  // Controlado por env var UNIFIED_MODE. Default=true (unificación activa).
-  // Para desactivar temporalmente: UNIFIED_MODE=false en el workflow.
   const unifiedMode = process.env.UNIFIED_MODE !== "false";
   if (unifiedMode) {
     await mergeIntoContenidoJson(result.mapped, CFG.files.outBatch);
-    console.log(`✅ ${CFG.files.outBatch} (carril unificado)`);
+    console.log(`✅ ${CFG.files.outBatch} (unificado, libro marcado _manual)`);
   } else {
     console.log(`🔕 UNIFIED_MODE=false — ${CFG.files.outBatch} no se actualizó`);
   }
