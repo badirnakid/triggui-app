@@ -103,21 +103,78 @@ export function textContrastOn(hex) {
 export function normalizeHighlightSyntax(input) {
   let text = String(input || "");
   if (!text.trim()) return "";
-  text = text.replace(/\{\{H\}\}/gi, "[H]").replace(/\{\{\/H\}\}/gi, "[/H]");
-  text = text.replace(/\[h\]/g, "[H]").replace(/\[\/h\]/g, "[/H]");
 
-  let toggleOpen = true;
-  text = text.replace(/\[H\]/g, () => {
-    const token = toggleOpen ? "[H]" : "[/H]";
-    toggleOpen = !toggleOpen;
-    return token;
-  });
+  // ═══ NIVEL DIOS v2: state machine correcto ═══
+  // 1. Absorber TODAS las variantes a placeholders únicos \x01 (open) y \x02 (close)
+  // 2. Limpiar tokens parciales (fragmentos rotos)
+  // 3. Recorrer la secuencia con state machine: dentro/fuera de highlight
+  // 4. Emitir tokens canónicos balanceados
 
-  const opens = (text.match(/\[H\]/g) || []).length;
-  const closes = (text.match(/\[\/H\]/g) || []).length;
-  if (opens > closes) text += "[/H]".repeat(opens - closes);
+  const OPEN = "\x01";
+  const CLOSE = "\x02";
 
-  text = text.replace(/\[H\]\s*\[\/H\]/g, "");
+  // ═══ PASO 1: Absorber cierres (primero, antes de aperturas, para no confundir
+  // fragmentos como "/H]" con cierre de "[/H]")
+  text = text.replace(/<\s*\/\s*h\s*>/gi, CLOSE);
+  text = text.replace(/\{\{\s*\/\s*h\s*\}\}/gi, CLOSE);
+  text = text.replace(/\[\s*\/\s*h\s*[\]\}>]/gi, CLOSE);      // [/H] [/H> [/H}
+  text = text.replace(/\[\s*h\s*\/\s*[\]\}>]/gi, CLOSE);      // [H/]
+
+  // ═══ PASO 2: Absorber aperturas
+  text = text.replace(/<\s*h\s*>/gi, OPEN);
+  text = text.replace(/\{\{\s*h\s*\}\}/gi, OPEN);
+  text = text.replace(/\[\s*h\s*[\]\}>]/gi, OPEN);            // [H] [H} [H>
+
+  // ═══ PASO 3: Limpiar tokens parciales rotos (sin ambas llaves)
+  // Debe correr DESPUÉS de absorber variantes completas, para no dañarlas
+  text = text.replace(/\[\s*\/\s*h\b/gi, "");   // [/H sin cerrar
+  text = text.replace(/\/\s*h\s*\]/gi, "");      // /H] sin abrir
+  text = text.replace(/\[\s*h\b/gi, "");         // [H sin cerrar
+  // H] aislada: eliminar cuando es claramente token roto (no parte de palabra real)
+  // Las palabras reales casi nunca terminan en "H" seguida de "]"; regex conservador:
+  // "H]" con cualquier contexto → eliminar solo "H]", preservando lo anterior
+  text = text.replace(/H\s*\]/gi, "");
+
+  // ═══ PASO 4: State machine — recorrer tokens y balancear
+  // Recorremos el texto extrayendo segmentos + tokens, y reconstruimos asegurando
+  // alternancia correcta: OPEN debe ir antes de cualquier CLOSE, y siempre alternan.
+  const tokenRe = new RegExp(`(${OPEN}|${CLOSE})`, "g");
+  const parts = text.split(tokenRe);
+  const out = [];
+  let inside = false; // ¿estamos dentro de un highlight?
+
+  for (const part of parts) {
+    if (part === OPEN) {
+      if (!inside) {
+        out.push(OPEN);
+        inside = true;
+      }
+      // Si ya estamos dentro, ignorar OPEN redundante
+    } else if (part === CLOSE) {
+      if (inside) {
+        out.push(CLOSE);
+        inside = false;
+      }
+      // Si no estamos dentro, ignorar CLOSE huérfano
+    } else {
+      // Texto normal
+      out.push(part);
+    }
+  }
+
+  // Si terminamos "dentro" sin cierre, cerrar al final
+  if (inside) out.push(CLOSE);
+
+  text = out.join("");
+
+  // ═══ PASO 5: Limpiar highlights vacíos
+  text = text.replace(new RegExp(`${OPEN}\\s*${CLOSE}`, "g"), "");
+
+  // ═══ PASO 6: Restaurar placeholders a tokens canónicos
+  text = text.replace(new RegExp(OPEN, "g"), "[H]");
+  text = text.replace(new RegExp(CLOSE, "g"), "[/H]");
+
+  // Whitespace final
   return text.replace(/[ \t]{2,}/g, " ").replace(/\n{3,}/g, "\n\n").trim();
 }
 
