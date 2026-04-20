@@ -1,0 +1,160 @@
+{
+  "titulo_input": "Las 48 leyes del poder",
+  "autor_input": "Greene",
+  "isbn_seed": "1454937292",
+  "isbn_discovered": "9786075276960",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Las 48 leyes del poder",
+      "matched_author": "Robert Greene"
+    },
+    "synopsis": "El best seller mundial para los que quieren obtener, estudiar o combatir el poder absoluto. Amoral, inmisericorde, despiadada y, sobre todo, muy instructiva, esta incisiva obra concentra tres mil años de historia del poder en cuarenta y ocho leyes claras y concisas. Robert Greene detalla las leyes del poder en su esencia más cruda, sintetizando el pensamiento de Maquiavelo, Sun Tzu, Carl von Clausewitz y otros grandes teóricos y estrategas. Algunas leyes sugieren la prudencia (\"Ley n° 1: nunca le haga sombra a su amo\"); otras, el sigilo (\"Ley n° 3: disimule sus intenciones\"); otras más, una total falta de piedad (\"Ley n° 15: aplaste por completo a su enemigo\"). Pero, nos guste o no, todas tienen aplicaciones en la vida cotidiana. Ilustradas mediante anécdotas de Isabel II, Henry Kissinger, P.T. Barnum y otras figuras que han esgrimido el poder (o que lo han padecido), estas leyes fascinarán a cualquiera que se interese en todas las manifestaciones del control total.",
+    "synopsis_length": 980,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/2c/17/cf/2c17cf19-ccda-acb8-87b0-e4d99fd9b53e/1027936580.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/2c/17/cf/2c17cf19-ccda-acb8-87b0-e4d99fd9b53e/1027936580.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/2c/17/cf/2c17cf19-ccda-acb8-87b0-e4d99fd9b53e/1027936580.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/2c/17/cf/2c17cf19-ccda-acb8-87b0-e4d99fd9b53e/1027936580.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Las 48 leyes del poder",
+      "autor_completo": "Robert Greene",
+      "año": "2018",
+      "editorial": null,
+      "isbn": "1454937292",
+      "categorias": [
+        "Management & Leadership",
+        "Books",
+        "Business & Personal Finance",
+        "Politics & Current Events",
+        "Political Science"
+      ],
+      "track_view_url": "https://books.apple.com/us/book/las-48-leyes-del-poder/id1454937292?uo=4"
+    }
+  },
+  "google": {
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Las 48 leyes del poder",
+      "matched_author": "Robert Greene"
+    },
+    "synopsis": "El best seller mundial para los que quieren obtener, estudiar o combatir el poder absoluto. Amoral, inmisericorde, despiadada y, sobre todo, muy instructiva, esta incisiva obra concentra tres mil años de historia del poder en cuarenta y ocho leyes claras y concisas. Robert Greene detalla las leyes del poder en su esencia más cruda, sintetizando el pensamiento de Maquiavelo, Sun Tzu, Carl von Clausewitz y otros grandes teóricos y estrategas. Algunas leyes sugieren la prudencia (\"Ley n° 1: nunca le haga sombra a su amo\"); otras, el sigilo (\"Ley n° 3: disimule sus intenciones\"); otras más, una total falta de piedad (\"Ley n° 15: aplaste por completo a su enemigo\"). Pero, nos guste o no, todas tienen aplicaciones en la vida cotidiana. Ilustradas mediante anécdotas de Isabel II, Henry Kissinger, P.T. Barnum y otras figuras que han esgrimido el poder (o que lo han padecido), estas leyes fascinarán a cualquiera que se interese en todas las manifestaciones del control total.",
+    "synopsis_length": 980,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=eMiLDwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Las 48 leyes del poder",
+      "subtitulo": "",
+      "autor_completo": "Robert Greene",
+      "año": "2018",
+      "editorial": "Océano",
+      "paginas": 947,
+      "isbn": "9786075276960",
+      "isbn13": "9786075276960",
+      "isbn10": "6075276963",
+      "categorias": [
+        "Business & Economics"
+      ],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=eMiLDwAAQBAJ&printsec=frontcover&dq=intitle:Las+48+leyes+del+poder+inauthor:Greene&hl=&cd=1&source=gbs_api"
+    }
+  },
+  "openlibrary": {
+    "ok": false,
+    "reason": "no_results",
+    "source": "openlibrary"
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/607527696.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "9786075276960",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/2c/17/cf/2c17cf19-ccda-acb8-87b0-e4d99fd9b53e/1027936580.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/2c/17/cf/2c17cf19-ccda-acb8-87b0-e4d99fd9b53e/1027936580.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/2c/17/cf/2c17cf19-ccda-acb8-87b0-e4d99fd9b53e/1027936580.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/2c/17/cf/2c17cf19-ccda-acb8-87b0-e4d99fd9b53e/1027936580.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=eMiLDwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/607527696.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "google_books",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "openlibrary:no_results"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 586,
+    "phase2_isbn_chain_ms": 205,
+    "cover_validation_ms": 99,
+    "total_ms": 890
+  },
+  "_cached_at": "2026-04-20T11:08:23.893Z"
+}

@@ -1,318 +1,303 @@
 {
   "libros": [
     {
-      "titulo": "El mito de Sísifo",
-      "autor": "Albert Camus",
-      "tagline": "Reflexiones sobre el vacío y la rebelión del ser humano.",
-      "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/ad/96/18/ad961849-0048-888f-8fed-642ca75984c1/9788439738121.jpg/3000x3000bb.jpg",
-      "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/ad/96/18/ad961849-0048-888f-8fed-642ca75984c1/9788439738121.jpg/3000x3000bb.jpg",
-      "isbn": "1542905952",
-      "titulo_es": "El mito de Sísifo",
-      "titulo_en": "The Myth of Sisyphus",
+      "titulo": "Las 48 leyes del poder",
+      "autor": "Robert Greene",
+      "tagline": "",
+      "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/2c/17/cf/2c17cf19-ccda-acb8-87b0-e4d99fd9b53e/1027936580.jpg/3000x3000bb.jpg",
+      "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/2c/17/cf/2c17cf19-ccda-acb8-87b0-e4d99fd9b53e/1027936580.jpg/3000x3000bb.jpg",
+      "isbn": "1454937292",
+      "titulo_es": "Las 48 leyes del poder",
+      "titulo_en": "The 48 Laws of Power",
       "idioma_original": "es",
-      "dimension": "Bienestar",
-      "punto": "Cero",
+      "dimension": "Conexion",
+      "punto": "Maximo",
       "palabras": [
-        "melancolía",
-        "rebeldía",
-        "reflexión",
-        "vacío"
+        "astucia",
+        "control",
+        "resiliencia",
+        "estrategia"
       ],
       "palabras_en": [
-        "existential",
-        "rebellion",
-        "meaning",
-        "despair"
+        "cunning",
+        "loyalty",
+        "success",
+        "subtlety"
       ],
       "frases": [
-        "🧘 Inhala profundamente y siente el peso del absurdo en tu ser.",
-        "⏳ ¿Qué significado le das a tus luchas diarias?",
-        "🔭 Imagina a Sísifo empujando su roca eternamente.",
-        "🌌 La rebelión es el primer paso hacia la libertad."
+        "🌅 Observe las interacciones a su alrededor y note el poder en juego.",
+        "⏳ ¿Qué intenciones ocultan aquellos que te rodean?",
+        "🗺 Imagínese un tablero de ajedrez donde cada pieza es un jugador de poder.",
+        "💫 La estrategia es movimiento; el poder, control."
       ],
       "frases_en": [
-        "💫 Feel the weight of existence pulling at your soul.",
-        "☀ What truths lie hidden in the shadows of your mind?",
-        "🗺 Picture a vast emptiness, echoing with the silence of unfulfilled dreams.",
-        "🌓 Time is both a companion and an adversary in our search for meaning."
+        "🌌 Imagine the delicate balance of influence in a room.",
+        "⏳ How often do you carefully consider your actions?",
+        "🔭 Picture a skilled tactician maneuvering through a crowd.",
+        "💫 In power, as in life, the subtle move prevails."
       ],
       "frases_og": [
-        "⚡ La existencia sin sentido despierta la necesidad de rebelarse.",
-        "🌿 El absurdo es un aliado en la búsqueda de significado.",
-        "🧭 Cada ser humano enfrenta su propio desafío existencial.",
-        "🔍 La desesperanza puede ser un punto de partida para la creación."
+        "🛡 La naturaleza amoral del poder se revela en cada acción.",
+        "🎯 Las leyes del poder son herramientas de análisis en la vida cotidiana.",
+        "🌱 La manipulación es un arte que requiere precisión y conocimiento.",
+        "🔮 Aplastar por completo a su enemigo es la máxima estrategia de superviv"
       ],
       "frases_og_en": [
-        "⚡ Confronting absurdity reveals the essence of our existence.",
-        "🌿 In the face of emptiness, we must create our own meaning.",
-        "🧭 Rebellion is the only response to a meaningless universe.",
-        "🔍 Finding significance is an act of defiance against despair."
+        "🛡 Master the art of relationships to maintain your power.",
+        "🎯 Loyalty is the foundation of every successful alliance.",
+        "🌱 Subtlety often triumphs where aggression fails.",
+        "🔮 Harness the power of strategy to achieve your goals."
       ],
       "colores": [
-        "#332D53",
-        "#524785",
-        "#857AB8",
-        "#BCB6D8"
+        "#F1927E",
+        "#30C9E8",
+        "#AE5413",
+        "#0B4065"
       ],
       "textColors": [
         "#FFFFFF",
+        "#000000",
         "#FFFFFF",
-        "#FFFFFF",
-        "#000000"
+        "#FFFFFF"
       ],
-      "fondo": "#45444B",
+      "fondo": "#D3D0CF",
       "tarjeta": {
-        "titulo": "La rebelión ante el absurdo",
-        "parrafoTop": "La lucha del ser humano contra el absurdo es una constante en la vida. [H]El reconocimiento de esta lucha nos permite acercarnos a un sentido más profundo de existencia.[/H]",
-        "subtitulo": "¿Es posible encontrar significado en el vacío?",
-        "parrafoBot": "La búsqueda de significado en un mundo vacío no es solo un deseo, es una necesidad. [H]La rebelión individual ante la desesperanza se convierte en un acto de creación personal.[/H>[/H]",
+        "titulo": "La ley de no hacer sombra a su amo",
+        "parrafoTop": "El poder se sostiene en el equilibrio de relaciones. [H]Nunca haga sombra a su amo, pues eso provoca temor y resentimiento.[/H] En lugar de eso, busque resaltar sus virtudes y mantener una lealtad inquebrantable.",
+        "subtitulo": "¿Cómo se construyen las relaciones de poder?",
+        "parrafoBot": "Las dinámicas de poder son complejas y requieren astucia. [H]Disimular intenciones como estrategia es una herramienta vital para el éxito.[/H] La sutileza puede ser más poderosa que la fuerza bruta.",
         "style": {
-          "accent": "#7E6ECF",
-          "paper": "#45444B",
-          "ink": "#EFEEF1",
-          "border": "#66666B"
+          "accent": "#E23512",
+          "paper": "#D3D0CF",
+          "ink": "#1C1817",
+          "border": "#7F7D7C"
         }
       },
       "tarjeta_base": {
-        "titulo": "La rebelión ante el absurdo",
-        "parrafoTop": "La lucha del ser humano contra el absurdo es una constante en la vida. [H]El reconocimiento de esta lucha nos permite acercarnos a un sentido más profundo de existencia.[/H]",
-        "subtitulo": "¿Es posible encontrar significado en el vacío?",
-        "parrafoBot": "La búsqueda de significado en un mundo vacío no es solo un deseo, es una necesidad. [H]La rebelión individual ante la desesperanza se convierte en un acto de creación personal.[/H>[/H]",
+        "titulo": "La ley de no hacer sombra a su amo",
+        "parrafoTop": "El poder se sostiene en el equilibrio de relaciones. [H]Nunca haga sombra a su amo, pues eso provoca temor y resentimiento.[/H] En lugar de eso, busque resaltar sus virtudes y mantener una lealtad inquebrantable.",
+        "subtitulo": "¿Cómo se construyen las relaciones de poder?",
+        "parrafoBot": "Las dinámicas de poder son complejas y requieren astucia. [H]Disimular intenciones como estrategia es una herramienta vital para el éxito.[/H] La sutileza puede ser más poderosa que la fuerza bruta.",
         "style": {
-          "accent": "#7E6ECF",
-          "paper": "#45444B",
-          "ink": "#EFEEF1",
-          "border": "#66666B"
+          "accent": "#E23512",
+          "paper": "#D3D0CF",
+          "ink": "#1C1817",
+          "border": "#7F7D7C"
         }
       },
       "tarjeta_presentacion": {
-        "titulo": "La rebelión ante el absurdo",
-        "parrafoTop": "La lucha del ser humano contra el absurdo es una constante en la vida. [H]El reconocimiento de esta lucha nos permite acercarnos a un sentido más profundo de existencia.[/H]",
-        "subtitulo": "¿Es posible encontrar significado en el vacío?",
-        "parrafoBot": "La búsqueda de significado en un mundo vacío no es solo un deseo, es una necesidad. [H]La rebelión individual ante la desesperanza se convierte en un acto de creación personal.[/H>[/H]",
+        "titulo": "La ley de no hacer sombra a su amo",
+        "parrafoTop": "El poder se sostiene en el equilibrio de relaciones. [H]Nunca haga sombra a su amo, pues eso provoca temor y resentimiento.[/H] En lugar de eso, busque resaltar sus virtudes y mantener una lealtad inquebrantable.",
+        "subtitulo": "¿Cómo se construyen las relaciones de poder?",
+        "parrafoBot": "Las dinámicas de poder son complejas y requieren astucia. [H]Disimular intenciones como estrategia es una herramienta vital para el éxito.[/H] La sutileza puede ser más poderosa que la fuerza bruta.",
         "style": {
-          "accent": "#7E6ECF",
-          "paper": "#45444B",
-          "ink": "#EFEEF1",
-          "border": "#66666B"
+          "accent": "#E23512",
+          "paper": "#D3D0CF",
+          "ink": "#1C1817",
+          "border": "#7F7D7C"
         }
       },
       "tarjeta_en": {
-        "titulo": "The Rebellion Against the Absurd",
-        "parrafoTop": "The struggle of humanity against absurdity is a constant in life. [H]Recognizing this struggle brings us closer to a deeper sense of existence.[/H]",
-        "subtitulo": "Is it possible to find meaning in emptiness?",
-        "parrafoBot": "The quest for meaning in an empty world is not merely a desire, but a necessity. [H]The individual rebellion against despair becomes an act of personal creation.[/H>[/H]",
+        "titulo": "The Law of Not Outshining the Master",
+        "parrafoTop": "Power exists within the balance of relationships. [H]Never outshine the master, as that breeds fear and resentment.[/H] Instead, seek to highlight their virtues and maintain unwavering loyalty.",
+        "subtitulo": "How Power Relationships Are Built",
+        "parrafoBot": "The dynamics of power are complex and require cunning. [H]Disguising intentions as strategy is a vital tool for success.[/H] Subtlety can prove more powerful than brute force.",
         "style": {
-          "accent": "#7E6ECF",
-          "paper": "#45444B",
-          "ink": "#EFEEF1",
-          "border": "#66666B"
+          "accent": "#E23512",
+          "paper": "#D3D0CF",
+          "ink": "#1C1817",
+          "border": "#7F7D7C"
         }
       },
       "tarjeta_base_en": {
-        "titulo": "The Rebellion Against the Absurd",
-        "parrafoTop": "The struggle of humanity against absurdity is a constant in life. [H]Recognizing this struggle brings us closer to a deeper sense of existence.[/H]",
-        "subtitulo": "Is it possible to find meaning in emptiness?",
-        "parrafoBot": "The quest for meaning in an empty world is not merely a desire, but a necessity. [H]The individual rebellion against despair becomes an act of personal creation.[/H>[/H]",
+        "titulo": "The Law of Not Outshining the Master",
+        "parrafoTop": "Power exists within the balance of relationships. [H]Never outshine the master, as that breeds fear and resentment.[/H] Instead, seek to highlight their virtues and maintain unwavering loyalty.",
+        "subtitulo": "How Power Relationships Are Built",
+        "parrafoBot": "The dynamics of power are complex and require cunning. [H]Disguising intentions as strategy is a vital tool for success.[/H] Subtlety can prove more powerful than brute force.",
         "style": {
-          "accent": "#7E6ECF",
-          "paper": "#45444B",
-          "ink": "#EFEEF1",
-          "border": "#66666B"
+          "accent": "#E23512",
+          "paper": "#D3D0CF",
+          "ink": "#1C1817",
+          "border": "#7F7D7C"
         }
       },
       "tarjeta_presentacion_en": {
-        "titulo": "The Rebellion Against the Absurd",
-        "parrafoTop": "The struggle of humanity against absurdity is a constant in life. [H]Recognizing this struggle brings us closer to a deeper sense of existence.[/H]",
-        "subtitulo": "Is it possible to find meaning in emptiness?",
-        "parrafoBot": "The quest for meaning in an empty world is not merely a desire, but a necessity. [H]The individual rebellion against despair becomes an act of personal creation.[/H>[/H]",
+        "titulo": "The Law of Not Outshining the Master",
+        "parrafoTop": "Power exists within the balance of relationships. [H]Never outshine the master, as that breeds fear and resentment.[/H] Instead, seek to highlight their virtues and maintain unwavering loyalty.",
+        "subtitulo": "How Power Relationships Are Built",
+        "parrafoBot": "The dynamics of power are complex and require cunning. [H]Disguising intentions as strategy is a vital tool for success.[/H] Subtlety can prove more powerful than brute force.",
         "style": {
-          "accent": "#7E6ECF",
-          "paper": "#45444B",
-          "ink": "#EFEEF1",
-          "border": "#66666B"
+          "accent": "#E23512",
+          "paper": "#D3D0CF",
+          "ink": "#1C1817",
+          "border": "#7F7D7C"
         }
       },
-      "videoUrl": "https://duckduckgo.com/?q=!ducky+site:youtube.com+El%20mito%20de%20S%C3%ADsifo%20Albert%20Camus%20entrevista%20espa%C3%B1ol",
-      "videoUrl_en": "https://duckduckgo.com/?q=!ducky+site:youtube.com+The%20Myth%20of%20Sisyphus%20Albert%20Camus%20interview",
+      "videoUrl": "https://duckduckgo.com/?q=!ducky+site:youtube.com+Las%2048%20leyes%20del%20poder%20Robert%20Greene%20entrevista%20espa%C3%B1ol",
+      "videoUrl_en": "https://duckduckgo.com/?q=!ducky+site:youtube.com+The%2048%20Laws%20of%20Power%20Robert%20Greene%20interview",
       "_nucleus": {
         "book_identity": {
-          "titulo_es": "El mito de Sísifo",
-          "titulo_en": "The Myth of Sisyphus",
-          "autor_completo": "Albert Camus",
+          "titulo_es": "Las 48 leyes del poder",
+          "titulo_en": "The 48 Laws of Power",
+          "autor_completo": "Robert Greene",
           "idioma_original": "es"
         },
         "book_grounding_anchors": {
           "concepts": [
-            "la lucha del ser humano contra el absurdo",
-            "búsqueda de significado en un mundo vacío",
-            "la rebelión individual ante la desesperanza"
+            "la ley de nunca hacer sombra a su amo",
+            "disimular intenciones como estrategia",
+            "aplastar por completo a su enemigo",
+            "la naturaleza amoral del poder",
+            "la aplicación de leyes del poder en la vida cotidiana"
           ],
           "key_terms": [
-            "absurdo",
-            "rebelión",
-            "vacío existencial",
-            "significado",
-            "condición humana"
+            "leyes del poder",
+            "estrategia",
+            "manipulación",
+            "control",
+            "análisis de poder"
           ],
-          "authorial_voice_notes": "Reflexiva, filosófica y melancólica, enfocada en la condición humana y la rebelión individual."
+          "authorial_voice_notes": "La voz de Robert Greene es incisiva y directa, combinando una narrativa histórica con ejemplos contemporáneos y un enfoque pragmático sobre la naturaleza del poder."
         },
         "lens_analysis": {
           "lens_provided": false,
-          "analysis": "La lente del curador no se aplica directamente, ya que el tema es inferido y no proviene de una fuente oficial.",
+          "analysis": "El libro no parece estar bajo una lente curatorial específica, sino que se presenta como un compendio de estrategias históricas sobre el poder.",
           "decision": "dont_apply_book_is_about_something_else"
         },
         "visual_intent": {
-          "hue_primary": 250,
-          "saturation": "muted",
-          "lightness_paper": "medium_dark",
-          "temperature_shift": 0,
-          "palette_strategy": "monochromatic",
-          "typography_family": "serif_literario",
+          "hue_primary": 0,
+          "saturation": "vivid",
+          "lightness_paper": "medium_light",
+          "temperature_shift": 10,
+          "palette_strategy": "complementary",
+          "typography_family": "serif_moderno",
           "density": "equilibrado",
           "rhythm": "medio",
           "era": "contemporaneo",
           "genre_visual": "ensayo"
         },
         "surface_hints": {
-          "dimension": "Bienestar",
-          "punto_hawkins": "Cero",
-          "franja_ideal": "noche"
+          "dimension": "Conexion",
+          "punto_hawkins": "Maximo",
+          "franja_ideal": "tarde"
         },
         "card_es": {
-          "titulo": "La rebelión ante el absurdo",
-          "parrafoTop": "La lucha del ser humano contra el absurdo es una constante en la vida. [H]El reconocimiento de esta lucha nos permite acercarnos a un sentido más profundo de existencia.[/H]",
-          "subtitulo": "¿Es posible encontrar significado en el vacío?",
-          "parrafoBot": "La búsqueda de significado en un mundo vacío no es solo un deseo, es una necesidad. [H]La rebelión individual ante la desesperanza se convierte en un acto de creación personal.[/H>"
+          "titulo": "La ley de no hacer sombra a su amo",
+          "parrafoTop": "El poder se sostiene en el equilibrio de relaciones. [H]Nunca haga sombra a su amo, pues eso provoca temor y resentimiento.[/H] En lugar de eso, busque resaltar sus virtudes y mantener una lealtad inquebrantable.",
+          "subtitulo": "¿Cómo se construyen las relaciones de poder?",
+          "parrafoBot": "Las dinámicas de poder son complejas y requieren astucia. [H]Disimular intenciones como estrategia es una herramienta vital para el éxito.[/H] La sutileza puede ser más poderosa que la fuerza bruta."
         },
         "card_en": {
-          "titulo": "The Rebellion Against the Absurd",
-          "parrafoTop": "The struggle of humanity against absurdity is a constant in life. [H]Recognizing this struggle brings us closer to a deeper sense of existence.[/H]",
-          "subtitulo": "Is it possible to find meaning in emptiness?",
-          "parrafoBot": "The quest for meaning in an empty world is not merely a desire, but a necessity. [H]The individual rebellion against despair becomes an act of personal creation.[/H>"
+          "titulo": "The Law of Not Outshining the Master",
+          "parrafoTop": "Power exists within the balance of relationships. [H]Never outshine the master, as that breeds fear and resentment.[/H] Instead, seek to highlight their virtues and maintain unwavering loyalty.",
+          "subtitulo": "How Power Relationships Are Built",
+          "parrafoBot": "The dynamics of power are complex and require cunning. [H]Disguising intentions as strategy is a vital tool for success.[/H] Subtlety can prove more powerful than brute force."
         },
         "emotional_words_es": [
-          "melancolía",
-          "rebeldía",
-          "reflexión",
-          "vacío"
+          "astucia",
+          "control",
+          "resiliencia",
+          "estrategia"
         ],
         "emotional_words_en": [
-          "existential",
-          "rebellion",
-          "meaning",
-          "despair"
+          "cunning",
+          "loyalty",
+          "success",
+          "subtlety"
         ],
         "og_phrases_es": [
-          "⚡ La existencia sin sentido despierta la necesidad de rebelarse.",
-          "🌿 El absurdo es un aliado en la búsqueda de significado.",
-          "🧭 Cada ser humano enfrenta su propio desafío existencial.",
-          "🔍 La desesperanza puede ser un punto de partida para la creación."
+          "🛡 La naturaleza amoral del poder se revela en cada acción.",
+          "🎯 Las leyes del poder son herramientas de análisis en la vida cotidiana.",
+          "🌱 La manipulación es un arte que requiere precisión y conocimiento.",
+          "🔮 Aplastar por completo a su enemigo es la máxima estrategia de superviv"
         ],
         "og_phrases_en": [
-          "⚡ Confronting absurdity reveals the essence of our existence.",
-          "🌿 In the face of emptiness, we must create our own meaning.",
-          "🧭 Rebellion is the only response to a meaningless universe.",
-          "🔍 Finding significance is an act of defiance against despair."
+          "🛡 Master the art of relationships to maintain your power.",
+          "🎯 Loyalty is the foundation of every successful alliance.",
+          "🌱 Subtlety often triumphs where aggression fails.",
+          "🔮 Harness the power of strategy to achieve your goals."
         ],
         "edition_blocks_es": [
           {
             "gesture_type": "instruccion_sensorial",
-            "sensory_anchor": "respiracion",
-            "phrase": "🧘 Inhala profundamente y siente el peso del absurdo en tu ser."
+            "sensory_anchor": "vista",
+            "phrase": "🌅 Observe las interacciones a su alrededor y note el poder en juego."
           },
           {
             "gesture_type": "pregunta_directa",
             "sensory_anchor": "tiempo",
-            "phrase": "⏳ ¿Qué significado le das a tus luchas diarias?"
+            "phrase": "⏳ ¿Qué intenciones ocultan aquellos que te rodean?"
           },
           {
             "gesture_type": "imagen_concreta",
-            "sensory_anchor": "vista",
-            "phrase": "🔭 Imagina a Sísifo empujando su roca eternamente."
+            "sensory_anchor": "espacio",
+            "phrase": "🗺 Imagínese un tablero de ajedrez donde cada pieza es un jugador de poder."
           },
           {
             "gesture_type": "aforismo_autorial",
-            "sensory_anchor": "espacio",
-            "phrase": "🌌 La rebelión es el primer paso hacia la libertad."
+            "sensory_anchor": "movimiento",
+            "phrase": "💫 La estrategia es movimiento; el poder, control."
           }
         ],
         "edition_blocks_en": [
           {
             "gesture_type": "sensory_instruction",
-            "sensory_anchor": "movement",
-            "phrase": "💫 Feel the weight of existence pulling at your soul."
+            "sensory_anchor": "space",
+            "phrase": "🌌 Imagine the delicate balance of influence in a room."
           },
           {
             "gesture_type": "direct_question",
-            "sensory_anchor": "light",
-            "phrase": "☀ What truths lie hidden in the shadows of your mind?"
+            "sensory_anchor": "time",
+            "phrase": "⏳ How often do you carefully consider your actions?"
           },
           {
             "gesture_type": "concrete_image",
-            "sensory_anchor": "space",
-            "phrase": "🗺 Picture a vast emptiness, echoing with the silence of unfulfilled dreams."
+            "sensory_anchor": "sight",
+            "phrase": "🔭 Picture a skilled tactician maneuvering through a crowd."
           },
           {
             "gesture_type": "authorial_aphorism",
-            "sensory_anchor": "time",
-            "phrase": "🌓 Time is both a companion and an adversary in our search for meaning."
+            "sensory_anchor": "movement",
+            "phrase": "💫 In power, as in life, the subtle move prevails."
           }
         ],
         "confidence": {
-          "book_grounding": 0.77,
+          "book_grounding": 0.95,
           "voice_authenticity": 0.93,
-          "specificity": 0.95,
+          "specificity": 0.91,
           "grounding_judge": 1,
-          "combined": 0.9,
+          "combined": 0.95,
           "signals": {
-            "bookIdentityConfidence": 0.765,
+            "bookIdentityConfidence": 0.95,
             "voiceSignal": 0.9249999999999999,
-            "specificitySignal": 0.95,
+            "specificitySignal": 0.9125,
             "judgeScore": 1
           }
         }
       },
       "_grounding": {
-        "source": "model_inference",
-        "tier_reached": 2.5,
-        "book_identity_confidence": 0.765,
+        "source": "apple_books",
+        "tier_reached": 2,
+        "book_identity_confidence": 0.95,
         "resolution_path": [
-          "evidence_fetched_0sources",
-          "tier3_conf_0.90"
+          "evidence_fetched_3sources"
         ],
         "verified_identity": {
-          "titulo_real": "El mito de Sísifo",
-          "autor_completo": "Albert Camus",
-          "año": null
+          "titulo_real": "Las 48 leyes del poder",
+          "autor_completo": "Robert Greene",
+          "año": "2018",
+          "editorial": null,
+          "isbn": "1454937292",
+          "categorias": [
+            "Management & Leadership",
+            "Books",
+            "Business & Personal Finance",
+            "Politics & Current Events",
+            "Political Science"
+          ],
+          "track_view_url": "https://books.apple.com/us/book/las-48-leyes-del-poder/id1454937292?uo=4"
         },
-        "similar_books": [
-          {
-            "titulo": "El extranjero",
-            "autor": "Albert Camus",
-            "razon": "Ambos libros son obras fundamentales de Camus y abordan la existencia humana y el absurdo."
-          },
-          {
-            "titulo": "La náusea",
-            "autor": "Jean-Paul Sartre",
-            "razon": "Explora temas existenciales y la búsqueda de significado en un mundo absurdo."
-          },
-          {
-            "titulo": "El ser y la nada",
-            "autor": "Jean-Paul Sartre",
-            "razon": "Profundiza en la filosofía existencialista y el vacío de la existencia."
-          },
-          {
-            "titulo": "La peste",
-            "autor": "Albert Camus",
-            "razon": "Otra obra de Camus que reflexiona sobre la condición humana y la lucha contra el absurdo."
-          },
-          {
-            "titulo": "El lobo estepario",
-            "autor": "Hermann Hesse",
-            "razon": "Aborda la dualidad del ser humano y la búsqueda de identidad en un mundo caótico."
-          }
-        ],
+        "match_score": 1,
         "from_cache": false
       },
       "_grounding_judge": {
@@ -320,13 +305,13 @@
           "grounded_score": 1,
           "uses_book_specific_concepts": true,
           "could_apply_to_any_book": false,
-          "reason": "The content directly addresses the struggle against absurdity and the search for meaning, which are central themes in the inferred ground truth. Phrases like 'la lucha del ser humano contra el absurdo' and 'la búsqueda de significado en un mundo vacío' explicitly reflect the philosophical focus on the human condition and individual rebellion. Additionally, the references to creation and personal, "
+          "reason": "The generated content directly references specific laws from 'Las 48 leyes del poder', such as 'nunca le haga sombra a su amo' and 'disimule sus intenciones', which are central concepts in the book. Additionally, the phrases and themes discussed, such as the amoral nature of power and the importance of strategy, are explicitly tied to Greene's work, making it highly specific and relevant."
         },
         "en": {
           "grounded_score": 1,
           "uses_book_specific_concepts": true,
           "could_apply_to_any_book": false,
-          "reason": "The generated content directly addresses the struggle against absurdity and the search for meaning, which are central themes in the inferred ground truth. Phrases like 'rebellion against despair' and 'creating our own meaning' specifically reflect the philosophical and existential focus of the book, making it highly relevant and anchored to the ground truth."
+          "reason": "The generated content directly references specific laws from the book, such as 'never outshine the master' and 'disguising intentions as strategy,' which are key concepts in 'Las 48 leyes del poder.' The phrases and ideas presented are clearly anchored in the book's themes and terminology, making it highly specific to Greene's work."
         }
       },
       "_voice_verdict": {
@@ -335,12 +320,12 @@
         "es": {
           "verdict": "pagina",
           "confidence": 0.9,
-          "reason": "Voz directa y reflexiones sobre la existencia sin referencias externas.",
-          "elapsed_ms": 810,
+          "reason": "Voz directa y consejos prácticos del libro.",
+          "elapsed_ms": 944,
           "usage": {
-            "prompt_tokens": 370,
-            "completion_tokens": 28,
-            "total_tokens": 398,
+            "prompt_tokens": 395,
+            "completion_tokens": 25,
+            "total_tokens": 420,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -356,13 +341,13 @@
         },
         "en": {
           "verdict": "pagina",
-          "confidence": 0.8,
-          "reason": "Voz directa y reflexiones sobre la existencia sin referencias externas.",
-          "elapsed_ms": 777,
+          "confidence": 0.9,
+          "reason": "Usa voz directa y se enfoca en conceptos del libro.",
+          "elapsed_ms": 1036,
           "usage": {
-            "prompt_tokens": 362,
+            "prompt_tokens": 369,
             "completion_tokens": 28,
-            "total_tokens": 390,
+            "total_tokens": 397,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -378,36 +363,36 @@
         },
         "circuit_tripped": false,
         "should_reextract": false,
-        "total_tokens": 788,
-        "total_ms": 810
+        "total_tokens": 817,
+        "total_ms": 1036
       },
       "_visual": {
         "synthesis_inputs": {
-          "hue_primary": 250,
-          "adjusted_hue": 250,
-          "saturation": "muted",
-          "saturation_value": 0.3,
-          "lightness_paper": "medium_dark",
-          "paper_lightness_value": 0.28,
-          "temperature_shift": 0,
-          "palette_strategy": "monochromatic"
+          "hue_primary": 0,
+          "adjusted_hue": 10,
+          "saturation": "vivid",
+          "saturation_value": 0.8,
+          "lightness_paper": "medium_light",
+          "paper_lightness_value": 0.82,
+          "temperature_shift": 10,
+          "palette_strategy": "complementary"
         },
-        "contrast_ratio": "8.33",
-        "paper_is_dark": true,
+        "contrast_ratio": "11.48",
+        "paper_is_dark": false,
         "cssVars": {
-          "--palette-0": "#332D53",
-          "--palette-1": "#524785",
-          "--palette-2": "#857AB8",
-          "--palette-3": "#BCB6D8",
-          "--accent": "#7E6ECF",
-          "--accent-soft": "#7E6ECF38",
-          "--accent-glow": "#7E6ECF6b",
-          "--paper": "#45444B",
-          "--ink": "#EFEEF1",
-          "--border": "#66666B",
-          "--highlight-bg": "#7E6ECFd9",
-          "--highlight-ink": "#45444B",
-          "--typography-stack": "'Crimson Pro', 'Source Serif Pro', Georgia, serif",
+          "--palette-0": "#F1927E",
+          "--palette-1": "#30C9E8",
+          "--palette-2": "#AE5413",
+          "--palette-3": "#0B4065",
+          "--accent": "#E23512",
+          "--accent-soft": "#E2351238",
+          "--accent-glow": "#E235126b",
+          "--paper": "#D3D0CF",
+          "--ink": "#1C1817",
+          "--border": "#7F7D7C",
+          "--highlight-bg": "#C72F10d9",
+          "--highlight-ink": "#FFFFFF",
+          "--typography-stack": "'Source Serif Pro', Georgia, serif",
           "--line-height": 1.65,
           "--letter-spacing": 0.2,
           "--paragraph-gap": 1,
@@ -434,42 +419,42 @@
         "distinct_types_en": 4
       },
       "_quality_warning": null,
-      "_inputs_snapshot": "2026-04-20T04-17-58",
+      "_inputs_snapshot": "2026-04-20T11-08-22",
       "_crono": {
-        "dia": "domingo",
-        "hora": 22,
-        "franja": "noche",
+        "dia": "lunes",
+        "hora": 5,
+        "franja": "madrugada",
         "energia": 0.8,
-        "modo": "preparacion_semana",
-        "descripcion_dia": "Domingo prepara cuerpo y mente para lunes. Sobrio, reflexivo.",
-        "descripcion_franja": "Noche: melatonina en ascenso. Reflexivo, contemplativo, sin urgencia."
+        "modo": "activacion_gentil",
+        "descripcion_dia": "Lunes requiere entrada suave. El lector está reentrando al modo productivo.",
+        "descripcion_franja": "Madrugada: claridad mental máxima. Presencia. Pocas palabras, mucho peso."
       },
       "_metrics": {
-        "tokens_total": 9738,
+        "tokens_total": 9692,
         "tokens_by_phase": {
-          "grounding": 562,
-          "anchors": 2267,
+          "grounding": 0,
+          "anchors": 2337,
           "palette": 0,
-          "content_es": 2491,
-          "judge_es": 821,
-          "content_en": 2001,
-          "judge_en": 808,
-          "voice": 788
+          "content_es": 2618,
+          "judge_es": 932,
+          "content_en": 2115,
+          "judge_en": 873,
+          "voice": 817
         },
-        "elapsed_ms_total": 58236,
+        "elapsed_ms_total": 31809,
         "elapsed_ms_by_phase": {
-          "grounding": 30027,
-          "anchors": 4875,
+          "grounding": 896,
+          "anchors": 6801,
           "palette": 1,
           "cover_fallback": 0,
-          "content_es": 6340,
-          "judge_es": 2321,
-          "content_en": 11998,
-          "judge_en": 1862,
-          "voice": 811,
-          "post_processing": 5
+          "content_es": 9824,
+          "judge_es": 2636,
+          "content_en": 7212,
+          "judge_en": 3401,
+          "voice": 1037,
+          "post_processing": 6
         },
-        "llm_calls_count": 8,
+        "llm_calls_count": 7,
         "models_used": [
           "gpt-4o-mini-2024-07-18"
         ],
