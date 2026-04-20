@@ -1,0 +1,454 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# 🌒 TRIGGUI — Generador único de contenido nivel dios
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# Un solo workflow para TODO:
+# - 📘 Generar un libro específico (tú eliges cuál)
+# - 💭 Triggui elige de tu catálogo de 700 libros según sentimiento
+# - 🌍 Triggui busca en el mundo entero según sentimiento
+# - 🎲 Generar 20 libros nuevos para la app (batch producción)
+# - 🧪 Prueba de 20 libros sin tocar la app (shadow)
+#
+# Protege automáticamente los libros que generaste manualmente.
+# Un batch NO sobrescribe tu curaduría — la respeta.
+#
+# ═══════════════════════════════════════════════════════════════════════════════
+# AUTOMATIZACIÓN (cron schedule)
+# ═══════════════════════════════════════════════════════════════════════════════
+# Para activar ejecución automática, descomenta UNA de las líneas de "schedule"
+# más abajo. Para desactivar todo el workflow: GitHub → Settings → Actions
+# ═══════════════════════════════════════════════════════════════════════════════
+
+name: 🌒 Triggui — Generar contenido
+
+run-name: >-
+  ${{ inputs.modo }}
+  ${{ inputs.libro_input != '' && format('· {0}', inputs.libro_input) || '' }}
+  ${{ inputs.sentimiento != '' && format('· {0}', inputs.sentimiento) || '' }}
+
+on:
+  # ───────────────────────────────────────────────────────────────────────
+  # CRON SCHEDULES — descomenta UNA línea para activar automatización
+  # ───────────────────────────────────────────────────────────────────────
+  # schedule:
+  #   - cron: '0 12 * * 1'        # LUNES 6 AM CDMX (recomendado)
+  #   - cron: '0 12 * * 1,4'      # LUNES y JUEVES 6 AM CDMX
+  #   - cron: '0 12 * * *'        # DIARIO 6 AM CDMX
+  #   - cron: '0 12 1,15 * *'     # QUINCENAL (días 1 y 15)
+  # ───────────────────────────────────────────────────────────────────────
+
+  workflow_dispatch:
+    inputs:
+      modo:
+        description: '¿Qué quieres generar?'
+        required: true
+        default: '📘 Un libro que ya sé cuál quiero'
+        type: choice
+        options:
+          - '📘 Un libro que ya sé cuál quiero'
+          - '💭 Triggui elige de mi catálogo de 700 libros'
+          - '🌍 Triggui busca el libro perfecto del mundo'
+          - '🎲 Generar 20 libros nuevos para la app'
+          - '🧪 Prueba de 20 libros sin tocar la app'
+
+      libro_input:
+        description: '📘 Título y autor. Solo para modo 📘. Formato: Título | Autor'
+        required: false
+        type: string
+
+      sentimiento:
+        description: '💭 ¿Qué siente el usuario? Solo modos 💭 y 🌍. Ej: me siento en duelo'
+        required: false
+        type: string
+
+      lente:
+        description: '🔍 Perspectiva especial (opcional). Ej: bajo la lente de maternidad'
+        required: false
+        type: string
+
+      generar_imagenes:
+        description: '🖼️ Generar tarjeta PNG + OG + edición viva'
+        required: true
+        default: true
+        type: boolean
+
+      preservar_manuales:
+        description: '🛡️ No sobrescribir libros curados manualmente'
+        required: true
+        default: true
+        type: boolean
+
+      cronobiologia:
+        description: '🕒 Adaptar tono al día y hora actuales'
+        required: true
+        default: true
+        type: boolean
+
+      modo_prueba:
+        description: '🧪 Solo archivo shadow (NO toca app.triggui.com)'
+        required: true
+        default: false
+        type: boolean
+
+      nota_libro:
+        description: '📝 Nota privada sobre el libro (casi nunca se usa)'
+        required: false
+        type: string
+
+concurrency:
+  group: triggui-content-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  generar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    env:
+      TZ: America/Mexico_City
+      OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
+      TRIGGUI_LENS: ${{ inputs.lente }}
+      TRIGGUI_BOOK_CONTEXT: ${{ inputs.nota_libro }}
+      TRIGGUI_CRONO_ENABLED: ${{ inputs.cronobiologia }}
+      BASE_URL: ${{ github.ref_name == 'main' && 'https://app.triggui.com' || 'https://beta.app.triggui.com' }}
+
+    steps:
+      # ╔══════════════════════════════════════════════════════════════════╗
+      # ║  FASE 0 — Decodificar modo humano → técnico                       ║
+      # ╚══════════════════════════════════════════════════════════════════╝
+
+      - name: 🌐 Decodificar modo
+        id: modo
+        shell: bash
+        run: |
+          set -euo pipefail
+          MODO_HUMANO="${{ inputs.modo }}"
+
+          # Default para triggers schedule (cron): batch producción
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            MODO_HUMANO="🎲 Generar 20 libros nuevos para la app"
+            echo "🕒 Ejecutado por cron → modo forzado: ${MODO_HUMANO}"
+          fi
+
+          case "${MODO_HUMANO}" in
+            *"📘"*|*"sé cuál"*) MODO_TECNICO="single_book" ;;
+            *"💭"*|*"catálogo"*) MODO_TECNICO="trigger_constrained" ;;
+            *"🌍"*|*"mundo"*) MODO_TECNICO="trigger_discover" ;;
+            *"🎲"*|*"20 libros nuevos"*) MODO_TECNICO="production_batch" ;;
+            *"🧪"*|*"Prueba"*) MODO_TECNICO="shadow_batch" ;;
+            *) echo "❌ Modo desconocido: ${MODO_HUMANO}" && exit 1 ;;
+          esac
+
+          # Si el usuario activó modo_prueba y eligió batch producción → forzar shadow
+          if [ "${{ inputs.modo_prueba }}" = "true" ] && [ "${MODO_TECNICO}" = "production_batch" ]; then
+            MODO_TECNICO="shadow_batch"
+            echo "⚠️  modo_prueba activo → degradando a shadow_batch"
+          fi
+
+          echo "modo_tecnico=${MODO_TECNICO}" >> $GITHUB_OUTPUT
+          echo "modo_humano=${MODO_HUMANO}" >> $GITHUB_OUTPUT
+
+          echo ""
+          echo "═══════════════════════════════════════════"
+          echo "🎯 Modo humano:       ${MODO_HUMANO}"
+          echo "🔧 Modo técnico:      ${MODO_TECNICO}"
+          echo "🛡️  Preservar manuales: ${{ inputs.preservar_manuales }}"
+          echo "🖼️  Generar imágenes:   ${{ inputs.generar_imagenes }}"
+          echo "🕒 Cronobiología:      ${{ inputs.cronobiologia }}"
+          echo "🧪 Modo prueba:        ${{ inputs.modo_prueba }}"
+          echo "═══════════════════════════════════════════"
+
+      # ╔══════════════════════════════════════════════════════════════════╗
+      # ║  FASE 1 — Checkout de AMBOS repos                                 ║
+      # ╚══════════════════════════════════════════════════════════════════╝
+
+      - name: 📦 Checkout triggui-app
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 📦 Checkout triggui-content (producción)
+        uses: actions/checkout@v4
+        with:
+          repository: badirnakid/triggui-content
+          token: ${{ secrets.CONTENT_REPO_TOKEN }}
+          path: triggui-content
+          fetch-depth: 0
+
+      # ╔══════════════════════════════════════════════════════════════════╗
+      # ║  FASE 2 — Setup entorno                                           ║
+      # ╚══════════════════════════════════════════════════════════════════╝
+
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: ⚙️ Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 📚 Install nucleus deps
+        working-directory: experiments/nucleus
+        run: npm ci || npm install --no-audit --no-fund
+
+      - name: 🎭 Install Playwright (solo si genera imágenes)
+        if: ${{ inputs.generar_imagenes }}
+        run: |
+          if [ -f package.json ]; then
+            npm ci || npm install --no-audit --no-fund
+          else
+            npm install --no-save --no-audit --no-fund playwright@1.48.0
+          fi
+          npx playwright install chromium --with-deps
+
+      - name: 🔗 Linkear CSV maestro
+        working-directory: experiments/nucleus
+        run: |
+          mkdir -p data
+          if [ -f "$GITHUB_WORKSPACE/triggui-content/data/libros_master.csv" ]; then
+            ln -sf "$GITHUB_WORKSPACE/triggui-content/data/libros_master.csv" data/libros_master.csv
+            echo "✓ CSV linkeado desde triggui-content"
+          elif [ -f "$GITHUB_WORKSPACE/data/libros_master.csv" ]; then
+            ln -sf "$GITHUB_WORKSPACE/data/libros_master.csv" data/libros_master.csv
+            echo "✓ CSV linkeado desde triggui-app"
+          else
+            echo "⚠️  libros_master.csv no encontrado — modos constrained y batch fallarán"
+          fi
+
+      # ╔══════════════════════════════════════════════════════════════════╗
+      # ║  FASE 3 — Linkear contenido.json histórico                        ║
+      # ╚══════════════════════════════════════════════════════════════════╝
+
+      - name: 📥 Linkear contenido.json histórico
+        if: ${{ steps.modo.outputs.modo_tecnico != 'shadow_batch' }}
+        run: |
+          if [ -f triggui-content/contenido.json ]; then
+            cp triggui-content/contenido.json experiments/nucleus/contenido.json
+            LIBROS=$(node -e "console.log(JSON.parse(require('fs').readFileSync('experiments/nucleus/contenido.json','utf8')).libros.length)")
+            MANUALES=$(node -e "const d=JSON.parse(require('fs').readFileSync('experiments/nucleus/contenido.json','utf8')); console.log(d.libros.filter(l=>l._manual===true).length)")
+            echo "📚 contenido.json histórico: ${LIBROS} libros (${MANUALES} manuales)"
+          else
+            echo "ℹ️  contenido.json no existe — se creará desde cero"
+          fi
+
+      # ╔══════════════════════════════════════════════════════════════════╗
+      # ║  FASE 4 — Validate book (para single/trigger)                     ║
+      # ╚══════════════════════════════════════════════════════════════════╝
+
+      - name: 📖 Validate DIRECT (modo 📘)
+        if: ${{ steps.modo.outputs.modo_tecnico == 'single_book' && inputs.libro_input != '' }}
+        working-directory: experiments/nucleus
+        env:
+          INPUT_MODE: book
+          SELECTOR_MODE: direct
+          LIBRO_INPUT: ${{ inputs.libro_input }}
+        run: node validate-book.js
+
+      - name: 📖 Validate CONSTRAINED (modo 💭)
+        if: ${{ steps.modo.outputs.modo_tecnico == 'trigger_constrained' }}
+        working-directory: experiments/nucleus
+        env:
+          INPUT_MODE: trigger
+          SELECTOR_MODE: constrained
+          ENTRADA_RAW: ${{ inputs.sentimiento }}
+          CATALOG_SCOPE: libros_master_csv
+          CATALOG_CSV_PATH: data/libros_master.csv
+        run: node validate-book.js
+
+      - name: 📖 Validate DISCOVER (modo 🌍)
+        if: ${{ steps.modo.outputs.modo_tecnico == 'trigger_discover' }}
+        working-directory: experiments/nucleus
+        env:
+          INPUT_MODE: trigger
+          SELECTOR_MODE: discover
+          ENTRADA_RAW: ${{ inputs.sentimiento }}
+        run: node validate-book.js
+
+      # ╔══════════════════════════════════════════════════════════════════╗
+      # ║  FASE 5 — Ejecutar Nucleus unificado                              ║
+      # ╚══════════════════════════════════════════════════════════════════╝
+
+      - name: 🧬 Ejecutar Nucleus
+        working-directory: experiments/nucleus
+        env:
+          SINGLE_MODE: ${{ (steps.modo.outputs.modo_tecnico == 'single_book' || steps.modo.outputs.modo_tecnico == 'trigger_constrained' || steps.modo.outputs.modo_tecnico == 'trigger_discover') && 'true' || '' }}
+          SHADOW_MODE: ${{ steps.modo.outputs.modo_tecnico == 'shadow_batch' && 'true' || '' }}
+          UNIFIED_MODE: ${{ !inputs.modo_prueba && 'true' || 'false' }}
+          PRESERVE_MANUAL: ${{ inputs.preservar_manuales && 'true' || 'false' }}
+        run: node build-contenido-nucleus.js
+
+      # ╔══════════════════════════════════════════════════════════════════╗
+      # ║  FASE 6 — Mover outputs al workspace                              ║
+      # ╚══════════════════════════════════════════════════════════════════╝
+
+      - name: 📦 Mover outputs al workspace
+        working-directory: experiments/nucleus
+        run: |
+          echo "📂 Archivos generados:"
+          ls -la contenido*.json 2>/dev/null || echo "(ninguno)"
+
+          [ -f contenido_edicion.json ] && cp -v contenido_edicion.json "$GITHUB_WORKSPACE/contenido_edicion.json"
+          [ -f contenido.json ] && cp -v contenido.json "$GITHUB_WORKSPACE/contenido.json"
+          [ -f contenido.shadow.json ] && cp -v contenido.shadow.json "$GITHUB_WORKSPACE/contenido.shadow.json"
+
+          for dir in inputs-history metrics quality-reports grounding-cache evidence-cache; do
+            if [ -d "$dir" ]; then
+              mkdir -p "$GITHUB_WORKSPACE/$dir"
+              cp -rv "$dir"/* "$GITHUB_WORKSPACE/$dir/" 2>/dev/null || true
+            fi
+          done
+
+          if [ -f /tmp/triggui-validate-debug.json ]; then
+            mkdir -p "$GITHUB_WORKSPACE/validate-debug"
+            cp /tmp/triggui-validate-debug.json "$GITHUB_WORKSPACE/validate-debug/$(date +%Y%m%d-%H%M%S)-debug.json"
+          fi
+
+      # ╔══════════════════════════════════════════════════════════════════╗
+      # ║  FASE 7 — Generar assets (solo single/trigger)                    ║
+      # ╚══════════════════════════════════════════════════════════════════╝
+
+      - name: 🌐 Generar edición viva HTML
+        if: ${{ inputs.generar_imagenes && (steps.modo.outputs.modo_tecnico == 'single_book' || steps.modo.outputs.modo_tecnico == 'trigger_constrained' || steps.modo.outputs.modo_tecnico == 'trigger_discover') }}
+        env:
+          TRIGGUI_EDICION_JSON: ${{ github.workspace }}/contenido_edicion.json
+        run: |
+          if [ ! -f "$GITHUB_WORKSPACE/contenido_edicion.json" ]; then
+            echo "❌ contenido_edicion.json no existe"
+            exit 1
+          fi
+          python3 scripts/build-editions.py
+          find public/t -name "index.html" 2>/dev/null | head -5
+
+      - name: 🎨 Generar tarjeta PNG 1080×1920
+        if: ${{ inputs.generar_imagenes && (steps.modo.outputs.modo_tecnico == 'single_book' || steps.modo.outputs.modo_tecnico == 'trigger_constrained' || steps.modo.outputs.modo_tecnico == 'trigger_discover') }}
+        env:
+          TRIGGUI_EDICION_JSON: ${{ github.workspace }}/contenido_edicion.json
+        run: |
+          node scripts/build-tarjeta-png.js
+          find public/t -name "tarjeta.png" 2>/dev/null | head -5
+
+      - name: 🖼️ Generar OG image PNG 1200×630
+        if: ${{ inputs.generar_imagenes && (steps.modo.outputs.modo_tecnico == 'single_book' || steps.modo.outputs.modo_tecnico == 'trigger_constrained' || steps.modo.outputs.modo_tecnico == 'trigger_discover') }}
+        env:
+          TRIGGUI_EDICION_JSON: ${{ github.workspace }}/contenido_edicion.json
+        run: |
+          node scripts/build-og-image.js
+          find public/t -name "og.png" 2>/dev/null | head -5
+
+      # ╔══════════════════════════════════════════════════════════════════╗
+      # ║  FASE 8 — Sincronizar contenido.json → triggui-content            ║
+      # ╚══════════════════════════════════════════════════════════════════╝
+
+      - name: 📤 Sincronizar a triggui-content
+        if: ${{ !inputs.modo_prueba }}
+        run: |
+          set -euo pipefail
+          if [ -f contenido.json ]; then
+            cp contenido.json triggui-content/contenido.json
+            echo "✅ contenido.json sincronizado"
+          fi
+          if [ -f contenido_edicion.json ]; then
+            cp contenido_edicion.json triggui-content/contenido_edicion.json
+            echo "✅ contenido_edicion.json sincronizado"
+          fi
+
+      # ╔══════════════════════════════════════════════════════════════════╗
+      # ║  FASE 9 — Commit y push a AMBOS repos                             ║
+      # ╚══════════════════════════════════════════════════════════════════╝
+
+      - name: 💾 Commit y push
+        run: |
+          set -euo pipefail
+          SLUG=$([ -f /tmp/triggui-slug.txt ] && cat /tmp/triggui-slug.txt || echo "${{ steps.modo.outputs.modo_tecnico }}")
+
+          # ─── triggui-app ───
+          git config user.name "Triggui Bot"
+          git config user.email "bot@triggui.com"
+
+          [ -d public/t ] && git add public/t/ || true
+          [ -f contenido_edicion.json ] && git add contenido_edicion.json || true
+          [ -f contenido.shadow.json ] && git add contenido.shadow.json || true
+
+          for dir in inputs-history metrics quality-reports grounding-cache evidence-cache validate-debug; do
+            [ -d "$dir" ] && git add "$dir/" || true
+          done
+
+          if git diff --cached --quiet; then
+            echo "🟡 triggui-app: sin cambios"
+          else
+            git commit -m "🌒 triggui ${{ steps.modo.outputs.modo_tecnico }} — ${SLUG}"
+            for i in 1 2 3; do
+              if git pull --rebase --autostash origin main && git push origin HEAD:main; then
+                echo "✅ Push triggui-app exitoso (intento $i)"
+                break
+              fi
+              sleep 3
+            done
+          fi
+
+          # ─── triggui-content ───
+          if [ "${{ inputs.modo_prueba }}" = "false" ]; then
+            cd triggui-content
+            git config user.name "Triggui Bot"
+            git config user.email "bot@triggui.com"
+
+            [ -f contenido.json ] && git add contenido.json || true
+            [ -f contenido_edicion.json ] && git add contenido_edicion.json || true
+
+            if git diff --cached --quiet; then
+              echo "🟡 triggui-content: sin cambios"
+            else
+              git commit -m "📚 triggui ${{ steps.modo.outputs.modo_tecnico }} — ${SLUG}"
+              for i in 1 2 3; do
+                if git fetch origin main && git rebase origin/main && git push origin HEAD:main; then
+                  echo "✅ Push triggui-content exitoso (intento $i)"
+                  break
+                fi
+                sleep 3
+              done
+            fi
+          fi
+
+      # ╔══════════════════════════════════════════════════════════════════╗
+      # ║  FASE 10 — Summary                                                ║
+      # ╚══════════════════════════════════════════════════════════════════╝
+
+      - name: 📋 Summary
+        if: always()
+        run: |
+          SLUG=$([ -f /tmp/triggui-slug.txt ] && cat /tmp/triggui-slug.txt || echo "${{ steps.modo.outputs.modo_tecnico }}")
+          TITULO=$([ -f /tmp/triggui-titulo.txt ] && cat /tmp/triggui-titulo.txt || echo "${SLUG}")
+
+          echo "## 🌒 Triggui — Ejecutado" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Campo | Valor |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| Modo | ${{ inputs.modo }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Libro | ${TITULO} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Imágenes | ${{ inputs.generar_imagenes }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Manuales protegidos | ${{ inputs.preservar_manuales }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Modo prueba | ${{ inputs.modo_prueba }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ -f "${GITHUB_WORKSPACE}/contenido.json" ]; then
+            LIBROS=$(node -e "console.log(JSON.parse(require('fs').readFileSync('${GITHUB_WORKSPACE}/contenido.json','utf8')).libros.length)" 2>/dev/null || echo "?")
+            MANUALES=$(node -e "const d=JSON.parse(require('fs').readFileSync('${GITHUB_WORKSPACE}/contenido.json','utf8')); console.log(d.libros.filter(l=>l._manual===true).length)" 2>/dev/null || echo "?")
+            echo "### 📊 Producción" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "- Libros totales: ${LIBROS}" >> $GITHUB_STEP_SUMMARY
+            echo "- Manuales curados: ${MANUALES}" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [ -f /tmp/triggui-slug.txt ]; then
+            echo "### 🔗 Links" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "- 🌐 Edición viva: ${BASE_URL}/t/${SLUG}/" >> $GITHUB_STEP_SUMMARY
+            echo "- 🖼️ Tarjeta: \`public/t/${SLUG}/tarjeta.png\`" >> $GITHUB_STEP_SUMMARY
+            echo "- 🖼️ OG: \`public/t/${SLUG}/og.png\`" >> $GITHUB_STEP_SUMMARY
+          fi
