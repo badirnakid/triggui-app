@@ -136,6 +136,127 @@ function getRealisticUserCount() {
   const variance = Math.floor(Math.random() * 8);
   return base + variance;
 }
+
+// ══════════════════════════════════════════════════════════════════════════
+// 🌍 SISTEMA I18N NIVEL DIOS — ES/EN con fallback gracioso
+// ══════════════════════════════════════════════════════════════════════════
+const TriggguiI18n = {
+  detectLang: function() {
+    const saved = getLocal('lang');
+    if (saved === 'es' || saved === 'en') return saved;
+    const nav = (navigator.language || navigator.userLanguage || 'es').toLowerCase();
+    const detected = nav.startsWith('en') ? 'en' : 'es';
+    saveLocal('lang', detected);
+    return detected;
+  },
+  get: function(key) {
+    const L = this.lang || 'es';
+    return (this.strings[L] && this.strings[L][key]) || this.strings.es[key] || key;
+  },
+  fromBook: function(libro, field) {
+    if (!libro) return '';
+    if (this.lang === 'en') {
+      const enKey = field + '_en';
+      if (libro[enKey] !== undefined && libro[enKey] !== null && libro[enKey] !== '') {
+        return libro[enKey];
+      }
+    }
+    return libro[field];
+  },
+  fromTarjeta: function(libro, tarjetaField, innerField) {
+    if (!libro) return '';
+    if (this.lang === 'en') {
+      const enKey = tarjetaField + '_en';
+      if (libro[enKey] && libro[enKey][innerField] !== undefined && libro[enKey][innerField] !== null && libro[enKey][innerField] !== '') {
+        return libro[enKey][innerField];
+      }
+    }
+    return (libro[tarjetaField] && libro[tarjetaField][innerField]) || '';
+  },
+  setLang: function(newLang) {
+    if (newLang !== 'es' && newLang !== 'en') return;
+    this.lang = newLang;
+    saveLocal('lang', newLang);
+    track('lang_changed', { lang: newLang });
+  },
+  strings: {
+    es: {
+      'barra.question.lunes': '¿Qué necesitas hoy?',
+      'barra.question.martes': '¿Qué te pesa?',
+      'barra.question.miercoles': '¿Qué te inquieta?',
+      'barra.question.jueves': '¿Qué quieres mover?',
+      'barra.question.viernes': '¿Qué te enciende?',
+      'barra.question.sabado': '¿Qué te calma?',
+      'barra.question.domingo': '¿Qué sientes?',
+      'barra.placeholder': 'Escribe en una frase…',
+      'barra.skip': 'saltar → abrir libro del día',
+      'barra.micro.starting': 'Triggui apenas comienza. Abramos el primero.',
+      'barra.micro.growing': 'Catálogo creciendo día a día.',
+      'barra.micro.robust': '',
+      'barra.loading': 'encontrando tu libro…',
+      'toast.langChanged.es': 'Español activado',
+      'toast.langChanged.en': 'English activated',
+      'badge.loading': 'Cargando…',
+      'badge.days': 'días',
+      'badge.day': 'día',
+      'badge.books': 'libros',
+      'badge.book': 'libro',
+      'badge.sparks': 'chispas juntas',
+      'badge.globalSparks': 'juntos',
+      'intro.default': 'Toca. Descubre. El libro te espera.',
+    },
+    en: {
+      'barra.question.lunes': 'What do you need today?',
+      'barra.question.martes': 'What\'s weighing on you?',
+      'barra.question.miercoles': 'What\'s on your mind?',
+      'barra.question.jueves': 'What do you want to shift?',
+      'barra.question.viernes': 'What lights you up?',
+      'barra.question.sabado': 'What calms you?',
+      'barra.question.domingo': 'What are you feeling?',
+      'barra.placeholder': 'Type in one sentence…',
+      'barra.skip': 'skip → open today\'s book',
+      'barra.micro.starting': 'Triggui is just beginning. Let\'s open the first one.',
+      'barra.micro.growing': 'Catalog growing every day.',
+      'barra.micro.robust': '',
+      'barra.loading': 'finding your book…',
+      'toast.langChanged.es': 'Español activado',
+      'toast.langChanged.en': 'English activated',
+      'badge.loading': 'Loading…',
+      'badge.days': 'days',
+      'badge.day': 'day',
+      'badge.books': 'books',
+      'badge.book': 'book',
+      'badge.sparks': 'sparks together',
+      'badge.globalSparks': 'together',
+      'intro.default': 'Tap. Discover. Your book awaits.',
+    }
+  }
+};
+TriggguiI18n.lang = TriggguiI18n.detectLang();
+
+// ══════════════════════════════════════════════════════════════════════════
+// 🎯 BARRA MÁGICA — gestión de visibilidad diaria
+// ══════════════════════════════════════════════════════════════════════════
+const BarraMagica = {
+  shouldShowToday: function() {
+    const today = new Date().toDateString();
+    const lastShown = getLocal('barra_last_shown');
+    return lastShown !== today;
+  },
+  markShownToday: function() {
+    saveLocal('barra_last_shown', new Date().toDateString());
+  },
+  getQuestionKey: function() {
+    const d = new Date().getDay();
+    const map = ['domingo','lunes','martes','miercoles','jueves','viernes','sabado'];
+    return 'barra.question.' + map[d];
+  },
+  getMicroCopyKey: function(catSize) {
+    if (catSize < 5) return 'barra.micro.starting';
+    if (catSize < 50) return 'barra.micro.growing';
+    return 'barra.micro.robust';
+  }
+};
 </script>
 
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,500;1,700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
@@ -1128,8 +1249,396 @@ body.webview #tarjetaCard {
 }
 </style>
 
+<style id="barra-magica-styles">
+#barraMagicaOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: #000000;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: env(safe-area-inset-top, 0) 24px env(safe-area-inset-bottom, 0);
+  opacity: 0;
+  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#barraMagicaOverlay.visible {
+  display: flex;
+  opacity: 1;
+}
+
+#barraMagicaOverlay::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(255, 0, 85, 0.12), transparent 60%),
+    radial-gradient(ellipse at 70% 80%, rgba(255, 94, 0, 0.06), transparent 60%);
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+.barra-magica-inner {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  animation: barra-rise 0.8s cubic-bezier(0.19, 1, 0.22, 1) 0.2s both;
+}
+
+@keyframes barra-rise {
+  0% { opacity: 0; transform: translateY(24px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+#barraQuestion {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.6rem, 5.5vw, 2.6rem);
+  color: #fff;
+  text-align: center;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #FF0055 0%, #FF5E00 50%, #FFD700 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: fire-move 6s ease infinite;
+  -webkit-font-smoothing: antialiased;
+}
+
+#barraInputWrap {
+  width: 100%;
+  position: relative;
+}
+
+#barraInput {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 20px;
+  padding: 20px 56px 20px 22px;
+  color: #fff;
+  font-family: 'Archivo', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  outline: none;
+  transition: border 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+  -webkit-appearance: none;
+  appearance: none;
+  -webkit-font-smoothing: antialiased;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+#barraInput::placeholder {
+  color: rgba(255,255,255,0.35);
+  font-weight: 400;
+}
+
+#barraInput:focus {
+  border-color: rgba(255, 0, 85, 0.4);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.04),
+    0 0 0 3px rgba(255, 0, 85, 0.12);
+}
+
+#barraSubmit {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #FF0055, #FF5E00);
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s;
+  touch-action: manipulation;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.12),
+    0 6px 18px rgba(255, 0, 85, 0.3);
+}
+
+#barraSubmit:hover {
+  transform: translateY(-50%) scale(1.06);
+}
+
+#barraSubmit:active {
+  transform: translateY(-50%) scale(0.94);
+}
+
+#barraSubmit:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+#barraMicro {
+  font-family: 'Archivo', sans-serif;
+  font-size: 13px;
+  color: rgba(255,255,255,0.38);
+  text-align: center;
+  font-weight: 400;
+  min-height: 16px;
+  letter-spacing: 0.2px;
+}
+
+#barraSkip {
+  font-family: 'Archivo', sans-serif;
+  font-size: 13px;
+  color: rgba(255,255,255,0.4);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 12px 20px;
+  margin-top: 4px;
+  transition: color 0.3s ease;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  text-decoration: underline;
+  text-decoration-color: rgba(255,255,255,0.12);
+  text-underline-offset: 4px;
+  touch-action: manipulation;
+}
+
+#barraSkip:hover {
+  color: rgba(255,255,255,0.7);
+}
+
+#barraSkip:active {
+  opacity: 0.6;
+}
+
+#barraLangToggle {
+  position: fixed;
+  top: max(18px, env(safe-area-inset-top, 18px));
+  right: 18px;
+  z-index: 9999;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 99px;
+  color: #fff;
+  font-family: 'Archivo', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  padding: 6px 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.25s ease, border 0.25s ease;
+  touch-action: manipulation;
+  -webkit-font-smoothing: antialiased;
+  opacity: 0;
+  animation: barra-rise 0.8s ease 1s forwards;
+}
+
+#barraLangToggle:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.25);
+}
+
+#barraLangToggle .lang-active {
+  color: #fff;
+  font-weight: 800;
+}
+
+#barraLangToggle .lang-inactive {
+  color: rgba(255,255,255,0.35);
+  font-weight: 500;
+}
+
+#barraLangToggle .lang-sep {
+  color: rgba(255,255,255,0.25);
+  font-weight: 400;
+}
+
+#barraFooterLogo {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: max(28px, env(safe-area-inset-bottom, 28px));
+  z-index: 3;
+  animation: logo-breathe 4s ease-in-out infinite;
+}
+
+#barraFooterLogo img {
+  height: 18px;
+  width: auto;
+  opacity: 0.5;
+  filter: brightness(1.2);
+}
+
+@keyframes logo-breathe {
+  0%, 100% { opacity: 0.85; transform: translateX(-50%) scale(1); }
+  50% { opacity: 1; transform: translateX(-50%) scale(1.02); }
+}
+
+#barraLupaBtn {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  z-index: 8;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.55);
+  border: 1px solid rgba(255,255,255,0.18);
+  color: #fff;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s;
+  touch-action: manipulation;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+}
+
+#barraLupaBtn.visible {
+  display: flex;
+  animation: barra-rise 0.6s ease both;
+}
+
+#barraLupaBtn:hover {
+  transform: scale(1.08);
+  background: rgba(0,0,0,0.7);
+}
+
+#barraLupaBtn:active {
+  transform: scale(0.92);
+}
+
+.card-lupa-btn {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  z-index: 10;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.18);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  opacity: 0.55;
+  transition: opacity 0.25s, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  touch-action: manipulation;
+}
+
+.card-dark-mode .card-lupa-btn {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.25);
+}
+
+.card-lupa-btn:hover {
+  opacity: 1;
+  transform: scale(1.08);
+}
+
+.card-lupa-btn:active {
+  transform: scale(0.92);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 480px) {
+  #barraMagicaOverlay {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  .barra-magica-inner {
+    gap: 22px;
+  }
+  #barraInput {
+    font-size: 16px !important;
+    padding: 18px 52px 18px 18px;
+  }
+  #barraSubmit {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+  #barraLangToggle {
+    top: max(14px, env(safe-area-inset-top, 14px));
+    right: 14px;
+    font-size: 10px;
+    padding: 5px 11px;
+  }
+  #barraFooterLogo img {
+    height: 15px;
+  }
+}
+</style>
+
 </head>
 <body>
+
+<div id="barraMagicaOverlay" role="search" aria-label="Triggui - Barra mágica">
+  <button id="barraLangToggle" type="button" aria-label="Toggle language">
+    <span id="langToggleEs" class="lang-active">ES</span>
+    <span class="lang-sep">·</span>
+    <span id="langToggleEn" class="lang-inactive">EN</span>
+  </button>
+
+  <div class="barra-magica-inner">
+    <div id="barraQuestion" aria-live="polite"></div>
+    <div id="barraInputWrap">
+      <label for="barraInput" class="sr-only">Escribe cómo te sientes</label>
+      <input id="barraInput" type="text" autocomplete="off" autocorrect="on" autocapitalize="sentences" spellcheck="false" inputmode="text" enterkeyhint="search" />
+      <button id="barraSubmit" type="button" aria-label="Buscar libro">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M5 12h14"/>
+          <path d="M13 5l7 7-7 7"/>
+        </svg>
+      </button>
+    </div>
+    <div id="barraMicro" aria-live="polite"></div>
+    <button id="barraSkip" type="button"></button>
+  </div>
+
+  <div id="barraFooterLogo">
+    <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png" alt="Triggui" loading="lazy">
+  </div>
+</div>
+
+<button id="barraLupaBtn" type="button" aria-label="Abrir barra mágica">
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <circle cx="11" cy="11" r="7"/>
+    <path d="M20 20l-3.5-3.5"/>
+  </svg>
+</button>
 
 <div id="progressBadge">
   <span class="line1">Tu chispa acumulada</span>
@@ -1154,7 +1663,7 @@ body.webview #tarjetaCard {
 
 <div class="cta" id="cta">
   <button id="otro"><span class="icon">🎲</span></button>
-  <button id="fisico"><span class="icon">🔟</span></button>
+  <button id="fisico" aria-label="Abrir barra mágica"><span class="icon" aria-hidden="true">🔍</span></button>
   <button id="share"><span class="icon">📖</span></button>
   <button id="like"><span class="icon">😍</span></button>
 </div>
@@ -1226,9 +1735,9 @@ const ANG = [115,205,35,320];
 const grad = i => `linear-gradient(${ANG[i%4]}deg,${libro.colores[i]},${libro.colores[(i+1)%4]})`;
 
 // ═══════════════════════════════════════════════════════════════════════
-// INTRO - NARRATIVA NIVEL DIOS (CON MICRO-HINT ACCIONABLE)
+// INTRO - NARRATIVA NIVEL DIOS (CON MICRO-HINT ACCIONABLE) · BILINGÜE
 // ═══════════════════════════════════════════════════════════════════════
-const frasesIntro = [
+const frasesIntroES = [
   "Toca. Descubre. El libro te espera.",
   "Cuando el impulso llega, el libro ya te espera.",
   "No busques libros. Deja que te encuentren.",
@@ -1256,6 +1765,35 @@ const frasesIntro = [
   "Elimina la fricción.", 
   "El libro. El momento."
 ];
+const frasesIntroEN = [
+  "Tap. Discover. Your book awaits.",
+  "When the impulse arrives, the book is already there.",
+  "Don't search for books. Let them find you.",
+  "If you can't read it now, it stays waiting.",
+  "The persistence of impulse.",
+  "WhatsApp is the memory of your intention.",
+  "The spark. The impulse.",
+  "The right book. The exact moment.",
+  "30 seconds. Now.",
+  "Starting is the hardest part.",
+  "Friction disappears.",
+  "The impulse that activates you.",
+  "You're already in.",
+  "The spark that removes friction.",
+  "Remove the friction of starting.",
+  "The easiest micro-habit.",
+  "One idea. 30 seconds.",
+  "Without opening anything else.",
+  "The impulse. Now.",
+  "The phrase that activates you.",
+  "You already started.",
+  "Like tying your shoes.",
+  "The first step.",
+  "The spark. Now.",
+  "Remove the friction.",
+  "The book. The moment."
+];
+const frasesIntro = TriggguiI18n.lang === 'en' ? frasesIntroEN : frasesIntroES;
 document.getElementById("intro").innerHTML=`<span class="t">${frasesIntro[Math.floor(Math.random()*frasesIntro.length)]}</span>`;
 
 // === TRIPLE TAP RESET ===
@@ -1280,17 +1818,34 @@ function showToast(msg, duration=3000) {
   setTimeout(() => toast.classList.remove('visible'), duration);
 }
 
-// ✨ UPDATE BADGE (Chispas activadas)
+// ✨ UPDATE BADGE (Chispas activadas + Contador Global)
 function updateBadge() {
   const streak = updateStreak(); 
   const books = getLocal('books_opened', 0);
   const concepts = getLocal('concepts', books * 5); 
+  const globalTotal = getLocal('global_total_cached', null);
   
-  const diasTexto = streak === 1 ? 'día' : 'días';
-  const librosTexto = books === 1 ? 'libro' : 'libros';
+  const diasTexto = streak === 1 ? TriggguiI18n.get('badge.day') : TriggguiI18n.get('badge.days');
+  const librosTexto = books === 1 ? TriggguiI18n.get('badge.book') : TriggguiI18n.get('badge.books');
+  const globalPart = globalTotal != null
+    ? `<span class="dot"></span> 🌍 <span class="highlight-txt">${globalTotal.toLocaleString(TriggguiI18n.lang === 'en' ? 'en-US' : 'es-MX')} ${TriggguiI18n.get('badge.globalSparks')}</span>`
+    : `<span class="dot"></span> <span class="highlight-txt">⚡ ${concepts} ${TriggguiI18n.get('badge.sparks')}</span>`;
   
   document.getElementById('badgeContent').innerHTML = 
-    `🔥 ${streak} ${diasTexto} <span class="dot"></span> 📚 ${books} ${librosTexto} <span class="dot"></span> <span class="highlight-txt">⚡ ${concepts} chispas activadas</span>`;
+    `🔥 ${streak} ${diasTexto} <span class="dot"></span> 📚 ${books} ${librosTexto}${globalPart}`;
+}
+
+// Fetch global counter sin bloquear UI (lazy update del badge)
+function refreshGlobalCounter() {
+  fetch("https://triggui-api.vercel.app/api/increment", { method: 'GET', cache: 'no-store' })
+    .then(r => r.ok ? r.json() : null)
+    .then(d => {
+      if (d && typeof d.total === 'number') {
+        saveLocal('global_total_cached', d.total);
+        updateBadge();
+      }
+    })
+    .catch(() => {});
 }
 
 // BUILDERS
@@ -1305,7 +1860,8 @@ function buildPort(i){
   const d=document.createElement("div"); d.className="portada";
   const wrap=document.createElement("div"); wrap.className="port-text-wrap";
   const box=document.createElement("div"); box.className="port-text";
-  box.innerHTML=`<h2>${libro.titulo}</h2><p>${libro.autor}</p>`;
+  const tituloI18n = TriggguiI18n.fromBook(libro, 'titulo');
+  box.innerHTML=`<h2>${tituloI18n}</h2><p>${libro.autor}</p>`;
   const emoji=document.createElement("div"); emoji.className="emoji-big";
   emoji.textContent=emojis[i%emojis.length];
   wrap.append(box,emoji);
@@ -1317,13 +1873,15 @@ function buildPort(i){
 
 function render(){
   grid.innerHTML="";
+  const palabrasI18n = TriggguiI18n.lang === 'en' && Array.isArray(libro.palabras_en) && libro.palabras_en.length === 4 ? libro.palabras_en : libro.palabras;
+  const frasesI18n = TriggguiI18n.lang === 'en' && Array.isArray(libro.frases_en) && libro.frases_en.length === 4 ? libro.frases_en : libro.frases;
   for(let i=0;i<4;i++){
     const card=document.createElement("div"); card.className="block"; card.style.background=grad(i);
     const label=document.createElement("div"); label.className="label";
-    label.textContent=`${emojis[i%emojis.length]} ${libro.palabras[i]}`;
+    label.textContent=`${emojis[i%emojis.length]} ${palabrasI18n[i]}`;
     label.style.color=libro.textColors?.[i]||"#fff";
     const frase=document.createElement("div"); frase.className="frase";
-    frase.textContent=libro.frases[i]; frase.style.color=libro.textColors?.[i]||"#fff";
+    frase.textContent=frasesI18n[i]; frase.style.color=libro.textColors?.[i]||"#fff";
     const port=buildPort(i);
 
     if(i===portIdx){
@@ -1359,7 +1917,15 @@ function handleBookReveal() {
   const booksCount = incrementBooks();
   addConcepts(4); 
   updateBadge();
-  fetch("https://triggui-api.vercel.app/api/increment", {cache:"no-store"}).catch(()=>{});
+  fetch("https://triggui-api.vercel.app/api/increment", {cache:"no-store"})
+    .then(r => r.ok ? r.json() : null)
+    .then(d => {
+      if (d && typeof d.total === 'number') {
+        saveLocal('global_total_cached', d.total);
+        updateBadge();
+      }
+    })
+    .catch(() => {});
 
   const delay = 1500;
   const userCount = getRealisticUserCount();
@@ -1455,10 +2021,9 @@ function createFloatingHeart(x, y) {
 
 // HANDLERS
 btnOtro.onclick = () => { location.reload(); track('reload_clicked'); };
-btnLibro.onclick = async() => {
-  btnLibro.disabled=true; cele.style.display="flex"; celeMsg.innerHTML='<span class="num">...</span><br>chispas activadas juntos';
-  try{ const r=await fetch("https://triggui-api.vercel.app/api/increment"); const d=await r.json(); celeMsg.innerHTML=`⚡ <span class="num">${d.total.toLocaleString("es-MX")}</span><br>chispas activadas juntos`; track('physical_book_opened', { total: d.total }); }catch{}
-  setTimeout(()=>{ cele.style.display="none"; btnLibro.disabled=false; },2300);
+btnLibro.onclick = () => {
+  track('lupa_reinvoke_clicked');
+  BarraMagica.openOverlay(true);
 };
 
 function luminance(hex) { try { const c = hex.replace("#","").match(/.{1,2}/g).map(x=>parseInt(x,16)/255); const f = v => v<=.03928 ? v/12.92 : Math.pow((v+.055)/1.055,2.4); return 0.2126*f(c[0])+0.7152*f(c[1])+0.0722*f(c[2]); } catch { return 0; } }
@@ -1572,7 +2137,11 @@ const cleanupCardListeners = () => {
 };
 
 btnShare.onclick = () => {
-  const t = libro.tarjeta; 
+  const tBase = libro.tarjeta; 
+  const tEn = libro.tarjeta_en;
+  const useEn = TriggguiI18n.lang === 'en' && tEn && tEn.parrafoTop;
+  const t = useEn ? tEn : tBase;
+  const tStyle = (tEn && tEn.style) || tBase.style || {};
   const overlay = document.getElementById("tarjetaOverlay");
   const card = document.getElementById("tarjetaCard");
   
@@ -1583,13 +2152,15 @@ btnShare.onclick = () => {
   // Limpiar listeners previos si existen
   cleanupCardListeners();
 
-  // Estilos del JSON
-  const sPaper = t.style.paper || "#fff"; 
-  const sInk = t.style.ink || "#111"; 
-  const sAccent = t.style.accent || "#30ffe4";
-  const sSerif = t.style.serif || "'Playfair Display', serif";
-  const sSans = t.style.sans || "'Archivo', sans-serif";
-  const p = libro.palabras && libro.palabras.length > 0 ? libro.palabras[Math.floor(Math.random()*libro.palabras.length)] : "";
+  // Estilos del JSON (siempre del style base para consistencia visual)
+  const sPaper = tStyle.paper || tBase.style?.paper || "#fff"; 
+  const sInk = tStyle.ink || tBase.style?.ink || "#111"; 
+  const sAccent = tStyle.accent || tBase.style?.accent || "#30ffe4";
+  const sSerif = tStyle.serif || tBase.style?.serif || "'Playfair Display', serif";
+  const sSans = tStyle.sans || tBase.style?.sans || "'Archivo', sans-serif";
+  const palabrasForCard = TriggguiI18n.lang === 'en' && Array.isArray(libro.palabras_en) && libro.palabras_en.length > 0 ? libro.palabras_en : libro.palabras;
+  const p = palabrasForCard && palabrasForCard.length > 0 ? palabrasForCard[Math.floor(Math.random()*palabrasForCard.length)] : "";
+  const tituloCard = TriggguiI18n.fromBook(libro, 'titulo');
 
   // Inyectar variables CSS
   card.style.setProperty('--paper-col', sPaper);
@@ -1605,17 +2176,20 @@ btnShare.onclick = () => {
   else { card.classList.remove('card-dark-mode'); }
 
   // URLs precalculadas
-  const buscarlibreURL = `https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(libro.titulo + ' ' + libro.autor)}`;
+  const buscarlibreURL = `https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(tituloCard + ' ' + libro.autor)}`;
   const explorarURL = `https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(p)}`;
   const penguinURL = `https://www.penguinlibros.com/mx/?mot_q=${encodeURIComponent(p)}`;
   const portadaCardHTML = isURL(libro.portada)
-    ? `<img src="${libro.portada}" alt="${libro.titulo}" class="card-cover-float" loading="lazy">`
+    ? `<img src="${libro.portada}" alt="${tituloCard}" class="card-cover-float" loading="lazy">`
     : "";
 
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🚀 RENDER OPTIMIZADO - Template literal con imágenes pre-cargadas
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   card.innerHTML = `
+    <button class="card-lupa-btn" type="button" aria-label="Abrir barra mágica" onclick="event.stopPropagation(); window.closeCard(); setTimeout(function(){ BarraMagica.openOverlay(true); }, 350);">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"/>
+        <path d="M20 20l-3.5-3.5"/>
+      </svg>
+    </button>
     <div class="card-content-wrap">
       
       <div class="card-header-logo">
@@ -1625,7 +2199,7 @@ btnShare.onclick = () => {
       </div>
       
       <div class="card-header">
-        <div class="card-title">${libro.titulo}</div>
+        <div class="card-title">${tituloCard}</div>
         <div class="card-author">${libro.autor}</div>
         <div class="card-divider"></div>
       </div>
@@ -1772,6 +2346,254 @@ window.closeCard = function() {
   }, 300);
 }
 
+// ══════════════════════════════════════════════════════════════════════════
+// 🔍 MOTOR DE FILTRO ADAPTATIVO — Buscador semántico sobre catálogo curado
+// Escala: 1 libro → 150 libros → 700+ libros con _nucleus.book_grounding_anchors
+// Costo por consulta: $0 · Latencia: <50ms · 100% client-side
+// ══════════════════════════════════════════════════════════════════════════
+const TrigguiFiltro = {
+  normalize: function(s) {
+    return String(s || '')
+      .toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^\w\s]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  },
+  tokenize: function(s) {
+    const stopES = new Set(['el','la','los','las','un','una','unos','unas','de','del','al','a','en','y','o','u','pero','si','no','que','como','con','por','para','me','te','se','lo','le','les','mi','tu','su','es','son','ser','estar','muy','mas','mucho','hoy','ya','aun','tambien','pues','solo','solo']);
+    const stopEN = new Set(['the','a','an','is','are','was','were','be','been','being','to','of','and','or','but','if','in','on','at','by','for','with','about','as','from','up','down','out','off','over','under','into','onto','this','that','these','those','i','me','my','you','your','he','she','it','we','they','what','which','who','how','why','very','much','really','too','just','so','also']);
+    const stop = TriggguiI18n.lang === 'en' ? stopEN : stopES;
+    return this.normalize(s).split(' ').filter(t => t.length >= 3 && !stop.has(t));
+  },
+  extractCorpus: function(libro) {
+    const useEn = TriggguiI18n.lang === 'en';
+    const parts = [];
+    if (useEn && libro.titulo_en) parts.push(libro.titulo_en); else parts.push(libro.titulo || '');
+    parts.push(libro.autor || '');
+    const palabras = useEn && Array.isArray(libro.palabras_en) ? libro.palabras_en : (libro.palabras || []);
+    parts.push(palabras.join(' '));
+    const frases = useEn && Array.isArray(libro.frases_en) ? libro.frases_en : (libro.frases || []);
+    parts.push(frases.join(' '));
+    parts.push(libro.tagline || '');
+    parts.push(libro.dimension || '');
+    parts.push(libro.punto || '');
+    const tarjeta = useEn && libro.tarjeta_en ? libro.tarjeta_en : libro.tarjeta;
+    if (tarjeta) {
+      parts.push(tarjeta.subtitulo || '');
+      parts.push(tarjeta.parrafoTop || '');
+      parts.push(tarjeta.parrafoBot || '');
+    }
+    if (libro._nucleus && libro._nucleus.book_grounding_anchors) {
+      const a = libro._nucleus.book_grounding_anchors;
+      if (Array.isArray(a.concepts)) parts.push(a.concepts.join(' '));
+      if (Array.isArray(a.key_terms)) parts.push(a.key_terms.join(' '));
+    }
+    return this.normalize(parts.join(' '));
+  },
+  scoreLibro: function(libro, queryTokens) {
+    if (!queryTokens.length) return 0;
+    const corpus = this.extractCorpus(libro);
+    let score = 0;
+    const palabras = (TriggguiI18n.lang === 'en' && Array.isArray(libro.palabras_en) ? libro.palabras_en : (libro.palabras || [])).map(p => this.normalize(p));
+    const palabrasSet = new Set(palabras);
+    const titulo = this.normalize(TriggguiI18n.fromBook(libro, 'titulo'));
+    const autor = this.normalize(libro.autor || '');
+    for (const tok of queryTokens) {
+      if (!tok) continue;
+      if (palabrasSet.has(tok)) score += 8;
+      for (const p of palabras) {
+        if (p !== tok && (p.includes(tok) || tok.includes(p))) { score += 3; break; }
+      }
+      if (titulo.includes(tok)) score += 6;
+      if (autor.includes(tok)) score += 5;
+      const reg = new RegExp('\\b' + tok.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'g');
+      const matches = corpus.match(reg);
+      if (matches) score += matches.length * 1.5;
+      if (!matches && corpus.includes(tok)) score += 0.5;
+    }
+    if (libro.dimension) {
+      const dimNorm = this.normalize(libro.dimension);
+      for (const tok of queryTokens) if (dimNorm.includes(tok)) score += 2;
+    }
+    return score;
+  },
+  cronoBoost: function(libro) {
+    const now = new Date();
+    const hour = now.getHours();
+    const day = now.getDay();
+    let boost = 0;
+    const punto = String(libro.punto || '').toLowerCase();
+    if (hour >= 5 && hour < 10) {
+      if (punto.includes('cero') || punto.includes('creativo')) boost += 1.5;
+    } else if (hour >= 10 && hour < 14) {
+      if (punto.includes('activo') || punto.includes('maximo') || punto.includes('máximo')) boost += 1.5;
+    } else if (hour >= 14 && hour < 18) {
+      if (punto.includes('activo')) boost += 1;
+    } else if (hour >= 18 && hour < 22) {
+      if (punto.includes('creativo') || punto.includes('cero')) boost += 1;
+    } else {
+      if (punto.includes('cero')) boost += 0.8;
+    }
+    if (day === 4 && punto.includes('maximo')) boost += 0.8;
+    if ((day === 0 || day === 6) && punto.includes('cero')) boost += 0.5;
+    return boost;
+  },
+  filter: function(libros, query) {
+    if (!libros || libros.length === 0) return null;
+    if (libros.length === 1) return { libro: libros[0], index: 0, score: 0, reason: 'solo' };
+    const tokens = this.tokenize(query);
+    if (tokens.length === 0) {
+      const idx = Math.floor(Math.random() * libros.length);
+      return { libro: libros[idx], index: idx, score: 0, reason: 'empty' };
+    }
+    const scored = libros.map((libro, index) => {
+      const base = this.scoreLibro(libro, tokens);
+      const crono = base > 0 ? this.cronoBoost(libro) : 0;
+      return { libro, index, score: base + crono };
+    });
+    scored.sort((a, b) => b.score - a.score);
+    if (scored[0].score < 1.5) {
+      const topFew = scored.slice(0, Math.min(3, scored.length));
+      const pick = topFew[Math.floor(Math.random() * topFew.length)];
+      return { ...pick, reason: 'fallback' };
+    }
+    const topGroup = scored.filter(s => s.score >= scored[0].score * 0.85).slice(0, 3);
+    const pick = topGroup[Math.floor(Math.random() * topGroup.length)];
+    return { ...pick, reason: 'match' };
+  }
+};
+
+// ══════════════════════════════════════════════════════════════════════════
+// 🎯 BarraMagica — control de UI (extiende el objeto ya definido)
+// ══════════════════════════════════════════════════════════════════════════
+BarraMagica.applyStrings = function() {
+  const qEl = document.getElementById('barraQuestion');
+  const iEl = document.getElementById('barraInput');
+  const sEl = document.getElementById('barraSkip');
+  if (qEl) qEl.textContent = TriggguiI18n.get(this.getQuestionKey());
+  if (iEl) iEl.placeholder = TriggguiI18n.get('barra.placeholder');
+  if (sEl) sEl.textContent = TriggguiI18n.get('barra.skip');
+  const microEl = document.getElementById('barraMicro');
+  if (microEl && window.__TRIGGUI_DATA__ && window.__TRIGGUI_DATA__.libros) {
+    const key = this.getMicroCopyKey(window.__TRIGGUI_DATA__.libros.length);
+    microEl.textContent = TriggguiI18n.get(key);
+  }
+  const esEl = document.getElementById('langToggleEs');
+  const enEl = document.getElementById('langToggleEn');
+  if (esEl && enEl) {
+    if (TriggguiI18n.lang === 'en') { esEl.className = 'lang-inactive'; enEl.className = 'lang-active'; }
+    else { esEl.className = 'lang-active'; enEl.className = 'lang-inactive'; }
+  }
+};
+BarraMagica.openOverlay = function(force) {
+  if (!force && !this.shouldShowToday()) return false;
+  const overlay = document.getElementById('barraMagicaOverlay');
+  if (!overlay) return false;
+  this.applyStrings();
+  overlay.style.display = 'flex';
+  requestAnimationFrame(() => {
+    overlay.classList.add('visible');
+    setTimeout(() => {
+      const inp = document.getElementById('barraInput');
+      if (inp && !('ontouchstart' in window)) inp.focus();
+    }, 400);
+  });
+  const lupa = document.getElementById('barraLupaBtn');
+  if (lupa) lupa.classList.remove('visible');
+  track('barra_opened', { force: !!force, lang: TriggguiI18n.lang });
+  return true;
+};
+BarraMagica.closeOverlay = function(skipped) {
+  const overlay = document.getElementById('barraMagicaOverlay');
+  if (!overlay) return;
+  overlay.classList.remove('visible');
+  setTimeout(() => { overlay.style.display = 'none'; }, 600);
+  this.markShownToday();
+  if (revealed) {
+    const lupa = document.getElementById('barraLupaBtn');
+    if (lupa) lupa.classList.add('visible');
+  }
+  track('barra_closed', { skipped: !!skipped });
+};
+BarraMagica.submit = function(query) {
+  const data = window.__TRIGGUI_DATA__;
+  if (!data || !data.libros || data.libros.length === 0) { this.closeOverlay(true); return; }
+  const q = String(query || '').trim();
+  const result = TrigguiFiltro.filter(data.libros, q);
+  if (q) {
+    try {
+      const hist = getLocal('queries_history', []);
+      hist.push({ q: q.slice(0, 140), t: Date.now(), lang: TriggguiI18n.lang, dow: new Date().getDay(), hour: new Date().getHours() });
+      saveLocal('queries_history', hist.slice(-50));
+    } catch(_) {}
+    track('barra_query', { len: q.length, lang: TriggguiI18n.lang, reason: result?.reason || 'none', dow: new Date().getDay(), hour: new Date().getHours() });
+  } else {
+    track('barra_skipped');
+  }
+  if (result && result.libro) {
+    libro = result.libro;
+    sessionStorage.setItem('lastLibroIdx', String(result.index));
+  }
+  this.closeOverlay(!q);
+  render();
+  updateBadge();
+  if (!getLocal('has_visited')) {
+    setTimeout(() => {
+      document.querySelectorAll('.block').forEach(b => b.classList.add('first-visit-hint'));
+      saveLocal('has_visited', true);
+    }, 500);
+  }
+};
+
+// ══════════════════════════════════════════════════════════════════════════
+// 🎯 Wiring de eventos de la barra mágica
+// ══════════════════════════════════════════════════════════════════════════
+function wireBarraMagicaEvents() {
+  const input = document.getElementById('barraInput');
+  const submit = document.getElementById('barraSubmit');
+  const skip = document.getElementById('barraSkip');
+  const langToggle = document.getElementById('barraLangToggle');
+  const lupa = document.getElementById('barraLupaBtn');
+
+  if (input && submit) {
+    const doSubmit = () => {
+      const q = input.value;
+      submit.disabled = true;
+      BarraMagica.submit(q);
+    };
+    submit.addEventListener('click', doSubmit);
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); doSubmit(); }
+    });
+  }
+  if (skip) {
+    skip.addEventListener('click', () => { BarraMagica.submit(''); });
+  }
+  if (langToggle) {
+    langToggle.addEventListener('click', () => {
+      const newLang = TriggguiI18n.lang === 'en' ? 'es' : 'en';
+      TriggguiI18n.setLang(newLang);
+      BarraMagica.applyStrings();
+      const toast = document.getElementById('toast');
+      if (toast) {
+        toast.textContent = TriggguiI18n.get('toast.langChanged.' + newLang);
+        toast.classList.add('visible');
+        setTimeout(() => toast.classList.remove('visible'), 2000);
+      }
+      try {
+        const overlay = document.getElementById('barraMagicaOverlay');
+        if (!overlay || !overlay.classList.contains('visible')) {
+          if (libro) { render(); updateBadge(); }
+        }
+      } catch(_) {}
+    });
+  }
+  if (lupa) {
+    lupa.addEventListener('click', () => { BarraMagica.openOverlay(true); });
+  }
+}
+
 // INIT
 function isWebView(){ const ua=navigator.userAgent||navigator.vendor||window.opera; return (/wv/i.test(ua)||/WebView/i.test(ua)||(ua.includes("Android")&&ua.includes("Version/"))||(ua.includes("iPhone")&&!ua.includes("Safari"))); }
 if(isWebView()) document.body.classList.add("webview");
@@ -1787,12 +2609,25 @@ function pickLibroNoRepetido(libros){
   try{
     const r=await fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json?ts="+Date.now());
     const data=await r.json();
-    libro=data.libros[pickLibroNoRepetido(data.libros)];
-    render(); 
+    window.__TRIGGUI_DATA__ = data;
+    wireBarraMagicaEvents();
+    const shouldShow = BarraMagica.shouldShowToday();
+    if (shouldShow && data.libros && data.libros.length >= 1) {
+      BarraMagica.openOverlay(false);
+      libro = data.libros[pickLibroNoRepetido(data.libros)];
+    } else {
+      libro = data.libros[pickLibroNoRepetido(data.libros)];
+      render();
+      if (revealed === false) {
+        const lupa = document.getElementById('barraLupaBtn');
+        if (lupa) setTimeout(() => lupa.classList.add('visible'), 1200);
+      }
+    }
     updateBadge();
-    track('app_loaded', {streak:getLocal('streak',0), books:getLocal('books_opened',0)});
-    
-    if (!getLocal('has_visited')) {
+    refreshGlobalCounter();
+    track('app_loaded', {streak:getLocal('streak',0), books:getLocal('books_opened',0), lang: TriggguiI18n.lang});
+
+    if (!getLocal('has_visited') && !shouldShow) {
       setTimeout(() => {
         document.querySelectorAll('.block').forEach(b => b.classList.add('first-visit-hint'));
         saveLocal('has_visited', true);
@@ -1800,7 +2635,8 @@ function pickLibroNoRepetido(libros){
     }
     
   }catch(e){ 
-    console.error(e);
+    console.error('[Triggui] init error:', e);
+    wireBarraMagicaEvents();
   }
 })();
 </script>
