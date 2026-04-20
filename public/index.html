@@ -188,7 +188,7 @@ const TriggguiI18n = {
       'barra.placeholder.default': 'escribe con honestidad',
       'barra.placeholder.returning': 'como siempre, sin editar',
       'barra.placeholder.sunday': 'un momento para ti',
-      'barra.placeholder.ritual': 'ya eres parte del ritual',
+      'barra.placeholder.ritual': 'dilo como viene',
       'barra.skip': 'saltar →',
       'barra.micro.starting': 'triggui elige <em>el primer libro</em>',
       'barra.micro.growing': 'triggui elige <em>el libro correcto</em>',
@@ -214,7 +214,7 @@ const TriggguiI18n = {
       'barra.placeholder.default': 'write honestly',
       'barra.placeholder.returning': 'as always, without editing',
       'barra.placeholder.sunday': 'a moment for you',
-      'barra.placeholder.ritual': 'you are part of the ritual',
+      'barra.placeholder.ritual': 'say it as it comes',
       'barra.skip': 'skip →',
       'barra.micro.starting': 'triggui picks <em>the first book</em>',
       'barra.micro.growing': 'triggui picks <em>the right book</em>',
@@ -1585,24 +1585,33 @@ body.webview #tarjetaCard {
 #barraSkip {
   position: absolute;
   bottom: max(96px, calc(env(safe-area-inset-bottom, 0px) + 76px));
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.32);
-  font-family: 'SF Pro Text', -apple-system, 'Archivo', sans-serif;
-  font-size: 12px;
-  letter-spacing: 0.3px;
+  padding: 0;
   cursor: pointer;
-  padding: 10px 18px;
-  transition: color 0.3s;
-  font-weight: 400;
   touch-action: manipulation;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   animation: bm-fade-up 1s ease 1.5s both;
   z-index: 3;
 }
 
-#barraSkip:hover { color: rgba(255, 255, 255, 0.75); }
+#barraSkip .bm-skip-inner {
+  color: rgba(255, 255, 255, 0.32);
+  font-family: 'SF Pro Text', -apple-system, 'Archivo', sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+  font-weight: 400;
+  padding: 10px 18px;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.3s;
+}
+
+#barraSkip:hover .bm-skip-inner { color: rgba(255, 255, 255, 0.75); }
 
 #barraSkip .bm-arrow {
   opacity: 0.55;
@@ -1687,24 +1696,33 @@ body.webview #tarjetaCard {
 
 #barraFooterLogo {
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
   bottom: max(34px, calc(env(safe-area-inset-bottom, 0px) + 26px));
   z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  user-select: none;
+  animation: bm-fade-up 1.5s ease 1.75s both;
+}
+
+#barraFooterLogo .bm-logo-text {
   font-family: 'New York', 'Playfair Display', Georgia, serif;
   font-style: italic;
   font-weight: 300;
   font-size: 13px;
   letter-spacing: 4px;
   color: rgba(255, 255, 255, 0.3);
-  animation: bm-logo-breathe 6s ease-in-out infinite, bm-fade-up 1.5s ease 1.75s both;
-  pointer-events: none;
-  user-select: none;
+  display: inline-block;
+  padding-right: 4px;
+  animation: bm-logo-breathe 6s ease-in-out infinite;
 }
 
 @keyframes bm-logo-breathe {
-  0%, 100% { opacity: 0.4; letter-spacing: 4px; }
-  50% { opacity: 0.85; letter-spacing: 5px; }
+  0%, 100% { opacity: 0.4; letter-spacing: 4px; padding-right: 4px; }
+  50% { opacity: 0.85; letter-spacing: 5px; padding-right: 5px; }
 }
 
 @keyframes bm-fade-up {
@@ -1844,7 +1862,7 @@ body.webview #tarjetaCard {
   }
   #barraLangToggle span { padding: 5px 10px; }
   #barraStreak { font-size: 10px; padding: 5px 11px; }
-  #barraFooterLogo { font-size: 12px; letter-spacing: 3.5px; }
+  #barraFooterLogo .bm-logo-text { font-size: 12px; letter-spacing: 3.5px; padding-right: 3.5px; }
 }
 </style>
 
@@ -1898,9 +1916,9 @@ body.webview #tarjetaCard {
     <div id="barraMicro" aria-live="polite"></div>
   </div>
 
-  <button id="barraSkip" type="button"></button>
+  <button id="barraSkip" type="button"><span class="bm-skip-inner"></span></button>
 
-  <div id="barraFooterLogo" aria-hidden="true">triggui</div>
+  <div id="barraFooterLogo" aria-hidden="true"><span class="bm-logo-text">triggui</span></div>
 </div>
 
 <button id="barraLupaBtn" type="button" aria-label="Abrir barra mágica">
@@ -2921,7 +2939,11 @@ BarraMagica.applyStrings = function() {
     else if (books >= 5) phKey = 'barra.placeholder.returning';
     iEl.placeholder = TriggguiI18n.get(phKey);
   }
-  if (sEl) sEl.textContent = TriggguiI18n.get('barra.skip');
+  if (sEl) {
+    const sInner = sEl.querySelector('.bm-skip-inner');
+    if (sInner) sInner.textContent = TriggguiI18n.get('barra.skip');
+    else sEl.textContent = TriggguiI18n.get('barra.skip');
+  }
   const microEl = document.getElementById('barraMicro');
   if (microEl && window.__TRIGGUI_DATA__ && window.__TRIGGUI_DATA__.libros) {
     const key = this.getMicroCopyKey(window.__TRIGGUI_DATA__.libros.length);
