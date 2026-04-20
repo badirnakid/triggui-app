@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
-   quality-validator.js — v3
+   quality-validator.js — v3.2 (+highlight quality)
 
    Responsabilidad radicalmente reducida. Ya NO valida:
      - hex (imposible por construcción, síntesis determinista)
@@ -15,7 +15,10 @@
      - Título EN sospechosamente literal (patrón específico)
      - Autor en output final todavía mononimo no-conocido
      - Edition blocks gesture_type realmente distintos
+     - Highlights [H]...[/H] terminan en palabra fuerte, no en preposición colgante
 ═══════════════════════════════════════════════════════════════════════════════ */
+
+import { validateHighlightQuality } from "./triggui-physics.js";
 
 export function detectHollowMetaphors(textArray) {
   if (!Array.isArray(textArray) || textArray.length === 0) return { hollow: false, hits: [] };
@@ -144,6 +147,22 @@ export function validateFinalNucleus(mapped) {
   const distinctEN = validateEditionBlocksDistinct(mapped._nucleus?.edition_blocks_en);
   details.distinct_gestures_en = distinctEN;
   if (!distinctEN.valid) warnings.push(`edition_en_${distinctEN.reason}`);
+
+  // Highlights saludables (no terminan en preposición/artículo colgante)
+  const highlightChecks = {
+    parrafoTop_es: validateHighlightQuality(mapped._nucleus?.card_es?.parrafoTop || ""),
+    parrafoBot_es: validateHighlightQuality(mapped._nucleus?.card_es?.parrafoBot || ""),
+    parrafoTop_en: validateHighlightQuality(mapped._nucleus?.card_en?.parrafoTop || ""),
+    parrafoBot_en: validateHighlightQuality(mapped._nucleus?.card_en?.parrafoBot || "")
+  };
+  details.highlights = highlightChecks;
+  for (const [field, check] of Object.entries(highlightChecks)) {
+    // Solo flagear si el campo TIENE highlights pero están mal
+    // (no_highlight no es problema aquí; lo añade ensureHighlight downstream)
+    if (!check.ok && check.reason !== "no_highlight") {
+      warnings.push(`highlight_${field}_${check.reason}${check.trailing ? `_'${check.trailing}'` : ""}`);
+    }
+  }
 
   // Lens consistency
   const lensCheck = validateLensConsistency(mapped._nucleus?.lens_analysis, mapped._grounding?.lens_relevance);
