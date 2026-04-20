@@ -205,32 +205,6 @@ CARD_ES
 - parrafoBot: 80-320 chars. Segunda idea del libro en la voz del autor.
 
 ═══════════════════════════════════════════════════════════════════
-HIGHLIGHTS [H]...[/H] EN PARRAFOS
-═══════════════════════════════════════════════════════════════════
-En parrafoTop y parrafoBot, marca UNA frase autocontenida con [H] al inicio y [/H] al final.
-
-La frase entre [H] y [/H] DEBE cumplir TODAS estas reglas:
-1. Cerrar con sentido completo — sujeto + verbo + complemento o idea cerrada
-2. Ser legible aislada — si alguien solo lee eso, debe entenderse por sí solo
-3. NO terminar en preposición, artículo o conector suelto
-   PROHIBIDO terminar en: a, de, en, con, por, para, el, la, los, las, un, una, y, o, que, como, cuando, donde, si, porque, su, sus, mi, mis
-4. Tener entre 5 y 14 palabras
-5. Solo UN [H]...[/H] por párrafo
-
-Ejemplos CORRECTOS (cierran con sentido):
-- "[H]La conexión emocional es el hilo que une a las personas.[/H] Cuando se logra, la conversación se transforma."
-- "El silencio es un instrumento. [H]Los supercomunicadores lo saben y lo aplican con maestría.[/H]"
-- "[H]Escuchar de verdad cambia la química del cuerpo.[/H] El cerebro responde a la atención recibida."
-
-Ejemplos INCORRECTOS (te van a rechazar):
-- "[H]La conexión emocional es el hilo que une a las[/H] personas..." ← corta en "las"
-- "[H]Los supercomunicadores[/H] lo saben..." ← trivial, 2 palabras
-- "[H]El silencio es un instrumento que[/H] los sabios..." ← termina en "que"
-- "[H]Cuando hablamos con alguien que conocemos y[/H] le damos..." ← termina en "y"
-
-Si no estás seguro de dónde cerrar, prefiere marcar la frase completa hasta el punto. Una frase cerrada es siempre mejor que un corte a la mitad.
-
-═══════════════════════════════════════════════════════════════════
 EMOTIONAL_WORDS_ES
 ═══════════════════════════════════════════════════════════════════
 Exactamente 4 palabras (3-25 chars cada una) que capturen el estado emocional que el libro evoca.
@@ -238,17 +212,36 @@ Ejemplos correctos: "serenidad", "dominio", "claridad", "desapego".
 NO uses palabras genéricas: "bienestar", "éxito", "crecimiento".
 
 ═══════════════════════════════════════════════════════════════════
-OG_PHRASES_ES (4 frases, 30-70 chars cada una)
+OG_PHRASES_ES (4 frases, 30-68 chars cada una)
 ═══════════════════════════════════════════════════════════════════
 CRÍTICO:
 - CADA FRASE en UNA SOLA LÍNEA. Nunca incluyas "\\n" ni saltos de línea.
 - NUNCA escribas emojis. El sistema los inyectará después.
 - Cada frase cierra con "." "?" o "!".
 - Cada frase usa un concepto específico del libro desde anchors.
+- LÍMITE BLANDO: apunta a 55-65 chars. El máximo es 70 chars pero NUNCA te acerques al filo.
+  Si una frase llega a 68+ chars, la reescribes más corta. Frases truncadas rompen la tarjeta.
 
-Ejemplos correctos (en voz del libro):
-- "El alma toma el color de los juicios repetidos."
-- "Pocas decisiones cargan casi todo el resultado."
+VARIEDAD SINTÁCTICA OBLIGATORIA (regla madre anti-patrón):
+Las 4 frases NO PUEDEN tener la misma estructura gramatical. Varía la forma:
+- FRASE 1 — Declarativa/afirmación: "X es Y" o "X hace Y".
+  Ejemplo: "La vanidad descubre más debilidades que el silencio."
+- FRASE 2 — Imperativa/instrucción: verbo al inicio, dirigida al lector.
+  Ejemplo: "Oculta tus intenciones. Permite que tu poder crezca callado."
+- FRASE 3 — Interrogativa retórica: pregunta que el autor haría al lector.
+  Ejemplo: "¿Cuántas batallas pierden los que muestran demasiado temprano?"
+- FRASE 4 — Aforística/sentenciosa: construcción contrastiva, paralela o nominal pura.
+  Ejemplo: "Mucho ruido arriba, silencio abajo: la receta del poder duradero."
+
+Si las 4 frases empiezan con "La/El/Los" + sustantivo, es FALLA DE VARIEDAD. Reescríbelas.
+Si las 4 frases son todas declarativas, es FALLA DE VARIEDAD. Reescríbelas.
+Cada frase debe sentirse como una cara distinta del mismo libro, no 4 paráfrasis de la misma idea.
+
+Ejemplos correctos (en voz del libro, los 4 tipos):
+- "La fortuna abandona al que revela sus planes." (declarativa)
+- "Estudia al enemigo antes de cualquier movimiento." (imperativa)
+- "¿Cuánto poder se pierde por no saber esperar?" (interrogativa)
+- "Obra cauta, voluntad firme: así se gobierna." (aforística)
 
 ═══════════════════════════════════════════════════════════════════
 EDITION_BLOCKS_ES (4 bloques)
@@ -360,37 +353,30 @@ STRUCTURE
 ═══════════════════════════════════════════════════════════════════
 card_en: titulo (8-60 chars), parrafoTop (80-320), subtitulo (20-120), parrafoBot (80-320)
 emotional_words_en: exactly 4 words, 3-25 chars each
-og_phrases_en: exactly 4 phrases, 30-70 chars each, ONE LINE, NO emojis, NO "\\n"
+og_phrases_en: exactly 4 phrases, 30-68 chars each, ONE LINE, NO emojis, NO "\\n"
+  Soft ceiling: aim for 55-65 chars. Hard max 70 — never flirt with the edge.
+  Any phrase above 68 chars risks mid-word truncation in rendering. Rewrite shorter.
 edition_blocks_en: exactly 4 blocks with different gesture_types, each 40-100 chars, ONE LINE, NO emojis
+
+═══════════════════════════════════════════════════════════════════
+SYNTACTIC VARIETY (mandatory anti-pattern rule)
+═══════════════════════════════════════════════════════════════════
+The 4 og_phrases MUST use different grammatical structures. Vary the form:
+- PHRASE 1 — Declarative/assertion: "X is Y" or "X does Y"
+  Example: "Vanity exposes more weakness than silence ever could."
+- PHRASE 2 — Imperative/instruction: verb first, directed at the reader
+  Example: "Conceal your intentions. Let your power grow quiet."
+- PHRASE 3 — Rhetorical question: a question the author would pose to the reader
+  Example: "How many battles are lost by showing strength too soon?"
+- PHRASE 4 — Aphoristic/sententious: contrastive, parallel or nominal construction
+  Example: "Much noise above, silence below — the shape of lasting power."
+
+If all 4 phrases start with "The/A" + noun, that is a VARIETY FAILURE. Rewrite.
+If all 4 phrases are declarative, that is a VARIETY FAILURE. Rewrite.
+Each phrase must feel like a different face of the same book, not four paraphrases.
 
 gesture_type enum: sensory_instruction | direct_question | concrete_image | authorial_aphorism
 sensory_anchor enum: sight | hearing | touch | smell | taste | movement | space | light | breath | time
-
-═══════════════════════════════════════════════════════════════════
-HIGHLIGHTS [H]...[/H] IN PARAGRAPHS
-═══════════════════════════════════════════════════════════════════
-In parrafoTop and parrafoBot, mark ONE self-contained phrase with [H] and [/H].
-
-The phrase between [H] and [/H] MUST follow ALL rules:
-1. Close with complete meaning — subject + verb + complement or finished idea
-2. Be readable in isolation — if someone only reads that, it must make sense on its own
-3. NEVER end in preposition, article, or loose connector
-   FORBIDDEN endings: a, an, the, of, in, on, at, by, for, with, from, to, and, or, but, that, which, who, if, when, where, my, your, his, her
-4. Be between 5 and 14 words
-5. Only ONE [H]...[/H] per paragraph
-
-Correct examples (close with meaning):
-- "[H]Emotional connection is the thread that binds people together.[/H] When it works, conversation transforms."
-- "Silence is an instrument. [H]Super-communicators know it and wield it with mastery.[/H]"
-- "[H]Real listening changes the body's chemistry.[/H] The brain responds to the attention received."
-
-Incorrect examples (will be rejected):
-- "[H]Emotional connection is the thread that binds[/H] people..." ← ends in "binds"... actually this IS fine, the bad one would be:
-- "[H]Emotional connection is the thread that binds people to[/H] each other..." ← ends in "to"
-- "[H]Super-communicators[/H] know it..." ← trivial, 1 word
-- "[H]Silence is an instrument that[/H] the wise..." ← ends in "that"
-
-If uncertain where to close, prefer marking the full phrase up to the period. A closed phrase beats a mid-sentence cut.
 
 ═══════════════════════════════════════════════════════════════════
 FORBIDDEN
