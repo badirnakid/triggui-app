@@ -437,7 +437,10 @@ function buildPresentationCopy(libro, bookMeta) {
   const source = libro.tarjeta_presentacion || libro.tarjeta || {};
 
   const title = sanitizeShortText(source.titulo, sanitizeShortText(libro.tagline, "Una idea útil"));
-  const author = sanitizeShortText(bookMeta.autor || libro.autor || "", "");
+  // v3.3 FIX: libro.autor tiene prioridad porque viene del grounding verificado
+  // (Apple Books, Google Books). bookMeta.autor viene del input crudo del workflow
+  // y puede estar truncado ("Greene" vs "Robert Greene"). El grounding siempre gana.
+  const author = sanitizeShortText(libro.autor || bookMeta.autor || "", "");
   const top = ensureOneHighlight(source.parrafoTop || "");
   const bottom = ensureOneHighlight(source.parrafoBot || "");
 
