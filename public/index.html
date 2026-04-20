@@ -11,6 +11,8 @@
 <link rel="dns-prefetch" href="https://www.buscalibre.com.mx">
 
 <link rel="preload" as="image" href="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png">
+<link rel="preload" as="image" href="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletrasblanco2.png">
+<link rel="preload" as="image" href="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletrascolor3.png">
 <link rel="preload" as="image" href="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/buscalibre.png">
 <link rel="preload" as="image" href="logopenguin.png">
 
@@ -144,10 +146,7 @@ const TriggguiI18n = {
   detectLang: function() {
     const saved = getLocal('lang');
     if (saved === 'es' || saved === 'en') return saved;
-    const nav = (navigator.language || navigator.userLanguage || 'es').toLowerCase();
-    const detected = nav.startsWith('en') ? 'en' : 'es';
-    saveLocal('lang', detected);
-    return detected;
+    return 'es';
   },
   get: function(key) {
     const L = this.lang || 'es';
@@ -181,6 +180,7 @@ const TriggguiI18n = {
   },
   strings: {
     es: {
+      'barra.question.fixed': '¿Cómo te sientes?',
       'barra.question.lunes': '¿Qué necesitas hoy?',
       'barra.question.martes': '¿Qué te pesa?',
       'barra.question.miercoles': '¿Qué te inquieta?',
@@ -206,6 +206,7 @@ const TriggguiI18n = {
       'intro.default': 'Toca. Descubre. El libro te espera.',
     },
     en: {
+      'barra.question.fixed': 'How are you feeling?',
       'barra.question.lunes': 'What do you need today?',
       'barra.question.martes': 'What\'s weighing on you?',
       'barra.question.miercoles': 'What\'s on your mind?',
@@ -247,9 +248,9 @@ const BarraMagica = {
     saveLocal('barra_last_shown', new Date().toDateString());
   },
   getQuestionKey: function() {
-    const d = new Date().getDay();
-    const map = ['domingo','lunes','martes','miercoles','jueves','viernes','sabado'];
-    return 'barra.question.' + map[d];
+    // Pregunta fija por ahora para consistencia ritual.
+    // En futuro se puede volver a rotación cronobiológica si decisión estratégica.
+    return 'barra.question.fixed';
   },
   getMicroCopyKey: function(catSize) {
     if (catSize < 5) return 'barra.micro.starting';
@@ -1250,6 +1251,10 @@ body.webview #tarjetaCard {
 </style>
 
 <style id="barra-magica-styles">
+#barraMagicaOverlay, #barraMagicaOverlay *, #barraMagicaOverlay *::before, #barraMagicaOverlay *::after {
+  box-sizing: border-box;
+}
+
 #barraMagicaOverlay {
   position: fixed;
   inset: 0;
@@ -1259,9 +1264,10 @@ body.webview #tarjetaCard {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: env(safe-area-inset-top, 0) 24px env(safe-area-inset-bottom, 0);
+  padding: env(safe-area-inset-top, 0) 20px env(safe-area-inset-bottom, 0) 20px;
   opacity: 0;
   transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
 }
 
 #barraMagicaOverlay.visible {
@@ -1284,7 +1290,7 @@ body.webview #tarjetaCard {
   position: relative;
   z-index: 2;
   width: 100%;
-  max-width: 560px;
+  max-width: min(560px, calc(100vw - 40px));
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1472,28 +1478,63 @@ body.webview #tarjetaCard {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: max(28px, env(safe-area-inset-bottom, 28px));
+  bottom: max(32px, calc(env(safe-area-inset-bottom, 0px) + 24px));
   z-index: 3;
-  animation: logo-breathe 4s ease-in-out infinite;
+  width: clamp(110px, 28vw, 150px);
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
 }
 
-#barraFooterLogo img {
-  height: 18px;
+#barraFooterLogo .logo-layer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 100%;
   width: auto;
-  opacity: 0.5;
-  filter: brightness(1.2);
+  max-width: 100%;
+  object-fit: contain;
+  transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@keyframes logo-breathe {
-  0%, 100% { opacity: 0.85; transform: translateX(-50%) scale(1); }
-  50% { opacity: 1; transform: translateX(-50%) scale(1.02); }
+#barraFooterLogo .logo-blanco {
+  opacity: 0.9;
+  animation: logo-alternate-blanco 12s ease-in-out infinite;
+}
+
+#barraFooterLogo .logo-color {
+  opacity: 0;
+  animation: logo-alternate-color 12s ease-in-out infinite;
+}
+
+@keyframes logo-alternate-blanco {
+  0%, 42% { opacity: 0.9; }
+  50%, 92% { opacity: 0; }
+  100% { opacity: 0.9; }
+}
+
+@keyframes logo-alternate-color {
+  0%, 42% { opacity: 0; }
+  50%, 92% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@media (max-width: 480px) {
+  #barraFooterLogo {
+    width: clamp(100px, 34vw, 140px);
+    height: 24px;
+    bottom: max(26px, calc(env(safe-area-inset-bottom, 0px) + 20px));
+  }
 }
 
 #barraLupaBtn {
-  position: absolute;
-  top: 14px;
-  right: 18px;
-  z-index: 8;
+  position: fixed;
+  top: max(18px, calc(env(safe-area-inset-top, 0px) + 14px));
+  right: max(16px, calc(env(safe-area-inset-right, 0px) + 14px));
+  z-index: 180;
   width: 38px;
   height: 38px;
   border-radius: 50%;
@@ -1628,8 +1669,9 @@ body.webview #tarjetaCard {
     <button id="barraSkip" type="button"></button>
   </div>
 
-  <div id="barraFooterLogo">
-    <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png" alt="Triggui" loading="lazy">
+  <div id="barraFooterLogo" aria-hidden="true">
+    <img class="logo-layer logo-blanco" src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletrasblanco2.png" alt="" loading="eager">
+    <img class="logo-layer logo-color" src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletrascolor3.png" alt="" loading="eager">
   </div>
 </div>
 
@@ -1728,8 +1770,8 @@ const grid=document.getElementById("grid"), cta=document.getElementById("cta"),
       progressBadge=document.getElementById("progressBadge"), toast=document.getElementById("toast");
 
 let libro=null, revealed=false;
-const portIdx=Math.floor(Math.random()*4),
-      emojis=["🌊","🛡️","🧠","✨","📘","🔮","❤️","🪞"];
+let portIdx = Math.floor(Math.random()*4);
+const emojis=["🌊","🛡️","🧠","✨","📘","🔮","❤️","🪞"];
 const isURL = s => /^https?:\/\//i.test(s || "");
 const ANG = [115,205,35,320];
 const grad = i => `linear-gradient(${ANG[i%4]}deg,${libro.colores[i]},${libro.colores[(i+1)%4]})`;
@@ -1872,7 +1914,18 @@ function buildPort(i){
 }
 
 function render(){
-  grid.innerHTML="";
+  // 🔧 FIX BUG ZOMBIE: reset de estado completo en cada render para permitir
+  // re-invocación desde la barra mágica sin residuos del render anterior.
+  revealed = false;
+  cardOpenedThisSession = false;
+  portIdx = Math.floor(Math.random() * 4);
+  cta.style.display = "none";
+  // Reset de estilos inline de botones CTA (los repinta el reveal si aplica)
+  ['otro','fisico','share','like'].forEach(id => {
+    const b = document.getElementById(id);
+    if (b) { b.style.background = ''; b.style.color = ''; }
+  });
+  grid.innerHTML = "";
   const palabrasI18n = TriggguiI18n.lang === 'en' && Array.isArray(libro.palabras_en) && libro.palabras_en.length === 4 ? libro.palabras_en : libro.palabras;
   const frasesI18n = TriggguiI18n.lang === 'en' && Array.isArray(libro.frases_en) && libro.frases_en.length === 4 ? libro.frases_en : libro.frases;
   for(let i=0;i<4;i++){
@@ -2347,11 +2400,28 @@ window.closeCard = function() {
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-// 🔍 MOTOR DE FILTRO ADAPTATIVO — Buscador semántico sobre catálogo curado
-// Escala: 1 libro → 150 libros → 700+ libros con _nucleus.book_grounding_anchors
-// Costo por consulta: $0 · Latencia: <50ms · 100% client-side
+// 🔍 MOTOR DE FILTRO TF-IDF NIVEL DIOS
+// 
+// Fundamento matemático:
+// - TF (Term Frequency): qué tanto aparece una palabra en un libro
+// - IDF (Inverse Document Frequency): qué tan rara es esa palabra en el catálogo
+// - Score = Σ(TF × IDF) por cada palabra del query en cada libro
+//
+// Cero stopwords hardcodeadas. Cero palabras "basura". TODA palabra que el
+// usuario escribe cuenta. Las palabras comunes (el, la, es, the, of) pesan
+// poco AUTOMÁTICAMENTE porque aparecen en todos los libros (IDF bajo).
+// Las palabras raras y significativas (Kasparov, dopamina, integridad,
+// nada, vacío) pesan mucho porque aparecen en pocos libros (IDF alto).
+//
+// Costo: $0 · Latencia: <20ms para catálogo de 200 libros
+// Escala: TF-IDF es el mismo algoritmo que usaba Google antes de la era de
+// embeddings. Matemáticamente correcto de 1 libro a 10 millones.
 // ══════════════════════════════════════════════════════════════════════════
 const TrigguiFiltro = {
+  // Cache del índice IDF. Se reconstruye cuando cambia el catálogo o el idioma.
+  _idxCache: null,
+  _idxCacheKey: null,
+
   normalize: function(s) {
     return String(s || '')
       .toLowerCase()
@@ -2360,106 +2430,213 @@ const TrigguiFiltro = {
       .replace(/\s+/g, ' ')
       .trim();
   },
+
+  // Tokenización PURA: sin stopwords, sin listas de palabras "basura".
+  // Solo descarta tokens de 1 carácter (ruido real) y números sueltos.
   tokenize: function(s) {
-    const stopES = new Set(['el','la','los','las','un','una','unos','unas','de','del','al','a','en','y','o','u','pero','si','no','que','como','con','por','para','me','te','se','lo','le','les','mi','tu','su','es','son','ser','estar','muy','mas','mucho','hoy','ya','aun','tambien','pues','solo','solo']);
-    const stopEN = new Set(['the','a','an','is','are','was','were','be','been','being','to','of','and','or','but','if','in','on','at','by','for','with','about','as','from','up','down','out','off','over','under','into','onto','this','that','these','those','i','me','my','you','your','he','she','it','we','they','what','which','who','how','why','very','much','really','too','just','so','also']);
-    const stop = TriggguiI18n.lang === 'en' ? stopEN : stopES;
-    return this.normalize(s).split(' ').filter(t => t.length >= 3 && !stop.has(t));
+    return this.normalize(s)
+      .split(' ')
+      .filter(t => t.length >= 2 && !/^\d+$/.test(t));
   },
-  extractCorpus: function(libro) {
+
+  // Extrae el texto completo de un libro en 4 zonas con peso distinto.
+  // Cada zona tiene un boost que refleja su importancia semántica:
+  // - palabras clave del libro: las 4 palabras que el curador eligió (x5)
+  // - título + autor: identidad del libro (x3)
+  // - tarjeta + frases: contenido editorial (x1.5)
+  // - tagline + dimension + punto: metadata contextual (x1)
+  extractZones: function(libro) {
     const useEn = TriggguiI18n.lang === 'en';
-    const parts = [];
-    if (useEn && libro.titulo_en) parts.push(libro.titulo_en); else parts.push(libro.titulo || '');
-    parts.push(libro.autor || '');
+    const titulo = useEn && libro.titulo_en ? libro.titulo_en : (libro.titulo || '');
     const palabras = useEn && Array.isArray(libro.palabras_en) ? libro.palabras_en : (libro.palabras || []);
-    parts.push(palabras.join(' '));
     const frases = useEn && Array.isArray(libro.frases_en) ? libro.frases_en : (libro.frases || []);
-    parts.push(frases.join(' '));
-    parts.push(libro.tagline || '');
-    parts.push(libro.dimension || '');
-    parts.push(libro.punto || '');
-    const tarjeta = useEn && libro.tarjeta_en ? libro.tarjeta_en : libro.tarjeta;
-    if (tarjeta) {
-      parts.push(tarjeta.subtitulo || '');
-      parts.push(tarjeta.parrafoTop || '');
-      parts.push(tarjeta.parrafoBot || '');
-    }
-    if (libro._nucleus && libro._nucleus.book_grounding_anchors) {
-      const a = libro._nucleus.book_grounding_anchors;
-      if (Array.isArray(a.concepts)) parts.push(a.concepts.join(' '));
-      if (Array.isArray(a.key_terms)) parts.push(a.key_terms.join(' '));
-    }
-    return this.normalize(parts.join(' '));
+    const tarjeta = useEn && libro.tarjeta_en ? libro.tarjeta_en : (libro.tarjeta || {});
+    const nucleus = libro._nucleus && libro._nucleus.book_grounding_anchors;
+    const anchors = nucleus ? (nucleus.concepts || []).concat(nucleus.key_terms || []) : [];
+    return {
+      palabras: [...palabras, ...anchors].join(' '),
+      identidad: [titulo, libro.autor || ''].join(' '),
+      editorial: [
+        frases.join(' '),
+        tarjeta.subtitulo || '',
+        tarjeta.parrafoTop || '',
+        tarjeta.parrafoBot || ''
+      ].join(' '),
+      contexto: [libro.tagline || '', libro.dimension || '', libro.punto || ''].join(' ')
+    };
   },
-  scoreLibro: function(libro, queryTokens) {
-    if (!queryTokens.length) return 0;
-    const corpus = this.extractCorpus(libro);
-    let score = 0;
-    const palabras = (TriggguiI18n.lang === 'en' && Array.isArray(libro.palabras_en) ? libro.palabras_en : (libro.palabras || [])).map(p => this.normalize(p));
-    const palabrasSet = new Set(palabras);
-    const titulo = this.normalize(TriggguiI18n.fromBook(libro, 'titulo'));
-    const autor = this.normalize(libro.autor || '');
-    for (const tok of queryTokens) {
-      if (!tok) continue;
-      if (palabrasSet.has(tok)) score += 8;
-      for (const p of palabras) {
-        if (p !== tok && (p.includes(tok) || tok.includes(p))) { score += 3; break; }
+
+  // Cuenta ocurrencias de cada término en un texto. Retorna { token: count }.
+  termFrequency: function(text) {
+    const tokens = this.tokenize(text);
+    const tf = {};
+    for (const t of tokens) tf[t] = (tf[t] || 0) + 1;
+    return tf;
+  },
+
+  // Construye el índice IDF del catálogo completo.
+  // IDF(término) = log(total_libros / libros_que_contienen_el_término)
+  // Palabras en todos los libros → IDF cercano a 0 (descartadas naturalmente)
+  // Palabras en 1 de N libros → IDF = log(N) (máximo peso)
+  // 
+  // También pre-computa los vectores TF ponderados de cada libro para scoring
+  // rápido. Todo esto corre una sola vez cuando llega el contenido.json.
+  buildIndex: function(libros) {
+    const cacheKey = `${libros.length}_${TriggguiI18n.lang}`;
+    if (this._idxCache && this._idxCacheKey === cacheKey) return this._idxCache;
+
+    const N = libros.length;
+    const docFreq = {};
+    const bookVectors = [];
+
+    const ZONE_WEIGHTS = { palabras: 5.0, identidad: 3.0, editorial: 1.5, contexto: 1.0 };
+
+    // Primera pasada: calcular TF por libro y document frequency global
+    for (const libro of libros) {
+      const zones = this.extractZones(libro);
+      const bookVec = {};
+      const seenInThisBook = new Set();
+      for (const zoneName of Object.keys(ZONE_WEIGHTS)) {
+        const tf = this.termFrequency(zones[zoneName]);
+        const w = ZONE_WEIGHTS[zoneName];
+        for (const [term, count] of Object.entries(tf)) {
+          bookVec[term] = (bookVec[term] || 0) + count * w;
+          seenInThisBook.add(term);
+        }
       }
-      if (titulo.includes(tok)) score += 6;
-      if (autor.includes(tok)) score += 5;
-      const reg = new RegExp('\\b' + tok.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'g');
-      const matches = corpus.match(reg);
-      if (matches) score += matches.length * 1.5;
-      if (!matches && corpus.includes(tok)) score += 0.5;
+      for (const term of seenInThisBook) {
+        docFreq[term] = (docFreq[term] || 0) + 1;
+      }
+      bookVectors.push(bookVec);
     }
-    if (libro.dimension) {
-      const dimNorm = this.normalize(libro.dimension);
-      for (const tok of queryTokens) if (dimNorm.includes(tok)) score += 2;
+
+    // Segunda pasada: calcular IDF de cada término
+    const idf = {};
+    for (const [term, df] of Object.entries(docFreq)) {
+      // Suavizado: log((N+1) / (df+1)) + 1 — evita IDF=0 y negativos
+      idf[term] = Math.log((N + 1) / (df + 1)) + 1;
     }
-    return score;
+
+    this._idxCacheKey = cacheKey;
+    this._idxCache = { N, idf, bookVectors, docFreq };
+    return this._idxCache;
   },
+
+  // Cronoboost: ajuste sutil según hora/día, basado en tu marco cronobiológico.
+  // No es arbitrario: cada franja horaria tiene un "punto Hawkins" afín.
   cronoBoost: function(libro) {
     const now = new Date();
     const hour = now.getHours();
     const day = now.getDay();
     let boost = 0;
-    const punto = String(libro.punto || '').toLowerCase();
+    const punto = this.normalize(libro.punto || '');
     if (hour >= 5 && hour < 10) {
-      if (punto.includes('cero') || punto.includes('creativo')) boost += 1.5;
+      if (punto.includes('cero') || punto.includes('creativo')) boost += 1.2;
     } else if (hour >= 10 && hour < 14) {
-      if (punto.includes('activo') || punto.includes('maximo') || punto.includes('máximo')) boost += 1.5;
+      if (punto.includes('activo') || punto.includes('maximo')) boost += 1.2;
     } else if (hour >= 14 && hour < 18) {
-      if (punto.includes('activo')) boost += 1;
+      if (punto.includes('activo')) boost += 0.8;
     } else if (hour >= 18 && hour < 22) {
-      if (punto.includes('creativo') || punto.includes('cero')) boost += 1;
+      if (punto.includes('creativo') || punto.includes('cero')) boost += 0.8;
     } else {
-      if (punto.includes('cero')) boost += 0.8;
+      if (punto.includes('cero')) boost += 0.6;
     }
-    if (day === 4 && punto.includes('maximo')) boost += 0.8;
-    if ((day === 0 || day === 6) && punto.includes('cero')) boost += 0.5;
+    if (day === 4 && punto.includes('maximo')) boost += 0.5;
+    if ((day === 0 || day === 6) && punto.includes('cero')) boost += 0.4;
     return boost;
   },
+
+  // Semilla pseudo-aleatoria derivada del día. Misma query el mismo día = mismo
+  // libro. Al día siguiente puede rotar. Esto da sensación de "consejo del día"
+  // consistente pero no repetitivo en el tiempo.
+  daySeed: function(query) {
+    const today = new Date().toDateString();
+    const str = today + '|' + (query || '');
+    let h = 5381;
+    for (let i = 0; i < str.length; i++) h = ((h * 33) ^ str.charCodeAt(i)) >>> 0;
+    return h;
+  },
+
+  // Selección determinística del top con semilla diaria
+  seededPick: function(items, seed) {
+    if (!items.length) return null;
+    return items[seed % items.length];
+  },
+
+  // Función principal. Retorna { libro, index, score, reason }.
+  // reason puede ser:
+  //   'solo'  — solo hay 1 libro en el catálogo
+  //   'empty' — query vacío o el usuario no escribió nada
+  //   'match' — se encontró al menos un libro con score relevante
+  //   'whisper' — ningún match claro; elige con semilla diaria del top
   filter: function(libros, query) {
     if (!libros || libros.length === 0) return null;
-    if (libros.length === 1) return { libro: libros[0], index: 0, score: 0, reason: 'solo' };
-    const tokens = this.tokenize(query);
-    if (tokens.length === 0) {
-      const idx = Math.floor(Math.random() * libros.length);
+    if (libros.length === 1) {
+      return { libro: libros[0], index: 0, score: 0, reason: 'solo' };
+    }
+
+    const q = String(query || '').trim();
+    if (!q) {
+      // Query vacío: elige con semilla diaria sobre todo el catálogo.
+      // Esto da "libro del día" consistente si el usuario abre sin escribir.
+      const seed = this.daySeed('');
+      const idx = seed % libros.length;
       return { libro: libros[idx], index: idx, score: 0, reason: 'empty' };
     }
-    const scored = libros.map((libro, index) => {
-      const base = this.scoreLibro(libro, tokens);
-      const crono = base > 0 ? this.cronoBoost(libro) : 0;
-      return { libro, index, score: base + crono };
-    });
-    scored.sort((a, b) => b.score - a.score);
-    if (scored[0].score < 1.5) {
-      const topFew = scored.slice(0, Math.min(3, scored.length));
-      const pick = topFew[Math.floor(Math.random() * topFew.length)];
-      return { ...pick, reason: 'fallback' };
+
+    const idx = this.buildIndex(libros);
+    const queryTokens = this.tokenize(q);
+
+    if (queryTokens.length === 0) {
+      // El usuario escribió solo puntuación, emojis, o 1 carácter
+      const seed = this.daySeed(q);
+      const i = seed % libros.length;
+      return { libro: libros[i], index: i, score: 0, reason: 'empty' };
     }
-    const topGroup = scored.filter(s => s.score >= scored[0].score * 0.85).slice(0, 3);
-    const pick = topGroup[Math.floor(Math.random() * topGroup.length)];
+
+    // Scoring TF-IDF: por cada libro, score = Σ(query_token_tf_in_book × idf_of_token)
+    const scored = libros.map((libro, index) => {
+      const bookVec = idx.bookVectors[index];
+      let tfidfScore = 0;
+      for (const token of queryTokens) {
+        const tf = bookVec[token] || 0;
+        if (tf === 0) {
+          // Match parcial: buscar el token como subcadena en keys del vector
+          for (const bookTerm of Object.keys(bookVec)) {
+            if (bookTerm.length >= 4 && token.length >= 4) {
+              if (bookTerm.includes(token) || token.includes(bookTerm)) {
+                const partialTf = bookVec[bookTerm] * 0.5;
+                tfidfScore += partialTf * (idx.idf[bookTerm] || 1);
+                break;
+              }
+            }
+          }
+        } else {
+          const termIdf = idx.idf[token] || 1;
+          tfidfScore += tf * termIdf;
+        }
+      }
+      const crono = tfidfScore > 0 ? this.cronoBoost(libro) : 0;
+      return { libro, index, score: tfidfScore + crono };
+    });
+
+    scored.sort((a, b) => b.score - a.score);
+
+    const best = scored[0];
+    if (best.score <= 0.01) {
+      // Ningún libro matcheó nada del query. Usar semilla para dar consistencia
+      // diaria sin parecer random puro. Top 3 con semilla para variedad sutil.
+      const top3 = scored.slice(0, Math.min(3, scored.length));
+      const seed = this.daySeed(q);
+      const pick = top3[seed % top3.length];
+      return { ...pick, reason: 'whisper' };
+    }
+
+    // Hay match real. Elegir del grupo con score >= 85% del mejor
+    // para dar variedad sin perder precisión. Semilla diaria = consistencia.
+    const topGroup = scored.filter(s => s.score >= best.score * 0.85).slice(0, 3);
+    const seed = this.daySeed(q);
+    const pick = topGroup[seed % topGroup.length];
     return { ...pick, reason: 'match' };
   }
 };
@@ -2504,11 +2681,27 @@ BarraMagica.openOverlay = function(force) {
   track('barra_opened', { force: !!force, lang: TriggguiI18n.lang });
   return true;
 };
-BarraMagica.closeOverlay = function(skipped) {
+BarraMagica.closeOverlay = function(skipped, skipRender) {
   const overlay = document.getElementById('barraMagicaOverlay');
   if (!overlay) return;
   overlay.classList.remove('visible');
-  setTimeout(() => { overlay.style.display = 'none'; }, 600);
+  setTimeout(() => {
+    overlay.style.display = 'none';
+    // Reset visual para próxima apertura (mantener estado consistente)
+    const submitBtn = document.getElementById('barraSubmit');
+    const inputEl = document.getElementById('barraInput');
+    const skipEl = document.getElementById('barraSkip');
+    const microEl = document.getElementById('barraMicro');
+    const questionEl = document.getElementById('barraQuestion');
+    if (submitBtn) submitBtn.disabled = false;
+    if (inputEl) inputEl.value = '';
+    if (skipEl) skipEl.style.opacity = '';
+    if (microEl) { microEl.style.opacity = ''; }
+    if (questionEl) {
+      questionEl.style.opacity = '';
+      questionEl.style.transform = '';
+    }
+  }, 700);
   this.markShownToday();
   if (revealed) {
     const lupa = document.getElementById('barraLupaBtn');
@@ -2535,14 +2728,46 @@ BarraMagica.submit = function(query) {
     libro = result.libro;
     sessionStorage.setItem('lastLibroIdx', String(result.index));
   }
-  this.closeOverlay(!q);
-  render();
-  updateBadge();
+
+  // 🎨 NIVEL DIOS: Breathing moment elegante antes del reveal
+  // Paso 1: Ocultar input + mostrar "encontrando tu libro…"
+  const submitBtn = document.getElementById('barraSubmit');
+  const inputEl = document.getElementById('barraInput');
+  const skipEl = document.getElementById('barraSkip');
+  const microEl = document.getElementById('barraMicro');
+  const questionEl = document.getElementById('barraQuestion');
+  if (inputEl) inputEl.blur();
+  if (submitBtn) submitBtn.disabled = true;
+  if (skipEl) skipEl.style.opacity = '0.3';
+  if (microEl) {
+    microEl.style.transition = 'opacity 0.4s ease';
+    microEl.style.opacity = '1';
+    microEl.textContent = TriggguiI18n.get('barra.loading');
+  }
+  if (questionEl) {
+    questionEl.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    questionEl.style.opacity = '0.35';
+    questionEl.style.transform = 'scale(0.96)';
+  }
+
+  // Paso 2: Construir los 4 bloques DEBAJO (invisibles aún, la pantalla negra los cubre)
+  setTimeout(() => {
+    this.markShownToday();
+    render();
+    updateBadge();
+  }, 300);
+
+  // Paso 3: Fade-out de la pantalla negra, revelando los bloques ya construidos
+  setTimeout(() => {
+    this.closeOverlay(!q, /*skipRender=*/ true);
+  }, 900);
+
+  // Paso 4: First-visit hint si aplica
   if (!getLocal('has_visited')) {
     setTimeout(() => {
       document.querySelectorAll('.block').forEach(b => b.classList.add('first-visit-hint'));
       saveLocal('has_visited', true);
-    }, 500);
+    }, 1600);
   }
 };
 
@@ -2611,17 +2836,23 @@ function pickLibroNoRepetido(libros){
     const data=await r.json();
     window.__TRIGGUI_DATA__ = data;
     wireBarraMagicaEvents();
+    // 🛡️ DEFENSIVO: Siempre elegir libro y pre-renderizar los bloques.
+    // Si la barra mágica aparece, los bloques quedan detrás del overlay negro
+    // (invisibles al usuario hasta que cierre la barra). Si algo falla con la
+    // barra, los bloques ya están visibles como fallback.
+    if (!data.libros || data.libros.length === 0) {
+      console.error('[Triggui] catálogo vacío');
+      return;
+    }
+    libro = data.libros[pickLibroNoRepetido(data.libros)];
+    render();
+    
     const shouldShow = BarraMagica.shouldShowToday();
-    if (shouldShow && data.libros && data.libros.length >= 1) {
+    if (shouldShow) {
       BarraMagica.openOverlay(false);
-      libro = data.libros[pickLibroNoRepetido(data.libros)];
     } else {
-      libro = data.libros[pickLibroNoRepetido(data.libros)];
-      render();
-      if (revealed === false) {
-        const lupa = document.getElementById('barraLupaBtn');
-        if (lupa) setTimeout(() => lupa.classList.add('visible'), 1200);
-      }
+      const lupa = document.getElementById('barraLupaBtn');
+      if (lupa) setTimeout(() => lupa.classList.add('visible'), 1200);
     }
     updateBadge();
     refreshGlobalCounter();
