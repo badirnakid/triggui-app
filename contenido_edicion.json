@@ -1,276 +1,277 @@
 {
   "libros": [
     {
-      "titulo": "supercomunicadores",
-      "autor": "charles duhigg",
+      "titulo": "poder",
+      "autor": "robert greene",
       "tagline": "",
-      "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/4b/2a/2e/4b2a2e4e-6092-277d-98ea-0d75dd6354c6/9788419820198.jpg/3000x3000bb.jpg",
-      "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/4b/2a/2e/4b2a2e4e-6092-277d-98ea-0d75dd6354c6/9788419820198.jpg/3000x3000bb.jpg",
-      "isbn": "6475678784",
-      "titulo_es": "supercomunicadores",
-      "titulo_en": "Supercommunicators",
-      "idioma_original": "es",
+      "portada": "https://images-na.ssl-images-amazon.com/images/P/1274206548.01.LZZZZZZZ.jpg",
+      "portada_url": "https://images-na.ssl-images-amazon.com/images/P/1274206548.01.LZZZZZZZ.jpg",
+      "isbn": "1274206548",
+      "titulo_es": "poder",
+      "titulo_en": "Power",
+      "idioma_original": "en",
       "dimension": "Conexion",
       "punto": "Activo",
       "palabras": [
-        "empatía",
-        "inspiración",
-        "conexión",
-        "persuasión"
+        "astucia",
+        "control",
+        "reflexión",
+        "estrategia"
       ],
       "palabras_en": [
-        "impactful",
-        "connection",
-        "understanding",
-        "influence"
+        "cunning",
+        "precision",
+        "control",
+        "awareness"
       ],
       "frases": [
-        "🗺 Imagina un espacio donde cada palabra resuena con significado.",
-        "🌓 ¿Qué historia compartes hoy que pueda influir en alguien más?",
-        "👁 Visualiza a un supercomunicador cautivando a su audiencia con cada gesto.",
-        "🔔 La voz del corazón siempre encuentra eco en el otro."
+        "🕰 Dedica un momento a observar cómo se despliega el poder a tu alrededor.",
+        "🌌 ¿Qué espacio ocupas en la jerarquía de tus relaciones?",
+        "👁 Imagina un tablero de ajedrez, donde cada movimiento cuenta.",
+        "🌊 El poder se mueve en silencio, esperando su momento."
       ],
       "frases_en": [
-        "🔭 Imagine the warmth of a genuine smile lighting up the room.",
-        "🧘 What truly resonates with you in a conversation?",
-        "🏛 Picture two people leaning in, fully engaged, sharing their stories.",
-        "🕰 True influence is a timeless art, crafted through connection."
+        "🗺 Imagine the room shifting with every unspoken command.",
+        "🌓 How often do you consider the power at play in your life?",
+        "👁 Picture a chessboard, each piece a player in the game of power.",
+        "🌊 Power is fluid; it moves like water, adapting to its surroundings."
       ],
       "frases_og": [
-        "🛡 La influencia comienza con una escucha activa.",
-        "🎯 Cada conversación es una oportunidad para conectar.",
-        "🌱 Las técnicas de persuasión son herramientas de conexión.",
-        "🔮 Los supercomunicadores transforman palabras en acción."
+        "🎯 Las relaciones humanas son un campo de batalla por el poder.",
+        "🌱 La manipulación es el arte de influir sin ser descubierto.",
+        "🔮 Entender las dinámicas sociales abre puertas al control.",
+        "🕊 Las tácticas de poder son imprescindibles en la vida cotidiana."
       ],
       "frases_og_en": [
-        "🛡 Every conversation can become meaningful with the right approach.",
-        "🎯 Empathy is the cornerstone of effective communication.",
-        "🌱 Mastering connection opens doors to influence.",
-        "🔮 Supercommunicators thrive on emotional resonance."
+        "🎯 Mastering power dynamics transforms every interaction.",
+        "🌱 Manipulation is not merely a tactic; it is an art.",
+        "🔮 Strategic thinking can redefine your relationships.",
+        "🕊 Understanding others is the foundation of influence."
       ],
       "colores": [
-        "#90DFD2",
-        "#4DC1CB",
-        "#2C5896",
-        "#192457"
+        "#F1927E",
+        "#30C9E8",
+        "#AE5413",
+        "#0B4065"
       ],
       "textColors": [
-        "#000000",
         "#FFFFFF",
+        "#000000",
         "#FFFFFF",
         "#FFFFFF"
       ],
-      "fondo": "#CFD2D3",
+      "fondo": "#D3D0CF",
       "tarjeta": {
-        "titulo": "La magia de la conexión emocional",
-        "parrafoTop": "[H]La conexión emocional es el hilo que une a las[/H] personas en una conversación. Cuando se logra, se transforma la simple charla en un intercambio significativo, donde cada palabra cuenta.",
-        "subtitulo": "¿Cómo estableces esa conexión en tus interacciones?",
-        "parrafoBot": "Utilizar técnicas que fomenten la empatía y el entendimiento puede ser la clave para influir efectivamente en los demás. [H]Los supercomunicadores lo saben y lo aplican con maestría.[/H]",
+        "titulo": "Las dinámicas del poder en acción",
+        "parrafoTop": "La comprensión de [H]las dinámicas del poder es esencial para navegar en la vida.[/H] Sin esta conciencia, uno se convierte en presa fácil de las manipulaciones ajenas.",
+        "subtitulo": "¿Qué estrategias empleas en tus relaciones?",
+        "parrafoBot": "Las tácticas para obtener poder requieren astucia y precisión. [H]La manipulación estratégica puede ser la clave para alcanzar tus objetivos.[/H>[/H]",
         "style": {
-          "accent": "#1F99D6",
-          "paper": "#CFD2D3",
-          "ink": "#171A1C",
-          "border": "#7C7E7F"
+          "accent": "#E23512",
+          "paper": "#D3D0CF",
+          "ink": "#1C1817",
+          "border": "#7F7D7C"
         }
       },
       "tarjeta_base": {
-        "titulo": "La magia de la conexión emocional",
-        "parrafoTop": "[H]La conexión emocional es el hilo que une a las[/H] personas en una conversación. Cuando se logra, se transforma la simple charla en un intercambio significativo, donde cada palabra cuenta.",
-        "subtitulo": "¿Cómo estableces esa conexión en tus interacciones?",
-        "parrafoBot": "Utilizar técnicas que fomenten la empatía y el entendimiento puede ser la clave para influir efectivamente en los demás. [H]Los supercomunicadores lo saben y lo aplican con maestría.[/H]",
+        "titulo": "Las dinámicas del poder en acción",
+        "parrafoTop": "La comprensión de [H]las dinámicas del poder es esencial para navegar en la vida.[/H] Sin esta conciencia, uno se convierte en presa fácil de las manipulaciones ajenas.",
+        "subtitulo": "¿Qué estrategias empleas en tus relaciones?",
+        "parrafoBot": "Las tácticas para obtener poder requieren astucia y precisión. [H]La manipulación estratégica puede ser la clave para alcanzar tus objetivos.[/H>[/H]",
         "style": {
-          "accent": "#1F99D6",
-          "paper": "#CFD2D3",
-          "ink": "#171A1C",
-          "border": "#7C7E7F"
+          "accent": "#E23512",
+          "paper": "#D3D0CF",
+          "ink": "#1C1817",
+          "border": "#7F7D7C"
         }
       },
       "tarjeta_presentacion": {
-        "titulo": "La magia de la conexión emocional",
-        "parrafoTop": "[H]La conexión emocional es el hilo que une a las[/H] personas en una conversación. Cuando se logra, se transforma la simple charla en un intercambio significativo, donde cada palabra cuenta.",
-        "subtitulo": "¿Cómo estableces esa conexión en tus interacciones?",
-        "parrafoBot": "Utilizar técnicas que fomenten la empatía y el entendimiento puede ser la clave para influir efectivamente en los demás. [H]Los supercomunicadores lo saben y lo aplican con maestría.[/H]",
+        "titulo": "Las dinámicas del poder en acción",
+        "parrafoTop": "La comprensión de [H]las dinámicas del poder es esencial para navegar en la vida.[/H] Sin esta conciencia, uno se convierte en presa fácil de las manipulaciones ajenas.",
+        "subtitulo": "¿Qué estrategias empleas en tus relaciones?",
+        "parrafoBot": "Las tácticas para obtener poder requieren astucia y precisión. [H]La manipulación estratégica puede ser la clave para alcanzar tus objetivos.[/H>[/H]",
         "style": {
-          "accent": "#1F99D6",
-          "paper": "#CFD2D3",
-          "ink": "#171A1C",
-          "border": "#7C7E7F"
+          "accent": "#E23512",
+          "paper": "#D3D0CF",
+          "ink": "#1C1817",
+          "border": "#7F7D7C"
         }
       },
       "tarjeta_en": {
-        "titulo": "The Power of Emotional Connection",
-        "parrafoTop": "[H]Emotional connection serves as the thread binding individuals within a conversation.[/H] When achieved, it transforms mere talk into a meaningful exchange, where every word resonates and leaves an impact.",
-        "subtitulo": "How do you create that connection in your interactions?",
-        "parrafoBot": "Employing techniques that nurture empathy and understanding can be the key to effectively influencing others. [H]Supercommunicators know this and wield it with skill.[/H]",
+        "titulo": "The Dynamics of Power in Action",
+        "parrafoTop": "Understanding [H]the dynamics of power is essential for navigating life.[/H] Without this awareness, one easily becomes prey to the manipulations of others.",
+        "subtitulo": "What strategies do you employ in your relationships?",
+        "parrafoBot": "The tactics for acquiring power demand cunning and precision. [H]Strategic manipulation can be the key to achieving your goals.[/H>[/H]",
         "style": {
-          "accent": "#1F99D6",
-          "paper": "#CFD2D3",
-          "ink": "#171A1C",
-          "border": "#7C7E7F"
+          "accent": "#E23512",
+          "paper": "#D3D0CF",
+          "ink": "#1C1817",
+          "border": "#7F7D7C"
         }
       },
       "tarjeta_base_en": {
-        "titulo": "The Power of Emotional Connection",
-        "parrafoTop": "[H]Emotional connection serves as the thread binding individuals within a conversation.[/H] When achieved, it transforms mere talk into a meaningful exchange, where every word resonates and leaves an impact.",
-        "subtitulo": "How do you create that connection in your interactions?",
-        "parrafoBot": "Employing techniques that nurture empathy and understanding can be the key to effectively influencing others. [H]Supercommunicators know this and wield it with skill.[/H]",
+        "titulo": "The Dynamics of Power in Action",
+        "parrafoTop": "Understanding [H]the dynamics of power is essential for navigating life.[/H] Without this awareness, one easily becomes prey to the manipulations of others.",
+        "subtitulo": "What strategies do you employ in your relationships?",
+        "parrafoBot": "The tactics for acquiring power demand cunning and precision. [H]Strategic manipulation can be the key to achieving your goals.[/H>[/H]",
         "style": {
-          "accent": "#1F99D6",
-          "paper": "#CFD2D3",
-          "ink": "#171A1C",
-          "border": "#7C7E7F"
+          "accent": "#E23512",
+          "paper": "#D3D0CF",
+          "ink": "#1C1817",
+          "border": "#7F7D7C"
         }
       },
       "tarjeta_presentacion_en": {
-        "titulo": "The Power of Emotional Connection",
-        "parrafoTop": "[H]Emotional connection serves as the thread binding individuals within a conversation.[/H] When achieved, it transforms mere talk into a meaningful exchange, where every word resonates and leaves an impact.",
-        "subtitulo": "How do you create that connection in your interactions?",
-        "parrafoBot": "Employing techniques that nurture empathy and understanding can be the key to effectively influencing others. [H]Supercommunicators know this and wield it with skill.[/H]",
+        "titulo": "The Dynamics of Power in Action",
+        "parrafoTop": "Understanding [H]the dynamics of power is essential for navigating life.[/H] Without this awareness, one easily becomes prey to the manipulations of others.",
+        "subtitulo": "What strategies do you employ in your relationships?",
+        "parrafoBot": "The tactics for acquiring power demand cunning and precision. [H]Strategic manipulation can be the key to achieving your goals.[/H>[/H]",
         "style": {
-          "accent": "#1F99D6",
-          "paper": "#CFD2D3",
-          "ink": "#171A1C",
-          "border": "#7C7E7F"
+          "accent": "#E23512",
+          "paper": "#D3D0CF",
+          "ink": "#1C1817",
+          "border": "#7F7D7C"
         }
       },
-      "videoUrl": "https://duckduckgo.com/?q=!ducky+site:youtube.com+supercomunicadores%20charles%20duhigg%20entrevista%20espa%C3%B1ol",
-      "videoUrl_en": "https://duckduckgo.com/?q=!ducky+site:youtube.com+Supercommunicators%20charles%20duhigg%20interview",
+      "videoUrl": "https://duckduckgo.com/?q=!ducky+site:youtube.com+poder%20robert%20greene%20entrevista%20espa%C3%B1ol",
+      "videoUrl_en": "https://duckduckgo.com/?q=!ducky+site:youtube.com+Power%20robert%20greene%20interview",
       "_nucleus": {
         "book_identity": {
-          "titulo_es": "supercomunicadores",
-          "titulo_en": "Supercommunicators",
-          "autor_completo": "Charles Duhigg",
-          "idioma_original": "es"
+          "titulo_es": "poder",
+          "titulo_en": "Power",
+          "autor_completo": "Robert Greene",
+          "idioma_original": "en"
         },
         "book_grounding_anchors": {
           "concepts": [
-            "técnicas para mejorar la comunicación interpersonal",
-            "habilidades para influir efectivamente en los demás",
-            "consejos prácticos para la comunicación",
-            "ejemplos de supercomunicadores en la vida real"
+            "dinámicas del poder",
+            "manipulación estratégica",
+            "tácticas para obtener poder",
+            "mantenimiento del poder",
+            "relaciones humanas y poder"
           ],
           "key_terms": [
-            "comunicación efectiva",
-            "influencia",
-            "habilidades interpersonales",
-            "persuasión",
-            "conexión emocional"
+            "manipulación",
+            "estrategia",
+            "dinámica social",
+            "poder",
+            "control"
           ],
-          "authorial_voice_notes": "La voz del autor es práctica y motivacional, centrada en consejos aplicables y ejemplos reales."
+          "authorial_voice_notes": "La voz del autor es analítica, persuasiva y pragmática, enfocándose en la realidad de las relaciones humanas y el poder."
         },
         "lens_analysis": {
           "lens_provided": false,
-          "analysis": "La lente del curador no se aplica directamente, ya que el libro no se basa en una perspectiva única o una teoría específica, sino que aborda un tema amplio de comunicación.",
+          "analysis": "La lente del curador no se aplica directamente, ya que el libro se centra en la exploración del poder en lugar de un enfoque curatorial específico.",
           "decision": "dont_apply_book_is_about_something_else"
         },
         "visual_intent": {
-          "hue_primary": 200,
-          "saturation": "balanced",
+          "hue_primary": 0,
+          "saturation": "vivid",
           "lightness_paper": "medium_light",
-          "temperature_shift": 0,
-          "palette_strategy": "analogous",
-          "typography_family": "sans_humanista",
+          "temperature_shift": 10,
+          "palette_strategy": "complementary",
+          "typography_family": "serif_moderno",
           "density": "equilibrado",
           "rhythm": "medio",
-          "era": "moderno",
+          "era": "contemporaneo",
           "genre_visual": "ensayo"
         },
         "surface_hints": {
           "dimension": "Conexion",
           "punto_hawkins": "Activo",
-          "franja_ideal": "manana"
+          "franja_ideal": "tarde"
         },
         "card_es": {
-          "titulo": "La magia de la conexión emocional",
-          "parrafoTop": "La conexión emocional es el hilo que une a las personas en una conversación. Cuando se logra, se transforma la simple charla en un intercambio significativo, donde cada palabra cuenta.",
-          "subtitulo": "¿Cómo estableces esa conexión en tus interacciones?",
-          "parrafoBot": "Utilizar técnicas que fomenten la empatía y el entendimiento puede ser la clave para influir efectivamente en los demás. Los supercomunicadores lo saben y lo aplican con maestría."
+          "titulo": "Las dinámicas del poder en acción",
+          "parrafoTop": "La comprensión de [H]las dinámicas del poder es esencial para navegar en la vida.[/H] Sin esta conciencia, uno se convierte en presa fácil de las manipulaciones ajenas.",
+          "subtitulo": "¿Qué estrategias empleas en tus relaciones?",
+          "parrafoBot": "Las tácticas para obtener poder requieren astucia y precisión. [H]La manipulación estratégica puede ser la clave para alcanzar tus objetivos.[/H>"
         },
         "card_en": {
-          "titulo": "The Power of Emotional Connection",
-          "parrafoTop": "Emotional connection serves as the thread binding individuals within a conversation. When achieved, it transforms mere talk into a meaningful exchange, where every word resonates and leaves an impact.",
-          "subtitulo": "How do you create that connection in your interactions?",
-          "parrafoBot": "Employing techniques that nurture empathy and understanding can be the key to effectively influencing others. Supercommunicators know this and wield it with skill."
+          "titulo": "The Dynamics of Power in Action",
+          "parrafoTop": "Understanding [H]the dynamics of power is essential for navigating life.[/H] Without this awareness, one easily becomes prey to the manipulations of others.",
+          "subtitulo": "What strategies do you employ in your relationships?",
+          "parrafoBot": "The tactics for acquiring power demand cunning and precision. [H]Strategic manipulation can be the key to achieving your goals.[/H>"
         },
         "emotional_words_es": [
-          "empatía",
-          "inspiración",
-          "conexión",
-          "persuasión"
+          "astucia",
+          "control",
+          "reflexión",
+          "estrategia"
         ],
         "emotional_words_en": [
-          "impactful",
-          "connection",
-          "understanding",
-          "influence"
+          "cunning",
+          "precision",
+          "control",
+          "awareness"
         ],
         "og_phrases_es": [
-          "🛡 La influencia comienza con una escucha activa.",
-          "🎯 Cada conversación es una oportunidad para conectar.",
-          "🌱 Las técnicas de persuasión son herramientas de conexión.",
-          "🔮 Los supercomunicadores transforman palabras en acción."
+          "🎯 Las relaciones humanas son un campo de batalla por el poder.",
+          "🌱 La manipulación es el arte de influir sin ser descubierto.",
+          "🔮 Entender las dinámicas sociales abre puertas al control.",
+          "🕊 Las tácticas de poder son imprescindibles en la vida cotidiana."
         ],
         "og_phrases_en": [
-          "🛡 Every conversation can become meaningful with the right approach.",
-          "🎯 Empathy is the cornerstone of effective communication.",
-          "🌱 Mastering connection opens doors to influence.",
-          "🔮 Supercommunicators thrive on emotional resonance."
+          "🎯 Mastering power dynamics transforms every interaction.",
+          "🌱 Manipulation is not merely a tactic; it is an art.",
+          "🔮 Strategic thinking can redefine your relationships.",
+          "🕊 Understanding others is the foundation of influence."
         ],
         "edition_blocks_es": [
           {
             "gesture_type": "instruccion_sensorial",
-            "sensory_anchor": "espacio",
-            "phrase": "🗺 Imagina un espacio donde cada palabra resuena con significado."
+            "sensory_anchor": "tiempo",
+            "phrase": "🕰 Dedica un momento a observar cómo se despliega el poder a tu alrededor."
           },
           {
             "gesture_type": "pregunta_directa",
-            "sensory_anchor": "tiempo",
-            "phrase": "🌓 ¿Qué historia compartes hoy que pueda influir en alguien más?"
+            "sensory_anchor": "espacio",
+            "phrase": "🌌 ¿Qué espacio ocupas en la jerarquía de tus relaciones?"
           },
           {
             "gesture_type": "imagen_concreta",
             "sensory_anchor": "vista",
-            "phrase": "👁 Visualiza a un supercomunicador cautivando a su audiencia con cada gesto."
+            "phrase": "👁 Imagina un tablero de ajedrez, donde cada movimiento cuenta."
           },
           {
             "gesture_type": "aforismo_autorial",
-            "sensory_anchor": "oido",
-            "phrase": "🔔 La voz del corazón siempre encuentra eco en el otro."
+            "sensory_anchor": "movimiento",
+            "phrase": "🌊 El poder se mueve en silencio, esperando su momento."
           }
         ],
         "edition_blocks_en": [
           {
             "gesture_type": "sensory_instruction",
-            "sensory_anchor": "sight",
-            "phrase": "🔭 Imagine the warmth of a genuine smile lighting up the room."
+            "sensory_anchor": "space",
+            "phrase": "🗺 Imagine the room shifting with every unspoken command."
           },
           {
             "gesture_type": "direct_question",
-            "sensory_anchor": "breath",
-            "phrase": "🧘 What truly resonates with you in a conversation?"
+            "sensory_anchor": "time",
+            "phrase": "🌓 How often do you consider the power at play in your life?"
           },
           {
             "gesture_type": "concrete_image",
-            "sensory_anchor": "space",
-            "phrase": "🏛 Picture two people leaning in, fully engaged, sharing their stories."
+            "sensory_anchor": "sight",
+            "phrase": "👁 Picture a chessboard, each piece a player in the game of power."
           },
           {
             "gesture_type": "authorial_aphorism",
-            "sensory_anchor": "time",
-            "phrase": "🕰 True influence is a timeless art, crafted through connection."
+            "sensory_anchor": "movement",
+            "phrase": "🌊 Power is fluid; it moves like water, adapting to its surroundings."
           }
         ],
         "confidence": {
           "book_grounding": 0.6,
           "voice_authenticity": 0.93,
-          "specificity": 0.91,
-          "grounding_judge": 0.85,
-          "combined": 0.8,
+          "specificity": 0.95,
+          "grounding_judge": 0.9,
+          "combined": 0.83,
           "signals": {
             "bookIdentityConfidence": 0.6000000000000001,
             "voiceSignal": 0.9249999999999999,
-            "specificitySignal": 0.9071428571428571,
-            "judgeScore": 0.8500000000000001
+            "specificitySignal": 0.95,
+            "judgeScore": 0.9
           }
         }
       },
@@ -283,46 +284,51 @@
           "tier3_conf_0.80"
         ],
         "verified_identity": {
-          "titulo_real": "supercomunicadores",
-          "autor_completo": "charles duhigg",
+          "titulo_real": "poder",
+          "autor_completo": "robert greene",
           "año": null
         },
         "similar_books": [
           {
-            "titulo": "Hablar en público para Dummies",
-            "autor": "Julio César Fernández",
-            "razon": "Aborda técnicas de comunicación efectiva y habilidades para hablar en público."
+            "titulo": "El arte de la guerra",
+            "autor": "Sun Tzu",
+            "razon": "Ambos libros tratan sobre estrategias y tácticas en la vida y en el poder."
           },
           {
-            "titulo": "Comunicación no violenta",
-            "autor": "Marshall B. Rosenberg",
-            "razon": "Explora la comunicación efectiva y empática, que puede relacionarse con el tema de la supercomunicación."
+            "titulo": "Las 48 leyes del poder",
+            "autor": "Robert Greene",
+            "razon": "Es otro libro del mismo autor que explora el poder y la manipulación en las relaciones humanas."
           },
           {
-            "titulo": "El arte de la comunicación",
-            "autor": "Thich Nhat Hanh",
-            "razon": "Se centra en la comunicación consciente y efectiva, un aspecto importante para ser un 'supercomunicador'."
+            "titulo": "Maestría",
+            "autor": "Robert Greene",
+            "razon": "También de Greene, este libro aborda el desarrollo personal y la adquisición de habilidades en el contexto del poder."
           },
           {
-            "titulo": "Cómo ganar amigos e influir sobre las personas",
-            "autor": "Dale Carnegie",
-            "razon": "Un clásico sobre habilidades interpersonales y comunicación persuasiva."
+            "titulo": "El príncipe",
+            "autor": "Nicolás Maquiavelo",
+            "razon": "Un clásico sobre el poder político y la manipulación en el liderazgo."
+          },
+          {
+            "titulo": "La conquista de la felicidad",
+            "autor": "Bertrand Russell",
+            "razon": "Aunque más filosófico, trata sobre el poder personal y la búsqueda de la felicidad."
           }
         ],
         "from_cache": false
       },
       "_grounding_judge": {
         "es": {
-          "grounded_score": 0.9,
+          "grounded_score": 1,
           "uses_book_specific_concepts": true,
           "could_apply_to_any_book": false,
-          "reason": "The content is highly relevant to the inferred themes of the book, focusing on emotional connection, empathy, and influence in communication. Phrases like 'la conexión emocional' and 'técnicas que fomenten la empatía' directly relate to the book's focus on interpersonal communication skills. The motivational tone and practical advice align well with the inferred voice of the author. While it is a "
+          "reason": "El contenido generado se ancla firmemente en el tema del poder, la manipulación y las dinámicas sociales, conceptos centrales en el libro 'Poder' de Robert Greene. Frases como 'Las dinámicas del poder es esencial para navegar en la vida' y 'La manipulación estratégica puede ser la clave para alcanzar tus objetivos' reflejan directamente las ideas del libro. Además, el uso de metáforas como 'un tab"
         },
         "en": {
           "grounded_score": 0.8,
           "uses_book_specific_concepts": true,
           "could_apply_to_any_book": false,
-          "reason": "The content reflects the inferred theme of the book by focusing on emotional connection and empathy as key elements of effective communication. Phrases like 'emotional connection' and 'empathy is the cornerstone of effective communication' directly relate to the skills and techniques for improving interpersonal communication. However, while it is specific to the inferred themes, the language used,"
+          "reason": "The content reflects the themes of power dynamics and manipulation, which are central to Robert Greene's work. Phrases like 'tactics for acquiring power' and 'strategic manipulation' directly relate to the concepts discussed in 'Poder'. However, while it is specific to the themes of the book, some phrases are somewhat generic and could apply to other contexts, which prevents a perfect score."
         }
       },
       "_voice_verdict": {
@@ -331,12 +337,12 @@
         "es": {
           "verdict": "pagina",
           "confidence": 0.9,
-          "reason": "Uso de voz directa y preguntas retóricas sin referencias externas.",
-          "elapsed_ms": 735,
+          "reason": "Uso de segunda persona y tono directo sobre el poder.",
+          "elapsed_ms": 875,
           "usage": {
-            "prompt_tokens": 367,
-            "completion_tokens": 28,
-            "total_tokens": 395,
+            "prompt_tokens": 358,
+            "completion_tokens": 26,
+            "total_tokens": 384,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -353,12 +359,12 @@
         "en": {
           "verdict": "pagina",
           "confidence": 0.9,
-          "reason": "Voz directa y enfoque en la conexión emocional sin referencias externas.",
-          "elapsed_ms": 886,
+          "reason": "Voz directa y reflexiones sobre el poder sin referencias externas.",
+          "elapsed_ms": 966,
           "usage": {
-            "prompt_tokens": 352,
+            "prompt_tokens": 348,
             "completion_tokens": 28,
-            "total_tokens": 380,
+            "total_tokens": 376,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -374,36 +380,36 @@
         },
         "circuit_tripped": false,
         "should_reextract": false,
-        "total_tokens": 775,
-        "total_ms": 886
+        "total_tokens": 760,
+        "total_ms": 966
       },
       "_visual": {
         "synthesis_inputs": {
-          "hue_primary": 200,
-          "adjusted_hue": 200,
-          "saturation": "balanced",
-          "saturation_value": 0.55,
+          "hue_primary": 0,
+          "adjusted_hue": 10,
+          "saturation": "vivid",
+          "saturation_value": 0.8,
           "lightness_paper": "medium_light",
           "paper_lightness_value": 0.82,
-          "temperature_shift": 0,
-          "palette_strategy": "analogous"
+          "temperature_shift": 10,
+          "palette_strategy": "complementary"
         },
-        "contrast_ratio": "11.50",
+        "contrast_ratio": "11.48",
         "paper_is_dark": false,
         "cssVars": {
-          "--palette-0": "#90DFD2",
-          "--palette-1": "#4DC1CB",
-          "--palette-2": "#2C5896",
-          "--palette-3": "#192457",
-          "--accent": "#1F99D6",
-          "--accent-soft": "#1F99D638",
-          "--accent-glow": "#1F99D66b",
-          "--paper": "#CFD2D3",
-          "--ink": "#171A1C",
-          "--border": "#7C7E7F",
-          "--highlight-bg": "#1B87BCd9",
+          "--palette-0": "#F1927E",
+          "--palette-1": "#30C9E8",
+          "--palette-2": "#AE5413",
+          "--palette-3": "#0B4065",
+          "--accent": "#E23512",
+          "--accent-soft": "#E2351238",
+          "--accent-glow": "#E235126b",
+          "--paper": "#D3D0CF",
+          "--ink": "#1C1817",
+          "--border": "#7F7D7C",
+          "--highlight-bg": "#C72F10d9",
           "--highlight-ink": "#FFFFFF",
-          "--typography-stack": "'Work Sans', 'Open Sans', 'Segoe UI', sans-serif",
+          "--typography-stack": "'Source Serif Pro', Georgia, serif",
           "--line-height": 1.65,
           "--letter-spacing": 0.2,
           "--paragraph-gap": 1,
@@ -430,7 +436,7 @@
         "distinct_types_en": 4
       },
       "_quality_warning": null,
-      "_inputs_snapshot": "2026-04-20T03-12-42",
+      "_inputs_snapshot": "2026-04-20T03-42-02",
       "_crono": {
         "dia": "domingo",
         "hora": 21,
@@ -441,28 +447,28 @@
         "descripcion_franja": "Noche: melatonina en ascenso. Reflexivo, contemplativo, sin urgencia."
       },
       "_metrics": {
-        "tokens_total": 8702,
+        "tokens_total": 9811,
         "tokens_by_phase": {
-          "grounding": 526,
-          "anchors": 2248,
+          "grounding": 571,
+          "anchors": 2270,
           "palette": 0,
-          "content_es": 2025,
-          "judge_es": 810,
-          "content_en": 1542,
-          "judge_en": 776,
-          "voice": 775
+          "content_es": 2515,
+          "judge_es": 867,
+          "content_en": 1997,
+          "judge_en": 831,
+          "voice": 760
         },
-        "elapsed_ms_total": 51234,
+        "elapsed_ms_total": 54616,
         "elapsed_ms_by_phase": {
-          "grounding": 28681,
-          "anchors": 6202,
-          "palette": 1,
+          "grounding": 30341,
+          "anchors": 5115,
+          "palette": 2,
           "cover_fallback": 0,
-          "content_es": 5537,
-          "judge_es": 2513,
-          "content_en": 4934,
-          "judge_en": 2479,
-          "voice": 886,
+          "content_es": 6267,
+          "judge_es": 2898,
+          "content_en": 6076,
+          "judge_en": 2949,
+          "voice": 967,
           "post_processing": 5
         },
         "llm_calls_count": 8,
