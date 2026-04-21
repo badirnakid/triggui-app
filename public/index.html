@@ -47,21 +47,28 @@
     opacity: 0.9;
   }
 
-  /* 🌒 v10 BOOT GATE TOTAL — LO PRIMERO QUE SE VE ES LA BARRA MÁGICA. PUNTO.
+  /* 🌒 v11 BOOT GATE INMEDIATO — LO PRIMERO QUE SE VE ES LA BARRA MÁGICA. PUNTO.
      
-     Mientras el boot no haya terminado, TODO lo demás queda invisible.
-     Esto incluye:
-       - .intro (el letrero con gradiente rojizo animado)
+     El CSS se evalúa en el MOMENTO de primer paint. Como el <script> que
+     agrega `html.booting` corre ANTES del primer paint, usamos `html.booting`
+     como selector principal. Así los bloques JAMÁS son visibles, ni siquiera
+     por 16ms (un frame).
+     
+     `body.booting` también existe como capa 2 de seguridad por si algún
+     navegador renderiza antes de que html.booting tome efecto.
+     
+     Lo que esconde durante el boot:
+       - .intro (letrero rojizo con gradiente fosforescente animado)
        - .block (los 4 cuadros de colores del libro)
-       - #likeBtnTarjeta, .card-reveal-trigger (otros elementos flotantes)
-       - #barraLupaBtn (el botón lupa)
+       - #likeBtnTarjeta, #barraLupaBtn, .card-reveal-trigger
      
-     Solo el overlay de la barra mágica puede ser visible durante el boot.
-     El JS remueve la clase body.booting cuando el overlay de la barra
-     está 100% montado, coloreado, y con strings aplicados.
-     
-     Usamos visibility:hidden (no display:none) para que el layout no se
-     reacomode cuando se revelen. */
+     Se usa visibility:hidden (no display:none) para que el layout no se
+     reacomode al revelarse. */
+  html.booting .intro,
+  html.booting .block,
+  html.booting #likeBtnTarjeta,
+  html.booting #barraLupaBtn,
+  html.booting .card-reveal-trigger,
   body.booting .intro,
   body.booting .block,
   body.booting #likeBtnTarjeta,
@@ -83,12 +90,17 @@
 </style>
 
 <script id="boot-gate">
-  // Aplicar el gate lo MÁS pronto posible — antes incluso del DOMContentLoaded
-  // para que ningún pintado inicial muestre bloques a medias.
+  // 🌒 v11: Gate INMEDIATO — ANTES del primer paint.
+  // El <script> es síncrono y corre durante el parse del HTML,
+  // ANTES de que el browser pinte nada. Esto garantiza que ningún
+  // elemento aparezca por un solo frame.
+  //
+  // html.booting y body.booting se remueven SINCRONIZADAMENTE en
+  // bootTriggui(), justo cuando el overlay de la barra mágica está
+  // 100% listo con strings y colores aplicados.
   document.documentElement.classList.add('booting');
   document.addEventListener('DOMContentLoaded', () => {
     document.body.classList.add('booting');
-    document.documentElement.classList.remove('booting');
   }, { once: true });
 </script>
 
@@ -3396,6 +3408,7 @@ BarraMagica.openOverlay = function(force) {
   overlay.style.display = 'flex';
   overlay.style.opacity = '0';
   overlay.style.transition = 'none';
+  overlay.style.pointerEvents = ''; // 🌒 v11: restaurar por si cerró con pointer-events:none
   void overlay.offsetWidth; // reflow
 
   const lupa = document.getElementById('barraLupaBtn');
@@ -3424,11 +3437,16 @@ BarraMagica.closeOverlay = function(skipped, skipRender) {
   // que el submit actual dejó programados (si llegamos aquí desde submit,
   // ya se programaron los timers con el token actual; si llegamos desde
   // otro lado, no hay timers que invalidar).
-  //
-  // El bug del v9: closeOverlay incrementaba el token, lo que invalidaba
-  // cualquier timer posterior del mismo submit (ej: first-visit-hint en
-  // 1600ms se abortaba silenciosamente).
   this._clearSubmitTimers && this._clearSubmitTimers();
+
+  // 🌒 v11: CRÍTICO — quitar pointer-events DEL INSTANTE que inicia el fade-out.
+  // Sin esto, durante los 650ms de transición el overlay sigue "por encima"
+  // (z-index: 9998) con pointer-events activos aunque visualmente se esté
+  // desvaneciendo. El usuario impaciente que ve los bloques aparecer e
+  // intenta clickear uno, el click se va al overlay invisible y parece que
+  // "no reacciona". Con pointer-events:none desde el inicio del fade-out,
+  // los bloques debajo reciben los clicks INMEDIATAMENTE.
+  overlay.style.pointerEvents = 'none';
 
   // Transición cinematográfica: overlay se desvanece en 650ms con
   // cubic-bezier suave. Los bloques (ya renderizados debajo) se revelan
@@ -3440,6 +3458,7 @@ BarraMagica.closeOverlay = function(skipped, skipRender) {
   setTimeout(() => {
     overlay.style.display = 'none';
     overlay.style.transition = '';
+    overlay.style.pointerEvents = ''; // restaurar para próxima apertura
     // Reset visual para próxima apertura
     const submitBtn = document.getElementById('barraSubmit');
     const inputEl = document.getElementById('barraInput');
@@ -3861,7 +3880,7 @@ async function bootTriggui() {
     if (!data.libros || data.libros.length === 0) {
       console.warn('[Triggui] catálogo vacío');
       if (overlay) overlay.style.display = 'none';
-      document.body.classList.remove('booting');
+      document.body.classList.remove('booting'); document.documentElement.classList.remove('booting');
       showLoadingOrError('empty_catalog');
       track('empty_catalog_seen', { lang: TriggguiI18n.lang });
       try { updateBadge(); } catch(_) {}
@@ -3894,7 +3913,7 @@ async function bootTriggui() {
           overlay.classList.add('visible');
         }
         // Remover body.booting — los bloques ya están renderizados detrás del overlay
-        document.body.classList.remove('booting');
+        document.body.classList.remove('booting'); document.documentElement.classList.remove('booting');
         // Focus al terminar la transición (solo desktop)
         setTimeout(() => {
           const inp = document.getElementById('barraInput');
@@ -3918,7 +3937,7 @@ async function bootTriggui() {
     track('boot_error', { message: String(err && err.message || err).slice(0, 80) });
     // NO re-wire aquí — ya se hizo arriba. Re-wiring causa dobles listeners.
     if (overlay) overlay.style.display = 'none';
-    document.body.classList.remove('booting');
+    document.body.classList.remove('booting'); document.documentElement.classList.remove('booting');
     showLoadingOrError('network_error', { onRetry: bootTriggui });
   }
 }
