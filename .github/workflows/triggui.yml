@@ -12,6 +12,12 @@
 # Protege automáticamente los libros que generaste manualmente.
 # Un batch NO sobrescribe tu curaduría — la respeta.
 #
+# Resiliente contra:
+# - contenido.json no existe → lo crea
+# - contenido.json vacío (0 bytes) → lo reconstruye
+# - contenido.json corrupto (JSON inválido) → backup + rebuild
+# - contenido.json válido → lo usa normalmente
+#
 # ═══════════════════════════════════════════════════════════════════════════════
 # AUTOMATIZACIÓN (cron schedule)
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -221,20 +227,91 @@ jobs:
           fi
 
       # ╔══════════════════════════════════════════════════════════════════╗
-      # ║  FASE 3 — Linkear contenido.json histórico                        ║
+      # ║  FASE 3 — Linkear contenido.json histórico (BLINDADO)             ║
+      # ║                                                                   ║
+      # ║  Maneja 4 estados del archivo:                                    ║
+      # ║  1. No existe         → crea estructura vacía válida              ║
+      # ║  2. Existe pero vacío → reemplaza por estructura vacía válida    ║
+      # ║  3. Existe y corrupto → backup + reemplaza                        ║
+      # ║  4. Existe y válido   → lo usa (cuenta libros y manuales)         ║
       # ╚══════════════════════════════════════════════════════════════════╝
 
       - name: 📥 Linkear contenido.json histórico
         if: ${{ steps.modo.outputs.modo_tecnico != 'shadow_batch' }}
+        shell: bash
         run: |
-          if [ -f triggui-content/contenido.json ]; then
-            cp triggui-content/contenido.json experiments/nucleus/contenido.json
-            LIBROS=$(node -e "console.log(JSON.parse(require('fs').readFileSync('experiments/nucleus/contenido.json','utf8')).libros.length)")
-            MANUALES=$(node -e "const d=JSON.parse(require('fs').readFileSync('experiments/nucleus/contenido.json','utf8')); console.log(d.libros.filter(l=>l._manual===true).length)")
-            echo "📚 contenido.json histórico: ${LIBROS} libros (${MANUALES} manuales)"
-          else
-            echo "ℹ️  contenido.json no existe — se creará desde cero"
+          set -euo pipefail
+          mkdir -p experiments/nucleus
+
+          # Template de catálogo vacío pero VÁLIDO
+          # Timestamp ISO-8601 generado en runtime (reproducible)
+          NOW=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          EMPTY_JSON='{"libros":[],"meta":{"version":"1.0.0","generated_at":"'"${NOW}"'","total":0,"note":"Catálogo vacío — listo para generación"}}'
+
+          SRC="triggui-content/contenido.json"
+          DEST="experiments/nucleus/contenido.json"
+
+          # Estado 1: no existe
+          if [ ! -f "${SRC}" ]; then
+            echo "ℹ️  contenido.json no existe en triggui-content — creando estructura vacía válida"
+            printf '%s' "${EMPTY_JSON}" > "${DEST}"
+            echo "📚 contenido.json: 0 libros (0 manuales) · inicializado"
+            exit 0
           fi
+
+          # Estado 2/3: existe, pero ¿es válido?
+          # Validación con exit codes diferenciados para debug:
+          #   0 → válido
+          #   2 → vacío (0 bytes o solo whitespace)
+          #   3 → estructura inválida (no es {libros: []})
+          #   4 → JSON parse error (corrupto)
+          VALIDATION_EXIT=0
+          node -e "
+            const fs = require('fs');
+            try {
+              const raw = fs.readFileSync('${SRC}', 'utf8').trim();
+              if (!raw) { process.exit(2); }
+              const d = JSON.parse(raw);
+              if (!d || !Array.isArray(d.libros)) { process.exit(3); }
+              process.exit(0);
+            } catch (e) {
+              process.stderr.write('parse_error: ' + e.message + '\n');
+              process.exit(4);
+            }
+          " || VALIDATION_EXIT=$?
+
+          case "${VALIDATION_EXIT}" in
+            0)
+              # Estado 4: válido
+              cp "${SRC}" "${DEST}"
+              LIBROS=$(node -e "console.log(JSON.parse(require('fs').readFileSync('${DEST}','utf8')).libros.length)")
+              MANUALES=$(node -e "const d=JSON.parse(require('fs').readFileSync('${DEST}','utf8')); console.log(d.libros.filter(l=>l._manual===true).length)")
+              echo "📚 contenido.json histórico: ${LIBROS} libros (${MANUALES} manuales)"
+              ;;
+            2)
+              echo "⚠️  contenido.json está VACÍO — reemplazando por estructura vacía válida"
+              printf '%s' "${EMPTY_JSON}" > "${DEST}"
+              echo "📚 contenido.json: 0 libros (0 manuales) · reinicializado"
+              ;;
+            3)
+              echo "⚠️  contenido.json tiene estructura inválida — backup + reemplazo"
+              BACKUP="triggui-content/contenido.json.backup-$(date +%Y%m%d-%H%M%S)"
+              cp "${SRC}" "${BACKUP}" && echo "💾 backup: ${BACKUP}"
+              printf '%s' "${EMPTY_JSON}" > "${DEST}"
+              echo "📚 contenido.json: 0 libros (0 manuales) · reconstruido"
+              ;;
+            4)
+              echo "⚠️  contenido.json está CORRUPTO (JSON inválido) — backup + reemplazo"
+              BACKUP="triggui-content/contenido.json.backup-corrupto-$(date +%Y%m%d-%H%M%S)"
+              cp "${SRC}" "${BACKUP}" && echo "💾 backup: ${BACKUP}"
+              printf '%s' "${EMPTY_JSON}" > "${DEST}"
+              echo "📚 contenido.json: 0 libros (0 manuales) · reconstruido desde corrupto"
+              ;;
+            *)
+              echo "❌ Estado desconocido de contenido.json (exit ${VALIDATION_EXIT})"
+              exit 1
+              ;;
+          esac
 
       # ╔══════════════════════════════════════════════════════════════════╗
       # ║  FASE 4 — Validate book (para single/trigger)                     ║
@@ -399,6 +476,8 @@ jobs:
 
             [ -f contenido.json ] && git add contenido.json || true
             [ -f contenido_edicion.json ] && git add contenido_edicion.json || true
+            # Si hubo backups por corrupto/inválido en Fase 3, se versionan también
+            ls contenido.json.backup-* >/dev/null 2>&1 && git add contenido.json.backup-* || true
 
             if git diff --cached --quiet; then
               echo "🟡 triggui-content: sin cambios"
@@ -415,11 +494,12 @@ jobs:
           fi
 
       # ╔══════════════════════════════════════════════════════════════════╗
-      # ║  FASE 10 — Summary                                                ║
+      # ║  FASE 10 — Summary (BLINDADO)                                     ║
       # ╚══════════════════════════════════════════════════════════════════╝
 
       - name: 📋 Summary
         if: always()
+        shell: bash
         run: |
           SLUG=$([ -f /tmp/triggui-slug.txt ] && cat /tmp/triggui-slug.txt || echo "${{ steps.modo.outputs.modo_tecnico }}")
           TITULO=$([ -f /tmp/triggui-titulo.txt ] && cat /tmp/triggui-titulo.txt || echo "${SLUG}")
@@ -435,9 +515,23 @@ jobs:
           echo "| Modo prueba | ${{ inputs.modo_prueba }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
+          # Summary blindado: usa la misma validación que Fase 3 con graceful fallback
           if [ -f "${GITHUB_WORKSPACE}/contenido.json" ]; then
-            LIBROS=$(node -e "console.log(JSON.parse(require('fs').readFileSync('${GITHUB_WORKSPACE}/contenido.json','utf8')).libros.length)" 2>/dev/null || echo "?")
-            MANUALES=$(node -e "const d=JSON.parse(require('fs').readFileSync('${GITHUB_WORKSPACE}/contenido.json','utf8')); console.log(d.libros.filter(l=>l._manual===true).length)" 2>/dev/null || echo "?")
+            COUNT_OUTPUT=$(node -e "
+              try {
+                const raw = require('fs').readFileSync('${GITHUB_WORKSPACE}/contenido.json','utf8').trim();
+                if (!raw) { console.log('0 0'); process.exit(0); }
+                const d = JSON.parse(raw);
+                if (!d || !Array.isArray(d.libros)) { console.log('0 0'); process.exit(0); }
+                const total = d.libros.length;
+                const manuales = d.libros.filter(l => l && l._manual === true).length;
+                console.log(total + ' ' + manuales);
+              } catch (e) {
+                console.log('0 0');
+              }
+            " 2>/dev/null || echo "0 0")
+            LIBROS=$(echo "${COUNT_OUTPUT}" | awk '{print $1}')
+            MANUALES=$(echo "${COUNT_OUTPUT}" | awk '{print $2}')
             echo "### 📊 Producción" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "- Libros totales: ${LIBROS}" >> $GITHUB_STEP_SUMMARY
