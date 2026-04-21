@@ -47,9 +47,37 @@
     }
   },
   "google": {
-    "ok": false,
-    "reason": "no_good_match",
-    "source": "google_books"
+    "ok": true,
+    "source": "google_books",
+    "match_score": 0.766,
+    "match_details": {
+      "matched_title": "La vida minimal",
+      "matched_author": "PEDRO ANTONIO CAMPOS DIAZ"
+    },
+    "synopsis": "\"Si amas algo, déjalo ir...\". No tengo nada en contra de esa frase, pero pienso que deberíamos empezar por dejar ir lo que no amamos. Si lo único que queremos es ser felices, ¿por qué nos complicamos tanto? ¿Por qué estamos tan ocupados? ¿Por qué tenemos tanta prisa? ¿A dónde vamos? ¿Qué estamos persiguiendo? ¿Qué pasaría si hiciéramos un cambio? ¿Qué pasaría si en lugar de ir en busca de más, nos dedicáramos a disfrutar la riqueza de vivir con menos? ¿Qué pasaría si nos enfocáramos en lo que realmente vale la pena y dejáramos de acumular, consumir y perseguir cosas que no tienen sentido? Tal vez todo sería más simple. Es tiempo de eliminar problemas innecesarios y dedicarnos a vivir con felicidad, a ser mejores personas y a contribuir al bienestar de los demás. Es tiempo de dejar de preocuparnos tanto por tener y empezar a ocuparnos en ser. Es tiempo de una vida minimal. lavidaminimal.com",
+    "synopsis_length": 902,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=WixfDwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "La vida minimal",
+      "subtitulo": "Cómo vivir ligero en un mundo pesado",
+      "autor_completo": "PEDRO ANTONIO CAMPOS DIAZ",
+      "año": "2018",
+      "editorial": "GRIJALBO",
+      "paginas": 192,
+      "isbn": "9786073171182",
+      "isbn13": "9786073171182",
+      "isbn10": "6073171188",
+      "categorias": [
+        "Body, Mind & Spirit"
+      ],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=WixfDwAAQBAJ&printsec=frontcover&dq=intitle:La+vida+minimal+inauthor:Pedro+Campos&hl=&cd=1&source=gbs_api"
+    }
   },
   "openlibrary": {
     "ok": false,
@@ -101,6 +129,12 @@
       "valid": true
     },
     {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=WixfDwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
       "source": "amazon",
       "size": "large",
       "url": "https://images-na.ssl-images-amazon.com/images/P/1396714156.01.LZZZZZZZ.jpg",
@@ -109,17 +143,17 @@
   ],
   "_sources_succeeded": [
     "apple_books",
+    "google_books",
     "amazon"
   ],
   "_sources_failed": [
-    "google_books:no_good_match",
     "openlibrary:no_results"
   ],
   "_timing": {
-    "phase1_parallel_ms": 15850,
-    "phase2_isbn_chain_ms": 23757,
-    "cover_validation_ms": 605,
-    "total_ms": 40212
+    "phase1_parallel_ms": 1049,
+    "phase2_isbn_chain_ms": 401,
+    "cover_validation_ms": 720,
+    "total_ms": 2170
   },
-  "_cached_at": "2026-04-21T01:28:30.063Z"
+  "_cached_at": "2026-04-21T13:36:07.831Z"
 }

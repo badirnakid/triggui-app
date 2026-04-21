@@ -17,11 +17,13 @@
     "track_view_url": "https://books.apple.com/mx/book/cuerpos-sin-edad-mentes-sin-tiempo/id422525918?uo=4"
   },
   "match_score": 0.9653846153846155,
-  "other_sources_agreed": [],
+  "other_sources_agreed": [
+    "google_books"
+  ],
   "resolution_path": [
-    "evidence_fetched_2sources"
+    "evidence_fetched_3sources"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-21T02:29:41.686Z"
+  "cached_at": "2026-04-21T13:39:20.635Z"
 }

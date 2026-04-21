@@ -76,7 +76,7 @@
         "Self-Help"
       ],
       "idioma": "es",
-      "preview_link": "http://books.google.com/books?id=x9oBEAAAQBAJ&printsec=frontcover&dq=Piensa+como+un+monje+Jay+Shetty&hl=&cd=1&source=gbs_api"
+      "preview_link": "http://books.google.com/books?id=x9oBEAAAQBAJ&printsec=frontcover&dq=intitle:Piensa+como+un+monje+inauthor:Jay+Shetty&hl=&cd=1&source=gbs_api"
     }
   },
   "openlibrary": {
@@ -150,10 +150,10 @@
     "openlibrary:no_results"
   ],
   "_timing": {
-    "phase1_parallel_ms": 716,
-    "phase2_isbn_chain_ms": 482,
-    "cover_validation_ms": 1479,
-    "total_ms": 2677
+    "phase1_parallel_ms": 1188,
+    "phase2_isbn_chain_ms": 433,
+    "cover_validation_ms": 304,
+    "total_ms": 1925
   },
-  "_cached_at": "2026-04-21T11:47:20.126Z"
+  "_cached_at": "2026-04-21T13:43:58.010Z"
 }

@@ -1,0 +1,173 @@
+{
+  "titulo_input": "Por qué no existe el mundo",
+  "autor_input": "Markus Gabriel",
+  "isbn_seed": "",
+  "isbn_discovered": "911702911",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 0.6333333333333334,
+    "match_details": {
+      "matched_title": "Pourquoi le monde n'existe pas",
+      "matched_author": "Markus Gabriel"
+    },
+    "synopsis": "« La vie, l’univers et tout le reste... chacun d’entre nous s’est probablement déjà souvent posé la question de savoir ce que tout cela veut dire au juste. Où nous trouvons-nous ? Ne sommes-nous qu’un agrégat de particules élémentaires dans un gigantesque réceptacle qui contient le monde ? (…) Je vais développer dans ce livre le principe d’une philosophie nouvelle qui part d’une idée fondamentale simple : le monde n’existe pas. Comme vous le verrez, cela ne signifie pas qu’il n’existe absolument rien. Notre planète existe, mes rêves, l’évolution, les chasses d’eau dans les toilettes, la chute des cheveux, les espoirs, les particules élémentaires et même des licornes sur la lune, pour ne citer que quelques exemples. Le principe qui énonce que le monde n’existe pas implique que tout le reste existe. Je peux donc d’ores et déjà laisser entrevoir que je vais affirmer que tout existe, excepté le monde. » Markus Gabriel Traduit de l'allemand par Georges Sturm",
+    "synopsis_length": 967,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication5/v4/bd/56/31/bd5631d5-2345-e6a7-67e1-551a53ed879a/9782709646406-X.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication5/v4/bd/56/31/bd5631d5-2345-e6a7-67e1-551a53ed879a/9782709646406-X.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication5/v4/bd/56/31/bd5631d5-2345-e6a7-67e1-551a53ed879a/9782709646406-X.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication5/v4/bd/56/31/bd5631d5-2345-e6a7-67e1-551a53ed879a/9782709646406-X.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Pourquoi le monde n'existe pas",
+      "autor_completo": "Markus Gabriel",
+      "año": "2014",
+      "editorial": null,
+      "isbn": "911702911",
+      "categorias": [
+        "Política y actualidad",
+        "Libros"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/pourquoi-le-monde-nexiste-pas/id911702911?uo=4"
+    }
+  },
+  "google": {
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Por qué no existe el mundo",
+      "matched_author": "Markus Gabriel"
+    },
+    "synopsis": "Existen mundos, partículas, seres, conciencias. Existen nuestros sueños y nuestros miedos. Pero no el mundo. ¿Por qué? ¿Qué significa existir? ¿ Y qué significado tiene nuestra existencia?",
+    "synopsis_length": 188,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=J-aCjwEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Por qué no existe el mundo",
+      "subtitulo": "",
+      "autor_completo": "Markus Gabriel",
+      "año": "2016",
+      "editorial": null,
+      "paginas": null,
+      "isbn": "9786077356998",
+      "isbn13": "9786077356998",
+      "isbn10": "6077356999",
+      "categorias": [
+        "Philosophy"
+      ],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=J-aCjwEACAAJ&dq=intitle:Por+qu%C3%A9+no+existe+el+mundo+inauthor:Markus+Gabriel&hl=&cd=1&source=gbs_api"
+    }
+  },
+  "openlibrary": {
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Por Qué No Existe el Mundo",
+      "matched_author": "Markus Gabriel"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2016.",
+    "synopsis_length": 65,
+    "covers": [],
+    "verified_identity": {
+      "titulo_real": "Por Qué No Existe el Mundo",
+      "autor_completo": "Markus Gabriel",
+      "año": "2016",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": "spa",
+      "paginas": null
+    }
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/911702911.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "911702911",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication5/v4/bd/56/31/bd5631d5-2345-e6a7-67e1-551a53ed879a/9782709646406-X.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication5/v4/bd/56/31/bd5631d5-2345-e6a7-67e1-551a53ed879a/9782709646406-X.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication5/v4/bd/56/31/bd5631d5-2345-e6a7-67e1-551a53ed879a/9782709646406-X.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication5/v4/bd/56/31/bd5631d5-2345-e6a7-67e1-551a53ed879a/9782709646406-X.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=J-aCjwEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/911702911.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "google_books",
+    "openlibrary",
+    "amazon"
+  ],
+  "_sources_failed": [],
+  "_timing": {
+    "phase1_parallel_ms": 4002,
+    "phase2_isbn_chain_ms": 1165,
+    "cover_validation_ms": 647,
+    "total_ms": 5814
+  },
+  "_cached_at": "2026-04-21T13:36:37.635Z"
+}

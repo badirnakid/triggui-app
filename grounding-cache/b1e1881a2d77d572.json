@@ -1,0 +1,30 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nWhat can you learn from a Silicon Valley legend and a pantheon of iconic leaders? The key to scaling a successful business isn’t talent, network, or strategy. It’s an entrepreneurial mindset—and that mindset can be cultivated. “If you’re scaling a company—or if you just love a well-told story—this is a book to savor.”—Robert Iger, #1 New York Times bestselling author&#xa0;of The Ride&#xa0;of&#xa0;a Lifetime Behind the scenes in Silicon Valley, Reid Hoffman (founder of LinkedIn, investor at Greylock) is a sought-after adviser to heads of companies and heads of state. On each&#xa0;episode of his podcast, Masters of Scale, he sits down with a guest from an all-star list of visionary founders and leaders, digging into the surprising strategies that power their&#xa0;company’s growth. In this book, he draws on their most riveting, revealing stories—as well as his own experience as a founder and investor—to distill the secrets behind the most extraordinary success stories of our times. Here, Hoffman teams up with Masters of Scale’s executive producers to offer a rare window into the entrepreneurial mind, sharing hard-won wisdom from leaders of&#xa0;iconic companies (including Apple, Nike, Netflix, Spotify, Starbucks, Google, Instagram,&#xa0;and Microsoft) as well as the bold, disruptive startups (such as 23andMe, TaskRabbit, Black List, and Walker & Co.) that are solving the problems of the twenty-first century. Through vivid storytelling and incisive analysis, Masters of Scale distills their collective insights into a set of counterintuitive principles that anyone can use. How do you find a winning idea and turn it into a scalable venture? What can you learn from a “squirmy no”? When should you stop listening to your customers? Which fires should you put out right away, and which should you let burn? And can you really make money while making the world a better place? (Answer: Yes. But you have to keep your profits and values aligned.) Based on more than a hundred interviews and including a wealth of new material never aired on the podcast, this unique insider’s guide will inspire you to reimagine how you do business today.\n\nMETADATA VERIFICADA:\n- Título: Masters of Scale\n- Autor: Reid Hoffman, June Cohen & Deron Triff\n- Año: 2021\n- Categorías: Pequeñas empresas y emprendedores, Libros, Negocios y finanzas personales, Economía",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Masters of Scale",
+    "autor_completo": "Reid Hoffman, June Cohen & Deron Triff",
+    "año": "2021",
+    "editorial": null,
+    "isbn": "1551970880",
+    "categorias": [
+      "Pequeñas empresas y emprendedores",
+      "Libros",
+      "Negocios y finanzas personales",
+      "Economía"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/masters-of-scale/id1551970880?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "google_books",
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_4sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T13:37:04.472Z"
+}

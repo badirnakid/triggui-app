@@ -1,0 +1,32 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\n#1 Wall Street Journal Bestseller New York Times Bestseller USA Today Bestseller The team behind How Google Works returns with management lessons from legendary coach and business executive, Bill Campbell, whose mentoring of some of our most successful modern entrepreneurs has helped create well over a trillion dollars in market value. Bill Campbell played an instrumental role in the growth of several prominent companies, such as Google, Apple, and Intuit, fostering deep relationships with Silicon Valley visionaries, including Steve Jobs, Larry Page, and Eric Schmidt. In addition, this business genius mentored dozens of other important leaders on both coasts, from entrepreneurs to venture capitalists to educators to football players, leaving behind a legacy of growing companies, successful people, respect, friendship, and love after his death in 2016. Leaders at Google for over a decade, Eric Schmidt, Jonathan Rosenberg, and Alan Eagle experienced firsthand how the man fondly known as Coach Bill built trusting relationships, fostered personal growth—even in those at the pinnacle of their careers—inspired courage, and identified and resolved simmering tensions that inevitably arise in fast-moving environments. To honor their mentor and inspire and teach future generations, they have codified his wisdom in this essential guide. Based on interviews with over eighty people who knew and loved Bill Campbell, Trillion Dollar Coach explains the Coach’s principles and illustrates them with stories from the many great people and companies with which he worked. The result is a blueprint for forward-thinking business leaders and managers that will help them create higher performing and faster moving cultures, teams, and companies. This essential guide reveals his principles for business success: Building Trust: Learn how Coach Bill created an “envelope of trust” to foster the psychological safety required for high-performing teams at companies like Google and Apple.Team First Culture: Discover why the team is paramount, and how to identify and nurture the “doers” who put the company’s success above personal gain.Actionable Management Principles: Get actionable advice on everything from running effective one-on-ones and making hard decisions to managing the difficult but valuable “aberrant genius.”The Power of Love: Understand why bringing love, community, and respect into the workplace isn’t just good for morale—it’s a critical component of operational excellence and success.\n\nMETADATA VERIFICADA:\n- Título: Trillion Dollar Coach\n- Autor: Eric Schmidt, Jonathan Rosenberg & Alan Eagle\n- Año: 2019\n- Categorías: Profesiones, Libros, Negocios y finanzas personales, Administración y liderazgo",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Trillion Dollar Coach",
+    "autor_completo": "Eric Schmidt, Jonathan Rosenberg & Alan Eagle",
+    "año": "2019",
+    "editorial": null,
+    "isbn": "1299676040",
+    "categorias": [
+      "Profesiones",
+      "Libros",
+      "Negocios y finanzas personales",
+      "Administración y liderazgo",
+      "Biografías y memorias",
+      "Pequeñas empresas y emprendedores",
+      "Biografías y memorias: negocios"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/trillion-dollar-coach/id1299676040?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "google_books"
+  ],
+  "resolution_path": [
+    "evidence_fetched_3sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T13:43:32.126Z"
+}

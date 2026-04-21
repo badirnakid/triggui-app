@@ -1,0 +1,30 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nEn Einstein para despistados, de la serie «Genios para la vida cotidiana», el prestigioso Allan Percy recoge 85 grandes reflexiones de este genio y las traslada a situaciones prácticas de la vida cotidiana. Sin lugar a dudas, la figura de Albert Einstein ha trascendido el ámbito de la ciencia para convertirse en un icono de la cultura moderna, comparable a las estrellas del pop o a los grandes actores de Hollywood. Y no solo por su peculiar peinado, ni por haber ganado un Premio Nobel, ni siquiera por ser el padre de la teoría de la relatividad. Además de haber revolucionado la física, Einstein fue un acérrimo defensor de la paz y un brillante pensador sobre el arte de vivir. Sus lúcidos aforismos para el día a día reflejan la sabiduría de alguien que siempre tuvo los pies en la tierra. Dentro y fuera del ámbito académico, Albert Einstein era por encima de todo un solucionador de problemas. En los tiempos que corren, en los que la presión es máxima y la compensación escasa, las enseñanzas de este físico nos ayudarán a apagar más de un fuego.\n\nMETADATA VERIFICADA:\n- Título: Einstein para despistados\n- Autor: Allan Percy\n- Año: 2019\n- Categorías: Espiritualidad, Libros, Salud, mente y cuerpo, No ficción",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Einstein para despistados",
+    "autor_completo": "Allan Percy",
+    "año": "2019",
+    "editorial": null,
+    "isbn": "1456037646",
+    "categorias": [
+      "Espiritualidad",
+      "Libros",
+      "Salud, mente y cuerpo",
+      "No ficción",
+      "Filosofía"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/einstein-para-despistados/id1456037646?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "google_books"
+  ],
+  "resolution_path": [
+    "evidence_fetched_3sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T13:34:42.918Z"
+}

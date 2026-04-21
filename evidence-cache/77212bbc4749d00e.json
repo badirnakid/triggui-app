@@ -47,9 +47,37 @@
     }
   },
   "google": {
-    "ok": false,
-    "reason": "no_good_match",
-    "source": "google_books"
+    "ok": true,
+    "source": "google_books",
+    "match_score": 0.9653846153846155,
+    "match_details": {
+      "matched_title": "Cuerpos Sin Edad, Mentes Sin Tiempo",
+      "matched_author": "Deepak Chopra"
+    },
+    "synopsis": "Readers are given valuable tools to alter their perception of the aging process and to maintain youthful vitality, beauty, and creativity in this discussion of the aspects of aging that are by no means inevitable. Studies in quantum physics by scientists such as Bohr, Einstein, and Heisenberg have led Chopra to the conclusion that physical aging can be controlled through alteration of thought patterns. Because age depends on an individual's consciousness, and any person can use their mental power to transform their body's chemistry, the past and the future become mere mental projections from which any person can liberate himself. En éste, su libro fundamental, Chopra les brinda herramientas a sus lectores para modificar su percepción sobre la edad, para conservar la vitalidad, la belleza, y la creatividad y para valorar al mismo tiempo la sabiduría acumulada a lo largo de la vida. Explica que el envejecimiento depende de la conciencia del individual, y que cualquier persona puede utilizar el poder de ésta para transformar la bioquímica de su cuerpo, crear las condiciones para la longevidad, y preservar el equilibrio de la vida. Porque el pasado y el futuro son sólo proyecciones mentales, alguien puede liberarse de ellas y abrir un espacio para la experiencia de un cuerpo sin edad y una mente sin tiempo.",
+    "synopsis_length": 1324,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=X79JFeVk9WwC&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Cuerpos Sin Edad, Mentes Sin Tiempo",
+      "subtitulo": "",
+      "autor_completo": "Deepak Chopra",
+      "año": "2005",
+      "editorial": "Vergara",
+      "paginas": 328,
+      "isbn": "9788466608275",
+      "isbn13": "9788466608275",
+      "isbn10": "8466608273",
+      "categorias": [
+        "Health & Fitness"
+      ],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=X79JFeVk9WwC&dq=intitle:Cuerpos+sin+edad+mentes+sin+tiempo+inauthor:Deepak+Shopra&hl=&cd=3&source=gbs_api"
+    }
   },
   "openlibrary": {
     "ok": false,
@@ -101,6 +129,12 @@
       "valid": true
     },
     {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=X79JFeVk9WwC&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
       "source": "amazon",
       "size": "large",
       "url": "https://images-na.ssl-images-amazon.com/images/P/422525918.01.LZZZZZZZ.jpg",
@@ -109,17 +143,17 @@
   ],
   "_sources_succeeded": [
     "apple_books",
+    "google_books",
     "amazon"
   ],
   "_sources_failed": [
-    "google_books:no_good_match",
     "openlibrary:no_results"
   ],
   "_timing": {
-    "phase1_parallel_ms": 16199,
-    "phase2_isbn_chain_ms": 24243,
-    "cover_validation_ms": 377,
-    "total_ms": 40819
+    "phase1_parallel_ms": 1069,
+    "phase2_isbn_chain_ms": 252,
+    "cover_validation_ms": 792,
+    "total_ms": 2113
   },
-  "_cached_at": "2026-04-21T02:29:41.686Z"
+  "_cached_at": "2026-04-21T13:39:20.635Z"
 }

@@ -1,0 +1,30 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nHay una carretera oculta que conduce a la riqueza y la libertad financiera, un atajo que puede recorrerse a una velocidad deslumbrante. Jubilarte cuatro décadas antes de lo habitual y llevar una vida que la mayoría no puede permitirse, es posible. Sin embargo, nos han inculcado el dogma de \"hazte rico poco a poco\", un plan asfixiante con una ligera posibilidad de obtener riquezas en nuestra vejez: \"Ve a la universidad, saca buenas notas, gradúate, consigue un buen trabajo, ahorra, invierte, contrata un plan de pensiones... Entonces, algún día, cuando tengas sesenta y cinco años, serás rico\". ¡No permitas que tu plan financiero consista en tener esperanzas y rezar! Cambia de carril; ve por la vía rápida y haz realidad tus sueños.&#xa0; M. J. de Marco amasó su primer millón a los treinta y un años y, en este libro traducido a más de quince idiomas y con más de 500.000 copias vendidas, te enseña todo lo que sabe. Por qué la \"vía lenta\" no te hará rico nunca. ¡Obtén unos ingresos millonarios siguiendo los 5 mandamientos de la riqueza! Aborda la pobreza como si se tratara de una enfermedad, ¡combate la causa, no los síntomas, y todo cambiará para ti! Por qué los mensajes de los gurús del tipo \"haz lo que amas\" o \"sigue tu pasión\" no suelen ser buenas recomendaciones para enriquecerse. ¡Y unas 250 indicaciones para salir de la pobreza y acelerar hacia la riqueza!\n\nMETADATA VERIFICADA:\n- Título: La vía rápida del millonario\n- Autor: MJ DeMarco\n- Año: 2018\n- Categorías: Superación personal, Libros, Salud, mente y cuerpo, Negocios y finanzas personales",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "La vía rápida del millonario",
+    "autor_completo": "MJ DeMarco",
+    "año": "2018",
+    "editorial": null,
+    "isbn": "1440287527",
+    "categorias": [
+      "Superación personal",
+      "Libros",
+      "Salud, mente y cuerpo",
+      "Negocios y finanzas personales",
+      "Administración y liderazgo"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/la-v%C3%ADa-r%C3%A1pida-del-millonario/id1440287527?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "google_books"
+  ],
+  "resolution_path": [
+    "evidence_fetched_3sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T13:32:09.513Z"
+}

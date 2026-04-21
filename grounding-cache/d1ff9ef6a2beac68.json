@@ -1,0 +1,31 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Google Books):\n\nCinco años y más de 100.000 copias después de la primera publicación de este libro, es difícil pensar que haya alguien que trabaje en el diseño web que no haya leído este clásico de Krug sobre Usabilidad en las Web, pero todos los días surgen personas que lo descubren. No debe sorprenderse si este libro cambia completamente su forma de ver el diseño web.\n\nMETADATA VERIFICADA:\n- Título: No me hagas pensar\n- Autor: Steve Krug\n- Año: 2006\n- Editorial: PRENTICE HALL\n- Categorías: Computers",
+  "grounding_source": "google_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "No me hagas pensar",
+    "subtitulo": "una aproximación a la usabilidad en la web",
+    "autor_completo": "Steve Krug",
+    "año": "2006",
+    "editorial": "PRENTICE HALL",
+    "paginas": 216,
+    "isbn": "9788483222867",
+    "isbn13": "9788483222867",
+    "isbn10": "8483222868",
+    "categorias": [
+      "Computers"
+    ],
+    "idioma": "es",
+    "preview_link": "http://books.google.com/books?id=MlPtOwAACAAJ&dq=intitle:No+me+hagas+pensar+inauthor:Steve+Krug&hl=&cd=1&source=gbs_api"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_3sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T13:31:38.318Z"
+}

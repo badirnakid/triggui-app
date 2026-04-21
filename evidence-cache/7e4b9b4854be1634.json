@@ -46,9 +46,37 @@
     }
   },
   "google": {
-    "ok": false,
-    "reason": "no_good_match",
-    "source": "google_books"
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Rompe la barrera del no",
+      "matched_author": "Chris Voss"
+    },
+    "synopsis": "El prestigioso ex negociador internacional del FBI Chris Voss, especializado en secuestros con rehenes, nos enseña un método de negociación rompedor: tácticas para negociaciones duras que son aplicables en múltiples aspectos de nuestras vidas. Rompe la barrera del no es un manual de negociación imprescindible desarrollado y perfeccionado a lo largo de la extraordinaria carrera de Chris Voss como negociador en secuestros con rehenes y como reconocido profesor en las escuelas de negocio más prestigiosas del mundo. Voss ha puesto a prueba estas técnicas en todo tipo de situaciones y ha comprobado su efectividad, tanto en los inicios de su carrera cuando patrullaba las peligrosas calles de Kansas City como en los cursos que imparte en las mejores universidades. Entre las muchas y distintas personas que han aplicado sus enseñanzas, se encuentran desde clientes que han visto aumentar significativamente los beneficios de sus empresas hasta estudiantes de programas de MBA que han conseguido empleos mejores o incluso padres que tienen que vérselas con sus hijos. Rompe la barrera del no relata los entresijos de situaciones verdaderamente dramáticas y revela las mejores y más eficaces estrategias de negociación. Voss, uno de los mejores negociadores del mundo, nos enseña a emplear estas técnicas en cualquier aspecto de nuestra vida. Reseñas: «Este libro destaca la importancia de la inteligencia emocional sin sacrificar la necesidad de conseguir acuerdos. Escrito por un negociador de rehenes, alguien que no se podía permitir una respuesta negativa, este libro resulta una lectura fascinante y muy práctica. En él encontraremos las técnicas necesarias para alcanzar el acuerdo deseado.» Daniel H. Pink, autor del bestseller Vender es humano «Pocas personas gozan de la experiencia de Chris Voss, ex negociador del FBI en situaciones de secuestros con rehenes. Sus técnicas funcionan, tanto para los negocios como para la vida.» Joe Navarro, agente especial (retirado) del FBI y autor del bestseller internacional El cuerpo habla «Los negocios, y prácticamente todo en la vida, dependen de cómo encaramos determinadas conversaciones cruciales, y estas herramientas nos proporcionan la ventaja que necesitamos... Es una lectura obligatoria para mis empleados, porque yo utilizo las lecciones de este libro cada día, y me gustaría que ellos también lo hicieran.» Jason MacCarthy, CEO de Goruck",
+    "synopsis_length": 2403,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=iBQnDQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Rompe la barrera del no",
+      "subtitulo": "Negocia como si te fuera la vida en ello",
+      "autor_completo": "Chris Voss",
+      "año": "2016",
+      "editorial": "CONECTA",
+      "paginas": 382,
+      "isbn": "9788416029914",
+      "isbn13": "9788416029914",
+      "isbn10": "8416029911",
+      "categorias": [
+        "Business & Economics"
+      ],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=iBQnDQAAQBAJ&printsec=frontcover&dq=intitle:Rompe+la+barrera+del+no+inauthor:Chris+Voss&hl=&cd=1&source=gbs_api"
+    }
   },
   "openlibrary": {
     "ok": false,
@@ -100,6 +128,12 @@
       "valid": true
     },
     {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=iBQnDQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
       "source": "amazon",
       "size": "large",
       "url": "https://images-na.ssl-images-amazon.com/images/P/1159881469.01.LZZZZZZZ.jpg",
@@ -108,17 +142,17 @@
   ],
   "_sources_succeeded": [
     "apple_books",
+    "google_books",
     "amazon"
   ],
   "_sources_failed": [
-    "google_books:no_good_match",
     "openlibrary:no_results"
   ],
   "_timing": {
-    "phase1_parallel_ms": 16211,
-    "phase2_isbn_chain_ms": 24478,
-    "cover_validation_ms": 946,
-    "total_ms": 41635
+    "phase1_parallel_ms": 470,
+    "phase2_isbn_chain_ms": 946,
+    "cover_validation_ms": 1324,
+    "total_ms": 2740
   },
-  "_cached_at": "2026-04-20T22:26:56.850Z"
+  "_cached_at": "2026-04-21T13:31:04.110Z"
 }

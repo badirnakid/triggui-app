@@ -1,0 +1,160 @@
+{
+  "titulo_input": "Trillion Dollar Coach",
+  "autor_input": "Eric Schmidt.Jonathan Rosenberg.Alan Eagle",
+  "isbn_seed": "",
+  "isbn_discovered": "1299676040",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Trillion Dollar Coach",
+      "matched_author": "Eric Schmidt, Jonathan Rosenberg & Alan Eagle"
+    },
+    "synopsis": "#1 Wall Street Journal Bestseller New York Times Bestseller USA Today Bestseller The team behind How Google Works returns with management lessons from legendary coach and business executive, Bill Campbell, whose mentoring of some of our most successful modern entrepreneurs has helped create well over a trillion dollars in market value. Bill Campbell played an instrumental role in the growth of several prominent companies, such as Google, Apple, and Intuit, fostering deep relationships with Silicon Valley visionaries, including Steve Jobs, Larry Page, and Eric Schmidt. In addition, this business genius mentored dozens of other important leaders on both coasts, from entrepreneurs to venture capitalists to educators to football players, leaving behind a legacy of growing companies, successful people, respect, friendship, and love after his death in 2016. Leaders at Google for over a decade, Eric Schmidt, Jonathan Rosenberg, and Alan Eagle experienced firsthand how the man fondly known as Coach Bill built trusting relationships, fostered personal growth—even in those at the pinnacle of their careers—inspired courage, and identified and resolved simmering tensions that inevitably arise in fast-moving environments. To honor their mentor and inspire and teach future generations, they have codified his wisdom in this essential guide. Based on interviews with over eighty people who knew and loved Bill Campbell, Trillion Dollar Coach explains the Coach’s principles and illustrates them with stories from the many great people and companies with which he worked. The result is a blueprint for forward-thinking business leaders and managers that will help them create higher performing and faster moving cultures, teams, and companies. This essential guide reveals his principles for business success: Building Trust: Learn how Coach Bill created an “envelope of trust” to foster the psychological safety required for high-performing teams at companies like Google and Apple.Team First Culture: Discover why the team is paramount, and how to identify and nurture the “doers” who put the company’s success above personal gain.Actionable Management Principles: Get actionable advice on everything from running effective one-on-ones and making hard decisions to managing the difficult but valuable “aberrant genius.”The Power of Love: Understand why bringing love, community, and respect into the workplace isn’t just good for morale—it’s a critical component of operational excellence and success.",
+    "synopsis_length": 2508,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/22/4a/c6/224ac60d-18b1-8f7f-e8f8-c65acdd14301/9780062839251.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/22/4a/c6/224ac60d-18b1-8f7f-e8f8-c65acdd14301/9780062839251.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/22/4a/c6/224ac60d-18b1-8f7f-e8f8-c65acdd14301/9780062839251.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/22/4a/c6/224ac60d-18b1-8f7f-e8f8-c65acdd14301/9780062839251.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Trillion Dollar Coach",
+      "autor_completo": "Eric Schmidt, Jonathan Rosenberg & Alan Eagle",
+      "año": "2019",
+      "editorial": null,
+      "isbn": "1299676040",
+      "categorias": [
+        "Profesiones",
+        "Libros",
+        "Negocios y finanzas personales",
+        "Administración y liderazgo",
+        "Biografías y memorias",
+        "Pequeñas empresas y emprendedores",
+        "Biografías y memorias: negocios"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/trillion-dollar-coach/id1299676040?uo=4"
+    }
+  },
+  "google": {
+    "ok": true,
+    "source": "google_books",
+    "match_score": 0.9550000000000001,
+    "match_details": {
+      "matched_title": "Trillion Dollar Coach",
+      "matched_author": "Eric Schmidt"
+    },
+    "synopsis": "Traditional Chinese edition of Trillion Dollar Coach：The Leadership Playbook of Silicon Valley's Bill Campbell",
+    "synopsis_length": 110,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=1GvRzQEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Trillion Dollar Coach",
+      "subtitulo": "",
+      "autor_completo": "Eric Schmidt",
+      "año": "2020",
+      "editorial": null,
+      "paginas": null,
+      "isbn": "9789863985570",
+      "isbn13": "9789863985570",
+      "isbn10": "9863985570",
+      "categorias": [],
+      "idioma": "zh-CN",
+      "preview_link": "http://books.google.com/books?id=1GvRzQEACAAJ&dq=intitle:Trillion+Dollar+Coach+inauthor:Eric+Schmidt.Jonathan+Rosenberg.Alan+Eagle&hl=&cd=2&source=gbs_api"
+    }
+  },
+  "openlibrary": {
+    "ok": false,
+    "reason": "no_results",
+    "source": "openlibrary"
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/1299676040.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "1299676040",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/22/4a/c6/224ac60d-18b1-8f7f-e8f8-c65acdd14301/9780062839251.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/22/4a/c6/224ac60d-18b1-8f7f-e8f8-c65acdd14301/9780062839251.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/22/4a/c6/224ac60d-18b1-8f7f-e8f8-c65acdd14301/9780062839251.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/22/4a/c6/224ac60d-18b1-8f7f-e8f8-c65acdd14301/9780062839251.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=1GvRzQEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/1299676040.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "google_books",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "openlibrary:no_results"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 1816,
+    "phase2_isbn_chain_ms": 494,
+    "cover_validation_ms": 800,
+    "total_ms": 3110
+  },
+  "_cached_at": "2026-04-21T13:43:32.125Z"
+}

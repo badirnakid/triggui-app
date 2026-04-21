@@ -1,0 +1,29 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\n¡Decídete a alcanzar tu máximo potencial! Cómo aprender la excelencia es una guía completa y práctica de disciplina mental para el alto rendimiento, creada por el experto que desarrolló el programa de resistencia mental de los Navy SEAL de los Estados Unidos y que ha trabajado con miles de atletas de élite, personal militar de alto rango, ejecutivos de empresas y socorristas para emergencias. Todos ellos tienen algo en común: saben cómo pensar con claridad, mantenerse enfocados y superar contratiempos bajo niveles muy altos de estrés. Pueden tener habilidades físicas e intelectuales sobresalientes, pero es lo que ocurre en su mente lo que los hace destacar: la diferencia entre ser bueno y ser excelente se basa por completo en su enfoque mental. Este enfoque no es innato, las personas con alto desempeño no nacen así, sino que aprenden la excelencia. El resto de las personas también podemos hacerlo, y el Dr. Eric Potterat nos enseña cómo. Cómo aprender la excelencia aborda cinco disciplinas mentales: Valores y metas, Mentalidad, Proceso, Tolerancia a la adversidad y Equilibrio y recuperación. Ilustrado con numerosas historias y ejemplos, ofrece principios prácticos que cualquier persona puede aplicar para tener un alto desempeño en el trabajo, en la escuela, en la casa y en la vida. \"Cualquiera puede ser de alto rendimiento, sobresalir en la escuela, tener una gran carrera e incluso, como yo, viajar al espacio. Cómo aprender la excelencia nos enseña las habilidades mentales que necesitamos para ser los mejores. Si quieres alcanzar todo tu potencial y más, este libro es el lugar perfecto para empezar.\" \"Cuando googleas 'cómo ser de alto rendimiento', Cómo aprender la excelencia debería ser el primer resultado. Los líderes de hoy tienen que pensar y abrirse camino a través del cambio constante. Los exhorto a aprender la excelencia ahora para que puedan estar listos para un futuro maravilloso.\" ERIC SCHMIDT, ANTIGUO CEO Y PRESIDENTE DE GOOGLE \"Desearía que Cómo aprender la excelencia hubiera existido cuando yo apenas me iniciaba en el futbol. ¡Seguro que me habría sido muy útil! Este libro tendrá un gran impacto en la siguiente generación de triunfadores, sin importar dónde ni cómo se desempeñen.\" CARLI LLOYD. EQUIPO NACIONAL FEMENIL DE ESTADOS UNIDOS, DOS VECES CAMPEONA COPA MUNDIAL FIFA, JUGADORA DEL AÑO Y MEDALLISTA DE ORO OLÍMPICA\n\nMETADATA VERIFICADA:\n- Título: Cómo aprender la excelencia\n- Autor: Eric Potterat & Alan Eagle\n- Año: 2024\n- Categorías: Administración y liderazgo, Libros, Negocios y finanzas personales",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Cómo aprender la excelencia",
+    "autor_completo": "Eric Potterat & Alan Eagle",
+    "año": "2024",
+    "editorial": null,
+    "isbn": "6529537589",
+    "categorias": [
+      "Administración y liderazgo",
+      "Libros",
+      "Negocios y finanzas personales"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/c%C3%B3mo-aprender-la-excelencia/id6529537589?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "google_books",
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_4sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T13:34:11.199Z"
+}

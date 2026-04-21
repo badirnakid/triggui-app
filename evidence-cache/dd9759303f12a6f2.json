@@ -1,0 +1,149 @@
+{
+  "titulo_input": "Einstein para despistados",
+  "autor_input": "Allan Percy",
+  "isbn_seed": "",
+  "isbn_discovered": "1456037646",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Einstein para despistados",
+      "matched_author": "Allan Percy"
+    },
+    "synopsis": "En Einstein para despistados, de la serie «Genios para la vida cotidiana», el prestigioso Allan Percy recoge 85 grandes reflexiones de este genio y las traslada a situaciones prácticas de la vida cotidiana. Sin lugar a dudas, la figura de Albert Einstein ha trascendido el ámbito de la ciencia para convertirse en un icono de la cultura moderna, comparable a las estrellas del pop o a los grandes actores de Hollywood. Y no solo por su peculiar peinado, ni por haber ganado un Premio Nobel, ni siquiera por ser el padre de la teoría de la relatividad. Además de haber revolucionado la física, Einstein fue un acérrimo defensor de la paz y un brillante pensador sobre el arte de vivir. Sus lúcidos aforismos para el día a día reflejan la sabiduría de alguien que siempre tuvo los pies en la tierra. Dentro y fuera del ámbito académico, Albert Einstein era por encima de todo un solucionador de problemas. En los tiempos que corren, en los que la presión es máxima y la compensación escasa, las enseñanzas de este físico nos ayudarán a apagar más de un fuego.",
+    "synopsis_length": 1057,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/4f/d4/33/4fd43350-abcd-6548-a29c-e6989b7a5a55/9786073180825.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/4f/d4/33/4fd43350-abcd-6548-a29c-e6989b7a5a55/9786073180825.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/4f/d4/33/4fd43350-abcd-6548-a29c-e6989b7a5a55/9786073180825.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/4f/d4/33/4fd43350-abcd-6548-a29c-e6989b7a5a55/9786073180825.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Einstein para despistados",
+      "autor_completo": "Allan Percy",
+      "año": "2019",
+      "editorial": null,
+      "isbn": "1456037646",
+      "categorias": [
+        "Espiritualidad",
+        "Libros",
+        "Salud, mente y cuerpo",
+        "No ficción",
+        "Filosofía"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/einstein-para-despistados/id1456037646?uo=4"
+    }
+  },
+  "google": {
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Einstein para despistados",
+      "matched_author": "Allan Percy"
+    },
+    "synopsis": "Sin lugar a dudas, la figura de Albert Einstein ha trascendido el ámbito de la ciencia para convertirse en un icono de la cultura moderna, comparable a las estrellas del pop o a los grandes actores de Hollywood. Y no sólo por su peculiar peinado, ni por haber ganado el Premio Nobel de Física, ni siquiera por ser el padre de la teoría de la relatividad. Además de haber revolucionado la física, Einstein fue un acérrimo defensor de la paz y un brillante pensador sobre el arte de vivir. Sus lúcidos aforismos para el día a día reflejan la sabiduría de alguien que siempre tuvo los pies en la tierra. El nuevo y esperado libro de Allan Percy recoge 85 grandes reflexiones de este genio y las traslada a situaciones prácticas de la vida cotidiana. Dentro y fuera del ámbito académico, Albert Einstein fue por encima de todo un solucionador de problemas. En los tiempos que corren, en los que la presión es máxima y la compensación escasa, las enseñanzas de este físico nos ayudarán a apagar más de un fuego.",
+    "synopsis_length": 1006,
+    "covers": [],
+    "verified_identity": {
+      "titulo_real": "Einstein para despistados",
+      "subtitulo": "",
+      "autor_completo": "Allan Percy",
+      "año": "2014",
+      "editorial": null,
+      "paginas": null,
+      "isbn": "9786073122429",
+      "isbn13": "9786073122429",
+      "isbn10": "607312242X",
+      "categorias": [
+        "Physicists"
+      ],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=UNX7oAEACAAJ&dq=intitle:Einstein+para+despistados+inauthor:Allan+Percy&hl=&cd=1&source=gbs_api"
+    }
+  },
+  "openlibrary": {
+    "ok": false,
+    "reason": "no_results",
+    "source": "openlibrary"
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/1456037646.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "1456037646",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/4f/d4/33/4fd43350-abcd-6548-a29c-e6989b7a5a55/9786073180825.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/4f/d4/33/4fd43350-abcd-6548-a29c-e6989b7a5a55/9786073180825.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/4f/d4/33/4fd43350-abcd-6548-a29c-e6989b7a5a55/9786073180825.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/4f/d4/33/4fd43350-abcd-6548-a29c-e6989b7a5a55/9786073180825.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/1456037646.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "google_books",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "openlibrary:no_results"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 1695,
+    "phase2_isbn_chain_ms": 1091,
+    "cover_validation_ms": 1252,
+    "total_ms": 4038
+  },
+  "_cached_at": "2026-04-21T13:34:42.917Z"
+}

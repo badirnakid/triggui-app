@@ -1,0 +1,42 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nHOW DOES MAGIC HAPPEN? The Ogilvy advertising legend—“one of the leading minds in the world of branding”&#xa0;(NPR)—explores the art and science of conjuring irresistible products and&#xa0;ideas. \"Sutherland, the legendary Vice Chairman of Ogilvy, uses his decades of experience to dissect human spending behavior in an insanely entertaining way.&#xa0;Alchemy&#xa0;combines scientific research with hilarious stories and&#xa0;case studies of&#xa0;campaigns for AmEx, Microsoft&#xa0;and the like. This is a must-read.\" —Entrepreneur (\"Best Books of the Year\") Why is Red Bull so popular, though everyone—everyone!—hates the taste? Humans are, in a word, irrational, basing decisions as much on subtle external signals (that little blue can) as on objective qualities (flavor, price, quality). The surrounding world, meanwhile, is irreducibly complex and random. This means future success can’t be projected on any accounting spreadsheet. To strike gold, you must master the dark art and curious science of conjuring irresistible ideas: alchemy. Based on thirty years of field work inside the largest experiment in human behavior ever conceived—the forever-unfolding pageant of consumer capitalism—Alchemy, the revolutionary book by Ogilvy advertising legend Rory Sutherland, whose TED talks have been viewed nearly seven million times, decodes human behavior, blending leading-edge scientific research, absurdly entertaining storytelling, deep psychological insight, and practical case studies from his storied career working on campaigns for AmEx, Microsoft, and others. Heralded as “one of the leading minds in the world of branding” by NPR and \"the don of modern advertising\" by The Times, Sutherland is a unique thought leader, as comfortable exchanging ideas with Nobel Prize winners Daniel Kahneman and Richard Thaler (both interviewed in these pages) as he is crafting the next product launch. His unconventional and relentlessly curious approach has led him to discover that the most compelling secrets to human decision-making can be found in surprising places: What can honey bees teach us about creating a sustainable business? How could budget airlines show us how to market a healthcare system? Why is it better to be vaguely right than precisely wrong? What might soccer penalty kicks teach us about the dangers of risk-aversion? Better “branding,” Sutherland reveals, can also be employed not just to sell products, but to promote a variety of social aims, like getting people to pay taxes, improving public health outcomes, or encouraging more women to pursue careers in tech. Equally startling and profound, Sutherland’s journey through the strange world of decision making is filled with astonishing lessons for all aspects of life and business. &#xa0;\n\nMETADATA VERIFICADA:\n- Título: Alchemy\n- Autor: Rory Sutherland\n- Año: 2019\n- Categorías: Mercadotecnia y ventas, Libros, Negocios y finanzas personales, Salud, mente y cuerpo",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Alchemy",
+    "autor_completo": "Rory Sutherland",
+    "año": "2019",
+    "editorial": null,
+    "isbn": "1227399404",
+    "categorias": [
+      "Mercadotecnia y ventas",
+      "Libros",
+      "Negocios y finanzas personales",
+      "Salud, mente y cuerpo",
+      "Psicología",
+      "Administración y liderazgo",
+      "Ciencia y naturaleza",
+      "Historia",
+      "Arte y espectáculo",
+      "Diseño",
+      "Historia de la ciencia",
+      "Economía",
+      "Técnicos y profesionales",
+      "Diseño",
+      "Finanzas",
+      "Educación"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/alchemy/id1227399404?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "google_books",
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_4sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T13:33:09.349Z"
+}
