@@ -75,7 +75,7 @@
         "Self-Help"
       ],
       "idioma": "es",
-      "preview_link": "http://books.google.com/books?id=rfzDDwAAQBAJ&printsec=frontcover&dq=intitle:Wa+La+v%C3%ADa+japonesa+de+la+armon%C3%ADa+inauthor:Laura+Imai&hl=&cd=1&source=gbs_api"
+      "preview_link": "http://books.google.com/books?id=rfzDDwAAQBAJ&printsec=frontcover&dq=Wa+La+v%C3%ADa+japonesa+de+la+armon%C3%ADa+Laura+Imai&hl=&cd=2&source=gbs_api"
     }
   },
   "openlibrary": {
@@ -149,10 +149,10 @@
     "openlibrary:no_results"
   ],
   "_timing": {
-    "phase1_parallel_ms": 1740,
-    "phase2_isbn_chain_ms": 609,
-    "cover_validation_ms": 910,
-    "total_ms": 3259
+    "phase1_parallel_ms": 3115,
+    "phase2_isbn_chain_ms": 843,
+    "cover_validation_ms": 152,
+    "total_ms": 4110
   },
-  "_cached_at": "2026-04-21T11:45:05.890Z"
+  "_cached_at": "2026-04-21T13:55:06.373Z"
 }

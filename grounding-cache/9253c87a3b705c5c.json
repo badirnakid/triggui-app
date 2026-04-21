@@ -1,0 +1,29 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nUn método revolucionario para influir y persuadir. La persuasión es una habilidad imprescindible en cualquier actividad profesional a todos los niveles en organizaciones y empresas. Pero, ¿cuáles son las mejores técnicas de persuasión?, ¿qué elementos de la comunicación permiten conquistar al público?, ¿cuáles son los momentos fundamentales en una argumentación? y ¿qué diferencia a un comunicador eficaz de un auténtico persuasor? Con el rigor científico y la capacidad de divulgación que le caracterizan, Robert Cialdini explica en este libro cómo capitalizar el tiempo previo a la transmisión de un mensaje importante. Ese instante puede hacer que el público se muestre más receptivo y, de este modo, la persuasión óptima solo se obtiene con una óptima «pre-suasión». Para persuadir, lo único que necesita el comunicador es redirigir la atención del público antes de una acción relevante para que este le diga «¡Sí!». Con solidez científica, Cialdini muestra cómo escoger no solo lo que vamos a decir, sino cuándo lo vamos a hacer y cómo atraer esa atención de una forma ética. Con Pre-suasión los lectores aprenderán a aprovechar el momento oportuno para ganar influencia y a conservarla. Reseñas: «Pre-suasión está destinado a convertirse inmediatamente en un clásico.» Forbes.com «Mi impresión sobre este libro se resume en una palabra: persuasor.» The Wall Street Journal «Un libro que recomendaré durante años.» Amy Cuddy, profesora asociada de Administración de empresas de la Harvard Business School y autora de El poder de la presencia «Una lectura fascinante sobre cómo el motor más importante de la persuasión no son las palabras que elegimos sino cómo las presentamos antes.» Adam Grant, profesor de Management y Psicología en The Wharton School y autor de Dar y recibir\n\nMETADATA VERIFICADA:\n- Título: Pre-suasión\n- Autor: Robert Cialdini\n- Año: 2017\n- Categorías: Administración y liderazgo, Libros, Negocios y finanzas personales",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Pre-suasión",
+    "autor_completo": "Robert Cialdini",
+    "año": "2017",
+    "editorial": null,
+    "isbn": "1199225026",
+    "categorias": [
+      "Administración y liderazgo",
+      "Libros",
+      "Negocios y finanzas personales"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/pre-suasi%C3%B3n/id1199225026?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "google_books",
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_4sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T13:47:33.395Z"
+}

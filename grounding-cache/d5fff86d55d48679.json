@@ -1,0 +1,30 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nVivimos en la era de la competitividad extrema, por lo que somos muchos los que deseamos saber cómo podemos mejorar nuestro rendimiento de manera eficaz y sin que nuestra salud resulte perjudicada. Las fórmulas que han reportado mayores éxitos a los expertos Steve Magness, entrenador deportivo de élite, y Brad Stulberg, experto en salud y consultor financiero, son tan sorprendentes como fáciles de llevar a la práctica: pasar un rato en compañía de los amigos, alternar periodos de trabajo intenso con etapas de descanso, crear ambientes distendidos, priorizar tareas, minimizar las distracciones o preparar adecuadamente el cuerpo y la mente para hacer frente a los desafíos que nos preocupan. Con inspiradores ejemplos de personalidades destacadas del mundo del deporte, las artes y los negocios, así como los últimos descubrimientos científicos sobre los factores cognitivos y bioquímicos que impulsan y mejoran la productividad, Máximo rendimiento nos revela los métodos más prometedores, éticos y revolucionarios para poder dar lo mejor de nosotros mismos, sea cual sea nuestro campo de interés.\n\nMETADATA VERIFICADA:\n- Título: Máximo rendimiento\n- Autor: Brad Stulberg & Steve Magness\n- Año: 2018\n- Categorías: Superación personal, Libros, Salud, mente y cuerpo, Psicología",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Máximo rendimiento",
+    "autor_completo": "Brad Stulberg & Steve Magness",
+    "año": "2018",
+    "editorial": null,
+    "isbn": "1475489171",
+    "categorias": [
+      "Superación personal",
+      "Libros",
+      "Salud, mente y cuerpo",
+      "Psicología"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/m%C3%A1ximo-rendimiento/id1475489171?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "google_books",
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_4sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T13:46:01.515Z"
+}

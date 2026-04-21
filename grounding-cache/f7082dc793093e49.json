@@ -1,0 +1,28 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nLa plenitud psicológica depende enteramente de nuestros estados de conciencia. El antídoto contra la ansiedad, la desesperación, la mediocridad, el aburrimiento existencial y el nihilismo que nos limitan como individuos -y como sociedad- es recuperar el orden interno. Existen cuatro puertas interiores que nos conducen a esa conquista: el dominio de nuestra energía mental, el establecimiento de una dirección de vida significativa, la adquisición de habilidades relevantes y el coraje para explorar e integrar las partes no develadas del ser que aún están envueltas en sombra. Estas son las cuatro puertas que deberás abrir. Dentro de las páginas de este libro encontrarás cada una de las llaves que te permitirá crear orden en la conciencia y aventurarte al mundo como nunca antes.\n\nMETADATA VERIFICADA:\n- Título: Las cuatro puertas\n- Autor: Jorge Benito\n- Año: 2022\n- Categorías: Psicología, Libros, Salud, mente y cuerpo",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Las cuatro puertas",
+    "autor_completo": "Jorge Benito",
+    "año": "2022",
+    "editorial": null,
+    "isbn": "6444294828",
+    "categorias": [
+      "Psicología",
+      "Libros",
+      "Salud, mente y cuerpo"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/las-cuatro-puertas/id6444294828?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "google_books"
+  ],
+  "resolution_path": [
+    "evidence_fetched_3sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T13:48:00.088Z"
+}

@@ -1,0 +1,173 @@
+{
+  "titulo_input": "Beneath the Surface",
+  "autor_input": "Michael Phelps",
+  "isbn_seed": "",
+  "isbn_discovered": "1516422783",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Beneath the Surface",
+      "matched_author": "Michael Phelps, Brian Cazeneuve & Bob Costas"
+    },
+    "synopsis": "Prepare to peek into the mind of a champion, known as the most decorated Olympian of all time with 28 medals, including 23 gold, with this newly updated edition of Michael Phelps’s autobiography, Beneath the Surface. In this candid memoir, Phelps talks openly about his battle with attention deficit disorder, the trauma of his parents’ divorce, and the challenges that come with being thrust into the limelight. Readers worldwide will relive all the heart-stopping glory as Phelps completes his journey from the youngest man to ever set a world swimming record in 2001, to an Olympic powerhouse in 2008, to surpassing the greatest athlete of ancient Greece, Leonidas of Rhodes, with 13 triumphs in 2016. Athletes and fans alike will be fascinated by insights into Phelps’s training, mental preparation, and behind-the-scenes perspective on international athletic competitions. A chronicle of Phelps’s evolution from awkward teenager to record-breaking powerhouse, Beneath the Surface is a must-read for any sports fan.",
+    "synopsis_length": 1019,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/51/7d/3e/517d3edd-f3dd-5cc2-3083-65adb9714d86/9781613213247.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/51/7d/3e/517d3edd-f3dd-5cc2-3083-65adb9714d86/9781613213247.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/51/7d/3e/517d3edd-f3dd-5cc2-3083-65adb9714d86/9781613213247.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/51/7d/3e/517d3edd-f3dd-5cc2-3083-65adb9714d86/9781613213247.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Beneath the Surface",
+      "autor_completo": "Michael Phelps, Brian Cazeneuve & Bob Costas",
+      "año": "2012",
+      "editorial": null,
+      "isbn": "1516422783",
+      "categorias": [
+        "Deportes acuáticos",
+        "Libros",
+        "Deportes y vida al aire libre",
+        "Biografías y memorias"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/beneath-the-surface/id1516422783?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Beneath the surface",
+      "matched_author": "Michael Phelps, Michael Phelps, Brian Cazeneuve"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2004.",
+    "synopsis_length": 65,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://covers.openlibrary.org/b/id/845712-L.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://covers.openlibrary.org/b/id/845712-M.jpg"
+      },
+      {
+        "size": "small",
+        "url": "https://covers.openlibrary.org/b/id/845712-S.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Beneath the surface",
+      "autor_completo": "Michael Phelps, Michael Phelps, Brian Cazeneuve",
+      "año": "2004",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": "eng",
+      "paginas": null
+    }
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/1516422783.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "1516422783",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/51/7d/3e/517d3edd-f3dd-5cc2-3083-65adb9714d86/9781613213247.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/51/7d/3e/517d3edd-f3dd-5cc2-3083-65adb9714d86/9781613213247.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/51/7d/3e/517d3edd-f3dd-5cc2-3083-65adb9714d86/9781613213247.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/51/7d/3e/517d3edd-f3dd-5cc2-3083-65adb9714d86/9781613213247.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "large",
+      "url": "https://covers.openlibrary.org/b/id/845712-L.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "medium",
+      "url": "https://covers.openlibrary.org/b/id/845712-M.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "small",
+      "url": "https://covers.openlibrary.org/b/id/845712-S.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/1516422783.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "openlibrary",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 1846,
+    "phase2_isbn_chain_ms": 450,
+    "cover_validation_ms": 504,
+    "total_ms": 2800
+  },
+  "_cached_at": "2026-04-21T13:46:27.545Z"
+}

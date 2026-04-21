@@ -1,0 +1,205 @@
+{
+  "titulo_input": "Dejar ir",
+  "autor_input": "David R. Hawkins",
+  "isbn_seed": "",
+  "isbn_discovered": "6670253303",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 0.6071428571428572,
+    "match_details": {
+      "matched_title": "El diario guiado de dejar ir",
+      "matched_author": "David R. Hawkins"
+    },
+    "synopsis": "Dejar ir es como el cese repentino de una presión interna o la caída de un peso. Va seguido de una sensación de alivio y ligereza, y de un aumento de la felicidad y la libertad. Imagina lo maravilloso que sería poder experimentar esa liberación todo el tiempo, en cualquier lugar y ante cualquier suceso. Podrías controlar cómo te sientes y dejar de estar a merced de las circunstancias, o de otras personas y de tus reacciones a ellas. En este diario guiado inspirado en Dejar ir, un clásico del Dr. David R. Hawkins, encontrarás herramientas y técnicas para trabajar los sentimientos y soltar los bloqueos que te frenan. Te guiamos en el proceso de escribir un diario para aprender a dejar de reprimir las emociones, a sanar los resentimientos del pasado, a soltar resistencias, trascender el ego y profundizar en el conocimiento de ti mismo.",
+    "synopsis_length": 844,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/69/09/7d/69097d97-8dcb-b710-bbbd-e19d0dad47ba/9788412874464.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/69/09/7d/69097d97-8dcb-b710-bbbd-e19d0dad47ba/9788412874464.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/69/09/7d/69097d97-8dcb-b710-bbbd-e19d0dad47ba/9788412874464.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/69/09/7d/69097d97-8dcb-b710-bbbd-e19d0dad47ba/9788412874464.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "El diario guiado de dejar ir",
+      "autor_completo": "David R. Hawkins",
+      "año": "2024",
+      "editorial": null,
+      "isbn": "6670253303",
+      "categorias": [
+        "Espiritualidad",
+        "Libros",
+        "Salud, mente y cuerpo"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/el-diario-guiado-de-dejar-ir/id6670253303?uo=4"
+    }
+  },
+  "google": {
+    "ok": true,
+    "source": "google_books",
+    "match_score": 0.6071428571428572,
+    "match_details": {
+      "matched_title": "El diario guiado de dejar ir",
+      "matched_author": "David R. Hawkins"
+    },
+    "synopsis": "Dejar ir es como el cese repentino de una presión interna o la caída de un peso. Va seguido de una sensación de alivio y ligereza, y de un aumento de la felicidad y la libertad. Imagina lo maravilloso que sería poder experimentar esa liberación todo el tiempo, en cualquier lugar y ante cualquier suceso. Podrías controlar cómo te sientes y dejar de estar a merced de las circunstancias, o de otras personas y de tus reacciones a ellas. En este diario guiado inspirado en Dejar ir, un clásico del Dr. David R. Hawkins, encontrarás herramientas y técnicas para trabajar los sentimientos y soltar los bloqueos que te frenan. Te guiamos en el proceso de escribir un diario para aprender a dejar de reprimir las emociones, a sanar los resentimientos del pasado, a soltar resistencias, trascender el ego y profundizar en el conocimiento de ti mismo.",
+    "synopsis_length": 844,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=_L8eEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "El diario guiado de dejar ir",
+      "subtitulo": "Cómo eliminar tus obstáculos internos a la felicidad, el amor y el éxito",
+      "autor_completo": "David R. Hawkins",
+      "año": "2025",
+      "editorial": "Ediciones El Grano de Mostaza",
+      "paginas": 56,
+      "isbn": "9788412874464",
+      "isbn13": "9788412874464",
+      "isbn10": "8412874463",
+      "categorias": [
+        "Self-Help"
+      ],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=_L8eEQAAQBAJ&printsec=frontcover&dq=intitle:Dejar+ir+inauthor:David+R.+Hawkins&hl=&cd=1&source=gbs_api"
+    }
+  },
+  "openlibrary": {
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Dejar ir",
+      "matched_author": "Dr. David R. Hawkins"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2014.",
+    "synopsis_length": 65,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://covers.openlibrary.org/b/id/15130351-L.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://covers.openlibrary.org/b/id/15130351-M.jpg"
+      },
+      {
+        "size": "small",
+        "url": "https://covers.openlibrary.org/b/id/15130351-S.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Dejar ir",
+      "autor_completo": "Dr. David R. Hawkins",
+      "año": "2014",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": "spa",
+      "paginas": null
+    }
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/6670253303.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "6670253303",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/69/09/7d/69097d97-8dcb-b710-bbbd-e19d0dad47ba/9788412874464.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/69/09/7d/69097d97-8dcb-b710-bbbd-e19d0dad47ba/9788412874464.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/69/09/7d/69097d97-8dcb-b710-bbbd-e19d0dad47ba/9788412874464.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/69/09/7d/69097d97-8dcb-b710-bbbd-e19d0dad47ba/9788412874464.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=_L8eEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "large",
+      "url": "https://covers.openlibrary.org/b/id/15130351-L.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "medium",
+      "url": "https://covers.openlibrary.org/b/id/15130351-M.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "small",
+      "url": "https://covers.openlibrary.org/b/id/15130351-S.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/6670253303.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "google_books",
+    "openlibrary",
+    "amazon"
+  ],
+  "_sources_failed": [],
+  "_timing": {
+    "phase1_parallel_ms": 5214,
+    "phase2_isbn_chain_ms": 105,
+    "cover_validation_ms": 706,
+    "total_ms": 6025
+  },
+  "_cached_at": "2026-04-21T13:51:42.467Z"
+}

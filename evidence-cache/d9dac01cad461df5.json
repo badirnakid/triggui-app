@@ -1,0 +1,147 @@
+{
+  "titulo_input": "Las cuatro puertas",
+  "autor_input": "Jorge Benito",
+  "isbn_seed": "",
+  "isbn_discovered": "6444294828",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Las cuatro puertas",
+      "matched_author": "Jorge Benito"
+    },
+    "synopsis": "La plenitud psicológica depende enteramente de nuestros estados de conciencia. El antídoto contra la ansiedad, la desesperación, la mediocridad, el aburrimiento existencial y el nihilismo que nos limitan como individuos -y como sociedad- es recuperar el orden interno. Existen cuatro puertas interiores que nos conducen a esa conquista: el dominio de nuestra energía mental, el establecimiento de una dirección de vida significativa, la adquisición de habilidades relevantes y el coraje para explorar e integrar las partes no develadas del ser que aún están envueltas en sombra. Estas son las cuatro puertas que deberás abrir. Dentro de las páginas de este libro encontrarás cada una de las llaves que te permitirá crear orden en la conciencia y aventurarte al mundo como nunca antes.",
+    "synopsis_length": 784,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d6/36/5e/d6365e07-f9fc-3b70-0e13-2220db0fde41/9786070794339.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d6/36/5e/d6365e07-f9fc-3b70-0e13-2220db0fde41/9786070794339.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d6/36/5e/d6365e07-f9fc-3b70-0e13-2220db0fde41/9786070794339.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d6/36/5e/d6365e07-f9fc-3b70-0e13-2220db0fde41/9786070794339.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Las cuatro puertas",
+      "autor_completo": "Jorge Benito",
+      "año": "2022",
+      "editorial": null,
+      "isbn": "6444294828",
+      "categorias": [
+        "Psicología",
+        "Libros",
+        "Salud, mente y cuerpo"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/las-cuatro-puertas/id6444294828?uo=4"
+    }
+  },
+  "google": {
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Las cuatro puertas",
+      "matched_author": "Jorge Benito"
+    },
+    "synopsis": "La plenitud psicológica depende enteramente de nuestros estados de conciencia. El antídoto contra la ansiedad, la desesperación, la mediocridad, el aburrimiento existencial y el nihilismo que nos limitan como individuos -y como sociedad- es recuperar el orden interno. Existen cuatro puertas interiores que nos conducen a esa conquista: el dominio de nuestra energía mental, el establecimiento de una dirección de vida significativa, la adquisición de habilidades relevantes y el coraje para explorar e integrar las partes no develadas del ser que aún están envueltas en sombra. Estas son las cuatro puertas que deberás abrir. Dentro de las páginas de este libro encontrarás cada una de las llaves que te permitirá crear orden en la conciencia y aventurarte al mundo como nunca antes.",
+    "synopsis_length": 784,
+    "covers": [],
+    "verified_identity": {
+      "titulo_real": "Las cuatro puertas",
+      "subtitulo": "Cómo encontrar el coraje y el sentido en un mundo cada vez más delirante",
+      "autor_completo": "Jorge Benito",
+      "año": "2022",
+      "editorial": null,
+      "paginas": null,
+      "isbn": "9786075693750",
+      "isbn13": "9786075693750",
+      "isbn10": "6075693750",
+      "categorias": [
+        "Psychology"
+      ],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=6cAA0AEACAAJ&dq=intitle:Las+cuatro+puertas+inauthor:Jorge+Benito&hl=&cd=1&source=gbs_api"
+    }
+  },
+  "openlibrary": {
+    "ok": false,
+    "reason": "no_results",
+    "source": "openlibrary"
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/6444294828.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "6444294828",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d6/36/5e/d6365e07-f9fc-3b70-0e13-2220db0fde41/9786070794339.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d6/36/5e/d6365e07-f9fc-3b70-0e13-2220db0fde41/9786070794339.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d6/36/5e/d6365e07-f9fc-3b70-0e13-2220db0fde41/9786070794339.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d6/36/5e/d6365e07-f9fc-3b70-0e13-2220db0fde41/9786070794339.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/6444294828.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "google_books",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "openlibrary:no_results"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 462,
+    "phase2_isbn_chain_ms": 885,
+    "cover_validation_ms": 981,
+    "total_ms": 2328
+  },
+  "_cached_at": "2026-04-21T13:48:00.087Z"
+}

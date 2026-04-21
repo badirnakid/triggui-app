@@ -1,0 +1,126 @@
+{
+  "titulo_input": "LIT Life ignition tools",
+  "autor_input": "Jeff Karp",
+  "isbn_seed": "",
+  "isbn_discovered": "6479328976",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "LIT (Life Ignition Tools)",
+      "matched_author": "Jeff Karp"
+    },
+    "synopsis": "Un método sencillo y radical con el que activar un estado mental de alto rendimiento, concentración y creatividad, para dar forma a la vida que realmente quieres. Por el director del laboratorio de innovación en Ingeniería Biomédica de Harvard, Jeff Karp. ¿Cómo puedes lograr un mayor rendimiento mental y creatividad en un mundo lleno de distracciones, de fechas límite constantes, de tiempo perdido en las redes sociales y de un bombardeo de noticias que te provoca ansiedad? En LIT, el innovador investigador de Harvard y del MIT, Jeff Karp, ha encontrado una poderosa manera de alcanzar un estado mental más enfocado y eficaz con la ayuda de sus siete herramientas para el encendido vital (Life Ignition Tools). LIT te enseñará a: *Examinarte interiormente y conectar con lo que es verdaderamente importante para ti. *Visualizarte desde fuera para actuar consecuentemente, conectando con los demás y con diferentes formas del saber. *Romper con patrones de pensamiento habituales y decidir activamente en vez de apresurarte a dar respuestas que te mantienen en tu zona de confort. *Lidiar con los múltiples inputs sensoriales y la sobrecarga de información a los que estamos sometidos actualmente. *Estimular la creatividad y el entusiasmo en tu lugar de trabajo. *Reconocer discursos manipulativos que nos pueden hacer tomar la dirección equivocada. *Integrar tu vida espiritual en tu vida personal para reparar y profundizar tus relaciones. LlT te quitará el piloto automático y te ayudará a permanecer alerta, presente en el momento y comprometido con tu vida, en un estado agudo de consciencia de ti mismo que te empujará a la curiosidad, conexión y energía necesarias para tener la vida que realmente quieres. La crítica ha dicho: «En LIT, descubrirás infinidad de herramientas y conceptos para despertar tu verdadero talento y acceder al máximo potencial de tu cerebro». Diana Nyad «Jeff Karp nos ofrece un camino hacia la iluminación interior y la innovación». Colin O'Brady, autor superventas del New York Times «El imprescindible libro de Jeff Karp, LIT nos da la chispa necesaria para alumbrar nuestras vidas desde el interior». Arianna Huffington, fundadora y CEO de Thrive Global «Buenas noticias: Podemos ser más felices, más listos, más eficaces y sentirnos más satisfechos de lo que jamás hubiésemos pensado. Este libro podría cambiar tu vida». Geoff Colvin, autor superventas «LIT es una caja de herramientas esencial para transformar intenciones en acciones relevantes». Daniel H. Pink, autor superventas de New York Times «LIT es un verdadero regalo en un tiempo en el que demasiadas distracciones nos impiden alcanzar nuestros objetivos más nobles. ¡Bravo!» Rudy Tanzi, doctor y profesor de neurología en la Facultad de Medicina de Harvard y autor superventas de Super Brain «Jeff Karp embarca al lector en un humilde viaje de autodescubrimiento a través de los retos de sus propias dificultades en el aprendizaje y de su desbordante impaciencia como estudiante, científico, padre y emprendedor». Nathan Gray, president y co-fundador de Geoversity: Nature's University",
+    "synopsis_length": 3091,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/21/9e/74/219e74c0-0074-2855-fd9e-2995c19f9245/9788417992361.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/21/9e/74/219e74c0-0074-2855-fd9e-2995c19f9245/9788417992361.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/21/9e/74/219e74c0-0074-2855-fd9e-2995c19f9245/9788417992361.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/21/9e/74/219e74c0-0074-2855-fd9e-2995c19f9245/9788417992361.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "LIT (Life Ignition Tools)",
+      "autor_completo": "Jeff Karp",
+      "año": "2024",
+      "editorial": null,
+      "isbn": "6479328976",
+      "categorias": [
+        "Superación personal",
+        "Libros",
+        "Salud, mente y cuerpo",
+        "Ciencia y naturaleza",
+        "Ciencias de la vida"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/lit-life-ignition-tools/id6479328976?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": false,
+    "reason": "no_results",
+    "source": "openlibrary"
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/6479328976.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "6479328976",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/21/9e/74/219e74c0-0074-2855-fd9e-2995c19f9245/9788417992361.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/21/9e/74/219e74c0-0074-2855-fd9e-2995c19f9245/9788417992361.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/21/9e/74/219e74c0-0074-2855-fd9e-2995c19f9245/9788417992361.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/21/9e/74/219e74c0-0074-2855-fd9e-2995c19f9245/9788417992361.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/6479328976.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match",
+    "openlibrary:no_results"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 2379,
+    "phase2_isbn_chain_ms": 372,
+    "cover_validation_ms": 825,
+    "total_ms": 3576
+  },
+  "_cached_at": "2026-04-21T13:49:20.910Z"
+}

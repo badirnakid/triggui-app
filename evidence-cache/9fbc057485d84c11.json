@@ -200,10 +200,10 @@
   ],
   "_sources_failed": [],
   "_timing": {
-    "phase1_parallel_ms": 4217,
-    "phase2_isbn_chain_ms": 143,
-    "cover_validation_ms": 804,
-    "total_ms": 5164
+    "phase1_parallel_ms": 4759,
+    "phase2_isbn_chain_ms": 802,
+    "cover_validation_ms": 236,
+    "total_ms": 5797
   },
-  "_cached_at": "2026-04-21T13:32:41.855Z"
+  "_cached_at": "2026-04-21T13:53:40.465Z"
 }

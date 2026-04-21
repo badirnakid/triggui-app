@@ -46,9 +46,37 @@
     }
   },
   "google": {
-    "ok": false,
-    "reason": "no_good_match",
-    "source": "google_books"
+    "ok": true,
+    "source": "google_books",
+    "match_score": 0.8777777777777778,
+    "match_details": {
+      "matched_title": "The Law of Success",
+      "matched_author": "Napoleon Hill"
+    },
+    "synopsis": "The Law of Success is Napoleon Hill's life-altering course of fifteen transformational lessons designed to help you create the life you've always wanted. Originally published in 1928, this book has changed the lives of millions of people in the years that have passed. Hill interviewed numerous industrial giants of his day—from Andrew Carnegie to Thomas Edison and J.P. Morgan—and distilled what he learned into the fifteen lessons that compose The Law of Success. The lessons range in topic from the importance of organized planning and imagination to the power of desire, but each is aimed at creating a new reality of abundance and prosperity. This complete, unabridged edition is essential reading for everyone looking to achieve a successful life.",
+    "synopsis_length": 753,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=Hdf3DwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "The Law of Success",
+      "subtitulo": "The 15 Most Powerful Principles for Wealth, Health, and Happiness",
+      "autor_completo": "Napoleon Hill",
+      "año": "2021",
+      "editorial": "Macmillan + ORM",
+      "paginas": 634,
+      "isbn": "9781250794932",
+      "isbn13": "9781250794932",
+      "isbn10": "1250794935",
+      "categorias": [
+        "Body, Mind & Spirit"
+      ],
+      "idioma": "en",
+      "preview_link": "http://books.google.com/books?id=Hdf3DwAAQBAJ&printsec=frontcover&dq=Law+of+Success+Napoleon+Hill&hl=&cd=1&source=gbs_api"
+    }
   },
   "openlibrary": {
     "ok": true,
@@ -130,6 +158,12 @@
       "valid": true
     },
     {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=Hdf3DwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
       "source": "openlibrary",
       "size": "large",
       "url": "https://covers.openlibrary.org/b/id/2292427-L.jpg",
@@ -156,17 +190,16 @@
   ],
   "_sources_succeeded": [
     "apple_books",
+    "google_books",
     "openlibrary",
     "amazon"
   ],
-  "_sources_failed": [
-    "google_books:no_good_match"
-  ],
+  "_sources_failed": [],
   "_timing": {
-    "phase1_parallel_ms": 15822,
-    "phase2_isbn_chain_ms": 24192,
-    "cover_validation_ms": 1327,
-    "total_ms": 41341
+    "phase1_parallel_ms": 2815,
+    "phase2_isbn_chain_ms": 107,
+    "cover_validation_ms": 385,
+    "total_ms": 3307
   },
-  "_cached_at": "2026-04-21T01:17:01.002Z"
+  "_cached_at": "2026-04-21T13:50:11.329Z"
 }

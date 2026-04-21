@@ -1,0 +1,28 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nUn método sencillo y radical con el que activar un estado mental de alto rendimiento, concentración y creatividad, para dar forma a la vida que realmente quieres. Por el director del laboratorio de innovación en Ingeniería Biomédica de Harvard, Jeff Karp. ¿Cómo puedes lograr un mayor rendimiento mental y creatividad en un mundo lleno de distracciones, de fechas límite constantes, de tiempo perdido en las redes sociales y de un bombardeo de noticias que te provoca ansiedad? En LIT, el innovador investigador de Harvard y del MIT, Jeff Karp, ha encontrado una poderosa manera de alcanzar un estado mental más enfocado y eficaz con la ayuda de sus siete herramientas para el encendido vital (Life Ignition Tools). LIT te enseñará a: *Examinarte interiormente y conectar con lo que es verdaderamente importante para ti. *Visualizarte desde fuera para actuar consecuentemente, conectando con los demás y con diferentes formas del saber. *Romper con patrones de pensamiento habituales y decidir activamente en vez de apresurarte a dar respuestas que te mantienen en tu zona de confort. *Lidiar con los múltiples inputs sensoriales y la sobrecarga de información a los que estamos sometidos actualmente. *Estimular la creatividad y el entusiasmo en tu lugar de trabajo. *Reconocer discursos manipulativos que nos pueden hacer tomar la dirección equivocada. *Integrar tu vida espiritual en tu vida personal para reparar y profundizar tus relaciones. LlT te quitará el piloto automático y te ayudará a permanecer alerta, presente en el momento y comprometido con tu vida, en un estado agudo de consciencia de ti mismo que te empujará a la curiosidad, conexión y energía necesarias para tener la vida que realmente quieres. La crítica ha dicho: «En LIT, descubrirás infinidad de herramientas y conceptos para despertar tu verdadero talento y acceder al máximo potencial de tu cerebro». Diana Nyad «Jeff Karp nos ofrece un camino hacia la iluminación interior y la innovación». Colin O'Brady, autor superventas del New York Times «El imprescindible libro de Jeff Karp, LIT nos da la chispa necesaria para alumbrar nuestras vidas desde el interior». Arianna Huffington, fundadora y CEO de Thrive Global «Buenas noticias: Podemos ser más felices, más listos, más eficaces y sentirnos más satisfechos de lo que jamás hubiésemos pensado. Este libro podría cambiar tu vida». Geoff Colvin, autor superventas «LIT es una caja de herramientas esencial para transformar intenciones en acciones relevantes». Daniel H. Pink, autor superventas de New York Times «LIT es un verdadero regalo en un tiempo en el que demasiadas distracciones nos impiden alcanzar nuestros objetivos más nobles. ¡Bravo!» Rudy Tanzi, doctor y profesor de neurología en la Facultad de Medicina de Harvard y autor superventas de Super Brain «Jeff Karp embarca al lector en un humilde viaje de autodescubrimiento a través de los retos de sus propias dificultades en el aprendizaje y de su desbordante impaciencia como estudiante, científico, padre y emprendedor». Nathan Gray, president y co-fundador de Geoversity: Nature's University\n\nMETADATA VERIFICADA:\n- Título: LIT (Life Ignition Tools)\n- Autor: Jeff Karp\n- Año: 2024\n- Categorías: Superación personal, Libros, Salud, mente y cuerpo, Ciencia y naturaleza",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "LIT (Life Ignition Tools)",
+    "autor_completo": "Jeff Karp",
+    "año": "2024",
+    "editorial": null,
+    "isbn": "6479328976",
+    "categorias": [
+      "Superación personal",
+      "Libros",
+      "Salud, mente y cuerpo",
+      "Ciencia y naturaleza",
+      "Ciencias de la vida"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/lit-life-ignition-tools/id6479328976?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [],
+  "resolution_path": [
+    "evidence_fetched_2sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T13:49:20.911Z"
+}

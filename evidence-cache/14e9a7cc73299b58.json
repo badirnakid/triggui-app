@@ -1,0 +1,206 @@
+{
+  "titulo_input": "Máximo Rendimiento",
+  "autor_input": "Brad Stulberg",
+  "isbn_seed": "",
+  "isbn_discovered": "1475489171",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Máximo rendimiento",
+      "matched_author": "Brad Stulberg & Steve Magness"
+    },
+    "synopsis": "Vivimos en la era de la competitividad extrema, por lo que somos muchos los que deseamos saber cómo podemos mejorar nuestro rendimiento de manera eficaz y sin que nuestra salud resulte perjudicada. Las fórmulas que han reportado mayores éxitos a los expertos Steve Magness, entrenador deportivo de élite, y Brad Stulberg, experto en salud y consultor financiero, son tan sorprendentes como fáciles de llevar a la práctica: pasar un rato en compañía de los amigos, alternar periodos de trabajo intenso con etapas de descanso, crear ambientes distendidos, priorizar tareas, minimizar las distracciones o preparar adecuadamente el cuerpo y la mente para hacer frente a los desafíos que nos preocupan. Con inspiradores ejemplos de personalidades destacadas del mundo del deporte, las artes y los negocios, así como los últimos descubrimientos científicos sobre los factores cognitivos y bioquímicos que impulsan y mejoran la productividad, Máximo rendimiento nos revela los métodos más prometedores, éticos y revolucionarios para poder dar lo mejor de nosotros mismos, sea cual sea nuestro campo de interés.",
+    "synopsis_length": 1103,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/e7/de/87/e7de8764-4c77-ead7-ef8b-8da06b2e4ce6/1029631734.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/e7/de/87/e7de8764-4c77-ead7-ef8b-8da06b2e4ce6/1029631734.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/e7/de/87/e7de8764-4c77-ead7-ef8b-8da06b2e4ce6/1029631734.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/e7/de/87/e7de8764-4c77-ead7-ef8b-8da06b2e4ce6/1029631734.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Máximo rendimiento",
+      "autor_completo": "Brad Stulberg & Steve Magness",
+      "año": "2018",
+      "editorial": null,
+      "isbn": "1475489171",
+      "categorias": [
+        "Superación personal",
+        "Libros",
+        "Salud, mente y cuerpo",
+        "Psicología"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/m%C3%A1ximo-rendimiento/id1475489171?uo=4"
+    }
+  },
+  "google": {
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Máximo rendimiento",
+      "matched_author": "Brad Stulberg, Steve Magness"
+    },
+    "synopsis": "Vivimos en la era de la competitividad extrema, por lo que somos muchos los que deseamos saber cómo podemos mejorar nuestro rendimiento de manera eficaz y sin que nuestra salud resulte perjudicada. Las fórmulas que han reportado mayores éxitos a los expertos Steve Magness, entrenador deportivo de élite, y Brad Stulberg, experto en salud y consultor financiero, son tan sorprendentes como fáciles de llevar a la práctica: pasar un rato en compañía de los amigos, alternar periodos de trabajo intenso con etapas de descanso, crear ambientes distendidos, priorizar tareas, minimizar las distracciones o preparar adecuadamente el cuerpo y la mente para hacer frente a los desafíos que nos preocupan. Con inspiradores ejemplos de personalidades destacadas del mundo del deporte, las artes y los negocios, así como los últimos descubrimientos científicos sobre los factores cognitivos y bioquímicos que impulsan y mejoran la productividad, Máximo rendimiento nos revela los métodos más prometedores, éticos y revolucionarios para poder dar lo mejor de nosotros mismos, sea cual sea nuestro campo de interés.",
+    "synopsis_length": 1103,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=HWKnDwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Máximo rendimiento",
+      "subtitulo": "Sube de nivel, evita el agotamiento y prospera con la nueva ciencia del éxito",
+      "autor_completo": "Brad Stulberg, Steve Magness",
+      "año": "2019",
+      "editorial": "EDITORIAL SIRIO S.A.",
+      "paginas": 222,
+      "isbn": "9788418000188",
+      "isbn13": "9788418000188",
+      "isbn10": "841800018X",
+      "categorias": [
+        "Self-Help"
+      ],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=HWKnDwAAQBAJ&printsec=frontcover&dq=M%C3%A1ximo+Rendimiento+Brad+Stulberg&hl=&cd=1&source=gbs_api"
+    }
+  },
+  "openlibrary": {
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "MÁXIMO RENDIMIENTO",
+      "matched_author": "Brad Stulberg, Steve Magness, Vicente Merlo Lillo"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2018.",
+    "synopsis_length": 65,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://covers.openlibrary.org/b/id/12003673-L.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://covers.openlibrary.org/b/id/12003673-M.jpg"
+      },
+      {
+        "size": "small",
+        "url": "https://covers.openlibrary.org/b/id/12003673-S.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "MÁXIMO RENDIMIENTO",
+      "autor_completo": "Brad Stulberg, Steve Magness, Vicente Merlo Lillo",
+      "año": "2018",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": null,
+      "paginas": null
+    }
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/1475489171.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "1475489171",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/e7/de/87/e7de8764-4c77-ead7-ef8b-8da06b2e4ce6/1029631734.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/e7/de/87/e7de8764-4c77-ead7-ef8b-8da06b2e4ce6/1029631734.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/e7/de/87/e7de8764-4c77-ead7-ef8b-8da06b2e4ce6/1029631734.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/e7/de/87/e7de8764-4c77-ead7-ef8b-8da06b2e4ce6/1029631734.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=HWKnDwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "large",
+      "url": "https://covers.openlibrary.org/b/id/12003673-L.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "medium",
+      "url": "https://covers.openlibrary.org/b/id/12003673-M.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "small",
+      "url": "https://covers.openlibrary.org/b/id/12003673-S.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/1475489171.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "google_books",
+    "openlibrary",
+    "amazon"
+  ],
+  "_sources_failed": [],
+  "_timing": {
+    "phase1_parallel_ms": 2473,
+    "phase2_isbn_chain_ms": 210,
+    "cover_validation_ms": 620,
+    "total_ms": 3303
+  },
+  "_cached_at": "2026-04-21T13:46:01.514Z"
+}

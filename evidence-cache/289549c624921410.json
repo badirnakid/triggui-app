@@ -1,0 +1,175 @@
+{
+  "titulo_input": "Rejection Proof",
+  "autor_input": "Jia Jiang",
+  "isbn_seed": "",
+  "isbn_discovered": "936541078",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Rejection Proof",
+      "matched_author": "Jia Jiang"
+    },
+    "synopsis": "The inspiring, relatable, and sometimes outrageous true story&#xa0;of how&#xa0;one man used 100 days of&#xa0;rejection therapy to overcome fear and dare to live more boldly “Rejection Proof smashes fear in the face with a one-two punch. You’ll laugh out loud at Jia’s crazy social experiments, but you’ll also go away thinking differently about what you can accomplish.”—Chris Guillebeau, New York Times bestselling author of The Happiness Pursuit &#xa0; Jia Jiang’s TEDx Talk, “What I learned from 100 days of rejection,”&#xa0;has amassed over ten million views! Jia Jiang came to the United States with the dream of being the next Bill Gates. But despite early success in the corporate world, his first attempt to pursue his entrepreneurial dream ended in rejection. Jia was crushed and spiraled into a period of deep self-doubt. Jia realized that his fear of rejection was a bigger obstacle than any single rejection would ever be; he needed to find a way to cope with being told “no” that wouldn’t destroy him.&#xa0;Inspired by rejection therapy, which uses similar modalities as exposure therapy to desensitize you to the effects of being rejected, he undertook&#xa0;the “100 days of rejection” experiment,&#xa0;during which he willfully sought out rejection on a daily basis—from requesting a lesson in sales from a car salesman (no) to asking a flight attendant if he could make an announcement on the loud speaker (yes) to his famous request to get Krispy Kreme donuts in the shape of Olympic rings (yes, with a viral video to prove it). &#xa0; Over the course of one hundred rejection attempts, Jia realized that even the most preposterous wish might be granted if you ask the right way. He learned the secrets to making successful requests, tactics for picking the right people to approach at the right time, and strategies for converting an initial no into something positive. More important, Jia discovered ways to steel himself against rejection and live more fearlessly—skills that can’t be derailed by a single setback. The changes Jia experienced from his&#xa0;rejection therapy experiment went far beyond becoming more successful in business; he realized that he could apply these techniques to get more out of his relationships with friends, family, and even casual encounters with strangers. &#xa0; Filled with great stories and valuable insight, Rejection Proof shares the secrets of Jia’s rejection journey, distilling each lesson into a strategy that can be used in any negotiation or pitch.",
+    "synopsis_length": 2513,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication118/v4/e0/90/f2/e090f237-a113-0def-3523-29651e6089f1/9780804141390.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication118/v4/e0/90/f2/e090f237-a113-0def-3523-29651e6089f1/9780804141390.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication118/v4/e0/90/f2/e090f237-a113-0def-3523-29651e6089f1/9780804141390.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication118/v4/e0/90/f2/e090f237-a113-0def-3523-29651e6089f1/9780804141390.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Rejection Proof",
+      "autor_completo": "Jia Jiang",
+      "año": "2015",
+      "editorial": null,
+      "isbn": "936541078",
+      "categorias": [
+        "Administración y liderazgo",
+        "Libros",
+        "Negocios y finanzas personales",
+        "Salud, mente y cuerpo",
+        "Superación personal",
+        "Psicología"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/rejection-proof/id936541078?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Rejection proof",
+      "matched_author": "Jia Jiang"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2015.",
+    "synopsis_length": 65,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://covers.openlibrary.org/b/id/9136683-L.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://covers.openlibrary.org/b/id/9136683-M.jpg"
+      },
+      {
+        "size": "small",
+        "url": "https://covers.openlibrary.org/b/id/9136683-S.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Rejection proof",
+      "autor_completo": "Jia Jiang",
+      "año": "2015",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": "eng",
+      "paginas": null
+    }
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/936541078.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "936541078",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication118/v4/e0/90/f2/e090f237-a113-0def-3523-29651e6089f1/9780804141390.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication118/v4/e0/90/f2/e090f237-a113-0def-3523-29651e6089f1/9780804141390.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication118/v4/e0/90/f2/e090f237-a113-0def-3523-29651e6089f1/9780804141390.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication118/v4/e0/90/f2/e090f237-a113-0def-3523-29651e6089f1/9780804141390.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "large",
+      "url": "https://covers.openlibrary.org/b/id/9136683-L.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "medium",
+      "url": "https://covers.openlibrary.org/b/id/9136683-M.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "small",
+      "url": "https://covers.openlibrary.org/b/id/9136683-S.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/936541078.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "openlibrary",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 1720,
+    "phase2_isbn_chain_ms": 321,
+    "cover_validation_ms": 520,
+    "total_ms": 2561
+  },
+  "_cached_at": "2026-04-21T13:48:25.017Z"
+}

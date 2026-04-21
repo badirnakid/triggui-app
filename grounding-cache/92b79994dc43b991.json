@@ -1,0 +1,29 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Google Books):\n\n\n\nMETADATA VERIFICADA:\n- Título: El yoga de Jesus\n- Autor: Paramahansa Yogananda, Self-Realization Fellowship\n- Año: 2009\n- Categorías: Sprituality",
+  "grounding_source": "google_books",
+  "book_identity_confidence": 0.843469387755102,
+  "verified_identity": {
+    "titulo_real": "El yoga de Jesus",
+    "subtitulo": "",
+    "autor_completo": "Paramahansa Yogananda, Self-Realization Fellowship",
+    "año": "2009",
+    "editorial": null,
+    "paginas": 161,
+    "isbn": "",
+    "isbn13": "",
+    "isbn10": "",
+    "categorias": [
+      "Sprituality"
+    ],
+    "idioma": "es",
+    "preview_link": "http://books.google.com/books?id=qNb2SAAACAAJ&dq=intitle:El+yoga+de+Jes%C3%BAs+inauthor:Paramahansa+Yogamanda&hl=&cd=2&source=gbs_api"
+  },
+  "match_score": 0.7336734693877551,
+  "other_sources_agreed": [],
+  "resolution_path": [
+    "evidence_fetched_1sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T13:50:38.242Z"
+}
