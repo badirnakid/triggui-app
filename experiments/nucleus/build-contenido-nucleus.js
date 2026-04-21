@@ -75,7 +75,16 @@ const INPUTS = {
 ────────────────────────────────────────────────────────────────────────────── */
 
 async function fileExists(p) { try { await fs.access(p); return true; } catch { return false; } }
-async function writeJSON(p, data) { await fs.writeFile(p, `${JSON.stringify(data, null, 2)}\n`, "utf8"); }
+// writeJSON v3.2: escritura ATÓMICA. Escribe a .tmp primero, luego rename.
+// En POSIX, rename dentro del mismo filesystem es atómico: o ves el archivo
+// viejo, o ves el archivo nuevo, nunca uno a medias. Evita contenido.json
+// corrupto si el proceso muere mid-write.
+async function writeJSON(p, data) {
+  const tmp = `${p}.tmp-${process.pid}-${Date.now()}`;
+  const content = `${JSON.stringify(data, null, 2)}\n`;
+  await fs.writeFile(tmp, content, "utf8");
+  await fs.rename(tmp, p);
+}
 
 // Defensa total: acepta cualquier cosa y devuelve string formateada. Nunca trona.
 function fmt(value, decimals = 2) {
@@ -85,8 +94,22 @@ function fmt(value, decimals = 2) {
   return num.toFixed(decimals);
 }
 
+// safeJSONParse v3.2: defensivo contra BOM UTF-8, whitespace, vacío, y JSON inválido.
+// String.prototype.trim() elimina el BOM (U+FEFF) porque JS lo considera whitespace.
+// Retorna { ok: bool, data: any, reason: string } para que el caller sepa qué pasó.
 function safeJSONParse(raw, fallback = {}) {
-  try { return JSON.parse(raw); } catch { return fallback; }
+  if (raw === null || raw === undefined) {
+    return { ok: false, data: fallback, reason: "null_or_undefined" };
+  }
+  const str = String(raw).trim();
+  if (!str) {
+    return { ok: false, data: fallback, reason: "empty_or_whitespace" };
+  }
+  try {
+    return { ok: true, data: JSON.parse(str), reason: "parsed" };
+  } catch (err) {
+    return { ok: false, data: fallback, reason: `parse_error: ${err.message.slice(0, 120)}` };
+  }
 }
 
 // Valida que un objeto tenga las propiedades esperadas, en profundidad. Si falla, lanza error claro.
@@ -517,9 +540,22 @@ ${Object.entries(mapped._metrics.tokens_by_phase || {}).map(([k, v]) => `- ${k}:
 ────────────────────────────────────────────────────────────────────────────── */
 
 async function loadCSV() {
-  const raw = await fs.readFile(CFG.files.csv, "utf8");
-  const rows = parse(raw, { columns: true, skip_empty_lines: true });
-  return rows.map((row) => ({
+  if (!(await fileExists(CFG.files.csv))) {
+    throw new Error(`CSV no encontrado: ${CFG.files.csv}. Modos batch/constrained no pueden proceder sin el catálogo.`);
+  }
+  const rawBytes = await fs.readFile(CFG.files.csv, "utf8");
+  // .trim() elimina BOM UTF-8 si el CSV fue guardado desde Excel/Windows
+  const raw = rawBytes.trim();
+  if (!raw) {
+    throw new Error(`CSV vacío: ${CFG.files.csv}. Agrega libros antes de correr batch.`);
+  }
+  let rows;
+  try {
+    rows = parse(raw, { columns: true, skip_empty_lines: true });
+  } catch (err) {
+    throw new Error(`CSV malformado: ${CFG.files.csv} — ${err.message}`);
+  }
+  const parsed = rows.map((row) => ({
     titulo: String(row.titulo || row.Titulo || row.title || "").trim(),
     autor: String(row.autor || row.Autor || row.author || "").trim(),
     tagline: String(row.tagline || row.Tagline || "").trim(),
@@ -527,6 +563,10 @@ async function loadCSV() {
     portada_url: String(row.portada_url || row.portada || "").trim(),
     isbn: String(row.isbn || row.ISBN || "").trim()
   })).filter((r) => r.titulo && r.autor);
+  if (parsed.length === 0) {
+    throw new Error(`CSV sin libros válidos (0 filas con titulo+autor): ${CFG.files.csv}`);
+  }
+  return parsed;
 }
 
 async function loadSingle() {
@@ -576,17 +616,25 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
 
     let existing = { libros: [] };
     if (await fileExists(targetPath)) {
-      try {
-        const raw = await fs.readFile(targetPath, "utf8");
-        existing = JSON.parse(raw);
+      const raw = await fs.readFile(targetPath, "utf8");
+      const parseResult = safeJSONParse(raw, null);
+
+      if (parseResult.ok) {
+        existing = parseResult.data;
         if (!existing || !Array.isArray(existing.libros)) {
+          // JSON válido pero estructura inesperada: preservar con backup
           console.log(`   ⚠️  ${targetPath} tiene estructura inesperada, creando backup y empezando limpio`);
           await fs.writeFile(`${targetPath}.backup-${Date.now()}`, raw, "utf8");
           existing = { libros: [] };
         }
-      } catch (err) {
-        console.log(`   ⚠️  ${targetPath} corrupto (${err.message}), creando backup y empezando limpio`);
-        await fs.writeFile(`${targetPath}.backup-${Date.now()}`, await fs.readFile(targetPath, "utf8").catch(() => ""), "utf8");
+      } else if (parseResult.reason === "empty_or_whitespace") {
+        // Vacío/whitespace: NO backup (no hay nada que preservar), solo inicializar
+        console.log(`   ℹ️  ${targetPath} vacío o solo whitespace, inicializando`);
+        existing = { libros: [] };
+      } else {
+        // Parse error real: backup (puede haber data recuperable manualmente)
+        console.log(`   ⚠️  ${targetPath} corrupto (${parseResult.reason}), creando backup y empezando limpio`);
+        await fs.writeFile(`${targetPath}.backup-${Date.now()}`, raw, "utf8");
         existing = { libros: [] };
       }
     } else {
@@ -711,19 +759,31 @@ async function runBatch() {
         isFromBatch: true
       });
     }
-    // También escribir el archivo consolidado del batch para auditoría
-    const finalRead = await fs.readFile(CFG.files.outBatch, "utf8");
-    const finalData = JSON.parse(finalRead);
-    console.log(`   🔗 Total en contenido.json: ${finalData.libros.length} libros`);
+    // También escribir el archivo consolidado del batch para auditoría.
+    // BLINDADO v3.2: este log NO debe matar el proceso si el archivo final
+    // tiene BOM, whitespace o quedó corrupto por race condition.
+    // Ya procesamos 20 libros y escribimos los quality reports: no tiene
+    // sentido morir aquí por una línea de observabilidad.
+    try {
+      const finalRead = await fs.readFile(CFG.files.outBatch, "utf8");
+      const parseResult = safeJSONParse(finalRead, { libros: [] });
+      if (parseResult.ok && Array.isArray(parseResult.data.libros)) {
+        console.log(`   🔗 Total en contenido.json: ${parseResult.data.libros.length} libros`);
+      } else {
+        console.log(`   ⚠️  No se pudo verificar total final (${parseResult.reason}). El archivo ya fue escrito por mergeIntoContenidoJson.`);
+      }
+    } catch (err) {
+      console.log(`   ⚠️  No se pudo leer ${CFG.files.outBatch} para verificación final: ${err.message}`);
+    }
   } else {
-    // Comportamiento legacy: sobrescribir archivo completo
-    await fs.writeFile(outputFile, `${JSON.stringify({ libros: exitosos }, null, 2)}\n`, "utf8");
+    // Comportamiento legacy: sobrescribir archivo completo (escritura atómica)
+    await writeJSON(outputFile, { libros: exitosos });
   }
 
   const runMs = Date.now() - t0;
   await fs.mkdir(CFG.files.metricsDir, { recursive: true });
   const stamp = new Date().toISOString().replace(/[:.]/g, "-");
-  await fs.writeFile(`${CFG.files.metricsDir}/nucleus-v3-${stamp}.json`, JSON.stringify({
+  await writeJSON(`${CFG.files.metricsDir}/nucleus-v3-${stamp}.json`, {
     timestamp: new Date().toISOString(),
     pipeline: "nucleus-canonical-v3",
     mode: CFG.shadowMode ? "shadow" : "production",
@@ -732,7 +792,7 @@ async function runBatch() {
     fallos,
     total_tokens: totalTokens,
     run_total_ms: runMs
-  }, null, 2), "utf8");
+  });
 
   console.log(`\n━━━━━━━━━━━━━━━━━━━━━━━━`);
   console.log(`✅ ${exitosos.length}/${selected.length} exitosos, ${fallos} fallos`);
@@ -766,7 +826,9 @@ async function runSingle() {
   result.mapped._manual_generated_at = new Date().toISOString();
 
   // Escribir contenido_edicion.json (solo este libro) — carril v3.2 (ediciones vivas)
-  await fs.writeFile(CFG.files.outSingle, `${JSON.stringify({ libros: [result.mapped] }, null, 2)}\n`, "utf8");
+  // Escritura atómica: write temp + rename garantiza que build-editions.py nunca
+  // lea un archivo a medias si corre en paralelo.
+  await writeJSON(CFG.files.outSingle, { libros: [result.mapped] });
   console.log(`\n✅ ${CFG.files.outSingle}`);
 
   const unifiedMode = process.env.UNIFIED_MODE !== "false";
