@@ -1,0 +1,29 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nCon Tus zonas mágicas el lector accederá al milagro cotidiano de aproximarse a la perfección. Otro libro imprescindible del autor de Tus zonas erróneas. ¿Solo existe la realidad tangible, la que reconocemos por nuestros sentidos? ¿No existirá también una realidad «subyacente», sin desarrollar en la mayoría de los seres, pero que daría a estos un ilimitado poder para realizar sus vidas con plenitud? Wayne W. Dyer afirma que sí. Afirma la existencia de una realidad mágica en cada uno, una poderosa parcela espiritual que está esperando ser descubierta para ser utilizada como un único fin posible: lograr lo mejor para uno mismo y para los otros.\n\nMETADATA VERIFICADA:\n- Título: Tus zonas mágicas\n- Autor: Wayne W. Dyer\n- Año: 2017\n- Categorías: Psicología, Libros, Salud, mente y cuerpo, Superación personal",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Tus zonas mágicas",
+    "autor_completo": "Wayne W. Dyer",
+    "año": "2017",
+    "editorial": null,
+    "isbn": "1209727960",
+    "categorias": [
+      "Psicología",
+      "Libros",
+      "Salud, mente y cuerpo",
+      "Superación personal"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/tus-zonas-m%C3%A1gicas/id1209727960?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_3sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T11:03:40.701Z"
+}

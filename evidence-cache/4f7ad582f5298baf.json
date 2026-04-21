@@ -1,0 +1,124 @@
+{
+  "titulo_input": "Cómo hacer que las cosas pasen",
+  "autor_input": "Guillermo Echevarria",
+  "isbn_seed": "",
+  "isbn_discovered": "1506684891",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Cómo hacer que las cosas pasen",
+      "matched_author": "Guillermo Echevarria"
+    },
+    "synopsis": "Cómo hacer que las cosas pasen es un libro para personas que quieren que empiece a pasar algo diferente en sus vidas. No importa a qué te dediques, qué edad ni qué formación tengas. Para hacer que las cosas pasen es clave que entrenes tu creatividad para ser más grande que tus desafíos y así poder. En la obra se abordan temas como: Tratar con personas difíciles Decir cosas incómodas de manera constructiva. Crecer profesionalmente cuando no reconocen tu valor. Superar el autoboicot y la postergación. Convertir imprevistos en oportunidades. Rehacer tu vida y construir un futuro que te apasione. Cambiar más rápido y con menos estrés. Inspirarte para dar tu mejor versión. En estas páginas vas a encontrar 17 historias inspiradoras, ejercicios, herramientas y semillas de actitud que pueden generarte unas ganas arrolladoras de hacer que las cosas pasen en tu vida. Ojalá te animes al desafío. ¿El que no arriesga no gana? El que no arriesga no vive. \"Cómo hacer que las cosas pasen me inspiró a imaginar la segunda mitad de mi carrera laboral y me dio herramientas para empezar a vivirla.\" DIEGO REJTMAN, director mundial de reclutamiento universitario en Microsoft. \"Me emocionó mucho 'Taxi coaching', la historia del taxista que pone todo de sí. Se me cayeron varias lágrimas porque me sentí identificado y porque en la vida, para ser felices, hay que estar dispuestos a poner siempre lo que falta para que las cosas pasen.\" GUSTAVO ZERBINO, sobreviviente de la tragedia de Los Andes",
+    "synopsis_length": 1490,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/b5/6e/56/b56e562a-b367-aa8a-2c02-f6eed43ce1a3/1031313479.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/b5/6e/56/b56e562a-b367-aa8a-2c02-f6eed43ce1a3/1031313479.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/b5/6e/56/b56e562a-b367-aa8a-2c02-f6eed43ce1a3/1031313479.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/b5/6e/56/b56e562a-b367-aa8a-2c02-f6eed43ce1a3/1031313479.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Cómo hacer que las cosas pasen",
+      "autor_completo": "Guillermo Echevarria",
+      "año": "2020",
+      "editorial": null,
+      "isbn": "1506684891",
+      "categorias": [
+        "Superación personal",
+        "Libros",
+        "Salud, mente y cuerpo"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/c%C3%B3mo-hacer-que-las-cosas-pasen/id1506684891?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": false,
+    "reason": "no_results",
+    "source": "openlibrary"
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/1506684891.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "1506684891",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/b5/6e/56/b56e562a-b367-aa8a-2c02-f6eed43ce1a3/1031313479.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/b5/6e/56/b56e562a-b367-aa8a-2c02-f6eed43ce1a3/1031313479.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/b5/6e/56/b56e562a-b367-aa8a-2c02-f6eed43ce1a3/1031313479.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/b5/6e/56/b56e562a-b367-aa8a-2c02-f6eed43ce1a3/1031313479.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/1506684891.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match",
+    "openlibrary:no_results"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 2859,
+    "phase2_isbn_chain_ms": 543,
+    "cover_validation_ms": 877,
+    "total_ms": 4279
+  },
+  "_cached_at": "2026-04-21T11:05:34.819Z"
+}

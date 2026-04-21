@@ -1,0 +1,26 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nEstás a punto de descubrir todo sobre la economía de los creadores Con la llegada de las plataformas digitales surgió una nueva fase económica que, además de permitir un modelo laboral más flexible, cambió el panorama del marketing digital: la economíade los creadores. Hoy existen influencers,youtubers,streamers y creadores de contenido que cuentan con miles de seguidores y manejan contratos millonarios con empresas de diferentes industrias, logrando vivir la vida de sus sueños y explorar todas y cada una de sus pasiones, pero ¿cómo llegaron hasta ahí? ¿Cómo unirse a sus filas? ¿Qué es lo que hay que saber? Y… ¿qué les depara el futuro? El mundo digital avanza a pasos agigantados y parece que cada día se implementa una nueva plataforma, por lo que la adaptabilidad, la autenticidad y un objetivo claro son clave para lograr posicionarse en el competido mundo de los creadores de contenido. No se trata sólo de subir contenido a redes: hay que tener una estrategia y una voz única detrás. En THE HIDDEN ECONOMY descubrirás qué es la economía de los creadores, cómo funcionan las plataformas digitales y quiénes son los jugadores de este gran tablero, además encontrarás reflexiones sobre el futuro del trabajo, la responsabilidad de comunicar y el nuevo papel de la Web3 y la inteligencia artificial en esta creciente industria.\n\nMETADATA VERIFICADA:\n- Título: The Hidden Economy\n- Autor: Alejandra González\n- Año: 2024\n- Categorías: Juvenil: profesiones y ocupaciones, Libros, Juvenil",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "The Hidden Economy",
+    "autor_completo": "Alejandra González",
+    "año": "2024",
+    "editorial": null,
+    "isbn": "6471896550",
+    "categorias": [
+      "Juvenil: profesiones y ocupaciones",
+      "Libros",
+      "Juvenil"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/the-hidden-economy/id6471896550?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [],
+  "resolution_path": [
+    "evidence_fetched_2sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T11:05:05.516Z"
+}

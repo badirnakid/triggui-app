@@ -1,0 +1,205 @@
+{
+  "titulo_input": "Si no eres el primero; Eres el último",
+  "autor_input": "Grant Cardone",
+  "isbn_seed": "",
+  "isbn_discovered": "1053584016",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Si no eres el primero, eres el último",
+      "matched_author": "Grant Cardone"
+    },
+    "synopsis": "Olvídate de pretextos, este libro te dará estrategias comprobadas que te harán un mejor vendedor, empresario y persona, al tiempo que te lleva hacia una nueva libertad financiera. En Si no eres el primero, eres el último, Grant Cardone te muestra cómo adoptar una actitud de \"avanza y conquista\". Sintoniza con el poder secreto del \"hambre\", diseña un plan para ser completamente libre, e ignora las convenciones sociales para conseguir el éxito. En estos tiempos se ha vuelto más complicado vender cualquier producto, mantener contentos a los clientes y obtener hasta la más mínima ventaja. Los errores ahora son más costosos y el fracaso se convierte en una posibilidad real para quienes no logran adaptarse con la suficiente rapidez. Pero imagina que puedas venderte a ti mismo de manera efectiva y contundente que tengas la gran capacidad de robar mercado a tus competidores a través de una fórmula precisa para aumentar tus ventas y conseguir tus objetivos.",
+    "synopsis_length": 962,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/a2/5a/da/a25adad3-0def-2d29-62e5-8351b635f9a9/mzm.bhpauauc.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/a2/5a/da/a25adad3-0def-2d29-62e5-8351b635f9a9/mzm.bhpauauc.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/a2/5a/da/a25adad3-0def-2d29-62e5-8351b635f9a9/mzm.bhpauauc.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/a2/5a/da/a25adad3-0def-2d29-62e5-8351b635f9a9/mzm.bhpauauc.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Si no eres el primero, eres el último",
+      "autor_completo": "Grant Cardone",
+      "año": "2015",
+      "editorial": null,
+      "isbn": "1053584016",
+      "categorias": [
+        "Mercadotecnia y ventas",
+        "Libros",
+        "Negocios y finanzas personales"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/si-no-eres-el-primero-eres-el-%C3%BAltimo/id1053584016?uo=4"
+    }
+  },
+  "google": {
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Si no eres el primero, eres el último",
+      "matched_author": "Grant Cardone"
+    },
+    "synopsis": "Olvídate de pretextos, este libro te dará estrategias comprobadas que te harán un mejor vendedor, empresario y persona, al tiempo que te lleva hacia una nueva libertad financiera. En Si no eres el primero, eres el último, Grant Cardone te muestra cómo adoptar una actitud de \"avanza y conquista\". Sintoniza con el poder secreto del \"hambre\", diseña un plan para ser completamente libre, e ignora las convenciones sociales para conseguir el éxito. En estos tiempos se ha vuelto más complicado vender cualquier producto, mantener contentos a los clientes y obtener hasta la más mínima ventaja. Los errores ahora son más costosos y el fracaso se convierte en una posibilidad real para quienes no logran adaptarse con la suficiente rapidez. Pero imagina que puedas venderte a ti mismo de manera efectiva y contundente que tengas la gran capacidad de robar mercado a tus competidores a través de una fórmula precisa para aumentar tus ventas y conseguir tus objetivos.",
+    "synopsis_length": 962,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=Y0PSCgAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Si no eres el primero, eres el último",
+      "subtitulo": "Estrategias de ventas para dominar al mercado y vencer a tu competencia",
+      "autor_completo": "Grant Cardone",
+      "año": "2015",
+      "editorial": "DEBOLSILLO",
+      "paginas": 230,
+      "isbn": "9786073138222",
+      "isbn13": "9786073138222",
+      "isbn10": "6073138229",
+      "categorias": [
+        "Business & Economics"
+      ],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=Y0PSCgAAQBAJ&printsec=frontcover&dq=intitle:Si+no+eres+el+primero%3B+Eres+el+%C3%BAltimo+inauthor:Grant+Cardone&hl=&cd=1&source=gbs_api"
+    }
+  },
+  "openlibrary": {
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Si no eres el primero, eres el último",
+      "matched_author": "GRANT CARDONE"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2015.",
+    "synopsis_length": 65,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://covers.openlibrary.org/b/id/13200016-L.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://covers.openlibrary.org/b/id/13200016-M.jpg"
+      },
+      {
+        "size": "small",
+        "url": "https://covers.openlibrary.org/b/id/13200016-S.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Si no eres el primero, eres el último",
+      "autor_completo": "GRANT CARDONE",
+      "año": "2015",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": null,
+      "paginas": null
+    }
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/1053584016.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "1053584016",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/a2/5a/da/a25adad3-0def-2d29-62e5-8351b635f9a9/mzm.bhpauauc.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/a2/5a/da/a25adad3-0def-2d29-62e5-8351b635f9a9/mzm.bhpauauc.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/a2/5a/da/a25adad3-0def-2d29-62e5-8351b635f9a9/mzm.bhpauauc.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/a2/5a/da/a25adad3-0def-2d29-62e5-8351b635f9a9/mzm.bhpauauc.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=Y0PSCgAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "large",
+      "url": "https://covers.openlibrary.org/b/id/13200016-L.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "medium",
+      "url": "https://covers.openlibrary.org/b/id/13200016-M.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "small",
+      "url": "https://covers.openlibrary.org/b/id/13200016-S.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/1053584016.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "google_books",
+    "openlibrary",
+    "amazon"
+  ],
+  "_sources_failed": [],
+  "_timing": {
+    "phase1_parallel_ms": 853,
+    "phase2_isbn_chain_ms": 732,
+    "cover_validation_ms": 978,
+    "total_ms": 2563
+  },
+  "_cached_at": "2026-04-21T11:08:54.126Z"
+}

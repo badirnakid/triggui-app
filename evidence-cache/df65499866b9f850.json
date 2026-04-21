@@ -45,9 +45,32 @@
     }
   },
   "google": {
-    "ok": false,
-    "reason": "no_good_match",
-    "source": "google_books"
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Viaje a las emociones",
+      "matched_author": "Eduardo Punset"
+    },
+    "synopsis": "El viaje que propone Eduardo Punset es el más fascinante de cuantos podamos emprender. Empieza con la búsqueda de la felicidad, una aventura de final incierto a través de todo aquello que nos puede conducir (o apartar) del objetivo, esto es: las emociones, el estrés, los fl ujos hormonales, el envejecimiento, los factores sociales, económicos, culturales, religiosos... Explora acto seguido los fundamentos del amor, el más primordial de los instintos, sus canales de expresión y el secreto de su fórmula; y culmina en lo más íntimo del ser humano, lo que ocurre en el interior de cada uno, y el final de todo viaje: la mente, que es, a la postre, «el único poder». Un recorrido por la felicidad, el amor y el poder: las tres claves que mueven el mundo.",
+    "synopsis_length": 755,
+    "covers": [],
+    "verified_identity": {
+      "titulo_real": "Viaje a las emociones",
+      "subtitulo": "Las claves que mueven el mundo: la felicidad, el amor y el poder de la mente",
+      "autor_completo": "Eduardo Punset",
+      "año": "2010",
+      "editorial": null,
+      "paginas": 848,
+      "isbn": "9788423343638",
+      "isbn13": "9788423343638",
+      "isbn10": "8423343634",
+      "categorias": [
+        "Education"
+      ],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=ElhFYgEACAAJ&dq=intitle:Viaje+a+las+emociones+inauthor:Eduardo+Punset&hl=&cd=1&source=gbs_api"
+    }
   },
   "openlibrary": {
     "ok": true,
@@ -155,17 +178,16 @@
   ],
   "_sources_succeeded": [
     "apple_books",
+    "google_books",
     "openlibrary",
     "amazon"
   ],
-  "_sources_failed": [
-    "google_books:no_good_match"
-  ],
+  "_sources_failed": [],
   "_timing": {
-    "phase1_parallel_ms": 16071,
-    "phase2_isbn_chain_ms": 24539,
-    "cover_validation_ms": 1016,
-    "total_ms": 41626
+    "phase1_parallel_ms": 1678,
+    "phase2_isbn_chain_ms": 100,
+    "cover_validation_ms": 956,
+    "total_ms": 2734
   },
-  "_cached_at": "2026-04-20T22:20:04.913Z"
+  "_cached_at": "2026-04-21T11:11:18.401Z"
 }

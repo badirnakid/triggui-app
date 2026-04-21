@@ -1,0 +1,148 @@
+{
+  "titulo_input": "Descubre tu abracadabra",
+  "autor_input": "Eva Sandoval",
+  "isbn_seed": "",
+  "isbn_discovered": "6467040506",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 0.76625,
+    "match_details": {
+      "matched_title": "Descubre tu abracadabra (Edición mexicana)",
+      "matched_author": "Eva Sandoval"
+    },
+    "synopsis": "El arte de crear con la palabra un vida poderosa «Cuando las palabras pierden su significado, la gente pierde su libertad.», Confucio Esta lectura está basada en el poder de las palabras, de los pensamientos y de las acciones en coherencia. ¿Existe un poder mayor que el de una persona alineada en todas estas manifestaciones de la vida? En estas páginas descubrirás significados, etimologías y revelaciones propias de las palabras más significativas para el momento que vivimos: desafío, crisis, magia, descubrir, arte, honestidad, revelación, conciencia… Y es que las palabras, una vez que conocemos su significado verdadero, sirven para abrir puertas que probablemente se cerraron a golpe de grito, amenaza o castigo durante la infancia, y que están ahí intactas para volver a ellas cuando llega el momento. Unas puertas que nos llevan a descubrir el poder que nace de la confianza innata que llevamos dentro y con el que podemos conectar a voluntad. «Abracadabra», una palabra de origen incierto que desde la Antigüedad se ha relacionado con la magia de la creación, significa «creo mientras hablo». La propuesta de Eva Sandoval es volver a jugar con la magia de las palabras para así regresar a ese espacio original e inocente en el que sabíamos que todo era posible y todo estaba por descubrir.",
+    "synopsis_length": 1300,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/f6/51/a4/f651a4dc-a841-27fb-deef-c5857c112ca5/9786073907330.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/f6/51/a4/f651a4dc-a841-27fb-deef-c5857c112ca5/9786073907330.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/f6/51/a4/f651a4dc-a841-27fb-deef-c5857c112ca5/9786073907330.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/f6/51/a4/f651a4dc-a841-27fb-deef-c5857c112ca5/9786073907330.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Descubre tu abracadabra (Edición mexicana)",
+      "autor_completo": "Eva Sandoval",
+      "año": "2023",
+      "editorial": null,
+      "isbn": "6467040506",
+      "categorias": [
+        "Espiritualidad",
+        "Libros",
+        "Salud, mente y cuerpo",
+        "Superación personal"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/descubre-tu-abracadabra-edici%C3%B3n-mexicana/id6467040506?uo=4"
+    }
+  },
+  "google": {
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Descubre tu abracadabra",
+      "matched_author": "Eva Sandoval"
+    },
+    "synopsis": "El arte de crear con la palabra un vida poderosa «Cuando las palabras pierden su significado, la gente pierde su libertad.» , Confucio Esta lectura está basada en el poder de las palabras, de los pensamientos y de las acciones en coherencia. ¿Existe un poder mayor que el de una persona alineada en todas estas manifestaciones de la vida? En estas páginas descubrirás significados, etimologías y revelaciones propias de las palabras más significativas para el momento que vivimos: desafío, crisis, magia, descubrir, arte, honestidad, revelación, conciencia... Y es que las palabras, una vez que conocemos su significado verdadero, sirven para abrir puertas que probablemente se cerraron a golpe de grito, amenaza o castigo durante la infancia, y que están ahí intactas para volver a ellas cuando llega el momento. Unas puertas que nos llevan a descubrir el poder que nace de la confianza innata que llevamos dentro y con el que podemos conectar a voluntad. «Abracadabra», una palabra de origen incierto que desde la Antigüedad se ha relacionado con la magia de la creación, significa «creo mientras hablo». La propuesta de Eva Sandoval es volver a jugar con la magia de las palabras para así regresar a ese espacio original e inocente en el que sabíamos que todo era posible y todo estaba por descubrir.",
+    "synopsis_length": 1303,
+    "covers": [],
+    "verified_identity": {
+      "titulo_real": "Descubre tu abracadabra",
+      "subtitulo": "El arte de crear con la palabra una vida poderosa",
+      "autor_completo": "Eva Sandoval",
+      "año": "2023",
+      "editorial": null,
+      "paginas": null,
+      "isbn": "9786073907231",
+      "isbn13": "9786073907231",
+      "isbn10": "6073907230",
+      "categorias": [
+        "Health & Fitness"
+      ],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=_Tw40AEACAAJ&dq=intitle:Descubre+tu+abracadabra+inauthor:Eva+Sandoval&hl=&cd=2&source=gbs_api"
+    }
+  },
+  "openlibrary": {
+    "ok": false,
+    "reason": "no_results",
+    "source": "openlibrary"
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/6467040506.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "6467040506",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/f6/51/a4/f651a4dc-a841-27fb-deef-c5857c112ca5/9786073907330.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/f6/51/a4/f651a4dc-a841-27fb-deef-c5857c112ca5/9786073907330.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/f6/51/a4/f651a4dc-a841-27fb-deef-c5857c112ca5/9786073907330.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/f6/51/a4/f651a4dc-a841-27fb-deef-c5857c112ca5/9786073907330.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/6467040506.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "google_books",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "openlibrary:no_results"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 2957,
+    "phase2_isbn_chain_ms": 454,
+    "cover_validation_ms": 1188,
+    "total_ms": 4599
+  },
+  "_cached_at": "2026-04-21T11:09:23.208Z"
+}

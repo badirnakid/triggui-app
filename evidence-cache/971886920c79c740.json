@@ -1,0 +1,173 @@
+{
+  "titulo_input": "Tus zonas mágicas",
+  "autor_input": "Wayne W. Dyer",
+  "isbn_seed": "",
+  "isbn_discovered": "1209727960",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Tus zonas mágicas",
+      "matched_author": "Wayne W. Dyer"
+    },
+    "synopsis": "Con Tus zonas mágicas el lector accederá al milagro cotidiano de aproximarse a la perfección. Otro libro imprescindible del autor de Tus zonas erróneas. ¿Solo existe la realidad tangible, la que reconocemos por nuestros sentidos? ¿No existirá también una realidad «subyacente», sin desarrollar en la mayoría de los seres, pero que daría a estos un ilimitado poder para realizar sus vidas con plenitud? Wayne W. Dyer afirma que sí. Afirma la existencia de una realidad mágica en cada uno, una poderosa parcela espiritual que está esperando ser descubierta para ser utilizada como un único fin posible: lograr lo mejor para uno mismo y para los otros.",
+    "synopsis_length": 649,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/5d/1f/9c/5d1f9c93-5e9d-3881-f3d5-abd14a1c5041/9788466341752.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/5d/1f/9c/5d1f9c93-5e9d-3881-f3d5-abd14a1c5041/9788466341752.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/5d/1f/9c/5d1f9c93-5e9d-3881-f3d5-abd14a1c5041/9788466341752.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/5d/1f/9c/5d1f9c93-5e9d-3881-f3d5-abd14a1c5041/9788466341752.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Tus zonas mágicas",
+      "autor_completo": "Wayne W. Dyer",
+      "año": "2017",
+      "editorial": null,
+      "isbn": "1209727960",
+      "categorias": [
+        "Psicología",
+        "Libros",
+        "Salud, mente y cuerpo",
+        "Superación personal"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/tus-zonas-m%C3%A1gicas/id1209727960?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Tus zonas mágicas",
+      "matched_author": "Wayne W. Dyer"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2001.",
+    "synopsis_length": 65,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://covers.openlibrary.org/b/id/167304-L.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://covers.openlibrary.org/b/id/167304-M.jpg"
+      },
+      {
+        "size": "small",
+        "url": "https://covers.openlibrary.org/b/id/167304-S.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Tus zonas mágicas",
+      "autor_completo": "Wayne W. Dyer",
+      "año": "2001",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": "spa",
+      "paginas": null
+    }
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/1209727960.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "1209727960",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/5d/1f/9c/5d1f9c93-5e9d-3881-f3d5-abd14a1c5041/9788466341752.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/5d/1f/9c/5d1f9c93-5e9d-3881-f3d5-abd14a1c5041/9788466341752.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/5d/1f/9c/5d1f9c93-5e9d-3881-f3d5-abd14a1c5041/9788466341752.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/5d/1f/9c/5d1f9c93-5e9d-3881-f3d5-abd14a1c5041/9788466341752.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "large",
+      "url": "https://covers.openlibrary.org/b/id/167304-L.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "medium",
+      "url": "https://covers.openlibrary.org/b/id/167304-M.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "small",
+      "url": "https://covers.openlibrary.org/b/id/167304-S.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/1209727960.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "openlibrary",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 1797,
+    "phase2_isbn_chain_ms": 662,
+    "cover_validation_ms": 893,
+    "total_ms": 3352
+  },
+  "_cached_at": "2026-04-21T11:03:40.700Z"
+}

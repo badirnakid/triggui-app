@@ -1,0 +1,29 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nEl dolor, el sufrimiento y el estrés pueden resultar intolerables; pero no necesariamente tiene que ser así. El mindfulness nos proporciona prácticas que podemos incorporar a nuestra vida cotidiana para aliviar los padecimientos de la enfermedad crónica. Los resultados de las investigaciones clínicas realizadas al respecto ponen de relieve que el mindfulness puede ser tan eficaz como los calmantes para mejorar los sistemas de curación natural del cuerpo. También puede reducir la ansiedad, la depresión, la irritabilidad, el agotamiento y el insomnio derivados del dolor y la enfermedad crónicos. Tú no eres tu dolor se basa en un programa de meditación de ocho semanas desarrollado por Vidyamala Burch y enseñado en Respira Vida Breathworks en todo el mundo.\n\nMETADATA VERIFICADA:\n- Título: Tú no eres tu dolor\n- Autor: Vidyamala Burch & Danny Penman\n- Año: 2016\n- Categorías: Espiritualidad, Libros, Salud, mente y cuerpo, Salud y fitness",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.9380000000000002,
+  "verified_identity": {
+    "titulo_real": "Tú no eres tu dolor",
+    "autor_completo": "Vidyamala Burch & Danny Penman",
+    "año": "2016",
+    "editorial": null,
+    "isbn": "1340356175",
+    "categorias": [
+      "Espiritualidad",
+      "Libros",
+      "Salud, mente y cuerpo",
+      "Salud y fitness"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/t%C3%BA-no-eres-tu-dolor/id1340356175?uo=4"
+  },
+  "match_score": 0.9700000000000001,
+  "other_sources_agreed": [
+    "google_books"
+  ],
+  "resolution_path": [
+    "evidence_fetched_3sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T11:02:41.957Z"
+}

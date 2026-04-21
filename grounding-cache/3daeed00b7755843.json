@@ -1,0 +1,31 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Google Books):\n\nAntología de ensayos y meditaciones Brianna Wiest, escritora bestseller y fenómeno global en redes sociales, presenta en esta obra una recopilación de sus escritos más famosos. La presente selección incluye reflexiones sobre por qué debemos perseguir el propósito por encima de la pasión, abrazar el pensamiento negativo, ver la sabiduría en la rutina diaria o ser conscientes de los sesgos cognitivos que crean nuestra manera de ver la vida, entre muchas otras. Algunas de estas piezas son inéditas; otras ya han sido leídas por millones de personas en todo el mundo. En cualquier caso, muchas de ellas te dejarán pensando: \"Esta idea me va a cambiar la vida\".\n\nMETADATA VERIFICADA:\n- Título: 101 Reflexiones que cambiarán tu forma de pensar\n- Autor: Brianna Wiest Brianna Wiest\n- Año: 2026\n- Editorial: Gaia Ediciones\n- Categorías: Psychology",
+  "grounding_source": "google_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "101 Reflexiones que cambiarán tu forma de pensar",
+    "subtitulo": "",
+    "autor_completo": "Brianna Wiest Brianna Wiest",
+    "año": "2026",
+    "editorial": "Gaia Ediciones",
+    "paginas": null,
+    "isbn": "9788411080279",
+    "isbn13": "9788411080279",
+    "isbn10": "8411080277",
+    "categorias": [
+      "Psychology"
+    ],
+    "idioma": "es",
+    "preview_link": "http://books.google.com/books?id=mMvFzwEACAAJ&dq=intitle:101+reflexiones+que+cambiar%C3%A1n+tu+forma+de+pensar+inauthor:Brianna+Wiest&hl=&cd=1&source=gbs_api"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_4sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T11:04:09.425Z"
+}

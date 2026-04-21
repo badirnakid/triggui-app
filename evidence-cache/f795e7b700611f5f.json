@@ -1,0 +1,173 @@
+{
+  "titulo_input": "Spin selling",
+  "autor_input": "Neil Rackham",
+  "isbn_seed": "",
+  "isbn_discovered": "1565369439",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "SPIN® -Selling",
+      "matched_author": "Neil Rackham"
+    },
+    "synopsis": "True or false? In selling high-value products or services: 'closing' increases your chance of success; it is essential to describe the benefits of your product or service to the customer; objection handling is an important skill; open questions are more effective than closed questions. All false, says this provocative book. Neil Rackham and his team studied more than 35,000 sales calls made by 10,000 sales people in 23 countries over 12 years. Their findings revealed that many of the methods developed for selling low-value goods just don‘t work for major sales. Rackham went on to introduce his SPIN-Selling method. SPIN describes the whole selling process: Situation questions Problem questions Implication questions Need-payoff questions SPIN-Selling provides you with a set of simple and practical techniques which have been tried in many of today‘s leading companies with dramatic improvements to their sales performance.",
+    "synopsis_length": 931,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/8c/93/d3/8c93d3fe-8b0e-880b-6bbe-4f117de1cf16/9781000154573.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/8c/93/d3/8c93d3fe-8b0e-880b-6bbe-4f117de1cf16/9781000154573.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/8c/93/d3/8c93d3fe-8b0e-880b-6bbe-4f117de1cf16/9781000154573.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/8c/93/d3/8c93d3fe-8b0e-880b-6bbe-4f117de1cf16/9781000154573.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "SPIN® -Selling",
+      "autor_completo": "Neil Rackham",
+      "año": "2020",
+      "editorial": null,
+      "isbn": "1565369439",
+      "categorias": [
+        "Mercadotecnia y ventas",
+        "Libros",
+        "Negocios y finanzas personales",
+        "Profesiones"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/spin-selling/id1565369439?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "SPIN selling",
+      "matched_author": "Neil Rackham"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 1988.",
+    "synopsis_length": 65,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://covers.openlibrary.org/b/id/55114-L.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://covers.openlibrary.org/b/id/55114-M.jpg"
+      },
+      {
+        "size": "small",
+        "url": "https://covers.openlibrary.org/b/id/55114-S.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "SPIN selling",
+      "autor_completo": "Neil Rackham",
+      "año": "1988",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": "eng",
+      "paginas": null
+    }
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/1565369439.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "1565369439",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/8c/93/d3/8c93d3fe-8b0e-880b-6bbe-4f117de1cf16/9781000154573.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/8c/93/d3/8c93d3fe-8b0e-880b-6bbe-4f117de1cf16/9781000154573.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/8c/93/d3/8c93d3fe-8b0e-880b-6bbe-4f117de1cf16/9781000154573.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/8c/93/d3/8c93d3fe-8b0e-880b-6bbe-4f117de1cf16/9781000154573.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "large",
+      "url": "https://covers.openlibrary.org/b/id/55114-L.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "medium",
+      "url": "https://covers.openlibrary.org/b/id/55114-M.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "small",
+      "url": "https://covers.openlibrary.org/b/id/55114-S.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/1565369439.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "openlibrary",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 1460,
+    "phase2_isbn_chain_ms": 419,
+    "cover_validation_ms": 702,
+    "total_ms": 2581
+  },
+  "_cached_at": "2026-04-21T11:07:01.620Z"
+}

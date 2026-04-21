@@ -1,0 +1,97 @@
+{
+  "titulo_input": "El fin de semana de 5 días",
+  "autor_input": "Nik Halik",
+  "isbn_seed": "",
+  "isbn_discovered": "9781607385721",
+  "apple": {
+    "ok": false,
+    "reason": "no_results",
+    "source": "apple_books"
+  },
+  "google": {
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "El fin de semana de 5 días",
+      "matched_author": "Nik Halik, Garret B. Gunderson"
+    },
+    "synopsis": "¡Tú sabes que hay una mejor manera de vivir y quieres más de la vida! ¡Tienes esperanzas y sueños! Anhelas salirte de esa rueda de la rutina que te exprime financieramente mes a mes y dejar de vivir por las reglas que te imponen la sociedad y otras personas. Sin embargo, nunca has tenido claro cuál es la manera más eficaz de alcanzar tus metas... hasta ahora. El fin de semana de 5 días es: *Un conjunto de estrategias que te ayudarán a dejar de lado esa rutina de trabajo de 8:00 am a 6:00 pm para que comiences a ir tras tus metas más soñadas y las logres. *Más que inspiración, un plan que te mostrará cómo construir múltiples fuentes de ingreso. *Más que un concepto, una visión real del mundo. Sus historias acerca de emprendedores de la vida diaria te servirán de ejemplo y guía. *Más que una forma de conseguir dinero, una forma de tener un propósito de vida. *Más que una rutina, una concepción del mundo que te muestra más y mejores opciones sobre cómo sentirte realizado. Es tu momento de dejar de estar atascado. ¿Estás listo para avanzar hacia un estilo de vida lleno de libertad financiera y propósitos? El fin de semana de 5 días es tu puerta de acceso hacia mejores expectativas.",
+    "synopsis_length": 1196,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=FSrEDwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "El fin de semana de 5 días",
+      "subtitulo": "Encuentra la libertad para construir una vida próspera y con propósito",
+      "autor_completo": "Nik Halik, Garret B. Gunderson",
+      "año": "2019",
+      "editorial": null,
+      "paginas": 215,
+      "isbn": "9781607385721",
+      "isbn13": "9781607385721",
+      "isbn10": "1607385724",
+      "categorias": [
+        "Business & Economics"
+      ],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=FSrEDwAAQBAJ&pg=PT88&dq=intitle:El+fin+de+semana+de+5+d%C3%ADas+inauthor:Nik+Halik&hl=&cd=1&source=gbs_api"
+    }
+  },
+  "openlibrary": {
+    "ok": false,
+    "reason": "no_results",
+    "source": "openlibrary"
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/160738572.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "9781607385721",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=FSrEDwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/160738572.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "google_books",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "apple_books:no_results",
+    "openlibrary:no_results"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 1503,
+    "phase2_isbn_chain_ms": 212,
+    "cover_validation_ms": 271,
+    "total_ms": 1986
+  },
+  "_cached_at": "2026-04-21T11:02:06.395Z"
+}

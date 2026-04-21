@@ -1,0 +1,29 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nOlvídate de pretextos, este libro te dará estrategias comprobadas que te harán un mejor vendedor, empresario y persona, al tiempo que te lleva hacia una nueva libertad financiera. En Si no eres el primero, eres el último, Grant Cardone te muestra cómo adoptar una actitud de \"avanza y conquista\". Sintoniza con el poder secreto del \"hambre\", diseña un plan para ser completamente libre, e ignora las convenciones sociales para conseguir el éxito. En estos tiempos se ha vuelto más complicado vender cualquier producto, mantener contentos a los clientes y obtener hasta la más mínima ventaja. Los errores ahora son más costosos y el fracaso se convierte en una posibilidad real para quienes no logran adaptarse con la suficiente rapidez. Pero imagina que puedas venderte a ti mismo de manera efectiva y contundente que tengas la gran capacidad de robar mercado a tus competidores a través de una fórmula precisa para aumentar tus ventas y conseguir tus objetivos.\n\nMETADATA VERIFICADA:\n- Título: Si no eres el primero, eres el último\n- Autor: Grant Cardone\n- Año: 2015\n- Categorías: Mercadotecnia y ventas, Libros, Negocios y finanzas personales",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Si no eres el primero, eres el último",
+    "autor_completo": "Grant Cardone",
+    "año": "2015",
+    "editorial": null,
+    "isbn": "1053584016",
+    "categorias": [
+      "Mercadotecnia y ventas",
+      "Libros",
+      "Negocios y finanzas personales"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/si-no-eres-el-primero-eres-el-%C3%BAltimo/id1053584016?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "google_books",
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_4sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T11:08:54.127Z"
+}

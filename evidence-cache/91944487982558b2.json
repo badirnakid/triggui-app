@@ -1,0 +1,91 @@
+{
+  "titulo_input": "Recupera tu poder",
+  "autor_input": "Rut Nieves",
+  "isbn_seed": "",
+  "isbn_discovered": "",
+  "apple": {
+    "ok": false,
+    "reason": "no_results",
+    "source": "apple_books"
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Recupera tu poder",
+      "matched_author": "Rut Nieves"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2022.",
+    "synopsis_length": 65,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://covers.openlibrary.org/b/id/12886515-L.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://covers.openlibrary.org/b/id/12886515-M.jpg"
+      },
+      {
+        "size": "small",
+        "url": "https://covers.openlibrary.org/b/id/12886515-S.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Recupera tu poder",
+      "autor_completo": "Rut Nieves",
+      "año": "2022",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": "spa",
+      "paginas": null
+    }
+  },
+  "amazon": {
+    "ok": false,
+    "reason": "skipped",
+    "source": "amazon"
+  },
+  "valid_covers": [
+    {
+      "source": "openlibrary",
+      "size": "large",
+      "url": "https://covers.openlibrary.org/b/id/12886515-L.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "medium",
+      "url": "https://covers.openlibrary.org/b/id/12886515-M.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "small",
+      "url": "https://covers.openlibrary.org/b/id/12886515-S.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "openlibrary"
+  ],
+  "_sources_failed": [
+    "apple_books:no_results",
+    "google_books:no_good_match",
+    "amazon:skipped"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 1565,
+    "phase2_isbn_chain_ms": 0,
+    "cover_validation_ms": 345,
+    "total_ms": 1910
+  },
+  "_cached_at": "2026-04-21T11:10:14.883Z"
+}
