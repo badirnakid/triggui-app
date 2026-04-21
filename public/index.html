@@ -65,8 +65,39 @@
 // ========================================
 // 🧠 LOGICA DE DATOS (CORE BLINDADO)
 // ========================================
-function saveLocal(key, value) { try { localStorage.setItem('triggui_' + key, JSON.stringify(value)); } catch(e) {} }
-function getLocal(key, defaultValue = null) { try { const data = localStorage.getItem('triggui_' + key); return data ? JSON.parse(data) : defaultValue; } catch(e) { return defaultValue; } }
+// 🌒 v8: saveLocal/getLocal con telemetría de errores (1 vez por sesión).
+// En Safari modo privado, WebView estricto, o quota exhausted, localStorage
+// puede lanzar QuotaExceededError o SecurityError. Antes se silenciaban
+// silenciosamente sin saber cuántos usuarios estaban afectados. Ahora se
+// reporta a GA el primer fallo de cada sesión para tener visibilidad.
+let __trigguiStorageErrorReported = false;
+function __reportStorageError(op, err) {
+  if (__trigguiStorageErrorReported) return;
+  __trigguiStorageErrorReported = true;
+  try {
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'storage_error', {
+        event_category: 'app_error',
+        op: op,
+        name: (err && err.name) || 'Unknown',
+        message: String((err && err.message) || err).slice(0, 80)
+      });
+    }
+  } catch(_) {}
+}
+function saveLocal(key, value) {
+  try { localStorage.setItem('triggui_' + key, JSON.stringify(value)); }
+  catch(e) { __reportStorageError('set', e); }
+}
+function getLocal(key, defaultValue = null) {
+  try {
+    const data = localStorage.getItem('triggui_' + key);
+    return data ? JSON.parse(data) : defaultValue;
+  } catch(e) {
+    __reportStorageError('get', e);
+    return defaultValue;
+  }
+}
 
 function getPlatform() {
   const ua = navigator.userAgent || navigator.vendor || window.opera;
@@ -146,6 +177,14 @@ const TriggguiI18n = {
   detectLang: function() {
     const saved = getLocal('lang');
     if (saved === 'es' || saved === 'en') return saved;
+    // 🌒 v8: respetar el idioma del navegador en primera visita.
+    // Triggui está en App Store + Google Play globalmente.
+    // navigator.language puede ser 'en', 'en-US', 'es-MX', 'fr', etc.
+    // Solo soportamos ES/EN — cualquier otro idioma cae a ES por default.
+    try {
+      const nav = (navigator.language || navigator.userLanguage || 'es').toLowerCase();
+      if (nav.startsWith('en')) return 'en';
+    } catch(_) {}
     return 'es';
   },
   get: function(key) {
@@ -176,6 +215,9 @@ const TriggguiI18n = {
     if (newLang !== 'es' && newLang !== 'en') return;
     this.lang = newLang;
     saveLocal('lang', newLang);
+    // 🌒 v8: mantener el atributo html[lang] sincronizado con el idioma real.
+    // Mejora SEO, screen readers, y Safari reader mode.
+    try { document.documentElement.lang = newLang; } catch(_) {}
     track('lang_changed', { lang: newLang });
   },
   strings: {
@@ -238,6 +280,8 @@ const TriggguiI18n = {
   }
 };
 TriggguiI18n.lang = TriggguiI18n.detectLang();
+// 🌒 v8: sincronizar html[lang] con el idioma detectado al arranque
+try { document.documentElement.lang = TriggguiI18n.lang; } catch(_) {}
 
 // ══════════════════════════════════════════════════════════════════════════
 // 🎯 BARRA MÁGICA — gestión de visibilidad diaria
@@ -3050,6 +3094,9 @@ BarraMagica.openOverlay = function(force) {
 BarraMagica.closeOverlay = function(skipped, skipRender) {
   const overlay = document.getElementById('barraMagicaOverlay');
   if (!overlay) return;
+  // 🌒 v8: invalidar cualquier submit en vuelo cuando se cierra la barra
+  this._submitToken = (this._submitToken || 0) + 1;
+  this._clearSubmitTimers && this._clearSubmitTimers();
   overlay.classList.remove('visible');
   setTimeout(() => {
     overlay.style.display = 'none';
@@ -3075,7 +3122,24 @@ BarraMagica.closeOverlay = function(skipped, skipRender) {
   }
   track('barra_closed', { skipped: !!skipped });
 };
+// 🌒 v8: tokens de submit para evitar que timeouts viejos ejecuten callbacks
+// cuando el usuario cierra/abre la barra rápido, o re-submite.
+// Cada llamada a submit() incrementa el token; los setTimeout verifican que
+// el token no haya cambiado antes de hacer su trabajo.
+BarraMagica._submitToken = 0;
+BarraMagica._submitTimers = [];
+
+BarraMagica._clearSubmitTimers = function() {
+  while (this._submitTimers.length) {
+    clearTimeout(this._submitTimers.pop());
+  }
+};
+
 BarraMagica.submit = function(query) {
+  // Invalidar cualquier submit en vuelo y cancelar sus timeouts
+  const myToken = ++this._submitToken;
+  this._clearSubmitTimers();
+
   const data = window.__TRIGGUI_DATA__;
   if (!data || !data.libros || data.libros.length === 0) { this.closeOverlay(true); return; }
   const q = String(query || '').trim();
@@ -3116,24 +3180,29 @@ BarraMagica.submit = function(query) {
     questionEl.style.transform = 'scale(0.96)';
   }
 
+  const self = this;
+
   // Paso 2: Construir los 4 bloques DEBAJO (invisibles aún, la pantalla negra los cubre)
-  setTimeout(() => {
-    this.markShownToday();
+  this._submitTimers.push(setTimeout(() => {
+    if (myToken !== self._submitToken) return; // submit fue cancelado
+    self.markShownToday();
     render();
     updateBadge();
-  }, 300);
+  }, 300));
 
   // Paso 3: Fade-out de la pantalla negra, revelando los bloques ya construidos
-  setTimeout(() => {
-    this.closeOverlay(!q, /*skipRender=*/ true);
-  }, 900);
+  this._submitTimers.push(setTimeout(() => {
+    if (myToken !== self._submitToken) return;
+    self.closeOverlay(!q, /*skipRender=*/ true);
+  }, 900));
 
   // Paso 4: First-visit hint si aplica
   if (!getLocal('has_visited')) {
-    setTimeout(() => {
+    this._submitTimers.push(setTimeout(() => {
+      if (myToken !== self._submitToken) return;
       document.querySelectorAll('.block').forEach(b => b.classList.add('first-visit-hint'));
       saveLocal('has_visited', true);
-    }, 1600);
+    }, 1600));
   }
 };
 
@@ -3151,7 +3220,17 @@ function wireBarraMagicaEvents() {
     const doSubmit = () => {
       const q = input.value;
       submit.disabled = true;
-      BarraMagica.submit(q);
+      // 🌒 v8: defensivo. Si BarraMagica.submit lanza (ej: data corrupta),
+      // el botón quedaría permanentemente disabled hasta un refresh completo.
+      // Re-enable automático a los 3s si algo sale mal antes del closeOverlay.
+      try {
+        BarraMagica.submit(q);
+      } catch (err) {
+        console.error('[Triggui] BarraMagica.submit error:', err);
+        submit.disabled = false;
+      }
+      // Guard de último recurso: re-enable tras ventana máxima del flow
+      setTimeout(() => { if (submit) submit.disabled = false; }, 3000);
     };
     submit.addEventListener('click', doSubmit);
     input.addEventListener('keydown', (e) => {
@@ -3185,6 +3264,164 @@ function wireBarraMagicaEvents() {
   }
 }
 
+// ══════════════════════════════════════════════════════════════════════════
+// 🌒 v8 — INIT NIVEL DIOS
+// Contrato: el usuario NUNCA ve pantalla negra infinita.
+// Rutas de fallo manejadas:
+//   1. Timeout de red (>10s)         → mensaje + reintento
+//   2. Error HTTP (404, 500)          → mensaje + reintento
+//   3. JSON corrupto en CDN           → mensaje + reintento
+//   4. Catálogo vacío (libros=[])     → mensaje "Preparando catálogo"
+//   5. localStorage quotaExceeded     → continúa (la app funciona sin persistir)
+//   6. renderizado inicial tira       → catch externo deja app usable
+// ══════════════════════════════════════════════════════════════════════════
+
+// Mensaje visible si algo falla antes de tener catálogo. No depende del DOM
+// principal; se inyecta en <body>. Reemplazable por retry().
+function showLoadingOrError(state, opts) {
+  opts = opts || {};
+  // Remover cualquier mensaje previo
+  const prev = document.getElementById('trigguiBootMsg');
+  if (prev) prev.remove();
+  if (state === 'hide') return;
+
+  const isEn = (typeof TriggguiI18n !== 'undefined' && TriggguiI18n.lang === 'en');
+  const copy = {
+    loading: isEn ? 'Loading your catalog…' : 'Cargando tu catálogo…',
+    preparing: isEn
+      ? 'Triggui is preparing fresh books. Come back in a few minutes.'
+      : 'Triggui está preparando libros nuevos. Vuelve en unos minutos.',
+    netError: isEn
+      ? 'Network issue. Tap to try again.'
+      : 'Problema de red. Toca para reintentar.',
+    retryLabel: isEn ? 'Try again' : 'Reintentar'
+  };
+
+  let title, action;
+  if (state === 'loading') {
+    title = copy.loading;
+    action = null;
+  } else if (state === 'empty_catalog') {
+    title = copy.preparing;
+    action = null;
+  } else {
+    title = copy.netError;
+    action = copy.retryLabel;
+  }
+
+  const wrap = document.createElement('div');
+  wrap.id = 'trigguiBootMsg';
+  wrap.setAttribute('role', 'status');
+  wrap.setAttribute('aria-live', 'polite');
+  wrap.style.cssText = [
+    'position:fixed',
+    'top:50%',
+    'left:50%',
+    'transform:translate(-50%,-50%)',
+    'max-width:300px',
+    'padding:22px 26px',
+    'background:rgba(20,24,38,0.92)',
+    'border:1px solid rgba(255,0,85,0.22)',
+    'border-radius:22px',
+    'color:#fff',
+    'font-family:Archivo,sans-serif',
+    'font-size:15px',
+    'line-height:1.4',
+    'text-align:center',
+    'z-index:200',
+    'backdrop-filter:blur(8px)',
+    '-webkit-backdrop-filter:blur(8px)',
+    'box-shadow:0 10px 40px rgba(0,0,0,0.5)'
+  ].join(';');
+
+  const t = document.createElement('div');
+  t.textContent = title;
+  t.style.cssText = 'opacity:0.92;margin-bottom:' + (action ? '14px' : '0');
+  wrap.appendChild(t);
+
+  if (action && opts.onRetry) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = action;
+    btn.style.cssText = [
+      'margin-top:4px',
+      'padding:10px 20px',
+      'background:linear-gradient(90deg,#FF5E00,#FF0055)',
+      'border:0',
+      'border-radius:999px',
+      'color:#fff',
+      'font-family:Archivo,sans-serif',
+      'font-weight:600',
+      'font-size:14px',
+      'cursor:pointer',
+      'letter-spacing:0.2px'
+    ].join(';');
+    btn.addEventListener('click', () => {
+      showLoadingOrError('loading');
+      opts.onRetry();
+    });
+    wrap.appendChild(btn);
+  }
+
+  if (state === 'loading') {
+    const dot = document.createElement('div');
+    dot.style.cssText = 'margin-top:12px;width:6px;height:6px;border-radius:50%;background:#FF5E00;margin-left:auto;margin-right:auto;animation:trigguiBootPulse 1.2s ease-in-out infinite;';
+    wrap.appendChild(dot);
+    // Keyframes inyectados solo si no existen
+    if (!document.getElementById('trigguiBootKeyframes')) {
+      const s = document.createElement('style');
+      s.id = 'trigguiBootKeyframes';
+      s.textContent = '@keyframes trigguiBootPulse{0%,100%{opacity:0.3;transform:scale(0.85)}50%{opacity:1;transform:scale(1.1)}}';
+      document.head.appendChild(s);
+    }
+  }
+
+  document.body.appendChild(wrap);
+}
+
+// Fetch con timeout duro + retry con backoff exponencial.
+// No confía en el default del browser (30-60s). 10s max por intento.
+async function fetchWithTimeout(url, timeoutMs) {
+  timeoutMs = timeoutMs || 10000;
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, { signal: ctrl.signal, cache: 'no-store' });
+    clearTimeout(timer);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return res;
+  } catch (err) {
+    clearTimeout(timer);
+    throw err;
+  }
+}
+
+async function loadCatalogWithRetry(maxAttempts) {
+  maxAttempts = maxAttempts || 3;
+  const url = "https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json?ts=" + Date.now();
+  let lastErr;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const r = await fetchWithTimeout(url, 10000);
+      const text = await r.text();
+      // .trim() tolera BOM UTF-8 (U+FEFF es whitespace)
+      const clean = text.trim();
+      if (!clean) throw new Error('empty_response');
+      const data = JSON.parse(clean);
+      if (!data || !Array.isArray(data.libros)) throw new Error('invalid_shape');
+      return data;
+    } catch (err) {
+      lastErr = err;
+      console.warn('[Triggui] intento ' + attempt + '/' + maxAttempts + ' falló:', err.message);
+      if (attempt < maxAttempts) {
+        // Backoff: 1s, 2s (no total >3s para no frustrar al usuario)
+        await new Promise(r => setTimeout(r, 1000 * attempt));
+      }
+    }
+  }
+  throw lastErr || new Error('unknown');
+}
+
 // INIT
 function isWebView(){ const ua=navigator.userAgent||navigator.vendor||window.opera; return (/wv/i.test(ua)||/WebView/i.test(ua)||(ua.includes("Android")&&ua.includes("Version/"))||(ua.includes("iPhone")&&!ua.includes("Safari"))); }
 if(isWebView()) document.body.classList.add("webview");
@@ -3196,46 +3433,57 @@ function pickLibroNoRepetido(libros){
   sessionStorage.setItem("lastLibroIdx", idx); return idx;
 }
 
-(async()=>{
-  try{
-    const r=await fetch("https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json?ts="+Date.now());
-    const data=await r.json();
+// Estado compartido del boot: no declaramos variables globales adicionales,
+// usamos una closure que la IIFE captura.
+async function bootTriggui() {
+  showLoadingOrError('loading');
+  try {
+    const data = await loadCatalogWithRetry(3);
     window.__TRIGGUI_DATA__ = data;
     wireBarraMagicaEvents();
-    // 🛡️ DEFENSIVO: Siempre elegir libro y pre-renderizar los bloques.
-    // Si la barra mágica aparece, los bloques quedan detrás del overlay negro
-    // (invisibles al usuario hasta que cierre la barra). Si algo falla con la
-    // barra, los bloques ya están visibles como fallback.
+
+    // Catálogo vacío: la app está lista pero no hay nada que mostrar.
+    // No es un error de red — es un estado de "todavía no hay contenido".
     if (!data.libros || data.libros.length === 0) {
-      console.error('[Triggui] catálogo vacío');
+      console.warn('[Triggui] catálogo vacío');
+      showLoadingOrError('empty_catalog');
+      // Telemetría: avisa que un usuario real topó con esto.
+      track('empty_catalog_seen', { lang: TriggguiI18n.lang });
+      // Badge/counter se ejecutan igual — la racha no depende del catálogo.
+      try { updateBadge(); } catch(_) {}
+      try { refreshGlobalCounter(); } catch(_) {}
       return;
     }
+
     libro = data.libros[pickLibroNoRepetido(data.libros)];
     render();
-    
-    const shouldShow = BarraMagica.shouldShowToday();
-    if (shouldShow) {
-      BarraMagica.openOverlay(false);
-    } else {
-      const lupa = document.getElementById('barraLupaBtn');
-      if (lupa) setTimeout(() => lupa.classList.add('visible'), 1200);
-    }
+    showLoadingOrError('hide');
+
+    // 🌒 v8: SIEMPRE mostrar la barra al abrir la app.
+    // El botón "saltar →" ya le da al usuario el control para omitir.
+    // (shouldShowToday / markShownToday se mantienen para telemetría.)
+    BarraMagica.openOverlay(true);
+
     updateBadge();
     refreshGlobalCounter();
-    track('app_loaded', {streak:getLocal('streak',0), books:getLocal('books_opened',0), lang: TriggguiI18n.lang});
+    track('app_loaded', { streak: getLocal('streak',0), books: getLocal('books_opened',0), lang: TriggguiI18n.lang });
 
-    if (!getLocal('has_visited') && !shouldShow) {
+    if (!getLocal('has_visited')) {
       setTimeout(() => {
         document.querySelectorAll('.block').forEach(b => b.classList.add('first-visit-hint'));
         saveLocal('has_visited', true);
       }, 100);
     }
-    
-  }catch(e){ 
-    console.error('[Triggui] init error:', e);
+  } catch (err) {
+    console.error('[Triggui] init error:', err);
+    track('boot_error', { message: String(err && err.message || err).slice(0, 80) });
     wireBarraMagicaEvents();
+    // Mostrar mensaje de red con botón de reintento
+    showLoadingOrError('network_error', { onRetry: bootTriggui });
   }
-})();
+}
+
+bootTriggui();
 </script>
 
 <script id="js-react-native-bridge">
