@@ -1,0 +1,31 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nEdward Bullmore, uno de los científicos más citados del mundo en neurociencia y psiquiatría, nos presenta una nueva y revolucionaria manera de entender la depresión y su relación con la inflamación del cerebro. La depresión parece encaminada a convertirse en la principal causa de discapacidad a nivel global, pero la realidad es que en las últimas tres décadas no ha habido ningún cambio notable en su tratamiento. En el mundo de la psiquiatría, el tiempo parece haberse detenido... hasta ahora. Edward Bullmore, profesor de Psiquiatría de la Universidad de Cambridge, afirma que los trastornos mentales pueden tener su raíz en el sistema inmunitario. En La inflamación de la mente, Bullmore ofrece una innovadora perspectiva sobre cómo la mente, el cerebro y el cuerpo colaboran en un esfuerzo a veces descaminado por ayudarnos a sobrevivir en un mundo hostil y nos muestra cómo podríamos abordar tanto la depresión como otros trastornos mentales de forma mucho más eficaz, así como los nuevos avances científicos que lo avalan. Esta revolucionaria obra esboza un futuro en el que podríamos encontrar nuevos tratamientos para romper los círculos viciosos del estrés, la inflamación y la depresión y salir victoriosos de la lucha contra los principales problemas de la salud pública en el siglo XXI.\n\nMETADATA VERIFICADA:\n- Título: La inflamación de la mente\n- Autor: Edward Bullmore\n- Año: 2023\n- Categorías: Psicología, Libros, Salud, mente y cuerpo, Técnicos y profesionales",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "La inflamación de la mente",
+    "autor_completo": "Edward Bullmore",
+    "año": "2023",
+    "editorial": null,
+    "isbn": "6448175472",
+    "categorias": [
+      "Psicología",
+      "Libros",
+      "Salud, mente y cuerpo",
+      "Técnicos y profesionales",
+      "Medicina",
+      "Inmunología"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/la-inflamaci%C3%B3n-de-la-mente/id6448175472?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_3sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T02:37:20.305Z"
+}

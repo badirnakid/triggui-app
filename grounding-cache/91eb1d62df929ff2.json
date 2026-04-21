@@ -1,0 +1,42 @@
+{
+  "ground_truth": "TEMA INFERIDO (el modelo no conoce este libro directamente, infiere desde similares):\n\nAdopción de hábitos saludables y su impacto en la calidad de vida y bienestar personal.\n\nVOZ INFERIDA:\nMotivacional y práctico, con un enfoque en la autoayuda y el desarrollo personal.\n\nLIBROS SIMILARES QUE COMPARTEN ADN CON ESTE:\n- \"El poder del ahora\" (Eckhart Tolle): Aborda la importancia de vivir en el presente y cómo esto afecta nuestra salud mental y bienestar.\n- \"Cómo ganar amigos e influir sobre las personas\" (Dale Carnegie): Enfocado en mejorar las relaciones interpersonales y el bienestar a través de decisiones y hábitos positivos.\n- \"La magia del orden\" (Marie Kondo): Explora cómo el orden y la organización pueden influir en nuestra vida diaria y bienestar.\n- \"Despierta tu héroe interior\" (Victor Hugo Manzanilla): Inspira a adoptar hábitos que mejoren la vida personal y profesional.",
+  "grounding_source": "model_inference",
+  "book_identity_confidence": 0.6000000000000001,
+  "verified_identity": {
+    "titulo_real": "Come muévete y duerme",
+    "autor_completo": "Tom Rath",
+    "año": null
+  },
+  "inference_confidence": 0.8,
+  "book_known_directly": false,
+  "rich_inference": true,
+  "similar_books": [
+    {
+      "titulo": "El poder del ahora",
+      "autor": "Eckhart Tolle",
+      "razon": "Aborda la importancia de vivir en el presente y cómo esto afecta nuestra salud mental y bienestar."
+    },
+    {
+      "titulo": "Cómo ganar amigos e influir sobre las personas",
+      "autor": "Dale Carnegie",
+      "razon": "Enfocado en mejorar las relaciones interpersonales y el bienestar a través de decisiones y hábitos positivos."
+    },
+    {
+      "titulo": "La magia del orden",
+      "autor": "Marie Kondo",
+      "razon": "Explora cómo el orden y la organización pueden influir en nuestra vida diaria y bienestar."
+    },
+    {
+      "titulo": "Despierta tu héroe interior",
+      "autor": "Victor Hugo Manzanilla",
+      "razon": "Inspira a adoptar hábitos que mejoren la vida personal y profesional."
+    }
+  ],
+  "resolution_path": [
+    "evidence_fetched_0sources",
+    "tier3_conf_0.80"
+  ],
+  "tier_reached": 3,
+  "cost_tokens": 610,
+  "cached_at": "2026-04-21T02:32:45.360Z"
+}

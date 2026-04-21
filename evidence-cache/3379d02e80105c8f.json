@@ -1,0 +1,173 @@
+{
+  "titulo_input": "Las casualidades no existen",
+  "autor_input": "Borja Vilaseca",
+  "isbn_seed": "",
+  "isbn_discovered": "1576582344",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Las casualidades no existen",
+      "matched_author": "Borja Vilaseca"
+    },
+    "synopsis": "El libro que hará que los creyentes cuestionen la religión y los ateos se abran a la espiritualidad. Estamos viviendo un hecho histórico imparable: cada vez la gente cree menos en las instituciones religiosas y -sin embargo- está cada vez más en contacto con su dimensión espiritual. Y esto se debe a que se está democratizando la sabiduría, provocando que los buscadores occidentales se adentren en la filosofía oriental. Como consecuencia de este viaje de autoconocimiento se está produciendo un despertar masivo de consciencia. Es decir, un profundo cambio en nuestra manera de concebirnos a nosotros mismos y de relacionarnos con la vida. Todas las personas que han despertado -creyentes, ateas o agnósticas- comparten una misma vivencia: que no sucede lo que queremos, sino lo que necesitamos para aprender y evolucionar espiritualmente. De ahí que las casualidades no existan. Este libro explica cómo liberarnos de la «pecera mental» en la que nuestra mente sigue encerrada para sentirnos nuevamente unidos y conectados con la vida, recuperando la alegría innata que nos provoca el simple hecho de estar vivos. No te lo creas: atrévete a experimentarlo. «La religión es para quienes tienen miedo de ir al infierno, mientras que la espiritualidad es para quienes ya hemos estado en el infierno». PROVERBIO SIOUX",
+    "synopsis_length": 1316,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/c7/ba/50/c7ba5092-be1c-8c4a-ba2d-2893a9221b1b/9788418045929.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/c7/ba/50/c7ba5092-be1c-8c4a-ba2d-2893a9221b1b/9788418045929.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/c7/ba/50/c7ba5092-be1c-8c4a-ba2d-2893a9221b1b/9788418045929.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/c7/ba/50/c7ba5092-be1c-8c4a-ba2d-2893a9221b1b/9788418045929.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Las casualidades no existen",
+      "autor_completo": "Borja Vilaseca",
+      "año": "2021",
+      "editorial": null,
+      "isbn": "1576582344",
+      "categorias": [
+        "Superación personal",
+        "Libros",
+        "Salud, mente y cuerpo",
+        "Espiritualidad"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/las-casualidades-no-existen/id1576582344?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Las casualidades no existen",
+      "matched_author": "Borja Vilaseca"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2022.",
+    "synopsis_length": 65,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://covers.openlibrary.org/b/id/13556104-L.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://covers.openlibrary.org/b/id/13556104-M.jpg"
+      },
+      {
+        "size": "small",
+        "url": "https://covers.openlibrary.org/b/id/13556104-S.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Las casualidades no existen",
+      "autor_completo": "Borja Vilaseca",
+      "año": "2022",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": null,
+      "paginas": null
+    }
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/1576582344.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "1576582344",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/c7/ba/50/c7ba5092-be1c-8c4a-ba2d-2893a9221b1b/9788418045929.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/c7/ba/50/c7ba5092-be1c-8c4a-ba2d-2893a9221b1b/9788418045929.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/c7/ba/50/c7ba5092-be1c-8c4a-ba2d-2893a9221b1b/9788418045929.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/c7/ba/50/c7ba5092-be1c-8c4a-ba2d-2893a9221b1b/9788418045929.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "large",
+      "url": "https://covers.openlibrary.org/b/id/13556104-L.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "medium",
+      "url": "https://covers.openlibrary.org/b/id/13556104-M.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "small",
+      "url": "https://covers.openlibrary.org/b/id/13556104-S.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/1576582344.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "openlibrary",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 16193,
+    "phase2_isbn_chain_ms": 24274,
+    "cover_validation_ms": 1094,
+    "total_ms": 41561
+  },
+  "_cached_at": "2026-04-21T02:38:29.297Z"
+}

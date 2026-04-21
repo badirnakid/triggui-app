@@ -1,0 +1,28 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nProbablemente el mejor libro del Dr. David R. Hawkins. El Poder frente a la fuerza en Estados Unidos fue un autentico superventas. Las personas involucradas en su traducción aseguran estar entusiasmados con su contenido y llevan años trabajando con libros de está índole, afirman que es “el mejor libro que han leído”. Esperamos no crear falsas expectativas, vosotros los lectores tendréis la última palabra, más cuando el rió suena agua lleva. Seguiremos informando. El doctor Hawkins nos aporta una explicación muy clara y comprensible de los niveles de la conciencia humana, asociados con las emociones, así como de algunos de los pasos clave que hay que dar para transitar de uno a otro, ofreciendo así valiosas herramientas para el cambio personal y social. Aunando su amplísima experiencia terapéutica con el estudio de la física cuántica y la ciencia de vanguardia, nos presenta conceptos novedosos, como el de “atractor” que sirven para ilustrar su sistema de pensamiento. También nos enseña la prueba kinesiológica para distinguir lo verdadero de lo falso, y realiza un amplio repaso de la dimensión social del estudio de la conciencia. Pero la clave del libro está en el estudio y la distinción entre poder y fuerza, entre aquellos estados en los que interviene el yo personal y están marcados por el esfuerzo, y aquellos otros en los que nos alineamos con el verdadero poder y podemos fluir con él. Querido Lector, estás ante uno de esos libros que solo aparecen cada diez o quince años, ante una obra maestra.\n\nMETADATA VERIFICADA:\n- Título: El poder frente a la fuerza\n- Autor: David R. Hawkins\n- Año: 2017\n- Categorías: Superación personal, Libros, Salud, mente y cuerpo, Psicología",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "El poder frente a la fuerza",
+    "autor_completo": "David R. Hawkins",
+    "año": "2017",
+    "editorial": null,
+    "isbn": "1410835550",
+    "categorias": [
+      "Superación personal",
+      "Libros",
+      "Salud, mente y cuerpo",
+      "Psicología",
+      "Espiritualidad"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/el-poder-frente-a-la-fuerza/id1410835550?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [],
+  "resolution_path": [
+    "evidence_fetched_2sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T02:23:52.754Z"
+}

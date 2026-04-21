@@ -1,0 +1,124 @@
+{
+  "titulo_input": "El cuerpo lleva la cuenta",
+  "autor_input": "Bessel Van Der Kolk",
+  "isbn_seed": "",
+  "isbn_discovered": "1509251380",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "El cuerpo lleva la cuenta",
+      "matched_author": "Bessel van der Kolk"
+    },
+    "synopsis": "El cuerpo lleva la cuenta ha sido traducido a más de 30 idiomas y ha vendido millones de ejemplares en todo el mundo. Ha estado de forma intermitente en la lista de bestseller del NYT de la sección de ciencia desde su publicación. Este libro profundamente humano ofrece una nueva comprensión radical de las causas y consecuencias del trauma, que ofrece esperanza y claridad a todas las personas afectadas por su devastación. El trauma ha surgido como uno de los grandes retos de la salud pública de nuestro tiempo, no sólo por sus efectos bien documentados sobre los veteranos de guerra y víctimas de accidentes y delitos, sino debido a la cifra oculta de la violencia sexual y familiar y en las comunidades y escuelas devastadas por el abuso, el abandono y la adicción. Basándose en más de treinta años en la vanguardia de la investigación y la práctica clínica, Bessel van der Kolk muestra que el terror y el aislamiento en el núcleo del trauma, literalmente, remodelan tanto cerebro como el cuerpo. Nuevos conocimientos sobre nuestros instintos de supervivencia explican por qué las personas traumatizadas experimentan ansiedad incomprensible y rabia paralizante e intolerable y cómo el trauma afecta su capacidad para concentrarse, recordar, formar relaciones de confianza e incluso para sentirse como en casa en sus propios cuerpos. Estas personas, después de haber perdido el sentido del autocontrol y frustrados por las terapias fallidas, a menudo temen estar dañados sin posibilidad de recuperación. El cuerpo lleva la cuenta es la inspiradora historia de cómo un grupo de terapeutas y científicos, junto con sus valientes y memorables pacientes, han luchado por integrar los recientes avances en la ciencia del cerebro, la investigación del apego y la conciencia corporal en tratamientos que puedan liberar a los supervivientes del trauma de la tiranía del pasado. Estos nuevos caminos hacia la recuperación activan la neuroplasticidad natural del cerebro para reconectar el funcionamiento perturbado y reconstruir paso a paso la capacidad de &#34;saber lo que se sabe y sentir lo que se siente&#34;. También ofrecen experiencias que contrarresten directamente la impotencia y la invisibilidad asociadas al trauma, lo que permite a niños y adultos recuperar la autoridad de sus cuerpos y sus vidas. Los lectores terminarán este libro asombrados por la resiliencia humana y por el poder que tienen nuestras relaciones, ya sea en la intimidad del hogar o en comunidades más amplias, de dañar y sanar.",
+    "synopsis_length": 2507,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/18/93/46/18934627-b76a-9ad8-bea3-8f37b15cf2af/1031385188.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/18/93/46/18934627-b76a-9ad8-bea3-8f37b15cf2af/1031385188.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/18/93/46/18934627-b76a-9ad8-bea3-8f37b15cf2af/1031385188.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/18/93/46/18934627-b76a-9ad8-bea3-8f37b15cf2af/1031385188.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "El cuerpo lleva la cuenta",
+      "autor_completo": "Bessel van der Kolk",
+      "año": "2020",
+      "editorial": null,
+      "isbn": "1509251380",
+      "categorias": [
+        "Psicología",
+        "Libros",
+        "Salud, mente y cuerpo"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/el-cuerpo-lleva-la-cuenta/id1509251380?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": false,
+    "reason": "no_results",
+    "source": "openlibrary"
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/1509251380.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "1509251380",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/18/93/46/18934627-b76a-9ad8-bea3-8f37b15cf2af/1031385188.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/18/93/46/18934627-b76a-9ad8-bea3-8f37b15cf2af/1031385188.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/18/93/46/18934627-b76a-9ad8-bea3-8f37b15cf2af/1031385188.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/18/93/46/18934627-b76a-9ad8-bea3-8f37b15cf2af/1031385188.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/1509251380.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match",
+    "openlibrary:no_results"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 16185,
+    "phase2_isbn_chain_ms": 24389,
+    "cover_validation_ms": 1061,
+    "total_ms": 41635
+  },
+  "_cached_at": "2026-04-21T02:25:04.697Z"
+}

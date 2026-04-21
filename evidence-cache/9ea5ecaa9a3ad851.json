@@ -1,0 +1,41 @@
+{
+  "titulo_input": "Come muévete y duerme",
+  "autor_input": "Tom Rath",
+  "isbn_seed": "",
+  "isbn_discovered": "",
+  "apple": {
+    "ok": false,
+    "reason": "low_match_0.19",
+    "source": "apple_books"
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": false,
+    "reason": "no_results",
+    "source": "openlibrary"
+  },
+  "amazon": {
+    "ok": false,
+    "reason": "skipped",
+    "source": "amazon"
+  },
+  "valid_covers": [],
+  "_sources_succeeded": [],
+  "_sources_failed": [
+    "apple_books:low_match_0.19",
+    "google_books:no_good_match",
+    "openlibrary:no_results",
+    "amazon:skipped"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 15971,
+    "phase2_isbn_chain_ms": 0,
+    "cover_validation_ms": 0,
+    "total_ms": 15971
+  },
+  "_cached_at": "2026-04-21T02:32:41.599Z"
+}

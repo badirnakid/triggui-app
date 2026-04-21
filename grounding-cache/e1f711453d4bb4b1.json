@@ -1,0 +1,27 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nEduardo Punset explora los territorios de la ciencia y las emociones humanas a través de una historia apasionante donde se funden la vida y los últimos avances científicos. Alicia –«verdad», en griego– es el personaje inseparable de Eduardo Punset en esta historia apasionante sobre la vida y la ciencia que reúne el legado científico y humanístico de personas sabias con la osadía de romper barreras y desvelar conocimientos que creíamos imposibles. Conocimientos que logran sumergirnos en la arqueología de las emociones e iluminar habitaciones secretas de nuestra mente. Ésta es una obra llena de respuestas y de preguntas abiertas. Es también una apuesta de esperanza y de futuro, avalada por los últimos descubrimientos científicos, que Eduardo Punset nos hace llegar a través de un «sueño» donde a menudo ficción y realidad se dan la mano.\n\nMETADATA VERIFICADA:\n- Título: El sueño de Alicia\n- Autor: Eduardo Punset\n- Año: 2013\n- Categorías: Ciencia y naturaleza, Libros",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "El sueño de Alicia",
+    "autor_completo": "Eduardo Punset",
+    "año": "2013",
+    "editorial": null,
+    "isbn": "677858744",
+    "categorias": [
+      "Ciencia y naturaleza",
+      "Libros"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/el-sue%C3%B1o-de-alicia/id677858744?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_3sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T02:33:56.914Z"
+}

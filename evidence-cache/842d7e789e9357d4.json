@@ -1,0 +1,125 @@
+{
+  "titulo_input": "La inteligencia que asusta",
+  "autor_input": "Mo Gawdat",
+  "isbn_seed": "",
+  "isbn_discovered": "6502112894",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 0.7825581395348837,
+    "match_details": {
+      "matched_title": "La inteligencia que asusta (Edición mexicana)",
+      "matched_author": "Mo Gawdat"
+    },
+    "synopsis": "Mo Gawdat, autor bestseller y exdirector ejecutivo de Google, denuncia en La inteligencia que asusta los peligros de la evolución descontrolada de la inteligencia artificial y propone un modelo para protegernos a nosotros mismos, a quienes amamos y al planeta. «La tecnología está llevando a la humanidad a una situación de riesgo sin precedentes. Este libro no es para los ingenieros que escriben el código ni para los políticos que prometen regularla. Este libro es para ti: lo creas o no, eres el único que puede solucionar esta situación.» —Mo Gawdat La inteligencia artificial tiene ventaja sobre los humanos: puede procesar información a la velocidad de la luz y llevar a cabo tareas específicas sin distraerse, además de predecir resultados futuros o de ver ángulos que se nos escapan. Entonces, ¿cómo es que tiene tantos fallos o responde de formas tan peligrosas? La respuesta somos nosotros: los usuarios diseñamos los algoritmos que definen cómo funciona el sistema, y la información que la IA procesa imita nuestros comportamientos. La inteligencia que asusta descubriremos cómo corregir la trayectoria a la que nos encaminamos para poder asegurar que la IA del futuro trabaje a nuestro favor. Gawdat se basa en su amplia experiencia para enseñarnos —y enseñar a las máquinas— cómo podemos vivir mejor y mostrarnos qué podemos hacer para protegernos a nosotros mismos, a nuestros seres queridos y al propio planeta. Porque el futuro está en nuestras manos.",
+    "synopsis_length": 1468,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/46/8f/b0/468fb079-2b57-c009-79e9-9c577ba46f20/9786073915007.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/46/8f/b0/468fb079-2b57-c009-79e9-9c577ba46f20/9786073915007.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/46/8f/b0/468fb079-2b57-c009-79e9-9c577ba46f20/9786073915007.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/46/8f/b0/468fb079-2b57-c009-79e9-9c577ba46f20/9786073915007.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "La inteligencia que asusta (Edición mexicana)",
+      "autor_completo": "Mo Gawdat",
+      "año": "2024",
+      "editorial": null,
+      "isbn": "6502112894",
+      "categorias": [
+        "Informática e Internet",
+        "Libros",
+        "No ficción",
+        "Filosofía"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/la-inteligencia-que-asusta-edici%C3%B3n-mexicana/id6502112894?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": false,
+    "reason": "no_results",
+    "source": "openlibrary"
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/6502112894.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "6502112894",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/46/8f/b0/468fb079-2b57-c009-79e9-9c577ba46f20/9786073915007.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/46/8f/b0/468fb079-2b57-c009-79e9-9c577ba46f20/9786073915007.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/46/8f/b0/468fb079-2b57-c009-79e9-9c577ba46f20/9786073915007.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/46/8f/b0/468fb079-2b57-c009-79e9-9c577ba46f20/9786073915007.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/6502112894.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match",
+    "openlibrary:no_results"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 16169,
+    "phase2_isbn_chain_ms": 24279,
+    "cover_validation_ms": 1046,
+    "total_ms": 41494
+  },
+  "_cached_at": "2026-04-21T02:18:30.195Z"
+}

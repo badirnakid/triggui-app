@@ -1,0 +1,29 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nEl libro que hará que los creyentes cuestionen la religión y los ateos se abran a la espiritualidad. Estamos viviendo un hecho histórico imparable: cada vez la gente cree menos en las instituciones religiosas y -sin embargo- está cada vez más en contacto con su dimensión espiritual. Y esto se debe a que se está democratizando la sabiduría, provocando que los buscadores occidentales se adentren en la filosofía oriental. Como consecuencia de este viaje de autoconocimiento se está produciendo un despertar masivo de consciencia. Es decir, un profundo cambio en nuestra manera de concebirnos a nosotros mismos y de relacionarnos con la vida. Todas las personas que han despertado -creyentes, ateas o agnósticas- comparten una misma vivencia: que no sucede lo que queremos, sino lo que necesitamos para aprender y evolucionar espiritualmente. De ahí que las casualidades no existan. Este libro explica cómo liberarnos de la «pecera mental» en la que nuestra mente sigue encerrada para sentirnos nuevamente unidos y conectados con la vida, recuperando la alegría innata que nos provoca el simple hecho de estar vivos. No te lo creas: atrévete a experimentarlo. «La religión es para quienes tienen miedo de ir al infierno, mientras que la espiritualidad es para quienes ya hemos estado en el infierno». PROVERBIO SIOUX\n\nMETADATA VERIFICADA:\n- Título: Las casualidades no existen\n- Autor: Borja Vilaseca\n- Año: 2021\n- Categorías: Superación personal, Libros, Salud, mente y cuerpo, Espiritualidad",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Las casualidades no existen",
+    "autor_completo": "Borja Vilaseca",
+    "año": "2021",
+    "editorial": null,
+    "isbn": "1576582344",
+    "categorias": [
+      "Superación personal",
+      "Libros",
+      "Salud, mente y cuerpo",
+      "Espiritualidad"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/las-casualidades-no-existen/id1576582344?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_3sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T02:38:29.298Z"
+}

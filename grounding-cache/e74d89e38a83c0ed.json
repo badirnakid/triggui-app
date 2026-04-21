@@ -1,0 +1,27 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nMo Gawdat, autor bestseller y exdirector ejecutivo de Google, denuncia en La inteligencia que asusta los peligros de la evolución descontrolada de la inteligencia artificial y propone un modelo para protegernos a nosotros mismos, a quienes amamos y al planeta. «La tecnología está llevando a la humanidad a una situación de riesgo sin precedentes. Este libro no es para los ingenieros que escriben el código ni para los políticos que prometen regularla. Este libro es para ti: lo creas o no, eres el único que puede solucionar esta situación.» —Mo Gawdat La inteligencia artificial tiene ventaja sobre los humanos: puede procesar información a la velocidad de la luz y llevar a cabo tareas específicas sin distraerse, además de predecir resultados futuros o de ver ángulos que se nos escapan. Entonces, ¿cómo es que tiene tantos fallos o responde de formas tan peligrosas? La respuesta somos nosotros: los usuarios diseñamos los algoritmos que definen cómo funciona el sistema, y la información que la IA procesa imita nuestros comportamientos. La inteligencia que asusta descubriremos cómo corregir la trayectoria a la que nos encaminamos para poder asegurar que la IA del futuro trabaje a nuestro favor. Gawdat se basa en su amplia experiencia para enseñarnos —y enseñar a las máquinas— cómo podemos vivir mejor y mostrarnos qué podemos hacer para protegernos a nosotros mismos, a nuestros seres queridos y al propio planeta. Porque el futuro está en nuestras manos.\n\nMETADATA VERIFICADA:\n- Título: La inteligencia que asusta (Edición mexicana)\n- Autor: Mo Gawdat\n- Año: 2024\n- Categorías: Informática e Internet, Libros, No ficción, Filosofía",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.8630232558139536,
+  "verified_identity": {
+    "titulo_real": "La inteligencia que asusta (Edición mexicana)",
+    "autor_completo": "Mo Gawdat",
+    "año": "2024",
+    "editorial": null,
+    "isbn": "6502112894",
+    "categorias": [
+      "Informática e Internet",
+      "Libros",
+      "No ficción",
+      "Filosofía"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/la-inteligencia-que-asusta-edici%C3%B3n-mexicana/id6502112894?uo=4"
+  },
+  "match_score": 0.7825581395348837,
+  "other_sources_agreed": [],
+  "resolution_path": [
+    "evidence_fetched_2sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T02:18:30.195Z"
+}

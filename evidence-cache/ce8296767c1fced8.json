@@ -1,0 +1,126 @@
+{
+  "titulo_input": "El poder frente a la fuerza",
+  "autor_input": "David R. Hawkins",
+  "isbn_seed": "",
+  "isbn_discovered": "1410835550",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "El poder frente a la fuerza",
+      "matched_author": "David R. Hawkins"
+    },
+    "synopsis": "Probablemente el mejor libro del Dr. David R. Hawkins. El Poder frente a la fuerza en Estados Unidos fue un autentico superventas. Las personas involucradas en su traducción aseguran estar entusiasmados con su contenido y llevan años trabajando con libros de está índole, afirman que es “el mejor libro que han leído”. Esperamos no crear falsas expectativas, vosotros los lectores tendréis la última palabra, más cuando el rió suena agua lleva. Seguiremos informando. El doctor Hawkins nos aporta una explicación muy clara y comprensible de los niveles de la conciencia humana, asociados con las emociones, así como de algunos de los pasos clave que hay que dar para transitar de uno a otro, ofreciendo así valiosas herramientas para el cambio personal y social. Aunando su amplísima experiencia terapéutica con el estudio de la física cuántica y la ciencia de vanguardia, nos presenta conceptos novedosos, como el de “atractor” que sirven para ilustrar su sistema de pensamiento. También nos enseña la prueba kinesiológica para distinguir lo verdadero de lo falso, y realiza un amplio repaso de la dimensión social del estudio de la conciencia. Pero la clave del libro está en el estudio y la distinción entre poder y fuerza, entre aquellos estados en los que interviene el yo personal y están marcados por el esfuerzo, y aquellos otros en los que nos alineamos con el verdadero poder y podemos fluir con él. Querido Lector, estás ante uno de esos libros que solo aparecen cada diez o quince años, ante una obra maestra.",
+    "synopsis_length": 1521,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/c4/51/01/c45101d7-47c9-276a-4a8d-f1063333abce/9788494279690.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/c4/51/01/c45101d7-47c9-276a-4a8d-f1063333abce/9788494279690.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/c4/51/01/c45101d7-47c9-276a-4a8d-f1063333abce/9788494279690.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/c4/51/01/c45101d7-47c9-276a-4a8d-f1063333abce/9788494279690.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "El poder frente a la fuerza",
+      "autor_completo": "David R. Hawkins",
+      "año": "2017",
+      "editorial": null,
+      "isbn": "1410835550",
+      "categorias": [
+        "Superación personal",
+        "Libros",
+        "Salud, mente y cuerpo",
+        "Psicología",
+        "Espiritualidad"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/el-poder-frente-a-la-fuerza/id1410835550?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": false,
+    "reason": "no_results",
+    "source": "openlibrary"
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/1410835550.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "1410835550",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/c4/51/01/c45101d7-47c9-276a-4a8d-f1063333abce/9788494279690.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/c4/51/01/c45101d7-47c9-276a-4a8d-f1063333abce/9788494279690.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/c4/51/01/c45101d7-47c9-276a-4a8d-f1063333abce/9788494279690.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/c4/51/01/c45101d7-47c9-276a-4a8d-f1063333abce/9788494279690.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/1410835550.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match",
+    "openlibrary:no_results"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 16425,
+    "phase2_isbn_chain_ms": 24561,
+    "cover_validation_ms": 566,
+    "total_ms": 41552
+  },
+  "_cached_at": "2026-04-21T02:23:52.753Z"
+}

@@ -1,0 +1,27 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nEnestecurso magistral,dictadooriginalmenteen Chicago amediados de losañoscincuenta,Napoleon Hilldesarrolla aprofundidad sus ideassobreeléxito ycómollegar aél . Durante décadas, Piense y hágase rico ha cambiado la mentalidad de millones de personas, que han encontrado en sus principios y filosofía una guía para alcanzar el triunfo y el equilibrio en su vida, pero nunca hasta ahora había sido posible acceder a las lecciones íntegras que el mismo Napoleon Hill impartió a sus alumnos iniciales. La ciencia del éxito es un valioso regalo, es el camino más directo hacia el perfeccionamiento de tu verdadero potencial, y uno de los libros de desarrollo personal más completos que se han escrito jamás. Ya sea que quieras descubrir tu propósito en la vida, desarrollar una personalidad atrayente, adquirir una actitud mental positiva, atraer oportunidades, mantener una salud óptima, nutrir tu creatividad y tu imaginación o encaminarte hacia el liderazgo, en este libro encontrarás las herramientas definitivas para lograr todo aquello que te propongas.\n\nMETADATA VERIFICADA:\n- Título: La ciencia del éxito\n- Autor: Napoleon Hill\n- Año: 2022\n- Categorías: Superación personal, Libros, Salud, mente y cuerpo, Negocios y finanzas personales",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "La ciencia del éxito",
+    "autor_completo": "Napoleon Hill",
+    "año": "2022",
+    "editorial": null,
+    "isbn": "1623003976",
+    "categorias": [
+      "Superación personal",
+      "Libros",
+      "Salud, mente y cuerpo",
+      "Negocios y finanzas personales"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/la-ciencia-del-%C3%A9xito/id1623003976?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [],
+  "resolution_path": [
+    "evidence_fetched_2sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T02:35:05.957Z"
+}

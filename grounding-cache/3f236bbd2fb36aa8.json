@@ -1,0 +1,27 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nIncluye estrategias, desafíos,guiones y correos a prueba de balas. Este es el mejor momento de la historia para emprender. Hay oportunidades en todas partes para crear nuevos negocios, productos y servicios que ayuden a resolver los problemas del mundo. De hecho, personas comunes y corrientes inician negocios rentables todos los días. Simplemente no lo presumen en Instagram. Si toda la información que necesitas para iniciar un negocio está disponible de manera gratuita, ¿por qué parece tan difícil? Es fácil poner excusas: no hay buenas ideas, miedo al rechazo, mal momento, capital insuficiente, no tener un socio comercial… Pero todas tienen solución. A pesar de lo que algunas personas te digan, emprender no tiene por qué ser complicado. Millonario en un fin de semana te enseña cómo crear un negocio en 48 horas para que el lunes comiences un negocio rentable y probado en el mercado. Ofrece un camino para crear la vida de tus sueños y alcanzar la libertad que mereces. Aprenderás: Por qué no necesitas leer otro libro, ver un video o gastar un solo centavo antes de ganar tu primer dólar. Cómo dominar el enfoque Customer First para generar tantas ideas de negocio que no sabrás qué hacer con todas ellas. Cómo encontrar tu Número de Libertad para que tu emprendimiento esté libre de riesgos. Cómo ganar tiempo para gestionar un negocio de 70 millones de dólares, un canal de YouTube y un blog, mientras viajas, haces ejercicio y vives la vida de tus sueños.\n\nMETADATA VERIFICADA:\n- Título: Millonario en un fin de semana\n- Autor: Noah Kagan & Tahl Raz\n- Año: 2025\n- Categorías: Pequeñas empresas y emprendedores, Libros, Negocios y finanzas personales, Economía",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Millonario en un fin de semana",
+    "autor_completo": "Noah Kagan & Tahl Raz",
+    "año": "2025",
+    "editorial": null,
+    "isbn": "6741345078",
+    "categorias": [
+      "Pequeñas empresas y emprendedores",
+      "Libros",
+      "Negocios y finanzas personales",
+      "Economía"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/millonario-en-un-fin-de-semana/id6741345078?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [],
+  "resolution_path": [
+    "evidence_fetched_2sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T02:30:51.943Z"
+}

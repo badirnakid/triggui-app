@@ -1,0 +1,26 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nPARA DAVID GOGGINS, LA INFANCIA FUE UNA PESADILLA. La pobreza, los prejuicios y los malos tratos físicos colorearon sus días y atormentaron sus noches. Pero gracias a su autodisciplina, su fortaleza mental y trabajo duro, Goggins pasó de ser un joven con sobrepeso, deprimido y sin futuro, a convertirse en un icono de las Fuerzas Armadas estadounidenses y en uno de los mejores atletas de resistencia del mundo. Es el único hombre de la historia que ha completado un entrenamiento de élite como SEAL de la Marina, Ranger del Ejército y Controlador Aéreo Táctico de las Fuerzas Aéreas, y llegó a batir récords en numerosas pruebas de resistencia, lo que inspiró a la revista Outside a nombrarlo \"El Hombre (Real) en Mejor Forma de Estados Unidos\". En No me puedes lastimar, comparte la asombrosa historia de su vida y revela que la mayoría de nosotros aprovechamos sólo el 40% de nuestras capacidades. Goggins llama a esto La Regla del 40%, y su historia ilumina un camino que cualquiera puede seguir para superar el dolor, vencer al miedo y alcanzar su máximo potencial.\n\nMETADATA VERIFICADA:\n- Título: No me puedes lastimar\n- Autor: David Goggins\n- Año: 2022\n- Categorías: Superación personal, Libros, Salud, mente y cuerpo",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "No me puedes lastimar",
+    "autor_completo": "David Goggins",
+    "año": "2022",
+    "editorial": null,
+    "isbn": "1616890350",
+    "categorias": [
+      "Superación personal",
+      "Libros",
+      "Salud, mente y cuerpo"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/no-me-puedes-lastimar/id1616890350?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [],
+  "resolution_path": [
+    "evidence_fetched_2sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T02:21:56.506Z"
+}
