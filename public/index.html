@@ -68,11 +68,15 @@
   html.booting .block,
   html.booting #likeBtnTarjeta,
   html.booting #barraLupaBtn,
+  html.booting #progressBadge,
+  html.booting #toast,
   html.booting .card-reveal-trigger,
   body.booting .intro,
   body.booting .block,
   body.booting #likeBtnTarjeta,
   body.booting #barraLupaBtn,
+  body.booting #progressBadge,
+  body.booting #toast,
   body.booting .card-reveal-trigger {
     visibility: hidden !important;
     opacity: 0 !important;
@@ -303,7 +307,7 @@ const TriggguiI18n = {
       'badge.books': 'libros',
       'badge.book': 'libro',
       'badge.sparks': 'chispas juntas',
-      'badge.globalSparks': 'juntos',
+      'badge.globalSparks': 'global',
       'intro.default': 'Toca. Descubre. El libro te espera.',
     },
     en: {
@@ -331,7 +335,7 @@ const TriggguiI18n = {
       'badge.books': 'books',
       'badge.book': 'book',
       'badge.sparks': 'sparks together',
-      'badge.globalSparks': 'together',
+      'badge.globalSparks': 'global',
       'intro.default': 'Tap. Discover. Your book awaits.',
     }
   }
@@ -1832,6 +1836,9 @@ body.webview #tarjetaCard {
 
 #barraFooterLogo .bm-logo-stage {
   position: relative;
+  /* 🌒 v13: width es el ancho de referencia. Ambos PNG se escalan a este
+     ancho (no al height). Esto garantiza que ambas versiones ocupen
+     EXACTAMENTE el mismo espacio visual al hacer crossfade. */
   width: clamp(110px, 28vw, 150px);
   height: 28px;
   display: flex;
@@ -1844,9 +1851,13 @@ body.webview #tarjetaCard {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  height: 100%;
-  width: auto;
-  max-width: 100%;
+  /* 🌒 v13: width:100% (del stage), height:auto. El navegador mantiene
+     aspect ratio. Si los dos PNG tienen aspect ratio distinto, uno puede
+     quedar más alto o más bajo, pero AMBOS ocupan el mismo ancho.
+     Esto elimina la sensación de "cambio de tamaño" al crossfadear. */
+  width: 100%;
+  height: auto;
+  max-height: 100%;
   object-fit: contain;
   transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -2090,7 +2101,7 @@ body.webview #tarjetaCard {
 </button>
 
 <div id="progressBadge">
-  <span class="line1">Tu chispa acumulada</span>
+  <span class="line1">Tu racha acumulada</span>
   <span class="line2" id="badgeContent">Cargando...</span>
 </div>
 
