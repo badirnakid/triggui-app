@@ -1,0 +1,30 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Google Books):\n\nSi buscas algo que te motive para iniciar bien el día y te haga sentir orgulloso, comienza con algo tan simple como tender tu cama. Se trata de un pequeño paso que te incita a dar otro y después otro, hasta conseguir tus metas más grandes y hacer una diferencia real en el mundo. Registra en este diario esas acciones que mejoran tu vida, sigue los consejos de William H. McRaven y descubre los hábitos que te hacen ser mejor. Sin importar las adversidades que se presenten frente a ti, nunca te dejes vencer y no olvides que: Los logros más trascendentes están hechos de pequeñas acciones. ¡Tiende tu cama es el libro que ha transformado los hábitos y ha mejorado la vida de más de 150 mil personas! Es momento de llevar a la acción sus aprendizajes y escribir en este diario lo que tú estás haciendo para cambiar tu vida y el mundo. El diario que te permitirá organizar tu vida y \"cambiar el mundo\" un paso a la vez.\n\nMETADATA VERIFICADA:\n- Título: Diario. Tiende Tu Cama\n- Autor: William H. McRaven\n- Año: 2020",
+  "grounding_source": "google_books",
+  "book_identity_confidence": 0.8766666666666667,
+  "verified_identity": {
+    "titulo_real": "Diario. Tiende Tu Cama",
+    "subtitulo": "",
+    "autor_completo": "William H. McRaven",
+    "año": "2020",
+    "editorial": null,
+    "paginas": 248,
+    "isbn": "9786070767890",
+    "isbn13": "9786070767890",
+    "isbn10": "6070767896",
+    "categorias": [],
+    "idioma": "es",
+    "preview_link": "http://books.google.com/books?id=TNyjzQEACAAJ&dq=Tiende+tu+cama+William+H.+McRaven&hl=&cd=2&source=gbs_api"
+  },
+  "match_score": 0.8166666666666668,
+  "other_sources_agreed": [
+    "apple_books",
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_4sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T11:43:43.556Z"
+}

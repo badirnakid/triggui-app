@@ -1,0 +1,29 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nJay Shetty, la super estrella mundial del crecimiento personal, nos presenta su primer y esperado libro que transmite la valiosa sabiduría que aprendió cuando era monje. Cuando PIENSES COMO UN MONJE, sabrás cómo superar la negatividad, cómo dejar de pensar demasiado, por qué la comparación mata al amor, cómo usar tu miedo en tu beneficio,cómo aprender de todo el mundo, por qué no eres tus pensamientos, cómo encontrar tu propósito en la vida y mucho más. Jay Shetty, la superestrella de las redes sociales y presentador del podcast nº 1 On Purpose, destila en este libro la sabiduría eterna que aprendió como monje y la expone con pasos prácticos que cualquiera puede aplicar para gozar de una vida más tranquila. Después de tres años en la India para convertirse en monje, meditar todos los días entre cuatro y ocho horas y dedicar su vida a ayudar a los demás, regresó a Londres, y entreno a sus estresados amigos en bienestar, propósito y atención plena. Desde entonces, Shetty se ha convertido en uno de los líderes de pensamiento más populares del mundo. En este libro inspirador y empoderador, Shetty se basa en su experiencia y conocimientos como monje para mostrarnos cómo despejar los obstáculos y llegar a nuestro potencial y poder y revela cómo superar los pensamientos y hábitos negativos, y acceder a la calma y al propósito que se encuentran en nuestro interior. Transforma lecciones abstractas en consejos y ejercicios que todos podemos aplicar para reducir el estrés y mejorar las relaciones. Reseñas: «Hacer que la sabiduría sea relevante y accesible es el superpoder de Jay Shetty. Su libro es profundo, conmovedor y práctico y estamos seguros de que ayudará a muchas personas a crear nuevos hábitos que los guiarán en la vida que realmente desean.» Will Smith y Jada Pinkett Smith «Jay Shetty te muestra, paso a paso, cómo desarrollar tu poder cambiando tu enfoque de la autoimagen a la autoestima. Piensa como un monje te libera de la hipnosis del condicionamiento social y te ayuda a convertirte en el arquitecto de tu propia vida.» Deepak Chopra, profesor de Medicina de la Universidad de California y San Diego y autor best seller. «Jay Shetty tiene un don excepcional para aprovechar la sabiduría eterna y hacerlacontemporánea infundiendo signifi cado y gracia a los momentos cotidianos. Ya ha compartido destellos de ella con millones de personas en las redes sociales, pero aquí lo reúne todo en un volumen que nos cambiará la vida. Hay que leer este libro para abrir la mente, levantar el ánimo, redefi nir el éxito y conectar con su propósito más profundo.» Arianna Huffington, fundadora de The Huffington Post, fundadora y directora ejecutiva de Thrive Global y autora best seller «¿Quién mejor que un monje para ayudarte a encontrar el sentido de la vida? La experiencia y sabiduría de Jay suponen un valor incalculable para cualquiera que busque mejorar su vida y alcanzar su máximo potencial.» Ellen DeGeneres, presentadora de televisión,actriz, escritora y productora «Coge este libro, busca una silla cómoda y deja que Jay Shetty te lleve en un viaje que te cambiará la vida. Querrás compartirlo con todos tus seres queridos.» Dr. Robert Waldinger, profesor de Psiquiatría de la facultad de Medicina de Harvard «Combinando la antigua sabiduría con los aspectos prácticos de hoy, Piensa como un monje proporciona una guía esencial para viajar por un camino equilibrado hacia el éxito.» Ray Dalio, fundador, copresidente y codirector de inversiones de Bridgewater Associates y autor best seller\n\nMETADATA VERIFICADA:\n- Título: Piensa como un monje\n- Autor: Jay Shetty\n- Año: 2020\n- Categorías: Superación personal, Libros, Salud, mente y cuerpo, Espiritualidad",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Piensa como un monje",
+    "autor_completo": "Jay Shetty",
+    "año": "2020",
+    "editorial": null,
+    "isbn": "1535101032",
+    "categorias": [
+      "Superación personal",
+      "Libros",
+      "Salud, mente y cuerpo",
+      "Espiritualidad"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/piensa-como-un-monje/id1535101032?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "google_books"
+  ],
+  "resolution_path": [
+    "evidence_fetched_3sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T11:47:20.127Z"
+}

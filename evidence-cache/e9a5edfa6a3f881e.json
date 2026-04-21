@@ -76,7 +76,7 @@
         "Body, Mind & Spirit"
       ],
       "idioma": "es",
-      "preview_link": "http://books.google.com/books?id=XPWbDwAAQBAJ&dq=intitle:T%C3%BA+no+eres+tu+dolor+inauthor:Vidyamala+Burch+y+Danny+Penman&hl=&cd=1&source=gbs_api"
+      "preview_link": "http://books.google.com/books?id=XPWbDwAAQBAJ&dq=T%C3%BA+no+eres+tu+dolor+Vidyamala+Burch+y+Danny+Penman&hl=&cd=1&source=gbs_api"
     }
   },
   "openlibrary": {
@@ -150,10 +150,10 @@
     "openlibrary:no_results"
   ],
   "_timing": {
-    "phase1_parallel_ms": 2202,
-    "phase2_isbn_chain_ms": 214,
-    "cover_validation_ms": 680,
-    "total_ms": 3096
+    "phase1_parallel_ms": 2227,
+    "phase2_isbn_chain_ms": 430,
+    "cover_validation_ms": 715,
+    "total_ms": 3372
   },
-  "_cached_at": "2026-04-21T11:02:41.955Z"
+  "_cached_at": "2026-04-21T11:48:41.455Z"
 }

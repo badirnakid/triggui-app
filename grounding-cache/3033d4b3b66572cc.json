@@ -1,0 +1,28 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\n¿En qué consiste exactamente el espíritu japonés? 72 palabras para entender que la verdadera felicidad es la compartida. Wa significa armonía, pero como todas las palabras japonesas evoca mucho más. Wa es, de hecho, todo lo que es suave, sereno y moderado, pero también hace referencia a todo lo que es japonés. Wa es un prefijo que se aplica tanto a cosas como a conceptos. A través de wa, Japón nos enseña su mejor lección: la belleza, la alegría y el civismo se construyen con grandes dosis de compromiso, mediante el trabajo continuo en uno mismo, ejercitando la paciencia, haciendo las cosas con cuidado y nunca a expensas de otros, porque una felicidad verdaderamente duradera es un proyecto de todos y nunca de uno solo. Laura Imai Messina, autora italiana afincada en Tokio y creadora del blog Japan Mon Amour, realiza en este libro un viaje a través de setenta y dos palabras que simbolizan y encarnan el encancanto y la esencia de Japón, y nos desvela el significado oculto de unos nombres llenos de poesía; como las setenta y dos estaciones del antiguo calendario lunar japonés, que cada cinco días da la oportunidad de renovarse. Las enseñanzas procedentes de Japón son más actuales que nunca, incluso en Occidente. Pero, ¿en qué consiste exactamente el espíritu japonés? El antiguo nombre de Japón era Yamato que, dividido en sus ideogramas, significa «Gran wa», es decir, «Gran Armonía». Y esa armonía, que es una prioridad de la cultura japonesa y domina las palabras y actitudes de su gente, es también un concepto en el camino, un sistema de absorción, elección y adaptación, que le da a Japón ese halo de misterio mágico que fascina al mundo.\n\nMETADATA VERIFICADA:\n- Título: WA. La vía japonesa de la armonía\n- Autor: Laura Imai Messina\n- Año: 2020\n- Categorías: Superación personal, Libros, Salud, mente y cuerpo",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "WA. La vía japonesa de la armonía",
+    "autor_completo": "Laura Imai Messina",
+    "año": "2020",
+    "editorial": null,
+    "isbn": "1491552339",
+    "categorias": [
+      "Superación personal",
+      "Libros",
+      "Salud, mente y cuerpo"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/wa-la-v%C3%ADa-japonesa-de-la-armon%C3%ADa/id1491552339?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "google_books"
+  ],
+  "resolution_path": [
+    "evidence_fetched_3sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T11:45:05.890Z"
+}

@@ -1,0 +1,32 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Google Books):\n\nProvides exercises, meditations, affirmations, and other techniques designed to help individuals learn to use mental energy to transform and improve health, beauty, prosperity, relationships, and other aspects of life.\n\nMETADATA VERIFICADA:\n- Título: Creative Visualization\n- Autor: Shakti Gawain\n- Año: 2002\n- Editorial: New World Library\n- Categorías: Business & Economics",
+  "grounding_source": "google_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Creative Visualization",
+    "subtitulo": "Use the Power of Your Imagination to Create what You Want in Your Life",
+    "autor_completo": "Shakti Gawain",
+    "año": "2002",
+    "editorial": "New World Library",
+    "paginas": 194,
+    "isbn": "9781577312291",
+    "isbn13": "9781577312291",
+    "isbn10": "1577312295",
+    "categorias": [
+      "Business & Economics"
+    ],
+    "idioma": "en",
+    "preview_link": "http://books.google.com/books?id=dWt6AAAAQBAJ&printsec=frontcover&dq=Creative+Visualization+Shakti+Gawain&hl=&cd=1&source=gbs_api"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "apple_books",
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_4sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T11:49:40.718Z"
+}

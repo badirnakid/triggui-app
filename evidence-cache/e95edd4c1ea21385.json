@@ -46,9 +46,37 @@
     }
   },
   "google": {
-    "ok": false,
-    "reason": "no_good_match",
-    "source": "google_books"
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Cómo conocer a una persona",
+      "matched_author": "David Brooks"
+    },
+    "synopsis": "Hay una capacidad que yace en el corazón de cualquier persona o comunidad: la de ver a los demás —en su sentido más profundo— y hacerlos sentir valorados, respetados y comprendidos. Sin embargo, a nuestro alrededor hay personas que se sienten invisibles en una sociedad fragmentada, hostil e insensible al sufrimiento. David Brooks se nutre de la psicología y la neurociencia, así como del teatro, la filosofía y la historia para ofrecer un enfoque esperanzador sobre la conexión humana que nos enseña a realizar acciones concretas, pequeñas pero significativas: ser un buen oyente, pedir y ofrecer perdón, sentarse con quien sufre, mirar las cosas desde la perspectiva del otro... En pocas palabras: ser más comprensivos —y compasivos— con nuestros semejantes. Cómo conocer a una persona es para aquellos que anhelan conectar verdaderamente con los demás. \"Este libro ya es mi favorito de todos los que David ha escrito. [...] Más que una guía para tener mejores conversaciones, se trata de un proyecto para vivir de manera más conectada y humana. Es una lectura imprescindible para cualquiera que busque profundizar sus relaciones y ampliar sus perspectivas.\" —Bill Gates, GatesNotes (lecturas recomendadas)",
+    "synopsis_length": 1209,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=bMkoEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Cómo conocer a una persona",
+      "subtitulo": "El arte de ver profundamente a los demás y de ser visto con profundidad",
+      "autor_completo": "David Brooks",
+      "año": "2024",
+      "editorial": "Océano",
+      "paginas": 261,
+      "isbn": "9786075579405",
+      "isbn13": "9786075579405",
+      "isbn10": "6075579400",
+      "categorias": [
+        "Philosophy"
+      ],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=bMkoEQAAQBAJ&printsec=frontcover&dq=intitle:C%C3%B3mo+conocer+a+una+persona+inauthor:David+Brooks&hl=&cd=1&source=gbs_api"
+    }
   },
   "openlibrary": {
     "ok": true,
@@ -117,6 +145,12 @@
       "valid": true
     },
     {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=bMkoEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
       "source": "amazon",
       "size": "large",
       "url": "https://images-na.ssl-images-amazon.com/images/P/6736685037.01.LZZZZZZZ.jpg",
@@ -125,17 +159,16 @@
   ],
   "_sources_succeeded": [
     "apple_books",
+    "google_books",
     "openlibrary",
     "amazon"
   ],
-  "_sources_failed": [
-    "google_books:no_good_match"
-  ],
+  "_sources_failed": [],
   "_timing": {
-    "phase1_parallel_ms": 16155,
-    "phase2_isbn_chain_ms": 24462,
-    "cover_validation_ms": 1030,
-    "total_ms": 41647
+    "phase1_parallel_ms": 1861,
+    "phase2_isbn_chain_ms": 128,
+    "cover_validation_ms": 77,
+    "total_ms": 2066
   },
-  "_cached_at": "2026-04-20T02:38:08.198Z"
+  "_cached_at": "2026-04-21T11:47:46.433Z"
 }

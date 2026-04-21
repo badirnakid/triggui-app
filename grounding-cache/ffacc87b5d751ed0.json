@@ -1,0 +1,28 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nA través del concepto La Pregunta —la cual engloba las ideas de mérito, bondad, valor, sentido, propósito, entre muchas más—, los autores y catedráticos del Programa de Humanidades de Yale invitarán al lector a reflexionar y a encontrar el verdadero sentido de su vida, basándose en importantes figuras de tradiciones religiosas y filosóficas, que lo impulsarán a ser más responsable de su vida, enfrentar sus miedos y a volver reales sus más impulsos más profundos.\n\nMETADATA VERIFICADA:\n- Título: La vida que vale la pena vivir\n- Autor: Miroslav Volf, Matthew Croasmun & Ryan McAnnally-Linz\n- Año: 2024\n- Categorías: Filosofía, Libros, No ficción",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "La vida que vale la pena vivir",
+    "autor_completo": "Miroslav Volf, Matthew Croasmun & Ryan McAnnally-Linz",
+    "año": "2024",
+    "editorial": null,
+    "isbn": "6737838325",
+    "categorias": [
+      "Filosofía",
+      "Libros",
+      "No ficción"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/la-vida-que-vale-la-pena-vivir/id6737838325?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "google_books"
+  ],
+  "resolution_path": [
+    "evidence_fetched_3sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T11:43:14.874Z"
+}

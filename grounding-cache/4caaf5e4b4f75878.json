@@ -1,0 +1,29 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nOSHO TAIGU, UN RECONOCIDO MONJE BUDISTA, NOS COMPARTE LOS CONSEJOS FUNDAMENTALES PARA VIVIR CON SERENIDAD. «Solo me suceden cosas que me hacen sufrir.» «Aún me arrepiento por algo del pasado.» «No sé para qué vivo.» ¿Cómo puedes liberarte de pensamientos angustiantes como estos? Osho Taigu nos explica que todo el sufrimiento que sientes en el corazón nace de las ilusiones creadas por tu mente. Sin embargo, si aprendes a observarla con consciencia y a modificar tus reacciones, lograrás una mente serena y en paz y podrás liberarte de los problemas que te aquejan. Es un camino arduo que requiere de valentía, pero al conseguir sobrepasar los muros de la mente y el ego, vivirás por fin libre de toda aflicción y sufrimiento. ESTE ES EL PROPÓSITO DEL BUDISMO.\n\nMETADATA VERIFICADA:\n- Título: El muro del yo\n- Autor: Osho Taigu\n- Año: 2025\n- Categorías: Superación personal, Libros, Salud, mente y cuerpo",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.8812500000000001,
+  "verified_identity": {
+    "titulo_real": "El muro del yo",
+    "autor_completo": "Osho Taigu",
+    "año": "2025",
+    "editorial": null,
+    "isbn": "6748983085",
+    "categorias": [
+      "Superación personal",
+      "Libros",
+      "Salud, mente y cuerpo"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/el-muro-del-yo/id6748983085?uo=4"
+  },
+  "match_score": 0.828125,
+  "other_sources_agreed": [
+    "openlibrary",
+    "google_books"
+  ],
+  "resolution_path": [
+    "evidence_fetched_4sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T11:52:58.289Z"
+}

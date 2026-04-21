@@ -1,0 +1,203 @@
+{
+  "titulo_input": "Tiende tu cama",
+  "autor_input": "William H. McRaven",
+  "isbn_seed": "",
+  "isbn_discovered": "6742792527",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 0.6173913043478261,
+    "match_details": {
+      "matched_title": "La sabiduría de la rana",
+      "matched_author": "William H. Mcraven"
+    },
+    "synopsis": "Las claves para convertirte en un lider grandioso en todas las áreas de tu vida DEL ACLAMADO Y EXITOSO AUTOR DE TIENDE TU CAMA, LLEGA ESTA OBRA DE LIDERAZGO PARA LA VIDA DIARIA Los hombres rana son Navy SEAL que han demostrado un valor inigualable, adaptabilidad y resistencia ante los desafíos, por lo que se les han encomendado las misiones más importantes, como audaces rescates en altamar. Después de casi 40 años de carrera, el almirante McRaven, autor de esta obra, fue condecorado como Bull Frog, que es el más alto honor al que aspira un hombre rana y que habla del memorable legado que deja. A lo largo de su trayectoria, superó inimaginables situaciones de crisis, así como dilemas éticos que lo llevaron a aprender grandes lecciones de liderazgo de vida, como: • Quien se atreve gana. • Escucha a tus tropas. • Ningún plan sobrevive al primer contacto con el enemigo. ATRÉVETE A ESTAR DÍA A DÍA EN LA CIMA DEL JUEGO",
+    "synopsis_length": 926,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/69/4b/ed/694bedab-84e1-4726-17db-50d07f9bd792/9786073925990.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/69/4b/ed/694bedab-84e1-4726-17db-50d07f9bd792/9786073925990.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/69/4b/ed/694bedab-84e1-4726-17db-50d07f9bd792/9786073925990.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/69/4b/ed/694bedab-84e1-4726-17db-50d07f9bd792/9786073925990.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "La sabiduría de la rana",
+      "autor_completo": "William H. Mcraven",
+      "año": "2025",
+      "editorial": null,
+      "isbn": "6742792527",
+      "categorias": [
+        "Superación personal",
+        "Libros",
+        "Salud, mente y cuerpo"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/la-sabidur%C3%ADa-de-la-rana/id6742792527?uo=4"
+    }
+  },
+  "google": {
+    "ok": true,
+    "source": "google_books",
+    "match_score": 0.8166666666666668,
+    "match_details": {
+      "matched_title": "Diario. Tiende Tu Cama",
+      "matched_author": "William H. McRaven"
+    },
+    "synopsis": "Si buscas algo que te motive para iniciar bien el día y te haga sentir orgulloso, comienza con algo tan simple como tender tu cama. Se trata de un pequeño paso que te incita a dar otro y después otro, hasta conseguir tus metas más grandes y hacer una diferencia real en el mundo. Registra en este diario esas acciones que mejoran tu vida, sigue los consejos de William H. McRaven y descubre los hábitos que te hacen ser mejor. Sin importar las adversidades que se presenten frente a ti, nunca te dejes vencer y no olvides que: Los logros más trascendentes están hechos de pequeñas acciones. ¡Tiende tu cama es el libro que ha transformado los hábitos y ha mejorado la vida de más de 150 mil personas! Es momento de llevar a la acción sus aprendizajes y escribir en este diario lo que tú estás haciendo para cambiar tu vida y el mundo. El diario que te permitirá organizar tu vida y \"cambiar el mundo\" un paso a la vez.",
+    "synopsis_length": 918,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=TNyjzQEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Diario. Tiende Tu Cama",
+      "subtitulo": "",
+      "autor_completo": "William H. McRaven",
+      "año": "2020",
+      "editorial": null,
+      "paginas": 248,
+      "isbn": "9786070767890",
+      "isbn13": "9786070767890",
+      "isbn10": "6070767896",
+      "categorias": [],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=TNyjzQEACAAJ&dq=Tiende+tu+cama+William+H.+McRaven&hl=&cd=2&source=gbs_api"
+    }
+  },
+  "openlibrary": {
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 0.8166666666666668,
+    "match_details": {
+      "matched_title": "Diario. Tiende Tu Cama",
+      "matched_author": "William H. McRaven"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2020.",
+    "synopsis_length": 65,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://covers.openlibrary.org/b/id/13224672-L.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://covers.openlibrary.org/b/id/13224672-M.jpg"
+      },
+      {
+        "size": "small",
+        "url": "https://covers.openlibrary.org/b/id/13224672-S.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Diario. Tiende Tu Cama",
+      "autor_completo": "William H. McRaven",
+      "año": "2020",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": "spa",
+      "paginas": null
+    }
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/6742792527.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "6742792527",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/69/4b/ed/694bedab-84e1-4726-17db-50d07f9bd792/9786073925990.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/69/4b/ed/694bedab-84e1-4726-17db-50d07f9bd792/9786073925990.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/69/4b/ed/694bedab-84e1-4726-17db-50d07f9bd792/9786073925990.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/69/4b/ed/694bedab-84e1-4726-17db-50d07f9bd792/9786073925990.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=TNyjzQEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "large",
+      "url": "https://covers.openlibrary.org/b/id/13224672-L.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "medium",
+      "url": "https://covers.openlibrary.org/b/id/13224672-M.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "small",
+      "url": "https://covers.openlibrary.org/b/id/13224672-S.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/6742792527.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "google_books",
+    "openlibrary",
+    "amazon"
+  ],
+  "_sources_failed": [],
+  "_timing": {
+    "phase1_parallel_ms": 1872,
+    "phase2_isbn_chain_ms": 923,
+    "cover_validation_ms": 1315,
+    "total_ms": 4110
+  },
+  "_cached_at": "2026-04-21T11:43:43.555Z"
+}

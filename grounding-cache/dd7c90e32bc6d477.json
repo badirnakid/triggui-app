@@ -1,0 +1,26 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nEn la época de la distracción, Dandapani enseña a los lectores a liberarse del ruido que constantemente reclama nuestra atención y así podamos enfocarse en lo que realmente importa. La vida que deseas está a tu alcance, pero para ello debes dominar el poder de la concentración absoluta. Ansiedad, estrés, preocupación, miedo… Todos estos males se han convertido en una plaga que contribuye a nuestra infelicidad, e incluso provoca o agrava ciertas enfermedades. El reconocido monje y conferencista internacional Dandapani nos muestra cómo el dominio de una sola capacidad, la de la concentración, puede permitirnos traspasar de forma permanente esas pesadas barreras mentales que nos alejan de la vida que anhelamos. Dandapani destila toda la sabiduría que acumuló como monje en un libro práctico que nos guía paso a paso para comprender nuestra mente, aprovechar todas sus posibilidades y librarnos de la distracción constante que nos impide avanzar. Con ideas claras y ejercicios prácticos, nos enseña a sincronizar conciencia y fuerza de voluntad, y así integrar una práctica de concentración diaria que nos ayude a incrementar nuestro foco de manera sostenible. «Si luchas contra la distracción o el estrés —por supuesto que lo haces necesitas el nuevo y maravilloso libro de Dandapani. Profundo y práctico a la vez, El poder de la concentración absoluta te guiará en un viaje para recuperar tu vida y vivirla con alegría y propósito». Arthur C. Brooks, profesor de Harvard Business School y autor de From Strength to Strength, bestseller de The New York Times\n\nMETADATA VERIFICADA:\n- Título: El poder de la concentración absoluta (Edición mexicana)\n- Autor: Dandapani\n- Año: 2023\n- Categorías: Espiritualidad, Libros, Salud, mente y cuerpo",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.8807407407407408,
+  "verified_identity": {
+    "titulo_real": "El poder de la concentración absoluta (Edición mexicana)",
+    "autor_completo": "Dandapani",
+    "año": "2023",
+    "editorial": null,
+    "isbn": "6469005928",
+    "categorias": [
+      "Espiritualidad",
+      "Libros",
+      "Salud, mente y cuerpo"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/el-poder-de-la-concentraci%C3%B3n-absoluta-edici%C3%B3n-mexicana/id6469005928?uo=4"
+  },
+  "match_score": 0.8268518518518518,
+  "other_sources_agreed": [],
+  "resolution_path": [
+    "evidence_fetched_2sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T11:44:08.213Z"
+}

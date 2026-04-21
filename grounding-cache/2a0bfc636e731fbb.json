@@ -1,42 +1,29 @@
 {
-  "ground_truth": "TEMA INFERIDO (el modelo no conoce este libro directamente, infiere desde similares):\n\nEl libro probablemente trata sobre la comprensión de las relaciones interpersonales y cómo conectar con los demás de manera efectiva.\n\nVOZ INFERIDA:\nEs probable que la voz del autor sea reflexiva y orientada a la autoayuda, con un enfoque en la psicología y la sociología de las relaciones.\n\nLIBROS SIMILARES QUE COMPARTEN ADN CON ESTE:\n- \"El arte de amar\" (Erich Fromm): Explora las relaciones humanas y la comprensión del amor y la conexión entre las personas.\n- \"Los hombres son de Marte, las mujeres son de Venus\" (John Gray): Aborda las diferencias en la comunicación y las relaciones entre hombres y mujeres.\n- \"Cómo ganar amigos e influir sobre las personas\" (Dale Carnegie): Se centra en las habilidades interpersonales y la construcción de relaciones efectivas.\n- \"Inteligencia emocional\" (Daniel Goleman): Analiza cómo las emociones afectan nuestras interacciones y relaciones.",
-  "grounding_source": "model_inference",
-  "book_identity_confidence": 0.5249999999999999,
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nHay una capacidad que yace en el corazón de cualquier persona o comunidad: la de ver a los demás —en su sentido más profundo— y hacerlos sentir valorados, respetados y comprendidos. Sin embargo, a nuestro alrededor hay personas que se sienten invisibles en una sociedad fragmentada, hostil e insensible al sufrimiento. David Brooks se nutre de la psicología y la neurociencia, así como del teatro, la filosofía y la historia para ofrecer un enfoque esperanzador sobre la conexión humana que nos enseña a realizar acciones concretas, pequeñas pero significativas: ser un buen oyente, pedir y ofrecer perdón, sentarse con quien sufre, mirar las cosas desde la perspectiva del otro… En pocas palabras: ser más comprensivos —y compasivos— con nuestros semejantes. Cómo conocer a una persona es para aquellos que anhelan conectar verdaderamente con los demás. \"Este libro ya es mi favorito de todos los que David ha escrito. [...] Más que una guía para tener mejores conversaciones, se trata de un proyecto para vivir de manera más conectada y humana. Es una lectura imprescindible para cualquiera que busque profundizar sus relaciones y ampliar sus perspectivas.\" —Bill Gates, GatesNotes (lecturas recomendadas)\n\nMETADATA VERIFICADA:\n- Título: Cómo conocer a una persona\n- Autor: David Brooks\n- Año: 2024\n- Categorías: Filosofía, Libros, No ficción",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
   "verified_identity": {
     "titulo_real": "Cómo conocer a una persona",
     "autor_completo": "David Brooks",
-    "año": null
+    "año": "2024",
+    "editorial": null,
+    "isbn": "6736685037",
+    "categorias": [
+      "Filosofía",
+      "Libros",
+      "No ficción"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/c%C3%B3mo-conocer-a-una-persona/id6736685037?uo=4"
   },
-  "inference_confidence": 0.7,
-  "book_known_directly": false,
-  "rich_inference": true,
-  "similar_books": [
-    {
-      "titulo": "El arte de amar",
-      "autor": "Erich Fromm",
-      "razon": "Explora las relaciones humanas y la comprensión del amor y la conexión entre las personas."
-    },
-    {
-      "titulo": "Los hombres son de Marte, las mujeres son de Venus",
-      "autor": "John Gray",
-      "razon": "Aborda las diferencias en la comunicación y las relaciones entre hombres y mujeres."
-    },
-    {
-      "titulo": "Cómo ganar amigos e influir sobre las personas",
-      "autor": "Dale Carnegie",
-      "razon": "Se centra en las habilidades interpersonales y la construcción de relaciones efectivas."
-    },
-    {
-      "titulo": "Inteligencia emocional",
-      "autor": "Daniel Goleman",
-      "razon": "Analiza cómo las emociones afectan nuestras interacciones y relaciones."
-    }
+  "match_score": 1,
+  "other_sources_agreed": [
+    "google_books",
+    "openlibrary"
   ],
   "resolution_path": [
-    "evidence_fetched_0sources",
-    "tier3_conf_0.70"
+    "evidence_fetched_4sources"
   ],
-  "tier_reached": 3,
-  "cost_tokens": 518,
-  "cached_at": "2026-04-20T02:38:38.052Z"
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T11:47:46.434Z"
 }

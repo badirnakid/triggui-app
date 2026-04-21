@@ -1,42 +1,29 @@
 {
-  "ground_truth": "TEMA INFERIDO (el modelo no conoce este libro directamente, infiere desde similares):\n\nEl libro probablemente explora la naturaleza humana en términos de comportamiento, motivaciones y estrategias en las relaciones interpersonales y el poder.\n\nVOZ INFERIDA:\nEs probable que la voz del autor sea analítica, persuasiva y con un enfoque pragmático, similar a su estilo en otros trabajos.\n\nLIBROS SIMILARES QUE COMPARTEN ADN CON ESTE:\n- \"El arte de la guerra\" (Sun Tzu): Ambos libros abordan estrategias y tácticas en relaciones humanas y conflictos.\n- \"Los 48 leyes del poder\" (Robert Greene): Otro libro del mismo autor que explora la manipulación y el poder en las interacciones humanas.\n- \"La psicología del dinero\" (Morgan Housel): Explora la naturaleza humana en relación con el dinero y las decisiones financieras.\n- \"Influence: The Psychology of Persuasion\" (Robert B. Cialdini): Aborda cómo las personas pueden ser influenciadas y manipuladas en sus decisiones.",
-  "grounding_source": "model_inference",
-  "book_identity_confidence": 0.6000000000000001,
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nLa naturaleza humana es más fuerte que cualquier individuo, institución o tecnología. Dirige nuestras obras y nos mueve como peones de ajedrez.Ignorarás sus leyes bajo tu propio riesgo. Como animales sociales, nuestras vidas dependen de las relaciones que forjamos. Por eso no bastan nuestro talento, cono-cimiento y formación: saber por qué la gente hace lo que hace es la herramienta más importante que podemos dominar. A partir de las ideas de personajes históricos tan diversos como Pericles, Isabel I y Martin Luther King Jr., el celebrado escritor Robert Greene nos enseña cómo controlar nuestras emociones, cómo leer mejor las intenciones de los demás, cómo desarrollar la empatía para servir a nuestros propósitos, cómo ver detrás de las máscaras y cómo modificar nuestros comportamientos negativos. Las leyes de la naturaleza humana es la obra maestra de un autor que ha comunicado a millones de lectores las enseñanzas de siglos de historia y filosofía. Un tratado indispensable para aprender las mejores tácticas del autoconocimiento, el éxito y la autodefensa.\n\nMETADATA VERIFICADA:\n- Título: Las leyes de la naturaleza humana\n- Autor: Robert Greene\n- Año: 2019\n- Categorías: Superación personal, Libros, Salud, mente y cuerpo, Psicología",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
   "verified_identity": {
     "titulo_real": "Las leyes de la naturaleza humana",
     "autor_completo": "Robert Greene",
-    "año": null
+    "año": "2019",
+    "editorial": null,
+    "isbn": "1464648017",
+    "categorias": [
+      "Superación personal",
+      "Libros",
+      "Salud, mente y cuerpo",
+      "Psicología"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/las-leyes-de-la-naturaleza-humana/id1464648017?uo=4"
   },
-  "inference_confidence": 0.8,
-  "book_known_directly": false,
-  "rich_inference": true,
-  "similar_books": [
-    {
-      "titulo": "El arte de la guerra",
-      "autor": "Sun Tzu",
-      "razon": "Ambos libros abordan estrategias y tácticas en relaciones humanas y conflictos."
-    },
-    {
-      "titulo": "Los 48 leyes del poder",
-      "autor": "Robert Greene",
-      "razon": "Otro libro del mismo autor que explora la manipulación y el poder en las interacciones humanas."
-    },
-    {
-      "titulo": "La psicología del dinero",
-      "autor": "Morgan Housel",
-      "razon": "Explora la naturaleza humana en relación con el dinero y las decisiones financieras."
-    },
-    {
-      "titulo": "Influence: The Psychology of Persuasion",
-      "autor": "Robert B. Cialdini",
-      "razon": "Aborda cómo las personas pueden ser influenciadas y manipuladas en sus decisiones."
-    }
+  "match_score": 1,
+  "other_sources_agreed": [
+    "openlibrary"
   ],
   "resolution_path": [
-    "evidence_fetched_0sources",
-    "tier3_conf_0.80"
+    "evidence_fetched_3sources"
   ],
-  "tier_reached": 3,
-  "cost_tokens": 525,
-  "cached_at": "2026-04-20T04:12:08.392Z"
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T11:44:39.550Z"
 }
