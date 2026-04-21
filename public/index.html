@@ -2366,7 +2366,7 @@ function render(){
       };
     } else {
       card.append(label, frase);
-      card.onclick = () => { if(revealed) location.reload(); else card.classList.toggle("show"); };
+      card.onclick = () => { if(revealed) requestNewBook(); else card.classList.toggle("show"); };
     }
     grid.append(card);
   }
@@ -2480,7 +2480,110 @@ function createFloatingHeart(x, y) {
 }
 
 // HANDLERS
-btnOtro.onclick = () => { location.reload(); track('reload_clicked'); };
+
+// 🌒 v12: requestNewBook — reemplazo NIVEL DIOS del location.reload()
+//
+// El usuario impaciente NO debe ver los bloques cambiar. NO debe ver flash.
+// NO debe ver nada transitorio. Solo ve: "toco bloque → aparece la barra
+// mágica → elijo sentimiento → aparecen bloques nuevos".
+//
+// La secuencia correcta:
+//   1. ANTES de cambiar libro, mostrar la barra mágica al 100% sobre los bloques
+//      actuales (el overlay los tapa totalmente con z-index:9998)
+//   2. CUANDO la barra está 100% visible, activar body.booting → bloques
+//      viejos se vuelven visibility:hidden detrás del overlay
+//   3. Elegir nuevo libro, llamar render() (nuevos bloques siguen hidden)
+//   4. El usuario submite → barra cierra → bloques nuevos aparecen limpios
+//
+// Esto elimina completamente el flash porque la barra mágica es SIEMPRE lo
+// primero que el usuario ve antes de que haya cualquier cambio de estado.
+function requestNewBook() {
+  const overlay = document.getElementById('barraMagicaOverlay');
+  if (!overlay) {
+    // fallback de seguridad — si no hay overlay, reload clásico
+    location.reload();
+    return;
+  }
+
+  track('new_book_requested');
+
+  // 🌒 v12: Secuencia cinematográfica nivel dios.
+  //
+  // Importante: NO removemos el gate hasta que el overlay esté al 100%.
+  // Si lo removiéramos al instante, los bloques viejos serían visibles
+  // detrás del overlay semi-transparente durante el fade-in.
+  //
+  // 1. Aplicar gate YA → bloques viejos visibility:hidden al instante
+  // 2. applyStrings pinta la barra (aún invisible con opacity:0)
+  // 3. Pre-mount overlay opacity:0, display:flex
+  // 4. Doble rAF → fade-in 350ms
+  // 5. transitionend → cambiar libro y render() (con gate aún activo)
+  // 6. El usuario submite → closeOverlay remueve gate al inicio del fade-out
+  //    (el fade-out revela los bloques nuevos gradualmente)
+
+  document.documentElement.classList.add('booting');
+  document.body.classList.add('booting');
+
+  BarraMagica.applyStrings();
+  overlay.style.display = 'flex';
+  overlay.style.opacity = '0';
+  overlay.style.pointerEvents = '';
+  overlay.style.transition = 'none';
+  void overlay.offsetWidth; // reflow
+
+  const lupa = document.getElementById('barraLupaBtn');
+  if (lupa) lupa.classList.remove('visible');
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      // Listener que dispara SOLO cuando fade-in complete
+      const onFadeInDone = (e) => {
+        if (e.propertyName !== 'opacity') return;
+        overlay.removeEventListener('transitionend', onFadeInDone);
+        // NO removemos gate aquí — se mantiene activo hasta que el usuario
+        // submite y closeOverlay lo remueva al inicio del fade-out (reveal).
+        try {
+          if (window.__TRIGGUI_DATA__ && window.__TRIGGUI_DATA__.libros) {
+            const idx = pickLibroNoRepetido(window.__TRIGGUI_DATA__.libros);
+            libro = window.__TRIGGUI_DATA__.libros[idx];
+            render();
+            updateBadge();
+          }
+        } catch (err) {
+          console.error('[Triggui] requestNewBook render error:', err);
+        }
+      };
+      overlay.addEventListener('transitionend', onFadeInDone);
+      // Fallback 400ms
+      setTimeout(() => {
+        overlay.removeEventListener('transitionend', onFadeInDone);
+        try {
+          if (window.__TRIGGUI_DATA__ && window.__TRIGGUI_DATA__.libros) {
+            const idx = pickLibroNoRepetido(window.__TRIGGUI_DATA__.libros);
+            libro = window.__TRIGGUI_DATA__.libros[idx];
+            render();
+            updateBadge();
+          }
+        } catch (err) {
+          console.error('[Triggui] requestNewBook render error:', err);
+        }
+      }, 400);
+
+      overlay.style.transition = 'opacity 350ms cubic-bezier(0.25, 0.1, 0.25, 1)';
+      overlay.style.opacity = '1';
+      overlay.classList.add('visible');
+
+      setTimeout(() => {
+        const inp = document.getElementById('barraInput');
+        if (inp && !('ontouchstart' in window)) inp.focus();
+      }, 500);
+
+      track('barra_opened', { force: true, lang: TriggguiI18n.lang, source: 'new_book' });
+    });
+  });
+}
+
+btnOtro.onclick = () => { requestNewBook(); };
 btnLibro.onclick = () => {
   track('lupa_reinvoke_clicked');
   BarraMagica.openOverlay(true);
@@ -3395,13 +3498,24 @@ BarraMagica.openOverlay = function(force) {
   const overlay = document.getElementById('barraMagicaOverlay');
   if (!overlay) return false;
 
-  // 🌒 v10: Apertura cinematográfica idéntica a la del boot.
-  // Secuencia:
-  //   1. Aplicar strings (colores, aurora, palabra sientes) — todo pintado
-  //   2. Resetear display y opacity (por si cerró antes)
-  //   3. Forzar reflow, disable transition (para no animar el display:flex)
-  //   4. Doble rAF para asegurar que todo está pintado
+  // 🌒 v12: Apertura cinematográfica nivel dios.
+  //
+  // Regla matemática: el gate (html.booting, body.booting) debe estar activo
+  // durante TODO el fade-in del overlay. Sin gate, los bloques son visibles
+  // detrás del overlay semi-transparente — exactamente el flash que el usuario
+  // reportó.
+  //
+  // Secuencia exacta:
+  //   1. Aplicar gate AL INSTANTE (si no estaba) → bloques visibility:hidden
+  //   2. applyStrings pinta strings/colores
+  //   3. Pre-mount overlay opacity:0 con transition:none (no animar el display)
+  //   4. Doble rAF para garantizar que el CSS aplicó
   //   5. Enable transition + opacity:1 → fade-in 450ms
+  //   6. transitionend dispara → remover gate (solo cuando opacity === 1)
+
+  // Gate INMEDIATO — antes de cualquier otra cosa
+  document.documentElement.classList.add('booting');
+  document.body.classList.add('booting');
 
   this.applyStrings();
 
@@ -3416,9 +3530,25 @@ BarraMagica.openOverlay = function(force) {
 
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
+      // Listener que remueve el gate SOLO cuando opacity llegue a 1
+      const onFadeInDone = (e) => {
+        if (e.propertyName !== 'opacity') return;
+        overlay.removeEventListener('transitionend', onFadeInDone);
+        document.body.classList.remove('booting');
+        document.documentElement.classList.remove('booting');
+      };
+      overlay.addEventListener('transitionend', onFadeInDone);
+      // Fallback 500ms (por si transitionend no dispara)
+      setTimeout(() => {
+        overlay.removeEventListener('transitionend', onFadeInDone);
+        document.body.classList.remove('booting');
+        document.documentElement.classList.remove('booting');
+      }, 500);
+
       overlay.style.transition = 'opacity 450ms cubic-bezier(0.25, 0.1, 0.25, 1)';
       overlay.style.opacity = '1';
       overlay.classList.add('visible');
+
       setTimeout(() => {
         const inp = document.getElementById('barraInput');
         if (inp && !('ontouchstart' in window)) inp.focus();
@@ -3433,24 +3563,21 @@ BarraMagica.closeOverlay = function(skipped, skipRender) {
   const overlay = document.getElementById('barraMagicaOverlay');
   if (!overlay) return;
 
-  // 🌒 v10: NO incrementar _submitToken aquí. Solo limpiar timers pendientes
-  // que el submit actual dejó programados (si llegamos aquí desde submit,
-  // ya se programaron los timers con el token actual; si llegamos desde
-  // otro lado, no hay timers que invalidar).
   this._clearSubmitTimers && this._clearSubmitTimers();
 
+  // 🌒 v12: Si venimos de requestNewBook(), body.booting está activo.
+  // Hay que removerlo ANTES de que el overlay se desvanezca, así los
+  // bloques nuevos aparecen limpios (sin el gate de visibility:hidden).
+  // Los bloques YA están renderizados debajo del overlay (por requestNewBook
+  // o por BarraMagica.submit), así que removerlos del gate los vuelve
+  // visibles al mismo tiempo que el overlay desaparece.
+  document.documentElement.classList.remove('booting');
+  document.body.classList.remove('booting');
+
   // 🌒 v11: CRÍTICO — quitar pointer-events DEL INSTANTE que inicia el fade-out.
-  // Sin esto, durante los 650ms de transición el overlay sigue "por encima"
-  // (z-index: 9998) con pointer-events activos aunque visualmente se esté
-  // desvaneciendo. El usuario impaciente que ve los bloques aparecer e
-  // intenta clickear uno, el click se va al overlay invisible y parece que
-  // "no reacciona". Con pointer-events:none desde el inicio del fade-out,
-  // los bloques debajo reciben los clicks INMEDIATAMENTE.
   overlay.style.pointerEvents = 'none';
 
-  // Transición cinematográfica: overlay se desvanece en 650ms con
-  // cubic-bezier suave. Los bloques (ya renderizados debajo) se revelan
-  // gradualmente. No hay flash.
+  // Transición cinematográfica: overlay se desvanece en 650ms
   overlay.style.transition = 'opacity 650ms cubic-bezier(0.33, 1, 0.68, 1)';
   overlay.style.opacity = '0';
   overlay.classList.remove('visible');
@@ -3905,15 +4032,37 @@ async function bootTriggui() {
     //   4. AL MISMO TIEMPO remover body.booting (los bloques ocultos debajo
     //      se vuelven "visibles" pero el overlay a 100% los tapa totalmente)
     //   5. El usuario SOLO ve: negro → barra mágica entra suavemente
+    // 🌒 v12: remover gate DESPUÉS de que el overlay esté al 100% de opacity.
+    // Antes se removía al INSTANTE del fade-in, lo que creaba una ventana de
+    // 50-400ms donde el overlay estaba semi-transparente y los bloques eran
+    // visibles detrás. Ahora usamos transitionend para matemática exacta.
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         if (overlay) {
+          // Listener que remueve el gate SOLO cuando opacity llegue a 1
+          const onFadeInDone = (e) => {
+            if (e.propertyName !== 'opacity') return;
+            overlay.removeEventListener('transitionend', onFadeInDone);
+            document.body.classList.remove('booting');
+            document.documentElement.classList.remove('booting');
+          };
+          overlay.addEventListener('transitionend', onFadeInDone);
+          // Fallback de seguridad: si transitionend no dispara (navegador raro,
+          // animaciones deshabilitadas por OS), removemos el gate tras 500ms.
+          setTimeout(() => {
+            overlay.removeEventListener('transitionend', onFadeInDone);
+            document.body.classList.remove('booting');
+            document.documentElement.classList.remove('booting');
+          }, 500);
+
           overlay.style.transition = 'opacity 450ms cubic-bezier(0.25, 0.1, 0.25, 1)';
           overlay.style.opacity = '1';
           overlay.classList.add('visible');
+        } else {
+          // Sin overlay → remover gate de inmediato (caso degradado)
+          document.body.classList.remove('booting');
+          document.documentElement.classList.remove('booting');
         }
-        // Remover body.booting — los bloques ya están renderizados detrás del overlay
-        document.body.classList.remove('booting'); document.documentElement.classList.remove('booting');
         // Focus al terminar la transición (solo desktop)
         setTimeout(() => {
           const inp = document.getElementById('barraInput');
