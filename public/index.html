@@ -12,7 +12,6 @@
 
 <link rel="preload" as="image" href="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png">
 <link rel="preload" as="image" href="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletrasblanco2.png">
-<link rel="preload" as="image" href="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletrascolor3.png">
 <link rel="preload" as="image" href="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/buscalibre.png">
 <link rel="preload" as="image" href="logopenguin.png">
 
@@ -1757,8 +1756,16 @@ body.webview #tarjetaCard {
   cursor: pointer;
   touch-action: manipulation;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2), inset 0 0.5px 0 rgba(255, 255, 255, 0.1);
+  /* 🌒 v14: opacity:1 estable. La animación bm-fade-up-delayed se aplica
+     SOLO la primera vez que aparece (primer boot), vía clase .bm-first-appear
+     que JS añade y quita. En re-aperturas (via lupa, requestNewBook), el
+     elemento mantiene opacity:1 sin necesidad de re-ejecutar animación. */
+  opacity: 1;
+}
+
+#barraLangToggle.bm-first-appear {
   opacity: 0;
-  animation: bm-fade-up 1s cubic-bezier(0.19, 1, 0.22, 1) 1.7s both;
+  animation: bm-fade-up 1s cubic-bezier(0.19, 1, 0.22, 1) 1.7s forwards;
 }
 
 #barraLangToggle span {
@@ -1851,37 +1858,16 @@ body.webview #tarjetaCard {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  /* 🌒 v13: width:100% (del stage), height:auto. El navegador mantiene
-     aspect ratio. Si los dos PNG tienen aspect ratio distinto, uno puede
-     quedar más alto o más bajo, pero AMBOS ocupan el mismo ancho.
-     Esto elimina la sensación de "cambio de tamaño" al crossfadear. */
+  /* 🌒 v14: single layer (logo blanco únicamente). Ya no crossfade.
+     width:100% del stage define el ancho, height:auto mantiene aspect. */
   width: 100%;
   height: auto;
   max-height: 100%;
   object-fit: contain;
-  transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 #barraFooterLogo .bm-logo-blanco {
   opacity: 0.85;
-  animation: bm-logo-alt-blanco 12s ease-in-out infinite;
-}
-
-#barraFooterLogo .bm-logo-color {
-  opacity: 0;
-  animation: bm-logo-alt-color 12s ease-in-out infinite;
-}
-
-@keyframes bm-logo-alt-blanco {
-  0%, 42% { opacity: 0.85; }
-  50%, 92% { opacity: 0; }
-  100% { opacity: 0.85; }
-}
-
-@keyframes bm-logo-alt-color {
-  0%, 42% { opacity: 0; }
-  50%, 92% { opacity: 1; }
-  100% { opacity: 0; }
 }
 
 @keyframes bm-fade-up {
@@ -2059,7 +2045,7 @@ body.webview #tarjetaCard {
     <span id="barraStreakUnit">días</span>
   </div>
 
-  <button id="barraLangToggle" type="button" aria-label="Toggle language">
+  <button id="barraLangToggle" class="bm-first-appear" type="button" aria-label="Toggle language">
     <span id="langToggleEs" class="lang-active">ES</span>
     <span class="lang-sep">·</span>
     <span id="langToggleEn" class="lang-inactive">EN</span>
@@ -2088,7 +2074,6 @@ body.webview #tarjetaCard {
   <div id="barraFooterLogo" aria-hidden="true">
     <div class="bm-logo-stage">
       <img class="bm-logo-layer bm-logo-blanco" src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletrasblanco2.png" alt="" loading="eager">
-      <img class="bm-logo-layer bm-logo-color" src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletrascolor3.png" alt="" loading="eager">
     </div>
   </div>
 </div>
@@ -3802,6 +3787,19 @@ function wireBarraMagicaEvents() {
   }
   if (lupa) {
     lupa.addEventListener('click', () => { BarraMagica.openOverlay(true); });
+  }
+
+  // 🌒 v14: Remover clase .bm-first-appear del langToggle tras la animación.
+  // Durante los primeros 2.7s (1.7s delay + 1s duration) el langToggle hace
+  // su entrada con fade-up. Después, se remueve la clase para que el elemento
+  // tenga opacity:1 estable (del CSS base). Así, al re-abrir la barra por
+  // lupa/requestNewBook, el elemento YA está en opacity:1 sin depender de
+  // ninguna animación.
+  const langToggleEl = document.getElementById('barraLangToggle');
+  if (langToggleEl && langToggleEl.classList.contains('bm-first-appear')) {
+    setTimeout(() => {
+      langToggleEl.classList.remove('bm-first-appear');
+    }, 2800);
   }
 
   __trigguiEventsWired = true;
