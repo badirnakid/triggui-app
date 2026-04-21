@@ -1,0 +1,91 @@
+{
+  "titulo_input": "¿Quién eres tú y qué haces aquí?",
+  "autor_input": "Jesús Yanes",
+  "isbn_seed": "",
+  "isbn_discovered": "",
+  "apple": {
+    "ok": false,
+    "reason": "low_match_0.34",
+    "source": "apple_books"
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 0.8166666666666668,
+    "match_details": {
+      "matched_title": "¿Quién eres tú y qué haces aquí? El Libro de iO",
+      "matched_author": "Jesús Yanes"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2020.",
+    "synopsis_length": 65,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://covers.openlibrary.org/b/id/13448965-L.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://covers.openlibrary.org/b/id/13448965-M.jpg"
+      },
+      {
+        "size": "small",
+        "url": "https://covers.openlibrary.org/b/id/13448965-S.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "¿Quién eres tú y qué haces aquí? El Libro de iO",
+      "autor_completo": "Jesús Yanes",
+      "año": "2020",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": "spa",
+      "paginas": null
+    }
+  },
+  "amazon": {
+    "ok": false,
+    "reason": "skipped",
+    "source": "amazon"
+  },
+  "valid_covers": [
+    {
+      "source": "openlibrary",
+      "size": "large",
+      "url": "https://covers.openlibrary.org/b/id/13448965-L.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "medium",
+      "url": "https://covers.openlibrary.org/b/id/13448965-M.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "small",
+      "url": "https://covers.openlibrary.org/b/id/13448965-S.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "openlibrary"
+  ],
+  "_sources_failed": [
+    "apple_books:low_match_0.34",
+    "google_books:no_good_match",
+    "amazon:skipped"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 15842,
+    "phase2_isbn_chain_ms": 0,
+    "cover_validation_ms": 1250,
+    "total_ms": 17092
+  },
+  "_cached_at": "2026-04-21T01:15:38.613Z"
+}

@@ -1,0 +1,27 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\n*Premio Princesa de Asturias de Comunicación y Humanidades 2025* Un poderoso llamamiento a abandonar la vida hiperactiva para recuperar el sentido de nuestras vidas, el equilibrio y la riqueza interior. Estamos perdiendo nuestra capacidad de no hacer nada. Nuestra existencia está completamente absorbida por la actividad y, por lo tanto, completamente explotada. Dado que solo percibimos la vida en términos de rendimiento, tendemos a entender la inactividad como un déficit, una negación o una mera ausencia de actividad cuando se trata, muy al contrario, de una interesante capacidad independiente. Byung-Chul Han indaga en los beneficios, el esplendor y la magia de la ociosidad y diseña una nueva forma de vida, que incluya momentos contemplativos, con la que afrontar la crisis actual de nuestra sociedad y frenar nuestra propia explotación y la destrucción de la naturaleza.\n\nMETADATA VERIFICADA:\n- Título: Vida contemplativa\n- Autor: Byung-Chul Han\n- Año: 2023\n- Categorías: Filosofía, Libros, No ficción, Ciencia social",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Vida contemplativa",
+    "autor_completo": "Byung-Chul Han",
+    "año": "2023",
+    "editorial": null,
+    "isbn": "6444631460",
+    "categorias": [
+      "Filosofía",
+      "Libros",
+      "No ficción",
+      "Ciencia social"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/vida-contemplativa/id6444631460?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [],
+  "resolution_path": [
+    "evidence_fetched_2sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T01:32:59.958Z"
+}

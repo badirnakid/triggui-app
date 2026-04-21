@@ -1,0 +1,28 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nA diez años de haber sido publicado por primera vez, Una vida sin límites se reedita para que los lectores de Alejandra Llamas, los seguidores del Tao Te Ching y los interesados en tener una vida plena encuentren las herramientas clave para eliminar los miedos y los obstáculos que les impiden vivir en equilibrio emocional. El libro incluye declaraciones diarias y una app en la que podrán descargar información extra para enriquecer su experiencia. En este libro, Alejandra Llamas realiza un profundo análisis sobre la conexión que debe tener todo ser humano con su mundo interno para lograr alejarse del miedo y acercarse a la unión y al amor. A través de 45 versos fundamentales del Tao Te Ching, texto ancestral clásico chino atribuido al filósofo Lao Tsé, Una vida sin límites se constituye como una herramienta para entender y ver de manera positiva nuestro entorno y lograr nuestra paz interior. Este inigualable libro nos invita a dejarnos llevar por el camino del Tao para reflexionar y alcanzar la serenidad.\n\nMETADATA VERIFICADA:\n- Título: Una vida sin límites\n- Autor: Alejandra Llamas\n- Año: 2019\n- Categorías: Superación personal, Libros, Salud, mente y cuerpo",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Una vida sin límites",
+    "autor_completo": "Alejandra Llamas",
+    "año": "2019",
+    "editorial": null,
+    "isbn": "1478033616",
+    "categorias": [
+      "Superación personal",
+      "Libros",
+      "Salud, mente y cuerpo"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/una-vida-sin-l%C3%ADmites/id1478033616?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_3sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T01:37:08.908Z"
+}

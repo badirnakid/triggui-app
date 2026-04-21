@@ -1,0 +1,172 @@
+{
+  "titulo_input": "El viaje a la vida",
+  "autor_input": "Eduardo Punset",
+  "isbn_seed": "",
+  "isbn_discovered": "918231322",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "El viaje a la vida",
+      "matched_author": "Eduardo Punset"
+    },
+    "synopsis": "Cómo la empatía y la intuición cambiarán nuestro futuro. Hasta hace muy pocos años, los humanos vivíamos en núcleos muy reducidos e incomunicados;&#xa0;el amor, la amistad o la comprensión eran una excepción, y había obstáculos&#xa0;insalvables entre las distintas comunidades. La empatía nació en el cerebro de los humanos hace cien mil años, pero está irrumpiendo&#xa0;de manera imparable en el hogar, las comunidades y las empresas. Gradualmente,&#xa0;la sociedad está aprendiendo, gracias a las redes sociales y a la propagación de la empatía,&#xa0;a cuidar de sí misma y a no necesitar de las ayudas interesadas de terceros. Algún&#xa0;día, ya nadie dudará de que la mejor manera de ser feliz será haciendo feliz a los demás.",
+    "synopsis_length": 730,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/cc/43/58/cc4358ee-140c-a645-a2ed-570ab33feed0/9788423348626.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/cc/43/58/cc4358ee-140c-a645-a2ed-570ab33feed0/9788423348626.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/cc/43/58/cc4358ee-140c-a645-a2ed-570ab33feed0/9788423348626.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/cc/43/58/cc4358ee-140c-a645-a2ed-570ab33feed0/9788423348626.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "El viaje a la vida",
+      "autor_completo": "Eduardo Punset",
+      "año": "2014",
+      "editorial": null,
+      "isbn": "918231322",
+      "categorias": [
+        "Superación personal",
+        "Libros",
+        "Salud, mente y cuerpo"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/el-viaje-a-la-vida/id918231322?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "El viaje a la vida",
+      "matched_author": "Eduardo Punset"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2016.",
+    "synopsis_length": 65,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://covers.openlibrary.org/b/id/13972563-L.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://covers.openlibrary.org/b/id/13972563-M.jpg"
+      },
+      {
+        "size": "small",
+        "url": "https://covers.openlibrary.org/b/id/13972563-S.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "El viaje a la vida",
+      "autor_completo": "Eduardo Punset",
+      "año": "2016",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": null,
+      "paginas": null
+    }
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/918231322.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "918231322",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/cc/43/58/cc4358ee-140c-a645-a2ed-570ab33feed0/9788423348626.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/cc/43/58/cc4358ee-140c-a645-a2ed-570ab33feed0/9788423348626.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/cc/43/58/cc4358ee-140c-a645-a2ed-570ab33feed0/9788423348626.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/cc/43/58/cc4358ee-140c-a645-a2ed-570ab33feed0/9788423348626.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "large",
+      "url": "https://covers.openlibrary.org/b/id/13972563-L.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "medium",
+      "url": "https://covers.openlibrary.org/b/id/13972563-M.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "small",
+      "url": "https://covers.openlibrary.org/b/id/13972563-S.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/918231322.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "openlibrary",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 15813,
+    "phase2_isbn_chain_ms": 23665,
+    "cover_validation_ms": 1074,
+    "total_ms": 40552
+  },
+  "_cached_at": "2026-04-21T01:21:43.137Z"
+}

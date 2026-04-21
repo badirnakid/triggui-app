@@ -1,0 +1,125 @@
+{
+  "titulo_input": "Descubre tu destino con el monje que vendió su Ferrari",
+  "autor_input": "Robin Sharma",
+  "isbn_seed": "",
+  "isbn_discovered": "469029722",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Descubre tu destino con el monje que vendió su Ferrari",
+      "matched_author": "Robin Sharma"
+    },
+    "synopsis": "¡Aprende cómo conseguir la vida que siempre has soñado tener y transforma definitivamente todas las dimensiones de tu mundo! Éste es el último libro de la serie que protagoniza el famoso monje que vendió su Ferrari, una obra que puede conseguir que mires el mundo con otros ojos. Te enseñará a despertar tu yo más íntimo y te ayudará a lograr una vida más plena y más feliz, así como prosperidad y paz interior. Lo único que tienes que hacer es mirar dentro de ti. Escrito como una fábula, Descubre tu destino con el monje que vendió su Ferrari ofrece nuevos aspectos de la sabiduría de Julian Mantle, el superabogado que cambió su vida de lujo por la paz interior y la felicidad. Una ficción inolvidable y paradójicamente realista, que desvela el verdadero propósito de la vida y muestra cómo liberar todo el potencial del ser, el secreto de la felicidad y la importancia de desbordar los límites para así encontrar el camino de la libertad personal. Una combinación de profundidad y lecciones prácticas que abrirá las puertas de las infinitas posibilidades que la vida depara a todas las personas y que transformarán definitivamente todas las dimensiones de tu mundo. Que te enseñará cómo conseguir la vida que siempre has soñado tener.",
+    "synopsis_length": 1238,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/26/ae/c4/26aec446-c3ff-3b28-d3c2-7f9732f5dfae/9788425345326.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/26/ae/c4/26aec446-c3ff-3b28-d3c2-7f9732f5dfae/9788425345326.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/26/ae/c4/26aec446-c3ff-3b28-d3c2-7f9732f5dfae/9788425345326.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/26/ae/c4/26aec446-c3ff-3b28-d3c2-7f9732f5dfae/9788425345326.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Descubre tu destino con el monje que vendió su Ferrari",
+      "autor_completo": "Robin Sharma",
+      "año": "2012",
+      "editorial": null,
+      "isbn": "469029722",
+      "categorias": [
+        "Superación personal",
+        "Libros",
+        "Salud, mente y cuerpo",
+        "Espiritualidad"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/descubre-tu-destino-con-el-monje-que-vendi%C3%B3-su-ferrari/id469029722?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": false,
+    "reason": "no_results",
+    "source": "openlibrary"
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/469029722.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "469029722",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/26/ae/c4/26aec446-c3ff-3b28-d3c2-7f9732f5dfae/9788425345326.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/26/ae/c4/26aec446-c3ff-3b28-d3c2-7f9732f5dfae/9788425345326.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/26/ae/c4/26aec446-c3ff-3b28-d3c2-7f9732f5dfae/9788425345326.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/26/ae/c4/26aec446-c3ff-3b28-d3c2-7f9732f5dfae/9788425345326.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/469029722.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match",
+    "openlibrary:no_results"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 15722,
+    "phase2_isbn_chain_ms": 23749,
+    "cover_validation_ms": 1012,
+    "total_ms": 40483
+  },
+  "_cached_at": "2026-04-21T01:36:00.111Z"
+}

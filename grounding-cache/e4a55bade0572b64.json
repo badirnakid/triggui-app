@@ -1,0 +1,47 @@
+{
+  "ground_truth": "TEMA INFERIDO (el modelo no conoce este libro directamente, infiere desde similares):\n\nEl libro probablemente aborda lecciones sobre finanzas personales y cómo adaptarse a un mundo en constante cambio, ofreciendo consejos prácticos y reflexiones sobre la vida y el dinero.\n\nVOZ INFERIDA:\nEs probable que el autor tenga una voz accesible y reflexiva, orientada a la enseñanza y la motivación, buscando conectar con el lector de manera directa y personal.\n\nLIBROS SIMILARES QUE COMPARTEN ADN CON ESTE:\n- \"El hombre más rico de Babilonia\" (George S. Clason): Ofrece lecciones sobre finanzas personales y sabiduría atemporal.\n- \"Padre rico, padre pobre\" (Robert Kiyosaki): Explora conceptos de educación financiera y mentalidad sobre el dinero.\n- \"Los secretos de la mente millonaria\" (T. Harv Eker): Aborda creencias y hábitos que afectan el éxito financiero.\n- \"La bolsa o la vida\" (Joe Dominguez y Vicki Robin): Enfoca en la relación entre el dinero y la vida personal, con lecciones prácticas.\n- \"El inversor inteligente\" (Benjamin Graham): Proporciona principios de inversión y filosofía financiera duradera.",
+  "grounding_source": "model_inference",
+  "book_identity_confidence": 0.6000000000000001,
+  "verified_identity": {
+    "titulo_real": "Lo que nunca cambia en un mundo cambiante",
+    "autor_completo": "Morgan Housel",
+    "año": null
+  },
+  "inference_confidence": 0.8,
+  "book_known_directly": false,
+  "rich_inference": true,
+  "similar_books": [
+    {
+      "titulo": "El hombre más rico de Babilonia",
+      "autor": "George S. Clason",
+      "razon": "Ofrece lecciones sobre finanzas personales y sabiduría atemporal."
+    },
+    {
+      "titulo": "Padre rico, padre pobre",
+      "autor": "Robert Kiyosaki",
+      "razon": "Explora conceptos de educación financiera y mentalidad sobre el dinero."
+    },
+    {
+      "titulo": "Los secretos de la mente millonaria",
+      "autor": "T. Harv Eker",
+      "razon": "Aborda creencias y hábitos que afectan el éxito financiero."
+    },
+    {
+      "titulo": "La bolsa o la vida",
+      "autor": "Joe Dominguez y Vicki Robin",
+      "razon": "Enfoca en la relación entre el dinero y la vida personal, con lecciones prácticas."
+    },
+    {
+      "titulo": "El inversor inteligente",
+      "autor": "Benjamin Graham",
+      "razon": "Proporciona principios de inversión y filosofía financiera duradera."
+    }
+  ],
+  "resolution_path": [
+    "evidence_fetched_0sources",
+    "tier3_conf_0.80"
+  ],
+  "tier_reached": 3,
+  "cost_tokens": 590,
+  "cached_at": "2026-04-21T01:34:50.649Z"
+}

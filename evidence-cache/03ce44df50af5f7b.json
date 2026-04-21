@@ -1,0 +1,125 @@
+{
+  "titulo_input": "La Buena Vida",
+  "autor_input": "Robert Waldinger",
+  "isbn_seed": "",
+  "isbn_discovered": "6445710030",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 0.8307692307692308,
+    "match_details": {
+      "matched_title": "Una bona vida",
+      "matched_author": "Robert Waldinger & Marc Schulz"
+    },
+    "synopsis": "Quina és la clau per tenir una bona vida? Un estudi que ha durat 84 anys ens ho explica. Quina és la clau per tenir una bona vida? Un estudi que ha durat 84 anys ens ho explica. Què ens fa feliços? Quina és la clau per tenir una bona vida? Fa més de vuitanta anys, a Harvard, es va posar en marxa l'estudi més gran que s'ha fet mai sobre la felicitat. L'objectiu de la recerca era descobrir quins són els factors que fan que una vida sigui feliç i plena, i per fer-ho van iniciar entrevistes sistemàtiques a més de set-centes persones i les seves famílies. Durant tots aquests anys s'han observat les vides d'aquests individus en tots els seus aspectes, des de l'adolescència fins a la vellesa, seguint els seus èxits i fracassos professionals, el nivell econòmic, les relacions de parella, el naixement dels fills i la mort dels éssers estimats. Què és el que els ha fet feliços en cada moment de la vida i com ha anat impactant aquesta felicitat en la seva salut i longevitat? Aquest és un llibre rigorós i sorprenent, que a través d'inspiradores històries personals i amb consells pràctics molt útils, ens demostra que la felicitat no és sinònim d'èxits financers i que aconseguir tenir una vida plena i llarga està més a les nostres mans del que ens pensem. L'estudi més gran del món per respondre a la pregunta més important de totes: Què ens fa feliços? «Una bona vida ens ensenya de manera científica i pràctica com definir, construir i, sobretot, viure una vida feliç». Jay Shetty «Un llibre que sens dubte influirà en la vida de milions de persones». Tal Ben-Shahar «En un mercat saturat de llibres amb consells per a una vida plena, aquest destaca per sobre de tots els altres». Angela Duckworth",
+    "synopsis_length": 1705,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/71/55/20/71552043-c43f-8221-79c6-e5e290f0bdf8/9788466430463.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/71/55/20/71552043-c43f-8221-79c6-e5e290f0bdf8/9788466430463.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/71/55/20/71552043-c43f-8221-79c6-e5e290f0bdf8/9788466430463.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/71/55/20/71552043-c43f-8221-79c6-e5e290f0bdf8/9788466430463.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Una bona vida",
+      "autor_completo": "Robert Waldinger & Marc Schulz",
+      "año": "2023",
+      "editorial": null,
+      "isbn": "6445710030",
+      "categorias": [
+        "Superación personal",
+        "Libros",
+        "Salud, mente y cuerpo",
+        "Referencia"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/una-bona-vida/id6445710030?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": false,
+    "reason": "no_results",
+    "source": "openlibrary"
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/6445710030.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "6445710030",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/71/55/20/71552043-c43f-8221-79c6-e5e290f0bdf8/9788466430463.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/71/55/20/71552043-c43f-8221-79c6-e5e290f0bdf8/9788466430463.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/71/55/20/71552043-c43f-8221-79c6-e5e290f0bdf8/9788466430463.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/71/55/20/71552043-c43f-8221-79c6-e5e290f0bdf8/9788466430463.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/6445710030.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match",
+    "openlibrary:no_results"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 15735,
+    "phase2_isbn_chain_ms": 23700,
+    "cover_validation_ms": 817,
+    "total_ms": 40252
+  },
+  "_cached_at": "2026-04-21T01:31:52.306Z"
+}

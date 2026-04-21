@@ -1,0 +1,141 @@
+{
+  "titulo_input": "Limpia tus genes",
+  "autor_input": "Ben Lynch",
+  "isbn_seed": "",
+  "isbn_discovered": "1435955916",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Limpia tus genes",
+      "matched_author": "Ben Lynch"
+    },
+    "synopsis": "¡Tus genes no son tu destino! Tal vez siempre has pensado en tus genes como un \"plan maestro\" con instrucciones inalterables que afectan cuán sano o qué tan propenso eres a la cardiopatía, la ansiedad, los desórdenes digestivos o autoinmunes e incluso al cáncer o la diabetes. Sin embargo, ocurre justo lo contrario: son nuestros hábitos, alimentación y estilo de vida los que modifican constantemente nuestra expresión genética e influyen de manera determinante en nuestra salud. El secreto está en nuestros \"genes sucios\" o las variaciones hereditarias que nos predisponen para la enfermedad. Y tras años de investigación en la nueva ciencia de las anormalidades genéticas y de brindar tratamiento a miles de pacientes, el doctor Ben Lynch traduce los últimos descubrimientos en este campo en un protocolo probado de tres fases que incluye acciones concretas y un amplio menú con recetas para cada tipo de \"gen sucio\", los cuales te permitirán obtener una piel radiante, un peso saludable, montones de energía y una mente aguda y clara. ¿Estás listo para gozar de una salud insólita? Limpia tus genes y recupera el control de tu destino hoy. «Limpia tus genes desafía de manera poderosa la noción de que los genes son los árbitros finales de la salud y la enfermedad» Doctor David Perlmutter, autor de Cerebro de pan, bestseller #1 de The New York Times",
+    "synopsis_length": 1355,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication128/v4/eb/97/70/eb9770b4-9e2f-3051-e64b-7fabcf9ce6e3/9786073173582.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication128/v4/eb/97/70/eb9770b4-9e2f-3051-e64b-7fabcf9ce6e3/9786073173582.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication128/v4/eb/97/70/eb9770b4-9e2f-3051-e64b-7fabcf9ce6e3/9786073173582.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication128/v4/eb/97/70/eb9770b4-9e2f-3051-e64b-7fabcf9ce6e3/9786073173582.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Limpia tus genes",
+      "autor_completo": "Ben Lynch",
+      "año": "2018",
+      "editorial": null,
+      "isbn": "1435955916",
+      "categorias": [
+        "Dieta y nutrición",
+        "Libros",
+        "Salud, mente y cuerpo"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/limpia-tus-genes/id1435955916?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 0.7642857142857142,
+    "match_details": {
+      "matched_title": "Limpia Tus Genes / Dirty Genes",
+      "matched_author": "Ben Lynch"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2019.",
+    "synopsis_length": 65,
+    "covers": [],
+    "verified_identity": {
+      "titulo_real": "Limpia Tus Genes / Dirty Genes",
+      "autor_completo": "Ben Lynch",
+      "año": "2019",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": "spa",
+      "paginas": null
+    }
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/1435955916.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "1435955916",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication128/v4/eb/97/70/eb9770b4-9e2f-3051-e64b-7fabcf9ce6e3/9786073173582.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication128/v4/eb/97/70/eb9770b4-9e2f-3051-e64b-7fabcf9ce6e3/9786073173582.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication128/v4/eb/97/70/eb9770b4-9e2f-3051-e64b-7fabcf9ce6e3/9786073173582.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication128/v4/eb/97/70/eb9770b4-9e2f-3051-e64b-7fabcf9ce6e3/9786073173582.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/1435955916.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "openlibrary",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 15810,
+    "phase2_isbn_chain_ms": 23804,
+    "cover_validation_ms": 515,
+    "total_ms": 40129
+  },
+  "_cached_at": "2026-04-21T01:20:33.386Z"
+}

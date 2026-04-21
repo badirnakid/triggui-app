@@ -1,0 +1,172 @@
+{
+  "titulo_input": "Law of Success",
+  "autor_input": "Napoleon Hill",
+  "isbn_seed": "",
+  "isbn_discovered": "579191855",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 0.8777777777777778,
+    "match_details": {
+      "matched_title": "The Law of Success",
+      "matched_author": "Napoleon Hill"
+    },
+    "synopsis": "Law of Success by Napoleon Hill This is the complete Book of Napoleon Hills Law of Success. This book helped millions of People in the Past, I am sure, you are reading this book will be benefited. Create an Extraordinary world and culture in you, your community, your family and workplace. Thanks for downloading this book.",
+    "synopsis_length": 323,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication/v4/be/c1/4f/bec14f5b-1aab-6bdb-0321-e5969ecef46a/Screen_Shot_2012-11-14_at_8.35.48_PM.png/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication/v4/be/c1/4f/bec14f5b-1aab-6bdb-0321-e5969ecef46a/Screen_Shot_2012-11-14_at_8.35.48_PM.png/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication/v4/be/c1/4f/bec14f5b-1aab-6bdb-0321-e5969ecef46a/Screen_Shot_2012-11-14_at_8.35.48_PM.png/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication/v4/be/c1/4f/bec14f5b-1aab-6bdb-0321-e5969ecef46a/Screen_Shot_2012-11-14_at_8.35.48_PM.png/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "The Law of Success",
+      "autor_completo": "Napoleon Hill",
+      "año": "2012",
+      "editorial": null,
+      "isbn": "579191855",
+      "categorias": [
+        "Espiritualidad",
+        "Libros",
+        "Salud, mente y cuerpo"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/the-law-of-success/id579191855?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 0.8777777777777778,
+    "match_details": {
+      "matched_title": "The Law of Success",
+      "matched_author": "Napoleon Hill"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 1969.",
+    "synopsis_length": 65,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://covers.openlibrary.org/b/id/2292427-L.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://covers.openlibrary.org/b/id/2292427-M.jpg"
+      },
+      {
+        "size": "small",
+        "url": "https://covers.openlibrary.org/b/id/2292427-S.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "The Law of Success",
+      "autor_completo": "Napoleon Hill",
+      "año": "1969",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": "eng",
+      "paginas": null
+    }
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/579191855.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "579191855",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication/v4/be/c1/4f/bec14f5b-1aab-6bdb-0321-e5969ecef46a/Screen_Shot_2012-11-14_at_8.35.48_PM.png/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication/v4/be/c1/4f/bec14f5b-1aab-6bdb-0321-e5969ecef46a/Screen_Shot_2012-11-14_at_8.35.48_PM.png/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication/v4/be/c1/4f/bec14f5b-1aab-6bdb-0321-e5969ecef46a/Screen_Shot_2012-11-14_at_8.35.48_PM.png/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication/v4/be/c1/4f/bec14f5b-1aab-6bdb-0321-e5969ecef46a/Screen_Shot_2012-11-14_at_8.35.48_PM.png/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "large",
+      "url": "https://covers.openlibrary.org/b/id/2292427-L.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "medium",
+      "url": "https://covers.openlibrary.org/b/id/2292427-M.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "small",
+      "url": "https://covers.openlibrary.org/b/id/2292427-S.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/579191855.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "openlibrary",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 15822,
+    "phase2_isbn_chain_ms": 24192,
+    "cover_validation_ms": 1327,
+    "total_ms": 41341
+  },
+  "_cached_at": "2026-04-21T01:17:01.002Z"
+}

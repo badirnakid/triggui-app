@@ -1,0 +1,29 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nLas coincidencias cotidianas nos permiten entrever un campo de posibilidades infinitas en el corazón de todas las cosas. Si comprendemos este poder, podremos reescribir nuestro destino. Sincrodestino de Deepak Chopra, autor de El alma del liderazgo e Iluminación, contiene ejercicios prácticos para poder llevar a cabo los principios que desarrolla el autor. ¿Te has parado a pensar cuál es el mensaje que esconden las distintas coincidencias que te ocurren a lo largo del día? De vez en cuando suceden coincidencias que a primera vista no tienen el menor significado o alguna razón de ser en especial, pero que llaman la atención. Deepak Chopra presenta ahora Sincrodestino, obra en donde muestra el poder de las coincidencias significativas y la manera de identificarlas en medio del cúmulo de sucesos cotidianos, con la finalidad de utilizarlas e interpretar los mensajes que ofrecen. Una vez que se dominan los principios de las sincronías y se encuentra su lazo con el propio destino, se pueden utilizar para crear abundancia en todas las áreas de la vida. Cada una de ellas esas coincidencias transmite un potencial milagroso... Sólo hay que entender las fuerzas que las provocan y lograremos vivir en un nivel más profundo y acceder al núcleo de nuestra existencia, donde yace el flujo de la sincronicidad: un renacimiento que nos traerá nuevas maneras de percibir y de ser, y que transforma nuestra vida en una experiencia deslumbrante. Lo que ha dicho la crítica: \"La estrella del rock de la nueva espiritualidad.\" -The Guardian- \"Sin duda uno de los filósofos más lúcidos e inspirados de nuestra época.\" -Mikhail Gorbachev-\n\nMETADATA VERIFICADA:\n- Título: Sincrodestino\n- Autor: Deepak Chopra\n- Año: 2016\n- Categorías: Religión y espiritualidad, Libros, Salud, mente y cuerpo, Superación personal",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Sincrodestino",
+    "autor_completo": "Deepak Chopra",
+    "año": "2016",
+    "editorial": null,
+    "isbn": "1169821163",
+    "categorias": [
+      "Religión y espiritualidad",
+      "Libros",
+      "Salud, mente y cuerpo",
+      "Superación personal"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/sincrodestino/id1169821163?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_3sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T01:19:23.633Z"
+}

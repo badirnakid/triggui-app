@@ -1,0 +1,26 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nUn homenaje a las librerías, a los libros y a todos aquellos que los aman. Una lectura para recrearse y saborear con un buen té japonés. Una de las novelas japonesas traducida a más idiomas en los últimos años. Best seller del Times en Reino Unido y libro favorito de las librerías independientes en Estados Unidos. La epopeya de Rintaro, el joven heredero de una entrañable librería de viejo, y de Tora, un sabio e ingenioso gato atigrado, se ha convertido en un fulgurante éxito internacional. Su emocionante misión consiste nada más y nada menos que en salvar los libros que están en peligro y extender así el amor por estos objetos, bellos e inigualables, que son parte imprescindible de nuestra vida. Del siempre fascinante Japón nos llega esta hermosa historia, cargada de sabiduría, magia y pasión por la lectura, que ya ha conquistado a lectores de todo el mundo. Reseñas: «Una fábula mágica sobre el inmenso poder de la lectura». Corriere di Bologna «Cada vez más gente compra libros online y los lee en un eReader (o escucha audiolibros mientras hace otras tareas), El gato que amaba los libros da a los lectores la oportunidad de ver reflejada su relación con la palabra impresa. Esta conmovedora y original novela nos invita a recordar lo maravilloso que es acurrucarse con un libro y saborear el placer sensorial de pasar las páginas al sumergirse en una buena historia». Japan Times\n\nMETADATA VERIFICADA:\n- Título: El gato que amaba los libros\n- Autor: Sosuke Natsukawa\n- Año: 2022\n- Categorías: Ficción literaria, Libros, Ficción y literatura",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "El gato que amaba los libros",
+    "autor_completo": "Sosuke Natsukawa",
+    "año": "2022",
+    "editorial": null,
+    "isbn": "1600978213",
+    "categorias": [
+      "Ficción literaria",
+      "Libros",
+      "Ficción y literatura"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/el-gato-que-amaba-los-libros/id1600978213?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [],
+  "resolution_path": [
+    "evidence_fetched_2sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T01:30:45.872Z"
+}

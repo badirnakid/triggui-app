@@ -1,0 +1,136 @@
+{
+  "titulo_input": "El método smart brevity",
+  "autor_input": "Jim VandeHei",
+  "isbn_seed": "",
+  "isbn_discovered": "6479582587",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "El método Smart Brevity",
+      "matched_author": "Jim VandeHei, Mike Allen & Roy Schwartz"
+    },
+    "synopsis": "Domina el arte de la brevedad con el método Smart Brevity: comunica con más impacto y en menos palabras para hacerte oír en la era digital. ¡Un bestseller del Wall Street Journal y USA Today! Domina el arte de la brevedad con el método Smart Brevity: comunica con más impacto, en menos palabras, para llegar a tu audiencia, captar su atención y hacerte oír en la era digital. Clic. Clic. Clic. Tienes 3 segundos para captar la atención de tu audiencia. Las viejas formas de comunicar ya no funcionan en el entorno digital. Sin embargo, seguimos soltando miles de palabras en informes, correos electrónicos, presentaciones, publicaciones, reuniones. Palabras que casi nadie lee ni escucha. Es agotador y frustrante, y nos coloca delante de un desafío épico: ¿cómo lograr que alguien preste atención a lo que realmente importa en medio de este ruidoso caos? ¡Simple! Cambia de inmediato la forma en que te comunicas con el método Smart Brevity. Una fórmula para priorizar la información esencial, explicar su impacto y presentarla de forma concisa y visual. Aprende a decir más con menos en prácticamente cualquier formato. Una guía que cambiará la vida de todos aquellos que desean ser escuchados en un mundo inundado de información. La crítica ha dicho… «Si transmitir tu mensaje es esencial, adopta este método eficaz.» Arianna Huffington, fundadora y CEO de Thrive Global «¡Brillante! Esta es una lectura perfecta para cualquiera que quiera comunicarse de manera eficaz. Una guía concreta, increíblemente útil.» Mika Brzezinski, copresentadora de Morning Joe y fundadora de Know Your Value «Ve al grano con El método Smart Brevity, una herramienta esencial para la comunicación eficaz que capacita a todos para hacerse escuchar.» Evan Spiegel, CEO de Snap «Un libro inteligente que brinda formas de comunicarse en un mundo cuya atención es de corta duración.» Andrew Ross Sorkin, DealBook, New York Times «El nuevo libro de los fundadores de Axios propone un método para una comunicación concisa en un mundo cada vez más complejo.» The New Yorker «A lo largo de la historia, los mejores líderes han sido con frecuencia los mejores comunicadores. Jim, Mike y Roy han creado una hoja de ruta destinada a políticos, empresarios y líderes para repensar radicalmente cómo comunicarse de manera clara, concisa y convincente.» Jamie Dimon, presidente y CEO de JPMorgan Chase «Un libro inteligente y conciso que te convertirá en un comunicador más agudo y en un mejor líder. Una lectura esencial para cualquiera que busque afinar su mensaje, aumentar su eficacia y crear una mejor cultura corporativa.» Tory Burch, presidenta ejecutiva y directora creativa de Tory Burch LLC «Los fundadores de Axios han demostrado una vez más ser referentes en cómo podemos escribir, hablar y liderar de manera que resuene y preserve nuestro recurso más preciado: el tiempo.» Lisa Osborne Ross, CEO de Edelman EE. UU.",
+    "synopsis_length": 2895,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/21/4f/46/214f46c8-037d-c4c0-a4cb-27286989c55c/9788418223945.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/21/4f/46/214f46c8-037d-c4c0-a4cb-27286989c55c/9788418223945.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/21/4f/46/214f46c8-037d-c4c0-a4cb-27286989c55c/9788418223945.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/21/4f/46/214f46c8-037d-c4c0-a4cb-27286989c55c/9788418223945.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "El método Smart Brevity",
+      "autor_completo": "Jim VandeHei, Mike Allen & Roy Schwartz",
+      "año": "2024",
+      "editorial": null,
+      "isbn": "6479582587",
+      "categorias": [
+        "Artes y disciplinas lingüísticas",
+        "Libros",
+        "Técnicos y profesionales",
+        "Educación",
+        "Salud, mente y cuerpo",
+        "Superación personal",
+        "Negocios y finanzas personales",
+        "Administración y liderazgo",
+        "Referencia",
+        "Palabras y lenguaje",
+        "Mercadotecnia y ventas",
+        "Referencias: escritura",
+        "Arte y espectáculo",
+        "Artes escénicas",
+        "Recursos de estudio"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/el-m%C3%A9todo-smart-brevity/id6479582587?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": false,
+    "reason": "no_results",
+    "source": "openlibrary"
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/6479582587.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "6479582587",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/21/4f/46/214f46c8-037d-c4c0-a4cb-27286989c55c/9788418223945.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/21/4f/46/214f46c8-037d-c4c0-a4cb-27286989c55c/9788418223945.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/21/4f/46/214f46c8-037d-c4c0-a4cb-27286989c55c/9788418223945.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/21/4f/46/214f46c8-037d-c4c0-a4cb-27286989c55c/9788418223945.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/6479582587.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match",
+    "openlibrary:no_results"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 15734,
+    "phase2_isbn_chain_ms": 23800,
+    "cover_validation_ms": 478,
+    "total_ms": 40012
+  },
+  "_cached_at": "2026-04-21T01:23:59.105Z"
+}

@@ -1,0 +1,27 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\n\"Si amas algo, déjalo ir...\". No tengo nada en contra de esa frase, pero pienso que deberíamos empezar por dejar ir lo que no amamos. Si lo único que queremos es ser felices, ¿por qué nos complicamos tanto? ¿Por qué estamos tan ocupados? ¿Por qué tenemos tanta prisa? ¿A dónde vamos? ¿Qué estamos persiguiendo? ¿Qué pasaría si hiciéramos un cambio? ¿Qué pasaría si en lugar de ir en busca de más, nos dedicáramos a disfrutar la riqueza de vivir con menos? ¿Qué pasaría si nos enfocáramos en lo que realmente vale la pena y dejáramos de acumular, consumir y perseguir cosas que no tienen sentido? Tal vez todo sería más simple. Es tiempo de eliminar problemas innecesarios y dedicarnos a vivir con felicidad, a ser mejores personas y a contribuir al bienestar de los demás. Es tiempo de dejar de preocuparnos tanto por tener y empezar a ocuparnos en ser. Es tiempo de una vida minimal. lavidaminimal.com\n\nMETADATA VERIFICADA:\n- Título: La vida minimal\n- Autor: Pedro Campos\n- Año: 2018\n- Categorías: Espiritualidad, Libros, Salud, mente y cuerpo, Superación personal",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "La vida minimal",
+    "autor_completo": "Pedro Campos",
+    "año": "2018",
+    "editorial": null,
+    "isbn": "1396714156",
+    "categorias": [
+      "Espiritualidad",
+      "Libros",
+      "Salud, mente y cuerpo",
+      "Superación personal"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/la-vida-minimal/id1396714156?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [],
+  "resolution_path": [
+    "evidence_fetched_2sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T01:28:30.064Z"
+}

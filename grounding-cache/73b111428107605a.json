@@ -1,0 +1,27 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nQuina és la clau per tenir una bona vida? Un estudi que ha durat 84 anys ens ho explica. Quina és la clau per tenir una bona vida? Un estudi que ha durat 84 anys ens ho explica. Què ens fa feliços? Quina és la clau per tenir una bona vida? Fa més de vuitanta anys, a Harvard, es va posar en marxa l'estudi més gran que s'ha fet mai sobre la felicitat. L'objectiu de la recerca era descobrir quins són els factors que fan que una vida sigui feliç i plena, i per fer-ho van iniciar entrevistes sistemàtiques a més de set-centes persones i les seves famílies. Durant tots aquests anys s'han observat les vides d'aquests individus en tots els seus aspectes, des de l'adolescència fins a la vellesa, seguint els seus èxits i fracassos professionals, el nivell econòmic, les relacions de parella, el naixement dels fills i la mort dels éssers estimats. Què és el que els ha fet feliços en cada moment de la vida i com ha anat impactant aquesta felicitat en la seva salut i longevitat? Aquest és un llibre rigorós i sorprenent, que a través d'inspiradores històries personals i amb consells pràctics molt útils, ens demostra que la felicitat no és sinònim d'èxits financers i que aconseguir tenir una vida plena i llarga està més a les nostres mans del que ens pensem. L'estudi més gran del món per respondre a la pregunta més important de totes: Què ens fa feliços? «Una bona vida ens ensenya de manera científica i pràctica com definir, construir i, sobretot, viure una vida feliç». Jay Shetty «Un llibre que sens dubte influirà en la vida de milions de persones». Tal Ben-Shahar «En un mercat saturat de llibres amb consells per a una vida plena, aquest destaca per sobre de tots els altres». Angela Duckworth\n\nMETADATA VERIFICADA:\n- Título: Una bona vida\n- Autor: Robert Waldinger & Marc Schulz\n- Año: 2023\n- Categorías: Superación personal, Libros, Salud, mente y cuerpo, Referencia",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.8823076923076925,
+  "verified_identity": {
+    "titulo_real": "Una bona vida",
+    "autor_completo": "Robert Waldinger & Marc Schulz",
+    "año": "2023",
+    "editorial": null,
+    "isbn": "6445710030",
+    "categorias": [
+      "Superación personal",
+      "Libros",
+      "Salud, mente y cuerpo",
+      "Referencia"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/una-bona-vida/id6445710030?uo=4"
+  },
+  "match_score": 0.8307692307692308,
+  "other_sources_agreed": [],
+  "resolution_path": [
+    "evidence_fetched_2sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T01:31:52.306Z"
+}

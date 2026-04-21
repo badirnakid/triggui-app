@@ -1,0 +1,28 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nLaw of Success by Napoleon Hill This is the complete Book of Napoleon Hills Law of Success. This book helped millions of People in the Past, I am sure, you are reading this book will be benefited. Create an Extraordinary world and culture in you, your community, your family and workplace. Thanks for downloading this book.\n\nMETADATA VERIFICADA:\n- Título: The Law of Success\n- Autor: Napoleon Hill\n- Año: 2012\n- Categorías: Espiritualidad, Libros, Salud, mente y cuerpo",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.9011111111111112,
+  "verified_identity": {
+    "titulo_real": "The Law of Success",
+    "autor_completo": "Napoleon Hill",
+    "año": "2012",
+    "editorial": null,
+    "isbn": "579191855",
+    "categorias": [
+      "Espiritualidad",
+      "Libros",
+      "Salud, mente y cuerpo"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/the-law-of-success/id579191855?uo=4"
+  },
+  "match_score": 0.8777777777777778,
+  "other_sources_agreed": [
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_3sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-21T01:17:01.003Z"
+}

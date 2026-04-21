@@ -1,0 +1,124 @@
+{
+  "titulo_input": "En pocas palabras",
+  "autor_input": "Ben Guttmann",
+  "isbn_seed": "",
+  "isbn_discovered": "6661017211",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "En pocas palabras",
+      "matched_author": "Ben Guttmann"
+    },
+    "synopsis": "¿Por qué algunos mensajes funcionan y otros no? ¿Por qué algunas ideas se abren paso y otras no prosperan? ¿Por qué algunas frases se nos quedan en la memoria y otras las olvidamos por completo? ¿Por qué, mientras algunos líderes inspiran el cambio, otros pasan desapercibidos? La respuesta es simple. Literalmente. Todos los comunicadores más eficaces del mundo estructuran sus mensajes de la misma manera: los diseñan buscando la simplicidad. El problema es que lo simple es un trabajo duro. Nuestros cerebros están programados para complicarse y nuestro mundo incentiva siempre a dar más, más y más. Es una paradoja: se necesita un esfuerzo deliberado e intencional para comunicarse de manera simple. En este libro, el galardonado empresario de marketing Ben Guttmann presenta un marco de cinco partes que permite a cualquiera comunicarse con claridad. Podrás diseñar mensajes que sean mínimos pero poderosos, bien enfocados, empáticos, memorables, accionables y funcionales.",
+    "synopsis_length": 978,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/9e/e5/10/9ee5108e-27f8-b9a3-c350-56662b551ebb/9786073849791.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/9e/e5/10/9ee5108e-27f8-b9a3-c350-56662b551ebb/9786073849791.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/9e/e5/10/9ee5108e-27f8-b9a3-c350-56662b551ebb/9786073849791.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/9e/e5/10/9ee5108e-27f8-b9a3-c350-56662b551ebb/9786073849791.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "En pocas palabras",
+      "autor_completo": "Ben Guttmann",
+      "año": "2024",
+      "editorial": null,
+      "isbn": "6661017211",
+      "categorias": [
+        "Negocios y finanzas personales",
+        "Libros",
+        "Mercadotecnia y ventas"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/en-pocas-palabras/id6661017211?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": false,
+    "reason": "no_results",
+    "source": "openlibrary"
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/6661017211.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "6661017211",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/9e/e5/10/9ee5108e-27f8-b9a3-c350-56662b551ebb/9786073849791.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/9e/e5/10/9ee5108e-27f8-b9a3-c350-56662b551ebb/9786073849791.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/9e/e5/10/9ee5108e-27f8-b9a3-c350-56662b551ebb/9786073849791.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/9e/e5/10/9ee5108e-27f8-b9a3-c350-56662b551ebb/9786073849791.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/6661017211.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match",
+    "openlibrary:no_results"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 15806,
+    "phase2_isbn_chain_ms": 23792,
+    "cover_validation_ms": 900,
+    "total_ms": 40498
+  },
+  "_cached_at": "2026-04-21T01:22:50.736Z"
+}

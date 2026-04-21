@@ -1,0 +1,141 @@
+{
+  "titulo_input": "Una Vida Sin Limites",
+  "autor_input": "Alejandra Llamas",
+  "isbn_seed": "",
+  "isbn_discovered": "1478033616",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Una vida sin límites",
+      "matched_author": "Alejandra Llamas"
+    },
+    "synopsis": "A diez años de haber sido publicado por primera vez, Una vida sin límites se reedita para que los lectores de Alejandra Llamas, los seguidores del Tao Te Ching y los interesados en tener una vida plena encuentren las herramientas clave para eliminar los miedos y los obstáculos que les impiden vivir en equilibrio emocional. El libro incluye declaraciones diarias y una app en la que podrán descargar información extra para enriquecer su experiencia. En este libro, Alejandra Llamas realiza un profundo análisis sobre la conexión que debe tener todo ser humano con su mundo interno para lograr alejarse del miedo y acercarse a la unión y al amor. A través de 45 versos fundamentales del Tao Te Ching, texto ancestral clásico chino atribuido al filósofo Lao Tsé, Una vida sin límites se constituye como una herramienta para entender y ver de manera positiva nuestro entorno y lograr nuestra paz interior. Este inigualable libro nos invita a dejarnos llevar por el camino del Tao para reflexionar y alcanzar la serenidad.",
+    "synopsis_length": 1019,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/1b/9d/7e/1b9d7e5b-0463-be8e-a4d9-717136794757/9786073185349.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/1b/9d/7e/1b9d7e5b-0463-be8e-a4d9-717136794757/9786073185349.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/1b/9d/7e/1b9d7e5b-0463-be8e-a4d9-717136794757/9786073185349.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/1b/9d/7e/1b9d7e5b-0463-be8e-a4d9-717136794757/9786073185349.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Una vida sin límites",
+      "autor_completo": "Alejandra Llamas",
+      "año": "2019",
+      "editorial": null,
+      "isbn": "1478033616",
+      "categorias": [
+        "Superación personal",
+        "Libros",
+        "Salud, mente y cuerpo"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/una-vida-sin-l%C3%ADmites/id1478033616?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Una vida sin límites",
+      "matched_author": "Alejandra Llamas"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2009.",
+    "synopsis_length": 65,
+    "covers": [],
+    "verified_identity": {
+      "titulo_real": "Una vida sin límites",
+      "autor_completo": "Alejandra Llamas",
+      "año": "2009",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": "spa",
+      "paginas": null
+    }
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/1478033616.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "1478033616",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/1b/9d/7e/1b9d7e5b-0463-be8e-a4d9-717136794757/9786073185349.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/1b/9d/7e/1b9d7e5b-0463-be8e-a4d9-717136794757/9786073185349.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/1b/9d/7e/1b9d7e5b-0463-be8e-a4d9-717136794757/9786073185349.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/1b/9d/7e/1b9d7e5b-0463-be8e-a4d9-717136794757/9786073185349.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/1478033616.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "openlibrary",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 15757,
+    "phase2_isbn_chain_ms": 24055,
+    "cover_validation_ms": 613,
+    "total_ms": 40425
+  },
+  "_cached_at": "2026-04-21T01:37:08.908Z"
+}
