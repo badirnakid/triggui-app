@@ -1,52 +1,52 @@
 {
   "libros": [
     {
-      "titulo": "Deep Work: Rules for Focused Success in a Distracted World",
-      "autor": "Cal Newport",
-      "tagline": "Un manual para lograr un trabajo profundo en tiempos de distracción.",
-      "portada": "https://images-na.ssl-images-amazon.com/images/P/991831052.01.LZZZZZZZ.jpg",
-      "portada_url": "https://images-na.ssl-images-amazon.com/images/P/991831052.01.LZZZZZZZ.jpg",
-      "isbn": "991831052",
-      "titulo_es": "Deep Work: Rules for Focused Success in a Distracted World",
-      "titulo_en": "Deep Work: Rules for Focused Success in a Distracted World",
+      "titulo": "Indistractable",
+      "autor": "Nir Eyal",
+      "tagline": "Conviértete en indistractable y controla tu vida.",
+      "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication114/v4/6c/48/59/6c4859d2-ffea-7399-7b6c-ff33e06eb6ce/1030309858.jpg/3000x3000bb.jpg",
+      "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication114/v4/6c/48/59/6c4859d2-ffea-7399-7b6c-ff33e06eb6ce/1030309858.jpg/3000x3000bb.jpg",
+      "isbn": "1487454977",
+      "titulo_es": "Indistractable",
+      "titulo_en": "Indistractable",
       "idioma_original": "en",
       "dimension": "Bienestar",
       "punto": "Activo",
       "palabras": [
-        "intensidad",
-        "claridad",
-        "determinado",
-        "tranquilidad"
+        "determinación",
+        "enfoque",
+        "libertad",
+        "control"
       ],
       "palabras_en": [
-        "intense",
-        "luxury",
-        "flourish",
-        "disconnect"
+        "empowerment",
+        "focus",
+        "clarity",
+        "control"
       ],
       "frases": [
-        "🏛 Encuentra un lugar aislado y dedicado solo a tu trabajo profundo.",
-        "🕰 ¿Cuándo fue la última vez que te sumergiste plenamente en una tarea?",
-        "🌅 Imagina tu escritorio limpio, sin distracciones, listo para la creación.",
-        "🚶 El enfoque es un músculo: cuanto más lo ejercitas, más fuerte se vuelve."
+        "⏳ Dedica un momento a identificar tus distracciones más frecuentes.",
+        "🗺 ¿Qué espacio puedes crear para facilitar tu concentración?",
+        "🌅 Visualiza tu jornada ideal, libre de interrupciones innecesarias.",
+        "🚶 Menos movimiento en distracciones, más avance hacia tus metas."
       ],
       "frases_en": [
-        "🏛 Create a quiet space for your thoughts to roam freely.",
-        "🕰 Have you carved out time for focused work today?",
-        "💡 Imagine a bright room, devoid of noise, where ideas can shine.",
-        "🌬 Inhale intention, exhale distractions — breathe in focus."
+        "⏳ Commit to a focused hour each day for your most important tasks.",
+        "🗺 What happens when you eliminate your distractions?",
+        "💡 Picture a life illuminated by undivided attention and purpose.",
+        "🚶 Discipline is the bridge between goals and accomplishment."
       ],
       "frases_og": [
-        "🔍 El trabajo profundo transforma la manera en que creamos.",
-        "💠 Desconéctate del ruido y descubre tu verdadero potencial.",
-        "✨ ¿Qué distracciones has permitido que dominen tu día?",
-        "⚓ Enfoque y disciplina: claves para una productividad real."
+        "✨ La distracción es un enemigo que se alimenta de nuestra falta de autog",
+        "⚓ Controla tu atención y transforma tu vida diaria.",
+        "🔁 ¿Qué hábitos positivos necesitas cultivar para ser indistractable?",
+        "🛡 Productividad real se forja en la disciplina de la atención."
       ],
       "frases_og_en": [
-        "🔍 Concentration is a rare gift in today's distracted world.",
-        "💠 Embrace disconnection. Cultivate your focus and creativity.",
-        "✨ How often do you let distractions steal your time?",
-        "⚓ Deep work demands solitude; distractions dilute your effort."
+        "✨ Attention is a resource worth protecting.",
+        "⚓ Identify your distractions and conquer them.",
+        "🔁 What holds your focus can shape your future.",
+        "🛡 Master your habits, master your time."
       ],
       "colores": [
         "#90DFD2",
@@ -62,10 +62,10 @@
       ],
       "fondo": "#CFD2D3",
       "tarjeta": {
-        "titulo": "Cultiva tu enfoque en un mundo distraído",
-        "parrafoTop": "[H]La concentración se ha convertido en un lujo en un mundo repleto de distracciones.[/H] Para alcanzar un estado de productividad genuina, es esencial desarrollar estrategias que permitan el trabajo profundo, donde la mente se sumerge y florece.",
-        "subtitulo": "¿Cómo puedes encontrar tu espacio de desconexión?",
-        "parrafoBot": "[H]La desconexión no solo es un descanso, es una herramienta fundamental[/H] para la efectividad personal. Al eliminar las distracciones, se abre la puerta a un enfoque intenso, donde las ideas pueden surgir y desarrollarse sin interrupciones.",
+        "titulo": "Estrategias para ser indistractable",
+        "parrafoTop": "[H]La verdadera batalla no es contra las distracciones externas[/H], sino contra las internas que nos alejan de nuestros objetivos. La clave está en entender que la atención es un recurso valioso que se puede gestionar y proteger.",
+        "subtitulo": "¿Cómo puedes tomar el control de tu atención?",
+        "parrafoBot": "Identificar lo que te interrumpe es el primer paso hacia la mejora de la productividad personal. [H]Con estrategias adecuadas, cada uno puede convertirse en indistractable y alcanzar[/H] una gestión del tiempo eficaz.",
         "style": {
           "accent": "#1F99D6",
           "paper": "#CFD2D3",
@@ -74,10 +74,10 @@
         }
       },
       "tarjeta_base": {
-        "titulo": "Cultiva tu enfoque en un mundo distraído",
-        "parrafoTop": "[H]La concentración se ha convertido en un lujo en un mundo repleto de distracciones.[/H] Para alcanzar un estado de productividad genuina, es esencial desarrollar estrategias que permitan el trabajo profundo, donde la mente se sumerge y florece.",
-        "subtitulo": "¿Cómo puedes encontrar tu espacio de desconexión?",
-        "parrafoBot": "[H]La desconexión no solo es un descanso, es una herramienta fundamental[/H] para la efectividad personal. Al eliminar las distracciones, se abre la puerta a un enfoque intenso, donde las ideas pueden surgir y desarrollarse sin interrupciones.",
+        "titulo": "Estrategias para ser indistractable",
+        "parrafoTop": "[H]La verdadera batalla no es contra las distracciones externas[/H], sino contra las internas que nos alejan de nuestros objetivos. La clave está en entender que la atención es un recurso valioso que se puede gestionar y proteger.",
+        "subtitulo": "¿Cómo puedes tomar el control de tu atención?",
+        "parrafoBot": "Identificar lo que te interrumpe es el primer paso hacia la mejora de la productividad personal. [H]Con estrategias adecuadas, cada uno puede convertirse en indistractable y alcanzar[/H] una gestión del tiempo eficaz.",
         "style": {
           "accent": "#1F99D6",
           "paper": "#CFD2D3",
@@ -86,10 +86,10 @@
         }
       },
       "tarjeta_presentacion": {
-        "titulo": "Cultiva tu enfoque en un mundo distraído",
-        "parrafoTop": "[H]La concentración se ha convertido en un lujo en un mundo repleto de distracciones.[/H] Para alcanzar un estado de productividad genuina, es esencial desarrollar estrategias que permitan el trabajo profundo, donde la mente se sumerge y florece.",
-        "subtitulo": "¿Cómo puedes encontrar tu espacio de desconexión?",
-        "parrafoBot": "[H]La desconexión no solo es un descanso, es una herramienta fundamental[/H] para la efectividad personal. Al eliminar las distracciones, se abre la puerta a un enfoque intenso, donde las ideas pueden surgir y desarrollarse sin interrupciones.",
+        "titulo": "Estrategias para ser indistractable",
+        "parrafoTop": "[H]La verdadera batalla no es contra las distracciones externas[/H], sino contra las internas que nos alejan de nuestros objetivos. La clave está en entender que la atención es un recurso valioso que se puede gestionar y proteger.",
+        "subtitulo": "¿Cómo puedes tomar el control de tu atención?",
+        "parrafoBot": "Identificar lo que te interrumpe es el primer paso hacia la mejora de la productividad personal. [H]Con estrategias adecuadas, cada uno puede convertirse en indistractable y alcanzar[/H] una gestión del tiempo eficaz.",
         "style": {
           "accent": "#1F99D6",
           "paper": "#CFD2D3",
@@ -98,10 +98,10 @@
         }
       },
       "tarjeta_en": {
-        "titulo": "Cultivate Your Focus in a Distracted World",
-        "parrafoTop": "[H]Concentration has become a luxury in a world filled with distractions.[/H] To achieve a state of genuine productivity, it is essential to develop strategies that enable deep work, where the mind immerses and flourishes.",
-        "subtitulo": "How can you find your space for disconnection?",
-        "parrafoBot": "[H]Disconnection is not just a break; it is a fundamental tool for personal effectiveness.[/H] By eliminating distractions, the door opens to intense focus, where ideas can arise and develop without interruptions.",
+        "titulo": "Strategies to Become Indistractable",
+        "parrafoTop": "The real battle lies not against external distractions, but against the internal ones pulling you away from your goals. [H]Understanding that attention is a valuable resource to be managed and protected is key.[/H]",
+        "subtitulo": "How can you take control of your attention?",
+        "parrafoBot": "Identifying what interrupts you is the first step toward improving personal productivity. [H]With the right strategies, anyone can become indistractable and achieve effective time management.[/H]",
         "style": {
           "accent": "#1F99D6",
           "paper": "#CFD2D3",
@@ -110,10 +110,10 @@
         }
       },
       "tarjeta_base_en": {
-        "titulo": "Cultivate Your Focus in a Distracted World",
-        "parrafoTop": "[H]Concentration has become a luxury in a world filled with distractions.[/H] To achieve a state of genuine productivity, it is essential to develop strategies that enable deep work, where the mind immerses and flourishes.",
-        "subtitulo": "How can you find your space for disconnection?",
-        "parrafoBot": "[H]Disconnection is not just a break; it is a fundamental tool for personal effectiveness.[/H] By eliminating distractions, the door opens to intense focus, where ideas can arise and develop without interruptions.",
+        "titulo": "Strategies to Become Indistractable",
+        "parrafoTop": "The real battle lies not against external distractions, but against the internal ones pulling you away from your goals. [H]Understanding that attention is a valuable resource to be managed and protected is key.[/H]",
+        "subtitulo": "How can you take control of your attention?",
+        "parrafoBot": "Identifying what interrupts you is the first step toward improving personal productivity. [H]With the right strategies, anyone can become indistractable and achieve effective time management.[/H]",
         "style": {
           "accent": "#1F99D6",
           "paper": "#CFD2D3",
@@ -122,10 +122,10 @@
         }
       },
       "tarjeta_presentacion_en": {
-        "titulo": "Cultivate Your Focus in a Distracted World",
-        "parrafoTop": "[H]Concentration has become a luxury in a world filled with distractions.[/H] To achieve a state of genuine productivity, it is essential to develop strategies that enable deep work, where the mind immerses and flourishes.",
-        "subtitulo": "How can you find your space for disconnection?",
-        "parrafoBot": "[H]Disconnection is not just a break; it is a fundamental tool for personal effectiveness.[/H] By eliminating distractions, the door opens to intense focus, where ideas can arise and develop without interruptions.",
+        "titulo": "Strategies to Become Indistractable",
+        "parrafoTop": "The real battle lies not against external distractions, but against the internal ones pulling you away from your goals. [H]Understanding that attention is a valuable resource to be managed and protected is key.[/H]",
+        "subtitulo": "How can you take control of your attention?",
+        "parrafoBot": "Identifying what interrupts you is the first step toward improving personal productivity. [H]With the right strategies, anyone can become indistractable and achieve effective time management.[/H]",
         "style": {
           "accent": "#1F99D6",
           "paper": "#CFD2D3",
@@ -133,33 +133,35 @@
           "border": "#7C7E7F"
         }
       },
-      "videoUrl": "https://duckduckgo.com/?q=!ducky+site:youtube.com+Deep%20Work%3A%20Rules%20for%20Focused%20Success%20in%20a%20Distracted%20World%20Cal%20Newport%20entrevista%20espa%C3%B1ol",
-      "videoUrl_en": "https://duckduckgo.com/?q=!ducky+site:youtube.com+Deep%20Work%3A%20Rules%20for%20Focused%20Success%20in%20a%20Distracted%20World%20Cal%20Newport%20interview",
+      "videoUrl": "https://duckduckgo.com/?q=!ducky+site:youtube.com+Indistractable%20Nir%20Eyal%20entrevista%20espa%C3%B1ol",
+      "videoUrl_en": "https://duckduckgo.com/?q=!ducky+site:youtube.com+Indistractable%20Nir%20Eyal%20interview",
       "_nucleus": {
         "book_identity": {
-          "titulo_es": "Deep Work: Rules for Focused Success in a Distracted World",
-          "titulo_en": "Deep Work: Rules for Focused Success in a Distracted World",
-          "autor_completo": "Cal Newport",
+          "titulo_es": "Indistractable",
+          "titulo_en": "Indistractable",
+          "autor_completo": "Nir Eyal",
           "idioma_original": "en"
         },
         "book_grounding_anchors": {
           "concepts": [
-            "la importancia de la concentración en un mundo distraído",
-            "estrategias para cultivar el trabajo profundo",
-            "la desconexión como herramienta para la productividad"
+            "estrategias para evitar distracciones",
+            "mejora de la productividad personal",
+            "gestión del tiempo eficaz",
+            "control de la atención",
+            "formación de hábitos positivos"
           ],
           "key_terms": [
-            "trabajo profundo",
-            "distracciones",
+            "indistractable",
+            "distracción",
             "productividad",
-            "enfoque",
-            "efectividad personal"
+            "gestión del tiempo",
+            "hábitos"
           ],
-          "authorial_voice_notes": "Práctica y motivacional, con un enfoque en estrategias y consejos para mejorar la efectividad personal."
+          "authorial_voice_notes": "La voz del autor es directa y motivadora, con un enfoque práctico y accesible para el lector."
         },
         "lens_analysis": {
           "lens_provided": false,
-          "analysis": "El libro no se centra en una lente curatorial específica, sino que ofrece herramientas prácticas para mejorar la concentración y la productividad.",
+          "analysis": "La lente del curador no aplica ya que el libro se centra en la gestión del tiempo y la atención, sin un enfoque específico que requiera una interpretación adicional.",
           "decision": "dont_apply_book_is_about_something_else"
         },
         "visual_intent": {
@@ -180,93 +182,93 @@
           "franja_ideal": "manana"
         },
         "card_es": {
-          "titulo": "Cultiva tu enfoque en un mundo distraído",
-          "parrafoTop": "La concentración se ha convertido en un lujo en un mundo repleto de distracciones. Para alcanzar un estado de productividad genuina, es esencial desarrollar estrategias que permitan el trabajo profundo, donde la mente se sumerge y florece.",
-          "subtitulo": "¿Cómo puedes encontrar tu espacio de desconexión?",
-          "parrafoBot": "La desconexión no solo es un descanso, es una herramienta fundamental para la efectividad personal. Al eliminar las distracciones, se abre la puerta a un enfoque intenso, donde las ideas pueden surgir y desarrollarse sin interrupciones."
+          "titulo": "Estrategias para ser indistractable",
+          "parrafoTop": "La verdadera batalla no es contra las distracciones externas, sino contra las internas que nos alejan de nuestros objetivos. La clave está en entender que la atención es un recurso valioso que se puede gestionar y proteger.",
+          "subtitulo": "¿Cómo puedes tomar el control de tu atención?",
+          "parrafoBot": "Identificar lo que te interrumpe es el primer paso hacia la mejora de la productividad personal. Con estrategias adecuadas, cada uno puede convertirse en indistractable y alcanzar una gestión del tiempo eficaz."
         },
         "card_en": {
-          "titulo": "Cultivate Your Focus in a Distracted World",
-          "parrafoTop": "Concentration has become a luxury in a world filled with distractions. To achieve a state of genuine productivity, it is essential to develop strategies that enable deep work, where the mind immerses and flourishes.",
-          "subtitulo": "How can you find your space for disconnection?",
-          "parrafoBot": "Disconnection is not just a break; it is a fundamental tool for personal effectiveness. By eliminating distractions, the door opens to intense focus, where ideas can arise and develop without interruptions."
+          "titulo": "Strategies to Become Indistractable",
+          "parrafoTop": "The real battle lies not against external distractions, but against the internal ones pulling you away from your goals. Understanding that attention is a valuable resource to be managed and protected is key.",
+          "subtitulo": "How can you take control of your attention?",
+          "parrafoBot": "Identifying what interrupts you is the first step toward improving personal productivity. With the right strategies, anyone can become indistractable and achieve effective time management."
         },
         "emotional_words_es": [
-          "intensidad",
-          "claridad",
-          "determinado",
-          "tranquilidad"
+          "determinación",
+          "enfoque",
+          "libertad",
+          "control"
         ],
         "emotional_words_en": [
-          "intense",
-          "luxury",
-          "flourish",
-          "disconnect"
+          "empowerment",
+          "focus",
+          "clarity",
+          "control"
         ],
         "og_phrases_es": [
-          "🔍 El trabajo profundo transforma la manera en que creamos.",
-          "💠 Desconéctate del ruido y descubre tu verdadero potencial.",
-          "✨ ¿Qué distracciones has permitido que dominen tu día?",
-          "⚓ Enfoque y disciplina: claves para una productividad real."
+          "✨ La distracción es un enemigo que se alimenta de nuestra falta de autog",
+          "⚓ Controla tu atención y transforma tu vida diaria.",
+          "🔁 ¿Qué hábitos positivos necesitas cultivar para ser indistractable?",
+          "🛡 Productividad real se forja en la disciplina de la atención."
         ],
         "og_phrases_en": [
-          "🔍 Concentration is a rare gift in today's distracted world.",
-          "💠 Embrace disconnection. Cultivate your focus and creativity.",
-          "✨ How often do you let distractions steal your time?",
-          "⚓ Deep work demands solitude; distractions dilute your effort."
+          "✨ Attention is a resource worth protecting.",
+          "⚓ Identify your distractions and conquer them.",
+          "🔁 What holds your focus can shape your future.",
+          "🛡 Master your habits, master your time."
         ],
         "edition_blocks_es": [
           {
             "gesture_type": "instruccion_sensorial",
-            "sensory_anchor": "espacio",
-            "phrase": "🏛 Encuentra un lugar aislado y dedicado solo a tu trabajo profundo."
+            "sensory_anchor": "tiempo",
+            "phrase": "⏳ Dedica un momento a identificar tus distracciones más frecuentes."
           },
           {
             "gesture_type": "pregunta_directa",
-            "sensory_anchor": "tiempo",
-            "phrase": "🕰 ¿Cuándo fue la última vez que te sumergiste plenamente en una tarea?"
+            "sensory_anchor": "espacio",
+            "phrase": "🗺 ¿Qué espacio puedes crear para facilitar tu concentración?"
           },
           {
             "gesture_type": "imagen_concreta",
             "sensory_anchor": "vista",
-            "phrase": "🌅 Imagina tu escritorio limpio, sin distracciones, listo para la creación."
+            "phrase": "🌅 Visualiza tu jornada ideal, libre de interrupciones innecesarias."
           },
           {
             "gesture_type": "aforismo_autorial",
             "sensory_anchor": "movimiento",
-            "phrase": "🚶 El enfoque es un músculo: cuanto más lo ejercitas, más fuerte se vuelve."
+            "phrase": "🚶 Menos movimiento en distracciones, más avance hacia tus metas."
           }
         ],
         "edition_blocks_en": [
           {
             "gesture_type": "sensory_instruction",
-            "sensory_anchor": "space",
-            "phrase": "🏛 Create a quiet space for your thoughts to roam freely."
+            "sensory_anchor": "time",
+            "phrase": "⏳ Commit to a focused hour each day for your most important tasks."
           },
           {
             "gesture_type": "direct_question",
-            "sensory_anchor": "time",
-            "phrase": "🕰 Have you carved out time for focused work today?"
+            "sensory_anchor": "space",
+            "phrase": "🗺 What happens when you eliminate your distractions?"
           },
           {
             "gesture_type": "concrete_image",
             "sensory_anchor": "light",
-            "phrase": "💡 Imagine a bright room, devoid of noise, where ideas can shine."
+            "phrase": "💡 Picture a life illuminated by undivided attention and purpose."
           },
           {
             "gesture_type": "authorial_aphorism",
-            "sensory_anchor": "breath",
-            "phrase": "🌬 Inhale intention, exhale distractions — breathe in focus."
+            "sensory_anchor": "movement",
+            "phrase": "🚶 Discipline is the bridge between goals and accomplishment."
           }
         ],
         "confidence": {
-          "book_grounding": 0.64,
+          "book_grounding": 0.44,
           "voice_authenticity": 0.93,
           "specificity": 0.95,
           "grounding_judge": 0.95,
-          "combined": 0.85,
+          "combined": 0.79,
           "signals": {
-            "bookIdentityConfidence": 0.6375,
+            "bookIdentityConfidence": 0.44000000000000006,
             "voiceSignal": 0.9249999999999999,
             "specificitySignal": 0.95,
             "judgeScore": 0.95
@@ -276,41 +278,31 @@
       "_grounding": {
         "source": "model_inference",
         "tier_reached": 3,
-        "book_identity_confidence": 0.6375,
+        "book_identity_confidence": 0.44000000000000006,
         "resolution_path": [
           "evidence_fetched_0sources",
-          "tier3_conf_0.85"
+          "tier3_conf_0.80"
         ],
         "verified_identity": {
-          "titulo_real": "Deep Work: Rules for Focused Success in a Distracted World",
-          "autor_completo": "Cal Newport",
+          "titulo_real": "Indistractable",
+          "autor_completo": "Nir Eyal",
           "año": null
         },
         "similar_books": [
           {
-            "titulo": "La magia del orden",
-            "autor": "Marie Kondo",
-            "razon": "Ambos libros abordan la idea de mejorar la productividad y la concentración a través de la organización y el enfoque."
+            "titulo": "Deep Work",
+            "autor": "Cal Newport",
+            "razon": "Aborda la importancia de la concentración en un mundo lleno de distracciones."
           },
           {
-            "titulo": "En defensa de la comida",
-            "autor": "Michael Pollan",
-            "razon": "Aunque se centra en la alimentación, también trata sobre la atención y la calidad de las elecciones en un mundo lleno de distracciones."
+            "titulo": "Atomic Habits",
+            "autor": "James Clear",
+            "razon": "Explora cómo formar buenos hábitos y romper los malos, relacionado con el control personal."
           },
           {
-            "titulo": "Los 7 hábitos de la gente altamente efectiva",
-            "autor": "Stephen R. Covey",
-            "razon": "Este libro también se enfoca en la efectividad personal y profesional, promoviendo la concentración y el enfoque."
-          },
-          {
-            "titulo": "Mindset: La actitud del éxito",
-            "autor": "Carol S. Dweck",
-            "razon": "Explora cómo la mentalidad puede influir en el éxito, lo que puede relacionarse con la capacidad de concentrarse en el trabajo profundo."
-          },
-          {
-            "titulo": "El poder del ahora",
-            "autor": "Eckhart Tolle",
-            "razon": "Aunque es más espiritual, también trata sobre la atención plena y la concentración en el presente, lo que puede ser relevante para el trabajo profundo."
+            "titulo": "The Power of Habit",
+            "autor": "Charles Duhigg",
+            "razon": "Analiza cómo los hábitos influyen en nuestras vidas y cómo podemos cambiarlos."
           }
         ],
         "from_cache": false
@@ -320,13 +312,13 @@
           "grounded_score": 1,
           "uses_book_specific_concepts": true,
           "could_apply_to_any_book": false,
-          "reason": "The generated content directly addresses the themes of productivity and concentration in a distracted world, using specific concepts like 'trabajo profundo' and 'desconexión' which align closely with the inferred themes of the book. The phrases and advice provided are tailored to the context of improving personal effectiveness, making it highly relevant and specific."
+          "reason": "El contenido generado se centra en la gestión de la atención y la productividad personal, conceptos que están claramente alineados con el ground truth del libro. Las frases como 'la atención es un recurso valioso' y 'convertirse en indistractable' reflejan directamente el enfoque del libro sobre cómo manejar distracciones y mejorar la productividad. Además, las estrategias propuestas son prácticas"
         },
         "en": {
           "grounded_score": 0.9,
           "uses_book_specific_concepts": true,
           "could_apply_to_any_book": false,
-          "reason": "The content is highly relevant to the inferred theme of productivity and concentration in a distracted world. It uses specific concepts like 'deep work' and 'disconnection' which align closely with the ground truth. The focus on strategies for enhancing personal effectiveness and the emphasis on eliminating distractions directly reflect the book's core message, making it less generic and more book"
+          "reason": "The content is highly specific to the themes of time management and attention management, which align closely with the inferred ground truth of the book. Phrases like 'Attention is a resource worth protecting' and 'Identify your distractions and conquer them' directly reflect the book's focus on strategies to avoid distractions and improve productivity. The motivational tone and practical advice,,"
         }
       },
       "_voice_verdict": {
@@ -335,12 +327,12 @@
         "es": {
           "verdict": "pagina",
           "confidence": 0.9,
-          "reason": "Voz directa y consejos prácticos sin referencias externas.",
-          "elapsed_ms": 1180,
+          "reason": "Uso de voz directa y enfoque en estrategias personales.",
+          "elapsed_ms": 825,
           "usage": {
-            "prompt_tokens": 395,
-            "completion_tokens": 26,
-            "total_tokens": 421,
+            "prompt_tokens": 374,
+            "completion_tokens": 25,
+            "total_tokens": 399,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -357,12 +349,12 @@
         "en": {
           "verdict": "pagina",
           "confidence": 0.9,
-          "reason": "Uso de voz directa y enfoque en estrategias del libro.",
-          "elapsed_ms": 1443,
+          "reason": "Tono directo y enfoque en estrategias del libro.",
+          "elapsed_ms": 991,
           "usage": {
-            "prompt_tokens": 379,
-            "completion_tokens": 26,
-            "total_tokens": 405,
+            "prompt_tokens": 355,
+            "completion_tokens": 25,
+            "total_tokens": 380,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -378,8 +370,8 @@
         },
         "circuit_tripped": false,
         "should_reextract": false,
-        "total_tokens": 826,
-        "total_ms": 1443
+        "total_tokens": 779,
+        "total_ms": 991
       },
       "_visual": {
         "synthesis_inputs": {
@@ -434,7 +426,7 @@
         "distinct_types_en": 4
       },
       "_quality_warning": null,
-      "_inputs_snapshot": "2026-04-22T22-46-55",
+      "_inputs_snapshot": "2026-04-22T22-52-42",
       "_crono": {
         "dia": "miércoles",
         "hora": 16,
@@ -445,28 +437,28 @@
         "descripcion_franja": "Tarde: pensamiento analítico. Matices, profundidad, contexto."
       },
       "_metrics": {
-        "tokens_total": 9975,
+        "tokens_total": 9090,
         "tokens_by_phase": {
-          "grounding": 612,
-          "anchors": 2322,
+          "grounding": 479,
+          "anchors": 2193,
           "palette": 0,
-          "content_es": 2512,
-          "judge_es": 892,
-          "content_en": 1952,
-          "judge_en": 859,
-          "voice": 826
+          "content_es": 2369,
+          "judge_es": 767,
+          "content_en": 1786,
+          "judge_en": 717,
+          "voice": 779
         },
-        "elapsed_ms_total": 49212,
+        "elapsed_ms_total": 45900,
         "elapsed_ms_by_phase": {
-          "grounding": 28368,
-          "anchors": 4329,
+          "grounding": 26173,
+          "anchors": 4295,
           "palette": 1,
           "cover_fallback": 0,
-          "content_es": 5314,
-          "judge_es": 1819,
-          "content_en": 4303,
-          "judge_en": 3634,
-          "voice": 1443,
+          "content_es": 4789,
+          "judge_es": 2738,
+          "content_en": 5198,
+          "judge_en": 1713,
+          "voice": 991,
           "post_processing": 5
         },
         "llm_calls_count": 8,
@@ -477,7 +469,7 @@
         "final_validation": "pass"
       },
       "_manual": true,
-      "_manual_generated_at": "2026-04-22T22:47:44.531Z"
+      "_manual_generated_at": "2026-04-22T22:53:28.370Z"
     }
   ]
 }

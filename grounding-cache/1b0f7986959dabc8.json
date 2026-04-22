@@ -1,7 +1,7 @@
 {
-  "ground_truth": "TEMA INFERIDO (el modelo no conoce este libro directamente, infiere desde similares):\n\nEl libro probablemente trata sobre la gestión de la atención y la autodisciplina en un mundo lleno de distracciones, ofreciendo estrategias para mejorar la productividad personal.\n\nVOZ INFERIDA:\nEs probable que la voz del autor sea práctica y motivacional, enfocándose en la autoayuda y el desarrollo personal.\n\nLIBROS SIMILARES QUE COMPARTEN ADN CON ESTE:\n- \"Deep Work\" (Cal Newport): Explora la importancia de la concentración en un mundo lleno de distracciones.\n- \"The Power of Habit\" (Charles Duhigg): Analiza cómo los hábitos afectan nuestra vida y cómo podemos cambiarlos.\n- \"Atomic Habits\" (James Clear): Ofrece estrategias para formar buenos hábitos y romper los malos, relacionado con el control de la atención.\n- \"Digital Minimalism\" (Cal Newport): Aborda cómo reducir el uso de tecnología para mejorar la calidad de vida y la atención.",
+  "ground_truth": "TEMA INFERIDO (el modelo no conoce este libro directamente, infiere desde similares):\n\nEl libro probablemente trata sobre la gestión del tiempo y la atención, ofreciendo estrategias para evitar distracciones y mejorar la productividad personal.\n\nVOZ INFERIDA:\nLa voz del autor probablemente es directa y motivadora, con un enfoque práctico y accesible para el lector.\n\nLIBROS SIMILARES QUE COMPARTEN ADN CON ESTE:\n- \"Deep Work\" (Cal Newport): Aborda la importancia de la concentración en un mundo lleno de distracciones.\n- \"Atomic Habits\" (James Clear): Explora cómo formar buenos hábitos y romper los malos, relacionado con el control personal.\n- \"The Power of Habit\" (Charles Duhigg): Analiza cómo los hábitos influyen en nuestras vidas y cómo podemos cambiarlos.",
   "grounding_source": "model_inference",
-  "book_identity_confidence": 0.6000000000000001,
+  "book_identity_confidence": 0.44000000000000006,
   "verified_identity": {
     "titulo_real": "Indistractable",
     "autor_completo": "Nir Eyal",
@@ -9,27 +9,22 @@
   },
   "inference_confidence": 0.8,
   "book_known_directly": false,
-  "rich_inference": true,
+  "rich_inference": false,
   "similar_books": [
     {
       "titulo": "Deep Work",
       "autor": "Cal Newport",
-      "razon": "Explora la importancia de la concentración en un mundo lleno de distracciones."
-    },
-    {
-      "titulo": "The Power of Habit",
-      "autor": "Charles Duhigg",
-      "razon": "Analiza cómo los hábitos afectan nuestra vida y cómo podemos cambiarlos."
+      "razon": "Aborda la importancia de la concentración en un mundo lleno de distracciones."
     },
     {
       "titulo": "Atomic Habits",
       "autor": "James Clear",
-      "razon": "Ofrece estrategias para formar buenos hábitos y romper los malos, relacionado con el control de la atención."
+      "razon": "Explora cómo formar buenos hábitos y romper los malos, relacionado con el control personal."
     },
     {
-      "titulo": "Digital Minimalism",
-      "autor": "Cal Newport",
-      "razon": "Aborda cómo reducir el uso de tecnología para mejorar la calidad de vida y la atención."
+      "titulo": "The Power of Habit",
+      "autor": "Charles Duhigg",
+      "razon": "Analiza cómo los hábitos influyen en nuestras vidas y cómo podemos cambiarlos."
     }
   ],
   "resolution_path": [
@@ -37,6 +32,6 @@
     "tier3_conf_0.80"
   ],
   "tier_reached": 3,
-  "cost_tokens": 518,
-  "cached_at": "2026-04-22T22:13:53.584Z"
+  "cost_tokens": 479,
+  "cached_at": "2026-04-22T22:53:08.638Z"
 }
