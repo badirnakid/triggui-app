@@ -47,37 +47,9 @@
     }
   },
   "google": {
-    "ok": true,
-    "source": "google_books",
-    "match_score": 1,
-    "match_details": {
-      "matched_title": "Steve Jobs",
-      "matched_author": "Walter Isaacson"
-    },
-    "synopsis": "Based on more than 40 interviews with Jobs conducted over two years--as well as interviews with more than 100 family members, friends, adversaries, competitors, and colleagues--Isaacson has written a riveting story of the roller-coaster life and searingly intense personality of a creative entrepreneur whose passion for perfection and ferocious drive revolutionized six industries: personal computers, animated movies, music, phones, tablet computing, and digital publishing.",
-    "synopsis_length": 476,
-    "covers": [
-      {
-        "size": "small",
-        "url": "https://books.google.com/books/content?id=8U2oAAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
-      }
-    ],
-    "verified_identity": {
-      "titulo_real": "Steve Jobs",
-      "subtitulo": "",
-      "autor_completo": "Walter Isaacson",
-      "año": "2011",
-      "editorial": "Simon and Schuster",
-      "paginas": 656,
-      "isbn": "9781451648546",
-      "isbn13": "9781451648546",
-      "isbn10": "1451648545",
-      "categorias": [
-        "Biography & Autobiography"
-      ],
-      "idioma": "en",
-      "preview_link": "http://books.google.com/books?id=8U2oAAAAQBAJ&printsec=frontcover&dq=Steve+Jobs+Walter+Isaacson&hl=&cd=1&source=gbs_api"
-    }
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
   },
   "openlibrary": {
     "ok": true,
@@ -159,12 +131,6 @@
       "valid": true
     },
     {
-      "source": "google_books",
-      "size": "small",
-      "url": "https://books.google.com/books/content?id=8U2oAAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
-      "valid": true
-    },
-    {
       "source": "openlibrary",
       "size": "large",
       "url": "https://covers.openlibrary.org/b/id/12374726-L.jpg",
@@ -191,16 +157,17 @@
   ],
   "_sources_succeeded": [
     "apple_books",
-    "google_books",
     "openlibrary",
     "amazon"
   ],
-  "_sources_failed": [],
+  "_sources_failed": [
+    "google_books:no_good_match"
+  ],
   "_timing": {
-    "phase1_parallel_ms": 2291,
-    "phase2_isbn_chain_ms": 186,
-    "cover_validation_ms": 1252,
-    "total_ms": 3729
+    "phase1_parallel_ms": 15850,
+    "phase2_isbn_chain_ms": 23837,
+    "cover_validation_ms": 1066,
+    "total_ms": 40753
   },
-  "_cached_at": "2026-04-21T11:51:42.818Z"
+  "_cached_at": "2026-04-22T20:10:27.889Z"
 }

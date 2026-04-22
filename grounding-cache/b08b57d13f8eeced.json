@@ -1,0 +1,29 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\n¿Cómo consigue Mago More ser socio de cinco empresas, guionista del programa de José Mota, cómico, impartir conferencias, dar cursos de formación, tener un espacio habitual en radio, colaborar asiduamente en prensa, asistir a actos sociales y benéficos, y ahora escribir un libro? Parece cosa de magia, pero tiene truco: con unos objetivos claros y un sencillo método puedes conseguir muchas más cosas de las que piensas. Y para muestra, él mismo. Pero las páginas de este libro esconden otro tipo de magia: si te descargas la aplicación que el Mago More ha creado podrás acceder a contenido extra en realidad aumentada. Sí, amigo, ¡un libro que habla! Y todo ello con el objetivo de ayudar al lector a dominar los mismos superpoderes que utiliza Mago More para mejorar su vida.\n\nMETADATA VERIFICADA:\n- Título: Superpoderes del éxito para gente normal\n- Autor: Mago More\n- Año: 2015\n- Categorías: Superación personal, Libros, Salud, mente y cuerpo, Negocios y finanzas personales",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Superpoderes del éxito para gente normal",
+    "autor_completo": "Mago More",
+    "año": "2015",
+    "editorial": null,
+    "isbn": "1049950628",
+    "categorias": [
+      "Superación personal",
+      "Libros",
+      "Salud, mente y cuerpo",
+      "Negocios y finanzas personales"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/superpoderes-del-%C3%A9xito-para-gente-normal/id1049950628?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_3sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-22T20:09:21.610Z"
+}

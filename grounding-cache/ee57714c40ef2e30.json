@@ -1,0 +1,23 @@
+{
+  "ground_truth": "INFORMACIÓN (OpenLibrary):\n\nLibro verificado en OpenLibrary. Publicado originalmente en 2020.\n\nMETADATA VERIFICADA:\n- Título: Invent and Wander\n- Autor: Walter Isaacson, Jeff Bezos\n- Año: 2020",
+  "grounding_source": "openlibrary",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Invent and Wander",
+    "autor_completo": "Walter Isaacson, Jeff Bezos",
+    "año": "2020",
+    "editorial": null,
+    "isbn": "",
+    "categorias": [],
+    "idioma": null,
+    "paginas": null
+  },
+  "match_score": 1,
+  "other_sources_agreed": [],
+  "resolution_path": [
+    "evidence_fetched_1sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-22T20:20:29.277Z"
+}

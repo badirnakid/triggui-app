@@ -116,10 +116,10 @@
     "openlibrary:no_results"
   ],
   "_timing": {
-    "phase1_parallel_ms": 1395,
-    "phase2_isbn_chain_ms": 481,
-    "cover_validation_ms": 594,
-    "total_ms": 2470
+    "phase1_parallel_ms": 15805,
+    "phase2_isbn_chain_ms": 23704,
+    "cover_validation_ms": 663,
+    "total_ms": 40172
   },
-  "_cached_at": "2026-04-21T13:49:46.329Z"
+  "_cached_at": "2026-04-22T20:07:06.565Z"
 }

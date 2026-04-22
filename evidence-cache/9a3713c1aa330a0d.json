@@ -1,0 +1,206 @@
+{
+  "titulo_input": "Extreme ownership",
+  "autor_input": "Jocko Willink",
+  "isbn_seed": "",
+  "isbn_discovered": "1271391269",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Extreme Ownership",
+      "matched_author": "Jocko Willink & Leif Babin"
+    },
+    "synopsis": "An updated edition of the blockbuster bestselling leadership book that took America and the world by storm, two U.S. Navy SEAL officers who led the most highly decorated special operations unit of the Iraq War demonstrate how to apply powerful leadership principles from the battlefield to business and life. Sent to the most violent battlefield in Iraq, Jocko Willink and Leif Babin’s SEAL task unit faced a seemingly impossible mission: help U.S. forces secure Ramadi, a city deemed “all but lost.” In gripping firsthand accounts of heroism, tragic loss, and hard-won victories in SEAL Team Three’s Task Unit Bruiser, they learned that leadership—at every level—is the most important factor in whether a team succeeds or fails. Willink and Babin returned home from deployment and instituted SEAL leadership training that helped forge the next generation of SEAL leaders. After departing the SEAL Teams, they launched Echelon Front, a company that teaches these same leadership principles to businesses and organizations. From promising startups to Fortune 500 companies, Babin and Willink have helped scores of clients across a broad range of industries build their own high-performance teams and dominate their battlefields. Now, detailing the mind-set and principles that enable SEAL units to accomplish the most difficult missions in combat, Extreme Ownership shows how to apply them to any team, family or organization. Each chapter focuses on a specific topic such as Cover and Move, Decentralized Command, and Leading Up the Chain, explaining what they are, why they are important, and how to implement them in any leadership environment. A compelling narrative with powerful instruction and direct application, Extreme Ownership revolutionizes business management and challenges leaders everywhere to fulfill their ultimate purpose: lead and win.",
+    "synopsis_length": 1855,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/af/2b/a9/af2ba9d3-b21f-ed60-16f2-a4fe2a4501b7/9781250184726.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/af/2b/a9/af2ba9d3-b21f-ed60-16f2-a4fe2a4501b7/9781250184726.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/af/2b/a9/af2ba9d3-b21f-ed60-16f2-a4fe2a4501b7/9781250184726.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/af/2b/a9/af2ba9d3-b21f-ed60-16f2-a4fe2a4501b7/9781250184726.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Extreme Ownership",
+      "autor_completo": "Jocko Willink & Leif Babin",
+      "año": "2017",
+      "editorial": null,
+      "isbn": "1271391269",
+      "categorias": [
+        "Administración y liderazgo",
+        "Libros",
+        "Negocios y finanzas personales",
+        "Biografías y memorias"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/extreme-ownership/id1271391269?uo=4"
+    }
+  },
+  "google": {
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Extreme Ownership",
+      "matched_author": "Jocko Willink, Leif Babin"
+    },
+    "synopsis": "Highly decorated Navy SEALs, now successful businessmen, show readers how to lead and win in business and in life with principles learned on the battlefield",
+    "synopsis_length": 156,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=ywaJCgAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Extreme Ownership",
+      "subtitulo": "How U.S. Navy SEALs Lead and Win",
+      "autor_completo": "Jocko Willink, Leif Babin",
+      "año": "2015",
+      "editorial": "Macmillan",
+      "paginas": 317,
+      "isbn": "9781250067050",
+      "isbn13": "9781250067050",
+      "isbn10": "1250067057",
+      "categorias": [
+        "Biography & Autobiography"
+      ],
+      "idioma": "en",
+      "preview_link": "http://books.google.com/books?id=ywaJCgAAQBAJ&printsec=frontcover&dq=intitle:Extreme+ownership+inauthor:Jocko+Willink&hl=&cd=1&source=gbs_api"
+    }
+  },
+  "openlibrary": {
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Extreme ownership",
+      "matched_author": "Jocko Willink, Leif Babin"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2015.",
+    "synopsis_length": 65,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://covers.openlibrary.org/b/id/12835042-L.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://covers.openlibrary.org/b/id/12835042-M.jpg"
+      },
+      {
+        "size": "small",
+        "url": "https://covers.openlibrary.org/b/id/12835042-S.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Extreme ownership",
+      "autor_completo": "Jocko Willink, Leif Babin",
+      "año": "2015",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": "eng",
+      "paginas": null
+    }
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/1271391269.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "1271391269",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/af/2b/a9/af2ba9d3-b21f-ed60-16f2-a4fe2a4501b7/9781250184726.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/af/2b/a9/af2ba9d3-b21f-ed60-16f2-a4fe2a4501b7/9781250184726.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/af/2b/a9/af2ba9d3-b21f-ed60-16f2-a4fe2a4501b7/9781250184726.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/af/2b/a9/af2ba9d3-b21f-ed60-16f2-a4fe2a4501b7/9781250184726.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=ywaJCgAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "large",
+      "url": "https://covers.openlibrary.org/b/id/12835042-L.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "medium",
+      "url": "https://covers.openlibrary.org/b/id/12835042-M.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "small",
+      "url": "https://covers.openlibrary.org/b/id/12835042-S.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/1271391269.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "google_books",
+    "openlibrary",
+    "amazon"
+  ],
+  "_sources_failed": [],
+  "_timing": {
+    "phase1_parallel_ms": 15810,
+    "phase2_isbn_chain_ms": 10928,
+    "cover_validation_ms": 1109,
+    "total_ms": 27847
+  },
+  "_cached_at": "2026-04-22T20:16:29.948Z"
+}

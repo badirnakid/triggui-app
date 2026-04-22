@@ -1,0 +1,124 @@
+{
+  "titulo_input": "Full stop",
+  "autor_input": "Silvio Raij",
+  "isbn_seed": "",
+  "isbn_discovered": "996635141",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Full Stop",
+      "matched_author": "Silvio Raij"
+    },
+    "synopsis": "\"Full Stop\" es la pausa necesaria para salir del piloto automático con que vivimos. Nos propone parar de correr, detenernos y preguntarnos hacia dónde vamos, para qué corremos y cómo queremos vivir. Es una práctica sencilla y posible que nos ayuda a eliminar la angustia que produce el pasado y la ansiedad del futuro; al tiempo que nos pone en contacto directo con la experiencia de libertad que significa vivir en el presente. Silvio Raij nos da un mapa claro para aprender a guiar nuestros pensamientos. Nos enseña a meditar de forma guiada y nos demuestra los beneficios de hacer pausas regulares durante el día. Full Stop nos permite estar más atentos y conscientes para silenciar nuestro ruido mental, renovar energías y disfrutar de la plenitud del aquí y el ahora. \"Haz una pausa en tu vida… Relaja tu cuerpo… Suelta cualquier tensión que sientas… Respira profundo… Y pon un punto final a tus preocupaciones… Ahora, déjate llevar por las palabras, que irás leyendo en este libro… Te deseo un buen viaje…\"",
+    "synopsis_length": 1012,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/1e/19/f5/1e19f536-0345-fdc5-1ec2-ae150ce20ef0/9789501201758.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/1e/19/f5/1e19f536-0345-fdc5-1ec2-ae150ce20ef0/9789501201758.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/1e/19/f5/1e19f536-0345-fdc5-1ec2-ae150ce20ef0/9789501201758.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/1e/19/f5/1e19f536-0345-fdc5-1ec2-ae150ce20ef0/9789501201758.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Full Stop",
+      "autor_completo": "Silvio Raij",
+      "año": "2015",
+      "editorial": null,
+      "isbn": "996635141",
+      "categorias": [
+        "Espiritualidad",
+        "Libros",
+        "Salud, mente y cuerpo"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/full-stop/id996635141?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": false,
+    "reason": "no_results",
+    "source": "openlibrary"
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/996635141.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "996635141",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/1e/19/f5/1e19f536-0345-fdc5-1ec2-ae150ce20ef0/9789501201758.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/1e/19/f5/1e19f536-0345-fdc5-1ec2-ae150ce20ef0/9789501201758.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/1e/19/f5/1e19f536-0345-fdc5-1ec2-ae150ce20ef0/9789501201758.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/1e/19/f5/1e19f536-0345-fdc5-1ec2-ae150ce20ef0/9789501201758.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/996635141.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match",
+    "openlibrary:no_results"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 15836,
+    "phase2_isbn_chain_ms": 23973,
+    "cover_validation_ms": 878,
+    "total_ms": 40687
+  },
+  "_cached_at": "2026-04-22T20:06:02.014Z"
+}

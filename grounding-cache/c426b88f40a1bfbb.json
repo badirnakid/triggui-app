@@ -1,0 +1,32 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Google Books):\n\nEinstein. Beethoven. Picasso. Jobs. La palabra genio evoca a estas figuras icónicas, cuyas contribuciones han transformado de forma irreversible a la sociedad. Sin embargo, Beethoven no sabía multiplicar, Picasso reprobó Matemáticas en la primaria y Jobs dejó la universidad después del primer semestre. ¿Qué dice esto sobre cómo medimos el éxito en la actualidad? ¿Por qué nos enseñan a comportarnos según las reglas, cuando los genios han hecho todo lo contrario? Y a todo esto, ¿qué es en realidad ser un genio? El profesor Craig Wright, creador del popular curso Explorando la Naturaleza del Genio, de la Universidad de Yale, revela lo que podemos aprender de las mentes brillantes que han cambiado al mundo. Al examinar la vida de individuos que van desde Charles Darwin y Leonardo da Vinci hasta Elon Musk y Andy Warhol, Wright identifica los 14 rasgos de las grandes mentes de la historia. Las ideas brillantes no suelen ser repentinas, son el resultado de modos de pensar únicos y una dedicación constante. Los hábitos mentales que producen grandes descubrimientos se pueden aprender y cultivar, y Wright nos muestra cómo. Este libro no te convertirá en un genio. Pero adoptar los hábitos secretos de estas personas te hará más estratégico, creativo, exitoso y, en última instancia, más feliz.\n\nMETADATA VERIFICADA:\n- Título: Los hábitos secretos de los genios\n- Autor: Craig Wright\n- Año: 2022\n- Editorial: Planeta México\n- Categorías: Self-Help",
+  "grounding_source": "google_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Los hábitos secretos de los genios",
+    "subtitulo": "",
+    "autor_completo": "Craig Wright",
+    "año": "2022",
+    "editorial": "Planeta México",
+    "paginas": 281,
+    "isbn": "9786070781315",
+    "isbn13": "9786070781315",
+    "isbn10": "6070781317",
+    "categorias": [
+      "Self-Help"
+    ],
+    "idioma": "es",
+    "preview_link": "http://books.google.com/books?id=DbdYEAAAQBAJ&printsec=frontcover&dq=Los+h%C3%A1bitos+secretos+de+los+genios+Craig+Wright&hl=&cd=1&source=gbs_api"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "apple_books",
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_4sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-22T20:13:16.588Z"
+}

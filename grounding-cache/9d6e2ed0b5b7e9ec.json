@@ -1,0 +1,27 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nPrepare to peek into the mind of a champion, known as the most decorated Olympian of all time with 28 medals, including 23 gold, with this newly updated edition of Michael Phelps’s autobiography, Beneath the Surface. In this candid memoir, Phelps talks openly about his battle with attention deficit disorder, the trauma of his parents’ divorce, and the challenges that come with being thrust into the limelight. Readers worldwide will relive all the heart-stopping glory as Phelps completes his journey from the youngest man to ever set a world swimming record in 2001, to an Olympic powerhouse in 2008, to surpassing the greatest athlete of ancient Greece, Leonidas of Rhodes, with 13 triumphs in 2016. Athletes and fans alike will be fascinated by insights into Phelps’s training, mental preparation, and behind-the-scenes perspective on international athletic competitions. A chronicle of Phelps’s evolution from awkward teenager to record-breaking powerhouse, Beneath the Surface is a must-read for any sports fan.\n\nMETADATA VERIFICADA:\n- Título: Beneath the Surface\n- Autor: Michael Phelps, Brian Cazeneuve & Bob Costas\n- Año: 2012\n- Categorías: Deportes acuáticos, Libros, Deportes y vida al aire libre, Biografías y memorias",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.8792857142857144,
+  "verified_identity": {
+    "titulo_real": "Beneath the Surface",
+    "autor_completo": "Michael Phelps, Brian Cazeneuve & Bob Costas",
+    "año": "2012",
+    "editorial": null,
+    "isbn": "1516422783",
+    "categorias": [
+      "Deportes acuáticos",
+      "Libros",
+      "Deportes y vida al aire libre",
+      "Biografías y memorias"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/beneath-the-surface/id1516422783?uo=4"
+  },
+  "match_score": 0.8232142857142858,
+  "other_sources_agreed": [],
+  "resolution_path": [
+    "evidence_fetched_2sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-22T20:04:50.949Z"
+}

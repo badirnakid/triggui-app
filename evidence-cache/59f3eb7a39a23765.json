@@ -46,30 +46,9 @@
     }
   },
   "google": {
-    "ok": true,
-    "source": "google_books",
-    "match_score": 1,
-    "match_details": {
-      "matched_title": "Empieza con el porqué",
-      "matched_author": "Simon Sinek"
-    },
-    "synopsis": "Sinek comienza haciéndose las siguientes preguntas: ¿Por qué algunas organizaciones son más innovadoras, influyentes y más rentables que otras? ¿Por qué algunas generan gran lealtad entre sus clientes y usuarios? ¿por qué a quienes llegan a tener éxito les es tan difícil seguir manteniéndolo? Al estudiar a los líderes con mayor influencia en el mundo, Simon Sinek descubrió que todos piensan, actúan y se comunican de la misma forma, y es lo opuesto a lo que hace la mayoría. Llamó a esta idea \"El Círculo Dorado\", que brinda un marco alrededor del cual las organizaciones pueden motivar a sus empleados y clientes, y todo comienza con el PORQUÉ. Personas como Steve Jobs, Martin Luther King Jr o los hermanos Wright tienen muy poco en común, pero todos han empezado con su porqué. Ellos se dieron cuenta de que agente no compra un producto, una idea, un servicio o un movimiento hasta que entienden cuál es el porqué que está detrás de los mismos. Basado en una amplia variedad de historias reales, Sinek ha conseguido clarificar qué es lo que se necesita para que una persona pueda liderar, inspirar y motivar. Tomado de la solapa del libro.",
-    "synopsis_length": 1145,
-    "covers": [],
-    "verified_identity": {
-      "titulo_real": "Empieza con el porqué",
-      "subtitulo": "cómo los grandes líderes motivan a actuar",
-      "autor_completo": "Simon Sinek",
-      "año": "2025",
-      "editorial": null,
-      "paginas": null,
-      "isbn": "9786289564730",
-      "isbn13": "9786289564730",
-      "isbn10": "6289564730",
-      "categorias": [],
-      "idioma": "es",
-      "preview_link": "http://books.google.com/books?id=kTqt0QEACAAJ&dq=intitle:Empieza+con+el+porqu%C3%A9+inauthor:Simon+Sinek&hl=&cd=2&source=gbs_api"
-    }
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
   },
   "openlibrary": {
     "ok": true,
@@ -177,16 +156,17 @@
   ],
   "_sources_succeeded": [
     "apple_books",
-    "google_books",
     "openlibrary",
     "amazon"
   ],
-  "_sources_failed": [],
+  "_sources_failed": [
+    "google_books:no_good_match"
+  ],
   "_timing": {
-    "phase1_parallel_ms": 1652,
-    "phase2_isbn_chain_ms": 125,
-    "cover_validation_ms": 810,
-    "total_ms": 2587
+    "phase1_parallel_ms": 15764,
+    "phase2_isbn_chain_ms": 23787,
+    "cover_validation_ms": 1053,
+    "total_ms": 40604
   },
-  "_cached_at": "2026-04-21T11:52:32.041Z"
+  "_cached_at": "2026-04-22T20:11:33.394Z"
 }

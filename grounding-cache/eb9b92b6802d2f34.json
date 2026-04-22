@@ -1,0 +1,26 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\n\"Full Stop\" es la pausa necesaria para salir del piloto automático con que vivimos. Nos propone parar de correr, detenernos y preguntarnos hacia dónde vamos, para qué corremos y cómo queremos vivir. Es una práctica sencilla y posible que nos ayuda a eliminar la angustia que produce el pasado y la ansiedad del futuro; al tiempo que nos pone en contacto directo con la experiencia de libertad que significa vivir en el presente. Silvio Raij nos da un mapa claro para aprender a guiar nuestros pensamientos. Nos enseña a meditar de forma guiada y nos demuestra los beneficios de hacer pausas regulares durante el día. Full Stop nos permite estar más atentos y conscientes para silenciar nuestro ruido mental, renovar energías y disfrutar de la plenitud del aquí y el ahora. \"Haz una pausa en tu vida… Relaja tu cuerpo… Suelta cualquier tensión que sientas… Respira profundo… Y pon un punto final a tus preocupaciones… Ahora, déjate llevar por las palabras, que irás leyendo en este libro… Te deseo un buen viaje…\"\n\nMETADATA VERIFICADA:\n- Título: Full Stop\n- Autor: Silvio Raij\n- Año: 2015\n- Categorías: Espiritualidad, Libros, Salud, mente y cuerpo",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Full Stop",
+    "autor_completo": "Silvio Raij",
+    "año": "2015",
+    "editorial": null,
+    "isbn": "996635141",
+    "categorias": [
+      "Espiritualidad",
+      "Libros",
+      "Salud, mente y cuerpo"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/full-stop/id996635141?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [],
+  "resolution_path": [
+    "evidence_fetched_2sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-22T20:06:02.015Z"
+}

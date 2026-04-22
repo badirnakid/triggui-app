@@ -1,0 +1,174 @@
+{
+  "titulo_input": "Los hábitos secretos de los genios",
+  "autor_input": "Craig Wright",
+  "isbn_seed": "",
+  "isbn_discovered": "1534798539",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 0.9352941176470588,
+    "match_details": {
+      "matched_title": "Os hábitos secretos dos gênios",
+      "matched_author": "Craig Wright"
+    },
+    "synopsis": "Einstein. Beethoven. Picasso. Jobs. A palavra “gênio” remete a esses nomes icônicos, de pessoas cujas contribuições culturais moldaram a sociedade de forma irreversível. Que características pessoais levaram essas pessoas à excelência? O autor, Craig Wright, propõe que a genialidade vai muito além da simples equação intelecto mais dedicação, argumentando que os hábitos da mente produzem grandes reflexões e descobertas, que podem ser aprendidos e cultivados ativamente. Os hábitos secretos dos gênios explora as interpretações atribuídas à genialidade, assim como suas controvérsias e as motivações inesperadas daqueles que consideramos “gênios” ao longo da História, de Charles Darwin e Marie Curie a Leonardo da Vinci e Andy Warhol e também a Toni Morrison e Jeff Bezos. Em sua análise, Wright analisa os 14 hábitos secretos dos gênios a fim de ajudar você a lapidar seus talentos e alcançar o máximo do seu potencial.",
+    "synopsis_length": 922,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication114/v4/0c/26/75/0c267552-68f3-9949-894d-54e1e5d9c2eb/98bf79d6-a8cc-42f2-b290-21ab68096124_cover_image.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication114/v4/0c/26/75/0c267552-68f3-9949-894d-54e1e5d9c2eb/98bf79d6-a8cc-42f2-b290-21ab68096124_cover_image.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication114/v4/0c/26/75/0c267552-68f3-9949-894d-54e1e5d9c2eb/98bf79d6-a8cc-42f2-b290-21ab68096124_cover_image.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication114/v4/0c/26/75/0c267552-68f3-9949-894d-54e1e5d9c2eb/98bf79d6-a8cc-42f2-b290-21ab68096124_cover_image.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Os hábitos secretos dos gênios",
+      "autor_completo": "Craig Wright",
+      "año": "2020",
+      "editorial": null,
+      "isbn": "1534798539",
+      "categorias": [
+        "Superación personal",
+        "Libros",
+        "Salud, mente y cuerpo"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/os-h%C3%A1bitos-secretos-dos-g%C3%AAnios/id1534798539?uo=4"
+    }
+  },
+  "google": {
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Los hábitos secretos de los genios",
+      "matched_author": "Craig Wright"
+    },
+    "synopsis": "Einstein. Beethoven. Picasso. Jobs. La palabra genio evoca a estas figuras icónicas, cuyas contribuciones han transformado de forma irreversible a la sociedad. Sin embargo, Beethoven no sabía multiplicar, Picasso reprobó Matemáticas en la primaria y Jobs dejó la universidad después del primer semestre. ¿Qué dice esto sobre cómo medimos el éxito en la actualidad? ¿Por qué nos enseñan a comportarnos según las reglas, cuando los genios han hecho todo lo contrario? Y a todo esto, ¿qué es en realidad ser un genio? El profesor Craig Wright, creador del popular curso Explorando la Naturaleza del Genio, de la Universidad de Yale, revela lo que podemos aprender de las mentes brillantes que han cambiado al mundo. Al examinar la vida de individuos que van desde Charles Darwin y Leonardo da Vinci hasta Elon Musk y Andy Warhol, Wright identifica los 14 rasgos de las grandes mentes de la historia. Las ideas brillantes no suelen ser repentinas, son el resultado de modos de pensar únicos y una dedicación constante. Los hábitos mentales que producen grandes descubrimientos se pueden aprender y cultivar, y Wright nos muestra cómo. Este libro no te convertirá en un genio. Pero adoptar los hábitos secretos de estas personas te hará más estratégico, creativo, exitoso y, en última instancia, más feliz.",
+    "synopsis_length": 1301,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=DbdYEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Los hábitos secretos de los genios",
+      "subtitulo": "",
+      "autor_completo": "Craig Wright",
+      "año": "2022",
+      "editorial": "Planeta México",
+      "paginas": 281,
+      "isbn": "9786070781315",
+      "isbn13": "9786070781315",
+      "isbn10": "6070781317",
+      "categorias": [
+        "Self-Help"
+      ],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=DbdYEAAAQBAJ&printsec=frontcover&dq=Los+h%C3%A1bitos+secretos+de+los+genios+Craig+Wright&hl=&cd=1&source=gbs_api"
+    }
+  },
+  "openlibrary": {
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Los hábitos secretos de los genios",
+      "matched_author": "Craig Wright"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2022.",
+    "synopsis_length": 65,
+    "covers": [],
+    "verified_identity": {
+      "titulo_real": "Los hábitos secretos de los genios",
+      "autor_completo": "Craig Wright",
+      "año": "2022",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": "spa",
+      "paginas": null
+    }
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/1534798539.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "1534798539",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication114/v4/0c/26/75/0c267552-68f3-9949-894d-54e1e5d9c2eb/98bf79d6-a8cc-42f2-b290-21ab68096124_cover_image.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication114/v4/0c/26/75/0c267552-68f3-9949-894d-54e1e5d9c2eb/98bf79d6-a8cc-42f2-b290-21ab68096124_cover_image.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication114/v4/0c/26/75/0c267552-68f3-9949-894d-54e1e5d9c2eb/98bf79d6-a8cc-42f2-b290-21ab68096124_cover_image.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication114/v4/0c/26/75/0c267552-68f3-9949-894d-54e1e5d9c2eb/98bf79d6-a8cc-42f2-b290-21ab68096124_cover_image.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=DbdYEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/1534798539.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "google_books",
+    "openlibrary",
+    "amazon"
+  ],
+  "_sources_failed": [],
+  "_timing": {
+    "phase1_parallel_ms": 9678,
+    "phase2_isbn_chain_ms": 97,
+    "cover_validation_ms": 1033,
+    "total_ms": 10808
+  },
+  "_cached_at": "2026-04-22T20:13:16.587Z"
+}
