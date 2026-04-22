@@ -47,37 +47,9 @@
     }
   },
   "google": {
-    "ok": true,
-    "source": "google_books",
-    "match_score": 1,
-    "match_details": {
-      "matched_title": "El sendero del Yoga",
-      "matched_author": "Osho"
-    },
-    "synopsis": "En la actualidad sobreviven del yoga, sobre todo, los ejercicios físicos que ayudan a lograr un estado vital más relajado y equilibrado. No obstante, como explica Osho, las posturas no vinieron primero, sino que los practicantes se dieron cuenta de que al alcanzar un estado meditativo, el cuerpo adoptaba ciertas posturas de modo natural. Al estar cuerpo y mente tan íntimamente conectados, es posible lograr cierta paz de espítritu mediante una postura corporal que corresponda a esta paz. Pero sería un error creer que el carro tira del caballo. Al retroceder a las enseñanzas originales como punto de partida. Osho aclara la relación cuerpo-mente y revela que el yoga no es una serie de ejercicios físicos, sino lo que él llama \"una ciencia del alma\". En El sendero del yoga, Osho explica el sentido de algunos de los sutras más importantes de Patañjali, el primer \"científico del alma\", padre del raja y oga o \"sendero real\" que utiliza las posturas y la respiración principalmente como medios para alcanzar estados más elevados de conciencia. La nueva traducción de los textos antiguos, y las agudas percepciones de Osho sobre la mente moderna y su psicología, hacen que Patañajali reviva en estas páginas con un enfoque de la práctica del yoga como medio para un mayor autoconocimiento que es de absoluta relevancia en nuestra época. El sendero del yoga es un libro inestimable para practicantes del yoga, ya sean principiantes o avanzados, y para cualquiera que busque comprender la intrincada y poderoas relación que existe entre el cuerpo y la mente.",
-    "synopsis_length": 1560,
-    "covers": [
-      {
-        "size": "small",
-        "url": "https://books.google.com/books/content?id=OO2bDwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
-      }
-    ],
-    "verified_identity": {
-      "titulo_real": "El sendero del Yoga",
-      "subtitulo": "",
-      "autor_completo": "Osho",
-      "año": "2013",
-      "editorial": "Editorial Kairós",
-      "paginas": 181,
-      "isbn": "9788499882598",
-      "isbn13": "9788499882598",
-      "isbn10": "8499882595",
-      "categorias": [
-        "Religion"
-      ],
-      "idioma": "es",
-      "preview_link": "http://books.google.com/books?id=OO2bDwAAQBAJ&dq=intitle:El+sendero+del+yoga+inauthor:Osho&hl=&cd=1&source=gbs_api"
-    }
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
   },
   "openlibrary": {
     "ok": true,
@@ -159,12 +131,6 @@
       "valid": true
     },
     {
-      "source": "google_books",
-      "size": "small",
-      "url": "https://books.google.com/books/content?id=OO2bDwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
-      "valid": true
-    },
-    {
       "source": "openlibrary",
       "size": "large",
       "url": "https://covers.openlibrary.org/b/id/3329258-L.jpg",
@@ -191,16 +157,17 @@
   ],
   "_sources_succeeded": [
     "apple_books",
-    "google_books",
     "openlibrary",
     "amazon"
   ],
-  "_sources_failed": [],
+  "_sources_failed": [
+    "google_books:no_good_match"
+  ],
   "_timing": {
-    "phase1_parallel_ms": 338,
-    "phase2_isbn_chain_ms": 974,
-    "cover_validation_ms": 1190,
-    "total_ms": 2502
+    "phase1_parallel_ms": 15782,
+    "phase2_isbn_chain_ms": 23853,
+    "cover_validation_ms": 1041,
+    "total_ms": 40676
   },
-  "_cached_at": "2026-04-21T11:08:23.424Z"
+  "_cached_at": "2026-04-22T03:55:57.816Z"
 }

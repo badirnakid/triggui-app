@@ -1,0 +1,126 @@
+{
+  "titulo_input": "La disciplina marcará tu destino",
+  "autor_input": "Ryan Holiday",
+  "isbn_seed": "",
+  "isbn_discovered": "6443174233",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 0.753448275862069,
+    "match_details": {
+      "matched_title": "La disciplina marcará tu destino (Las 4 virtudes estoicas 2)",
+      "matched_author": "Ryan Holiday"
+    },
+    "synopsis": "«Ryan Holiday ha traído las antiguas enseñanzas del estoicismo a millones de lectores, desde atletas y políticos hasta directores ejecutivos». Good Morning America Un inspirador tributo al poder y la promesa de la autodisciplina; este es el segundo libro de la serie «Las 4 virtudes estoicas» de Ryan Holiday, autor superventas y referente internacional del estoicismo moderno. Para conquistar el mundo, uno debe conquistarse primero a sí mismo: las emociones, las acciones y los pensamientos. Eisenhower dijo que la libertad es la práctica de la autodisciplina. Cicerón definió la virtud de la templanza como el esplendor de la vida. Sin límites ni autocontrol, no solo nos arriesgamos a no alcanzar nuestro potencial y a perder lo que hemos logrado, sino que, además, nos aseguramos una vida de humillación y miseria. En este nuevo libro, Ryan Holiday defiende la templanza como la virtud más importante. A lo largo de la historia ha recibido distintos nombres —autocontrol, disciplina…— pero todos hacen referencia a lo mismo: a gobernar en lugar de ser gobernado; a establecer tus propios límites; a marcar tus propios hábitos. Todos los grandes de la historia han practicado esta forma de autodominio, desde la leyenda del béisbol Lou Gehrig, hasta la reina Isabel II, la escritora Joyce Carol Oates, el emperador Marco Aurelio y Martin Luther King Jr., ministro y líder del movimiento por los derechos civiles. En una época de excesos y desorden, la autodisciplina es ahora más necesaria que nunca. ¿Te atreves a cavar hondo para encontrarla? Y, más importante, ¿la usarás? Solo con autodisciplina podrás dirigir tu vida rumbo a la verdadera realización. La crítica ha dicho: «Una lectura ágil y absorbente». Annie Duke, autora del best seller Thinking In Bets «Un poderoso argumento a favor de las virtudes y los valores por los que deben regirse los líderes de hoy». Almirante James Stavridis, excomandante supremo de las Fuerzas Aliadas de la OTAN",
+    "synopsis_length": 1956,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/9d/7e/96/9d7e9687-141e-4154-46e0-45ca73fc5561/9788417992682.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/9d/7e/96/9d7e9687-141e-4154-46e0-45ca73fc5561/9788417992682.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/9d/7e/96/9d7e9687-141e-4154-46e0-45ca73fc5561/9788417992682.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/9d/7e/96/9d7e9687-141e-4154-46e0-45ca73fc5561/9788417992682.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "La disciplina marcará tu destino (Las 4 virtudes estoicas 2)",
+      "autor_completo": "Ryan Holiday",
+      "año": "2022",
+      "editorial": null,
+      "isbn": "6443174233",
+      "categorias": [
+        "Superación personal",
+        "Libros",
+        "Salud, mente y cuerpo",
+        "No ficción",
+        "Filosofía"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/la-disciplina-marcar%C3%A1-tu-destino-las-4-virtudes-estoicas-2/id6443174233?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": false,
+    "reason": "no_results",
+    "source": "openlibrary"
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/6443174233.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "6443174233",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/9d/7e/96/9d7e9687-141e-4154-46e0-45ca73fc5561/9788417992682.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/9d/7e/96/9d7e9687-141e-4154-46e0-45ca73fc5561/9788417992682.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/9d/7e/96/9d7e9687-141e-4154-46e0-45ca73fc5561/9788417992682.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/9d/7e/96/9d7e9687-141e-4154-46e0-45ca73fc5561/9788417992682.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/6443174233.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match",
+    "openlibrary:no_results"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 15801,
+    "phase2_isbn_chain_ms": 23762,
+    "cover_validation_ms": 1090,
+    "total_ms": 40653
+  },
+  "_cached_at": "2026-04-22T03:57:01.917Z"
+}

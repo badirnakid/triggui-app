@@ -20,13 +20,12 @@
   },
   "match_score": 1,
   "other_sources_agreed": [
-    "google_books",
     "openlibrary"
   ],
   "resolution_path": [
-    "evidence_fetched_4sources"
+    "evidence_fetched_3sources"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-21T11:51:14.362Z"
+  "cached_at": "2026-04-22T03:48:09.067Z"
 }

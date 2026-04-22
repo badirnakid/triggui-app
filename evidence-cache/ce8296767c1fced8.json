@@ -48,37 +48,9 @@
     }
   },
   "google": {
-    "ok": true,
-    "source": "google_books",
-    "match_score": 1,
-    "match_details": {
-      "matched_title": "El poder frente a la fuerza",
-      "matched_author": "David R. Hawkins"
-    },
-    "synopsis": "Probablemente el mejor libro del Dr. David R. Hawkins. El Poder frente a la fuerza en Estados Unidos fue un autentico superventas. Las personas involucradas en su traducción aseguran estar entusiasmados con su contenido y llevan años trabajando con libros de está índole, afirman que es “el mejor libro que han leído”. Esperamos no crear falsas expectativas, vosotros los lectores tendréis la última palabra, más cuando el rió suena agua lleva. Seguiremos informando. El doctor Hawkins nos aporta una explicación muy clara y comprensible de los niveles de la conciencia humana, asociados con las emociones, así como de algunos de los pasos clave que hay que dar para transitar de uno a otro, ofreciendo así valiosas herramientas para el cambio personal y social. Aunando su amplísima experiencia terapéutica con el estudio de la física cuántica y la ciencia de vanguardia, nos presenta conceptos novedosos, como el de “atractor” que sirven para ilustrar su sistema de pensamiento. También nos enseña la prueba kinesiológica para distinguir lo verdadero de lo falso, y realiza un amplio repaso de la dimensión social del estudio de la conciencia. Pero la clave del libro está en el estudio y la distinción entre poder y fuerza, entre aquellos estados en los que interviene el yo personal y están marcados por el esfuerzo, y aquellos otros en los que nos alineamos con el verdadero poder y podemos fluir con él. Querido Lector, estás ante uno de esos libros que solo aparecen cada diez o quince años, ante una obra maestra.",
-    "synopsis_length": 1521,
-    "covers": [
-      {
-        "size": "small",
-        "url": "https://books.google.com/books/content?id=lITOBgAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
-      }
-    ],
-    "verified_identity": {
-      "titulo_real": "El poder frente a la fuerza",
-      "subtitulo": "",
-      "autor_completo": "David R. Hawkins",
-      "año": "2017",
-      "editorial": "El Grano de Mostaza Ediciones",
-      "paginas": 274,
-      "isbn": "9788494279690",
-      "isbn13": "9788494279690",
-      "isbn10": "8494279696",
-      "categorias": [
-        "Self-Help"
-      ],
-      "idioma": "es",
-      "preview_link": "http://books.google.com/books?id=lITOBgAAQBAJ&printsec=frontcover&dq=intitle:El+poder+frente+a+la+fuerza+inauthor:David+R.+Hawkins&hl=&cd=1&source=gbs_api"
-    }
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
   },
   "openlibrary": {
     "ok": false,
@@ -130,12 +102,6 @@
       "valid": true
     },
     {
-      "source": "google_books",
-      "size": "small",
-      "url": "https://books.google.com/books/content?id=lITOBgAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
-      "valid": true
-    },
-    {
       "source": "amazon",
       "size": "large",
       "url": "https://images-na.ssl-images-amazon.com/images/P/1410835550.01.LZZZZZZZ.jpg",
@@ -144,17 +110,17 @@
   ],
   "_sources_succeeded": [
     "apple_books",
-    "google_books",
     "amazon"
   ],
   "_sources_failed": [
+    "google_books:no_good_match",
     "openlibrary:no_results"
   ],
   "_timing": {
-    "phase1_parallel_ms": 565,
-    "phase2_isbn_chain_ms": 781,
-    "cover_validation_ms": 653,
-    "total_ms": 1999
+    "phase1_parallel_ms": 15848,
+    "phase2_isbn_chain_ms": 23734,
+    "cover_validation_ms": 495,
+    "total_ms": 40077
   },
-  "_cached_at": "2026-04-21T13:35:09.365Z"
+  "_cached_at": "2026-04-22T03:50:20.958Z"
 }

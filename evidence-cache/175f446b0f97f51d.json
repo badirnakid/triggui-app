@@ -48,37 +48,9 @@
     }
   },
   "google": {
-    "ok": true,
-    "source": "google_books",
-    "match_score": 1,
-    "match_details": {
-      "matched_title": "El poder del Tao",
-      "matched_author": "Lou Marinoff"
-    },
-    "synopsis": "En El poder del Tao , el filósofo Lou Marinoff muestra cómo el Tao puede servir como potente remedio contra el estrés, la ansiedad y los retos cotidianos que conlleva el vivir en nuestro impredecible y siempre cambiante mundo. El Tao resulta especialmente útil en esta época de crisis económica, degradación medioambiental, urbanización descontrolada, conflictos culturales y agitación política. Durante más de dos mil quinientos años la filosofía taoísta ha ayudado a cientos de millones de personas a alcanzar de modo duradero la ecuanimidad, la serenidad y la felicidad. El poder del Tao dilucida las enseñanzas fundamentales de Lao Tzu, aplicándolas a cuestiones a las que nos enfrentamos a diario en los ámbitos de la salud y el bienestar, el amor y el matrimonio, la creatividad y la profesión, los logros y ambiciones personales. Cada capítulo está repleto de ilustrativos casos prácticos que revelan que tanto emperadores, atletas y artistas como ciudadanos corrientes han accedido al poder del Tao. La sabiduría taoísta puede restablecer el equilibrio en las relaciones humanas precarias, promover la calma ante la enfermedad y la muerte, y capacitarnos para ser mejores ciudadanos y líderes más sensatos. Armonizando la naturaleza y el sustrato humano, el Tao nos enseña a alcanzar nuestro verdadero potencial y a evitar la envidia, la avaricia y la ira. Más allá de la transformación de la vida de los individuos, el Tao contiene la promesa de una nueva era dorada de prosperidad, paz y fomento de la cultura.",
-    "synopsis_length": 1520,
-    "covers": [
-      {
-        "size": "small",
-        "url": "https://books.google.com/books/content?id=ZaI4AwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
-      }
-    ],
-    "verified_identity": {
-      "titulo_real": "El poder del Tao",
-      "subtitulo": "",
-      "autor_completo": "Lou Marinoff",
-      "año": "2015",
-      "editorial": "B DE BOOKS",
-      "paginas": 275,
-      "isbn": "9788466650731",
-      "isbn13": "9788466650731",
-      "isbn10": "8466650733",
-      "categorias": [
-        "Body, Mind & Spirit"
-      ],
-      "idioma": "es",
-      "preview_link": "http://books.google.com/books?id=ZaI4AwAAQBAJ&printsec=frontcover&dq=El+poder+del+Tao+Lou+Marinoff&hl=&cd=1&source=gbs_api"
-    }
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
   },
   "openlibrary": {
     "ok": false,
@@ -130,12 +102,6 @@
       "valid": true
     },
     {
-      "source": "google_books",
-      "size": "small",
-      "url": "https://books.google.com/books/content?id=ZaI4AwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
-      "valid": true
-    },
-    {
       "source": "amazon",
       "size": "large",
       "url": "https://images-na.ssl-images-amazon.com/images/P/1270390944.01.LZZZZZZZ.jpg",
@@ -144,17 +110,17 @@
   ],
   "_sources_succeeded": [
     "apple_books",
-    "google_books",
     "amazon"
   ],
   "_sources_failed": [
+    "google_books:no_good_match",
     "openlibrary:no_results"
   ],
   "_timing": {
-    "phase1_parallel_ms": 2151,
-    "phase2_isbn_chain_ms": 259,
-    "cover_validation_ms": 154,
-    "total_ms": 2564
+    "phase1_parallel_ms": 15760,
+    "phase2_isbn_chain_ms": 23774,
+    "cover_validation_ms": 982,
+    "total_ms": 40516
   },
-  "_cached_at": "2026-04-21T11:45:56.297Z"
+  "_cached_at": "2026-04-22T03:54:53.960Z"
 }

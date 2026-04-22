@@ -1,6 +1,6 @@
 {
-  "titulo_input": "El yoga de Jesús",
-  "autor_input": "Paramahansa Yogamanda",
+  "titulo_input": "Homo creativus",
+  "autor_input": "Juan Carlos Chavez",
   "isbn_seed": "",
   "isbn_discovered": "",
   "apple": {
@@ -32,10 +32,10 @@
     "amazon:skipped"
   ],
   "_timing": {
-    "phase1_parallel_ms": 15844,
+    "phase1_parallel_ms": 15819,
     "phase2_isbn_chain_ms": 0,
     "cover_validation_ms": 0,
-    "total_ms": 15844
+    "total_ms": 15819
   },
-  "_cached_at": "2026-04-22T03:53:45.987Z"
+  "_cached_at": "2026-04-22T03:53:05.946Z"
 }

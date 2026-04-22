@@ -9,17 +9,15 @@
     "editorial": null,
     "isbn": "",
     "categorias": [],
-    "idioma": "fre",
+    "idioma": "eng",
     "paginas": null
   },
   "match_score": 1,
-  "other_sources_agreed": [
-    "google_books"
-  ],
+  "other_sources_agreed": [],
   "resolution_path": [
-    "evidence_fetched_4sources"
+    "evidence_fetched_3sources"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-21T13:38:27.088Z"
+  "cached_at": "2026-04-22T03:58:04.100Z"
 }

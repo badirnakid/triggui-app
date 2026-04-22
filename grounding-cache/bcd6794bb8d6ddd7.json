@@ -1,0 +1,25 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nInstagram ha cambiado la tecnología y los negocios, la cultura y la comunicación y también nos ha cambiado a todos nosotros. ¡Descubre sus secretos! El mejor libro de empresa de 2020 según el Financial Times and McKinsey &amp; Company Instagram está tan ligado a nuestro día a día que su historia no puede disociarse del impacto que tiene sobre nuestras vidas. Desde su creación en el año 2010 de la mano de Kevin Systrom y Mike Krieger como una aplicación simple e intuitiva, lnstagram se ha convertido en una máquina de hacer famosos como nunca antes se había visto -ya sea en el patio de los colegios, en el mundo cultural o en el de la moda- en busca de un reconocimiento digital que obtiene gracias a likes, comentarios, seguidores y espectaculares acuerdos con distintas empresas. Unos doscientos millones de usuarios cuentan con más de cincuenta mil seguidores, la cifra necesaria para vivir de publicar promocionando marcas. Y millones de personas y de marcas tienen más seguidores en Instagram que suscriptores el The New York Times hasta tal punto que, anunciarse a través de estas personas que crean tendencias, cuentan historias o tienen muchos seguidores, se ha convertido en un negocio multimillonario. Sin filtro es el primer libro que desvela los secretos de Instagram gracias al testimonio de quienes lo hicieron realidad. ¿Cómo crearon ese espacio donde compartimos versiones aspiracionales de la vida, transformando nuestro sentido colectivo de la realidad? ¿Qué caminos se abren para asegurar su incesante crecimiento tras la adquisición por Facebook? Además, a partir de distintos casos reveladores, la autora nos ofrece el análisis de las estrategias de éxito que los usuarios del software culturalmente más importante de nuestra generación han desarrollado para crear su imagen y potenciar su fama: desde los adolescentes hasta las figuras más icónicas o las startups más innovadoras y las mayores compañías del mundo. Reseñas: «Sin filtro es un libro apasionante, repleto de creatividad, ambición e intriga, y a la vez un retrato antropológico de la vida moderna. Con un pulso trepidante, Sarah Frier relata con todo detalle cómo Instagram se ha convertido en un fenómeno cultural y reflexiona sobre qué dice el éxito de esta aplicación acerca de todos nosotros.» Ashlee Vance, autor de Elon Musk «Esta fascinante historia del imparable ascenso y de la inevitable transformación de una de las redes sociales más populares e influyentes nos invita a reflexionar sobre qué, o quién, es el verdadero producto en las nuevas tecnologías.» Kirkus Reviews\n\nMETADATA VERIFICADA:\n- Título: Sin filtro\n- Autor: Sarah Frier\n- Año: 2020\n- Categorías: Negocios y finanzas personales, Libros",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Sin filtro",
+    "autor_completo": "Sarah Frier",
+    "año": "2020",
+    "editorial": null,
+    "isbn": "1523750789",
+    "categorias": [
+      "Negocios y finanzas personales",
+      "Libros"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/sin-filtro/id1523750789?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [],
+  "resolution_path": [
+    "evidence_fetched_3sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-22T03:52:28.715Z"
+}

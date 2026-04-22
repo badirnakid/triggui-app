@@ -47,37 +47,9 @@
     }
   },
   "google": {
-    "ok": true,
-    "source": "google_books",
-    "match_score": 1,
-    "match_details": {
-      "matched_title": "Descubre tu destino con el monje que vendió su Ferrari",
-      "matched_author": "Robin Sharma"
-    },
-    "synopsis": "¡Aprende cómo conseguir la vida que siempre has soñado tener y transforma definitivamente todas las dimensiones de tu mundo! Éste es el último libro de la serie que protagoniza el famoso monje que vendió su Ferrari, una obra que puede conseguir que mires el mundo con otros ojos. Te enseñará a despertar tu yo más íntimo y te ayudará a lograr una vida más plena y más feliz, así como prosperidad y paz interior. Lo único que tienes que hacer es mirar dentro de ti. Escrito como una fábula, Descubre tu destino con el monje que vendió su Ferrari ofrece nuevos aspectos de la sabiduría de Julian Mantle, el superabogado que cambió su vida de lujo por la paz interior y la felicidad. Una ficción inolvidable y paradójicamente realista, que desvela el verdadero propósito de la vida y muestra cómo liberar todo el potencial del ser, el secreto de la felicidad y la importancia de desbordar los límites para así encontrar el camino de la libertad personal. Una combinación de profundidad y lecciones prácticas que abrirá las puertas de las infinitas posibilidades que la vida depara a todas las personas y que transformarán definitivamente todas las dimensiones de tu mundo. Que te enseñará cómo conseguir la vida que siempre has soñado tener.",
-    "synopsis_length": 1238,
-    "covers": [
-      {
-        "size": "small",
-        "url": "https://books.google.com/books/content?id=veYJ4id8CZwC&printsec=frontcover&img=1&zoom=1&source=gbs_api"
-      }
-    ],
-    "verified_identity": {
-      "titulo_real": "Descubre tu destino con el monje que vendió su Ferrari",
-      "subtitulo": "Una fábula espiritual",
-      "autor_completo": "Robin Sharma",
-      "año": "2012",
-      "editorial": "GRIJALBO",
-      "paginas": 187,
-      "isbn": "9788425345326",
-      "isbn13": "9788425345326",
-      "isbn10": "8425345324",
-      "categorias": [
-        "Self-Help"
-      ],
-      "idioma": "es",
-      "preview_link": "http://books.google.com/books?id=veYJ4id8CZwC&printsec=frontcover&dq=intitle:Descubre+tu+destino+con+el+monje+que+vendi%C3%B3+su+Ferrari+inauthor:Robin+Sharma&hl=&cd=1&source=gbs_api"
-    }
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
   },
   "openlibrary": {
     "ok": false,
@@ -129,12 +101,6 @@
       "valid": true
     },
     {
-      "source": "google_books",
-      "size": "small",
-      "url": "https://books.google.com/books/content?id=veYJ4id8CZwC&printsec=frontcover&img=1&zoom=1&source=gbs_api",
-      "valid": true
-    },
-    {
       "source": "amazon",
       "size": "large",
       "url": "https://images-na.ssl-images-amazon.com/images/P/469029722.01.LZZZZZZZ.jpg",
@@ -143,17 +109,17 @@
   ],
   "_sources_succeeded": [
     "apple_books",
-    "google_books",
     "amazon"
   ],
   "_sources_failed": [
+    "google_books:no_good_match",
     "openlibrary:no_results"
   ],
   "_timing": {
-    "phase1_parallel_ms": 679,
-    "phase2_isbn_chain_ms": 159,
-    "cover_validation_ms": 954,
-    "total_ms": 1792
+    "phase1_parallel_ms": 15813,
+    "phase2_isbn_chain_ms": 23825,
+    "cover_validation_ms": 518,
+    "total_ms": 40156
   },
-  "_cached_at": "2026-04-21T11:10:47.687Z"
+  "_cached_at": "2026-04-22T03:49:17.217Z"
 }

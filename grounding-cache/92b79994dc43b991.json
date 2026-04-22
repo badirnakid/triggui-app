@@ -1,29 +1,47 @@
 {
-  "ground_truth": "SINOPSIS OFICIAL (Google Books):\n\n\n\nMETADATA VERIFICADA:\n- Título: El yoga de Jesus\n- Autor: Paramahansa Yogananda, Self-Realization Fellowship\n- Año: 2009\n- Categorías: Sprituality",
-  "grounding_source": "google_books",
-  "book_identity_confidence": 0.843469387755102,
+  "ground_truth": "TEMA INFERIDO (el modelo no conoce este libro directamente, infiere desde similares):\n\nLa conexión entre las enseñanzas de Jesús y la práctica del yoga, enfatizando la espiritualidad y la meditación como caminos hacia la unión con lo divino.\n\nVOZ INFERIDA:\nUna voz espiritual y reflexiva, que busca unir diferentes tradiciones religiosas y filosóficas a través de un enfoque inclusivo y profundo.\n\nLIBROS SIMILARES QUE COMPARTEN ADN CON ESTE:\n- \"Autobiografía de un yogui\" (Paramahansa Yogananda): Escrito por el mismo autor, este libro explora la espiritualidad y la meditación, y presenta la conexión entre el yoga y la vida espiritual.\n- \"El corazón del yoga: Desarrollo de una práctica personal\" (T.K.V. Desikachar): Este libro aborda la práctica del yoga desde una perspectiva espiritual y filosófica, similar a la conexión que se establece entre el yoga y las enseñanzas de Jesús.\n- \"La sabiduría de la inseguridad\" (Alan Watts): Aunque no trata directamente sobre el yoga, este libro explora la espiritualidad y la búsqueda de la verdad, resonando con la temática de la unión divina.\n- \"La esencia del cristianismo\" (Ludwig Feuerbach): Este libro examina las enseñanzas de Jesús desde una perspectiva filosófica, lo que puede ser relevante para el análisis de las enseñanzas ocultas en los Evangelios.\n- \"El camino del yogui\" (Swami Sivananda): Este libro ofrece una visión sobre el yoga y la espiritualidad, similar a la exploración de Yogananda sobre las enseñanzas de Jesús.",
+  "grounding_source": "model_inference",
+  "book_identity_confidence": 0.6000000000000001,
   "verified_identity": {
-    "titulo_real": "El yoga de Jesus",
-    "subtitulo": "",
-    "autor_completo": "Paramahansa Yogananda, Self-Realization Fellowship",
-    "año": "2009",
-    "editorial": null,
-    "paginas": 161,
-    "isbn": "",
-    "isbn13": "",
-    "isbn10": "",
-    "categorias": [
-      "Sprituality"
-    ],
-    "idioma": "es",
-    "preview_link": "http://books.google.com/books?id=qNb2SAAACAAJ&dq=intitle:El+yoga+de+Jes%C3%BAs+inauthor:Paramahansa+Yogamanda&hl=&cd=2&source=gbs_api"
+    "titulo_real": "El yoga de Jesús",
+    "autor_completo": "Paramahansa Yogamanda",
+    "año": null
   },
-  "match_score": 0.7336734693877551,
-  "other_sources_agreed": [],
-  "resolution_path": [
-    "evidence_fetched_1sources"
+  "inference_confidence": 0.8,
+  "book_known_directly": false,
+  "rich_inference": true,
+  "similar_books": [
+    {
+      "titulo": "Autobiografía de un yogui",
+      "autor": "Paramahansa Yogananda",
+      "razon": "Escrito por el mismo autor, este libro explora la espiritualidad y la meditación, y presenta la conexión entre el yoga y la vida espiritual."
+    },
+    {
+      "titulo": "El corazón del yoga: Desarrollo de una práctica personal",
+      "autor": "T.K.V. Desikachar",
+      "razon": "Este libro aborda la práctica del yoga desde una perspectiva espiritual y filosófica, similar a la conexión que se establece entre el yoga y las enseñanzas de Jesús."
+    },
+    {
+      "titulo": "La sabiduría de la inseguridad",
+      "autor": "Alan Watts",
+      "razon": "Aunque no trata directamente sobre el yoga, este libro explora la espiritualidad y la búsqueda de la verdad, resonando con la temática de la unión divina."
+    },
+    {
+      "titulo": "La esencia del cristianismo",
+      "autor": "Ludwig Feuerbach",
+      "razon": "Este libro examina las enseñanzas de Jesús desde una perspectiva filosófica, lo que puede ser relevante para el análisis de las enseñanzas ocultas en los Evangelios."
+    },
+    {
+      "titulo": "El camino del yogui",
+      "autor": "Swami Sivananda",
+      "razon": "Este libro ofrece una visión sobre el yoga y la espiritualidad, similar a la exploración de Yogananda sobre las enseñanzas de Jesús."
+    }
   ],
-  "tier_reached": 2,
-  "cost_tokens": 0,
-  "cached_at": "2026-04-21T13:50:38.242Z"
+  "resolution_path": [
+    "evidence_fetched_0sources",
+    "tier3_conf_0.80"
+  ],
+  "tier_reached": 3,
+  "cost_tokens": 892,
+  "cached_at": "2026-04-22T03:53:51.471Z"
 }

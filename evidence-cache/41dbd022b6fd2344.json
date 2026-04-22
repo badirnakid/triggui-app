@@ -45,35 +45,9 @@
     }
   },
   "google": {
-    "ok": true,
-    "source": "google_books",
-    "match_score": 1,
-    "match_details": {
-      "matched_title": "Wu Wei",
-      "matched_author": "Henri Borel"
-    },
-    "synopsis": "",
-    "synopsis_length": 0,
-    "covers": [
-      {
-        "size": "small",
-        "url": "https://books.google.com/books/content?id=AjakOr29ocgC&printsec=frontcover&img=1&zoom=1&source=gbs_api"
-      }
-    ],
-    "verified_identity": {
-      "titulo_real": "Wu Wei",
-      "subtitulo": "A Phantasy Based on the Philosophy of Lao-Tse",
-      "autor_completo": "Henri Borel",
-      "año": "1903",
-      "editorial": null,
-      "paginas": 88,
-      "isbn": "",
-      "isbn13": "",
-      "isbn10": "",
-      "categorias": [],
-      "idioma": "en",
-      "preview_link": "http://books.google.com/books?id=AjakOr29ocgC&printsec=frontcover&dq=intitle:Wu+wei+inauthor:Henri+Borel&hl=&cd=1&source=gbs_api"
-    }
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
   },
   "openlibrary": {
     "ok": true,
@@ -106,7 +80,7 @@
       "editorial": null,
       "isbn": "",
       "categorias": [],
-      "idioma": "fre",
+      "idioma": "eng",
       "paginas": null
     }
   },
@@ -155,12 +129,6 @@
       "valid": true
     },
     {
-      "source": "google_books",
-      "size": "small",
-      "url": "https://books.google.com/books/content?id=AjakOr29ocgC&printsec=frontcover&img=1&zoom=1&source=gbs_api",
-      "valid": true
-    },
-    {
       "source": "openlibrary",
       "size": "large",
       "url": "https://covers.openlibrary.org/b/id/5691511-L.jpg",
@@ -187,16 +155,17 @@
   ],
   "_sources_succeeded": [
     "apple_books",
-    "google_books",
     "openlibrary",
     "amazon"
   ],
-  "_sources_failed": [],
+  "_sources_failed": [
+    "google_books:no_good_match"
+  ],
   "_timing": {
-    "phase1_parallel_ms": 1414,
-    "phase2_isbn_chain_ms": 97,
-    "cover_validation_ms": 673,
-    "total_ms": 2184
+    "phase1_parallel_ms": 15790,
+    "phase2_isbn_chain_ms": 23732,
+    "cover_validation_ms": 1094,
+    "total_ms": 40616
   },
-  "_cached_at": "2026-04-21T13:38:27.087Z"
+  "_cached_at": "2026-04-22T03:58:04.099Z"
 }

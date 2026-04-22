@@ -165,10 +165,10 @@
     "google_books:no_good_match"
   ],
   "_timing": {
-    "phase1_parallel_ms": 3501,
-    "phase2_isbn_chain_ms": 421,
-    "cover_validation_ms": 972,
-    "total_ms": 4894
+    "phase1_parallel_ms": 15793,
+    "phase2_isbn_chain_ms": 23885,
+    "cover_validation_ms": 465,
+    "total_ms": 40143
   },
-  "_cached_at": "2026-04-21T11:06:04.760Z"
+  "_cached_at": "2026-04-22T04:07:19.798Z"
 }

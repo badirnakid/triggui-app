@@ -1,0 +1,28 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\n¿Cuál es el secreto del crecimiento y la innovación en un mundo cada vez más complejo? Según Marc Benioff, la respuesta hay que buscarla en la cultura, en los valores que se transmiten en todo lo que haces. El fundador de salesforce.com revela cómo los valores: confianza, éxito de los clientes, innovación y equidad, así como el compromiso de retornar a la comunidad lo que esta te da, han sido los que han permitido el éxito de su empresa. No importa el sector al que te dediques, la base de la resiliencia y flexibilidad de toda empresa está en la cultura de la organización y cómo esta inspira a todos los empleados. Sin eso, nada funciona.\n\nMETADATA VERIFICADA:\n- Título: Pionero\n- Autor: Marc Benioff\n- Año: 2020\n- Categorías: Administración y liderazgo, Libros, Negocios y finanzas personales",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Pionero",
+    "autor_completo": "Marc Benioff",
+    "año": "2020",
+    "editorial": null,
+    "isbn": "1503130540",
+    "categorias": [
+      "Administración y liderazgo",
+      "Libros",
+      "Negocios y finanzas personales"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/pionero/id1503130540?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_3sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-22T03:51:26.856Z"
+}

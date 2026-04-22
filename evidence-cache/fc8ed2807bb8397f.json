@@ -1,0 +1,171 @@
+{
+  "titulo_input": "Sin filtro",
+  "autor_input": "Sarah Frier",
+  "isbn_seed": "",
+  "isbn_discovered": "1523750789",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Sin filtro",
+      "matched_author": "Sarah Frier"
+    },
+    "synopsis": "Instagram ha cambiado la tecnología y los negocios, la cultura y la comunicación y también nos ha cambiado a todos nosotros. ¡Descubre sus secretos! El mejor libro de empresa de 2020 según el Financial Times and McKinsey &amp; Company Instagram está tan ligado a nuestro día a día que su historia no puede disociarse del impacto que tiene sobre nuestras vidas. Desde su creación en el año 2010 de la mano de Kevin Systrom y Mike Krieger como una aplicación simple e intuitiva, lnstagram se ha convertido en una máquina de hacer famosos como nunca antes se había visto -ya sea en el patio de los colegios, en el mundo cultural o en el de la moda- en busca de un reconocimiento digital que obtiene gracias a likes, comentarios, seguidores y espectaculares acuerdos con distintas empresas. Unos doscientos millones de usuarios cuentan con más de cincuenta mil seguidores, la cifra necesaria para vivir de publicar promocionando marcas. Y millones de personas y de marcas tienen más seguidores en Instagram que suscriptores el The New York Times hasta tal punto que, anunciarse a través de estas personas que crean tendencias, cuentan historias o tienen muchos seguidores, se ha convertido en un negocio multimillonario. Sin filtro es el primer libro que desvela los secretos de Instagram gracias al testimonio de quienes lo hicieron realidad. ¿Cómo crearon ese espacio donde compartimos versiones aspiracionales de la vida, transformando nuestro sentido colectivo de la realidad? ¿Qué caminos se abren para asegurar su incesante crecimiento tras la adquisición por Facebook? Además, a partir de distintos casos reveladores, la autora nos ofrece el análisis de las estrategias de éxito que los usuarios del software culturalmente más importante de nuestra generación han desarrollado para crear su imagen y potenciar su fama: desde los adolescentes hasta las figuras más icónicas o las startups más innovadoras y las mayores compañías del mundo. Reseñas: «Sin filtro es un libro apasionante, repleto de creatividad, ambición e intriga, y a la vez un retrato antropológico de la vida moderna. Con un pulso trepidante, Sarah Frier relata con todo detalle cómo Instagram se ha convertido en un fenómeno cultural y reflexiona sobre qué dice el éxito de esta aplicación acerca de todos nosotros.» Ashlee Vance, autor de Elon Musk «Esta fascinante historia del imparable ascenso y de la inevitable transformación de una de las redes sociales más populares e influyentes nos invita a reflexionar sobre qué, o quién, es el verdadero producto en las nuevas tecnologías.» Kirkus Reviews",
+    "synopsis_length": 2572,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/22/19/01/221901bb-8836-7a74-5ad2-e6bd055f10be/9788417992217.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/22/19/01/221901bb-8836-7a74-5ad2-e6bd055f10be/9788417992217.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/22/19/01/221901bb-8836-7a74-5ad2-e6bd055f10be/9788417992217.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/22/19/01/221901bb-8836-7a74-5ad2-e6bd055f10be/9788417992217.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Sin filtro",
+      "autor_completo": "Sarah Frier",
+      "año": "2020",
+      "editorial": null,
+      "isbn": "1523750789",
+      "categorias": [
+        "Negocios y finanzas personales",
+        "Libros"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/sin-filtro/id1523750789?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 0.5537735849056604,
+    "match_details": {
+      "matched_title": "Sin filtro : La historia secreta de Instagram / No Filter",
+      "matched_author": "Sarah Frier"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2020.",
+    "synopsis_length": 65,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://covers.openlibrary.org/b/id/10509399-L.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://covers.openlibrary.org/b/id/10509399-M.jpg"
+      },
+      {
+        "size": "small",
+        "url": "https://covers.openlibrary.org/b/id/10509399-S.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Sin filtro : La historia secreta de Instagram / No Filter",
+      "autor_completo": "Sarah Frier",
+      "año": "2020",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": null,
+      "paginas": null
+    }
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/1523750789.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "1523750789",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/22/19/01/221901bb-8836-7a74-5ad2-e6bd055f10be/9788417992217.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/22/19/01/221901bb-8836-7a74-5ad2-e6bd055f10be/9788417992217.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/22/19/01/221901bb-8836-7a74-5ad2-e6bd055f10be/9788417992217.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/22/19/01/221901bb-8836-7a74-5ad2-e6bd055f10be/9788417992217.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "large",
+      "url": "https://covers.openlibrary.org/b/id/10509399-L.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "medium",
+      "url": "https://covers.openlibrary.org/b/id/10509399-M.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "small",
+      "url": "https://covers.openlibrary.org/b/id/10509399-S.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/1523750789.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "openlibrary",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 15767,
+    "phase2_isbn_chain_ms": 24736,
+    "cover_validation_ms": 1239,
+    "total_ms": 41742
+  },
+  "_cached_at": "2026-04-22T03:52:28.714Z"
+}

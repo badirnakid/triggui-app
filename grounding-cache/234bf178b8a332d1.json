@@ -1,0 +1,28 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\n«Ryan Holiday ha traído las antiguas enseñanzas del estoicismo a millones de lectores, desde atletas y políticos hasta directores ejecutivos». Good Morning America Un inspirador tributo al poder y la promesa de la autodisciplina; este es el segundo libro de la serie «Las 4 virtudes estoicas» de Ryan Holiday, autor superventas y referente internacional del estoicismo moderno. Para conquistar el mundo, uno debe conquistarse primero a sí mismo: las emociones, las acciones y los pensamientos. Eisenhower dijo que la libertad es la práctica de la autodisciplina. Cicerón definió la virtud de la templanza como el esplendor de la vida. Sin límites ni autocontrol, no solo nos arriesgamos a no alcanzar nuestro potencial y a perder lo que hemos logrado, sino que, además, nos aseguramos una vida de humillación y miseria. En este nuevo libro, Ryan Holiday defiende la templanza como la virtud más importante. A lo largo de la historia ha recibido distintos nombres —autocontrol, disciplina…— pero todos hacen referencia a lo mismo: a gobernar en lugar de ser gobernado; a establecer tus propios límites; a marcar tus propios hábitos. Todos los grandes de la historia han practicado esta forma de autodominio, desde la leyenda del béisbol Lou Gehrig, hasta la reina Isabel II, la escritora Joyce Carol Oates, el emperador Marco Aurelio y Martin Luther King Jr., ministro y líder del movimiento por los derechos civiles. En una época de excesos y desorden, la autodisciplina es ahora más necesaria que nunca. ¿Te atreves a cavar hondo para encontrarla? Y, más importante, ¿la usarás? Solo con autodisciplina podrás dirigir tu vida rumbo a la verdadera realización. La crítica ha dicho: «Una lectura ágil y absorbente». Annie Duke, autora del best seller Thinking In Bets «Un poderoso argumento a favor de las virtudes y los valores por los que deben regirse los líderes de hoy». Almirante James Stavridis, excomandante supremo de las Fuerzas Aliadas de la OTAN\n\nMETADATA VERIFICADA:\n- Título: La disciplina marcará tu destino (Las 4 virtudes estoicas 2)\n- Autor: Ryan Holiday\n- Año: 2022\n- Categorías: Superación personal, Libros, Salud, mente y cuerpo, No ficción",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.8513793103448277,
+  "verified_identity": {
+    "titulo_real": "La disciplina marcará tu destino (Las 4 virtudes estoicas 2)",
+    "autor_completo": "Ryan Holiday",
+    "año": "2022",
+    "editorial": null,
+    "isbn": "6443174233",
+    "categorias": [
+      "Superación personal",
+      "Libros",
+      "Salud, mente y cuerpo",
+      "No ficción",
+      "Filosofía"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/la-disciplina-marcar%C3%A1-tu-destino-las-4-virtudes-estoicas-2/id6443174233?uo=4"
+  },
+  "match_score": 0.753448275862069,
+  "other_sources_agreed": [],
+  "resolution_path": [
+    "evidence_fetched_2sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-22T03:57:01.918Z"
+}

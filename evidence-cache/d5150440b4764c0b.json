@@ -1,0 +1,126 @@
+{
+  "titulo_input": "Todo el tiempo del mundo",
+  "autor_input": "Lisa Broderick",
+  "isbn_seed": "",
+  "isbn_discovered": "1620669165",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Todo el tiempo del mundo",
+      "matched_author": "Lisa Broderick"
+    },
+    "synopsis": "Nos pasamos el día corriendo, dándonos prisa, abrumados… nos faltan horas incluso para dormir. El tiempo es algo de lo que no podemos escapar, y también es un concepto que aún no comprendemos del todo. En lo único en lo que casi todos nos ponemos de acuerdo es en que tenemos muy poco. Hoy en día la idea de que el tiempo no es algo lineal, ni una fuerza inamovible, empieza a ser más conocida. Pero las implicaciones que esto tiene en nuestro día a día todavía se nos escapan y parecen accesibles solo a ciertos teóricos de la física cuántica con muchos doctorados a sus espaldas. En este libro (con prólogo del renombrado maestro espiritual Don Miguel Ruiz) Lisa Broderick examina la ciencia y la metafísica de la construcción humana del tiempo. Lisa Broderick nos revela que el tiempo es una energía maleable y que podemos influir en él y manipularlo de la misma forma que sucede con otras energías sutiles. Así, el tiempo puede convertirse en un recurso abundante que podemos liberar de forma activa para tener todo el tiempo del mundo y conseguir el tipo de vida que deseamos. A medida que aprendamos los conceptos y las técnicas que comparte la autora en un discurso fascinante, descubriremos que podemos dejar de ser esclavos del tiempo para convertirnos en creadores de nuestra propia experiencia.",
+    "synopsis_length": 1305,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/10/7b/dc/107bdc37-1078-3a28-9bbc-d75961d637ff/9788411190206.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/10/7b/dc/107bdc37-1078-3a28-9bbc-d75961d637ff/9788411190206.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/10/7b/dc/107bdc37-1078-3a28-9bbc-d75961d637ff/9788411190206.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/10/7b/dc/107bdc37-1078-3a28-9bbc-d75961d637ff/9788411190206.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Todo el tiempo del mundo",
+      "autor_completo": "Lisa Broderick",
+      "año": "2022",
+      "editorial": null,
+      "isbn": "1620669165",
+      "categorias": [
+        "Superación personal",
+        "Libros",
+        "Salud, mente y cuerpo",
+        "Negocios y finanzas personales",
+        "Administración y liderazgo"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/todo-el-tiempo-del-mundo/id1620669165?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": false,
+    "reason": "no_results",
+    "source": "openlibrary"
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/1620669165.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "1620669165",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/10/7b/dc/107bdc37-1078-3a28-9bbc-d75961d637ff/9788411190206.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/10/7b/dc/107bdc37-1078-3a28-9bbc-d75961d637ff/9788411190206.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/10/7b/dc/107bdc37-1078-3a28-9bbc-d75961d637ff/9788411190206.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/10/7b/dc/107bdc37-1078-3a28-9bbc-d75961d637ff/9788411190206.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/1620669165.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match",
+    "openlibrary:no_results"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 15825,
+    "phase2_isbn_chain_ms": 23710,
+    "cover_validation_ms": 1211,
+    "total_ms": 40746
+  },
+  "_cached_at": "2026-04-22T04:01:17.687Z"
+}
