@@ -1,0 +1,47 @@
+{
+  "ground_truth": "TEMA INFERIDO (el modelo no conoce este libro directamente, infiere desde similares):\n\nEl libro probablemente trata sobre la búsqueda de significado y la superación de miedos en tiempos de crisis, utilizando sabiduría ancestral y prácticas chamánicas.\n\nVOZ INFERIDA:\nLa voz del autor parece ser reflexiva, inspiradora y accesible, combinando elementos de autoayuda con una profunda conexión cultural.\n\nLIBROS SIMILARES QUE COMPARTEN ADN CON ESTE:\n- \"El poder del ahora\" (Eckhart Tolle): Aborda la importancia de vivir en el presente y cómo enfrentar miedos internos.\n- \"La sabiduría de la inseguridad\" (Alan Watts): Explora la fragilidad de la vida y cómo aceptar la incertidumbre.\n- \"Los cuatro acuerdos\" (Don Miguel Ruiz): Ofrece principios prácticos para la vida basados en la sabiduría ancestral.\n- \"La magia del orden\" (Marie Kondo): Aunque más centrado en el orden físico, también toca la transformación personal y la búsqueda de significado.\n- \"El camino del artista\" (Julia Cameron): Invita a la introspección y a la conexión con la creatividad como forma de enfrentar miedos.",
+  "grounding_source": "model_inference",
+  "book_identity_confidence": 0.6000000000000001,
+  "verified_identity": {
+    "titulo_real": "Encuentro",
+    "autor_completo": "Fernando Broca",
+    "año": null
+  },
+  "inference_confidence": 0.8,
+  "book_known_directly": false,
+  "rich_inference": true,
+  "similar_books": [
+    {
+      "titulo": "El poder del ahora",
+      "autor": "Eckhart Tolle",
+      "razon": "Aborda la importancia de vivir en el presente y cómo enfrentar miedos internos."
+    },
+    {
+      "titulo": "La sabiduría de la inseguridad",
+      "autor": "Alan Watts",
+      "razon": "Explora la fragilidad de la vida y cómo aceptar la incertidumbre."
+    },
+    {
+      "titulo": "Los cuatro acuerdos",
+      "autor": "Don Miguel Ruiz",
+      "razon": "Ofrece principios prácticos para la vida basados en la sabiduría ancestral."
+    },
+    {
+      "titulo": "La magia del orden",
+      "autor": "Marie Kondo",
+      "razon": "Aunque más centrado en el orden físico, también toca la transformación personal y la búsqueda de significado."
+    },
+    {
+      "titulo": "El camino del artista",
+      "autor": "Julia Cameron",
+      "razon": "Invita a la introspección y a la conexión con la creatividad como forma de enfrentar miedos."
+    }
+  ],
+  "resolution_path": [
+    "evidence_fetched_0sources",
+    "tier3_conf_0.80"
+  ],
+  "tier_reached": 3,
+  "cost_tokens": 775,
+  "cached_at": "2026-04-22T14:43:15.761Z"
+}

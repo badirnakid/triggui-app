@@ -1,0 +1,158 @@
+{
+  "titulo_input": "La conciencia",
+  "autor_input": "Mark Gober",
+  "isbn_seed": "",
+  "isbn_discovered": "1564726354",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 0.6021276595744681,
+    "match_details": {
+      "matched_title": "La conciencia: principio fundamental de realidad",
+      "matched_author": "Mark Gober"
+    },
+    "synopsis": "La conciencia crea toda la realidad material. No son los procesos biológicos los que crean la conciencia. Este descubrimiento invierte por completo el pensamiento científico tradicional. Mark Gober no solo explora la evidencia científica procedente de distintas disciplinas, que van desde los fenómenos psíquicos a las experiencias cercanas a la muerte, pasando por la física cuántica. También recoge el testimonio de pensadores de vanguardia como el doctor Ervin Laszlo, dos veces nominado para el Premio Nobel de la Paz, el doctor Dean Radin, director científico del Instituto de Ciencias Noéticas o Larry Dossey. Este libro sacudirá a la comunidad científica y a todos lo que estén interesados en comprender la verdadera naturaleza de la realidad. La confusión actual a nivel planetario puede estar relacionada, en su esencia, con una comprensión errónea fundamental respecto a nuestra realidad. Esta obra tiene como objetivo cambiar nuestra perspectiva colectiva, remodelar nuestra visión del potencial humano y cómo nos tratamos los unos a los otros. Las implicaciones derivadas del libro alientan una muy necesaria revisión de la ciencia, la tecnología y la medicina. Una breve historia del tiempo de Stephen Hawking se encuentra con El poder del ahora de Eckhart Tolle.",
+    "synopsis_length": 1276,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication125/v4/6c/be/1a/6cbe1ad2-a2bf-0f73-b73a-eb2227584286/1033895648.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication125/v4/6c/be/1a/6cbe1ad2-a2bf-0f73-b73a-eb2227584286/1033895648.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication125/v4/6c/be/1a/6cbe1ad2-a2bf-0f73-b73a-eb2227584286/1033895648.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication125/v4/6c/be/1a/6cbe1ad2-a2bf-0f73-b73a-eb2227584286/1033895648.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "La conciencia: principio fundamental de realidad",
+      "autor_completo": "Mark Gober",
+      "año": "2021",
+      "editorial": null,
+      "isbn": "1564726354",
+      "categorias": [
+        "Ciencias de la vida",
+        "Libros",
+        "Ciencia y naturaleza"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/la-conciencia-principio-fundamental-de-realidad/id1564726354?uo=4"
+    }
+  },
+  "google": {
+    "ok": true,
+    "source": "google_books",
+    "match_score": 0.6021276595744681,
+    "match_details": {
+      "matched_title": "La conciencia: principio fundamental de realidad",
+      "matched_author": "Mark Gober"
+    },
+    "synopsis": "La conciencia crea toda la realidad material. No son los procesos biológicos los que crean la conciencia. Este descubrimiento invierte por completo el pensamiento científico tradicional. Mark Gober no solo explora la evidencia científica procedente de distintas disciplinas, que van desde los fenómenos psíquicos a las experiencias cercanas a la muerte, pasando por la física cuántica. También recoge el testimonio de pensadores de vanguardia como el doctor Ervin Laszlo, dos veces nominado para el Premio Nobel de la Paz, el doctor Dean Radin, director científico del Instituto de Ciencias Noéticas o Larry Dossey. Este libro sacudirá a la comunidad científica y a todos lo que estén interesados en comprender la verdadera naturaleza de la realidad. La confusión actual a nivel planetario puede estar relacionada, en su esencia, con una comprensión errónea fundamental respecto a nuestra realidad. Esta obra tiene como objetivo cambiar nuestra perspectiva colectiva, remodelar nuestra visión del potencial humano y cómo nos tratamos los unos a los otros. Las implicaciones derivadas del libro alientan una muy necesaria revisión de la ciencia, la tecnología y la medicina. Una breve historia del tiempo de Stephen Hawking se encuentra con El poder del ahora de Eckhart Tolle.",
+    "synopsis_length": 1276,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=Xz4rEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "La conciencia: principio fundamental de realidad",
+      "subtitulo": "¿Y si fuera al revés? Disipando el mito de que la conciencia es producto del cerebro.",
+      "autor_completo": "Mark Gober",
+      "año": "2021",
+      "editorial": "EDITORIAL SIRIO S.A.",
+      "paginas": 394,
+      "isbn": "9788418531521",
+      "isbn13": "9788418531521",
+      "isbn10": "8418531525",
+      "categorias": [
+        "Science"
+      ],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=Xz4rEAAAQBAJ&printsec=frontcover&dq=La+conciencia+Mark+Gober&hl=&cd=1&source=gbs_api"
+    }
+  },
+  "openlibrary": {
+    "ok": false,
+    "reason": "no_results",
+    "source": "openlibrary"
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/1564726354.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "1564726354",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication125/v4/6c/be/1a/6cbe1ad2-a2bf-0f73-b73a-eb2227584286/1033895648.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication125/v4/6c/be/1a/6cbe1ad2-a2bf-0f73-b73a-eb2227584286/1033895648.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication125/v4/6c/be/1a/6cbe1ad2-a2bf-0f73-b73a-eb2227584286/1033895648.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication125/v4/6c/be/1a/6cbe1ad2-a2bf-0f73-b73a-eb2227584286/1033895648.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=Xz4rEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/1564726354.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "google_books",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "openlibrary:no_results"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 15729,
+    "phase2_isbn_chain_ms": 16278,
+    "cover_validation_ms": 482,
+    "total_ms": 32489
+  },
+  "_cached_at": "2026-04-22T14:49:06.022Z"
+}

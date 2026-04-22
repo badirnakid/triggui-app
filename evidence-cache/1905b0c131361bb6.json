@@ -1,0 +1,158 @@
+{
+  "titulo_input": "La filosofía del éxito",
+  "autor_input": "Napoleón Hill",
+  "isbn_seed": "",
+  "isbn_discovered": "1608169091",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "La filosofía del éxito",
+      "matched_author": "Napoleon Hill"
+    },
+    "synopsis": "&#xa0;Tienes en tus manos los diecisiete principios del éxito que Napoleon Hill descubrió tras más de veinte años de investigación. La esencia de la sabiduría de quien, a pesar de llevar décadas muerto, sigue siendo considerando \"el filósofo de la superación de todos los tiempos\". Autor de múltiples libros superventas, Hill te da las claves para alcanzar el éxito, la felicidad y la tranquilidad de espíritu. Líbrate de las limitaciones que te autoimpones y disfruta de la riqueza de la vida.&#xa0; &#xa0;Trabajar para conseguir tu objetivo será más fácil y productivo si conviertes estas enseñanzas en tus nuevos hábitos. Aprende a definir tu meta en la vida, a ser una persona proactiva y con iniciativa, a mantener a raya las emociones negativas y a ganarte la confianza de los demás. Si lo haces, tu nueva actitud te allanará el camino mucho más de lo que puedas imaginar.&#xa0; &#xa0;Usa esta obra como lo que es: la brújula que guio a un hombre que no sólo se hizo a sí mismo, sino que fue capaz de alcanzar todas las metas que se propuso. Porque, además de compartir los principios fundamentales del éxito, Napoleon Hill te da instrucciones detalladas sobre cómo aplicarlos. ¡Define tu norte y dirígete hacia él sin perder más tiempo!&#xa0;",
+    "synopsis_length": 1249,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/8c/3c/bd/8c3cbd23-ff8a-f4a6-8d4e-7853d8a35189/9788413441535.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/8c/3c/bd/8c3cbd23-ff8a-f4a6-8d4e-7853d8a35189/9788413441535.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/8c/3c/bd/8c3cbd23-ff8a-f4a6-8d4e-7853d8a35189/9788413441535.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/8c/3c/bd/8c3cbd23-ff8a-f4a6-8d4e-7853d8a35189/9788413441535.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "La filosofía del éxito",
+      "autor_completo": "Napoleon Hill",
+      "año": "2022",
+      "editorial": null,
+      "isbn": "1608169091",
+      "categorias": [
+        "Superación personal",
+        "Libros",
+        "Salud, mente y cuerpo"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/la-filosof%C3%ADa-del-%C3%A9xito/id1608169091?uo=4"
+    }
+  },
+  "google": {
+    "ok": true,
+    "source": "google_books",
+    "match_score": 0.6135135135135135,
+    "match_details": {
+      "matched_title": "Las llaves del éxito de Napoleón Hill",
+      "matched_author": "Napoleón Hill"
+    },
+    "synopsis": "¿Sabías que puedes alcanzar el éxito en cualquier cosa que emprendas? Este libro te enseñará cómo hacerlo con los 17 principios: Precisión de objetivos. Genio creador. Una personalidad agradable. Fe aplicada. Recorrer un kilómetro más. Trabajo en equipo. Visión creadora. Autodisciplina. Exactitud de pensamiento. Aprender de la derrota. Atención controlada. Iniciativa personal. Entusiasmo. Dedicación de tiempo y dinero. La conservación de una buena salud física y mental. Utilización de la fuerza del \"hábito cósmico\".",
+    "synopsis_length": 521,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=5dkt1rcHn2gC&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Las llaves del éxito de Napoleón Hill",
+      "subtitulo": "Los 17 principios del triunfo personal",
+      "autor_completo": "Napoleón Hill",
+      "año": "1997",
+      "editorial": "EDAF",
+      "paginas": 242,
+      "isbn": "9788441401112",
+      "isbn13": "9788441401112",
+      "isbn10": "844140111X",
+      "categorias": [
+        "Family & Relationships"
+      ],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=5dkt1rcHn2gC&printsec=frontcover&dq=intitle:La+filosof%C3%ADa+del+%C3%A9xito+inauthor:Napole%C3%B3n+Hill&hl=&cd=3&source=gbs_api"
+    }
+  },
+  "openlibrary": {
+    "ok": false,
+    "reason": "no_results",
+    "source": "openlibrary"
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/1608169091.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "1608169091",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/8c/3c/bd/8c3cbd23-ff8a-f4a6-8d4e-7853d8a35189/9788413441535.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/8c/3c/bd/8c3cbd23-ff8a-f4a6-8d4e-7853d8a35189/9788413441535.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/8c/3c/bd/8c3cbd23-ff8a-f4a6-8d4e-7853d8a35189/9788413441535.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/8c/3c/bd/8c3cbd23-ff8a-f4a6-8d4e-7853d8a35189/9788413441535.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=5dkt1rcHn2gC&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/1608169091.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "google_books",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "openlibrary:no_results"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 498,
+    "phase2_isbn_chain_ms": 187,
+    "cover_validation_ms": 983,
+    "total_ms": 1668
+  },
+  "_cached_at": "2026-04-22T14:41:31.747Z"
+}

@@ -47,9 +47,37 @@
     }
   },
   "google": {
-    "ok": false,
-    "reason": "no_good_match",
-    "source": "google_books"
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Beneath the Surface",
+      "matched_author": "Michael Phelps, Brian Cazeneuve"
+    },
+    "synopsis": "Prepare to peek into the mind of a champion, known as the most decorated Olympian of all time with 28 medals, including 23 gold, with this newly updated edition of Michael Phelps’s autobiography, Beneath the Surface. In this candid memoir, Phelps talks openly about his battle with attention deficit disorder, the trauma of his parents’ divorce, and the challenges that come with being thrust into the limelight. Readers worldwide will relive all the heart-stopping glory as Phelps completes his journey from the youngest man to ever set a world swimming record in 2001, to an Olympic powerhouse in 2008, to surpassing the greatest athlete of ancient Greece, Leonidas of Rhodes, with 13 triumphs in 2016. Athletes and fans alike will be fascinated by insights into Phelps’s training, mental preparation, and behind-the-scenes perspective on international athletic competitions. A chronicle of Phelps’s evolution from awkward teenager to record-breaking powerhouse, Beneath the Surface is a must-read for any sports fan.",
+    "synopsis_length": 1019,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=rmse3WzHmckC&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Beneath the Surface",
+      "subtitulo": "My Story",
+      "autor_completo": "Michael Phelps, Brian Cazeneuve",
+      "año": "2012",
+      "editorial": "Skyhorse",
+      "paginas": 321,
+      "isbn": "9781613213247",
+      "isbn13": "9781613213247",
+      "isbn10": "1613213247",
+      "categorias": [
+        "Sports & Recreation"
+      ],
+      "idioma": "en",
+      "preview_link": "http://books.google.com/books?id=rmse3WzHmckC&printsec=frontcover&dq=intitle:Beneath+the+Surface+inauthor:Michael+Phelps&hl=&cd=1&source=gbs_api"
+    }
   },
   "openlibrary": {
     "ok": true,
@@ -131,6 +159,12 @@
       "valid": true
     },
     {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=rmse3WzHmckC&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
       "source": "openlibrary",
       "size": "large",
       "url": "https://covers.openlibrary.org/b/id/845712-L.jpg",
@@ -157,17 +191,16 @@
   ],
   "_sources_succeeded": [
     "apple_books",
+    "google_books",
     "openlibrary",
     "amazon"
   ],
-  "_sources_failed": [
-    "google_books:no_good_match"
-  ],
+  "_sources_failed": [],
   "_timing": {
-    "phase1_parallel_ms": 1846,
-    "phase2_isbn_chain_ms": 450,
-    "cover_validation_ms": 504,
-    "total_ms": 2800
+    "phase1_parallel_ms": 15794,
+    "phase2_isbn_chain_ms": 1310,
+    "cover_validation_ms": 1503,
+    "total_ms": 18607
   },
-  "_cached_at": "2026-04-21T13:46:27.545Z"
+  "_cached_at": "2026-04-22T14:42:22.192Z"
 }

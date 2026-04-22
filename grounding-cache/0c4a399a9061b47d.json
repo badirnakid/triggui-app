@@ -1,0 +1,28 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nLa conciencia crea toda la realidad material. No son los procesos biológicos los que crean la conciencia. Este descubrimiento invierte por completo el pensamiento científico tradicional. Mark Gober no solo explora la evidencia científica procedente de distintas disciplinas, que van desde los fenómenos psíquicos a las experiencias cercanas a la muerte, pasando por la física cuántica. También recoge el testimonio de pensadores de vanguardia como el doctor Ervin Laszlo, dos veces nominado para el Premio Nobel de la Paz, el doctor Dean Radin, director científico del Instituto de Ciencias Noéticas o Larry Dossey. Este libro sacudirá a la comunidad científica y a todos lo que estén interesados en comprender la verdadera naturaleza de la realidad. La confusión actual a nivel planetario puede estar relacionada, en su esencia, con una comprensión errónea fundamental respecto a nuestra realidad. Esta obra tiene como objetivo cambiar nuestra perspectiva colectiva, remodelar nuestra visión del potencial humano y cómo nos tratamos los unos a los otros. Las implicaciones derivadas del libro alientan una muy necesaria revisión de la ciencia, la tecnología y la medicina. Una breve historia del tiempo de Stephen Hawking se encuentra con El poder del ahora de Eckhart Tolle.\n\nMETADATA VERIFICADA:\n- Título: La conciencia: principio fundamental de realidad\n- Autor: Mark Gober\n- Año: 2021\n- Categorías: Ciencias de la vida, Libros, Ciencia y naturaleza",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.7908510638297873,
+  "verified_identity": {
+    "titulo_real": "La conciencia: principio fundamental de realidad",
+    "autor_completo": "Mark Gober",
+    "año": "2021",
+    "editorial": null,
+    "isbn": "1564726354",
+    "categorias": [
+      "Ciencias de la vida",
+      "Libros",
+      "Ciencia y naturaleza"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/la-conciencia-principio-fundamental-de-realidad/id1564726354?uo=4"
+  },
+  "match_score": 0.6021276595744681,
+  "other_sources_agreed": [
+    "google_books"
+  ],
+  "resolution_path": [
+    "evidence_fetched_3sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-22T14:49:06.023Z"
+}

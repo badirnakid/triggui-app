@@ -46,37 +46,9 @@
     }
   },
   "google": {
-    "ok": true,
-    "source": "google_books",
-    "match_score": 1,
-    "match_details": {
-      "matched_title": "Eutanasia para vivir",
-      "matched_author": "Martín Achirica"
-    },
-    "synopsis": "Hay palabras que impactan y EUTANASIA por su inmediata relación con la muerte, es una de ellas. Amar la vida, no es odiar la muerte; por el contrario, gracias a la muerte que me ha dado tanto… y es que, si no la hiciésemos presente no valoraríamos la vida que tenemos frente. Pero para muchos esta reflexión suele llegar demasiado tarde, cuando ya no queda nada por hacer. ¿Debemos entonces resignarnos a vivir en modo avión, en modo autómata y activar nuestra conciencia solo días o minutos antes de nuestra muerte? En Eutanasia para vivir, volver a la vida en la vida misma, Martín Achirica, nos comparte una visión de la muerte distinta; nos muestra un reflejo al espejo en 360 grados que nos provoca y reta a hacer un alto en el camino para poder sobrevivir, pero más que eso, nos alienta a realmente saber VIVIR abrazando la conciencia del morir. A través de sus páginas, realizaremos un viaje de muerte y vida, nos sorprenderemos ante la vinculación entre la ciencia y la espiritualidad, aquello que se ve y no se ve como parte de un todo encaminado al nuevo paradigma del bienestar y la salud integrativa. Un nuevo arquetipo para el sentido de la existencia.",
-    "synopsis_length": 1165,
-    "covers": [
-      {
-        "size": "small",
-        "url": "https://books.google.com/books/content?id=Ap3QEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
-      }
-    ],
-    "verified_identity": {
-      "titulo_real": "Eutanasia para vivir",
-      "subtitulo": "Volver a la vida en la vida misma",
-      "autor_completo": "Martín Achirica",
-      "año": "2022",
-      "editorial": "Urano México",
-      "paginas": 258,
-      "isbn": "9788419251367",
-      "isbn13": "9788419251367",
-      "isbn10": "8419251364",
-      "categorias": [
-        "Self-Help"
-      ],
-      "idioma": "es",
-      "preview_link": "http://books.google.com/books?id=Ap3QEAAAQBAJ&dq=intitle:Eutanasia+para+vivir+inauthor:Mart%C3%ADn+Achirica&hl=&cd=1&source=gbs_api"
-    }
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
   },
   "openlibrary": {
     "ok": false,
@@ -128,12 +100,6 @@
       "valid": true
     },
     {
-      "source": "google_books",
-      "size": "small",
-      "url": "https://books.google.com/books/content?id=Ap3QEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
-      "valid": true
-    },
-    {
       "source": "amazon",
       "size": "large",
       "url": "https://images-na.ssl-images-amazon.com/images/P/1612107071.01.LZZZZZZZ.jpg",
@@ -142,17 +108,17 @@
   ],
   "_sources_succeeded": [
     "apple_books",
-    "google_books",
     "amazon"
   ],
   "_sources_failed": [
+    "google_books:no_good_match",
     "openlibrary:no_results"
   ],
   "_timing": {
-    "phase1_parallel_ms": 5712,
-    "phase2_isbn_chain_ms": 513,
-    "cover_validation_ms": 74,
-    "total_ms": 6299
+    "phase1_parallel_ms": 7933,
+    "phase2_isbn_chain_ms": 16660,
+    "cover_validation_ms": 826,
+    "total_ms": 25419
   },
-  "_cached_at": "2026-04-21T11:50:10.401Z"
+  "_cached_at": "2026-04-22T14:54:24.495Z"
 }

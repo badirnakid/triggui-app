@@ -46,9 +46,37 @@
     }
   },
   "google": {
-    "ok": false,
-    "reason": "no_good_match",
-    "source": "google_books"
+    "ok": true,
+    "source": "google_books",
+    "match_score": 0.9625,
+    "match_details": {
+      "matched_title": "El valor del silencio",
+      "matched_author": "Justin Zorn, Leigh Marz"
+    },
+    "synopsis": "El silencio es un poder secreto que nos centra, nos sana y nos enseña. Dos especialistas en bienestar del más alto nivel nos desvelan los beneficios del silencio en un mundo más ruidoso que nunca. La proliferación del ruido no se refiere solamente al sentido auditivo y literal, sino también a las pantallas yal ruido de la información, que consume nuestra atención. Si bien el mindfulness nos puede ayudar a frenar los prejuicios del ruido constante, los estudios señalan que no todo el mundo es capaz de meditar con regularidad. Necesitamos nuevas maneras de encontrar claridad y renovación. Recurriendo a la ciencia, la psicología, la filosofía y la espiritualidad, Justin Zorn y Leigh Marz nos demuestran el poder del silencio inmersivo, un tipo de silencio más profundo que todos, quizá sin saberlo, hemos practicado. Esta guía actual y urgente explora la avalancha sensorial en la que vivimos inmersos y cómo nos impacta, junto con propuestas prácticas y flexibles para practicar el silencio y eliminar el ruido de nuestra vida como individuos, grupos, organizaciones y sociedad.",
+    "synopsis_length": 1085,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=dZTQEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "El valor del silencio",
+      "subtitulo": "Cómo encontrar la serenidad en un mundo lleno de ruido",
+      "autor_completo": "Justin Zorn, Leigh Marz",
+      "año": "2023",
+      "editorial": "EDICIONES URANO",
+      "paginas": 347,
+      "isbn": "9788419413307",
+      "isbn13": "9788419413307",
+      "isbn10": "8419413305",
+      "categorias": [
+        "Psychology"
+      ],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=dZTQEAAAQBAJ&dq=intitle:El+valor+del+silencio+inauthor:Justin+Zorn+y+Leigh+Marz&hl=&cd=1&source=gbs_api"
+    }
   },
   "openlibrary": {
     "ok": false,
@@ -100,6 +128,12 @@
       "valid": true
     },
     {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=dZTQEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
       "source": "amazon",
       "size": "large",
       "url": "https://images-na.ssl-images-amazon.com/images/P/6444997144.01.LZZZZZZZ.jpg",
@@ -108,17 +142,17 @@
   ],
   "_sources_succeeded": [
     "apple_books",
+    "google_books",
     "amazon"
   ],
   "_sources_failed": [
-    "google_books:no_good_match",
     "openlibrary:no_results"
   ],
   "_timing": {
-    "phase1_parallel_ms": 15766,
-    "phase2_isbn_chain_ms": 24075,
-    "cover_validation_ms": 530,
-    "total_ms": 40371
+    "phase1_parallel_ms": 15737,
+    "phase2_isbn_chain_ms": 8903,
+    "cover_validation_ms": 54,
+    "total_ms": 24694
   },
-  "_cached_at": "2026-04-22T03:59:06.131Z"
+  "_cached_at": "2026-04-22T14:53:29.095Z"
 }

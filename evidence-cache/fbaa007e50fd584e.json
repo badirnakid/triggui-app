@@ -1,0 +1,207 @@
+{
+  "titulo_input": "El viaje de Andrés",
+  "autor_input": "Svend Brinkmann",
+  "isbn_seed": "",
+  "isbn_discovered": "1571911782",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "El viaje de Andrés",
+      "matched_author": "Svend Brinkmann"
+    },
+    "synopsis": "¿Qué es el ser humano? Alrededor de Andrés todo eran preguntas profundas: ¿quién eres?, ¿qué quieres?, ¿qué te hace feliz? Sin embargo, jamás se había cuestionado el sentido de la existencia misma. Jamás… hasta la lectura de un misterioso manuscrito durante un viaje de aprendizaje que cambiará su vida. Andrés es un adolescente introvertido que atraviesa una depresión. Cuando más necesita cambiar de aires, Ana, su abuela paterna, le propone recorrer Europa en tren juntos. Por desgracia, Ana cae gravemente enferma. Consciente de que ya no podrá acompañarlo, le anima a embarcarse en ese viaje planeado. Incluso le regala una maleta de libros para que lo acompañen. De todos ellos, le insiste en leer ¿Qué es el ser humano?, un manuscrito filosófico que le guiará en la comprensión de la especie humana. Andrés sube al tren solo y sin conocer su destino. Ana lo conduce a través de Skype hacia una fascinante ruta por distintos países. Se cruza con un sinfín de personas, conoce famosas obras artísticas y visita lugares emblemáticos de la historia europea hasta alcanzar lo más importante en la vida: el sentido de la existencia humana.",
+    "synopsis_length": 1140,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/b7/9c/c8/b79cc8bb-33bd-9f6b-7104-1884d1d87048/1034313484.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/b7/9c/c8/b79cc8bb-33bd-9f6b-7104-1884d1d87048/1034313484.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/b7/9c/c8/b79cc8bb-33bd-9f6b-7104-1884d1d87048/1034313484.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/b7/9c/c8/b79cc8bb-33bd-9f6b-7104-1884d1d87048/1034313484.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "El viaje de Andrés",
+      "autor_completo": "Svend Brinkmann",
+      "año": "2021",
+      "editorial": null,
+      "isbn": "1571911782",
+      "categorias": [
+        "Filosofía",
+        "Libros",
+        "No ficción",
+        "Juvenil",
+        "Juvenil: no ficción"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/el-viaje-de-andr%C3%A9s/id1571911782?uo=4"
+    }
+  },
+  "google": {
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "El viaje de Andrés",
+      "matched_author": "Svend Brinkmann"
+    },
+    "synopsis": "¿Qué es el ser humano? Alrededor de Andrés todo eran preguntas profundas: ¿quién eres?, ¿qué quieres?, ¿qué te hace feliz? Sin embargo, jamás se había cuestionado el sentido de la existencia misma. Jamás… hasta la lectura de un misterioso manuscrito durante un viaje de aprendizaje que cambiará su vida. Andrés es un adolescente introvertido que atraviesa una depresión. Cuando más necesita cambiar de aires, Ana, su abuela paterna, le propone recorrer Europa en tren juntos. Por desgracia, Ana cae gravemente enferma. Consciente de que ya no podrá acompañarlo, le anima a embarcarse en ese viaje planeado. Incluso le regala una maleta de libros para que lo acompañen. De todos ellos, le insiste en leer ¿Qué es el ser humano?, un manuscrito filosófico que le guiará en la comprensión de la especie humana. Andrés sube al tren solo y sin conocer su destino. Ana lo conduce a través de Skype hacia una fascinante ruta por distintos países. Se cruza con un sinfín de personas, conoce famosas obras artísticas y visita lugares emblemáticos de la historia europea hasta alcanzar lo más importante en la vida: el sentido de la existencia humana.",
+    "synopsis_length": 1140,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=vNYyEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "El viaje de Andrés",
+      "subtitulo": "Una novela de aprendizaje que recoge las seis maneras de definir al ser humano",
+      "autor_completo": "Svend Brinkmann",
+      "año": "2021",
+      "editorial": "NED Ediciones",
+      "paginas": 263,
+      "isbn": "9788418273148",
+      "isbn13": "9788418273148",
+      "isbn10": "8418273143",
+      "categorias": [
+        "Philosophy"
+      ],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=vNYyEAAAQBAJ&printsec=frontcover&dq=intitle:El+viaje+de+Andr%C3%A9s+inauthor:Svend+Brinkmann&hl=&cd=1&source=gbs_api"
+    }
+  },
+  "openlibrary": {
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "El viaje de Andrés",
+      "matched_author": "Svend Brinkmann, Maria Rosich Andreu"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2021.",
+    "synopsis_length": 65,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://covers.openlibrary.org/b/id/12767381-L.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://covers.openlibrary.org/b/id/12767381-M.jpg"
+      },
+      {
+        "size": "small",
+        "url": "https://covers.openlibrary.org/b/id/12767381-S.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "El viaje de Andrés",
+      "autor_completo": "Svend Brinkmann, Maria Rosich Andreu",
+      "año": "2021",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": null,
+      "paginas": null
+    }
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/1571911782.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "1571911782",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/b7/9c/c8/b79cc8bb-33bd-9f6b-7104-1884d1d87048/1034313484.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/b7/9c/c8/b79cc8bb-33bd-9f6b-7104-1884d1d87048/1034313484.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/b7/9c/c8/b79cc8bb-33bd-9f6b-7104-1884d1d87048/1034313484.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/b7/9c/c8/b79cc8bb-33bd-9f6b-7104-1884d1d87048/1034313484.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=vNYyEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "large",
+      "url": "https://covers.openlibrary.org/b/id/12767381-L.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "medium",
+      "url": "https://covers.openlibrary.org/b/id/12767381-M.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "small",
+      "url": "https://covers.openlibrary.org/b/id/12767381-S.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/1571911782.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "google_books",
+    "openlibrary",
+    "amazon"
+  ],
+  "_sources_failed": [],
+  "_timing": {
+    "phase1_parallel_ms": 2426,
+    "phase2_isbn_chain_ms": 131,
+    "cover_validation_ms": 1273,
+    "total_ms": 3830
+  },
+  "_cached_at": "2026-04-22T14:48:00.832Z"
+}

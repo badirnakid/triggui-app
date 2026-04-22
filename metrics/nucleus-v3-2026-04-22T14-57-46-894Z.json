@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-04-22T14:57:46.894Z",
+  "pipeline": "nucleus-canonical-v3",
+  "mode": "production",
+  "requested": 20,
+  "exitosos": 20,
+  "fallos": 0,
+  "total_tokens": 197768,
+  "run_total_ms": 976861
+}

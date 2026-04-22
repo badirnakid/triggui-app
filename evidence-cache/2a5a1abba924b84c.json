@@ -46,9 +46,37 @@
     }
   },
   "google": {
-    "ok": false,
-    "reason": "no_good_match",
-    "source": "google_books"
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "The Hidden Economy",
+      "matched_author": "Alejandra González"
+    },
+    "synopsis": "Estás a punto de descubrir todo sobre la economía de los creadores Con la llegada de las plataformas digitales surgió una nueva fase económica que, además de permitir un modelo laboral más flexible, cambió el panorama del marketing digital: la economía de los creadores. Hoy existen influencers , youtubers , streamers y creadores de contenido que cuentan con miles de seguidores y manejan contratos millonarios con empresas de diferentes industrias, logrando vivir la vida de sus sueños y explorar todas y cada una de sus pasiones, pero ¿cómo llegaron hasta ahí? ¿Cómo unirse a sus filas? ¿Qué es lo que hay que saber? Y... ¿qué les depara el futuro? El mundo digital avanza a pasos agigantados y parece que cada día se implementa una nueva plataforma, por lo que la adaptabilidad, la autenticidad y un objetivo claro son clave para lograr posicionarse en el competido mundo de los creadores de contenido. No se trata sólo de subir contenido a redes: hay que tener una estrategia y una voz única detrás. En THE HIDDEN ECONOMY descubrirás qué es la economía de los creadores, cómo funcionan las plataformas digitales y quiénes son los jugadores de este gran tablero, además encontrarás reflexiones sobre el futuro del trabajo, la responsabilidad de comunicar y el nuevo papel de la Web3 y la inteligencia artificial en esta creciente industria.",
+    "synopsis_length": 1344,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=45viEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "The Hidden Economy",
+      "subtitulo": "Los creadores de contenido en la economía digital",
+      "autor_completo": "Alejandra González",
+      "año": "2024",
+      "editorial": "ALTEA",
+      "paginas": 170,
+      "isbn": "9786073839396",
+      "isbn13": "9786073839396",
+      "isbn10": "6073839391",
+      "categorias": [
+        "Young Adult Nonfiction"
+      ],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=45viEAAAQBAJ&printsec=frontcover&dq=intitle:The+hidden+economy+inauthor:Alejandra+Gonzalez&hl=&cd=1&source=gbs_api"
+    }
   },
   "openlibrary": {
     "ok": false,
@@ -100,6 +128,12 @@
       "valid": true
     },
     {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=45viEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
       "source": "amazon",
       "size": "large",
       "url": "https://images-na.ssl-images-amazon.com/images/P/6471896550.01.LZZZZZZZ.jpg",
@@ -108,17 +142,17 @@
   ],
   "_sources_succeeded": [
     "apple_books",
+    "google_books",
     "amazon"
   ],
   "_sources_failed": [
-    "google_books:no_good_match",
     "openlibrary:no_results"
   ],
   "_timing": {
-    "phase1_parallel_ms": 910,
-    "phase2_isbn_chain_ms": 232,
-    "cover_validation_ms": 903,
-    "total_ms": 2045
+    "phase1_parallel_ms": 2790,
+    "phase2_isbn_chain_ms": 215,
+    "cover_validation_ms": 912,
+    "total_ms": 3917
   },
-  "_cached_at": "2026-04-21T11:05:05.516Z"
+  "_cached_at": "2026-04-22T14:57:21.379Z"
 }

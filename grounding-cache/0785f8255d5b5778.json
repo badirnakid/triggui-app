@@ -1,0 +1,31 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nA sabedoria e a experiência do investidor que cativou o mundo com seus ensinamentos sobre o sucesso nos negócios e na vida Ficar rico não é questão de sorte; felicidade não vem de berço. Essas aspirações podem parecer fora de alcance, mas, conforme nos ensina o empresário, filósofo e investidor Naval Ravikant, a prosperidade duradoura é uma habilidade que se aprende. Naval Ravikant gosta de pensar que, se perdesse todo o seu dinheiro e fosse deixado em uma rua aleatória de um país cuja língua falasse, em cinco ou dez anos estaria rico novamente, porque ganhar dinheiro é apenas um conjunto de habilidades que ele desenvolveu — e que qualquer um pode ter. O caminho para a riqueza não passa por diplomas ou bons empregos: ninguém tem verdadeira liberdade financeira alugando seu tempo. É preciso antes de tudo conhecer a si mesmo e encontrar a sua verdadeira obsessão, para então transformá-la em um negócio lucrativo. Nesta curadoria de suas reflexões mais perspicazes e pungentes, Naval nos mostra que ser autêntico — abraçando nossos interesses mais particulares, aqueles que nos tornam únicos — não é apenas o caminho para a riqueza, mas também para a felicidade.\n\nMETADATA VERIFICADA:\n- Título: O almanaque de Naval Ravikant\n- Autor: Eric Jorgenson\n- Año: 2022\n- Categorías: Economía, Libros, Negocios y finanzas personales, Administración y liderazgo",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.9353333333333333,
+  "verified_identity": {
+    "titulo_real": "O almanaque de Naval Ravikant",
+    "autor_completo": "Eric Jorgenson",
+    "año": "2022",
+    "editorial": null,
+    "isbn": "1604455307",
+    "categorias": [
+      "Economía",
+      "Libros",
+      "Negocios y finanzas personales",
+      "Administración y liderazgo",
+      "Inversiones",
+      "Contabilidad"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/o-almanaque-de-naval-ravikant/id1604455307?uo=4"
+  },
+  "match_score": 0.9633333333333334,
+  "other_sources_agreed": [
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_4sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-22T14:44:12.027Z"
+}

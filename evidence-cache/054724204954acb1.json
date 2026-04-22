@@ -48,9 +48,37 @@
     }
   },
   "google": {
-    "ok": false,
-    "reason": "no_good_match",
-    "source": "google_books"
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Timeboxing",
+      "matched_author": "Marc Zao-Sanders"
+    },
+    "synopsis": "The gloriously simple practice of choosing one thing to do, when to do it, and getting it done. Every day, a billion knowledge workers wake up, gravitate towards a pixelated screen and process information for eight hours or more, facing an endless and bewildering array of work and life choices. We’re confronted with countless always-on options; untimely, unsolicited notifications; and a constant competition for our attention. This depletes our faculty for choosing the right things to do, leading millions to become perplexed, frazzled, anxious, or depressed. Timeboxing by Marc Zao-Sanders is a comprehensive guide to carefully and intentionally selecting what to do, specifying start and finish times, focusing solely on that single activity, and getting it done to an acceptable standard within that timeframe. This is the fundamental, transcendent time-management practice; countless luminaries, from Carl Jung and Albert Einstein to Bill Gates and Steve Jobs, have employed some form of it in their daily lives. Zao-Sanders provides an informative and accessible look at every aspect of this revolutionary method– how to do it consistently, and how to do it well. Timeboxing offers guidance on what you can, should, and will do at any given moment. This pragmatic and life-changing practice of intentional daily activity has been proven to yield what almost every human being wants most: a chosen, cherished life.",
+    "synopsis_length": 1422,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=qdm_EAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Timeboxing",
+      "subtitulo": "The Power of Doing One Thing at a Time",
+      "autor_completo": "Marc Zao-Sanders",
+      "año": "2024",
+      "editorial": "St. Martin's Essentials",
+      "paginas": 180,
+      "isbn": "9781250340160",
+      "isbn13": "9781250340160",
+      "isbn10": "1250340160",
+      "categorias": [
+        "Self-Help"
+      ],
+      "idioma": "en",
+      "preview_link": "http://books.google.com/books?id=qdm_EAAAQBAJ&printsec=frontcover&dq=intitle:Timeboxing+inauthor:Marc+Zao-Sanders&hl=&cd=1&source=gbs_api"
+    }
   },
   "openlibrary": {
     "ok": true,
@@ -119,6 +147,12 @@
       "valid": true
     },
     {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=qdm_EAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
       "source": "amazon",
       "size": "large",
       "url": "https://images-na.ssl-images-amazon.com/images/P/6463842745.01.LZZZZZZZ.jpg",
@@ -127,17 +161,16 @@
   ],
   "_sources_succeeded": [
     "apple_books",
+    "google_books",
     "openlibrary",
     "amazon"
   ],
-  "_sources_failed": [
-    "google_books:no_good_match"
-  ],
+  "_sources_failed": [],
   "_timing": {
-    "phase1_parallel_ms": 15759,
-    "phase2_isbn_chain_ms": 23734,
-    "cover_validation_ms": 694,
-    "total_ms": 40187
+    "phase1_parallel_ms": 4186,
+    "phase2_isbn_chain_ms": 124,
+    "cover_validation_ms": 35,
+    "total_ms": 4345
   },
-  "_cached_at": "2026-04-22T04:08:25.466Z"
+  "_cached_at": "2026-04-22T14:49:45.101Z"
 }

@@ -1,0 +1,28 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\n&#xa0;Tienes en tus manos los diecisiete principios del éxito que Napoleon Hill descubrió tras más de veinte años de investigación. La esencia de la sabiduría de quien, a pesar de llevar décadas muerto, sigue siendo considerando \"el filósofo de la superación de todos los tiempos\". Autor de múltiples libros superventas, Hill te da las claves para alcanzar el éxito, la felicidad y la tranquilidad de espíritu. Líbrate de las limitaciones que te autoimpones y disfruta de la riqueza de la vida.&#xa0; &#xa0;Trabajar para conseguir tu objetivo será más fácil y productivo si conviertes estas enseñanzas en tus nuevos hábitos. Aprende a definir tu meta en la vida, a ser una persona proactiva y con iniciativa, a mantener a raya las emociones negativas y a ganarte la confianza de los demás. Si lo haces, tu nueva actitud te allanará el camino mucho más de lo que puedas imaginar.&#xa0; &#xa0;Usa esta obra como lo que es: la brújula que guio a un hombre que no sólo se hizo a sí mismo, sino que fue capaz de alcanzar todas las metas que se propuso. Porque, además de compartir los principios fundamentales del éxito, Napoleon Hill te da instrucciones detalladas sobre cómo aplicarlos. ¡Define tu norte y dirígete hacia él sin perder más tiempo!&#xa0;\n\nMETADATA VERIFICADA:\n- Título: La filosofía del éxito\n- Autor: Napoleon Hill\n- Año: 2022\n- Categorías: Superación personal, Libros, Salud, mente y cuerpo",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "La filosofía del éxito",
+    "autor_completo": "Napoleon Hill",
+    "año": "2022",
+    "editorial": null,
+    "isbn": "1608169091",
+    "categorias": [
+      "Superación personal",
+      "Libros",
+      "Salud, mente y cuerpo"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/la-filosof%C3%ADa-del-%C3%A9xito/id1608169091?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "google_books"
+  ],
+  "resolution_path": [
+    "evidence_fetched_3sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-22T14:41:31.748Z"
+}

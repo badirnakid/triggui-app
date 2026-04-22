@@ -1,0 +1,195 @@
+{
+  "titulo_input": "El almanaque de Naval Ravikant",
+  "autor_input": "Eric Jorgenson",
+  "isbn_seed": "",
+  "isbn_discovered": "1604455307",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 0.9633333333333334,
+    "match_details": {
+      "matched_title": "O almanaque de Naval Ravikant",
+      "matched_author": "Eric Jorgenson"
+    },
+    "synopsis": "A sabedoria e a experiência do investidor que cativou o mundo com seus ensinamentos sobre o sucesso nos negócios e na vida Ficar rico não é questão de sorte; felicidade não vem de berço. Essas aspirações podem parecer fora de alcance, mas, conforme nos ensina o empresário, filósofo e investidor Naval Ravikant, a prosperidade duradoura é uma habilidade que se aprende. Naval Ravikant gosta de pensar que, se perdesse todo o seu dinheiro e fosse deixado em uma rua aleatória de um país cuja língua falasse, em cinco ou dez anos estaria rico novamente, porque ganhar dinheiro é apenas um conjunto de habilidades que ele desenvolveu — e que qualquer um pode ter. O caminho para a riqueza não passa por diplomas ou bons empregos: ninguém tem verdadeira liberdade financeira alugando seu tempo. É preciso antes de tudo conhecer a si mesmo e encontrar a sua verdadeira obsessão, para então transformá-la em um negócio lucrativo. Nesta curadoria de suas reflexões mais perspicazes e pungentes, Naval nos mostra que ser autêntico — abraçando nossos interesses mais particulares, aqueles que nos tornam únicos — não é apenas o caminho para a riqueza, mas também para a felicidade.",
+    "synopsis_length": 1172,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/1c/b2/a1/1cb2a1f7-df27-20e6-f251-03a842ec789e/9786555605518.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/1c/b2/a1/1cb2a1f7-df27-20e6-f251-03a842ec789e/9786555605518.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/1c/b2/a1/1cb2a1f7-df27-20e6-f251-03a842ec789e/9786555605518.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/1c/b2/a1/1cb2a1f7-df27-20e6-f251-03a842ec789e/9786555605518.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "O almanaque de Naval Ravikant",
+      "autor_completo": "Eric Jorgenson",
+      "año": "2022",
+      "editorial": null,
+      "isbn": "1604455307",
+      "categorias": [
+        "Economía",
+        "Libros",
+        "Negocios y finanzas personales",
+        "Administración y liderazgo",
+        "Inversiones",
+        "Contabilidad"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/o-almanaque-de-naval-ravikant/id1604455307?uo=4"
+    }
+  },
+  "google": {
+    "ok": true,
+    "source": "google_books",
+    "match_score": 0.55,
+    "match_details": {
+      "matched_title": "El Almanaque de Naval Ravikant",
+      "matched_author": ""
+    },
+    "synopsis": "",
+    "synopsis_length": 0,
+    "covers": [],
+    "verified_identity": {
+      "titulo_real": "El Almanaque de Naval Ravikant",
+      "subtitulo": "",
+      "autor_completo": "Eric Jorgenson",
+      "año": null,
+      "editorial": null,
+      "paginas": null,
+      "isbn": "9788412303544",
+      "isbn13": "9788412303544",
+      "isbn10": "8412303547",
+      "categorias": [],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=24BSzwEACAAJ&dq=intitle:El+almanaque+de+Naval+Ravikant+inauthor:Eric+Jorgenson&hl=&cd=1&source=gbs_api"
+    }
+  },
+  "openlibrary": {
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "El Almanaque de Naval Ravikant",
+      "matched_author": "Eric Jorgenson"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2022.",
+    "synopsis_length": 65,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://covers.openlibrary.org/b/id/13560158-L.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://covers.openlibrary.org/b/id/13560158-M.jpg"
+      },
+      {
+        "size": "small",
+        "url": "https://covers.openlibrary.org/b/id/13560158-S.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "El Almanaque de Naval Ravikant",
+      "autor_completo": "Eric Jorgenson",
+      "año": "2022",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": null,
+      "paginas": null
+    }
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/1604455307.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "1604455307",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/1c/b2/a1/1cb2a1f7-df27-20e6-f251-03a842ec789e/9786555605518.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/1c/b2/a1/1cb2a1f7-df27-20e6-f251-03a842ec789e/9786555605518.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/1c/b2/a1/1cb2a1f7-df27-20e6-f251-03a842ec789e/9786555605518.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/1c/b2/a1/1cb2a1f7-df27-20e6-f251-03a842ec789e/9786555605518.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "large",
+      "url": "https://covers.openlibrary.org/b/id/13560158-L.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "medium",
+      "url": "https://covers.openlibrary.org/b/id/13560158-M.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "small",
+      "url": "https://covers.openlibrary.org/b/id/13560158-S.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/1604455307.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "google_books",
+    "openlibrary",
+    "amazon"
+  ],
+  "_sources_failed": [],
+  "_timing": {
+    "phase1_parallel_ms": 15731,
+    "phase2_isbn_chain_ms": 10815,
+    "cover_validation_ms": 1042,
+    "total_ms": 27588
+  },
+  "_cached_at": "2026-04-22T14:44:12.026Z"
+}

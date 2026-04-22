@@ -1,0 +1,30 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nAhora es tu momento, esta es tu guía. Durante más de veinticinco años, Robin Sharma, el legendario experto en liderazgo y en excelencia, ha enseñado discretamente a titanes de los negocios, a grandes del deporte profesional y a superestrellas del mundo del espectáculo un revolucionario sistema que los ha ayudado a convertir sus máximas aspiraciones en resultados palpables a diario. <tab> </tab> Ahora, en Manifiesto para los héroes de cada día -su obra maestra-, el innovador Robin Sharma ha destilado los principios fundamentales, los protocolos y las tácticas de su método de mentoring y ha creado una obra valiosísima que es al mismo tiempo un compendio de estrategias para alcanzar una productividad inagotable, un manual para llevar una vida incomparable, y una guía universal para llegar a ser un líder espiritual capaz de cargar con el mundo sobre los hombros. En las páginas de este libro absolutamente único descubrirás: -<tab style=\"\"> Pautas reales sobre cómo las personas más creativas, productivas y prósperas del planeta adquieren hábitos insuperables, controlan sus días y organizan su vida al más alto nivel. </tab>-<tab style=\"\"> Prácticas poderosas para mejorar la energía, aumentar la vitalidad y prolongar la longevidad a fin de dar forma al genio que eres. </tab>-<tab style=\"\"> Un modelo demostrado para realizar trabajos excepcionales que lideren tu sector e iluminen a futuras generaciones. </tab>- Técnicas basadas en la neurociencia para convertir problemas en triunfos, temores en acicates y sufrimientos del pasado en heroísmo cotidiano. -<tab style=\"\"> Una sabiduría inusual (y alcanzada con esfuerzo) para mejorar tu vivacidad, incubar una serenidad sublime y dignificar la libertad espiritual que crea una vida hermosa.</tab> La crítica ha dicho: «La estrella del rock del liderazgo.» The Globe and Mail «A pesar de que Robin Sharma rechace la etiqueta de gurú, resulta difícil no referirse a él con ese término.» Publishers Weekly «Rivaliza en seguidores con el Dalai Lama.» The Times of India\n\nMETADATA VERIFICADA:\n- Título: Manifiesto para los héroes de cada día\n- Autor: Robin Sharma\n- Año: 2021\n- Categorías: Administración y liderazgo, Libros, Negocios y finanzas personales, Salud, mente y cuerpo",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Manifiesto para los héroes de cada día",
+    "autor_completo": "Robin Sharma",
+    "año": "2021",
+    "editorial": null,
+    "isbn": "1578022685",
+    "categorias": [
+      "Administración y liderazgo",
+      "Libros",
+      "Negocios y finanzas personales",
+      "Salud, mente y cuerpo",
+      "Superación personal"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/manifiesto-para-los-h%C3%A9roes-de-cada-d%C3%ADa/id1578022685?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "google_books"
+  ],
+  "resolution_path": [
+    "evidence_fetched_3sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-22T14:50:20.500Z"
+}

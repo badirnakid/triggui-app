@@ -16,11 +16,13 @@
     "track_view_url": "https://books.apple.com/mx/book/el-poder-de-ser-valiosos/id6467835012?uo=4"
   },
   "match_score": 1,
-  "other_sources_agreed": [],
+  "other_sources_agreed": [
+    "google_books"
+  ],
   "resolution_path": [
-    "evidence_fetched_2sources"
+    "evidence_fetched_3sources"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-21T01:25:06.481Z"
+  "cached_at": "2026-04-22T14:45:21.712Z"
 }
