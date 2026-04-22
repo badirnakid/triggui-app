@@ -1,42 +1,42 @@
 {
-  "ground_truth": "TEMA INFERIDO (el modelo no conoce este libro directamente, infiere desde similares):\n\nEl libro probablemente trata sobre la gestión de la atención y cómo evitar distracciones para mejorar la calidad de vida y la productividad personal.\n\nVOZ INFERIDA:\nEs probable que la voz del autor sea motivacional y práctica, enfocándose en estrategias aplicables para el lector.\n\nLIBROS SIMILARES QUE COMPARTEN ADN CON ESTE:\n- \"Deep Work\" (Cal Newport): Aborda la importancia de la concentración profunda en un mundo lleno de distracciones.\n- \"Atomic Habits\" (James Clear): Explora cómo formar buenos hábitos y romper los malos, relacionado con el control de la atención.\n- \"The Power of Now\" (Eckhart Tolle): Enfocado en la atención plena y el control de la mente para vivir en el presente.\n- \"Mindset: The New Psychology of Success\" (Carol S. Dweck): Discute cómo nuestras creencias sobre nuestras habilidades pueden influir en nuestra vida y atención.",
+  "ground_truth": "TEMA INFERIDO (el modelo no conoce este libro directamente, infiere desde similares):\n\nLa gestión de la atención y el control de las distracciones en la vida moderna, así como el desarrollo de hábitos positivos.\n\nVOZ INFERIDA:\nPráctica y motivacional, con un enfoque en la autoayuda y el desarrollo personal.\n\nLIBROS SIMILARES QUE COMPARTEN ADN CON ESTE:\n- \"Deep Work\" (Cal Newport): Explora la importancia de la concentración en un mundo lleno de distracciones.\n- \"The Power of Habit\" (Charles Duhigg): Analiza cómo los hábitos afectan nuestra vida y cómo podemos cambiarlos.\n- \"Atomic Habits\" (James Clear): Ofrece estrategias sobre cómo construir buenos hábitos y eliminar los malos.\n- \"Digital Minimalism\" (Cal Newport): Propone un enfoque más consciente sobre el uso de la tecnología y su impacto en nuestra atención.",
   "grounding_source": "model_inference",
-  "book_identity_confidence": 0.6375,
+  "book_identity_confidence": 0.6000000000000001,
   "verified_identity": {
     "titulo_real": "Indistractable: How to Control Your Attention and Choose Your Life",
     "autor_completo": "Nir Eyal",
     "año": null
   },
-  "inference_confidence": 0.85,
+  "inference_confidence": 0.8,
   "book_known_directly": false,
   "rich_inference": true,
   "similar_books": [
     {
       "titulo": "Deep Work",
       "autor": "Cal Newport",
-      "razon": "Aborda la importancia de la concentración profunda en un mundo lleno de distracciones."
+      "razon": "Explora la importancia de la concentración en un mundo lleno de distracciones."
+    },
+    {
+      "titulo": "The Power of Habit",
+      "autor": "Charles Duhigg",
+      "razon": "Analiza cómo los hábitos afectan nuestra vida y cómo podemos cambiarlos."
     },
     {
       "titulo": "Atomic Habits",
       "autor": "James Clear",
-      "razon": "Explora cómo formar buenos hábitos y romper los malos, relacionado con el control de la atención."
+      "razon": "Ofrece estrategias sobre cómo construir buenos hábitos y eliminar los malos."
     },
     {
-      "titulo": "The Power of Now",
-      "autor": "Eckhart Tolle",
-      "razon": "Enfocado en la atención plena y el control de la mente para vivir en el presente."
-    },
-    {
-      "titulo": "Mindset: The New Psychology of Success",
-      "autor": "Carol S. Dweck",
-      "razon": "Discute cómo nuestras creencias sobre nuestras habilidades pueden influir en nuestra vida y atención."
+      "titulo": "Digital Minimalism",
+      "autor": "Cal Newport",
+      "razon": "Propone un enfoque más consciente sobre el uso de la tecnología y su impacto en nuestra atención."
     }
   ],
   "resolution_path": [
     "evidence_fetched_0sources",
-    "tier3_conf_0.85"
+    "tier3_conf_0.80"
   ],
   "tier_reached": 3,
-  "cost_tokens": 543,
-  "cached_at": "2026-04-22T22:41:46.457Z"
+  "cost_tokens": 517,
+  "cached_at": "2026-04-22T23:02:58.620Z"
 }
