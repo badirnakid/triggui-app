@@ -1,0 +1,42 @@
+{
+  "ground_truth": "TEMA INFERIDO (el modelo no conoce este libro directamente, infiere desde similares):\n\nEl libro probablemente trata sobre la gestión de la atención y la autodisciplina en un mundo lleno de distracciones, ofreciendo estrategias para mejorar la productividad personal.\n\nVOZ INFERIDA:\nEs probable que la voz del autor sea práctica y motivacional, enfocándose en la autoayuda y el desarrollo personal.\n\nLIBROS SIMILARES QUE COMPARTEN ADN CON ESTE:\n- \"Deep Work\" (Cal Newport): Explora la importancia de la concentración en un mundo lleno de distracciones.\n- \"The Power of Habit\" (Charles Duhigg): Analiza cómo los hábitos afectan nuestra vida y cómo podemos cambiarlos.\n- \"Atomic Habits\" (James Clear): Ofrece estrategias para formar buenos hábitos y romper los malos, relacionado con el control de la atención.\n- \"Digital Minimalism\" (Cal Newport): Aborda cómo reducir el uso de tecnología para mejorar la calidad de vida y la atención.",
+  "grounding_source": "model_inference",
+  "book_identity_confidence": 0.6000000000000001,
+  "verified_identity": {
+    "titulo_real": "Indistractable",
+    "autor_completo": "Nir Eyal",
+    "año": null
+  },
+  "inference_confidence": 0.8,
+  "book_known_directly": false,
+  "rich_inference": true,
+  "similar_books": [
+    {
+      "titulo": "Deep Work",
+      "autor": "Cal Newport",
+      "razon": "Explora la importancia de la concentración en un mundo lleno de distracciones."
+    },
+    {
+      "titulo": "The Power of Habit",
+      "autor": "Charles Duhigg",
+      "razon": "Analiza cómo los hábitos afectan nuestra vida y cómo podemos cambiarlos."
+    },
+    {
+      "titulo": "Atomic Habits",
+      "autor": "James Clear",
+      "razon": "Ofrece estrategias para formar buenos hábitos y romper los malos, relacionado con el control de la atención."
+    },
+    {
+      "titulo": "Digital Minimalism",
+      "autor": "Cal Newport",
+      "razon": "Aborda cómo reducir el uso de tecnología para mejorar la calidad de vida y la atención."
+    }
+  ],
+  "resolution_path": [
+    "evidence_fetched_0sources",
+    "tier3_conf_0.80"
+  ],
+  "tier_reached": 3,
+  "cost_tokens": 518,
+  "cached_at": "2026-04-22T22:13:53.584Z"
+}
