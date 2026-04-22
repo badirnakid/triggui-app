@@ -1,0 +1,814 @@
+{
+  "history": [
+    {
+      "at": "2026-04-22T23:21:35.457Z",
+      "stage": "trigger_analysis",
+      "trigger_analysis": {
+        "raw_input": "Crisis existencial",
+        "semantic_query": "libros sobre crisis existencial",
+        "intent_summary": "Buscar libros que aborden el tema de la crisis existencial.",
+        "editorial_requests": [],
+        "source_preference": null,
+        "ranking_preference": null,
+        "unsupported_runtime_constraints": [],
+        "supported_constraints": {
+          "year_min": null,
+          "year_max": null,
+          "prefer_recent": false
+        },
+        "search_queries": [
+          "crisis existencial",
+          "libros sobre existencialismo",
+          "superar crisis existencial",
+          "filosofía de la existencia",
+          "reflexiones sobre la vida",
+          "autoayuda crisis existencial",
+          "libros sobre crisis existencial",
+          "libros crisis existencial"
+        ],
+        "concept_hints": [
+          "existentialism",
+          "philosophy",
+          "self-help"
+        ],
+        "clean_for_selection": "libros sobre crisis existencial",
+        "notes": {
+          "used_ai_normalizer": true,
+          "looked_like_book_intent": false,
+          "semantic_overlap_vs_raw": 1
+        }
+      }
+    },
+    {
+      "at": "2026-04-22T23:21:38.364Z",
+      "stage": "live_candidates_merged",
+      "count": 0,
+      "top": []
+    },
+    {
+      "at": "2026-04-22T23:21:41.394Z",
+      "stage": "discover_attempt_result",
+      "attempt": 1,
+      "parsed_preview": {
+        "recommendations": [
+          {
+            "titulo": "El ser y la nada",
+            "autor": "Jean-Paul Sartre",
+            "motivo_corto": "Una obra fundamental del existencialismo que explora la libertad, la angustia y la búsqueda de significado en la vida.",
+            "tagline": "La libertad es la condena del ser."
+          },
+          {
+            "titulo": "El hombre en busca de sentido",
+            "autor": "Viktor Frankl",
+            "motivo_corto": "Un relato personal sobre la búsqueda de significado en medio del sufrimiento, basado en su experiencia en campos de concentración.",
+            "tagline": "La vida tiene sentido, incluso en las circunstancias más difíciles."
+          },
+          {
+            "titulo": "La náusea",
+            "autor": "Jean-Paul Sartre",
+            "motivo_corto": "Una novela que ilustra la crisis existencial a través de la experiencia de un hombre que se enfrenta a la absurdidad de la existencia.",
+            "tagline": "La existencia precede a la esencia."
+          }
+        ]
+      },
+      "raw_preview": "{\n  \"recommendations\": [\n    { \"titulo\": \"El ser y la nada\", \"autor\": \"Jean-Paul Sartre\", \"motivo_corto\": \"Una obra fundamental del existencialismo que explora la libertad, la angustia y la búsqueda de significado en la vida.\", \"tagline\": \"La libertad es la condena del ser.\" },\n    { \"titulo\": \"El hombre en busca de sentido\", \"autor\": \"Viktor Frankl\", \"motivo_corto\": \"Un relato personal sobre la búsqueda de significado en medio del sufrimiento, basado en su experiencia en campos de concentración.\", \"tagline\": \"La vida tiene sentido, incluso en las circunstancias más difíciles.\" },\n    { \"titulo\": \"La náusea\", \"autor\": \"Jean-Paul Sartre\", \"motivo_corto\": \"Una novela que ilustra la crisis existencial a través de la experiencia de un hombre que se enfrenta a la absurdidad de la existencia.\", \"tagline\": \"La existencia precede a la esencia.\" }\n  ]\n}",
+      "recommendations": [
+        {
+          "titulo": "El ser y la nada",
+          "autor": "Jean-Paul Sartre",
+          "motivo_corto": "Una obra fundamental del existencialismo que explora la libertad, la angustia y la búsqueda de significado en la vida.",
+          "tagline": "La libertad es la condena del ser.",
+          "source_label": "",
+          "source_url": "",
+          "published_year": null,
+          "live_score": 0,
+          "ai_fit_score": 0,
+          "ai_fit_reason": ""
+        },
+        {
+          "titulo": "El hombre en busca de sentido",
+          "autor": "Viktor Frankl",
+          "motivo_corto": "Un relato personal sobre la búsqueda de significado en medio del sufrimiento, basado en su experiencia en campos de concentración.",
+          "tagline": "La vida tiene sentido, incluso en las circunstancias más difíciles.",
+          "source_label": "",
+          "source_url": "",
+          "published_year": null,
+          "live_score": 0,
+          "ai_fit_score": 0,
+          "ai_fit_reason": ""
+        },
+        {
+          "titulo": "La náusea",
+          "autor": "Jean-Paul Sartre",
+          "motivo_corto": "Una novela que ilustra la crisis existencial a través de la experiencia de un hombre que se enfrenta a la absurdidad de la existencia.",
+          "tagline": "La existencia precede a la esencia.",
+          "source_label": "",
+          "source_url": "",
+          "published_year": null,
+          "live_score": 0,
+          "ai_fit_score": 0,
+          "ai_fit_reason": ""
+        }
+      ]
+    },
+    {
+      "at": "2026-04-22T23:21:43.555Z",
+      "stage": "ai_rerank_candidates",
+      "stageLabel": "discover_gpt_rerank_attempt_1",
+      "ranked": [
+        {
+          "idx": 2,
+          "fit_score": 0.95,
+          "reason": "Aborda directamente la búsqueda de sentido en la vida, un tema central en las crisis existenciales."
+        },
+        {
+          "idx": 1,
+          "fit_score": 0.92,
+          "reason": "Explora la libertad y la responsabilidad, conceptos clave en la filosofía existencial."
+        },
+        {
+          "idx": 3,
+          "fit_score": 0.9,
+          "reason": "Refleja la angustia y la búsqueda de significado, elementos fundamentales de la crisis existencial."
+        }
+      ]
+    },
+    {
+      "at": "2026-04-22T23:22:26.028Z",
+      "stage": "gpt_candidates_inspected",
+      "attempt": 1,
+      "inspected": [
+        {
+          "recommendation": {
+            "titulo": "El hombre en busca de sentido",
+            "autor": "Viktor Frankl",
+            "motivo_corto": "Un relato personal sobre la búsqueda de significado en medio del sufrimiento, basado en su experiencia en campos de concentración.",
+            "tagline": "La vida tiene sentido, incluso en las circunstancias más difíciles.",
+            "source_label": "",
+            "source_url": "",
+            "published_year": null,
+            "live_score": 0,
+            "ai_fit_score": 0.95,
+            "ai_fit_reason": "Aborda directamente la búsqueda de sentido en la vida, un tema central en las crisis existenciales."
+          },
+          "evidence": {
+            "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/3000x3000bb.jpg",
+            "isbn": "6450851734",
+            "editorial": "Viktor Frankl",
+            "source": "apple_books",
+            "year": "2015",
+            "matched_title": "El hombre en busca de sentido",
+            "matched_author": "Viktor Frankl",
+            "match_score": 1,
+            "synopsis": "*Nueva traducción* \"El hombre en busca de sentido\" es el estremecedor relato en el que Viktor Frankl nos narra su experiencia en los campos de concentración. Durante todos esos años de sufrimiento, sintió en su propio ser lo que significaba una existencia desnuda, absolutamente desprovista de todo, salvo de la existencia misma. Él, que todo lo había perdido, que padeció hambre, frío y brutalidades, que tantas veces estuvo a punto de ser ejecutado, pudo reconocer que, pese a todo, la vida es digna de ser vivida y que la libertad interior y la dignidad humana son indestructibles. En su condición de psiquiatra y prisionero, Frankl reflexiona con palabras de sorprendente esperanza sobre la capacidad humana de trascender las dificultades y descubrir una verdad profunda que nos orienta y da sentido a nuestras vidas. La logoterapia, método psicoterapéutico creado por el propio Frankl, se centra precisamente en el sentido de la existencia y en la búsqueda de ese sentido por parte del hombre, que asume la responsabilidad ante sí mismo, ante los demás y ante la vida. ¿Qué espera la vida de nosotros? El hombre en busca de sentido es mucho más que el testimonio de un psiquiatra sobre los hechos y los acontecimientos vividos en un campo de concentración, es una lección existencial. Traducido a medio centenar de idiomas, se han vendido millones de ejemplares en todo el mundo. Según la Library of Congress de Washington, es uno de los diez libros de mayor influencia en Estados Unidos.",
+            "synopsis_length": 1493,
+            "covers": [
+              {
+                "size": "xxlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/3000x3000bb.jpg"
+              },
+              {
+                "size": "xlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/1200x1200bb.jpg"
+              },
+              {
+                "size": "large",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/600x600bb.jpg"
+              },
+              {
+                "size": "medium",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/100x100bb.jpg"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "El hombre en busca de sentido",
+              "autor_completo": "Viktor Frankl",
+              "año": "2015",
+              "editorial": null,
+              "isbn": "6450851734",
+              "categorias": [
+                "Psicología",
+                "Libros",
+                "Salud, mente y cuerpo"
+              ],
+              "track_view_url": "https://books.apple.com/mx/book/el-hombre-en-busca-de-sentido/id6450851734?uo=4"
+            },
+            "_evidence": {
+              "titulo_input": "El hombre en busca de sentido",
+              "autor_input": "Viktor Frankl",
+              "isbn_seed": "",
+              "isbn_discovered": "6450851734",
+              "apple": {
+                "ok": true,
+                "source": "apple_books",
+                "match_score": 1,
+                "match_details": {
+                  "matched_title": "El hombre en busca de sentido",
+                  "matched_author": "Viktor Frankl"
+                },
+                "synopsis": "*Nueva traducción* \"El hombre en busca de sentido\" es el estremecedor relato en el que Viktor Frankl nos narra su experiencia en los campos de concentración. Durante todos esos años de sufrimiento, sintió en su propio ser lo que significaba una existencia desnuda, absolutamente desprovista de todo, salvo de la existencia misma. Él, que todo lo había perdido, que padeció hambre, frío y brutalidades, que tantas veces estuvo a punto de ser ejecutado, pudo reconocer que, pese a todo, la vida es digna de ser vivida y que la libertad interior y la dignidad humana son indestructibles. En su condición de psiquiatra y prisionero, Frankl reflexiona con palabras de sorprendente esperanza sobre la capacidad humana de trascender las dificultades y descubrir una verdad profunda que nos orienta y da sentido a nuestras vidas. La logoterapia, método psicoterapéutico creado por el propio Frankl, se centra precisamente en el sentido de la existencia y en la búsqueda de ese sentido por parte del hombre, que asume la responsabilidad ante sí mismo, ante los demás y ante la vida. ¿Qué espera la vida de nosotros? El hombre en busca de sentido es mucho más que el testimonio de un psiquiatra sobre los hechos y los acontecimientos vividos en un campo de concentración, es una lección existencial. Traducido a medio centenar de idiomas, se han vendido millones de ejemplares en todo el mundo. Según la Library of Congress de Washington, es uno de los diez libros de mayor influencia en Estados Unidos.",
+                "synopsis_length": 1493,
+                "covers": [
+                  {
+                    "size": "xxlarge",
+                    "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/3000x3000bb.jpg"
+                  },
+                  {
+                    "size": "xlarge",
+                    "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/1200x1200bb.jpg"
+                  },
+                  {
+                    "size": "large",
+                    "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/600x600bb.jpg"
+                  },
+                  {
+                    "size": "medium",
+                    "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/100x100bb.jpg"
+                  }
+                ],
+                "verified_identity": {
+                  "titulo_real": "El hombre en busca de sentido",
+                  "autor_completo": "Viktor Frankl",
+                  "año": "2015",
+                  "editorial": null,
+                  "isbn": "6450851734",
+                  "categorias": [
+                    "Psicología",
+                    "Libros",
+                    "Salud, mente y cuerpo"
+                  ],
+                  "track_view_url": "https://books.apple.com/mx/book/el-hombre-en-busca-de-sentido/id6450851734?uo=4"
+                }
+              },
+              "google": {
+                "ok": false,
+                "reason": "no_good_match",
+                "source": "google_books"
+              },
+              "openlibrary": {
+                "ok": false,
+                "reason": "no_results",
+                "source": "openlibrary"
+              },
+              "amazon": {
+                "ok": true,
+                "source": "amazon",
+                "match_score": 0.85,
+                "covers": [
+                  {
+                    "size": "large",
+                    "url": "https://images-na.ssl-images-amazon.com/images/P/6450851734.01.LZZZZZZZ.jpg"
+                  }
+                ],
+                "synopsis": "",
+                "synopsis_length": 0,
+                "verified_identity": {
+                  "isbn": "6450851734",
+                  "titulo_real": null,
+                  "autor_completo": null,
+                  "año": null
+                }
+              },
+              "valid_covers": [
+                {
+                  "source": "apple_books",
+                  "size": "xxlarge",
+                  "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/3000x3000bb.jpg",
+                  "valid": true
+                },
+                {
+                  "source": "apple_books",
+                  "size": "xlarge",
+                  "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/1200x1200bb.jpg",
+                  "valid": true
+                },
+                {
+                  "source": "apple_books",
+                  "size": "large",
+                  "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/600x600bb.jpg",
+                  "valid": true
+                },
+                {
+                  "source": "apple_books",
+                  "size": "medium",
+                  "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/100x100bb.jpg",
+                  "valid": true
+                },
+                {
+                  "source": "amazon",
+                  "size": "large",
+                  "url": "https://images-na.ssl-images-amazon.com/images/P/6450851734.01.LZZZZZZZ.jpg",
+                  "valid": true
+                }
+              ],
+              "_sources_succeeded": [
+                "apple_books",
+                "amazon"
+              ],
+              "_sources_failed": [
+                "google_books:no_good_match",
+                "openlibrary:no_results"
+              ],
+              "_timing": {
+                "phase1_parallel_ms": 16608,
+                "phase2_isbn_chain_ms": 25071,
+                "cover_validation_ms": 786,
+                "total_ms": 42465
+              }
+            }
+          },
+          "constraintsCheck": {
+            "exact_ok": true,
+            "hard_ok": true,
+            "issues": [],
+            "warnings": [],
+            "reason": "Año verificado 2015"
+          },
+          "sourceLabel": "gpt_attempt_1",
+          "semantic_score": 0.95,
+          "fallback_score": 155
+        }
+      ]
+    },
+    {
+      "at": "2026-04-22T23:22:26.030Z",
+      "stage": "success",
+      "bookData": {
+        "titulo": "El hombre en busca de sentido",
+        "autor": "Viktor Frankl",
+        "slug": "el-hombre-en-busca-de-sentido",
+        "tagline": "La vida tiene sentido, incluso en las circunstancias más difíciles.",
+        "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/3000x3000bb.jpg",
+        "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/3000x3000bb.jpg",
+        "portada_source": "apple_books",
+        "portada_candidates": [
+          {
+            "source": "apple_books",
+            "size": "xxlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/3000x3000bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "xlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/1200x1200bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "large",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/600x600bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "medium",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/100x100bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "amazon",
+            "size": "large",
+            "url": "https://images-na.ssl-images-amazon.com/images/P/6450851734.01.LZZZZZZZ.jpg",
+            "valid": true
+          }
+        ],
+        "needs_fallback_cover": false,
+        "isbn": "6450851734",
+        "editorial": "Viktor Frankl",
+        "publication_year": "2015",
+        "source": "apple_books",
+        "duplicado": false,
+        "selected_via": "discover_trigger",
+        "selection_reason": "Un relato personal sobre la búsqueda de significado en medio del sufrimiento, basado en su experiencia en campos de concentración.",
+        "trigger_input": "Crisis existencial",
+        "trigger_analysis": {
+          "raw_input": "Crisis existencial",
+          "semantic_query": "libros sobre crisis existencial",
+          "intent_summary": "Buscar libros que aborden el tema de la crisis existencial.",
+          "editorial_requests": [],
+          "source_preference": null,
+          "ranking_preference": null,
+          "unsupported_runtime_constraints": [],
+          "supported_constraints": {
+            "year_min": null,
+            "year_max": null,
+            "prefer_recent": false
+          },
+          "search_queries": [
+            "crisis existencial",
+            "libros sobre existencialismo",
+            "superar crisis existencial",
+            "filosofía de la existencia",
+            "reflexiones sobre la vida",
+            "autoayuda crisis existencial",
+            "libros sobre crisis existencial",
+            "libros crisis existencial"
+          ],
+          "concept_hints": [
+            "existentialism",
+            "philosophy",
+            "self-help"
+          ],
+          "clean_for_selection": "libros sobre crisis existencial",
+          "notes": {
+            "used_ai_normalizer": true,
+            "looked_like_book_intent": false,
+            "semantic_overlap_vs_raw": 1
+          }
+        },
+        "selection_validation": {
+          "semantic_score": 0.95,
+          "ai_fit_score": 0.95,
+          "match_score": 1,
+          "validation_source": "apple_books",
+          "constraint_reason": "Año verificado 2015",
+          "mode": "exact_gpt",
+          "source_label": "gpt_attempt_1",
+          "fallback_score": 155
+        },
+        "catalog_scope": "",
+        "contexto_2026": {},
+        "identity_sealed": true,
+        "_evidence": {
+          "titulo_input": "El hombre en busca de sentido",
+          "autor_input": "Viktor Frankl",
+          "isbn_seed": "",
+          "isbn_discovered": "6450851734",
+          "apple": {
+            "ok": true,
+            "source": "apple_books",
+            "match_score": 1,
+            "match_details": {
+              "matched_title": "El hombre en busca de sentido",
+              "matched_author": "Viktor Frankl"
+            },
+            "synopsis": "*Nueva traducción* \"El hombre en busca de sentido\" es el estremecedor relato en el que Viktor Frankl nos narra su experiencia en los campos de concentración. Durante todos esos años de sufrimiento, sintió en su propio ser lo que significaba una existencia desnuda, absolutamente desprovista de todo, salvo de la existencia misma. Él, que todo lo había perdido, que padeció hambre, frío y brutalidades, que tantas veces estuvo a punto de ser ejecutado, pudo reconocer que, pese a todo, la vida es digna de ser vivida y que la libertad interior y la dignidad humana son indestructibles. En su condición de psiquiatra y prisionero, Frankl reflexiona con palabras de sorprendente esperanza sobre la capacidad humana de trascender las dificultades y descubrir una verdad profunda que nos orienta y da sentido a nuestras vidas. La logoterapia, método psicoterapéutico creado por el propio Frankl, se centra precisamente en el sentido de la existencia y en la búsqueda de ese sentido por parte del hombre, que asume la responsabilidad ante sí mismo, ante los demás y ante la vida. ¿Qué espera la vida de nosotros? El hombre en busca de sentido es mucho más que el testimonio de un psiquiatra sobre los hechos y los acontecimientos vividos en un campo de concentración, es una lección existencial. Traducido a medio centenar de idiomas, se han vendido millones de ejemplares en todo el mundo. Según la Library of Congress de Washington, es uno de los diez libros de mayor influencia en Estados Unidos.",
+            "synopsis_length": 1493,
+            "covers": [
+              {
+                "size": "xxlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/3000x3000bb.jpg"
+              },
+              {
+                "size": "xlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/1200x1200bb.jpg"
+              },
+              {
+                "size": "large",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/600x600bb.jpg"
+              },
+              {
+                "size": "medium",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/100x100bb.jpg"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "El hombre en busca de sentido",
+              "autor_completo": "Viktor Frankl",
+              "año": "2015",
+              "editorial": null,
+              "isbn": "6450851734",
+              "categorias": [
+                "Psicología",
+                "Libros",
+                "Salud, mente y cuerpo"
+              ],
+              "track_view_url": "https://books.apple.com/mx/book/el-hombre-en-busca-de-sentido/id6450851734?uo=4"
+            }
+          },
+          "google": {
+            "ok": false,
+            "reason": "no_good_match",
+            "source": "google_books"
+          },
+          "openlibrary": {
+            "ok": false,
+            "reason": "no_results",
+            "source": "openlibrary"
+          },
+          "amazon": {
+            "ok": true,
+            "source": "amazon",
+            "match_score": 0.85,
+            "covers": [
+              {
+                "size": "large",
+                "url": "https://images-na.ssl-images-amazon.com/images/P/6450851734.01.LZZZZZZZ.jpg"
+              }
+            ],
+            "synopsis": "",
+            "synopsis_length": 0,
+            "verified_identity": {
+              "isbn": "6450851734",
+              "titulo_real": null,
+              "autor_completo": null,
+              "año": null
+            }
+          },
+          "valid_covers": [
+            {
+              "source": "apple_books",
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/3000x3000bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/1200x1200bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/600x600bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/100x100bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "amazon",
+              "size": "large",
+              "url": "https://images-na.ssl-images-amazon.com/images/P/6450851734.01.LZZZZZZZ.jpg",
+              "valid": true
+            }
+          ],
+          "_sources_succeeded": [
+            "apple_books",
+            "amazon"
+          ],
+          "_sources_failed": [
+            "google_books:no_good_match",
+            "openlibrary:no_results"
+          ],
+          "_timing": {
+            "phase1_parallel_ms": 16608,
+            "phase2_isbn_chain_ms": 25071,
+            "cover_validation_ms": 786,
+            "total_ms": 42465
+          }
+        },
+        "_evidence_synopsis": "*Nueva traducción* \"El hombre en busca de sentido\" es el estremecedor relato en el que Viktor Frankl nos narra su experiencia en los campos de concentración. Durante todos esos años de sufrimiento, sintió en su propio ser lo que significaba una existencia desnuda, absolutamente desprovista de todo, salvo de la existencia misma. Él, que todo lo había perdido, que padeció hambre, frío y brutalidades, que tantas veces estuvo a punto de ser ejecutado, pudo reconocer que, pese a todo, la vida es digna de ser vivida y que la libertad interior y la dignidad humana son indestructibles. En su condición de psiquiatra y prisionero, Frankl reflexiona con palabras de sorprendente esperanza sobre la capacidad humana de trascender las dificultades y descubrir una verdad profunda que nos orienta y da sentido a nuestras vidas. La logoterapia, método psicoterapéutico creado por el propio Frankl, se centra precisamente en el sentido de la existencia y en la búsqueda de ese sentido por parte del hombre, que asume la responsabilidad ante sí mismo, ante los demás y ante la vida. ¿Qué espera la vida de nosotros? El hombre en busca de sentido es mucho más que el testimonio de un psiquiatra sobre los hechos y los acontecimientos vividos en un campo de concentración, es una lección existencial. Traducido a medio centenar de idiomas, se han vendido millones de ejemplares en todo el mundo. Según la Library of Congress de Washington, es uno de los diez libros de mayor influencia en Estados Unidos.",
+        "_evidence_verified_identity": {
+          "titulo_real": "El hombre en busca de sentido",
+          "autor_completo": "Viktor Frankl",
+          "año": "2015",
+          "editorial": null,
+          "isbn": "6450851734",
+          "categorias": [
+            "Psicología",
+            "Libros",
+            "Salud, mente y cuerpo"
+          ],
+          "track_view_url": "https://books.apple.com/mx/book/el-hombre-en-busca-de-sentido/id6450851734?uo=4"
+        },
+        "_evidence_match_score": 1
+      }
+    }
+  ],
+  "last": {
+    "at": "2026-04-22T23:22:26.030Z",
+    "stage": "success",
+    "bookData": {
+      "titulo": "El hombre en busca de sentido",
+      "autor": "Viktor Frankl",
+      "slug": "el-hombre-en-busca-de-sentido",
+      "tagline": "La vida tiene sentido, incluso en las circunstancias más difíciles.",
+      "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/3000x3000bb.jpg",
+      "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/3000x3000bb.jpg",
+      "portada_source": "apple_books",
+      "portada_candidates": [
+        {
+          "source": "apple_books",
+          "size": "xxlarge",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/3000x3000bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "xlarge",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/1200x1200bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "large",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/600x600bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "medium",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/100x100bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "amazon",
+          "size": "large",
+          "url": "https://images-na.ssl-images-amazon.com/images/P/6450851734.01.LZZZZZZZ.jpg",
+          "valid": true
+        }
+      ],
+      "needs_fallback_cover": false,
+      "isbn": "6450851734",
+      "editorial": "Viktor Frankl",
+      "publication_year": "2015",
+      "source": "apple_books",
+      "duplicado": false,
+      "selected_via": "discover_trigger",
+      "selection_reason": "Un relato personal sobre la búsqueda de significado en medio del sufrimiento, basado en su experiencia en campos de concentración.",
+      "trigger_input": "Crisis existencial",
+      "trigger_analysis": {
+        "raw_input": "Crisis existencial",
+        "semantic_query": "libros sobre crisis existencial",
+        "intent_summary": "Buscar libros que aborden el tema de la crisis existencial.",
+        "editorial_requests": [],
+        "source_preference": null,
+        "ranking_preference": null,
+        "unsupported_runtime_constraints": [],
+        "supported_constraints": {
+          "year_min": null,
+          "year_max": null,
+          "prefer_recent": false
+        },
+        "search_queries": [
+          "crisis existencial",
+          "libros sobre existencialismo",
+          "superar crisis existencial",
+          "filosofía de la existencia",
+          "reflexiones sobre la vida",
+          "autoayuda crisis existencial",
+          "libros sobre crisis existencial",
+          "libros crisis existencial"
+        ],
+        "concept_hints": [
+          "existentialism",
+          "philosophy",
+          "self-help"
+        ],
+        "clean_for_selection": "libros sobre crisis existencial",
+        "notes": {
+          "used_ai_normalizer": true,
+          "looked_like_book_intent": false,
+          "semantic_overlap_vs_raw": 1
+        }
+      },
+      "selection_validation": {
+        "semantic_score": 0.95,
+        "ai_fit_score": 0.95,
+        "match_score": 1,
+        "validation_source": "apple_books",
+        "constraint_reason": "Año verificado 2015",
+        "mode": "exact_gpt",
+        "source_label": "gpt_attempt_1",
+        "fallback_score": 155
+      },
+      "catalog_scope": "",
+      "contexto_2026": {},
+      "identity_sealed": true,
+      "_evidence": {
+        "titulo_input": "El hombre en busca de sentido",
+        "autor_input": "Viktor Frankl",
+        "isbn_seed": "",
+        "isbn_discovered": "6450851734",
+        "apple": {
+          "ok": true,
+          "source": "apple_books",
+          "match_score": 1,
+          "match_details": {
+            "matched_title": "El hombre en busca de sentido",
+            "matched_author": "Viktor Frankl"
+          },
+          "synopsis": "*Nueva traducción* \"El hombre en busca de sentido\" es el estremecedor relato en el que Viktor Frankl nos narra su experiencia en los campos de concentración. Durante todos esos años de sufrimiento, sintió en su propio ser lo que significaba una existencia desnuda, absolutamente desprovista de todo, salvo de la existencia misma. Él, que todo lo había perdido, que padeció hambre, frío y brutalidades, que tantas veces estuvo a punto de ser ejecutado, pudo reconocer que, pese a todo, la vida es digna de ser vivida y que la libertad interior y la dignidad humana son indestructibles. En su condición de psiquiatra y prisionero, Frankl reflexiona con palabras de sorprendente esperanza sobre la capacidad humana de trascender las dificultades y descubrir una verdad profunda que nos orienta y da sentido a nuestras vidas. La logoterapia, método psicoterapéutico creado por el propio Frankl, se centra precisamente en el sentido de la existencia y en la búsqueda de ese sentido por parte del hombre, que asume la responsabilidad ante sí mismo, ante los demás y ante la vida. ¿Qué espera la vida de nosotros? El hombre en busca de sentido es mucho más que el testimonio de un psiquiatra sobre los hechos y los acontecimientos vividos en un campo de concentración, es una lección existencial. Traducido a medio centenar de idiomas, se han vendido millones de ejemplares en todo el mundo. Según la Library of Congress de Washington, es uno de los diez libros de mayor influencia en Estados Unidos.",
+          "synopsis_length": 1493,
+          "covers": [
+            {
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/3000x3000bb.jpg"
+            },
+            {
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/1200x1200bb.jpg"
+            },
+            {
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/600x600bb.jpg"
+            },
+            {
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/100x100bb.jpg"
+            }
+          ],
+          "verified_identity": {
+            "titulo_real": "El hombre en busca de sentido",
+            "autor_completo": "Viktor Frankl",
+            "año": "2015",
+            "editorial": null,
+            "isbn": "6450851734",
+            "categorias": [
+              "Psicología",
+              "Libros",
+              "Salud, mente y cuerpo"
+            ],
+            "track_view_url": "https://books.apple.com/mx/book/el-hombre-en-busca-de-sentido/id6450851734?uo=4"
+          }
+        },
+        "google": {
+          "ok": false,
+          "reason": "no_good_match",
+          "source": "google_books"
+        },
+        "openlibrary": {
+          "ok": false,
+          "reason": "no_results",
+          "source": "openlibrary"
+        },
+        "amazon": {
+          "ok": true,
+          "source": "amazon",
+          "match_score": 0.85,
+          "covers": [
+            {
+              "size": "large",
+              "url": "https://images-na.ssl-images-amazon.com/images/P/6450851734.01.LZZZZZZZ.jpg"
+            }
+          ],
+          "synopsis": "",
+          "synopsis_length": 0,
+          "verified_identity": {
+            "isbn": "6450851734",
+            "titulo_real": null,
+            "autor_completo": null,
+            "año": null
+          }
+        },
+        "valid_covers": [
+          {
+            "source": "apple_books",
+            "size": "xxlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/3000x3000bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "xlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/1200x1200bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "large",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/600x600bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "medium",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/100x100bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "amazon",
+            "size": "large",
+            "url": "https://images-na.ssl-images-amazon.com/images/P/6450851734.01.LZZZZZZZ.jpg",
+            "valid": true
+          }
+        ],
+        "_sources_succeeded": [
+          "apple_books",
+          "amazon"
+        ],
+        "_sources_failed": [
+          "google_books:no_good_match",
+          "openlibrary:no_results"
+        ],
+        "_timing": {
+          "phase1_parallel_ms": 16608,
+          "phase2_isbn_chain_ms": 25071,
+          "cover_validation_ms": 786,
+          "total_ms": 42465
+        }
+      },
+      "_evidence_synopsis": "*Nueva traducción* \"El hombre en busca de sentido\" es el estremecedor relato en el que Viktor Frankl nos narra su experiencia en los campos de concentración. Durante todos esos años de sufrimiento, sintió en su propio ser lo que significaba una existencia desnuda, absolutamente desprovista de todo, salvo de la existencia misma. Él, que todo lo había perdido, que padeció hambre, frío y brutalidades, que tantas veces estuvo a punto de ser ejecutado, pudo reconocer que, pese a todo, la vida es digna de ser vivida y que la libertad interior y la dignidad humana son indestructibles. En su condición de psiquiatra y prisionero, Frankl reflexiona con palabras de sorprendente esperanza sobre la capacidad humana de trascender las dificultades y descubrir una verdad profunda que nos orienta y da sentido a nuestras vidas. La logoterapia, método psicoterapéutico creado por el propio Frankl, se centra precisamente en el sentido de la existencia y en la búsqueda de ese sentido por parte del hombre, que asume la responsabilidad ante sí mismo, ante los demás y ante la vida. ¿Qué espera la vida de nosotros? El hombre en busca de sentido es mucho más que el testimonio de un psiquiatra sobre los hechos y los acontecimientos vividos en un campo de concentración, es una lección existencial. Traducido a medio centenar de idiomas, se han vendido millones de ejemplares en todo el mundo. Según la Library of Congress de Washington, es uno de los diez libros de mayor influencia en Estados Unidos.",
+      "_evidence_verified_identity": {
+        "titulo_real": "El hombre en busca de sentido",
+        "autor_completo": "Viktor Frankl",
+        "año": "2015",
+        "editorial": null,
+        "isbn": "6450851734",
+        "categorias": [
+          "Psicología",
+          "Libros",
+          "Salud, mente y cuerpo"
+        ],
+        "track_view_url": "https://books.apple.com/mx/book/el-hombre-en-busca-de-sentido/id6450851734?uo=4"
+      },
+      "_evidence_match_score": 1
+    }
+  }
+}

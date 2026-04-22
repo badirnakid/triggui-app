@@ -1,0 +1,47 @@
+{
+  "ground_truth": "TEMA INFERIDO (el modelo no conoce este libro directamente, infiere desde similares):\n\nLa búsqueda de sentido en la vida, especialmente en situaciones adversas y difíciles.\n\nVOZ INFERIDA:\nReflexiva y filosófica, con un enfoque en la psicología y la experiencia humana.\n\nLIBROS SIMILARES QUE COMPARTEN ADN CON ESTE:\n- \"El arte de la felicidad\" (Dalai Lama y Howard Cutler): Explora la búsqueda de la felicidad y el sentido de la vida desde una perspectiva filosófica y psicológica.\n- \"Man's Search for Meaning\" (Viktor Frankl): Es la versión en inglés del mismo libro, que aborda el sentido de la vida a través de la experiencia en campos de concentración.\n- \"La conquista de la felicidad\" (Bertrand Russell): Reflexiona sobre la búsqueda de la felicidad y el sentido en la vida desde un enfoque filosófico.\n- \"El poder del ahora\" (Eckhart Tolle): Se centra en la importancia de vivir el presente y encontrar significado en la existencia.\n- \"El hombre en busca de sí mismo\" (Rollo May): Aborda la búsqueda de identidad y sentido en la vida, similar a los temas de Frankl.",
+  "grounding_source": "model_inference",
+  "book_identity_confidence": 0.8075,
+  "verified_identity": {
+    "titulo_real": "El hombre en busca de sentido",
+    "autor_completo": "Viktor Frankl",
+    "año": null
+  },
+  "inference_confidence": 0.95,
+  "book_known_directly": true,
+  "rich_inference": true,
+  "similar_books": [
+    {
+      "titulo": "El arte de la felicidad",
+      "autor": "Dalai Lama y Howard Cutler",
+      "razon": "Explora la búsqueda de la felicidad y el sentido de la vida desde una perspectiva filosófica y psicológica."
+    },
+    {
+      "titulo": "Man's Search for Meaning",
+      "autor": "Viktor Frankl",
+      "razon": "Es la versión en inglés del mismo libro, que aborda el sentido de la vida a través de la experiencia en campos de concentración."
+    },
+    {
+      "titulo": "La conquista de la felicidad",
+      "autor": "Bertrand Russell",
+      "razon": "Reflexiona sobre la búsqueda de la felicidad y el sentido en la vida desde un enfoque filosófico."
+    },
+    {
+      "titulo": "El poder del ahora",
+      "autor": "Eckhart Tolle",
+      "razon": "Se centra en la importancia de vivir el presente y encontrar significado en la existencia."
+    },
+    {
+      "titulo": "El hombre en busca de sí mismo",
+      "autor": "Rollo May",
+      "razon": "Aborda la búsqueda de identidad y sentido en la vida, similar a los temas de Frankl."
+    }
+  ],
+  "resolution_path": [
+    "evidence_fetched_0sources",
+    "tier3_conf_0.95"
+  ],
+  "tier_reached": 2.5,
+  "cost_tokens": 581,
+  "cached_at": "2026-04-22T23:22:56.929Z"
+}
