@@ -1,52 +1,52 @@
 {
   "libros": [
     {
-      "titulo": "Indistractable",
+      "titulo": "Indistractable: How to Control Your Attention and Choose Your Life",
       "autor": "Nir Eyal",
-      "tagline": "Cómo controlar tu atención y elegir tu vida.",
-      "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication114/v4/6c/48/59/6c4859d2-ffea-7399-7b6c-ff33e06eb6ce/1030309858.jpg/3000x3000bb.jpg",
-      "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication114/v4/6c/48/59/6c4859d2-ffea-7399-7b6c-ff33e06eb6ce/1030309858.jpg/3000x3000bb.jpg",
-      "isbn": "1487454977",
-      "titulo_es": "Indistractable",
-      "titulo_en": "Indistractable",
+      "tagline": "Conviértete en indistractable y toma el control de tu vida.",
+      "portada": "https://images-na.ssl-images-amazon.com/images/P/6741169938.01.LZZZZZZZ.jpg",
+      "portada_url": "https://images-na.ssl-images-amazon.com/images/P/6741169938.01.LZZZZZZZ.jpg",
+      "isbn": "6741169938",
+      "titulo_es": "Indistractable: Cómo controlar tu atención y elegir tu vida",
+      "titulo_en": "Indistractable: How to Control Your Attention and Choose Your Life",
       "idioma_original": "en",
       "dimension": "Bienestar",
       "punto": "Activo",
       "palabras": [
-        "determinación",
-        "claridad",
-        "enfoque",
-        "resiliencia"
+        "determinado",
+        "enfocado",
+        "liberador",
+        "pleno"
       ],
       "palabras_en": [
+        "empowerment",
+        "clarity",
         "focus",
-        "discipline",
-        "powerful",
-        "habits"
+        "freedom"
       ],
       "frases": [
-        "🚶 Ajusta tu espacio de trabajo. Elimina todo lo que te distraiga.",
-        "🕰 ¿Estás invirtiendo tu tiempo en lo que realmente importa?",
-        "🌅 Imagina un día sin interrupciones, donde tu atención fluye sin obstáculos.",
-        "🏛 Menos distracciones, más claridad: así se forja el enfoque."
+        "💫 Practica la atención plena en cada tarea que realices.",
+        "⏳ ¿Cuánto tiempo pierdes cada día en distracciones innecesarias?",
+        "🔭 Imagina un día sin interrupciones, donde cada objetivo se cumple.",
+        "🌌 La productividad florece en un entorno libre de distracciones."
       ],
       "frases_en": [
-        "🏛 Design your workspace for maximum focus and clarity.",
-        "🕰 Consider: what time of day do you feel most productive?",
-        "💡 Imagine a room filled with natural light, inspiring your best work.",
-        "🚶 In the flow of focus, distractions fade into the background."
+        "💡 Illuminate your priorities. Let your attention shine.",
+        "🏛 What distractions occupy your space today?",
+        "🔭 Imagine a day where every moment is intentionally yours.",
+        "🌓 Time wasted is potential unreleased — focus transforms minutes into mastery."
       ],
       "frases_og": [
-        "✨ La gestión de la atención es el nuevo superpoder.",
-        "⚓ Establece límites claros y enfócate en lo esencial.",
-        "🔁 ¿Cuántas distracciones se cuelan en tu día a día?",
-        "🛡 La autodisciplina construye el camino hacia la productividad."
+        "✨ El control personal transforma la atención en poder.",
+        "⚓ Evita distracciones, elige tu camino hacia el éxito.",
+        "🔁 ¿Qué logros podrías alcanzar si te volvieras indistractable?",
+        "🛡 Atención plena: el arte de vivir cada momento."
       ],
       "frases_og_en": [
-        "✨ Self-discipline empowers your focus in chaotic times.",
-        "⚓ Create your environment to nurture attention and clarity.",
-        "🔁 How often do distractions steal your time and energy?",
-        "🛡 Distractions loom large, yet discipline shapes your path."
+        "✨ Master your attention to reclaim your life.",
+        "⚓ Identify distractions and eliminate their hold on you.",
+        "🔁 What would you accomplish if focus was effortless?",
+        "🛡 Intentional choices lead to a life of purpose."
       ],
       "colores": [
         "#90DFD2",
@@ -62,10 +62,10 @@
       ],
       "fondo": "#CFD2D3",
       "tarjeta": {
-        "titulo": "Dominando tu atención en un mundo distraído",
-        "parrafoTop": "[H]La autodisciplina no es solo resistir tentaciones, sino también crear un entorno[/H] que favorezca la concentración. Implementar estrategias para controlar la atención es clave para navegar en un mar de distracciones que amenaza con desviar tu enfoque.",
-        "subtitulo": "¿Qué hábitos alimentan tu productividad?",
-        "parrafoBot": "[H]Cada elección que haces impacta tu capacidad de ser productivo.[/H] Al adoptar hábitos que refuercen tu autodisciplina, puedes transformar tu enfoque en una herramienta poderosa para alcanzar tus metas.",
+        "titulo": "Domina tu atención para vivir plenamente",
+        "parrafoTop": "[H]La gestión de la atención es el primer paso para convertirte en indistractable.[/H] Con cada distracción que superas, mejoras tu calidad de vida y aumentas tu productividad personal.",
+        "subtitulo": "¿Cómo puedes evitar las distracciones cotidianas?",
+        "parrafoBot": "[H]Las estrategias aplicables son la clave para mantener el enfoque.[/H] Cada acción consciente te acerca más a la vida que realmente deseas, libre de interrupciones y llena de propósito.",
         "style": {
           "accent": "#1F99D6",
           "paper": "#CFD2D3",
@@ -74,10 +74,10 @@
         }
       },
       "tarjeta_base": {
-        "titulo": "Dominando tu atención en un mundo distraído",
-        "parrafoTop": "[H]La autodisciplina no es solo resistir tentaciones, sino también crear un entorno[/H] que favorezca la concentración. Implementar estrategias para controlar la atención es clave para navegar en un mar de distracciones que amenaza con desviar tu enfoque.",
-        "subtitulo": "¿Qué hábitos alimentan tu productividad?",
-        "parrafoBot": "[H]Cada elección que haces impacta tu capacidad de ser productivo.[/H] Al adoptar hábitos que refuercen tu autodisciplina, puedes transformar tu enfoque en una herramienta poderosa para alcanzar tus metas.",
+        "titulo": "Domina tu atención para vivir plenamente",
+        "parrafoTop": "[H]La gestión de la atención es el primer paso para convertirte en indistractable.[/H] Con cada distracción que superas, mejoras tu calidad de vida y aumentas tu productividad personal.",
+        "subtitulo": "¿Cómo puedes evitar las distracciones cotidianas?",
+        "parrafoBot": "[H]Las estrategias aplicables son la clave para mantener el enfoque.[/H] Cada acción consciente te acerca más a la vida que realmente deseas, libre de interrupciones y llena de propósito.",
         "style": {
           "accent": "#1F99D6",
           "paper": "#CFD2D3",
@@ -86,10 +86,10 @@
         }
       },
       "tarjeta_presentacion": {
-        "titulo": "Dominando tu atención en un mundo distraído",
-        "parrafoTop": "[H]La autodisciplina no es solo resistir tentaciones, sino también crear un entorno[/H] que favorezca la concentración. Implementar estrategias para controlar la atención es clave para navegar en un mar de distracciones que amenaza con desviar tu enfoque.",
-        "subtitulo": "¿Qué hábitos alimentan tu productividad?",
-        "parrafoBot": "[H]Cada elección que haces impacta tu capacidad de ser productivo.[/H] Al adoptar hábitos que refuercen tu autodisciplina, puedes transformar tu enfoque en una herramienta poderosa para alcanzar tus metas.",
+        "titulo": "Domina tu atención para vivir plenamente",
+        "parrafoTop": "[H]La gestión de la atención es el primer paso para convertirte en indistractable.[/H] Con cada distracción que superas, mejoras tu calidad de vida y aumentas tu productividad personal.",
+        "subtitulo": "¿Cómo puedes evitar las distracciones cotidianas?",
+        "parrafoBot": "[H]Las estrategias aplicables son la clave para mantener el enfoque.[/H] Cada acción consciente te acerca más a la vida que realmente deseas, libre de interrupciones y llena de propósito.",
         "style": {
           "accent": "#1F99D6",
           "paper": "#CFD2D3",
@@ -98,10 +98,10 @@
         }
       },
       "tarjeta_en": {
-        "titulo": "Mastering Your Attention in a Distracted World",
-        "parrafoTop": "[H]Self-discipline transcends mere resistance to temptation; it involves crafting an environment conducive to focus.[/H] Implementing strategies to manage your attention is essential for navigating a sea of distractions that threatens to divert your concentration.",
-        "subtitulo": "What habits fuel your productivity?",
-        "parrafoBot": "[H]Every choice impacts your productivity.[/H] By embracing habits that strengthen your self-discipline, you can transform your focus into a powerful tool for achieving your goals.",
+        "titulo": "Master Your Attention for a Fulfilling Life",
+        "parrafoTop": "Attention management is the first step to becoming indistractable. [H]Each distraction you overcome enhances your quality of life and boosts your personal productivity.[/H]",
+        "subtitulo": "How can you avoid everyday distractions?",
+        "parrafoBot": "[H]Practical strategies are the key to maintaining focus.[/H] Every conscious action brings you closer to the life you truly desire, free from interruptions and filled with purpose.",
         "style": {
           "accent": "#1F99D6",
           "paper": "#CFD2D3",
@@ -110,10 +110,10 @@
         }
       },
       "tarjeta_base_en": {
-        "titulo": "Mastering Your Attention in a Distracted World",
-        "parrafoTop": "[H]Self-discipline transcends mere resistance to temptation; it involves crafting an environment conducive to focus.[/H] Implementing strategies to manage your attention is essential for navigating a sea of distractions that threatens to divert your concentration.",
-        "subtitulo": "What habits fuel your productivity?",
-        "parrafoBot": "[H]Every choice impacts your productivity.[/H] By embracing habits that strengthen your self-discipline, you can transform your focus into a powerful tool for achieving your goals.",
+        "titulo": "Master Your Attention for a Fulfilling Life",
+        "parrafoTop": "Attention management is the first step to becoming indistractable. [H]Each distraction you overcome enhances your quality of life and boosts your personal productivity.[/H]",
+        "subtitulo": "How can you avoid everyday distractions?",
+        "parrafoBot": "[H]Practical strategies are the key to maintaining focus.[/H] Every conscious action brings you closer to the life you truly desire, free from interruptions and filled with purpose.",
         "style": {
           "accent": "#1F99D6",
           "paper": "#CFD2D3",
@@ -122,10 +122,10 @@
         }
       },
       "tarjeta_presentacion_en": {
-        "titulo": "Mastering Your Attention in a Distracted World",
-        "parrafoTop": "[H]Self-discipline transcends mere resistance to temptation; it involves crafting an environment conducive to focus.[/H] Implementing strategies to manage your attention is essential for navigating a sea of distractions that threatens to divert your concentration.",
-        "subtitulo": "What habits fuel your productivity?",
-        "parrafoBot": "[H]Every choice impacts your productivity.[/H] By embracing habits that strengthen your self-discipline, you can transform your focus into a powerful tool for achieving your goals.",
+        "titulo": "Master Your Attention for a Fulfilling Life",
+        "parrafoTop": "Attention management is the first step to becoming indistractable. [H]Each distraction you overcome enhances your quality of life and boosts your personal productivity.[/H]",
+        "subtitulo": "How can you avoid everyday distractions?",
+        "parrafoBot": "[H]Practical strategies are the key to maintaining focus.[/H] Every conscious action brings you closer to the life you truly desire, free from interruptions and filled with purpose.",
         "style": {
           "accent": "#1F99D6",
           "paper": "#CFD2D3",
@@ -133,33 +133,35 @@
           "border": "#7C7E7F"
         }
       },
-      "videoUrl": "https://duckduckgo.com/?q=!ducky+site:youtube.com+Indistractable%20Nir%20Eyal%20entrevista%20espa%C3%B1ol",
-      "videoUrl_en": "https://duckduckgo.com/?q=!ducky+site:youtube.com+Indistractable%20Nir%20Eyal%20interview",
+      "videoUrl": "https://duckduckgo.com/?q=!ducky+site:youtube.com+Indistractable%3A%20How%20to%20Control%20Your%20Attention%20and%20Choose%20Your%20Life%20Nir%20Eyal%20entrevista%20espa%C3%B1ol",
+      "videoUrl_en": "https://duckduckgo.com/?q=!ducky+site:youtube.com+Indistractable%3A%20How%20to%20Control%20Your%20Attention%20and%20Choose%20Your%20Life%20Nir%20Eyal%20interview",
       "_nucleus": {
         "book_identity": {
-          "titulo_es": "Indistractable",
-          "titulo_en": "Indistractable",
+          "titulo_es": "Indistractable: Cómo controlar tu atención y elegir tu vida",
+          "titulo_en": "Indistractable: How to Control Your Attention and Choose Your Life",
           "autor_completo": "Nir Eyal",
           "idioma_original": "en"
         },
         "book_grounding_anchors": {
           "concepts": [
-            "estrategias para controlar la atención",
-            "autodisciplina en un mundo lleno de distracciones",
-            "mejora de la productividad personal"
+            "gestión de la atención",
+            "evitar distracciones",
+            "mejorar la calidad de vida",
+            "productividad personal",
+            "estrategias aplicables"
           ],
           "key_terms": [
-            "gestión de la atención",
-            "autodisciplina",
+            "indistractable",
+            "atención plena",
             "distracciones",
             "productividad",
-            "enfoque"
+            "control personal"
           ],
-          "authorial_voice_notes": "La voz del autor es práctica y motivacional, centrada en la autoayuda y el desarrollo personal."
+          "authorial_voice_notes": "La voz del autor es motivacional y práctica, enfocándose en proporcionar estrategias que el lector puede aplicar en su vida diaria."
         },
         "lens_analysis": {
           "lens_provided": false,
-          "analysis": "La lente del curador no se aplica directamente ya que el contenido se basa en inferencias sobre la gestión de la atención y la autodisciplina.",
+          "analysis": "La lente del curador no aplica directamente ya que el análisis es inferido y no se basa en un contenido específico del libro.",
           "decision": "dont_apply_book_is_about_something_else"
         },
         "visual_intent": {
@@ -171,7 +173,7 @@
           "typography_family": "sans_humanista",
           "density": "equilibrado",
           "rhythm": "medio",
-          "era": "contemporaneo",
+          "era": "moderno",
           "genre_visual": "ensayo"
         },
         "surface_hints": {
@@ -180,95 +182,95 @@
           "franja_ideal": "manana"
         },
         "card_es": {
-          "titulo": "Dominando tu atención en un mundo distraído",
-          "parrafoTop": "La autodisciplina no es solo resistir tentaciones, sino también crear un entorno que favorezca la concentración. Implementar estrategias para controlar la atención es clave para navegar en un mar de distracciones que amenaza con desviar tu enfoque.",
-          "subtitulo": "¿Qué hábitos alimentan tu productividad?",
-          "parrafoBot": "Cada elección que haces impacta tu capacidad de ser productivo. Al adoptar hábitos que refuercen tu autodisciplina, puedes transformar tu enfoque en una herramienta poderosa para alcanzar tus metas."
+          "titulo": "Domina tu atención para vivir plenamente",
+          "parrafoTop": "La gestión de la atención es el primer paso para convertirte en indistractable. Con cada distracción que superas, mejoras tu calidad de vida y aumentas tu productividad personal.",
+          "subtitulo": "¿Cómo puedes evitar las distracciones cotidianas?",
+          "parrafoBot": "Las estrategias aplicables son la clave para mantener el enfoque. Cada acción consciente te acerca más a la vida que realmente deseas, libre de interrupciones y llena de propósito."
         },
         "card_en": {
-          "titulo": "Mastering Your Attention in a Distracted World",
-          "parrafoTop": "Self-discipline transcends mere resistance to temptation; it involves crafting an environment conducive to focus. Implementing strategies to manage your attention is essential for navigating a sea of distractions that threatens to divert your concentration.",
-          "subtitulo": "What habits fuel your productivity?",
-          "parrafoBot": "Every choice impacts your productivity. By embracing habits that strengthen your self-discipline, you can transform your focus into a powerful tool for achieving your goals."
+          "titulo": "Master Your Attention for a Fulfilling Life",
+          "parrafoTop": "Attention management is the first step to becoming indistractable. Each distraction you overcome enhances your quality of life and boosts your personal productivity.",
+          "subtitulo": "How can you avoid everyday distractions?",
+          "parrafoBot": "Practical strategies are the key to maintaining focus. Every conscious action brings you closer to the life you truly desire, free from interruptions and filled with purpose."
         },
         "emotional_words_es": [
-          "determinación",
-          "claridad",
-          "enfoque",
-          "resiliencia"
+          "determinado",
+          "enfocado",
+          "liberador",
+          "pleno"
         ],
         "emotional_words_en": [
+          "empowerment",
+          "clarity",
           "focus",
-          "discipline",
-          "powerful",
-          "habits"
+          "freedom"
         ],
         "og_phrases_es": [
-          "✨ La gestión de la atención es el nuevo superpoder.",
-          "⚓ Establece límites claros y enfócate en lo esencial.",
-          "🔁 ¿Cuántas distracciones se cuelan en tu día a día?",
-          "🛡 La autodisciplina construye el camino hacia la productividad."
+          "✨ El control personal transforma la atención en poder.",
+          "⚓ Evita distracciones, elige tu camino hacia el éxito.",
+          "🔁 ¿Qué logros podrías alcanzar si te volvieras indistractable?",
+          "🛡 Atención plena: el arte de vivir cada momento."
         ],
         "og_phrases_en": [
-          "✨ Self-discipline empowers your focus in chaotic times.",
-          "⚓ Create your environment to nurture attention and clarity.",
-          "🔁 How often do distractions steal your time and energy?",
-          "🛡 Distractions loom large, yet discipline shapes your path."
+          "✨ Master your attention to reclaim your life.",
+          "⚓ Identify distractions and eliminate their hold on you.",
+          "🔁 What would you accomplish if focus was effortless?",
+          "🛡 Intentional choices lead to a life of purpose."
         ],
         "edition_blocks_es": [
           {
             "gesture_type": "instruccion_sensorial",
             "sensory_anchor": "movimiento",
-            "phrase": "🚶 Ajusta tu espacio de trabajo. Elimina todo lo que te distraiga."
+            "phrase": "💫 Practica la atención plena en cada tarea que realices."
           },
           {
             "gesture_type": "pregunta_directa",
             "sensory_anchor": "tiempo",
-            "phrase": "🕰 ¿Estás invirtiendo tu tiempo en lo que realmente importa?"
+            "phrase": "⏳ ¿Cuánto tiempo pierdes cada día en distracciones innecesarias?"
           },
           {
             "gesture_type": "imagen_concreta",
             "sensory_anchor": "vista",
-            "phrase": "🌅 Imagina un día sin interrupciones, donde tu atención fluye sin obstáculos."
+            "phrase": "🔭 Imagina un día sin interrupciones, donde cada objetivo se cumple."
           },
           {
             "gesture_type": "aforismo_autorial",
             "sensory_anchor": "espacio",
-            "phrase": "🏛 Menos distracciones, más claridad: así se forja el enfoque."
+            "phrase": "🌌 La productividad florece en un entorno libre de distracciones."
           }
         ],
         "edition_blocks_en": [
           {
             "gesture_type": "sensory_instruction",
-            "sensory_anchor": "space",
-            "phrase": "🏛 Design your workspace for maximum focus and clarity."
+            "sensory_anchor": "light",
+            "phrase": "💡 Illuminate your priorities. Let your attention shine."
           },
           {
             "gesture_type": "direct_question",
-            "sensory_anchor": "time",
-            "phrase": "🕰 Consider: what time of day do you feel most productive?"
+            "sensory_anchor": "space",
+            "phrase": "🏛 What distractions occupy your space today?"
           },
           {
             "gesture_type": "concrete_image",
-            "sensory_anchor": "light",
-            "phrase": "💡 Imagine a room filled with natural light, inspiring your best work."
+            "sensory_anchor": "sight",
+            "phrase": "🔭 Imagine a day where every moment is intentionally yours."
           },
           {
             "gesture_type": "authorial_aphorism",
-            "sensory_anchor": "movement",
-            "phrase": "🚶 In the flow of focus, distractions fade into the background."
+            "sensory_anchor": "time",
+            "phrase": "🌓 Time wasted is potential unreleased — focus transforms minutes into mastery."
           }
         ],
         "confidence": {
-          "book_grounding": 0.6,
+          "book_grounding": 0.64,
           "voice_authenticity": 0.93,
-          "specificity": 0.95,
+          "specificity": 0.88,
           "grounding_judge": 0.95,
           "combined": 0.84,
           "signals": {
-            "bookIdentityConfidence": 0.6000000000000001,
+            "bookIdentityConfidence": 0.6375,
             "voiceSignal": 0.9249999999999999,
-            "specificitySignal": 0.95,
+            "specificitySignal": 0.8818181818181818,
             "judgeScore": 0.95
           }
         }
@@ -276,13 +278,13 @@
       "_grounding": {
         "source": "model_inference",
         "tier_reached": 3,
-        "book_identity_confidence": 0.6000000000000001,
+        "book_identity_confidence": 0.6375,
         "resolution_path": [
           "evidence_fetched_0sources",
-          "tier3_conf_0.80"
+          "tier3_conf_0.85"
         ],
         "verified_identity": {
-          "titulo_real": "Indistractable",
+          "titulo_real": "Indistractable: How to Control Your Attention and Choose Your Life",
           "autor_completo": "Nir Eyal",
           "año": null
         },
@@ -290,22 +292,22 @@
           {
             "titulo": "Deep Work",
             "autor": "Cal Newport",
-            "razon": "Explora la importancia de la concentración en un mundo lleno de distracciones."
-          },
-          {
-            "titulo": "The Power of Habit",
-            "autor": "Charles Duhigg",
-            "razon": "Analiza cómo los hábitos afectan nuestra vida y cómo podemos cambiarlos."
+            "razon": "Aborda la importancia de la concentración profunda en un mundo lleno de distracciones."
           },
           {
             "titulo": "Atomic Habits",
             "autor": "James Clear",
-            "razon": "Ofrece estrategias para formar buenos hábitos y romper los malos, relacionado con el control de la atención."
+            "razon": "Explora cómo formar buenos hábitos y romper los malos, relacionado con el control de la atención."
           },
           {
-            "titulo": "Digital Minimalism",
-            "autor": "Cal Newport",
-            "razon": "Aborda cómo reducir el uso de tecnología para mejorar la calidad de vida y la atención."
+            "titulo": "The Power of Now",
+            "autor": "Eckhart Tolle",
+            "razon": "Enfocado en la atención plena y el control de la mente para vivir en el presente."
+          },
+          {
+            "titulo": "Mindset: The New Psychology of Success",
+            "autor": "Carol S. Dweck",
+            "razon": "Discute cómo nuestras creencias sobre nuestras habilidades pueden influir en nuestra vida y atención."
           }
         ],
         "from_cache": false
@@ -315,13 +317,13 @@
           "grounded_score": 1,
           "uses_book_specific_concepts": true,
           "could_apply_to_any_book": false,
-          "reason": "The generated content directly addresses themes of attention management and self-discipline, which align closely with the inferred themes of the book. Phrases like 'crear un entorno que favorezca la concentración' and 'transformar tu enfoque en una herramienta poderosa' reflect specific concepts related to productivity and focus, making it highly relevant to the book's ground truth."
+          "reason": "The generated content directly addresses the themes of attention management and productivity, which align closely with the inferred ground truth of the book. Phrases like 'domina tu atención' and 'indistractable' specifically reflect the book's focus on overcoming distractions to enhance quality of life and productivity. Additionally, the motivational tone and practical strategies presented are in"
         },
         "en": {
           "grounded_score": 0.9,
           "uses_book_specific_concepts": true,
           "could_apply_to_any_book": false,
-          "reason": "The content is highly relevant to the inferred themes of attention management and self-discipline, using specific concepts like 'self-discipline', 'environment conducive to focus', and 'habits that strengthen your self-discipline'. It reflects a practical and motivational voice, aligning closely with the inferred voice of the author. The phrases and ideas presented are tailored to the book's focus"
+          "reason": "The content is highly specific to the themes of attention management and productivity, which align closely with the inferred themes of the book. Phrases like 'master your attention' and 'overcome distractions' directly reflect the core concepts of improving quality of life through focus. The motivational tone and practical strategies also resonate with the inferred voice of the author. While it is"
         }
       },
       "_voice_verdict": {
@@ -330,12 +332,12 @@
         "es": {
           "verdict": "pagina",
           "confidence": 0.9,
-          "reason": "Voz directa y enfoque en la autodisciplina sin referencias externas.",
-          "elapsed_ms": 1977,
+          "reason": "Voz directa y enfoque en la acción personal.",
+          "elapsed_ms": 1058,
           "usage": {
-            "prompt_tokens": 376,
-            "completion_tokens": 29,
-            "total_tokens": 405,
+            "prompt_tokens": 371,
+            "completion_tokens": 25,
+            "total_tokens": 396,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -352,12 +354,12 @@
         "en": {
           "verdict": "pagina",
           "confidence": 0.9,
-          "reason": "Tono directo y enfoque en la autoayuda sin referencias externas.",
-          "elapsed_ms": 2374,
+          "reason": "Voz directa y enfoque en estrategias prácticas sin referencias meta.",
+          "elapsed_ms": 1267,
           "usage": {
-            "prompt_tokens": 359,
-            "completion_tokens": 29,
-            "total_tokens": 388,
+            "prompt_tokens": 357,
+            "completion_tokens": 27,
+            "total_tokens": 384,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -373,8 +375,8 @@
         },
         "circuit_tripped": false,
         "should_reextract": false,
-        "total_tokens": 793,
-        "total_ms": 2374
+        "total_tokens": 780,
+        "total_ms": 1267
       },
       "_visual": {
         "synthesis_inputs": {
@@ -429,7 +431,7 @@
         "distinct_types_en": 4
       },
       "_quality_warning": null,
-      "_inputs_snapshot": "2026-04-22T22-13-17",
+      "_inputs_snapshot": "2026-04-22T22-41-18",
       "_crono": {
         "dia": "miércoles",
         "hora": 16,
@@ -440,28 +442,28 @@
         "descripcion_franja": "Tarde: pensamiento analítico. Matices, profundidad, contexto."
       },
       "_metrics": {
-        "tokens_total": 9386,
+        "tokens_total": 9376,
         "tokens_by_phase": {
-          "grounding": 518,
-          "anchors": 2224,
+          "grounding": 543,
+          "anchors": 2263,
           "palette": 0,
-          "content_es": 2419,
-          "judge_es": 816,
-          "content_en": 1839,
-          "judge_en": 777,
-          "voice": 793
+          "content_es": 2411,
+          "judge_es": 795,
+          "content_en": 1824,
+          "judge_en": 760,
+          "voice": 780
         },
-        "elapsed_ms_total": 61739,
+        "elapsed_ms_total": 49170,
         "elapsed_ms_by_phase": {
-          "grounding": 35879,
-          "anchors": 5077,
+          "grounding": 28425,
+          "anchors": 6214,
           "palette": 1,
           "cover_fallback": 0,
-          "content_es": 6477,
-          "judge_es": 2975,
-          "content_en": 4731,
-          "judge_en": 4222,
-          "voice": 2375,
+          "content_es": 4465,
+          "judge_es": 2785,
+          "content_en": 4355,
+          "judge_en": 1656,
+          "voice": 1267,
           "post_processing": 6
         },
         "llm_calls_count": 8,
@@ -472,7 +474,7 @@
         "final_validation": "pass"
       },
       "_manual": true,
-      "_manual_generated_at": "2026-04-22T22:14:19.449Z"
+      "_manual_generated_at": "2026-04-22T22:42:07.208Z"
     }
   ]
 }
