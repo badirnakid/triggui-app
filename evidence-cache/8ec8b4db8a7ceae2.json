@@ -1,0 +1,124 @@
+{
+  "titulo_input": "Audaz productivo y feliz",
+  "autor_input": "Robin Sharma",
+  "isbn_seed": "",
+  "isbn_discovered": "1035974905",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Audaz, productivo y feliz",
+      "matched_author": "Robin Sharma"
+    },
+    "synopsis": "Audaz, productivo y feliz constituye una valiosa guía para alcanzar la excelencia personal y profesional. Este libro ofrece propuestas prácticas que contribuirán a un cambio rápido en los hábitos diarios para alcanzar el máximo potencial de cada uno. Robin Sharma incluye aquí 36 módulos capaces de transformar radicalmente la dinámica vital para conducir al lector a horizontes profesionales y personales más elevados. El autor nos invita a reflexionar sobre la forma en que vivimos y trabajamos, y a comprometernos a introducir cambios de rumbo profundos para prosperar en todos los ámbitos de la vida. ** Robin Sharma es autor del best seller internacional El monje que vendió su Ferrari, con más de 5.000.000 de ejemplares vendidos Audaz, productivo y feliz te enseñará a: o Conseguir un rendimiento extraordinario en tu trabajo y en tu vida. o Encontrar un enfoque equilibrado del éxito. o No dejar nunca de aprender. o Desarrollar un entorno propicio para la excelencia. o Ejercer un verdadero liderazgo. «No dispones de días de más, ni de días sin sentido. Hoy mismo puedes tomar la decisión de aspirar a una meta más alta, de ser quien siempre has deseado ser.» Robin Sharma",
+    "synopsis_length": 1182,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/8f/a9/d28fa91e-a7e2-e802-604b-420ba8128c35/9788416029655.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/8f/a9/d28fa91e-a7e2-e802-604b-420ba8128c35/9788416029655.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/8f/a9/d28fa91e-a7e2-e802-604b-420ba8128c35/9788416029655.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/8f/a9/d28fa91e-a7e2-e802-604b-420ba8128c35/9788416029655.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Audaz, productivo y feliz",
+      "autor_completo": "Robin Sharma",
+      "año": "2015",
+      "editorial": null,
+      "isbn": "1035974905",
+      "categorias": [
+        "Superación personal",
+        "Libros",
+        "Salud, mente y cuerpo"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/audaz-productivo-y-feliz/id1035974905?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": false,
+    "reason": "no_results",
+    "source": "openlibrary"
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/1035974905.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "1035974905",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/8f/a9/d28fa91e-a7e2-e802-604b-420ba8128c35/9788416029655.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/8f/a9/d28fa91e-a7e2-e802-604b-420ba8128c35/9788416029655.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/8f/a9/d28fa91e-a7e2-e802-604b-420ba8128c35/9788416029655.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/8f/a9/d28fa91e-a7e2-e802-604b-420ba8128c35/9788416029655.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/1035974905.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match",
+    "openlibrary:no_results"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 16582,
+    "phase2_isbn_chain_ms": 25119,
+    "cover_validation_ms": 951,
+    "total_ms": 42652
+  },
+  "_cached_at": "2026-04-23T02:59:28.789Z"
+}

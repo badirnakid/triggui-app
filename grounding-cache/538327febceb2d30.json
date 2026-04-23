@@ -1,7 +1,7 @@
 {
-  "ground_truth": "TEMA INFERIDO (el modelo no conoce este libro directamente, infiere desde similares):\n\nEl libro probablemente trata sobre la creatividad y el desarrollo personal, enfocándose en virtudes y peligros relacionados con el potencial humano.\n\nVOZ INFERIDA:\nEs probable que la voz del autor sea motivacional y reflexiva, buscando inspirar al lector a explorar su propia creatividad y potencial.\n\nLIBROS SIMILARES QUE COMPARTEN ADN CON ESTE:\n- \"El arte de la creatividad\" (Rod Judkins): Explora la creatividad y cómo desarrollarla en diversas áreas de la vida.\n- \"El camino del artista\" (Julia Cameron): Ofrece un enfoque sobre la creatividad y cómo desbloquear el potencial artístico.\n- \"Creatividad S.A.\" (Ed Catmull): Reflexiona sobre la creatividad en el contexto empresarial y cómo fomentarla.\n- \"La guerra del arte\" (Steven Pressfield): Aborda los obstáculos que enfrentan los creativos y cómo superarlos.\n- \"Big Magic: Creative Living Beyond Fear\" (Elizabeth Gilbert): Explora la naturaleza de la creatividad y cómo vivir de manera creativa.",
+  "ground_truth": "TEMA INFERIDO (el modelo no conoce este libro directamente, infiere desde similares):\n\nDesarrollo personal y autoconocimiento, con un enfoque en virtudes y potencial humano.\n\nVOZ INFERIDA:\nMotivacional y reflexiva, posiblemente con un enfoque práctico y accesible.\n\nLIBROS SIMILARES QUE COMPARTEN ADN CON ESTE:\n- \"El poder del ahora\" (Eckhart Tolle): Explora la conciencia y el potencial humano.\n- \"Despierta tu héroe interior\" (Victor Hugo Manzanilla): Se centra en el crecimiento personal y el desarrollo de virtudes.\n- \"Los secretos de la mente millonaria\" (T. Harv Eker): Aborda la mentalidad y las actitudes que llevan al éxito.",
   "grounding_source": "model_inference",
-  "book_identity_confidence": 0.5249999999999999,
+  "book_identity_confidence": 0.385,
   "verified_identity": {
     "titulo_real": "Homo creativus",
     "autor_completo": "Juan Carlos Chavez",
@@ -9,32 +9,22 @@
   },
   "inference_confidence": 0.7,
   "book_known_directly": false,
-  "rich_inference": true,
+  "rich_inference": false,
   "similar_books": [
     {
-      "titulo": "El arte de la creatividad",
-      "autor": "Rod Judkins",
-      "razon": "Explora la creatividad y cómo desarrollarla en diversas áreas de la vida."
+      "titulo": "El poder del ahora",
+      "autor": "Eckhart Tolle",
+      "razon": "Explora la conciencia y el potencial humano."
     },
     {
-      "titulo": "El camino del artista",
-      "autor": "Julia Cameron",
-      "razon": "Ofrece un enfoque sobre la creatividad y cómo desbloquear el potencial artístico."
+      "titulo": "Despierta tu héroe interior",
+      "autor": "Victor Hugo Manzanilla",
+      "razon": "Se centra en el crecimiento personal y el desarrollo de virtudes."
     },
     {
-      "titulo": "Creatividad S.A.",
-      "autor": "Ed Catmull",
-      "razon": "Reflexiona sobre la creatividad en el contexto empresarial y cómo fomentarla."
-    },
-    {
-      "titulo": "La guerra del arte",
-      "autor": "Steven Pressfield",
-      "razon": "Aborda los obstáculos que enfrentan los creativos y cómo superarlos."
-    },
-    {
-      "titulo": "Big Magic: Creative Living Beyond Fear",
-      "autor": "Elizabeth Gilbert",
-      "razon": "Explora la naturaleza de la creatividad y cómo vivir de manera creativa."
+      "titulo": "Los secretos de la mente millonaria",
+      "autor": "T. Harv Eker",
+      "razon": "Aborda la mentalidad y las actitudes que llevan al éxito."
     }
   ],
   "resolution_path": [
@@ -42,6 +32,6 @@
     "tier3_conf_0.70"
   ],
   "tier_reached": 3,
-  "cost_tokens": 608,
-  "cached_at": "2026-04-22T03:53:09.803Z"
+  "cost_tokens": 528,
+  "cached_at": "2026-04-23T03:03:53.990Z"
 }

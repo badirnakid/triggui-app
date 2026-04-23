@@ -48,32 +48,9 @@
     }
   },
   "google": {
-    "ok": true,
-    "source": "google_books",
-    "match_score": 1,
-    "match_details": {
-      "matched_title": "Einstein para despistados",
-      "matched_author": "Allan Percy"
-    },
-    "synopsis": "Sin lugar a dudas, la figura de Albert Einstein ha trascendido el ámbito de la ciencia para convertirse en un icono de la cultura moderna, comparable a las estrellas del pop o a los grandes actores de Hollywood. Y no sólo por su peculiar peinado, ni por haber ganado el Premio Nobel de Física, ni siquiera por ser el padre de la teoría de la relatividad. Además de haber revolucionado la física, Einstein fue un acérrimo defensor de la paz y un brillante pensador sobre el arte de vivir. Sus lúcidos aforismos para el día a día reflejan la sabiduría de alguien que siempre tuvo los pies en la tierra. El nuevo y esperado libro de Allan Percy recoge 85 grandes reflexiones de este genio y las traslada a situaciones prácticas de la vida cotidiana. Dentro y fuera del ámbito académico, Albert Einstein fue por encima de todo un solucionador de problemas. En los tiempos que corren, en los que la presión es máxima y la compensación escasa, las enseñanzas de este físico nos ayudarán a apagar más de un fuego.",
-    "synopsis_length": 1006,
-    "covers": [],
-    "verified_identity": {
-      "titulo_real": "Einstein para despistados",
-      "subtitulo": "",
-      "autor_completo": "Allan Percy",
-      "año": "2014",
-      "editorial": null,
-      "paginas": null,
-      "isbn": "9786073122429",
-      "isbn13": "9786073122429",
-      "isbn10": "607312242X",
-      "categorias": [
-        "Physicists"
-      ],
-      "idioma": "es",
-      "preview_link": "http://books.google.com/books?id=UNX7oAEACAAJ&dq=intitle:Einstein+para+despistados+inauthor:Allan+Percy&hl=&cd=1&source=gbs_api"
-    }
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
   },
   "openlibrary": {
     "ok": false,
@@ -133,17 +110,17 @@
   ],
   "_sources_succeeded": [
     "apple_books",
-    "google_books",
     "amazon"
   ],
   "_sources_failed": [
+    "google_books:no_good_match",
     "openlibrary:no_results"
   ],
   "_timing": {
-    "phase1_parallel_ms": 1695,
-    "phase2_isbn_chain_ms": 1091,
-    "cover_validation_ms": 1252,
-    "total_ms": 4038
+    "phase1_parallel_ms": 15960,
+    "phase2_isbn_chain_ms": 24812,
+    "cover_validation_ms": 125,
+    "total_ms": 40897
   },
-  "_cached_at": "2026-04-21T13:34:42.917Z"
+  "_cached_at": "2026-04-23T03:08:45.734Z"
 }

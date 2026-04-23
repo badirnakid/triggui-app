@@ -47,37 +47,9 @@
     }
   },
   "google": {
-    "ok": true,
-    "source": "google_books",
-    "match_score": 1,
-    "match_details": {
-      "matched_title": "Extreme Ownership",
-      "matched_author": "Jocko Willink, Leif Babin"
-    },
-    "synopsis": "Highly decorated Navy SEALs, now successful businessmen, show readers how to lead and win in business and in life with principles learned on the battlefield",
-    "synopsis_length": 156,
-    "covers": [
-      {
-        "size": "small",
-        "url": "https://books.google.com/books/content?id=ywaJCgAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
-      }
-    ],
-    "verified_identity": {
-      "titulo_real": "Extreme Ownership",
-      "subtitulo": "How U.S. Navy SEALs Lead and Win",
-      "autor_completo": "Jocko Willink, Leif Babin",
-      "año": "2015",
-      "editorial": "Macmillan",
-      "paginas": 317,
-      "isbn": "9781250067050",
-      "isbn13": "9781250067050",
-      "isbn10": "1250067057",
-      "categorias": [
-        "Biography & Autobiography"
-      ],
-      "idioma": "en",
-      "preview_link": "http://books.google.com/books?id=ywaJCgAAQBAJ&printsec=frontcover&dq=intitle:Extreme+ownership+inauthor:Jocko+Willink&hl=&cd=1&source=gbs_api"
-    }
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
   },
   "openlibrary": {
     "ok": true,
@@ -159,12 +131,6 @@
       "valid": true
     },
     {
-      "source": "google_books",
-      "size": "small",
-      "url": "https://books.google.com/books/content?id=ywaJCgAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
-      "valid": true
-    },
-    {
       "source": "openlibrary",
       "size": "large",
       "url": "https://covers.openlibrary.org/b/id/12835042-L.jpg",
@@ -191,16 +157,17 @@
   ],
   "_sources_succeeded": [
     "apple_books",
-    "google_books",
     "openlibrary",
     "amazon"
   ],
-  "_sources_failed": [],
+  "_sources_failed": [
+    "google_books:no_good_match"
+  ],
   "_timing": {
-    "phase1_parallel_ms": 15810,
-    "phase2_isbn_chain_ms": 10928,
-    "cover_validation_ms": 1109,
-    "total_ms": 27847
+    "phase1_parallel_ms": 16451,
+    "phase2_isbn_chain_ms": 24601,
+    "cover_validation_ms": 497,
+    "total_ms": 41549
   },
-  "_cached_at": "2026-04-22T20:16:29.948Z"
+  "_cached_at": "2026-04-23T03:07:36.628Z"
 }

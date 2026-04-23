@@ -1,0 +1,26 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nAudaz, productivo y feliz constituye una valiosa guía para alcanzar la excelencia personal y profesional. Este libro ofrece propuestas prácticas que contribuirán a un cambio rápido en los hábitos diarios para alcanzar el máximo potencial de cada uno. Robin Sharma incluye aquí 36 módulos capaces de transformar radicalmente la dinámica vital para conducir al lector a horizontes profesionales y personales más elevados. El autor nos invita a reflexionar sobre la forma en que vivimos y trabajamos, y a comprometernos a introducir cambios de rumbo profundos para prosperar en todos los ámbitos de la vida. ** Robin Sharma es autor del best seller internacional El monje que vendió su Ferrari, con más de 5.000.000 de ejemplares vendidos Audaz, productivo y feliz te enseñará a: o Conseguir un rendimiento extraordinario en tu trabajo y en tu vida. o Encontrar un enfoque equilibrado del éxito. o No dejar nunca de aprender. o Desarrollar un entorno propicio para la excelencia. o Ejercer un verdadero liderazgo. «No dispones de días de más, ni de días sin sentido. Hoy mismo puedes tomar la decisión de aspirar a una meta más alta, de ser quien siempre has deseado ser.» Robin Sharma\n\nMETADATA VERIFICADA:\n- Título: Audaz, productivo y feliz\n- Autor: Robin Sharma\n- Año: 2015\n- Categorías: Superación personal, Libros, Salud, mente y cuerpo",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Audaz, productivo y feliz",
+    "autor_completo": "Robin Sharma",
+    "año": "2015",
+    "editorial": null,
+    "isbn": "1035974905",
+    "categorias": [
+      "Superación personal",
+      "Libros",
+      "Salud, mente y cuerpo"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/audaz-productivo-y-feliz/id1035974905?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [],
+  "resolution_path": [
+    "evidence_fetched_2sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-23T02:59:28.789Z"
+}

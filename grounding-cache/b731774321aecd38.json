@@ -1,0 +1,28 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nUna aproximación revolucionaria a la más poderosa de todas las emociones: el amor. Los secretos del amor se habían interpretado siempre desde los campos de la moral o la literatura. «El amor es ciego», se decía, pero hoy empezamos a saber que se mueve por razones evolutivas y biológicas extremadamente precisas. La revolución tecnológica está permitiendo, por primera vez en la historia de la evolución, que la ciencia aborde los secretos del amor. Ahora resulta que los ciegos éramos nosotros. ¿Cómo pudieron nuestros antepasados sobrevivir amando o despreciando, sin saber lo que ocurría en su interior? ¿Es posible hablar de una existencia feliz sin considerar lo que significa el amor? Paso a paso, en un estilo al alcance de todos los lectores, El viaje al amor descubre revelaciones fundamentales sobre esta emoción. Con su habitual maestría y saber, que lo han convertido en un fenómeno de la divulgación científica, Eduardo Punset desgrana las claves para comprender el amor: el más primordial de los instintos para sobrevivir; sus canales de expresión en la belleza, la química y la imaginación; por qué tiene sexo el cerebro; las razones evolutivas de la vida en pareja; la indefensión frente a los estragos idénticos del desamparo infantil y el desamor de los adultos… El capítulo final propone la fórmula del amor y brinda, por vez primera, un cuestionario para descubrir nuestra capacidad de amar, herramienta indispensable en una vida plena y feliz.\n\nMETADATA VERIFICADA:\n- Título: El viaje al amor\n- Autor: Eduardo Punset\n- Año: 2010\n- Categorías: Ciencia y naturaleza, Libros, Historia de la ciencia",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "El viaje al amor",
+    "autor_completo": "Eduardo Punset",
+    "año": "2010",
+    "editorial": null,
+    "isbn": "469035386",
+    "categorias": [
+      "Ciencia y naturaleza",
+      "Libros",
+      "Historia de la ciencia"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/el-viaje-al-amor/id469035386?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_3sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-23T02:54:56.724Z"
+}

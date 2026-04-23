@@ -1,0 +1,23 @@
+{
+  "ground_truth": "INFORMACIÓN (OpenLibrary):\n\nLibro verificado en OpenLibrary. Publicado originalmente en 2023.\n\nMETADATA VERIFICADA:\n- Título: Vendes o vendes\n- Autor: Timothy Grant Cardone, Carlos Tejada\n- Año: 2023",
+  "grounding_source": "openlibrary",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Vendes o vendes",
+    "autor_completo": "Timothy Grant Cardone, Carlos Tejada",
+    "año": "2023",
+    "editorial": null,
+    "isbn": "",
+    "categorias": [],
+    "idioma": "spa",
+    "paginas": null
+  },
+  "match_score": 1,
+  "other_sources_agreed": [],
+  "resolution_path": [
+    "evidence_fetched_3sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-23T03:15:46.083Z"
+}

@@ -46,37 +46,9 @@
     }
   },
   "google": {
-    "ok": true,
-    "source": "google_books",
-    "match_score": 1,
-    "match_details": {
-      "matched_title": "Sesgos inconscientes",
-      "matched_author": "Pamela Fuller, Anne Chow, Mark Murphy"
-    },
-    "synopsis": "UNA GUÍA OBLIGADA PARA ENTENDER Y TRASCENDER LOS SESGOS EN EL TRABAJO, POR LOS EXPERTOS DE FRANKLINCOVEY. Los sesgos inconscientes nos afectan a todos. Un reclutador se podría decepcionar si un candidato le pregunta sobre la incapacidad por maternidad. A un profesional de Recursos Humanos le puede parecer más atractivo promover a un graduado de una universidad prestigiosa que a uno de una escuela pública. Un líder puede que crea que una mujer está menos preparada para presentar un reporte en la próxima reunión que su colega varón. Sesgos inconscientes explica que estos son el resultado de atajos mentales, de lo que nos gusta y de lo que no nos gusta, pero, indiscutiblemente, son parte de nuestra condición humana. Sin embargo, lo que asumimos y cómo interactuamos con el otro tiene efectos incalculables en nuestro desarrollo profesional. Al reconocer los sesgos, enfatizar en la empatía y la curiosidad, ver a quienes te rodean como personas completas y priorizar el entendimiento verdadero, podremos liberar todo el potencial de cada persona con la que nos relacionemos.",
-    "synopsis_length": 1081,
-    "covers": [
-      {
-        "size": "small",
-        "url": "https://books.google.com/books/content?id=usrOEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
-      }
-    ],
-    "verified_identity": {
-      "titulo_real": "Sesgos inconscientes",
-      "subtitulo": "Como reformular sesgos, cultivar conexiones y crear equipos de alto rendimiento",
-      "autor_completo": "Pamela Fuller, Anne Chow, Mark Murphy",
-      "año": "2023",
-      "editorial": "CONECTA",
-      "paginas": 219,
-      "isbn": "9786073836296",
-      "isbn13": "9786073836296",
-      "isbn10": "6073836295",
-      "categorias": [
-        "Business & Economics"
-      ],
-      "idioma": "es",
-      "preview_link": "http://books.google.com/books?id=usrOEAAAQBAJ&printsec=frontcover&dq=Sesgos+Inconscientes+Pamela+Fuller&hl=&cd=1&source=gbs_api"
-    }
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
   },
   "openlibrary": {
     "ok": false,
@@ -128,12 +100,6 @@
       "valid": true
     },
     {
-      "source": "google_books",
-      "size": "small",
-      "url": "https://books.google.com/books/content?id=usrOEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
-      "valid": true
-    },
-    {
       "source": "amazon",
       "size": "large",
       "url": "https://images-na.ssl-images-amazon.com/images/P/6457063008.01.LZZZZZZZ.jpg",
@@ -142,17 +108,17 @@
   ],
   "_sources_succeeded": [
     "apple_books",
-    "google_books",
     "amazon"
   ],
   "_sources_failed": [
+    "google_books:no_good_match",
     "openlibrary:no_results"
   ],
   "_timing": {
-    "phase1_parallel_ms": 12645,
-    "phase2_isbn_chain_ms": 1686,
-    "cover_validation_ms": 602,
-    "total_ms": 14933
+    "phase1_parallel_ms": 16428,
+    "phase2_isbn_chain_ms": 24803,
+    "cover_validation_ms": 644,
+    "total_ms": 41875
   },
-  "_cached_at": "2026-04-22T14:46:48.875Z"
+  "_cached_at": "2026-04-23T02:53:48.703Z"
 }

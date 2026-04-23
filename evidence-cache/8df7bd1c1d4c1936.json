@@ -1,0 +1,172 @@
+{
+  "titulo_input": "Good to great",
+  "autor_input": "Jim Collins",
+  "isbn_seed": "",
+  "isbn_discovered": "1552247816",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Good to Great",
+      "matched_author": "Jim Collins"
+    },
+    "synopsis": "Bestseller #1. Siete millones de copias vendidas. Referenciado como uno de los diez mejores libros sobre gestión empresarial, \"Good to Great\" nos ofrece todo un conjunto de directrices y paradigmas que debe adoptar cualquier empresa que pretenda diferenciarse de las demás. Después de revisar montañas de datos, de hacer miles de entrevistas y de utilizar rigurosas herramientas de comparación, Jim Collins y su equipo de investigación identificaron los determinantes clave de la excelencia en un conjunto de empresas de élite que dieron el salto hasta conseguir unos resultados extraordinarios y sostenibles. Elogios a GOOD TO GREAT: \"Este libro escrito a partir de una investigación profunda refuta muchas de las exageraciones actuales de la gestión empresarial —desde el culto al CEO superhombre al culto a la tecnología de la información o la afición a las fusiones y adquisiciones. Estas prácticas no permiten que la mediocridad se convierta en una competencia, sino que deberían permitir que la competencia se convirtiera en excelencia\". Peter F. Drucker &#xa0; \"Un libro que ningún CEO debería dejar de comprar\". USA Today \"Collins y su equipo de investigación abordan unas de las cuestiones más importantes que las empresas deberían tratar\". Fortune \"Con ambos libros, Good to Great y Built to Last, el señor Collins ofrece dos mensajes seductores: que la gestión extraordinaria la pueden conse-guir los simples mortales y que sus practicantes pueden desarrollar instituciones excelentes. Es justo lo que los mortales queríamos oír\". Wall Street Journal \"La diferencia es lo duro que trabaja el señor Collins para llegar a sus conclusiones más elementales. Se basan en años de minuciosa investi-gación empírica y todas ellas son las más poderosas para producir los resultados más sorprendentes\". Financial Times \"La idea empresarial del año\" Fast Company \"Collins ha vuelto a escribir un libro que parece haber sido concebido para perdurar\". Business Wee",
+    "synopsis_length": 1962,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication114/v4/30/66/3d/30663d02-6170-e0d5-f875-70095e490f84/1033040401.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication114/v4/30/66/3d/30663d02-6170-e0d5-f875-70095e490f84/1033040401.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication114/v4/30/66/3d/30663d02-6170-e0d5-f875-70095e490f84/1033040401.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication114/v4/30/66/3d/30663d02-6170-e0d5-f875-70095e490f84/1033040401.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Good to Great",
+      "autor_completo": "Jim Collins",
+      "año": "2021",
+      "editorial": null,
+      "isbn": "1552247816",
+      "categorias": [
+        "Administración y liderazgo",
+        "Libros",
+        "Negocios y finanzas personales"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/good-to-great/id1552247816?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Good to Great",
+      "matched_author": "Jim Collins"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2001.",
+    "synopsis_length": 65,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://covers.openlibrary.org/b/id/53111-L.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://covers.openlibrary.org/b/id/53111-M.jpg"
+      },
+      {
+        "size": "small",
+        "url": "https://covers.openlibrary.org/b/id/53111-S.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Good to Great",
+      "autor_completo": "Jim Collins",
+      "año": "2001",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": "eng",
+      "paginas": null
+    }
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/1552247816.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "1552247816",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication114/v4/30/66/3d/30663d02-6170-e0d5-f875-70095e490f84/1033040401.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication114/v4/30/66/3d/30663d02-6170-e0d5-f875-70095e490f84/1033040401.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication114/v4/30/66/3d/30663d02-6170-e0d5-f875-70095e490f84/1033040401.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication114/v4/30/66/3d/30663d02-6170-e0d5-f875-70095e490f84/1033040401.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "large",
+      "url": "https://covers.openlibrary.org/b/id/53111-L.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "medium",
+      "url": "https://covers.openlibrary.org/b/id/53111-M.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "small",
+      "url": "https://covers.openlibrary.org/b/id/53111-S.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/1552247816.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "openlibrary",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 16074,
+    "phase2_isbn_chain_ms": 24620,
+    "cover_validation_ms": 970,
+    "total_ms": 41664
+  },
+  "_cached_at": "2026-04-23T03:06:22.279Z"
+}
