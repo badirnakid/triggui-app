@@ -76,7 +76,7 @@
         "Psychology"
       ],
       "idioma": "es",
-      "preview_link": "http://books.google.com/books?id=mMvFzwEACAAJ&dq=intitle:101+reflexiones+que+cambiar%C3%A1n+tu+forma+de+pensar+inauthor:Brianna+Wiest&hl=&cd=1&source=gbs_api"
+      "preview_link": "http://books.google.com/books?id=mMvFzwEACAAJ&dq=101+reflexiones+que+cambiar%C3%A1n+tu+forma+de+pensar+Brianna+Wiest&hl=&cd=1&source=gbs_api"
     }
   },
   "openlibrary": {
@@ -197,10 +197,10 @@
   ],
   "_sources_failed": [],
   "_timing": {
-    "phase1_parallel_ms": 988,
-    "phase2_isbn_chain_ms": 685,
-    "cover_validation_ms": 948,
-    "total_ms": 2621
+    "phase1_parallel_ms": 8947,
+    "phase2_isbn_chain_ms": 183,
+    "cover_validation_ms": 696,
+    "total_ms": 9826
   },
-  "_cached_at": "2026-04-21T11:04:09.424Z"
+  "_cached_at": "2026-04-23T18:44:34.613Z"
 }

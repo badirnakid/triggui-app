@@ -1,0 +1,126 @@
+{
+  "titulo_input": "Pensar rápido pensar despacio",
+  "autor_input": "Daniel Kahneman",
+  "isbn_seed": "",
+  "isbn_discovered": "535372103",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Pensar rápido, pensar despacio",
+      "matched_author": "Daniel Kahneman"
+    },
+    "synopsis": "Un apasionante recorrido por el funcionamiento de la mente de la mano del padre de la psicología conductista y premio Nobel de Economía en 2002: Daniel Kahneman. En Pensar rápido, pensar despacio, un éxito internacional, Kahneman nos ofrece una revolucionaria perspectiva del cerebro y explica los dos sistemas que modelan cómo pensamos. Daniel Kahneman, uno de los pensadores más importantes del mundo, recibió el premio Nobel de Economía por su trabajo pionero en psicología sobre el modelo racional de la toma de decisiones. Sus ideas han tenido un profundo impacto en campos tan diversos como la economía, la medicina o la política, pero hasta ahora no había reunido la obra de su vida en un libro. En este libro Kahneman expone la extraordinaria capacidad (y también los errores y los sesgos) del pensamiento rápido, y revela la duradera influencia de las impresiones intuitivas sobre nuestro pensamiento y nuestra conducta. Toca muchos temas que nos afectan en el día a día: el impacto de la aversión a la pérdida y el exceso de confianza en las estrategias empresariales, la dificultad de predecir lo que nos hará felices en el futuro, el reto de enmarcar adecuadamente los riesgos en el trabajo y en el hogar, el profundo efecto de los sesgos cognitivos sobre todo lo que hacemos, desde jugar en la Bolsa hasta planificar las vacaciones; todo esto solo puede ser comprendido si entendemos el funcionamiento conjunto de los dos sistemas del cerebro a la hora de formular nuestros juicios y decisiones. Al implicar al lector en una animada reflexión sobre cómo pensamos, Kahneman consigue revelar cuándo podemos confiar en nuestras intuiciones y cuándo no, y de qué modo podemos aprovechar los beneficios del pensamiento lento. Además, ofrece enseñanzas prácticas e iluminadoras sobre cómo se adoptan decisiones en la vida profesional o personal, y sobre cómo podemos usar distintas técnicas para protegernos de los fallos mentales que nos crean problemas. Pensar rápido, pensar despacio cambiará para siempre nuestra manera de pensar sobre cómo pensamos. La crítica ha dicho: «Los más entusiastas lo comparan con Galileo y Darwin». El Mundo «Considerado uno de los mejores libros de 2011 por The New York Times, The Economist o The Wall Street Journal, Kahneman revela cuándo debemos confiar en nuestras intuiciones para aprovechar los beneficios del pensamiento lento». El Economista",
+    "synopsis_length": 2391,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/e7/2a/a3/e72aa346-76c8-e141-2283-e7778b372069/9788499922072.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/e7/2a/a3/e72aa346-76c8-e141-2283-e7778b372069/9788499922072.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/e7/2a/a3/e72aa346-76c8-e141-2283-e7778b372069/9788499922072.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/e7/2a/a3/e72aa346-76c8-e141-2283-e7778b372069/9788499922072.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Pensar rápido, pensar despacio",
+      "autor_completo": "Daniel Kahneman",
+      "año": "2012",
+      "editorial": null,
+      "isbn": "535372103",
+      "categorias": [
+        "Ciencias de la vida",
+        "Libros",
+        "Ciencia y naturaleza",
+        "Salud, mente y cuerpo",
+        "Psicología"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/pensar-r%C3%A1pido-pensar-despacio/id535372103?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": false,
+    "reason": "no_results",
+    "source": "openlibrary"
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/535372103.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "535372103",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/e7/2a/a3/e72aa346-76c8-e141-2283-e7778b372069/9788499922072.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/e7/2a/a3/e72aa346-76c8-e141-2283-e7778b372069/9788499922072.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/e7/2a/a3/e72aa346-76c8-e141-2283-e7778b372069/9788499922072.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/e7/2a/a3/e72aa346-76c8-e141-2283-e7778b372069/9788499922072.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/535372103.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match",
+    "openlibrary:no_results"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 15779,
+    "phase2_isbn_chain_ms": 24783,
+    "cover_validation_ms": 1051,
+    "total_ms": 41613
+  },
+  "_cached_at": "2026-04-23T18:47:18.506Z"
+}

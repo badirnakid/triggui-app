@@ -1,0 +1,29 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nEl esperado nuevo libro de Yuval Noah Harari, uno de los pensadores más innovadores, interesantes y clarividentes de la actualidad, y autor de Sapiens, el fenómeno literario global que ha cautivado a millones de lectores. En Nexus, Harari contempla a la humanidad desde la amplia perspectiva de la historia para analizar cómo las redes de información han hecho y deshecho nuestro mundo. Durante los últimos 100.000 años, los sapiens hemos acumulado un enorme poder. Pero, a pesar de todos los descubrimientos, inventos y conquistas, ahora nos enfrentamos a una crisis existencial: el mundo está al borde del colapso ecológico, abunda la desinformación y nos precipitamos hacia la era de la I.A. Con todo el camino andando, ¿por qué somos una especie autodestructiva? A partir de una fascinante variedad de ejemplos históricos, desde la Edad de Piedra, pasando por la Biblia, la caza de brujas de principios de la Edad Moderna, el estalinismo y el nazismo, hasta el resurgimiento del populismo en nuestros días, Harari nos ofrece un marco revelador para indagar en las complejas relaciones que existen entre información y verdad, burocracia y mitología, y sabiduría y poder. Examina cómo diferentes sociedades y sistemas políticos han utilizado la información para lograr sus objetivos e imponer el orden, para bien y para mal. Y plantea las opciones urgentes a las que nos enfrentamos hoy en día, cuando la inteligencia no humana amenaza nuestra propia existencia. La información no es el principio activo de la verdad; tampoco una simple arma. Nexusexplora el esperanzador término medio entre estos extremos. La crítica ha dicho: «Tremendo, estimulante y muy bien razonado. Harari nos ofrece una visión de un futuro cada vez más próximo y que es al mismo tiempo emocionante y escalofriante. Si hay un libro que instaría a todo el mundo a leer, especialmente a nuestros líderes políticos, corporativos y culturales, es Nexus». Stephen Fry «Harari tiene una capacidad única para unir detalles mínimos de la historia con grandiosas megatendencias. Este libro, profundamente importante, llega en un momento crítico en el que todos reflexionamos sobre lo que implica la inteligencia artificial». Mustafa Suleyman «Harari utiliza múltiples ejemplos de la historia, la filosofía, la ciencia, la psicología y la teoría política para mostrar cómo la información es la corriente que subyace a toda actividad humana. De hecho, el talento de Harari es desenredar patrones complejos para revelar las intricadas estructuras que ocultan, a la vez que ilumina cómo afectan a nuestra vida cotidiana. Una lectura importante y oportuna ya que nuestra supervivencia está a merced de la información». Booklist «El historiador tiene una habilidad endemoniada para exponer argumentos sofisticados sobre cuestiones complejas sin dolor para el lector [...]. Pocos pensadores pueden escribir 600 páginas plagadas de ideas innovadoras y estimulantes que el lector puede absorber como quien da un paseo por el campo. Aunque sea un campo de minas». Javier Sampedro, El País\n\nMETADATA VERIFICADA:\n- Título: Nexus\n- Autor: Yuval Noah Harari\n- Año: 2024\n- Categorías: Informática e Internet, Libros, Software",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Nexus",
+    "autor_completo": "Yuval Noah Harari",
+    "año": "2024",
+    "editorial": null,
+    "isbn": "6476974724",
+    "categorias": [
+      "Informática e Internet",
+      "Libros",
+      "Software"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/nexus/id6476974724?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "google_books",
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_4sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-23T18:40:09.895Z"
+}

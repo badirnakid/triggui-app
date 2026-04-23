@@ -1,0 +1,205 @@
+{
+  "titulo_input": "Focus",
+  "autor_input": "Daniel Goleman",
+  "isbn_seed": "",
+  "isbn_discovered": "1340339632",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Focus",
+      "matched_author": "Daniel Goleman"
+    },
+    "synopsis": "La práctica de la atención y de focalizar es como un músculo. Si no lo utilizamos se debilita; si lo ejercitamos, se desarrolla y fortalece. En este esperado libro, el autor del best-seller mundial Inteligencia emocional nos muestra las posibilidades de cultivar dicha atención, tanto como forma de autocontrol, demejorar la empatía con los demás o para comprender la complejidad del mundoque nos rodea. Las personas que logran un máximo rendimiento (ya sea en la educación, los negocios, el deporte o las artes) utilizan intuitivamente formas de focalización y de atención plena. El quid no está en practicar la concentración durante muchas horas, sino en la forma como prestamos atención a lo que hacemosy como absorbemos los feedbacks para autocorregirnos. Incluso el divagar mentalmente puede ser beneficioso. El antídoto para la fatiga mental es el mismo que para la fatiga física:tomar un descanso y sumergirse en una actividad completamente diferente (pasear, disfrutar de la naturaleza, charlar con amistades, etcétera). Focus es una nueva obra magistral de uno de los pensadores más influyentes de nuestra época.",
+    "synopsis_length": 1121,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication118/v4/d8/be/4e/d8be4e57-1bde-6d42-4d18-27d808ae1340/1023237066.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication118/v4/d8/be/4e/d8be4e57-1bde-6d42-4d18-27d808ae1340/1023237066.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication118/v4/d8/be/4e/d8be4e57-1bde-6d42-4d18-27d808ae1340/1023237066.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication118/v4/d8/be/4e/d8be4e57-1bde-6d42-4d18-27d808ae1340/1023237066.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Focus",
+      "autor_completo": "Daniel Goleman",
+      "año": "2013",
+      "editorial": null,
+      "isbn": "1340339632",
+      "categorias": [
+        "Superación personal",
+        "Libros",
+        "Salud, mente y cuerpo"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/focus/id1340339632?uo=4"
+    }
+  },
+  "google": {
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Focus",
+      "matched_author": "Daniel Goleman"
+    },
+    "synopsis": "Drawing on cutting-edge research along with practical findings, this landmark book on the science of attention reveals what distinguishes experts from amateurs and stars from average performers, and urges readers to pay attention to what matters to them most. 200,000 first printing.",
+    "synopsis_length": 283,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=_T0sngEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Focus",
+      "subtitulo": "The Hidden Driver of Excellence",
+      "autor_completo": "Daniel Goleman",
+      "año": "2013",
+      "editorial": "Harper",
+      "paginas": 320,
+      "isbn": "9780062114860",
+      "isbn13": "9780062114860",
+      "isbn10": "0062114867",
+      "categorias": [
+        "Business & Economics"
+      ],
+      "idioma": "en",
+      "preview_link": "http://books.google.com/books?id=_T0sngEACAAJ&dq=intitle:Focus+inauthor:Daniel+Goleman&hl=&cd=2&source=gbs_api"
+    }
+  },
+  "openlibrary": {
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Focus",
+      "matched_author": "Daniel Goleman"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2013.",
+    "synopsis_length": 65,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://covers.openlibrary.org/b/id/12672951-L.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://covers.openlibrary.org/b/id/12672951-M.jpg"
+      },
+      {
+        "size": "small",
+        "url": "https://covers.openlibrary.org/b/id/12672951-S.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Focus",
+      "autor_completo": "Daniel Goleman",
+      "año": "2013",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": "eng",
+      "paginas": null
+    }
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/1340339632.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "1340339632",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication118/v4/d8/be/4e/d8be4e57-1bde-6d42-4d18-27d808ae1340/1023237066.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication118/v4/d8/be/4e/d8be4e57-1bde-6d42-4d18-27d808ae1340/1023237066.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication118/v4/d8/be/4e/d8be4e57-1bde-6d42-4d18-27d808ae1340/1023237066.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication118/v4/d8/be/4e/d8be4e57-1bde-6d42-4d18-27d808ae1340/1023237066.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=_T0sngEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "large",
+      "url": "https://covers.openlibrary.org/b/id/12672951-L.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "medium",
+      "url": "https://covers.openlibrary.org/b/id/12672951-M.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "small",
+      "url": "https://covers.openlibrary.org/b/id/12672951-S.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/1340339632.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "google_books",
+    "openlibrary",
+    "amazon"
+  ],
+  "_sources_failed": [],
+  "_timing": {
+    "phase1_parallel_ms": 446,
+    "phase2_isbn_chain_ms": 53,
+    "cover_validation_ms": 901,
+    "total_ms": 1400
+  },
+  "_cached_at": "2026-04-23T18:42:10.728Z"
+}

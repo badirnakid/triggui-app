@@ -47,9 +47,37 @@
     }
   },
   "google": {
-    "ok": false,
-    "reason": "no_good_match",
-    "source": "google_books"
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "La nueva ciencia de la atención",
+      "matched_author": "Amishi Jha"
+    },
+    "synopsis": "Desde la constante reclamación de atención de la tecnología, hasta las 24 horas de titulares constantes y las abrumadoras exigencias del trabajo, a nuestra capacidad de concentración se le exige más que nunca. Estamos sufriendo un trastorno colectivo de déficit de atención que nos hace sentir dispersos, abrumados y ansiosos, pero incapaces de resistirse a distracciones como los correos electrónicos, las videollamadas, los mensajes o las notificaciones. En realidad, utilizamos toda nuestra atención en cada momento del día, pero la Dra. Jha ha descubierto que, a menos que creemos espacio en nuestra mente mediante una práctica diaria específica y dirigida, no podremos controlar lo que capta nuestra atención. Esto nos hace vulnerables a cualquier distracción, una experiencia que ella denomina «degradación de la atención». La nueva ciencia de la atención presenta la única técnica de entrenamiento cognitivo que ha demostrado mejorar la atención y el rendimiento: el de la atención plena. La Dra. Jha explica exactamente cómo aplicar este programa de doce minutos al día en la vida cotidiana. Inteligente y accesible, entrelazando la ciencia y las historias ilustrativas de personas de alto nivel que han utilizado con éxito sus técnicas, La nueva ciencia de la atención desmiente las suposiciones comunes y ofrece nuevas y sorprendentes herramientas para mejorar radicalmente nuestras vidas.",
+    "synopsis_length": 1399,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=QlKiEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "La nueva ciencia de la atención",
+      "subtitulo": "Aprende a focalizarte y domina tu mente con doce minutos al día",
+      "autor_completo": "Amishi Jha",
+      "año": "2023",
+      "editorial": "Ediciones Paidós",
+      "paginas": 373,
+      "isbn": "9788449340789",
+      "isbn13": "9788449340789",
+      "isbn10": "8449340780",
+      "categorias": [
+        "Self-Help"
+      ],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=QlKiEAAAQBAJ&printsec=frontcover&dq=intitle:La+nueva+ciencia+de+la+atenci%C3%B3n+inauthor:Amishi+Jha&hl=&cd=1&source=gbs_api"
+    }
   },
   "openlibrary": {
     "ok": true,
@@ -118,6 +146,12 @@
       "valid": true
     },
     {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=QlKiEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
       "source": "amazon",
       "size": "large",
       "url": "https://images-na.ssl-images-amazon.com/images/P/6445139502.01.LZZZZZZZ.jpg",
@@ -126,17 +160,16 @@
   ],
   "_sources_succeeded": [
     "apple_books",
+    "google_books",
     "openlibrary",
     "amazon"
   ],
-  "_sources_failed": [
-    "google_books:no_good_match"
-  ],
+  "_sources_failed": [],
   "_timing": {
-    "phase1_parallel_ms": 2231,
-    "phase2_isbn_chain_ms": 455,
-    "cover_validation_ms": 427,
-    "total_ms": 3113
+    "phase1_parallel_ms": 616,
+    "phase2_isbn_chain_ms": 63,
+    "cover_validation_ms": 170,
+    "total_ms": 849
   },
-  "_cached_at": "2026-04-21T11:07:54.009Z"
+  "_cached_at": "2026-04-23T18:44:00.868Z"
 }

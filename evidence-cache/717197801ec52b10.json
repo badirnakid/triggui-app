@@ -1,0 +1,205 @@
+{
+  "titulo_input": "Amar lo que es",
+  "autor_input": "Byron Katie",
+  "isbn_seed": "",
+  "isbn_discovered": "583914969",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Amar lo que es",
+      "matched_author": "Byron Katie"
+    },
+    "synopsis": "Una mañana tras años de estar sumida en una profunda depresión y de pensar obsesivamente en el suicidio, Byron Katie se sintió invadida por un estado de dicha absoluta. Lo que se despertó en Katie fue un proceso silencioso de interrogación personal que la condujo a acabar con su sufrimiento. La libertad que le proporcionó ese conocimiento nunca la ha abandonado y, ahora, en \"Amar lo que es\", también tú puedes descubrirla mediante El Trabajo, el método creado por la autora que consta sencillamente de cuatro preguntas que, aplicadas a un problema específico, te permiten ver lo que te perturba desde una óptica nueva. Una vez que hemos hecho El Trabajo alcanzamos el punto en el que somos capaces de amar verdaderamente lo que es, tal como es, y nos convertimos en \"amantes de la realidad\". Como dice Katie: \"Lo que provoca nuestro sufrimiento no es el problema, sino lo que pensamos sobre el mismo\". Paso a paso, y mediante ejemplos claros, Amar lo que es te enseñará a poner en práctica este proceso revolucionario.",
+    "synopsis_length": 1021,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication/v4/73/90/7f/73907ff5-f69a-f783-7e89-cc292b94a659/amar_lo_que_es.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication/v4/73/90/7f/73907ff5-f69a-f783-7e89-cc292b94a659/amar_lo_que_es.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication/v4/73/90/7f/73907ff5-f69a-f783-7e89-cc292b94a659/amar_lo_que_es.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication/v4/73/90/7f/73907ff5-f69a-f783-7e89-cc292b94a659/amar_lo_que_es.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Amar lo que es",
+      "autor_completo": "Byron Katie",
+      "año": "2012",
+      "editorial": null,
+      "isbn": "583914969",
+      "categorias": [
+        "Superación personal",
+        "Libros",
+        "Salud, mente y cuerpo"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/amar-lo-que-es/id583914969?uo=4"
+    }
+  },
+  "google": {
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Amar lo que es",
+      "matched_author": "Byron Katie, Stephen Mitchell"
+    },
+    "synopsis": "Loving What Is will show you step-by-step, through clear and vivid examples, exactly how to use this revolutionary process for yourself. Youll see people do The Work with Katie on a broad range of human problems, from a wife ready to leave her husband because he wants more sex, to a Manhattan worker paralyzed by fear of terrorism, to a woman suffering over a death in her family. Many people have discovered The Works power to solve problems; in addition, they say that through The Work they experience a sense of lasting peace and find the clarity and energy to act, even in situations that had previously seemed impossible. If you continue to do The Work, you may discover, as many people have, that the questioning flows into every aspect of your life, effortlessly undoing the stressful thoughts that keep you from experiencing peace. Loving What Is offers everything you need to learn and live this remarkable process, and to find happiness as what Katie calls a lover of reality.",
+    "synopsis_length": 987,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=68HAPAAACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Amar lo que es",
+      "subtitulo": "cuatro preguntas que pueden cambiar tu vida",
+      "autor_completo": "Byron Katie, Stephen Mitchell",
+      "año": "2008",
+      "editorial": null,
+      "paginas": null,
+      "isbn": "9788479536732",
+      "isbn13": "9788479536732",
+      "isbn10": "847953673X",
+      "categorias": [
+        "Joy"
+      ],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=68HAPAAACAAJ&dq=intitle:Amar+lo+que+es+inauthor:Byron+Katie&hl=&cd=1&source=gbs_api"
+    }
+  },
+  "openlibrary": {
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Amar lo que Es",
+      "matched_author": "Byron Katie"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2008.",
+    "synopsis_length": 65,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://covers.openlibrary.org/b/id/13703560-L.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://covers.openlibrary.org/b/id/13703560-M.jpg"
+      },
+      {
+        "size": "small",
+        "url": "https://covers.openlibrary.org/b/id/13703560-S.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Amar lo que Es",
+      "autor_completo": "Byron Katie",
+      "año": "2008",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": "spa",
+      "paginas": null
+    }
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/583914969.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "583914969",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication/v4/73/90/7f/73907ff5-f69a-f783-7e89-cc292b94a659/amar_lo_que_es.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication/v4/73/90/7f/73907ff5-f69a-f783-7e89-cc292b94a659/amar_lo_que_es.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication/v4/73/90/7f/73907ff5-f69a-f783-7e89-cc292b94a659/amar_lo_que_es.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication/v4/73/90/7f/73907ff5-f69a-f783-7e89-cc292b94a659/amar_lo_que_es.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=68HAPAAACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "large",
+      "url": "https://covers.openlibrary.org/b/id/13703560-L.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "medium",
+      "url": "https://covers.openlibrary.org/b/id/13703560-M.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "small",
+      "url": "https://covers.openlibrary.org/b/id/13703560-S.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/583914969.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "google_books",
+    "openlibrary",
+    "amazon"
+  ],
+  "_sources_failed": [],
+  "_timing": {
+    "phase1_parallel_ms": 483,
+    "phase2_isbn_chain_ms": 55,
+    "cover_validation_ms": 835,
+    "total_ms": 1373
+  },
+  "_cached_at": "2026-04-23T18:43:09.518Z"
+}

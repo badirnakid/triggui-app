@@ -1,0 +1,28 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nPARA ENTENDER CÓMO PENSAMOS Y PENSAR MEJOR, HAY QUE LEER A KAHNEMAN Premio Nobel de Economía Dos médicos en la misma ciudad pueden dar diagnósticos diferentes a pacientes idénticos; dos jueces pueden dictar sentencias distintas ante delitos similares; nosotros mismos podemos decidir una cosa u otra según sea por la mañana o por la tarde, o según se acerque o no la hora de comer. Estos son ejemplos de ruido: el sesgo que conlleva variabilidad en juicios que deberían ser iguales. El ruido está presente en todas las decisiones individuales y colectivas, y produce errores en innumerables terrenos, desde la medicina hasta la economía, pasando por el derecho, la sanidad, la protección infantil y la contratación. Además, también nos importuna e influye a la hora de tomar muchas de nuestras decisiones cotidianas. Daniel Kahneman, uno de los psicólogos más importantes del mundo, junto con Cass R. Sunstein y Olivier Sibony, dos eminencias mundiales en pensamiento estratégico, nos enseñan a escuchar ese ruido, cuyo impacto tendemos a ignorar, y a reducirlo para mejorar nuestros juicios. Basado en el mismo tipo de análisis agudo e ingeniosos ejemplos que convirtió Pensar rápido, pensar despacio en un best seller internacional, Ruido ofrece una serie de remedios originales, prácticos y sencillos para pensar mejor. La crítica ha dicho: «Una investigación absolutamente brillante de un problema social inmenso que nos ha pasado desapercibido cuando ha estado siempre ante nuestros ojos.» Steven Levitt, autor de Freakonomics «Monumental y apasionante. Excepcional.» The Sunday Times «Un tour de force de sabiduría y claridad.» The New York Times «Puede que Ruido sea el libro más importante que he leído en más de una década. Una obra maestra.» Angela Duckworth, autora de Grit «Un logro magistral y un hito en el campo de la psicología.» Philip E. Tetlock, coautor de Superpronosticadores «Una exploración electrizante de la mente humana. Este libro cambiará permanentemente nuestra forma de pensar sobre la escala y el alcance de los prejuicios.» David Lammy, diputado por Tottenham «Prepárate para que algunas de las mentes más brillantes del mundo te ayuden a repensar tu forma de evaluar a las personas, tomar decisiones y resolver problemas.» Adam Grant, autor de Think Again y presentador del TED podcast WorkLife\n\nMETADATA VERIFICADA:\n- Título: Ruido\n- Autor: Daniel Kahneman, Olivier Sibony & Cass R. Sunstein\n- Año: 2021\n- Categorías: Ciencias de la vida, Libros, Ciencia y naturaleza, Salud, mente y cuerpo",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Ruido",
+    "autor_completo": "Daniel Kahneman, Olivier Sibony & Cass R. Sunstein",
+    "año": "2021",
+    "editorial": null,
+    "isbn": "1573301648",
+    "categorias": [
+      "Ciencias de la vida",
+      "Libros",
+      "Ciencia y naturaleza",
+      "Salud, mente y cuerpo",
+      "Psicología"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/ruido/id1573301648?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [],
+  "resolution_path": [
+    "evidence_fetched_2sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-23T18:48:22.996Z"
+}

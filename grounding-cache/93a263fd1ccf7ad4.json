@@ -1,24 +1,23 @@
 {
-  "ground_truth": "SINOPSIS OFICIAL (Google Books):\n\nSi buscas algo que te motive para iniciar bien el día y te haga sentir orgulloso, comienza con algo tan simple como tender tu cama. Se trata de un pequeño paso que te incita a dar otro y después otro, hasta conseguir tus metas más grandes y hacer una diferencia real en el mundo. Registra en este diario esas acciones que mejoran tu vida, sigue los consejos de William H. McRaven y descubre los hábitos que te hacen ser mejor. Sin importar las adversidades que se presenten frente a ti, nunca te dejes vencer y no olvides que: Los logros más trascendentes están hechos de pequeñas acciones. ¡Tiende tu cama es el libro que ha transformado los hábitos y ha mejorado la vida de más de 150 mil personas! Es momento de llevar a la acción sus aprendizajes y escribir en este diario lo que tú estás haciendo para cambiar tu vida y el mundo. El diario que te permitirá organizar tu vida y \"cambiar el mundo\" un paso a la vez.\n\nMETADATA VERIFICADA:\n- Título: Diario. Tiende Tu Cama\n- Autor: William H. McRaven\n- Año: 2020",
-  "grounding_source": "google_books",
-  "book_identity_confidence": 0.8766666666666667,
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nLas claves para convertirte en un lider grandioso en todas las áreas de tu vida DEL ACLAMADO Y EXITOSO AUTOR DE TIENDE TU CAMA, LLEGA ESTA OBRA DE LIDERAZGO PARA LA VIDA DIARIA Los hombres rana son Navy SEAL que han demostrado un valor inigualable, adaptabilidad y resistencia ante los desafíos, por lo que se les han encomendado las misiones más importantes, como audaces rescates en altamar. Después de casi 40 años de carrera, el almirante McRaven, autor de esta obra, fue condecorado como Bull Frog, que es el más alto honor al que aspira un hombre rana y que habla del memorable legado que deja. A lo largo de su trayectoria, superó inimaginables situaciones de crisis, así como dilemas éticos que lo llevaron a aprender grandes lecciones de liderazgo de vida, como: • Quien se atreve gana. • Escucha a tus tropas. • Ningún plan sobrevive al primer contacto con el enemigo. ATRÉVETE A ESTAR DÍA A DÍA EN LA CIMA DEL JUEGO\n\nMETADATA VERIFICADA:\n- Título: La sabiduría de la rana\n- Autor: William H. Mcraven\n- Año: 2025\n- Categorías: Superación personal, Libros, Salud, mente y cuerpo",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.7969565217391305,
   "verified_identity": {
-    "titulo_real": "Diario. Tiende Tu Cama",
-    "subtitulo": "",
-    "autor_completo": "William H. McRaven",
-    "año": "2020",
+    "titulo_real": "La sabiduría de la rana",
+    "autor_completo": "William H. Mcraven",
+    "año": "2025",
     "editorial": null,
-    "paginas": 248,
-    "isbn": "9786070767890",
-    "isbn13": "9786070767890",
-    "isbn10": "6070767896",
-    "categorias": [],
-    "idioma": "es",
-    "preview_link": "http://books.google.com/books?id=TNyjzQEACAAJ&dq=Tiende+tu+cama+William+H.+McRaven&hl=&cd=2&source=gbs_api"
+    "isbn": "6742792527",
+    "categorias": [
+      "Superación personal",
+      "Libros",
+      "Salud, mente y cuerpo"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/la-sabidur%C3%ADa-de-la-rana/id6742792527?uo=4"
   },
-  "match_score": 0.8166666666666668,
+  "match_score": 0.6173913043478261,
   "other_sources_agreed": [
-    "apple_books",
+    "google_books",
     "openlibrary"
   ],
   "resolution_path": [
@@ -26,5 +25,5 @@
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-21T11:43:43.556Z"
+  "cached_at": "2026-04-23T18:42:38.267Z"
 }

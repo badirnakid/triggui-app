@@ -46,9 +46,30 @@
     }
   },
   "google": {
-    "ok": false,
-    "reason": "no_good_match",
-    "source": "google_books"
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Good to Great",
+      "matched_author": "Jim Collins"
+    },
+    "synopsis": "",
+    "synopsis_length": 0,
+    "covers": [],
+    "verified_identity": {
+      "titulo_real": "Good to Great",
+      "subtitulo": "Why Some Companies Make the Break and Others Don't",
+      "autor_completo": "Jim Collins",
+      "año": "2001",
+      "editorial": null,
+      "paginas": 300,
+      "isbn": "",
+      "isbn13": "",
+      "isbn10": "",
+      "categorias": [],
+      "idioma": "en",
+      "preview_link": "http://books.google.com/books?id=THbXzgEACAAJ&dq=intitle:Good+to+great+inauthor:Jim+Collins&hl=&cd=3&source=gbs_api"
+    }
   },
   "openlibrary": {
     "ok": true,
@@ -156,17 +177,16 @@
   ],
   "_sources_succeeded": [
     "apple_books",
+    "google_books",
     "openlibrary",
     "amazon"
   ],
-  "_sources_failed": [
-    "google_books:no_good_match"
-  ],
+  "_sources_failed": [],
   "_timing": {
-    "phase1_parallel_ms": 16074,
-    "phase2_isbn_chain_ms": 24620,
-    "cover_validation_ms": 970,
-    "total_ms": 41664
+    "phase1_parallel_ms": 15753,
+    "phase2_isbn_chain_ms": 10799,
+    "cover_validation_ms": 1505,
+    "total_ms": 28057
   },
-  "_cached_at": "2026-04-23T03:06:22.279Z"
+  "_cached_at": "2026-04-23T18:49:13.065Z"
 }

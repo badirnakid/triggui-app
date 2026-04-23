@@ -75,7 +75,7 @@
         "Psychology"
       ],
       "idioma": "es",
-      "preview_link": "http://books.google.com/books?id=FadQAgAAQBAJ&printsec=frontcover&dq=%C2%BFDemasiado+inteligente+para+ser+feliz%3F+Jeanne+Siaud-Facchin&hl=&cd=1&source=gbs_api"
+      "preview_link": "http://books.google.com/books?id=FadQAgAAQBAJ&printsec=frontcover&dq=intitle:%C2%BFDemasiado+inteligente+para+ser+feliz%3F+inauthor:Jeanne+Siaud-Facchin&hl=&cd=1&source=gbs_api"
     }
   },
   "openlibrary": {
@@ -196,10 +196,10 @@
   ],
   "_sources_failed": [],
   "_timing": {
-    "phase1_parallel_ms": 15749,
-    "phase2_isbn_chain_ms": 16991,
-    "cover_validation_ms": 1003,
-    "total_ms": 33743
+    "phase1_parallel_ms": 1039,
+    "phase2_isbn_chain_ms": 423,
+    "cover_validation_ms": 971,
+    "total_ms": 2433
   },
-  "_cached_at": "2026-04-22T14:56:43.655Z"
+  "_cached_at": "2026-04-23T18:41:42.846Z"
 }
