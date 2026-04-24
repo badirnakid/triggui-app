@@ -46,37 +46,9 @@
     }
   },
   "google": {
-    "ok": true,
-    "source": "google_books",
-    "match_score": 1,
-    "match_details": {
-      "matched_title": "¿Demasiado inteligente para ser feliz?",
-      "matched_author": "Jeanne Siaud-Facchin"
-    },
-    "synopsis": "¿Cómo puedo saber si soy superdotado? En caso de serlo, ¿es posible que una gran inteligencia implique una sensibilidad exacerbada? ¿Puede aumentar también la fragilidad emocional e incluso causar sufrimiento? Ser superdotado es un don, pero a su vez es un talento que puede suscitar un sentimiento de inadaptación, una impresión de estar permanentemente fuera de lugar. ¿Cómo puedo vivir de la mejor manera posible? ¿Cómo puedo aprovechar todos mis recursos? En ¿Demasiado inteligente para ser feliz? Jeanne Siaud-Facchin nos ofrece recursos y consejos para comprender y convivir mejor con este tipo de personalidad y conseguir que las personas con altas capacidades se sientan mejor consigo mismas y con la gente que les rodea.",
-    "synopsis_length": 729,
-    "covers": [
-      {
-        "size": "small",
-        "url": "https://books.google.com/books/content?id=FadQAgAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
-      }
-    ],
-    "verified_identity": {
-      "titulo_real": "¿Demasiado inteligente para ser feliz?",
-      "subtitulo": "Las dificultades del adulto superdotado en la vida cotidiana",
-      "autor_completo": "Jeanne Siaud-Facchin",
-      "año": "2014",
-      "editorial": "Grupo Planeta Spain",
-      "paginas": 337,
-      "isbn": "9788449329906",
-      "isbn13": "9788449329906",
-      "isbn10": "8449329906",
-      "categorias": [
-        "Psychology"
-      ],
-      "idioma": "es",
-      "preview_link": "http://books.google.com/books?id=FadQAgAAQBAJ&printsec=frontcover&dq=intitle:%C2%BFDemasiado+inteligente+para+ser+feliz%3F+inauthor:Jeanne+Siaud-Facchin&hl=&cd=1&source=gbs_api"
-    }
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
   },
   "openlibrary": {
     "ok": true,
@@ -158,12 +130,6 @@
       "valid": true
     },
     {
-      "source": "google_books",
-      "size": "small",
-      "url": "https://books.google.com/books/content?id=FadQAgAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
-      "valid": true
-    },
-    {
       "source": "openlibrary",
       "size": "large",
       "url": "https://covers.openlibrary.org/b/id/7429143-L.jpg",
@@ -190,16 +156,17 @@
   ],
   "_sources_succeeded": [
     "apple_books",
-    "google_books",
     "openlibrary",
     "amazon"
   ],
-  "_sources_failed": [],
+  "_sources_failed": [
+    "google_books:no_good_match"
+  ],
   "_timing": {
-    "phase1_parallel_ms": 1039,
-    "phase2_isbn_chain_ms": 423,
-    "cover_validation_ms": 971,
-    "total_ms": 2433
+    "phase1_parallel_ms": 16622,
+    "phase2_isbn_chain_ms": 24951,
+    "cover_validation_ms": 976,
+    "total_ms": 42549
   },
-  "_cached_at": "2026-04-23T18:41:42.846Z"
+  "_cached_at": "2026-04-24T03:24:27.929Z"
 }

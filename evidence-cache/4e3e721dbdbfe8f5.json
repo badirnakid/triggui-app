@@ -50,35 +50,9 @@
     }
   },
   "google": {
-    "ok": true,
-    "source": "google_books",
-    "match_score": 0.9550000000000001,
-    "match_details": {
-      "matched_title": "Trillion Dollar Coach",
-      "matched_author": "Eric Schmidt"
-    },
-    "synopsis": "Traditional Chinese edition of Trillion Dollar Coach：The Leadership Playbook of Silicon Valley's Bill Campbell",
-    "synopsis_length": 110,
-    "covers": [
-      {
-        "size": "small",
-        "url": "https://books.google.com/books/content?id=1GvRzQEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
-      }
-    ],
-    "verified_identity": {
-      "titulo_real": "Trillion Dollar Coach",
-      "subtitulo": "",
-      "autor_completo": "Eric Schmidt",
-      "año": "2020",
-      "editorial": null,
-      "paginas": null,
-      "isbn": "9789863985570",
-      "isbn13": "9789863985570",
-      "isbn10": "9863985570",
-      "categorias": [],
-      "idioma": "zh-CN",
-      "preview_link": "http://books.google.com/books?id=1GvRzQEACAAJ&dq=intitle:Trillion+Dollar+Coach+inauthor:Eric+Schmidt.Jonathan+Rosenberg.Alan+Eagle&hl=&cd=2&source=gbs_api"
-    }
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
   },
   "openlibrary": {
     "ok": false,
@@ -130,12 +104,6 @@
       "valid": true
     },
     {
-      "source": "google_books",
-      "size": "small",
-      "url": "https://books.google.com/books/content?id=1GvRzQEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
-      "valid": true
-    },
-    {
       "source": "amazon",
       "size": "large",
       "url": "https://images-na.ssl-images-amazon.com/images/P/1299676040.01.LZZZZZZZ.jpg",
@@ -144,17 +112,17 @@
   ],
   "_sources_succeeded": [
     "apple_books",
-    "google_books",
     "amazon"
   ],
   "_sources_failed": [
+    "google_books:no_good_match",
     "openlibrary:no_results"
   ],
   "_timing": {
-    "phase1_parallel_ms": 1816,
-    "phase2_isbn_chain_ms": 494,
-    "cover_validation_ms": 800,
-    "total_ms": 3110
+    "phase1_parallel_ms": 16838,
+    "phase2_isbn_chain_ms": 25085,
+    "cover_validation_ms": 259,
+    "total_ms": 42182
   },
-  "_cached_at": "2026-04-21T13:43:32.125Z"
+  "_cached_at": "2026-04-24T03:13:21.409Z"
 }

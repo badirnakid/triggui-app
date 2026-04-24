@@ -1,0 +1,32 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nFor more than two decades, legendary trainer Tim Grover has taken the greats—Michael Jordan, Kobe Bryant, Dwyane Wade, and hundreds of relentless competitors in sports, business, and every walk of life—and made them greater. Now, for the first time ever, he reveals what it takes to achieve total mental and physical dominance, showing you how to be relentless and achieve whatever you desire. Direct, blunt, and brutally honest, Grover breaks down what it takes to be unstoppable: you keep going when everyone else is giving up, you thrive under pressure, you never let your emotions make you weak. In “The Relentless 13,” he details the essential traits shared by the most intense competitors and achievers in sports, business, and all walks of life. Relentless shows you how to trust your instincts and get in the Zone; how to control and adapt to any situation; how to find your opponent’s weakness and attack. Grover gives you the same advice he gives his world-class clients—“don’t think”—and shows you that anything is possible. Packed with previously untold stories and unparalleled insight into the psyches of the most successful and accomplished athletes of our time, Relentless shows you how even the best get better . . . and how you can too.\n\nMETADATA VERIFICADA:\n- Título: Relentless\n- Autor: Tim S Grover\n- Año: 2013\n- Categorías: Baloncesto, Libros, Deportes y vida al aire libre, Salud, mente y cuerpo",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Relentless",
+    "autor_completo": "Tim S Grover",
+    "año": "2013",
+    "editorial": null,
+    "isbn": "547386050",
+    "categorias": [
+      "Baloncesto",
+      "Libros",
+      "Deportes y vida al aire libre",
+      "Salud, mente y cuerpo",
+      "Salud y fitness",
+      "Superación personal",
+      "Entrenamiento físico"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/relentless/id547386050?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_3sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-24T03:15:33.228Z"
+}

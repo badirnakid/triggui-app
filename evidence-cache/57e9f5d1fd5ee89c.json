@@ -1,0 +1,124 @@
+{
+  "titulo_input": "Un año para cambiar el chip",
+  "autor_input": "Napoleón Hill",
+  "isbn_seed": "",
+  "isbn_discovered": "6741198395",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Un año para cambiar el chip",
+      "matched_author": "Napoleon Hill"
+    },
+    "synopsis": "¿Quién te dijo que no eras apto para lograr tus metas? ¿Y qué grandes triunfos ha obtenido el que se atreve a cuestionar tus habilidades? Recuerda que recibir sabios consejos es definitivo cada vez que decides encaminarte hacia nuevos horizontes. Asegúrate de rodearte de la gente adecuada y de las herramientas apropiadas que te animen a avanzar hacia la búsqueda y cumplimiento de tus propósitos e ideales. Desecha los destructores de sueños y enfócate en todo lo que te ayude a construir un futuro sólido. Si bien es cierto que el camino hacia el cumplimiento de tus metas comienza ahora, tienes a tu disposición Un año para cambiar el chip: 52 claves para retomar tus sueños y consolidarlos. En esta ocasión el pionero del pensamiento positivo pone a tu disposición esta valiosa herramienta que contiene las pautas que necesitas poner en práctica semana tras semana para acercarte año tras año y con paso seguro y confiado hacia el cumplimiento de los propósitos que has trazado para tu vida. Un año para cambiar el chip: 52 claves para retomar tus sueños y consolidarlos está escrito en un estilo tan claro y dinámico, que aunque implica 52 semanas de trabajo, generará en ti la curiosidad y el entusiasmo suficientes como para no querer abandonarlo hasta haberlo devorado ¡en una sola lectura! Encontrarás claves tan esenciales que te mostrarán, entre muchas otras cosas, cómo: •Identificar y aprovechar las oportunidades de éxito •Beneficiarte de todo fracaso y derrota •Buscar siempre el lado positivo de cada circunstancia •Desarrollar autodisciplina •Tener iniciativa en el área personal y en los negocios •Capitalizar las experiencias para aprender a pensar con sabiduría •Y muchas otras claves valiosas que tienes a disposición conforme a tu entusiasmo y deseo de triunfar.",
+    "synopsis_length": 1785,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/2c/ac/e2/2cace27d-14e0-e81c-d764-1a009a293c36/1027064128.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/2c/ac/e2/2cace27d-14e0-e81c-d764-1a009a293c36/1027064128.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/2c/ac/e2/2cace27d-14e0-e81c-d764-1a009a293c36/1027064128.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/2c/ac/e2/2cace27d-14e0-e81c-d764-1a009a293c36/1027064128.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Un año para cambiar el chip",
+      "autor_completo": "Napoleon Hill",
+      "año": "2018",
+      "editorial": null,
+      "isbn": "6741198395",
+      "categorias": [
+        "Superación personal",
+        "Libros",
+        "Salud, mente y cuerpo"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/un-a%C3%B1o-para-cambiar-el-chip/id6741198395?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": false,
+    "reason": "no_results",
+    "source": "openlibrary"
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/6741198395.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "6741198395",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/2c/ac/e2/2cace27d-14e0-e81c-d764-1a009a293c36/1027064128.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/2c/ac/e2/2cace27d-14e0-e81c-d764-1a009a293c36/1027064128.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/2c/ac/e2/2cace27d-14e0-e81c-d764-1a009a293c36/1027064128.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/2c/ac/e2/2cace27d-14e0-e81c-d764-1a009a293c36/1027064128.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/6741198395.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match",
+    "openlibrary:no_results"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 16269,
+    "phase2_isbn_chain_ms": 25190,
+    "cover_validation_ms": 1138,
+    "total_ms": 42597
+  },
+  "_cached_at": "2026-04-24T03:25:34.469Z"
+}

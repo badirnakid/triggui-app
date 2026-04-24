@@ -46,37 +46,9 @@
     }
   },
   "google": {
-    "ok": true,
-    "source": "google_books",
-    "match_score": 1,
-    "match_details": {
-      "matched_title": "Si no eres el primero, eres el último",
-      "matched_author": "Grant Cardone"
-    },
-    "synopsis": "Olvídate de pretextos, este libro te dará estrategias comprobadas que te harán un mejor vendedor, empresario y persona, al tiempo que te lleva hacia una nueva libertad financiera. En Si no eres el primero, eres el último, Grant Cardone te muestra cómo adoptar una actitud de \"avanza y conquista\". Sintoniza con el poder secreto del \"hambre\", diseña un plan para ser completamente libre, e ignora las convenciones sociales para conseguir el éxito. En estos tiempos se ha vuelto más complicado vender cualquier producto, mantener contentos a los clientes y obtener hasta la más mínima ventaja. Los errores ahora son más costosos y el fracaso se convierte en una posibilidad real para quienes no logran adaptarse con la suficiente rapidez. Pero imagina que puedas venderte a ti mismo de manera efectiva y contundente que tengas la gran capacidad de robar mercado a tus competidores a través de una fórmula precisa para aumentar tus ventas y conseguir tus objetivos.",
-    "synopsis_length": 962,
-    "covers": [
-      {
-        "size": "small",
-        "url": "https://books.google.com/books/content?id=Y0PSCgAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
-      }
-    ],
-    "verified_identity": {
-      "titulo_real": "Si no eres el primero, eres el último",
-      "subtitulo": "Estrategias de ventas para dominar al mercado y vencer a tu competencia",
-      "autor_completo": "Grant Cardone",
-      "año": "2015",
-      "editorial": "DEBOLSILLO",
-      "paginas": 230,
-      "isbn": "9786073138222",
-      "isbn13": "9786073138222",
-      "isbn10": "6073138229",
-      "categorias": [
-        "Business & Economics"
-      ],
-      "idioma": "es",
-      "preview_link": "http://books.google.com/books?id=Y0PSCgAAQBAJ&printsec=frontcover&dq=intitle:Si+no+eres+el+primero%3B+Eres+el+%C3%BAltimo+inauthor:Grant+Cardone&hl=&cd=1&source=gbs_api"
-    }
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
   },
   "openlibrary": {
     "ok": true,
@@ -158,12 +130,6 @@
       "valid": true
     },
     {
-      "source": "google_books",
-      "size": "small",
-      "url": "https://books.google.com/books/content?id=Y0PSCgAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
-      "valid": true
-    },
-    {
       "source": "openlibrary",
       "size": "large",
       "url": "https://covers.openlibrary.org/b/id/13200016-L.jpg",
@@ -190,16 +156,17 @@
   ],
   "_sources_succeeded": [
     "apple_books",
-    "google_books",
     "openlibrary",
     "amazon"
   ],
-  "_sources_failed": [],
+  "_sources_failed": [
+    "google_books:no_good_match"
+  ],
   "_timing": {
-    "phase1_parallel_ms": 853,
-    "phase2_isbn_chain_ms": 732,
-    "cover_validation_ms": 978,
-    "total_ms": 2563
+    "phase1_parallel_ms": 16633,
+    "phase2_isbn_chain_ms": 25168,
+    "cover_validation_ms": 731,
+    "total_ms": 42532
   },
-  "_cached_at": "2026-04-21T11:08:54.126Z"
+  "_cached_at": "2026-04-24T03:14:28.539Z"
 }

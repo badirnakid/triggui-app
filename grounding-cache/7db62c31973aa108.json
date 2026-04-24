@@ -1,0 +1,31 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\n#1 New York Times Bestseller “THIS. This is the right book for right now. Yes, learning requires focus. But, unlearning and relearning requires much more—it requires choosing courage over comfort. In Think Again, Adam Grant&#xa0;weaves together research and storytelling to help us build the intellectual and emotional muscle we need to stay curious enough about the world to actually change it.&#xa0;I’ve never felt so hopeful about what I don’t know.” —Brené Brown, Ph.D., #1 New York Times bestselling author of Dare to Lead The #1 New York Times bestselling author of Hidden Potential, Originals, and Give and Take examines the critical art of rethinking: learning to question your opinions and open other people's minds, which can position you for excellence at work and wisdom in life Intelligence is usually seen as the ability to think and learn, but in a rapidly changing world, there's another set of cognitive skills that might matter more: the ability to rethink and unlearn. In our daily lives, too many of us favor the comfort of conviction over the discomfort of doubt. We listen to opinions that make us feel good, instead of ideas that make us think hard. We see disagreement as a threat to our egos, rather than an opportunity to learn. We surround ourselves with people who agree with our conclusions, when we should be gravitating toward those who challenge our thought process. The result is that our beliefs get brittle long before our bones. We think too much like preachers defending our sacred beliefs, prosecutors proving the other side wrong, and politicians campaigning for approval--and too little like scientists searching for truth. Intelligence is no cure, and it can even be a curse: being good at thinking can make us worse at rethinking. The brighter we are, the blinder to our own limitations we can become. Organizational psychologist Adam Grant is an expert on opening other people's minds--and our own. As Wharton's top-rated professor and the bestselling author of Originals and Give and Take, he makes it one of his guiding principles to argue like he's right but listen like he's wrong. With bold ideas and rigorous evidence, he investigates how we can embrace the joy of being wrong, bring nuance to charged conversations, and build schools, workplaces, and communities of lifelong learners. You'll learn how an international debate champion wins arguments, a Black musician persuades white supremacists to abandon hate, a vaccine whisperer convinces concerned parents to immunize their children, and Adam has coaxed Yankees fans to root for the Red Sox. Think Again reveals that we don't have to believe everything we think or internalize everything we feel. It's an invitation to let go of views that are no longer serving us well and prize mental flexibility over foolish consistency. If knowledge is power, knowing what we don't know is wisdom.\n\nMETADATA VERIFICADA:\n- Título: Think Again\n- Autor: Adam Grant\n- Año: 2021\n- Categorías: Administración y liderazgo, Libros, Negocios y finanzas personales, Salud, mente y cuerpo",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Think Again",
+    "autor_completo": "Adam Grant",
+    "año": "2021",
+    "editorial": null,
+    "isbn": "1529794256",
+    "categorias": [
+      "Administración y liderazgo",
+      "Libros",
+      "Negocios y finanzas personales",
+      "Salud, mente y cuerpo",
+      "Superación personal",
+      "Psicología"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/think-again/id1529794256?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_3sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-24T03:17:50.381Z"
+}

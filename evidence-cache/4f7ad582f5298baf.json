@@ -46,37 +46,9 @@
     }
   },
   "google": {
-    "ok": true,
-    "source": "google_books",
-    "match_score": 1,
-    "match_details": {
-      "matched_title": "Cómo hacer que las cosas pasen",
-      "matched_author": "Guillermo Echevarría"
-    },
-    "synopsis": "Las historias de vida, las anécdotas, ejercicios y claves de este libro tienen como propósito inspirarte, motivarte y darte herramientas para que puedas elegir tus pensamientos y hacer que las cosas pasen en el minuto presente. Este es un libro para personas que quieren que empiece a pasar algo diferente en sus vidas. No importa a qué te dediques, qué edad ni qué formación tengas. Para hacer que las cosas pasen, es clave que te entrenes para ser más grande que tus desafíos y así poder: * Tratar con personas difíciles * Decir cosas incómodas de manera constructiva * Crecer profesionalmente cuando no reconocen tu valor * Superar el autoboicot y la postergación * Convertir imprevistos en oportunidades * Rehacer tu vida y construir un futuro que te apasione * Cambiar más rápido y con menos estrés * Inspirarte para dar tu mejor versión En estas páginas vas a encontrar 17 historias inspiradoras, ejercicios, herramientas y semillas de actitud que pueden generarte unas ganas arrolladoras de hacer que las cosas pasen en tu vida. Ojalá te animes al desafío. ¿El que no arriesga no gana? El que no arriesga no vive.",
-    "synopsis_length": 1120,
-    "covers": [
-      {
-        "size": "small",
-        "url": "https://books.google.com/books/content?id=JLh2DwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
-      }
-    ],
-    "verified_identity": {
-      "titulo_real": "Cómo hacer que las cosas pasen",
-      "subtitulo": "En lugar de vivir hablando de lo que pasa",
-      "autor_completo": "Guillermo Echevarría",
-      "año": "2018",
-      "editorial": "VERGARA",
-      "paginas": 290,
-      "isbn": "9789501509502",
-      "isbn13": "9789501509502",
-      "isbn10": "9501509508",
-      "categorias": [
-        "Business & Economics"
-      ],
-      "idioma": "es",
-      "preview_link": "http://books.google.com/books?id=JLh2DwAAQBAJ&printsec=frontcover&dq=intitle:C%C3%B3mo+hacer+que+las+cosas+pasen+inauthor:Guillermo+Echevarria&hl=&cd=1&source=gbs_api"
-    }
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
   },
   "openlibrary": {
     "ok": false,
@@ -128,12 +100,6 @@
       "valid": true
     },
     {
-      "source": "google_books",
-      "size": "small",
-      "url": "https://books.google.com/books/content?id=JLh2DwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
-      "valid": true
-    },
-    {
       "source": "amazon",
       "size": "large",
       "url": "https://images-na.ssl-images-amazon.com/images/P/1506684891.01.LZZZZZZZ.jpg",
@@ -142,17 +108,17 @@
   ],
   "_sources_succeeded": [
     "apple_books",
-    "google_books",
     "amazon"
   ],
   "_sources_failed": [
+    "google_books:no_good_match",
     "openlibrary:no_results"
   ],
   "_timing": {
-    "phase1_parallel_ms": 1964,
-    "phase2_isbn_chain_ms": 731,
-    "cover_validation_ms": 1082,
-    "total_ms": 3777
+    "phase1_parallel_ms": 16612,
+    "phase2_isbn_chain_ms": 25469,
+    "cover_validation_ms": 203,
+    "total_ms": 42284
   },
-  "_cached_at": "2026-04-21T13:33:38.387Z"
+  "_cached_at": "2026-04-24T03:12:14.391Z"
 }
