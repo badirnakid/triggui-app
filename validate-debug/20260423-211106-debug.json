@@ -1,0 +1,754 @@
+{
+  "history": [
+    {
+      "at": "2026-04-24T03:09:34.322Z",
+      "stage": "trigger_analysis",
+      "trigger_analysis": {
+        "raw_input": "Para que desear vivir eternamente?",
+        "semantic_query": "reflexiones sobre la vida eterna y su significado",
+        "intent_summary": "Explorar la idea de la vida eterna y su propósito.",
+        "editorial_requests": [],
+        "source_preference": null,
+        "ranking_preference": null,
+        "unsupported_runtime_constraints": [],
+        "supported_constraints": {
+          "year_min": null,
+          "year_max": null,
+          "prefer_recent": false
+        },
+        "search_queries": [
+          "vida eterna",
+          "filosofía de la inmortalidad",
+          "significado de la vida",
+          "reflexiones sobre la muerte",
+          "deseo de vivir para siempre",
+          "perspectivas sobre la eternidad",
+          "reflexiones sobre la vida eterna y su significado",
+          "reflexiones vida eterna"
+        ],
+        "concept_hints": [
+          "filosofía",
+          "espiritualidad"
+        ],
+        "clean_for_selection": "reflexiones sobre la vida eterna y su significado",
+        "notes": {
+          "used_ai_normalizer": true,
+          "looked_like_book_intent": false,
+          "semantic_overlap_vs_raw": 0
+        }
+      }
+    },
+    {
+      "at": "2026-04-24T03:09:34.698Z",
+      "stage": "live_candidates_merged",
+      "count": 0,
+      "top": []
+    },
+    {
+      "at": "2026-04-24T03:09:38.205Z",
+      "stage": "discover_attempt_result",
+      "attempt": 1,
+      "parsed_preview": {
+        "recommendations": [
+          {
+            "titulo": "La inmortalidad",
+            "autor": "Milan Kundera",
+            "motivo_corto": "Explora la relación entre la vida, la muerte y el deseo de inmortalidad a través de una narrativa filosófica.",
+            "tagline": "Una reflexión profunda sobre el significado de la vida y la búsqueda de la eternidad."
+          },
+          {
+            "titulo": "El sentido de la vida",
+            "autor": "Viktor Frankl",
+            "motivo_corto": "Ofrece una perspectiva psicológica y filosófica sobre el propósito de la vida, incluso en circunstancias extremas.",
+            "tagline": "Encuentra significado en la vida, incluso frente a la muerte."
+          },
+          {
+            "titulo": "La muerte de Iván Ilich",
+            "autor": "León Tolstói",
+            "motivo_corto": "Reflexiona sobre la vida, la muerte y el arrepentimiento, cuestionando el verdadero significado de la existencia.",
+            "tagline": "Una poderosa meditación sobre la vida y la inevitabilidad de la muerte."
+          }
+        ]
+      },
+      "raw_preview": "{\n  \"recommendations\": [\n    { \"titulo\": \"La inmortalidad\", \"autor\": \"Milan Kundera\", \"motivo_corto\": \"Explora la relación entre la vida, la muerte y el deseo de inmortalidad a través de una narrativa filosófica.\", \"tagline\": \"Una reflexión profunda sobre el significado de la vida y la búsqueda de la eternidad.\" },\n    { \"titulo\": \"El sentido de la vida\", \"autor\": \"Viktor Frankl\", \"motivo_corto\": \"Ofrece una perspectiva psicológica y filosófica sobre el propósito de la vida, incluso en circunstancias extremas.\", \"tagline\": \"Encuentra significado en la vida, incluso frente a la muerte.\" },\n    { \"titulo\": \"La muerte de Iván Ilich\", \"autor\": \"León Tolstói\", \"motivo_corto\": \"Reflexiona sobre la vida, la muerte y el arrepentimiento, cuestionando el verdadero significado de la existencia.\", \"tagline\": \"Una poderosa meditación sobre la vida y la inevitabilidad de la muerte.\" }\n  ]\n}",
+      "recommendations": [
+        {
+          "titulo": "La inmortalidad",
+          "autor": "Milan Kundera",
+          "motivo_corto": "Explora la relación entre la vida, la muerte y el deseo de inmortalidad a través de una narrativa filosófica.",
+          "tagline": "Una reflexión profunda sobre el significado de la vida y la búsqueda de la eternidad.",
+          "source_label": "",
+          "source_url": "",
+          "published_year": null,
+          "live_score": 0,
+          "ai_fit_score": 0,
+          "ai_fit_reason": ""
+        },
+        {
+          "titulo": "El sentido de la vida",
+          "autor": "Viktor Frankl",
+          "motivo_corto": "Ofrece una perspectiva psicológica y filosófica sobre el propósito de la vida, incluso en circunstancias extremas.",
+          "tagline": "Encuentra significado en la vida, incluso frente a la muerte.",
+          "source_label": "",
+          "source_url": "",
+          "published_year": null,
+          "live_score": 0,
+          "ai_fit_score": 0,
+          "ai_fit_reason": ""
+        },
+        {
+          "titulo": "La muerte de Iván Ilich",
+          "autor": "León Tolstói",
+          "motivo_corto": "Reflexiona sobre la vida, la muerte y el arrepentimiento, cuestionando el verdadero significado de la existencia.",
+          "tagline": "Una poderosa meditación sobre la vida y la inevitabilidad de la muerte.",
+          "source_label": "",
+          "source_url": "",
+          "published_year": null,
+          "live_score": 0,
+          "ai_fit_score": 0,
+          "ai_fit_reason": ""
+        }
+      ]
+    },
+    {
+      "at": "2026-04-24T03:09:40.888Z",
+      "stage": "ai_rerank_candidates",
+      "stageLabel": "discover_gpt_rerank_attempt_1",
+      "ranked": [
+        {
+          "idx": 2,
+          "fit_score": 0.95,
+          "reason": "El libro de Viktor Frankl aborda directamente el sentido de la vida y cómo encontrar significado incluso ante la muerte, lo que se alinea perfectamente con la exploración de la vida eterna y su propósito."
+        },
+        {
+          "idx": 3,
+          "fit_score": 0.92,
+          "reason": "La obra de Tolstói ofrece una meditación profunda sobre la vida y la muerte, lo que permite reflexionar sobre la vida eterna y su significado."
+        },
+        {
+          "idx": 1,
+          "fit_score": 0.88,
+          "reason": "Kundera reflexiona sobre la búsqueda de la eternidad, aunque su enfoque es más filosófico y menos centrado en el propósito de la vida en comparación con los otros dos."
+        }
+      ]
+    },
+    {
+      "at": "2026-04-24T03:10:21.434Z",
+      "stage": "gpt_candidates_inspected",
+      "attempt": 1,
+      "inspected": [
+        {
+          "recommendation": {
+            "titulo": "El sentido de la vida",
+            "autor": "Viktor Frankl",
+            "motivo_corto": "Ofrece una perspectiva psicológica y filosófica sobre el propósito de la vida, incluso en circunstancias extremas.",
+            "tagline": "Encuentra significado en la vida, incluso frente a la muerte.",
+            "source_label": "",
+            "source_url": "",
+            "published_year": null,
+            "live_score": 0,
+            "ai_fit_score": 0.95,
+            "ai_fit_reason": "El libro de Viktor Frankl aborda directamente el sentido de la vida y cómo encontrar significado incluso ante la muerte, lo que se alinea perfectamente con la exploración de la vida eterna y su propósito."
+          },
+          "evidence": {
+            "portada": "https://images-na.ssl-images-amazon.com/images/P/6761764625.01.LZZZZZZZ.jpg",
+            "isbn": "6761764625",
+            "editorial": "",
+            "source": "amazon",
+            "year": "",
+            "matched_title": "",
+            "matched_author": "",
+            "match_score": 0.85,
+            "_evidence": {
+              "titulo_input": "El sentido de la vida",
+              "autor_input": "Viktor Frankl",
+              "isbn_seed": "",
+              "isbn_discovered": "6761764625",
+              "apple": {
+                "ok": true,
+                "source": "apple_books",
+                "match_score": 0.675,
+                "match_details": {
+                  "matched_title": "La voluntad de sentido",
+                  "matched_author": "Viktor Frankl"
+                },
+                "synopsis": "En su conjunto, cada conferencia constituye una variación sobre el mismo tema: el hombre es un ser empeñado en la búsqueda de un sentido, del logos, y ayudar a encontrar ese sentido es un deber de la psicoterapia y el deber de la logoterapia. Se incluye asimismo un trabajo sobre la validación de este tipo de psicoterapia llevado a cabo por Elisabeth S. Lukas, del Instituto de Psicología Experimental y Aplicada de la Universidad de Viena.",
+                "synopsis_length": 441,
+                "covers": [
+                  {
+                    "size": "xxlarge",
+                    "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/21/e6/30/21e63091-1ff4-ed69-9791-219fff97df83/1065216762.jpg/3000x3000bb.jpg"
+                  },
+                  {
+                    "size": "xlarge",
+                    "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/21/e6/30/21e63091-1ff4-ed69-9791-219fff97df83/1065216762.jpg/1200x1200bb.jpg"
+                  },
+                  {
+                    "size": "large",
+                    "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/21/e6/30/21e63091-1ff4-ed69-9791-219fff97df83/1065216762.jpg/600x600bb.jpg"
+                  },
+                  {
+                    "size": "medium",
+                    "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/21/e6/30/21e63091-1ff4-ed69-9791-219fff97df83/1065216762.jpg/100x100bb.jpg"
+                  }
+                ],
+                "verified_identity": {
+                  "titulo_real": "La voluntad de sentido",
+                  "autor_completo": "Viktor Frankl",
+                  "año": "2026",
+                  "editorial": null,
+                  "isbn": "6761764625",
+                  "categorias": [
+                    "Psicología",
+                    "Libros",
+                    "Salud, mente y cuerpo"
+                  ],
+                  "track_view_url": "https://books.apple.com/mx/book/la-voluntad-de-sentido/id6761764625?uo=4"
+                }
+              },
+              "google": {
+                "ok": false,
+                "reason": "no_good_match",
+                "source": "google_books"
+              },
+              "openlibrary": {
+                "ok": false,
+                "reason": "no_results",
+                "source": "openlibrary"
+              },
+              "amazon": {
+                "ok": true,
+                "source": "amazon",
+                "match_score": 0.85,
+                "covers": [
+                  {
+                    "size": "large",
+                    "url": "https://images-na.ssl-images-amazon.com/images/P/6761764625.01.LZZZZZZZ.jpg"
+                  }
+                ],
+                "synopsis": "",
+                "synopsis_length": 0,
+                "verified_identity": {
+                  "isbn": "6761764625",
+                  "titulo_real": null,
+                  "autor_completo": null,
+                  "año": null
+                }
+              },
+              "valid_covers": [
+                {
+                  "source": "apple_books",
+                  "size": "xxlarge",
+                  "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/21/e6/30/21e63091-1ff4-ed69-9791-219fff97df83/1065216762.jpg/3000x3000bb.jpg",
+                  "valid": true
+                },
+                {
+                  "source": "apple_books",
+                  "size": "xlarge",
+                  "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/21/e6/30/21e63091-1ff4-ed69-9791-219fff97df83/1065216762.jpg/1200x1200bb.jpg",
+                  "valid": true
+                },
+                {
+                  "source": "apple_books",
+                  "size": "large",
+                  "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/21/e6/30/21e63091-1ff4-ed69-9791-219fff97df83/1065216762.jpg/600x600bb.jpg",
+                  "valid": true
+                },
+                {
+                  "source": "apple_books",
+                  "size": "medium",
+                  "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/21/e6/30/21e63091-1ff4-ed69-9791-219fff97df83/1065216762.jpg/100x100bb.jpg",
+                  "valid": true
+                },
+                {
+                  "source": "amazon",
+                  "size": "large",
+                  "url": "https://images-na.ssl-images-amazon.com/images/P/6761764625.01.LZZZZZZZ.jpg",
+                  "valid": true
+                }
+              ],
+              "_sources_succeeded": [
+                "apple_books",
+                "amazon"
+              ],
+              "_sources_failed": [
+                "google_books:no_good_match",
+                "openlibrary:no_results"
+              ],
+              "_timing": {
+                "phase1_parallel_ms": 15734,
+                "phase2_isbn_chain_ms": 23716,
+                "cover_validation_ms": 1087,
+                "total_ms": 40537
+              }
+            }
+          },
+          "constraintsCheck": {
+            "exact_ok": true,
+            "hard_ok": true,
+            "issues": [],
+            "warnings": [],
+            "reason": "Válido por evidencia bibliográfica"
+          },
+          "sourceLabel": "gpt_attempt_1",
+          "semantic_score": 0.95,
+          "fallback_score": 152
+        }
+      ]
+    },
+    {
+      "at": "2026-04-24T03:10:21.436Z",
+      "stage": "success",
+      "bookData": {
+        "titulo": "El sentido de la vida",
+        "autor": "Viktor Frankl",
+        "slug": "el-sentido-de-la-vida",
+        "tagline": "Encuentra significado en la vida, incluso frente a la muerte.",
+        "portada": "https://images-na.ssl-images-amazon.com/images/P/6761764625.01.LZZZZZZZ.jpg",
+        "portada_url": "https://images-na.ssl-images-amazon.com/images/P/6761764625.01.LZZZZZZZ.jpg",
+        "portada_source": "amazon",
+        "portada_candidates": [
+          {
+            "source": "apple_books",
+            "size": "xxlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/21/e6/30/21e63091-1ff4-ed69-9791-219fff97df83/1065216762.jpg/3000x3000bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "xlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/21/e6/30/21e63091-1ff4-ed69-9791-219fff97df83/1065216762.jpg/1200x1200bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "large",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/21/e6/30/21e63091-1ff4-ed69-9791-219fff97df83/1065216762.jpg/600x600bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "medium",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/21/e6/30/21e63091-1ff4-ed69-9791-219fff97df83/1065216762.jpg/100x100bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "amazon",
+            "size": "large",
+            "url": "https://images-na.ssl-images-amazon.com/images/P/6761764625.01.LZZZZZZZ.jpg",
+            "valid": true
+          }
+        ],
+        "needs_fallback_cover": false,
+        "isbn": "6761764625",
+        "editorial": "",
+        "publication_year": "",
+        "source": "amazon",
+        "duplicado": false,
+        "selected_via": "discover_trigger",
+        "selection_reason": "Ofrece una perspectiva psicológica y filosófica sobre el propósito de la vida, incluso en circunstancias extremas.",
+        "trigger_input": "Para que desear vivir eternamente?",
+        "trigger_analysis": {
+          "raw_input": "Para que desear vivir eternamente?",
+          "semantic_query": "reflexiones sobre la vida eterna y su significado",
+          "intent_summary": "Explorar la idea de la vida eterna y su propósito.",
+          "editorial_requests": [],
+          "source_preference": null,
+          "ranking_preference": null,
+          "unsupported_runtime_constraints": [],
+          "supported_constraints": {
+            "year_min": null,
+            "year_max": null,
+            "prefer_recent": false
+          },
+          "search_queries": [
+            "vida eterna",
+            "filosofía de la inmortalidad",
+            "significado de la vida",
+            "reflexiones sobre la muerte",
+            "deseo de vivir para siempre",
+            "perspectivas sobre la eternidad",
+            "reflexiones sobre la vida eterna y su significado",
+            "reflexiones vida eterna"
+          ],
+          "concept_hints": [
+            "filosofía",
+            "espiritualidad"
+          ],
+          "clean_for_selection": "reflexiones sobre la vida eterna y su significado",
+          "notes": {
+            "used_ai_normalizer": true,
+            "looked_like_book_intent": false,
+            "semantic_overlap_vs_raw": 0
+          }
+        },
+        "selection_validation": {
+          "semantic_score": 0.95,
+          "ai_fit_score": 0.95,
+          "match_score": 0.85,
+          "validation_source": "amazon",
+          "constraint_reason": "Válido por evidencia bibliográfica",
+          "mode": "exact_gpt",
+          "source_label": "gpt_attempt_1",
+          "fallback_score": 152
+        },
+        "catalog_scope": "",
+        "contexto_2026": {},
+        "identity_sealed": true,
+        "_evidence": {
+          "titulo_input": "El sentido de la vida",
+          "autor_input": "Viktor Frankl",
+          "isbn_seed": "",
+          "isbn_discovered": "6761764625",
+          "apple": {
+            "ok": true,
+            "source": "apple_books",
+            "match_score": 0.675,
+            "match_details": {
+              "matched_title": "La voluntad de sentido",
+              "matched_author": "Viktor Frankl"
+            },
+            "synopsis": "En su conjunto, cada conferencia constituye una variación sobre el mismo tema: el hombre es un ser empeñado en la búsqueda de un sentido, del logos, y ayudar a encontrar ese sentido es un deber de la psicoterapia y el deber de la logoterapia. Se incluye asimismo un trabajo sobre la validación de este tipo de psicoterapia llevado a cabo por Elisabeth S. Lukas, del Instituto de Psicología Experimental y Aplicada de la Universidad de Viena.",
+            "synopsis_length": 441,
+            "covers": [
+              {
+                "size": "xxlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/21/e6/30/21e63091-1ff4-ed69-9791-219fff97df83/1065216762.jpg/3000x3000bb.jpg"
+              },
+              {
+                "size": "xlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/21/e6/30/21e63091-1ff4-ed69-9791-219fff97df83/1065216762.jpg/1200x1200bb.jpg"
+              },
+              {
+                "size": "large",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/21/e6/30/21e63091-1ff4-ed69-9791-219fff97df83/1065216762.jpg/600x600bb.jpg"
+              },
+              {
+                "size": "medium",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/21/e6/30/21e63091-1ff4-ed69-9791-219fff97df83/1065216762.jpg/100x100bb.jpg"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "La voluntad de sentido",
+              "autor_completo": "Viktor Frankl",
+              "año": "2026",
+              "editorial": null,
+              "isbn": "6761764625",
+              "categorias": [
+                "Psicología",
+                "Libros",
+                "Salud, mente y cuerpo"
+              ],
+              "track_view_url": "https://books.apple.com/mx/book/la-voluntad-de-sentido/id6761764625?uo=4"
+            }
+          },
+          "google": {
+            "ok": false,
+            "reason": "no_good_match",
+            "source": "google_books"
+          },
+          "openlibrary": {
+            "ok": false,
+            "reason": "no_results",
+            "source": "openlibrary"
+          },
+          "amazon": {
+            "ok": true,
+            "source": "amazon",
+            "match_score": 0.85,
+            "covers": [
+              {
+                "size": "large",
+                "url": "https://images-na.ssl-images-amazon.com/images/P/6761764625.01.LZZZZZZZ.jpg"
+              }
+            ],
+            "synopsis": "",
+            "synopsis_length": 0,
+            "verified_identity": {
+              "isbn": "6761764625",
+              "titulo_real": null,
+              "autor_completo": null,
+              "año": null
+            }
+          },
+          "valid_covers": [
+            {
+              "source": "apple_books",
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/21/e6/30/21e63091-1ff4-ed69-9791-219fff97df83/1065216762.jpg/3000x3000bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/21/e6/30/21e63091-1ff4-ed69-9791-219fff97df83/1065216762.jpg/1200x1200bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/21/e6/30/21e63091-1ff4-ed69-9791-219fff97df83/1065216762.jpg/600x600bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/21/e6/30/21e63091-1ff4-ed69-9791-219fff97df83/1065216762.jpg/100x100bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "amazon",
+              "size": "large",
+              "url": "https://images-na.ssl-images-amazon.com/images/P/6761764625.01.LZZZZZZZ.jpg",
+              "valid": true
+            }
+          ],
+          "_sources_succeeded": [
+            "apple_books",
+            "amazon"
+          ],
+          "_sources_failed": [
+            "google_books:no_good_match",
+            "openlibrary:no_results"
+          ],
+          "_timing": {
+            "phase1_parallel_ms": 15734,
+            "phase2_isbn_chain_ms": 23716,
+            "cover_validation_ms": 1087,
+            "total_ms": 40537
+          }
+        },
+        "_evidence_synopsis": "",
+        "_evidence_verified_identity": {},
+        "_evidence_match_score": 0.85
+      }
+    }
+  ],
+  "last": {
+    "at": "2026-04-24T03:10:21.436Z",
+    "stage": "success",
+    "bookData": {
+      "titulo": "El sentido de la vida",
+      "autor": "Viktor Frankl",
+      "slug": "el-sentido-de-la-vida",
+      "tagline": "Encuentra significado en la vida, incluso frente a la muerte.",
+      "portada": "https://images-na.ssl-images-amazon.com/images/P/6761764625.01.LZZZZZZZ.jpg",
+      "portada_url": "https://images-na.ssl-images-amazon.com/images/P/6761764625.01.LZZZZZZZ.jpg",
+      "portada_source": "amazon",
+      "portada_candidates": [
+        {
+          "source": "apple_books",
+          "size": "xxlarge",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/21/e6/30/21e63091-1ff4-ed69-9791-219fff97df83/1065216762.jpg/3000x3000bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "xlarge",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/21/e6/30/21e63091-1ff4-ed69-9791-219fff97df83/1065216762.jpg/1200x1200bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "large",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/21/e6/30/21e63091-1ff4-ed69-9791-219fff97df83/1065216762.jpg/600x600bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "medium",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/21/e6/30/21e63091-1ff4-ed69-9791-219fff97df83/1065216762.jpg/100x100bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "amazon",
+          "size": "large",
+          "url": "https://images-na.ssl-images-amazon.com/images/P/6761764625.01.LZZZZZZZ.jpg",
+          "valid": true
+        }
+      ],
+      "needs_fallback_cover": false,
+      "isbn": "6761764625",
+      "editorial": "",
+      "publication_year": "",
+      "source": "amazon",
+      "duplicado": false,
+      "selected_via": "discover_trigger",
+      "selection_reason": "Ofrece una perspectiva psicológica y filosófica sobre el propósito de la vida, incluso en circunstancias extremas.",
+      "trigger_input": "Para que desear vivir eternamente?",
+      "trigger_analysis": {
+        "raw_input": "Para que desear vivir eternamente?",
+        "semantic_query": "reflexiones sobre la vida eterna y su significado",
+        "intent_summary": "Explorar la idea de la vida eterna y su propósito.",
+        "editorial_requests": [],
+        "source_preference": null,
+        "ranking_preference": null,
+        "unsupported_runtime_constraints": [],
+        "supported_constraints": {
+          "year_min": null,
+          "year_max": null,
+          "prefer_recent": false
+        },
+        "search_queries": [
+          "vida eterna",
+          "filosofía de la inmortalidad",
+          "significado de la vida",
+          "reflexiones sobre la muerte",
+          "deseo de vivir para siempre",
+          "perspectivas sobre la eternidad",
+          "reflexiones sobre la vida eterna y su significado",
+          "reflexiones vida eterna"
+        ],
+        "concept_hints": [
+          "filosofía",
+          "espiritualidad"
+        ],
+        "clean_for_selection": "reflexiones sobre la vida eterna y su significado",
+        "notes": {
+          "used_ai_normalizer": true,
+          "looked_like_book_intent": false,
+          "semantic_overlap_vs_raw": 0
+        }
+      },
+      "selection_validation": {
+        "semantic_score": 0.95,
+        "ai_fit_score": 0.95,
+        "match_score": 0.85,
+        "validation_source": "amazon",
+        "constraint_reason": "Válido por evidencia bibliográfica",
+        "mode": "exact_gpt",
+        "source_label": "gpt_attempt_1",
+        "fallback_score": 152
+      },
+      "catalog_scope": "",
+      "contexto_2026": {},
+      "identity_sealed": true,
+      "_evidence": {
+        "titulo_input": "El sentido de la vida",
+        "autor_input": "Viktor Frankl",
+        "isbn_seed": "",
+        "isbn_discovered": "6761764625",
+        "apple": {
+          "ok": true,
+          "source": "apple_books",
+          "match_score": 0.675,
+          "match_details": {
+            "matched_title": "La voluntad de sentido",
+            "matched_author": "Viktor Frankl"
+          },
+          "synopsis": "En su conjunto, cada conferencia constituye una variación sobre el mismo tema: el hombre es un ser empeñado en la búsqueda de un sentido, del logos, y ayudar a encontrar ese sentido es un deber de la psicoterapia y el deber de la logoterapia. Se incluye asimismo un trabajo sobre la validación de este tipo de psicoterapia llevado a cabo por Elisabeth S. Lukas, del Instituto de Psicología Experimental y Aplicada de la Universidad de Viena.",
+          "synopsis_length": 441,
+          "covers": [
+            {
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/21/e6/30/21e63091-1ff4-ed69-9791-219fff97df83/1065216762.jpg/3000x3000bb.jpg"
+            },
+            {
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/21/e6/30/21e63091-1ff4-ed69-9791-219fff97df83/1065216762.jpg/1200x1200bb.jpg"
+            },
+            {
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/21/e6/30/21e63091-1ff4-ed69-9791-219fff97df83/1065216762.jpg/600x600bb.jpg"
+            },
+            {
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/21/e6/30/21e63091-1ff4-ed69-9791-219fff97df83/1065216762.jpg/100x100bb.jpg"
+            }
+          ],
+          "verified_identity": {
+            "titulo_real": "La voluntad de sentido",
+            "autor_completo": "Viktor Frankl",
+            "año": "2026",
+            "editorial": null,
+            "isbn": "6761764625",
+            "categorias": [
+              "Psicología",
+              "Libros",
+              "Salud, mente y cuerpo"
+            ],
+            "track_view_url": "https://books.apple.com/mx/book/la-voluntad-de-sentido/id6761764625?uo=4"
+          }
+        },
+        "google": {
+          "ok": false,
+          "reason": "no_good_match",
+          "source": "google_books"
+        },
+        "openlibrary": {
+          "ok": false,
+          "reason": "no_results",
+          "source": "openlibrary"
+        },
+        "amazon": {
+          "ok": true,
+          "source": "amazon",
+          "match_score": 0.85,
+          "covers": [
+            {
+              "size": "large",
+              "url": "https://images-na.ssl-images-amazon.com/images/P/6761764625.01.LZZZZZZZ.jpg"
+            }
+          ],
+          "synopsis": "",
+          "synopsis_length": 0,
+          "verified_identity": {
+            "isbn": "6761764625",
+            "titulo_real": null,
+            "autor_completo": null,
+            "año": null
+          }
+        },
+        "valid_covers": [
+          {
+            "source": "apple_books",
+            "size": "xxlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/21/e6/30/21e63091-1ff4-ed69-9791-219fff97df83/1065216762.jpg/3000x3000bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "xlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/21/e6/30/21e63091-1ff4-ed69-9791-219fff97df83/1065216762.jpg/1200x1200bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "large",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/21/e6/30/21e63091-1ff4-ed69-9791-219fff97df83/1065216762.jpg/600x600bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "medium",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/21/e6/30/21e63091-1ff4-ed69-9791-219fff97df83/1065216762.jpg/100x100bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "amazon",
+            "size": "large",
+            "url": "https://images-na.ssl-images-amazon.com/images/P/6761764625.01.LZZZZZZZ.jpg",
+            "valid": true
+          }
+        ],
+        "_sources_succeeded": [
+          "apple_books",
+          "amazon"
+        ],
+        "_sources_failed": [
+          "google_books:no_good_match",
+          "openlibrary:no_results"
+        ],
+        "_timing": {
+          "phase1_parallel_ms": 15734,
+          "phase2_isbn_chain_ms": 23716,
+          "cover_validation_ms": 1087,
+          "total_ms": 40537
+        }
+      },
+      "_evidence_synopsis": "",
+      "_evidence_verified_identity": {},
+      "_evidence_match_score": 0.85
+    }
+  }
+}

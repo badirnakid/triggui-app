@@ -1,0 +1,47 @@
+{
+  "ground_truth": "TEMA INFERIDO (el modelo no conoce este libro directamente, infiere desde similares):\n\nLa búsqueda de significado en la vida, especialmente en situaciones adversas y ante la muerte.\n\nVOZ INFERIDA:\nReflexiva y filosófica, con un enfoque en la psicología y la experiencia humana.\n\nLIBROS SIMILARES QUE COMPARTEN ADN CON ESTE:\n- \"El hombre en busca de sentido\" (Viktor Frankl): Escrito por el mismo autor, aborda la búsqueda de significado en la vida a través de experiencias en campos de concentración.\n- \"La vida tiene sentido\" (Victor Frankl): También del mismo autor, explora la importancia de encontrar un propósito en la vida.\n- \"El poder del ahora\" (Eckhart Tolle): Aunque es diferente en enfoque, trata sobre la búsqueda de significado y la conciencia en el presente.\n- \"La búsqueda del sentido\" (Irvin D. Yalom): Reflexiona sobre la búsqueda de significado en la vida, especialmente en el contexto de la muerte y la existencia.\n- \"Man's Search for Meaning\" (Viktor Frankl): El título original en inglés del libro de Frankl que también trata sobre la búsqueda de sentido.",
+  "grounding_source": "model_inference",
+  "book_identity_confidence": 0.675,
+  "verified_identity": {
+    "titulo_real": "El sentido de la vida",
+    "autor_completo": "Viktor Frankl",
+    "año": null
+  },
+  "inference_confidence": 0.9,
+  "book_known_directly": false,
+  "rich_inference": true,
+  "similar_books": [
+    {
+      "titulo": "El hombre en busca de sentido",
+      "autor": "Viktor Frankl",
+      "razon": "Escrito por el mismo autor, aborda la búsqueda de significado en la vida a través de experiencias en campos de concentración."
+    },
+    {
+      "titulo": "La vida tiene sentido",
+      "autor": "Victor Frankl",
+      "razon": "También del mismo autor, explora la importancia de encontrar un propósito en la vida."
+    },
+    {
+      "titulo": "El poder del ahora",
+      "autor": "Eckhart Tolle",
+      "razon": "Aunque es diferente en enfoque, trata sobre la búsqueda de significado y la conciencia en el presente."
+    },
+    {
+      "titulo": "La búsqueda del sentido",
+      "autor": "Irvin D. Yalom",
+      "razon": "Reflexiona sobre la búsqueda de significado en la vida, especialmente en el contexto de la muerte y la existencia."
+    },
+    {
+      "titulo": "Man's Search for Meaning",
+      "autor": "Viktor Frankl",
+      "razon": "El título original en inglés del libro de Frankl que también trata sobre la búsqueda de sentido."
+    }
+  ],
+  "resolution_path": [
+    "evidence_fetched_0sources",
+    "tier3_conf_0.90"
+  ],
+  "tier_reached": 3,
+  "cost_tokens": 576,
+  "cached_at": "2026-04-24T03:10:49.129Z"
+}

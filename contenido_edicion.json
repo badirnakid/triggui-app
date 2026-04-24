@@ -1,52 +1,52 @@
 {
   "libros": [
     {
-      "titulo": "El hombre en busca de sentido",
+      "titulo": "El sentido de la vida",
       "autor": "Viktor Frankl",
-      "tagline": "La vida tiene sentido, incluso en las circunstancias más difíciles.",
-      "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/3000x3000bb.jpg",
-      "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/09/15/89/0915893b-ced6-6de8-e9c3-72d1be745708/1013290224.jpg/3000x3000bb.jpg",
-      "isbn": "6450851734",
-      "titulo_es": "El hombre en busca de sentido",
+      "tagline": "Encuentra significado en la vida, incluso frente a la muerte.",
+      "portada": "https://images-na.ssl-images-amazon.com/images/P/6761764625.01.LZZZZZZZ.jpg",
+      "portada_url": "https://images-na.ssl-images-amazon.com/images/P/6761764625.01.LZZZZZZZ.jpg",
+      "isbn": "6761764625",
+      "titulo_es": "El sentido de la vida",
       "titulo_en": "Man's Search for Meaning",
-      "idioma_original": "es",
+      "idioma_original": "en",
       "dimension": "Bienestar",
       "punto": "Cero",
       "palabras": [
-        "esperanza",
-        "dignidad",
         "resiliencia",
-        "propósito"
+        "propósito",
+        "introspección",
+        "libertad"
       ],
       "palabras_en": [
         "freedom",
-        "dignity",
         "purpose",
-        "growth"
+        "suffering",
+        "meaning"
       ],
       "frases": [
-        "🧘 Respira hondo y recuerda: en cada sufrimiento hay una elección.",
-        "⏳ ¿Qué lecciones te ofrece tu sufrimiento en este momento?",
-        "🔭 Imagina un faro iluminando tu camino en la tormenta del sufrimiento.",
-        "🌌 La búsqueda de sentido da forma a nuestra existencia."
+        "🌓 Reflexiona sobre tu pasado y encuentra el significado oculto.",
+        "🏛 ¿Qué espacio ocupan el sufrimiento y la esperanza en tu vida?",
+        "🔭 Imagina un faro que brilla en medio de la tormenta de la vida.",
+        "🧘 El verdadero sentido de la vida se respira en la adversidad."
       ],
       "frases_en": [
-        "💫 Move forward, embracing the discomfort within your journey.",
-        "⏳ What choices will you make when confronted with pain?",
-        "🗺 Imagine a lighthouse, its beam cutting through the stormy night.",
-        "💡 In darkness, the search for meaning illuminates the path."
+        "💫 Step into the depths of your suffering and seek clarity.",
+        "⏳ What meaning can you uncover in your own trials?",
+        "🕯 Imagine purpose as a light breaking through the darkness.",
+        "🧘 Inhaling suffering, exhaling purpose — the cycle of life."
       ],
       "frases_og": [
-        "🎯 El sufrimiento puede ser un camino hacia la trascendencia.",
-        "🌱 Elige tu respuesta ante el dolor, y hallarás tu libertad.",
-        "🔮 ¿Qué significado buscas en medio de la adversidad?",
-        "🕊 La voluntad de sentido es la esencia de la experiencia humana."
+        "🔮 La búsqueda de significado florece en tiempos de adversidad.",
+        "🕊 Descubre el propósito en cada experiencia vivida.",
+        "📖 ¿Qué significado encuentras en tus momentos más difíciles?",
+        "🌓 Libertad interior: la clave para trascender el sufrimiento."
       ],
       "frases_og_en": [
-        "🎯 Life is not just what happens, but how we respond to it.",
-        "🌱 Choose your attitude in the face of suffering.",
-        "🔮 What if suffering holds the key to deeper meaning?",
-        "🕊 In adversity, meaning shines as a guiding light."
+        "🔮 Adversity shapes us, revealing our true character.",
+        "🕊 Embrace suffering. Let it guide you toward understanding.",
+        "📖 What if suffering holds the key to your purpose?",
+        "🌓 Meaning emerges from the depths of human experience."
       ],
       "colores": [
         "#A2CDC6",
@@ -62,10 +62,10 @@
       ],
       "fondo": "#CFD2D3",
       "tarjeta": {
-        "titulo": "La libertad de elegir nuestra actitud",
-        "parrafoTop": "[H]La vida, en su esencia, no es solo lo que nos sucede[/H], sino cómo elegimos responder a ello. En cada instante de sufrimiento, se abre la puerta a la libertad más profunda: la capacidad de decidir nuestra actitud frente a las circunstancias.",
-        "subtitulo": "¿Cómo enfrentar el sufrimiento con dignidad?",
-        "parrafoBot": "[H]La búsqueda de sentido se convierte en un faro en medio de la adversidad.[/H] Al encontrar un propósito, incluso el sufrimiento puede transformarse en un camino hacia la dignidad y el crecimiento personal.",
+        "titulo": "La libertad interior ante la adversidad",
+        "parrafoTop": "[H]En los momentos más oscuros, la búsqueda de significado se convierte[/H] en el faro que guía nuestra existencia. La adversidad no solo revela nuestro verdadero carácter, sino que también nos ofrece la oportunidad de encontrar un propósito más profundo.",
+        "subtitulo": "¿Cómo puede el sufrimiento llevarnos al sentido?",
+        "parrafoBot": "[H]El sufrimiento puede ser transformado en un puente hacia la libertad interior.[/H] Al elegir nuestra actitud frente a las circunstancias, descubrimos que el significado se encuentra en la experiencia humana más que en la mera existencia.",
         "style": {
           "accent": "#3D8FB8",
           "paper": "#CFD2D3",
@@ -74,10 +74,10 @@
         }
       },
       "tarjeta_base": {
-        "titulo": "La libertad de elegir nuestra actitud",
-        "parrafoTop": "[H]La vida, en su esencia, no es solo lo que nos sucede[/H], sino cómo elegimos responder a ello. En cada instante de sufrimiento, se abre la puerta a la libertad más profunda: la capacidad de decidir nuestra actitud frente a las circunstancias.",
-        "subtitulo": "¿Cómo enfrentar el sufrimiento con dignidad?",
-        "parrafoBot": "[H]La búsqueda de sentido se convierte en un faro en medio de la adversidad.[/H] Al encontrar un propósito, incluso el sufrimiento puede transformarse en un camino hacia la dignidad y el crecimiento personal.",
+        "titulo": "La libertad interior ante la adversidad",
+        "parrafoTop": "[H]En los momentos más oscuros, la búsqueda de significado se convierte[/H] en el faro que guía nuestra existencia. La adversidad no solo revela nuestro verdadero carácter, sino que también nos ofrece la oportunidad de encontrar un propósito más profundo.",
+        "subtitulo": "¿Cómo puede el sufrimiento llevarnos al sentido?",
+        "parrafoBot": "[H]El sufrimiento puede ser transformado en un puente hacia la libertad interior.[/H] Al elegir nuestra actitud frente a las circunstancias, descubrimos que el significado se encuentra en la experiencia humana más que en la mera existencia.",
         "style": {
           "accent": "#3D8FB8",
           "paper": "#CFD2D3",
@@ -86,10 +86,10 @@
         }
       },
       "tarjeta_presentacion": {
-        "titulo": "La libertad de elegir nuestra actitud",
-        "parrafoTop": "[H]La vida, en su esencia, no es solo lo que nos sucede[/H], sino cómo elegimos responder a ello. En cada instante de sufrimiento, se abre la puerta a la libertad más profunda: la capacidad de decidir nuestra actitud frente a las circunstancias.",
-        "subtitulo": "¿Cómo enfrentar el sufrimiento con dignidad?",
-        "parrafoBot": "[H]La búsqueda de sentido se convierte en un faro en medio de la adversidad.[/H] Al encontrar un propósito, incluso el sufrimiento puede transformarse en un camino hacia la dignidad y el crecimiento personal.",
+        "titulo": "La libertad interior ante la adversidad",
+        "parrafoTop": "[H]En los momentos más oscuros, la búsqueda de significado se convierte[/H] en el faro que guía nuestra existencia. La adversidad no solo revela nuestro verdadero carácter, sino que también nos ofrece la oportunidad de encontrar un propósito más profundo.",
+        "subtitulo": "¿Cómo puede el sufrimiento llevarnos al sentido?",
+        "parrafoBot": "[H]El sufrimiento puede ser transformado en un puente hacia la libertad interior.[/H] Al elegir nuestra actitud frente a las circunstancias, descubrimos que el significado se encuentra en la experiencia humana más que en la mera existencia.",
         "style": {
           "accent": "#3D8FB8",
           "paper": "#CFD2D3",
@@ -98,10 +98,10 @@
         }
       },
       "tarjeta_en": {
-        "titulo": "The Freedom to Choose Our Attitude",
-        "parrafoTop": "[H]Life, at its core, is not merely what happens to us[/H], but how we choose to respond. In every moment of suffering, a door opens to the deepest freedom: the ability to decide our attitude in the face of circumstances.",
-        "subtitulo": "How to Face Suffering with Dignity?",
-        "parrafoBot": "[H]The quest for meaning becomes a beacon amidst adversity.[/H] By finding a purpose, even suffering can transform into a pathway toward dignity and personal growth.",
+        "titulo": "Inner Freedom Amid Adversity",
+        "parrafoTop": "[H]In the darkest moments, the search for meaning becomes the beacon guiding our existence.[/H] Adversity not only reveals our true character but also offers us the chance to discover a deeper purpose.",
+        "subtitulo": "How can suffering lead us to meaning?",
+        "parrafoBot": "[H]Suffering can be transformed into a bridge toward inner freedom.[/H] By choosing our attitude in the face of circumstances, we find that meaning lies in the human experience rather than mere existence.",
         "style": {
           "accent": "#3D8FB8",
           "paper": "#CFD2D3",
@@ -110,10 +110,10 @@
         }
       },
       "tarjeta_base_en": {
-        "titulo": "The Freedom to Choose Our Attitude",
-        "parrafoTop": "[H]Life, at its core, is not merely what happens to us[/H], but how we choose to respond. In every moment of suffering, a door opens to the deepest freedom: the ability to decide our attitude in the face of circumstances.",
-        "subtitulo": "How to Face Suffering with Dignity?",
-        "parrafoBot": "[H]The quest for meaning becomes a beacon amidst adversity.[/H] By finding a purpose, even suffering can transform into a pathway toward dignity and personal growth.",
+        "titulo": "Inner Freedom Amid Adversity",
+        "parrafoTop": "[H]In the darkest moments, the search for meaning becomes the beacon guiding our existence.[/H] Adversity not only reveals our true character but also offers us the chance to discover a deeper purpose.",
+        "subtitulo": "How can suffering lead us to meaning?",
+        "parrafoBot": "[H]Suffering can be transformed into a bridge toward inner freedom.[/H] By choosing our attitude in the face of circumstances, we find that meaning lies in the human experience rather than mere existence.",
         "style": {
           "accent": "#3D8FB8",
           "paper": "#CFD2D3",
@@ -122,10 +122,10 @@
         }
       },
       "tarjeta_presentacion_en": {
-        "titulo": "The Freedom to Choose Our Attitude",
-        "parrafoTop": "[H]Life, at its core, is not merely what happens to us[/H], but how we choose to respond. In every moment of suffering, a door opens to the deepest freedom: the ability to decide our attitude in the face of circumstances.",
-        "subtitulo": "How to Face Suffering with Dignity?",
-        "parrafoBot": "[H]The quest for meaning becomes a beacon amidst adversity.[/H] By finding a purpose, even suffering can transform into a pathway toward dignity and personal growth.",
+        "titulo": "Inner Freedom Amid Adversity",
+        "parrafoTop": "[H]In the darkest moments, the search for meaning becomes the beacon guiding our existence.[/H] Adversity not only reveals our true character but also offers us the chance to discover a deeper purpose.",
+        "subtitulo": "How can suffering lead us to meaning?",
+        "parrafoBot": "[H]Suffering can be transformed into a bridge toward inner freedom.[/H] By choosing our attitude in the face of circumstances, we find that meaning lies in the human experience rather than mere existence.",
         "style": {
           "accent": "#3D8FB8",
           "paper": "#CFD2D3",
@@ -133,33 +133,33 @@
           "border": "#7C7E7F"
         }
       },
-      "videoUrl": "https://duckduckgo.com/?q=!ducky+site:youtube.com+El%20hombre%20en%20busca%20de%20sentido%20Viktor%20Frankl%20entrevista%20espa%C3%B1ol",
+      "videoUrl": "https://duckduckgo.com/?q=!ducky+site:youtube.com+El%20sentido%20de%20la%20vida%20Viktor%20Frankl%20entrevista%20espa%C3%B1ol",
       "videoUrl_en": "https://duckduckgo.com/?q=!ducky+site:youtube.com+Man's%20Search%20for%20Meaning%20Viktor%20Frankl%20interview",
       "_nucleus": {
         "book_identity": {
-          "titulo_es": "El hombre en busca de sentido",
+          "titulo_es": "El sentido de la vida",
           "titulo_en": "Man's Search for Meaning",
           "autor_completo": "Viktor Frankl",
-          "idioma_original": "es"
+          "idioma_original": "en"
         },
         "book_grounding_anchors": {
           "concepts": [
-            "la búsqueda de sentido en la vida",
-            "enfrentar el sufrimiento con dignidad",
-            "la libertad de elegir nuestra actitud ante el sufrimiento"
+            "la búsqueda de significado en situaciones adversas",
+            "encontrar propósito incluso ante la muerte",
+            "la importancia de la libertad interior"
           ],
           "key_terms": [
             "logoterapia",
-            "sentido de la vida",
-            "sufrimiento",
+            "significado",
             "experiencia humana",
-            "voluntad de sentido"
+            "adversidad",
+            "propósito"
           ],
-          "authorial_voice_notes": "Reflexiva y filosófica, con un enfoque en la psicología y la experiencia humana."
+          "authorial_voice_notes": "Reflexiva y filosófica, enfocada en la psicología y la experiencia humana, invitando a la introspección."
         },
         "lens_analysis": {
           "lens_provided": false,
-          "analysis": "El libro se centra en la experiencia humana y la búsqueda de significado en situaciones adversas, lo que sugiere una perspectiva más filosófica y psicológica que se alinea con la búsqueda de bienestar personal.",
+          "analysis": "El libro no se centra en un tema curatorial específico, sino que se enfoca en la experiencia personal y la búsqueda de significado, lo que lo hace único.",
           "decision": "dont_apply_book_is_about_something_else"
         },
         "visual_intent": {
@@ -177,140 +177,140 @@
         "surface_hints": {
           "dimension": "Bienestar",
           "punto_hawkins": "Cero",
-          "franja_ideal": "tarde"
+          "franja_ideal": "noche"
         },
         "card_es": {
-          "titulo": "La libertad de elegir nuestra actitud",
-          "parrafoTop": "La vida, en su esencia, no es solo lo que nos sucede, sino cómo elegimos responder a ello. En cada instante de sufrimiento, se abre la puerta a la libertad más profunda: la capacidad de decidir nuestra actitud frente a las circunstancias.",
-          "subtitulo": "¿Cómo enfrentar el sufrimiento con dignidad?",
-          "parrafoBot": "La búsqueda de sentido se convierte en un faro en medio de la adversidad. Al encontrar un propósito, incluso el sufrimiento puede transformarse en un camino hacia la dignidad y el crecimiento personal."
+          "titulo": "La libertad interior ante la adversidad",
+          "parrafoTop": "En los momentos más oscuros, la búsqueda de significado se convierte en el faro que guía nuestra existencia. La adversidad no solo revela nuestro verdadero carácter, sino que también nos ofrece la oportunidad de encontrar un propósito más profundo.",
+          "subtitulo": "¿Cómo puede el sufrimiento llevarnos al sentido?",
+          "parrafoBot": "El sufrimiento puede ser transformado en un puente hacia la libertad interior. Al elegir nuestra actitud frente a las circunstancias, descubrimos que el significado se encuentra en la experiencia humana más que en la mera existencia."
         },
         "card_en": {
-          "titulo": "The Freedom to Choose Our Attitude",
-          "parrafoTop": "Life, at its core, is not merely what happens to us, but how we choose to respond. In every moment of suffering, a door opens to the deepest freedom: the ability to decide our attitude in the face of circumstances.",
-          "subtitulo": "How to Face Suffering with Dignity?",
-          "parrafoBot": "The quest for meaning becomes a beacon amidst adversity. By finding a purpose, even suffering can transform into a pathway toward dignity and personal growth."
+          "titulo": "Inner Freedom Amid Adversity",
+          "parrafoTop": "In the darkest moments, the search for meaning becomes the beacon guiding our existence. Adversity not only reveals our true character but also offers us the chance to discover a deeper purpose.",
+          "subtitulo": "How can suffering lead us to meaning?",
+          "parrafoBot": "Suffering can be transformed into a bridge toward inner freedom. By choosing our attitude in the face of circumstances, we find that meaning lies in the human experience rather than mere existence."
         },
         "emotional_words_es": [
-          "esperanza",
-          "dignidad",
           "resiliencia",
-          "propósito"
+          "propósito",
+          "introspección",
+          "libertad"
         ],
         "emotional_words_en": [
           "freedom",
-          "dignity",
           "purpose",
-          "growth"
+          "suffering",
+          "meaning"
         ],
         "og_phrases_es": [
-          "🎯 El sufrimiento puede ser un camino hacia la trascendencia.",
-          "🌱 Elige tu respuesta ante el dolor, y hallarás tu libertad.",
-          "🔮 ¿Qué significado buscas en medio de la adversidad?",
-          "🕊 La voluntad de sentido es la esencia de la experiencia humana."
+          "🔮 La búsqueda de significado florece en tiempos de adversidad.",
+          "🕊 Descubre el propósito en cada experiencia vivida.",
+          "📖 ¿Qué significado encuentras en tus momentos más difíciles?",
+          "🌓 Libertad interior: la clave para trascender el sufrimiento."
         ],
         "og_phrases_en": [
-          "🎯 Life is not just what happens, but how we respond to it.",
-          "🌱 Choose your attitude in the face of suffering.",
-          "🔮 What if suffering holds the key to deeper meaning?",
-          "🕊 In adversity, meaning shines as a guiding light."
+          "🔮 Adversity shapes us, revealing our true character.",
+          "🕊 Embrace suffering. Let it guide you toward understanding.",
+          "📖 What if suffering holds the key to your purpose?",
+          "🌓 Meaning emerges from the depths of human experience."
         ],
         "edition_blocks_es": [
           {
             "gesture_type": "instruccion_sensorial",
-            "sensory_anchor": "respiracion",
-            "phrase": "🧘 Respira hondo y recuerda: en cada sufrimiento hay una elección."
+            "sensory_anchor": "tiempo",
+            "phrase": "🌓 Reflexiona sobre tu pasado y encuentra el significado oculto."
           },
           {
             "gesture_type": "pregunta_directa",
-            "sensory_anchor": "tiempo",
-            "phrase": "⏳ ¿Qué lecciones te ofrece tu sufrimiento en este momento?"
+            "sensory_anchor": "espacio",
+            "phrase": "🏛 ¿Qué espacio ocupan el sufrimiento y la esperanza en tu vida?"
           },
           {
             "gesture_type": "imagen_concreta",
             "sensory_anchor": "vista",
-            "phrase": "🔭 Imagina un faro iluminando tu camino en la tormenta del sufrimiento."
+            "phrase": "🔭 Imagina un faro que brilla en medio de la tormenta de la vida."
           },
           {
             "gesture_type": "aforismo_autorial",
-            "sensory_anchor": "espacio",
-            "phrase": "🌌 La búsqueda de sentido da forma a nuestra existencia."
+            "sensory_anchor": "respiracion",
+            "phrase": "🧘 El verdadero sentido de la vida se respira en la adversidad."
           }
         ],
         "edition_blocks_en": [
           {
             "gesture_type": "sensory_instruction",
             "sensory_anchor": "movement",
-            "phrase": "💫 Move forward, embracing the discomfort within your journey."
+            "phrase": "💫 Step into the depths of your suffering and seek clarity."
           },
           {
             "gesture_type": "direct_question",
             "sensory_anchor": "time",
-            "phrase": "⏳ What choices will you make when confronted with pain?"
+            "phrase": "⏳ What meaning can you uncover in your own trials?"
           },
           {
             "gesture_type": "concrete_image",
-            "sensory_anchor": "space",
-            "phrase": "🗺 Imagine a lighthouse, its beam cutting through the stormy night."
+            "sensory_anchor": "light",
+            "phrase": "🕯 Imagine purpose as a light breaking through the darkness."
           },
           {
             "gesture_type": "authorial_aphorism",
-            "sensory_anchor": "light",
-            "phrase": "💡 In darkness, the search for meaning illuminates the path."
+            "sensory_anchor": "breath",
+            "phrase": "🧘 Inhaling suffering, exhaling purpose — the cycle of life."
           }
         ],
         "confidence": {
-          "book_grounding": 0.81,
+          "book_grounding": 0.68,
           "voice_authenticity": 0.93,
           "specificity": 0.89,
-          "grounding_judge": 1,
-          "combined": 0.91,
+          "grounding_judge": 0.9,
+          "combined": 0.84,
           "signals": {
-            "bookIdentityConfidence": 0.8075,
+            "bookIdentityConfidence": 0.675,
             "voiceSignal": 0.9249999999999999,
-            "specificitySignal": 0.8944444444444444,
-            "judgeScore": 1
+            "specificitySignal": 0.8923076923076922,
+            "judgeScore": 0.9
           }
         }
       },
       "_grounding": {
         "source": "model_inference",
-        "tier_reached": 2.5,
-        "book_identity_confidence": 0.8075,
+        "tier_reached": 3,
+        "book_identity_confidence": 0.675,
         "resolution_path": [
           "evidence_fetched_0sources",
-          "tier3_conf_0.95"
+          "tier3_conf_0.90"
         ],
         "verified_identity": {
-          "titulo_real": "El hombre en busca de sentido",
+          "titulo_real": "El sentido de la vida",
           "autor_completo": "Viktor Frankl",
           "año": null
         },
         "similar_books": [
           {
-            "titulo": "El arte de la felicidad",
-            "autor": "Dalai Lama y Howard Cutler",
-            "razon": "Explora la búsqueda de la felicidad y el sentido de la vida desde una perspectiva filosófica y psicológica."
-          },
-          {
-            "titulo": "Man's Search for Meaning",
+            "titulo": "El hombre en busca de sentido",
             "autor": "Viktor Frankl",
-            "razon": "Es la versión en inglés del mismo libro, que aborda el sentido de la vida a través de la experiencia en campos de concentración."
+            "razon": "Escrito por el mismo autor, aborda la búsqueda de significado en la vida a través de experiencias en campos de concentración."
           },
           {
-            "titulo": "La conquista de la felicidad",
-            "autor": "Bertrand Russell",
-            "razon": "Reflexiona sobre la búsqueda de la felicidad y el sentido en la vida desde un enfoque filosófico."
+            "titulo": "La vida tiene sentido",
+            "autor": "Victor Frankl",
+            "razon": "También del mismo autor, explora la importancia de encontrar un propósito en la vida."
           },
           {
             "titulo": "El poder del ahora",
             "autor": "Eckhart Tolle",
-            "razon": "Se centra en la importancia de vivir el presente y encontrar significado en la existencia."
+            "razon": "Aunque es diferente en enfoque, trata sobre la búsqueda de significado y la conciencia en el presente."
           },
           {
-            "titulo": "El hombre en busca de sí mismo",
-            "autor": "Rollo May",
-            "razon": "Aborda la búsqueda de identidad y sentido en la vida, similar a los temas de Frankl."
+            "titulo": "La búsqueda del sentido",
+            "autor": "Irvin D. Yalom",
+            "razon": "Reflexiona sobre la búsqueda de significado en la vida, especialmente en el contexto de la muerte y la existencia."
+          },
+          {
+            "titulo": "Man's Search for Meaning",
+            "autor": "Viktor Frankl",
+            "razon": "El título original en inglés del libro de Frankl que también trata sobre la búsqueda de sentido."
           }
         ],
         "from_cache": false
@@ -320,13 +320,13 @@
           "grounded_score": 1,
           "uses_book_specific_concepts": true,
           "could_apply_to_any_book": false,
-          "reason": "The generated content directly reflects the themes of seeking meaning in life, especially in adversity, which aligns perfectly with the inferred ground truth. Phrases like 'la búsqueda de sentido' and 'la capacidad de decidir nuestra actitud frente a las circunstancias' are specific to the book's themes and concepts, demonstrating a deep connection to the philosophical and psychological exploratio"
+          "reason": "The generated content is deeply anchored in the themes of the book, specifically the search for meaning in adversity and the transformative power of suffering. Phrases like 'la búsqueda de significado' and 'libertad interior' directly reflect the core concepts inferred from the ground truth, aligning closely with the philosophical and psychological exploration of human experience in difficult life"
         },
         "en": {
-          "grounded_score": 1,
+          "grounded_score": 0.8,
           "uses_book_specific_concepts": true,
           "could_apply_to_any_book": false,
-          "reason": "The content directly addresses the themes of finding meaning in suffering and the importance of attitude in adversity, which are central to the inferred theme of the book. Phrases like 'the quest for meaning becomes a beacon amidst adversity' and 'the ability to decide our attitude in the face of circumstances' specifically reflect the philosophical and psychological exploration of life's meaning,"
+          "reason": "The content strongly reflects the themes of seeking meaning in adversity and the transformative power of suffering, which are central to the inferred ground truth. Phrases like 'the search for meaning becomes the beacon guiding our existence' and 'suffering can be transformed into a bridge toward inner freedom' directly align with the philosophical and psychological exploration found in similar to"
         }
       },
       "_voice_verdict": {
@@ -335,12 +335,12 @@
         "es": {
           "verdict": "pagina",
           "confidence": 0.9,
-          "reason": "Voz directa y reflexiones en primera persona sobre la actitud.",
-          "elapsed_ms": 581,
+          "reason": "Voz directa y reflexiones sobre la experiencia humana.",
+          "elapsed_ms": 754,
           "usage": {
-            "prompt_tokens": 383,
-            "completion_tokens": 28,
-            "total_tokens": 411,
+            "prompt_tokens": 381,
+            "completion_tokens": 26,
+            "total_tokens": 407,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -356,13 +356,13 @@
         },
         "en": {
           "verdict": "pagina",
-          "confidence": 0.9,
-          "reason": "Voz directa y reflexiones en primera persona sobre el sufrimiento.",
-          "elapsed_ms": 689,
+          "confidence": 0.8,
+          "reason": "Tono reflexivo y directo, sin referencias externas al libro.",
+          "elapsed_ms": 842,
           "usage": {
-            "prompt_tokens": 368,
-            "completion_tokens": 29,
-            "total_tokens": 397,
+            "prompt_tokens": 362,
+            "completion_tokens": 28,
+            "total_tokens": 390,
             "prompt_tokens_details": {
               "cached_tokens": 0,
               "audio_tokens": 0
@@ -378,8 +378,8 @@
         },
         "circuit_tripped": false,
         "should_reextract": false,
-        "total_tokens": 808,
-        "total_ms": 689
+        "total_tokens": 797,
+        "total_ms": 842
       },
       "_visual": {
         "synthesis_inputs": {
@@ -434,40 +434,40 @@
         "distinct_types_en": 4
       },
       "_quality_warning": null,
-      "_inputs_snapshot": "2026-04-22T23-22-26",
+      "_inputs_snapshot": "2026-04-24T03-10-21",
       "_crono": {
-        "dia": "miércoles",
-        "hora": 17,
-        "franja": "tarde",
-        "energia": 0.6,
-        "modo": "meseta_media",
-        "descripcion_dia": "Miércoles es meseta. El contenido puede empezar a retar suavemente.",
-        "descripcion_franja": "Tarde: pensamiento analítico. Matices, profundidad, contexto."
+        "dia": "jueves",
+        "hora": 21,
+        "franja": "noche",
+        "energia": 1.2,
+        "modo": "ejecucion_pico",
+        "descripcion_dia": "Jueves 9-11 AM es el peak de ejecución. Contenido directo y accionable.",
+        "descripcion_franja": "Noche: melatonina en ascenso. Reflexivo, contemplativo, sin urgencia."
       },
       "_metrics": {
-        "tokens_total": 9760,
+        "tokens_total": 9698,
         "tokens_by_phase": {
-          "grounding": 581,
-          "anchors": 2305,
+          "grounding": 576,
+          "anchors": 2285,
           "palette": 0,
-          "content_es": 2471,
-          "judge_es": 860,
-          "content_en": 1907,
-          "judge_en": 828,
-          "voice": 808
+          "content_es": 2477,
+          "judge_es": 855,
+          "content_en": 1891,
+          "judge_en": 817,
+          "voice": 797
         },
-        "elapsed_ms_total": 50931,
+        "elapsed_ms_total": 44771,
         "elapsed_ms_by_phase": {
-          "grounding": 30724,
-          "anchors": 4415,
+          "grounding": 27520,
+          "anchors": 4575,
           "palette": 1,
           "cover_fallback": 0,
-          "content_es": 4749,
-          "judge_es": 1864,
-          "content_en": 6026,
-          "judge_en": 2462,
-          "voice": 689,
-          "post_processing": 5
+          "content_es": 5353,
+          "judge_es": 1787,
+          "content_en": 3493,
+          "judge_en": 1197,
+          "voice": 843,
+          "post_processing": 6
         },
         "llm_calls_count": 8,
         "models_used": [
@@ -477,7 +477,7 @@
         "final_validation": "pass"
       },
       "_manual": true,
-      "_manual_generated_at": "2026-04-22T23:23:17.141Z"
+      "_manual_generated_at": "2026-04-24T03:11:06.386Z"
     }
   ]
 }
