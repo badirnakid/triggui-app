@@ -21,6 +21,16 @@
       "timestamp": "2026-04-26T13:38:25.909Z",
       "trigger_input": "quiero un libro que me ayude a entender mejor el dinero",
       "selected_via": "discover_live_google_books"
+    },
+    {
+      "titulo": "Liderazgo Consciente y Acción Transformadora",
+      "autor": "DORALY. MAYORGA, Jose Manuel Vega Baez",
+      "slug": "liderazgo-consciente-y-accion-transformadora",
+      "titulo_normalizado": "liderazgo consciente y accion transformadora",
+      "autor_normalizado": "doraly mayorga jose manuel vega baez",
+      "timestamp": "2026-04-26T13:44:54.978Z",
+      "trigger_input": "algo sobre liderazgo consciente",
+      "selected_via": "discover_live_google_books"
     }
   ],
   "_note": "FIFO ring de últimos 30 libros generados por selección automática (constrained o discover). Filtro pre-rerank en validate-book.js. Inicializa vacío y se rellena con cada run exitoso. Si se borra, el sistema arranca limpio sin daño."
