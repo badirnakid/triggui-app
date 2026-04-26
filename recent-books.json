@@ -1,6 +1,17 @@
 {
   "version": "3.4",
   "max_size": 30,
-  "books": [],
+  "books": [
+    {
+      "titulo": "Deep Work: Rules for Focused Success in a Distracted World",
+      "autor": "Cal Newport",
+      "slug": "deep-work-rules-for-focused-success-in-a-distracted-world",
+      "titulo_normalizado": "deep work rules for focused success in a distracted world",
+      "autor_normalizado": "cal newport",
+      "timestamp": "2026-04-26T03:05:59.491Z",
+      "trigger_input": "Se me pasa muy rápido el tiempo cuando estoy trabajando",
+      "selected_via": "discover_trigger"
+    }
+  ],
   "_note": "FIFO ring de últimos 30 libros generados por selección automática (constrained o discover). Filtro pre-rerank en validate-book.js. Inicializa vacío y se rellena con cada run exitoso. Si se borra, el sistema arranca limpio sin daño."
 }

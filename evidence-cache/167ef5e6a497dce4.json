@@ -32,10 +32,10 @@
     "amazon:skipped"
   ],
   "_timing": {
-    "phase1_parallel_ms": 23721,
+    "phase1_parallel_ms": 23711,
     "phase2_isbn_chain_ms": 0,
-    "cover_validation_ms": 0,
-    "total_ms": 23721
+    "cover_validation_ms": 1,
+    "total_ms": 23712
   },
-  "_cached_at": "2026-04-22T22:47:19.038Z"
+  "_cached_at": "2026-04-26T03:06:23.458Z"
 }
