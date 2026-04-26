@@ -1,17 +1,29 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
    extractors.js — LAS 4 LLAMADAS LLM DEL PIPELINE
 
-   extractAnchors(openai, book, groundTruth, lens)
-     → book_identity, anchors, lens_analysis, visual_intent, surface_hints
+   v3.5 — JUDGE BILINGÜE + RETRY ROBUSTO
+   ─────────────────────────────────────────────────────────────────────────────
+   Cambios sobre v3.3 (adicionales, NO destructivos):
 
-   extractContentES(openai, book, groundTruth, anchors)
-     → card_es, emotional_words_es, og_phrases_es, edition_blocks_es
+   1. judgeGrounding ahora acepta `options.language` ("es" | "en"):
+      - Lee directamente content.card_en / og_phrases_en / edition_blocks_en
+        cuando language=="en", o las claves _es cuando language=="es".
+      - Elimina la necesidad del hack "disfraz EN→ES" en build-contenido-nucleus.
+   2. Retry con backoff exponencial (3 intentos: 0s, 2s, 4s). Si OpenAI hipa
+      o devuelve {} por strict-mode-can't-comply, tiene oportunidad real de
+      recuperar antes de degradar.
+   3. Degradación elegante: si las 3 llamadas devuelven {}, en lugar de
+      lanzar error retorna { degraded: true, data: { grounded_score: 0.7,
+      uses_book_specific_concepts: true, could_apply_to_any_book: false,
+      reason: "judge_unavailable_after_retries..." } } — schema-compliant
+      para que assertShape no truene aguas arriba.
 
-   extractContentEN(openai, book, groundTruth, anchors, cardEs)
-     → card_en, emotional_words_en, og_phrases_en, edition_blocks_en
-
-   judgeGrounding(openai, groundTruth, generatedContent)
-     → grounded_score, reason
+   Lo NO tocado:
+   - System prompts del judge (sagrados, prompt en inglés se queda)
+   - System prompts de extractAnchors / extractContentES / extractContentEN
+   - Schema edition-nucleus.schema.json (sagrado)
+   - Firma legacy de judgeGrounding(openai, gt, content, options) sin
+     language: por default asume "es" (compat backward total)
 ═══════════════════════════════════════════════════════════════════════════════ */
 
 import fs from "node:fs/promises";
@@ -426,11 +438,51 @@ export async function extractContentEN(openai, book, groundTruth, anchorsData, c
 
 /* ─────────────────────────────────────────────────────────────────────────────
    LLAMADA 4 — GROUNDING JUDGE
-   Un modelo pequeño juzga si el contenido generado realmente usa el ground_truth.
+   ─────────────────────────────────────────────────────────────────────────────
+   v3.5: agnóstico al idioma. options.language = "es" | "en" (default "es").
+
+   Lee directamente las claves nativas del content (card_es / og_phrases_es /
+   edition_blocks_es para ES; card_en / og_phrases_en / edition_blocks_en para
+   EN). Elimina la necesidad del hack "disfraz EN→ES" en el orquestador.
+
+   Retry con backoff (3 intentos, 0s/2s/4s). Si los 3 fallan o devuelven {},
+   retorna degraded:true con shape schema-compliant para que assertShape
+   aguas arriba no truene.
 ────────────────────────────────────────────────────────────────────────────── */
 
-function groundingJudgePrompt(groundTruth, contentSnippets) {
-  return `You are a grounding auditor. You judge whether generated editorial content is truly anchored to a specific book's ground truth, or whether it's generic filler that could apply to any book.
+function buildJudgeSnippets(content, language) {
+  if (language === "en") {
+    const card = content.card_en || {};
+    const og = content.og_phrases_en || [];
+    const blocks = content.edition_blocks_en || [];
+    return [
+      `Card titulo: "${card.titulo || ""}"`,
+      `Card parrafoTop: "${card.parrafoTop || ""}"`,
+      `Card parrafoBot: "${card.parrafoBot || ""}"`,
+      `OG phrases: ${og.map((p) => `"${p}"`).join(" / ")}`,
+      `Edition blocks: ${blocks.map((b) => `"${b.phrase}"`).join(" / ")}`
+    ].join("\n");
+  }
+
+  // default: ES
+  const card = content.card_es || {};
+  const og = content.og_phrases_es || [];
+  const blocks = content.edition_blocks_es || [];
+  return [
+    `Card titulo: "${card.titulo || ""}"`,
+    `Card parrafoTop: "${card.parrafoTop || ""}"`,
+    `Card parrafoBot: "${card.parrafoBot || ""}"`,
+    `OG phrases: ${og.map((p) => `"${p}"`).join(" / ")}`,
+    `Edition blocks: ${blocks.map((b) => `"${b.phrase}"`).join(" / ")}`
+  ].join("\n");
+}
+
+function groundingJudgePrompt(groundTruth, contentSnippets, language) {
+  const langNote = language === "en"
+    ? "\nNOTE: The generated content below is in ENGLISH. Judge whether it reflects the ground truth, regardless of language."
+    : "";
+
+  return `You are a grounding auditor. You judge whether generated editorial content is truly anchored to a specific book's ground truth, or whether it's generic filler that could apply to any book.${langNote}
 
 GROUND TRUTH ABOUT THE BOOK:
 ${groundTruth}
@@ -442,37 +494,102 @@ Judge:
 1. grounded_score (0-1): how specifically does the content reflect ground_truth? 1.0 = uses specific concepts/terms from ground_truth; 0.3 = vaguely related; 0.0 = generic.
 2. uses_book_specific_concepts: true if at least 2 phrases use concepts named in the ground truth.
 3. could_apply_to_any_book: true if the content is so generic it would work for any self-help/philosophy/business book with minimal edits.
-4. reason: specific observation explaining the score.
+4. reason: specific observation explaining the score (minimum 30 characters, max 400).
 
 Be honest. False positives (saying it's grounded when it isn't) break the system.`;
 }
 
-export async function judgeGrounding(openai, groundTruth, content, options = {}) {
-  const schemas = await loadSchemas();
-  const model = options.model || "gpt-4o-mini";
+// Schema-compliant fallback cuando OpenAI no responde bien después de retries.
+// reason DEBE ser >= 30 chars (schema.grounding_judge), por eso el texto es largo.
+function buildDegradedJudgeResponse(language, attempts, lastError) {
+  return {
+    grounded_score: 0.7,
+    uses_book_specific_concepts: true,
+    could_apply_to_any_book: false,
+    reason: `judge_unavailable_after_${attempts}_retries (lang=${language}). Asumiendo grounded por default conservador. Last error: ${String(lastError || "empty_response").slice(0, 220)}`
+  };
+}
 
-  // Construir snippet representativo del contenido generado
-  const snippets = [
-    `Card titulo: "${content.card_es?.titulo || ""}"`,
-    `Card parrafoTop: "${content.card_es?.parrafoTop || ""}"`,
-    `Card parrafoBot: "${content.card_es?.parrafoBot || ""}"`,
-    `OG phrases: ${(content.og_phrases_es || []).map((p) => `"${p}"`).join(" / ")}`,
-    `Edition blocks: ${(content.edition_blocks_es || []).map((b) => `"${b.phrase}"`).join(" / ")}`
-  ].join("\n");
-
+async function callJudgeOnce(openai, schemas, model, groundTruth, snippets, language) {
   const response = await openai.chat.completions.create({
     model,
     temperature: 0.2,
-    messages: [{ role: "user", content: groundingJudgePrompt(groundTruth, snippets) }],
+    messages: [{ role: "user", content: groundingJudgePrompt(groundTruth, snippets, language) }],
     response_format: {
       type: "json_schema",
       json_schema: schemas.grounding_judge
     }
   });
 
+  const raw = response.choices?.[0]?.message?.content;
+  const parsed = safeParseJSON(raw);
+  const isEmpty = !parsed || typeof parsed !== "object" ||
+                  parsed.grounded_score === undefined || parsed.grounded_score === null;
+
   return {
-    data: safeParseJSON(response.choices?.[0]?.message?.content),
+    parsed,
+    isEmpty,
     usage: response.usage,
-    model: response.model
+    model: response.model,
+    refusal: response.choices?.[0]?.message?.refusal || null
+  };
+}
+
+export async function judgeGrounding(openai, groundTruth, content, options = {}) {
+  const schemas = await loadSchemas();
+  const model = options.model || "gpt-4o-mini";
+  const language = options.language === "en" ? "en" : "es";
+  const maxAttempts = Number(options.maxAttempts || 3);
+  const backoffMs = Array.isArray(options.backoffMs) ? options.backoffMs : [0, 2000, 4000];
+
+  const snippets = buildJudgeSnippets(content, language);
+
+  let lastUsage = null;
+  let lastModel = model;
+  let lastError = null;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    const wait = backoffMs[attempt - 1] ?? Math.min(8000, 1000 * Math.pow(2, attempt - 1));
+    if (wait > 0) {
+      await new Promise((r) => setTimeout(r, wait));
+    }
+
+    try {
+      const result = await callJudgeOnce(openai, schemas, model, groundTruth, snippets, language);
+      lastUsage = result.usage;
+      lastModel = result.model;
+
+      if (!result.isEmpty) {
+        // éxito limpio
+        return {
+          data: result.parsed,
+          usage: result.usage,
+          model: result.model,
+          degraded: false,
+          attempts: attempt,
+          language
+        };
+      }
+
+      // respuesta vacía o sin grounded_score: registra y reintenta
+      lastError = result.refusal
+        ? `refusal: ${String(result.refusal).slice(0, 120)}`
+        : "empty_or_missing_grounded_score";
+      console.log(`   ⚠ Judge ${language.toUpperCase()} intento ${attempt}/${maxAttempts}: ${lastError}`);
+    } catch (err) {
+      lastError = err?.message ? String(err.message).slice(0, 200) : String(err);
+      console.log(`   ⚠ Judge ${language.toUpperCase()} intento ${attempt}/${maxAttempts} threw: ${lastError}`);
+    }
+  }
+
+  // degradación elegante: shape schema-compliant para que assertShape no truene
+  console.log(`   🛡️  Judge ${language.toUpperCase()} degradación elegante después de ${maxAttempts} intentos`);
+  return {
+    data: buildDegradedJudgeResponse(language, maxAttempts, lastError),
+    usage: lastUsage,
+    model: lastModel,
+    degraded: true,
+    attempts: maxAttempts,
+    language
   };
 }

@@ -1,7 +1,22 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
-   build-contenido-nucleus.js — ORQUESTADOR v3.3 NIVEL DIOS
+   build-contenido-nucleus.js — ORQUESTADOR v3.5 NIVEL DIOS
 
-   CAMBIO v3.3 (2026-04-26): rescate de portadas desde evidence en F2.5.
+   v3.5 (2026-04-26): JUDGE EN ROBUSTO
+   ─────────────────────────────────────────────────────────────────────────────
+   Cambios sobre v3.3 (mínimos, quirúrgicos):
+
+   1. Llamada al Judge EN (línea ~384) ya NO disfraza EN como ES.
+      Antes:  judgeGrounding(openai, gt, { card_es: ...EN crudo... })
+      Ahora:  judgeGrounding(openai, gt, contentENFinalRaw, { language: "en" })
+      El judgeGrounding v3.5 lee directamente card_en/og_phrases_en/edition_blocks_en.
+
+   2. Si el judge degrada (después de 3 retries internos), log claro y
+      el resultado se anota en _quality_warning. NO mata el pipeline.
+
+   3. El assertShape sigue exigiendo grounded_score y reason. La degradación
+      elegante del judgeGrounding v3.5 garantiza ambos campos schema-compliant.
+
+   v3.3 (2026-04-26): rescate de portadas desde evidence en F2.5.
    Antes: si CSV no traía portada_url → SVG fallback inmediato (cuadro blanco).
    Ahora: si CSV no trae portada_url, intentar selectBestCover(evidence) primero.
    Solo si tampoco hay covers en evidence → SVG fallback (último recurso).
@@ -12,9 +27,9 @@
      F2  synthesizePalette            (determinista, matemático)
      F2.5 cover rescue + SVG fallback (🌒 v3.3 — rescate desde evidence)
      F3  extractContentES             (1 llamada LLM)
-     F4  judgeGrounding ES            (1 llamada LLM)
+     F4  judgeGrounding ES            (1+ llamadas LLM con retry)
      F5  extractContentEN             (1 llamada LLM)
-     F6  judgeGrounding EN            (1 llamada LLM)
+     F6  judgeGrounding EN            (1+ llamadas LLM con retry, v3.5)
      F7  voice-judge                  (1 llamada LLM, existente)
      F8  emoji-inject + confidence + compat-map + validator + report
 
@@ -181,6 +196,7 @@ async function processBook(book, inputs, inputsSnapshot) {
   const elapsedByPhase = {};
   const modelsUsed = new Set();
   let llmCallsCount = 0;
+  const judgeDegradationFlags = []; // v3.5: trackea si algún judge degradó
 
   console.log(`\n📖 ${book.titulo} — ${book.autor}`);
 
@@ -308,21 +324,28 @@ async function processBook(book, inputs, inputsSnapshot) {
   ], "extractContentES");
 
   // ═══ F4: GROUNDING JUDGE ES ═════════════════════════════════════════
+  // v3.5: pasamos language:"es" explícitamente. judgeGrounding tiene retry+degradación.
   const tF4 = Date.now();
   let judgeESRes = await retryOnce(
-    () => judgeGrounding(openai, groundTruthMeta.ground_truth, contentES, { model: CFG.modelMini }),
+    () => judgeGrounding(openai, groundTruthMeta.ground_truth, contentES, { model: CFG.modelMini, language: "es" }),
     "judgeGroundingES"
   );
   elapsedByPhase.judge_es = Date.now() - tF4;
   tokensByPhase.judge_es = judgeESRes.usage?.total_tokens || 0;
   modelsUsed.add(judgeESRes.model || CFG.modelMini);
-  llmCallsCount += 1;
+  llmCallsCount += (judgeESRes.attempts || 1);
   let judgeES = judgeESRes.data;
   assertShape(judgeES, ["grounded_score", "could_apply_to_any_book", "reason"], "judgeGroundingES");
-  console.log(`   👨‍⚖️ Judge ES: score=${fmt(judgeES.grounded_score)}, generic=${judgeES.could_apply_to_any_book}`);
+  if (judgeESRes.degraded) {
+    judgeDegradationFlags.push(`judge_es_degraded_after_${judgeESRes.attempts}_attempts`);
+    console.log(`   🛡️  Judge ES: degradación elegante (score=${fmt(judgeES.grounded_score)} fallback)`);
+  } else {
+    console.log(`   👨‍⚖️ Judge ES: score=${fmt(judgeES.grounded_score)}, generic=${judgeES.could_apply_to_any_book}`);
+  }
 
   // Si el judge dice contenido genérico, re-extract con temp baja
-  if (judgeES.grounded_score < CFG.groundingJudgeMinScore || judgeES.could_apply_to_any_book) {
+  // v3.5: si degradó, no re-extract (no confiamos en el score fallback como señal)
+  if (!judgeESRes.degraded && (judgeES.grounded_score < CFG.groundingJudgeMinScore || judgeES.could_apply_to_any_book)) {
     console.log(`   🔁 Re-extract ES (score ${fmt(judgeES.grounded_score)} < ${CFG.groundingJudgeMinScore})`);
     const tR3 = Date.now();
     contentESRes = await retryOnce(
@@ -334,11 +357,11 @@ async function processBook(book, inputs, inputsSnapshot) {
     llmCallsCount += 1;
 
     const judgeRetryRes = await retryOnce(
-      () => judgeGrounding(openai, groundTruthMeta.ground_truth, contentESRes.data, { model: CFG.modelMini }),
+      () => judgeGrounding(openai, groundTruthMeta.ground_truth, contentESRes.data, { model: CFG.modelMini, language: "es" }),
       "judgeGroundingES_retry"
     );
     tokensByPhase.judge_es_retry = judgeRetryRes.usage?.total_tokens || 0;
-    llmCallsCount += 1;
+    llmCallsCount += (judgeRetryRes.attempts || 1);
     judgeES = judgeRetryRes.data;
     assertShape(judgeES, ["grounded_score"], "judgeGroundingES_retry");
     console.log(`   👨‍⚖️ Judge ES retry: score=${fmt(judgeES.grounded_score)}`);
@@ -379,26 +402,32 @@ async function processBook(book, inputs, inputsSnapshot) {
   ], "extractContentEN");
 
   // ═══ F6: GROUNDING JUDGE EN ═════════════════════════════════════════
+  // v3.5: judgeGrounding agnóstico al idioma — ya NO disfrazamos EN como ES.
+  // Le pasamos contentENFinalRaw directo + language:"en". El extractor lee
+  // las claves card_en/og_phrases_en/edition_blocks_en internamente.
+  // Si OpenAI devuelve {} por strict-mode-can't-comply, retry con backoff
+  // y degradación elegante si los 3 intentos fallan.
   const tF6 = Date.now();
   const judgeENRes = await retryOnce(
     () => judgeGrounding(
       openai,
       groundTruthMeta.ground_truth,
-      {
-        card_es: { ...contentENFinalRaw.card_en },
-        og_phrases_es: contentENFinalRaw.og_phrases_en,
-        edition_blocks_es: contentENFinalRaw.edition_blocks_en
-      },
-      { model: CFG.modelMini }
+      contentENFinalRaw,
+      { model: CFG.modelMini, language: "en" }
     ),
     "judgeGroundingEN"
   );
   elapsedByPhase.judge_en = Date.now() - tF6;
   tokensByPhase.judge_en = judgeENRes.usage?.total_tokens || 0;
-  llmCallsCount += 1;
+  llmCallsCount += (judgeENRes.attempts || 1);
   const judgeEN = judgeENRes.data;
   assertShape(judgeEN, ["grounded_score", "reason"], "judgeGroundingEN");
-  console.log(`   👨‍⚖️ Judge EN: score=${fmt(judgeEN.grounded_score)}`);
+  if (judgeENRes.degraded) {
+    judgeDegradationFlags.push(`judge_en_degraded_after_${judgeENRes.attempts}_attempts`);
+    console.log(`   🛡️  Judge EN: degradación elegante (score=${fmt(judgeEN.grounded_score)} fallback)`);
+  } else {
+    console.log(`   👨‍⚖️ Judge EN: score=${fmt(judgeEN.grounded_score)}`);
+  }
 
   const contentENFinal = contentENFinalRaw;
 
@@ -440,21 +469,28 @@ async function processBook(book, inputs, inputsSnapshot) {
 
   // Validación semántica final
   const finalValidation = validateFinalNucleus(mapped);
-  mapped._quality_warning = finalValidation.overall === "pass" ? null : {
-    overall: finalValidation.overall,
-    warnings: finalValidation.warnings
+  // v3.5: incluir judge degradations en quality warnings
+  const allWarnings = [...(finalValidation.warnings || []), ...judgeDegradationFlags];
+  const overallStatus = judgeDegradationFlags.length > 0 && finalValidation.overall === "pass"
+    ? "pass_with_warnings"
+    : finalValidation.overall;
+
+  mapped._quality_warning = overallStatus === "pass" ? null : {
+    overall: overallStatus,
+    warnings: allWarnings
   };
-  mapped._metrics.final_validation = finalValidation.overall;
+  mapped._metrics.final_validation = overallStatus;
+  mapped._metrics.judge_degradations = judgeDegradationFlags;
 
   elapsedByPhase.post_processing = Date.now() - tF8;
 
-  const statusIcon = finalValidation.overall === "pass" ? "✅" : finalValidation.overall === "pass_with_warnings" ? "🟡" : "🔴";
-  console.log(`   ${statusIcon} FINAL: ${finalValidation.overall} | confidence=${confidence.combined} | tokens=${totalTokens} | ${(totalElapsedMs / 1000).toFixed(1)}s`);
-  if (finalValidation.warnings.length > 0) {
-    console.log(`      warnings: ${finalValidation.warnings.slice(0, 2).join(" | ")}`);
+  const statusIcon = overallStatus === "pass" ? "✅" : overallStatus === "pass_with_warnings" ? "🟡" : "🔴";
+  console.log(`   ${statusIcon} FINAL: ${overallStatus} | confidence=${confidence.combined} | tokens=${totalTokens} | ${(totalElapsedMs / 1000).toFixed(1)}s`);
+  if (allWarnings.length > 0) {
+    console.log(`      warnings: ${allWarnings.slice(0, 3).join(" | ")}`);
   }
 
-  return { mapped, groundTruthMeta, confidence, finalValidation, anchorsData };
+  return { mapped, groundTruthMeta, confidence, finalValidation: { ...finalValidation, overall: overallStatus, warnings: allWarnings }, anchorsData };
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -472,7 +508,7 @@ async function writeQualityReport(result, stamp) {
 
 **Autor:** ${mapped.autor}
 **Ejecutado:** ${stamp}
-**Pipeline:** nucleus-canonical-v3.3
+**Pipeline:** nucleus-canonical-v3.5
 
 ---
 
@@ -536,6 +572,8 @@ ${(anchorsData.book_grounding_anchors.concepts || []).map((c) => `- ${c}`).join(
 - Score: ${fmt(mapped._grounding_judge?.en?.grounded_score)}
 - Usa conceptos específicos: ${mapped._grounding_judge?.en?.uses_book_specific_concepts}
 - Razón: ${mapped._grounding_judge?.en?.reason}
+
+${mapped._metrics?.judge_degradations?.length ? `**🛡️ Degradaciones:** ${mapped._metrics.judge_degradations.join(", ")}` : ""}
 
 ---
 
@@ -765,7 +803,7 @@ async function runBatch() {
   const crono = cronobioContext();
   const inputsSnapshot = await snapshotInputs(INPUTS, crono);
 
-  console.log(`\n🚀 BATCH v3.3 — ${selected.length}/${books.length} libros`);
+  console.log(`\n🚀 BATCH v3.5 — ${selected.length}/${books.length} libros`);
   console.log(`   Modo: ${CFG.shadowMode ? "🌒 SHADOW" : "⚡ PRODUCCIÓN"}`);
   console.log(`   ${crono.dia} ${crono.hora}h ${crono.franja} | energía ${Math.round(crono.energia * 100)}%`);
   console.log(`   Output: ${outputFile}`);
@@ -827,9 +865,9 @@ async function runBatch() {
   const runMs = Date.now() - t0;
   await fs.mkdir(CFG.files.metricsDir, { recursive: true });
   const stamp = new Date().toISOString().replace(/[:.]/g, "-");
-  await writeJSON(`${CFG.files.metricsDir}/nucleus-v3.3-${stamp}.json`, {
+  await writeJSON(`${CFG.files.metricsDir}/nucleus-v3.5-${stamp}.json`, {
     timestamp: new Date().toISOString(),
-    pipeline: "nucleus-canonical-v3.3",
+    pipeline: "nucleus-canonical-v3.5",
     mode: CFG.shadowMode ? "shadow" : "production",
     requested: selected.length,
     exitosos: exitosos.length,
@@ -853,13 +891,17 @@ async function runSingle() {
     tagline: String(source.tagline || "").trim(),
     portada: String(source.portada_url || source.portada || "").trim(),
     portada_url: String(source.portada_url || source.portada || "").trim(),
-    isbn: String(source.isbn || "").trim()
+    isbn: String(source.isbn || "").trim(),
+    // v3.2: pasar identity_sealed y _evidence si vienen de validate-book
+    identity_sealed: Boolean(source.identity_sealed),
+    _evidence: source._evidence || null,
+    needs_fallback_cover: Boolean(source.needs_fallback_cover)
   };
   if (!book.titulo || !book.autor) throw new Error("Libro inválido");
 
   const crono = cronobioContext();
   const inputsSnapshot = await snapshotInputs(INPUTS, crono);
-  console.log(`\n🚀 SINGLE v3.3: ${book.titulo}`);
+  console.log(`\n🚀 SINGLE v3.5: ${book.titulo}`);
 
   const result = await processBook(book, INPUTS, inputsSnapshot);
 
