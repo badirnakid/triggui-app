@@ -1,29 +1,30 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
-   extractors.js — LAS 4 LLAMADAS LLM DEL PIPELINE
+   extractors.js — LAS 5 LLAMADAS LLM DEL PIPELINE
 
-   v3.5 — JUDGE BILINGÜE + RETRY ROBUSTO
+   v3.7 (2026-04-26): JUDGE DE HIGHLIGHTS — coherencia gramatical semántica
    ─────────────────────────────────────────────────────────────────────────────
-   Cambios sobre v3.3 (adicionales, NO destructivos):
+   Cambios sobre v3.5 (aditivos, NO destructivos):
 
-   1. judgeGrounding ahora acepta `options.language` ("es" | "en"):
-      - Lee directamente content.card_en / og_phrases_en / edition_blocks_en
-        cuando language=="en", o las claves _es cuando language=="es".
-      - Elimina la necesidad del hack "disfraz EN→ES" en build-contenido-nucleus.
-   2. Retry con backoff exponencial (3 intentos: 0s, 2s, 4s). Si OpenAI hipa
-      o devuelve {} por strict-mode-can't-comply, tiene oportunidad real de
-      recuperar antes de degradar.
-   3. Degradación elegante: si las 3 llamadas devuelven {}, en lugar de
-      lanzar error retorna { degraded: true, data: { grounded_score: 0.7,
-      uses_book_specific_concepts: true, could_apply_to_any_book: false,
-      reason: "judge_unavailable_after_retries..." } } — schema-compliant
-      para que assertShape no truene aguas arriba.
+   1. Nueva función exportada `judgeHighlightCoherence(openai, segments, opts)`:
+      - Recibe array de strings (los highlights ya extraídos).
+      - Pide al LLM que juzgue si CADA highlight, leído aislado, queda
+        gramaticalmente colgado (cópula sin atributo, modal sin acción,
+        transitivo sin objeto). Sin diccionarios ni listas hardcodeadas.
+      - Retorna { coherence_score, is_grammatically_complete,
+        feels_naturally_finished, reason } schema-compliant.
+   2. Mismo patrón que judgeGrounding: retry con backoff [0, 2000, 4000]ms,
+      degradación elegante si los 3 intentos fallan, callJudgeOnce helper,
+      buildDegradedHighlightJudgeResponse fallback conservador.
+   3. Modelo: gpt-4o-mini (mismo que el resto del pipeline). Temperature
+      0.1 (más bajo que el resto: queremos consistencia, no creatividad).
+   4. Costo: ~110 tokens por libro (~$0.000017 USD). Despreciable según el
+      principio "que no cueste".
 
    Lo NO tocado:
-   - System prompts del judge (sagrados, prompt en inglés se queda)
-   - System prompts de extractAnchors / extractContentES / extractContentEN
-   - Schema edition-nucleus.schema.json (sagrado)
-   - Firma legacy de judgeGrounding(openai, gt, content, options) sin
-     language: por default asume "es" (compat backward total)
+   - System prompts existentes (sagrados)
+   - Schema (solo se AGREGA highlight_judge, las otras 4 secciones intactas)
+   - judgeGrounding bilingüe + retry (intacto)
+   - extractAnchors / extractContentES / extractContentEN (intactos)
 ═══════════════════════════════════════════════════════════════════════════════ */
 
 import fs from "node:fs/promises";
@@ -586,6 +587,165 @@ export async function judgeGrounding(openai, groundTruth, content, options = {})
   console.log(`   🛡️  Judge ${language.toUpperCase()} degradación elegante después de ${maxAttempts} intentos`);
   return {
     data: buildDegradedJudgeResponse(language, maxAttempts, lastError),
+    usage: lastUsage,
+    model: lastModel,
+    degraded: true,
+    attempts: maxAttempts,
+    language
+  };
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   LLAMADA 5 — HIGHLIGHT JUDGE (v3.7 NIVEL DIOS)
+   ─────────────────────────────────────────────────────────────────────────────
+   Juzga si los highlights [H]...[/H] quedan gramaticalmente colgados leídos
+   en aislamiento. Sin diccionarios. Sin listas hardcodeadas de verbos. El
+   LLM detecta cópulas sin atributo, modales sin acción, transitivos sin
+   objeto — universalmente, en cualquier idioma.
+
+   Mismo patrón que judgeGrounding: retry con backoff, degradación elegante
+   schema-compliant. Default conservador: si el judge falla, asumimos
+   coherente (no extender highlights innecesariamente).
+
+   Costo aproximado por libro: ~110 tokens × 2 idiomas × precio gpt-4o-mini
+   = ~$0.000017 USD. Despreciable según principio "que no cueste".
+────────────────────────────────────────────────────────────────────────────── */
+
+function highlightJudgePrompt(highlightSegments, language) {
+  const langName = language === "en" ? "ENGLISH" : "SPANISH";
+  const segmentsList = highlightSegments
+    .map((s, i) => `${i + 1}. "${s}"`)
+    .join("\n");
+
+  return `You are a grammatical coherence auditor for editorial highlights. Your job is to judge whether each highlight, READ IN ISOLATION (without surrounding context), feels like a complete grammatical thought, or whether it ends mid-thought.
+
+The highlights are in ${langName}.
+
+A highlight is GRAMMATICALLY DANGLING if it ends with:
+- A copula or auxiliary without its required attribute (e.g., "merece ser" → "to be" what?)
+- A modal verb without the action it modifies (e.g., "podemos" → "we can" do what?)
+- A transitive verb without its required object (e.g., "tiene" → "has" what?)
+- A preposition or article (any language) without its complement
+- Any word that creates obvious syntactic expectation for continuation
+
+A highlight is COHERENT if it ends with:
+- A complete clause closed naturally (period, question mark, exclamation in the prose)
+- A noun, full verb phrase, or adjective that closes the syntactic unit
+- A clear semantic boundary that feels finished even when read alone
+
+HIGHLIGHTS TO JUDGE:
+${segmentsList}
+
+Judge:
+1. coherence_score (0-1): mean coherence across all highlights. 1.0 = all feel naturally finished; 0.5 = some dangling; 0.0 = all dangling mid-thought.
+2. is_grammatically_complete: true ONLY if EVERY highlight ends with a word that closes its syntactic unit. False if any highlight ends mid-clause.
+3. feels_naturally_finished: true ONLY if a reader, encountering only the highlight text, would feel the idea is whole rather than truncated. False if any highlight makes the reader's brain expect a continuation.
+4. reason: specific observation about which highlights are problematic and why (minimum 30 characters, max 400). Identify the trailing word and the missing element. Example: "Highlight 2 ends in 'merece ser' (copula 'ser' without attribute). Highlight 1 OK, ends in noun 'cotidiano'."
+
+Be strict. False positives (saying it's complete when it dangles) break the user experience.`;
+}
+
+// Schema-compliant fallback cuando OpenAI no responde bien después de retries.
+// Default conservador: asumimos COHERENTE para no extender highlights
+// innecesariamente cuando el judge falla. Mejor un highlight no expandido
+// que un highlight extendido por error a la frase completa.
+function buildDegradedHighlightJudgeResponse(language, attempts, lastError) {
+  return {
+    coherence_score: 0.85,
+    is_grammatically_complete: true,
+    feels_naturally_finished: true,
+    reason: `highlight_judge_unavailable_after_${attempts}_retries (lang=${language}). Asumiendo coherente por default conservador para no extender highlights innecesariamente. Last error: ${String(lastError || "empty_response").slice(0, 200)}`
+  };
+}
+
+async function callHighlightJudgeOnce(openai, schemas, model, segments, language) {
+  const response = await openai.chat.completions.create({
+    model,
+    temperature: 0.1,
+    messages: [{ role: "user", content: highlightJudgePrompt(segments, language) }],
+    response_format: {
+      type: "json_schema",
+      json_schema: schemas.highlight_judge
+    }
+  });
+
+  const raw = response.choices?.[0]?.message?.content;
+  const parsed = safeParseJSON(raw);
+  const isEmpty = !parsed || typeof parsed !== "object" ||
+                  parsed.coherence_score === undefined || parsed.coherence_score === null;
+
+  return {
+    parsed,
+    isEmpty,
+    usage: response.usage,
+    model: response.model,
+    refusal: response.choices?.[0]?.message?.refusal || null
+  };
+}
+
+export async function judgeHighlightCoherence(openai, highlightSegments, options = {}) {
+  // Si no hay highlights, devolver pass trivial (sin llamada al LLM)
+  if (!Array.isArray(highlightSegments) || highlightSegments.length === 0) {
+    return {
+      data: {
+        coherence_score: 1.0,
+        is_grammatically_complete: true,
+        feels_naturally_finished: true,
+        reason: "no_highlights_to_judge — pipeline did not produce highlight segments for evaluation."
+      },
+      usage: null,
+      model: options.model || "gpt-4o-mini",
+      degraded: false,
+      attempts: 0,
+      language: options.language || "es"
+    };
+  }
+
+  const schemas = await loadSchemas();
+  const model = options.model || "gpt-4o-mini";
+  const language = options.language === "en" ? "en" : "es";
+  const maxAttempts = Number(options.maxAttempts || 3);
+  const backoffMs = Array.isArray(options.backoffMs) ? options.backoffMs : [0, 2000, 4000];
+
+  let lastUsage = null;
+  let lastModel = model;
+  let lastError = null;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    const wait = backoffMs[attempt - 1] ?? Math.min(8000, 1000 * Math.pow(2, attempt - 1));
+    if (wait > 0) {
+      await new Promise((r) => setTimeout(r, wait));
+    }
+
+    try {
+      const result = await callHighlightJudgeOnce(openai, schemas, model, highlightSegments, language);
+      lastUsage = result.usage;
+      lastModel = result.model;
+
+      if (!result.isEmpty) {
+        return {
+          data: result.parsed,
+          usage: result.usage,
+          model: result.model,
+          degraded: false,
+          attempts: attempt,
+          language
+        };
+      }
+
+      lastError = result.refusal
+        ? `refusal: ${String(result.refusal).slice(0, 120)}`
+        : "empty_or_missing_coherence_score";
+      console.log(`   ⚠ HighlightJudge ${language.toUpperCase()} intento ${attempt}/${maxAttempts}: ${lastError}`);
+    } catch (err) {
+      lastError = err?.message ? String(err.message).slice(0, 200) : String(err);
+      console.log(`   ⚠ HighlightJudge ${language.toUpperCase()} intento ${attempt}/${maxAttempts} threw: ${lastError}`);
+    }
+  }
+
+  console.log(`   🛡️  HighlightJudge ${language.toUpperCase()} degradación elegante después de ${maxAttempts} intentos`);
+  return {
+    data: buildDegradedHighlightJudgeResponse(language, maxAttempts, lastError),
     usage: lastUsage,
     model: lastModel,
     degraded: true,

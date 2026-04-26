@@ -1,5 +1,5 @@
 {
-  "note": "Schema v3 dividido en 3 sub-schemas para las 3 llamadas de extracción. El schema completo se arma en memoria desde estos.",
+  "note": "Schema v3 dividido en 4 sub-schemas para las 4 llamadas LLM + 1 para el judge de highlights v3.7. El schema completo se arma en memoria desde estos.",
   "anchors_and_intent": {
     "name": "AnchorsAndIntent",
     "description": "Extrae anchors del libro + intención visual numérica + análisis de lente. NO escribe cards ni og_phrases.",
@@ -247,6 +247,23 @@
         "grounded_score": { "type": "number", "minimum": 0, "maximum": 1 },
         "uses_book_specific_concepts": { "type": "boolean" },
         "could_apply_to_any_book": { "type": "boolean" },
+        "reason": { "type": "string", "minLength": 30, "maxLength": 400 }
+      }
+    }
+  },
+
+  "highlight_judge": {
+    "name": "HighlightJudge",
+    "description": "v3.7: juzga semánticamente si los highlights [H]...[/H] quedan gramaticalmente colgados (verbo cópula sin atributo, modal sin acción, transitivo sin objeto). Sin diccionarios. Sin hardcoding. LLM como validador universal.",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["coherence_score", "is_grammatically_complete", "feels_naturally_finished", "reason"],
+      "properties": {
+        "coherence_score": { "type": "number", "minimum": 0, "maximum": 1 },
+        "is_grammatically_complete": { "type": "boolean" },
+        "feels_naturally_finished": { "type": "boolean" },
         "reason": { "type": "string", "minLength": 30, "maxLength": 400 }
       }
     }

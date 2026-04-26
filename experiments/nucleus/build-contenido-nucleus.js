@@ -1,32 +1,29 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
-   build-contenido-nucleus.js — ORQUESTADOR v3.6 NIVEL DIOS
+   build-contenido-nucleus.js — ORQUESTADOR v3.7.1 NIVEL DIOS
 
-   v3.6 (2026-04-26): AUTO-HEALING DE PORTADAS FANTASMA
+   v3.7.1 (2026-04-26): FIX QUIRÚRGICO DE F2.7 — POSICIÓN POST-COMPATMAPPER
    ─────────────────────────────────────────────────────────────────────────────
-   Cambios sobre v3.5 (mínimos, quirúrgicos):
+   v3.7 original tenía F2.7 mal posicionada: corría DESPUÉS de F6 (judge EN)
+   pero ANTES del compatMapper, sobre `_nucleus.card_es.parrafoTop` que NO
+   contiene [H]...[/H] (los inyecta `ensureHighlight()` dentro de
+   `renderTarjetaES/EN`, que el compatMapper llama).
 
-   F2.5 NIVEL DIOS — antes confiaba ciegamente en book.portada si era no-vacío.
-   Ahora valida la URL REAL antes de confiar:
+   Resultado: el judge corría sobre [] segmentos vacíos, devolvía pass trivial,
+   y el bug de Brooks "merece ser" / "podemos" seguía intacto en producción.
 
-     1. Si book.portada existe pero es URL fantasma (placeholder Amazon GIF
-        de 43 bytes, o URL muerta, o >2KB de imagen real falsa), checkImageURL
-        v3.6 la rechaza por tamaño mínimo.
-     2. Si checkImageURL falla → fuerza el camino de rescate de evidence (que
-        ya existía desde v3.3).
-     3. Si rescate de evidence también falla → SVG fallback (último recurso).
+   v3.7.1 mueve F2.7 a su posición correcta: DESPUÉS del compatMapper, sobre
+   `mapped.tarjeta.parrafoTop` (donde sí hay [H]). Mutaciones se propagan
+   a las 6 ubicaciones renderizadas:
+     - mapped.tarjeta, mapped.tarjeta_base, mapped.tarjeta_presentacion (ES)
+     - mapped.tarjeta_en, mapped.tarjeta_base_en, mapped.tarjeta_presentacion_en (EN)
+   porque compatMapper hace 3 spreads independientes (son COPIAS, no refs).
 
-   Esto crea AUTO-HEALING: cualquier libro generado en el pasado con URL
-   fantasma se autoarregla la próxima vez que entre al pipeline. Sin scripts
-   retroactivos, sin tocar contenido.json viejo.
+   Cambios sobre v3.7:
+   - F2.7 reubicada (post-compatMapper)
+   - Propagación explícita a 6 ubicaciones renderizadas
+   - Sin cambios en triggui-physics, extractors, schema o quality-validator
 
-   Lo NO tocado:
-   - Prompts (sagrados)
-   - Schema edition-nucleus.schema.json (sagrado)
-   - v3.5 judge bilingüe + retry + degradación elegante (intacto)
-   - v3.4 anti-duplicados (en validate-book.js, intacto)
-   - Cualquier otra fase del pipeline
-
-   Pipeline de 8 fases:
+   Pipeline de 9 fases:
      F0  grounding-resolver          (curator / api / inference / blind) + evidence
      F1  extractAnchors               (1 llamada LLM)
      F2  synthesizePalette            (determinista, matemático)
@@ -36,7 +33,17 @@
      F5  extractContentEN             (1 llamada LLM)
      F6  judgeGrounding EN            (1+ llamadas LLM con retry, v3.5)
      F7  voice-judge                  (1 llamada LLM, existente)
-     F8  emoji-inject + confidence + compat-map + validator + report
+     F8  emoji-inject + confidence + compat-map
+     F2.7 highlight coherence judge   (✨ v3.7.1 — POST-compatMapper)
+     F9  validator + report
+
+   Lo NO tocado:
+   - Prompts existentes (sagrados)
+   - Schema (sagrado, agregado highlight_judge en v3.7)
+   - compatMapper (sagrado)
+   - render-tarjeta.js (sagrado)
+   - v3.6 auto-healing portadas (intacto)
+   - v3.5 judge bilingüe + retry (intacto)
 ═══════════════════════════════════════════════════════════════════════════════ */
 
 import fs from "node:fs/promises";
@@ -51,8 +58,13 @@ import {
   extractContentES,
   extractContentEN,
   judgeGrounding,
+  judgeHighlightCoherence,
   cronobioContext
 } from "./extractors.js";
+import {
+  expandHighlightToFullSentence,
+  getHighlightSegments
+} from "./triggui-physics.js";
 import { synthesizePalette } from "./palette-synthesizer.js";
 import { injectEmojis, calculateConfidence, compatMapper } from "./post-processors.js";
 import { judgeBothVoices } from "./voice-judge.js";
@@ -462,6 +474,21 @@ async function processBook(book, inputs, inputsSnapshot) {
 
   const contentENFinal = contentENFinalRaw;
 
+  // ═══ NOTA v3.7.1 NIVEL DIOS: F2.7 MOVIDA POST-COMPATMAPPER ═══════════════
+  //
+  // En v3.7 original F2.7 corría aquí, pero los [H]...[/H] todavía no existían:
+  // los inyecta `ensureHighlight()` dentro de renderTarjetaES/EN (que llama
+  // compatMapper). El judge corría sobre [] y devolvía pass trivial.
+  //
+  // En v3.7.1 F2.7 se ejecuta DESPUÉS del compatMapper, sobre los campos
+  // `mapped.tarjeta.parrafoTop/parrafoBot` (y EN) que sí tienen [H] inyectados.
+  //
+  // Variables que F2.7 actualizará después: highlightDegradationFlags,
+  // highlightAutoCorrected, totalCorrections.
+  // ═════════════════════════════════════════════════════════════════════════
+  const highlightDegradationFlags = [];
+  const highlightAutoCorrected = { es: { top: false, bot: false }, en: { top: false, bot: false } };
+
   // ═══ F7: VOICE JUDGE ════════════════════════════════════════════════
   const tF7 = Date.now();
   const voiceVerdict = await retryOnce(
@@ -498,14 +525,130 @@ async function processBook(book, inputs, inputsSnapshot) {
     qualityWarning: null
   });
 
+  // ═══ F2.7 v3.7.1 — HIGHLIGHT COHERENCE JUDGE + AUTO-CORRECT ═════════
+  //
+  // CONTEXTO ARQUITECTÓNICO:
+  // Los [H]...[/H] se inyectan dentro de compatMapper vía renderTarjetaES/EN
+  // → ensureHighlight → placeHighlightOnDensestSpan. Por eso F2.7 corre AQUÍ
+  // (post-compatMapper), no antes. En v3.7 original corría antes y operaba
+  // sobre _nucleus.card_es que NO tiene [H], por eso no detectaba nada.
+  //
+  // ESTRATEGIA:
+  // 1. Juzgar `mapped.tarjeta.parrafoTop/parrafoBot` (ES) y `mapped.tarjeta_en.parrafoTop/parrafoBot` (EN)
+  // 2. Si el LLM judge dice colgado → expandHighlightToFullSentence
+  // 3. Re-juzgar UNA vez para confirmar mejora
+  // 4. Propagar los textos finales a las 6 ubicaciones renderizadas:
+  //    tarjeta, tarjeta_base, tarjeta_presentacion (ES) +
+  //    tarjeta_en, tarjeta_base_en, tarjeta_presentacion_en (EN)
+  //    porque compatMapper hace 3 spreads independientes — son COPIAS, no refs.
+  //
+  // COSTO: 4 llamadas base × ~110 tokens = ~$0.000017 USD/libro
+  // FILOSOFÍA: cero hardcoding de listas léxicas — LLM como detector universal
+  const tF27 = Date.now();
+
+  async function judgeAndCorrectField(targetObj, field, language) {
+    const original = targetObj?.[field];
+    if (!original) return null;
+
+    const segments = getHighlightSegments(original);
+    if (segments.length === 0) return null; // sin highlights: nada que juzgar
+
+    // Primer juicio
+    const firstJudge = await judgeHighlightCoherence(openai, segments, {
+      model: CFG.modelMini,
+      language
+    });
+    tokensByPhase[`highlight_judge_${language}_${field}`] = firstJudge.usage?.total_tokens || 0;
+    llmCallsCount += (firstJudge.attempts || 1);
+    if (firstJudge.degraded) {
+      highlightDegradationFlags.push(`highlight_judge_${language}_${field}_degraded`);
+    }
+
+    // Si coherente, listo (no auto-corregir)
+    if (firstJudge.data.feels_naturally_finished && firstJudge.data.is_grammatically_complete) {
+      return null;
+    }
+
+    console.log(`   ✂  HighlightJudge ${language.toUpperCase()} ${field}: colgado (score=${fmt(firstJudge.data.coherence_score)}) — auto-corrigiendo`);
+
+    // Auto-correct: expandir a frase completa
+    const corrected = expandHighlightToFullSentence(original);
+    if (corrected === original) {
+      console.log(`   ⚠  HighlightJudge ${language.toUpperCase()} ${field}: no se pudo auto-expandir (frase contenedora >22 palabras sin coma natural)`);
+      highlightDegradationFlags.push(`highlight_${language}_${field}_uncorrectable`);
+      return null;
+    }
+
+    // Re-juzgar UNA vez para verificar que mejoró
+    const newSegments = getHighlightSegments(corrected);
+    const secondJudge = await judgeHighlightCoherence(openai, newSegments, {
+      model: CFG.modelMini,
+      language
+    });
+    tokensByPhase[`highlight_judge_${language}_${field}_retry`] = secondJudge.usage?.total_tokens || 0;
+    llmCallsCount += (secondJudge.attempts || 1);
+
+    highlightAutoCorrected[language][field === "parrafoTop" ? "top" : "bot"] = true;
+
+    if (secondJudge.data.feels_naturally_finished && secondJudge.data.is_grammatically_complete) {
+      console.log(`   ✅ HighlightJudge ${language.toUpperCase()} ${field}: auto-corregido (score=${fmt(secondJudge.data.coherence_score)})`);
+    } else {
+      console.log(`   🟡 HighlightJudge ${language.toUpperCase()} ${field}: aplicado pero residual warning (score=${fmt(secondJudge.data.coherence_score)})`);
+      highlightDegradationFlags.push(`highlight_${language}_${field}_residual_warning`);
+    }
+
+    return corrected;
+  }
+
+  // Procesar los 4 campos canónicos: ES top/bot (sobre mapped.tarjeta) + EN top/bot (sobre mapped.tarjeta_en)
+  const correctedES_top = await judgeAndCorrectField(mapped.tarjeta, "parrafoTop", "es");
+  const correctedES_bot = await judgeAndCorrectField(mapped.tarjeta, "parrafoBot", "es");
+  const correctedEN_top = await judgeAndCorrectField(mapped.tarjeta_en, "parrafoTop", "en");
+  const correctedEN_bot = await judgeAndCorrectField(mapped.tarjeta_en, "parrafoBot", "en");
+
+  // PROPAGACIÓN: si hubo correcciones, aplicar a las 6 ubicaciones (copias independientes
+  // creadas por compatMapper). Si no hubo corrección, no tocar nada.
+  if (correctedES_top !== null) {
+    mapped.tarjeta.parrafoTop = correctedES_top;
+    mapped.tarjeta_base.parrafoTop = correctedES_top;
+    mapped.tarjeta_presentacion.parrafoTop = correctedES_top;
+  }
+  if (correctedES_bot !== null) {
+    mapped.tarjeta.parrafoBot = correctedES_bot;
+    mapped.tarjeta_base.parrafoBot = correctedES_bot;
+    mapped.tarjeta_presentacion.parrafoBot = correctedES_bot;
+  }
+  if (correctedEN_top !== null) {
+    mapped.tarjeta_en.parrafoTop = correctedEN_top;
+    mapped.tarjeta_base_en.parrafoTop = correctedEN_top;
+    mapped.tarjeta_presentacion_en.parrafoTop = correctedEN_top;
+  }
+  if (correctedEN_bot !== null) {
+    mapped.tarjeta_en.parrafoBot = correctedEN_bot;
+    mapped.tarjeta_base_en.parrafoBot = correctedEN_bot;
+    mapped.tarjeta_presentacion_en.parrafoBot = correctedEN_bot;
+  }
+
+  elapsedByPhase.highlight_judge = Date.now() - tF27;
+  const totalCorrections = Object.values(highlightAutoCorrected).flatMap(o => Object.values(o)).filter(Boolean).length;
+  if (totalCorrections > 0) {
+    console.log(`   🪡 HighlightJudge v3.7.1: ${totalCorrections} highlight(s) auto-corregido(s) y propagado(s) a las 6 ubicaciones`);
+  } else {
+    console.log(`   ✅ HighlightJudge v3.7.1: todos los highlights gramaticalmente coherentes`);
+  }
+
   // Validación semántica final
   const finalValidation = validateFinalNucleus(mapped);
-  const allWarnings = [...(finalValidation.warnings || []), ...judgeDegradationFlags];
+  const allWarnings = [...(finalValidation.warnings || []), ...judgeDegradationFlags, ...highlightDegradationFlags];
   // v3.6: agregar warning si hubo auto-healing de portada (visibilidad para auditoría)
   if (book.portada_was_invalid) {
     allWarnings.push(`portada_auto_healed_v3.6: original "${(book.portada_invalid_url || "").slice(0, 60)}" rechazada por ${book.portada_invalid_reason}`);
   }
-  const overallStatus = (judgeDegradationFlags.length > 0 || book.portada_was_invalid) && finalValidation.overall === "pass"
+  // v3.7: agregar warning si hubo auto-correct de highlights
+  if (totalCorrections > 0) {
+    allWarnings.push(`highlights_auto_corrected_v3.7: ${totalCorrections} highlight(s) extendidos a frase completa por LLM judge`);
+  }
+  const overallStatus = (judgeDegradationFlags.length > 0 || book.portada_was_invalid || totalCorrections > 0 || highlightDegradationFlags.length > 0) && finalValidation.overall === "pass"
     ? "pass_with_warnings"
     : finalValidation.overall;
 
@@ -516,6 +659,8 @@ async function processBook(book, inputs, inputsSnapshot) {
   mapped._metrics.final_validation = overallStatus;
   mapped._metrics.judge_degradations = judgeDegradationFlags;
   mapped._metrics.portada_auto_healed = Boolean(book.portada_was_invalid);
+  mapped._metrics.highlights_auto_corrected = totalCorrections;
+  mapped._metrics.highlight_degradations = highlightDegradationFlags;
 
   elapsedByPhase.post_processing = Date.now() - tF8;
 
@@ -543,7 +688,7 @@ async function writeQualityReport(result, stamp) {
 
 **Autor:** ${mapped.autor}
 **Ejecutado:** ${stamp}
-**Pipeline:** nucleus-canonical-v3.6
+**Pipeline:** nucleus-canonical-v3.7.1
 
 ---
 
@@ -823,7 +968,7 @@ async function runBatch() {
   const crono = cronobioContext();
   const inputsSnapshot = await snapshotInputs(INPUTS, crono);
 
-  console.log(`\n🚀 BATCH v3.6 — ${selected.length}/${books.length} libros`);
+  console.log(`\n🚀 BATCH v3.7.1 — ${selected.length}/${books.length} libros`);
   console.log(`   Modo: ${CFG.shadowMode ? "🌒 SHADOW" : "⚡ PRODUCCIÓN"}`);
   console.log(`   ${crono.dia} ${crono.hora}h ${crono.franja} | energía ${Math.round(crono.energia * 100)}%`);
   console.log(`   Output: ${outputFile}`);
@@ -878,9 +1023,9 @@ async function runBatch() {
   const runMs = Date.now() - t0;
   await fs.mkdir(CFG.files.metricsDir, { recursive: true });
   const stamp = new Date().toISOString().replace(/[:.]/g, "-");
-  await writeJSON(`${CFG.files.metricsDir}/nucleus-v3.6-${stamp}.json`, {
+  await writeJSON(`${CFG.files.metricsDir}/nucleus-v3.7.1-${stamp}.json`, {
     timestamp: new Date().toISOString(),
-    pipeline: "nucleus-canonical-v3.6",
+    pipeline: "nucleus-canonical-v3.7.1",
     mode: CFG.shadowMode ? "shadow" : "production",
     requested: selected.length,
     exitosos: exitosos.length,
@@ -913,7 +1058,7 @@ async function runSingle() {
 
   const crono = cronobioContext();
   const inputsSnapshot = await snapshotInputs(INPUTS, crono);
-  console.log(`\n🚀 SINGLE v3.6: ${book.titulo}`);
+  console.log(`\n🚀 SINGLE v3.7.1: ${book.titulo}`);
 
   const result = await processBook(book, INPUTS, inputsSnapshot);
 

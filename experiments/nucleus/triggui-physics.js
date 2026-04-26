@@ -1,5 +1,30 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
    triggui-physics.js — MATEMÁTICA PURA
+
+   v3.7 (2026-04-26): expandHighlightToFullSentence — auto-corrección quirúrgica
+   ─────────────────────────────────────────────────────────────────────────────
+   Cambio sobre v3.6 (aditivo, NO destructivo):
+
+   Nueva función exportada `expandHighlightToFullSentence(text)`:
+     - Recibe texto con [H]...[/H] que el LLM judge marcó como semánticamente
+       colgado (cópula sin atributo, modal sin acción, transitivo sin objeto).
+     - Para cada highlight, encuentra la frase completa que lo contiene.
+     - Si la frase es de longitud razonable (≤22 palabras), reemplaza el
+       highlight cortado por la frase completa (sin punto/exclamación final).
+     - Si la frase es >22 palabras, busca coma natural anterior con palabra
+       fuerte y corta ahí; sino, retreata desde el final con weak words.
+
+   Esta función NO se llama automáticamente desde placeHighlightOnDensestSpan.
+   Se invoca desde build-contenido-nucleus.js fase F2.7 cuando el LLM judge
+   reporta is_grammatically_complete=false.
+
+   Lo NO tocado:
+   - Toda la matemática de color/contraste (sagrada)
+   - Toda la state machine de normalizeHighlightSyntax (sagrada)
+   - placeHighlightOnDensestSpan (intacto, sigue siendo el primer corte)
+   - validateHighlightQuality (intacto, sigue siendo el validador léxico)
+   - WEAK_TRAILING_WORDS_ES/EN (sin agregar verbos hardcoded — la
+     filosofía es que el LLM detecta el problema, NO listas léxicas)
 ═══════════════════════════════════════════════════════════════════════════════ */
 
 /**
@@ -354,6 +379,95 @@ export function validateHighlightQuality(text) {
     }
   }
   return { ok: true, count: segments.length };
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   v3.7 — EXPAND HIGHLIGHT TO FULL SENTENCE
+   ─────────────────────────────────────────────────────────────────────────────
+   Auto-corrección invocada cuando el LLM judge reporta que el highlight queda
+   gramaticalmente colgado (cópula sin atributo, modal sin acción, transitivo
+   sin objeto). En esos casos la solución matemáticamente correcta es respetar
+   la frase completa donde se encuentra el highlight, NO hardcodear listas de
+   verbos colgantes.
+
+   Estrategia (Opción C — híbrida):
+   1. Para cada highlight, ubicar la frase completa que lo contiene.
+   2. Si la frase es ≤22 palabras → usar frase completa (sin punto/exclamación
+      final, que rompe el flujo visual del subrayado dentro del párrafo).
+   3. Si la frase es >22 palabras → buscar coma natural anterior con palabra
+      fuerte (no weak trailing); si no hay, retreatar desde el final.
+
+   Esta función NO se llama desde placeHighlightOnDensestSpan. Solo desde la
+   fase F2.7 del orquestador, después de que el LLM judge dice
+   feels_naturally_finished=false.
+────────────────────────────────────────────────────────────────────────────── */
+
+export function expandHighlightToFullSentence(text) {
+  const original = String(text || "");
+  if (!original) return text;
+
+  // Texto plano (sin tags) — base sobre la que reconstruiremos
+  const plain = stripHighlightTags(original).replace(/\s+/g, " ").trim();
+  if (!plain) return text;
+
+  const segments = getHighlightSegments(original);
+  if (segments.length === 0) return text;
+
+  const sentences = plain.split(/(?<=[\.\!\?])\s+/).filter(Boolean);
+
+  // Para cada highlight original, calcular qué frase completa lo contiene y
+  // qué replacement debe usar. Construimos un plan de expansiones.
+  const expansions = [];
+  for (const segment of segments) {
+    const containingSentence = sentences.find((s) => s.includes(segment));
+    if (!containingSentence) continue;
+
+    const sentenceWords = containingSentence.split(/\s+/).filter(Boolean);
+    let replacement;
+
+    if (sentenceWords.length <= 22) {
+      // Caso normal: respetar la frase como la escribió el autor (sin puntuación final)
+      replacement = containingSentence.trim().replace(/[\.!?]+$/, "");
+    } else {
+      // Caso edge: frase >22 palabras. Buscar coma natural anterior con palabra fuerte.
+      let bestCutIdx = sentenceWords.length;
+      for (let i = sentenceWords.length - 2; i >= 8; i--) {
+        if (/,$/.test(sentenceWords[i])) {
+          const noComma = sentenceWords[i].replace(/,$/, "");
+          if (!isWeakTrailingWord(noComma)) {
+            bestCutIdx = i + 1;
+            break;
+          }
+        }
+      }
+      bestCutIdx = retreatFromWeakTrailing(sentenceWords, bestCutIdx, 5);
+      replacement = sentenceWords.slice(0, bestCutIdx).join(" ").replace(/[,:;]+$/g, "").trim();
+    }
+
+    if (!replacement) continue;
+    expansions.push({ segment, fullSentence: containingSentence, replacement });
+  }
+
+  if (expansions.length === 0) return text;
+
+  // Reconstrucción nivel dios: trabajamos sobre el plain text.
+  // Para cada expansión, reemplazamos la frase completa por [H]replacement[/H]
+  // preservando la puntuación final que iba al final de la frase original.
+  // Esto evita duplicar texto post-[/H] que era parte de la frase contenedora.
+  let result = plain;
+  for (const exp of expansions) {
+    const sentenceTrimmed = exp.fullSentence.trim();
+    const endingPunct = sentenceTrimmed.match(/[\.!?]+$/);
+    const tail = endingPunct ? endingPunct[0] : "";
+
+    const escapedSentence = sentenceTrimmed.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const sentenceRe = new RegExp(escapedSentence);
+
+    if (!sentenceRe.test(result)) continue;
+    result = result.replace(sentenceRe, `[H]${exp.replacement}[/H]${tail}`);
+  }
+
+  return result;
 }
 
 export function densityToMultipliers(density) {
