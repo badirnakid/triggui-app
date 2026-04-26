@@ -1,0 +1,1110 @@
+{
+  "history": [
+    {
+      "at": "2026-04-26T13:38:09.030Z",
+      "stage": "trigger_analysis",
+      "trigger_analysis": {
+        "raw_input": "quiero un libro que me ayude a entender mejor el dinero",
+        "semantic_query": "libros sobre educación financiera y comprensión del dinero",
+        "intent_summary": "Buscar un libro que explique conceptos financieros y ayude a entender el dinero.",
+        "editorial_requests": [],
+        "source_preference": null,
+        "ranking_preference": null,
+        "unsupported_runtime_constraints": [],
+        "supported_constraints": {
+          "year_min": null,
+          "year_max": null,
+          "prefer_recent": false
+        },
+        "search_queries": [
+          "educación financiera",
+          "comprensión del dinero",
+          "libros sobre finanzas personales",
+          "cómo manejar el dinero",
+          "inversiones para principiantes",
+          "ahorro y presupuesto",
+          "libros sobre educación financiera y comprensión del dinero",
+          "libros educacion financiera"
+        ],
+        "concept_hints": [
+          "finanzas",
+          "educación financiera"
+        ],
+        "clean_for_selection": "libros sobre educación financiera y comprensión del dinero",
+        "notes": {
+          "used_ai_normalizer": true,
+          "looked_like_book_intent": true,
+          "semantic_overlap_vs_raw": 0.09090909090909091
+        }
+      }
+    },
+    {
+      "at": "2026-04-26T13:38:15.619Z",
+      "stage": "live_candidates_filter_recent",
+      "before": 15,
+      "after": 15,
+      "removed": 0,
+      "ring_size": 1
+    },
+    {
+      "at": "2026-04-26T13:38:22.811Z",
+      "stage": "ai_rerank_candidates",
+      "stageLabel": "live_candidates_rerank",
+      "ranked": [
+        {
+          "idx": 3,
+          "fit_score": 0.95,
+          "reason": "Ofrece una comprensión clara de la educación financiera y cómo manejar el dinero."
+        },
+        {
+          "idx": 4,
+          "fit_score": 0.92,
+          "reason": "Proporciona una introducción accesible a las finanzas personales, ideal para principiantes."
+        },
+        {
+          "idx": 2,
+          "fit_score": 0.91,
+          "reason": "Enfocado en la educación financiera para niños, lo que ayuda a entender el valor del dinero desde una edad temprana."
+        },
+        {
+          "idx": 8,
+          "fit_score": 0.89,
+          "reason": "Aborda el manejo del dinero en la vida cotidiana, lo que es relevante para la comprensión financiera."
+        },
+        {
+          "idx": 1,
+          "fit_score": 0.87,
+          "reason": "Explora la relación personal con el dinero, lo que puede ayudar a entender conceptos financieros."
+        },
+        {
+          "idx": 5,
+          "fit_score": 0.85,
+          "reason": "Se centra en estrategias de inversión, lo que es parte importante de la educación financiera."
+        },
+        {
+          "idx": 12,
+          "fit_score": 0.84,
+          "reason": "Promete una comprensión fácil de la educación financiera, lo que es útil para quienes buscan aprender."
+        },
+        {
+          "idx": 13,
+          "fit_score": 0.82,
+          "reason": "Enfocado en la mentalidad necesaria para el éxito financiero, complementando la educación financiera."
+        }
+      ]
+    },
+    {
+      "at": "2026-04-26T13:38:22.811Z",
+      "stage": "live_candidates_merged",
+      "count": 15,
+      "top": [
+        {
+          "titulo": "Educación financiera",
+          "autor": "Iñaki Jiménez Largo",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "¿Te gustaría dejar de preocuparte por tu dinero a final de mes?",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/KE1OEAAAQBAJ",
+          "published_year": 2021,
+          "live_score": 39.25,
+          "ai_fit_score": 0.95,
+          "ai_fit_reason": "Ofrece una comprensión clara de la educación financiera y cómo manejar el dinero."
+        },
+        {
+          "titulo": "Educación Financiera para Principiantes y Dummies",
+          "autor": "Giovanni Rigters",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "Las finanzas personales son cruciales para cualquiera que desee alcanzar la libertad financiera.",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/8uS1EAAAQBAJ",
+          "published_year": null,
+          "live_score": 37.38,
+          "ai_fit_score": 0.92,
+          "ai_fit_reason": "Proporciona una introducción accesible a las finanzas personales, ideal para principiantes."
+        },
+        {
+          "titulo": "Dinero Una Guía Para Niños",
+          "autor": "Isela J Arredondo",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "Es importante que los niños entiendan la historia y el valor del dinero en todas sus diferentes formas por varias razones: Educación financiera: Comprender la historia y…",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/BdPvzwEACAAJ",
+          "published_year": 2023,
+          "live_score": 41.63,
+          "ai_fit_score": 0.91,
+          "ai_fit_reason": "Enfocado en la educación financiera para niños, lo que ayuda a entender el valor del dinero desde una edad temprana."
+        },
+        {
+          "titulo": "¿Y si hacemos dinero?",
+          "autor": "Walter Eyzaguirre",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "A lo largo de nuestra vida, todas las personas tenemos algo en común: el manejo de nuestro dinero.",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/wF3UDwAAQBAJ",
+          "published_year": 2020,
+          "live_score": 31.75,
+          "ai_fit_score": 0.89,
+          "ai_fit_reason": "Aborda el manejo del dinero en la vida cotidiana, lo que es relevante para la comprensión financiera."
+        },
+        {
+          "titulo": "Me Y El Dinero",
+          "autor": "Jonathan Suarez",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "El dinero y yo estamos relacionados con lo que sabemos, ¿qué hay en estos libros?",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/xGR20QEACAAJ",
+          "published_year": 2024,
+          "live_score": 41.75,
+          "ai_fit_score": 0.87,
+          "ai_fit_reason": "Explora la relación personal con el dinero, lo que puede ayudar a entender conceptos financieros."
+        },
+        {
+          "titulo": "Inversión para principiantes: Minimiza el riesgo, maximiza los rendimientos, haz crecer tu riqueza y alcanza la libertad financiera a través del mercado de valores, fondos indexados, comercio de opciones, criptodivisas, bienes raíces",
+          "autor": "Samuel Feron",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "Domina las Estrategias de Inversión y Alcanza la Libertad Financiera con Inversiones Inteligentes ¿Estás buscando una manera de hacer crecer tu riqueza y alcanzar la lib…",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/7tnSEAAAQBAJ",
+          "published_year": 2023,
+          "live_score": 36.33,
+          "ai_fit_score": 0.85,
+          "ai_fit_reason": "Se centra en estrategias de inversión, lo que es parte importante de la educación financiera."
+        },
+        {
+          "titulo": "Educación financiera: Cómo entender fácilmente",
+          "autor": "MAX EDITORIAL",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "💰📘 ¿Te gustaría dominar tu dinero sin complicaciones ni fórmulas difíciles?",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/onfQEQAAQBAJ",
+          "published_year": 2026,
+          "live_score": 26.56,
+          "ai_fit_score": 0.84,
+          "ai_fit_reason": "Promete una comprensión fácil de la educación financiera, lo que es útil para quienes buscan aprender."
+        },
+        {
+          "titulo": "Código dinero",
+          "autor": "Cristian Arens",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "Para llegar a tener éxito en el mundo de las finanzas personales y las inversiones, debes estar dispuesto a cambiar tu mentalidad y abrirte a nuevas posibilidades.",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/jS4_EAAAQBAJ",
+          "published_year": 2021,
+          "live_score": 26.13,
+          "ai_fit_score": 0.82,
+          "ai_fit_reason": "Enfocado en la mentalidad necesaria para el éxito financiero, complementando la educación financiera."
+        },
+        {
+          "titulo": "La Biblia de la Educación Financiera",
+          "autor": "Svetoslav Tihomirov Nikolov",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "Lo que tienes ante ti probablemente sea el mejor libro de educación financiera jamás escrito.",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/EFKq0AEACAAJ",
+          "published_year": 2024,
+          "live_score": 35.25,
+          "ai_fit_score": 0,
+          "ai_fit_reason": ""
+        },
+        {
+          "titulo": "Educación financiera inteligente",
+          "autor": "MAX EDITORIAL",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "💡💰 ¿Estás listo para dejar de sobrevivir y empezar a prosperar con inteligencia?",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/F-nLEQAAQBAJ",
+          "published_year": 2026,
+          "live_score": 34.25,
+          "ai_fit_score": 0,
+          "ai_fit_reason": ""
+        }
+      ]
+    },
+    {
+      "at": "2026-04-26T13:38:25.886Z",
+      "stage": "live_candidates_inspected",
+      "inspected": [
+        {
+          "recommendation": {
+            "titulo": "Educación financiera",
+            "autor": "Iñaki Jiménez Largo",
+            "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+            "tagline": "¿Te gustaría dejar de preocuparte por tu dinero a final de mes?",
+            "source_label": "google_books_newest",
+            "source_url": "https://www.googleapis.com/books/v1/volumes/KE1OEAAAQBAJ",
+            "published_year": 2021,
+            "live_score": 39.25,
+            "ai_fit_score": 0.95,
+            "ai_fit_reason": "Ofrece una comprensión clara de la educación financiera y cómo manejar el dinero."
+          },
+          "evidence": {
+            "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/3000x3000bb.jpg",
+            "isbn": "",
+            "editorial": "Iñaki Jiménez Largo",
+            "source": "apple_books",
+            "year": "2021",
+            "matched_title": "Educación financiera",
+            "matched_author": "Iñaki Jiménez Largo",
+            "match_score": 1,
+            "synopsis": "¿Te gustaría dejar de preocuparte por tu dinero a final de mes? La solución a tu problema no pasa por quejarte por cómo te han ido las cosas hasta el momento. Debes empezar por adquirir unos conocimientos básicos sobre educación financiera. Aunque el mundo financiero te pueda parecer algo complejo, te prometo que la lectura de este libro te ayudará a comprender todos aquellos conceptos económicos que serán clave para que tus decisiones resulten más acertadas. No se trata de que trabajes muchas más horas para intentar tener unos pocos ingresos más a final de mes. El objetivo será que tu dinero siga trabajando para ti mientras tú disfrutas de una agradable velada con tus amigos o incluso cuando estés durmiendo. A lo largo del libro te explicaré la necesidad de que ahorres para luego poder invertir esos ahorros de forma exitosa y mejorar definitivamente tus finanzas personales. Con la lectura de Educación financiera: -Conocerás los conceptos económicos básicos para tomar buenas decisiones -Entenderás que invertir es diferente a gastar -Estudiarás diferentes alternativas de inversión -Averiguarás en qué momento endeudarse es sano o empieza a ser un problema -Analizarás el panorama económico que nos ha dejado la COVID-19 El libro está escrito por Iñaki Jiménez Largo, licenciado en Administración de Empresas por la Universidad de Barcelona (UB) y profesor de economía desde hace más de veinticinco años. Es autor de varios libros sobre economía, ha publicado artículos de educación financiera básica con el diario de economía Expansión y es colaborador en Onda Cero Cataluña, donde tiene una sección periódica en la que habla de la actualidad económica. En Educación financiera el autor pone a tu disposición toda su experiencia como docente y explica de forma didáctica y amena todo lo que vas a necesitar para defenderte mejor en el mundo financiero.",
+            "synopsis_length": 1868,
+            "covers": [
+              {
+                "size": "xxlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/3000x3000bb.jpg"
+              },
+              {
+                "size": "xlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/1200x1200bb.jpg"
+              },
+              {
+                "size": "large",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/600x600bb.jpg"
+              },
+              {
+                "size": "medium",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/100x100bb.jpg"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "Educación financiera",
+              "autor_completo": "Iñaki Jiménez Largo",
+              "año": "2021",
+              "editorial": null,
+              "isbn": "",
+              "apple_track_id": "1588365226",
+              "categorias": [
+                "Finanzas",
+                "Libros",
+                "Negocios y finanzas personales"
+              ],
+              "track_view_url": "https://books.apple.com/mx/book/educaci%C3%B3n-financiera/id1588365226?uo=4"
+            },
+            "_evidence": {
+              "titulo_input": "Educación financiera",
+              "autor_input": "Iñaki Jiménez Largo",
+              "isbn_seed": "",
+              "isbn_seed_raw": "",
+              "isbn_seed_rejected": null,
+              "isbn_discovered": "9788426733948",
+              "isbn_discovered_raw": "9788426733948",
+              "apple": {
+                "ok": true,
+                "source": "apple_books",
+                "match_score": 1,
+                "match_details": {
+                  "matched_title": "Educación financiera",
+                  "matched_author": "Iñaki Jiménez Largo"
+                },
+                "synopsis": "¿Te gustaría dejar de preocuparte por tu dinero a final de mes? La solución a tu problema no pasa por quejarte por cómo te han ido las cosas hasta el momento. Debes empezar por adquirir unos conocimientos básicos sobre educación financiera. Aunque el mundo financiero te pueda parecer algo complejo, te prometo que la lectura de este libro te ayudará a comprender todos aquellos conceptos económicos que serán clave para que tus decisiones resulten más acertadas. No se trata de que trabajes muchas más horas para intentar tener unos pocos ingresos más a final de mes. El objetivo será que tu dinero siga trabajando para ti mientras tú disfrutas de una agradable velada con tus amigos o incluso cuando estés durmiendo. A lo largo del libro te explicaré la necesidad de que ahorres para luego poder invertir esos ahorros de forma exitosa y mejorar definitivamente tus finanzas personales. Con la lectura de Educación financiera: -Conocerás los conceptos económicos básicos para tomar buenas decisiones -Entenderás que invertir es diferente a gastar -Estudiarás diferentes alternativas de inversión -Averiguarás en qué momento endeudarse es sano o empieza a ser un problema -Analizarás el panorama económico que nos ha dejado la COVID-19 El libro está escrito por Iñaki Jiménez Largo, licenciado en Administración de Empresas por la Universidad de Barcelona (UB) y profesor de economía desde hace más de veinticinco años. Es autor de varios libros sobre economía, ha publicado artículos de educación financiera básica con el diario de economía Expansión y es colaborador en Onda Cero Cataluña, donde tiene una sección periódica en la que habla de la actualidad económica. En Educación financiera el autor pone a tu disposición toda su experiencia como docente y explica de forma didáctica y amena todo lo que vas a necesitar para defenderte mejor en el mundo financiero.",
+                "synopsis_length": 1868,
+                "covers": [
+                  {
+                    "size": "xxlarge",
+                    "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/3000x3000bb.jpg"
+                  },
+                  {
+                    "size": "xlarge",
+                    "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/1200x1200bb.jpg"
+                  },
+                  {
+                    "size": "large",
+                    "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/600x600bb.jpg"
+                  },
+                  {
+                    "size": "medium",
+                    "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/100x100bb.jpg"
+                  }
+                ],
+                "verified_identity": {
+                  "titulo_real": "Educación financiera",
+                  "autor_completo": "Iñaki Jiménez Largo",
+                  "año": "2021",
+                  "editorial": null,
+                  "isbn": "",
+                  "apple_track_id": "1588365226",
+                  "categorias": [
+                    "Finanzas",
+                    "Libros",
+                    "Negocios y finanzas personales"
+                  ],
+                  "track_view_url": "https://books.apple.com/mx/book/educaci%C3%B3n-financiera/id1588365226?uo=4"
+                }
+              },
+              "google": {
+                "ok": true,
+                "source": "google_books",
+                "match_score": 1,
+                "match_details": {
+                  "matched_title": "Educación financiera",
+                  "matched_author": "Iñaki Jiménez Largo"
+                },
+                "synopsis": "¿Te gustaría dejar de preocuparte por tu dinero a final de mes? La solución a tu problema no pasa por quejarte por cómo te han ido las cosas hasta el momento. Debes empezar por adquirir unos conocimientos básicos sobre educación financiera. Aunque el mundo financiero te pueda parecer algo complejo, te prometo que la lectura de este libro te ayudará a comprender todos aquellos conceptos económicos que serán clave para que tus decisiones resulten más acertadas. No se trata de que trabajes muchas más horas para intentar tener unos pocos ingresos más a final de mes. El objetivo será que tu dinero siga trabajando para ti mientras tú disfrutas de una agradable velada con tus amigos o incluso cuando estés durmiendo. A lo largo del libro te explicaré la necesidad de que ahorres para luego poder invertir esos ahorros de forma exitosa y mejorar definitivamente tus finanzas personales. Con la lectura de Educación financiera: -Conocerás los conceptos económicos básicos para tomar buenas decisiones -Entenderás que invertir es diferente a gastar -Estudiarás diferentes alternativas de inversión -Averiguarás en qué momento endeudarse es sano o empieza a ser un problema -Analizarás el panorama económico que nos ha dejado la COVID-19 El libro está escrito por Iñaki Jiménez Largo, licenciado en Administración de Empresas por la Universidad de Barcelona (UB) y profesor de economía desde hace más de veinticinco años. Es autor de varios libros sobre economía, ha publicado artículos de educación financiera básica con el diario de economía Expansión y es colaborador en Onda Cero Cataluña, donde tiene una sección periódica en la que habla de la actualidad económica. En Educación financiera el autor pone a tu disposición toda su experiencia como docente y explica de forma didáctica y amena todo lo que vas a necesitar para defenderte mejor en el mundo financiero. Cuando acabes de leer este libro, comprenderás que su adquisición realmente ha sido una inversión y no un gasto. No esperes más, hazte con el manual y empieza a tomar las mejores decisiones con tu dinero.",
+                "synopsis_length": 2073,
+                "covers": [
+                  {
+                    "size": "small",
+                    "url": "https://books.google.com/books/content?id=KE1OEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+                  }
+                ],
+                "verified_identity": {
+                  "titulo_real": "Educación financiera",
+                  "subtitulo": "Mueve tu dinero",
+                  "autor_completo": "Iñaki Jiménez Largo",
+                  "año": "2021",
+                  "editorial": "Marcombo",
+                  "paginas": 129,
+                  "isbn": "9788426733948",
+                  "isbn13": "9788426733948",
+                  "isbn10": "8426733948",
+                  "categorias": [
+                    "Business & Economics"
+                  ],
+                  "idioma": "es",
+                  "preview_link": "http://books.google.com/books?id=KE1OEAAAQBAJ&printsec=frontcover&dq=Educaci%C3%B3n+financiera+I%C3%B1aki+Jim%C3%A9nez+Largo&hl=&cd=1&source=gbs_api"
+                }
+              },
+              "openlibrary": {
+                "ok": true,
+                "source": "openlibrary",
+                "match_score": 1,
+                "match_details": {
+                  "matched_title": "Educación financiera",
+                  "matched_author": "IÑAKI JIMÉNEZ LARGO"
+                },
+                "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2021.",
+                "synopsis_length": 65,
+                "covers": [
+                  {
+                    "size": "large",
+                    "url": "https://covers.openlibrary.org/b/id/13698801-L.jpg"
+                  },
+                  {
+                    "size": "medium",
+                    "url": "https://covers.openlibrary.org/b/id/13698801-M.jpg"
+                  },
+                  {
+                    "size": "small",
+                    "url": "https://covers.openlibrary.org/b/id/13698801-S.jpg"
+                  }
+                ],
+                "verified_identity": {
+                  "titulo_real": "Educación financiera",
+                  "autor_completo": "IÑAKI JIMÉNEZ LARGO",
+                  "año": "2021",
+                  "editorial": null,
+                  "isbn": "",
+                  "categorias": [],
+                  "idioma": null,
+                  "paginas": null
+                }
+              },
+              "amazon": {
+                "ok": false,
+                "reason": "no_amazon_cover_or_only_placeholders",
+                "source": "amazon"
+              },
+              "valid_covers": [
+                {
+                  "source": "apple_books",
+                  "size": "xxlarge",
+                  "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/3000x3000bb.jpg",
+                  "valid": true
+                },
+                {
+                  "source": "apple_books",
+                  "size": "xlarge",
+                  "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/1200x1200bb.jpg",
+                  "valid": true
+                },
+                {
+                  "source": "apple_books",
+                  "size": "large",
+                  "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/600x600bb.jpg",
+                  "valid": true
+                },
+                {
+                  "source": "apple_books",
+                  "size": "medium",
+                  "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/100x100bb.jpg",
+                  "valid": true
+                },
+                {
+                  "source": "google_books",
+                  "size": "small",
+                  "url": "https://books.google.com/books/content?id=KE1OEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+                  "valid": true
+                },
+                {
+                  "source": "openlibrary",
+                  "size": "large",
+                  "url": "https://covers.openlibrary.org/b/id/13698801-L.jpg",
+                  "valid": true
+                },
+                {
+                  "source": "openlibrary",
+                  "size": "medium",
+                  "url": "https://covers.openlibrary.org/b/id/13698801-M.jpg",
+                  "valid": true
+                }
+              ],
+              "_sources_succeeded": [
+                "apple_books",
+                "google_books",
+                "openlibrary"
+              ],
+              "_sources_failed": [
+                "amazon:no_amazon_cover_or_only_placeholders"
+              ],
+              "_timing": {
+                "phase1_parallel_ms": 656,
+                "phase2_isbn_chain_ms": 306,
+                "cover_validation_ms": 2108,
+                "total_ms": 3070
+              },
+              "_version": "3.6"
+            }
+          },
+          "constraintsCheck": {
+            "exact_ok": true,
+            "hard_ok": true,
+            "issues": [],
+            "warnings": [],
+            "reason": "Año verificado 2021"
+          },
+          "sourceLabel": "live_candidates",
+          "semantic_score": 0.95,
+          "fallback_score": 155
+        }
+      ]
+    },
+    {
+      "at": "2026-04-26T13:38:25.910Z",
+      "stage": "success",
+      "bookData": {
+        "titulo": "Educación financiera",
+        "autor": "Iñaki Jiménez Largo",
+        "slug": "educacion-financiera",
+        "tagline": "¿Te gustaría dejar de preocuparte por tu dinero a final de mes?",
+        "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/3000x3000bb.jpg",
+        "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/3000x3000bb.jpg",
+        "portada_source": "apple_books",
+        "portada_candidates": [
+          {
+            "source": "apple_books",
+            "size": "xxlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/3000x3000bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "xlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/1200x1200bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "large",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/600x600bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "medium",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/100x100bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "google_books",
+            "size": "small",
+            "url": "https://books.google.com/books/content?id=KE1OEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+            "valid": true
+          },
+          {
+            "source": "openlibrary",
+            "size": "large",
+            "url": "https://covers.openlibrary.org/b/id/13698801-L.jpg",
+            "valid": true
+          },
+          {
+            "source": "openlibrary",
+            "size": "medium",
+            "url": "https://covers.openlibrary.org/b/id/13698801-M.jpg",
+            "valid": true
+          }
+        ],
+        "needs_fallback_cover": false,
+        "isbn": "",
+        "editorial": "Iñaki Jiménez Largo",
+        "publication_year": "2021",
+        "source": "apple_books",
+        "duplicado": false,
+        "selected_via": "discover_live_google_books",
+        "selection_reason": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+        "trigger_input": "quiero un libro que me ayude a entender mejor el dinero",
+        "trigger_analysis": {
+          "raw_input": "quiero un libro que me ayude a entender mejor el dinero",
+          "semantic_query": "libros sobre educación financiera y comprensión del dinero",
+          "intent_summary": "Buscar un libro que explique conceptos financieros y ayude a entender el dinero.",
+          "editorial_requests": [],
+          "source_preference": null,
+          "ranking_preference": null,
+          "unsupported_runtime_constraints": [],
+          "supported_constraints": {
+            "year_min": null,
+            "year_max": null,
+            "prefer_recent": false
+          },
+          "search_queries": [
+            "educación financiera",
+            "comprensión del dinero",
+            "libros sobre finanzas personales",
+            "cómo manejar el dinero",
+            "inversiones para principiantes",
+            "ahorro y presupuesto",
+            "libros sobre educación financiera y comprensión del dinero",
+            "libros educacion financiera"
+          ],
+          "concept_hints": [
+            "finanzas",
+            "educación financiera"
+          ],
+          "clean_for_selection": "libros sobre educación financiera y comprensión del dinero",
+          "notes": {
+            "used_ai_normalizer": true,
+            "looked_like_book_intent": true,
+            "semantic_overlap_vs_raw": 0.09090909090909091
+          }
+        },
+        "selection_validation": {
+          "semantic_score": 0.95,
+          "ai_fit_score": 0.95,
+          "match_score": 1,
+          "validation_source": "apple_books",
+          "constraint_reason": "Año verificado 2021",
+          "mode": "exact_live",
+          "source_label": "google_books_newest",
+          "fallback_score": 155
+        },
+        "catalog_scope": "",
+        "contexto_2026": {},
+        "identity_sealed": true,
+        "_evidence": {
+          "titulo_input": "Educación financiera",
+          "autor_input": "Iñaki Jiménez Largo",
+          "isbn_seed": "",
+          "isbn_seed_raw": "",
+          "isbn_seed_rejected": null,
+          "isbn_discovered": "9788426733948",
+          "isbn_discovered_raw": "9788426733948",
+          "apple": {
+            "ok": true,
+            "source": "apple_books",
+            "match_score": 1,
+            "match_details": {
+              "matched_title": "Educación financiera",
+              "matched_author": "Iñaki Jiménez Largo"
+            },
+            "synopsis": "¿Te gustaría dejar de preocuparte por tu dinero a final de mes? La solución a tu problema no pasa por quejarte por cómo te han ido las cosas hasta el momento. Debes empezar por adquirir unos conocimientos básicos sobre educación financiera. Aunque el mundo financiero te pueda parecer algo complejo, te prometo que la lectura de este libro te ayudará a comprender todos aquellos conceptos económicos que serán clave para que tus decisiones resulten más acertadas. No se trata de que trabajes muchas más horas para intentar tener unos pocos ingresos más a final de mes. El objetivo será que tu dinero siga trabajando para ti mientras tú disfrutas de una agradable velada con tus amigos o incluso cuando estés durmiendo. A lo largo del libro te explicaré la necesidad de que ahorres para luego poder invertir esos ahorros de forma exitosa y mejorar definitivamente tus finanzas personales. Con la lectura de Educación financiera: -Conocerás los conceptos económicos básicos para tomar buenas decisiones -Entenderás que invertir es diferente a gastar -Estudiarás diferentes alternativas de inversión -Averiguarás en qué momento endeudarse es sano o empieza a ser un problema -Analizarás el panorama económico que nos ha dejado la COVID-19 El libro está escrito por Iñaki Jiménez Largo, licenciado en Administración de Empresas por la Universidad de Barcelona (UB) y profesor de economía desde hace más de veinticinco años. Es autor de varios libros sobre economía, ha publicado artículos de educación financiera básica con el diario de economía Expansión y es colaborador en Onda Cero Cataluña, donde tiene una sección periódica en la que habla de la actualidad económica. En Educación financiera el autor pone a tu disposición toda su experiencia como docente y explica de forma didáctica y amena todo lo que vas a necesitar para defenderte mejor en el mundo financiero.",
+            "synopsis_length": 1868,
+            "covers": [
+              {
+                "size": "xxlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/3000x3000bb.jpg"
+              },
+              {
+                "size": "xlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/1200x1200bb.jpg"
+              },
+              {
+                "size": "large",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/600x600bb.jpg"
+              },
+              {
+                "size": "medium",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/100x100bb.jpg"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "Educación financiera",
+              "autor_completo": "Iñaki Jiménez Largo",
+              "año": "2021",
+              "editorial": null,
+              "isbn": "",
+              "apple_track_id": "1588365226",
+              "categorias": [
+                "Finanzas",
+                "Libros",
+                "Negocios y finanzas personales"
+              ],
+              "track_view_url": "https://books.apple.com/mx/book/educaci%C3%B3n-financiera/id1588365226?uo=4"
+            }
+          },
+          "google": {
+            "ok": true,
+            "source": "google_books",
+            "match_score": 1,
+            "match_details": {
+              "matched_title": "Educación financiera",
+              "matched_author": "Iñaki Jiménez Largo"
+            },
+            "synopsis": "¿Te gustaría dejar de preocuparte por tu dinero a final de mes? La solución a tu problema no pasa por quejarte por cómo te han ido las cosas hasta el momento. Debes empezar por adquirir unos conocimientos básicos sobre educación financiera. Aunque el mundo financiero te pueda parecer algo complejo, te prometo que la lectura de este libro te ayudará a comprender todos aquellos conceptos económicos que serán clave para que tus decisiones resulten más acertadas. No se trata de que trabajes muchas más horas para intentar tener unos pocos ingresos más a final de mes. El objetivo será que tu dinero siga trabajando para ti mientras tú disfrutas de una agradable velada con tus amigos o incluso cuando estés durmiendo. A lo largo del libro te explicaré la necesidad de que ahorres para luego poder invertir esos ahorros de forma exitosa y mejorar definitivamente tus finanzas personales. Con la lectura de Educación financiera: -Conocerás los conceptos económicos básicos para tomar buenas decisiones -Entenderás que invertir es diferente a gastar -Estudiarás diferentes alternativas de inversión -Averiguarás en qué momento endeudarse es sano o empieza a ser un problema -Analizarás el panorama económico que nos ha dejado la COVID-19 El libro está escrito por Iñaki Jiménez Largo, licenciado en Administración de Empresas por la Universidad de Barcelona (UB) y profesor de economía desde hace más de veinticinco años. Es autor de varios libros sobre economía, ha publicado artículos de educación financiera básica con el diario de economía Expansión y es colaborador en Onda Cero Cataluña, donde tiene una sección periódica en la que habla de la actualidad económica. En Educación financiera el autor pone a tu disposición toda su experiencia como docente y explica de forma didáctica y amena todo lo que vas a necesitar para defenderte mejor en el mundo financiero. Cuando acabes de leer este libro, comprenderás que su adquisición realmente ha sido una inversión y no un gasto. No esperes más, hazte con el manual y empieza a tomar las mejores decisiones con tu dinero.",
+            "synopsis_length": 2073,
+            "covers": [
+              {
+                "size": "small",
+                "url": "https://books.google.com/books/content?id=KE1OEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "Educación financiera",
+              "subtitulo": "Mueve tu dinero",
+              "autor_completo": "Iñaki Jiménez Largo",
+              "año": "2021",
+              "editorial": "Marcombo",
+              "paginas": 129,
+              "isbn": "9788426733948",
+              "isbn13": "9788426733948",
+              "isbn10": "8426733948",
+              "categorias": [
+                "Business & Economics"
+              ],
+              "idioma": "es",
+              "preview_link": "http://books.google.com/books?id=KE1OEAAAQBAJ&printsec=frontcover&dq=Educaci%C3%B3n+financiera+I%C3%B1aki+Jim%C3%A9nez+Largo&hl=&cd=1&source=gbs_api"
+            }
+          },
+          "openlibrary": {
+            "ok": true,
+            "source": "openlibrary",
+            "match_score": 1,
+            "match_details": {
+              "matched_title": "Educación financiera",
+              "matched_author": "IÑAKI JIMÉNEZ LARGO"
+            },
+            "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2021.",
+            "synopsis_length": 65,
+            "covers": [
+              {
+                "size": "large",
+                "url": "https://covers.openlibrary.org/b/id/13698801-L.jpg"
+              },
+              {
+                "size": "medium",
+                "url": "https://covers.openlibrary.org/b/id/13698801-M.jpg"
+              },
+              {
+                "size": "small",
+                "url": "https://covers.openlibrary.org/b/id/13698801-S.jpg"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "Educación financiera",
+              "autor_completo": "IÑAKI JIMÉNEZ LARGO",
+              "año": "2021",
+              "editorial": null,
+              "isbn": "",
+              "categorias": [],
+              "idioma": null,
+              "paginas": null
+            }
+          },
+          "amazon": {
+            "ok": false,
+            "reason": "no_amazon_cover_or_only_placeholders",
+            "source": "amazon"
+          },
+          "valid_covers": [
+            {
+              "source": "apple_books",
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/3000x3000bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/1200x1200bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/600x600bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/100x100bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "google_books",
+              "size": "small",
+              "url": "https://books.google.com/books/content?id=KE1OEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+              "valid": true
+            },
+            {
+              "source": "openlibrary",
+              "size": "large",
+              "url": "https://covers.openlibrary.org/b/id/13698801-L.jpg",
+              "valid": true
+            },
+            {
+              "source": "openlibrary",
+              "size": "medium",
+              "url": "https://covers.openlibrary.org/b/id/13698801-M.jpg",
+              "valid": true
+            }
+          ],
+          "_sources_succeeded": [
+            "apple_books",
+            "google_books",
+            "openlibrary"
+          ],
+          "_sources_failed": [
+            "amazon:no_amazon_cover_or_only_placeholders"
+          ],
+          "_timing": {
+            "phase1_parallel_ms": 656,
+            "phase2_isbn_chain_ms": 306,
+            "cover_validation_ms": 2108,
+            "total_ms": 3070
+          },
+          "_version": "3.6"
+        },
+        "_evidence_synopsis": "¿Te gustaría dejar de preocuparte por tu dinero a final de mes? La solución a tu problema no pasa por quejarte por cómo te han ido las cosas hasta el momento. Debes empezar por adquirir unos conocimientos básicos sobre educación financiera. Aunque el mundo financiero te pueda parecer algo complejo, te prometo que la lectura de este libro te ayudará a comprender todos aquellos conceptos económicos que serán clave para que tus decisiones resulten más acertadas. No se trata de que trabajes muchas más horas para intentar tener unos pocos ingresos más a final de mes. El objetivo será que tu dinero siga trabajando para ti mientras tú disfrutas de una agradable velada con tus amigos o incluso cuando estés durmiendo. A lo largo del libro te explicaré la necesidad de que ahorres para luego poder invertir esos ahorros de forma exitosa y mejorar definitivamente tus finanzas personales. Con la lectura de Educación financiera: -Conocerás los conceptos económicos básicos para tomar buenas decisiones -Entenderás que invertir es diferente a gastar -Estudiarás diferentes alternativas de inversión -Averiguarás en qué momento endeudarse es sano o empieza a ser un problema -Analizarás el panorama económico que nos ha dejado la COVID-19 El libro está escrito por Iñaki Jiménez Largo, licenciado en Administración de Empresas por la Universidad de Barcelona (UB) y profesor de economía desde hace más de veinticinco años. Es autor de varios libros sobre economía, ha publicado artículos de educación financiera básica con el diario de economía Expansión y es colaborador en Onda Cero Cataluña, donde tiene una sección periódica en la que habla de la actualidad económica. En Educación financiera el autor pone a tu disposición toda su experiencia como docente y explica de forma didáctica y amena todo lo que vas a necesitar para defenderte mejor en el mundo financiero.",
+        "_evidence_verified_identity": {
+          "titulo_real": "Educación financiera",
+          "autor_completo": "Iñaki Jiménez Largo",
+          "año": "2021",
+          "editorial": null,
+          "isbn": "",
+          "apple_track_id": "1588365226",
+          "categorias": [
+            "Finanzas",
+            "Libros",
+            "Negocios y finanzas personales"
+          ],
+          "track_view_url": "https://books.apple.com/mx/book/educaci%C3%B3n-financiera/id1588365226?uo=4"
+        },
+        "_evidence_match_score": 1
+      },
+      "ring_updated": true
+    }
+  ],
+  "last": {
+    "at": "2026-04-26T13:38:25.910Z",
+    "stage": "success",
+    "bookData": {
+      "titulo": "Educación financiera",
+      "autor": "Iñaki Jiménez Largo",
+      "slug": "educacion-financiera",
+      "tagline": "¿Te gustaría dejar de preocuparte por tu dinero a final de mes?",
+      "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/3000x3000bb.jpg",
+      "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/3000x3000bb.jpg",
+      "portada_source": "apple_books",
+      "portada_candidates": [
+        {
+          "source": "apple_books",
+          "size": "xxlarge",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/3000x3000bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "xlarge",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/1200x1200bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "large",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/600x600bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "medium",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/100x100bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "google_books",
+          "size": "small",
+          "url": "https://books.google.com/books/content?id=KE1OEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+          "valid": true
+        },
+        {
+          "source": "openlibrary",
+          "size": "large",
+          "url": "https://covers.openlibrary.org/b/id/13698801-L.jpg",
+          "valid": true
+        },
+        {
+          "source": "openlibrary",
+          "size": "medium",
+          "url": "https://covers.openlibrary.org/b/id/13698801-M.jpg",
+          "valid": true
+        }
+      ],
+      "needs_fallback_cover": false,
+      "isbn": "",
+      "editorial": "Iñaki Jiménez Largo",
+      "publication_year": "2021",
+      "source": "apple_books",
+      "duplicado": false,
+      "selected_via": "discover_live_google_books",
+      "selection_reason": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+      "trigger_input": "quiero un libro que me ayude a entender mejor el dinero",
+      "trigger_analysis": {
+        "raw_input": "quiero un libro que me ayude a entender mejor el dinero",
+        "semantic_query": "libros sobre educación financiera y comprensión del dinero",
+        "intent_summary": "Buscar un libro que explique conceptos financieros y ayude a entender el dinero.",
+        "editorial_requests": [],
+        "source_preference": null,
+        "ranking_preference": null,
+        "unsupported_runtime_constraints": [],
+        "supported_constraints": {
+          "year_min": null,
+          "year_max": null,
+          "prefer_recent": false
+        },
+        "search_queries": [
+          "educación financiera",
+          "comprensión del dinero",
+          "libros sobre finanzas personales",
+          "cómo manejar el dinero",
+          "inversiones para principiantes",
+          "ahorro y presupuesto",
+          "libros sobre educación financiera y comprensión del dinero",
+          "libros educacion financiera"
+        ],
+        "concept_hints": [
+          "finanzas",
+          "educación financiera"
+        ],
+        "clean_for_selection": "libros sobre educación financiera y comprensión del dinero",
+        "notes": {
+          "used_ai_normalizer": true,
+          "looked_like_book_intent": true,
+          "semantic_overlap_vs_raw": 0.09090909090909091
+        }
+      },
+      "selection_validation": {
+        "semantic_score": 0.95,
+        "ai_fit_score": 0.95,
+        "match_score": 1,
+        "validation_source": "apple_books",
+        "constraint_reason": "Año verificado 2021",
+        "mode": "exact_live",
+        "source_label": "google_books_newest",
+        "fallback_score": 155
+      },
+      "catalog_scope": "",
+      "contexto_2026": {},
+      "identity_sealed": true,
+      "_evidence": {
+        "titulo_input": "Educación financiera",
+        "autor_input": "Iñaki Jiménez Largo",
+        "isbn_seed": "",
+        "isbn_seed_raw": "",
+        "isbn_seed_rejected": null,
+        "isbn_discovered": "9788426733948",
+        "isbn_discovered_raw": "9788426733948",
+        "apple": {
+          "ok": true,
+          "source": "apple_books",
+          "match_score": 1,
+          "match_details": {
+            "matched_title": "Educación financiera",
+            "matched_author": "Iñaki Jiménez Largo"
+          },
+          "synopsis": "¿Te gustaría dejar de preocuparte por tu dinero a final de mes? La solución a tu problema no pasa por quejarte por cómo te han ido las cosas hasta el momento. Debes empezar por adquirir unos conocimientos básicos sobre educación financiera. Aunque el mundo financiero te pueda parecer algo complejo, te prometo que la lectura de este libro te ayudará a comprender todos aquellos conceptos económicos que serán clave para que tus decisiones resulten más acertadas. No se trata de que trabajes muchas más horas para intentar tener unos pocos ingresos más a final de mes. El objetivo será que tu dinero siga trabajando para ti mientras tú disfrutas de una agradable velada con tus amigos o incluso cuando estés durmiendo. A lo largo del libro te explicaré la necesidad de que ahorres para luego poder invertir esos ahorros de forma exitosa y mejorar definitivamente tus finanzas personales. Con la lectura de Educación financiera: -Conocerás los conceptos económicos básicos para tomar buenas decisiones -Entenderás que invertir es diferente a gastar -Estudiarás diferentes alternativas de inversión -Averiguarás en qué momento endeudarse es sano o empieza a ser un problema -Analizarás el panorama económico que nos ha dejado la COVID-19 El libro está escrito por Iñaki Jiménez Largo, licenciado en Administración de Empresas por la Universidad de Barcelona (UB) y profesor de economía desde hace más de veinticinco años. Es autor de varios libros sobre economía, ha publicado artículos de educación financiera básica con el diario de economía Expansión y es colaborador en Onda Cero Cataluña, donde tiene una sección periódica en la que habla de la actualidad económica. En Educación financiera el autor pone a tu disposición toda su experiencia como docente y explica de forma didáctica y amena todo lo que vas a necesitar para defenderte mejor en el mundo financiero.",
+          "synopsis_length": 1868,
+          "covers": [
+            {
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/3000x3000bb.jpg"
+            },
+            {
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/1200x1200bb.jpg"
+            },
+            {
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/600x600bb.jpg"
+            },
+            {
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/100x100bb.jpg"
+            }
+          ],
+          "verified_identity": {
+            "titulo_real": "Educación financiera",
+            "autor_completo": "Iñaki Jiménez Largo",
+            "año": "2021",
+            "editorial": null,
+            "isbn": "",
+            "apple_track_id": "1588365226",
+            "categorias": [
+              "Finanzas",
+              "Libros",
+              "Negocios y finanzas personales"
+            ],
+            "track_view_url": "https://books.apple.com/mx/book/educaci%C3%B3n-financiera/id1588365226?uo=4"
+          }
+        },
+        "google": {
+          "ok": true,
+          "source": "google_books",
+          "match_score": 1,
+          "match_details": {
+            "matched_title": "Educación financiera",
+            "matched_author": "Iñaki Jiménez Largo"
+          },
+          "synopsis": "¿Te gustaría dejar de preocuparte por tu dinero a final de mes? La solución a tu problema no pasa por quejarte por cómo te han ido las cosas hasta el momento. Debes empezar por adquirir unos conocimientos básicos sobre educación financiera. Aunque el mundo financiero te pueda parecer algo complejo, te prometo que la lectura de este libro te ayudará a comprender todos aquellos conceptos económicos que serán clave para que tus decisiones resulten más acertadas. No se trata de que trabajes muchas más horas para intentar tener unos pocos ingresos más a final de mes. El objetivo será que tu dinero siga trabajando para ti mientras tú disfrutas de una agradable velada con tus amigos o incluso cuando estés durmiendo. A lo largo del libro te explicaré la necesidad de que ahorres para luego poder invertir esos ahorros de forma exitosa y mejorar definitivamente tus finanzas personales. Con la lectura de Educación financiera: -Conocerás los conceptos económicos básicos para tomar buenas decisiones -Entenderás que invertir es diferente a gastar -Estudiarás diferentes alternativas de inversión -Averiguarás en qué momento endeudarse es sano o empieza a ser un problema -Analizarás el panorama económico que nos ha dejado la COVID-19 El libro está escrito por Iñaki Jiménez Largo, licenciado en Administración de Empresas por la Universidad de Barcelona (UB) y profesor de economía desde hace más de veinticinco años. Es autor de varios libros sobre economía, ha publicado artículos de educación financiera básica con el diario de economía Expansión y es colaborador en Onda Cero Cataluña, donde tiene una sección periódica en la que habla de la actualidad económica. En Educación financiera el autor pone a tu disposición toda su experiencia como docente y explica de forma didáctica y amena todo lo que vas a necesitar para defenderte mejor en el mundo financiero. Cuando acabes de leer este libro, comprenderás que su adquisición realmente ha sido una inversión y no un gasto. No esperes más, hazte con el manual y empieza a tomar las mejores decisiones con tu dinero.",
+          "synopsis_length": 2073,
+          "covers": [
+            {
+              "size": "small",
+              "url": "https://books.google.com/books/content?id=KE1OEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+            }
+          ],
+          "verified_identity": {
+            "titulo_real": "Educación financiera",
+            "subtitulo": "Mueve tu dinero",
+            "autor_completo": "Iñaki Jiménez Largo",
+            "año": "2021",
+            "editorial": "Marcombo",
+            "paginas": 129,
+            "isbn": "9788426733948",
+            "isbn13": "9788426733948",
+            "isbn10": "8426733948",
+            "categorias": [
+              "Business & Economics"
+            ],
+            "idioma": "es",
+            "preview_link": "http://books.google.com/books?id=KE1OEAAAQBAJ&printsec=frontcover&dq=Educaci%C3%B3n+financiera+I%C3%B1aki+Jim%C3%A9nez+Largo&hl=&cd=1&source=gbs_api"
+          }
+        },
+        "openlibrary": {
+          "ok": true,
+          "source": "openlibrary",
+          "match_score": 1,
+          "match_details": {
+            "matched_title": "Educación financiera",
+            "matched_author": "IÑAKI JIMÉNEZ LARGO"
+          },
+          "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2021.",
+          "synopsis_length": 65,
+          "covers": [
+            {
+              "size": "large",
+              "url": "https://covers.openlibrary.org/b/id/13698801-L.jpg"
+            },
+            {
+              "size": "medium",
+              "url": "https://covers.openlibrary.org/b/id/13698801-M.jpg"
+            },
+            {
+              "size": "small",
+              "url": "https://covers.openlibrary.org/b/id/13698801-S.jpg"
+            }
+          ],
+          "verified_identity": {
+            "titulo_real": "Educación financiera",
+            "autor_completo": "IÑAKI JIMÉNEZ LARGO",
+            "año": "2021",
+            "editorial": null,
+            "isbn": "",
+            "categorias": [],
+            "idioma": null,
+            "paginas": null
+          }
+        },
+        "amazon": {
+          "ok": false,
+          "reason": "no_amazon_cover_or_only_placeholders",
+          "source": "amazon"
+        },
+        "valid_covers": [
+          {
+            "source": "apple_books",
+            "size": "xxlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/3000x3000bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "xlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/1200x1200bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "large",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/600x600bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "medium",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/56/fc/56/56fc56a6-78e0-2174-99f8-c5b95db0b5bc/1035030723.jpg/100x100bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "google_books",
+            "size": "small",
+            "url": "https://books.google.com/books/content?id=KE1OEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+            "valid": true
+          },
+          {
+            "source": "openlibrary",
+            "size": "large",
+            "url": "https://covers.openlibrary.org/b/id/13698801-L.jpg",
+            "valid": true
+          },
+          {
+            "source": "openlibrary",
+            "size": "medium",
+            "url": "https://covers.openlibrary.org/b/id/13698801-M.jpg",
+            "valid": true
+          }
+        ],
+        "_sources_succeeded": [
+          "apple_books",
+          "google_books",
+          "openlibrary"
+        ],
+        "_sources_failed": [
+          "amazon:no_amazon_cover_or_only_placeholders"
+        ],
+        "_timing": {
+          "phase1_parallel_ms": 656,
+          "phase2_isbn_chain_ms": 306,
+          "cover_validation_ms": 2108,
+          "total_ms": 3070
+        },
+        "_version": "3.6"
+      },
+      "_evidence_synopsis": "¿Te gustaría dejar de preocuparte por tu dinero a final de mes? La solución a tu problema no pasa por quejarte por cómo te han ido las cosas hasta el momento. Debes empezar por adquirir unos conocimientos básicos sobre educación financiera. Aunque el mundo financiero te pueda parecer algo complejo, te prometo que la lectura de este libro te ayudará a comprender todos aquellos conceptos económicos que serán clave para que tus decisiones resulten más acertadas. No se trata de que trabajes muchas más horas para intentar tener unos pocos ingresos más a final de mes. El objetivo será que tu dinero siga trabajando para ti mientras tú disfrutas de una agradable velada con tus amigos o incluso cuando estés durmiendo. A lo largo del libro te explicaré la necesidad de que ahorres para luego poder invertir esos ahorros de forma exitosa y mejorar definitivamente tus finanzas personales. Con la lectura de Educación financiera: -Conocerás los conceptos económicos básicos para tomar buenas decisiones -Entenderás que invertir es diferente a gastar -Estudiarás diferentes alternativas de inversión -Averiguarás en qué momento endeudarse es sano o empieza a ser un problema -Analizarás el panorama económico que nos ha dejado la COVID-19 El libro está escrito por Iñaki Jiménez Largo, licenciado en Administración de Empresas por la Universidad de Barcelona (UB) y profesor de economía desde hace más de veinticinco años. Es autor de varios libros sobre economía, ha publicado artículos de educación financiera básica con el diario de economía Expansión y es colaborador en Onda Cero Cataluña, donde tiene una sección periódica en la que habla de la actualidad económica. En Educación financiera el autor pone a tu disposición toda su experiencia como docente y explica de forma didáctica y amena todo lo que vas a necesitar para defenderte mejor en el mundo financiero.",
+      "_evidence_verified_identity": {
+        "titulo_real": "Educación financiera",
+        "autor_completo": "Iñaki Jiménez Largo",
+        "año": "2021",
+        "editorial": null,
+        "isbn": "",
+        "apple_track_id": "1588365226",
+        "categorias": [
+          "Finanzas",
+          "Libros",
+          "Negocios y finanzas personales"
+        ],
+        "track_view_url": "https://books.apple.com/mx/book/educaci%C3%B3n-financiera/id1588365226?uo=4"
+      },
+      "_evidence_match_score": 1
+    },
+    "ring_updated": true
+  }
+}
