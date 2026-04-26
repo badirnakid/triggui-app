@@ -1,0 +1,29 @@
+# Secretos y entornos
+.env
+.env.local
+.env.*.local
+.vercel/
+
+# Dependencias
+node_modules/
+
+# Archivos temporales / scratch
+*.backup-*
+*.bak
+*.tmp
+*.tmp-*
+
+# Diagnósticos y auditorías de sesión (no van a producción)
+AUDIT_*.txt
+DIAGNOSTICO_*.txt
+VERIFICAR_*.txt
+*_PARA_AUDITORIA.txt
+*_PARA_AUDIT.txt
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
