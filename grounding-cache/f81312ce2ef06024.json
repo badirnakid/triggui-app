@@ -1,0 +1,31 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nTras el éxito de Sapiens, Yuval Noah Harari vuelve su mirada al futuro para ver hacia dónde nos dirigimos. Bestseller del New York Times con 1 millón de ejemplares vendidos Yuval Noah Harari, autor de Sapiens, un fenómeno internacional unánimemente aclamado por la crítica, regresa con una secuela igualmente original, convincente y provocadora, centrando su atención en el futuro de la humanidad y en nuestra obsesión por convertirnos en dioses. A lo largo del último siglo, la humanidad ha logrado lo imposible frenando la hambruna, la peste y la guerra. Por primera vez en la historia, más personas mueren por obesidad que por pasar hambre y hay más probabilidades de quitarse la vida que de morir en un conflicto bélico o un atentado terrorista. ¿Qué pasará con la democracia cuando Google y Facebook lleguen a conocer nuestros gustos y preferencias políticas mejor que nos conocemos a nosotros mismos? ¿Qué pasará con el estado de bienestar cuando la inteligencia artificial expulse a los individuos del mercado laboral, creando una «clase innecesaria» de humanos? ¿Cómo podremos lidiar con los avances en ingeniería genética? ¿Terminará Silicon Valley por establecer nuevas religiones en lugar de enfocarse a producir únicamente dispositivos inteligentes? Homo Deus explora los proyectos, los sueños y las pesadillas que configurarán el siglo XXI: desde superar la muerte hasta la creación de la inteligencia y la vida artificial. ¿Hacia dónde nos dirigimos? ¿Cómo protegeremos al mundo de nuestros propios poderes destructivos? He aquí una mirada hacia el futuro de la evolución. He aquí Homo Deus. Reseñas: «Yuval Noah Harari, autor del fenómeno Sapiens, reflexiona sobre el futuro de la humanidad en Homo Deus, un libro de prosa inteligente, fresca y libre de prejuicios.» Jorge Wagensberg, Babelia «Aún más legible, incluso más importante que su excelente Sapiens.» Kazuo Ishiguro, Premio Nobel de Literatura «Homo Deus te impactará y te cautivará, pero sobre todo te hará pensar como nunca antes.» Daniel Kahneman, Premio Nobel de Economía «Harari se convierte en una especie de filósofo del futuro que desarrolla las intuiciones de su primera obra [...] un ritmo y una energía que convierten Homo Deus en un libro francamente ameno.» El Cultural «El épico y mundialmente celebrado Sapiens recibe la secuela que necesitaba: una intensa y compulsiva investigación sobre el apocalipsis de la humanidad en un futuro impulsado por la tecnología.» The Guardian «Un libro implacable y fascinante que seguramente se convertirá, y merece ser un éxito de ventas.» Kirkus Review «Un estimulante libro que lleva al lector a profundizar sobre cuestiones de identidad, conciencia e inteligencia.» The Observer «Un brebaje embriagador de ciencia, filosofía y futurismo.» Mail on Sunday «Un estudio brillante, original, estimulante e importante sobre hacia dónde se dirige la humanidad.» Evening Standard\n\nMETADATA VERIFICADA:\n- Título: Homo Deus\n- Autor: Yuval Noah Harari\n- Año: 2016\n- Categorías: Historia mundial, Libros, Historia, Ciencia y naturaleza",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Homo Deus",
+    "autor_completo": "Yuval Noah Harari",
+    "año": "2016",
+    "editorial": null,
+    "isbn": "",
+    "apple_track_id": "1141110834",
+    "categorias": [
+      "Historia mundial",
+      "Libros",
+      "Historia",
+      "Ciencia y naturaleza"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/homo-deus/id1141110834?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "google_books",
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_4sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-26T19:47:24.098Z"
+}

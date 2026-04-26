@@ -4,8 +4,8 @@
   "isbn_seed": "",
   "isbn_seed_raw": "",
   "isbn_seed_rejected": null,
-  "isbn_discovered": "9789584264930",
-  "isbn_discovered_raw": "9789584264930",
+  "isbn_discovered": "",
+  "isbn_discovered_raw": "",
   "apple": {
     "ok": true,
     "source": "apple_books",
@@ -50,37 +50,9 @@
     }
   },
   "google": {
-    "ok": true,
-    "source": "google_books",
-    "match_score": 1,
-    "match_details": {
-      "matched_title": "Las 25 leyes bíblicas para el éxito",
-      "matched_author": "William Douglas"
-    },
-    "synopsis": "La Biblia es el mejor manual sobre el éxito que se haya escrito hasta hoy. Contrario a lo que se piensa, no habla solamente sobre religión, sino también sobre los valores fundamentales para construir una base sólida para la vida profesional. Los autores de este libro acuden a esa fuente milenaria de sabiduría para consolidar las 25 leyes que presentan en estas páginas. Son lecciones que hablan sobre la importancia del esfuerzo y la dedicación en el trabajo, la búsqueda indispensable del conocimiento y la evolución personal, el respeto a los otros y, por encima de todo, la honestidad. Sin importar su orientación espiritual o si usted es empleado, trabajador independiente, emprendedor o dueño de una empresa, este libro puede transformar su vida. En estas páginas, usted aprenderá: - Los antídotos contra los siete pecados capitales en la búsqueda del éxito. - Lo que enseña Salomón en el libro de los Proverbios sobre el éxito profesional. - Los errores de la \"teologia de la prosperidad\" y \"la teologia de la miseria\" - Las virtudes recomendadas por la Biblia para alcanzar el éxito - Cómo tener una relación armoniosa con el dinero - 200 citas bíblicas para alcanzar la excelencia, la credibilidad y el éxito",
-    "synopsis_length": 1218,
-    "covers": [
-      {
-        "size": "small",
-        "url": "https://books.google.com/books/content?id=js5KDwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
-      }
-    ],
-    "verified_identity": {
-      "titulo_real": "Las 25 leyes bíblicas para el éxito",
-      "subtitulo": "",
-      "autor_completo": "William Douglas",
-      "año": "2018",
-      "editorial": "Diana Colombia",
-      "paginas": 212,
-      "isbn": "9789584264930",
-      "isbn13": "9789584264930",
-      "isbn10": "9584264931",
-      "categorias": [
-        "Self-Help"
-      ],
-      "idioma": "es",
-      "preview_link": "http://books.google.com/books?id=js5KDwAAQBAJ&printsec=frontcover&dq=intitle:Las+25+leyes+b%C3%ADblicas+para+el+%C3%A9xito+inauthor:William+Douglas&hl=&cd=1&source=gbs_api"
-    }
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
   },
   "openlibrary": {
     "ok": true,
@@ -106,7 +78,7 @@
   },
   "amazon": {
     "ok": false,
-    "reason": "no_amazon_cover_or_only_placeholders",
+    "reason": "skipped",
     "source": "amazon"
   },
   "valid_covers": [
@@ -133,28 +105,22 @@
       "size": "medium",
       "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/f3/86/d2f386d5-0b77-6163-bcc9-4403c6f77889/9789584264930.jpg/100x100bb.jpg",
       "valid": true
-    },
-    {
-      "source": "google_books",
-      "size": "small",
-      "url": "https://books.google.com/books/content?id=js5KDwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
-      "valid": true
     }
   ],
   "_sources_succeeded": [
     "apple_books",
-    "google_books",
     "openlibrary"
   ],
   "_sources_failed": [
-    "amazon:no_amazon_cover_or_only_placeholders"
+    "google_books:no_good_match",
+    "amazon:skipped"
   ],
   "_timing": {
-    "phase1_parallel_ms": 703,
-    "phase2_isbn_chain_ms": 373,
-    "cover_validation_ms": 1352,
-    "total_ms": 2428
+    "phase1_parallel_ms": 16381,
+    "phase2_isbn_chain_ms": 0,
+    "cover_validation_ms": 206,
+    "total_ms": 16587
   },
   "_version": "3.6",
-  "_cached_at": "2026-04-26T14:49:53.765Z"
+  "_cached_at": "2026-04-26T19:59:32.899Z"
 }

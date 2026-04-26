@@ -1,0 +1,187 @@
+{
+  "titulo_input": "Pequeños hábitos grandes cambios",
+  "autor_input": "Steven Handel",
+  "isbn_seed": "",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "9786073180573",
+  "isbn_discovered_raw": "9786073180573",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Pequeños hábitos, grandes cambios",
+      "matched_author": "Steven Handel"
+    },
+    "synopsis": "Transforma tu vida un paso a la vez. Decides probar algo nuevo. Lo haces una segunda vez. Entonces otra vez. Y otra vez. Eventualmente lo estás haciendo sin pensar. Así se forman los hábitos. Los hábitos comienzan cuando las acciones conscientes se transforman en comportamientos constantes. Sin embargo, tocan todos los aspectos de tu vida -alimentación, relaciones, trabajo, ejercicio, salud, felicidad, entre muchos más, ¡es precisamente por eso que son tan poderosos! Repleto de consejos útiles y técnicas efectivas, este libro hace que cambiar tus hábitos sea simple y divertido. Se enfoca en hacer pequeños cambios que crearán mejoras duraderas en tu vida. Entre otros temas te brindará información sobre: -La importancia de tener un ritual matutino. -La diferencia entre una mentalidad de crecimiento y una mentalidad fija. -Cómo utilizar los ciclos de hábitos y la fuerza de voluntad. -Qué elementos facilitan tu toma de decisiones. -Las herramientas clave para mantenerte motivado. -La importancia de los descansos y los pasatiempos para contrarrestar el estrés. -Las principales estrategias para establecer una rutina diaria saludable. -Cómo crear un nuevo estilo de vida a través de sistemas y metas. ¡Cambiar tu vida hoy es posible!\"",
+    "synopsis_length": 1245,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/1d/d6/9e/1dd69e58-ad8a-8f74-5c8d-3cbcc620d092/9786073180573.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/1d/d6/9e/1dd69e58-ad8a-8f74-5c8d-3cbcc620d092/9786073180573.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/1d/d6/9e/1dd69e58-ad8a-8f74-5c8d-3cbcc620d092/9786073180573.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/1d/d6/9e/1dd69e58-ad8a-8f74-5c8d-3cbcc620d092/9786073180573.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Pequeños hábitos, grandes cambios",
+      "autor_completo": "Steven Handel",
+      "año": "2019",
+      "editorial": null,
+      "isbn": "",
+      "apple_track_id": "1463292725",
+      "categorias": [
+        "Superación personal",
+        "Libros",
+        "Salud, mente y cuerpo",
+        "Negocios y finanzas personales",
+        "Administración y liderazgo"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/peque%C3%B1os-h%C3%A1bitos-grandes-cambios/id1463292725?uo=4"
+    }
+  },
+  "google": {
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Pequeños hábitos, grandes cambios",
+      "matched_author": "Steven Handel"
+    },
+    "synopsis": "Transforma tu vida un paso a la vez. Decides probar algo nuevo. Lo haces una segunda vez. Entonces otra vez. Y otra vez. Eventualmente lo estás haciendo sin pensar. Así se forman los hábitos. Los hábitos comienzan cuando las acciones conscientes se transforman en comportamientos constantes. Sin embargo, tocan todos los aspectos de tu vida -alimentación, relaciones, trabajo, ejercicio, salud, felicidad, entre muchos más, ¡es precisamente por eso que son tan poderosos! Repleto de consejos útiles y técnicas efectivas, este libro hace que cambiar tus hábitos sea simple y divertido. Se enfoca en hacer pequeños cambios que crearán mejoras duraderas en tu vida. Entre otros temas te brindará información sobre: -La importancia de tener un ritual matutino. -La diferencia entre una mentalidad de crecimiento y una mentalidad fija. -Cómo utilizar los ciclos de hábitos y la fuerza de voluntad. -Qué elementos facilitan tu toma de decisiones. -Las herramientas clave para mantenerte motivado. -La importancia de los descansos y los pasatiempos para contrarrestar el estrés. -Las principales estrategias para establecer una rutina diaria saludable. -Cómo crear un nuevo estilo de vida a través de sistemas y metas. ¡Cambiar tu vida hoy es posible!\"",
+    "synopsis_length": 1245,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=JmGXDwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Pequeños hábitos, grandes cambios",
+      "subtitulo": "Cómo las acciones más sencillas cambiarán radicalmente tu vida ¡para siempre!",
+      "autor_completo": "Steven Handel",
+      "año": "2019",
+      "editorial": "DEBOLSILLO",
+      "paginas": 184,
+      "isbn": "9786073180573",
+      "isbn13": "9786073180573",
+      "isbn10": "6073180578",
+      "categorias": [
+        "Self-Help"
+      ],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=JmGXDwAAQBAJ&printsec=frontcover&dq=intitle:Peque%C3%B1os+h%C3%A1bitos+grandes+cambios+inauthor:Steven+Handel&hl=&cd=1&source=gbs_api"
+    }
+  },
+  "openlibrary": {
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Pequeños hábitos, grandes cambios",
+      "matched_author": "Steven Handel"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2019.",
+    "synopsis_length": 65,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://covers.openlibrary.org/b/id/9078802-L.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://covers.openlibrary.org/b/id/9078802-M.jpg"
+      },
+      {
+        "size": "small",
+        "url": "https://covers.openlibrary.org/b/id/9078802-S.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Pequeños hábitos, grandes cambios",
+      "autor_completo": "Steven Handel",
+      "año": "2019",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": null,
+      "paginas": null
+    }
+  },
+  "amazon": {
+    "ok": false,
+    "reason": "no_amazon_cover_or_only_placeholders",
+    "source": "amazon"
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/1d/d6/9e/1dd69e58-ad8a-8f74-5c8d-3cbcc620d092/9786073180573.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/1d/d6/9e/1dd69e58-ad8a-8f74-5c8d-3cbcc620d092/9786073180573.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/1d/d6/9e/1dd69e58-ad8a-8f74-5c8d-3cbcc620d092/9786073180573.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/1d/d6/9e/1dd69e58-ad8a-8f74-5c8d-3cbcc620d092/9786073180573.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=JmGXDwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "large",
+      "url": "https://covers.openlibrary.org/b/id/9078802-L.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "medium",
+      "url": "https://covers.openlibrary.org/b/id/9078802-M.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "google_books",
+    "openlibrary"
+  ],
+  "_sources_failed": [
+    "amazon:no_amazon_cover_or_only_placeholders"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 1420,
+    "phase2_isbn_chain_ms": 361,
+    "cover_validation_ms": 2731,
+    "total_ms": 4512
+  },
+  "_version": "3.6",
+  "_cached_at": "2026-04-26T19:46:43.774Z"
+}

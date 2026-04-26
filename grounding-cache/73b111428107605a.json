@@ -7,7 +7,8 @@
     "autor_completo": "Robert Waldinger & Marc Schulz",
     "año": "2023",
     "editorial": null,
-    "isbn": "6445710030",
+    "isbn": "",
+    "apple_track_id": "6445710030",
     "categorias": [
       "Superación personal",
       "Libros",
@@ -17,11 +18,13 @@
     "track_view_url": "https://books.apple.com/mx/book/una-bona-vida/id6445710030?uo=4"
   },
   "match_score": 0.8307692307692308,
-  "other_sources_agreed": [],
+  "other_sources_agreed": [
+    "google_books"
+  ],
   "resolution_path": [
-    "evidence_fetched_2sources"
+    "evidence_fetched_4sources"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-22T20:23:22.288Z"
+  "cached_at": "2026-04-26T19:49:53.634Z"
 }

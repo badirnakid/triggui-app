@@ -1,28 +1,32 @@
 {
-  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nDEBES ENTENDER QUE NO EXISTE ESO DE \"LOGRARLO\"; QUE NO IMPORTA CUÁNTO DINERO, FAMA O ÉXITO OBTENGAS, EL FUTURO TRAERÁ MÁS DIFICULTADES. MÁS DRAMA. MÁS OBSTÁCULOS. LA META NO ES SÓLO SER EXITOSO, SINO CONSERVAR ESE ÉXITO. YO LO APRENDÍ POR LAS MALAS. Y ES UNA HABILIDAD QUE TE VOY A ENSEÑAR EN ESTE LIBRO. CURTIS JACKSON Curtis \"50 Cent\" Jackson llegó a la cima, se desplomó y volvió a subir. A sus treinta años había vendido decenas de millones de discos, producido una película sobre su vida y creado una de las marcas más reconocibles en el hip hop. Se sentía invencible. Hasta que sufrió la trágica muerte de su manager y mentor, empezó a padecer numerosas demandas legales y vio cómo sus ingresos se evaporaban con el advenimiento de la música digital. Ahora, en Trabaja duro, trabaja con astucia, nos presenta los principios que lo convirtieron en una de las mayores historias de renovado éxito en la industria del entretenimiento. A partir de su experiencia en la calle (un mundo tan inmisericorde como el de los negocios) y con un personalísimo relato sobre su vida, sus triunfos y sus fracasos, Jackson comparte las reglas y estrategias que le permitieron retomar y conservar su lugar en la cima. Un libro imprescindible que te permitirá sobreponerte a las crisis, adaptarte a los cambios y cumplir todas tus metas con dedicación y confianza en ti mismo.\n\nMETADATA VERIFICADA:\n- Título: Trabaja duro, trabaja con astucia\n- Autor: Curtis (50 Cent) Jackson\n- Año: 2021\n- Categorías: Biografías y memorias, Libros, Negocios y finanzas personales",
-  "grounding_source": "apple_books",
-  "book_identity_confidence": 0.8845454545454546,
+  "ground_truth": "SINOPSIS OFICIAL (Google Books):\n\nEs una serie de recuentos muy honestos sobre su historia personal, el polémico rapero Curtis Jackson (50 Cent) presenta una guía para alcanzar nuestras metas aun después de sufrir caídas importantes. Con una combinación única de experiencia de la calle y un talento inusitado para los negocios, el libro resulta una guía amena y reveladora sobre el cambio, la adaptación y los deseos irrefrenables de triunfar en la vida y en los negocios. \"Debes entender que no existe eso de \"lograrlo\", que no importa cuánto dinero, fama o éxito tengas, el futuro traerá más dificultades, más drama, más obstáculos. La meta no es solo ser exitoso sino conservar ese éxito, yo lo aprendí por las malas y es una habilidad que te voy a enseñar en este libro\". In a series of very honest accounts of his personal history, the controversial rapper Curtis Jackson (50 Cent) presents a guide to reach our goals even after suffering major falls. With a unique combination of street experience and unusual talent for business, the book is an engaging and insightful guide to change, adaptation, and the irrepressible desire to succeed in life and in business. \"You must understand that there is no such thing as 'getting it', that no matter how much money, fame or success you have, the future will bring more difficulties, more drama, more obstacles. The goal is not only to be successful but to keep that success, I learned it the hard way and it is a skill that I am going to teach you in this book \".\n\nMETADATA VERIFICADA:\n- Título: Trabaja Duro, Trabaja Con Astucia\n- Autor: Curtis Jackson 50 Cent\n- Año: 2022\n- Editorial: Oceano\n- Categorías: Business & Economics",
+  "grounding_source": "google_books",
+  "book_identity_confidence": 0.95,
   "verified_identity": {
-    "titulo_real": "Trabaja duro, trabaja con astucia",
-    "autor_completo": "Curtis (50 Cent) Jackson",
-    "año": "2021",
-    "editorial": null,
-    "isbn": "1569482097",
+    "titulo_real": "Trabaja Duro, Trabaja Con Astucia",
+    "subtitulo": "",
+    "autor_completo": "Curtis Jackson 50 Cent",
+    "año": "2022",
+    "editorial": "Oceano",
+    "paginas": 208,
+    "isbn": "9786075573311",
+    "isbn13": "9786075573311",
+    "isbn10": "6075573313",
     "categorias": [
-      "Biografías y memorias",
-      "Libros",
-      "Negocios y finanzas personales"
+      "Business & Economics"
     ],
-    "track_view_url": "https://books.apple.com/mx/book/trabaja-duro-trabaja-con-astucia/id1569482097?uo=4"
+    "idioma": "es",
+    "preview_link": "http://books.google.com/books?id=KdK0zgEACAAJ&dq=Trabaja+duro+trabaja+con+astucia+Curtis+Jackson&hl=&cd=2&source=gbs_api"
   },
-  "match_score": 0.8363636363636364,
+  "match_score": 1,
   "other_sources_agreed": [
+    "apple_books",
     "openlibrary"
   ],
   "resolution_path": [
-    "evidence_fetched_3sources"
+    "evidence_fetched_4sources"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-20T22:17:54.173Z"
+  "cached_at": "2026-04-26T19:56:19.106Z"
 }

@@ -7,7 +7,8 @@
     "autor_completo": "Vidyamala Burch & Danny Penman",
     "año": "2016",
     "editorial": null,
-    "isbn": "1340356175",
+    "isbn": "",
+    "apple_track_id": "1340356175",
     "categorias": [
       "Espiritualidad",
       "Libros",
@@ -17,13 +18,11 @@
     "track_view_url": "https://books.apple.com/mx/book/t%C3%BA-no-eres-tu-dolor/id1340356175?uo=4"
   },
   "match_score": 0.9700000000000001,
-  "other_sources_agreed": [
-    "google_books"
-  ],
+  "other_sources_agreed": [],
   "resolution_path": [
-    "evidence_fetched_3sources"
+    "evidence_fetched_1sources"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-22T14:44:45.620Z"
+  "cached_at": "2026-04-26T19:54:12.075Z"
 }

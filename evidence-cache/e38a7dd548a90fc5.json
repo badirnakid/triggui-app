@@ -2,7 +2,10 @@
   "titulo_input": "Encuentro",
   "autor_input": "Fernando Broca",
   "isbn_seed": "",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
   "isbn_discovered": "",
+  "isbn_discovered_raw": "",
   "apple": {
     "ok": false,
     "reason": "no_results",
@@ -32,10 +35,11 @@
     "amazon:skipped"
   ],
   "_timing": {
-    "phase1_parallel_ms": 15778,
+    "phase1_parallel_ms": 2247,
     "phase2_isbn_chain_ms": 0,
     "cover_validation_ms": 0,
-    "total_ms": 15778
+    "total_ms": 2247
   },
-  "_cached_at": "2026-04-22T14:43:08.817Z"
+  "_version": "3.6",
+  "_cached_at": "2026-04-26T19:58:41.322Z"
 }

@@ -7,7 +7,8 @@
     "autor_completo": "Robin Sharma",
     "año": "2010",
     "editorial": null,
-    "isbn": "469028713",
+    "isbn": "",
+    "apple_track_id": "469028713",
     "categorias": [
       "Superación personal",
       "Libros",
@@ -17,11 +18,13 @@
     "track_view_url": "https://books.apple.com/mx/book/el-monje-que-vendi%C3%B3-su-ferrari/id469028713?uo=4"
   },
   "match_score": 1,
-  "other_sources_agreed": [],
+  "other_sources_agreed": [
+    "google_books"
+  ],
   "resolution_path": [
-    "evidence_fetched_2sources"
+    "evidence_fetched_3sources"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-21T02:19:38.566Z"
+  "cached_at": "2026-04-26T20:00:14.853Z"
 }

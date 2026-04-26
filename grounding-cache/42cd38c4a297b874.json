@@ -1,28 +1,29 @@
 {
-  "ground_truth": "LIBRO SELECCIONADO POR EL CURADOR AUTOMÁTICO:\nTítulo: Las 25 leyes bíblicas para el éxito\nAutor: William Douglas\n\nSINOPSIS OFICIAL (Apple Books):\n\nLa Biblia es el mejor manual sobre el éxito que se haya escrito hasta hoy. Contrario a lo que se piensa, no habla solamente sobre religión, sino también sobre los valores fundamentales para construir una base sólida para la vida profesional. Los autores de este libro acuden a esa fuente milenaria de sabiduría para consolidar las 25 leyes que presentan en estas páginas. Son lecciones que hablan sobre la importancia del esfuerzo y la dedicación en el trabajo, la búsqueda indispensable del conocimiento y la evolución personal, el respeto a los otros y, por encima de todo, la honestidad. Sin importar su orientación espiritual o si usted es empleado, trabajador independiente, emprendedor o dueño de una empresa, este libro puede transformar su vida. En estas páginas, usted aprenderá: - Los antídotos contra los siete pecados capitales en la búsqueda del éxito. - Lo que enseña Salomón en el libro de los Proverbios sobre el éxito profesional. - Los errores de la \"teologia de la prosperidad\" y \"la teologia de la miseria\" - Las virtudes recomendadas por la Biblia para alcanzar el éxito - Cómo tener una relación armoniosa con el dinero - 200 citas bíblicas para alcanzar la excelencia, la credibilidad y el éxito\n\nMETADATA VERIFICADA:\n- Título: Las 25 leyes bíblicas para el éxito\n- Autor: William Douglas\n- Año: 2018\n- Categorías: Superación personal, Libros, Salud, mente y cuerpo",
-  "grounding_source": "identity_sealed_with_evidence",
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nLa Biblia es el mejor manual sobre el éxito que se haya escrito hasta hoy. Contrario a lo que se piensa, no habla solamente sobre religión, sino también sobre los valores fundamentales para construir una base sólida para la vida profesional. Los autores de este libro acuden a esa fuente milenaria de sabiduría para consolidar las 25 leyes que presentan en estas páginas. Son lecciones que hablan sobre la importancia del esfuerzo y la dedicación en el trabajo, la búsqueda indispensable del conocimiento y la evolución personal, el respeto a los otros y, por encima de todo, la honestidad. Sin importar su orientación espiritual o si usted es empleado, trabajador independiente, emprendedor o dueño de una empresa, este libro puede transformar su vida. En estas páginas, usted aprenderá: - Los antídotos contra los siete pecados capitales en la búsqueda del éxito. - Lo que enseña Salomón en el libro de los Proverbios sobre el éxito profesional. - Los errores de la \"teologia de la prosperidad\" y \"la teologia de la miseria\" - Las virtudes recomendadas por la Biblia para alcanzar el éxito - Cómo tener una relación armoniosa con el dinero - 200 citas bíblicas para alcanzar la excelencia, la credibilidad y el éxito\n\nMETADATA VERIFICADA:\n- Título: Las 25 leyes bíblicas para el éxito\n- Autor: William Douglas\n- Año: 2018\n- Categorías: Superación personal, Libros, Salud, mente y cuerpo",
+  "grounding_source": "apple_books",
   "book_identity_confidence": 0.95,
   "verified_identity": {
     "titulo_real": "Las 25 leyes bíblicas para el éxito",
     "autor_completo": "William Douglas",
     "año": "2018",
     "editorial": null,
+    "isbn": "",
+    "apple_track_id": "1345622931",
     "categorias": [
       "Superación personal",
       "Libros",
       "Salud, mente y cuerpo"
-    ]
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/las-25-leyes-b%C3%ADblicas-para-el-%C3%A9xito/id1345622931?uo=4"
   },
   "match_score": 1,
-  "evidence_source": "apple_books",
   "other_sources_agreed": [
-    "google_books",
     "openlibrary"
   ],
   "resolution_path": [
-    "evidence_preloaded"
+    "evidence_fetched_2sources"
   ],
-  "tier_reached": 1.5,
+  "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-26T14:49:54.076Z"
+  "cached_at": "2026-04-26T19:59:32.900Z"
 }

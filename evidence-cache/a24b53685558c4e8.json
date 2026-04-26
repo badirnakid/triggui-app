@@ -1,0 +1,207 @@
+{
+  "titulo_input": "Homo Deus",
+  "autor_input": "Yuval Noah Harari",
+  "isbn_seed": "",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "9780771038709",
+  "isbn_discovered_raw": "9780771038709",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Homo Deus",
+      "matched_author": "Yuval Noah Harari"
+    },
+    "synopsis": "Tras el éxito de Sapiens, Yuval Noah Harari vuelve su mirada al futuro para ver hacia dónde nos dirigimos. Bestseller del New York Times con 1 millón de ejemplares vendidos Yuval Noah Harari, autor de Sapiens, un fenómeno internacional unánimemente aclamado por la crítica, regresa con una secuela igualmente original, convincente y provocadora, centrando su atención en el futuro de la humanidad y en nuestra obsesión por convertirnos en dioses. A lo largo del último siglo, la humanidad ha logrado lo imposible frenando la hambruna, la peste y la guerra. Por primera vez en la historia, más personas mueren por obesidad que por pasar hambre y hay más probabilidades de quitarse la vida que de morir en un conflicto bélico o un atentado terrorista. ¿Qué pasará con la democracia cuando Google y Facebook lleguen a conocer nuestros gustos y preferencias políticas mejor que nos conocemos a nosotros mismos? ¿Qué pasará con el estado de bienestar cuando la inteligencia artificial expulse a los individuos del mercado laboral, creando una «clase innecesaria» de humanos? ¿Cómo podremos lidiar con los avances en ingeniería genética? ¿Terminará Silicon Valley por establecer nuevas religiones en lugar de enfocarse a producir únicamente dispositivos inteligentes? Homo Deus explora los proyectos, los sueños y las pesadillas que configurarán el siglo XXI: desde superar la muerte hasta la creación de la inteligencia y la vida artificial. ¿Hacia dónde nos dirigimos? ¿Cómo protegeremos al mundo de nuestros propios poderes destructivos? He aquí una mirada hacia el futuro de la evolución. He aquí Homo Deus. Reseñas: «Yuval Noah Harari, autor del fenómeno Sapiens, reflexiona sobre el futuro de la humanidad en Homo Deus, un libro de prosa inteligente, fresca y libre de prejuicios.» Jorge Wagensberg, Babelia «Aún más legible, incluso más importante que su excelente Sapiens.» Kazuo Ishiguro, Premio Nobel de Literatura «Homo Deus te impactará y te cautivará, pero sobre todo te hará pensar como nunca antes.» Daniel Kahneman, Premio Nobel de Economía «Harari se convierte en una especie de filósofo del futuro que desarrolla las intuiciones de su primera obra [...] un ritmo y una energía que convierten Homo Deus en un libro francamente ameno.» El Cultural «El épico y mundialmente celebrado Sapiens recibe la secuela que necesitaba: una intensa y compulsiva investigación sobre el apocalipsis de la humanidad en un futuro impulsado por la tecnología.» The Guardian «Un libro implacable y fascinante que seguramente se convertirá, y merece ser un éxito de ventas.» Kirkus Review «Un estimulante libro que lleva al lector a profundizar sobre cuestiones de identidad, conciencia e inteligencia.» The Observer «Un brebaje embriagador de ciencia, filosofía y futurismo.» Mail on Sunday «Un estudio brillante, original, estimulante e importante sobre hacia dónde se dirige la humanidad.» Evening Standard",
+    "synopsis_length": 2900,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/81/2b/d1/812bd1c8-4c82-7f02-faeb-6e8e999a0b19/9788499926643.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/81/2b/d1/812bd1c8-4c82-7f02-faeb-6e8e999a0b19/9788499926643.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/81/2b/d1/812bd1c8-4c82-7f02-faeb-6e8e999a0b19/9788499926643.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/81/2b/d1/812bd1c8-4c82-7f02-faeb-6e8e999a0b19/9788499926643.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Homo Deus",
+      "autor_completo": "Yuval Noah Harari",
+      "año": "2016",
+      "editorial": null,
+      "isbn": "",
+      "apple_track_id": "1141110834",
+      "categorias": [
+        "Historia mundial",
+        "Libros",
+        "Historia",
+        "Ciencia y naturaleza"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/homo-deus/id1141110834?uo=4"
+    }
+  },
+  "google": {
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Homo Deus",
+      "matched_author": "Yuval Noah Harari"
+    },
+    "synopsis": "From the author of the international bestseller Sapiens: A Brief History of Humankind comes an extraordinary follow-up that explores the future of the human species. Humans today enjoy unprecedented levels of power and an increasingly god-like status. The great epidemics of the past—famine, plague and war—no longer control our lives. We are the only species in history that has single-handedly changed the entire planet, and we can no longer blame a higher being for our fate. But as our gods take a back seat, and Homo Sapiens becomes Homo Deus, what are we going to do with ourselves? How do we set the agenda for our own future without pushing our species—and the rest of the world—beyond its limits? In this vivid, challenging new book from the author of Sapiens, Yuval Noah Harari examines the implications of our newly upgraded condition, from our dogged pursuit of status and happiness to our constant quest to overcome death by pushing the boundaries of science. He explores how Homo Sapiens conquered the world, our creation of today's human-centred environment, our current predicament and our possible future. And, above all, he asks the fundamental questions: Where do we go from here? And how will we protect this fragile world from our own destructive powers?",
+    "synopsis_length": 1275,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=0_uOEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Homo Deus",
+      "subtitulo": "A Brief History of Tomorrow",
+      "autor_completo": "Yuval Noah Harari",
+      "año": "2017",
+      "editorial": "National Geographic Books",
+      "paginas": null,
+      "isbn": "9780771038709",
+      "isbn13": "9780771038709",
+      "isbn10": "0771038704",
+      "categorias": [
+        "History"
+      ],
+      "idioma": "en",
+      "preview_link": "http://books.google.com/books?id=0_uOEAAAQBAJ&dq=intitle:Homo+Deus+inauthor:Yuval+Noah+Harari&hl=&cd=2&source=gbs_api"
+    }
+  },
+  "openlibrary": {
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Homo Deus",
+      "matched_author": "Yuval Noah Harari"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2017.",
+    "synopsis_length": 65,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://covers.openlibrary.org/b/id/14421556-L.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://covers.openlibrary.org/b/id/14421556-M.jpg"
+      },
+      {
+        "size": "small",
+        "url": "https://covers.openlibrary.org/b/id/14421556-S.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Homo Deus",
+      "autor_completo": "Yuval Noah Harari",
+      "año": "2017",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": "fre",
+      "paginas": null
+    }
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/0771038704.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "0771038704",
+      "isbn13": "9780771038709",
+      "isbn10": "0771038704",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/81/2b/d1/812bd1c8-4c82-7f02-faeb-6e8e999a0b19/9788499926643.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/81/2b/d1/812bd1c8-4c82-7f02-faeb-6e8e999a0b19/9788499926643.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/81/2b/d1/812bd1c8-4c82-7f02-faeb-6e8e999a0b19/9788499926643.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/81/2b/d1/812bd1c8-4c82-7f02-faeb-6e8e999a0b19/9788499926643.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=0_uOEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "large",
+      "url": "https://covers.openlibrary.org/b/id/14421556-L.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "medium",
+      "url": "https://covers.openlibrary.org/b/id/14421556-M.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/0771038704.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "google_books",
+    "openlibrary",
+    "amazon"
+  ],
+  "_sources_failed": [],
+  "_timing": {
+    "phase1_parallel_ms": 550,
+    "phase2_isbn_chain_ms": 98,
+    "cover_validation_ms": 1291,
+    "total_ms": 1939
+  },
+  "_version": "3.6",
+  "_cached_at": "2026-04-26T19:47:24.097Z"
+}

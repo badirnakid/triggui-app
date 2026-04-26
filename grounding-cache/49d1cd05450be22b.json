@@ -7,7 +7,8 @@
     "autor_completo": "David R. Hawkins",
     "año": "2017",
     "editorial": null,
-    "isbn": "1410835550",
+    "isbn": "",
+    "apple_track_id": "1410835550",
     "categorias": [
       "Superación personal",
       "Libros",
@@ -18,11 +19,13 @@
     "track_view_url": "https://books.apple.com/mx/book/el-poder-frente-a-la-fuerza/id1410835550?uo=4"
   },
   "match_score": 1,
-  "other_sources_agreed": [],
+  "other_sources_agreed": [
+    "google_books"
+  ],
   "resolution_path": [
     "evidence_fetched_2sources"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-22T20:12:39.905Z"
+  "cached_at": "2026-04-26T19:58:08.186Z"
 }

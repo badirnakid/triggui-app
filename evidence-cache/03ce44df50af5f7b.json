@@ -2,7 +2,10 @@
   "titulo_input": "La Buena Vida",
   "autor_input": "Robert Waldinger",
   "isbn_seed": "",
-  "isbn_discovered": "6445710030",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "9786073902335",
+  "isbn_discovered_raw": "9786073902335",
   "apple": {
     "ok": true,
     "source": "apple_books",
@@ -36,7 +39,8 @@
       "autor_completo": "Robert Waldinger & Marc Schulz",
       "año": "2023",
       "editorial": null,
-      "isbn": "6445710030",
+      "isbn": "",
+      "apple_track_id": "6445710030",
       "categorias": [
         "Superación personal",
         "Libros",
@@ -47,14 +51,57 @@
     }
   },
   "google": {
-    "ok": false,
-    "reason": "no_good_match",
-    "source": "google_books"
+    "ok": true,
+    "source": "google_books",
+    "match_score": 0.67,
+    "match_details": {
+      "matched_title": "Una Buena Vida (Spanish Edition)",
+      "matched_author": "Marc Schulz, Robert Waldinger"
+    },
+    "synopsis": "¿Cuál es la clave de una buena vida? Hace más de ocho décadas, la universidad de Harvard puso en marcha el mayor estudio realizado hasta la fecha. Eligieron a cientos de personas y durante años estuvieron entrevistándolas, haciéndoles análisis y siguiendo su desarrollo profesional y personal. Siguieron la vida de ciudadanos desde su juventud hasta su deceso e indagaron en sus motivaciones, su carrera profesional y sus relaciones. Algunos fracasaron o se arruinaron, otros se hicieron millonarios o llegaron incluso a ser presidentes de EE. UU. Sin embargo, tras años de estudios, se dieron cuenta de que el secreto de la felicidad no estaba en nuestra salud física o económica, sino en las relaciones personales. A través de inspiradoras historias reales, este libro nos brinda las conclusiones de ese estudio que cambiará para siempre nuestra perspectiva sobre la vida y nos enseñará que nunca es demasiado tarde para fortalecer nuestros vínculos sociales y conseguir una vida más feliz. «Un libro fascinante que nos enseña de forma científica y práctica cómo definir, construir y, sobre todo, vivir una vida feliz.» Jay Shetty, autor de Piensa como un monje «Un consejo muy útil en un mundo que se enfrenta a niveles de infelicidad y soledad sin precedentes.» Laurie Santos, catedrática de Psicología en Yale. «Waldinger y Schulz han escrito un libro fundamental, quizá el más esencial jamás escrito, sobre el bienestar humano. Una buena vida amplía el cerebro y enriquece el corazón.» Daniel H. Pink, autor de La sorprendente verdad sobre qué nos motiva «Un libro al alcance de todos, pero con fundamento científico, que sin duda influirá en la vida de millones de personas.» Tal Ben-Shahar, autor de La búsqueda de la felicidad ENGLISH DESCRIPTION The directors of the Harvard Study of Adult Development--the longest scientific study of happiness ever conducted--analyze and demonstrate how happiness may be closer than you realize. What makes a life fulfilling and meaningful? The simple but surprising answer is: relationships. The stronger our relationships, the more likely we are to live happy, satisfying, and healthier lives. The invaluable insights in this book emerge from the revealing personal stories of hundreds of participants in the Harvard Study as they were followed year after year for their entire adult lives, and this wisdom was bolstered by research findings from many other studies. Relationships in all their forms--friendships, romantic partnerships, families, coworkers--all contribute to a happier, healthier life",
+    "synopsis_length": 2548,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=6EgN0AEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Una Buena Vida (Spanish Edition)",
+      "subtitulo": "",
+      "autor_completo": "Marc Schulz, Robert Waldinger",
+      "año": "2023",
+      "editorial": "Planeta Publishing",
+      "paginas": null,
+      "isbn": "9786073902335",
+      "isbn13": "9786073902335",
+      "isbn10": "6073902336",
+      "categorias": [],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=6EgN0AEACAAJ&dq=intitle:La+Buena+Vida+inauthor:Robert+Waldinger&hl=&cd=2&source=gbs_api"
+    }
   },
   "openlibrary": {
-    "ok": false,
-    "reason": "no_results",
-    "source": "openlibrary"
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 0.54625,
+    "match_details": {
+      "matched_title": "Buena Vida / the Good Life (Spanish Edition)",
+      "matched_author": "Marc Schulz, Robert Waldinger"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2023.",
+    "synopsis_length": 65,
+    "covers": [],
+    "verified_identity": {
+      "titulo_real": "Buena Vida / the Good Life (Spanish Edition)",
+      "autor_completo": "Marc Schulz, Robert Waldinger",
+      "año": "2023",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": "spa",
+      "paginas": null
+    }
   },
   "amazon": {
     "ok": true,
@@ -63,13 +110,15 @@
     "covers": [
       {
         "size": "large",
-        "url": "https://images-na.ssl-images-amazon.com/images/P/6445710030.01.LZZZZZZZ.jpg"
+        "url": "https://images-na.ssl-images-amazon.com/images/P/6073902336.01.LZZZZZZZ.jpg"
       }
     ],
     "synopsis": "",
     "synopsis_length": 0,
     "verified_identity": {
-      "isbn": "6445710030",
+      "isbn": "6073902336",
+      "isbn13": "9786073902335",
+      "isbn10": "6073902336",
       "titulo_real": null,
       "autor_completo": null,
       "año": null
@@ -101,25 +150,31 @@
       "valid": true
     },
     {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=6EgN0AEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
       "source": "amazon",
       "size": "large",
-      "url": "https://images-na.ssl-images-amazon.com/images/P/6445710030.01.LZZZZZZZ.jpg",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/6073902336.01.LZZZZZZZ.jpg",
       "valid": true
     }
   ],
   "_sources_succeeded": [
     "apple_books",
+    "google_books",
+    "openlibrary",
     "amazon"
   ],
-  "_sources_failed": [
-    "google_books:no_good_match",
-    "openlibrary:no_results"
-  ],
+  "_sources_failed": [],
   "_timing": {
-    "phase1_parallel_ms": 15792,
-    "phase2_isbn_chain_ms": 23721,
-    "cover_validation_ms": 143,
-    "total_ms": 39656
+    "phase1_parallel_ms": 3120,
+    "phase2_isbn_chain_ms": 1483,
+    "cover_validation_ms": 1143,
+    "total_ms": 5746
   },
-  "_cached_at": "2026-04-22T20:23:22.287Z"
+  "_version": "3.6",
+  "_cached_at": "2026-04-26T19:49:53.633Z"
 }

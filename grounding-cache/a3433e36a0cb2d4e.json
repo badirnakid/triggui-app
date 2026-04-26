@@ -7,7 +7,8 @@
     "autor_completo": "Marc Zao-Sanders",
     "año": "2024",
     "editorial": null,
-    "isbn": "6463842745",
+    "isbn": "",
+    "apple_track_id": "6463842745",
     "categorias": [
       "Superación personal",
       "Libros",
@@ -19,6 +20,7 @@
   },
   "match_score": 1,
   "other_sources_agreed": [
+    "google_books",
     "openlibrary"
   ],
   "resolution_path": [
@@ -26,5 +28,5 @@
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-24T03:29:09.635Z"
+  "cached_at": "2026-04-26T19:55:31.594Z"
 }

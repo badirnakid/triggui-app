@@ -1,0 +1,30 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nEste libro muestra que la idea típica de la motivación como algo que va y viene es completamente inexacta.En su lugar existe un conjunto de leyes que aquí se explican a detalle y que conforman su ciencia. Y, si aplicas la ciencia de la motivación sistemáticamente en tu vida, tus sueños se convertirán en tu destino. La mayoría de las personas afirma que quiere ser exitosa y feliz. Sin embargo, son pocos los capaces de sostener esfuerzos prolongados para lograr sus metas. El problema central radica en mantener la motivación sin importar cuántas dificultades surjan en el camino. Brian Tracy, experto mundial en desarrollopersonal, nos muestra cómo salvar la brecha entre lo que decimos que queremos y lo que debemos hacer para lograrlo, que a menudo requiere retrasar la gratificación temporal y las soluciones rápidas para obtener una felicidad y un éxito duraderos.\n\nMETADATA VERIFICADA:\n- Título: Conecta con la motivación\n- Autor: Brian Tracy\n- Año: 2022\n- Categorías: Superación personal, Libros, Salud, mente y cuerpo",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Conecta con la motivación",
+    "autor_completo": "Brian Tracy",
+    "año": "2022",
+    "editorial": null,
+    "isbn": "",
+    "apple_track_id": "6443024667",
+    "categorias": [
+      "Superación personal",
+      "Libros",
+      "Salud, mente y cuerpo"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/conecta-con-la-motivaci%C3%B3n/id6443024667?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "google_books",
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_3sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-26T19:54:49.712Z"
+}

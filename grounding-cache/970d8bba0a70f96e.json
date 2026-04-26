@@ -7,7 +7,8 @@
     "autor_completo": "Leo Piccioli",
     "año": "2024",
     "editorial": null,
-    "isbn": "6504121259",
+    "isbn": "",
+    "apple_track_id": "6504121259",
     "categorias": [
       "Negocios y finanzas personales",
       "Libros",
@@ -18,9 +19,9 @@
   "match_score": 1,
   "other_sources_agreed": [],
   "resolution_path": [
-    "evidence_fetched_2sources"
+    "evidence_fetched_1sources"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-22T04:02:22.412Z"
+  "cached_at": "2026-04-26T19:52:46.745Z"
 }

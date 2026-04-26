@@ -2,7 +2,10 @@
   "titulo_input": "La seducción de las palabras",
   "autor_input": "Alex Grijelmo",
   "isbn_seed": "",
-  "isbn_discovered": "896163681",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "",
+  "isbn_discovered_raw": "",
   "apple": {
     "ok": true,
     "source": "apple_books",
@@ -36,7 +39,8 @@
       "autor_completo": "Álex Grijelmo",
       "año": "2014",
       "editorial": null,
-      "isbn": "896163681",
+      "isbn": "",
+      "apple_track_id": "896163681",
       "categorias": [
         "Artes y disciplinas lingüísticas",
         "Libros",
@@ -108,23 +112,9 @@
     }
   },
   "amazon": {
-    "ok": true,
-    "source": "amazon",
-    "match_score": 0.85,
-    "covers": [
-      {
-        "size": "large",
-        "url": "https://images-na.ssl-images-amazon.com/images/P/896163681.01.LZZZZZZZ.jpg"
-      }
-    ],
-    "synopsis": "",
-    "synopsis_length": 0,
-    "verified_identity": {
-      "isbn": "896163681",
-      "titulo_real": null,
-      "autor_completo": null,
-      "año": null
-    }
+    "ok": false,
+    "reason": "skipped",
+    "source": "amazon"
   },
   "valid_covers": [
     {
@@ -162,32 +152,22 @@
       "size": "medium",
       "url": "https://covers.openlibrary.org/b/id/8685060-M.jpg",
       "valid": true
-    },
-    {
-      "source": "openlibrary",
-      "size": "small",
-      "url": "https://covers.openlibrary.org/b/id/8685060-S.jpg",
-      "valid": true
-    },
-    {
-      "source": "amazon",
-      "size": "large",
-      "url": "https://images-na.ssl-images-amazon.com/images/P/896163681.01.LZZZZZZZ.jpg",
-      "valid": true
     }
   ],
   "_sources_succeeded": [
     "apple_books",
     "google_books",
-    "openlibrary",
-    "amazon"
+    "openlibrary"
   ],
-  "_sources_failed": [],
+  "_sources_failed": [
+    "amazon:skipped"
+  ],
   "_timing": {
-    "phase1_parallel_ms": 1291,
-    "phase2_isbn_chain_ms": 73,
-    "cover_validation_ms": 945,
-    "total_ms": 2309
+    "phase1_parallel_ms": 1254,
+    "phase2_isbn_chain_ms": 0,
+    "cover_validation_ms": 1183,
+    "total_ms": 2437
   },
-  "_cached_at": "2026-04-23T18:39:17.539Z"
+  "_version": "3.6",
+  "_cached_at": "2026-04-26T19:57:31.293Z"
 }

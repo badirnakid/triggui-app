@@ -2,7 +2,10 @@
   "titulo_input": "El monje que vendió su Ferrari",
   "autor_input": "Robin Sharma",
   "isbn_seed": "",
-  "isbn_discovered": "469028713",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "9788425345388",
+  "isbn_discovered_raw": "9788425345388",
   "apple": {
     "ok": true,
     "source": "apple_books",
@@ -36,7 +39,8 @@
       "autor_completo": "Robin Sharma",
       "año": "2010",
       "editorial": null,
-      "isbn": "469028713",
+      "isbn": "",
+      "apple_track_id": "469028713",
       "categorias": [
         "Superación personal",
         "Libros",
@@ -47,9 +51,37 @@
     }
   },
   "google": {
-    "ok": false,
-    "reason": "no_good_match",
-    "source": "google_books"
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "El monje que vendió su Ferrari",
+      "matched_author": "Robin Sharma"
+    },
+    "synopsis": "El monje que vendió su Ferrari es una fábula espiritual que, desde hace más de quince años, ha marcado la vida de millones de personas en todo el mundo. A través de sus páginas, conocemos la extraordinaria historia de Julian Mantle, un abogado de éxito que, tras sufrir un ataque al corazón, debe afrontar el gran vacío de su existencia. Inmerso en esta crisis existencial, Julian toma la radical decisión de vender todas sus pertenencias y viajar a la India. Es en un monasterio del Himalaya donde aprende las sabias y profundas lecciones de los monjes sobre la felicidad, el coraje, el equilibrio y la paz interior. Con esta historia tan especial e inolvidable, Robin Sharma nos enseña, paso a paso, una nueva manera de enfocar la vida personal, profesional y familiar. Nos muestra lo importante que es emprender un recorrido vital con una dirección clara, con pasión y armonía interior. *** Más de 5 millones de libros vendidos. Reseña: «Los libros de Robin Sharma ayudan a personas de todo el mundo a vivir una vida extraordinaria.» Paulo Coelho, autor de El alquimista",
+    "synopsis_length": 1073,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=iBUBhR_pOJ4C&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "El monje que vendió su Ferrari",
+      "subtitulo": "Una fábula espiritual",
+      "autor_completo": "Robin Sharma",
+      "año": "2010",
+      "editorial": "GRIJALBO",
+      "paginas": 166,
+      "isbn": "9788425345388",
+      "isbn13": "9788425345388",
+      "isbn10": "8425345383",
+      "categorias": [
+        "Self-Help"
+      ],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=iBUBhR_pOJ4C&printsec=frontcover&dq=El+monje+que+vendi%C3%B3+su+Ferrari+Robin+Sharma&hl=&cd=1&source=gbs_api"
+    }
   },
   "openlibrary": {
     "ok": false,
@@ -63,13 +95,15 @@
     "covers": [
       {
         "size": "large",
-        "url": "https://images-na.ssl-images-amazon.com/images/P/469028713.01.LZZZZZZZ.jpg"
+        "url": "https://images-na.ssl-images-amazon.com/images/P/8425345383.01.LZZZZZZZ.jpg"
       }
     ],
     "synopsis": "",
     "synopsis_length": 0,
     "verified_identity": {
-      "isbn": "469028713",
+      "isbn": "8425345383",
+      "isbn13": "9788425345388",
+      "isbn10": "8425345383",
       "titulo_real": null,
       "autor_completo": null,
       "año": null
@@ -101,25 +135,32 @@
       "valid": true
     },
     {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=iBUBhR_pOJ4C&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
       "source": "amazon",
       "size": "large",
-      "url": "https://images-na.ssl-images-amazon.com/images/P/469028713.01.LZZZZZZZ.jpg",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/8425345383.01.LZZZZZZZ.jpg",
       "valid": true
     }
   ],
   "_sources_succeeded": [
     "apple_books",
+    "google_books",
     "amazon"
   ],
   "_sources_failed": [
-    "google_books:no_good_match",
     "openlibrary:no_results"
   ],
   "_timing": {
-    "phase1_parallel_ms": 16057,
-    "phase2_isbn_chain_ms": 24097,
-    "cover_validation_ms": 1175,
-    "total_ms": 41329
+    "phase1_parallel_ms": 9070,
+    "phase2_isbn_chain_ms": 739,
+    "cover_validation_ms": 1049,
+    "total_ms": 10858
   },
-  "_cached_at": "2026-04-21T02:19:38.565Z"
+  "_version": "3.6",
+  "_cached_at": "2026-04-26T20:00:14.853Z"
 }
