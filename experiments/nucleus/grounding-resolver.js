@@ -1,15 +1,25 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
-   grounding-resolver.js — v3.2 FUSIÓN TOTAL
+   grounding-resolver.js — v3.3 NIVEL DIOS
+
+   CAMBIO v3.3 (2026-04-26): cada tier retorna `evidence` además de los demás
+   campos. Esto permite que build-contenido-nucleus.js acceda a las portadas
+   válidas (valid_covers) aunque el grounding caiga a Tier 3 (model_inference).
+
+   ANTES: si scoreMatch < 0.55 → tier 3 → portadas se descartaban → SVG fallback.
+   AHORA: las portadas válidas (>0) se usan independientemente del tier alcanzado.
 
    MUCHO más delgado que v3.1 porque evidence-fetcher.js hace el trabajo de APIs.
    Responsabilidad ÚNICA: decidir qué tier alcanzamos y construir ground_truth.
 
-   CASCADA v3.2:
+   CASCADA v3.3:
      Tier 1  — Curator (book_context del usuario)           → trust 1.0
      Tier 1.5— Identity sealed (validate-book eligió libro) → trust 0.95
      Tier 2  — Evidence fetcher (Apple+Google+OL+Amazon)    → trust 0.75-0.95
      Tier 3  — Model inference desde similares              → trust 0.3-0.7
      Tier 4  — Ciego con warning                            → trust 0.2
+
+   Todos los tiers (excepto Tier 1 puro curador) retornan `evidence` cuando existe,
+   para que el caller pueda rescatar portadas válidas del evidence-cache.
 ═══════════════════════════════════════════════════════════════════════════════ */
 
 import { createHash } from "node:crypto";
@@ -39,7 +49,10 @@ async function writeCache(hash, data) {
   try {
     await fs.mkdir(CACHE_DIR, { recursive: true });
     const p = path.join(CACHE_DIR, `${hash}.json`);
-    await fs.writeFile(p, JSON.stringify({ ...data, cached_at: new Date().toISOString() }, null, 2), "utf8");
+    // 🌒 v3.3: NO cacheamos `evidence` dentro de grounding-cache porque ya vive
+    // en evidence-cache (single source of truth). Stripeamos antes de escribir.
+    const { evidence, ...cacheable } = data;
+    await fs.writeFile(p, JSON.stringify({ ...cacheable, cached_at: new Date().toISOString() }, null, 2), "utf8");
   } catch (err) {
     console.warn(`   ⚠ Grounding cache write failed: ${err.message}`);
   }
@@ -141,7 +154,7 @@ Autor: ${autor}${tagline ? `\nContexto editorial: "${tagline}"` : ""}
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   RESOLVER PRINCIPAL v3.2
+   RESOLVER PRINCIPAL v3.3 — TODOS LOS TIERS RETORNAN `evidence` SI EXISTE
 ────────────────────────────────────────────────────────────────────────────── */
 
 export async function resolveGrounding(openai, book, inputs = {}) {
@@ -153,6 +166,8 @@ export async function resolveGrounding(openai, book, inputs = {}) {
   const hash = bookHash(titulo, autor);
 
   // ═══ TIER 1: CURADOR
+  // 🌒 v3.3: incluso en tier 1 retornamos evidence si está pre-cargada en book._evidence
+  // (ej: validate-book ya llamó a fetchEvidence). Si no hay, evidence: null.
   if (bookContext.length >= 100) {
     const result = {
       ground_truth: `CONTEXTO DEL CURADOR (máxima autoridad):\n\n${bookContext}`,
@@ -161,17 +176,28 @@ export async function resolveGrounding(openai, book, inputs = {}) {
       verified_identity: { titulo_real: titulo, autor_completo: autor, año: null },
       resolution_path: ["tier1_curator"],
       tier_reached: 1,
-      cost_tokens: 0
+      cost_tokens: 0,
+      evidence: book._evidence || null  // 🌒 v3.3: pasar evidence si existe
     };
     console.log(`   🎯 Tier 1: CURADOR (${bookContext.length} chars)`);
     return result;
   }
 
-  // Cache
+  // Cache hit
+  // 🌒 v3.3: aunque haya cache hit del grounding, siempre traer evidence fresca
+  // del evidence-cache (que es independiente y tiene su propio TTL). Esto evita
+  // perder portadas si el grounding-cache fue creado antes del fix v3.3.
   const cached = await readCache(hash);
   if (cached && cached.grounding_source !== "curator") {
     console.log(`   💾 Grounding cache hit: ${cached.grounding_source} (trust ${cached.book_identity_confidence.toFixed(2)})`);
-    return { ...cached, from_cache: true, resolution_path: [`cache_${cached.grounding_source}`] };
+    // Cargar evidence (cache hit interno o fetch nuevo)
+    const evidence = book._evidence || await fetchEvidence(book);
+    return {
+      ...cached,
+      from_cache: true,
+      resolution_path: [`cache_${cached.grounding_source}`],
+      evidence  // 🌒 v3.3: pasar evidence fresca al caller
+    };
   }
 
   const resolutionPath = [];
@@ -207,7 +233,8 @@ export async function resolveGrounding(openai, book, inputs = {}) {
         other_sources_agreed: gt.other_sources_agreed || [],
         resolution_path: resolutionPath,
         tier_reached: 1.5,
-        cost_tokens: 0
+        cost_tokens: 0,
+        evidence  // 🌒 v3.3
       };
       console.log(`   🔒 Tier 1.5: IDENTITY SEALED + ${gt.source} (match ${gt.match_score.toFixed(2)})`);
       await writeCache(hash, result);
@@ -228,7 +255,8 @@ export async function resolveGrounding(openai, book, inputs = {}) {
       other_sources_agreed: gt.other_sources_agreed,
       resolution_path: resolutionPath,
       tier_reached: 2,
-      cost_tokens: 0
+      cost_tokens: 0,
+      evidence  // 🌒 v3.3
     };
     console.log(`   ✅ Tier 2: ${gt.source} match=${gt.match_score.toFixed(2)}`);
     await writeCache(hash, result);
@@ -258,7 +286,10 @@ export async function resolveGrounding(openai, book, inputs = {}) {
       similar_books: inf.similar_books,
       resolution_path: resolutionPath,
       tier_reached: tier,
-      cost_tokens: inf.tokens
+      cost_tokens: inf.tokens,
+      evidence  // 🌒 v3.3 — CRÍTICO: aunque el grounding cayó a inferencia,
+                //         las portadas de Apple/Google/OL/Amazon siguen siendo válidas.
+                //         build-contenido-nucleus.js puede rescatarlas vía selectBestCover(evidence).
     };
     console.log(`   ✓ Inferencia: known=${inf.book_known_directly}, conf=${inf.inference_confidence.toFixed(2)}, rich=${richInference}`);
     await writeCache(hash, result);
@@ -275,6 +306,8 @@ export async function resolveGrounding(openai, book, inputs = {}) {
     resolution_path: [...resolutionPath, "tier4_blind"],
     tier_reached: 4,
     warning: "Este libro no pudo ser verificado. Considera agregar book_context manual.",
-    cost_tokens: 0
+    cost_tokens: 0,
+    evidence  // 🌒 v3.3 — incluso en tier 4 ciego, si por casualidad alguna API
+              //         devolvió portada (raro pero posible), úsala.
   };
 }

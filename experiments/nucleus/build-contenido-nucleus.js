@@ -1,10 +1,16 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
-   build-contenido-nucleus.js — ORQUESTADOR v3 NIVEL DIOS
+   build-contenido-nucleus.js — ORQUESTADOR v3.3 NIVEL DIOS
+
+   CAMBIO v3.3 (2026-04-26): rescate de portadas desde evidence en F2.5.
+   Antes: si CSV no traía portada_url → SVG fallback inmediato (cuadro blanco).
+   Ahora: si CSV no trae portada_url, intentar selectBestCover(evidence) primero.
+   Solo si tampoco hay covers en evidence → SVG fallback (último recurso).
 
    Pipeline de 8 fases:
-     F0  grounding-resolver          (curator / api / inference / blind)
+     F0  grounding-resolver          (curator / api / inference / blind) + evidence
      F1  extractAnchors               (1 llamada LLM)
      F2  synthesizePalette            (determinista, matemático)
+     F2.5 cover rescue + SVG fallback (🌒 v3.3 — rescate desde evidence)
      F3  extractContentES             (1 llamada LLM)
      F4  judgeGrounding ES            (1 llamada LLM)
      F5  extractContentEN             (1 llamada LLM)
@@ -38,6 +44,7 @@ import { injectEmojis, calculateConfidence, compatMapper } from "./post-processo
 import { judgeBothVoices } from "./voice-judge.js";
 import { validateFinalNucleus } from "./quality-validator.js";
 import { generateFallbackCover } from "./typographic-cover.js";
+import { selectBestCover } from "./evidence-fetcher.js"; // 🌒 v3.3: rescate de portadas
 
 const KEY = process.env.OPENAI_KEY;
 if (!KEY) { console.log("🔕 Sin OPENAI_KEY"); process.exit(0); }
@@ -75,6 +82,7 @@ const INPUTS = {
 ────────────────────────────────────────────────────────────────────────────── */
 
 async function fileExists(p) { try { await fs.access(p); return true; } catch { return false; } }
+
 // writeJSON v3.2: escritura ATÓMICA. Escribe a .tmp primero, luego rename.
 // En POSIX, rename dentro del mismo filesystem es atómico: o ves el archivo
 // viejo, o ves el archivo nuevo, nunca uno a medias. Evita contenido.json
@@ -135,6 +143,7 @@ function assertShape(obj, paths, label) {
 function seededRandomInt(seed, counter) {
   return createHash("sha256").update(`${seed}:${counter}`).digest().readUInt32BE(0);
 }
+
 function fisherYatesShuffle(arr, seed = null) {
   const copy = [...arr];
   if (seed === null) {
@@ -178,6 +187,7 @@ async function processBook(book, inputs, inputsSnapshot) {
   // ═══ F0: GROUNDING ═════════════════════════════════════════════════
   const tF0 = Date.now();
   // v3.2 FUSIÓN: pasar identity_sealed y _evidence precargada si vienen de validate-book
+  // v3.3: groundTruthMeta ahora incluye `evidence` para rescate de portadas
   const groundTruthMeta = await resolveGrounding(openai, book, {
     bookContext: inputs.bookContext,
     identitySealed: Boolean(book.identity_sealed)
@@ -235,11 +245,37 @@ async function processBook(book, inputs, inputsSnapshot) {
   tokensByPhase.palette = 0;
   console.log(`   🎨 Paleta: paper=${palette.paper} accent=${palette.accent} contrast=${palette.contrast_ratio}:1`);
 
-  // ═══ F2.5: SVG FALLBACK si no hay portada ═══════════════════════════
-  // v3.2 FUSIÓN: si ninguna API tuvo portada válida, generar SVG tipográfico
-  // usando la paleta sintetizada + visual_intent. Coherencia visual total.
+  // ═══ F2.5: PORTADA — RESCATE DESDE EVIDENCE + SVG FALLBACK ═══════════
+  //
+  // 🌒 v3.3 NIVEL DIOS: el orden correcto es:
+  //   1. Si el CSV ya trae portada_url → úsala (curaduría manual prevalece).
+  //   2. Si no, intentar rescatar de evidence (las APIs ya buscaron en F0).
+  //      Esto cubre casos como "Indistractable" donde scoreMatch < 0.55
+  //      hizo que grounding cayera a tier 3 model_inference, PERO
+  //      Apple/Google/OpenLibrary SÍ encontraron portadas válidas.
+  //   3. Si tampoco hay covers en evidence, generar SVG tipográfico.
+  //
+  // Antes (v3.2): pasos 1 y 3 únicamente. Las portadas válidas en evidence
+  //               se descartaban si el grounding caía a tier 3 → cuadro blanco.
+  // Ahora (v3.3): paso 2 intermedio. SVG fallback solo cuando NADIE encontró portada.
   const tF2b = Date.now();
+  const hasValidCoverFromCSV = Boolean(book.portada_url || book.portada);
+
+  if (!hasValidCoverFromCSV && groundTruthMeta.evidence) {
+    // Intentar rescatar portada del evidence (puede tener valid_covers aunque tier=3)
+    const bestCover = selectBestCover(groundTruthMeta.evidence);
+    if (bestCover && bestCover.url) {
+      book.portada = bestCover.url;
+      book.portada_url = bestCover.url;
+      book.portada_source = `${bestCover.source}_${bestCover.size}`;
+      book.portada_rescued_from_evidence = true;
+      console.log(`   📸 Portada rescatada: ${bestCover.source}/${bestCover.size} (tier ${groundTruthMeta.tier_reached} no la usó pero existía)`);
+    }
+  }
+
+  // Después del intento de rescate, recalcular si tenemos portada
   const hasValidCover = Boolean(book.portada_url || book.portada);
+
   if (!hasValidCover || book.needs_fallback_cover) {
     const fallback = generateFallbackCover(
       { titulo: book.titulo, autor: book.autor },
@@ -436,7 +472,7 @@ async function writeQualityReport(result, stamp) {
 
 **Autor:** ${mapped.autor}
 **Ejecutado:** ${stamp}
-**Pipeline:** nucleus-canonical-v3
+**Pipeline:** nucleus-canonical-v3.3
 
 ---
 
@@ -454,6 +490,14 @@ ${groundTruthMeta.warning ? `\n⚠️ **WARNING:** ${groundTruthMeta.warning}` :
 \`\`\`
 ${groundTruthMeta.ground_truth.slice(0, 800)}${groundTruthMeta.ground_truth.length > 800 ? "..." : ""}
 \`\`\`
+
+---
+
+## 🖼️ Portada
+
+- **Source:** \`${mapped.portada_source || "n/a"}\`
+${mapped.portada_rescued_from_evidence ? "- **Rescatada del evidence-cache** (tier alcanzado no la usó pero estaba disponible)" : ""}
+${mapped.portada_fallback_generated ? `- **SVG fallback generado** (${mapped.portada_fallback_size_kb}KB)` : ""}
 
 ---
 
@@ -721,7 +765,7 @@ async function runBatch() {
   const crono = cronobioContext();
   const inputsSnapshot = await snapshotInputs(INPUTS, crono);
 
-  console.log(`\n🚀 BATCH v3 — ${selected.length}/${books.length} libros`);
+  console.log(`\n🚀 BATCH v3.3 — ${selected.length}/${books.length} libros`);
   console.log(`   Modo: ${CFG.shadowMode ? "🌒 SHADOW" : "⚡ PRODUCCIÓN"}`);
   console.log(`   ${crono.dia} ${crono.hora}h ${crono.franja} | energía ${Math.round(crono.energia * 100)}%`);
   console.log(`   Output: ${outputFile}`);
@@ -783,9 +827,9 @@ async function runBatch() {
   const runMs = Date.now() - t0;
   await fs.mkdir(CFG.files.metricsDir, { recursive: true });
   const stamp = new Date().toISOString().replace(/[:.]/g, "-");
-  await writeJSON(`${CFG.files.metricsDir}/nucleus-v3-${stamp}.json`, {
+  await writeJSON(`${CFG.files.metricsDir}/nucleus-v3.3-${stamp}.json`, {
     timestamp: new Date().toISOString(),
-    pipeline: "nucleus-canonical-v3",
+    pipeline: "nucleus-canonical-v3.3",
     mode: CFG.shadowMode ? "shadow" : "production",
     requested: selected.length,
     exitosos: exitosos.length,
@@ -815,7 +859,7 @@ async function runSingle() {
 
   const crono = cronobioContext();
   const inputsSnapshot = await snapshotInputs(INPUTS, crono);
-  console.log(`\n🚀 SINGLE v3: ${book.titulo}`);
+  console.log(`\n🚀 SINGLE v3.3: ${book.titulo}`);
 
   const result = await processBook(book, INPUTS, inputsSnapshot);
 
