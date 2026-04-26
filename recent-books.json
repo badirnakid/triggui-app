@@ -31,6 +31,16 @@
       "timestamp": "2026-04-26T13:44:54.978Z",
       "trigger_input": "algo sobre liderazgo consciente",
       "selected_via": "discover_live_google_books"
+    },
+    {
+      "titulo": "Innovación docente en arte y humanidades: explorando retos y oportunidades en la enseñanza y el aprendizaje",
+      "autor": "Autor desconocido",
+      "slug": "innovacion-docente-en-arte-y-humanidades-explorando-retos-y-",
+      "titulo_normalizado": "innovacion docente en arte y humanidades explorando retos y oportunidades en la ensenanza y el aprendizaje",
+      "autor_normalizado": "autor desconocido",
+      "timestamp": "2026-04-26T13:49:46.032Z",
+      "trigger_input": "quiero leer lo mejor sobre creatividad en 2025",
+      "selected_via": "discover_live_google_books"
     }
   ],
   "_note": "FIFO ring de últimos 30 libros generados por selección automática (constrained o discover). Filtro pre-rerank en validate-book.js. Inicializa vacío y se rellena con cada run exitoso. Si se borra, el sistema arranca limpio sin daño."

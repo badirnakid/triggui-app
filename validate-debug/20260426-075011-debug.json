@@ -1,0 +1,731 @@
+{
+  "history": [
+    {
+      "at": "2026-04-26T13:49:31.990Z",
+      "stage": "trigger_analysis",
+      "trigger_analysis": {
+        "raw_input": "quiero leer lo mejor sobre creatividad en 2025",
+        "semantic_query": "mejores libros sobre creatividad publicados en 2025",
+        "intent_summary": "Buscar libros destacados sobre creatividad de 2025.",
+        "editorial_requests": [],
+        "source_preference": null,
+        "ranking_preference": "new_releases",
+        "unsupported_runtime_constraints": [
+          "lista viva de novedades"
+        ],
+        "supported_constraints": {
+          "year_min": 2025,
+          "year_max": 2025,
+          "prefer_recent": true
+        },
+        "search_queries": [
+          "libros sobre creatividad 2025",
+          "nuevas publicaciones creatividad 2025",
+          "mejores libros creatividad",
+          "creatividad 2025",
+          "libros recientes sobre creatividad",
+          "tendencias en creatividad 2025",
+          "mejores libros sobre creatividad publicados en 2025",
+          "mejores libros creatividad publicados 2025"
+        ],
+        "concept_hints": [
+          "creatividad"
+        ],
+        "clean_for_selection": "mejores libros sobre creatividad publicados en 2025",
+        "notes": {
+          "used_ai_normalizer": true,
+          "looked_like_book_intent": true,
+          "semantic_overlap_vs_raw": 0.5
+        }
+      }
+    },
+    {
+      "at": "2026-04-26T13:49:32.065Z",
+      "stage": "barnes_and_noble_fetch_empty",
+      "url": "https://www.barnesandnoble.com/s/libros%20sobre%20creatividad%202025"
+    },
+    {
+      "at": "2026-04-26T13:49:38.031Z",
+      "stage": "live_candidates_filter_recent",
+      "before": 15,
+      "after": 15,
+      "removed": 0,
+      "ring_size": 3
+    },
+    {
+      "at": "2026-04-26T13:49:44.459Z",
+      "stage": "ai_rerank_candidates",
+      "stageLabel": "live_candidates_rerank",
+      "ranked": [
+        {
+          "idx": 2,
+          "fit_score": 0.85,
+          "reason": "Aborda la innovación en la enseñanza, lo que está relacionado con la creatividad en el ámbito educativo."
+        },
+        {
+          "idx": 3,
+          "fit_score": 0.84,
+          "reason": "Similar al anterior, se centra en la innovación en ciencias sociales, lo que puede incluir aspectos creativos."
+        },
+        {
+          "idx": 5,
+          "fit_score": 0.82,
+          "reason": "Explora la intersección entre la inteligencia artificial y la creatividad, un tema relevante en la actualidad."
+        },
+        {
+          "idx": 6,
+          "fit_score": 0.8,
+          "reason": "Trata sobre educación y tecnología, lo que puede implicar enfoques creativos en el aprendizaje."
+        },
+        {
+          "idx": 7,
+          "fit_score": 0.78,
+          "reason": "El enfoque en el arte de llevar un diario puede ser visto como un ejercicio de creatividad personal."
+        },
+        {
+          "idx": 9,
+          "fit_score": 0.76,
+          "reason": "Promueve la autoexpresión y el desarrollo personal, elementos clave de la creatividad."
+        },
+        {
+          "idx": 1,
+          "fit_score": 0.74,
+          "reason": "Aunque se centra en la educación, no se especifica un enfoque en creatividad."
+        },
+        {
+          "idx": 4,
+          "fit_score": 0.7,
+          "reason": "Aunque es un libro infantil, puede incluir elementos creativos en su narrativa."
+        }
+      ]
+    },
+    {
+      "at": "2026-04-26T13:49:44.460Z",
+      "stage": "live_candidates_merged",
+      "count": 15,
+      "top": [
+        {
+          "titulo": "Innovación docente en arte y humanidades: explorando retos y oportunidades en la enseñanza y el aprendizaje",
+          "autor": "",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "Nos encontramos ante una obra en la que, con maestría, los autores, profesionales en la materia con una dilatada experiencia, analizan el tema desde diferentes perspecti…",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/6LixEQAAQBAJ",
+          "published_year": 2025,
+          "live_score": 66.8,
+          "ai_fit_score": 0.85,
+          "ai_fit_reason": "Aborda la innovación en la enseñanza, lo que está relacionado con la creatividad en el ámbito educativo."
+        },
+        {
+          "titulo": "Innovación docente en ciencias sociales, económicas y jurídicas: explorando retos y oportunidades en la enseñanza y el aprendizaje",
+          "autor": "",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "Nos encontramos ante una obra en la que, con maestría, los autores, profesionales en la materia con una dilatada experiencia, analizan el tema desde diferentes perspecti…",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/3rixEQAAQBAJ",
+          "published_year": 2025,
+          "live_score": 66.64,
+          "ai_fit_score": 0.84,
+          "ai_fit_reason": "Similar al anterior, se centra en la innovación en ciencias sociales, lo que puede incluir aspectos creativos."
+        },
+        {
+          "titulo": "Estética artificial",
+          "autor": "Emanuele Arielli, Lev Manovich",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "La inteligencia artificial ha irrumpido en nuestras vidas con una fuerza arrolladora.",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/l_qZEQAAQBAJ",
+          "published_year": 2025,
+          "live_score": 59.21,
+          "ai_fit_score": 0.82,
+          "ai_fit_reason": "Explora la intersección entre la inteligencia artificial y la creatividad, un tema relevante en la actualidad."
+        },
+        {
+          "titulo": "Educación, tecnología emergente y conciencia global",
+          "autor": "Eloy López Meneses, César Bernal Bravo",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "La presente obra científica es el resultado de la selección de aportaciones científicas presentadas en el II Congreso Internacional de Educación, Innovación y Transferen…",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/ubqMEQAAQBAJ",
+          "published_year": 2025,
+          "live_score": 59.21,
+          "ai_fit_score": 0.8,
+          "ai_fit_reason": "Trata sobre educación y tecnología, lo que puede implicar enfoques creativos en el aprendizaje."
+        },
+        {
+          "titulo": "El libro de la alquimia",
+          "autor": "Suleika Jaouad",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "Una guía sobre el arte de llevar un diario-y una meditación sobre las preguntas centrales de la vida- por la autora bestseller de Entre dos reinos Para muchas personas,…",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/9mWBEQAAQBAJ",
+          "published_year": 2025,
+          "live_score": 59.21,
+          "ai_fit_score": 0.78,
+          "ai_fit_reason": "El enfoque en el arte de llevar un diario puede ser visto como un ejercicio de creatividad personal."
+        },
+        {
+          "titulo": "¡Solo brilla! Cómo ser la mejor versión de ti mismo (Just Shine! How to Be a Better You Spanish Edition)",
+          "autor": "Sonia Sotomayor",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "De la autora del bestseller #1 del New York Times ¡Solo pregunta!, llega un cuento dulce y potente sobre cómo serte fiel a ti mismo y brillar con toda tu luz.",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/KOJEEQAAQBAJ",
+          "published_year": 2025,
+          "live_score": 59.21,
+          "ai_fit_score": 0.76,
+          "ai_fit_reason": "Promueve la autoexpresión y el desarrollo personal, elementos clave de la creatividad."
+        },
+        {
+          "titulo": "Avances de investigación 2024-2025",
+          "autor": "",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "Con el propósito de incidir en el fortalecimiento y la transformación de las Escuelas Normales Públicas del Estado de México (ENPEM), la Dirección General de Educación N…",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/S5CTEQAAQBAJ",
+          "published_year": 2025,
+          "live_score": 68.64,
+          "ai_fit_score": 0.74,
+          "ai_fit_reason": "Aunque se centra en la educación, no se especifica un enfoque en creatividad."
+        },
+        {
+          "titulo": "Caty la cuidadora de gatos 2: Mejores amigas para nunca",
+          "autor": "Stephanie Yue, Colleen AF Venable",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "¡ES LA VUELTA AL COLE PARA CATY LA CUIDADORA DE GATOS!",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/Wv6IEQAAQBAJ",
+          "published_year": 2025,
+          "live_score": 61.43,
+          "ai_fit_score": 0.7,
+          "ai_fit_reason": "Aunque es un libro infantil, puede incluir elementos creativos en su narrativa."
+        },
+        {
+          "titulo": "Sara y Jamila salvan el verano",
+          "autor": "Gillian Goerz",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "Un verano, una amistad inesperada y un montón de misterios por resolver Jamila espera un verano solitario en su barrio nuevo.",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/ed5MEQAAQBAJ",
+          "published_year": 2025,
+          "live_score": 59.21,
+          "ai_fit_score": 0,
+          "ai_fit_reason": ""
+        },
+        {
+          "titulo": "Caty la cuidadora de gatos 3: Secretos y gatástrofes",
+          "autor": "Stephanie Yue, Colleen AF Venable",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "SUPERHÉROES = ¡¿SUPERDRAMA?!",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/WP6IEQAAQBAJ",
+          "published_year": 2025,
+          "live_score": 53.5,
+          "ai_fit_score": 0,
+          "ai_fit_reason": ""
+        }
+      ]
+    },
+    {
+      "at": "2026-04-26T13:49:46.010Z",
+      "stage": "live_candidates_inspected",
+      "inspected": [
+        {
+          "recommendation": {
+            "titulo": "Innovación docente en arte y humanidades: explorando retos y oportunidades en la enseñanza y el aprendizaje",
+            "autor": "",
+            "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+            "tagline": "Nos encontramos ante una obra en la que, con maestría, los autores, profesionales en la materia con una dilatada experiencia, analizan el tema desde diferentes perspecti…",
+            "source_label": "google_books_newest",
+            "source_url": "https://www.googleapis.com/books/v1/volumes/6LixEQAAQBAJ",
+            "published_year": 2025,
+            "live_score": 66.8,
+            "ai_fit_score": 0.85,
+            "ai_fit_reason": "Aborda la innovación en la enseñanza, lo que está relacionado con la creatividad en el ámbito educativo."
+          },
+          "evidence": {
+            "portada": "https://books.google.com/books/content?id=6LixEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+            "isbn": "9791370068912",
+            "editorial": "Dykinson",
+            "source": "google_books",
+            "year": "2025",
+            "matched_title": "Innovación docente en arte y humanidades: explorando retos y oportunidades en la enseñanza y el aprendizaje",
+            "matched_author": "",
+            "match_score": 0.55,
+            "synopsis": "Nos encontramos ante una obra en la que, con maestría, los autores, profesionales en la materia con una dilatada experiencia, analizan el tema desde diferentes perspectivas ofreciendo al lector una completa visión del estado actual de la materia.",
+            "synopsis_length": 246,
+            "covers": [
+              {
+                "size": "small",
+                "url": "https://books.google.com/books/content?id=6LixEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "Innovación docente en arte y humanidades: explorando retos y oportunidades en la enseñanza y el aprendizaje",
+              "subtitulo": "",
+              "autor_completo": "Autor desconocido",
+              "año": "2025",
+              "editorial": "Dykinson",
+              "paginas": 551,
+              "isbn": "9791370068912",
+              "isbn13": "9791370068912",
+              "isbn10": "",
+              "categorias": [
+                "Education"
+              ],
+              "idioma": "es",
+              "preview_link": "http://books.google.com/books?id=6LixEQAAQBAJ&printsec=frontcover&dq=Innovaci%C3%B3n+docente+en+arte+y+humanidades:+explorando+retos+y+oportunidades+en+la+ense%C3%B1anza+y+el+aprendizaje+Autor+desconocido&hl=&cd=1&source=gbs_api"
+            },
+            "_evidence": {
+              "titulo_input": "Innovación docente en arte y humanidades: explorando retos y oportunidades en la enseñanza y el aprendizaje",
+              "autor_input": "Autor desconocido",
+              "isbn_seed": "",
+              "isbn_seed_raw": "",
+              "isbn_seed_rejected": null,
+              "isbn_discovered": "9791370068912",
+              "isbn_discovered_raw": "9791370068912",
+              "apple": {
+                "ok": false,
+                "reason": "low_match_0.28",
+                "source": "apple_books"
+              },
+              "google": {
+                "ok": true,
+                "source": "google_books",
+                "match_score": 0.55,
+                "match_details": {
+                  "matched_title": "Innovación docente en arte y humanidades: explorando retos y oportunidades en la enseñanza y el aprendizaje",
+                  "matched_author": ""
+                },
+                "synopsis": "Nos encontramos ante una obra en la que, con maestría, los autores, profesionales en la materia con una dilatada experiencia, analizan el tema desde diferentes perspectivas ofreciendo al lector una completa visión del estado actual de la materia.",
+                "synopsis_length": 246,
+                "covers": [
+                  {
+                    "size": "small",
+                    "url": "https://books.google.com/books/content?id=6LixEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+                  }
+                ],
+                "verified_identity": {
+                  "titulo_real": "Innovación docente en arte y humanidades: explorando retos y oportunidades en la enseñanza y el aprendizaje",
+                  "subtitulo": "",
+                  "autor_completo": "Autor desconocido",
+                  "año": "2025",
+                  "editorial": "Dykinson",
+                  "paginas": 551,
+                  "isbn": "9791370068912",
+                  "isbn13": "9791370068912",
+                  "isbn10": "",
+                  "categorias": [
+                    "Education"
+                  ],
+                  "idioma": "es",
+                  "preview_link": "http://books.google.com/books?id=6LixEQAAQBAJ&printsec=frontcover&dq=Innovaci%C3%B3n+docente+en+arte+y+humanidades:+explorando+retos+y+oportunidades+en+la+ense%C3%B1anza+y+el+aprendizaje+Autor+desconocido&hl=&cd=1&source=gbs_api"
+                }
+              },
+              "openlibrary": {
+                "ok": false,
+                "reason": "no_results",
+                "source": "openlibrary"
+              },
+              "amazon": {
+                "ok": false,
+                "reason": "isbn13_conversion_failed_or_not_978",
+                "source": "amazon",
+                "_attempted_isbn": "9791370068912"
+              },
+              "valid_covers": [
+                {
+                  "source": "google_books",
+                  "size": "small",
+                  "url": "https://books.google.com/books/content?id=6LixEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+                  "valid": true
+                }
+              ],
+              "_sources_succeeded": [
+                "google_books"
+              ],
+              "_sources_failed": [
+                "apple_books:low_match_0.28",
+                "openlibrary:no_results",
+                "amazon:isbn13_conversion_failed_or_not_978"
+              ],
+              "_timing": {
+                "phase1_parallel_ms": 1385,
+                "phase2_isbn_chain_ms": 106,
+                "cover_validation_ms": 54,
+                "total_ms": 1545
+              },
+              "_version": "3.6"
+            }
+          },
+          "constraintsCheck": {
+            "exact_ok": true,
+            "hard_ok": true,
+            "issues": [],
+            "warnings": [],
+            "reason": "Año verificado 2025"
+          },
+          "sourceLabel": "live_candidates",
+          "semantic_score": 0.85,
+          "fallback_score": 136
+        }
+      ]
+    },
+    {
+      "at": "2026-04-26T13:49:46.033Z",
+      "stage": "success",
+      "bookData": {
+        "titulo": "Innovación docente en arte y humanidades: explorando retos y oportunidades en la enseñanza y el aprendizaje",
+        "autor": "Autor desconocido",
+        "slug": "innovacion-docente-en-arte-y-humanidades-explorando-retos-y-",
+        "tagline": "Nos encontramos ante una obra en la que, con maestría, los autores, profesionales en la materia con una dilatada experiencia, analizan el tema desde diferentes perspecti…",
+        "portada": "https://books.google.com/books/content?id=6LixEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+        "portada_url": "https://books.google.com/books/content?id=6LixEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+        "portada_source": "google_books",
+        "portada_candidates": [
+          {
+            "source": "google_books",
+            "size": "small",
+            "url": "https://books.google.com/books/content?id=6LixEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+            "valid": true
+          }
+        ],
+        "needs_fallback_cover": false,
+        "isbn": "9791370068912",
+        "editorial": "Dykinson",
+        "publication_year": "2025",
+        "source": "google_books",
+        "duplicado": false,
+        "selected_via": "discover_live_google_books",
+        "selection_reason": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+        "trigger_input": "quiero leer lo mejor sobre creatividad en 2025",
+        "trigger_analysis": {
+          "raw_input": "quiero leer lo mejor sobre creatividad en 2025",
+          "semantic_query": "mejores libros sobre creatividad publicados en 2025",
+          "intent_summary": "Buscar libros destacados sobre creatividad de 2025.",
+          "editorial_requests": [],
+          "source_preference": null,
+          "ranking_preference": "new_releases",
+          "unsupported_runtime_constraints": [
+            "lista viva de novedades"
+          ],
+          "supported_constraints": {
+            "year_min": 2025,
+            "year_max": 2025,
+            "prefer_recent": true
+          },
+          "search_queries": [
+            "libros sobre creatividad 2025",
+            "nuevas publicaciones creatividad 2025",
+            "mejores libros creatividad",
+            "creatividad 2025",
+            "libros recientes sobre creatividad",
+            "tendencias en creatividad 2025",
+            "mejores libros sobre creatividad publicados en 2025",
+            "mejores libros creatividad publicados 2025"
+          ],
+          "concept_hints": [
+            "creatividad"
+          ],
+          "clean_for_selection": "mejores libros sobre creatividad publicados en 2025",
+          "notes": {
+            "used_ai_normalizer": true,
+            "looked_like_book_intent": true,
+            "semantic_overlap_vs_raw": 0.5
+          }
+        },
+        "selection_validation": {
+          "semantic_score": 0.85,
+          "ai_fit_score": 0.85,
+          "match_score": 0.55,
+          "validation_source": "google_books",
+          "constraint_reason": "Año verificado 2025",
+          "mode": "exact_live",
+          "source_label": "google_books_newest",
+          "fallback_score": 136
+        },
+        "catalog_scope": "",
+        "contexto_2026": {},
+        "identity_sealed": true,
+        "_evidence": {
+          "titulo_input": "Innovación docente en arte y humanidades: explorando retos y oportunidades en la enseñanza y el aprendizaje",
+          "autor_input": "Autor desconocido",
+          "isbn_seed": "",
+          "isbn_seed_raw": "",
+          "isbn_seed_rejected": null,
+          "isbn_discovered": "9791370068912",
+          "isbn_discovered_raw": "9791370068912",
+          "apple": {
+            "ok": false,
+            "reason": "low_match_0.28",
+            "source": "apple_books"
+          },
+          "google": {
+            "ok": true,
+            "source": "google_books",
+            "match_score": 0.55,
+            "match_details": {
+              "matched_title": "Innovación docente en arte y humanidades: explorando retos y oportunidades en la enseñanza y el aprendizaje",
+              "matched_author": ""
+            },
+            "synopsis": "Nos encontramos ante una obra en la que, con maestría, los autores, profesionales en la materia con una dilatada experiencia, analizan el tema desde diferentes perspectivas ofreciendo al lector una completa visión del estado actual de la materia.",
+            "synopsis_length": 246,
+            "covers": [
+              {
+                "size": "small",
+                "url": "https://books.google.com/books/content?id=6LixEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "Innovación docente en arte y humanidades: explorando retos y oportunidades en la enseñanza y el aprendizaje",
+              "subtitulo": "",
+              "autor_completo": "Autor desconocido",
+              "año": "2025",
+              "editorial": "Dykinson",
+              "paginas": 551,
+              "isbn": "9791370068912",
+              "isbn13": "9791370068912",
+              "isbn10": "",
+              "categorias": [
+                "Education"
+              ],
+              "idioma": "es",
+              "preview_link": "http://books.google.com/books?id=6LixEQAAQBAJ&printsec=frontcover&dq=Innovaci%C3%B3n+docente+en+arte+y+humanidades:+explorando+retos+y+oportunidades+en+la+ense%C3%B1anza+y+el+aprendizaje+Autor+desconocido&hl=&cd=1&source=gbs_api"
+            }
+          },
+          "openlibrary": {
+            "ok": false,
+            "reason": "no_results",
+            "source": "openlibrary"
+          },
+          "amazon": {
+            "ok": false,
+            "reason": "isbn13_conversion_failed_or_not_978",
+            "source": "amazon",
+            "_attempted_isbn": "9791370068912"
+          },
+          "valid_covers": [
+            {
+              "source": "google_books",
+              "size": "small",
+              "url": "https://books.google.com/books/content?id=6LixEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+              "valid": true
+            }
+          ],
+          "_sources_succeeded": [
+            "google_books"
+          ],
+          "_sources_failed": [
+            "apple_books:low_match_0.28",
+            "openlibrary:no_results",
+            "amazon:isbn13_conversion_failed_or_not_978"
+          ],
+          "_timing": {
+            "phase1_parallel_ms": 1385,
+            "phase2_isbn_chain_ms": 106,
+            "cover_validation_ms": 54,
+            "total_ms": 1545
+          },
+          "_version": "3.6"
+        },
+        "_evidence_synopsis": "Nos encontramos ante una obra en la que, con maestría, los autores, profesionales en la materia con una dilatada experiencia, analizan el tema desde diferentes perspectivas ofreciendo al lector una completa visión del estado actual de la materia.",
+        "_evidence_verified_identity": {
+          "titulo_real": "Innovación docente en arte y humanidades: explorando retos y oportunidades en la enseñanza y el aprendizaje",
+          "subtitulo": "",
+          "autor_completo": "Autor desconocido",
+          "año": "2025",
+          "editorial": "Dykinson",
+          "paginas": 551,
+          "isbn": "9791370068912",
+          "isbn13": "9791370068912",
+          "isbn10": "",
+          "categorias": [
+            "Education"
+          ],
+          "idioma": "es",
+          "preview_link": "http://books.google.com/books?id=6LixEQAAQBAJ&printsec=frontcover&dq=Innovaci%C3%B3n+docente+en+arte+y+humanidades:+explorando+retos+y+oportunidades+en+la+ense%C3%B1anza+y+el+aprendizaje+Autor+desconocido&hl=&cd=1&source=gbs_api"
+        },
+        "_evidence_match_score": 0.55
+      },
+      "ring_updated": true
+    }
+  ],
+  "last": {
+    "at": "2026-04-26T13:49:46.033Z",
+    "stage": "success",
+    "bookData": {
+      "titulo": "Innovación docente en arte y humanidades: explorando retos y oportunidades en la enseñanza y el aprendizaje",
+      "autor": "Autor desconocido",
+      "slug": "innovacion-docente-en-arte-y-humanidades-explorando-retos-y-",
+      "tagline": "Nos encontramos ante una obra en la que, con maestría, los autores, profesionales en la materia con una dilatada experiencia, analizan el tema desde diferentes perspecti…",
+      "portada": "https://books.google.com/books/content?id=6LixEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "portada_url": "https://books.google.com/books/content?id=6LixEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "portada_source": "google_books",
+      "portada_candidates": [
+        {
+          "source": "google_books",
+          "size": "small",
+          "url": "https://books.google.com/books/content?id=6LixEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+          "valid": true
+        }
+      ],
+      "needs_fallback_cover": false,
+      "isbn": "9791370068912",
+      "editorial": "Dykinson",
+      "publication_year": "2025",
+      "source": "google_books",
+      "duplicado": false,
+      "selected_via": "discover_live_google_books",
+      "selection_reason": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+      "trigger_input": "quiero leer lo mejor sobre creatividad en 2025",
+      "trigger_analysis": {
+        "raw_input": "quiero leer lo mejor sobre creatividad en 2025",
+        "semantic_query": "mejores libros sobre creatividad publicados en 2025",
+        "intent_summary": "Buscar libros destacados sobre creatividad de 2025.",
+        "editorial_requests": [],
+        "source_preference": null,
+        "ranking_preference": "new_releases",
+        "unsupported_runtime_constraints": [
+          "lista viva de novedades"
+        ],
+        "supported_constraints": {
+          "year_min": 2025,
+          "year_max": 2025,
+          "prefer_recent": true
+        },
+        "search_queries": [
+          "libros sobre creatividad 2025",
+          "nuevas publicaciones creatividad 2025",
+          "mejores libros creatividad",
+          "creatividad 2025",
+          "libros recientes sobre creatividad",
+          "tendencias en creatividad 2025",
+          "mejores libros sobre creatividad publicados en 2025",
+          "mejores libros creatividad publicados 2025"
+        ],
+        "concept_hints": [
+          "creatividad"
+        ],
+        "clean_for_selection": "mejores libros sobre creatividad publicados en 2025",
+        "notes": {
+          "used_ai_normalizer": true,
+          "looked_like_book_intent": true,
+          "semantic_overlap_vs_raw": 0.5
+        }
+      },
+      "selection_validation": {
+        "semantic_score": 0.85,
+        "ai_fit_score": 0.85,
+        "match_score": 0.55,
+        "validation_source": "google_books",
+        "constraint_reason": "Año verificado 2025",
+        "mode": "exact_live",
+        "source_label": "google_books_newest",
+        "fallback_score": 136
+      },
+      "catalog_scope": "",
+      "contexto_2026": {},
+      "identity_sealed": true,
+      "_evidence": {
+        "titulo_input": "Innovación docente en arte y humanidades: explorando retos y oportunidades en la enseñanza y el aprendizaje",
+        "autor_input": "Autor desconocido",
+        "isbn_seed": "",
+        "isbn_seed_raw": "",
+        "isbn_seed_rejected": null,
+        "isbn_discovered": "9791370068912",
+        "isbn_discovered_raw": "9791370068912",
+        "apple": {
+          "ok": false,
+          "reason": "low_match_0.28",
+          "source": "apple_books"
+        },
+        "google": {
+          "ok": true,
+          "source": "google_books",
+          "match_score": 0.55,
+          "match_details": {
+            "matched_title": "Innovación docente en arte y humanidades: explorando retos y oportunidades en la enseñanza y el aprendizaje",
+            "matched_author": ""
+          },
+          "synopsis": "Nos encontramos ante una obra en la que, con maestría, los autores, profesionales en la materia con una dilatada experiencia, analizan el tema desde diferentes perspectivas ofreciendo al lector una completa visión del estado actual de la materia.",
+          "synopsis_length": 246,
+          "covers": [
+            {
+              "size": "small",
+              "url": "https://books.google.com/books/content?id=6LixEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+            }
+          ],
+          "verified_identity": {
+            "titulo_real": "Innovación docente en arte y humanidades: explorando retos y oportunidades en la enseñanza y el aprendizaje",
+            "subtitulo": "",
+            "autor_completo": "Autor desconocido",
+            "año": "2025",
+            "editorial": "Dykinson",
+            "paginas": 551,
+            "isbn": "9791370068912",
+            "isbn13": "9791370068912",
+            "isbn10": "",
+            "categorias": [
+              "Education"
+            ],
+            "idioma": "es",
+            "preview_link": "http://books.google.com/books?id=6LixEQAAQBAJ&printsec=frontcover&dq=Innovaci%C3%B3n+docente+en+arte+y+humanidades:+explorando+retos+y+oportunidades+en+la+ense%C3%B1anza+y+el+aprendizaje+Autor+desconocido&hl=&cd=1&source=gbs_api"
+          }
+        },
+        "openlibrary": {
+          "ok": false,
+          "reason": "no_results",
+          "source": "openlibrary"
+        },
+        "amazon": {
+          "ok": false,
+          "reason": "isbn13_conversion_failed_or_not_978",
+          "source": "amazon",
+          "_attempted_isbn": "9791370068912"
+        },
+        "valid_covers": [
+          {
+            "source": "google_books",
+            "size": "small",
+            "url": "https://books.google.com/books/content?id=6LixEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+            "valid": true
+          }
+        ],
+        "_sources_succeeded": [
+          "google_books"
+        ],
+        "_sources_failed": [
+          "apple_books:low_match_0.28",
+          "openlibrary:no_results",
+          "amazon:isbn13_conversion_failed_or_not_978"
+        ],
+        "_timing": {
+          "phase1_parallel_ms": 1385,
+          "phase2_isbn_chain_ms": 106,
+          "cover_validation_ms": 54,
+          "total_ms": 1545
+        },
+        "_version": "3.6"
+      },
+      "_evidence_synopsis": "Nos encontramos ante una obra en la que, con maestría, los autores, profesionales en la materia con una dilatada experiencia, analizan el tema desde diferentes perspectivas ofreciendo al lector una completa visión del estado actual de la materia.",
+      "_evidence_verified_identity": {
+        "titulo_real": "Innovación docente en arte y humanidades: explorando retos y oportunidades en la enseñanza y el aprendizaje",
+        "subtitulo": "",
+        "autor_completo": "Autor desconocido",
+        "año": "2025",
+        "editorial": "Dykinson",
+        "paginas": 551,
+        "isbn": "9791370068912",
+        "isbn13": "9791370068912",
+        "isbn10": "",
+        "categorias": [
+          "Education"
+        ],
+        "idioma": "es",
+        "preview_link": "http://books.google.com/books?id=6LixEQAAQBAJ&printsec=frontcover&dq=Innovaci%C3%B3n+docente+en+arte+y+humanidades:+explorando+retos+y+oportunidades+en+la+ense%C3%B1anza+y+el+aprendizaje+Autor+desconocido&hl=&cd=1&source=gbs_api"
+      },
+      "_evidence_match_score": 0.55
+    },
+    "ring_updated": true
+  }
+}
