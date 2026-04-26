@@ -2,6 +2,8 @@
 # 🌒 TRIGGUI — Generador único de contenido nivel dios
 # ═══════════════════════════════════════════════════════════════════════════════
 #
+# v3.4 — Anti-duplicados FIFO: persiste recent-books.json en raíz del repo
+#
 # Un solo workflow para TODO:
 # - 📘 Generar un libro específico (tú eliges cuál)
 # - 💭 Triggui elige de tu catálogo de 700 libros según sentimiento
@@ -17,6 +19,7 @@
 # - contenido.json vacío (0 bytes) → lo reconstruye
 # - contenido.json corrupto (JSON inválido) → backup + rebuild
 # - contenido.json válido → lo usa normalmente
+# - recent-books.json no existe → arranca con ring vacío (no falla)
 #
 # ═══════════════════════════════════════════════════════════════════════════════
 # AUTOMATIZACIÓN (cron schedule)
@@ -120,6 +123,8 @@ jobs:
       TRIGGUI_BOOK_CONTEXT: ${{ inputs.nota_libro }}
       TRIGGUI_CRONO_ENABLED: ${{ inputs.cronobiologia }}
       BASE_URL: ${{ github.ref_name == 'main' && 'https://app.triggui.com' || 'https://beta.app.triggui.com' }}
+      # v3.4: ruta absoluta al ring para que validate-book.js no dependa de cwd
+      RECENT_BOOKS_PATH: ${{ github.workspace }}/recent-books.json
 
     steps:
       # ╔══════════════════════════════════════════════════════════════════╗
@@ -224,6 +229,36 @@ jobs:
             echo "✓ CSV linkeado desde triggui-app"
           else
             echo "⚠️  libros_master.csv no encontrado — modos constrained y batch fallarán"
+          fi
+
+      # ╔══════════════════════════════════════════════════════════════════╗
+      # ║  FASE 2.5 — v3.4: Verificar/crear recent-books.json               ║
+      # ║                                                                   ║
+      # ║  Si el archivo no existe (primer run o se borró), lo inicializa  ║
+      # ║  con estructura vacía válida. Si existe pero está corrupto,       ║
+      # ║  validate-book.js lo arranca con ring vacío sin fallar.           ║
+      # ╚══════════════════════════════════════════════════════════════════╝
+
+      - name: 🛡️ Inicializar recent-books.json (anti-duplicados v3.4)
+        shell: bash
+        run: |
+          set -euo pipefail
+          RECENT_FILE="${GITHUB_WORKSPACE}/recent-books.json"
+
+          if [ ! -f "${RECENT_FILE}" ]; then
+            echo "ℹ️  recent-books.json no existe — inicializando estructura vacía"
+            cat > "${RECENT_FILE}" <<'EOF'
+          {
+            "version": "3.4",
+            "max_size": 30,
+            "books": [],
+            "_note": "FIFO ring de últimos 30 libros generados por selección automática (constrained o discover). Filtro pre-rerank en validate-book.js. Inicializa vacío y se rellena con cada run exitoso. Si se borra, el sistema arranca limpio sin daño."
+          }
+          EOF
+            echo "✅ recent-books.json inicializado"
+          else
+            COUNT=$(node -e "try{const d=JSON.parse(require('fs').readFileSync('${RECENT_FILE}','utf8').trim());console.log(Array.isArray(d.books)?d.books.length:0)}catch(e){console.log('0')}" 2>/dev/null || echo "0")
+            echo "🛡️  recent-books.json: ${COUNT} libros en ring"
           fi
 
       # ╔══════════════════════════════════════════════════════════════════╗
@@ -349,6 +384,35 @@ jobs:
         run: node validate-book.js
 
       # ╔══════════════════════════════════════════════════════════════════╗
+      # ║  FASE 4.5 — v3.4: Aplicar update del ring si validate-book lo     ║
+      # ║              emitió. NO se aplica para modo book directo.         ║
+      # ║              NO se aplica si fue degradación elegante (repetido). ║
+      # ╚══════════════════════════════════════════════════════════════════╝
+
+      - name: 🛡️ Aplicar update del ring de recientes
+        if: ${{ steps.modo.outputs.modo_tecnico == 'trigger_constrained' || steps.modo.outputs.modo_tecnico == 'trigger_discover' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          UPDATE_PATH="/tmp/triggui-recent-books-update.json"
+          RECENT_FILE="${GITHUB_WORKSPACE}/recent-books.json"
+
+          if [ ! -f "${UPDATE_PATH}" ]; then
+            echo "ℹ️  Sin update del ring (degradación elegante o modo book) — sin cambios"
+            exit 0
+          fi
+
+          # Validar que el update sea JSON válido antes de pisar el archivo en raíz
+          if ! node -e "JSON.parse(require('fs').readFileSync('${UPDATE_PATH}','utf8'))" 2>/dev/null; then
+            echo "⚠️  Update del ring no es JSON válido — manteniendo archivo actual"
+            exit 0
+          fi
+
+          cp "${UPDATE_PATH}" "${RECENT_FILE}"
+          COUNT=$(node -e "console.log(JSON.parse(require('fs').readFileSync('${RECENT_FILE}','utf8')).books.length)" 2>/dev/null || echo "?")
+          echo "✅ recent-books.json actualizado: ${COUNT} libros en ring"
+
+      # ╔══════════════════════════════════════════════════════════════════╗
       # ║  FASE 5 — Ejecutar Nucleus unificado                              ║
       # ╚══════════════════════════════════════════════════════════════════╝
 
@@ -452,6 +516,8 @@ jobs:
           [ -d public/t ] && git add public/t/ || true
           [ -f contenido_edicion.json ] && git add contenido_edicion.json || true
           [ -f contenido.shadow.json ] && git add contenido.shadow.json || true
+          # v3.4: persistir ring de anti-duplicados
+          [ -f recent-books.json ] && git add recent-books.json || true
 
           for dir in inputs-history metrics quality-reports grounding-cache evidence-cache validate-debug; do
             [ -d "$dir" ] && git add "$dir/" || true
@@ -516,6 +582,13 @@ jobs:
           echo "| Manuales protegidos | ${{ inputs.preservar_manuales }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Modo prueba | ${{ inputs.modo_prueba }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
+
+          # v3.4: contar ring de recientes para reporte
+          if [ -f "${GITHUB_WORKSPACE}/recent-books.json" ]; then
+            RING=$(node -e "try{const d=JSON.parse(require('fs').readFileSync('${GITHUB_WORKSPACE}/recent-books.json','utf8').trim());console.log(Array.isArray(d.books)?d.books.length:0)}catch(e){console.log('0')}" 2>/dev/null || echo "0")
+            echo "| Ring anti-duplicados | ${RING} libros |" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
 
           # Summary blindado: usa la misma validación que Fase 3 con graceful fallback
           if [ -f "${GITHUB_WORKSPACE}/contenido.json" ]; then

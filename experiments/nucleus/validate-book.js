@@ -1,32 +1,39 @@
 /**
  * validate-book.js — Paso 1 del pipeline Triggui 2.0
  *
+ * v3.4 — ANTI-DUPLICADOS
+ * ─────────────────────────────────────────────────────────────
+ * Cambios sobre v3.3 (adicionales, NO destructivos):
+ *
+ * 1. Lee /workspaces/triggui-app/recent-books.json (FIFO 30 libros).
+ * 2. Filtra candidatos vivos y GPT antes del rerank por
+ *    título normalizado + autor normalizado.
+ * 3. Inyecta lista de "evita estos" en runDiscoverAttempt.
+ * 4. Sube temperature de runDiscoverAttempt intento 1 a 0.7.
+ * 5. Degradación elegante: si el filtro vacía la lista,
+ *    permite repetir el más antiguo (FIFO inverso).
+ * 6. Al final escribe /tmp/triggui-recent-books-update.json
+ *    con la entrada nueva. El workflow lo persiste al repo.
+ *
+ * Lo NO tocado:
+ * - Reranker AI sigue en temp 0.05 (queremos determinismo en
+ *   evaluación de fit, variedad por filtro pre-rerank).
+ * - Constrained selector sigue como está (selecciona desde tu
+ *   CSV curado, repetir ahí es válido).
+ * - Modo book directo sigue como está (libro explícito, no
+ *   cuenta como "recomendación automática").
+ *
  * Soporta tres caminos:
  * 1) book + direct         -> libro explícito, validación directa
  * 2) trigger + constrained -> elige SOLO dentro de libros_master.csv
  * 3) trigger + discover    -> resuelve libro con capa viva + GPT + validación
- *
- * Filosofía:
- * El usuario escribe lo que quiera en lenguaje humano.
- * Este script separa intención semántica, ruido editorial y restricciones,
- * busca candidatos reales en fuentes vivas, valida evidencia bibliográfica,
- * y solo deja pasar libros dignos.
- *
- * Salida:
- * - GitHub Actions output: book_json
- * - /tmp/triggui-slug.txt
- * - /tmp/triggui-titulo.txt
- * - /tmp/triggui-book.json
- * - /tmp/triggui-validate-debug.json
  */
 
 import fs from "node:fs/promises";
 import { appendFileSync, writeFileSync } from "node:fs";
+import path from "node:path";
 import { parse } from "csv-parse/sync";
 
-// ═══ v3.2 FUSIÓN TOTAL ═══
-// Reemplaza las funciones duplicadas searchAppleBooks/searchGoogleBooks/searchOpenLibrary
-// por llamadas unificadas a evidence-fetcher. Zero llamadas duplicadas con grounding-resolver.
 import { fetchEvidence, selectBestCover, buildEnrichedBookData, checkImageURL as checkImageURLEF } from "./evidence-fetcher.js";
 
 const INPUT_MODE = String(process.env.INPUT_MODE || "").trim().toLowerCase();
@@ -40,9 +47,14 @@ const OPENAI_KEY = String(process.env.OPENAI_KEY || "").trim();
 const MODE = INPUT_MODE || (LIBRO_INPUT ? "book" : "");
 const SELECTOR = SELECTOR_MODE || (LIBRO_INPUT ? "direct" : "");
 const DEBUG_PATH = "/tmp/triggui-validate-debug.json";
+const RECENT_UPDATE_PATH = "/tmp/triggui-recent-books-update.json";
 const MAX_DISCOVER_ATTEMPTS = 2;
 const MIN_EVIDENCE_MATCH_SCORE = 0.38;
 const MIN_SEMANTIC_FALLBACK_SCORE = 0.18;
+
+// v3.4: configuración anti-duplicados
+const RECENT_BOOKS_MAX = 30;
+const RECENT_BOOKS_FILENAME = "recent-books.json";
 
 const HTML_HEADERS = {
   "User-Agent": "triggui-validate-book/6.0",
@@ -467,6 +479,108 @@ function pickFirst(obj, keys) {
     }
   }
   return "";
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   v3.4 — RECENT-BOOKS RING (FIFO 30)
+   ─────────────────────────────────────────────────────────────
+   Lee la raíz del repo triggui-app/recent-books.json.
+   Busca en orden:
+   1. ENV explícito RECENT_BOOKS_PATH (override para tests)
+   2. /workspaces/triggui-app/recent-books.json (Codespaces)
+   3. ../../recent-books.json relativo a este script
+   4. ./recent-books.json (cwd)
+
+   Si nada existe, devuelve estructura vacía. NO falla.
+═══════════════════════════════════════════════════════════════ */
+
+async function findRecentBooksPath() {
+  const candidates = [
+    String(process.env.RECENT_BOOKS_PATH || "").trim(),
+    "/workspaces/triggui-app/recent-books.json",
+    path.resolve(process.cwd(), "../../recent-books.json"),
+    path.resolve(process.cwd(), `./${RECENT_BOOKS_FILENAME}`),
+    `/${RECENT_BOOKS_FILENAME}`
+  ].filter(Boolean);
+
+  for (const candidate of candidates) {
+    if (await fileExists(candidate)) {
+      return candidate;
+    }
+  }
+  return null;
+}
+
+async function loadRecentBooks() {
+  const filePath = await findRecentBooksPath();
+
+  if (!filePath) {
+    console.log("ℹ️  recent-books.json no encontrado — primer run o archivo borrado, arrancando con ring vacío");
+    return { filePath: null, version: "3.4", max_size: RECENT_BOOKS_MAX, books: [] };
+  }
+
+  try {
+    const raw = (await fs.readFile(filePath, "utf8")).trim();
+    if (!raw) {
+      console.log(`ℹ️  recent-books.json vacío en ${filePath} — arrancando con ring vacío`);
+      return { filePath, version: "3.4", max_size: RECENT_BOOKS_MAX, books: [] };
+    }
+
+    const parsed = JSON.parse(raw);
+    const books = safeArray(parsed?.books)
+      .filter(b => b && typeof b === "object")
+      .map(b => ({
+        titulo: String(b.titulo || "").trim(),
+        autor: String(b.autor || "").trim(),
+        slug: String(b.slug || "").trim(),
+        titulo_normalizado: String(b.titulo_normalizado || normalizeText(b.titulo)).trim(),
+        autor_normalizado: String(b.autor_normalizado || normalizeText(b.autor)).trim(),
+        timestamp: String(b.timestamp || "").trim(),
+        trigger_input: String(b.trigger_input || "").trim(),
+        selected_via: String(b.selected_via || "").trim()
+      }))
+      .filter(b => b.titulo_normalizado);
+
+    return {
+      filePath,
+      version: String(parsed?.version || "3.4"),
+      max_size: toNumberOrNull(parsed?.max_size) || RECENT_BOOKS_MAX,
+      books
+    };
+  } catch (e) {
+    console.log(`⚠️  recent-books.json en ${filePath} no parseable (${e.message}) — arrancando con ring vacío`);
+    return { filePath, version: "3.4", max_size: RECENT_BOOKS_MAX, books: [] };
+  }
+}
+
+function isRecent(recentBooks, titulo, autor) {
+  const tNorm = normalizeText(titulo);
+  const aNorm = normalizeText(autor);
+  if (!tNorm) return false;
+
+  return safeArray(recentBooks?.books).some(prev => {
+    const sameTitle = prev.titulo_normalizado === tNorm;
+    if (!sameTitle) return false;
+    if (!aNorm || !prev.autor_normalizado) return true;
+    return prev.autor_normalizado === aNorm;
+  });
+}
+
+function filterRecent(items, recentBooks, label = "candidatos") {
+  const before = safeArray(items).length;
+  const out = safeArray(items).filter(item => !isRecent(recentBooks, item?.titulo, item?.autor));
+  const removed = before - out.length;
+  if (removed > 0) {
+    console.log(`   🛡️  Anti-duplicados (${label}): ${removed}/${before} filtrados por ring de ${recentBooks.books.length} recientes`);
+  }
+  return out;
+}
+
+function buildAvoidListForPrompt(recentBooks, max = 30) {
+  return safeArray(recentBooks?.books)
+    .slice(-max)
+    .map(b => `- ${b.titulo}${b.autor ? ` — ${b.autor}` : ""}`)
+    .join("\n");
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -915,16 +1029,8 @@ function scoreBookMatch(targetTitle, targetAuthor, candidateTitle, candidateAuth
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    API WRAPPERS v3.2 — DELEGADOS A EVIDENCE-FETCHER
-
-   Preservan la firma idéntica de las funciones originales pero delegan al
-   módulo unificado. Así ninguna función aguas arriba cambia.
-
-   BONUS: getBestBookEvidence ahora cachea internamente el evidence completo
-   para que si luego grounding-resolver lo llama, reutilice el resultado.
 ═══════════════════════════════════════════════════════════════════════════════ */
 
-// Cache in-process del último evidence fetch por libro.
-// Permite que validate-book y grounding-resolver compartan la misma evidence sin re-llamar.
 const _evidenceCache = new Map();
 function _evidenceKey(titulo, autor) {
   return `${String(titulo || "").trim().toLowerCase()}|${String(autor || "").trim().toLowerCase()}`;
@@ -939,7 +1045,6 @@ async function _getOrFetchEvidence(titulo, autor, isbn = "") {
 }
 
 function _mapSourceToLegacy(result, legacySource) {
-  // Adapta un resultado de evidence-fetcher al shape legacy que espera el código existente.
   if (!result || !result.ok) return null;
   const vi = result.verified_identity || {};
   const firstCover = Array.isArray(result.covers) && result.covers[0] ? result.covers[0].url : "";
@@ -952,7 +1057,6 @@ function _mapSourceToLegacy(result, legacySource) {
     matched_title: result.match_details?.matched_title || "",
     matched_author: result.match_details?.matched_author || "",
     match_score: result.match_score || 0,
-    // Campos adicionales v3.2 (aditivos, no rompen consumers legacy)
     synopsis: result.synopsis || "",
     synopsis_length: result.synopsis_length || 0,
     covers: result.covers || [],
@@ -965,7 +1069,6 @@ async function searchAppleBooks(titulo, autor) {
   const evidence = await _getOrFetchEvidence(titulo, autor);
   const mapped = _mapSourceToLegacy(evidence.apple, "apple_books");
   if (!mapped || mapped.match_score < MIN_EVIDENCE_MATCH_SCORE) return null;
-  // Validación de portada ya hecha por evidence-fetcher, pero respetamos el contrato legacy
   const validCovers = (evidence.valid_covers || []).filter((c) => c.source === "apple_books");
   if (validCovers.length === 0 && mapped.portada) {
     return { ...mapped, portada: "" };
@@ -997,8 +1100,6 @@ async function searchOpenLibrary(titulo, autor) {
 }
 
 async function searchAmazonFallback(titulo, autor) {
-  // v3.2: Amazon public cover endpoint por ISBN (no PA-API deprecada)
-  // evidence-fetcher ya intentó Amazon si descubrió ISBN, solo reportamos
   const evidence = _evidenceCache.get(_evidenceKey(titulo, autor));
   if (!evidence) return null;
   const amz = evidence.amazon;
@@ -1021,10 +1122,8 @@ async function searchAmazonFallback(titulo, autor) {
 async function getBestBookEvidence(titulo, autor) {
   console.log(`🔍 Buscando evidencia para "${titulo}" — ${autor} (v3.2 unified)`);
 
-  // Una sola llamada a evidence-fetcher trae TODO
   const evidence = await _getOrFetchEvidence(titulo, autor);
 
-  // Construir candidates desde las 4 posibles fuentes
   const candidates = [
     _mapSourceToLegacy(evidence.apple, "apple_books"),
     _mapSourceToLegacy(evidence.google, "google_books"),
@@ -1041,7 +1140,6 @@ async function getBestBookEvidence(titulo, autor) {
     } : null
   ].filter(Boolean);
 
-  // Filtrar candidatos que pasaron score mínimo
   const qualified = candidates.filter((c) => (c.match_score || 0) >= MIN_EVIDENCE_MATCH_SCORE);
 
   if (!qualified.length) {
@@ -1054,11 +1152,10 @@ async function getBestBookEvidence(titulo, autor) {
       matched_title: "",
       matched_author: "",
       match_score: 0,
-      _evidence: evidence  // ← v3.2: evidence completa adjunta para reuso downstream
+      _evidence: evidence
     };
   }
 
-  // Ranking: priorizar covers válidas + match_score
   qualified.sort((a, b) => {
     const aImage = a.portada ? 1 : 0;
     const bImage = b.portada ? 1 : 0;
@@ -1557,7 +1654,7 @@ async function searchBarnesAndNobleLiveCandidates(triggerAnalysis) {
   return candidates;
 }
 
-async function resolveLiveCandidates(triggerAnalysis) {
+async function resolveLiveCandidates(triggerAnalysis, recentBooks) {
   const shouldUseBn = triggerAnalysis.source_preference === "barnes_and_noble"
     || triggerAnalysis.ranking_preference === "new_releases"
     || triggerAnalysis.ranking_preference === "best_sellers"
@@ -1586,6 +1683,18 @@ async function resolveLiveCandidates(triggerAnalysis) {
     .map(rec => ({ ...rec, live_score: scoreLiveCandidate(rec, triggerAnalysis) }))
     .sort((a, b) => (b.live_score || 0) - (a.live_score || 0))
     .slice(0, 15);
+
+  // v3.4: filtro pre-rerank por ring de recientes
+  const beforeFilter = merged.length;
+  merged = filterRecent(merged, recentBooks, "live_candidates");
+  const afterFilter = merged.length;
+
+  await appendDebugEvent("live_candidates_filter_recent", {
+    before: beforeFilter,
+    after: afterFilter,
+    removed: beforeFilter - afterFilter,
+    ring_size: recentBooks.books.length
+  });
 
   merged = await rerankCandidatesWithAI(triggerAnalysis, merged, "live_candidates_rerank");
 
@@ -1643,7 +1752,7 @@ function salvageRecommendations(response) {
   return [];
 }
 
-function buildDiscoverUserPrompt(triggerAnalysis, attemptNumber) {
+function buildDiscoverUserPrompt(triggerAnalysis, attemptNumber, recentBooks) {
   const lines = [];
   if (triggerAnalysis.supported_constraints.year_min) lines.push(`- año mínimo obligatorio: ${triggerAnalysis.supported_constraints.year_min}`);
   if (triggerAnalysis.supported_constraints.year_max) lines.push(`- año máximo obligatorio: ${triggerAnalysis.supported_constraints.year_max}`);
@@ -1651,6 +1760,12 @@ function buildDiscoverUserPrompt(triggerAnalysis, attemptNumber) {
   if (triggerAnalysis.source_preference === "barnes_and_noble") lines.push("- si conoces libros recientes visibles en Barnes & Noble, priorízalos");
   if (triggerAnalysis.ranking_preference) lines.push(`- preferencia de ranking: ${triggerAnalysis.ranking_preference}`);
   if (triggerAnalysis.editorial_requests.length) lines.push(`- ignora estas instrucciones editoriales: ${triggerAnalysis.editorial_requests.join(", ")}`);
+
+  // v3.4: inyectar lista de evitados
+  const avoidList = buildAvoidListForPrompt(recentBooks);
+  const avoidBlock = avoidList
+    ? `\n\nEVITA ESTOS LIBROS YA RECOMENDADOS RECIENTEMENTE:\n${avoidList}\n\nNo los propongas. Busca alternativas reales con fit equivalente.`
+    : "";
 
   return `
 TRIGGER HUMANO LIMPIO:
@@ -1666,7 +1781,7 @@ RESTRICCIONES:
 ${lines.length ? lines.join("\n") : "- ninguna adicional"}
 
 CONSULTAS ÚTILES:
-${triggerAnalysis.search_queries.join(" | ")}
+${triggerAnalysis.search_queries.join(" | ")}${avoidBlock}
 
 ${attemptNumber === 1 ? "Propón hasta 3 libros reales y verificables." : "Reintento estricto: mejor 1 libro sólido que 3 dudosos."}
 No inventes.
@@ -1675,7 +1790,7 @@ No devuelvas estructura editorial.
 `.trim();
 }
 
-async function runDiscoverAttempt(triggerAnalysis, attemptNumber) {
+async function runDiscoverAttempt(triggerAnalysis, attemptNumber, recentBooks) {
   console.log(`🌌 Trigger discover GPT — intento ${attemptNumber}/${MAX_DISCOVER_ATTEMPTS}`);
 
   const system = `
@@ -1685,6 +1800,7 @@ No inventes títulos.
 No inventes autores.
 Ignora instrucciones editoriales de formato.
 Si el usuario pidió recencia o año, respétalo si no estás adivinando.
+Si te dan una lista de libros a evitar, NO los propongas; busca alternativas reales.
 Responde SOLO JSON con:
 {
   "recommendations": [
@@ -1693,10 +1809,15 @@ Responde SOLO JSON con:
 }
 `.trim();
 
-  const user = buildDiscoverUserPrompt(triggerAnalysis, attemptNumber);
-  const { json, rawContent } = await callOpenAIJson(system, user, attemptNumber === 1 ? 0.25 : 0.10, {
+  const user = buildDiscoverUserPrompt(triggerAnalysis, attemptNumber, recentBooks);
+  // v3.4: subir temperature de intento 1 a 0.7 para variedad real
+  const temperature = attemptNumber === 1 ? 0.7 : 0.10;
+
+  const { json, rawContent } = await callOpenAIJson(system, user, temperature, {
     stage: "discover_selector",
-    attempt: attemptNumber
+    attempt: attemptNumber,
+    temperature,
+    avoid_list_size: recentBooks.books.length
   });
 
   const recommendations = salvageRecommendations(json);
@@ -1705,7 +1826,8 @@ Responde SOLO JSON con:
     attempt: attemptNumber,
     parsed_preview: json,
     raw_preview: String(rawContent || "").slice(0, 1200),
-    recommendations
+    recommendations,
+    temperature
   });
 
   return recommendations;
@@ -1725,13 +1847,65 @@ function buildGracefulCompromiseText(row, triggerAnalysis) {
   return parts.length ? `Fallback elegante: ${parts.join(" | ")}` : "Fallback elegante al mejor candidato real disponible";
 }
 
-async function resolveDiscoverFromTrigger(triggerAnalysis) {
+/**
+ * v3.4 — Fallback de degradación elegante para anti-duplicados:
+ * Si TODOS los candidatos están filtrados por el ring, repite el más antiguo
+ * (FIFO: primer elemento del array = más viejo). Promesa de variedad cede a
+ * promesa de "siempre dar libro" en este caso extremo.
+ */
+async function resolveFromOldestRecent(triggerAnalysis, recentBooks) {
+  const oldest = recentBooks.books[0];
+  if (!oldest?.titulo) return null;
+
+  console.log(`⚠️  Anti-duplicados agotó alternativas — degradación elegante: repetir más antiguo del ring`);
+  console.log(`📖 Más antiguo: ${oldest.titulo} — ${oldest.autor}`);
+
+  const evidence = await getBestBookEvidence(oldest.titulo, oldest.autor || "Autor desconocido");
+  const constraintsCheck = evaluateEvidenceAgainstConstraints(evidence, triggerAnalysis);
+
+  const lexical_semantic = weightedSemanticScore(
+    triggerAnalysis.clean_for_selection,
+    oldest.titulo,
+    "",
+    triggerAnalysis.concept_hints
+  );
+
+  const row = {
+    recommendation: {
+      titulo: oldest.titulo,
+      autor: oldest.autor || "Autor desconocido",
+      tagline: "",
+      motivo_corto: "Repetición elegante: el ring de últimos 30 libros agotó alternativas",
+      source_label: "recent_books_oldest",
+      published_year: null,
+      live_score: 0,
+      ai_fit_score: 0,
+      ai_fit_reason: ""
+    },
+    evidence,
+    constraintsCheck,
+    sourceLabel: "recent_books_oldest",
+    semantic_score: lexical_semantic,
+    fallback_score: 0
+  };
+
+  await appendDebugEvent("recent_books_degradation", {
+    repeated_book: oldest,
+    ring_size: recentBooks.books.length
+  });
+
+  const result = resultFromInspectedRow(row, triggerAnalysis, "discover_recent_oldest_fallback", "recent_oldest_fallback");
+  result.selection_reason = `Anti-duplicados FIFO: el ring de últimos ${recentBooks.books.length} libros agotó alternativas válidas. Se repite el más antiguo (registrado el ${oldest.timestamp || "—"}).`;
+  return result;
+}
+
+async function resolveDiscoverFromTrigger(triggerAnalysis, recentBooks) {
   console.log("🌌 Trigger discover — resolviendo con capa viva + GPT...");
   const allInspected = [];
 
-  let liveCandidates = await resolveLiveCandidates(triggerAnalysis);
+  let liveCandidates = await resolveLiveCandidates(triggerAnalysis, recentBooks);
   if (liveCandidates.length) {
-    console.log(`🔢 Candidatos vivos: ${liveCandidates.length}`);
+    console.log(`🔢 Candidatos vivos (post-filtro recientes): ${liveCandidates.length}`);
     const liveInspected = await inspectRecommendations(liveCandidates, triggerAnalysis, "live_candidates");
     allInspected.push(...liveInspected.inspected);
     await appendDebugEvent("live_candidates_inspected", { inspected: liveInspected.inspected });
@@ -1745,11 +1919,31 @@ async function resolveDiscoverFromTrigger(triggerAnalysis) {
         "exact_live"
       );
     }
+  } else {
+    console.log("🟡 Sin candidatos vivos disponibles después del filtro de recientes");
   }
 
   for (let attempt = 1; attempt <= MAX_DISCOVER_ATTEMPTS; attempt += 1) {
-    let gptCandidates = await runDiscoverAttempt(triggerAnalysis, attempt);
-    if (!gptCandidates.length) continue;
+    let gptCandidates = await runDiscoverAttempt(triggerAnalysis, attempt, recentBooks);
+
+    // v3.4: filtro pre-rerank también para GPT (defensa en profundidad
+    // por si GPT ignoró el avoid list del prompt)
+    const beforeGpt = gptCandidates.length;
+    gptCandidates = filterRecent(gptCandidates, recentBooks, `gpt_attempt_${attempt}`);
+    const afterGpt = gptCandidates.length;
+    if (beforeGpt !== afterGpt) {
+      await appendDebugEvent("gpt_candidates_filter_recent", {
+        attempt,
+        before: beforeGpt,
+        after: afterGpt,
+        removed: beforeGpt - afterGpt
+      });
+    }
+
+    if (!gptCandidates.length) {
+      console.log(`🟡 Intento ${attempt}: GPT propuso solo libros ya en el ring, reintentando`);
+      continue;
+    }
 
     gptCandidates = await rerankCandidatesWithAI(triggerAnalysis, gptCandidates, `discover_gpt_rerank_attempt_${attempt}`);
 
@@ -1775,6 +1969,12 @@ async function resolveDiscoverFromTrigger(triggerAnalysis) {
     return result;
   }
 
+  // v3.4: degradación elegante final — repetir el más antiguo del ring
+  if (recentBooks.books.length > 0) {
+    const repeated = await resolveFromOldestRecent(triggerAnalysis, recentBooks);
+    if (repeated) return repeated;
+  }
+
   throw new Error(`Discover no pudo resolver un libro digno para "${triggerAnalysis.clean_for_selection}" respetando el nivel de exigencia actual. Revisa ${DEBUG_PATH}.`);
 }
 
@@ -1798,7 +1998,6 @@ async function getBestCover(titulo, autor) {
     editorial: evidence.editorial || "",
     year: evidence.year || "",
     source: evidence.source || "none",
-    // v3.2: reenviamos evidence completo + covers candidates para reuso downstream
     _evidence: evidence._evidence || null,
     portada_candidates: evidence._evidence?.valid_covers || [],
     synopsis: evidence.synopsis || "",
@@ -1808,7 +2007,7 @@ async function getBestCover(titulo, autor) {
   };
 }
 
-async function resolveBookData() {
+async function resolveBookData(recentBooks) {
   if (MODE === "book") {
     if (SELECTOR !== "direct") {
       console.log(`ℹ️  Modo book fuerza selector direct (recibido: ${SELECTOR})`);
@@ -1838,7 +2037,7 @@ async function resolveBookData() {
   }
 
   if (MODE === "trigger" && SELECTOR === "discover") {
-    return await resolveDiscoverFromTrigger(triggerAnalysis);
+    return await resolveDiscoverFromTrigger(triggerAnalysis, recentBooks);
   }
 
   throw new Error(`Combinación no soportada: INPUT_MODE=${MODE} / SELECTOR_MODE=${SELECTOR}`);
@@ -1849,7 +2048,11 @@ async function resolveBookData() {
 ═══════════════════════════════════════════════════════════════ */
 
 try {
-  const resolved = await resolveBookData();
+  // v3.4: cargar ring antes de resolver
+  const recentBooks = await loadRecentBooks();
+  console.log(`🛡️  Anti-duplicados: ring de ${recentBooks.books.length} libros recientes cargado desde ${recentBooks.filePath || "(vacío inicial)"}`);
+
+  const resolved = await resolveBookData(recentBooks);
 
   const titulo = resolved.titulo;
   const autor = resolved.autor || "Autor desconocido";
@@ -1866,13 +2069,12 @@ try {
   const publicationYearFinal = cover.year || resolved.publication_year || "";
   const coverSourceFinal = cover.source !== "none" ? cover.source : (resolved.portada ? "catalog" : "none");
 
-  // v3.2: identity_sealed cuando el libro viene de selección automática (constrained/discover).
-  // Esto le dice a grounding-resolver: NO cambies el titulo/autor, solo enriquece.
   const identitySealed = resolved.selected_via === "constrained_catalog"
                       || resolved.selected_via === "discover_trigger"
                       || resolved.selected_via === "discover_trigger_graceful_fallback"
                       || resolved.selected_via === "discover_live_barnes_and_noble"
-                      || resolved.selected_via === "discover_live_google_books";
+                      || resolved.selected_via === "discover_live_google_books"
+                      || resolved.selected_via === "discover_recent_oldest_fallback";
 
   const bookData = {
     titulo,
@@ -1882,9 +2084,7 @@ try {
     portada: portadaFinal,
     portada_url: portadaFinal,
     portada_source: coverSourceFinal,
-    // v3.2: candidates multi-tamaño (útil para HD thumbnails, fallbacks, etc.)
     portada_candidates: cover.portada_candidates || [],
-    // v3.2: marca para que build-contenido genere SVG si ninguna API dio portada
     needs_fallback_cover: !portadaFinal,
     isbn: isbnFinal,
     editorial: editorialFinal,
@@ -1898,7 +2098,6 @@ try {
     selection_validation: resolved.selection_validation || {},
     catalog_scope: resolved.catalog_scope || "",
     contexto_2026: resolved.contexto_2026 || {},
-    // v3.2: identity_sealed + evidence completa para que grounding-resolver los reuse
     identity_sealed: identitySealed,
     _evidence: cover._evidence || null,
     _evidence_synopsis: cover.synopsis || "",
@@ -1910,7 +2109,49 @@ try {
   await fs.writeFile("/tmp/triggui-titulo.txt", titulo, "utf8");
   await fs.writeFile("/tmp/triggui-book.json", JSON.stringify(bookData, null, 2), "utf8");
 
-  await appendDebugEvent("success", { bookData });
+  // v3.4: emitir actualización del ring SOLO para selección automática (constrained o discover).
+  // Modo book directo NO entra al ring porque es elección explícita del humano.
+  const shouldUpdateRing = bookData.selected_via === "constrained_catalog"
+                        || bookData.selected_via === "discover_trigger"
+                        || bookData.selected_via === "discover_trigger_graceful_fallback"
+                        || bookData.selected_via === "discover_live_barnes_and_noble"
+                        || bookData.selected_via === "discover_live_google_books";
+  // NOTA: discover_recent_oldest_fallback NO entra (es repetición, ya estaba en el ring)
+
+  if (shouldUpdateRing) {
+    const newEntry = {
+      titulo,
+      autor,
+      slug,
+      titulo_normalizado: normalizeText(titulo),
+      autor_normalizado: normalizeText(autor),
+      timestamp: new Date().toISOString(),
+      trigger_input: resolved.trigger_input || ENTRADA_RAW || "",
+      selected_via: bookData.selected_via
+    };
+
+    // FIFO: filtrar duplicado exacto del ring (por si acaso) y agregar al final.
+    // Si supera RECENT_BOOKS_MAX, elimina el más antiguo (índice 0).
+    const filteredBooks = recentBooks.books.filter(b =>
+      !(b.titulo_normalizado === newEntry.titulo_normalizado && b.autor_normalizado === newEntry.autor_normalizado)
+    );
+    const updatedBooks = [...filteredBooks, newEntry].slice(-RECENT_BOOKS_MAX);
+
+    const updatedRing = {
+      version: "3.4",
+      max_size: RECENT_BOOKS_MAX,
+      books: updatedBooks,
+      _note: "FIFO ring de últimos 30 libros generados por selección automática (constrained o discover). Filtro pre-rerank en validate-book.js. Inicializa vacío y se rellena con cada run exitoso. Si se borra, el sistema arranca limpio sin daño."
+    };
+
+    await fs.writeFile(RECENT_UPDATE_PATH, JSON.stringify(updatedRing, null, 2), "utf8");
+    console.log(`🛡️  Ring actualizado: ${updatedBooks.length}/${RECENT_BOOKS_MAX} entradas → ${RECENT_UPDATE_PATH}`);
+    console.log(`   Nuevo: ${titulo} — ${autor}`);
+  } else {
+    console.log(`ℹ️  selected_via=${bookData.selected_via} — no actualiza ring (modo book directo o repetición)`);
+  }
+
+  await appendDebugEvent("success", { bookData, ring_updated: shouldUpdateRing });
 
   setGithubOutput("book_json", JSON.stringify(bookData));
   setGithubOutput("slug", slug);
@@ -1918,6 +2159,7 @@ try {
   setGithubOutput("autor", autor);
   setGithubOutput("selected_via", bookData.selected_via);
   setGithubOutput("validation_debug_path", DEBUG_PATH);
+  setGithubOutput("recent_books_update_path", shouldUpdateRing ? RECENT_UPDATE_PATH : "");
 
   console.log("══════════════════════════════════════════");
   console.log(`🧭 INPUT_MODE: ${MODE}`);
@@ -1934,6 +2176,7 @@ try {
   console.log(`🏢 Editorial: ${editorialFinal || "—"}`);
   console.log(`🗓️  publication_year: ${publicationYearFinal || "—"}`);
   console.log(`📄 Duplicado: ${duplicado ? "sí" : "no"}`);
+  console.log(`🛡️  Ring actualizado: ${shouldUpdateRing ? "sí" : "no"}`);
   console.log(`⚡ Evidence precargada: ${bookData._evidence ? `sí (${bookData._evidence._sources_succeeded?.length || 0} sources)` : "no"}`);
   console.log(`🧪 Debug: ${DEBUG_PATH}`);
   console.log("══════════════════════════════════════════");
