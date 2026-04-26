@@ -1,0 +1,607 @@
+{
+  "history": [
+    {
+      "at": "2026-04-26T14:49:50.001Z",
+      "stage": "trigger_analysis",
+      "trigger_analysis": {
+        "raw_input": "Trabajo demasiado intensamente y a veces no sé si realmente vale la pena",
+        "semantic_query": "reflexiones sobre el trabajo y su valor",
+        "intent_summary": "Buscar libros que ayuden a entender el valor del trabajo y el equilibrio en la vida.",
+        "editorial_requests": [],
+        "source_preference": null,
+        "ranking_preference": null,
+        "unsupported_runtime_constraints": [],
+        "supported_constraints": {
+          "year_min": null,
+          "year_max": null,
+          "prefer_recent": false
+        },
+        "search_queries": [
+          "valor del trabajo",
+          "equilibrio vida-trabajo",
+          "reflexiones sobre el trabajo",
+          "trabajo y satisfacción",
+          "intensidad laboral",
+          "bienestar en el trabajo",
+          "reflexiones sobre el trabajo y su valor",
+          "reflexiones trabajo valor"
+        ],
+        "concept_hints": [
+          "trabajo",
+          "bienestar",
+          "filosofía"
+        ],
+        "clean_for_selection": "reflexiones sobre el trabajo y su valor",
+        "notes": {
+          "used_ai_normalizer": true,
+          "looked_like_book_intent": false,
+          "semantic_overlap_vs_raw": 0.15384615384615385
+        }
+      }
+    },
+    {
+      "at": "2026-04-26T14:49:53.767Z",
+      "stage": "success",
+      "bookData": {
+        "titulo": "Las 25 leyes bíblicas para el éxito",
+        "autor": "William Douglas",
+        "slug": "las-25-leyes-biblicas-para-el-exito",
+        "tagline": "La Biblia es el mejor manual sobre el éxito que se haya escrito hasta hoy.Contrario a lo que se piensa no habla solamente sobre religión sino también sobre los valores fundamentales para construir una base sólida para la vida profesional.Los autores de este libro acuden a esa fuente milenaria de sabiduría para consolidar las 25 leyes que presentan en estas páginas. Son lecciones que hablan sobre la importancia del esfuerzo y la dedicación en el trabajo la búsqueda indispensable del conocimiento y la evolución personal el respeto a los otros y por encima de todo la honestidad.Sin importar su orientación espiritual o si usted es empleado trabajador independiente emprendedor o dueño de una empresa este libro puede transformar su vida.En estas páginas usted aprenderá:Los antídotos contra los siete pecados capitales en la búsqueda del éxito.Lo que enseña Salomón en el libro de los Proverbios sobre el éxito profesional.Los errores de la teologia de la prosperidad y la teologia de la miseria. Las virtudes recomendadas por la Biblia para alcanzar el éxito.Cómo tener una relación armoniosa con el dinero. 200 citas bíblicas para alcanzar la excelencia la credibilidad y el éxito",
+        "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/f3/86/d2f386d5-0b77-6163-bcc9-4403c6f77889/9789584264930.jpg/3000x3000bb.jpg",
+        "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/f3/86/d2f386d5-0b77-6163-bcc9-4403c6f77889/9789584264930.jpg/3000x3000bb.jpg",
+        "portada_source": "apple_books",
+        "portada_candidates": [
+          {
+            "source": "apple_books",
+            "size": "xxlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/f3/86/d2f386d5-0b77-6163-bcc9-4403c6f77889/9789584264930.jpg/3000x3000bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "xlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/f3/86/d2f386d5-0b77-6163-bcc9-4403c6f77889/9789584264930.jpg/1200x1200bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "large",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/f3/86/d2f386d5-0b77-6163-bcc9-4403c6f77889/9789584264930.jpg/600x600bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "medium",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/f3/86/d2f386d5-0b77-6163-bcc9-4403c6f77889/9789584264930.jpg/100x100bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "google_books",
+            "size": "small",
+            "url": "https://books.google.com/books/content?id=js5KDwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+            "valid": true
+          }
+        ],
+        "needs_fallback_cover": false,
+        "isbn": "",
+        "editorial": "William Douglas",
+        "publication_year": "2018",
+        "source": "apple_books",
+        "duplicado": true,
+        "selected_via": "constrained_catalog",
+        "selection_reason": "Ofrece reflexiones sobre el trabajo, esfuerzo y dedicación, alineándose con la búsqueda del valor del trabajo y el equilibrio en la vida.",
+        "trigger_input": "Trabajo demasiado intensamente y a veces no sé si realmente vale la pena",
+        "trigger_analysis": {
+          "raw_input": "Trabajo demasiado intensamente y a veces no sé si realmente vale la pena",
+          "semantic_query": "reflexiones sobre el trabajo y su valor",
+          "intent_summary": "Buscar libros que ayuden a entender el valor del trabajo y el equilibrio en la vida.",
+          "editorial_requests": [],
+          "source_preference": null,
+          "ranking_preference": null,
+          "unsupported_runtime_constraints": [],
+          "supported_constraints": {
+            "year_min": null,
+            "year_max": null,
+            "prefer_recent": false
+          },
+          "search_queries": [
+            "valor del trabajo",
+            "equilibrio vida-trabajo",
+            "reflexiones sobre el trabajo",
+            "trabajo y satisfacción",
+            "intensidad laboral",
+            "bienestar en el trabajo",
+            "reflexiones sobre el trabajo y su valor",
+            "reflexiones trabajo valor"
+          ],
+          "concept_hints": [
+            "trabajo",
+            "bienestar",
+            "filosofía"
+          ],
+          "clean_for_selection": "reflexiones sobre el trabajo y su valor",
+          "notes": {
+            "used_ai_normalizer": true,
+            "looked_like_book_intent": false,
+            "semantic_overlap_vs_raw": 0.15384615384615385
+          }
+        },
+        "selection_validation": {},
+        "catalog_scope": "libros_master_csv",
+        "contexto_2026": {
+          "aplicacion_badir_hoy": "",
+          "trigger_diagnostics": {
+            "semantic_query": "reflexiones sobre el trabajo y su valor",
+            "editorial_requests": [],
+            "supported_constraints": {
+              "year_min": null,
+              "year_max": null,
+              "prefer_recent": false
+            },
+            "source_preference": null,
+            "ranking_preference": null
+          }
+        },
+        "identity_sealed": true,
+        "_evidence": {
+          "titulo_input": "Las 25 leyes bíblicas para el éxito",
+          "autor_input": "William Douglas",
+          "isbn_seed": "",
+          "isbn_seed_raw": "",
+          "isbn_seed_rejected": null,
+          "isbn_discovered": "9789584264930",
+          "isbn_discovered_raw": "9789584264930",
+          "apple": {
+            "ok": true,
+            "source": "apple_books",
+            "match_score": 1,
+            "match_details": {
+              "matched_title": "Las 25 leyes bíblicas para el éxito",
+              "matched_author": "William Douglas"
+            },
+            "synopsis": "La Biblia es el mejor manual sobre el éxito que se haya escrito hasta hoy. Contrario a lo que se piensa, no habla solamente sobre religión, sino también sobre los valores fundamentales para construir una base sólida para la vida profesional. Los autores de este libro acuden a esa fuente milenaria de sabiduría para consolidar las 25 leyes que presentan en estas páginas. Son lecciones que hablan sobre la importancia del esfuerzo y la dedicación en el trabajo, la búsqueda indispensable del conocimiento y la evolución personal, el respeto a los otros y, por encima de todo, la honestidad. Sin importar su orientación espiritual o si usted es empleado, trabajador independiente, emprendedor o dueño de una empresa, este libro puede transformar su vida. En estas páginas, usted aprenderá: - Los antídotos contra los siete pecados capitales en la búsqueda del éxito. - Lo que enseña Salomón en el libro de los Proverbios sobre el éxito profesional. - Los errores de la \"teologia de la prosperidad\" y \"la teologia de la miseria\" - Las virtudes recomendadas por la Biblia para alcanzar el éxito - Cómo tener una relación armoniosa con el dinero - 200 citas bíblicas para alcanzar la excelencia, la credibilidad y el éxito",
+            "synopsis_length": 1218,
+            "covers": [
+              {
+                "size": "xxlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/f3/86/d2f386d5-0b77-6163-bcc9-4403c6f77889/9789584264930.jpg/3000x3000bb.jpg"
+              },
+              {
+                "size": "xlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/f3/86/d2f386d5-0b77-6163-bcc9-4403c6f77889/9789584264930.jpg/1200x1200bb.jpg"
+              },
+              {
+                "size": "large",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/f3/86/d2f386d5-0b77-6163-bcc9-4403c6f77889/9789584264930.jpg/600x600bb.jpg"
+              },
+              {
+                "size": "medium",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/f3/86/d2f386d5-0b77-6163-bcc9-4403c6f77889/9789584264930.jpg/100x100bb.jpg"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "Las 25 leyes bíblicas para el éxito",
+              "autor_completo": "William Douglas",
+              "año": "2018",
+              "editorial": null,
+              "isbn": "",
+              "apple_track_id": "1345622931",
+              "categorias": [
+                "Superación personal",
+                "Libros",
+                "Salud, mente y cuerpo"
+              ],
+              "track_view_url": "https://books.apple.com/mx/book/las-25-leyes-b%C3%ADblicas-para-el-%C3%A9xito/id1345622931?uo=4"
+            }
+          },
+          "google": {
+            "ok": true,
+            "source": "google_books",
+            "match_score": 1,
+            "match_details": {
+              "matched_title": "Las 25 leyes bíblicas para el éxito",
+              "matched_author": "William Douglas"
+            },
+            "synopsis": "La Biblia es el mejor manual sobre el éxito que se haya escrito hasta hoy. Contrario a lo que se piensa, no habla solamente sobre religión, sino también sobre los valores fundamentales para construir una base sólida para la vida profesional. Los autores de este libro acuden a esa fuente milenaria de sabiduría para consolidar las 25 leyes que presentan en estas páginas. Son lecciones que hablan sobre la importancia del esfuerzo y la dedicación en el trabajo, la búsqueda indispensable del conocimiento y la evolución personal, el respeto a los otros y, por encima de todo, la honestidad. Sin importar su orientación espiritual o si usted es empleado, trabajador independiente, emprendedor o dueño de una empresa, este libro puede transformar su vida. En estas páginas, usted aprenderá: - Los antídotos contra los siete pecados capitales en la búsqueda del éxito. - Lo que enseña Salomón en el libro de los Proverbios sobre el éxito profesional. - Los errores de la \"teologia de la prosperidad\" y \"la teologia de la miseria\" - Las virtudes recomendadas por la Biblia para alcanzar el éxito - Cómo tener una relación armoniosa con el dinero - 200 citas bíblicas para alcanzar la excelencia, la credibilidad y el éxito",
+            "synopsis_length": 1218,
+            "covers": [
+              {
+                "size": "small",
+                "url": "https://books.google.com/books/content?id=js5KDwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "Las 25 leyes bíblicas para el éxito",
+              "subtitulo": "",
+              "autor_completo": "William Douglas",
+              "año": "2018",
+              "editorial": "Diana Colombia",
+              "paginas": 212,
+              "isbn": "9789584264930",
+              "isbn13": "9789584264930",
+              "isbn10": "9584264931",
+              "categorias": [
+                "Self-Help"
+              ],
+              "idioma": "es",
+              "preview_link": "http://books.google.com/books?id=js5KDwAAQBAJ&printsec=frontcover&dq=intitle:Las+25+leyes+b%C3%ADblicas+para+el+%C3%A9xito+inauthor:William+Douglas&hl=&cd=1&source=gbs_api"
+            }
+          },
+          "openlibrary": {
+            "ok": true,
+            "source": "openlibrary",
+            "match_score": 1,
+            "match_details": {
+              "matched_title": "Las 25 Leyes Bíblicas para El éxito",
+              "matched_author": "William Douglas"
+            },
+            "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2018.",
+            "synopsis_length": 65,
+            "covers": [],
+            "verified_identity": {
+              "titulo_real": "Las 25 Leyes Bíblicas para El éxito",
+              "autor_completo": "William Douglas",
+              "año": "2018",
+              "editorial": null,
+              "isbn": "",
+              "categorias": [],
+              "idioma": "spa",
+              "paginas": null
+            }
+          },
+          "amazon": {
+            "ok": false,
+            "reason": "no_amazon_cover_or_only_placeholders",
+            "source": "amazon"
+          },
+          "valid_covers": [
+            {
+              "source": "apple_books",
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/f3/86/d2f386d5-0b77-6163-bcc9-4403c6f77889/9789584264930.jpg/3000x3000bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/f3/86/d2f386d5-0b77-6163-bcc9-4403c6f77889/9789584264930.jpg/1200x1200bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/f3/86/d2f386d5-0b77-6163-bcc9-4403c6f77889/9789584264930.jpg/600x600bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/f3/86/d2f386d5-0b77-6163-bcc9-4403c6f77889/9789584264930.jpg/100x100bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "google_books",
+              "size": "small",
+              "url": "https://books.google.com/books/content?id=js5KDwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+              "valid": true
+            }
+          ],
+          "_sources_succeeded": [
+            "apple_books",
+            "google_books",
+            "openlibrary"
+          ],
+          "_sources_failed": [
+            "amazon:no_amazon_cover_or_only_placeholders"
+          ],
+          "_timing": {
+            "phase1_parallel_ms": 703,
+            "phase2_isbn_chain_ms": 373,
+            "cover_validation_ms": 1352,
+            "total_ms": 2428
+          },
+          "_version": "3.6"
+        },
+        "_evidence_synopsis": "La Biblia es el mejor manual sobre el éxito que se haya escrito hasta hoy. Contrario a lo que se piensa, no habla solamente sobre religión, sino también sobre los valores fundamentales para construir una base sólida para la vida profesional. Los autores de este libro acuden a esa fuente milenaria de sabiduría para consolidar las 25 leyes que presentan en estas páginas. Son lecciones que hablan sobre la importancia del esfuerzo y la dedicación en el trabajo, la búsqueda indispensable del conocimiento y la evolución personal, el respeto a los otros y, por encima de todo, la honestidad. Sin importar su orientación espiritual o si usted es empleado, trabajador independiente, emprendedor o dueño de una empresa, este libro puede transformar su vida. En estas páginas, usted aprenderá: - Los antídotos contra los siete pecados capitales en la búsqueda del éxito. - Lo que enseña Salomón en el libro de los Proverbios sobre el éxito profesional. - Los errores de la \"teologia de la prosperidad\" y \"la teologia de la miseria\" - Las virtudes recomendadas por la Biblia para alcanzar el éxito - Cómo tener una relación armoniosa con el dinero - 200 citas bíblicas para alcanzar la excelencia, la credibilidad y el éxito",
+        "_evidence_verified_identity": {
+          "titulo_real": "Las 25 leyes bíblicas para el éxito",
+          "autor_completo": "William Douglas",
+          "año": "2018",
+          "editorial": null,
+          "isbn": "",
+          "apple_track_id": "1345622931",
+          "categorias": [
+            "Superación personal",
+            "Libros",
+            "Salud, mente y cuerpo"
+          ],
+          "track_view_url": "https://books.apple.com/mx/book/las-25-leyes-b%C3%ADblicas-para-el-%C3%A9xito/id1345622931?uo=4"
+        },
+        "_evidence_match_score": 1
+      },
+      "ring_updated": true
+    }
+  ],
+  "last": {
+    "at": "2026-04-26T14:49:53.767Z",
+    "stage": "success",
+    "bookData": {
+      "titulo": "Las 25 leyes bíblicas para el éxito",
+      "autor": "William Douglas",
+      "slug": "las-25-leyes-biblicas-para-el-exito",
+      "tagline": "La Biblia es el mejor manual sobre el éxito que se haya escrito hasta hoy.Contrario a lo que se piensa no habla solamente sobre religión sino también sobre los valores fundamentales para construir una base sólida para la vida profesional.Los autores de este libro acuden a esa fuente milenaria de sabiduría para consolidar las 25 leyes que presentan en estas páginas. Son lecciones que hablan sobre la importancia del esfuerzo y la dedicación en el trabajo la búsqueda indispensable del conocimiento y la evolución personal el respeto a los otros y por encima de todo la honestidad.Sin importar su orientación espiritual o si usted es empleado trabajador independiente emprendedor o dueño de una empresa este libro puede transformar su vida.En estas páginas usted aprenderá:Los antídotos contra los siete pecados capitales en la búsqueda del éxito.Lo que enseña Salomón en el libro de los Proverbios sobre el éxito profesional.Los errores de la teologia de la prosperidad y la teologia de la miseria. Las virtudes recomendadas por la Biblia para alcanzar el éxito.Cómo tener una relación armoniosa con el dinero. 200 citas bíblicas para alcanzar la excelencia la credibilidad y el éxito",
+      "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/f3/86/d2f386d5-0b77-6163-bcc9-4403c6f77889/9789584264930.jpg/3000x3000bb.jpg",
+      "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/f3/86/d2f386d5-0b77-6163-bcc9-4403c6f77889/9789584264930.jpg/3000x3000bb.jpg",
+      "portada_source": "apple_books",
+      "portada_candidates": [
+        {
+          "source": "apple_books",
+          "size": "xxlarge",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/f3/86/d2f386d5-0b77-6163-bcc9-4403c6f77889/9789584264930.jpg/3000x3000bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "xlarge",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/f3/86/d2f386d5-0b77-6163-bcc9-4403c6f77889/9789584264930.jpg/1200x1200bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "large",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/f3/86/d2f386d5-0b77-6163-bcc9-4403c6f77889/9789584264930.jpg/600x600bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "medium",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/f3/86/d2f386d5-0b77-6163-bcc9-4403c6f77889/9789584264930.jpg/100x100bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "google_books",
+          "size": "small",
+          "url": "https://books.google.com/books/content?id=js5KDwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+          "valid": true
+        }
+      ],
+      "needs_fallback_cover": false,
+      "isbn": "",
+      "editorial": "William Douglas",
+      "publication_year": "2018",
+      "source": "apple_books",
+      "duplicado": true,
+      "selected_via": "constrained_catalog",
+      "selection_reason": "Ofrece reflexiones sobre el trabajo, esfuerzo y dedicación, alineándose con la búsqueda del valor del trabajo y el equilibrio en la vida.",
+      "trigger_input": "Trabajo demasiado intensamente y a veces no sé si realmente vale la pena",
+      "trigger_analysis": {
+        "raw_input": "Trabajo demasiado intensamente y a veces no sé si realmente vale la pena",
+        "semantic_query": "reflexiones sobre el trabajo y su valor",
+        "intent_summary": "Buscar libros que ayuden a entender el valor del trabajo y el equilibrio en la vida.",
+        "editorial_requests": [],
+        "source_preference": null,
+        "ranking_preference": null,
+        "unsupported_runtime_constraints": [],
+        "supported_constraints": {
+          "year_min": null,
+          "year_max": null,
+          "prefer_recent": false
+        },
+        "search_queries": [
+          "valor del trabajo",
+          "equilibrio vida-trabajo",
+          "reflexiones sobre el trabajo",
+          "trabajo y satisfacción",
+          "intensidad laboral",
+          "bienestar en el trabajo",
+          "reflexiones sobre el trabajo y su valor",
+          "reflexiones trabajo valor"
+        ],
+        "concept_hints": [
+          "trabajo",
+          "bienestar",
+          "filosofía"
+        ],
+        "clean_for_selection": "reflexiones sobre el trabajo y su valor",
+        "notes": {
+          "used_ai_normalizer": true,
+          "looked_like_book_intent": false,
+          "semantic_overlap_vs_raw": 0.15384615384615385
+        }
+      },
+      "selection_validation": {},
+      "catalog_scope": "libros_master_csv",
+      "contexto_2026": {
+        "aplicacion_badir_hoy": "",
+        "trigger_diagnostics": {
+          "semantic_query": "reflexiones sobre el trabajo y su valor",
+          "editorial_requests": [],
+          "supported_constraints": {
+            "year_min": null,
+            "year_max": null,
+            "prefer_recent": false
+          },
+          "source_preference": null,
+          "ranking_preference": null
+        }
+      },
+      "identity_sealed": true,
+      "_evidence": {
+        "titulo_input": "Las 25 leyes bíblicas para el éxito",
+        "autor_input": "William Douglas",
+        "isbn_seed": "",
+        "isbn_seed_raw": "",
+        "isbn_seed_rejected": null,
+        "isbn_discovered": "9789584264930",
+        "isbn_discovered_raw": "9789584264930",
+        "apple": {
+          "ok": true,
+          "source": "apple_books",
+          "match_score": 1,
+          "match_details": {
+            "matched_title": "Las 25 leyes bíblicas para el éxito",
+            "matched_author": "William Douglas"
+          },
+          "synopsis": "La Biblia es el mejor manual sobre el éxito que se haya escrito hasta hoy. Contrario a lo que se piensa, no habla solamente sobre religión, sino también sobre los valores fundamentales para construir una base sólida para la vida profesional. Los autores de este libro acuden a esa fuente milenaria de sabiduría para consolidar las 25 leyes que presentan en estas páginas. Son lecciones que hablan sobre la importancia del esfuerzo y la dedicación en el trabajo, la búsqueda indispensable del conocimiento y la evolución personal, el respeto a los otros y, por encima de todo, la honestidad. Sin importar su orientación espiritual o si usted es empleado, trabajador independiente, emprendedor o dueño de una empresa, este libro puede transformar su vida. En estas páginas, usted aprenderá: - Los antídotos contra los siete pecados capitales en la búsqueda del éxito. - Lo que enseña Salomón en el libro de los Proverbios sobre el éxito profesional. - Los errores de la \"teologia de la prosperidad\" y \"la teologia de la miseria\" - Las virtudes recomendadas por la Biblia para alcanzar el éxito - Cómo tener una relación armoniosa con el dinero - 200 citas bíblicas para alcanzar la excelencia, la credibilidad y el éxito",
+          "synopsis_length": 1218,
+          "covers": [
+            {
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/f3/86/d2f386d5-0b77-6163-bcc9-4403c6f77889/9789584264930.jpg/3000x3000bb.jpg"
+            },
+            {
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/f3/86/d2f386d5-0b77-6163-bcc9-4403c6f77889/9789584264930.jpg/1200x1200bb.jpg"
+            },
+            {
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/f3/86/d2f386d5-0b77-6163-bcc9-4403c6f77889/9789584264930.jpg/600x600bb.jpg"
+            },
+            {
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/f3/86/d2f386d5-0b77-6163-bcc9-4403c6f77889/9789584264930.jpg/100x100bb.jpg"
+            }
+          ],
+          "verified_identity": {
+            "titulo_real": "Las 25 leyes bíblicas para el éxito",
+            "autor_completo": "William Douglas",
+            "año": "2018",
+            "editorial": null,
+            "isbn": "",
+            "apple_track_id": "1345622931",
+            "categorias": [
+              "Superación personal",
+              "Libros",
+              "Salud, mente y cuerpo"
+            ],
+            "track_view_url": "https://books.apple.com/mx/book/las-25-leyes-b%C3%ADblicas-para-el-%C3%A9xito/id1345622931?uo=4"
+          }
+        },
+        "google": {
+          "ok": true,
+          "source": "google_books",
+          "match_score": 1,
+          "match_details": {
+            "matched_title": "Las 25 leyes bíblicas para el éxito",
+            "matched_author": "William Douglas"
+          },
+          "synopsis": "La Biblia es el mejor manual sobre el éxito que se haya escrito hasta hoy. Contrario a lo que se piensa, no habla solamente sobre religión, sino también sobre los valores fundamentales para construir una base sólida para la vida profesional. Los autores de este libro acuden a esa fuente milenaria de sabiduría para consolidar las 25 leyes que presentan en estas páginas. Son lecciones que hablan sobre la importancia del esfuerzo y la dedicación en el trabajo, la búsqueda indispensable del conocimiento y la evolución personal, el respeto a los otros y, por encima de todo, la honestidad. Sin importar su orientación espiritual o si usted es empleado, trabajador independiente, emprendedor o dueño de una empresa, este libro puede transformar su vida. En estas páginas, usted aprenderá: - Los antídotos contra los siete pecados capitales en la búsqueda del éxito. - Lo que enseña Salomón en el libro de los Proverbios sobre el éxito profesional. - Los errores de la \"teologia de la prosperidad\" y \"la teologia de la miseria\" - Las virtudes recomendadas por la Biblia para alcanzar el éxito - Cómo tener una relación armoniosa con el dinero - 200 citas bíblicas para alcanzar la excelencia, la credibilidad y el éxito",
+          "synopsis_length": 1218,
+          "covers": [
+            {
+              "size": "small",
+              "url": "https://books.google.com/books/content?id=js5KDwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+            }
+          ],
+          "verified_identity": {
+            "titulo_real": "Las 25 leyes bíblicas para el éxito",
+            "subtitulo": "",
+            "autor_completo": "William Douglas",
+            "año": "2018",
+            "editorial": "Diana Colombia",
+            "paginas": 212,
+            "isbn": "9789584264930",
+            "isbn13": "9789584264930",
+            "isbn10": "9584264931",
+            "categorias": [
+              "Self-Help"
+            ],
+            "idioma": "es",
+            "preview_link": "http://books.google.com/books?id=js5KDwAAQBAJ&printsec=frontcover&dq=intitle:Las+25+leyes+b%C3%ADblicas+para+el+%C3%A9xito+inauthor:William+Douglas&hl=&cd=1&source=gbs_api"
+          }
+        },
+        "openlibrary": {
+          "ok": true,
+          "source": "openlibrary",
+          "match_score": 1,
+          "match_details": {
+            "matched_title": "Las 25 Leyes Bíblicas para El éxito",
+            "matched_author": "William Douglas"
+          },
+          "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2018.",
+          "synopsis_length": 65,
+          "covers": [],
+          "verified_identity": {
+            "titulo_real": "Las 25 Leyes Bíblicas para El éxito",
+            "autor_completo": "William Douglas",
+            "año": "2018",
+            "editorial": null,
+            "isbn": "",
+            "categorias": [],
+            "idioma": "spa",
+            "paginas": null
+          }
+        },
+        "amazon": {
+          "ok": false,
+          "reason": "no_amazon_cover_or_only_placeholders",
+          "source": "amazon"
+        },
+        "valid_covers": [
+          {
+            "source": "apple_books",
+            "size": "xxlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/f3/86/d2f386d5-0b77-6163-bcc9-4403c6f77889/9789584264930.jpg/3000x3000bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "xlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/f3/86/d2f386d5-0b77-6163-bcc9-4403c6f77889/9789584264930.jpg/1200x1200bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "large",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/f3/86/d2f386d5-0b77-6163-bcc9-4403c6f77889/9789584264930.jpg/600x600bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "medium",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/f3/86/d2f386d5-0b77-6163-bcc9-4403c6f77889/9789584264930.jpg/100x100bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "google_books",
+            "size": "small",
+            "url": "https://books.google.com/books/content?id=js5KDwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+            "valid": true
+          }
+        ],
+        "_sources_succeeded": [
+          "apple_books",
+          "google_books",
+          "openlibrary"
+        ],
+        "_sources_failed": [
+          "amazon:no_amazon_cover_or_only_placeholders"
+        ],
+        "_timing": {
+          "phase1_parallel_ms": 703,
+          "phase2_isbn_chain_ms": 373,
+          "cover_validation_ms": 1352,
+          "total_ms": 2428
+        },
+        "_version": "3.6"
+      },
+      "_evidence_synopsis": "La Biblia es el mejor manual sobre el éxito que se haya escrito hasta hoy. Contrario a lo que se piensa, no habla solamente sobre religión, sino también sobre los valores fundamentales para construir una base sólida para la vida profesional. Los autores de este libro acuden a esa fuente milenaria de sabiduría para consolidar las 25 leyes que presentan en estas páginas. Son lecciones que hablan sobre la importancia del esfuerzo y la dedicación en el trabajo, la búsqueda indispensable del conocimiento y la evolución personal, el respeto a los otros y, por encima de todo, la honestidad. Sin importar su orientación espiritual o si usted es empleado, trabajador independiente, emprendedor o dueño de una empresa, este libro puede transformar su vida. En estas páginas, usted aprenderá: - Los antídotos contra los siete pecados capitales en la búsqueda del éxito. - Lo que enseña Salomón en el libro de los Proverbios sobre el éxito profesional. - Los errores de la \"teologia de la prosperidad\" y \"la teologia de la miseria\" - Las virtudes recomendadas por la Biblia para alcanzar el éxito - Cómo tener una relación armoniosa con el dinero - 200 citas bíblicas para alcanzar la excelencia, la credibilidad y el éxito",
+      "_evidence_verified_identity": {
+        "titulo_real": "Las 25 leyes bíblicas para el éxito",
+        "autor_completo": "William Douglas",
+        "año": "2018",
+        "editorial": null,
+        "isbn": "",
+        "apple_track_id": "1345622931",
+        "categorias": [
+          "Superación personal",
+          "Libros",
+          "Salud, mente y cuerpo"
+        ],
+        "track_view_url": "https://books.apple.com/mx/book/las-25-leyes-b%C3%ADblicas-para-el-%C3%A9xito/id1345622931?uo=4"
+      },
+      "_evidence_match_score": 1
+    },
+    "ring_updated": true
+  }
+}

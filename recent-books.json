@@ -41,6 +41,16 @@
       "timestamp": "2026-04-26T13:49:46.032Z",
       "trigger_input": "quiero leer lo mejor sobre creatividad en 2025",
       "selected_via": "discover_live_google_books"
+    },
+    {
+      "titulo": "Las 25 leyes bíblicas para el éxito",
+      "autor": "William Douglas",
+      "slug": "las-25-leyes-biblicas-para-el-exito",
+      "titulo_normalizado": "las 25 leyes biblicas para el exito",
+      "autor_normalizado": "william douglas",
+      "timestamp": "2026-04-26T14:49:53.766Z",
+      "trigger_input": "Trabajo demasiado intensamente y a veces no sé si realmente vale la pena",
+      "selected_via": "constrained_catalog"
     }
   ],
   "_note": "FIFO ring de últimos 30 libros generados por selección automática (constrained o discover). Filtro pre-rerank en validate-book.js. Inicializa vacío y se rellena con cada run exitoso. Si se borra, el sistema arranca limpio sin daño."
