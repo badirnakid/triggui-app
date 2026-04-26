@@ -1,0 +1,474 @@
+{
+  "history": [
+    {
+      "at": "2026-04-26T14:40:51.957Z",
+      "stage": "success",
+      "bookData": {
+        "titulo": "Cómo conocer a una persona",
+        "autor": "David Brooks",
+        "slug": "como-conocer-a-una-persona",
+        "tagline": "",
+        "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/54/cf/51/54cf5132-06c7-d163-2a63-2f5d0ef5b9c2/1044120648.jpg/3000x3000bb.jpg",
+        "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/54/cf/51/54cf5132-06c7-d163-2a63-2f5d0ef5b9c2/1044120648.jpg/3000x3000bb.jpg",
+        "portada_source": "apple_books",
+        "portada_candidates": [
+          {
+            "source": "apple_books",
+            "size": "xxlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/54/cf/51/54cf5132-06c7-d163-2a63-2f5d0ef5b9c2/1044120648.jpg/3000x3000bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "xlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/54/cf/51/54cf5132-06c7-d163-2a63-2f5d0ef5b9c2/1044120648.jpg/1200x1200bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "large",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/54/cf/51/54cf5132-06c7-d163-2a63-2f5d0ef5b9c2/1044120648.jpg/600x600bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "medium",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/54/cf/51/54cf5132-06c7-d163-2a63-2f5d0ef5b9c2/1044120648.jpg/100x100bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "google_books",
+            "size": "small",
+            "url": "https://books.google.com/books/content?id=bMkoEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+            "valid": true
+          }
+        ],
+        "needs_fallback_cover": false,
+        "isbn": "",
+        "editorial": "David Brooks",
+        "publication_year": "2024",
+        "source": "apple_books",
+        "duplicado": true,
+        "selected_via": "direct_book",
+        "selection_reason": "Libro explícito proporcionado en workflow_dispatch",
+        "trigger_input": "",
+        "trigger_analysis": null,
+        "selection_validation": {},
+        "catalog_scope": "",
+        "contexto_2026": {},
+        "identity_sealed": false,
+        "_evidence": {
+          "titulo_input": "Cómo conocer a una persona",
+          "autor_input": "David Brooks",
+          "isbn_seed": "",
+          "isbn_seed_raw": "",
+          "isbn_seed_rejected": null,
+          "isbn_discovered": "9786075579405",
+          "isbn_discovered_raw": "9786075579405",
+          "apple": {
+            "ok": true,
+            "source": "apple_books",
+            "match_score": 1,
+            "match_details": {
+              "matched_title": "Cómo conocer a una persona",
+              "matched_author": "David Brooks"
+            },
+            "synopsis": "Hay una capacidad que yace en el corazón de cualquier persona o comunidad: la de ver a los demás —en su sentido más profundo— y hacerlos sentir valorados, respetados y comprendidos. Sin embargo, a nuestro alrededor hay personas que se sienten invisibles en una sociedad fragmentada, hostil e insensible al sufrimiento. David Brooks se nutre de la psicología y la neurociencia, así como del teatro, la filosofía y la historia para ofrecer un enfoque esperanzador sobre la conexión humana que nos enseña a realizar acciones concretas, pequeñas pero significativas: ser un buen oyente, pedir y ofrecer perdón, sentarse con quien sufre, mirar las cosas desde la perspectiva del otro… En pocas palabras: ser más comprensivos —y compasivos— con nuestros semejantes. Cómo conocer a una persona es para aquellos que anhelan conectar verdaderamente con los demás. \"Este libro ya es mi favorito de todos los que David ha escrito. [...] Más que una guía para tener mejores conversaciones, se trata de un proyecto para vivir de manera más conectada y humana. Es una lectura imprescindible para cualquiera que busque profundizar sus relaciones y ampliar sus perspectivas.\" —Bill Gates, GatesNotes (lecturas recomendadas)",
+            "synopsis_length": 1207,
+            "covers": [
+              {
+                "size": "xxlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/54/cf/51/54cf5132-06c7-d163-2a63-2f5d0ef5b9c2/1044120648.jpg/3000x3000bb.jpg"
+              },
+              {
+                "size": "xlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/54/cf/51/54cf5132-06c7-d163-2a63-2f5d0ef5b9c2/1044120648.jpg/1200x1200bb.jpg"
+              },
+              {
+                "size": "large",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/54/cf/51/54cf5132-06c7-d163-2a63-2f5d0ef5b9c2/1044120648.jpg/600x600bb.jpg"
+              },
+              {
+                "size": "medium",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/54/cf/51/54cf5132-06c7-d163-2a63-2f5d0ef5b9c2/1044120648.jpg/100x100bb.jpg"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "Cómo conocer a una persona",
+              "autor_completo": "David Brooks",
+              "año": "2024",
+              "editorial": null,
+              "isbn": "",
+              "apple_track_id": "6736685037",
+              "categorias": [
+                "Filosofía",
+                "Libros",
+                "No ficción"
+              ],
+              "track_view_url": "https://books.apple.com/mx/book/c%C3%B3mo-conocer-a-una-persona/id6736685037?uo=4"
+            }
+          },
+          "google": {
+            "ok": true,
+            "source": "google_books",
+            "match_score": 1,
+            "match_details": {
+              "matched_title": "Cómo conocer a una persona",
+              "matched_author": "David Brooks"
+            },
+            "synopsis": "Hay una capacidad que yace en el corazón de cualquier persona o comunidad: la de ver a los demás —en su sentido más profundo— y hacerlos sentir valorados, respetados y comprendidos. Sin embargo, a nuestro alrededor hay personas que se sienten invisibles en una sociedad fragmentada, hostil e insensible al sufrimiento. David Brooks se nutre de la psicología y la neurociencia, así como del teatro, la filosofía y la historia para ofrecer un enfoque esperanzador sobre la conexión humana que nos enseña a realizar acciones concretas, pequeñas pero significativas: ser un buen oyente, pedir y ofrecer perdón, sentarse con quien sufre, mirar las cosas desde la perspectiva del otro... En pocas palabras: ser más comprensivos —y compasivos— con nuestros semejantes. Cómo conocer a una persona es para aquellos que anhelan conectar verdaderamente con los demás. \"Este libro ya es mi favorito de todos los que David ha escrito. [...] Más que una guía para tener mejores conversaciones, se trata de un proyecto para vivir de manera más conectada y humana. Es una lectura imprescindible para cualquiera que busque profundizar sus relaciones y ampliar sus perspectivas.\" —Bill Gates, GatesNotes (lecturas recomendadas)",
+            "synopsis_length": 1209,
+            "covers": [
+              {
+                "size": "small",
+                "url": "https://books.google.com/books/content?id=bMkoEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "Cómo conocer a una persona",
+              "subtitulo": "El arte de ver profundamente a los demás y de ser visto con profundidad",
+              "autor_completo": "David Brooks",
+              "año": "2024",
+              "editorial": "Océano",
+              "paginas": 261,
+              "isbn": "9786075579405",
+              "isbn13": "9786075579405",
+              "isbn10": "6075579400",
+              "categorias": [
+                "Philosophy"
+              ],
+              "idioma": "es",
+              "preview_link": "http://books.google.com/books?id=bMkoEQAAQBAJ&printsec=frontcover&dq=intitle:C%C3%B3mo+conocer+a+una+persona+inauthor:David+Brooks&hl=&cd=1&source=gbs_api"
+            }
+          },
+          "openlibrary": {
+            "ok": true,
+            "source": "openlibrary",
+            "match_score": 0.614367816091954,
+            "match_details": {
+              "matched_title": "Cómo Conocer a una Persona. el Arte de Conectar con Los Demás y Mostrarte con Sinceridad",
+              "matched_author": "David Brooks"
+            },
+            "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2024.",
+            "synopsis_length": 65,
+            "covers": [],
+            "verified_identity": {
+              "titulo_real": "Cómo Conocer a una Persona. el Arte de Conectar con Los Demás y Mostrarte con Sinceridad",
+              "autor_completo": "David Brooks",
+              "año": "2024",
+              "editorial": null,
+              "isbn": "",
+              "categorias": [],
+              "idioma": "spa",
+              "paginas": null
+            }
+          },
+          "amazon": {
+            "ok": false,
+            "reason": "no_amazon_cover_or_only_placeholders",
+            "source": "amazon"
+          },
+          "valid_covers": [
+            {
+              "source": "apple_books",
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/54/cf/51/54cf5132-06c7-d163-2a63-2f5d0ef5b9c2/1044120648.jpg/3000x3000bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/54/cf/51/54cf5132-06c7-d163-2a63-2f5d0ef5b9c2/1044120648.jpg/1200x1200bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/54/cf/51/54cf5132-06c7-d163-2a63-2f5d0ef5b9c2/1044120648.jpg/600x600bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/54/cf/51/54cf5132-06c7-d163-2a63-2f5d0ef5b9c2/1044120648.jpg/100x100bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "google_books",
+              "size": "small",
+              "url": "https://books.google.com/books/content?id=bMkoEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+              "valid": true
+            }
+          ],
+          "_sources_succeeded": [
+            "apple_books",
+            "google_books",
+            "openlibrary"
+          ],
+          "_sources_failed": [
+            "amazon:no_amazon_cover_or_only_placeholders"
+          ],
+          "_timing": {
+            "phase1_parallel_ms": 749,
+            "phase2_isbn_chain_ms": 591,
+            "cover_validation_ms": 945,
+            "total_ms": 2285
+          },
+          "_version": "3.6"
+        },
+        "_evidence_synopsis": "Hay una capacidad que yace en el corazón de cualquier persona o comunidad: la de ver a los demás —en su sentido más profundo— y hacerlos sentir valorados, respetados y comprendidos. Sin embargo, a nuestro alrededor hay personas que se sienten invisibles en una sociedad fragmentada, hostil e insensible al sufrimiento. David Brooks se nutre de la psicología y la neurociencia, así como del teatro, la filosofía y la historia para ofrecer un enfoque esperanzador sobre la conexión humana que nos enseña a realizar acciones concretas, pequeñas pero significativas: ser un buen oyente, pedir y ofrecer perdón, sentarse con quien sufre, mirar las cosas desde la perspectiva del otro… En pocas palabras: ser más comprensivos —y compasivos— con nuestros semejantes. Cómo conocer a una persona es para aquellos que anhelan conectar verdaderamente con los demás. \"Este libro ya es mi favorito de todos los que David ha escrito. [...] Más que una guía para tener mejores conversaciones, se trata de un proyecto para vivir de manera más conectada y humana. Es una lectura imprescindible para cualquiera que busque profundizar sus relaciones y ampliar sus perspectivas.\" —Bill Gates, GatesNotes (lecturas recomendadas)",
+        "_evidence_verified_identity": {
+          "titulo_real": "Cómo conocer a una persona",
+          "autor_completo": "David Brooks",
+          "año": "2024",
+          "editorial": null,
+          "isbn": "",
+          "apple_track_id": "6736685037",
+          "categorias": [
+            "Filosofía",
+            "Libros",
+            "No ficción"
+          ],
+          "track_view_url": "https://books.apple.com/mx/book/c%C3%B3mo-conocer-a-una-persona/id6736685037?uo=4"
+        },
+        "_evidence_match_score": 1
+      },
+      "ring_updated": false
+    }
+  ],
+  "last": {
+    "at": "2026-04-26T14:40:51.957Z",
+    "stage": "success",
+    "bookData": {
+      "titulo": "Cómo conocer a una persona",
+      "autor": "David Brooks",
+      "slug": "como-conocer-a-una-persona",
+      "tagline": "",
+      "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/54/cf/51/54cf5132-06c7-d163-2a63-2f5d0ef5b9c2/1044120648.jpg/3000x3000bb.jpg",
+      "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/54/cf/51/54cf5132-06c7-d163-2a63-2f5d0ef5b9c2/1044120648.jpg/3000x3000bb.jpg",
+      "portada_source": "apple_books",
+      "portada_candidates": [
+        {
+          "source": "apple_books",
+          "size": "xxlarge",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/54/cf/51/54cf5132-06c7-d163-2a63-2f5d0ef5b9c2/1044120648.jpg/3000x3000bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "xlarge",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/54/cf/51/54cf5132-06c7-d163-2a63-2f5d0ef5b9c2/1044120648.jpg/1200x1200bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "large",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/54/cf/51/54cf5132-06c7-d163-2a63-2f5d0ef5b9c2/1044120648.jpg/600x600bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "medium",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/54/cf/51/54cf5132-06c7-d163-2a63-2f5d0ef5b9c2/1044120648.jpg/100x100bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "google_books",
+          "size": "small",
+          "url": "https://books.google.com/books/content?id=bMkoEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+          "valid": true
+        }
+      ],
+      "needs_fallback_cover": false,
+      "isbn": "",
+      "editorial": "David Brooks",
+      "publication_year": "2024",
+      "source": "apple_books",
+      "duplicado": true,
+      "selected_via": "direct_book",
+      "selection_reason": "Libro explícito proporcionado en workflow_dispatch",
+      "trigger_input": "",
+      "trigger_analysis": null,
+      "selection_validation": {},
+      "catalog_scope": "",
+      "contexto_2026": {},
+      "identity_sealed": false,
+      "_evidence": {
+        "titulo_input": "Cómo conocer a una persona",
+        "autor_input": "David Brooks",
+        "isbn_seed": "",
+        "isbn_seed_raw": "",
+        "isbn_seed_rejected": null,
+        "isbn_discovered": "9786075579405",
+        "isbn_discovered_raw": "9786075579405",
+        "apple": {
+          "ok": true,
+          "source": "apple_books",
+          "match_score": 1,
+          "match_details": {
+            "matched_title": "Cómo conocer a una persona",
+            "matched_author": "David Brooks"
+          },
+          "synopsis": "Hay una capacidad que yace en el corazón de cualquier persona o comunidad: la de ver a los demás —en su sentido más profundo— y hacerlos sentir valorados, respetados y comprendidos. Sin embargo, a nuestro alrededor hay personas que se sienten invisibles en una sociedad fragmentada, hostil e insensible al sufrimiento. David Brooks se nutre de la psicología y la neurociencia, así como del teatro, la filosofía y la historia para ofrecer un enfoque esperanzador sobre la conexión humana que nos enseña a realizar acciones concretas, pequeñas pero significativas: ser un buen oyente, pedir y ofrecer perdón, sentarse con quien sufre, mirar las cosas desde la perspectiva del otro… En pocas palabras: ser más comprensivos —y compasivos— con nuestros semejantes. Cómo conocer a una persona es para aquellos que anhelan conectar verdaderamente con los demás. \"Este libro ya es mi favorito de todos los que David ha escrito. [...] Más que una guía para tener mejores conversaciones, se trata de un proyecto para vivir de manera más conectada y humana. Es una lectura imprescindible para cualquiera que busque profundizar sus relaciones y ampliar sus perspectivas.\" —Bill Gates, GatesNotes (lecturas recomendadas)",
+          "synopsis_length": 1207,
+          "covers": [
+            {
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/54/cf/51/54cf5132-06c7-d163-2a63-2f5d0ef5b9c2/1044120648.jpg/3000x3000bb.jpg"
+            },
+            {
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/54/cf/51/54cf5132-06c7-d163-2a63-2f5d0ef5b9c2/1044120648.jpg/1200x1200bb.jpg"
+            },
+            {
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/54/cf/51/54cf5132-06c7-d163-2a63-2f5d0ef5b9c2/1044120648.jpg/600x600bb.jpg"
+            },
+            {
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/54/cf/51/54cf5132-06c7-d163-2a63-2f5d0ef5b9c2/1044120648.jpg/100x100bb.jpg"
+            }
+          ],
+          "verified_identity": {
+            "titulo_real": "Cómo conocer a una persona",
+            "autor_completo": "David Brooks",
+            "año": "2024",
+            "editorial": null,
+            "isbn": "",
+            "apple_track_id": "6736685037",
+            "categorias": [
+              "Filosofía",
+              "Libros",
+              "No ficción"
+            ],
+            "track_view_url": "https://books.apple.com/mx/book/c%C3%B3mo-conocer-a-una-persona/id6736685037?uo=4"
+          }
+        },
+        "google": {
+          "ok": true,
+          "source": "google_books",
+          "match_score": 1,
+          "match_details": {
+            "matched_title": "Cómo conocer a una persona",
+            "matched_author": "David Brooks"
+          },
+          "synopsis": "Hay una capacidad que yace en el corazón de cualquier persona o comunidad: la de ver a los demás —en su sentido más profundo— y hacerlos sentir valorados, respetados y comprendidos. Sin embargo, a nuestro alrededor hay personas que se sienten invisibles en una sociedad fragmentada, hostil e insensible al sufrimiento. David Brooks se nutre de la psicología y la neurociencia, así como del teatro, la filosofía y la historia para ofrecer un enfoque esperanzador sobre la conexión humana que nos enseña a realizar acciones concretas, pequeñas pero significativas: ser un buen oyente, pedir y ofrecer perdón, sentarse con quien sufre, mirar las cosas desde la perspectiva del otro... En pocas palabras: ser más comprensivos —y compasivos— con nuestros semejantes. Cómo conocer a una persona es para aquellos que anhelan conectar verdaderamente con los demás. \"Este libro ya es mi favorito de todos los que David ha escrito. [...] Más que una guía para tener mejores conversaciones, se trata de un proyecto para vivir de manera más conectada y humana. Es una lectura imprescindible para cualquiera que busque profundizar sus relaciones y ampliar sus perspectivas.\" —Bill Gates, GatesNotes (lecturas recomendadas)",
+          "synopsis_length": 1209,
+          "covers": [
+            {
+              "size": "small",
+              "url": "https://books.google.com/books/content?id=bMkoEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+            }
+          ],
+          "verified_identity": {
+            "titulo_real": "Cómo conocer a una persona",
+            "subtitulo": "El arte de ver profundamente a los demás y de ser visto con profundidad",
+            "autor_completo": "David Brooks",
+            "año": "2024",
+            "editorial": "Océano",
+            "paginas": 261,
+            "isbn": "9786075579405",
+            "isbn13": "9786075579405",
+            "isbn10": "6075579400",
+            "categorias": [
+              "Philosophy"
+            ],
+            "idioma": "es",
+            "preview_link": "http://books.google.com/books?id=bMkoEQAAQBAJ&printsec=frontcover&dq=intitle:C%C3%B3mo+conocer+a+una+persona+inauthor:David+Brooks&hl=&cd=1&source=gbs_api"
+          }
+        },
+        "openlibrary": {
+          "ok": true,
+          "source": "openlibrary",
+          "match_score": 0.614367816091954,
+          "match_details": {
+            "matched_title": "Cómo Conocer a una Persona. el Arte de Conectar con Los Demás y Mostrarte con Sinceridad",
+            "matched_author": "David Brooks"
+          },
+          "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2024.",
+          "synopsis_length": 65,
+          "covers": [],
+          "verified_identity": {
+            "titulo_real": "Cómo Conocer a una Persona. el Arte de Conectar con Los Demás y Mostrarte con Sinceridad",
+            "autor_completo": "David Brooks",
+            "año": "2024",
+            "editorial": null,
+            "isbn": "",
+            "categorias": [],
+            "idioma": "spa",
+            "paginas": null
+          }
+        },
+        "amazon": {
+          "ok": false,
+          "reason": "no_amazon_cover_or_only_placeholders",
+          "source": "amazon"
+        },
+        "valid_covers": [
+          {
+            "source": "apple_books",
+            "size": "xxlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/54/cf/51/54cf5132-06c7-d163-2a63-2f5d0ef5b9c2/1044120648.jpg/3000x3000bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "xlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/54/cf/51/54cf5132-06c7-d163-2a63-2f5d0ef5b9c2/1044120648.jpg/1200x1200bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "large",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/54/cf/51/54cf5132-06c7-d163-2a63-2f5d0ef5b9c2/1044120648.jpg/600x600bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "medium",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/54/cf/51/54cf5132-06c7-d163-2a63-2f5d0ef5b9c2/1044120648.jpg/100x100bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "google_books",
+            "size": "small",
+            "url": "https://books.google.com/books/content?id=bMkoEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+            "valid": true
+          }
+        ],
+        "_sources_succeeded": [
+          "apple_books",
+          "google_books",
+          "openlibrary"
+        ],
+        "_sources_failed": [
+          "amazon:no_amazon_cover_or_only_placeholders"
+        ],
+        "_timing": {
+          "phase1_parallel_ms": 749,
+          "phase2_isbn_chain_ms": 591,
+          "cover_validation_ms": 945,
+          "total_ms": 2285
+        },
+        "_version": "3.6"
+      },
+      "_evidence_synopsis": "Hay una capacidad que yace en el corazón de cualquier persona o comunidad: la de ver a los demás —en su sentido más profundo— y hacerlos sentir valorados, respetados y comprendidos. Sin embargo, a nuestro alrededor hay personas que se sienten invisibles en una sociedad fragmentada, hostil e insensible al sufrimiento. David Brooks se nutre de la psicología y la neurociencia, así como del teatro, la filosofía y la historia para ofrecer un enfoque esperanzador sobre la conexión humana que nos enseña a realizar acciones concretas, pequeñas pero significativas: ser un buen oyente, pedir y ofrecer perdón, sentarse con quien sufre, mirar las cosas desde la perspectiva del otro… En pocas palabras: ser más comprensivos —y compasivos— con nuestros semejantes. Cómo conocer a una persona es para aquellos que anhelan conectar verdaderamente con los demás. \"Este libro ya es mi favorito de todos los que David ha escrito. [...] Más que una guía para tener mejores conversaciones, se trata de un proyecto para vivir de manera más conectada y humana. Es una lectura imprescindible para cualquiera que busque profundizar sus relaciones y ampliar sus perspectivas.\" —Bill Gates, GatesNotes (lecturas recomendadas)",
+      "_evidence_verified_identity": {
+        "titulo_real": "Cómo conocer a una persona",
+        "autor_completo": "David Brooks",
+        "año": "2024",
+        "editorial": null,
+        "isbn": "",
+        "apple_track_id": "6736685037",
+        "categorias": [
+          "Filosofía",
+          "Libros",
+          "No ficción"
+        ],
+        "track_view_url": "https://books.apple.com/mx/book/c%C3%B3mo-conocer-a-una-persona/id6736685037?uo=4"
+      },
+      "_evidence_match_score": 1
+    },
+    "ring_updated": false
+  }
+}

@@ -7,7 +7,8 @@
     "autor_completo": "David Brooks",
     "año": "2024",
     "editorial": null,
-    "isbn": "6736685037",
+    "isbn": "",
+    "apple_track_id": "6736685037",
     "categorias": [
       "Filosofía",
       "Libros",
@@ -21,9 +22,9 @@
     "openlibrary"
   ],
   "resolution_path": [
-    "evidence_fetched_4sources"
+    "evidence_preloaded"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-21T11:47:46.434Z"
+  "cached_at": "2026-04-26T14:40:52.128Z"
 }
