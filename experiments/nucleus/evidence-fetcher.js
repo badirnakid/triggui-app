@@ -1,20 +1,40 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
-   evidence-fetcher.js — v3.2 FUSIÓN TOTAL
+   evidence-fetcher.js — v3.6 NIVEL DIOS MATEMÁTICO CUÁNTICO
 
-   Un solo módulo que llama a Apple/Google/OpenLibrary/Amazon una vez y extrae
-   TODO lo útil: sinopsis, portada (múltiples tamaños), metadata, ISBN.
+   v3.6 (2026-04-26): FIX PORTADA FANTASMA
+   ─────────────────────────────────────────────────────────────────────────────
+   Bugs corregidos sobre v3.2:
 
-   Reemplaza las funciones searchAppleBooks/searchGoogleBooks/searchOpenLibrary
-   duplicadas entre validate-book.js y grounding-resolver.js.
+   BUG A — Apple `trackId` se guardaba como ISBN
+     Antes: isbn: best.trackId ? String(best.trackId) : ""
+     Causa: Apple devuelve trackId interno (ej. "991831052"), NO un ISBN real.
+     Esto contaminaba toda la cadena: Amazon recibía un "ISBN" inválido y
+     devolvía placeholder GIF.
+     Fix v3.6: NO guardar trackId como isbn. Preservar en apple_track_id
+     para auditoría. ISBN solo si Apple devuelve uno verdadero (raro).
 
-   CARACTERÍSTICAS NIVEL DIOS:
-   - Llamadas concurrentes (Promise.allSettled) — 3-4x speedup vs secuencial
-   - ISBN chain: ISBN descubierto en una API se usa en las otras
-   - Retry exponencial en 429
-   - Multi-size portada cascade (thumbnail → medium → large → extraLarge)
-   - Cover validation paralela
-   - Cache filesystem con TTL 30 días
-   - Raw response preservado en _raw para debug/audit
+   BUG B — checkImageURL no validaba tamaño real
+     Antes: solo content-type startsWith "image/"
+     Causa: Amazon devuelve GIF placeholder de 43 bytes con content-type
+     image/gif para cualquier ID inválido. Eso pasaba el filtro como
+     "imagen válida".
+     Fix v3.6: validar content-length >= 2000 bytes. Cualquier portada
+     real pesa >2KB. GIF placeholders pesan <500 bytes.
+
+   BUG C (parcial) — Conversión ISBN13→ISBN10 matemáticamente incorrecta
+     Antes: isbn13.slice(3, 12)  // 9 chars, no 10
+     Causa: ISBN-10 son 10 caracteres. La conversión real requiere
+     recalcular el dígito verificador con módulo 11 sobre los primeros
+     9 dígitos del cuerpo.
+     Fix v3.6: implementar convertIsbn13ToIsbn10() correcto. Validar que
+     ISBN sea exactamente 10 o 13 dígitos numéricos antes de usar.
+
+   Lo NO tocado:
+   - Estructura del cache filesystem
+   - Format de evidence retornado (compatibilidad total con validate-book v3.4)
+   - Llamadas Apple/Google/OpenLibrary (solo cambia 1 línea en Apple)
+   - Algoritmo de match scoring
+   - selectBestCover, buildGroundTruthFromEvidence, buildEnrichedBookData
 ═══════════════════════════════════════════════════════════════════════════════ */
 
 import { createHash } from "node:crypto";
@@ -24,7 +44,13 @@ import path from "node:path";
 const CACHE_DIR = "evidence-cache";
 const CACHE_TTL_DAYS = 30;
 const REQUEST_TIMEOUT_MS = 8000;
-const MIN_MATCH_SCORE = 0.38; // Mismo threshold que validate-book.js viejo
+const MIN_MATCH_SCORE = 0.38;
+
+// v3.6: tamaño mínimo de imagen para considerarla "real" (no placeholder).
+// Amazon devuelve GIFs de 43 bytes para ISBNs inválidos. Cualquier portada
+// de libro pesa >5KB típicamente. 2KB es un margen seguro que descarta
+// placeholders sin falsos positivos.
+const MIN_IMAGE_SIZE_BYTES = 2000;
 
 /* ─────────────────────────────────────────────────────────────────────────────
    CACHE
@@ -111,6 +137,59 @@ function cleanHTMLEntities(raw) {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   v3.6 — ISBN VALIDATION + CONVERSIÓN ISBN13→ISBN10 CORRECTA
+────────────────────────────────────────────────────────────────────────────── */
+
+/**
+ * Valida que un string sea un ISBN-10 o ISBN-13 con formato correcto.
+ * NO valida el dígito verificador (eso requeriría ser estricto y
+ * algunos ISBNs viejos vienen mal formateados pero existen). Solo
+ * valida que sea exactamente 10 o 13 dígitos numéricos.
+ *
+ * v3.6: agregada para cortar la cadena de IDs falsos (trackId Apple,
+ * IDs internos de tiendas) que se colaban como "ISBN" antes.
+ */
+function isValidIsbnFormat(isbn) {
+  if (!isbn || typeof isbn !== "string") return false;
+  const clean = isbn.replace(/[-\s]/g, "").trim();
+  return /^[0-9]{10}$/.test(clean) || /^[0-9]{13}$/.test(clean) || /^[0-9]{9}[0-9X]$/.test(clean);
+}
+
+/**
+ * Conversión ISBN-13 → ISBN-10 con algoritmo correcto.
+ *
+ * Solo es posible cuando el ISBN-13 empieza con "978" (rango compatible
+ * con ISBN-10). Los que empiezan con "979" no tienen equivalente ISBN-10
+ * y deben usar otra estrategia.
+ *
+ * Algoritmo:
+ *   1. Tomar los 9 dígitos del cuerpo (chars 3-11 del ISBN-13)
+ *   2. Calcular dígito verificador con módulo 11:
+ *      sum = sum(digit_i * (10 - i)) for i in 0..8
+ *      check = (11 - (sum % 11)) % 11
+ *      si check === 10 → "X"
+ *      si no → str(check)
+ *   3. Concatenar cuerpo + check
+ *
+ * v3.6: antes era isbn13.slice(3, 12) que devolvía 9 chars (incorrecto).
+ */
+function convertIsbn13ToIsbn10(isbn13) {
+  if (!isbn13 || typeof isbn13 !== "string") return null;
+  const clean = isbn13.replace(/[-\s]/g, "").trim();
+  if (!/^[0-9]{13}$/.test(clean)) return null;
+  if (!clean.startsWith("978")) return null; // Solo 978 tiene equivalente ISBN-10
+
+  const body = clean.slice(3, 12); // 9 dígitos
+  let sum = 0;
+  for (let i = 0; i < 9; i += 1) {
+    sum += (10 - i) * Number(body[i]);
+  }
+  const checkValue = (11 - (sum % 11)) % 11;
+  const checkChar = checkValue === 10 ? "X" : String(checkValue);
+  return body + checkChar;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
    FETCH CON RETRY 429 Y TIMEOUT
 ────────────────────────────────────────────────────────────────────────────── */
 
@@ -123,7 +202,7 @@ async function fetchWithRetry(url, options = {}, maxRetries = 3) {
         ...options,
         signal: controller.signal,
         headers: {
-          "User-Agent": "triggui-evidence-fetcher/3.2",
+          "User-Agent": "triggui-evidence-fetcher/3.6",
           "Accept": "application/json",
           ...(options.headers || {})
         }
@@ -141,17 +220,91 @@ async function fetchWithRetry(url, options = {}, maxRetries = 3) {
   return { ok: false, status: 429 };
 }
 
+/**
+ * v3.6 — checkImageURL NIVEL DIOS
+ *
+ * Antes solo validaba content-type. Eso permitía que Amazon GIF placeholder
+ * de 43 bytes pasara como "imagen válida".
+ *
+ * Ahora valida 3 cosas en cascada (HEAD request, sin descargar el archivo):
+ *   1. HTTP 200 OK
+ *   2. content-type empieza con "image/"
+ *   3. content-length >= MIN_IMAGE_SIZE_BYTES (2000 bytes)
+ *
+ * Si content-length no viene en headers (algunos CDN lo omiten), fallback:
+ *   hace un GET con range bytes=0-2047 y mide tamaño real recibido.
+ *
+ * Esto descarta:
+ *   - Amazon GIF placeholder de 43 bytes (no llega a 2KB)
+ *   - PNG transparentes 1x1 de OpenLibrary cuando un libro no tiene cover
+ *   - SVGs vacíos
+ *
+ * Y acepta:
+ *   - Apple xxlarge 3000x3000 (típicamente >100KB)
+ *   - Google extraLarge (típicamente >50KB)
+ *   - OpenLibrary -L.jpg (típicamente >20KB)
+ *   - Amazon LZZZZZZZ real (típicamente >30KB)
+ */
 export async function checkImageURL(url) {
   if (!url || typeof url !== "string") return false;
+
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 4000);
     const res = await fetch(url, { method: "HEAD", signal: controller.signal });
     clearTimeout(timeoutId);
+
     if (!res.ok) return false;
+
     const type = res.headers.get("content-type") || "";
-    return type.startsWith("image/");
-  } catch { return false; }
+    if (!type.startsWith("image/")) return false;
+
+    // v3.6: validación de tamaño
+    const contentLengthHeader = res.headers.get("content-length");
+    const contentLength = Number(contentLengthHeader || 0);
+
+    if (contentLength > 0) {
+      // Header presente: validar directamente
+      return contentLength >= MIN_IMAGE_SIZE_BYTES;
+    }
+
+    // Header ausente: fallback con range request
+    // Algunos CDNs (especialmente CloudFront) omiten content-length en HEAD.
+    // Pedimos primeros 2KB y vemos cuánto realmente devuelve.
+    return await checkImageURLByRange(url);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Fallback de checkImageURL cuando content-length no viene en HEAD.
+ * Hace un GET con Range bytes=0-2047 y mide bytes reales recibidos.
+ * Si recibe los 2048 bytes pedidos completos, asume imagen real.
+ * Si recibe menos (placeholder pequeño), rechaza.
+ */
+async function checkImageURLByRange(url) {
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
+    const res = await fetch(url, {
+      method: "GET",
+      headers: { "Range": `bytes=0-${MIN_IMAGE_SIZE_BYTES - 1}` },
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+
+    if (!res.ok && res.status !== 206) return false;
+
+    const type = res.headers.get("content-type") || "";
+    if (!type.startsWith("image/")) return false;
+
+    // Leer el cuerpo completo del range request y medir
+    const buf = await res.arrayBuffer();
+    return buf.byteLength >= MIN_IMAGE_SIZE_BYTES;
+  } catch {
+    return false;
+  }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -161,7 +314,9 @@ export async function checkImageURL(url) {
 async function fetchApple(titulo, autor, isbn) {
   try {
     let url;
-    if (isbn && isbn.trim()) {
+    // v3.6: solo usar isbn como query param si tiene formato válido (10 o 13 chars)
+    // Antes: cualquier string en isbn se pasaba, incluyendo trackIds basura
+    if (isbn && isValidIsbnFormat(isbn)) {
       url = `https://itunes.apple.com/lookup?isbn=${encodeURIComponent(isbn.trim())}`;
     } else {
       const term = `${titulo} ${autor}`.trim();
@@ -209,6 +364,10 @@ async function fetchApple(titulo, autor, isbn) {
     const year = best.releaseDate ? best.releaseDate.slice(0, 4) : null;
     const genres = Array.isArray(best.genres) ? best.genres : (best.primaryGenreName ? [best.primaryGenreName] : []);
 
+    // v3.6 BUG A FIX: Apple's trackId NO es ISBN — es un ID interno de iTunes.
+    // Antes: isbn: best.trackId ? String(best.trackId) : ""
+    // Ahora: isbn = "" siempre (Apple no expone ISBN real en su Search API).
+    // El trackId se preserva separadamente para auditoría.
     return {
       ok: true,
       source: "apple_books",
@@ -225,7 +384,8 @@ async function fetchApple(titulo, autor, isbn) {
         autor_completo: best.artistName || autor,
         año: year,
         editorial: null,
-        isbn: best.trackId ? String(best.trackId) : "", // Apple usa trackId como ID interno
+        isbn: "", // v3.6: NUNCA usar trackId como ISBN
+        apple_track_id: best.trackId ? String(best.trackId) : "", // Preservado para auditoría
         categorias: genres,
         track_view_url: best.trackViewUrl || null
       }
@@ -259,8 +419,8 @@ async function fetchGoogleBooksAttempt(url, titulo, autor) {
 
 async function fetchGoogle(titulo, autor, isbn) {
   try {
-    // Estrategia 1: ISBN si existe
-    if (isbn && isbn.trim()) {
+    // v3.6: solo usar ISBN si tiene formato válido
+    if (isbn && isValidIsbnFormat(isbn)) {
       const urlIsbn = `https://www.googleapis.com/books/v1/volumes?q=isbn:${encodeURIComponent(isbn.trim())}&maxResults=3`;
       const isbnResult = await fetchGoogleBooksAttempt(urlIsbn, titulo, autor);
       if (isbnResult.ok && isbnResult.candidates.length > 0 && isbnResult.candidates[0]._match_score >= MIN_MATCH_SCORE) {
@@ -345,8 +505,8 @@ function buildGoogleEvidence(candidate, titulo, autor) {
 async function fetchOpenLibrary(titulo, autor, isbn) {
   try {
     let url;
-    if (isbn && isbn.trim()) {
-      // OpenLibrary también soporta búsqueda por ISBN
+    // v3.6: solo usar ISBN si tiene formato válido
+    if (isbn && isValidIsbnFormat(isbn)) {
       url = `https://openlibrary.org/search.json?isbn=${encodeURIComponent(isbn.trim())}&limit=3`;
     } else {
       url = `https://openlibrary.org/search.json?title=${encodeURIComponent(titulo)}&author=${encodeURIComponent(autor)}&limit=5`;
@@ -375,7 +535,6 @@ async function fetchOpenLibrary(titulo, autor, isbn) {
     const authors = Array.isArray(doc.author_name) ? doc.author_name : [];
     const firstSentence = Array.isArray(doc.first_sentence) && doc.first_sentence[0] ? cleanHTMLEntities(doc.first_sentence[0]) : "";
 
-    // Construir synopsis con todo lo disponible
     let synopsis = "";
     if (firstSentence && firstSentence.length >= 20) {
       synopsis = `Primera línea del libro: "${firstSentence}". `;
@@ -389,7 +548,6 @@ async function fetchOpenLibrary(titulo, autor, isbn) {
       if (publisher) synopsis += ` Editorial: ${publisher}.`;
     }
 
-    // Multi-size covers
     const covers = [];
     if (doc.cover_i) {
       covers.push({ size: "large", url: `https://covers.openlibrary.org/b/id/${doc.cover_i}-L.jpg` });
@@ -427,38 +585,100 @@ async function fetchOpenLibrary(titulo, autor, isbn) {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   AMAZON COVER BY ISBN (endpoint público, sin API)
+   AMAZON COVER BY ISBN — v3.6 con validación estricta
 ────────────────────────────────────────────────────────────────────────────── */
 
+/**
+ * v3.6 BUG B FIX + BUG C FIX:
+ *
+ * Antes (v3.2):
+ *   const isbn10 = clean.length === 13 ? clean.slice(3, 12) : clean;
+ *
+ * Bugs:
+ *   - slice(3, 12) devuelve 9 chars, no 10 (ISBN-10 son 10 chars)
+ *   - No validaba que isbn fuera realmente 10 o 13 dígitos
+ *   - Cualquier basura como trackId Apple "991831052" pasaba
+ *
+ * Ahora (v3.6):
+ *   - Valida formato (10 o 13 dígitos) antes de construir URL
+ *   - Conversión 13→10 con módulo 11 correcto
+ *   - checkImageURL valida tamaño mínimo (rechaza GIF placeholder)
+ */
 async function fetchAmazonCoverByISBN(isbn) {
-  if (!isbn || !isbn.trim()) return { ok: false, reason: "no_isbn", source: "amazon" };
-  const clean = isbn.replace(/-/g, "").trim();
-  // Amazon usa ISBN-10 para URL, así que si es 13 hay que convertir (últimos 10 chars aproximado)
-  const isbn10 = clean.length === 13 ? clean.slice(3, 12) : clean;
+  if (!isbn || !isbn.trim()) {
+    return { ok: false, reason: "no_isbn", source: "amazon" };
+  }
+
+  const clean = isbn.replace(/[-\s]/g, "").trim();
+
+  // v3.6: validación estricta de formato ISBN
+  if (!isValidIsbnFormat(clean)) {
+    return {
+      ok: false,
+      reason: `invalid_isbn_format_${clean.length}_chars`,
+      source: "amazon",
+      _attempted_isbn: clean
+    };
+  }
+
+  // Convertir ISBN-13 → ISBN-10 si es necesario (Amazon URLs usan ISBN-10)
+  let isbn10;
+  if (clean.length === 13) {
+    isbn10 = convertIsbn13ToIsbn10(clean);
+    if (!isbn10) {
+      return {
+        ok: false,
+        reason: "isbn13_conversion_failed_or_not_978",
+        source: "amazon",
+        _attempted_isbn: clean
+      };
+    }
+  } else {
+    isbn10 = clean;
+  }
+
+  // Validar que isbn10 resultante sea exactamente 10 chars
+  if (!/^[0-9]{9}[0-9X]$/.test(isbn10)) {
+    return {
+      ok: false,
+      reason: `invalid_isbn10_after_conversion_${isbn10.length}_chars`,
+      source: "amazon",
+      _attempted_isbn10: isbn10
+    };
+  }
+
   const urls = [
     `https://images-na.ssl-images-amazon.com/images/P/${isbn10}.01.LZZZZZZZ.jpg`,
     `https://images-na.ssl-images-amazon.com/images/P/${isbn10}.01._SCLZZZZZZZ_.jpg`,
     `https://m.media-amazon.com/images/P/${isbn10}.01.LZZZZZZZ.jpg`
   ];
+
   for (const url of urls) {
-    if (await checkImageURL(url)) {
+    if (await checkImageURL(url)) { // v3.6: ahora valida tamaño >= 2KB
       return {
         ok: true,
         source: "amazon",
-        match_score: 0.85, // ISBN match es alto por definición
+        match_score: 0.85,
         covers: [{ size: "large", url }],
-        synopsis: "", // Amazon cover-only, sin sinopsis
+        synopsis: "",
         synopsis_length: 0,
-        verified_identity: { isbn, titulo_real: null, autor_completo: null, año: null }
+        verified_identity: {
+          isbn: isbn10,
+          isbn13: clean.length === 13 ? clean : "",
+          isbn10,
+          titulo_real: null,
+          autor_completo: null,
+          año: null
+        }
       };
     }
   }
-  return { ok: false, reason: "no_amazon_cover", source: "amazon" };
+
+  return { ok: false, reason: "no_amazon_cover_or_only_placeholders", source: "amazon" };
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    COVER VALIDATION PARALELA
-   Toma un array de evidence results y verifica qué covers realmente existen.
 ────────────────────────────────────────────────────────────────────────────── */
 
 async function validateCoversParallel(results) {
@@ -470,20 +690,26 @@ async function validateCoversParallel(results) {
       }
     }
   }
-  // Validar todos los covers en paralelo
+  // v3.6: checkImageURL ahora rechaza placeholders <2KB
   const checks = await Promise.all(allCovers.map(async (c) => ({ ...c, valid: await checkImageURL(c.url) })));
   return checks.filter((c) => c.valid);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    ORCHESTRATOR PRINCIPAL
-   Llama a todas las APIs en paralelo, hace ISBN chain, devuelve evidencia fusionada.
 ────────────────────────────────────────────────────────────────────────────── */
 
 export async function fetchEvidence(book, options = {}) {
   const titulo = String(book.titulo || "").trim();
   const autor = String(book.autor || "").trim();
-  const seedIsbn = String(book.isbn || "").trim();
+  const seedIsbnRaw = String(book.isbn || "").trim();
+
+  // v3.6: validar el seedIsbn ANTES de hash y antes de pasar a las APIs.
+  // Si el "ISBN" del libro es un trackId basura (ej. "991831052" 9 chars),
+  // simplemente NO lo usamos como ISBN. Las APIs harán búsqueda por título+autor
+  // que es lo correcto para esos casos.
+  const seedIsbn = isValidIsbnFormat(seedIsbnRaw) ? seedIsbnRaw : "";
+  const rejectedSeedIsbn = seedIsbnRaw && !seedIsbn ? seedIsbnRaw : null;
 
   if (!titulo) throw new Error("fetchEvidence requiere titulo");
 
@@ -498,8 +724,11 @@ export async function fetchEvidence(book, options = {}) {
   }
 
   console.log(`   🔍 Fetching evidence para "${titulo.slice(0, 40)}" — ${autor.slice(0, 30)}`);
+  if (rejectedSeedIsbn) {
+    console.log(`   🛡️  v3.6: seedIsbn rechazado ("${rejectedSeedIsbn}" no es ISBN válido) — buscando solo por título+autor`);
+  }
 
-  // FASE 1: llamadas paralelas con seedIsbn
+  // FASE 1: llamadas paralelas con seedIsbn (vacío si era basura)
   const t0 = Date.now();
   const [appleResult, googleResult, openLibraryResult] = await Promise.allSettled([
     fetchApple(titulo, autor, seedIsbn),
@@ -508,12 +737,13 @@ export async function fetchEvidence(book, options = {}) {
   ]).then((results) => results.map((r) => r.status === "fulfilled" ? r.value : { ok: false, reason: `promise_rejected`, error: String(r.reason).slice(0, 100) }));
   const phase1Ms = Date.now() - t0;
 
-  // FASE 2: ISBN chain — si alguna API encontró ISBN y otras fallaron, reintentar con ese ISBN
-  const discoveredIsbn = appleResult.verified_identity?.isbn ||
-                         googleResult.verified_identity?.isbn ||
-                         openLibraryResult.verified_identity?.isbn ||
-                         "";
-  const cleanDiscoveredIsbn = discoveredIsbn && !discoveredIsbn.startsWith("id_") ? discoveredIsbn : "";
+  // FASE 2: ISBN chain — si alguna API encontró ISBN VÁLIDO y otras fallaron, reintentar
+  // v3.6: validar formato antes de usar el ISBN descubierto
+  const discoveredIsbnRaw = appleResult.verified_identity?.isbn ||
+                             googleResult.verified_identity?.isbn ||
+                             openLibraryResult.verified_identity?.isbn ||
+                             "";
+  const cleanDiscoveredIsbn = isValidIsbnFormat(discoveredIsbnRaw) ? discoveredIsbnRaw : "";
 
   let finalApple = appleResult;
   let finalGoogle = googleResult;
@@ -542,17 +772,20 @@ export async function fetchEvidence(book, options = {}) {
     }
   }
 
-  // FASE 3: Amazon solo si tenemos ISBN verificado
+  // FASE 3: Amazon solo si tenemos ISBN VERIFICADO Y VÁLIDO
+  // v3.6: doble verificación porque Amazon era el origen del problema
   let amazonResult = { ok: false, reason: "skipped", source: "amazon" };
-  if (cleanDiscoveredIsbn) {
+  if (cleanDiscoveredIsbn && isValidIsbnFormat(cleanDiscoveredIsbn)) {
     const t2 = Date.now();
     amazonResult = await fetchAmazonCoverByISBN(cleanDiscoveredIsbn);
     phase2Ms += Date.now() - t2;
+  } else if (cleanDiscoveredIsbn) {
+    amazonResult = { ok: false, reason: "isbn_format_invalid", source: "amazon", _attempted: cleanDiscoveredIsbn };
   }
 
   const allResults = [finalApple, finalGoogle, finalOpenLibrary, amazonResult];
 
-  // FASE 4: validar covers en paralelo
+  // FASE 4: validar covers en paralelo (con tamaño mínimo v3.6)
   const t3 = Date.now();
   const validCovers = await validateCoversParallel(allResults);
   const coverValidationMs = Date.now() - t3;
@@ -566,7 +799,10 @@ export async function fetchEvidence(book, options = {}) {
     titulo_input: titulo,
     autor_input: autor,
     isbn_seed: seedIsbn,
+    isbn_seed_raw: seedIsbnRaw,
+    isbn_seed_rejected: rejectedSeedIsbn, // v3.6: trazabilidad de ISBNs basura
     isbn_discovered: cleanDiscoveredIsbn,
+    isbn_discovered_raw: discoveredIsbnRaw,
     apple: finalApple,
     google: finalGoogle,
     openlibrary: finalOpenLibrary,
@@ -579,7 +815,8 @@ export async function fetchEvidence(book, options = {}) {
       phase2_isbn_chain_ms: phase2Ms,
       cover_validation_ms: coverValidationMs,
       total_ms: phase1Ms + phase2Ms + coverValidationMs
-    }
+    },
+    _version: "3.6"
   };
 
   await writeEvidenceCache(hash, evidence);
@@ -587,13 +824,9 @@ export async function fetchEvidence(book, options = {}) {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   SELECTORS — helpers para extraer cosas específicas de la evidencia
+   SELECTORS — sin cambios v3.6
 ────────────────────────────────────────────────────────────────────────────── */
 
-/**
- * Elige la mejor portada entre todas las covers válidas.
- * Prioridad: tamaño más grande > score de match > preferencia de fuente
- */
 export function selectBestCover(evidence, sourcePreference = ["apple_books", "google_books", "openlibrary", "amazon"]) {
   const valid = evidence.valid_covers || [];
   if (valid.length === 0) return null;
@@ -614,15 +847,10 @@ export function selectBestCover(evidence, sourcePreference = ["apple_books", "go
   return scored[0];
 }
 
-/**
- * Construye el ground_truth unificado para usar en grounding-resolver.
- * Prioriza sinopsis más larga y sustantiva.
- */
 export function buildGroundTruthFromEvidence(evidence) {
   const sources = [evidence.apple, evidence.google, evidence.openlibrary].filter((s) => s.ok);
   if (sources.length === 0) return null;
 
-  // Elegir el mejor: match_score alto + synopsis largo
   sources.sort((a, b) => {
     const scoreA = (a.match_score || 0) * 0.6 + Math.min(1, (a.synopsis_length || 0) / 500) * 0.4;
     const scoreB = (b.match_score || 0) * 0.6 + Math.min(1, (b.synopsis_length || 0) / 500) * 0.4;
@@ -654,14 +882,9 @@ export function buildGroundTruthFromEvidence(evidence) {
   };
 }
 
-/**
- * Dado el input book + evidence, construye el bookData enriquecido.
- */
 export function buildEnrichedBookData(book, evidence, selectedCover = null) {
   const cover = selectedCover || selectBestCover(evidence);
 
-  // Identity reconciliation: si el usuario dio CSV con título+autor, respetarlo.
-  // Pero enriquecer con metadata verificada.
   const gt = buildGroundTruthFromEvidence(evidence);
   const vi = gt?.verified_identity || {};
 

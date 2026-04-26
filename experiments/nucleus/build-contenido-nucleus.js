@@ -1,43 +1,42 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
-   build-contenido-nucleus.js — ORQUESTADOR v3.5 NIVEL DIOS
+   build-contenido-nucleus.js — ORQUESTADOR v3.6 NIVEL DIOS
 
-   v3.5 (2026-04-26): JUDGE EN ROBUSTO
+   v3.6 (2026-04-26): AUTO-HEALING DE PORTADAS FANTASMA
    ─────────────────────────────────────────────────────────────────────────────
-   Cambios sobre v3.3 (mínimos, quirúrgicos):
+   Cambios sobre v3.5 (mínimos, quirúrgicos):
 
-   1. Llamada al Judge EN (línea ~384) ya NO disfraza EN como ES.
-      Antes:  judgeGrounding(openai, gt, { card_es: ...EN crudo... })
-      Ahora:  judgeGrounding(openai, gt, contentENFinalRaw, { language: "en" })
-      El judgeGrounding v3.5 lee directamente card_en/og_phrases_en/edition_blocks_en.
+   F2.5 NIVEL DIOS — antes confiaba ciegamente en book.portada si era no-vacío.
+   Ahora valida la URL REAL antes de confiar:
 
-   2. Si el judge degrada (después de 3 retries internos), log claro y
-      el resultado se anota en _quality_warning. NO mata el pipeline.
+     1. Si book.portada existe pero es URL fantasma (placeholder Amazon GIF
+        de 43 bytes, o URL muerta, o >2KB de imagen real falsa), checkImageURL
+        v3.6 la rechaza por tamaño mínimo.
+     2. Si checkImageURL falla → fuerza el camino de rescate de evidence (que
+        ya existía desde v3.3).
+     3. Si rescate de evidence también falla → SVG fallback (último recurso).
 
-   3. El assertShape sigue exigiendo grounded_score y reason. La degradación
-      elegante del judgeGrounding v3.5 garantiza ambos campos schema-compliant.
+   Esto crea AUTO-HEALING: cualquier libro generado en el pasado con URL
+   fantasma se autoarregla la próxima vez que entre al pipeline. Sin scripts
+   retroactivos, sin tocar contenido.json viejo.
 
-   v3.3 (2026-04-26): rescate de portadas desde evidence en F2.5.
-   Antes: si CSV no traía portada_url → SVG fallback inmediato (cuadro blanco).
-   Ahora: si CSV no trae portada_url, intentar selectBestCover(evidence) primero.
-   Solo si tampoco hay covers en evidence → SVG fallback (último recurso).
+   Lo NO tocado:
+   - Prompts (sagrados)
+   - Schema edition-nucleus.schema.json (sagrado)
+   - v3.5 judge bilingüe + retry + degradación elegante (intacto)
+   - v3.4 anti-duplicados (en validate-book.js, intacto)
+   - Cualquier otra fase del pipeline
 
    Pipeline de 8 fases:
      F0  grounding-resolver          (curator / api / inference / blind) + evidence
      F1  extractAnchors               (1 llamada LLM)
      F2  synthesizePalette            (determinista, matemático)
-     F2.5 cover rescue + SVG fallback (🌒 v3.3 — rescate desde evidence)
+     F2.5 cover validation + rescue   (🌒 v3.6 — auto-healing)
      F3  extractContentES             (1 llamada LLM)
-     F4  judgeGrounding ES            (1+ llamadas LLM con retry)
+     F4  judgeGrounding ES            (1+ llamadas LLM con retry, v3.5)
      F5  extractContentEN             (1 llamada LLM)
      F6  judgeGrounding EN            (1+ llamadas LLM con retry, v3.5)
      F7  voice-judge                  (1 llamada LLM, existente)
      F8  emoji-inject + confidence + compat-map + validator + report
-
-   Retry policy:
-     - Cada LLAMADA individual tiene retry con backoff
-     - Si grounding_judge < 0.6, re-extract content con temp 0.4
-     - Si el content sigue bajo, escalar a gpt-4o solo esa llamada
-     - Nunca aborta: si todo falla, emite con _quality_warning prominente
 ═══════════════════════════════════════════════════════════════════════════════ */
 
 import fs from "node:fs/promises";
@@ -59,7 +58,7 @@ import { injectEmojis, calculateConfidence, compatMapper } from "./post-processo
 import { judgeBothVoices } from "./voice-judge.js";
 import { validateFinalNucleus } from "./quality-validator.js";
 import { generateFallbackCover } from "./typographic-cover.js";
-import { selectBestCover } from "./evidence-fetcher.js"; // 🌒 v3.3: rescate de portadas
+import { selectBestCover, checkImageURL } from "./evidence-fetcher.js"; // 🌒 v3.6: import checkImageURL
 
 const KEY = process.env.OPENAI_KEY;
 if (!KEY) { console.log("🔕 Sin OPENAI_KEY"); process.exit(0); }
@@ -98,10 +97,6 @@ const INPUTS = {
 
 async function fileExists(p) { try { await fs.access(p); return true; } catch { return false; } }
 
-// writeJSON v3.2: escritura ATÓMICA. Escribe a .tmp primero, luego rename.
-// En POSIX, rename dentro del mismo filesystem es atómico: o ves el archivo
-// viejo, o ves el archivo nuevo, nunca uno a medias. Evita contenido.json
-// corrupto si el proceso muere mid-write.
 async function writeJSON(p, data) {
   const tmp = `${p}.tmp-${process.pid}-${Date.now()}`;
   const content = `${JSON.stringify(data, null, 2)}\n`;
@@ -109,7 +104,6 @@ async function writeJSON(p, data) {
   await fs.rename(tmp, p);
 }
 
-// Defensa total: acepta cualquier cosa y devuelve string formateada. Nunca trona.
 function fmt(value, decimals = 2) {
   if (value === null || value === undefined) return "n/a";
   const num = typeof value === "number" ? value : Number(value);
@@ -117,9 +111,6 @@ function fmt(value, decimals = 2) {
   return num.toFixed(decimals);
 }
 
-// safeJSONParse v3.2: defensivo contra BOM UTF-8, whitespace, vacío, y JSON inválido.
-// String.prototype.trim() elimina el BOM (U+FEFF) porque JS lo considera whitespace.
-// Retorna { ok: bool, data: any, reason: string } para que el caller sepa qué pasó.
 function safeJSONParse(raw, fallback = {}) {
   if (raw === null || raw === undefined) {
     return { ok: false, data: fallback, reason: "null_or_undefined" };
@@ -135,7 +126,6 @@ function safeJSONParse(raw, fallback = {}) {
   }
 }
 
-// Valida que un objeto tenga las propiedades esperadas, en profundidad. Si falla, lanza error claro.
 function assertShape(obj, paths, label) {
   if (!obj || typeof obj !== "object") {
     throw new Error(`${label} devolvió objeto inválido (null/undefined/non-object)`);
@@ -196,14 +186,12 @@ async function processBook(book, inputs, inputsSnapshot) {
   const elapsedByPhase = {};
   const modelsUsed = new Set();
   let llmCallsCount = 0;
-  const judgeDegradationFlags = []; // v3.5: trackea si algún judge degradó
+  const judgeDegradationFlags = [];
 
   console.log(`\n📖 ${book.titulo} — ${book.autor}`);
 
   // ═══ F0: GROUNDING ═════════════════════════════════════════════════
   const tF0 = Date.now();
-  // v3.2 FUSIÓN: pasar identity_sealed y _evidence precargada si vienen de validate-book
-  // v3.3: groundTruthMeta ahora incluye `evidence` para rescate de portadas
   const groundTruthMeta = await resolveGrounding(openai, book, {
     bookContext: inputs.bookContext,
     identitySealed: Boolean(book.identity_sealed)
@@ -261,35 +249,82 @@ async function processBook(book, inputs, inputsSnapshot) {
   tokensByPhase.palette = 0;
   console.log(`   🎨 Paleta: paper=${palette.paper} accent=${palette.accent} contrast=${palette.contrast_ratio}:1`);
 
-  // ═══ F2.5: PORTADA — RESCATE DESDE EVIDENCE + SVG FALLBACK ═══════════
+  // ═══ F2.5: PORTADA — VALIDATION + RESCATE + SVG FALLBACK ═══════════
   //
-  // 🌒 v3.3 NIVEL DIOS: el orden correcto es:
-  //   1. Si el CSV ya trae portada_url → úsala (curaduría manual prevalece).
-  //   2. Si no, intentar rescatar de evidence (las APIs ya buscaron en F0).
-  //      Esto cubre casos como "Indistractable" donde scoreMatch < 0.55
-  //      hizo que grounding cayera a tier 3 model_inference, PERO
-  //      Apple/Google/OpenLibrary SÍ encontraron portadas válidas.
-  //   3. Si tampoco hay covers en evidence, generar SVG tipográfico.
+  // 🌒 v3.6 NIVEL DIOS: AUTO-HEALING de portadas fantasma.
   //
-  // Antes (v3.2): pasos 1 y 3 únicamente. Las portadas válidas en evidence
-  //               se descartaban si el grounding caía a tier 3 → cuadro blanco.
-  // Ahora (v3.3): paso 2 intermedio. SVG fallback solo cuando NADIE encontró portada.
+  // El bug original (v3.2-v3.5): si book.portada venía con URL existente
+  // pero rota (placeholder Amazon GIF de 43 bytes, URL muerta), el sistema
+  // confiaba en ella sin validar y servía cuadro vacío al usuario.
+  //
+  // El fix v3.6 valida la URL REAL antes de confiar:
+  //   1. Si book.portada existe → validar con checkImageURL v3.6 (HEAD + tamaño >= 2KB)
+  //   2. Si la validación pasa → usar tal cual (caso normal)
+  //   3. Si la validación falla → tratar como si NO hubiera portada
+  //      (continúa al rescate de evidence del v3.3)
+  //   4. Si evidence tampoco tiene cover → SVG fallback (último recurso)
+  //
+  // Esto crea AUTO-HEALING: el próximo run que toque un libro con URL
+  // fantasma la detecta y la reemplaza por una válida desde evidence,
+  // o por SVG fallback si nadie tiene cover real.
   const tF2b = Date.now();
-  const hasValidCoverFromCSV = Boolean(book.portada_url || book.portada);
+  const csvPortadaRaw = book.portada_url || book.portada || "";
+  const csvPortadaPresent = Boolean(csvPortadaRaw);
 
-  if (!hasValidCoverFromCSV && groundTruthMeta.evidence) {
-    // Intentar rescatar portada del evidence (puede tener valid_covers aunque tier=3)
-    const bestCover = selectBestCover(groundTruthMeta.evidence);
-    if (bestCover && bestCover.url) {
-      book.portada = bestCover.url;
-      book.portada_url = bestCover.url;
-      book.portada_source = `${bestCover.source}_${bestCover.size}`;
-      book.portada_rescued_from_evidence = true;
-      console.log(`   📸 Portada rescatada: ${bestCover.source}/${bestCover.size} (tier ${groundTruthMeta.tier_reached} no la usó pero existía)`);
+  let csvPortadaValid = false;
+  let csvPortadaCheckMs = 0;
+  let csvPortadaRejectReason = null;
+
+  if (csvPortadaPresent) {
+    const t = Date.now();
+    csvPortadaValid = await checkImageURL(csvPortadaRaw);
+    csvPortadaCheckMs = Date.now() - t;
+
+    if (!csvPortadaValid) {
+      csvPortadaRejectReason = "url_failed_size_or_type_check_v3.6";
+      console.log(`   🛡️  v3.6: portada CSV/precargada rechazada (URL fantasma o <2KB): ${csvPortadaRaw.slice(0, 80)}`);
+      // Limpiar la portada falsa para que el flujo siguiente la trate como ausente
+      book.portada = "";
+      book.portada_url = "";
+      book.portada_was_invalid = true;
+      book.portada_invalid_url = csvPortadaRaw;
+      book.portada_invalid_reason = csvPortadaRejectReason;
+    } else {
+      // Portada válida: marcar como tal para trazabilidad
+      if (!book.portada_source) {
+        book.portada_source = book.portada_source || "csv_or_precargada_validated";
+      }
     }
   }
 
-  // Después del intento de rescate, recalcular si tenemos portada
+  // Recalcular si tenemos portada válida después de la limpieza v3.6
+  const hasValidCoverFromCSV = csvPortadaValid;
+
+  // Rescate de evidence (lógica v3.3 intacta)
+  if (!hasValidCoverFromCSV && groundTruthMeta.evidence) {
+    const bestCover = selectBestCover(groundTruthMeta.evidence);
+    if (bestCover && bestCover.url) {
+      // v3.6: validar también el rescate (defensa extra, aunque selectBestCover
+      // ya filtra por valid_covers que pasó checkImageURL en evidence-fetcher)
+      const rescuedValid = await checkImageURL(bestCover.url);
+      if (rescuedValid) {
+        book.portada = bestCover.url;
+        book.portada_url = bestCover.url;
+        book.portada_source = `${bestCover.source}_${bestCover.size}`;
+        book.portada_rescued_from_evidence = true;
+        if (book.portada_was_invalid) {
+          book.portada_auto_healed = true;
+          console.log(`   🩹 v3.6: AUTO-HEALING — portada rescatada de ${bestCover.source}/${bestCover.size} reemplaza URL fantasma`);
+        } else {
+          console.log(`   📸 Portada rescatada: ${bestCover.source}/${bestCover.size}`);
+        }
+      } else {
+        console.log(`   ⚠ v3.6: rescate también devolvió URL inválida (${bestCover.url.slice(0, 60)}) — saltando a SVG`);
+      }
+    }
+  }
+
+  // Después del rescate, recalcular si tenemos portada definitiva
   const hasValidCover = Boolean(book.portada_url || book.portada);
 
   if (!hasValidCover || book.needs_fallback_cover) {
@@ -303,7 +338,12 @@ async function processBook(book, inputs, inputsSnapshot) {
     book.portada_source = "typographic_svg_fallback";
     book.portada_fallback_generated = true;
     book.portada_fallback_size_kb = Math.round(fallback.size_uri_bytes / 1024);
-    console.log(`   🎨 SVG fallback generado: ${book.portada_fallback_size_kb}KB (paleta+tipografía de la card)`);
+    if (book.portada_was_invalid) {
+      book.portada_auto_healed_to_svg = true;
+      console.log(`   🩹 v3.6: AUTO-HEALING fallback — SVG ${book.portada_fallback_size_kb}KB reemplaza URL fantasma (sin evidence cover)`);
+    } else {
+      console.log(`   🎨 SVG fallback generado: ${book.portada_fallback_size_kb}KB (paleta+tipografía de la card)`);
+    }
   }
   elapsedByPhase.cover_fallback = Date.now() - tF2b;
 
@@ -324,7 +364,6 @@ async function processBook(book, inputs, inputsSnapshot) {
   ], "extractContentES");
 
   // ═══ F4: GROUNDING JUDGE ES ═════════════════════════════════════════
-  // v3.5: pasamos language:"es" explícitamente. judgeGrounding tiene retry+degradación.
   const tF4 = Date.now();
   let judgeESRes = await retryOnce(
     () => judgeGrounding(openai, groundTruthMeta.ground_truth, contentES, { model: CFG.modelMini, language: "es" }),
@@ -343,8 +382,6 @@ async function processBook(book, inputs, inputsSnapshot) {
     console.log(`   👨‍⚖️ Judge ES: score=${fmt(judgeES.grounded_score)}, generic=${judgeES.could_apply_to_any_book}`);
   }
 
-  // Si el judge dice contenido genérico, re-extract con temp baja
-  // v3.5: si degradó, no re-extract (no confiamos en el score fallback como señal)
   if (!judgeESRes.degraded && (judgeES.grounded_score < CFG.groundingJudgeMinScore || judgeES.could_apply_to_any_book)) {
     console.log(`   🔁 Re-extract ES (score ${fmt(judgeES.grounded_score)} < ${CFG.groundingJudgeMinScore})`);
     const tR3 = Date.now();
@@ -366,7 +403,6 @@ async function processBook(book, inputs, inputsSnapshot) {
     assertShape(judgeES, ["grounded_score"], "judgeGroundingES_retry");
     console.log(`   👨‍⚖️ Judge ES retry: score=${fmt(judgeES.grounded_score)}`);
 
-    // Si sigue malo, escalar a gpt-4o
     if (judgeES.grounded_score < CFG.groundingJudgeMinScore) {
       console.log(`   🚀 Escalar ES a ${CFG.modelBig}`);
       contentESRes = await retryOnce(
@@ -402,11 +438,6 @@ async function processBook(book, inputs, inputsSnapshot) {
   ], "extractContentEN");
 
   // ═══ F6: GROUNDING JUDGE EN ═════════════════════════════════════════
-  // v3.5: judgeGrounding agnóstico al idioma — ya NO disfrazamos EN como ES.
-  // Le pasamos contentENFinalRaw directo + language:"en". El extractor lee
-  // las claves card_en/og_phrases_en/edition_blocks_en internamente.
-  // Si OpenAI devuelve {} por strict-mode-can't-comply, retry con backoff
-  // y degradación elegante si los 3 intentos fallan.
   const tF6 = Date.now();
   const judgeENRes = await retryOnce(
     () => judgeGrounding(
@@ -469,9 +500,12 @@ async function processBook(book, inputs, inputsSnapshot) {
 
   // Validación semántica final
   const finalValidation = validateFinalNucleus(mapped);
-  // v3.5: incluir judge degradations en quality warnings
   const allWarnings = [...(finalValidation.warnings || []), ...judgeDegradationFlags];
-  const overallStatus = judgeDegradationFlags.length > 0 && finalValidation.overall === "pass"
+  // v3.6: agregar warning si hubo auto-healing de portada (visibilidad para auditoría)
+  if (book.portada_was_invalid) {
+    allWarnings.push(`portada_auto_healed_v3.6: original "${(book.portada_invalid_url || "").slice(0, 60)}" rechazada por ${book.portada_invalid_reason}`);
+  }
+  const overallStatus = (judgeDegradationFlags.length > 0 || book.portada_was_invalid) && finalValidation.overall === "pass"
     ? "pass_with_warnings"
     : finalValidation.overall;
 
@@ -481,6 +515,7 @@ async function processBook(book, inputs, inputsSnapshot) {
   };
   mapped._metrics.final_validation = overallStatus;
   mapped._metrics.judge_degradations = judgeDegradationFlags;
+  mapped._metrics.portada_auto_healed = Boolean(book.portada_was_invalid);
 
   elapsedByPhase.post_processing = Date.now() - tF8;
 
@@ -508,7 +543,7 @@ async function writeQualityReport(result, stamp) {
 
 **Autor:** ${mapped.autor}
 **Ejecutado:** ${stamp}
-**Pipeline:** nucleus-canonical-v3.5
+**Pipeline:** nucleus-canonical-v3.6
 
 ---
 
@@ -534,6 +569,7 @@ ${groundTruthMeta.ground_truth.slice(0, 800)}${groundTruthMeta.ground_truth.leng
 - **Source:** \`${mapped.portada_source || "n/a"}\`
 ${mapped.portada_rescued_from_evidence ? "- **Rescatada del evidence-cache** (tier alcanzado no la usó pero estaba disponible)" : ""}
 ${mapped.portada_fallback_generated ? `- **SVG fallback generado** (${mapped.portada_fallback_size_kb}KB)` : ""}
+${mapped._metrics?.portada_auto_healed ? "- **🩹 v3.6 AUTO-HEALING activado** (URL fantasma original rechazada por checkImageURL)" : ""}
 
 ---
 
@@ -626,7 +662,6 @@ async function loadCSV() {
     throw new Error(`CSV no encontrado: ${CFG.files.csv}. Modos batch/constrained no pueden proceder sin el catálogo.`);
   }
   const rawBytes = await fs.readFile(CFG.files.csv, "utf8");
-  // .trim() elimina BOM UTF-8 si el CSV fue guardado desde Excel/Windows
   const raw = rawBytes.trim();
   if (!raw) {
     throw new Error(`CSV vacío: ${CFG.files.csv}. Agrega libros antes de correr batch.`);
@@ -672,15 +707,7 @@ async function loadSingle() {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   FUSIÓN CON contenido.json (para unificar carriles sin perder los 20 libros)
-
-   La estrategia:
-   - Leer contenido.json existente si hay
-   - Si el libro nuevo ya está (match por titulo+autor normalizado), lo reemplaza
-   - Si es nuevo, lo agrega al inicio del array (recién generado = más visible)
-   - Escribe de vuelta el contenido.json unificado
-
-   Nunca trona. Si algo falla, log y sigue — contenido_edicion.json siempre se escribe.
+   FUSIÓN CON contenido.json
 ────────────────────────────────────────────────────────────────────────────── */
 
 function normalizeBookKey(titulo, autor) {
@@ -688,9 +715,6 @@ function normalizeBookKey(titulo, autor) {
 }
 
 async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
-  // options.preserveManual (default true): si el libro existente tiene _manual:true
-  //   y el nuevo viene del batch sin _manual, se SALTA (protege curaduría).
-  // options.isFromBatch (default false): marca si el newBook viene de un batch.
   try {
     const t0 = Date.now();
     const preserveManual = options.preserveManual !== false;
@@ -704,17 +728,14 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
       if (parseResult.ok) {
         existing = parseResult.data;
         if (!existing || !Array.isArray(existing.libros)) {
-          // JSON válido pero estructura inesperada: preservar con backup
           console.log(`   ⚠️  ${targetPath} tiene estructura inesperada, creando backup y empezando limpio`);
           await fs.writeFile(`${targetPath}.backup-${Date.now()}`, raw, "utf8");
           existing = { libros: [] };
         }
       } else if (parseResult.reason === "empty_or_whitespace") {
-        // Vacío/whitespace: NO backup (no hay nada que preservar), solo inicializar
         console.log(`   ℹ️  ${targetPath} vacío o solo whitespace, inicializando`);
         existing = { libros: [] };
       } else {
-        // Parse error real: backup (puede haber data recuperable manualmente)
         console.log(`   ⚠️  ${targetPath} corrupto (${parseResult.reason}), creando backup y empezando limpio`);
         await fs.writeFile(`${targetPath}.backup-${Date.now()}`, raw, "utf8");
         existing = { libros: [] };
@@ -733,7 +754,6 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
       const existingIsManual = existingBook._manual === true;
       const newIsManual = newBook._manual === true;
 
-      // PROTECCIÓN: existente manual + nuevo viene de batch + preserveManual=true → saltar
       if (existingIsManual && isFromBatch && preserveManual && !newIsManual) {
         const elapsedMs = Date.now() - t0;
         console.log(`   🛡️  PROTEGIDO manual: "${existingBook.titulo}" — no se reemplaza (${elapsedMs}ms)`);
@@ -803,7 +823,7 @@ async function runBatch() {
   const crono = cronobioContext();
   const inputsSnapshot = await snapshotInputs(INPUTS, crono);
 
-  console.log(`\n🚀 BATCH v3.5 — ${selected.length}/${books.length} libros`);
+  console.log(`\n🚀 BATCH v3.6 — ${selected.length}/${books.length} libros`);
   console.log(`   Modo: ${CFG.shadowMode ? "🌒 SHADOW" : "⚡ PRODUCCIÓN"}`);
   console.log(`   ${crono.dia} ${crono.hora}h ${crono.franja} | energía ${Math.round(crono.energia * 100)}%`);
   console.log(`   Output: ${outputFile}`);
@@ -829,7 +849,6 @@ async function runBatch() {
 
   const exitosos = results.filter((r) => !r.mapped._fallback).map((r) => r.mapped);
 
-  // UNIFICACIÓN FASE 2: fusión libro por libro cuando UNIFIED_MODE=true y producción
   const unifiedMode = process.env.UNIFIED_MODE !== "false";
   const preserveManual = process.env.PRESERVE_MANUAL !== "false";
 
@@ -841,11 +860,6 @@ async function runBatch() {
         isFromBatch: true
       });
     }
-    // También escribir el archivo consolidado del batch para auditoría.
-    // BLINDADO v3.2: este log NO debe matar el proceso si el archivo final
-    // tiene BOM, whitespace o quedó corrupto por race condition.
-    // Ya procesamos 20 libros y escribimos los quality reports: no tiene
-    // sentido morir aquí por una línea de observabilidad.
     try {
       const finalRead = await fs.readFile(CFG.files.outBatch, "utf8");
       const parseResult = safeJSONParse(finalRead, { libros: [] });
@@ -858,16 +872,15 @@ async function runBatch() {
       console.log(`   ⚠️  No se pudo leer ${CFG.files.outBatch} para verificación final: ${err.message}`);
     }
   } else {
-    // Comportamiento legacy: sobrescribir archivo completo (escritura atómica)
     await writeJSON(outputFile, { libros: exitosos });
   }
 
   const runMs = Date.now() - t0;
   await fs.mkdir(CFG.files.metricsDir, { recursive: true });
   const stamp = new Date().toISOString().replace(/[:.]/g, "-");
-  await writeJSON(`${CFG.files.metricsDir}/nucleus-v3.5-${stamp}.json`, {
+  await writeJSON(`${CFG.files.metricsDir}/nucleus-v3.6-${stamp}.json`, {
     timestamp: new Date().toISOString(),
-    pipeline: "nucleus-canonical-v3.5",
+    pipeline: "nucleus-canonical-v3.6",
     mode: CFG.shadowMode ? "shadow" : "production",
     requested: selected.length,
     exitosos: exitosos.length,
@@ -892,7 +905,6 @@ async function runSingle() {
     portada: String(source.portada_url || source.portada || "").trim(),
     portada_url: String(source.portada_url || source.portada || "").trim(),
     isbn: String(source.isbn || "").trim(),
-    // v3.2: pasar identity_sealed y _evidence si vienen de validate-book
     identity_sealed: Boolean(source.identity_sealed),
     _evidence: source._evidence || null,
     needs_fallback_cover: Boolean(source.needs_fallback_cover)
@@ -901,19 +913,13 @@ async function runSingle() {
 
   const crono = cronobioContext();
   const inputsSnapshot = await snapshotInputs(INPUTS, crono);
-  console.log(`\n🚀 SINGLE v3.5: ${book.titulo}`);
+  console.log(`\n🚀 SINGLE v3.6: ${book.titulo}`);
 
   const result = await processBook(book, INPUTS, inputsSnapshot);
 
-  // UNIFICACIÓN FASE 2: marcar libro como MANUAL (curación intencional del usuario)
-  // Este flag se usa por mergeIntoContenidoJson en batches futuros para NO sobrescribir
-  // libros curados manualmente.
   result.mapped._manual = true;
   result.mapped._manual_generated_at = new Date().toISOString();
 
-  // Escribir contenido_edicion.json (solo este libro) — carril v3.2 (ediciones vivas)
-  // Escritura atómica: write temp + rename garantiza que build-editions.py nunca
-  // lea un archivo a medias si corre en paralelo.
   await writeJSON(CFG.files.outSingle, { libros: [result.mapped] });
   console.log(`\n✅ ${CFG.files.outSingle}`);
 
