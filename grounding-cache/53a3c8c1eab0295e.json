@@ -1,0 +1,23 @@
+{
+  "ground_truth": "LIBRO SELECCIONADO POR EL CURADOR AUTOMÁTICO:\nTítulo: Gestión Del Tiempo\nAutor: Anselmo Echevarria\n\nSINOPSIS OFICIAL (Google Books):\n\nTanto si es estudiante, profesional o alguien que busca un estilo de vida más equilibrado, \"Gestión del tiempo\" es la guía definitiva para desbloquear todo su potencial y lograr el éxito en todas las áreas de su vida. Cualquiera que quiera dominar la gestión del tiempo y aumentar la productividad debe leer El plan de productividad: Dominar la gestión del tiempo para profesionales ocupados. Este libro es para todos, incluidos ejecutivos, profesionales y estudiantes. Este libro ofrece a los directores ejecutivos y profesionales con limitaciones de tiempo una guía útil sobre la gestión del tiempo y la mejora de la productividad. Con frecuencia, los ejecutivos tienen dificultades para mantenerse al día con su carga de trabajo debido a las presiones de las reuniones, el trabajo y los plazos. Este libro ofrece consejos perspicaces y tácticas prácticas para ayudar a los directores ejecutivos a establecer prioridades y lograr sus objetivos.\n\nMETADATA VERIFICADA:\n- Título: Gestión Del Tiempo\n- Autor: Anselmo Echevarria\n- Año: 2023\n- Categorías: Business & Economics",
+  "grounding_source": "identity_sealed_with_evidence",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Gestión Del Tiempo",
+    "autor_completo": "Anselmo Echevarria",
+    "año": "2023",
+    "editorial": null,
+    "categorias": [
+      "Business & Economics"
+    ]
+  },
+  "match_score": 1,
+  "evidence_source": "google_books",
+  "other_sources_agreed": [],
+  "resolution_path": [
+    "evidence_preloaded"
+  ],
+  "tier_reached": 1.5,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-26T18:04:38.606Z"
+}

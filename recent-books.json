@@ -51,6 +51,16 @@
       "timestamp": "2026-04-26T14:49:53.766Z",
       "trigger_input": "Trabajo demasiado intensamente y a veces no sé si realmente vale la pena",
       "selected_via": "constrained_catalog"
+    },
+    {
+      "titulo": "Gestión Del Tiempo",
+      "autor": "Anselmo Echevarria",
+      "slug": "gestion-del-tiempo",
+      "titulo_normalizado": "gestion del tiempo",
+      "autor_normalizado": "anselmo echevarria",
+      "timestamp": "2026-04-26T18:04:38.360Z",
+      "trigger_input": "Algún método moderno para administrar mejor el tiempo?",
+      "selected_via": "discover_live_google_books"
     }
   ],
   "_note": "FIFO ring de últimos 30 libros generados por selección automática (constrained o discover). Filtro pre-rerank en validate-book.js. Inicializa vacío y se rellena con cada run exitoso. Si se borra, el sistema arranca limpio sin daño."
