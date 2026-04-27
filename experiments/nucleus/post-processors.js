@@ -1,6 +1,31 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
    post-processors.js — TRANSFORMACIONES DETERMINISTAS POST-LLM
 
+   v3.7.2 (2026-04-27): ENSURE SENTENCE CLOSURE
+   ─────────────────────────────────────────────────────────────────────────────
+   Cambio sobre v3.7.1 (aditivo, NO destructivo):
+
+   GPT ocasionalmente genera frases sin signo de cierre (ej: "¿Qué pasa" sin
+   "?", "Hazlo ahora" sin "."), incumpliendo el system prompt de extractors.
+   Antes: el OG renderer, edición viva y meta tags tomaban esas frases tal
+   cual y las pintaban truncadas visualmente (se vio en el OG image de
+   "El Poder de la Soledad": "¿Qué verdades surgen en el silencio de tu
+   interior" sin "?").
+
+   Fix: ensureSentenceClosure() valida y completa el signo de cierre antes de
+   que las frases entren al JSON publicado. Como vive en injectEmojis, cura
+   las 4 colecciones (og_phrases_es/en + edition_blocks_es/en.phrase) en una
+   sola pasada, sin tocar prompts de GPT ni schema.
+
+   Lo NO tocado:
+   - Prompts (sagrados)
+   - Schema (sagrado)
+   - calculateConfidence (intacto)
+   - compatMapper (intacto)
+   - parrafoTop/parrafoBot (no se aplica ahí porque pueden contener [H]...[/H]
+     con cortes intencionales y la heurística sería arriesgada)
+
+   Componentes anteriores intactos:
    1. injectEmojis(content, bookSeed): agrega emoji al inicio de cada og_phrase
       y edition_block.phrase. Elige emoji según sensory_anchor (ES) o gesture_type (EN),
       rotando entre 2-3 variantes con seed derivada del libro. Determinista por libro,
@@ -69,7 +94,51 @@ function pickWithSeed(options, seed, index) {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   v3.7.2 — ENSURE SENTENCE CLOSURE
+   ─────────────────────────────────────────────────────────────────────────────
+   Defensa matemática contra GPT que olvida cerrar frases. El system prompt
+   pide cerrar con "." "?" o "!" pero no es enforced. Esta función garantiza
+   el cierre correcto antes de persistir las frases en el JSON publicado.
+
+   Reglas matemáticas:
+   - Termina ya en . ! ? …  → no tocar (frase ya cerrada bien)
+   - Empieza con ¿ y no cierra → append "?" (pregunta interrogativa)
+   - Empieza con ¡ y no cierra → append "!" (exclamativa)
+   - Cualquier otra sin cierre → append "." (punto final por defecto)
+
+   No se aplica a parrafoTop/parrafoBot porque pueden contener [H]...[/H] con
+   cortes intencionales que el LLM judge ya valida en F2.7. Aquí sólo curamos
+   frases cortas (og_phrases + edition_blocks.phrase), donde el cierre es
+   inequívocamente necesario.
+
+   Idempotente: aplicarla 2 veces sobre la misma frase devuelve el mismo
+   resultado (no apila puntuación).
+────────────────────────────────────────────────────────────────────────────── */
+
+function ensureSentenceClosure(text) {
+  if (!text) return text;
+  const trimmed = String(text).trim();
+  if (!trimmed) return trimmed;
+
+  const lastChar = trimmed.slice(-1);
+
+  // Ya cierra correctamente con puntuación final estándar
+  if (".!?…".includes(lastChar)) return trimmed;
+
+  // Pregunta abierta con ¿ sin cerrar
+  if (trimmed.startsWith("¿")) return `${trimmed}?`;
+
+  // Exclamación abierta con ¡ sin cerrar
+  if (trimmed.startsWith("¡")) return `${trimmed}!`;
+
+  // Cualquier otra frase sin cierre: punto final
+  return `${trimmed}.`;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
    INJECT EMOJIS
+   v3.7.2: integra ensureSentenceClosure antes del concat con emoji para
+   que ninguna frase publicada quede sin signo de cierre.
 ────────────────────────────────────────────────────────────────────────────── */
 
 export function injectEmojis(contentES, contentEN, titulo, autor) {
@@ -80,7 +149,8 @@ export function injectEmojis(contentES, contentEN, titulo, autor) {
     const pool = EMOJI_BY_SENSORY_ES[block.sensory_anchor] || EMOJI_OG_POOL;
     const emoji = pickWithSeed(pool, seed, i);
     const phraseClean = String(block.phrase || "").trim().replace(/[\n\r]+/g, " ").replace(/\s+/g, " ");
-    return { ...block, phrase: `${emoji} ${phraseClean}` };
+    const phraseClosed = ensureSentenceClosure(phraseClean);
+    return { ...block, phrase: `${emoji} ${phraseClosed}` };
   });
 
   // Edition blocks EN con emoji por sensory_anchor
@@ -88,20 +158,23 @@ export function injectEmojis(contentES, contentEN, titulo, autor) {
     const pool = EMOJI_BY_SENSORY_EN[block.sensory_anchor] || EMOJI_OG_POOL;
     const emoji = pickWithSeed(pool, seed, i);
     const phraseClean = String(block.phrase || "").trim().replace(/[\n\r]+/g, " ").replace(/\s+/g, " ");
-    return { ...block, phrase: `${emoji} ${phraseClean}` };
+    const phraseClosed = ensureSentenceClosure(phraseClean);
+    return { ...block, phrase: `${emoji} ${phraseClosed}` };
   });
 
   // OG phrases: emoji desde pool neutral rotando con seed
   const ogES = (contentES.og_phrases_es || []).map((phrase, i) => {
     const emoji = pickWithSeed(EMOJI_OG_POOL, seed, i + 10);
     const clean = String(phrase || "").trim().replace(/[\n\r]+/g, " ").replace(/\s+/g, " ");
-    return `${emoji} ${clean}`;
+    const closed = ensureSentenceClosure(clean);
+    return `${emoji} ${closed}`;
   });
 
   const ogEN = (contentEN.og_phrases_en || []).map((phrase, i) => {
     const emoji = pickWithSeed(EMOJI_OG_POOL, seed, i + 10);
     const clean = String(phrase || "").trim().replace(/[\n\r]+/g, " ").replace(/\s+/g, " ");
-    return `${emoji} ${clean}`;
+    const closed = ensureSentenceClosure(clean);
+    return `${emoji} ${closed}`;
   });
 
   return {
