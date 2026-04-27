@@ -1,0 +1,154 @@
+{
+  "titulo_input": "Nuevas doctrinas de la soledad",
+  "autor_input": "Miguel Morey",
+  "isbn_seed": "",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "9788410249639",
+  "isbn_discovered_raw": "9788410249639",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 0.7000000000000001,
+    "match_details": {
+      "matched_title": "Nuevas doctrinas de la soledad",
+      "matched_author": "Morey Miguel"
+    },
+    "synopsis": "Tras casi dos décadas, Miguel Morey retoma el gesto que dio forma a Pequeñas doctrinas de la soledad y lo prolonga en este libro con la misma lucidez que caracteriza toda su obra ensayística. En este nuevo volumen plasma una constelación de textos que oscilan entre el ensayo, el pensamiento eminentemente filosófico y la literatura, desplazando el centro del discurso para dejar que las ideas logren respirar en el claroscuro de lo fragmentario. La mirada de Morey, ahora más literaria pero siempre filosófica, pasa revista a figuras clave del pensamiento y el arte –Nietzsche, Foucault, Deleuze, Benjamin, Handke– y se interroga por temas como la experiencia del presente, la imagen y las artes visuales, la lectura, el lenguaje y la traducción. ¿Qué persigue el autor con ello? Una travesía, «abrir una puerta en el pensamiento del lector que lo conduzca hacia una experiencia de conocimiento que tan solo el lector puede hacer, y cada lector la suya. Tal como en una buena conversación». Nuevas doctrinas de la soledad nos sacude para sacarnos del embrutecimiento de lo cotidiano y obligarnos al complicado ejercicio de pensar. Una vez más, Morey sorprende con su erudición y sus reflexiones cargadas de inteligencia.",
+    "synopsis_length": 1221,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/eb/1e/fc/eb1efcaa-aac6-417a-2222-99d6a804603b/9788410249561.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/eb/1e/fc/eb1efcaa-aac6-417a-2222-99d6a804603b/9788410249561.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/eb/1e/fc/eb1efcaa-aac6-417a-2222-99d6a804603b/9788410249561.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/eb/1e/fc/eb1efcaa-aac6-417a-2222-99d6a804603b/9788410249561.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Nuevas doctrinas de la soledad",
+      "autor_completo": "Morey Miguel",
+      "año": "2025",
+      "editorial": null,
+      "isbn": "",
+      "apple_track_id": "6752265711",
+      "categorias": [
+        "Filosofía",
+        "Libros",
+        "No ficción"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/nuevas-doctrinas-de-la-soledad/id6752265711?uo=4"
+    }
+  },
+  "google": {
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Nuevas doctrinas de la soledad",
+      "matched_author": "Miguel Morey"
+    },
+    "synopsis": "",
+    "synopsis_length": 0,
+    "covers": [],
+    "verified_identity": {
+      "titulo_real": "Nuevas doctrinas de la soledad",
+      "subtitulo": "",
+      "autor_completo": "Miguel Morey",
+      "año": "2025",
+      "editorial": null,
+      "paginas": null,
+      "isbn": "9788410249639",
+      "isbn13": "9788410249639",
+      "isbn10": "8410249634",
+      "categorias": [
+        "Essays"
+      ],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=MeWr0QEACAAJ&dq=intitle:Nuevas+doctrinas+de+la+soledad+inauthor:Miguel+Morey&hl=&cd=1&source=gbs_api"
+    }
+  },
+  "openlibrary": {
+    "ok": false,
+    "reason": "no_results",
+    "source": "openlibrary"
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/8410249634.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "8410249634",
+      "isbn13": "9788410249639",
+      "isbn10": "8410249634",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/eb/1e/fc/eb1efcaa-aac6-417a-2222-99d6a804603b/9788410249561.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/eb/1e/fc/eb1efcaa-aac6-417a-2222-99d6a804603b/9788410249561.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/eb/1e/fc/eb1efcaa-aac6-417a-2222-99d6a804603b/9788410249561.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/eb/1e/fc/eb1efcaa-aac6-417a-2222-99d6a804603b/9788410249561.jpg/100x100bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/8410249634.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "google_books",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "openlibrary:no_results"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 2913,
+    "phase2_isbn_chain_ms": 298,
+    "cover_validation_ms": 751,
+    "total_ms": 3962
+  },
+  "_version": "3.6",
+  "_cached_at": "2026-04-27T15:44:34.091Z"
+}
