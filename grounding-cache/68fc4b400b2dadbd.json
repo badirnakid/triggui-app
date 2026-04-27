@@ -1,0 +1,29 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nTú eres más inteligente de lo que crees. Basándose en el enfoque mental que caracteriza a los científicos espaciales, en este libro, accesible y práctico, Ozan Varol revela nueve estrategias sencillas que podrás utilizar para lograr dar el poderoso impulso que buscas. La ciencia espacial suele considerarse el logro destacado de la tecnología. Pero es más bien la culminación de un determinado enfoque, una forma de imaginar lo inimaginable y de resolver lo irresoluble. En este libro, un ex ingeniero espacial desvela los hábitos, las ideas y las estrategias que te permitirán convertir lo aparentemente imposible en posible. Con su lectura aprenderás: Las barreras invisibles que limitan tu pensamiento (y qué hacer al respecto). La palabra que puedes utilizar para potenciar tu creatividad. Qué es lo primero que debes hacer al afrontar un objetivo audaz. Por qué no hacer \"nada\" es más valioso de lo que crees.\n\nMETADATA VERIFICADA:\n- Título: Piensa como un científico espacial\n- Autor: Ozan Varol\n- Año: 2022\n- Categorías: Negocios y finanzas personales, Libros",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Piensa como un científico espacial",
+    "autor_completo": "Ozan Varol",
+    "año": "2022",
+    "editorial": null,
+    "isbn": "",
+    "apple_track_id": "6443355509",
+    "categorias": [
+      "Negocios y finanzas personales",
+      "Libros"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/piensa-como-un-cient%C3%ADfico-espacial/id6443355509?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "google_books",
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_preloaded"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-27T15:49:24.570Z"
+}
