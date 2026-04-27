@@ -61,6 +61,16 @@
       "timestamp": "2026-04-26T18:04:38.360Z",
       "trigger_input": "Algún método moderno para administrar mejor el tiempo?",
       "selected_via": "discover_live_google_books"
+    },
+    {
+      "titulo": "The Creative Act: A Way of Being",
+      "autor": "Rick Rubin",
+      "slug": "the-creative-act-a-way-of-being",
+      "titulo_normalizado": "the creative act a way of being",
+      "autor_normalizado": "rick rubin",
+      "timestamp": "2026-04-27T03:18:50.646Z",
+      "trigger_input": "Autor que esté en novedades de barnes and noble de algún tema actual moderno",
+      "selected_via": "discover_trigger"
     }
   ],
   "_note": "FIFO ring de últimos 30 libros generados por selección automática (constrained o discover). Filtro pre-rerank en validate-book.js. Inicializa vacío y se rellena con cada run exitoso. Si se borra, el sistema arranca limpio sin daño."
