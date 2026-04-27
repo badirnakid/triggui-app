@@ -71,6 +71,16 @@
       "timestamp": "2026-04-27T03:18:50.646Z",
       "trigger_input": "Autor que esté en novedades de barnes and noble de algún tema actual moderno",
       "selected_via": "discover_trigger"
+    },
+    {
+      "titulo": "La invisible 'mano invisible' de Adam Smith (The Invisible 'Invisible Hand' by Adam Smith).",
+      "autor": "Del Hierro Patricia",
+      "slug": "la-invisible-mano-invisible-de-adam-smith-the-invisible-invi",
+      "titulo_normalizado": "la invisible mano invisible de adam smith the invisible invisible hand by adam smith",
+      "autor_normalizado": "del hierro patricia",
+      "timestamp": "2026-04-27T13:52:53.084Z",
+      "trigger_input": "La ilusión del egoísmo y la verdad de Adam Smith La respuesta directa es no. La \"mano invisible\" no significa que el egoísmo destructivo, la avaricia o el pensar exclusivamente en ti sin importar el costo acomoden el mundo mágicamente. Ese es el malentendido contemporáneo más común sobre su obra.  Aquí está la disección exacta de lo que realmente significa el concepto:  Interés propio vs. Egoísmo tóxico: Smith no defiende pisotear al otro. Defiende que, por naturaleza humana, buscas mejorar tu propia condición. Para lograrlo en una economía sana, estás obligado a ofrecer algo de valor que los demás necesiten.  La regla de la creación de valor mutuo: La idea central se resume en su famoso ejemplo: no tienes tu cena en la mesa por la caridad del carnicero o el panadero, sino porque ellos cuidan de sus propios intereses. Ellos quieren asegurar su sustento económico; para lograrlo, tienen que alimentarte bien a ti.  El orden no intencionado: Al buscar su propio beneficio, el individuo es guiado por una \"mano invisible\" para promover un fin que no estaba en sus intenciones originales: el progreso de la sociedad. Creas riqueza para ti resolviendo las necesidades de otros.  La precondición moral: Adam Smith era filósofo moral antes que economista. El mecanismo de la mano invisible asume que los actores operan bajo reglas de justicia, competencia justa y empatía. Si haces trampa, si construyes monopolios o extraes valor sin aportar nada, el mecanismo se rompe por completo.",
+      "selected_via": "discover_live_google_books"
     }
   ],
   "_note": "FIFO ring de últimos 30 libros generados por selección automática (constrained o discover). Filtro pre-rerank en validate-book.js. Inicializa vacío y se rellena con cada run exitoso. Si se borra, el sistema arranca limpio sin daño."

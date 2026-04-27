@@ -1,0 +1,665 @@
+{
+  "history": [
+    {
+      "at": "2026-04-27T13:52:36.919Z",
+      "stage": "trigger_analysis",
+      "trigger_analysis": {
+        "raw_input": "La ilusión del egoísmo y la verdad de Adam Smith La respuesta directa es no. La \"mano invisible\" no significa que el egoísmo destructivo, la avaricia o el pensar exclusivamente en ti sin importar el costo acomoden el mundo mágicamente. Ese es el malentendido contemporáneo más común sobre su obra.  Aquí está la disección exacta de lo que realmente significa el concepto:  Interés propio vs. Egoísmo tóxico: Smith no defiende pisotear al otro. Defiende que, por naturaleza humana, buscas mejorar tu propia condición. Para lograrlo en una economía sana, estás obligado a ofrecer algo de valor que los demás necesiten.  La regla de la creación de valor mutuo: La idea central se resume en su famoso ejemplo: no tienes tu cena en la mesa por la caridad del carnicero o el panadero, sino porque ellos cuidan de sus propios intereses. Ellos quieren asegurar su sustento económico; para lograrlo, tienen que alimentarte bien a ti.  El orden no intencionado: Al buscar su propio beneficio, el individuo es guiado por una \"mano invisible\" para promover un fin que no estaba en sus intenciones originales: el progreso de la sociedad. Creas riqueza para ti resolviendo las necesidades de otros.  La precondición moral: Adam Smith era filósofo moral antes que economista. El mecanismo de la mano invisible asume que los actores operan bajo reglas de justicia, competencia justa y empatía. Si haces trampa, si construyes monopolios o extraes valor sin aportar nada, el mecanismo se rompe por completo.",
+        "semantic_query": "diferencias entre interés propio y egoísmo en la economía según Adam Smith",
+        "intent_summary": "Explorar la interpretación correcta de la 'mano invisible' de Adam Smith y su relación con el egoísmo y la creación de valor en la economía.",
+        "editorial_requests": [
+          "Incluir análisis sobre la filosofía moral de Adam Smith y su impacto en la economía moderna."
+        ],
+        "source_preference": null,
+        "ranking_preference": null,
+        "unsupported_runtime_constraints": [],
+        "supported_constraints": {
+          "year_min": null,
+          "year_max": null,
+          "prefer_recent": false
+        },
+        "search_queries": [
+          "Adam Smith mano invisible",
+          "interés propio vs egoísmo",
+          "filosofía moral Adam Smith",
+          "creación de valor en economía",
+          "economía y ética",
+          "teoría económica de Adam Smith",
+          "diferencias entre interés propio y egoísmo en la economía según Adam Smith",
+          "diferencias entre interes"
+        ],
+        "concept_hints": [
+          "ego",
+          "economía",
+          "filosofía",
+          "ética"
+        ],
+        "clean_for_selection": "diferencias entre interés propio y egoísmo en la economía según Adam Smith",
+        "notes": {
+          "used_ai_normalizer": true,
+          "looked_like_book_intent": false,
+          "semantic_overlap_vs_raw": 0.059602649006622516
+        }
+      }
+    },
+    {
+      "at": "2026-04-27T13:52:41.706Z",
+      "stage": "live_candidates_filter_recent",
+      "before": 15,
+      "after": 15,
+      "removed": 0,
+      "ring_size": 7
+    },
+    {
+      "at": "2026-04-27T13:52:52.560Z",
+      "stage": "ai_rerank_candidates",
+      "stageLabel": "live_candidates_rerank",
+      "ranked": [
+        {
+          "idx": 5,
+          "fit_score": 0.95,
+          "reason": "Este artículo analiza específicamente el significado de la 'mano invisible' de Adam Smith, lo que se alinea directamente con la intención de explorar su relación con el egoísmo y la creación de valor."
+        },
+        {
+          "idx": 2,
+          "fit_score": 0.89,
+          "reason": "Amartya Sen aborda la relación entre ética y economía, lo que puede proporcionar un contexto valioso para entender las diferencias entre interés propio y egoísmo en la economía."
+        },
+        {
+          "idx": 3,
+          "fit_score": 0.85,
+          "reason": "La obra de Adam Smith es fundamental para entender su concepto de la 'mano invisible', aunque no se centra exclusivamente en la diferencia entre interés propio y egoísmo."
+        },
+        {
+          "idx": 4,
+          "fit_score": 0.84,
+          "reason": "Esta edición reciente de 'La Riqueza de las Naciones' puede ofrecer una interpretación moderna de las ideas de Smith, aunque no se enfoca directamente en el egoísmo."
+        },
+        {
+          "idx": 1,
+          "fit_score": 0.75,
+          "reason": "Aunque trata sobre contabilidad y auditoría, puede ofrecer perspectivas sobre cómo se perciben los intereses en la economía actual."
+        },
+        {
+          "idx": 11,
+          "fit_score": 0.72,
+          "reason": "El análisis del sector energético y su impacto en la economía puede ofrecer un contexto sobre cómo el interés propio se manifiesta en diferentes sectores."
+        },
+        {
+          "idx": 8,
+          "fit_score": 0.7,
+          "reason": "El enfoque en el humanismo y la economía puede proporcionar una perspectiva ética que contrasta con el egoísmo en la economía."
+        },
+        {
+          "idx": 10,
+          "fit_score": 0.68,
+          "reason": "Aunque se centra en finanzas corporativas, puede ofrecer un contexto sobre cómo se gestionan los intereses en el ámbito empresarial."
+        }
+      ]
+    },
+    {
+      "at": "2026-04-27T13:52:52.560Z",
+      "stage": "live_candidates_merged",
+      "count": 15,
+      "top": [
+        {
+          "titulo": "La invisible 'mano invisible' de Adam Smith (The Invisible 'Invisible Hand' by Adam Smith).",
+          "autor": "Del Hierro Patricia",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "Spanish Abstract: Este artículo analiza el significado de la expresión “mano invisible” de Smith.",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/_yMBzwEACAAJ",
+          "published_year": 2019,
+          "live_score": 74.44,
+          "ai_fit_score": 0.95,
+          "ai_fit_reason": "Este artículo analiza específicamente el significado de la 'mano invisible' de Adam Smith, lo que se alinea directamente con la intención de explorar su relación con el egoísmo y la creación de valor."
+        },
+        {
+          "titulo": "Sobre ética y economía",
+          "autor": "Amartya Sen",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "En este libro, Amartya Sen se plantea de forma crítica el distanciamiento entre ética y economía que caracteriza el análisis económico moderno y que termina convirtiendo…",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/9uzDDwAAQBAJ",
+          "published_year": 2020,
+          "live_score": 77.9,
+          "ai_fit_score": 0.89,
+          "ai_fit_reason": "Amartya Sen aborda la relación entre ética y economía, lo que puede proporcionar un contexto valioso para entender las diferencias entre interés propio y egoísmo en la economía."
+        },
+        {
+          "titulo": "LA RIQUEZA DE LAS NACIONES - Adam Smith",
+          "autor": "Adam Smith",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "La Riqueza de las Naciones, es la famosa obra de Adam Smith.",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/KRG8EAAAQBAJ",
+          "published_year": 2023,
+          "live_score": 76.94,
+          "ai_fit_score": 0.85,
+          "ai_fit_reason": "La obra de Adam Smith es fundamental para entender su concepto de la 'mano invisible', aunque no se centra exclusivamente en la diferencia entre interés propio y egoísmo."
+        },
+        {
+          "titulo": "La Riqueza de las Naciones",
+          "autor": "Adam Smith",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "\"La riqueza de las naciones\" de Adam Smith representa un hito intelectual innovador que transformó fundamentalmente el pensamiento económico y sentó los principios funda…",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/6BNlEQAAQBAJ",
+          "published_year": 2025,
+          "live_score": 74.81,
+          "ai_fit_score": 0.84,
+          "ai_fit_reason": "Esta edición reciente de 'La Riqueza de las Naciones' puede ofrecer una interpretación moderna de las ideas de Smith, aunque no se enfoca directamente en el egoísmo."
+        },
+        {
+          "titulo": "Retos de la contabilidad y la auditoría en la economía actual",
+          "autor": "Rosa Mª Dasí González, Mª Amparo Gimeno Ruiz",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "El libro recoge 51 aportaciones que dan cuenta de los desafíos que los docentes, investigadores y profesionales de la contabilidad deberán afrontar en los años venideros…",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/GfN0DwAAQBAJ",
+          "published_year": 2018,
+          "live_score": 78.21,
+          "ai_fit_score": 0.75,
+          "ai_fit_reason": "Aunque trata sobre contabilidad y auditoría, puede ofrecer perspectivas sobre cómo se perciben los intereses en la economía actual."
+        },
+        {
+          "titulo": "Sector energético, crecimiento económico y desarrollo sostenible frente al cambio climático",
+          "autor": "Julieta Evangelina Sánchez Cano, et al.",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "El sector energético mueve la economía y la geopolítica mundial, impacta directamente en el crecimiento económico de todos los sectores (a nivel global, nacional y local…",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/61TcEAAAQBAJ",
+          "published_year": 2023,
+          "live_score": 72.05,
+          "ai_fit_score": 0.72,
+          "ai_fit_reason": "El análisis del sector energético y su impacto en la economía puede ofrecer un contexto sobre cómo el interés propio se manifiesta en diferentes sectores."
+        },
+        {
+          "titulo": "HUMANISMO Y ECONOMÍA",
+          "autor": "PARADINAS FUENTES, JESÚS LUÍS",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "Pedro de Valencia, propone que el orden económico se organice de tal manera que los seres humanos puedan conseguir con su trabajo los bienes que necesitan para vivir dig…",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/sm41DAAAQBAJ",
+          "published_year": 2016,
+          "live_score": 72.72,
+          "ai_fit_score": 0.7,
+          "ai_fit_reason": "El enfoque en el humanismo y la economía puede proporcionar una perspectiva ética que contrasta con el egoísmo en la economía."
+        },
+        {
+          "titulo": "Manual de corporate finance y banca de inversion",
+          "autor": "Revello Jose Maria",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "Valoracion de empresas,mercado de capitales,titulizacion,financiacion de proyectos,fusiones y adquisiciones,la financiacion estructurada en el comercio exterior.",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/j81UEQAAQBAJ",
+          "published_year": 2020,
+          "live_score": 72.24,
+          "ai_fit_score": 0.68,
+          "ai_fit_reason": "Aunque se centra en finanzas corporativas, puede ofrecer un contexto sobre cómo se gestionan los intereses en el ámbito empresarial."
+        },
+        {
+          "titulo": "ECONOMÍA INDUSTRIAL PARA INGENIEROS",
+          "autor": "LÓPEZ EGUILAZ Máxima Juliana",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "En las escuelas de ingenieros se imparten, tradicionalmente, asignaturas bajo muy diversas denominaciones, tales como: Introducción a la Economía, Economía Industrial, O…",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/sH5DDwAAQBAJ",
+          "published_year": 2017,
+          "live_score": 73.96,
+          "ai_fit_score": 0,
+          "ai_fit_reason": ""
+        },
+        {
+          "titulo": "Diseño Organizacional",
+          "autor": "Octavio Rolando  Lara Martínez, Gabriela Alejandra Ríos Zúñiga",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "En el ámbito empresarial, la organización efectiva es clave para el éxito y la sostenibilidad a largo plazo.",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/3nYqEQAAQBAJ",
+          "published_year": 2024,
+          "live_score": 72.9,
+          "ai_fit_score": 0,
+          "ai_fit_reason": ""
+        }
+      ]
+    },
+    {
+      "at": "2026-04-27T13:52:53.061Z",
+      "stage": "live_candidates_inspected",
+      "inspected": [
+        {
+          "recommendation": {
+            "titulo": "La invisible 'mano invisible' de Adam Smith (The Invisible 'Invisible Hand' by Adam Smith).",
+            "autor": "Del Hierro Patricia",
+            "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+            "tagline": "Spanish Abstract: Este artículo analiza el significado de la expresión “mano invisible” de Smith.",
+            "source_label": "google_books_newest",
+            "source_url": "https://www.googleapis.com/books/v1/volumes/_yMBzwEACAAJ",
+            "published_year": 2019,
+            "live_score": 74.44,
+            "ai_fit_score": 0.95,
+            "ai_fit_reason": "Este artículo analiza específicamente el significado de la 'mano invisible' de Adam Smith, lo que se alinea directamente con la intención de explorar su relación con el egoísmo y la creación de valor."
+          },
+          "evidence": {
+            "portada": "",
+            "isbn": "",
+            "editorial": "Del Hierro Patricia",
+            "source": "google_books",
+            "year": "2019",
+            "matched_title": "La invisible 'mano invisible' de Adam Smith (The Invisible 'Invisible Hand' by Adam Smith).",
+            "matched_author": "Del Hierro Patricia",
+            "match_score": 1,
+            "synopsis": "Spanish Abstract: Este artículo analiza el significado de la expresión “mano invisible” de Smith. ¿La usó para describir el comportamiento de los mercados como algo inexorable y predeterminado, como se supone usualmente, o como una metáfora de la “mano de Dios”? Para responder esta pregunta explora el contenido filosófico de La teoría de los sentimientos morales como contexto de su obra económica más conocida. El artículo busca contribuir a un debate que ya es común en círculos filosóficos y que aún es incipiente en el ámbito de la economía, pese a que Adam Smith es un autor muy citado en las obras de teoría y de política económica.",
+            "synopsis_length": 640,
+            "covers": [],
+            "verified_identity": {
+              "titulo_real": "La invisible 'mano invisible' de Adam Smith (The Invisible 'Invisible Hand' by Adam Smith).",
+              "subtitulo": "",
+              "autor_completo": "Del Hierro Patricia",
+              "año": "2019",
+              "editorial": null,
+              "paginas": 19,
+              "isbn": "",
+              "isbn13": "",
+              "isbn10": "",
+              "categorias": [],
+              "idioma": "es",
+              "preview_link": "http://books.google.com/books?id=_yMBzwEACAAJ&dq=intitle:La+invisible+%27mano+invisible%27+de+Adam+Smith+(The+Invisible+%27Invisible+Hand%27+by+Adam+Smith).+inauthor:Del+Hierro+Patricia&hl=&cd=1&source=gbs_api"
+            },
+            "_evidence": {
+              "titulo_input": "La invisible 'mano invisible' de Adam Smith (The Invisible 'Invisible Hand' by Adam Smith).",
+              "autor_input": "Del Hierro Patricia",
+              "isbn_seed": "",
+              "isbn_seed_raw": "",
+              "isbn_seed_rejected": null,
+              "isbn_discovered": "",
+              "isbn_discovered_raw": "",
+              "apple": {
+                "ok": false,
+                "reason": "no_results",
+                "source": "apple_books"
+              },
+              "google": {
+                "ok": true,
+                "source": "google_books",
+                "match_score": 1,
+                "match_details": {
+                  "matched_title": "La invisible 'mano invisible' de Adam Smith (The Invisible 'Invisible Hand' by Adam Smith).",
+                  "matched_author": "Del Hierro Patricia"
+                },
+                "synopsis": "Spanish Abstract: Este artículo analiza el significado de la expresión “mano invisible” de Smith. ¿La usó para describir el comportamiento de los mercados como algo inexorable y predeterminado, como se supone usualmente, o como una metáfora de la “mano de Dios”? Para responder esta pregunta explora el contenido filosófico de La teoría de los sentimientos morales como contexto de su obra económica más conocida. El artículo busca contribuir a un debate que ya es común en círculos filosóficos y que aún es incipiente en el ámbito de la economía, pese a que Adam Smith es un autor muy citado en las obras de teoría y de política económica.",
+                "synopsis_length": 640,
+                "covers": [],
+                "verified_identity": {
+                  "titulo_real": "La invisible 'mano invisible' de Adam Smith (The Invisible 'Invisible Hand' by Adam Smith).",
+                  "subtitulo": "",
+                  "autor_completo": "Del Hierro Patricia",
+                  "año": "2019",
+                  "editorial": null,
+                  "paginas": 19,
+                  "isbn": "",
+                  "isbn13": "",
+                  "isbn10": "",
+                  "categorias": [],
+                  "idioma": "es",
+                  "preview_link": "http://books.google.com/books?id=_yMBzwEACAAJ&dq=intitle:La+invisible+%27mano+invisible%27+de+Adam+Smith+(The+Invisible+%27Invisible+Hand%27+by+Adam+Smith).+inauthor:Del+Hierro+Patricia&hl=&cd=1&source=gbs_api"
+                }
+              },
+              "openlibrary": {
+                "ok": false,
+                "reason": "no_results",
+                "source": "openlibrary"
+              },
+              "amazon": {
+                "ok": false,
+                "reason": "skipped",
+                "source": "amazon"
+              },
+              "valid_covers": [],
+              "_sources_succeeded": [
+                "google_books"
+              ],
+              "_sources_failed": [
+                "apple_books:no_results",
+                "openlibrary:no_results",
+                "amazon:skipped"
+              ],
+              "_timing": {
+                "phase1_parallel_ms": 496,
+                "phase2_isbn_chain_ms": 0,
+                "cover_validation_ms": 0,
+                "total_ms": 496
+              },
+              "_version": "3.6"
+            }
+          },
+          "constraintsCheck": {
+            "exact_ok": true,
+            "hard_ok": true,
+            "issues": [],
+            "warnings": [],
+            "reason": "Año verificado 2019"
+          },
+          "sourceLabel": "live_candidates",
+          "semantic_score": 0.95,
+          "fallback_score": 155
+        }
+      ]
+    },
+    {
+      "at": "2026-04-27T13:52:53.085Z",
+      "stage": "success",
+      "bookData": {
+        "titulo": "La invisible 'mano invisible' de Adam Smith (The Invisible 'Invisible Hand' by Adam Smith).",
+        "autor": "Del Hierro Patricia",
+        "slug": "la-invisible-mano-invisible-de-adam-smith-the-invisible-invi",
+        "tagline": "Spanish Abstract: Este artículo analiza el significado de la expresión “mano invisible” de Smith.",
+        "portada": "",
+        "portada_url": "",
+        "portada_source": "google_books",
+        "portada_candidates": [],
+        "needs_fallback_cover": true,
+        "isbn": "",
+        "editorial": "Del Hierro Patricia",
+        "publication_year": "2019",
+        "source": "google_books",
+        "duplicado": false,
+        "selected_via": "discover_live_google_books",
+        "selection_reason": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+        "trigger_input": "La ilusión del egoísmo y la verdad de Adam Smith La respuesta directa es no. La \"mano invisible\" no significa que el egoísmo destructivo, la avaricia o el pensar exclusivamente en ti sin importar el costo acomoden el mundo mágicamente. Ese es el malentendido contemporáneo más común sobre su obra.  Aquí está la disección exacta de lo que realmente significa el concepto:  Interés propio vs. Egoísmo tóxico: Smith no defiende pisotear al otro. Defiende que, por naturaleza humana, buscas mejorar tu propia condición. Para lograrlo en una economía sana, estás obligado a ofrecer algo de valor que los demás necesiten.  La regla de la creación de valor mutuo: La idea central se resume en su famoso ejemplo: no tienes tu cena en la mesa por la caridad del carnicero o el panadero, sino porque ellos cuidan de sus propios intereses. Ellos quieren asegurar su sustento económico; para lograrlo, tienen que alimentarte bien a ti.  El orden no intencionado: Al buscar su propio beneficio, el individuo es guiado por una \"mano invisible\" para promover un fin que no estaba en sus intenciones originales: el progreso de la sociedad. Creas riqueza para ti resolviendo las necesidades de otros.  La precondición moral: Adam Smith era filósofo moral antes que economista. El mecanismo de la mano invisible asume que los actores operan bajo reglas de justicia, competencia justa y empatía. Si haces trampa, si construyes monopolios o extraes valor sin aportar nada, el mecanismo se rompe por completo.",
+        "trigger_analysis": {
+          "raw_input": "La ilusión del egoísmo y la verdad de Adam Smith La respuesta directa es no. La \"mano invisible\" no significa que el egoísmo destructivo, la avaricia o el pensar exclusivamente en ti sin importar el costo acomoden el mundo mágicamente. Ese es el malentendido contemporáneo más común sobre su obra.  Aquí está la disección exacta de lo que realmente significa el concepto:  Interés propio vs. Egoísmo tóxico: Smith no defiende pisotear al otro. Defiende que, por naturaleza humana, buscas mejorar tu propia condición. Para lograrlo en una economía sana, estás obligado a ofrecer algo de valor que los demás necesiten.  La regla de la creación de valor mutuo: La idea central se resume en su famoso ejemplo: no tienes tu cena en la mesa por la caridad del carnicero o el panadero, sino porque ellos cuidan de sus propios intereses. Ellos quieren asegurar su sustento económico; para lograrlo, tienen que alimentarte bien a ti.  El orden no intencionado: Al buscar su propio beneficio, el individuo es guiado por una \"mano invisible\" para promover un fin que no estaba en sus intenciones originales: el progreso de la sociedad. Creas riqueza para ti resolviendo las necesidades de otros.  La precondición moral: Adam Smith era filósofo moral antes que economista. El mecanismo de la mano invisible asume que los actores operan bajo reglas de justicia, competencia justa y empatía. Si haces trampa, si construyes monopolios o extraes valor sin aportar nada, el mecanismo se rompe por completo.",
+          "semantic_query": "diferencias entre interés propio y egoísmo en la economía según Adam Smith",
+          "intent_summary": "Explorar la interpretación correcta de la 'mano invisible' de Adam Smith y su relación con el egoísmo y la creación de valor en la economía.",
+          "editorial_requests": [
+            "Incluir análisis sobre la filosofía moral de Adam Smith y su impacto en la economía moderna."
+          ],
+          "source_preference": null,
+          "ranking_preference": null,
+          "unsupported_runtime_constraints": [],
+          "supported_constraints": {
+            "year_min": null,
+            "year_max": null,
+            "prefer_recent": false
+          },
+          "search_queries": [
+            "Adam Smith mano invisible",
+            "interés propio vs egoísmo",
+            "filosofía moral Adam Smith",
+            "creación de valor en economía",
+            "economía y ética",
+            "teoría económica de Adam Smith",
+            "diferencias entre interés propio y egoísmo en la economía según Adam Smith",
+            "diferencias entre interes"
+          ],
+          "concept_hints": [
+            "ego",
+            "economía",
+            "filosofía",
+            "ética"
+          ],
+          "clean_for_selection": "diferencias entre interés propio y egoísmo en la economía según Adam Smith",
+          "notes": {
+            "used_ai_normalizer": true,
+            "looked_like_book_intent": false,
+            "semantic_overlap_vs_raw": 0.059602649006622516
+          }
+        },
+        "selection_validation": {
+          "semantic_score": 0.95,
+          "ai_fit_score": 0.95,
+          "match_score": 1,
+          "validation_source": "google_books",
+          "constraint_reason": "Año verificado 2019",
+          "mode": "exact_live",
+          "source_label": "google_books_newest",
+          "fallback_score": 155
+        },
+        "catalog_scope": "",
+        "contexto_2026": {},
+        "identity_sealed": true,
+        "_evidence": {
+          "titulo_input": "La invisible 'mano invisible' de Adam Smith (The Invisible 'Invisible Hand' by Adam Smith).",
+          "autor_input": "Del Hierro Patricia",
+          "isbn_seed": "",
+          "isbn_seed_raw": "",
+          "isbn_seed_rejected": null,
+          "isbn_discovered": "",
+          "isbn_discovered_raw": "",
+          "apple": {
+            "ok": false,
+            "reason": "no_results",
+            "source": "apple_books"
+          },
+          "google": {
+            "ok": true,
+            "source": "google_books",
+            "match_score": 1,
+            "match_details": {
+              "matched_title": "La invisible 'mano invisible' de Adam Smith (The Invisible 'Invisible Hand' by Adam Smith).",
+              "matched_author": "Del Hierro Patricia"
+            },
+            "synopsis": "Spanish Abstract: Este artículo analiza el significado de la expresión “mano invisible” de Smith. ¿La usó para describir el comportamiento de los mercados como algo inexorable y predeterminado, como se supone usualmente, o como una metáfora de la “mano de Dios”? Para responder esta pregunta explora el contenido filosófico de La teoría de los sentimientos morales como contexto de su obra económica más conocida. El artículo busca contribuir a un debate que ya es común en círculos filosóficos y que aún es incipiente en el ámbito de la economía, pese a que Adam Smith es un autor muy citado en las obras de teoría y de política económica.",
+            "synopsis_length": 640,
+            "covers": [],
+            "verified_identity": {
+              "titulo_real": "La invisible 'mano invisible' de Adam Smith (The Invisible 'Invisible Hand' by Adam Smith).",
+              "subtitulo": "",
+              "autor_completo": "Del Hierro Patricia",
+              "año": "2019",
+              "editorial": null,
+              "paginas": 19,
+              "isbn": "",
+              "isbn13": "",
+              "isbn10": "",
+              "categorias": [],
+              "idioma": "es",
+              "preview_link": "http://books.google.com/books?id=_yMBzwEACAAJ&dq=intitle:La+invisible+%27mano+invisible%27+de+Adam+Smith+(The+Invisible+%27Invisible+Hand%27+by+Adam+Smith).+inauthor:Del+Hierro+Patricia&hl=&cd=1&source=gbs_api"
+            }
+          },
+          "openlibrary": {
+            "ok": false,
+            "reason": "no_results",
+            "source": "openlibrary"
+          },
+          "amazon": {
+            "ok": false,
+            "reason": "skipped",
+            "source": "amazon"
+          },
+          "valid_covers": [],
+          "_sources_succeeded": [
+            "google_books"
+          ],
+          "_sources_failed": [
+            "apple_books:no_results",
+            "openlibrary:no_results",
+            "amazon:skipped"
+          ],
+          "_timing": {
+            "phase1_parallel_ms": 496,
+            "phase2_isbn_chain_ms": 0,
+            "cover_validation_ms": 0,
+            "total_ms": 496
+          },
+          "_version": "3.6"
+        },
+        "_evidence_synopsis": "Spanish Abstract: Este artículo analiza el significado de la expresión “mano invisible” de Smith. ¿La usó para describir el comportamiento de los mercados como algo inexorable y predeterminado, como se supone usualmente, o como una metáfora de la “mano de Dios”? Para responder esta pregunta explora el contenido filosófico de La teoría de los sentimientos morales como contexto de su obra económica más conocida. El artículo busca contribuir a un debate que ya es común en círculos filosóficos y que aún es incipiente en el ámbito de la economía, pese a que Adam Smith es un autor muy citado en las obras de teoría y de política económica.",
+        "_evidence_verified_identity": {
+          "titulo_real": "La invisible 'mano invisible' de Adam Smith (The Invisible 'Invisible Hand' by Adam Smith).",
+          "subtitulo": "",
+          "autor_completo": "Del Hierro Patricia",
+          "año": "2019",
+          "editorial": null,
+          "paginas": 19,
+          "isbn": "",
+          "isbn13": "",
+          "isbn10": "",
+          "categorias": [],
+          "idioma": "es",
+          "preview_link": "http://books.google.com/books?id=_yMBzwEACAAJ&dq=intitle:La+invisible+%27mano+invisible%27+de+Adam+Smith+(The+Invisible+%27Invisible+Hand%27+by+Adam+Smith).+inauthor:Del+Hierro+Patricia&hl=&cd=1&source=gbs_api"
+        },
+        "_evidence_match_score": 1
+      },
+      "ring_updated": true
+    }
+  ],
+  "last": {
+    "at": "2026-04-27T13:52:53.085Z",
+    "stage": "success",
+    "bookData": {
+      "titulo": "La invisible 'mano invisible' de Adam Smith (The Invisible 'Invisible Hand' by Adam Smith).",
+      "autor": "Del Hierro Patricia",
+      "slug": "la-invisible-mano-invisible-de-adam-smith-the-invisible-invi",
+      "tagline": "Spanish Abstract: Este artículo analiza el significado de la expresión “mano invisible” de Smith.",
+      "portada": "",
+      "portada_url": "",
+      "portada_source": "google_books",
+      "portada_candidates": [],
+      "needs_fallback_cover": true,
+      "isbn": "",
+      "editorial": "Del Hierro Patricia",
+      "publication_year": "2019",
+      "source": "google_books",
+      "duplicado": false,
+      "selected_via": "discover_live_google_books",
+      "selection_reason": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+      "trigger_input": "La ilusión del egoísmo y la verdad de Adam Smith La respuesta directa es no. La \"mano invisible\" no significa que el egoísmo destructivo, la avaricia o el pensar exclusivamente en ti sin importar el costo acomoden el mundo mágicamente. Ese es el malentendido contemporáneo más común sobre su obra.  Aquí está la disección exacta de lo que realmente significa el concepto:  Interés propio vs. Egoísmo tóxico: Smith no defiende pisotear al otro. Defiende que, por naturaleza humana, buscas mejorar tu propia condición. Para lograrlo en una economía sana, estás obligado a ofrecer algo de valor que los demás necesiten.  La regla de la creación de valor mutuo: La idea central se resume en su famoso ejemplo: no tienes tu cena en la mesa por la caridad del carnicero o el panadero, sino porque ellos cuidan de sus propios intereses. Ellos quieren asegurar su sustento económico; para lograrlo, tienen que alimentarte bien a ti.  El orden no intencionado: Al buscar su propio beneficio, el individuo es guiado por una \"mano invisible\" para promover un fin que no estaba en sus intenciones originales: el progreso de la sociedad. Creas riqueza para ti resolviendo las necesidades de otros.  La precondición moral: Adam Smith era filósofo moral antes que economista. El mecanismo de la mano invisible asume que los actores operan bajo reglas de justicia, competencia justa y empatía. Si haces trampa, si construyes monopolios o extraes valor sin aportar nada, el mecanismo se rompe por completo.",
+      "trigger_analysis": {
+        "raw_input": "La ilusión del egoísmo y la verdad de Adam Smith La respuesta directa es no. La \"mano invisible\" no significa que el egoísmo destructivo, la avaricia o el pensar exclusivamente en ti sin importar el costo acomoden el mundo mágicamente. Ese es el malentendido contemporáneo más común sobre su obra.  Aquí está la disección exacta de lo que realmente significa el concepto:  Interés propio vs. Egoísmo tóxico: Smith no defiende pisotear al otro. Defiende que, por naturaleza humana, buscas mejorar tu propia condición. Para lograrlo en una economía sana, estás obligado a ofrecer algo de valor que los demás necesiten.  La regla de la creación de valor mutuo: La idea central se resume en su famoso ejemplo: no tienes tu cena en la mesa por la caridad del carnicero o el panadero, sino porque ellos cuidan de sus propios intereses. Ellos quieren asegurar su sustento económico; para lograrlo, tienen que alimentarte bien a ti.  El orden no intencionado: Al buscar su propio beneficio, el individuo es guiado por una \"mano invisible\" para promover un fin que no estaba en sus intenciones originales: el progreso de la sociedad. Creas riqueza para ti resolviendo las necesidades de otros.  La precondición moral: Adam Smith era filósofo moral antes que economista. El mecanismo de la mano invisible asume que los actores operan bajo reglas de justicia, competencia justa y empatía. Si haces trampa, si construyes monopolios o extraes valor sin aportar nada, el mecanismo se rompe por completo.",
+        "semantic_query": "diferencias entre interés propio y egoísmo en la economía según Adam Smith",
+        "intent_summary": "Explorar la interpretación correcta de la 'mano invisible' de Adam Smith y su relación con el egoísmo y la creación de valor en la economía.",
+        "editorial_requests": [
+          "Incluir análisis sobre la filosofía moral de Adam Smith y su impacto en la economía moderna."
+        ],
+        "source_preference": null,
+        "ranking_preference": null,
+        "unsupported_runtime_constraints": [],
+        "supported_constraints": {
+          "year_min": null,
+          "year_max": null,
+          "prefer_recent": false
+        },
+        "search_queries": [
+          "Adam Smith mano invisible",
+          "interés propio vs egoísmo",
+          "filosofía moral Adam Smith",
+          "creación de valor en economía",
+          "economía y ética",
+          "teoría económica de Adam Smith",
+          "diferencias entre interés propio y egoísmo en la economía según Adam Smith",
+          "diferencias entre interes"
+        ],
+        "concept_hints": [
+          "ego",
+          "economía",
+          "filosofía",
+          "ética"
+        ],
+        "clean_for_selection": "diferencias entre interés propio y egoísmo en la economía según Adam Smith",
+        "notes": {
+          "used_ai_normalizer": true,
+          "looked_like_book_intent": false,
+          "semantic_overlap_vs_raw": 0.059602649006622516
+        }
+      },
+      "selection_validation": {
+        "semantic_score": 0.95,
+        "ai_fit_score": 0.95,
+        "match_score": 1,
+        "validation_source": "google_books",
+        "constraint_reason": "Año verificado 2019",
+        "mode": "exact_live",
+        "source_label": "google_books_newest",
+        "fallback_score": 155
+      },
+      "catalog_scope": "",
+      "contexto_2026": {},
+      "identity_sealed": true,
+      "_evidence": {
+        "titulo_input": "La invisible 'mano invisible' de Adam Smith (The Invisible 'Invisible Hand' by Adam Smith).",
+        "autor_input": "Del Hierro Patricia",
+        "isbn_seed": "",
+        "isbn_seed_raw": "",
+        "isbn_seed_rejected": null,
+        "isbn_discovered": "",
+        "isbn_discovered_raw": "",
+        "apple": {
+          "ok": false,
+          "reason": "no_results",
+          "source": "apple_books"
+        },
+        "google": {
+          "ok": true,
+          "source": "google_books",
+          "match_score": 1,
+          "match_details": {
+            "matched_title": "La invisible 'mano invisible' de Adam Smith (The Invisible 'Invisible Hand' by Adam Smith).",
+            "matched_author": "Del Hierro Patricia"
+          },
+          "synopsis": "Spanish Abstract: Este artículo analiza el significado de la expresión “mano invisible” de Smith. ¿La usó para describir el comportamiento de los mercados como algo inexorable y predeterminado, como se supone usualmente, o como una metáfora de la “mano de Dios”? Para responder esta pregunta explora el contenido filosófico de La teoría de los sentimientos morales como contexto de su obra económica más conocida. El artículo busca contribuir a un debate que ya es común en círculos filosóficos y que aún es incipiente en el ámbito de la economía, pese a que Adam Smith es un autor muy citado en las obras de teoría y de política económica.",
+          "synopsis_length": 640,
+          "covers": [],
+          "verified_identity": {
+            "titulo_real": "La invisible 'mano invisible' de Adam Smith (The Invisible 'Invisible Hand' by Adam Smith).",
+            "subtitulo": "",
+            "autor_completo": "Del Hierro Patricia",
+            "año": "2019",
+            "editorial": null,
+            "paginas": 19,
+            "isbn": "",
+            "isbn13": "",
+            "isbn10": "",
+            "categorias": [],
+            "idioma": "es",
+            "preview_link": "http://books.google.com/books?id=_yMBzwEACAAJ&dq=intitle:La+invisible+%27mano+invisible%27+de+Adam+Smith+(The+Invisible+%27Invisible+Hand%27+by+Adam+Smith).+inauthor:Del+Hierro+Patricia&hl=&cd=1&source=gbs_api"
+          }
+        },
+        "openlibrary": {
+          "ok": false,
+          "reason": "no_results",
+          "source": "openlibrary"
+        },
+        "amazon": {
+          "ok": false,
+          "reason": "skipped",
+          "source": "amazon"
+        },
+        "valid_covers": [],
+        "_sources_succeeded": [
+          "google_books"
+        ],
+        "_sources_failed": [
+          "apple_books:no_results",
+          "openlibrary:no_results",
+          "amazon:skipped"
+        ],
+        "_timing": {
+          "phase1_parallel_ms": 496,
+          "phase2_isbn_chain_ms": 0,
+          "cover_validation_ms": 0,
+          "total_ms": 496
+        },
+        "_version": "3.6"
+      },
+      "_evidence_synopsis": "Spanish Abstract: Este artículo analiza el significado de la expresión “mano invisible” de Smith. ¿La usó para describir el comportamiento de los mercados como algo inexorable y predeterminado, como se supone usualmente, o como una metáfora de la “mano de Dios”? Para responder esta pregunta explora el contenido filosófico de La teoría de los sentimientos morales como contexto de su obra económica más conocida. El artículo busca contribuir a un debate que ya es común en círculos filosóficos y que aún es incipiente en el ámbito de la economía, pese a que Adam Smith es un autor muy citado en las obras de teoría y de política económica.",
+      "_evidence_verified_identity": {
+        "titulo_real": "La invisible 'mano invisible' de Adam Smith (The Invisible 'Invisible Hand' by Adam Smith).",
+        "subtitulo": "",
+        "autor_completo": "Del Hierro Patricia",
+        "año": "2019",
+        "editorial": null,
+        "paginas": 19,
+        "isbn": "",
+        "isbn13": "",
+        "isbn10": "",
+        "categorias": [],
+        "idioma": "es",
+        "preview_link": "http://books.google.com/books?id=_yMBzwEACAAJ&dq=intitle:La+invisible+%27mano+invisible%27+de+Adam+Smith+(The+Invisible+%27Invisible+Hand%27+by+Adam+Smith).+inauthor:Del+Hierro+Patricia&hl=&cd=1&source=gbs_api"
+      },
+      "_evidence_match_score": 1
+    },
+    "ring_updated": true
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "ground_truth": "LIBRO SELECCIONADO POR EL CURADOR AUTOMÁTICO:\nTítulo: La invisible 'mano invisible' de Adam Smith (The Invisible 'Invisible Hand' by Adam Smith).\nAutor: Del Hierro Patricia\n\nSINOPSIS OFICIAL (Google Books):\n\nSpanish Abstract: Este artículo analiza el significado de la expresión “mano invisible” de Smith. ¿La usó para describir el comportamiento de los mercados como algo inexorable y predeterminado, como se supone usualmente, o como una metáfora de la “mano de Dios”? Para responder esta pregunta explora el contenido filosófico de La teoría de los sentimientos morales como contexto de su obra económica más conocida. El artículo busca contribuir a un debate que ya es común en círculos filosóficos y que aún es incipiente en el ámbito de la economía, pese a que Adam Smith es un autor muy citado en las obras de teoría y de política económica.\n\nMETADATA VERIFICADA:\n- Título: La invisible 'mano invisible' de Adam Smith (The Invisible 'Invisible Hand' by Adam Smith).\n- Autor: Del Hierro Patricia\n- Año: 2019",
+  "grounding_source": "identity_sealed_with_evidence",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "La invisible 'mano invisible' de Adam Smith (The Invisible 'Invisible Hand' by Adam Smith).",
+    "autor_completo": "Del Hierro Patricia",
+    "año": "2019",
+    "editorial": null,
+    "categorias": []
+  },
+  "match_score": 1,
+  "evidence_source": "google_books",
+  "other_sources_agreed": [],
+  "resolution_path": [
+    "evidence_preloaded"
+  ],
+  "tier_reached": 1.5,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-27T13:52:53.319Z"
+}
