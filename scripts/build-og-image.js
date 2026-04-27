@@ -13,6 +13,24 @@
  *   3) contenido.json (fallback)
  *
  * + /tmp/triggui-book.json como metadata upstream.
+ *
+ * ─────────────────────────────────────────────────────────────────
+ * v3.7.3 (2026-04-27): FIX stripExplicitBookRefs preserva ? ! .
+ * ─────────────────────────────────────────────────────────────────
+ * Bug detectado: la regex final de stripExplicitBookRefs limpiaba
+ * puntuación colgante al final de la frase (necesario cuando se
+ * removía el título y dejaba "..., revela que..." con coma residual)
+ * pero como side-effect TAMBIÉN borraba ? ! . legítimos de cierre.
+ *
+ * Visto en producción: OG image de "Piensa como un científico
+ * espacial" renderizó "¿Qué barreras invisibles limitan tu
+ * pensamiento creativo" sin "?" — el ensureSentenceClosure de
+ * v3.7.2 lo había agregado correctamente al JSON, pero el OG
+ * renderer lo eliminaba justo antes de pintar.
+ *
+ * Fix: dividir la regex en dos pasos. Inicio limpia "[, . ; : · -]+"
+ * (el "." al inicio nunca es legítimo). Final solo limpia "[, ; : · -]+"
+ * preservando "? ! ." como cierres válidos.
  */
 
 import fs from "node:fs/promises";
@@ -180,6 +198,23 @@ function uniqueStrings(values) {
   return output;
 }
 
+/* ─────────────────────────────────────────────────────────────────
+   stripExplicitBookRefs — v3.7.3
+   Limpia referencias literales al título/autor del libro y normaliza
+   puntuación residual, PRESERVANDO el cierre legítimo de frase.
+
+   Antes (v3.7.2 y anteriores):
+     .replace(/^[,.;:!?·\-\s]+|[,.;:!?·\-\s]+$/g, "")
+   Esa regex borraba ? ! . al final, comiendo el cierre de preguntas
+   y exclamaciones legítimas.
+
+   Después (v3.7.3):
+     .replace(/^[,.;:·\-\s]+/, "")    // inicio: "." al inicio nunca es legítimo
+     .replace(/[,;:·\-\s]+$/, "")     // final: preserva ? ! .
+
+   Idempotente: aplicarla 2 veces produce el mismo resultado.
+───────────────────────────────────────────────────────────────── */
+
 function stripExplicitBookRefs(text, titulo = "", autor = "") {
   let value = normalizeText(stripHighlightTags(text));
   if (!value) return "";
@@ -194,7 +229,8 @@ function stripExplicitBookRefs(text, titulo = "", autor = "") {
     .replace(/\s+([,.;:!?])/g, "$1")
     .replace(/[ \t]{2,}/g, " ")
     .trim()
-    .replace(/^[,.;:!?·\-\s]+|[,.;:!?·\-\s]+$/g, "");
+    .replace(/^[,.;:·\-\s]+/, "")
+    .replace(/[,;:·\-\s]+$/, "");
 
   return normalizeText(value);
 }
