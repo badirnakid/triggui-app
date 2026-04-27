@@ -1,0 +1,82 @@
+{
+  "titulo_input": "El Poder de la Soledad",
+  "autor_input": "MAHOGANY. CLARK",
+  "isbn_seed": "",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "9798289055040",
+  "isbn_discovered_raw": "9798289055040",
+  "apple": {
+    "ok": false,
+    "reason": "no_results",
+    "source": "apple_books"
+  },
+  "google": {
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "El Poder de la Soledad",
+      "matched_author": "MAHOGANY. CLARK"
+    },
+    "synopsis": "El Poder de la Soledad: Solo, No Solitario enseña a los lectores a abrazar la autorreflexión y a comprender su yo más profundo. Cuestiona la percepción negativa de estar solo, destacando los profundos beneficios de la soledad en todas las áreas de la vida. Este libro te guiará desde no saber cómo estar solo hasta darte cuenta de que la soledad no significa estar en soledad, lo que te permitirá encontrar la paz dentro de ti mismo.",
+    "synopsis_length": 433,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=xruA0QEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "El Poder de la Soledad",
+      "subtitulo": "Solo No Solitario",
+      "autor_completo": "MAHOGANY. CLARK",
+      "año": "2025",
+      "editorial": "Independently Published",
+      "paginas": null,
+      "isbn": "9798289055040",
+      "isbn13": "9798289055040",
+      "isbn10": "",
+      "categorias": [
+        "Young Adult Nonfiction"
+      ],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=xruA0QEACAAJ&dq=intitle:El+Poder+de+la+Soledad+inauthor:MAHOGANY.+CLARK&hl=&cd=1&source=gbs_api"
+    }
+  },
+  "openlibrary": {
+    "ok": false,
+    "reason": "no_results",
+    "source": "openlibrary"
+  },
+  "amazon": {
+    "ok": false,
+    "reason": "isbn13_conversion_failed_or_not_978",
+    "source": "amazon",
+    "_attempted_isbn": "9798289055040"
+  },
+  "valid_covers": [
+    {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=xruA0QEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "google_books"
+  ],
+  "_sources_failed": [
+    "apple_books:no_results",
+    "openlibrary:no_results",
+    "amazon:isbn13_conversion_failed_or_not_978"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 326,
+    "phase2_isbn_chain_ms": 82,
+    "cover_validation_ms": 64,
+    "total_ms": 472
+  },
+  "_version": "3.6",
+  "_cached_at": "2026-04-27T15:06:44.061Z"
+}
