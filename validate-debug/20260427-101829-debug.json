@@ -1,0 +1,470 @@
+{
+  "history": [
+    {
+      "at": "2026-04-27T16:17:59.051Z",
+      "stage": "success",
+      "bookData": {
+        "titulo": "Piensa como un científico espacial",
+        "autor": "Ozan Varol",
+        "slug": "piensa-como-un-cientifico-espacial",
+        "tagline": "",
+        "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/57/f8/59/57f859bd-35bf-e5bc-42f7-7363974d3984/1038102784.jpg/3000x3000bb.jpg",
+        "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/57/f8/59/57f859bd-35bf-e5bc-42f7-7363974d3984/1038102784.jpg/3000x3000bb.jpg",
+        "portada_source": "apple_books",
+        "portada_candidates": [
+          {
+            "source": "apple_books",
+            "size": "xxlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/57/f8/59/57f859bd-35bf-e5bc-42f7-7363974d3984/1038102784.jpg/3000x3000bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "xlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/57/f8/59/57f859bd-35bf-e5bc-42f7-7363974d3984/1038102784.jpg/1200x1200bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "large",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/57/f8/59/57f859bd-35bf-e5bc-42f7-7363974d3984/1038102784.jpg/600x600bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "medium",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/57/f8/59/57f859bd-35bf-e5bc-42f7-7363974d3984/1038102784.jpg/100x100bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "google_books",
+            "size": "small",
+            "url": "https://books.google.com/books/content?id=QQOHEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+            "valid": true
+          }
+        ],
+        "needs_fallback_cover": false,
+        "isbn": "",
+        "editorial": "Ozan Varol",
+        "publication_year": "2022",
+        "source": "apple_books",
+        "duplicado": false,
+        "selected_via": "direct_book",
+        "selection_reason": "Libro explícito proporcionado en workflow_dispatch",
+        "trigger_input": "",
+        "trigger_analysis": null,
+        "selection_validation": {},
+        "catalog_scope": "",
+        "contexto_2026": {},
+        "identity_sealed": false,
+        "_evidence": {
+          "titulo_input": "Piensa como un científico espacial",
+          "autor_input": "Ozan Varol",
+          "isbn_seed": "",
+          "isbn_seed_raw": "",
+          "isbn_seed_rejected": null,
+          "isbn_discovered": "9788429197150",
+          "isbn_discovered_raw": "9788429197150",
+          "apple": {
+            "ok": true,
+            "source": "apple_books",
+            "match_score": 1,
+            "match_details": {
+              "matched_title": "Piensa como un científico espacial",
+              "matched_author": "Ozan Varol"
+            },
+            "synopsis": "Tú eres más inteligente de lo que crees. Basándose en el enfoque mental que caracteriza a los científicos espaciales, en este libro, accesible y práctico, Ozan Varol revela nueve estrategias sencillas que podrás utilizar para lograr dar el poderoso impulso que buscas. La ciencia espacial suele considerarse el logro destacado de la tecnología. Pero es más bien la culminación de un determinado enfoque, una forma de imaginar lo inimaginable y de resolver lo irresoluble. En este libro, un ex ingeniero espacial desvela los hábitos, las ideas y las estrategias que te permitirán convertir lo aparentemente imposible en posible. Con su lectura aprenderás: Las barreras invisibles que limitan tu pensamiento (y qué hacer al respecto). La palabra que puedes utilizar para potenciar tu creatividad. Qué es lo primero que debes hacer al afrontar un objetivo audaz. Por qué no hacer \"nada\" es más valioso de lo que crees.",
+            "synopsis_length": 915,
+            "covers": [
+              {
+                "size": "xxlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/57/f8/59/57f859bd-35bf-e5bc-42f7-7363974d3984/1038102784.jpg/3000x3000bb.jpg"
+              },
+              {
+                "size": "xlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/57/f8/59/57f859bd-35bf-e5bc-42f7-7363974d3984/1038102784.jpg/1200x1200bb.jpg"
+              },
+              {
+                "size": "large",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/57/f8/59/57f859bd-35bf-e5bc-42f7-7363974d3984/1038102784.jpg/600x600bb.jpg"
+              },
+              {
+                "size": "medium",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/57/f8/59/57f859bd-35bf-e5bc-42f7-7363974d3984/1038102784.jpg/100x100bb.jpg"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "Piensa como un científico espacial",
+              "autor_completo": "Ozan Varol",
+              "año": "2022",
+              "editorial": null,
+              "isbn": "",
+              "apple_track_id": "6443355509",
+              "categorias": [
+                "Negocios y finanzas personales",
+                "Libros"
+              ],
+              "track_view_url": "https://books.apple.com/mx/book/piensa-como-un-cient%C3%ADfico-espacial/id6443355509?uo=4"
+            }
+          },
+          "google": {
+            "ok": true,
+            "source": "google_books",
+            "match_score": 1,
+            "match_details": {
+              "matched_title": "Piensa como un científico espacial",
+              "matched_author": "Ozan Varol"
+            },
+            "synopsis": "Tú eres más inteligente de lo que crees. Basándose en el enfoque mental que caracteriza a los científicos espaciales, en este libro, accesible y práctico, Ozan Varol revela nueve estrategias sencillas que podrás utilizar para lograr dar el poderoso impulso que buscas. La ciencia espacial suele considerarse el logro destacado de la tecnología. Pero es más bien la culminación de un determinado enfoque, una forma de imaginar lo inimaginable y de resolver lo irresoluble. En este libro, un ex ingeniero espacial desvela los hábitos, las ideas y las estrategias que te permitirán convertir lo aparentemente imposible en posible. Con su lectura aprenderás: Las barreras invisibles que limitan tu pensamiento (y qué hacer al respecto). La palabra que puedes utilizar para potenciar tu creatividad. Qué es lo primero que debes hacer al afrontar un objetivo audaz. Por qué no hacer \"nada\" es más valioso de lo que crees.",
+            "synopsis_length": 915,
+            "covers": [
+              {
+                "size": "small",
+                "url": "https://books.google.com/books/content?id=QQOHEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "Piensa como un científico espacial",
+              "subtitulo": "Nueve estrategias sencillas para tener éxito en el trabajo y en la vida",
+              "autor_completo": "Ozan Varol",
+              "año": "2022",
+              "editorial": "Reverte-Management",
+              "paginas": 416,
+              "isbn": "9788429197150",
+              "isbn13": "9788429197150",
+              "isbn10": "842919715X",
+              "categorias": [
+                "Business & Economics"
+              ],
+              "idioma": "es",
+              "preview_link": "http://books.google.com/books?id=QQOHEAAAQBAJ&printsec=frontcover&dq=intitle:Piensa+como+un+cient%C3%ADfico+espacial+inauthor:Ozan+Varol&hl=&cd=1&source=gbs_api"
+            }
+          },
+          "openlibrary": {
+            "ok": true,
+            "source": "openlibrary",
+            "match_score": 1,
+            "match_details": {
+              "matched_title": "Piensa Como un Científico Espacial",
+              "matched_author": "Ozan Varol, Irene Muñoz"
+            },
+            "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2023.",
+            "synopsis_length": 65,
+            "covers": [],
+            "verified_identity": {
+              "titulo_real": "Piensa Como un Científico Espacial",
+              "autor_completo": "Ozan Varol, Irene Muñoz",
+              "año": "2023",
+              "editorial": null,
+              "isbn": "",
+              "categorias": [],
+              "idioma": "spa",
+              "paginas": null
+            }
+          },
+          "amazon": {
+            "ok": false,
+            "reason": "no_amazon_cover_or_only_placeholders",
+            "source": "amazon"
+          },
+          "valid_covers": [
+            {
+              "source": "apple_books",
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/57/f8/59/57f859bd-35bf-e5bc-42f7-7363974d3984/1038102784.jpg/3000x3000bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/57/f8/59/57f859bd-35bf-e5bc-42f7-7363974d3984/1038102784.jpg/1200x1200bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/57/f8/59/57f859bd-35bf-e5bc-42f7-7363974d3984/1038102784.jpg/600x600bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/57/f8/59/57f859bd-35bf-e5bc-42f7-7363974d3984/1038102784.jpg/100x100bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "google_books",
+              "size": "small",
+              "url": "https://books.google.com/books/content?id=QQOHEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+              "valid": true
+            }
+          ],
+          "_sources_succeeded": [
+            "apple_books",
+            "google_books",
+            "openlibrary"
+          ],
+          "_sources_failed": [
+            "amazon:no_amazon_cover_or_only_placeholders"
+          ],
+          "_timing": {
+            "phase1_parallel_ms": 591,
+            "phase2_isbn_chain_ms": 555,
+            "cover_validation_ms": 1050,
+            "total_ms": 2196
+          },
+          "_version": "3.6"
+        },
+        "_evidence_synopsis": "Tú eres más inteligente de lo que crees. Basándose en el enfoque mental que caracteriza a los científicos espaciales, en este libro, accesible y práctico, Ozan Varol revela nueve estrategias sencillas que podrás utilizar para lograr dar el poderoso impulso que buscas. La ciencia espacial suele considerarse el logro destacado de la tecnología. Pero es más bien la culminación de un determinado enfoque, una forma de imaginar lo inimaginable y de resolver lo irresoluble. En este libro, un ex ingeniero espacial desvela los hábitos, las ideas y las estrategias que te permitirán convertir lo aparentemente imposible en posible. Con su lectura aprenderás: Las barreras invisibles que limitan tu pensamiento (y qué hacer al respecto). La palabra que puedes utilizar para potenciar tu creatividad. Qué es lo primero que debes hacer al afrontar un objetivo audaz. Por qué no hacer \"nada\" es más valioso de lo que crees.",
+        "_evidence_verified_identity": {
+          "titulo_real": "Piensa como un científico espacial",
+          "autor_completo": "Ozan Varol",
+          "año": "2022",
+          "editorial": null,
+          "isbn": "",
+          "apple_track_id": "6443355509",
+          "categorias": [
+            "Negocios y finanzas personales",
+            "Libros"
+          ],
+          "track_view_url": "https://books.apple.com/mx/book/piensa-como-un-cient%C3%ADfico-espacial/id6443355509?uo=4"
+        },
+        "_evidence_match_score": 1
+      },
+      "ring_updated": false
+    }
+  ],
+  "last": {
+    "at": "2026-04-27T16:17:59.051Z",
+    "stage": "success",
+    "bookData": {
+      "titulo": "Piensa como un científico espacial",
+      "autor": "Ozan Varol",
+      "slug": "piensa-como-un-cientifico-espacial",
+      "tagline": "",
+      "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/57/f8/59/57f859bd-35bf-e5bc-42f7-7363974d3984/1038102784.jpg/3000x3000bb.jpg",
+      "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/57/f8/59/57f859bd-35bf-e5bc-42f7-7363974d3984/1038102784.jpg/3000x3000bb.jpg",
+      "portada_source": "apple_books",
+      "portada_candidates": [
+        {
+          "source": "apple_books",
+          "size": "xxlarge",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/57/f8/59/57f859bd-35bf-e5bc-42f7-7363974d3984/1038102784.jpg/3000x3000bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "xlarge",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/57/f8/59/57f859bd-35bf-e5bc-42f7-7363974d3984/1038102784.jpg/1200x1200bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "large",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/57/f8/59/57f859bd-35bf-e5bc-42f7-7363974d3984/1038102784.jpg/600x600bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "medium",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/57/f8/59/57f859bd-35bf-e5bc-42f7-7363974d3984/1038102784.jpg/100x100bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "google_books",
+          "size": "small",
+          "url": "https://books.google.com/books/content?id=QQOHEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+          "valid": true
+        }
+      ],
+      "needs_fallback_cover": false,
+      "isbn": "",
+      "editorial": "Ozan Varol",
+      "publication_year": "2022",
+      "source": "apple_books",
+      "duplicado": false,
+      "selected_via": "direct_book",
+      "selection_reason": "Libro explícito proporcionado en workflow_dispatch",
+      "trigger_input": "",
+      "trigger_analysis": null,
+      "selection_validation": {},
+      "catalog_scope": "",
+      "contexto_2026": {},
+      "identity_sealed": false,
+      "_evidence": {
+        "titulo_input": "Piensa como un científico espacial",
+        "autor_input": "Ozan Varol",
+        "isbn_seed": "",
+        "isbn_seed_raw": "",
+        "isbn_seed_rejected": null,
+        "isbn_discovered": "9788429197150",
+        "isbn_discovered_raw": "9788429197150",
+        "apple": {
+          "ok": true,
+          "source": "apple_books",
+          "match_score": 1,
+          "match_details": {
+            "matched_title": "Piensa como un científico espacial",
+            "matched_author": "Ozan Varol"
+          },
+          "synopsis": "Tú eres más inteligente de lo que crees. Basándose en el enfoque mental que caracteriza a los científicos espaciales, en este libro, accesible y práctico, Ozan Varol revela nueve estrategias sencillas que podrás utilizar para lograr dar el poderoso impulso que buscas. La ciencia espacial suele considerarse el logro destacado de la tecnología. Pero es más bien la culminación de un determinado enfoque, una forma de imaginar lo inimaginable y de resolver lo irresoluble. En este libro, un ex ingeniero espacial desvela los hábitos, las ideas y las estrategias que te permitirán convertir lo aparentemente imposible en posible. Con su lectura aprenderás: Las barreras invisibles que limitan tu pensamiento (y qué hacer al respecto). La palabra que puedes utilizar para potenciar tu creatividad. Qué es lo primero que debes hacer al afrontar un objetivo audaz. Por qué no hacer \"nada\" es más valioso de lo que crees.",
+          "synopsis_length": 915,
+          "covers": [
+            {
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/57/f8/59/57f859bd-35bf-e5bc-42f7-7363974d3984/1038102784.jpg/3000x3000bb.jpg"
+            },
+            {
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/57/f8/59/57f859bd-35bf-e5bc-42f7-7363974d3984/1038102784.jpg/1200x1200bb.jpg"
+            },
+            {
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/57/f8/59/57f859bd-35bf-e5bc-42f7-7363974d3984/1038102784.jpg/600x600bb.jpg"
+            },
+            {
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/57/f8/59/57f859bd-35bf-e5bc-42f7-7363974d3984/1038102784.jpg/100x100bb.jpg"
+            }
+          ],
+          "verified_identity": {
+            "titulo_real": "Piensa como un científico espacial",
+            "autor_completo": "Ozan Varol",
+            "año": "2022",
+            "editorial": null,
+            "isbn": "",
+            "apple_track_id": "6443355509",
+            "categorias": [
+              "Negocios y finanzas personales",
+              "Libros"
+            ],
+            "track_view_url": "https://books.apple.com/mx/book/piensa-como-un-cient%C3%ADfico-espacial/id6443355509?uo=4"
+          }
+        },
+        "google": {
+          "ok": true,
+          "source": "google_books",
+          "match_score": 1,
+          "match_details": {
+            "matched_title": "Piensa como un científico espacial",
+            "matched_author": "Ozan Varol"
+          },
+          "synopsis": "Tú eres más inteligente de lo que crees. Basándose en el enfoque mental que caracteriza a los científicos espaciales, en este libro, accesible y práctico, Ozan Varol revela nueve estrategias sencillas que podrás utilizar para lograr dar el poderoso impulso que buscas. La ciencia espacial suele considerarse el logro destacado de la tecnología. Pero es más bien la culminación de un determinado enfoque, una forma de imaginar lo inimaginable y de resolver lo irresoluble. En este libro, un ex ingeniero espacial desvela los hábitos, las ideas y las estrategias que te permitirán convertir lo aparentemente imposible en posible. Con su lectura aprenderás: Las barreras invisibles que limitan tu pensamiento (y qué hacer al respecto). La palabra que puedes utilizar para potenciar tu creatividad. Qué es lo primero que debes hacer al afrontar un objetivo audaz. Por qué no hacer \"nada\" es más valioso de lo que crees.",
+          "synopsis_length": 915,
+          "covers": [
+            {
+              "size": "small",
+              "url": "https://books.google.com/books/content?id=QQOHEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+            }
+          ],
+          "verified_identity": {
+            "titulo_real": "Piensa como un científico espacial",
+            "subtitulo": "Nueve estrategias sencillas para tener éxito en el trabajo y en la vida",
+            "autor_completo": "Ozan Varol",
+            "año": "2022",
+            "editorial": "Reverte-Management",
+            "paginas": 416,
+            "isbn": "9788429197150",
+            "isbn13": "9788429197150",
+            "isbn10": "842919715X",
+            "categorias": [
+              "Business & Economics"
+            ],
+            "idioma": "es",
+            "preview_link": "http://books.google.com/books?id=QQOHEAAAQBAJ&printsec=frontcover&dq=intitle:Piensa+como+un+cient%C3%ADfico+espacial+inauthor:Ozan+Varol&hl=&cd=1&source=gbs_api"
+          }
+        },
+        "openlibrary": {
+          "ok": true,
+          "source": "openlibrary",
+          "match_score": 1,
+          "match_details": {
+            "matched_title": "Piensa Como un Científico Espacial",
+            "matched_author": "Ozan Varol, Irene Muñoz"
+          },
+          "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2023.",
+          "synopsis_length": 65,
+          "covers": [],
+          "verified_identity": {
+            "titulo_real": "Piensa Como un Científico Espacial",
+            "autor_completo": "Ozan Varol, Irene Muñoz",
+            "año": "2023",
+            "editorial": null,
+            "isbn": "",
+            "categorias": [],
+            "idioma": "spa",
+            "paginas": null
+          }
+        },
+        "amazon": {
+          "ok": false,
+          "reason": "no_amazon_cover_or_only_placeholders",
+          "source": "amazon"
+        },
+        "valid_covers": [
+          {
+            "source": "apple_books",
+            "size": "xxlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/57/f8/59/57f859bd-35bf-e5bc-42f7-7363974d3984/1038102784.jpg/3000x3000bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "xlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/57/f8/59/57f859bd-35bf-e5bc-42f7-7363974d3984/1038102784.jpg/1200x1200bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "large",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/57/f8/59/57f859bd-35bf-e5bc-42f7-7363974d3984/1038102784.jpg/600x600bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "medium",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/57/f8/59/57f859bd-35bf-e5bc-42f7-7363974d3984/1038102784.jpg/100x100bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "google_books",
+            "size": "small",
+            "url": "https://books.google.com/books/content?id=QQOHEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+            "valid": true
+          }
+        ],
+        "_sources_succeeded": [
+          "apple_books",
+          "google_books",
+          "openlibrary"
+        ],
+        "_sources_failed": [
+          "amazon:no_amazon_cover_or_only_placeholders"
+        ],
+        "_timing": {
+          "phase1_parallel_ms": 591,
+          "phase2_isbn_chain_ms": 555,
+          "cover_validation_ms": 1050,
+          "total_ms": 2196
+        },
+        "_version": "3.6"
+      },
+      "_evidence_synopsis": "Tú eres más inteligente de lo que crees. Basándose en el enfoque mental que caracteriza a los científicos espaciales, en este libro, accesible y práctico, Ozan Varol revela nueve estrategias sencillas que podrás utilizar para lograr dar el poderoso impulso que buscas. La ciencia espacial suele considerarse el logro destacado de la tecnología. Pero es más bien la culminación de un determinado enfoque, una forma de imaginar lo inimaginable y de resolver lo irresoluble. En este libro, un ex ingeniero espacial desvela los hábitos, las ideas y las estrategias que te permitirán convertir lo aparentemente imposible en posible. Con su lectura aprenderás: Las barreras invisibles que limitan tu pensamiento (y qué hacer al respecto). La palabra que puedes utilizar para potenciar tu creatividad. Qué es lo primero que debes hacer al afrontar un objetivo audaz. Por qué no hacer \"nada\" es más valioso de lo que crees.",
+      "_evidence_verified_identity": {
+        "titulo_real": "Piensa como un científico espacial",
+        "autor_completo": "Ozan Varol",
+        "año": "2022",
+        "editorial": null,
+        "isbn": "",
+        "apple_track_id": "6443355509",
+        "categorias": [
+          "Negocios y finanzas personales",
+          "Libros"
+        ],
+        "track_view_url": "https://books.apple.com/mx/book/piensa-como-un-cient%C3%ADfico-espacial/id6443355509?uo=4"
+      },
+      "_evidence_match_score": 1
+    },
+    "ring_updated": false
+  }
+}

@@ -149,11 +149,11 @@
     "amazon:no_amazon_cover_or_only_placeholders"
   ],
   "_timing": {
-    "phase1_parallel_ms": 852,
-    "phase2_isbn_chain_ms": 344,
-    "cover_validation_ms": 823,
-    "total_ms": 2019
+    "phase1_parallel_ms": 591,
+    "phase2_isbn_chain_ms": 555,
+    "cover_validation_ms": 1050,
+    "total_ms": 2196
   },
   "_version": "3.6",
-  "_cached_at": "2026-04-27T15:49:24.399Z"
+  "_cached_at": "2026-04-27T16:17:59.048Z"
 }
