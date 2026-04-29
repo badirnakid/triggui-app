@@ -7,7 +7,8 @@
     "autor_completo": "Bessel van der Kolk",
     "año": "2020",
     "editorial": null,
-    "isbn": "1509251380",
+    "isbn": "",
+    "apple_track_id": "1509251380",
     "categorias": [
       "Psicología",
       "Libros",
@@ -18,9 +19,9 @@
   "match_score": 1,
   "other_sources_agreed": [],
   "resolution_path": [
-    "evidence_fetched_2sources"
+    "evidence_fetched_1sources"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-21T02:25:04.698Z"
+  "cached_at": "2026-04-29T22:19:07.767Z"
 }

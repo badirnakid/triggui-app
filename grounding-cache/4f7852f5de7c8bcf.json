@@ -1,0 +1,28 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nA WALL STREET JOURNAL BESTSELLER A FINANCIAL TIMESBUSINESS BOOK OF THE MONTH A FAST COMPANY TOP SUMMER PICK Un sistema revolucionario para mejorar tu productividad, pensar de forma más creativa y recordar y poner en práctica tus mejores ideas. Por primera vez en la historia, tenemos acceso instantáneo a todo el conocimiento que existe. Nunca ha habido un mejor momento para aprender, crear cosas nuevas y mejorar. Sin embargo, ese flujo continuo de información a menudo nos abruma en lugar de empoderarnos. El mismo conocimiento que se suponía que debía liberarnos nos ha llevado al estrés paralizante de creer que nunca sabremos o recordaremos lo suficiente. Descubre todo el potencial de tus ideas y transforma lo que sabes en mejoras más potentes y significativas en tu trabajo y en tu vida creando un segundo cerebro.\n\nMETADATA VERIFICADA:\n- Título: Crea tu segundo cerebro\n- Autor: Tiago Forte\n- Año: 2023\n- Categorías: Superación personal, Libros, Salud, mente y cuerpo, Negocios y finanzas personales",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Crea tu segundo cerebro",
+    "autor_completo": "Tiago Forte",
+    "año": "2023",
+    "editorial": null,
+    "isbn": "",
+    "apple_track_id": "6468229071",
+    "categorias": [
+      "Superación personal",
+      "Libros",
+      "Salud, mente y cuerpo",
+      "Negocios y finanzas personales"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/crea-tu-segundo-cerebro/id6468229071?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [],
+  "resolution_path": [
+    "evidence_fetched_1sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-29T22:09:04.543Z"
+}

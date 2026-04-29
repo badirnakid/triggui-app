@@ -1,0 +1,149 @@
+{
+  "titulo_input": "La biología de la creencia",
+  "autor_input": "Bruce H. Lipton",
+  "isbn_seed": "",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "9788496665187",
+  "isbn_discovered_raw": "9788496665187",
+  "apple": {
+    "ok": false,
+    "reason": "low_match_0.24",
+    "source": "apple_books"
+  },
+  "google": {
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "La biología de la creencia",
+      "matched_author": "Bruce H. Lipton"
+    },
+    "synopsis": "",
+    "synopsis_length": 0,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=MqqOMwAACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "La biología de la creencia",
+      "subtitulo": "la liberación del poder de la conciencia, la materia y los milagros",
+      "autor_completo": "Bruce H. Lipton",
+      "año": "2007",
+      "editorial": null,
+      "paginas": 294,
+      "isbn": "9788496665187",
+      "isbn13": "9788496665187",
+      "isbn10": "8496665186",
+      "categorias": [],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=MqqOMwAACAAJ&dq=intitle:La+biolog%C3%ADa+de+la+creencia+inauthor:Bruce+H.+Lipton&hl=&cd=1&source=gbs_api"
+    }
+  },
+  "openlibrary": {
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "La biología de la creencia",
+      "matched_author": "Bruce H. Lipton, Concepción Rodríguez González"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2021.",
+    "synopsis_length": 65,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://covers.openlibrary.org/b/id/13919889-L.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://covers.openlibrary.org/b/id/13919889-M.jpg"
+      },
+      {
+        "size": "small",
+        "url": "https://covers.openlibrary.org/b/id/13919889-S.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "La biología de la creencia",
+      "autor_completo": "Bruce H. Lipton, Concepción Rodríguez González",
+      "año": "2021",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": null,
+      "paginas": null
+    }
+  },
+  "amazon": {
+    "ok": true,
+    "source": "amazon",
+    "match_score": 0.85,
+    "covers": [
+      {
+        "size": "large",
+        "url": "https://images-na.ssl-images-amazon.com/images/P/8496665186.01.LZZZZZZZ.jpg"
+      }
+    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "verified_identity": {
+      "isbn": "8496665186",
+      "isbn13": "9788496665187",
+      "isbn10": "8496665186",
+      "titulo_real": null,
+      "autor_completo": null,
+      "año": null
+    }
+  },
+  "valid_covers": [
+    {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=MqqOMwAACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "large",
+      "url": "https://covers.openlibrary.org/b/id/13919889-L.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "medium",
+      "url": "https://covers.openlibrary.org/b/id/13919889-M.jpg",
+      "valid": true
+    },
+    {
+      "source": "openlibrary",
+      "size": "small",
+      "url": "https://covers.openlibrary.org/b/id/13919889-S.jpg",
+      "valid": true
+    },
+    {
+      "source": "amazon",
+      "size": "large",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/8496665186.01.LZZZZZZZ.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "google_books",
+    "openlibrary",
+    "amazon"
+  ],
+  "_sources_failed": [
+    "apple_books:low_match_0.24"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 543,
+    "phase2_isbn_chain_ms": 571,
+    "cover_validation_ms": 828,
+    "total_ms": 1942
+  },
+  "_version": "3.6",
+  "_cached_at": "2026-04-29T22:14:35.221Z"
+}

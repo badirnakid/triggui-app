@@ -2,7 +2,10 @@
   "titulo_input": "Extreme ownership",
   "autor_input": "Jocko Willink",
   "isbn_seed": "",
-  "isbn_discovered": "1271391269",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "",
+  "isbn_discovered_raw": "",
   "apple": {
     "ok": true,
     "source": "apple_books",
@@ -36,7 +39,8 @@
       "autor_completo": "Jocko Willink & Leif Babin",
       "año": "2017",
       "editorial": null,
-      "isbn": "1271391269",
+      "isbn": "",
+      "apple_track_id": "1271391269",
       "categorias": [
         "Administración y liderazgo",
         "Libros",
@@ -87,23 +91,9 @@
     }
   },
   "amazon": {
-    "ok": true,
-    "source": "amazon",
-    "match_score": 0.85,
-    "covers": [
-      {
-        "size": "large",
-        "url": "https://images-na.ssl-images-amazon.com/images/P/1271391269.01.LZZZZZZZ.jpg"
-      }
-    ],
-    "synopsis": "",
-    "synopsis_length": 0,
-    "verified_identity": {
-      "isbn": "1271391269",
-      "titulo_real": null,
-      "autor_completo": null,
-      "año": null
-    }
+    "ok": false,
+    "reason": "skipped",
+    "source": "amazon"
   },
   "valid_covers": [
     {
@@ -141,33 +131,22 @@
       "size": "medium",
       "url": "https://covers.openlibrary.org/b/id/12835042-M.jpg",
       "valid": true
-    },
-    {
-      "source": "openlibrary",
-      "size": "small",
-      "url": "https://covers.openlibrary.org/b/id/12835042-S.jpg",
-      "valid": true
-    },
-    {
-      "source": "amazon",
-      "size": "large",
-      "url": "https://images-na.ssl-images-amazon.com/images/P/1271391269.01.LZZZZZZZ.jpg",
-      "valid": true
     }
   ],
   "_sources_succeeded": [
     "apple_books",
-    "openlibrary",
-    "amazon"
+    "openlibrary"
   ],
   "_sources_failed": [
-    "google_books:no_good_match"
+    "google_books:no_good_match",
+    "amazon:skipped"
   ],
   "_timing": {
-    "phase1_parallel_ms": 16451,
-    "phase2_isbn_chain_ms": 24601,
-    "cover_validation_ms": 497,
-    "total_ms": 41549
+    "phase1_parallel_ms": 16310,
+    "phase2_isbn_chain_ms": 0,
+    "cover_validation_ms": 3957,
+    "total_ms": 20267
   },
-  "_cached_at": "2026-04-23T03:07:36.628Z"
+  "_version": "3.6",
+  "_cached_at": "2026-04-29T22:12:41.816Z"
 }

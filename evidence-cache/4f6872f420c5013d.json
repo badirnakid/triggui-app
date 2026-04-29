@@ -2,7 +2,10 @@
   "titulo_input": "El viaje al amor",
   "autor_input": "Eduardo Punset",
   "isbn_seed": "",
-  "isbn_discovered": "469035386",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "",
+  "isbn_discovered_raw": "",
   "apple": {
     "ok": true,
     "source": "apple_books",
@@ -36,7 +39,8 @@
       "autor_completo": "Eduardo Punset",
       "año": "2010",
       "editorial": null,
-      "isbn": "469035386",
+      "isbn": "",
+      "apple_track_id": "469035386",
       "categorias": [
         "Ciencia y naturaleza",
         "Libros",
@@ -86,23 +90,9 @@
     }
   },
   "amazon": {
-    "ok": true,
-    "source": "amazon",
-    "match_score": 0.85,
-    "covers": [
-      {
-        "size": "large",
-        "url": "https://images-na.ssl-images-amazon.com/images/P/469035386.01.LZZZZZZZ.jpg"
-      }
-    ],
-    "synopsis": "",
-    "synopsis_length": 0,
-    "verified_identity": {
-      "isbn": "469035386",
-      "titulo_real": null,
-      "autor_completo": null,
-      "año": null
-    }
+    "ok": false,
+    "reason": "skipped",
+    "source": "amazon"
   },
   "valid_covers": [
     {
@@ -131,42 +121,25 @@
     },
     {
       "source": "openlibrary",
-      "size": "large",
-      "url": "https://covers.openlibrary.org/b/id/2314713-L.jpg",
-      "valid": true
-    },
-    {
-      "source": "openlibrary",
       "size": "medium",
       "url": "https://covers.openlibrary.org/b/id/2314713-M.jpg",
-      "valid": true
-    },
-    {
-      "source": "openlibrary",
-      "size": "small",
-      "url": "https://covers.openlibrary.org/b/id/2314713-S.jpg",
-      "valid": true
-    },
-    {
-      "source": "amazon",
-      "size": "large",
-      "url": "https://images-na.ssl-images-amazon.com/images/P/469035386.01.LZZZZZZZ.jpg",
       "valid": true
     }
   ],
   "_sources_succeeded": [
     "apple_books",
-    "openlibrary",
-    "amazon"
+    "openlibrary"
   ],
   "_sources_failed": [
-    "google_books:no_good_match"
+    "google_books:no_good_match",
+    "amazon:skipped"
   ],
   "_timing": {
-    "phase1_parallel_ms": 16442,
-    "phase2_isbn_chain_ms": 24751,
-    "cover_validation_ms": 550,
-    "total_ms": 41743
+    "phase1_parallel_ms": 16337,
+    "phase2_isbn_chain_ms": 0,
+    "cover_validation_ms": 4447,
+    "total_ms": 20784
   },
-  "_cached_at": "2026-04-23T02:54:56.723Z"
+  "_version": "3.6",
+  "_cached_at": "2026-04-29T22:20:49.766Z"
 }

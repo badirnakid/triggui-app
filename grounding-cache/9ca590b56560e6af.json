@@ -7,7 +7,8 @@
     "autor_completo": "Osho",
     "año": "2018",
     "editorial": null,
-    "isbn": "1371045750",
+    "isbn": "",
+    "apple_track_id": "1371045750",
     "categorias": [
       "Filosofía",
       "Libros",
@@ -22,9 +23,9 @@
     "openlibrary"
   ],
   "resolution_path": [
-    "evidence_fetched_3sources"
+    "evidence_fetched_2sources"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-21T02:26:17.220Z"
+  "cached_at": "2026-04-29T22:10:42.085Z"
 }

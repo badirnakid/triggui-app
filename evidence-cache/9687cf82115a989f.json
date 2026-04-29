@@ -2,7 +2,10 @@
   "titulo_input": "Moral inmoral y amoral",
   "autor_input": "Osho",
   "isbn_seed": "",
-  "isbn_discovered": "1371045750",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "",
+  "isbn_discovered_raw": "",
   "apple": {
     "ok": true,
     "source": "apple_books",
@@ -36,7 +39,8 @@
       "autor_completo": "Osho",
       "año": "2018",
       "editorial": null,
-      "isbn": "1371045750",
+      "isbn": "",
+      "apple_track_id": "1371045750",
       "categorias": [
         "Filosofía",
         "Libros",
@@ -88,23 +92,9 @@
     }
   },
   "amazon": {
-    "ok": true,
-    "source": "amazon",
-    "match_score": 0.85,
-    "covers": [
-      {
-        "size": "large",
-        "url": "https://images-na.ssl-images-amazon.com/images/P/1371045750.01.LZZZZZZZ.jpg"
-      }
-    ],
-    "synopsis": "",
-    "synopsis_length": 0,
-    "verified_identity": {
-      "isbn": "1371045750",
-      "titulo_real": null,
-      "autor_completo": null,
-      "año": null
-    }
+    "ok": false,
+    "reason": "skipped",
+    "source": "amazon"
   },
   "valid_covers": [
     {
@@ -142,33 +132,22 @@
       "size": "medium",
       "url": "https://covers.openlibrary.org/b/id/13235747-M.jpg",
       "valid": true
-    },
-    {
-      "source": "openlibrary",
-      "size": "small",
-      "url": "https://covers.openlibrary.org/b/id/13235747-S.jpg",
-      "valid": true
-    },
-    {
-      "source": "amazon",
-      "size": "large",
-      "url": "https://images-na.ssl-images-amazon.com/images/P/1371045750.01.LZZZZZZZ.jpg",
-      "valid": true
     }
   ],
   "_sources_succeeded": [
     "apple_books",
-    "openlibrary",
-    "amazon"
+    "openlibrary"
   ],
   "_sources_failed": [
-    "google_books:no_good_match"
+    "google_books:no_good_match",
+    "amazon:skipped"
   ],
   "_timing": {
-    "phase1_parallel_ms": 16209,
-    "phase2_isbn_chain_ms": 24514,
-    "cover_validation_ms": 688,
-    "total_ms": 41411
+    "phase1_parallel_ms": 15981,
+    "phase2_isbn_chain_ms": 0,
+    "cover_validation_ms": 1007,
+    "total_ms": 16988
   },
-  "_cached_at": "2026-04-21T02:26:17.219Z"
+  "_version": "3.6",
+  "_cached_at": "2026-04-29T22:10:42.084Z"
 }

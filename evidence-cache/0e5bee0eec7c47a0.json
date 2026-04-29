@@ -2,7 +2,10 @@
   "titulo_input": "El viaje a la vida",
   "autor_input": "Eduardo Punset",
   "isbn_seed": "",
-  "isbn_discovered": "918231322",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "9786070724725",
+  "isbn_discovered_raw": "9786070724725",
   "apple": {
     "ok": true,
     "source": "apple_books",
@@ -36,7 +39,8 @@
       "autor_completo": "Eduardo Punset",
       "año": "2014",
       "editorial": null,
-      "isbn": "918231322",
+      "isbn": "",
+      "apple_track_id": "918231322",
       "categorias": [
         "Superación personal",
         "Libros",
@@ -46,9 +50,37 @@
     }
   },
   "google": {
-    "ok": false,
-    "reason": "no_good_match",
-    "source": "google_books"
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "El Viaje a la Vida",
+      "matched_author": "Eduardo Punset"
+    },
+    "synopsis": "Un viaje a la sociedad del futuro. Hace cien mil años, los humanos vivíamos en núcleos reducidos e incomunicados; el amor, la amistad o la comprensión eran una excepción. Pero entonces nació la empatía, que ha ido irrumpiendo de forma imparable en nuestras vidas hasta hoy. Eduardo Punset va un paso más allá, y anticipa que un mundo radicalmente distinto al que conocemos está llamando a nuestras puertas. Por primera vez, la persona va a ser el centro de la vida. ¿Cómo nos relacionaremos en esta nueva realidad? ¿Serán verdaderamente necesarias las instituciones entre las personas? ¿Qué estamos dispuestos a sacrificar para triunfar? La sociedad está aprendiendo a cuidar de sí misma y, algún día, ya nadie pondrá en duda que la mejor manera de alcanzar la felicidad será haciendo felices a los demás.",
+    "synopsis_length": 805,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=u8XNrQEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "El Viaje a la Vida",
+      "subtitulo": "",
+      "autor_completo": "Eduardo Punset",
+      "año": "2015",
+      "editorial": "Planeta Publishing",
+      "paginas": null,
+      "isbn": "9786070724725",
+      "isbn13": "9786070724725",
+      "isbn10": "6070724720",
+      "categorias": [
+        "Brain"
+      ],
+      "idioma": "en",
+      "preview_link": "http://books.google.com/books?id=u8XNrQEACAAJ&dq=El+viaje+a+la+vida+Eduardo+Punset&hl=&cd=1&source=gbs_api"
+    }
   },
   "openlibrary": {
     "ok": true,
@@ -92,13 +124,15 @@
     "covers": [
       {
         "size": "large",
-        "url": "https://images-na.ssl-images-amazon.com/images/P/918231322.01.LZZZZZZZ.jpg"
+        "url": "https://images-na.ssl-images-amazon.com/images/P/6070724720.01.LZZZZZZZ.jpg"
       }
     ],
     "synopsis": "",
     "synopsis_length": 0,
     "verified_identity": {
-      "isbn": "918231322",
+      "isbn": "6070724720",
+      "isbn13": "9786070724725",
+      "isbn10": "6070724720",
       "titulo_real": null,
       "autor_completo": null,
       "año": null
@@ -130,6 +164,12 @@
       "valid": true
     },
     {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=u8XNrQEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
       "source": "openlibrary",
       "size": "large",
       "url": "https://covers.openlibrary.org/b/id/13972563-L.jpg",
@@ -150,23 +190,23 @@
     {
       "source": "amazon",
       "size": "large",
-      "url": "https://images-na.ssl-images-amazon.com/images/P/918231322.01.LZZZZZZZ.jpg",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/6070724720.01.LZZZZZZZ.jpg",
       "valid": true
     }
   ],
   "_sources_succeeded": [
     "apple_books",
+    "google_books",
     "openlibrary",
     "amazon"
   ],
-  "_sources_failed": [
-    "google_books:no_good_match"
-  ],
+  "_sources_failed": [],
   "_timing": {
-    "phase1_parallel_ms": 16063,
-    "phase2_isbn_chain_ms": 24143,
-    "cover_validation_ms": 1125,
-    "total_ms": 41331
+    "phase1_parallel_ms": 8866,
+    "phase2_isbn_chain_ms": 256,
+    "cover_validation_ms": 913,
+    "total_ms": 10035
   },
-  "_cached_at": "2026-04-21T02:36:11.818Z"
+  "_version": "3.6",
+  "_cached_at": "2026-04-29T22:17:30.853Z"
 }

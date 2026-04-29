@@ -7,7 +7,8 @@
     "autor_completo": "Jocko Willink & Leif Babin",
     "año": "2017",
     "editorial": null,
-    "isbn": "1271391269",
+    "isbn": "",
+    "apple_track_id": "1271391269",
     "categorias": [
       "Administración y liderazgo",
       "Libros",
@@ -21,9 +22,9 @@
     "openlibrary"
   ],
   "resolution_path": [
-    "evidence_fetched_3sources"
+    "evidence_fetched_2sources"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-23T03:07:36.629Z"
+  "cached_at": "2026-04-29T22:12:41.816Z"
 }

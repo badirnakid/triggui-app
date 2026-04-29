@@ -7,7 +7,8 @@
     "autor_completo": "Deepak Chopra, Jack Tuszynski & Brian Ferting",
     "año": "2024",
     "editorial": null,
-    "isbn": "6475700041",
+    "isbn": "",
+    "apple_track_id": "6475700041",
     "categorias": [
       "Salud, mente y cuerpo",
       "Libros",
@@ -18,9 +19,9 @@
   "match_score": 1,
   "other_sources_agreed": [],
   "resolution_path": [
-    "evidence_fetched_3sources"
+    "evidence_fetched_2sources"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-20T22:16:48.881Z"
+  "cached_at": "2026-04-29T22:19:57.095Z"
 }

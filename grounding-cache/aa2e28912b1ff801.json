@@ -1,0 +1,28 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nLa riquesa no és fruit de la nostra intel·ligència, talent o treball. És fruit del nostre comportament. La riquesa no és fruit de la nostra intel·ligència, talent o treball. És fruit del nostre comportament. En qüestió de diners, el que importa no és com siguis de llest sinó com et comportes. Tendim a pensar en la inversió o la gestió de les finances personals com una disciplina matemàtica, en què les dades i les fórmules ens diuen exactament què cal fer. Malgrat això, el tret que defineix les persones que aconsegueixen enriquir-se no és la seva destresa amb els números, ni el sou o el talent, sinó la història personal, les motivacions i la seva visió del món. Un geni que perd el control de les emocions pot ser un desastre financer. I el mateix val en cas contrari: gent corrent sense formació en finances es pot enriquir si compta amb uns quants patrons de comportament. Això, que és impensable en altres disciplines com ara l'arquitectura o la medicina, és fonamental en el camp de les finances. Aquest llibre, que es convertirà sens dubte en un clàssic de les finances personals, ens dona el coneixement essencial per entendre la psicologia dels diners i ens convida a fer-nos una pregunta bàsica que poques vegades ens fem: quina relació tenim amb els diners i què en volem treure realment. A partir de nocions atemporals, Morgan Housel ens ensenya com funciona la psicologia dels diners i quins són els hàbits i les conductes que ens ajudaran no tan sols a generar riquesa, sinó també, més important encara, a conservar-la. «Un llibre imprescindible per a qualsevol que vulgui prendre decisions més intel·ligents i viure una vida més rica». Daniel Pink, autor de Drive. The Surprising Truth About What Motivates Us «Idees fascinants i consells pràctics. Qualsevol que es vulgui fer ric hauria de tenir un exemplar d'aquest llibre». James Clear, autor d'Hàbits atòmics «Un dels llibres de finances millors i més originals dels darrers anys». Jason Zweig, The Wall Street Journal «Housel és d'aquells escriptors capaços de fer digeribles conceptes financers d'allò més complexos. És un llibre que es devora des del principi fins al final i que no tan sols ens explica per què prenem males decisions respecte als diners, sinó que ens ajudarà a prendre'n de millors». Annie Duke, autora de Thinking in Bets\n\nMETADATA VERIFICADA:\n- Título: La psicologia dels diners\n- Autor: Morgan Housel\n- Año: 2023\n- Categorías: Finanzas personales, Libros, Negocios y finanzas personales, Economía",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.9324000000000001,
+  "verified_identity": {
+    "titulo_real": "La psicologia dels diners",
+    "autor_completo": "Morgan Housel",
+    "año": "2023",
+    "editorial": null,
+    "isbn": "",
+    "apple_track_id": "6469041305",
+    "categorias": [
+      "Finanzas personales",
+      "Libros",
+      "Negocios y finanzas personales",
+      "Economía"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/la-psicologia-dels-diners/id6469041305?uo=4"
+  },
+  "match_score": 0.9560000000000002,
+  "other_sources_agreed": [],
+  "resolution_path": [
+    "evidence_fetched_1sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-29T22:16:19.723Z"
+}

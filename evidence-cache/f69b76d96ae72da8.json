@@ -2,7 +2,10 @@
   "titulo_input": "No me hagas pensar",
   "autor_input": "Steve Krug",
   "isbn_seed": "",
-  "isbn_discovered": "9788483222867",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "9788420532523",
+  "isbn_discovered_raw": "9788420532523",
   "apple": {
     "ok": false,
     "reason": "low_match_0.17",
@@ -16,29 +19,22 @@
       "matched_title": "No me hagas pensar",
       "matched_author": "Steve Krug"
     },
-    "synopsis": "Cinco años y más de 100.000 copias después de la primera publicación de este libro, es difícil pensar que haya alguien que trabaje en el diseño web que no haya leído este clásico de Krug sobre Usabilidad en las Web, pero todos los días surgen personas que lo descubren. No debe sorprenderse si este libro cambia completamente su forma de ver el diseño web.",
-    "synopsis_length": 356,
-    "covers": [
-      {
-        "size": "small",
-        "url": "https://books.google.com/books/content?id=MlPtOwAACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
-      }
-    ],
+    "synopsis": "",
+    "synopsis_length": 0,
+    "covers": [],
     "verified_identity": {
       "titulo_real": "No me hagas pensar",
-      "subtitulo": "una aproximación a la usabilidad en la web",
+      "subtitulo": "una aproximación a la usabilidad en la Web",
       "autor_completo": "Steve Krug",
-      "año": "2006",
-      "editorial": "PRENTICE HALL",
-      "paginas": 216,
-      "isbn": "9788483222867",
-      "isbn13": "9788483222867",
-      "isbn10": "8483222868",
-      "categorias": [
-        "Computers"
-      ],
+      "año": "2001",
+      "editorial": null,
+      "paginas": 189,
+      "isbn": "9788420532523",
+      "isbn13": "9788420532523",
+      "isbn10": "8420532525",
+      "categorias": [],
       "idioma": "es",
-      "preview_link": "http://books.google.com/books?id=MlPtOwAACAAJ&dq=intitle:No+me+hagas+pensar+inauthor:Steve+Krug&hl=&cd=1&source=gbs_api"
+      "preview_link": "http://books.google.com/books?id=zFT1AAAACAAJ&dq=intitle:No+me+hagas+pensar+inauthor:Steve+Krug&hl=&cd=1&source=gbs_api"
     }
   },
   "openlibrary": {
@@ -77,37 +73,11 @@
     }
   },
   "amazon": {
-    "ok": true,
-    "source": "amazon",
-    "match_score": 0.85,
-    "covers": [
-      {
-        "size": "large",
-        "url": "https://images-na.ssl-images-amazon.com/images/P/848322286.01.LZZZZZZZ.jpg"
-      }
-    ],
-    "synopsis": "",
-    "synopsis_length": 0,
-    "verified_identity": {
-      "isbn": "9788483222867",
-      "titulo_real": null,
-      "autor_completo": null,
-      "año": null
-    }
+    "ok": false,
+    "reason": "no_amazon_cover_or_only_placeholders",
+    "source": "amazon"
   },
   "valid_covers": [
-    {
-      "source": "google_books",
-      "size": "small",
-      "url": "https://books.google.com/books/content?id=MlPtOwAACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
-      "valid": true
-    },
-    {
-      "source": "openlibrary",
-      "size": "large",
-      "url": "https://covers.openlibrary.org/b/id/13954258-L.jpg",
-      "valid": true
-    },
     {
       "source": "openlibrary",
       "size": "medium",
@@ -119,27 +89,22 @@
       "size": "small",
       "url": "https://covers.openlibrary.org/b/id/13954258-S.jpg",
       "valid": true
-    },
-    {
-      "source": "amazon",
-      "size": "large",
-      "url": "https://images-na.ssl-images-amazon.com/images/P/848322286.01.LZZZZZZZ.jpg",
-      "valid": true
     }
   ],
   "_sources_succeeded": [
     "google_books",
-    "openlibrary",
-    "amazon"
+    "openlibrary"
   ],
   "_sources_failed": [
-    "apple_books:low_match_0.17"
+    "apple_books:low_match_0.17",
+    "amazon:no_amazon_cover_or_only_placeholders"
   ],
   "_timing": {
-    "phase1_parallel_ms": 4263,
-    "phase2_isbn_chain_ms": 818,
-    "cover_validation_ms": 812,
-    "total_ms": 5893
+    "phase1_parallel_ms": 2841,
+    "phase2_isbn_chain_ms": 495,
+    "cover_validation_ms": 4001,
+    "total_ms": 7337
   },
-  "_cached_at": "2026-04-21T13:31:38.317Z"
+  "_version": "3.6",
+  "_cached_at": "2026-04-29T22:13:17.798Z"
 }

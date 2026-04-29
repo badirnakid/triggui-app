@@ -2,7 +2,10 @@
   "titulo_input": "El cuerpo lleva la cuenta",
   "autor_input": "Bessel Van Der Kolk",
   "isbn_seed": "",
-  "isbn_discovered": "1509251380",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "",
+  "isbn_discovered_raw": "",
   "apple": {
     "ok": true,
     "source": "apple_books",
@@ -36,7 +39,8 @@
       "autor_completo": "Bessel van der Kolk",
       "año": "2020",
       "editorial": null,
-      "isbn": "1509251380",
+      "isbn": "",
+      "apple_track_id": "1509251380",
       "categorias": [
         "Psicología",
         "Libros",
@@ -56,23 +60,9 @@
     "source": "openlibrary"
   },
   "amazon": {
-    "ok": true,
-    "source": "amazon",
-    "match_score": 0.85,
-    "covers": [
-      {
-        "size": "large",
-        "url": "https://images-na.ssl-images-amazon.com/images/P/1509251380.01.LZZZZZZZ.jpg"
-      }
-    ],
-    "synopsis": "",
-    "synopsis_length": 0,
-    "verified_identity": {
-      "isbn": "1509251380",
-      "titulo_real": null,
-      "autor_completo": null,
-      "año": null
-    }
+    "ok": false,
+    "reason": "skipped",
+    "source": "amazon"
   },
   "valid_covers": [
     {
@@ -98,27 +88,22 @@
       "size": "medium",
       "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/18/93/46/18934627-b76a-9ad8-bea3-8f37b15cf2af/1031385188.jpg/100x100bb.jpg",
       "valid": true
-    },
-    {
-      "source": "amazon",
-      "size": "large",
-      "url": "https://images-na.ssl-images-amazon.com/images/P/1509251380.01.LZZZZZZZ.jpg",
-      "valid": true
     }
   ],
   "_sources_succeeded": [
-    "apple_books",
-    "amazon"
+    "apple_books"
   ],
   "_sources_failed": [
     "google_books:no_good_match",
-    "openlibrary:no_results"
+    "openlibrary:no_results",
+    "amazon:skipped"
   ],
   "_timing": {
-    "phase1_parallel_ms": 16185,
-    "phase2_isbn_chain_ms": 24389,
-    "cover_validation_ms": 1061,
-    "total_ms": 41635
+    "phase1_parallel_ms": 16103,
+    "phase2_isbn_chain_ms": 0,
+    "cover_validation_ms": 1068,
+    "total_ms": 17171
   },
-  "_cached_at": "2026-04-21T02:25:04.697Z"
+  "_version": "3.6",
+  "_cached_at": "2026-04-29T22:19:07.766Z"
 }

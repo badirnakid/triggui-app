@@ -7,7 +7,8 @@
     "autor_completo": "Napoleon Hill",
     "año": "2018",
     "editorial": null,
-    "isbn": "6741198395",
+    "isbn": "",
+    "apple_track_id": "6741198395",
     "categorias": [
       "Superación personal",
       "Libros",
@@ -18,9 +19,9 @@
   "match_score": 1,
   "other_sources_agreed": [],
   "resolution_path": [
-    "evidence_fetched_2sources"
+    "evidence_fetched_1sources"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-24T03:25:34.469Z"
+  "cached_at": "2026-04-29T22:18:18.543Z"
 }

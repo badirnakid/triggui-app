@@ -1,0 +1,52 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\n“At the core, Hit Refresh, is about us humans and the unique quality we call empathy, which will become ever more valuable in a world where the torrent of technology will disrupt the status quo like never before.” – Satya Nadella from Hit Refresh “Satya has charted a course for making the most of the opportunities created by technology while also facing up to the hard questions.” – Bill Gates from the Foreword of Hit Refresh The New York Times bestseller Hit Refresh is about individual change, about the transformation happening inside of Microsoft and the technology that will soon impact all of our lives—the arrival of the most exciting and disruptive wave of technology humankind has experienced: artificial intelligence, mixed reality, and quantum computing. It’s about how people, organizations, and societies can and must transform and “hit refresh” in their persistent quest for new energy, new ideas, and continued relevance and renewal.&#xa0; Microsoft’s CEO tells the inside story of the tech company’s continuing transformation, tracing his own personal journey from a childhood in India to leading some of the most significant technological changes in the digital era. Satya Nadella explores a fascinating childhood before immigrating to the U.S. and how he learned to lead along the way. He then shares his meditations as a sitting CEO—one who is mostly unknown following the brainy Bill Gates and energetic Steve Ballmer. He tells the inside story of how a company rediscovered its soul—transforming everything from its corporate culture to their fiercely competitive landscape and industry partnerships. As much a humanist as engineer and executive, Nadella concludes with his vision for the coming wave of technology and by exploring the potential impact to society and delivering call to action for world leaders. “Ideas excite me,” Nadella explains. “Empathy grounds and centers me.” Hit Refresh is a set of reflections, meditations, and recommendations presented as algorithms from a principled, deliberative leader searching for improvement—for himself, for a storied company, and for society. This insightful business book delivers a clear-eyed look at the challenges and opportunities facing modern leaders, including: A New Kind of Leadership: Discover why empathy is the single most valuable quality for a leader guiding a team through massive transformation and their quest for new energy.The History of Microsoft: Go inside the story of how a legendary tech company rediscovered its soul, transforming everything from its corporate culture to its industry partnerships.Personal Transformation: Follow Satya Nadella’s personal journey from his childhood in India to succeeding iconic leaders like Bill Gates and Steve Ballmer.The Future of Technology: Explore the next disruptive wave—artificial intelligence, mixed reality, and quantum computing—and its potential impact on society.\n\nMETADATA VERIFICADA:\n- Título: Hit Refresh\n- Autor: Satya Nadella, Greg Shaw & Jill Tracie Nichols\n- Año: 2017\n- Categorías: Biografías y memorias, Libros, Negocios y finanzas personales, Industrias y profesiones",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Hit Refresh",
+    "autor_completo": "Satya Nadella, Greg Shaw & Jill Tracie Nichols",
+    "año": "2017",
+    "editorial": null,
+    "isbn": "",
+    "apple_track_id": "1128878569",
+    "categorias": [
+      "Biografías y memorias",
+      "Libros",
+      "Negocios y finanzas personales",
+      "Industrias y profesiones",
+      "Informática e Internet",
+      "Internet",
+      "Historia",
+      "Ciencia y naturaleza",
+      "Ecología",
+      "Naturaleza",
+      "No ficción",
+      "Ciencia social",
+      "Sociedad",
+      "Computadoras",
+      "Finanzas",
+      "Economía",
+      "Salud, mente y cuerpo",
+      "Superación personal",
+      "Biografías y memorias: ciencia y tecnología",
+      "Historia de América",
+      "Técnicos y profesionales",
+      "Ingeniería",
+      "Informática",
+      "Administración y liderazgo",
+      "Biografías y memorias: negocios"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/hit-refresh/id1128878569?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "google_books",
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_3sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-04-29T22:11:53.984Z"
+}

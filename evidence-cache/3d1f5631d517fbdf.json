@@ -1,8 +1,11 @@
 {
-  "titulo_input": "supercomunicadores",
-  "autor_input": "charles duhigg",
+  "titulo_input": "Supercomunicadores",
+  "autor_input": "Charles Duhigg",
   "isbn_seed": "",
-  "isbn_discovered": "6475678784",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "",
+  "isbn_discovered_raw": "",
   "apple": {
     "ok": true,
     "source": "apple_books",
@@ -36,7 +39,8 @@
       "autor_completo": "Charles Duhigg",
       "año": "2024",
       "editorial": null,
-      "isbn": "6475678784",
+      "isbn": "",
+      "apple_track_id": "6475678784",
       "categorias": [
         "Superación personal",
         "Libros",
@@ -56,23 +60,9 @@
     "source": "openlibrary"
   },
   "amazon": {
-    "ok": true,
-    "source": "amazon",
-    "match_score": 0.85,
-    "covers": [
-      {
-        "size": "large",
-        "url": "https://images-na.ssl-images-amazon.com/images/P/6475678784.01.LZZZZZZZ.jpg"
-      }
-    ],
-    "synopsis": "",
-    "synopsis_length": 0,
-    "verified_identity": {
-      "isbn": "6475678784",
-      "titulo_real": null,
-      "autor_completo": null,
-      "año": null
-    }
+    "ok": false,
+    "reason": "skipped",
+    "source": "amazon"
   },
   "valid_covers": [
     {
@@ -98,27 +88,22 @@
       "size": "medium",
       "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/4b/2a/2e/4b2a2e4e-6092-277d-98ea-0d75dd6354c6/9788419820198.jpg/100x100bb.jpg",
       "valid": true
-    },
-    {
-      "source": "amazon",
-      "size": "large",
-      "url": "https://images-na.ssl-images-amazon.com/images/P/6475678784.01.LZZZZZZZ.jpg",
-      "valid": true
     }
   ],
   "_sources_succeeded": [
-    "apple_books",
-    "amazon"
+    "apple_books"
   ],
   "_sources_failed": [
     "google_books:no_good_match",
-    "openlibrary:no_results"
+    "openlibrary:no_results",
+    "amazon:skipped"
   ],
   "_timing": {
-    "phase1_parallel_ms": 15853,
-    "phase2_isbn_chain_ms": 27624,
-    "cover_validation_ms": 997,
-    "total_ms": 44474
+    "phase1_parallel_ms": 16331,
+    "phase2_isbn_chain_ms": 0,
+    "cover_validation_ms": 486,
+    "total_ms": 16817
   },
-  "_cached_at": "2026-04-20T03:12:42.448Z"
+  "_version": "3.6",
+  "_cached_at": "2026-04-29T22:22:32.494Z"
 }

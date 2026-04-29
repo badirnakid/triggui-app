@@ -7,7 +7,8 @@
     "autor_completo": "Eduardo Punset",
     "año": "2010",
     "editorial": null,
-    "isbn": "469035386",
+    "isbn": "",
+    "apple_track_id": "469035386",
     "categorias": [
       "Ciencia y naturaleza",
       "Libros",
@@ -20,9 +21,9 @@
     "openlibrary"
   ],
   "resolution_path": [
-    "evidence_fetched_3sources"
+    "evidence_fetched_2sources"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-23T02:54:56.724Z"
+  "cached_at": "2026-04-29T22:20:49.767Z"
 }

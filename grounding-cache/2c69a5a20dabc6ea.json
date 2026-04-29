@@ -7,7 +7,8 @@
     "autor_completo": "Shane Parrish",
     "año": "2023",
     "editorial": null,
-    "isbn": "6445290443",
+    "isbn": "",
+    "apple_track_id": "6445290443",
     "categorias": [
       "Administración y liderazgo",
       "Libros",
@@ -22,9 +23,9 @@
     "openlibrary"
   ],
   "resolution_path": [
-    "evidence_fetched_3sources"
+    "evidence_fetched_2sources"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-24T03:22:16.449Z"
+  "cached_at": "2026-04-29T22:14:03.523Z"
 }

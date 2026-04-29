@@ -2,7 +2,10 @@
   "titulo_input": "Clear Thinking",
   "autor_input": "Shane Parrish",
   "isbn_seed": "",
-  "isbn_discovered": "6445290443",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "",
+  "isbn_discovered_raw": "",
   "apple": {
     "ok": true,
     "source": "apple_books",
@@ -36,7 +39,8 @@
       "autor_completo": "Shane Parrish",
       "año": "2023",
       "editorial": null,
-      "isbn": "6445290443",
+      "isbn": "",
+      "apple_track_id": "6445290443",
       "categorias": [
         "Administración y liderazgo",
         "Libros",
@@ -88,23 +92,9 @@
     }
   },
   "amazon": {
-    "ok": true,
-    "source": "amazon",
-    "match_score": 0.85,
-    "covers": [
-      {
-        "size": "large",
-        "url": "https://images-na.ssl-images-amazon.com/images/P/6445290443.01.LZZZZZZZ.jpg"
-      }
-    ],
-    "synopsis": "",
-    "synopsis_length": 0,
-    "verified_identity": {
-      "isbn": "6445290443",
-      "titulo_real": null,
-      "autor_completo": null,
-      "año": null
-    }
+    "ok": false,
+    "reason": "skipped",
+    "source": "amazon"
   },
   "valid_covers": [
     {
@@ -142,33 +132,22 @@
       "size": "medium",
       "url": "https://covers.openlibrary.org/b/id/15208264-M.jpg",
       "valid": true
-    },
-    {
-      "source": "openlibrary",
-      "size": "small",
-      "url": "https://covers.openlibrary.org/b/id/15208264-S.jpg",
-      "valid": true
-    },
-    {
-      "source": "amazon",
-      "size": "large",
-      "url": "https://images-na.ssl-images-amazon.com/images/P/6445290443.01.LZZZZZZZ.jpg",
-      "valid": true
     }
   ],
   "_sources_succeeded": [
     "apple_books",
-    "openlibrary",
-    "amazon"
+    "openlibrary"
   ],
   "_sources_failed": [
-    "google_books:no_good_match"
+    "google_books:no_good_match",
+    "amazon:skipped"
   ],
   "_timing": {
-    "phase1_parallel_ms": 16612,
-    "phase2_isbn_chain_ms": 24806,
-    "cover_validation_ms": 638,
-    "total_ms": 42056
+    "phase1_parallel_ms": 16211,
+    "phase2_isbn_chain_ms": 0,
+    "cover_validation_ms": 453,
+    "total_ms": 16664
   },
-  "_cached_at": "2026-04-24T03:22:16.448Z"
+  "_version": "3.6",
+  "_cached_at": "2026-04-29T22:14:03.522Z"
 }

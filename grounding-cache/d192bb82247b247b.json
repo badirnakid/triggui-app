@@ -7,7 +7,8 @@
     "autor_completo": "Eduardo Punset",
     "año": "2014",
     "editorial": null,
-    "isbn": "918231322",
+    "isbn": "",
+    "apple_track_id": "918231322",
     "categorias": [
       "Superación personal",
       "Libros",
@@ -17,12 +18,13 @@
   },
   "match_score": 1,
   "other_sources_agreed": [
+    "google_books",
     "openlibrary"
   ],
   "resolution_path": [
-    "evidence_fetched_3sources"
+    "evidence_fetched_4sources"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-21T02:36:11.819Z"
+  "cached_at": "2026-04-29T22:17:30.853Z"
 }
