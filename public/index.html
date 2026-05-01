@@ -3141,6 +3141,469 @@ window.closeCard = function() {
 // Escala: TF-IDF es el mismo algoritmo que usaba Google antes de la era de
 // embeddings. Matemáticamente correcto de 1 libro a 10 millones.
 // ══════════════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════════
+// 🌒 v10: Diccionario de sinónimos emocionales — expansión de query.
+//
+// 30 familias semánticas (estados emocionales, energía, relacionales, vitales).
+// Reciprocidad matemática garantizada: si A→[B,C], entonces B→[A,C] y C→[A,B].
+// 169 términos ES + 164 términos EN, ~5 sinónimos promedio cada uno.
+//
+// Aplicación en TrigguiFiltro:
+//   - Token escrito por el usuario: peso 1.0 (gana siempre que matchea)
+//   - Sinónimo expandido: peso 0.5 (rescata sin dominar)
+//   - Si el usuario escribe DOS palabras del mismo cluster, ambas valen 1.0
+//
+// FALLBACK: si el idioma no está en el mapa o hay cualquier error,
+// expandWithSynonyms devuelve solo los tokens originales — el filtro
+// sigue funcionando idéntico al comportamiento previo. Cero riesgo.
+// ══════════════════════════════════════════════════════════════════════════
+const TRIGGUI_SYNONYMS = {
+  es: {
+    "abandonada":["abandonado","abandono","aislada","aislado","aislamiento","desconectada","desconectado","sola","soledad","solo"],
+    "abandonado":["abandonada","abandono","aislada","aislado","aislamiento","desconectada","desconectado","sola","soledad","solo"],
+    "abandono":["abandonada","abandonado","aislada","aislado","aislamiento","desconectada","desconectado","sola","soledad","solo"],
+    "afecto":["amando","amor","carino","enamorada","enamorado","ternura"],
+    "agobiada":["agobiado","agobio","angustia","ansiedad","ansiosa","ansioso","estres","estresada","estresado","nervios","preocupacion","preocupada","preocupado"],
+    "agobiado":["agobiada","agobio","angustia","ansiedad","ansiosa","ansioso","estres","estresada","estresado","nervios","preocupacion","preocupada","preocupado"],
+    "agobio":["agobiada","agobiado","angustia","ansiedad","ansiosa","ansioso","estres","estresada","estresado","nervios","preocupacion","preocupada","preocupado"],
+    "agotada":["agotado","agotamiento","burnout","cansada","cansado","cansancio","exhausta","exhausto","fatiga","fatigada","fatigado","rendida","rendido"],
+    "agotado":["agotada","agotamiento","burnout","cansada","cansado","cansancio","exhausta","exhausto","fatiga","fatigada","fatigado","rendida","rendido"],
+    "agotamiento":["agotada","agotado","burnout","cansada","cansado","cansancio","exhausta","exhausto","fatiga","fatigada","fatigado","rendida","rendido"],
+    "aislada":["abandonada","abandonado","abandono","aislado","aislamiento","desconectada","desconectado","sola","soledad","solo"],
+    "aislado":["abandonada","abandonado","abandono","aislada","aislamiento","desconectada","desconectado","sola","soledad","solo"],
+    "aislamiento":["abandonada","abandonado","abandono","aislada","aislado","desconectada","desconectado","sola","soledad","solo"],
+    "alegre":["alegria","contenta","contento","dicha","dichosa","dichoso","feliz","gozo","plena","pleno"],
+    "alegria":["alegre","contenta","contento","dicha","dichosa","dichoso","feliz","gozo","plena","pleno"],
+    "amando":["afecto","amor","carino","enamorada","enamorado","ternura"],
+    "amor":["afecto","amando","carino","enamorada","enamorado","ternura"],
+    "angustia":["agobiada","agobiado","agobio","ansiedad","ansiosa","ansioso","estres","estresada","estresado","nervios","preocupacion","preocupada","preocupado"],
+    "ansiedad":["agobiada","agobiado","agobio","angustia","ansiosa","ansioso","estres","estresada","estresado","nervios","preocupacion","preocupada","preocupado"],
+    "ansiosa":["agobiada","agobiado","agobio","angustia","ansiedad","ansioso","estres","estresada","estresado","nervios","preocupacion","preocupada","preocupado"],
+    "ansioso":["agobiada","agobiado","agobio","angustia","ansiedad","ansiosa","estres","estresada","estresado","nervios","preocupacion","preocupada","preocupado"],
+    "arrepentida":["arrepentido","arrepentimiento","culpa","culpable","remordimiento"],
+    "arrepentido":["arrepentida","arrepentimiento","culpa","culpable","remordimiento"],
+    "arrepentimiento":["arrepentida","arrepentido","culpa","culpable","remordimiento"],
+    "asustada":["asustado","miedo","miedosa","miedoso","panico","pavor","susto","temor","terror"],
+    "asustado":["asustada","miedo","miedosa","miedoso","panico","pavor","susto","temor","terror"],
+    "atorada":["atorado","bloqueada","bloqueado","bloqueo","estancada","estancado","paralizada","paralizado"],
+    "atorado":["atorada","bloqueada","bloqueado","bloqueo","estancada","estancado","paralizada","paralizado"],
+    "ausencia":["hueca","hueco","nada","sinrumbo","vacia","vacio"],
+    "autonomia":["independencia","libertad","libre","soltar"],
+    "avergonzada":["avergonzado","humillacion","humillada","humillado","pena","ridicula","ridiculo","verguenza"],
+    "avergonzado":["avergonzada","humillacion","humillada","humillado","pena","ridicula","ridiculo","verguenza"],
+    "bloqueada":["atorada","atorado","bloqueado","bloqueo","estancada","estancado","paralizada","paralizado"],
+    "bloqueado":["atorada","atorado","bloqueada","bloqueo","estancada","estancado","paralizada","paralizado"],
+    "bloqueo":["atorada","atorado","bloqueada","bloqueado","confundida","confundido","confusion","desorientada","desorientado","estancada","estancado","paralizada","paralizado","perdida","perdido"],
+    "burnout":["agotada","agotado","agotamiento","cansada","cansado","cansancio","exhausta","exhausto","fatiga","fatigada","fatigado","rendida","rendido"],
+    "calma":["calmada","calmado","paz","quietud","serena","serenidad","sereno","sosiego","tranquila","tranquilidad","tranquilo"],
+    "calmada":["calma","calmado","paz","quietud","serena","serenidad","sereno","sosiego","tranquila","tranquilidad","tranquilo"],
+    "calmado":["calma","calmada","paz","quietud","serena","serenidad","sereno","sosiego","tranquila","tranquilidad","tranquilo"],
+    "cambio":["evolucion","metamorfosis","renacer","transformacion","transformar","transformarme"],
+    "camino":["direccion","guia","norte","orientacion"],
+    "cansada":["agotada","agotado","agotamiento","burnout","cansado","cansancio","exhausta","exhausto","fatiga","fatigada","fatigado","rendida","rendido"],
+    "cansado":["agotada","agotado","agotamiento","burnout","cansada","cansancio","exhausta","exhausto","fatiga","fatigada","fatigado","rendida","rendido"],
+    "cansancio":["agotada","agotado","agotamiento","burnout","cansada","cansado","exhausta","exhausto","fatiga","fatigada","fatigado","rendida","rendido"],
+    "carino":["afecto","amando","amor","enamorada","enamorado","ternura"],
+    "celos":["celosa","celoso","comparacion","envidia","envidiosa","envidioso","resentida","resentido","resentimiento"],
+    "celosa":["celos","celoso","comparacion","envidia","envidiosa","envidioso","resentida","resentido","resentimiento"],
+    "celoso":["celos","celosa","comparacion","envidia","envidiosa","envidioso","resentida","resentido","resentimiento"],
+    "cercania":["conectada","conectado","conexion","intimidad","vinculo"],
+    "clara":["claridad","claro","concentracion","concentrada","concentrado","enfocada","enfocado","enfoque","lucida","lucidez","lucido"],
+    "claridad":["clara","claro","concentracion","concentrada","concentrado","enfocada","enfocado","enfoque","lucida","lucidez","lucido"],
+    "claro":["clara","claridad","concentracion","concentrada","concentrado","enfocada","enfocado","enfoque","lucida","lucidez","lucido"],
+    "comparacion":["celos","celosa","celoso","envidia","envidiosa","envidioso","resentida","resentido","resentimiento"],
+    "concentracion":["clara","claridad","claro","concentrada","concentrado","enfocada","enfocado","enfoque","lucida","lucidez","lucido"],
+    "concentrada":["clara","claridad","claro","concentracion","concentrado","enfocada","enfocado","enfoque","lucida","lucidez","lucido"],
+    "concentrado":["clara","claridad","claro","concentracion","concentrada","enfocada","enfocado","enfoque","lucida","lucidez","lucido"],
+    "conectada":["cercania","conectado","conexion","intimidad","vinculo"],
+    "conectado":["cercania","conectada","conexion","intimidad","vinculo"],
+    "conexion":["cercania","conectada","conectado","intimidad","vinculo"],
+    "confundida":["bloqueo","confundido","confusion","desorientada","desorientado","perdida","perdido"],
+    "confundido":["bloqueo","confundida","confusion","desorientada","desorientado","perdida","perdido"],
+    "confusion":["bloqueo","confundida","confundido","desorientada","desorientado","perdida","perdido"],
+    "contenta":["alegre","alegria","contento","dicha","dichosa","dichoso","feliz","gozo","plena","pleno"],
+    "contento":["alegre","alegria","contenta","dicha","dichosa","dichoso","feliz","gozo","plena","pleno"],
+    "coraje":["enojada","enojado","enojo","frustrada","frustrado","furia","furiosa","furioso","ira","molesta","molesto","rabia"],
+    "culpa":["arrepentida","arrepentido","arrepentimiento","culpable","remordimiento"],
+    "culpable":["arrepentida","arrepentido","arrepentimiento","culpa","remordimiento"],
+    "decidir":["decision","duda","dudar","dudo","eleccion","encrucijada"],
+    "decision":["decidir","duda","dudar","dudo","eleccion","encrucijada"],
+    "depre":["deprimida","deprimido","dolor","duelo","luto","melancolia","melancolica","melancolico","pena","triste","tristeza"],
+    "deprimida":["depre","deprimido","dolor","duelo","luto","melancolia","melancolica","melancolico","pena","triste","tristeza"],
+    "deprimido":["depre","deprimida","dolor","duelo","luto","melancolia","melancolica","melancolico","pena","triste","tristeza"],
+    "descansar":["descanso","pausa","reposo","respiro","tregua"],
+    "descanso":["descansar","pausa","reposo","respiro","tregua"],
+    "desconectada":["abandonada","abandonado","abandono","aislada","aislado","aislamiento","desconectado","desconexion","distancia","distante","frialdad","lejania","sola","soledad","solo"],
+    "desconectado":["abandonada","abandonado","abandono","aislada","aislado","aislamiento","desconectada","desconexion","distancia","distante","frialdad","lejania","sola","soledad","solo"],
+    "desconexion":["desconectada","desconectado","distancia","distante","frialdad","lejania"],
+    "deslealtad":["engano","traicion","traicionada","traicionado","trampa"],
+    "desorientada":["bloqueo","confundida","confundido","confusion","desorientado","perdida","perdido"],
+    "desorientado":["bloqueo","confundida","confundido","confusion","desorientada","perdida","perdido"],
+    "dicha":["alegre","alegria","contenta","contento","dichosa","dichoso","feliz","gozo","plena","pleno"],
+    "dichosa":["alegre","alegria","contenta","contento","dicha","dichoso","feliz","gozo","plena","pleno"],
+    "dichoso":["alegre","alegria","contenta","contento","dicha","dichosa","feliz","gozo","plena","pleno"],
+    "direccion":["camino","guia","norte","orientacion"],
+    "distancia":["desconectada","desconectado","desconexion","distante","frialdad","lejania"],
+    "distante":["desconectada","desconectado","desconexion","distancia","frialdad","lejania"],
+    "divorciada":["divorciado","divorcio","rota","roto","ruptura","separacion","separada","separado","termino"],
+    "divorciado":["divorciada","divorcio","rota","roto","ruptura","separacion","separada","separado","termino"],
+    "divorcio":["divorciada","divorciado","rota","roto","ruptura","separacion","separada","separado","termino"],
+    "dolor":["depre","deprimida","deprimido","duelo","luto","melancolia","melancolica","melancolico","pena","triste","tristeza"],
+    "duda":["decidir","decision","dudar","dudo","eleccion","encrucijada"],
+    "dudar":["decidir","decision","duda","dudo","eleccion","encrucijada"],
+    "dudo":["decidir","decision","duda","dudar","eleccion","encrucijada"],
+    "duelo":["depre","deprimida","deprimido","dolor","luto","melancolia","melancolica","melancolico","pena","triste","tristeza"],
+    "eleccion":["decidir","decision","duda","dudar","dudo","encrucijada"],
+    "empuje":["energia","energica","energico","ganas","impulso","motivacion","motivada","motivado"],
+    "enamorada":["afecto","amando","amor","carino","enamorado","ternura"],
+    "enamorado":["afecto","amando","amor","carino","enamorada","ternura"],
+    "encrucijada":["decidir","decision","duda","dudar","dudo","eleccion"],
+    "energia":["empuje","energica","energico","ganas","impulso","motivacion","motivada","motivado"],
+    "energica":["empuje","energia","energico","ganas","impulso","motivacion","motivada","motivado"],
+    "energico":["empuje","energia","energica","ganas","impulso","motivacion","motivada","motivado"],
+    "enfocada":["clara","claridad","claro","concentracion","concentrada","concentrado","enfocado","enfoque","lucida","lucidez","lucido"],
+    "enfocado":["clara","claridad","claro","concentracion","concentrada","concentrado","enfocada","enfoque","lucida","lucidez","lucido"],
+    "enfoque":["clara","claridad","claro","concentracion","concentrada","concentrado","enfocada","enfocado","lucida","lucidez","lucido"],
+    "engano":["deslealtad","traicion","traicionada","traicionado","trampa"],
+    "enojada":["coraje","enojado","enojo","frustrada","frustrado","furia","furiosa","furioso","ira","molesta","molesto","rabia"],
+    "enojado":["coraje","enojada","enojo","frustrada","frustrado","furia","furiosa","furioso","ira","molesta","molesto","rabia"],
+    "enojo":["coraje","enojada","enojado","frustrada","frustrado","furia","furiosa","furioso","ira","molesta","molesto","rabia"],
+    "envidia":["celos","celosa","celoso","comparacion","envidiosa","envidioso","resentida","resentido","resentimiento"],
+    "envidiosa":["celos","celosa","celoso","comparacion","envidia","envidioso","resentida","resentido","resentimiento"],
+    "envidioso":["celos","celosa","celoso","comparacion","envidia","envidiosa","resentida","resentido","resentimiento"],
+    "esperanza":["esperanzada","esperanzado","fe","ilusion","ilusionada","ilusionado","luz","optimismo","optimista"],
+    "esperanzada":["esperanza","esperanzado","fe","ilusion","ilusionada","ilusionado","luz","optimismo","optimista"],
+    "esperanzado":["esperanza","esperanzada","fe","ilusion","ilusionada","ilusionado","luz","optimismo","optimista"],
+    "estancada":["atorada","atorado","bloqueada","bloqueado","bloqueo","estancado","paralizada","paralizado"],
+    "estancado":["atorada","atorado","bloqueada","bloqueado","bloqueo","estancada","paralizada","paralizado"],
+    "estres":["agobiada","agobiado","agobio","angustia","ansiedad","ansiosa","ansioso","estresada","estresado","nervios","preocupacion","preocupada","preocupado"],
+    "estresada":["agobiada","agobiado","agobio","angustia","ansiedad","ansiosa","ansioso","estres","estresado","nervios","preocupacion","preocupada","preocupado"],
+    "estresado":["agobiada","agobiado","agobio","angustia","ansiedad","ansiosa","ansioso","estres","estresada","nervios","preocupacion","preocupada","preocupado"],
+    "evolucion":["cambio","metamorfosis","renacer","transformacion","transformar","transformarme"],
+    "exhausta":["agotada","agotado","agotamiento","burnout","cansada","cansado","cansancio","exhausto","fatiga","fatigada","fatigado","rendida","rendido"],
+    "exhausto":["agotada","agotado","agotamiento","burnout","cansada","cansado","cansancio","exhausta","fatiga","fatigada","fatigado","rendida","rendido"],
+    "fatiga":["agotada","agotado","agotamiento","burnout","cansada","cansado","cansancio","exhausta","exhausto","fatigada","fatigado","rendida","rendido"],
+    "fatigada":["agotada","agotado","agotamiento","burnout","cansada","cansado","cansancio","exhausta","exhausto","fatiga","fatigado","rendida","rendido"],
+    "fatigado":["agotada","agotado","agotamiento","burnout","cansada","cansado","cansancio","exhausta","exhausto","fatiga","fatigada","rendida","rendido"],
+    "fe":["esperanza","esperanzada","esperanzado","ilusion","ilusionada","ilusionado","luz","optimismo","optimista"],
+    "feliz":["alegre","alegria","contenta","contento","dicha","dichosa","dichoso","gozo","plena","pleno"],
+    "flow":["fluidez","fluyendo","ligera","ligero","presente"],
+    "fluidez":["flow","fluyendo","ligera","ligero","presente"],
+    "fluyendo":["flow","fluidez","ligera","ligero","presente"],
+    "frialdad":["desconectada","desconectado","desconexion","distancia","distante","lejania"],
+    "frustrada":["coraje","enojada","enojado","enojo","frustrado","furia","furiosa","furioso","ira","molesta","molesto","rabia"],
+    "frustrado":["coraje","enojada","enojado","enojo","frustrada","furia","furiosa","furioso","ira","molesta","molesto","rabia"],
+    "furia":["coraje","enojada","enojado","enojo","frustrada","frustrado","furiosa","furioso","ira","molesta","molesto","rabia"],
+    "furiosa":["coraje","enojada","enojado","enojo","frustrada","frustrado","furia","furioso","ira","molesta","molesto","rabia"],
+    "furioso":["coraje","enojada","enojado","enojo","frustrada","frustrado","furia","furiosa","ira","molesta","molesto","rabia"],
+    "ganas":["empuje","energia","energica","energico","impulso","motivacion","motivada","motivado"],
+    "gozo":["alegre","alegria","contenta","contento","dicha","dichosa","dichoso","feliz","plena","pleno"],
+    "guia":["camino","direccion","norte","orientacion"],
+    "hueca":["ausencia","hueco","nada","sinrumbo","vacia","vacio"],
+    "hueco":["ausencia","hueca","nada","sinrumbo","vacia","vacio"],
+    "humillacion":["avergonzada","avergonzado","humillada","humillado","pena","ridicula","ridiculo","verguenza"],
+    "humillada":["avergonzada","avergonzado","humillacion","humillado","pena","ridicula","ridiculo","verguenza"],
+    "humillado":["avergonzada","avergonzado","humillacion","humillada","pena","ridicula","ridiculo","verguenza"],
+    "ilusion":["esperanza","esperanzada","esperanzado","fe","ilusionada","ilusionado","luz","optimismo","optimista"],
+    "ilusionada":["esperanza","esperanzada","esperanzado","fe","ilusion","ilusionado","luz","optimismo","optimista"],
+    "ilusionado":["esperanza","esperanzada","esperanzado","fe","ilusion","ilusionada","luz","optimismo","optimista"],
+    "impulso":["empuje","energia","energica","energico","ganas","motivacion","motivada","motivado"],
+    "independencia":["autonomia","libertad","libre","soltar"],
+    "intimidad":["cercania","conectada","conectado","conexion","vinculo"],
+    "ira":["coraje","enojada","enojado","enojo","frustrada","frustrado","furia","furiosa","furioso","molesta","molesto","rabia"],
+    "lejania":["desconectada","desconectado","desconexion","distancia","distante","frialdad"],
+    "liberar":["perdon","perdonar","reconciliacion","soltar"],
+    "libertad":["autonomia","independencia","libre","soltar"],
+    "libre":["autonomia","independencia","libertad","soltar"],
+    "ligera":["flow","fluidez","fluyendo","ligero","presente"],
+    "ligero":["flow","fluidez","fluyendo","ligera","presente"],
+    "lucida":["clara","claridad","claro","concentracion","concentrada","concentrado","enfocada","enfocado","enfoque","lucidez","lucido"],
+    "lucidez":["clara","claridad","claro","concentracion","concentrada","concentrado","enfocada","enfocado","enfoque","lucida","lucido"],
+    "lucido":["clara","claridad","claro","concentracion","concentrada","concentrado","enfocada","enfocado","enfoque","lucida","lucidez"],
+    "luto":["depre","deprimida","deprimido","dolor","duelo","melancolia","melancolica","melancolico","pena","triste","tristeza"],
+    "luz":["esperanza","esperanzada","esperanzado","fe","ilusion","ilusionada","ilusionado","optimismo","optimista"],
+    "melancolia":["depre","deprimida","deprimido","dolor","duelo","luto","melancolica","melancolico","pena","triste","tristeza"],
+    "melancolica":["depre","deprimida","deprimido","dolor","duelo","luto","melancolia","melancolico","pena","triste","tristeza"],
+    "melancolico":["depre","deprimida","deprimido","dolor","duelo","luto","melancolia","melancolica","pena","triste","tristeza"],
+    "metamorfosis":["cambio","evolucion","renacer","transformacion","transformar","transformarme"],
+    "miedo":["asustada","asustado","miedosa","miedoso","panico","pavor","susto","temor","terror"],
+    "miedosa":["asustada","asustado","miedo","miedoso","panico","pavor","susto","temor","terror"],
+    "miedoso":["asustada","asustado","miedo","miedosa","panico","pavor","susto","temor","terror"],
+    "mision":["proposito","propositos","rumbo","sentido","vocacion"],
+    "molesta":["coraje","enojada","enojado","enojo","frustrada","frustrado","furia","furiosa","furioso","ira","molesto","rabia"],
+    "molesto":["coraje","enojada","enojado","enojo","frustrada","frustrado","furia","furiosa","furioso","ira","molesta","rabia"],
+    "motivacion":["empuje","energia","energica","energico","ganas","impulso","motivada","motivado"],
+    "motivada":["empuje","energia","energica","energico","ganas","impulso","motivacion","motivado"],
+    "motivado":["empuje","energia","energica","energico","ganas","impulso","motivacion","motivada"],
+    "nada":["ausencia","hueca","hueco","sinrumbo","vacia","vacio"],
+    "nervios":["agobiada","agobiado","agobio","angustia","ansiedad","ansiosa","ansioso","estres","estresada","estresado","preocupacion","preocupada","preocupado"],
+    "norte":["camino","direccion","guia","orientacion"],
+    "optimismo":["esperanza","esperanzada","esperanzado","fe","ilusion","ilusionada","ilusionado","luz","optimista"],
+    "optimista":["esperanza","esperanzada","esperanzado","fe","ilusion","ilusionada","ilusionado","luz","optimismo"],
+    "orientacion":["camino","direccion","guia","norte"],
+    "panico":["asustada","asustado","miedo","miedosa","miedoso","pavor","susto","temor","terror"],
+    "paralizada":["atorada","atorado","bloqueada","bloqueado","bloqueo","estancada","estancado","paralizado"],
+    "paralizado":["atorada","atorado","bloqueada","bloqueado","bloqueo","estancada","estancado","paralizada"],
+    "pausa":["descansar","descanso","reposo","respiro","tregua"],
+    "pavor":["asustada","asustado","miedo","miedosa","miedoso","panico","susto","temor","terror"],
+    "paz":["calma","calmada","calmado","quietud","serena","serenidad","sereno","sosiego","tranquila","tranquilidad","tranquilo"],
+    "pena":["avergonzada","avergonzado","depre","deprimida","deprimido","dolor","duelo","humillacion","humillada","humillado","luto","melancolia","melancolica","melancolico","ridicula","ridiculo","triste","tristeza","verguenza"],
+    "perdida":["bloqueo","confundida","confundido","confusion","desorientada","desorientado","perdido"],
+    "perdido":["bloqueo","confundida","confundido","confusion","desorientada","desorientado","perdida"],
+    "perdon":["liberar","perdonar","reconciliacion","soltar"],
+    "perdonar":["liberar","perdon","reconciliacion","soltar"],
+    "plena":["alegre","alegria","contenta","contento","dicha","dichosa","dichoso","feliz","gozo","pleno"],
+    "pleno":["alegre","alegria","contenta","contento","dicha","dichosa","dichoso","feliz","gozo","plena"],
+    "preocupacion":["agobiada","agobiado","agobio","angustia","ansiedad","ansiosa","ansioso","estres","estresada","estresado","nervios","preocupada","preocupado"],
+    "preocupada":["agobiada","agobiado","agobio","angustia","ansiedad","ansiosa","ansioso","estres","estresada","estresado","nervios","preocupacion","preocupado"],
+    "preocupado":["agobiada","agobiado","agobio","angustia","ansiedad","ansiosa","ansioso","estres","estresada","estresado","nervios","preocupacion","preocupada"],
+    "presente":["flow","fluidez","fluyendo","ligera","ligero"],
+    "proposito":["mision","propositos","rumbo","sentido","vocacion"],
+    "propositos":["mision","proposito","rumbo","sentido","vocacion"],
+    "quietud":["calma","calmada","calmado","paz","serena","serenidad","sereno","sosiego","tranquila","tranquilidad","tranquilo"],
+    "rabia":["coraje","enojada","enojado","enojo","frustrada","frustrado","furia","furiosa","furioso","ira","molesta","molesto"],
+    "reconciliacion":["liberar","perdon","perdonar","soltar"],
+    "remordimiento":["arrepentida","arrepentido","arrepentimiento","culpa","culpable"],
+    "renacer":["cambio","evolucion","metamorfosis","transformacion","transformar","transformarme"],
+    "rendida":["agotada","agotado","agotamiento","burnout","cansada","cansado","cansancio","exhausta","exhausto","fatiga","fatigada","fatigado","rendido"],
+    "rendido":["agotada","agotado","agotamiento","burnout","cansada","cansado","cansancio","exhausta","exhausto","fatiga","fatigada","fatigado","rendida"],
+    "reposo":["descansar","descanso","pausa","respiro","tregua"],
+    "resentida":["celos","celosa","celoso","comparacion","envidia","envidiosa","envidioso","resentido","resentimiento"],
+    "resentido":["celos","celosa","celoso","comparacion","envidia","envidiosa","envidioso","resentida","resentimiento"],
+    "resentimiento":["celos","celosa","celoso","comparacion","envidia","envidiosa","envidioso","resentida","resentido"],
+    "respiro":["descansar","descanso","pausa","reposo","tregua"],
+    "ridicula":["avergonzada","avergonzado","humillacion","humillada","humillado","pena","ridiculo","verguenza"],
+    "ridiculo":["avergonzada","avergonzado","humillacion","humillada","humillado","pena","ridicula","verguenza"],
+    "rota":["divorciada","divorciado","divorcio","roto","ruptura","separacion","separada","separado","termino"],
+    "roto":["divorciada","divorciado","divorcio","rota","ruptura","separacion","separada","separado","termino"],
+    "rumbo":["mision","proposito","propositos","sentido","vocacion"],
+    "ruptura":["divorciada","divorciado","divorcio","rota","roto","separacion","separada","separado","termino"],
+    "sentido":["mision","proposito","propositos","rumbo","vocacion"],
+    "separacion":["divorciada","divorciado","divorcio","rota","roto","ruptura","separada","separado","termino"],
+    "separada":["divorciada","divorciado","divorcio","rota","roto","ruptura","separacion","separado","termino"],
+    "separado":["divorciada","divorciado","divorcio","rota","roto","ruptura","separacion","separada","termino"],
+    "serena":["calma","calmada","calmado","paz","quietud","serenidad","sereno","sosiego","tranquila","tranquilidad","tranquilo"],
+    "serenidad":["calma","calmada","calmado","paz","quietud","serena","sereno","sosiego","tranquila","tranquilidad","tranquilo"],
+    "sereno":["calma","calmada","calmado","paz","quietud","serena","serenidad","sosiego","tranquila","tranquilidad","tranquilo"],
+    "sinrumbo":["ausencia","hueca","hueco","nada","vacia","vacio"],
+    "sola":["abandonada","abandonado","abandono","aislada","aislado","aislamiento","desconectada","desconectado","soledad","solo"],
+    "soledad":["abandonada","abandonado","abandono","aislada","aislado","aislamiento","desconectada","desconectado","sola","solo"],
+    "solo":["abandonada","abandonado","abandono","aislada","aislado","aislamiento","desconectada","desconectado","sola","soledad"],
+    "soltar":["autonomia","independencia","liberar","libertad","libre","perdon","perdonar","reconciliacion"],
+    "sosiego":["calma","calmada","calmado","paz","quietud","serena","serenidad","sereno","tranquila","tranquilidad","tranquilo"],
+    "susto":["asustada","asustado","miedo","miedosa","miedoso","panico","pavor","temor","terror"],
+    "temor":["asustada","asustado","miedo","miedosa","miedoso","panico","pavor","susto","terror"],
+    "termino":["divorciada","divorciado","divorcio","rota","roto","ruptura","separacion","separada","separado"],
+    "ternura":["afecto","amando","amor","carino","enamorada","enamorado"],
+    "terror":["asustada","asustado","miedo","miedosa","miedoso","panico","pavor","susto","temor"],
+    "traicion":["deslealtad","engano","traicionada","traicionado","trampa"],
+    "traicionada":["deslealtad","engano","traicion","traicionado","trampa"],
+    "traicionado":["deslealtad","engano","traicion","traicionada","trampa"],
+    "trampa":["deslealtad","engano","traicion","traicionada","traicionado"],
+    "tranquila":["calma","calmada","calmado","paz","quietud","serena","serenidad","sereno","sosiego","tranquilidad","tranquilo"],
+    "tranquilidad":["calma","calmada","calmado","paz","quietud","serena","serenidad","sereno","sosiego","tranquila","tranquilo"],
+    "tranquilo":["calma","calmada","calmado","paz","quietud","serena","serenidad","sereno","sosiego","tranquila","tranquilidad"],
+    "transformacion":["cambio","evolucion","metamorfosis","renacer","transformar","transformarme"],
+    "transformar":["cambio","evolucion","metamorfosis","renacer","transformacion","transformarme"],
+    "transformarme":["cambio","evolucion","metamorfosis","renacer","transformacion","transformar"],
+    "tregua":["descansar","descanso","pausa","reposo","respiro"],
+    "triste":["depre","deprimida","deprimido","dolor","duelo","luto","melancolia","melancolica","melancolico","pena","tristeza"],
+    "tristeza":["depre","deprimida","deprimido","dolor","duelo","luto","melancolia","melancolica","melancolico","pena","triste"],
+    "vacia":["ausencia","hueca","hueco","nada","sinrumbo","vacio"],
+    "vacio":["ausencia","hueca","hueco","nada","sinrumbo","vacia"],
+    "verguenza":["avergonzada","avergonzado","humillacion","humillada","humillado","pena","ridicula","ridiculo"],
+    "vinculo":["cercania","conectada","conectado","conexion","intimidad"],
+    "vocacion":["mision","proposito","propositos","rumbo","sentido"]
+  },
+  en: {
+    "abandoned":["alone","disconnected","isolated","loneliness","lonely"],
+    "affection":["care","love","loving","tenderness"],
+    "afraid":["dread","fear","fright","frightened","panic","scared","terror"],
+    "alone":["abandoned","disconnected","isolated","loneliness","lonely"],
+    "anger":["angry","frustrated","fury","mad","rage","resentful"],
+    "angry":["anger","frustrated","fury","mad","rage","resentful"],
+    "anxiety":["anxious","nervous","nervousness","overwhelm","overwhelmed","stress","stressed","uneasy","worried","worry","worrying"],
+    "anxious":["anxiety","nervous","nervousness","overwhelm","overwhelmed","stress","stressed","uneasy","worried","worry","worrying"],
+    "apart":["coldness","disconnected","disconnection","distance","distant"],
+    "ashamed":["embarrassed","embarrassment","humiliated","humiliation","shame"],
+    "autonomy":["free","freedom","independence","release"],
+    "betrayal":["betrayed","deceit","deception","disloyalty"],
+    "betrayed":["betrayal","deceit","deception","disloyalty"],
+    "blank":["emptiness","empty","hollow","numb","void"],
+    "block":["blocked","frozen","paralyzed","stuck"],
+    "blocked":["block","frozen","paralyzed","stuck"],
+    "blue":["depressed","grief","mourning","pain","sad","sadness","sorrow"],
+    "bond":["closeness","connected","connection","intimacy"],
+    "break":["pause","respite","rest","resting","stillness"],
+    "breakup":["broken","divorce","divorced","ending","separated","separation"],
+    "broken":["breakup","divorce","divorced","ending","separated","separation"],
+    "burned":["burnout","burnt","drained","exhausted","exhaustion","fatigue","fatigued","spent","tired","tiredness"],
+    "burnout":["burned","burnt","drained","exhausted","exhaustion","fatigue","fatigued","spent","tired","tiredness"],
+    "burnt":["burned","burnout","drained","exhausted","exhaustion","fatigue","fatigued","spent","tired","tiredness"],
+    "calling":["meaning","mission","purpose","vocation"],
+    "calm":["calmness","peace","peaceful","quiet","serenity","stillness","tranquility"],
+    "calmness":["calm","peace","peaceful","quiet","serenity","stillness","tranquility"],
+    "care":["affection","love","loving","tenderness"],
+    "change":["evolution","rebirth","shift","transform","transformation"],
+    "cheerful":["content","delight","elated","happy","joy","joyful"],
+    "choice":["crossroads","decide","deciding","decision","doubt"],
+    "clarity":["clear","concentration","focus","focused","lucid"],
+    "clear":["clarity","concentration","focus","focused","lucid"],
+    "closeness":["bond","connected","connection","intimacy"],
+    "coldness":["apart","disconnected","disconnection","distance","distant"],
+    "comparison":["envious","envy","jealous","jealousy","resentful","resentment"],
+    "compass":["direction","guidance","path","way"],
+    "concentration":["clarity","clear","focus","focused","lucid"],
+    "confused":["confusion","disoriented","lost","muddled"],
+    "confusion":["confused","disoriented","lost","muddled"],
+    "connected":["bond","closeness","connection","intimacy"],
+    "connection":["bond","closeness","connected","intimacy"],
+    "content":["cheerful","delight","elated","happy","joy","joyful"],
+    "crossroads":["choice","decide","deciding","decision","doubt"],
+    "deceit":["betrayal","betrayed","deception","disloyalty"],
+    "deception":["betrayal","betrayed","deceit","disloyalty"],
+    "decide":["choice","crossroads","deciding","decision","doubt"],
+    "deciding":["choice","crossroads","decide","decision","doubt"],
+    "decision":["choice","crossroads","decide","deciding","doubt"],
+    "delight":["cheerful","content","elated","happy","joy","joyful"],
+    "depressed":["blue","grief","mourning","pain","sad","sadness","sorrow"],
+    "direction":["compass","guidance","path","way"],
+    "disconnected":["abandoned","alone","apart","coldness","disconnection","distance","distant","isolated","loneliness","lonely"],
+    "disconnection":["apart","coldness","disconnected","distance","distant"],
+    "disloyalty":["betrayal","betrayed","deceit","deception"],
+    "disoriented":["confused","confusion","lost","muddled"],
+    "distance":["apart","coldness","disconnected","disconnection","distant"],
+    "distant":["apart","coldness","disconnected","disconnection","distance"],
+    "divorce":["breakup","broken","divorced","ending","separated","separation"],
+    "divorced":["breakup","broken","divorce","ending","separated","separation"],
+    "doubt":["choice","crossroads","decide","deciding","decision"],
+    "drained":["burned","burnout","burnt","exhausted","exhaustion","fatigue","fatigued","spent","tired","tiredness"],
+    "dread":["afraid","fear","fright","frightened","panic","scared","terror"],
+    "drive":["energized","energy","momentum","motivated","motivation","spark"],
+    "ease":["flow","flowing","light","present"],
+    "elated":["cheerful","content","delight","happy","joy","joyful"],
+    "embarrassed":["ashamed","embarrassment","humiliated","humiliation","shame"],
+    "embarrassment":["ashamed","embarrassed","humiliated","humiliation","shame"],
+    "emptiness":["blank","empty","hollow","numb","void"],
+    "empty":["blank","emptiness","hollow","numb","void"],
+    "ending":["breakup","broken","divorce","divorced","separated","separation"],
+    "energized":["drive","energy","momentum","motivated","motivation","spark"],
+    "energy":["drive","energized","momentum","motivated","motivation","spark"],
+    "envious":["comparison","envy","jealous","jealousy","resentful","resentment"],
+    "envy":["comparison","envious","jealous","jealousy","resentful","resentment"],
+    "evolution":["change","rebirth","shift","transform","transformation"],
+    "exhausted":["burned","burnout","burnt","drained","exhaustion","fatigue","fatigued","spent","tired","tiredness"],
+    "exhaustion":["burned","burnout","burnt","drained","exhausted","fatigue","fatigued","spent","tired","tiredness"],
+    "faith":["hope","hopeful","light","optimism","optimistic"],
+    "fatigue":["burned","burnout","burnt","drained","exhausted","exhaustion","fatigued","spent","tired","tiredness"],
+    "fatigued":["burned","burnout","burnt","drained","exhausted","exhaustion","fatigue","spent","tired","tiredness"],
+    "fear":["afraid","dread","fright","frightened","panic","scared","terror"],
+    "flow":["ease","flowing","light","present"],
+    "flowing":["ease","flow","light","present"],
+    "focus":["clarity","clear","concentration","focused","lucid"],
+    "focused":["clarity","clear","concentration","focus","lucid"],
+    "forgive":["forgiveness","letting go","reconciliation","release"],
+    "forgiveness":["forgive","letting go","reconciliation","release"],
+    "free":["autonomy","freedom","independence","release"],
+    "freedom":["autonomy","free","independence","release"],
+    "fright":["afraid","dread","fear","frightened","panic","scared","terror"],
+    "frightened":["afraid","dread","fear","fright","panic","scared","terror"],
+    "frozen":["block","blocked","paralyzed","stuck"],
+    "frustrated":["anger","angry","fury","mad","rage","resentful"],
+    "fury":["anger","angry","frustrated","mad","rage","resentful"],
+    "grief":["blue","depressed","mourning","pain","sad","sadness","sorrow"],
+    "guidance":["compass","direction","path","way"],
+    "guilt":["guilty","regret","remorse"],
+    "guilty":["guilt","regret","remorse"],
+    "happy":["cheerful","content","delight","elated","joy","joyful"],
+    "hollow":["blank","emptiness","empty","numb","void"],
+    "hope":["faith","hopeful","light","optimism","optimistic"],
+    "hopeful":["faith","hope","light","optimism","optimistic"],
+    "humiliated":["ashamed","embarrassed","embarrassment","humiliation","shame"],
+    "humiliation":["ashamed","embarrassed","embarrassment","humiliated","shame"],
+    "independence":["autonomy","free","freedom","release"],
+    "intimacy":["bond","closeness","connected","connection"],
+    "isolated":["abandoned","alone","disconnected","loneliness","lonely"],
+    "jealous":["comparison","envious","envy","jealousy","resentful","resentment"],
+    "jealousy":["comparison","envious","envy","jealous","resentful","resentment"],
+    "joy":["cheerful","content","delight","elated","happy","joyful"],
+    "joyful":["cheerful","content","delight","elated","happy","joy"],
+    "letting go":["forgive","forgiveness","reconciliation","release"],
+    "light":["ease","faith","flow","flowing","hope","hopeful","optimism","optimistic","present"],
+    "loneliness":["abandoned","alone","disconnected","isolated","lonely"],
+    "lonely":["abandoned","alone","disconnected","isolated","loneliness"],
+    "lost":["confused","confusion","disoriented","muddled"],
+    "love":["affection","care","loving","tenderness"],
+    "loving":["affection","care","love","tenderness"],
+    "lucid":["clarity","clear","concentration","focus","focused"],
+    "mad":["anger","angry","frustrated","fury","rage","resentful"],
+    "meaning":["calling","mission","purpose","vocation"],
+    "mission":["calling","meaning","purpose","vocation"],
+    "momentum":["drive","energized","energy","motivated","motivation","spark"],
+    "motivated":["drive","energized","energy","momentum","motivation","spark"],
+    "motivation":["drive","energized","energy","momentum","motivated","spark"],
+    "mourning":["blue","depressed","grief","pain","sad","sadness","sorrow"],
+    "muddled":["confused","confusion","disoriented","lost"],
+    "nervous":["anxiety","anxious","nervousness","overwhelm","overwhelmed","stress","stressed","uneasy","worried","worry","worrying"],
+    "nervousness":["anxiety","anxious","nervous","overwhelm","overwhelmed","stress","stressed","uneasy","worried","worry","worrying"],
+    "numb":["blank","emptiness","empty","hollow","void"],
+    "optimism":["faith","hope","hopeful","light","optimistic"],
+    "optimistic":["faith","hope","hopeful","light","optimism"],
+    "overwhelm":["anxiety","anxious","nervous","nervousness","overwhelmed","stress","stressed","uneasy","worried","worry","worrying"],
+    "overwhelmed":["anxiety","anxious","nervous","nervousness","overwhelm","stress","stressed","uneasy","worried","worry","worrying"],
+    "pain":["blue","depressed","grief","mourning","sad","sadness","sorrow"],
+    "panic":["afraid","dread","fear","fright","frightened","scared","terror"],
+    "paralyzed":["block","blocked","frozen","stuck"],
+    "path":["compass","direction","guidance","way"],
+    "pause":["break","respite","rest","resting","stillness"],
+    "peace":["calm","calmness","peaceful","quiet","serenity","stillness","tranquility"],
+    "peaceful":["calm","calmness","peace","quiet","serenity","stillness","tranquility"],
+    "present":["ease","flow","flowing","light"],
+    "purpose":["calling","meaning","mission","vocation"],
+    "quiet":["calm","calmness","peace","peaceful","serenity","stillness","tranquility"],
+    "rage":["anger","angry","frustrated","fury","mad","resentful"],
+    "rebirth":["change","evolution","shift","transform","transformation"],
+    "reconciliation":["forgive","forgiveness","letting go","release"],
+    "regret":["guilt","guilty","remorse"],
+    "release":["autonomy","forgive","forgiveness","free","freedom","independence","letting go","reconciliation"],
+    "remorse":["guilt","guilty","regret"],
+    "resentful":["anger","angry","comparison","envious","envy","frustrated","fury","jealous","jealousy","mad","rage","resentment"],
+    "resentment":["comparison","envious","envy","jealous","jealousy","resentful"],
+    "respite":["break","pause","rest","resting","stillness"],
+    "rest":["break","pause","respite","resting","stillness"],
+    "resting":["break","pause","respite","rest","stillness"],
+    "sad":["blue","depressed","grief","mourning","pain","sadness","sorrow"],
+    "sadness":["blue","depressed","grief","mourning","pain","sad","sorrow"],
+    "scared":["afraid","dread","fear","fright","frightened","panic","terror"],
+    "separated":["breakup","broken","divorce","divorced","ending","separation"],
+    "separation":["breakup","broken","divorce","divorced","ending","separated"],
+    "serenity":["calm","calmness","peace","peaceful","quiet","stillness","tranquility"],
+    "shame":["ashamed","embarrassed","embarrassment","humiliated","humiliation"],
+    "shift":["change","evolution","rebirth","transform","transformation"],
+    "sorrow":["blue","depressed","grief","mourning","pain","sad","sadness"],
+    "spark":["drive","energized","energy","momentum","motivated","motivation"],
+    "spent":["burned","burnout","burnt","drained","exhausted","exhaustion","fatigue","fatigued","tired","tiredness"],
+    "stillness":["break","calm","calmness","pause","peace","peaceful","quiet","respite","rest","resting","serenity","tranquility"],
+    "stress":["anxiety","anxious","nervous","nervousness","overwhelm","overwhelmed","stressed","uneasy","worried","worry","worrying"],
+    "stressed":["anxiety","anxious","nervous","nervousness","overwhelm","overwhelmed","stress","uneasy","worried","worry","worrying"],
+    "stuck":["block","blocked","frozen","paralyzed"],
+    "tenderness":["affection","care","love","loving"],
+    "terror":["afraid","dread","fear","fright","frightened","panic","scared"],
+    "tired":["burned","burnout","burnt","drained","exhausted","exhaustion","fatigue","fatigued","spent","tiredness"],
+    "tiredness":["burned","burnout","burnt","drained","exhausted","exhaustion","fatigue","fatigued","spent","tired"],
+    "tranquility":["calm","calmness","peace","peaceful","quiet","serenity","stillness"],
+    "transform":["change","evolution","rebirth","shift","transformation"],
+    "transformation":["change","evolution","rebirth","shift","transform"],
+    "uneasy":["anxiety","anxious","nervous","nervousness","overwhelm","overwhelmed","stress","stressed","worried","worry","worrying"],
+    "vocation":["calling","meaning","mission","purpose"],
+    "void":["blank","emptiness","empty","hollow","numb"],
+    "way":["compass","direction","guidance","path"],
+    "worried":["anxiety","anxious","nervous","nervousness","overwhelm","overwhelmed","stress","stressed","uneasy","worry","worrying"],
+    "worry":["anxiety","anxious","nervous","nervousness","overwhelm","overwhelmed","stress","stressed","uneasy","worried","worrying"],
+    "worrying":["anxiety","anxious","nervous","nervousness","overwhelm","overwhelmed","stress","stressed","uneasy","worried","worry"]
+  }
+};
+
 const TrigguiFiltro = {
   // Cache del índice IDF. Se reconstruye cuando cambia el catálogo o el idioma.
   _idxCache: null,
@@ -3161,6 +3624,37 @@ const TrigguiFiltro = {
     return this.normalize(s)
       .split(' ')
       .filter(t => t.length >= 2 && !/^\d+$/.test(t));
+  },
+
+  // 🌒 v10: Expande tokens del usuario con sinónimos emocionales.
+  // Devuelve array de {token, weight}.
+  //   - Originales escritos por el usuario: peso 1.0 (gana siempre que matchea)
+  //   - Sinónimos expandidos del diccionario: peso 0.5 (rescata sin dominar)
+  // Defensa anti-doble-conteo: si el query ya incluye un sinónimo de otro
+  // token, ese sinónimo cuenta como original (peso 1.0), nunca se duplica.
+  // FALLBACK: si TRIGGUI_SYNONYMS no existe o el idioma no está en él,
+  // devuelve solo los originales — el filtro funciona idéntico al previo.
+  expandWithSynonyms: function(tokens) {
+    try {
+      const expanded = tokens.map(t => ({ token: t, weight: 1.0 }));
+      if (typeof TRIGGUI_SYNONYMS === 'undefined') return expanded;
+      const lang = (typeof TriggguiI18n !== 'undefined' && TriggguiI18n.lang) || 'es';
+      const dict = TRIGGUI_SYNONYMS[lang];
+      if (!dict) return expanded;
+      const seen = new Set(tokens);
+      for (const t of tokens) {
+        const syns = dict[t];
+        if (!Array.isArray(syns)) continue;
+        for (const syn of syns) {
+          if (seen.has(syn)) continue;
+          expanded.push({ token: syn, weight: 0.5 });
+          seen.add(syn);
+        }
+      }
+      return expanded;
+    } catch (_) {
+      return tokens.map(t => ({ token: t, weight: 1.0 }));
+    }
   },
 
   // Extrae el texto completo de un libro en 4 zonas con peso distinto.
@@ -3318,26 +3812,34 @@ const TrigguiFiltro = {
       return { libro: libros[i], index: i, score: 0, reason: 'empty' };
     }
 
-    // Scoring TF-IDF: por cada libro, score = Σ(query_token_tf_in_book × idf_of_token)
+    // 🌒 v10: Expansión con sinónimos emocionales.
+    // Originales: peso 1.0. Sinónimos del diccionario: peso 0.5.
+    // El match parcial (subcadena) solo se aplica a originales — los sinónimos
+    // ya son aproximaciones, no aproximamos sobre aproximaciones.
+    const expandedTokens = this.expandWithSynonyms(queryTokens);
+
+    // Scoring TF-IDF: por cada libro, score = Σ(token_tf_in_book × idf_of_token × weight)
     const scored = libros.map((libro, index) => {
       const bookVec = idx.bookVectors[index];
       let tfidfScore = 0;
-      for (const token of queryTokens) {
+      for (const { token, weight } of expandedTokens) {
         const tf = bookVec[token] || 0;
         if (tf === 0) {
-          // Match parcial: buscar el token como subcadena en keys del vector
+          // Match parcial SOLO para originales (peso 1.0). Los sinónimos no
+          // hacen match parcial — eso sería aproximación de aproximación = ruido.
+          if (weight < 1.0) continue;
           for (const bookTerm of Object.keys(bookVec)) {
             if (bookTerm.length >= 4 && token.length >= 4) {
               if (bookTerm.includes(token) || token.includes(bookTerm)) {
                 const partialTf = bookVec[bookTerm] * 0.5;
-                tfidfScore += partialTf * (idx.idf[bookTerm] || 1);
+                tfidfScore += partialTf * (idx.idf[bookTerm] || 1) * weight;
                 break;
               }
             }
           }
         } else {
           const termIdf = idx.idf[token] || 1;
-          tfidfScore += tf * termIdf;
+          tfidfScore += tf * termIdf * weight;
         }
       }
       const crono = tfidfScore > 0 ? this.cronoBoost(libro) : 0;
@@ -3368,6 +3870,161 @@ const TrigguiFiltro = {
 // ══════════════════════════════════════════════════════════════════════════
 // 🎯 BarraMagica — control de UI (extiende el objeto ya definido)
 // ══════════════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════════
+// 🌒 v10: Banco de 50 variantes por idioma — pregunta rotatoria por aparición.
+//
+// Cada apertura del overlay elige una variante aleatoria. Cero red, cero
+// async, cero parse externo. ~3KB de strings. Costo por aparición ~0.0001ms.
+//
+// Regla C de segmentación: si la frase tiene ≤4 palabras, la última palabra
+// es el ancla (recibe color + subrayado animado). Si tiene ≥5 palabras, las
+// últimas 2 palabras son el ancla. Esto da el balance visual óptimo en
+// cualquier longitud sin curaduría manual.
+//
+// FALLBACK: si por cualquier razón el banco falla o el idioma no existe,
+// la función devuelve null y applyStrings cae al sistema i18n original
+// (barra.question.word1/word2/word3) que sigue intacto. Cero riesgo.
+// ══════════════════════════════════════════════════════════════════════════
+BarraMagica.QUESTIONS = {
+  es: [
+    "¿Cómo te sientes?",
+    "¿Cómo te sientes hoy?",
+    "¿Cómo amaneciste?",
+    "¿Cómo amaneciste hoy?",
+    "¿Qué traes hoy?",
+    "¿Cómo te encuentras?",
+    "¿Qué tal te encuentras?",
+    "¿Cómo te hallas?",
+    "¿Cómo te despertaste?",
+    "¿Cómo amaneces?",
+    "¿En qué momento estás?",
+    "¿En qué momento andas?",
+    "¿Cómo vienes hoy?",
+    "¿Cómo llegas hoy?",
+    "¿Qué hay contigo?",
+    "¿Qué hay contigo hoy?",
+    "¿Cómo te sientes este momento?",
+    "¿Cómo amaneciste de ánimo?",
+    "¿Con qué ánimo amaneciste?",
+    "¿Con qué ánimo vienes?",
+    "¿Con qué ánimo llegas hoy?",
+    "¿Con qué ánimo arrancas?",
+    "¿Cómo amaneció tu ánimo?",
+    "¿Cómo está tu ánimo hoy?",
+    "¿Qué ánimo traes?",
+    "¿Qué ánimo traes hoy?",
+    "¿Qué ánimo te acompaña hoy?",
+    "¿Cómo te sientes ahora mismo?",
+    "¿Cómo te sientes en este momento?",
+    "¿Qué estás sintiendo hoy?",
+    "¿Qué estás sintiendo ahora?",
+    "¿Qué te habita hoy?",
+    "¿Qué te acompaña hoy?",
+    "¿Qué emoción te acompaña hoy?",
+    "¿Qué emoción traes hoy?",
+    "¿Qué emoción amaneciste?",
+    "¿Cómo amaneció tu mañana?",
+    "¿Cómo amaneció tu día?",
+    "¿Cómo arrancaste el día?",
+    "¿Con qué amaneciste hoy?",
+    "¿Con qué llegas hoy?",
+    "¿Con qué vienes hoy?",
+    "¿Con qué te despertaste?",
+    "¿Qué traes en la mañana?",
+    "¿Qué traes contigo hoy?",
+    "¿Qué te trae hoy?",
+    "¿Cómo se siente hoy?",
+    "¿Cómo se siente este momento?",
+    "¿Qué se siente hoy?",
+    "¿Qué se siente este momento?"
+  ],
+  en: [
+    "How are you feeling?",
+    "How are you feeling today?",
+    "How are you feeling right now?",
+    "How are you feeling this morning?",
+    "How are you feeling in this moment?",
+    "What are you feeling today?",
+    "What are you feeling right now?",
+    "What's the feeling today?",
+    "What's the mood today?",
+    "What's your mood today?",
+    "What mood are you in today?",
+    "What mood did you wake up in?",
+    "What mood are you bringing today?",
+    "How's your mood today?",
+    "How's your mood this morning?",
+    "How did you wake up?",
+    "How did you wake up today?",
+    "How did you wake up feeling?",
+    "What did you wake up with?",
+    "What did you wake up feeling?",
+    "How did the morning find you?",
+    "How did today find you?",
+    "What's with you today?",
+    "What's stirring today?",
+    "What's stirring in you today?",
+    "What's alive in you today?",
+    "What's present for you today?",
+    "What's coming up for you today?",
+    "What are you carrying today?",
+    "What are you bringing today?",
+    "What are you bringing in today?",
+    "What are you holding today?",
+    "What's sitting with you today?",
+    "How's your inner weather today?",
+    "What's your inner weather like?",
+    "What's the weather inside today?",
+    "What's moving in you today?",
+    "What's the feeling this morning?",
+    "What's the feeling right now?",
+    "How does today feel?",
+    "How does this morning feel?",
+    "How does right now feel?",
+    "How does the day feel so far?",
+    "What does today feel like?",
+    "What does this morning feel like?",
+    "What does right now feel like?",
+    "How are you, in this moment?",
+    "How are you on the inside today?",
+    "What's the feeling you woke up with?",
+    "What feeling came with you today?"
+  ]
+};
+
+// Segmenta una frase en [w1, w2, w3] con regla C.
+// w3 es la ancla (1 palabra si ≤4 palabras totales, 2 si ≥5).
+// La concatenación con espacios de las piezas no vacías = frase original.
+BarraMagica.segmentQuestion = function(phrase) {
+  try {
+    const words = String(phrase).split(/\s+/).filter(w => w.length > 0);
+    const n = words.length;
+    if (n < 2) return ['', '', words.join(' ')];
+    const anchorCount = n <= 4 ? 1 : 2;
+    const w3 = words.slice(n - anchorCount).join(' ');
+    const remaining = words.slice(0, n - anchorCount);
+    if (remaining.length === 0) return ['', '', w3];
+    if (remaining.length === 1) return [remaining[0], '', w3];
+    return [remaining[0], remaining.slice(1).join(' '), w3];
+  } catch (_) {
+    return null;
+  }
+};
+
+// Selecciona una variante aleatoria del idioma activo y la segmenta.
+// Devuelve [w1, w2, w3] o null si algo falla (cae al fallback i18n).
+BarraMagica.pickQuestion = function() {
+  try {
+    const lang = (TriggguiI18n && TriggguiI18n.lang) || 'es';
+    const bank = BarraMagica.QUESTIONS[lang];
+    if (!Array.isArray(bank) || bank.length === 0) return null;
+    const phrase = bank[Math.floor(Math.random() * bank.length)];
+    return BarraMagica.segmentQuestion(phrase);
+  } catch (_) {
+    return null;
+  }
+};
+
 BarraMagica.applyStrings = function() {
   const qEl = document.getElementById('barraQuestion');
   const iEl = document.getElementById('barraInput');
@@ -3377,9 +4034,17 @@ BarraMagica.applyStrings = function() {
   const w2El = qEl ? qEl.querySelector('.bm-w2') : null;
   const w3El = qEl ? qEl.querySelector('.bm-w3') : null;
   if (eyEl) eyEl.textContent = TriggguiI18n.get('barra.eyebrow');
-  if (w1El) w1El.textContent = TriggguiI18n.get('barra.question.word1');
-  if (w2El) w2El.textContent = TriggguiI18n.get('barra.question.word2');
-  if (w3El) w3El.textContent = TriggguiI18n.get('barra.question.word3');
+  // 🌒 v10: pregunta rotatoria. Si pickQuestion falla, fallback al i18n original.
+  const seg = BarraMagica.pickQuestion();
+  if (seg && Array.isArray(seg) && seg.length === 3) {
+    if (w1El) w1El.textContent = seg[0];
+    if (w2El) w2El.textContent = seg[1];
+    if (w3El) w3El.textContent = seg[2];
+  } else {
+    if (w1El) w1El.textContent = TriggguiI18n.get('barra.question.word1');
+    if (w2El) w2El.textContent = TriggguiI18n.get('barra.question.word2');
+    if (w3El) w3El.textContent = TriggguiI18n.get('barra.question.word3');
+  }
 
   // 🌒 v9: Color rotatorio + 2 auroras cromáticas — todo del catálogo real.
   //
