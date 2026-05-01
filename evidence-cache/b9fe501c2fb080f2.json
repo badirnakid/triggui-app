@@ -4,8 +4,8 @@
   "isbn_seed": "",
   "isbn_seed_raw": "",
   "isbn_seed_rejected": null,
-  "isbn_discovered": "9786075573311",
-  "isbn_discovered_raw": "9786075573311",
+  "isbn_discovered": "",
+  "isbn_discovered_raw": "",
   "apple": {
     "ok": true,
     "source": "apple_books",
@@ -50,37 +50,9 @@
     }
   },
   "google": {
-    "ok": true,
-    "source": "google_books",
-    "match_score": 1,
-    "match_details": {
-      "matched_title": "Trabaja Duro, Trabaja Con Astucia",
-      "matched_author": "Curtis Jackson 50 Cent"
-    },
-    "synopsis": "Es una serie de recuentos muy honestos sobre su historia personal, el polémico rapero Curtis Jackson (50 Cent) presenta una guía para alcanzar nuestras metas aun después de sufrir caídas importantes. Con una combinación única de experiencia de la calle y un talento inusitado para los negocios, el libro resulta una guía amena y reveladora sobre el cambio, la adaptación y los deseos irrefrenables de triunfar en la vida y en los negocios. \"Debes entender que no existe eso de \"lograrlo\", que no importa cuánto dinero, fama o éxito tengas, el futuro traerá más dificultades, más drama, más obstáculos. La meta no es solo ser exitoso sino conservar ese éxito, yo lo aprendí por las malas y es una habilidad que te voy a enseñar en este libro\". In a series of very honest accounts of his personal history, the controversial rapper Curtis Jackson (50 Cent) presents a guide to reach our goals even after suffering major falls. With a unique combination of street experience and unusual talent for business, the book is an engaging and insightful guide to change, adaptation, and the irrepressible desire to succeed in life and in business. \"You must understand that there is no such thing as 'getting it', that no matter how much money, fame or success you have, the future will bring more difficulties, more drama, more obstacles. The goal is not only to be successful but to keep that success, I learned it the hard way and it is a skill that I am going to teach you in this book \".",
-    "synopsis_length": 1481,
-    "covers": [
-      {
-        "size": "small",
-        "url": "https://books.google.com/books/content?id=KdK0zgEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
-      }
-    ],
-    "verified_identity": {
-      "titulo_real": "Trabaja Duro, Trabaja Con Astucia",
-      "subtitulo": "",
-      "autor_completo": "Curtis Jackson 50 Cent",
-      "año": "2022",
-      "editorial": "Oceano",
-      "paginas": 208,
-      "isbn": "9786075573311",
-      "isbn13": "9786075573311",
-      "isbn10": "6075573313",
-      "categorias": [
-        "Business & Economics"
-      ],
-      "idioma": "es",
-      "preview_link": "http://books.google.com/books?id=KdK0zgEACAAJ&dq=Trabaja+duro+trabaja+con+astucia+Curtis+Jackson&hl=&cd=2&source=gbs_api"
-    }
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
   },
   "openlibrary": {
     "ok": true,
@@ -118,25 +90,9 @@
     }
   },
   "amazon": {
-    "ok": true,
-    "source": "amazon",
-    "match_score": 0.85,
-    "covers": [
-      {
-        "size": "large",
-        "url": "https://images-na.ssl-images-amazon.com/images/P/6075573313.01.LZZZZZZZ.jpg"
-      }
-    ],
-    "synopsis": "",
-    "synopsis_length": 0,
-    "verified_identity": {
-      "isbn": "6075573313",
-      "isbn13": "9786075573311",
-      "isbn10": "6075573313",
-      "titulo_real": null,
-      "autor_completo": null,
-      "año": null
-    }
+    "ok": false,
+    "reason": "skipped",
+    "source": "amazon"
   },
   "valid_covers": [
     {
@@ -164,12 +120,6 @@
       "valid": true
     },
     {
-      "source": "google_books",
-      "size": "small",
-      "url": "https://books.google.com/books/content?id=KdK0zgEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
-      "valid": true
-    },
-    {
       "source": "openlibrary",
       "size": "large",
       "url": "https://covers.openlibrary.org/b/id/14680594-L.jpg",
@@ -180,27 +130,22 @@
       "size": "medium",
       "url": "https://covers.openlibrary.org/b/id/14680594-M.jpg",
       "valid": true
-    },
-    {
-      "source": "amazon",
-      "size": "large",
-      "url": "https://images-na.ssl-images-amazon.com/images/P/6075573313.01.LZZZZZZZ.jpg",
-      "valid": true
     }
   ],
   "_sources_succeeded": [
     "apple_books",
-    "google_books",
-    "openlibrary",
-    "amazon"
+    "openlibrary"
   ],
-  "_sources_failed": [],
+  "_sources_failed": [
+    "google_books:no_good_match",
+    "amazon:skipped"
+  ],
   "_timing": {
-    "phase1_parallel_ms": 8993,
-    "phase2_isbn_chain_ms": 540,
-    "cover_validation_ms": 1315,
-    "total_ms": 10848
+    "phase1_parallel_ms": 15791,
+    "phase2_isbn_chain_ms": 0,
+    "cover_validation_ms": 2208,
+    "total_ms": 17999
   },
   "_version": "3.6",
-  "_cached_at": "2026-04-26T19:56:19.105Z"
+  "_cached_at": "2026-05-01T18:40:44.951Z"
 }

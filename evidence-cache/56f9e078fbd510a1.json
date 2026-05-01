@@ -2,7 +2,10 @@
   "titulo_input": "Cartas para un ciego que creía ver",
   "autor_input": "Santiago Molano",
   "isbn_seed": "",
-  "isbn_discovered": "6737427456",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "",
+  "isbn_discovered_raw": "",
   "apple": {
     "ok": true,
     "source": "apple_books",
@@ -36,7 +39,8 @@
       "autor_completo": "Santiago Molano",
       "año": "2024",
       "editorial": null,
-      "isbn": "6737427456",
+      "isbn": "",
+      "apple_track_id": "6737427456",
       "categorias": [
         "Superación personal",
         "Libros",
@@ -46,37 +50,9 @@
     }
   },
   "google": {
-    "ok": true,
-    "source": "google_books",
-    "match_score": 1,
-    "match_details": {
-      "matched_title": "Cartas para un ciego que creía ver",
-      "matched_author": "Santiago Molano"
-    },
-    "synopsis": "Deja de ser víctima y conviértete en el protagonista de tu vida. Soñamos con cambiar el mundo y creemos que todo lo malo viene del exterior, sin entender que es dentro de nosotros que debe iniciar cualquier transformación. Este libro busca ayudarnos a cambiar la narrativa de víctima para asumir la responsabilidad sobre las decisiones que hemos tomado y que han definido nuestra vida. Es un llamado a observarnos en el espejo, con objetividad, pues solo así podremos hacernos cargo de nosotros mismos. Santiago Molano es un convencido de que en la propia historia se encuentra la clave para despertar. Por eso, a través de cartas dirigidas a su Querido Santiago, busca hacer un ejercicio de autoconocimiento en el que nos invita a reflexionar para entender quién es ese al que llamamos \"yo\" y qué lo mueve a reaccionar como lo hace. \"Mis críticas son para mí, entonces, ¿para qué las comparto? Porque tal vez existe alguien, que, como yo, ha sufrido el peso de su propia ignorancia, y quisiera que ese alguien sepa que no está solo\".",
-    "synopsis_length": 1034,
-    "covers": [
-      {
-        "size": "small",
-        "url": "https://books.google.com/books/content?id=wIMsEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
-      }
-    ],
-    "verified_identity": {
-      "titulo_real": "Cartas para un ciego que creía ver",
-      "subtitulo": "Reflexiones para comprender ese problema que llamamos \"yo\"",
-      "autor_completo": "Santiago Molano",
-      "año": "2024",
-      "editorial": "Diana Colombia",
-      "paginas": 250,
-      "isbn": "9786287707405",
-      "isbn13": "9786287707405",
-      "isbn10": "6287707402",
-      "categorias": [
-        "Self-Help"
-      ],
-      "idioma": "es",
-      "preview_link": "http://books.google.com/books?id=wIMsEQAAQBAJ&printsec=frontcover&dq=intitle:Cartas+para+un+ciego+que+cre%C3%ADa+ver+inauthor:Santiago+Molano&hl=&cd=2&source=gbs_api"
-    }
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
   },
   "openlibrary": {
     "ok": false,
@@ -84,23 +60,9 @@
     "source": "openlibrary"
   },
   "amazon": {
-    "ok": true,
-    "source": "amazon",
-    "match_score": 0.85,
-    "covers": [
-      {
-        "size": "large",
-        "url": "https://images-na.ssl-images-amazon.com/images/P/6737427456.01.LZZZZZZZ.jpg"
-      }
-    ],
-    "synopsis": "",
-    "synopsis_length": 0,
-    "verified_identity": {
-      "isbn": "6737427456",
-      "titulo_real": null,
-      "autor_completo": null,
-      "año": null
-    }
+    "ok": false,
+    "reason": "skipped",
+    "source": "amazon"
   },
   "valid_covers": [
     {
@@ -126,33 +88,22 @@
       "size": "medium",
       "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/dc/a6/c3/dca6c307-d0df-f79c-a64f-8eb698928a7c/9786287707405.jpg/100x100bb.jpg",
       "valid": true
-    },
-    {
-      "source": "google_books",
-      "size": "small",
-      "url": "https://books.google.com/books/content?id=wIMsEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
-      "valid": true
-    },
-    {
-      "source": "amazon",
-      "size": "large",
-      "url": "https://images-na.ssl-images-amazon.com/images/P/6737427456.01.LZZZZZZZ.jpg",
-      "valid": true
     }
   ],
   "_sources_succeeded": [
-    "apple_books",
-    "google_books",
-    "amazon"
+    "apple_books"
   ],
   "_sources_failed": [
-    "openlibrary:no_results"
+    "google_books:no_good_match",
+    "openlibrary:no_results",
+    "amazon:skipped"
   ],
   "_timing": {
-    "phase1_parallel_ms": 3003,
-    "phase2_isbn_chain_ms": 522,
-    "cover_validation_ms": 878,
-    "total_ms": 4403
+    "phase1_parallel_ms": 15771,
+    "phase2_isbn_chain_ms": 0,
+    "cover_validation_ms": 561,
+    "total_ms": 16332
   },
-  "_cached_at": "2026-04-21T11:04:38.067Z"
+  "_version": "3.6",
+  "_cached_at": "2026-05-01T18:50:11.433Z"
 }

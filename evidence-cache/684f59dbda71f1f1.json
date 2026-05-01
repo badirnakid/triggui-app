@@ -1,0 +1,126 @@
+{
+  "titulo_input": "Enamórate del problema no de la solución",
+  "autor_input": "Uri Levine",
+  "isbn_seed": "",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "",
+  "isbn_discovered_raw": "",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Enamórate del problema no de la solución",
+      "matched_author": "Uri Levine"
+    },
+    "synopsis": "\"El cofundador de Waze, Uri Levine tiene uno de los más escasos rasgos del emprendedor: tiene las habilidades y la persistencia que le han permitido lanzar múltiples empresas exitosas, combinadas con la consciencia de cómo lo hizo. En Enamórate del problema, no de la solución, comparte estas verdades duramente obtenidas con el resto de nosotros… Debería ser una lectura obligatoria para toda persona que aspire a tener un emprendimiento.\" —Marc Randolph, Cofundador de Netflix Enamorémonos del problema, no de la solución Ofrece la guía de un mentor de parte de uno de los emprendedores más exitosos del mundo, y nos empodera para construir un negocio de éxito, mediante la identificación de los problemas más serios de nuestros consumidores y perturbar los mercados ineficientes que actualmente les sirven.",
+    "synopsis_length": 809,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/ec/b3/47/ecb34700-b504-9032-41c9-04cb928fabef/9786287578302.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/ec/b3/47/ecb34700-b504-9032-41c9-04cb928fabef/9786287578302.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/ec/b3/47/ecb34700-b504-9032-41c9-04cb928fabef/9786287578302.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/ec/b3/47/ecb34700-b504-9032-41c9-04cb928fabef/9786287578302.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Enamórate del problema no de la solución",
+      "autor_completo": "Uri Levine",
+      "año": "2023",
+      "editorial": null,
+      "isbn": "",
+      "apple_track_id": "6467240871",
+      "categorias": [
+        "Pequeñas empresas y emprendedores",
+        "Libros",
+        "Negocios y finanzas personales"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/enam%C3%B3rate-del-problema-no-de-la-soluci%C3%B3n/id6467240871?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 0.7028735632183909,
+    "match_details": {
+      "matched_title": "Enamórate Del Problema No de la Solución / Fall in Love with the Problem, Not the Solution",
+      "matched_author": "Uri Levine"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2024.",
+    "synopsis_length": 65,
+    "covers": [],
+    "verified_identity": {
+      "titulo_real": "Enamórate Del Problema No de la Solución / Fall in Love with the Problem, Not the Solution",
+      "autor_completo": "Uri Levine",
+      "año": "2024",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": "spa",
+      "paginas": null
+    }
+  },
+  "amazon": {
+    "ok": false,
+    "reason": "skipped",
+    "source": "amazon"
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/ec/b3/47/ecb34700-b504-9032-41c9-04cb928fabef/9786287578302.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/ec/b3/47/ecb34700-b504-9032-41c9-04cb928fabef/9786287578302.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/ec/b3/47/ecb34700-b504-9032-41c9-04cb928fabef/9786287578302.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/ec/b3/47/ecb34700-b504-9032-41c9-04cb928fabef/9786287578302.jpg/100x100bb.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "openlibrary"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match",
+    "amazon:skipped"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 15791,
+    "phase2_isbn_chain_ms": 0,
+    "cover_validation_ms": 980,
+    "total_ms": 16771
+  },
+  "_version": "3.6",
+  "_cached_at": "2026-05-01T18:36:51.012Z"
+}

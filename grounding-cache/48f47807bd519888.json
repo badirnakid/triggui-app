@@ -13,13 +13,11 @@
     "paginas": null
   },
   "match_score": 1,
-  "other_sources_agreed": [
-    "google_books"
-  ],
+  "other_sources_agreed": [],
   "resolution_path": [
-    "evidence_fetched_3sources"
+    "evidence_fetched_1sources"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-29T22:14:35.222Z"
+  "cached_at": "2026-05-01T18:44:33.421Z"
 }

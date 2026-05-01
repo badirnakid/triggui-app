@@ -4,8 +4,8 @@
   "isbn_seed": "",
   "isbn_seed_raw": "",
   "isbn_seed_rejected": null,
-  "isbn_discovered": "9788417399894",
-  "isbn_discovered_raw": "9788417399894",
+  "isbn_discovered": "",
+  "isbn_discovered_raw": "",
   "apple": {
     "ok": true,
     "source": "apple_books",
@@ -50,37 +50,9 @@
     }
   },
   "google": {
-    "ok": true,
-    "source": "google_books",
-    "match_score": 1,
-    "match_details": {
-      "matched_title": "El poder de la integridad",
-      "matched_author": "Kelley Kosow"
-    },
-    "synopsis": "¿Recuerdas la última vez que te prometiste decir lo que pensabas en una reunión de trabajo pero permaneciste sentado en silencio? ¿Cuántas veces has afirmado que, esta vez, la dieta iba en serio, pero te fallaste a ti mismo? ¿Reconoces la sensación de desconfiar de alguien para finalmente, y tras una mala experiencia, darte cuenta de que estabas en lo cierto?... Como afirma Kelley Kosow: «Cada vez que te muerdes la lengua, ahogas tu integridad». Integridad no significa perfección. No es una estrategia sino una manera de vivir en consonancia con quien realmente somos. Todos tenemos heridas que representan las múltiples formas en las que nos hemos traicionado, mentido o despreciado a nosotros mismos. Hacemos caso omiso a nuestra voz interior y buscamos las respuestas fuera. Nuestra falta de confianza, nuestra tendencia a buscar en el exterior lo que debe venir de dentro, nos lleva a pisotear nuestra verdad. El poder de la integridad te enseña a empezar a vivir la vida a tu manera; a enfrentarte al miedo, a la vergüenza y a las creencias erróneas para, a partir de ahí, empezar a vivir la vida según tus principios y desde tu verdadera esencia. Transforma tus limitaciones y conecta con tus capacidades infinitas... Tu integridad es tu poder.",
-    "synopsis_length": 1255,
-    "covers": [
-      {
-        "size": "small",
-        "url": "https://books.google.com/books/content?id=OZmWDwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
-      }
-    ],
-    "verified_identity": {
-      "titulo_real": "El poder de la integridad",
-      "subtitulo": "Conecta con tu verdad, ama tu vida y manifiesta todo tu esplendor",
-      "autor_completo": "Kelley Kosow",
-      "año": "2019",
-      "editorial": "EDITORIAL SIRIO S.A.",
-      "paginas": 151,
-      "isbn": "9788417399894",
-      "isbn13": "9788417399894",
-      "isbn10": "8417399895",
-      "categorias": [
-        "Self-Help"
-      ],
-      "idioma": "es",
-      "preview_link": "http://books.google.com/books?id=OZmWDwAAQBAJ&printsec=frontcover&dq=intitle:El+poder+de+la+integridad+inauthor:Kelley+Kosow&hl=&cd=1&source=gbs_api"
-    }
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
   },
   "openlibrary": {
     "ok": true,
@@ -119,7 +91,7 @@
   },
   "amazon": {
     "ok": false,
-    "reason": "no_amazon_cover_or_only_placeholders",
+    "reason": "skipped",
     "source": "amazon"
   },
   "valid_covers": [
@@ -148,38 +120,26 @@
       "valid": true
     },
     {
-      "source": "google_books",
-      "size": "small",
-      "url": "https://books.google.com/books/content?id=OZmWDwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
-      "valid": true
-    },
-    {
       "source": "openlibrary",
       "size": "large",
       "url": "https://covers.openlibrary.org/b/id/12343068-L.jpg",
-      "valid": true
-    },
-    {
-      "source": "openlibrary",
-      "size": "medium",
-      "url": "https://covers.openlibrary.org/b/id/12343068-M.jpg",
       "valid": true
     }
   ],
   "_sources_succeeded": [
     "apple_books",
-    "google_books",
     "openlibrary"
   ],
   "_sources_failed": [
-    "amazon:no_amazon_cover_or_only_placeholders"
+    "google_books:no_good_match",
+    "amazon:skipped"
   ],
   "_timing": {
-    "phase1_parallel_ms": 3207,
-    "phase2_isbn_chain_ms": 310,
-    "cover_validation_ms": 1138,
-    "total_ms": 4655
+    "phase1_parallel_ms": 15793,
+    "phase2_isbn_chain_ms": 0,
+    "cover_validation_ms": 4006,
+    "total_ms": 19799
   },
   "_version": "3.6",
-  "_cached_at": "2026-04-26T19:50:29.393Z"
+  "_cached_at": "2026-05-01T18:45:32.302Z"
 }

@@ -7,7 +7,8 @@
     "autor_completo": "John C. Bogle",
     "año": "2022",
     "editorial": null,
-    "isbn": "6443325862",
+    "isbn": "",
+    "apple_track_id": "6443325862",
     "categorias": [
       "Finanzas personales",
       "Libros",
@@ -21,9 +22,9 @@
     "openlibrary"
   ],
   "resolution_path": [
-    "evidence_fetched_3sources"
+    "evidence_fetched_2sources"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-20T22:24:40.375Z"
+  "cached_at": "2026-05-01T18:38:50.035Z"
 }

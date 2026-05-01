@@ -2,7 +2,10 @@
   "titulo_input": "Una Vida Sin Limites",
   "autor_input": "Alejandra Llamas",
   "isbn_seed": "",
-  "isbn_discovered": "1478033616",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "",
+  "isbn_discovered_raw": "",
   "apple": {
     "ok": true,
     "source": "apple_books",
@@ -36,7 +39,8 @@
       "autor_completo": "Alejandra Llamas",
       "año": "2019",
       "editorial": null,
-      "isbn": "1478033616",
+      "isbn": "",
+      "apple_track_id": "1478033616",
       "categorias": [
         "Superación personal",
         "Libros",
@@ -73,23 +77,9 @@
     }
   },
   "amazon": {
-    "ok": true,
-    "source": "amazon",
-    "match_score": 0.85,
-    "covers": [
-      {
-        "size": "large",
-        "url": "https://images-na.ssl-images-amazon.com/images/P/1478033616.01.LZZZZZZZ.jpg"
-      }
-    ],
-    "synopsis": "",
-    "synopsis_length": 0,
-    "verified_identity": {
-      "isbn": "1478033616",
-      "titulo_real": null,
-      "autor_completo": null,
-      "año": null
-    }
+    "ok": false,
+    "reason": "skipped",
+    "source": "amazon"
   },
   "valid_covers": [
     {
@@ -115,27 +105,22 @@
       "size": "medium",
       "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/1b/9d/7e/1b9d7e5b-0463-be8e-a4d9-717136794757/9786073185349.jpg/100x100bb.jpg",
       "valid": true
-    },
-    {
-      "source": "amazon",
-      "size": "large",
-      "url": "https://images-na.ssl-images-amazon.com/images/P/1478033616.01.LZZZZZZZ.jpg",
-      "valid": true
     }
   ],
   "_sources_succeeded": [
     "apple_books",
-    "openlibrary",
-    "amazon"
+    "openlibrary"
   ],
   "_sources_failed": [
-    "google_books:no_good_match"
+    "google_books:no_good_match",
+    "amazon:skipped"
   ],
   "_timing": {
-    "phase1_parallel_ms": 15757,
-    "phase2_isbn_chain_ms": 24055,
-    "cover_validation_ms": 613,
-    "total_ms": 40425
+    "phase1_parallel_ms": 15841,
+    "phase2_isbn_chain_ms": 0,
+    "cover_validation_ms": 630,
+    "total_ms": 16471
   },
-  "_cached_at": "2026-04-21T01:37:08.908Z"
+  "_version": "3.6",
+  "_cached_at": "2026-05-01T18:35:57.088Z"
 }

@@ -2,7 +2,10 @@
   "titulo_input": "101 reflexiones que cambiarán tu forma de pensar",
   "autor_input": "Brianna Wiest",
   "isbn_seed": "",
-  "isbn_discovered": "6670730473",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "",
+  "isbn_discovered_raw": "",
   "apple": {
     "ok": true,
     "source": "apple_books",
@@ -36,7 +39,8 @@
       "autor_completo": "Brianna Wiest",
       "año": "2024",
       "editorial": null,
-      "isbn": "6670730473",
+      "isbn": "",
+      "apple_track_id": "6670730473",
       "categorias": [
         "Psicología",
         "Libros",
@@ -47,91 +51,19 @@
     }
   },
   "google": {
-    "ok": true,
-    "source": "google_books",
-    "match_score": 1,
-    "match_details": {
-      "matched_title": "101 Reflexiones que cambiarán tu forma de pensar",
-      "matched_author": "Brianna Wiest Brianna Wiest"
-    },
-    "synopsis": "Antología de ensayos y meditaciones Brianna Wiest, escritora bestseller y fenómeno global en redes sociales, presenta en esta obra una recopilación de sus escritos más famosos. La presente selección incluye reflexiones sobre por qué debemos perseguir el propósito por encima de la pasión, abrazar el pensamiento negativo, ver la sabiduría en la rutina diaria o ser conscientes de los sesgos cognitivos que crean nuestra manera de ver la vida, entre muchas otras. Algunas de estas piezas son inéditas; otras ya han sido leídas por millones de personas en todo el mundo. En cualquier caso, muchas de ellas te dejarán pensando: \"Esta idea me va a cambiar la vida\".",
-    "synopsis_length": 661,
-    "covers": [
-      {
-        "size": "small",
-        "url": "https://books.google.com/books/content?id=mMvFzwEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
-      }
-    ],
-    "verified_identity": {
-      "titulo_real": "101 Reflexiones que cambiarán tu forma de pensar",
-      "subtitulo": "",
-      "autor_completo": "Brianna Wiest Brianna Wiest",
-      "año": "2026",
-      "editorial": "Gaia Ediciones",
-      "paginas": null,
-      "isbn": "9788411080279",
-      "isbn13": "9788411080279",
-      "isbn10": "8411080277",
-      "categorias": [
-        "Psychology"
-      ],
-      "idioma": "es",
-      "preview_link": "http://books.google.com/books?id=mMvFzwEACAAJ&dq=101+reflexiones+que+cambiar%C3%A1n+tu+forma+de+pensar+Brianna+Wiest&hl=&cd=1&source=gbs_api"
-    }
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
   },
   "openlibrary": {
-    "ok": true,
-    "source": "openlibrary",
-    "match_score": 1,
-    "match_details": {
-      "matched_title": "101 reflexiones que cambiarán tu forma de pensar",
-      "matched_author": "Brianna Wiest, Andrea Hernández González"
-    },
-    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2023.",
-    "synopsis_length": 65,
-    "covers": [
-      {
-        "size": "large",
-        "url": "https://covers.openlibrary.org/b/id/13574772-L.jpg"
-      },
-      {
-        "size": "medium",
-        "url": "https://covers.openlibrary.org/b/id/13574772-M.jpg"
-      },
-      {
-        "size": "small",
-        "url": "https://covers.openlibrary.org/b/id/13574772-S.jpg"
-      }
-    ],
-    "verified_identity": {
-      "titulo_real": "101 reflexiones que cambiarán tu forma de pensar",
-      "autor_completo": "Brianna Wiest, Andrea Hernández González",
-      "año": "2023",
-      "editorial": null,
-      "isbn": "",
-      "categorias": [],
-      "idioma": null,
-      "paginas": null
-    }
+    "ok": false,
+    "reason": "no_results",
+    "source": "openlibrary"
   },
   "amazon": {
-    "ok": true,
-    "source": "amazon",
-    "match_score": 0.85,
-    "covers": [
-      {
-        "size": "large",
-        "url": "https://images-na.ssl-images-amazon.com/images/P/6670730473.01.LZZZZZZZ.jpg"
-      }
-    ],
-    "synopsis": "",
-    "synopsis_length": 0,
-    "verified_identity": {
-      "isbn": "6670730473",
-      "titulo_real": null,
-      "autor_completo": null,
-      "año": null
-    }
+    "ok": false,
+    "reason": "skipped",
+    "source": "amazon"
   },
   "valid_covers": [
     {
@@ -157,50 +89,22 @@
       "size": "medium",
       "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/f3/0b/fd/f30bfdbc-f5e5-1569-2474-3b9ef52f6aaf/9786073919357.jpg/100x100bb.jpg",
       "valid": true
-    },
-    {
-      "source": "google_books",
-      "size": "small",
-      "url": "https://books.google.com/books/content?id=mMvFzwEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
-      "valid": true
-    },
-    {
-      "source": "openlibrary",
-      "size": "large",
-      "url": "https://covers.openlibrary.org/b/id/13574772-L.jpg",
-      "valid": true
-    },
-    {
-      "source": "openlibrary",
-      "size": "medium",
-      "url": "https://covers.openlibrary.org/b/id/13574772-M.jpg",
-      "valid": true
-    },
-    {
-      "source": "openlibrary",
-      "size": "small",
-      "url": "https://covers.openlibrary.org/b/id/13574772-S.jpg",
-      "valid": true
-    },
-    {
-      "source": "amazon",
-      "size": "large",
-      "url": "https://images-na.ssl-images-amazon.com/images/P/6670730473.01.LZZZZZZZ.jpg",
-      "valid": true
     }
   ],
   "_sources_succeeded": [
-    "apple_books",
-    "google_books",
-    "openlibrary",
-    "amazon"
+    "apple_books"
   ],
-  "_sources_failed": [],
+  "_sources_failed": [
+    "google_books:no_good_match",
+    "openlibrary:no_results",
+    "amazon:skipped"
+  ],
   "_timing": {
-    "phase1_parallel_ms": 8947,
-    "phase2_isbn_chain_ms": 183,
-    "cover_validation_ms": 696,
-    "total_ms": 9826
+    "phase1_parallel_ms": 15839,
+    "phase2_isbn_chain_ms": 0,
+    "cover_validation_ms": 1077,
+    "total_ms": 16916
   },
-  "_cached_at": "2026-04-23T18:44:34.613Z"
+  "_version": "3.6",
+  "_cached_at": "2026-05-01T18:37:48.570Z"
 }

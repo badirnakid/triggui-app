@@ -7,7 +7,8 @@
     "autor_completo": "William H. Mcraven",
     "año": "2025",
     "editorial": null,
-    "isbn": "6742792527",
+    "isbn": "",
+    "apple_track_id": "6742792527",
     "categorias": [
       "Superación personal",
       "Libros",
@@ -17,13 +18,12 @@
   },
   "match_score": 0.6173913043478261,
   "other_sources_agreed": [
-    "google_books",
     "openlibrary"
   ],
   "resolution_path": [
-    "evidence_fetched_4sources"
+    "evidence_fetched_2sources"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-23T18:42:38.267Z"
+  "cached_at": "2026-05-01T18:39:48.399Z"
 }

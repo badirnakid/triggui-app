@@ -2,7 +2,10 @@
   "titulo_input": "Tiende tu cama",
   "autor_input": "William H. McRaven",
   "isbn_seed": "",
-  "isbn_discovered": "6742792527",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "",
+  "isbn_discovered_raw": "",
   "apple": {
     "ok": true,
     "source": "apple_books",
@@ -36,7 +39,8 @@
       "autor_completo": "William H. Mcraven",
       "año": "2025",
       "editorial": null,
-      "isbn": "6742792527",
+      "isbn": "",
+      "apple_track_id": "6742792527",
       "categorias": [
         "Superación personal",
         "Libros",
@@ -46,30 +50,9 @@
     }
   },
   "google": {
-    "ok": true,
-    "source": "google_books",
-    "match_score": 1,
-    "match_details": {
-      "matched_title": "Tiende tu cama",
-      "matched_author": "William H. McRaven"
-    },
-    "synopsis": "",
-    "synopsis_length": 0,
-    "covers": [],
-    "verified_identity": {
-      "titulo_real": "Tiende tu cama",
-      "subtitulo": "y otros pequeños hábitos que cambiaran tu vida y el mundo",
-      "autor_completo": "William H. McRaven",
-      "año": "2020",
-      "editorial": null,
-      "paginas": 175,
-      "isbn": "9789563605723",
-      "isbn13": "9789563605723",
-      "isbn10": "9563605721",
-      "categorias": [],
-      "idioma": "es",
-      "preview_link": "http://books.google.com/books?id=6fgyzwEACAAJ&dq=intitle:Tiende+tu+cama+inauthor:William+H.+McRaven&hl=&cd=3&source=gbs_api"
-    }
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
   },
   "openlibrary": {
     "ok": true,
@@ -107,23 +90,9 @@
     }
   },
   "amazon": {
-    "ok": true,
-    "source": "amazon",
-    "match_score": 0.85,
-    "covers": [
-      {
-        "size": "large",
-        "url": "https://images-na.ssl-images-amazon.com/images/P/6742792527.01.LZZZZZZZ.jpg"
-      }
-    ],
-    "synopsis": "",
-    "synopsis_length": 0,
-    "verified_identity": {
-      "isbn": "6742792527",
-      "titulo_real": null,
-      "autor_completo": null,
-      "año": null
-    }
+    "ok": false,
+    "reason": "skipped",
+    "source": "amazon"
   },
   "valid_covers": [
     {
@@ -161,32 +130,22 @@
       "size": "medium",
       "url": "https://covers.openlibrary.org/b/id/13224672-M.jpg",
       "valid": true
-    },
-    {
-      "source": "openlibrary",
-      "size": "small",
-      "url": "https://covers.openlibrary.org/b/id/13224672-S.jpg",
-      "valid": true
-    },
-    {
-      "source": "amazon",
-      "size": "large",
-      "url": "https://images-na.ssl-images-amazon.com/images/P/6742792527.01.LZZZZZZZ.jpg",
-      "valid": true
     }
   ],
   "_sources_succeeded": [
     "apple_books",
-    "google_books",
-    "openlibrary",
-    "amazon"
+    "openlibrary"
   ],
-  "_sources_failed": [],
+  "_sources_failed": [
+    "google_books:no_good_match",
+    "amazon:skipped"
+  ],
   "_timing": {
-    "phase1_parallel_ms": 551,
-    "phase2_isbn_chain_ms": 55,
-    "cover_validation_ms": 737,
-    "total_ms": 1343
+    "phase1_parallel_ms": 15805,
+    "phase2_isbn_chain_ms": 0,
+    "cover_validation_ms": 1700,
+    "total_ms": 17505
   },
-  "_cached_at": "2026-04-23T18:42:38.267Z"
+  "_version": "3.6",
+  "_cached_at": "2026-05-01T18:39:48.399Z"
 }

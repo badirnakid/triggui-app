@@ -2,7 +2,10 @@
   "titulo_input": "La vida que vale la pena vivir",
   "autor_input": "Miroslav Volf",
   "isbn_seed": "",
-  "isbn_discovered": "6737838325",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "",
+  "isbn_discovered_raw": "",
   "apple": {
     "ok": true,
     "source": "apple_books",
@@ -36,7 +39,8 @@
       "autor_completo": "Miroslav Volf, Matthew Croasmun & Ryan McAnnally-Linz",
       "año": "2024",
       "editorial": null,
-      "isbn": "6737838325",
+      "isbn": "",
+      "apple_track_id": "6737838325",
       "categorias": [
         "Filosofía",
         "Libros",
@@ -46,37 +50,9 @@
     }
   },
   "google": {
-    "ok": true,
-    "source": "google_books",
-    "match_score": 1,
-    "match_details": {
-      "matched_title": "La vida que vale la pena vivir",
-      "matched_author": "Miroslav Volf, Matthew Croasmun, Ryan MCAnnally-Linz"
-    },
-    "synopsis": "A través del concepto La Pregunta —la cual engloba las ideas de mérito, bondad, valor, sentido, propósito, entre muchas más—, los autores y catedráticos del Programa de Humanidades de Yale invitarán al lector a reflexionar y a encontrar el verdadero sentido de su vida, basándose en importantes figuras de tradiciones religiosas y filosóficas, que lo impulsarán a ser más responsable de su vida, enfrentar sus miedos y a volver reales sus más impulsos más profundos.",
-    "synopsis_length": 466,
-    "covers": [
-      {
-        "size": "small",
-        "url": "https://books.google.com/books/content?id=WmowEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
-      }
-    ],
-    "verified_identity": {
-      "titulo_real": "La vida que vale la pena vivir",
-      "subtitulo": "",
-      "autor_completo": "Miroslav Volf, Matthew Croasmun, Ryan MCAnnally-Linz",
-      "año": "2024",
-      "editorial": "VR Editoras",
-      "paginas": 280,
-      "isbn": "9786076370827",
-      "isbn13": "9786076370827",
-      "isbn10": "6076370823",
-      "categorias": [
-        "Philosophy"
-      ],
-      "idioma": "es",
-      "preview_link": "http://books.google.com/books?id=WmowEQAAQBAJ&pg=PT4&dq=intitle:La+vida+que+vale+la+pena+vivir+inauthor:Miroslav+Volf&hl=&cd=1&source=gbs_api"
-    }
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
   },
   "openlibrary": {
     "ok": false,
@@ -84,23 +60,9 @@
     "source": "openlibrary"
   },
   "amazon": {
-    "ok": true,
-    "source": "amazon",
-    "match_score": 0.85,
-    "covers": [
-      {
-        "size": "large",
-        "url": "https://images-na.ssl-images-amazon.com/images/P/6737838325.01.LZZZZZZZ.jpg"
-      }
-    ],
-    "synopsis": "",
-    "synopsis_length": 0,
-    "verified_identity": {
-      "isbn": "6737838325",
-      "titulo_real": null,
-      "autor_completo": null,
-      "año": null
-    }
+    "ok": false,
+    "reason": "skipped",
+    "source": "amazon"
   },
   "valid_covers": [
     {
@@ -126,33 +88,22 @@
       "size": "medium",
       "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/1e/08/c2/1e08c242-d4bc-5bb4-f173-d1cb99fbfed1/1050435823.jpg/100x100bb.jpg",
       "valid": true
-    },
-    {
-      "source": "google_books",
-      "size": "small",
-      "url": "https://books.google.com/books/content?id=WmowEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
-      "valid": true
-    },
-    {
-      "source": "amazon",
-      "size": "large",
-      "url": "https://images-na.ssl-images-amazon.com/images/P/6737838325.01.LZZZZZZZ.jpg",
-      "valid": true
     }
   ],
   "_sources_succeeded": [
-    "apple_books",
-    "google_books",
-    "amazon"
+    "apple_books"
   ],
   "_sources_failed": [
-    "openlibrary:no_results"
+    "google_books:no_good_match",
+    "openlibrary:no_results",
+    "amazon:skipped"
   ],
   "_timing": {
-    "phase1_parallel_ms": 925,
-    "phase2_isbn_chain_ms": 521,
-    "cover_validation_ms": 174,
-    "total_ms": 1620
+    "phase1_parallel_ms": 15780,
+    "phase2_isbn_chain_ms": 0,
+    "cover_validation_ms": 599,
+    "total_ms": 16379
   },
-  "_cached_at": "2026-04-23T18:43:34.461Z"
+  "_version": "3.6",
+  "_cached_at": "2026-05-01T18:41:43.467Z"
 }

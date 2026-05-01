@@ -1,5 +1,5 @@
 {
-  "ground_truth": "TEMA INFERIDO (el modelo no conoce este libro directamente, infiere desde similares):\n\nLa búsqueda de significado y la adaptación a los cambios y crisis contemporáneas a través de la sabiduría ancestral y prácticas espirituales.\n\nVOZ INFERIDA:\nReflexiva, accesible y profundamente conectada con la tradición y la experiencia personal.\n\nLIBROS SIMILARES QUE COMPARTEN ADN CON ESTE:\n- \"El poder del ahora\" (Eckhart Tolle): Explora la conciencia y la espiritualidad en tiempos de crisis personal.\n- \"La sabiduría de la inseguridad\" (Alan Watts): Aborda la fragilidad de la seguridad y la necesidad de adaptarse a los cambios.\n- \"El camino del artista\" (Julia Cameron): Ofrece herramientas para la autoexploración y el crecimiento personal en tiempos difíciles.\n- \"Antifrágil\" (Nassim Nicholas Taleb): Discute cómo enfrentar la incertidumbre y el cambio de manera constructiva.",
+  "ground_truth": "TEMA INFERIDO (el modelo no conoce este libro directamente, infiere desde similares):\n\nLa búsqueda de significado y conexión en tiempos de crisis, explorando la vulnerabilidad humana y la sabiduría ancestral.\n\nVOZ INFERIDA:\nReflexiva, introspectiva y accesible, con un enfoque en la práctica y la transformación personal.\n\nLIBROS SIMILARES QUE COMPARTEN ADN CON ESTE:\n- \"El poder del ahora\" (Eckhart Tolle): Explora la conciencia y la conexión con el presente, temas que pueden resonar con la búsqueda de significado en tiempos de crisis.\n- \"La sabiduría de la inseguridad\" (Alan Watts): Aborda la fragilidad de la existencia y la aceptación de la incertidumbre, similar a la temática de vulnerabilidad en 'Encuentro'.\n- \"Los cuatro acuerdos\" (Don Miguel Ruiz): Ofrece principios prácticos basados en la sabiduría ancestral, alineándose con el enfoque de prácticas chamánicas del libro buscado.\n- \"La vida es un viaje\" (Jorge Bucay): Reflexiona sobre el crecimiento personal y la búsqueda de significado, en un contexto de transformación personal y social.\n- \"Sapiens: De animales a dioses\" (Yuval Noah Harari): Aunque más histórico, aborda la evolución de la humanidad y los desafíos contemporáneos, lo que puede relacionarse con el contexto de cambio y crisis.",
   "grounding_source": "model_inference",
   "book_identity_confidence": 0.6000000000000001,
   "verified_identity": {
@@ -14,22 +14,27 @@
     {
       "titulo": "El poder del ahora",
       "autor": "Eckhart Tolle",
-      "razon": "Explora la conciencia y la espiritualidad en tiempos de crisis personal."
+      "razon": "Explora la conciencia y la conexión con el presente, temas que pueden resonar con la búsqueda de significado en tiempos de crisis."
     },
     {
       "titulo": "La sabiduría de la inseguridad",
       "autor": "Alan Watts",
-      "razon": "Aborda la fragilidad de la seguridad y la necesidad de adaptarse a los cambios."
+      "razon": "Aborda la fragilidad de la existencia y la aceptación de la incertidumbre, similar a la temática de vulnerabilidad en 'Encuentro'."
     },
     {
-      "titulo": "El camino del artista",
-      "autor": "Julia Cameron",
-      "razon": "Ofrece herramientas para la autoexploración y el crecimiento personal en tiempos difíciles."
+      "titulo": "Los cuatro acuerdos",
+      "autor": "Don Miguel Ruiz",
+      "razon": "Ofrece principios prácticos basados en la sabiduría ancestral, alineándose con el enfoque de prácticas chamánicas del libro buscado."
     },
     {
-      "titulo": "Antifrágil",
-      "autor": "Nassim Nicholas Taleb",
-      "razon": "Discute cómo enfrentar la incertidumbre y el cambio de manera constructiva."
+      "titulo": "La vida es un viaje",
+      "autor": "Jorge Bucay",
+      "razon": "Reflexiona sobre el crecimiento personal y la búsqueda de significado, en un contexto de transformación personal y social."
+    },
+    {
+      "titulo": "Sapiens: De animales a dioses",
+      "autor": "Yuval Noah Harari",
+      "razon": "Aunque más histórico, aborda la evolución de la humanidad y los desafíos contemporáneos, lo que puede relacionarse con el contexto de cambio y crisis."
     }
   ],
   "resolution_path": [
@@ -37,6 +42,6 @@
     "tier3_conf_0.80"
   ],
   "tier_reached": 3,
-  "cost_tokens": 719,
-  "cached_at": "2026-04-26T19:58:47.062Z"
+  "cost_tokens": 815,
+  "cached_at": "2026-05-01T18:49:25.848Z"
 }

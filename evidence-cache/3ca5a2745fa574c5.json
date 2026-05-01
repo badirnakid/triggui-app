@@ -1,6 +1,6 @@
 {
-  "titulo_input": "La biología de la creencia",
-  "autor_input": "Bruce H. Lipton",
+  "titulo_input": "Confía en mí estoy mintiendo",
+  "autor_input": "Ryan Holiday",
   "isbn_seed": "",
   "isbn_seed_raw": "",
   "isbn_seed_rejected": null,
@@ -21,33 +21,33 @@
     "source": "openlibrary",
     "match_score": 1,
     "match_details": {
-      "matched_title": "La biología de la creencia",
-      "matched_author": "Bruce H. Lipton, Concepción Rodríguez González"
+      "matched_title": "Confía en mí, estoy mintiendo",
+      "matched_author": "Ryan Holiday"
     },
-    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2021.",
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2013.",
     "synopsis_length": 65,
     "covers": [
       {
         "size": "large",
-        "url": "https://covers.openlibrary.org/b/id/13919889-L.jpg"
+        "url": "https://covers.openlibrary.org/b/id/11355144-L.jpg"
       },
       {
         "size": "medium",
-        "url": "https://covers.openlibrary.org/b/id/13919889-M.jpg"
+        "url": "https://covers.openlibrary.org/b/id/11355144-M.jpg"
       },
       {
         "size": "small",
-        "url": "https://covers.openlibrary.org/b/id/13919889-S.jpg"
+        "url": "https://covers.openlibrary.org/b/id/11355144-S.jpg"
       }
     ],
     "verified_identity": {
-      "titulo_real": "La biología de la creencia",
-      "autor_completo": "Bruce H. Lipton, Concepción Rodríguez González",
-      "año": "2021",
+      "titulo_real": "Confía en mí, estoy mintiendo",
+      "autor_completo": "Ryan Holiday",
+      "año": "2013",
       "editorial": null,
       "isbn": "",
       "categorias": [],
-      "idioma": null,
+      "idioma": "spa",
       "paginas": null
     }
   },
@@ -60,19 +60,13 @@
     {
       "source": "openlibrary",
       "size": "large",
-      "url": "https://covers.openlibrary.org/b/id/13919889-L.jpg",
+      "url": "https://covers.openlibrary.org/b/id/11355144-L.jpg",
       "valid": true
     },
     {
       "source": "openlibrary",
       "size": "medium",
-      "url": "https://covers.openlibrary.org/b/id/13919889-M.jpg",
-      "valid": true
-    },
-    {
-      "source": "openlibrary",
-      "size": "small",
-      "url": "https://covers.openlibrary.org/b/id/13919889-S.jpg",
+      "url": "https://covers.openlibrary.org/b/id/11355144-M.jpg",
       "valid": true
     }
   ],
@@ -85,11 +79,11 @@
     "amazon:skipped"
   ],
   "_timing": {
-    "phase1_parallel_ms": 15779,
+    "phase1_parallel_ms": 15810,
     "phase2_isbn_chain_ms": 0,
-    "cover_validation_ms": 1533,
-    "total_ms": 17312
+    "cover_validation_ms": 2441,
+    "total_ms": 18251
   },
   "_version": "3.6",
-  "_cached_at": "2026-05-01T18:44:33.420Z"
+  "_cached_at": "2026-05-01T18:47:25.137Z"
 }

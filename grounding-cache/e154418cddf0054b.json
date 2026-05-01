@@ -1,0 +1,29 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\n\"El cofundador de Waze, Uri Levine tiene uno de los más escasos rasgos del emprendedor: tiene las habilidades y la persistencia que le han permitido lanzar múltiples empresas exitosas, combinadas con la consciencia de cómo lo hizo. En Enamórate del problema, no de la solución, comparte estas verdades duramente obtenidas con el resto de nosotros… Debería ser una lectura obligatoria para toda persona que aspire a tener un emprendimiento.\" —Marc Randolph, Cofundador de Netflix Enamorémonos del problema, no de la solución Ofrece la guía de un mentor de parte de uno de los emprendedores más exitosos del mundo, y nos empodera para construir un negocio de éxito, mediante la identificación de los problemas más serios de nuestros consumidores y perturbar los mercados ineficientes que actualmente les sirven.\n\nMETADATA VERIFICADA:\n- Título: Enamórate del problema no de la solución\n- Autor: Uri Levine\n- Año: 2023\n- Categorías: Pequeñas empresas y emprendedores, Libros, Negocios y finanzas personales",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Enamórate del problema no de la solución",
+    "autor_completo": "Uri Levine",
+    "año": "2023",
+    "editorial": null,
+    "isbn": "",
+    "apple_track_id": "6467240871",
+    "categorias": [
+      "Pequeñas empresas y emprendedores",
+      "Libros",
+      "Negocios y finanzas personales"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/enam%C3%B3rate-del-problema-no-de-la-soluci%C3%B3n/id6467240871?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_2sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-05-01T18:36:51.012Z"
+}

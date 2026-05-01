@@ -7,7 +7,8 @@
     "autor_completo": "Miyamoto Musashi",
     "año": "1980",
     "editorial": null,
-    "isbn": "957209875",
+    "isbn": "",
+    "apple_track_id": "957209875",
     "categorias": [
       "Ficción y literatura",
       "Libros"
@@ -19,9 +20,9 @@
     "openlibrary"
   ],
   "resolution_path": [
-    "evidence_fetched_3sources"
+    "evidence_fetched_2sources"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-24T03:21:08.746Z"
+  "cached_at": "2026-05-01T18:52:52.694Z"
 }

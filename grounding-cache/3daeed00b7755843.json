@@ -1,31 +1,28 @@
 {
-  "ground_truth": "SINOPSIS OFICIAL (Google Books):\n\nAntología de ensayos y meditaciones Brianna Wiest, escritora bestseller y fenómeno global en redes sociales, presenta en esta obra una recopilación de sus escritos más famosos. La presente selección incluye reflexiones sobre por qué debemos perseguir el propósito por encima de la pasión, abrazar el pensamiento negativo, ver la sabiduría en la rutina diaria o ser conscientes de los sesgos cognitivos que crean nuestra manera de ver la vida, entre muchas otras. Algunas de estas piezas son inéditas; otras ya han sido leídas por millones de personas en todo el mundo. En cualquier caso, muchas de ellas te dejarán pensando: \"Esta idea me va a cambiar la vida\".\n\nMETADATA VERIFICADA:\n- Título: 101 Reflexiones que cambiarán tu forma de pensar\n- Autor: Brianna Wiest Brianna Wiest\n- Año: 2026\n- Editorial: Gaia Ediciones\n- Categorías: Psychology",
-  "grounding_source": "google_books",
-  "book_identity_confidence": 0.95,
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nMicrosanación que cambiará tu historia de vida El proceso de sanación no ocurre una sola vez en la vida; todos estamos en constante transformación y eso puede abrumarnos. Brianna Wiest, autora del bestseller La montaña eres tú, regresa con más de 40 reflexiones que te acompañarán en la experiencia de crecer, dejar ir a quien no te ama y acercarte —poco a poco— a tu verdadero propósito. Aquí encontrarás hábitos de microsanación para tu vida cotidiana, como restarles poder a tus pensamientos negativos o llevar un «diario de tu basura» para eludir la positividad tóxica. Además, entenderás la importancia de escuchar con atención a tu incomodidad, pues darte la oportunidad de sentirla es la única manera de saber que es tiempo de sanar.\n\nMETADATA VERIFICADA:\n- Título: Es tiempo de sanar\n- Autor: Brianna Wiest\n- Año: 2024\n- Categorías: Psicología, Libros, Salud, mente y cuerpo, Superación personal",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.7895833333333334,
   "verified_identity": {
-    "titulo_real": "101 Reflexiones que cambiarán tu forma de pensar",
-    "subtitulo": "",
-    "autor_completo": "Brianna Wiest Brianna Wiest",
-    "año": "2026",
-    "editorial": "Gaia Ediciones",
-    "paginas": null,
-    "isbn": "9788411080279",
-    "isbn13": "9788411080279",
-    "isbn10": "8411080277",
+    "titulo_real": "Es tiempo de sanar",
+    "autor_completo": "Brianna Wiest",
+    "año": "2024",
+    "editorial": null,
+    "isbn": "",
+    "apple_track_id": "6670730473",
     "categorias": [
-      "Psychology"
+      "Psicología",
+      "Libros",
+      "Salud, mente y cuerpo",
+      "Superación personal"
     ],
-    "idioma": "es",
-    "preview_link": "http://books.google.com/books?id=mMvFzwEACAAJ&dq=101+reflexiones+que+cambiar%C3%A1n+tu+forma+de+pensar+Brianna+Wiest&hl=&cd=1&source=gbs_api"
+    "track_view_url": "https://books.apple.com/mx/book/es-tiempo-de-sanar/id6670730473?uo=4"
   },
-  "match_score": 1,
-  "other_sources_agreed": [
-    "openlibrary"
-  ],
+  "match_score": 0.5989583333333334,
+  "other_sources_agreed": [],
   "resolution_path": [
-    "evidence_fetched_4sources"
+    "evidence_fetched_1sources"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-23T18:44:34.613Z"
+  "cached_at": "2026-05-01T18:37:48.572Z"
 }

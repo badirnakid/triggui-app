@@ -1,0 +1,27 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nCon este libro aprenderás de una forma amena y fácil a interpretar las señales no verbales que los demás emiten inconscientemente, lo cual te permitirá descubrir sus intenciones y sentimientos verdaderos y evitar así engaños y trampas. Al mismo tiempo podrás utilizar ese lenguaje no verbal para transmitir a tus familiares, amigos y jefes aquello que realmente quieres comunicarles. Entre otras cosas aprenderás: Qué indica que una persona está mintiendo. Las sencillas señales no verbales que generan confianza. Las señales no verbales que comunican autoridad Cuáles son los comportamientos que revelan sinceridad El significado que los pulgares, los pies y los párpados tienen en relación con los motivos y los sentimientos de la persona. Aprenderás también que el rostro no es lo más importante a la hora de captar las verdaderas intenciones y sentimientos de los demás. La experiencia y los conocimientos de Joe Navarro convierten a este libro en un instrumento valiosísimo para navegar por el mundo de hoy.\n\nMETADATA VERIFICADA:\n- Título: El cuerpo habla\n- Autor: Joe Navarro\n- Año: 2010\n- Categorías: Superación personal, Libros, Salud, mente y cuerpo",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "El cuerpo habla",
+    "autor_completo": "Joe Navarro",
+    "año": "2010",
+    "editorial": null,
+    "isbn": "",
+    "apple_track_id": "1188292800",
+    "categorias": [
+      "Superación personal",
+      "Libros",
+      "Salud, mente y cuerpo"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/el-cuerpo-habla/id1188292800?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [],
+  "resolution_path": [
+    "evidence_fetched_1sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-05-01T18:43:38.150Z"
+}

@@ -7,7 +7,8 @@
     "autor_completo": "Alejandra Llamas",
     "año": "2019",
     "editorial": null,
-    "isbn": "1478033616",
+    "isbn": "",
+    "apple_track_id": "1478033616",
     "categorias": [
       "Superación personal",
       "Libros",
@@ -20,9 +21,9 @@
     "openlibrary"
   ],
   "resolution_path": [
-    "evidence_fetched_3sources"
+    "evidence_fetched_2sources"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-21T01:37:08.908Z"
+  "cached_at": "2026-05-01T18:35:57.089Z"
 }

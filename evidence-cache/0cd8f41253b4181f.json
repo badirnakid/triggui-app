@@ -2,7 +2,10 @@
   "titulo_input": "El libro de los 5 anillos",
   "autor_input": "Miyamoto Musashi",
   "isbn_seed": "",
-  "isbn_discovered": "957209875",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "",
+  "isbn_discovered_raw": "",
   "apple": {
     "ok": true,
     "source": "apple_books",
@@ -36,7 +39,8 @@
       "autor_completo": "Miyamoto Musashi",
       "año": "1980",
       "editorial": null,
-      "isbn": "957209875",
+      "isbn": "",
+      "apple_track_id": "957209875",
       "categorias": [
         "Ficción y literatura",
         "Libros"
@@ -85,23 +89,9 @@
     }
   },
   "amazon": {
-    "ok": true,
-    "source": "amazon",
-    "match_score": 0.85,
-    "covers": [
-      {
-        "size": "large",
-        "url": "https://images-na.ssl-images-amazon.com/images/P/957209875.01.LZZZZZZZ.jpg"
-      }
-    ],
-    "synopsis": "",
-    "synopsis_length": 0,
-    "verified_identity": {
-      "isbn": "957209875",
-      "titulo_real": null,
-      "autor_completo": null,
-      "año": null
-    }
+    "ok": false,
+    "reason": "skipped",
+    "source": "amazon"
   },
   "valid_covers": [
     {
@@ -139,33 +129,22 @@
       "size": "medium",
       "url": "https://covers.openlibrary.org/b/id/13450688-M.jpg",
       "valid": true
-    },
-    {
-      "source": "openlibrary",
-      "size": "small",
-      "url": "https://covers.openlibrary.org/b/id/13450688-S.jpg",
-      "valid": true
-    },
-    {
-      "source": "amazon",
-      "size": "large",
-      "url": "https://images-na.ssl-images-amazon.com/images/P/957209875.01.LZZZZZZZ.jpg",
-      "valid": true
     }
   ],
   "_sources_succeeded": [
     "apple_books",
-    "openlibrary",
-    "amazon"
+    "openlibrary"
   ],
   "_sources_failed": [
-    "google_books:no_good_match"
+    "google_books:no_good_match",
+    "amazon:skipped"
   ],
   "_timing": {
-    "phase1_parallel_ms": 16374,
-    "phase2_isbn_chain_ms": 25377,
-    "cover_validation_ms": 793,
-    "total_ms": 42544
+    "phase1_parallel_ms": 16022,
+    "phase2_isbn_chain_ms": 0,
+    "cover_validation_ms": 1572,
+    "total_ms": 17594
   },
-  "_cached_at": "2026-04-24T03:21:08.745Z"
+  "_version": "3.6",
+  "_cached_at": "2026-05-01T18:52:52.693Z"
 }
