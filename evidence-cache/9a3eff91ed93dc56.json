@@ -2,7 +2,10 @@
   "titulo_input": "El círculo de la motivación",
   "autor_input": "Valentín Fuster",
   "isbn_seed": "",
-  "isbn_discovered": "610837968",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "9788408112860",
+  "isbn_discovered_raw": "9788408112860",
   "apple": {
     "ok": true,
     "source": "apple_books",
@@ -36,7 +39,8 @@
       "autor_completo": "Valentín Fuster & Emma Reverter",
       "año": "2013",
       "editorial": null,
-      "isbn": "610837968",
+      "isbn": "",
+      "apple_track_id": "610837968",
       "categorias": [
         "Superación personal",
         "Libros",
@@ -46,9 +50,37 @@
     }
   },
   "google": {
-    "ok": false,
-    "reason": "no_good_match",
-    "source": "google_books"
+    "ok": true,
+    "source": "google_books",
+    "match_score": 0.7589285714285715,
+    "match_details": {
+      "matched_title": "El círculo de la motivación",
+      "matched_author": "Valentí Fuster, Emma Reverter"
+    },
+    "synopsis": "En El círculo de la motivación, el eminente cardiólogo y científico Valentín Fuster comparte con los lectores su método para estar motivado. Fuster nos anima a luchar en los momentos difíciles a partir de sus experiencias personales. En su libro más íntimo, desgrana su periplo vital, que le ha llevado a viajar por su Barcelona natal, Liverpool, Edimburgo, Rochester, Boston y, finalmente, Nueva York y Madrid. En la presente obra el lector encontrará las reflexiones de Fuster sobre los valores que deben guiar al individuo y a la sociedad: los miembros de una comunidad deben dedicar tiempo a la reflexión, descubrir el talento, transmitir optimismo y promover la figura del tutor; ser auténticos, aceptar nuestras circunstancias, mostrar una actitud positiva y apostar por el altruismo nos ayuda a crecer como personas. Lo acompaña en este fascinante recorrido la periodista Emma Reverter, que, como Fuster, vive entre España y Estados Unidos. Lejos de ser una mera declaración de intenciones, El círculo de la motivación nos demuestra con un centenar de casos que motivarnos y transformar nuestras vidas es posible.",
+    "synopsis_length": 1120,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=nrarykHL4IkC&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "El círculo de la motivación",
+      "subtitulo": "",
+      "autor_completo": "Valentí Fuster, Emma Reverter",
+      "año": "2013",
+      "editorial": "Grupo Planeta Spain",
+      "paginas": 152,
+      "isbn": "9788408112860",
+      "isbn13": "9788408112860",
+      "isbn10": "8408112864",
+      "categorias": [
+        "Self-Help"
+      ],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=nrarykHL4IkC&printsec=frontcover&dq=intitle:El+c%C3%ADrculo+de+la+motivaci%C3%B3n+inauthor:Valent%C3%ADn+Fuster&hl=&cd=1&source=gbs_api"
+    }
   },
   "openlibrary": {
     "ok": true,
@@ -56,28 +88,28 @@
     "match_score": 1,
     "match_details": {
       "matched_title": "El círculo de la motivación",
-      "matched_author": "Valentín Fuster"
+      "matched_author": "Valentin Fuster"
     },
-    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2014.",
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2013.",
     "synopsis_length": 65,
     "covers": [
       {
         "size": "large",
-        "url": "https://covers.openlibrary.org/b/id/14156037-L.jpg"
+        "url": "https://covers.openlibrary.org/b/id/7263863-L.jpg"
       },
       {
         "size": "medium",
-        "url": "https://covers.openlibrary.org/b/id/14156037-M.jpg"
+        "url": "https://covers.openlibrary.org/b/id/7263863-M.jpg"
       },
       {
         "size": "small",
-        "url": "https://covers.openlibrary.org/b/id/14156037-S.jpg"
+        "url": "https://covers.openlibrary.org/b/id/7263863-S.jpg"
       }
     ],
     "verified_identity": {
       "titulo_real": "El círculo de la motivación",
-      "autor_completo": "Valentín Fuster",
-      "año": "2014",
+      "autor_completo": "Valentin Fuster",
+      "año": "2013",
       "editorial": null,
       "isbn": "",
       "categorias": [],
@@ -86,23 +118,9 @@
     }
   },
   "amazon": {
-    "ok": true,
-    "source": "amazon",
-    "match_score": 0.85,
-    "covers": [
-      {
-        "size": "large",
-        "url": "https://images-na.ssl-images-amazon.com/images/P/610837968.01.LZZZZZZZ.jpg"
-      }
-    ],
-    "synopsis": "",
-    "synopsis_length": 0,
-    "verified_identity": {
-      "isbn": "610837968",
-      "titulo_real": null,
-      "autor_completo": null,
-      "año": null
-    }
+    "ok": false,
+    "reason": "no_amazon_cover_or_only_placeholders",
+    "source": "amazon"
   },
   "valid_covers": [
     {
@@ -130,43 +148,38 @@
       "valid": true
     },
     {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=nrarykHL4IkC&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
       "source": "openlibrary",
       "size": "large",
-      "url": "https://covers.openlibrary.org/b/id/14156037-L.jpg",
+      "url": "https://covers.openlibrary.org/b/id/7263863-L.jpg",
       "valid": true
     },
     {
       "source": "openlibrary",
       "size": "medium",
-      "url": "https://covers.openlibrary.org/b/id/14156037-M.jpg",
-      "valid": true
-    },
-    {
-      "source": "openlibrary",
-      "size": "small",
-      "url": "https://covers.openlibrary.org/b/id/14156037-S.jpg",
-      "valid": true
-    },
-    {
-      "source": "amazon",
-      "size": "large",
-      "url": "https://images-na.ssl-images-amazon.com/images/P/610837968.01.LZZZZZZZ.jpg",
+      "url": "https://covers.openlibrary.org/b/id/7263863-M.jpg",
       "valid": true
     }
   ],
   "_sources_succeeded": [
     "apple_books",
-    "openlibrary",
-    "amazon"
+    "google_books",
+    "openlibrary"
   ],
   "_sources_failed": [
-    "google_books:no_good_match"
+    "amazon:no_amazon_cover_or_only_placeholders"
   ],
   "_timing": {
-    "phase1_parallel_ms": 15756,
-    "phase2_isbn_chain_ms": 18492,
-    "cover_validation_ms": 975,
-    "total_ms": 35223
+    "phase1_parallel_ms": 1416,
+    "phase2_isbn_chain_ms": 171,
+    "cover_validation_ms": 1073,
+    "total_ms": 2660
   },
-  "_cached_at": "2026-04-22T20:19:46.117Z"
+  "_version": "3.6",
+  "_cached_at": "2026-05-01T15:26:35.409Z"
 }
