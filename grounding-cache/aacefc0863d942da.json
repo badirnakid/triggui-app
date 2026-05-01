@@ -1,0 +1,28 @@
+{
+  "ground_truth": "LIBRO SELECCIONADO POR EL CURADOR AUTOMÁTICO:\nTítulo: Saber de libros sin leer\nAutor: Henry Hitchings\n\nSINOPSIS OFICIAL (Apple Books):\n\n¿Alguna vez te has preguntado por qué hay gente que parece tener una opinión sobre todos los libros que se han publicado? En la actualidad existe un gran volumen de libros, así que ¿cómo se puede ser culto con este panorama? Si has dejado para más adelante leer a Jane Austen, o quieres defenderte en un debate sobre El tiempo perdido de Proust, no busques más. Con consejos sobre cómo fingir saber de todo con seguridad, utilizando citas y curiosidades que no tienen precio, Henry Hitchings aborda con ingenio los libros más destacados que se supone todo el mundo debería haber leído. Esta guía te proporcionará toda la información literaria que necesitas para salir airoso de cualquier situación, ya sea un examen crucial, una conversación profunda en el bar o una charla con quien puede ser el amor de tu vida. Si hay un libro que deberías encontrar tiempo para leer, es éste.\n\nMETADATA VERIFICADA:\n- Título: Saber de libros sin leer\n- Autor: Henry Hitchings\n- Año: 2011\n- Categorías: Educación, Libros, Técnicos y profesionales",
+  "grounding_source": "identity_sealed_with_evidence",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Saber de libros sin leer",
+    "autor_completo": "Henry Hitchings",
+    "año": "2011",
+    "editorial": null,
+    "categorias": [
+      "Educación",
+      "Libros",
+      "Técnicos y profesionales"
+    ]
+  },
+  "match_score": 1,
+  "evidence_source": "apple_books",
+  "other_sources_agreed": [
+    "google_books",
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_preloaded"
+  ],
+  "tier_reached": 1.5,
+  "cost_tokens": 0,
+  "cached_at": "2026-05-01T15:22:09.260Z"
+}
