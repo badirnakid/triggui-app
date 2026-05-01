@@ -141,11 +141,11 @@
     "amazon:skipped"
   ],
   "_timing": {
-    "phase1_parallel_ms": 15908,
+    "phase1_parallel_ms": 15852,
     "phase2_isbn_chain_ms": 0,
-    "cover_validation_ms": 1133,
-    "total_ms": 17041
+    "cover_validation_ms": 1200,
+    "total_ms": 17052
   },
   "_version": "3.6",
-  "_cached_at": "2026-05-01T15:30:31.898Z"
+  "_cached_at": "2026-05-01T15:35:22.689Z"
 }
