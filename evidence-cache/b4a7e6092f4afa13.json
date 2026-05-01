@@ -121,12 +121,6 @@
     },
     {
       "source": "openlibrary",
-      "size": "large",
-      "url": "https://covers.openlibrary.org/b/id/14156037-L.jpg",
-      "valid": true
-    },
-    {
-      "source": "openlibrary",
       "size": "medium",
       "url": "https://covers.openlibrary.org/b/id/14156037-M.jpg",
       "valid": true
@@ -141,11 +135,11 @@
     "amazon:skipped"
   ],
   "_timing": {
-    "phase1_parallel_ms": 15846,
+    "phase1_parallel_ms": 8749,
     "phase2_isbn_chain_ms": 0,
-    "cover_validation_ms": 1823,
-    "total_ms": 17669
+    "cover_validation_ms": 4504,
+    "total_ms": 13253
   },
   "_version": "3.6",
-  "_cached_at": "2026-05-01T15:39:49.838Z"
+  "_cached_at": "2026-05-01T15:43:18.506Z"
 }

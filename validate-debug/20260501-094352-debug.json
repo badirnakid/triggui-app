@@ -1,0 +1,444 @@
+{
+  "history": [
+    {
+      "at": "2026-05-01T15:43:18.509Z",
+      "stage": "success",
+      "bookData": {
+        "titulo": "el circulo de la motivación",
+        "autor": "Valentin Fuster",
+        "slug": "el-circulo-de-la-motivacion",
+        "tagline": "",
+        "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/4c/ca/45/4cca4512-dfdf-7e8e-ea4a-f32a23d75c79/9788408112860.jpg/3000x3000bb.jpg",
+        "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/4c/ca/45/4cca4512-dfdf-7e8e-ea4a-f32a23d75c79/9788408112860.jpg/3000x3000bb.jpg",
+        "portada_source": "apple_books",
+        "portada_candidates": [
+          {
+            "source": "apple_books",
+            "size": "xxlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/4c/ca/45/4cca4512-dfdf-7e8e-ea4a-f32a23d75c79/9788408112860.jpg/3000x3000bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "xlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/4c/ca/45/4cca4512-dfdf-7e8e-ea4a-f32a23d75c79/9788408112860.jpg/1200x1200bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "large",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/4c/ca/45/4cca4512-dfdf-7e8e-ea4a-f32a23d75c79/9788408112860.jpg/600x600bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "medium",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/4c/ca/45/4cca4512-dfdf-7e8e-ea4a-f32a23d75c79/9788408112860.jpg/100x100bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "openlibrary",
+            "size": "medium",
+            "url": "https://covers.openlibrary.org/b/id/14156037-M.jpg",
+            "valid": true
+          }
+        ],
+        "needs_fallback_cover": false,
+        "isbn": "",
+        "editorial": "Valentín Fuster & Emma Reverter",
+        "publication_year": "2013",
+        "source": "apple_books",
+        "duplicado": true,
+        "selected_via": "direct_book",
+        "selection_reason": "Libro explícito proporcionado en workflow_dispatch",
+        "trigger_input": "",
+        "trigger_analysis": null,
+        "selection_validation": {},
+        "catalog_scope": "",
+        "contexto_2026": {},
+        "identity_sealed": false,
+        "_evidence": {
+          "titulo_input": "el circulo de la motivación",
+          "autor_input": "Valentin Fuster",
+          "isbn_seed": "",
+          "isbn_seed_raw": "",
+          "isbn_seed_rejected": null,
+          "isbn_discovered": "",
+          "isbn_discovered_raw": "",
+          "apple": {
+            "ok": true,
+            "source": "apple_books",
+            "match_score": 1,
+            "match_details": {
+              "matched_title": "El círculo de la motivación",
+              "matched_author": "Valentín Fuster & Emma Reverter"
+            },
+            "synopsis": "En El círculo de la motivación, el eminente cardiólogo y científico Valentín Fuster comparte con los lectores su método para estar motivado. Fuster nos anima a luchar en los momentos difíciles a partir de sus experiencias personales. En su libro más íntimo, desgrana su periplo vital, que le ha llevado a viajar por su Barcelona natal, Liverpool, Edimburgo, Rochester, Boston y, finalmente, Nueva York y Madrid. En la presente obra el lector encontrará las reflexiones de Fuster sobre los valores que deben guiar al individuo y a la sociedad: los miembros de una comunidad deben dedicar tiempo a la reflexión, descubrir el talento, transmitir optimismo y promover la figura del tutor; ser auténticos, aceptar nuestras circunstancias, mostrar una actitud positiva y apostar por el altruismo nos ayuda a crecer como personas. Lo acompaña en este fascinante recorrido la periodista Emma Reverter, que, como Fuster, vive entre España y Estados Unidos. Lejos de ser una mera declaración de intenciones, El círculo de la motivación nos demuestra con un centenar de casos que motivarnos y transformar nuestras vidas es posible.",
+            "synopsis_length": 1120,
+            "covers": [
+              {
+                "size": "xxlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/4c/ca/45/4cca4512-dfdf-7e8e-ea4a-f32a23d75c79/9788408112860.jpg/3000x3000bb.jpg"
+              },
+              {
+                "size": "xlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/4c/ca/45/4cca4512-dfdf-7e8e-ea4a-f32a23d75c79/9788408112860.jpg/1200x1200bb.jpg"
+              },
+              {
+                "size": "large",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/4c/ca/45/4cca4512-dfdf-7e8e-ea4a-f32a23d75c79/9788408112860.jpg/600x600bb.jpg"
+              },
+              {
+                "size": "medium",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/4c/ca/45/4cca4512-dfdf-7e8e-ea4a-f32a23d75c79/9788408112860.jpg/100x100bb.jpg"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "El círculo de la motivación",
+              "autor_completo": "Valentín Fuster & Emma Reverter",
+              "año": "2013",
+              "editorial": null,
+              "isbn": "",
+              "apple_track_id": "610837968",
+              "categorias": [
+                "Superación personal",
+                "Libros",
+                "Salud, mente y cuerpo"
+              ],
+              "track_view_url": "https://books.apple.com/mx/book/el-c%C3%ADrculo-de-la-motivaci%C3%B3n/id610837968?uo=4"
+            }
+          },
+          "google": {
+            "ok": false,
+            "reason": "no_good_match",
+            "source": "google_books"
+          },
+          "openlibrary": {
+            "ok": true,
+            "source": "openlibrary",
+            "match_score": 1,
+            "match_details": {
+              "matched_title": "El círculo de la motivación",
+              "matched_author": "Valentín Fuster"
+            },
+            "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2014.",
+            "synopsis_length": 65,
+            "covers": [
+              {
+                "size": "large",
+                "url": "https://covers.openlibrary.org/b/id/14156037-L.jpg"
+              },
+              {
+                "size": "medium",
+                "url": "https://covers.openlibrary.org/b/id/14156037-M.jpg"
+              },
+              {
+                "size": "small",
+                "url": "https://covers.openlibrary.org/b/id/14156037-S.jpg"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "El círculo de la motivación",
+              "autor_completo": "Valentín Fuster",
+              "año": "2014",
+              "editorial": null,
+              "isbn": "",
+              "categorias": [],
+              "idioma": null,
+              "paginas": null
+            }
+          },
+          "amazon": {
+            "ok": false,
+            "reason": "skipped",
+            "source": "amazon"
+          },
+          "valid_covers": [
+            {
+              "source": "apple_books",
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/4c/ca/45/4cca4512-dfdf-7e8e-ea4a-f32a23d75c79/9788408112860.jpg/3000x3000bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/4c/ca/45/4cca4512-dfdf-7e8e-ea4a-f32a23d75c79/9788408112860.jpg/1200x1200bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/4c/ca/45/4cca4512-dfdf-7e8e-ea4a-f32a23d75c79/9788408112860.jpg/600x600bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/4c/ca/45/4cca4512-dfdf-7e8e-ea4a-f32a23d75c79/9788408112860.jpg/100x100bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "openlibrary",
+              "size": "medium",
+              "url": "https://covers.openlibrary.org/b/id/14156037-M.jpg",
+              "valid": true
+            }
+          ],
+          "_sources_succeeded": [
+            "apple_books",
+            "openlibrary"
+          ],
+          "_sources_failed": [
+            "google_books:no_good_match",
+            "amazon:skipped"
+          ],
+          "_timing": {
+            "phase1_parallel_ms": 8749,
+            "phase2_isbn_chain_ms": 0,
+            "cover_validation_ms": 4504,
+            "total_ms": 13253
+          },
+          "_version": "3.6"
+        },
+        "_evidence_synopsis": "En El círculo de la motivación, el eminente cardiólogo y científico Valentín Fuster comparte con los lectores su método para estar motivado. Fuster nos anima a luchar en los momentos difíciles a partir de sus experiencias personales. En su libro más íntimo, desgrana su periplo vital, que le ha llevado a viajar por su Barcelona natal, Liverpool, Edimburgo, Rochester, Boston y, finalmente, Nueva York y Madrid. En la presente obra el lector encontrará las reflexiones de Fuster sobre los valores que deben guiar al individuo y a la sociedad: los miembros de una comunidad deben dedicar tiempo a la reflexión, descubrir el talento, transmitir optimismo y promover la figura del tutor; ser auténticos, aceptar nuestras circunstancias, mostrar una actitud positiva y apostar por el altruismo nos ayuda a crecer como personas. Lo acompaña en este fascinante recorrido la periodista Emma Reverter, que, como Fuster, vive entre España y Estados Unidos. Lejos de ser una mera declaración de intenciones, El círculo de la motivación nos demuestra con un centenar de casos que motivarnos y transformar nuestras vidas es posible.",
+        "_evidence_verified_identity": {
+          "titulo_real": "El círculo de la motivación",
+          "autor_completo": "Valentín Fuster & Emma Reverter",
+          "año": "2013",
+          "editorial": null,
+          "isbn": "",
+          "apple_track_id": "610837968",
+          "categorias": [
+            "Superación personal",
+            "Libros",
+            "Salud, mente y cuerpo"
+          ],
+          "track_view_url": "https://books.apple.com/mx/book/el-c%C3%ADrculo-de-la-motivaci%C3%B3n/id610837968?uo=4"
+        },
+        "_evidence_match_score": 1
+      },
+      "ring_updated": false
+    }
+  ],
+  "last": {
+    "at": "2026-05-01T15:43:18.509Z",
+    "stage": "success",
+    "bookData": {
+      "titulo": "el circulo de la motivación",
+      "autor": "Valentin Fuster",
+      "slug": "el-circulo-de-la-motivacion",
+      "tagline": "",
+      "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/4c/ca/45/4cca4512-dfdf-7e8e-ea4a-f32a23d75c79/9788408112860.jpg/3000x3000bb.jpg",
+      "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/4c/ca/45/4cca4512-dfdf-7e8e-ea4a-f32a23d75c79/9788408112860.jpg/3000x3000bb.jpg",
+      "portada_source": "apple_books",
+      "portada_candidates": [
+        {
+          "source": "apple_books",
+          "size": "xxlarge",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/4c/ca/45/4cca4512-dfdf-7e8e-ea4a-f32a23d75c79/9788408112860.jpg/3000x3000bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "xlarge",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/4c/ca/45/4cca4512-dfdf-7e8e-ea4a-f32a23d75c79/9788408112860.jpg/1200x1200bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "large",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/4c/ca/45/4cca4512-dfdf-7e8e-ea4a-f32a23d75c79/9788408112860.jpg/600x600bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "medium",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/4c/ca/45/4cca4512-dfdf-7e8e-ea4a-f32a23d75c79/9788408112860.jpg/100x100bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "openlibrary",
+          "size": "medium",
+          "url": "https://covers.openlibrary.org/b/id/14156037-M.jpg",
+          "valid": true
+        }
+      ],
+      "needs_fallback_cover": false,
+      "isbn": "",
+      "editorial": "Valentín Fuster & Emma Reverter",
+      "publication_year": "2013",
+      "source": "apple_books",
+      "duplicado": true,
+      "selected_via": "direct_book",
+      "selection_reason": "Libro explícito proporcionado en workflow_dispatch",
+      "trigger_input": "",
+      "trigger_analysis": null,
+      "selection_validation": {},
+      "catalog_scope": "",
+      "contexto_2026": {},
+      "identity_sealed": false,
+      "_evidence": {
+        "titulo_input": "el circulo de la motivación",
+        "autor_input": "Valentin Fuster",
+        "isbn_seed": "",
+        "isbn_seed_raw": "",
+        "isbn_seed_rejected": null,
+        "isbn_discovered": "",
+        "isbn_discovered_raw": "",
+        "apple": {
+          "ok": true,
+          "source": "apple_books",
+          "match_score": 1,
+          "match_details": {
+            "matched_title": "El círculo de la motivación",
+            "matched_author": "Valentín Fuster & Emma Reverter"
+          },
+          "synopsis": "En El círculo de la motivación, el eminente cardiólogo y científico Valentín Fuster comparte con los lectores su método para estar motivado. Fuster nos anima a luchar en los momentos difíciles a partir de sus experiencias personales. En su libro más íntimo, desgrana su periplo vital, que le ha llevado a viajar por su Barcelona natal, Liverpool, Edimburgo, Rochester, Boston y, finalmente, Nueva York y Madrid. En la presente obra el lector encontrará las reflexiones de Fuster sobre los valores que deben guiar al individuo y a la sociedad: los miembros de una comunidad deben dedicar tiempo a la reflexión, descubrir el talento, transmitir optimismo y promover la figura del tutor; ser auténticos, aceptar nuestras circunstancias, mostrar una actitud positiva y apostar por el altruismo nos ayuda a crecer como personas. Lo acompaña en este fascinante recorrido la periodista Emma Reverter, que, como Fuster, vive entre España y Estados Unidos. Lejos de ser una mera declaración de intenciones, El círculo de la motivación nos demuestra con un centenar de casos que motivarnos y transformar nuestras vidas es posible.",
+          "synopsis_length": 1120,
+          "covers": [
+            {
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/4c/ca/45/4cca4512-dfdf-7e8e-ea4a-f32a23d75c79/9788408112860.jpg/3000x3000bb.jpg"
+            },
+            {
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/4c/ca/45/4cca4512-dfdf-7e8e-ea4a-f32a23d75c79/9788408112860.jpg/1200x1200bb.jpg"
+            },
+            {
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/4c/ca/45/4cca4512-dfdf-7e8e-ea4a-f32a23d75c79/9788408112860.jpg/600x600bb.jpg"
+            },
+            {
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/4c/ca/45/4cca4512-dfdf-7e8e-ea4a-f32a23d75c79/9788408112860.jpg/100x100bb.jpg"
+            }
+          ],
+          "verified_identity": {
+            "titulo_real": "El círculo de la motivación",
+            "autor_completo": "Valentín Fuster & Emma Reverter",
+            "año": "2013",
+            "editorial": null,
+            "isbn": "",
+            "apple_track_id": "610837968",
+            "categorias": [
+              "Superación personal",
+              "Libros",
+              "Salud, mente y cuerpo"
+            ],
+            "track_view_url": "https://books.apple.com/mx/book/el-c%C3%ADrculo-de-la-motivaci%C3%B3n/id610837968?uo=4"
+          }
+        },
+        "google": {
+          "ok": false,
+          "reason": "no_good_match",
+          "source": "google_books"
+        },
+        "openlibrary": {
+          "ok": true,
+          "source": "openlibrary",
+          "match_score": 1,
+          "match_details": {
+            "matched_title": "El círculo de la motivación",
+            "matched_author": "Valentín Fuster"
+          },
+          "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2014.",
+          "synopsis_length": 65,
+          "covers": [
+            {
+              "size": "large",
+              "url": "https://covers.openlibrary.org/b/id/14156037-L.jpg"
+            },
+            {
+              "size": "medium",
+              "url": "https://covers.openlibrary.org/b/id/14156037-M.jpg"
+            },
+            {
+              "size": "small",
+              "url": "https://covers.openlibrary.org/b/id/14156037-S.jpg"
+            }
+          ],
+          "verified_identity": {
+            "titulo_real": "El círculo de la motivación",
+            "autor_completo": "Valentín Fuster",
+            "año": "2014",
+            "editorial": null,
+            "isbn": "",
+            "categorias": [],
+            "idioma": null,
+            "paginas": null
+          }
+        },
+        "amazon": {
+          "ok": false,
+          "reason": "skipped",
+          "source": "amazon"
+        },
+        "valid_covers": [
+          {
+            "source": "apple_books",
+            "size": "xxlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/4c/ca/45/4cca4512-dfdf-7e8e-ea4a-f32a23d75c79/9788408112860.jpg/3000x3000bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "xlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/4c/ca/45/4cca4512-dfdf-7e8e-ea4a-f32a23d75c79/9788408112860.jpg/1200x1200bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "large",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/4c/ca/45/4cca4512-dfdf-7e8e-ea4a-f32a23d75c79/9788408112860.jpg/600x600bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "medium",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/4c/ca/45/4cca4512-dfdf-7e8e-ea4a-f32a23d75c79/9788408112860.jpg/100x100bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "openlibrary",
+            "size": "medium",
+            "url": "https://covers.openlibrary.org/b/id/14156037-M.jpg",
+            "valid": true
+          }
+        ],
+        "_sources_succeeded": [
+          "apple_books",
+          "openlibrary"
+        ],
+        "_sources_failed": [
+          "google_books:no_good_match",
+          "amazon:skipped"
+        ],
+        "_timing": {
+          "phase1_parallel_ms": 8749,
+          "phase2_isbn_chain_ms": 0,
+          "cover_validation_ms": 4504,
+          "total_ms": 13253
+        },
+        "_version": "3.6"
+      },
+      "_evidence_synopsis": "En El círculo de la motivación, el eminente cardiólogo y científico Valentín Fuster comparte con los lectores su método para estar motivado. Fuster nos anima a luchar en los momentos difíciles a partir de sus experiencias personales. En su libro más íntimo, desgrana su periplo vital, que le ha llevado a viajar por su Barcelona natal, Liverpool, Edimburgo, Rochester, Boston y, finalmente, Nueva York y Madrid. En la presente obra el lector encontrará las reflexiones de Fuster sobre los valores que deben guiar al individuo y a la sociedad: los miembros de una comunidad deben dedicar tiempo a la reflexión, descubrir el talento, transmitir optimismo y promover la figura del tutor; ser auténticos, aceptar nuestras circunstancias, mostrar una actitud positiva y apostar por el altruismo nos ayuda a crecer como personas. Lo acompaña en este fascinante recorrido la periodista Emma Reverter, que, como Fuster, vive entre España y Estados Unidos. Lejos de ser una mera declaración de intenciones, El círculo de la motivación nos demuestra con un centenar de casos que motivarnos y transformar nuestras vidas es posible.",
+      "_evidence_verified_identity": {
+        "titulo_real": "El círculo de la motivación",
+        "autor_completo": "Valentín Fuster & Emma Reverter",
+        "año": "2013",
+        "editorial": null,
+        "isbn": "",
+        "apple_track_id": "610837968",
+        "categorias": [
+          "Superación personal",
+          "Libros",
+          "Salud, mente y cuerpo"
+        ],
+        "track_view_url": "https://books.apple.com/mx/book/el-c%C3%ADrculo-de-la-motivaci%C3%B3n/id610837968?uo=4"
+      },
+      "_evidence_match_score": 1
+    },
+    "ring_updated": false
+  }
+}
