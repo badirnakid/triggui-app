@@ -2362,7 +2362,7 @@ function render(){
       };
     } else {
       card.append(label, frase);
-      card.onclick = () => { if(revealed) requestNewBook(); else card.classList.toggle("show"); };
+      card.onclick = (e) => { if(revealed) { e.stopPropagation(); btnShare.click(); } else card.classList.toggle("show"); };
     }
     grid.append(card);
   }
