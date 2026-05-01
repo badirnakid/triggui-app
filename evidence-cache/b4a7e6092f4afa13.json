@@ -60,28 +60,28 @@
     "match_score": 1,
     "match_details": {
       "matched_title": "El círculo de la motivación",
-      "matched_author": "Valentin Fuster"
+      "matched_author": "Valentín Fuster"
     },
-    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2013.",
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2014.",
     "synopsis_length": 65,
     "covers": [
       {
         "size": "large",
-        "url": "https://covers.openlibrary.org/b/id/7263863-L.jpg"
+        "url": "https://covers.openlibrary.org/b/id/14156037-L.jpg"
       },
       {
         "size": "medium",
-        "url": "https://covers.openlibrary.org/b/id/7263863-M.jpg"
+        "url": "https://covers.openlibrary.org/b/id/14156037-M.jpg"
       },
       {
         "size": "small",
-        "url": "https://covers.openlibrary.org/b/id/7263863-S.jpg"
+        "url": "https://covers.openlibrary.org/b/id/14156037-S.jpg"
       }
     ],
     "verified_identity": {
       "titulo_real": "El círculo de la motivación",
-      "autor_completo": "Valentin Fuster",
-      "año": "2013",
+      "autor_completo": "Valentín Fuster",
+      "año": "2014",
       "editorial": null,
       "isbn": "",
       "categorias": [],
@@ -122,13 +122,13 @@
     {
       "source": "openlibrary",
       "size": "large",
-      "url": "https://covers.openlibrary.org/b/id/7263863-L.jpg",
+      "url": "https://covers.openlibrary.org/b/id/14156037-L.jpg",
       "valid": true
     },
     {
       "source": "openlibrary",
       "size": "medium",
-      "url": "https://covers.openlibrary.org/b/id/7263863-M.jpg",
+      "url": "https://covers.openlibrary.org/b/id/14156037-M.jpg",
       "valid": true
     }
   ],
@@ -141,11 +141,11 @@
     "amazon:skipped"
   ],
   "_timing": {
-    "phase1_parallel_ms": 15852,
+    "phase1_parallel_ms": 15846,
     "phase2_isbn_chain_ms": 0,
-    "cover_validation_ms": 1200,
-    "total_ms": 17052
+    "cover_validation_ms": 1823,
+    "total_ms": 17669
   },
   "_version": "3.6",
-  "_cached_at": "2026-05-01T15:35:22.689Z"
+  "_cached_at": "2026-05-01T15:39:49.838Z"
 }
