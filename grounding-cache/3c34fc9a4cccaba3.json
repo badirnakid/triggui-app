@@ -1,0 +1,31 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Google Books):\n\nEn la antigua China, quinientos años antes del nacimiento de Jesucristo, un hombre realizado en Dios llamado Lao-Tsé dictó 81 versos, considerado por muchos como la máxima exégesis sobre la naturaleza de nuestra existencia. El texto clásico de estos versos, llamado el Tao Te Ching o el Gran Camino, ofrece consejo y guía balanceados, morales, espirituales y siempre con el propósito de realizar el bien. El doctor Wayne W. Dyer ha revisado cientos de traducciones del Tao Te Ching. En este libro, escribe 81 ensayos distintos sobre cómo aplicar esta sabiduría antigua de Lao-Tsé en el mundo moderno. Este trabajo contiene los 81 versos del Tao, compilados por Wayne según sus investigaciones de diez de las traducciones más respetadas del texto, el cual ha sobrevivido por más de veinticinco siglos. Cada uno de los 81 capítulos tiene como finalidad llegar a vivir de forma verdadera el Tao o el Gran Camino, y concluye con una sección titulada: \"Practique el Tao ahora\". Wayne pasó todo un año leyendo, investigando y meditando sobre los mensajes de Lao-Tsé, practicándolos cada día y terminando por escribir estas revelaciones que él sentía que Lao-Tsé deseaba que ustedes conocieran. Esta es una obra que debe leerse despacio, un verso al día. Como dice Wayne: \"Este es un libro que cambiará para siempre la forma de ver su vida, y el resultado será que llevará una vida en un nuevo mundo alineado con la naturaleza. Escribir este libro me transformó a mi por igual. Ahora vivo de acuerdo con el mundo natural y siento una paz que jamás había experimentado en mi vida. Estoy muy orgulloso de presentar esta interpretación del Tao Te Ching; espero que le ofrezca la misma oportunidad de cambio que me ofreció a mí\".\n\nMETADATA VERIFICADA:\n- Título: Cambie Sus Pensamientos, Cambie Su Vida\n- Autor: Dr. Wayne W. Dyer\n- Año: 2009\n- Editorial: Hay House, Inc\n- Categorías: Self-Help",
+  "grounding_source": "google_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Cambie Sus Pensamientos, Cambie Su Vida",
+    "subtitulo": "Vivir la sabiduria del Tao",
+    "autor_completo": "Dr. Wayne W. Dyer",
+    "año": "2009",
+    "editorial": "Hay House, Inc",
+    "paginas": 458,
+    "isbn": "9781401925086",
+    "isbn13": "9781401925086",
+    "isbn10": "1401925081",
+    "categorias": [
+      "Self-Help"
+    ],
+    "idioma": "es",
+    "preview_link": "http://books.google.com/books?id=-CBuROn7JUUC&pg=PA273&dq=intitle:Cambie+Sus+Pensamientos+Cambie+Su+Vida+inauthor:Dr.+Wayne+W.+Dyer&hl=&cd=1&source=gbs_api"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "apple_books"
+  ],
+  "resolution_path": [
+    "evidence_fetched_2sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-05-02T11:52:16.560Z"
+}

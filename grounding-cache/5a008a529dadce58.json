@@ -1,0 +1,30 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nNo sabemos qué te ha llevado a sentir curiosidad por este libro. Tal vez estés pasando por una etapa con un alto nivel de estrés. Quizás sufres una gran saturación de trabajo. O estás empezando a comprender las responsabilidades que conlleva tener un hijo. O puede que estés viviendo una tormenta emocional como consecuencia de una nueva relación fallida. Sea lo que sea, seguro que puedes encontrar las palabras justas dentro de la sabiduría estoica. El estoicismo es una filosofía práctica cuyo mensaje esencial es: no podemos controlar lo que nos pasa, pero sí cómo respondemos a ello. Cuando nos hacemos preguntas tan corrientes como «¿Qué puedo hacer para controlar mi rabia?», «¿Qué debo hacer si alguien me insulta?», «¿Qué puedo hacer para no sentir temor ante la muerte?», o incluso «¿Cómo debería gestionar los éxitos que obtengo?» lo que en realidad nos estamos preguntando es de qué forma deberíamos vivir nuestra vida para ser más felices. Y no parece una cuestión sencilla de responder… En Cómo ser un estoico, el filósofo Massimo Pigliucci ofrece el estoicismo, la antigua filosofía que inspiró al gran emperador Marco Aurelio, como el mejor camino para conseguirlo. Mediante una conversación entre el mismo Pigliucci y Epicteto, el antiguo esclavo convertido en maestro, y un sinfín de consejos, ejercicios prácticos y propuestas de meditación, este libro se convierte en la guía esencial para vivir la vida según las pautas del estoicismo y encontrar las soluciones que esta filosofía práctica puede aportar a nuestros problemas modernos.\n\nMETADATA VERIFICADA:\n- Título: Cómo ser un estoico\n- Autor: Massimo Pigliucci\n- Año: 2018\n- Categorías: Filosofía, Libros, No ficción",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Cómo ser un estoico",
+    "autor_completo": "Massimo Pigliucci",
+    "año": "2018",
+    "editorial": null,
+    "isbn": "",
+    "apple_track_id": "1347364525",
+    "categorias": [
+      "Filosofía",
+      "Libros",
+      "No ficción"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/c%C3%B3mo-ser-un-estoico/id1347364525?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "google_books",
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_3sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-05-02T11:53:32.862Z"
+}

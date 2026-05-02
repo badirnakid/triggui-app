@@ -1,0 +1,29 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Google Books):\n\nMan of the future, In this transmission, we will reveal 5 biological virtues representing privileged power, 3 intentions marking an intelligently beneficial direction, 3 means adding grand strength to each step, 11 imminent dangers we must avoid at all costs, and 11 possibilities showing us a fertile and profoundly captivating port. All this will let you understand that we must act urgently and be conscious partners in the next evolutionary leap as a species. Homo creativus, our potential genetic heir, are exceptionally strong, brilliant, empathetic, intelligent biological beings capable of shaping a fascinating future with their thoughts. In short, they have conquered their spirit and observable existence, which has opened the doors to a future full of Life, wisdom, orderly creation, freedom from suffering, eudemonia (complete happiness), peace, and reunion with what inspires us most endearingly. Man of the future, I hope this message doesn't come too late...\n\nMETADATA VERIFICADA:\n- Título: Homo Creativus\n- Autor: Juan Carlos Chávez\n- Año: 2024\n- Editorial: Independently Published\n- Categorías: Self-Help",
+  "grounding_source": "google_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Homo Creativus",
+    "subtitulo": "33 Thoughts to Save Your Life.",
+    "autor_completo": "Juan Carlos Chávez",
+    "año": "2024",
+    "editorial": "Independently Published",
+    "paginas": null,
+    "isbn": "9798884413573",
+    "isbn13": "9798884413573",
+    "isbn10": "",
+    "categorias": [
+      "Self-Help"
+    ],
+    "idioma": "en",
+    "preview_link": "http://books.google.com/books?id=3AKs0AEACAAJ&dq=intitle:Homo+creativus+inauthor:Juan+Carlos+Chavez&hl=&cd=1&source=gbs_api"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [],
+  "resolution_path": [
+    "evidence_fetched_1sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-05-02T11:59:50.989Z"
+}

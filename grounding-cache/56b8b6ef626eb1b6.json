@@ -7,7 +7,8 @@
     "autor_completo": "Sonia González Boysen",
     "año": "2013",
     "editorial": null,
-    "isbn": "607370034",
+    "isbn": "",
+    "apple_track_id": "607370034",
     "categorias": [
       "Negocios y finanzas personales",
       "Libros"
@@ -15,11 +16,14 @@
     "track_view_url": "https://books.apple.com/mx/book/el-efecto/id607370034?uo=4"
   },
   "match_score": 1,
-  "other_sources_agreed": [],
+  "other_sources_agreed": [
+    "google_books",
+    "openlibrary"
+  ],
   "resolution_path": [
-    "evidence_fetched_2sources"
+    "evidence_fetched_4sources"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-21T11:11:44.947Z"
+  "cached_at": "2026-05-02T12:03:53.395Z"
 }

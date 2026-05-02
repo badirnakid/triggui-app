@@ -2,7 +2,10 @@
   "titulo_input": "Cómo dejar de ser tu peor enemigo",
   "autor_input": "Alba Cardalda",
   "isbn_seed": "",
-  "isbn_discovered": "6578453522",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "9788419820204",
+  "isbn_discovered_raw": "9788419820204",
   "apple": {
     "ok": true,
     "source": "apple_books",
@@ -36,7 +39,8 @@
       "autor_completo": "Alba Cardalda",
       "año": "2024",
       "editorial": null,
-      "isbn": "6578453522",
+      "isbn": "",
+      "apple_track_id": "6578453522",
       "categorias": [
         "Superación personal",
         "Libros",
@@ -46,9 +50,37 @@
     }
   },
   "google": {
-    "ok": false,
-    "reason": "no_good_match",
-    "source": "google_books"
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Cómo dejar de ser tu peor enemigo",
+      "matched_author": "Alba Cardalda"
+    },
+    "synopsis": "QUERERSE ES FÁCIL, SI SABES CÓMO. Por la autora del best seller Cómo mandar a la mierda de forma educada. MÁS DE 300.000 PERSONAS YA LO RECOMIENDAN. Hay una persona con la que dialogas, debates, discutes, te enfadas y te reconcilias varias veces al día. Y no, no es tu pareja, ni tu jefe, ni tu padre ni tu madre. Eres tú. Tú eres la persona con quien más hablas e, irremediablemente, a quien más escuchas. Pero no siempre te hablas bien, ni siquiera con el respeto que pedirías a los demás. Y esto repercute en la relación que tienes contigo mismo y afecta directamente tu autoestima y tu salud mental. Tanto que a menudo te boicoteas y te acabas convirtiendo, sin saberlo, en tu peor enemigo. La neuropsicóloga Alba Cardalda nos muestra en este libro cómo operan nuestros diálogos internos y nos enseña la importancia de cuidarlos. Y, por supuesto, nos da las herramientas y las claves para mejorarlos y empezar a tratarnos con el cariño y el amor que merecemos. Han dicho sobre Cómo dejar de ser tu peor enemigo: «Enseña la importancia de cuidar el diálogo interno para que no nos amarguen la vida». El Mundo «Un libro sobre cómo repercute la manera en la que nos hablamos en nuestro bienestar». Vogue «Aporta claves de asertividad y seguridad en uno mismo y herramientas de mindfulness para silenciar el diálogo interior destructivo». BBVA Aprendemos Juntos",
+    "synopsis_length": 1361,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=W1cWEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Cómo dejar de ser tu peor enemigo",
+      "subtitulo": "",
+      "autor_completo": "Alba Cardalda",
+      "año": "2024",
+      "editorial": "VERGARA",
+      "paginas": 221,
+      "isbn": "9788419820204",
+      "isbn13": "9788419820204",
+      "isbn10": "8419820202",
+      "categorias": [
+        "Self-Help"
+      ],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=W1cWEQAAQBAJ&printsec=frontcover&dq=intitle:C%C3%B3mo+dejar+de+ser+tu+peor+enemigo+inauthor:Alba+Cardalda&hl=&cd=1&source=gbs_api"
+    }
   },
   "openlibrary": {
     "ok": true,
@@ -86,23 +118,9 @@
     }
   },
   "amazon": {
-    "ok": true,
-    "source": "amazon",
-    "match_score": 0.85,
-    "covers": [
-      {
-        "size": "large",
-        "url": "https://images-na.ssl-images-amazon.com/images/P/6578453522.01.LZZZZZZZ.jpg"
-      }
-    ],
-    "synopsis": "",
-    "synopsis_length": 0,
-    "verified_identity": {
-      "isbn": "6578453522",
-      "titulo_real": null,
-      "autor_completo": null,
-      "año": null
-    }
+    "ok": false,
+    "reason": "no_amazon_cover_or_only_placeholders",
+    "source": "amazon"
   },
   "valid_covers": [
     {
@@ -130,6 +148,12 @@
       "valid": true
     },
     {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=W1cWEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
       "source": "openlibrary",
       "size": "large",
       "url": "https://covers.openlibrary.org/b/id/15118928-L.jpg",
@@ -140,33 +164,22 @@
       "size": "medium",
       "url": "https://covers.openlibrary.org/b/id/15118928-M.jpg",
       "valid": true
-    },
-    {
-      "source": "openlibrary",
-      "size": "small",
-      "url": "https://covers.openlibrary.org/b/id/15118928-S.jpg",
-      "valid": true
-    },
-    {
-      "source": "amazon",
-      "size": "large",
-      "url": "https://images-na.ssl-images-amazon.com/images/P/6578453522.01.LZZZZZZZ.jpg",
-      "valid": true
     }
   ],
   "_sources_succeeded": [
     "apple_books",
-    "openlibrary",
-    "amazon"
+    "google_books",
+    "openlibrary"
   ],
   "_sources_failed": [
-    "google_books:no_good_match"
+    "amazon:no_amazon_cover_or_only_placeholders"
   ],
   "_timing": {
-    "phase1_parallel_ms": 16095,
-    "phase2_isbn_chain_ms": 24240,
-    "cover_validation_ms": 821,
-    "total_ms": 41156
+    "phase1_parallel_ms": 457,
+    "phase2_isbn_chain_ms": 254,
+    "cover_validation_ms": 974,
+    "total_ms": 1685
   },
-  "_cached_at": "2026-04-21T02:27:26.870Z"
+  "_version": "3.6",
+  "_cached_at": "2026-05-02T11:54:39.893Z"
 }

@@ -1,0 +1,29 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nLas teorías de Darwin aplicadas&#xa0;a la supervivencia cotidiana. En Adaptarse a la marea, Eduardo Punset traslada las enseñanzas de la física, la biología y la psicología evolutiva a los retos del día a día, y las convierte en la fórmula para triunfar en nuestra vida cotidiana. Así, nos recuerda que la mayor parte de la realidad es invisible, que las emociones están en el origen de todas las conductas y proyectos, que el cerebro no fue diseñado para descubrir la verdad sino para sobrevivir y que la inteligencia surge de la integración con otros, tanto o más que del proceso cognitivo. Todo ello con el objetivo de convertirnos en personas más conscientes de lo que somos y de lo que sentimos, y con más éxito en todos los ámbitos de la vida.\n\nMETADATA VERIFICADA:\n- Título: Adaptarse a la marea\n- Autor: Eduardo Punset\n- Año: 2012\n- Categorías: Ciencia y naturaleza, Libros",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Adaptarse a la marea",
+    "autor_completo": "Eduardo Punset",
+    "año": "2012",
+    "editorial": null,
+    "isbn": "",
+    "apple_track_id": "516299676",
+    "categorias": [
+      "Ciencia y naturaleza",
+      "Libros"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/adaptarse-a-la-marea/id516299676?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "google_books",
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_4sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-05-02T11:57:30.081Z"
+}

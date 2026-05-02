@@ -7,7 +7,8 @@
     "autor_completo": "Svend Brinkmann",
     "año": "2021",
     "editorial": null,
-    "isbn": "1571911782",
+    "isbn": "",
+    "apple_track_id": "1571911782",
     "categorias": [
       "Filosofía",
       "Libros",
@@ -23,9 +24,9 @@
     "openlibrary"
   ],
   "resolution_path": [
-    "evidence_fetched_4sources"
+    "evidence_fetched_3sources"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-22T14:48:00.832Z"
+  "cached_at": "2026-05-02T11:51:35.192Z"
 }

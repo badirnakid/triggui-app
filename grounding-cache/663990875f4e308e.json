@@ -7,7 +7,8 @@
     "autor_completo": "Walter Isaacson",
     "año": "2011",
     "editorial": null,
-    "isbn": "473501560",
+    "isbn": "",
+    "apple_track_id": "473501560",
     "categorias": [
       "Biografías y memorias",
       "Libros",
@@ -18,12 +19,13 @@
   },
   "match_score": 1,
   "other_sources_agreed": [
+    "google_books",
     "openlibrary"
   ],
   "resolution_path": [
-    "evidence_fetched_3sources"
+    "evidence_fetched_4sources"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-22T20:10:27.890Z"
+  "cached_at": "2026-05-02T11:54:06.324Z"
 }

@@ -4,8 +4,8 @@
   "isbn_seed": "",
   "isbn_seed_raw": "",
   "isbn_seed_rejected": null,
-  "isbn_discovered": "",
-  "isbn_discovered_raw": "",
+  "isbn_discovered": "9786073117357",
+  "isbn_discovered_raw": "9786073117357",
   "apple": {
     "ok": true,
     "source": "apple_books",
@@ -50,9 +50,37 @@
     }
   },
   "google": {
-    "ok": false,
-    "reason": "no_good_match",
-    "source": "google_books"
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Una vida sin límites",
+      "matched_author": "Alejandra Llamas"
+    },
+    "synopsis": "Este libro permite al lector lograr un equilibrio emocional, a través de 45 versos fundamentales del Tao Te Ching, texto ancestral Chino atribuido a Lao Tsé. En este libro, la profesional realiza un profundo análisis sobre la conexión que debe tener todo ser humano con su mundo interno, logrando con ello alejarse de la separación y el miedo, y acercarse a la unión y al amor. Alejandra Llamas, originaria de México, y establecida desde hace varios años en la ciudad de Miami, es una experta en la ciencia de la ontología, dogmatismo que estudia el comportamiento humano, certificada por la institución ideal coaching, en Minnesota. También es directora del ontologik group, centro de yoga, arte y coaching, y además es invitada frecuentemente a importantes medios de comunicación con el fin de dar consejos sobre cómo manejarse mejor en la vida, y lograr una profunda sensación de paz y gozo.",
+    "synopsis_length": 894,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=xhkXuBrAoFkC&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Una vida sin límites",
+      "subtitulo": "Reflexiones basadas en el Tao Te Ching y el coaching ontológico",
+      "autor_completo": "Alejandra Llamas",
+      "año": "2013",
+      "editorial": "Grijalbo",
+      "paginas": 219,
+      "isbn": "9786073117357",
+      "isbn13": "9786073117357",
+      "isbn10": "6073117353",
+      "categorias": [
+        "Self-Help"
+      ],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=xhkXuBrAoFkC&printsec=frontcover&dq=intitle:Una+Vida+Sin+Limites+inauthor:Alejandra+Llamas&hl=&cd=1&source=gbs_api"
+    }
   },
   "openlibrary": {
     "ok": true,
@@ -78,7 +106,7 @@
   },
   "amazon": {
     "ok": false,
-    "reason": "skipped",
+    "reason": "no_amazon_cover_or_only_placeholders",
     "source": "amazon"
   },
   "valid_covers": [
@@ -105,22 +133,28 @@
       "size": "medium",
       "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication123/v4/1b/9d/7e/1b9d7e5b-0463-be8e-a4d9-717136794757/9786073185349.jpg/100x100bb.jpg",
       "valid": true
+    },
+    {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=xhkXuBrAoFkC&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
     }
   ],
   "_sources_succeeded": [
     "apple_books",
+    "google_books",
     "openlibrary"
   ],
   "_sources_failed": [
-    "google_books:no_good_match",
-    "amazon:skipped"
+    "amazon:no_amazon_cover_or_only_placeholders"
   ],
   "_timing": {
-    "phase1_parallel_ms": 15841,
-    "phase2_isbn_chain_ms": 0,
-    "cover_validation_ms": 630,
-    "total_ms": 16471
+    "phase1_parallel_ms": 500,
+    "phase2_isbn_chain_ms": 252,
+    "cover_validation_ms": 621,
+    "total_ms": 1373
   },
   "_version": "3.6",
-  "_cached_at": "2026-05-01T18:35:57.088Z"
+  "_cached_at": "2026-05-02T11:52:51.907Z"
 }

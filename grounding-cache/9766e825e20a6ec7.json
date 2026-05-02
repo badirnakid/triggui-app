@@ -16,7 +16,7 @@
       "Body, Mind & Spirit"
     ],
     "idioma": "en",
-    "preview_link": "http://books.google.com/books?id=Hdf3DwAAQBAJ&printsec=frontcover&dq=Law+of+Success+Napoleon+Hill&hl=&cd=1&source=gbs_api"
+    "preview_link": "http://books.google.com/books?id=Hdf3DwAAQBAJ&printsec=frontcover&dq=intitle:Law+of+Success+inauthor:Napoleon+Hill&hl=&cd=1&source=gbs_api"
   },
   "match_score": 0.8777777777777778,
   "other_sources_agreed": [
@@ -24,9 +24,9 @@
     "openlibrary"
   ],
   "resolution_path": [
-    "evidence_fetched_4sources"
+    "evidence_fetched_3sources"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-21T13:50:11.330Z"
+  "cached_at": "2026-05-02T12:00:34.147Z"
 }

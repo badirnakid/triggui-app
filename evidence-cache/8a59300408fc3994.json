@@ -2,7 +2,10 @@
   "titulo_input": "Steve Jobs",
   "autor_input": "Walter Isaacson",
   "isbn_seed": "",
-  "isbn_discovered": "473501560",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "9781451648546",
+  "isbn_discovered_raw": "9781451648546",
   "apple": {
     "ok": true,
     "source": "apple_books",
@@ -36,7 +39,8 @@
       "autor_completo": "Walter Isaacson",
       "año": "2011",
       "editorial": null,
-      "isbn": "473501560",
+      "isbn": "",
+      "apple_track_id": "473501560",
       "categorias": [
         "Biografías y memorias",
         "Libros",
@@ -47,9 +51,37 @@
     }
   },
   "google": {
-    "ok": false,
-    "reason": "no_good_match",
-    "source": "google_books"
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Steve Jobs",
+      "matched_author": "Walter Isaacson"
+    },
+    "synopsis": "Based on more than 40 interviews with Jobs conducted over two years--as well as interviews with more than 100 family members, friends, adversaries, competitors, and colleagues--Isaacson has written a riveting story of the roller-coaster life and searingly intense personality of a creative entrepreneur whose passion for perfection and ferocious drive revolutionized six industries: personal computers, animated movies, music, phones, tablet computing, and digital publishing.",
+    "synopsis_length": 476,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=8U2oAAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Steve Jobs",
+      "subtitulo": "",
+      "autor_completo": "Walter Isaacson",
+      "año": "2011",
+      "editorial": "Simon and Schuster",
+      "paginas": 656,
+      "isbn": "9781451648546",
+      "isbn13": "9781451648546",
+      "isbn10": "1451648545",
+      "categorias": [
+        "Biography & Autobiography"
+      ],
+      "idioma": "en",
+      "preview_link": "http://books.google.com/books?id=8U2oAAAAQBAJ&printsec=frontcover&dq=intitle:Steve+Jobs+inauthor:Walter+Isaacson&hl=&cd=1&source=gbs_api"
+    }
   },
   "openlibrary": {
     "ok": true,
@@ -93,13 +125,15 @@
     "covers": [
       {
         "size": "large",
-        "url": "https://images-na.ssl-images-amazon.com/images/P/473501560.01.LZZZZZZZ.jpg"
+        "url": "https://images-na.ssl-images-amazon.com/images/P/1451648545.01.LZZZZZZZ.jpg"
       }
     ],
     "synopsis": "",
     "synopsis_length": 0,
     "verified_identity": {
-      "isbn": "473501560",
+      "isbn": "1451648545",
+      "isbn13": "9781451648546",
+      "isbn10": "1451648545",
       "titulo_real": null,
       "autor_completo": null,
       "año": null
@@ -131,6 +165,12 @@
       "valid": true
     },
     {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=8U2oAAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
       "source": "openlibrary",
       "size": "large",
       "url": "https://covers.openlibrary.org/b/id/12374726-L.jpg",
@@ -143,31 +183,25 @@
       "valid": true
     },
     {
-      "source": "openlibrary",
-      "size": "small",
-      "url": "https://covers.openlibrary.org/b/id/12374726-S.jpg",
-      "valid": true
-    },
-    {
       "source": "amazon",
       "size": "large",
-      "url": "https://images-na.ssl-images-amazon.com/images/P/473501560.01.LZZZZZZZ.jpg",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/1451648545.01.LZZZZZZZ.jpg",
       "valid": true
     }
   ],
   "_sources_succeeded": [
     "apple_books",
+    "google_books",
     "openlibrary",
     "amazon"
   ],
-  "_sources_failed": [
-    "google_books:no_good_match"
-  ],
+  "_sources_failed": [],
   "_timing": {
-    "phase1_parallel_ms": 15850,
-    "phase2_isbn_chain_ms": 23837,
-    "cover_validation_ms": 1066,
-    "total_ms": 40753
+    "phase1_parallel_ms": 357,
+    "phase2_isbn_chain_ms": 174,
+    "cover_validation_ms": 999,
+    "total_ms": 1530
   },
-  "_cached_at": "2026-04-22T20:10:27.889Z"
+  "_version": "3.6",
+  "_cached_at": "2026-05-02T11:54:06.324Z"
 }

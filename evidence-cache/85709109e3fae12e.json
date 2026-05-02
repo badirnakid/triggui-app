@@ -2,16 +2,47 @@
   "titulo_input": "Homo creativus",
   "autor_input": "Juan Carlos Chavez",
   "isbn_seed": "",
-  "isbn_discovered": "",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "9798884413573",
+  "isbn_discovered_raw": "9798884413573",
   "apple": {
     "ok": false,
     "reason": "no_results",
     "source": "apple_books"
   },
   "google": {
-    "ok": false,
-    "reason": "no_good_match",
-    "source": "google_books"
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Homo Creativus",
+      "matched_author": "Juan Carlos Chávez"
+    },
+    "synopsis": "Man of the future, In this transmission, we will reveal 5 biological virtues representing privileged power, 3 intentions marking an intelligently beneficial direction, 3 means adding grand strength to each step, 11 imminent dangers we must avoid at all costs, and 11 possibilities showing us a fertile and profoundly captivating port. All this will let you understand that we must act urgently and be conscious partners in the next evolutionary leap as a species. Homo creativus, our potential genetic heir, are exceptionally strong, brilliant, empathetic, intelligent biological beings capable of shaping a fascinating future with their thoughts. In short, they have conquered their spirit and observable existence, which has opened the doors to a future full of Life, wisdom, orderly creation, freedom from suffering, eudemonia (complete happiness), peace, and reunion with what inspires us most endearingly. Man of the future, I hope this message doesn't come too late...",
+    "synopsis_length": 974,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=3AKs0AEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Homo Creativus",
+      "subtitulo": "33 Thoughts to Save Your Life.",
+      "autor_completo": "Juan Carlos Chávez",
+      "año": "2024",
+      "editorial": "Independently Published",
+      "paginas": null,
+      "isbn": "9798884413573",
+      "isbn13": "9798884413573",
+      "isbn10": "",
+      "categorias": [
+        "Self-Help"
+      ],
+      "idioma": "en",
+      "preview_link": "http://books.google.com/books?id=3AKs0AEACAAJ&dq=intitle:Homo+creativus+inauthor:Juan+Carlos+Chavez&hl=&cd=1&source=gbs_api"
+    }
   },
   "openlibrary": {
     "ok": false,
@@ -20,22 +51,32 @@
   },
   "amazon": {
     "ok": false,
-    "reason": "skipped",
-    "source": "amazon"
+    "reason": "isbn13_conversion_failed_or_not_978",
+    "source": "amazon",
+    "_attempted_isbn": "9798884413573"
   },
-  "valid_covers": [],
-  "_sources_succeeded": [],
+  "valid_covers": [
+    {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=3AKs0AEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "google_books"
+  ],
   "_sources_failed": [
     "apple_books:no_results",
-    "google_books:no_good_match",
     "openlibrary:no_results",
-    "amazon:skipped"
+    "amazon:isbn13_conversion_failed_or_not_978"
   ],
   "_timing": {
-    "phase1_parallel_ms": 16189,
-    "phase2_isbn_chain_ms": 0,
-    "cover_validation_ms": 0,
-    "total_ms": 16189
+    "phase1_parallel_ms": 518,
+    "phase2_isbn_chain_ms": 88,
+    "cover_validation_ms": 49,
+    "total_ms": 655
   },
-  "_cached_at": "2026-04-23T03:03:43.825Z"
+  "_version": "3.6",
+  "_cached_at": "2026-05-02T11:59:50.988Z"
 }

@@ -7,7 +7,8 @@
     "autor_completo": "Alba Cardalda",
     "año": "2024",
     "editorial": null,
-    "isbn": "6578453522",
+    "isbn": "",
+    "apple_track_id": "6578453522",
     "categorias": [
       "Superación personal",
       "Libros",
@@ -17,6 +18,7 @@
   },
   "match_score": 1,
   "other_sources_agreed": [
+    "google_books",
     "openlibrary"
   ],
   "resolution_path": [
@@ -24,5 +26,5 @@
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-21T02:27:26.871Z"
+  "cached_at": "2026-05-02T11:54:39.893Z"
 }

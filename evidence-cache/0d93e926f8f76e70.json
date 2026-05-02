@@ -4,8 +4,8 @@
   "isbn_seed": "",
   "isbn_seed_raw": "",
   "isbn_seed_rejected": null,
-  "isbn_discovered": "",
-  "isbn_discovered_raw": "",
+  "isbn_discovered": "9788423346059",
+  "isbn_discovered_raw": "9788423346059",
   "apple": {
     "ok": true,
     "source": "apple_books",
@@ -49,9 +49,37 @@
     }
   },
   "google": {
-    "ok": false,
-    "reason": "no_good_match",
-    "source": "google_books"
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "Viaje al optimismo",
+      "matched_author": "Eduardo Punset"
+    },
+    "synopsis": "Nos sobran razones para pensar en un futuro mejor. «El pasado fue siempre peor, y no hay duda de que el futuro será mejor.» Ese mensaje orienta el Viaje al optimismo al que nos invita Eduardo Punset. Los constantes avances científicos, que recorreremos con el autor, justifican abordar con entusiasmo el futuro. En este viaje, Punset desmiente que la crisis sea planetaria, proclama la obligada redistribución del trabajo mientras la esperanza de vida aumenta dos años y medio cada década, y recuerda que ya no es posible vivir sin las redes sociales. Hoy, afirma, «la manada reclama el liderazgo de los jóvenes», es más necesario que nunca «aprender a desaprender» y debemos asumir que la gestión de las emociones es una prioridad inexcusable.",
+    "synopsis_length": 744,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=bfnFjq3Cex4C&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "Viaje al optimismo",
+      "subtitulo": "Las claves del futuro",
+      "autor_completo": "Eduardo Punset",
+      "año": "2011",
+      "editorial": "Grupo Planeta Spain",
+      "paginas": 304,
+      "isbn": "9788423346059",
+      "isbn13": "9788423346059",
+      "isbn10": "8423346056",
+      "categorias": [
+        "Science"
+      ],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=bfnFjq3Cex4C&printsec=frontcover&dq=intitle:Viaje+al+optimismo+inauthor:Eduardo+Punset&hl=&cd=1&source=gbs_api"
+    }
   },
   "openlibrary": {
     "ok": true,
@@ -90,7 +118,7 @@
   },
   "amazon": {
     "ok": false,
-    "reason": "skipped",
+    "reason": "no_amazon_cover_or_only_placeholders",
     "source": "amazon"
   },
   "valid_covers": [
@@ -119,6 +147,12 @@
       "valid": true
     },
     {
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=bfnFjq3Cex4C&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "valid": true
+    },
+    {
       "source": "openlibrary",
       "size": "large",
       "url": "https://covers.openlibrary.org/b/id/7254924-L.jpg",
@@ -133,18 +167,18 @@
   ],
   "_sources_succeeded": [
     "apple_books",
+    "google_books",
     "openlibrary"
   ],
   "_sources_failed": [
-    "google_books:no_good_match",
-    "amazon:skipped"
+    "amazon:no_amazon_cover_or_only_placeholders"
   ],
   "_timing": {
-    "phase1_parallel_ms": 15944,
-    "phase2_isbn_chain_ms": 0,
-    "cover_validation_ms": 937,
-    "total_ms": 16881
+    "phase1_parallel_ms": 368,
+    "phase2_isbn_chain_ms": 648,
+    "cover_validation_ms": 990,
+    "total_ms": 2006
   },
   "_version": "3.6",
-  "_cached_at": "2026-05-02T03:39:11.965Z"
+  "_cached_at": "2026-05-02T12:03:01.083Z"
 }

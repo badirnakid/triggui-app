@@ -2,7 +2,10 @@
   "titulo_input": "El Efecto",
   "autor_input": "Sonia González Boysen",
   "isbn_seed": "",
-  "isbn_discovered": "607370034",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "9781602558885",
+  "isbn_discovered_raw": "9781602558885",
   "apple": {
     "ok": true,
     "source": "apple_books",
@@ -36,7 +39,8 @@
       "autor_completo": "Sonia González Boysen",
       "año": "2013",
       "editorial": null,
-      "isbn": "607370034",
+      "isbn": "",
+      "apple_track_id": "607370034",
       "categorias": [
         "Negocios y finanzas personales",
         "Libros"
@@ -45,14 +49,59 @@
     }
   },
   "google": {
-    "ok": false,
-    "reason": "no_good_match",
-    "source": "google_books"
+    "ok": true,
+    "source": "google_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "El efecto",
+      "matched_author": "Sonia González Boysen"
+    },
+    "synopsis": "Aún cuando permanezcan callados, herméticos, tímidos e inexpresivos, todos los individuos transmiten “algo”, desde su esencia particular y única. Incluso dormidos, quietos, distantes o de espaldas, siempre infunden parte de sus vidas en las otras personas a su alrededor. Tan solo con el milagro permanente de respirar, proyectan una imagen. Un clima interior que trasciende y revela el “aire” personal. Nadie sabe cómo llamarlo, pero es evidente que ¡ahí está! Ese “soplo” vivencial y personal, no se oye, ni se ve, ni se siente, pero usted lo exhala desde su interior sobre las personas, lo infunde en el ambiente y hasta parece que lo deja impregnado en su en torno. Es su maravillosa huella. Su marca personal. Eso es El efecto. Nadie sabe dónde le queda, pero ahí está siempre. Es su diferencial indescriptible, intangible y fantástico, que lo conecta de manera exclusiva con los demás y lo hace único e irrepetible. Y es justo ese “no sé qué” intangible, pero tan real, lo que lo llevará por las páginas de este fascinante libro de El efecto, que querrá devorar en un día, para saber cuál ha sido su EFECTO de toda una vida.",
+    "synopsis_length": 1130,
+    "covers": [
+      {
+        "size": "small",
+        "url": "https://books.google.com/books/content?id=C-bRjunCwFMC&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "El efecto",
+      "subtitulo": "Descubra la riqueza de ese ?algo? que usted transmite",
+      "autor_completo": "Sonia González Boysen",
+      "año": "2013",
+      "editorial": "HarperEnfoque",
+      "paginas": 192,
+      "isbn": "9781602558885",
+      "isbn13": "9781602558885",
+      "isbn10": "1602558884",
+      "categorias": [
+        "Business & Economics"
+      ],
+      "idioma": "es",
+      "preview_link": "http://books.google.com/books?id=C-bRjunCwFMC&printsec=frontcover&dq=intitle:El+Efecto+inauthor:Sonia+Gonz%C3%A1lez+Boysen&hl=&cd=1&source=gbs_api"
+    }
   },
   "openlibrary": {
-    "ok": false,
-    "reason": "no_results",
-    "source": "openlibrary"
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 0.8166666666666668,
+    "match_details": {
+      "matched_title": "Efecto",
+      "matched_author": "Sonia González Boysen"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2013.",
+    "synopsis_length": 65,
+    "covers": [],
+    "verified_identity": {
+      "titulo_real": "Efecto",
+      "autor_completo": "Sonia González Boysen",
+      "año": "2013",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": "spa",
+      "paginas": null
+    }
   },
   "amazon": {
     "ok": true,
@@ -61,13 +110,15 @@
     "covers": [
       {
         "size": "large",
-        "url": "https://images-na.ssl-images-amazon.com/images/P/607370034.01.LZZZZZZZ.jpg"
+        "url": "https://images-na.ssl-images-amazon.com/images/P/1602558884.01.LZZZZZZZ.jpg"
       }
     ],
     "synopsis": "",
     "synopsis_length": 0,
     "verified_identity": {
-      "isbn": "607370034",
+      "isbn": "1602558884",
+      "isbn13": "9781602558885",
+      "isbn10": "1602558884",
       "titulo_real": null,
       "autor_completo": null,
       "año": null
@@ -93,31 +144,31 @@
       "valid": true
     },
     {
-      "source": "apple_books",
-      "size": "medium",
-      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication/v4/14/8e/3f/148e3f50-56a9-1075-6e70-af0f204de7b4/9781602558885.jpg/100x100bb.jpg",
+      "source": "google_books",
+      "size": "small",
+      "url": "https://books.google.com/books/content?id=C-bRjunCwFMC&printsec=frontcover&img=1&zoom=1&source=gbs_api",
       "valid": true
     },
     {
       "source": "amazon",
       "size": "large",
-      "url": "https://images-na.ssl-images-amazon.com/images/P/607370034.01.LZZZZZZZ.jpg",
+      "url": "https://images-na.ssl-images-amazon.com/images/P/1602558884.01.LZZZZZZZ.jpg",
       "valid": true
     }
   ],
   "_sources_succeeded": [
     "apple_books",
+    "google_books",
+    "openlibrary",
     "amazon"
   ],
-  "_sources_failed": [
-    "google_books:no_good_match",
-    "openlibrary:no_results"
-  ],
+  "_sources_failed": [],
   "_timing": {
-    "phase1_parallel_ms": 1312,
-    "phase2_isbn_chain_ms": 554,
-    "cover_validation_ms": 597,
-    "total_ms": 2463
+    "phase1_parallel_ms": 454,
+    "phase2_isbn_chain_ms": 194,
+    "cover_validation_ms": 494,
+    "total_ms": 1142
   },
-  "_cached_at": "2026-04-21T11:11:44.946Z"
+  "_version": "3.6",
+  "_cached_at": "2026-05-02T12:03:53.395Z"
 }
