@@ -1,0 +1,31 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nEl best seller mundial para los que quieren obtener, estudiar o combatir el poder absoluto. Amoral, inmisericorde, despiadada y, sobre todo, muy instructiva, esta incisiva obra concentra tres mil años de historia del poder en cuarenta y ocho leyes claras y concisas. Robert Greene detalla las leyes del poder en su esencia más cruda, sintetizando el pensamiento de Maquiavelo, Sun Tzu, Carl von Clausewitz y otros grandes teóricos y estrategas. Algunas leyes sugieren la prudencia (\"Ley n° 1: nunca le haga sombra a su amo\"); otras, el sigilo (\"Ley n° 3: disimule sus intenciones\"); otras más, una total falta de piedad (\"Ley n° 15: aplaste por completo a su enemigo\"). Pero, nos guste o no, todas tienen aplicaciones en la vida cotidiana. Ilustradas mediante anécdotas de Isabel II, Henry Kissinger, P.T. Barnum y otras figuras que han esgrimido el poder (o que lo han padecido), estas leyes fascinarán a cualquiera que se interese en todas las manifestaciones del control total.\n\nMETADATA VERIFICADA:\n- Título: Las 48 leyes del poder\n- Autor: Robert Greene\n- Año: 2018\n- Categorías: Administración y liderazgo, Libros, Negocios y finanzas personales, Política y actualidad",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Las 48 leyes del poder",
+    "autor_completo": "Robert Greene",
+    "año": "2018",
+    "editorial": null,
+    "isbn": "",
+    "apple_track_id": "1454937292",
+    "categorias": [
+      "Administración y liderazgo",
+      "Libros",
+      "Negocios y finanzas personales",
+      "Política y actualidad",
+      "Ciencias políticas"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/las-48-leyes-del-poder/id1454937292?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_2sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-05-02T03:26:23.731Z"
+}

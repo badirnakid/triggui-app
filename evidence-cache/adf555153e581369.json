@@ -4,8 +4,8 @@
   "isbn_seed": "",
   "isbn_seed_raw": "",
   "isbn_seed_rejected": null,
-  "isbn_discovered": "9788490067277",
-  "isbn_discovered_raw": "9788490067277",
+  "isbn_discovered": "",
+  "isbn_discovered_raw": "",
   "apple": {
     "ok": true,
     "source": "apple_books",
@@ -50,37 +50,9 @@
     }
   },
   "google": {
-    "ok": true,
-    "source": "google_books",
-    "match_score": 1,
-    "match_details": {
-      "matched_title": "La lentitud como método",
-      "matched_author": "Carl Honoré"
-    },
-    "synopsis": "Vivimos en un mundo tan acelerado que casi siempre buscamos la solución rápida para resolverlo todo. La cruda realidad es que esa solución precipitada no suele arreglar nada. Incluso a veces empeora las cosas. Ha llegado la hora de asumir que los parches no sirven para solventar los grandes problemas y que debemos afrontarlos de una forma meditada y paciente. En esta obra, Carl Honoré ofrece las claves para tomarnos la vida con calma y aprender a solucionar las dificultades de una manera más lenta pero mucho más eficaz.",
-    "synopsis_length": 525,
-    "covers": [
-      {
-        "size": "small",
-        "url": "https://books.google.com/books/content?id=xvLNDwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
-      }
-    ],
-    "verified_identity": {
-      "titulo_real": "La lentitud como método",
-      "subtitulo": "",
-      "autor_completo": "Carl Honoré",
-      "año": "2013",
-      "editorial": "RBA Libros",
-      "paginas": 325,
-      "isbn": "9788490067277",
-      "isbn13": "9788490067277",
-      "isbn10": "8490067279",
-      "categorias": [
-        "Self-Help"
-      ],
-      "idioma": "es",
-      "preview_link": "http://books.google.com/books?id=xvLNDwAAQBAJ&printsec=frontcover&dq=intitle:La+lentitud+como+m%C3%A9todo+inauthor:Carl+Honor%C3%A9&hl=&cd=1&source=gbs_api"
-    }
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
   },
   "openlibrary": {
     "ok": true,
@@ -119,7 +91,7 @@
   },
   "amazon": {
     "ok": false,
-    "reason": "no_amazon_cover_or_only_placeholders",
+    "reason": "skipped",
     "source": "amazon"
   },
   "valid_covers": [
@@ -148,12 +120,6 @@
       "valid": true
     },
     {
-      "source": "google_books",
-      "size": "small",
-      "url": "https://books.google.com/books/content?id=xvLNDwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
-      "valid": true
-    },
-    {
       "source": "openlibrary",
       "size": "large",
       "url": "https://covers.openlibrary.org/b/id/7294859-L.jpg",
@@ -174,18 +140,18 @@
   ],
   "_sources_succeeded": [
     "apple_books",
-    "google_books",
     "openlibrary"
   ],
   "_sources_failed": [
-    "amazon:no_amazon_cover_or_only_placeholders"
+    "google_books:no_good_match",
+    "amazon:skipped"
   ],
   "_timing": {
-    "phase1_parallel_ms": 465,
-    "phase2_isbn_chain_ms": 288,
-    "cover_validation_ms": 978,
-    "total_ms": 1731
+    "phase1_parallel_ms": 16059,
+    "phase2_isbn_chain_ms": 0,
+    "cover_validation_ms": 807,
+    "total_ms": 16866
   },
   "_version": "3.6",
-  "_cached_at": "2026-04-26T19:56:57.323Z"
+  "_cached_at": "2026-05-02T03:36:33.170Z"
 }

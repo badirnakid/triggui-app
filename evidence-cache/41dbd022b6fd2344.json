@@ -2,7 +2,10 @@
   "titulo_input": "Wu wei",
   "autor_input": "Henri Borel",
   "isbn_seed": "",
-  "isbn_discovered": "1586785211",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "",
+  "isbn_discovered_raw": "",
   "apple": {
     "ok": true,
     "source": "apple_books",
@@ -36,7 +39,8 @@
       "autor_completo": "Henri Borel",
       "año": "2021",
       "editorial": null,
-      "isbn": "1586785211",
+      "isbn": "",
+      "apple_track_id": "1586785211",
       "categorias": [
         "Ficción y literatura",
         "Libros"
@@ -80,28 +84,14 @@
       "editorial": null,
       "isbn": "",
       "categorias": [],
-      "idioma": "eng",
+      "idioma": "fre",
       "paginas": null
     }
   },
   "amazon": {
-    "ok": true,
-    "source": "amazon",
-    "match_score": 0.85,
-    "covers": [
-      {
-        "size": "large",
-        "url": "https://images-na.ssl-images-amazon.com/images/P/1586785211.01.LZZZZZZZ.jpg"
-      }
-    ],
-    "synopsis": "",
-    "synopsis_length": 0,
-    "verified_identity": {
-      "isbn": "1586785211",
-      "titulo_real": null,
-      "autor_completo": null,
-      "año": null
-    }
+    "ok": false,
+    "reason": "skipped",
+    "source": "amazon"
   },
   "valid_covers": [
     {
@@ -139,33 +129,22 @@
       "size": "medium",
       "url": "https://covers.openlibrary.org/b/id/5691511-M.jpg",
       "valid": true
-    },
-    {
-      "source": "openlibrary",
-      "size": "small",
-      "url": "https://covers.openlibrary.org/b/id/5691511-S.jpg",
-      "valid": true
-    },
-    {
-      "source": "amazon",
-      "size": "large",
-      "url": "https://images-na.ssl-images-amazon.com/images/P/1586785211.01.LZZZZZZZ.jpg",
-      "valid": true
     }
   ],
   "_sources_succeeded": [
     "apple_books",
-    "openlibrary",
-    "amazon"
+    "openlibrary"
   ],
   "_sources_failed": [
-    "google_books:no_good_match"
+    "google_books:no_good_match",
+    "amazon:skipped"
   ],
   "_timing": {
-    "phase1_parallel_ms": 15790,
-    "phase2_isbn_chain_ms": 23732,
-    "cover_validation_ms": 1094,
-    "total_ms": 40616
+    "phase1_parallel_ms": 16353,
+    "phase2_isbn_chain_ms": 0,
+    "cover_validation_ms": 956,
+    "total_ms": 17309
   },
-  "_cached_at": "2026-04-22T03:58:04.099Z"
+  "_version": "3.6",
+  "_cached_at": "2026-05-02T03:30:27.795Z"
 }

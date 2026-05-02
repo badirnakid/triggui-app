@@ -7,7 +7,8 @@
     "autor_completo": "Sosuke Natsukawa",
     "año": "2022",
     "editorial": null,
-    "isbn": "1600978213",
+    "isbn": "",
+    "apple_track_id": "1600978213",
     "categorias": [
       "Ficción literaria",
       "Libros",
@@ -18,9 +19,9 @@
   "match_score": 1,
   "other_sources_agreed": [],
   "resolution_path": [
-    "evidence_fetched_2sources"
+    "evidence_fetched_1sources"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-23T18:50:14.852Z"
+  "cached_at": "2026-05-02T03:25:37.303Z"
 }

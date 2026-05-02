@@ -2,7 +2,10 @@
   "titulo_input": "Miedo",
   "autor_input": "Osho",
   "isbn_seed": "",
-  "isbn_discovered": "469005760",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "",
+  "isbn_discovered_raw": "",
   "apple": {
     "ok": true,
     "source": "apple_books",
@@ -36,7 +39,8 @@
       "autor_completo": "Osho",
       "año": "2011",
       "editorial": null,
-      "isbn": "469005760",
+      "isbn": "",
+      "apple_track_id": "469005760",
       "categorias": [
         "Superación personal",
         "Libros",
@@ -47,37 +51,9 @@
     }
   },
   "google": {
-    "ok": true,
-    "source": "google_books",
-    "match_score": 1,
-    "match_details": {
-      "matched_title": "Miedo",
-      "matched_author": "Osho"
-    },
-    "synopsis": "Un libro que nos enseña a aceptar y afrontar nuestros miedos La vida es inseguridad. Cada nueva situación nos lleva a una inseguridad más profunda que la anterior. Es un juego en el que nadie sabe cuál será el siguiente paso. ¡En esto radica la belleza de la existencia! Si fuera predecible, no valdría la pena vivir; si todo fuera tal y como deseáramos y no hubiese lugar para la incertidumbre, no seríamos seres humanos sino máquinas, ya que solo para ellas todo es seguro y cierto. El hombre vive en libertad. La libertad necesita inseguridad e incertidumbre.",
-    "synopsis_length": 562,
-    "covers": [
-      {
-        "size": "small",
-        "url": "https://books.google.com/books/content?id=CRpHuHFxskwC&printsec=frontcover&img=1&zoom=1&source=gbs_api"
-      }
-    ],
-    "verified_identity": {
-      "titulo_real": "Miedo",
-      "subtitulo": "Entender y aceptar las inseguridades de la vida",
-      "autor_completo": "Osho",
-      "año": "2011",
-      "editorial": "DEBOLS!LLO",
-      "paginas": 91,
-      "isbn": "9788499892948",
-      "isbn13": "9788499892948",
-      "isbn10": "8499892949",
-      "categorias": [
-        "Self-Help"
-      ],
-      "idioma": "es",
-      "preview_link": "http://books.google.com/books?id=CRpHuHFxskwC&printsec=frontcover&dq=intitle:Miedo+inauthor:Osho&hl=&cd=1&source=gbs_api"
-    }
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
   },
   "openlibrary": {
     "ok": false,
@@ -85,23 +61,9 @@
     "source": "openlibrary"
   },
   "amazon": {
-    "ok": true,
-    "source": "amazon",
-    "match_score": 0.85,
-    "covers": [
-      {
-        "size": "large",
-        "url": "https://images-na.ssl-images-amazon.com/images/P/469005760.01.LZZZZZZZ.jpg"
-      }
-    ],
-    "synopsis": "",
-    "synopsis_length": 0,
-    "verified_identity": {
-      "isbn": "469005760",
-      "titulo_real": null,
-      "autor_completo": null,
-      "año": null
-    }
+    "ok": false,
+    "reason": "skipped",
+    "source": "amazon"
   },
   "valid_covers": [
     {
@@ -127,33 +89,22 @@
       "size": "medium",
       "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/a8/19/b2/a819b29a-1104-1d15-2d07-47875ddaa196/9788499892948.jpg/100x100bb.jpg",
       "valid": true
-    },
-    {
-      "source": "google_books",
-      "size": "small",
-      "url": "https://books.google.com/books/content?id=CRpHuHFxskwC&printsec=frontcover&img=1&zoom=1&source=gbs_api",
-      "valid": true
-    },
-    {
-      "source": "amazon",
-      "size": "large",
-      "url": "https://images-na.ssl-images-amazon.com/images/P/469005760.01.LZZZZZZZ.jpg",
-      "valid": true
     }
   ],
   "_sources_succeeded": [
-    "apple_books",
-    "google_books",
-    "amazon"
+    "apple_books"
   ],
   "_sources_failed": [
-    "openlibrary:no_results"
+    "google_books:no_good_match",
+    "openlibrary:no_results",
+    "amazon:skipped"
   ],
   "_timing": {
-    "phase1_parallel_ms": 1022,
-    "phase2_isbn_chain_ms": 403,
-    "cover_validation_ms": 1163,
-    "total_ms": 2588
+    "phase1_parallel_ms": 16182,
+    "phase2_isbn_chain_ms": 0,
+    "cover_validation_ms": 1164,
+    "total_ms": 17346
   },
-  "_cached_at": "2026-04-23T18:40:40.815Z"
+  "_version": "3.6",
+  "_cached_at": "2026-05-02T03:35:41.551Z"
 }

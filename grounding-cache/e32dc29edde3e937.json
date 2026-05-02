@@ -7,7 +7,8 @@
     "autor_completo": "Osho",
     "año": "2011",
     "editorial": null,
-    "isbn": "469005760",
+    "isbn": "",
+    "apple_track_id": "469005760",
     "categorias": [
       "Superación personal",
       "Libros",
@@ -17,13 +18,11 @@
     "track_view_url": "https://books.apple.com/mx/book/miedo/id469005760?uo=4"
   },
   "match_score": 1,
-  "other_sources_agreed": [
-    "google_books"
-  ],
+  "other_sources_agreed": [],
   "resolution_path": [
-    "evidence_fetched_3sources"
+    "evidence_fetched_1sources"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-23T18:40:40.816Z"
+  "cached_at": "2026-05-02T03:35:41.552Z"
 }

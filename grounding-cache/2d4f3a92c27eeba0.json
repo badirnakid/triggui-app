@@ -7,7 +7,8 @@
     "autor_completo": "Jim VandeHei, Mike Allen & Roy Schwartz",
     "año": "2024",
     "editorial": null,
-    "isbn": "6479582587",
+    "isbn": "",
+    "apple_track_id": "6479582587",
     "categorias": [
       "Artes y disciplinas lingüísticas",
       "Libros",
@@ -30,9 +31,9 @@
   "match_score": 1,
   "other_sources_agreed": [],
   "resolution_path": [
-    "evidence_fetched_2sources"
+    "evidence_fetched_1sources"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-21T01:23:59.106Z"
+  "cached_at": "2026-05-02T03:32:03.455Z"
 }

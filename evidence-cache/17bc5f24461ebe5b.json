@@ -2,7 +2,10 @@
   "titulo_input": "El método smart brevity",
   "autor_input": "Jim VandeHei",
   "isbn_seed": "",
-  "isbn_discovered": "6479582587",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "",
+  "isbn_discovered_raw": "",
   "apple": {
     "ok": true,
     "source": "apple_books",
@@ -36,7 +39,8 @@
       "autor_completo": "Jim VandeHei, Mike Allen & Roy Schwartz",
       "año": "2024",
       "editorial": null,
-      "isbn": "6479582587",
+      "isbn": "",
+      "apple_track_id": "6479582587",
       "categorias": [
         "Artes y disciplinas lingüísticas",
         "Libros",
@@ -68,23 +72,9 @@
     "source": "openlibrary"
   },
   "amazon": {
-    "ok": true,
-    "source": "amazon",
-    "match_score": 0.85,
-    "covers": [
-      {
-        "size": "large",
-        "url": "https://images-na.ssl-images-amazon.com/images/P/6479582587.01.LZZZZZZZ.jpg"
-      }
-    ],
-    "synopsis": "",
-    "synopsis_length": 0,
-    "verified_identity": {
-      "isbn": "6479582587",
-      "titulo_real": null,
-      "autor_completo": null,
-      "año": null
-    }
+    "ok": false,
+    "reason": "skipped",
+    "source": "amazon"
   },
   "valid_covers": [
     {
@@ -110,27 +100,22 @@
       "size": "medium",
       "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/21/4f/46/214f46c8-037d-c4c0-a4cb-27286989c55c/9788418223945.jpg/100x100bb.jpg",
       "valid": true
-    },
-    {
-      "source": "amazon",
-      "size": "large",
-      "url": "https://images-na.ssl-images-amazon.com/images/P/6479582587.01.LZZZZZZZ.jpg",
-      "valid": true
     }
   ],
   "_sources_succeeded": [
-    "apple_books",
-    "amazon"
+    "apple_books"
   ],
   "_sources_failed": [
     "google_books:no_good_match",
-    "openlibrary:no_results"
+    "openlibrary:no_results",
+    "amazon:skipped"
   ],
   "_timing": {
-    "phase1_parallel_ms": 15734,
-    "phase2_isbn_chain_ms": 23800,
-    "cover_validation_ms": 478,
-    "total_ms": 40012
+    "phase1_parallel_ms": 16072,
+    "phase2_isbn_chain_ms": 0,
+    "cover_validation_ms": 584,
+    "total_ms": 16656
   },
-  "_cached_at": "2026-04-21T01:23:59.105Z"
+  "_version": "3.6",
+  "_cached_at": "2026-05-02T03:32:03.455Z"
 }

@@ -1,0 +1,29 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nEdición ampliada y actualizada del best seller sobre liderazgo creativo que recoge los principios que construyeron la cultura singularmente exitosa de Pixar y le permitieron conservar su creatividad sin dejar de evolucionar. A lo largo de casi veinte años, Pixar ha dominado el sector de la animación y ha producido películas tan valoradas como la trilogía de Toy Story, Monsters, S. A., o WALL-E, que han batido récords de recaudación y conseguido cuarenta premios Oscar. En muchos aspectos —la inventiva de las tramas, la capacidad de emocionar, la maravilla de sus historias...—, las películas de Pixar son una lección práctica sobre lo que es la creatividad. Cuando Ed Catmull era joven tenía un sueño: hacer la primera película de animación por ordenador. Persiguió este sueño como estudiante en la Universidad de Utah, y se asoció con George Lucas, una colaboración que, indirectamente, lo llevó a fundar Pixar con Steve Jobs y John Lasseter en 1986. Catmull explica en este libro los valores y las técnicas que han hecho que Pixar sea tan admirada, y también tan rentable. El ingrediente esencial en el éxito de Pixar está en su entorno único, basado en principios que protegen el proceso creativo y que desafían las ideas establecidas, como por ejemplo: - Un equipo mediocre puede hacer fracasar una buena idea. Un buen equipo puede arreglar o mejorar una idea mediocre. - La tarea de dirigir no es evitar riesgos sino crear el entorno para que otros puedan tomarlos. - Con frecuencia, el coste de evitar errores es superior al de subsanarlos. - La estructura de comunicación de una empresa no debe ser el reflejo de su estructura organizativa; todo el equipo debe ser capaz de interrelacionarse, independientemente de su cargo y sus funciones. En esta edición ampliada y actualizada, Catmull da cuenta de los años posteriores a la publicación de Creatividad, S.A., para iluminar aún más el desarrollo continuo de la cultura, única y singular, propia de Pixar. Reseñas: «Este libro debería ser una lectura obligatoria para cualquier directivo». Charles Duhigg, autor de El poder del hábito «En Creatividad, S. A., Ed Catmull expone con honestidad y sentido común cómo no convertirte en un estorbo y cómo fusionar arte, negocio e innovación». George Lucas «A los gurús de los negocios les encanta contar historias sobre Pixar, pero esta es la oportunidad de conocer la historia real de alguien que la vivió y la lideró. Todos los interesados en gestión de la innovación deberían leer este libro». Chip Heath, coautor de Cambia el chip «El libro más práctico y profundo jamás escrito por un profesional de la innovación». Gary P. Pisano, profesor en la Escuela de Negocios Harvard «Catmull nos traslada al interior del ecosistema de Pixar y nos muestra cómo la excelencia se desarrolla y se perfecciona con un nivel de detalle que resulta inspirador. Si tienes un trabajo creativo, debes leer este libro ya». Daniel Coyle, autor de El pequeño libro del talento «Este es el mejor libro jamás escrito acerca de lo que implica establecer una organización creativa». Robert I. Sutton, profesor en la Universidad de Stanford y autor de Buen jefe, mal jefe\n\nMETADATA VERIFICADA:\n- Título: Creatividad, S.A.\n- Autor: Ed Catmull\n- Año: 2014\n- Categorías: Administración y liderazgo, Libros, Negocios y finanzas personales",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.8913333333333334,
+  "verified_identity": {
+    "titulo_real": "Creatividad, S.A.",
+    "autor_completo": "Ed Catmull",
+    "año": "2014",
+    "editorial": null,
+    "isbn": "",
+    "apple_track_id": "889246256",
+    "categorias": [
+      "Administración y liderazgo",
+      "Libros",
+      "Negocios y finanzas personales"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/creatividad-s-a/id889246256?uo=4"
+  },
+  "match_score": 0.8533333333333334,
+  "other_sources_agreed": [
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_2sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-05-02T03:27:11.064Z"
+}

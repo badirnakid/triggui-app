@@ -1,0 +1,28 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nNos sobran razones para pensar en un futuro mejor. «El pasado fue siempre peor, y no hay duda de que el futuro será mejor.» Ese mensaje orienta el Viaje al optimismo al que nos invita Eduardo Punset. Los constantes avances científicos, que recorreremos con el autor, justifican abordar con entusiasmo el futuro. En este viaje, Punset desmiente que la crisis sea planetaria, proclama la obligada redistribución del trabajo mientras la esperanza de vida aumenta dos años y medio cada década, y recuerda que ya no es posible vivir sin las redes sociales. Hoy, afirma, «la manada reclama el liderazgo de los jóvenes», es más necesario que nunca «aprender a desaprender» y debemos asumir que la gestión de las emociones es una prioridad inexcusable.\n\nMETADATA VERIFICADA:\n- Título: Viaje al optimismo\n- Autor: Eduardo Punset\n- Año: 2011\n- Categorías: Ciencia y naturaleza, Libros",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "Viaje al optimismo",
+    "autor_completo": "Eduardo Punset",
+    "año": "2011",
+    "editorial": null,
+    "isbn": "",
+    "apple_track_id": "483386101",
+    "categorias": [
+      "Ciencia y naturaleza",
+      "Libros"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/viaje-al-optimismo/id483386101?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_2sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-05-02T03:39:11.966Z"
+}

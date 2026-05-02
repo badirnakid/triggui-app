@@ -2,7 +2,10 @@
   "titulo_input": "La ciencia del éxito",
   "autor_input": "Napoleon Hill",
   "isbn_seed": "",
-  "isbn_discovered": "1623003976",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "",
+  "isbn_discovered_raw": "",
   "apple": {
     "ok": true,
     "source": "apple_books",
@@ -36,7 +39,8 @@
       "autor_completo": "Napoleon Hill",
       "año": "2022",
       "editorial": null,
-      "isbn": "1623003976",
+      "isbn": "",
+      "apple_track_id": "1623003976",
       "categorias": [
         "Superación personal",
         "Libros",
@@ -57,23 +61,9 @@
     "source": "openlibrary"
   },
   "amazon": {
-    "ok": true,
-    "source": "amazon",
-    "match_score": 0.85,
-    "covers": [
-      {
-        "size": "large",
-        "url": "https://images-na.ssl-images-amazon.com/images/P/1623003976.01.LZZZZZZZ.jpg"
-      }
-    ],
-    "synopsis": "",
-    "synopsis_length": 0,
-    "verified_identity": {
-      "isbn": "1623003976",
-      "titulo_real": null,
-      "autor_completo": null,
-      "año": null
-    }
+    "ok": false,
+    "reason": "skipped",
+    "source": "amazon"
   },
   "valid_covers": [
     {
@@ -99,27 +89,22 @@
       "size": "medium",
       "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication122/v4/23/4f/0b/234f0bcd-6265-5ee3-8dc3-d84fc463292d/9786073817684.jpg/100x100bb.jpg",
       "valid": true
-    },
-    {
-      "source": "amazon",
-      "size": "large",
-      "url": "https://images-na.ssl-images-amazon.com/images/P/1623003976.01.LZZZZZZZ.jpg",
-      "valid": true
     }
   ],
   "_sources_succeeded": [
-    "apple_books",
-    "amazon"
+    "apple_books"
   ],
   "_sources_failed": [
     "google_books:no_good_match",
-    "openlibrary:no_results"
+    "openlibrary:no_results",
+    "amazon:skipped"
   ],
   "_timing": {
-    "phase1_parallel_ms": 1408,
-    "phase2_isbn_chain_ms": 1268,
-    "cover_validation_ms": 20,
-    "total_ms": 2696
+    "phase1_parallel_ms": 16342,
+    "phase2_isbn_chain_ms": 0,
+    "cover_validation_ms": 702,
+    "total_ms": 17044
   },
-  "_cached_at": "2026-04-21T11:03:11.292Z"
+  "_version": "3.6",
+  "_cached_at": "2026-05-02T03:29:41.382Z"
 }

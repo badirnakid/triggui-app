@@ -1,0 +1,47 @@
+{
+  "ground_truth": "TEMA INFERIDO (el modelo no conoce este libro directamente, infiere desde similares):\n\nEtiqueta y comportamiento profesional en el entorno empresarial, con un enfoque en la comunicación y la presentación personal.\n\nVOZ INFERIDA:\nPráctica y directa, orientada a ofrecer consejos útiles y aplicables en situaciones cotidianas de negocios.\n\nLIBROS SIMILARES QUE COMPARTEN ADN CON ESTE:\n- \"El arte de la guerra\" (Sun Tzu): Aunque es un texto antiguo sobre estrategia militar, se aplica a la estrategia en los negocios y la importancia de la presentación y el comportamiento en situaciones competitivas.\n- \"Cómo ganar amigos e influir sobre las personas\" (Dale Carnegie): Este libro se centra en las relaciones interpersonales y la comunicación efectiva, temas que son fundamentales en el contexto empresarial.\n- \"La magia del orden\" (Marie Kondo): Aunque se centra en la organización personal, también toca aspectos de la presentación y el comportamiento en el entorno profesional.\n- \"Los 7 hábitos de la gente altamente efectiva\" (Stephen R. Covey): Este libro aborda principios de efectividad personal y profesional, incluyendo la importancia de la etiqueta y el comportamiento en los negocios.\n- \"Presentaciones que convencen\" (Jill Schiefelbein): Se enfoca en la comunicación efectiva en el ámbito profesional, lo que es relevante para el tema de etiqueta y estilo en los negocios.",
+  "grounding_source": "model_inference",
+  "book_identity_confidence": 0.6000000000000001,
+  "verified_identity": {
+    "titulo_real": "Etiqueta y estilo en los negocios",
+    "autor_completo": "Pachter Barbara",
+    "año": null
+  },
+  "inference_confidence": 0.8,
+  "book_known_directly": false,
+  "rich_inference": true,
+  "similar_books": [
+    {
+      "titulo": "El arte de la guerra",
+      "autor": "Sun Tzu",
+      "razon": "Aunque es un texto antiguo sobre estrategia militar, se aplica a la estrategia en los negocios y la importancia de la presentación y el comportamiento en situaciones competitivas."
+    },
+    {
+      "titulo": "Cómo ganar amigos e influir sobre las personas",
+      "autor": "Dale Carnegie",
+      "razon": "Este libro se centra en las relaciones interpersonales y la comunicación efectiva, temas que son fundamentales en el contexto empresarial."
+    },
+    {
+      "titulo": "La magia del orden",
+      "autor": "Marie Kondo",
+      "razon": "Aunque se centra en la organización personal, también toca aspectos de la presentación y el comportamiento en el entorno profesional."
+    },
+    {
+      "titulo": "Los 7 hábitos de la gente altamente efectiva",
+      "autor": "Stephen R. Covey",
+      "razon": "Este libro aborda principios de efectividad personal y profesional, incluyendo la importancia de la etiqueta y el comportamiento en los negocios."
+    },
+    {
+      "titulo": "Presentaciones que convencen",
+      "autor": "Jill Schiefelbein",
+      "razon": "Se enfoca en la comunicación efectiva en el ámbito profesional, lo que es relevante para el tema de etiqueta y estilo en los negocios."
+    }
+  ],
+  "resolution_path": [
+    "evidence_fetched_0sources",
+    "tier3_conf_0.80"
+  ],
+  "tier_reached": 3,
+  "cost_tokens": 672,
+  "cached_at": "2026-05-02T03:33:57.735Z"
+}

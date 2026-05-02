@@ -4,8 +4,8 @@
   "isbn_seed": "",
   "isbn_seed_raw": "",
   "isbn_seed_rejected": null,
-  "isbn_discovered": "9780771038709",
-  "isbn_discovered_raw": "9780771038709",
+  "isbn_discovered": "",
+  "isbn_discovered_raw": "",
   "apple": {
     "ok": true,
     "source": "apple_books",
@@ -51,37 +51,9 @@
     }
   },
   "google": {
-    "ok": true,
-    "source": "google_books",
-    "match_score": 1,
-    "match_details": {
-      "matched_title": "Homo Deus",
-      "matched_author": "Yuval Noah Harari"
-    },
-    "synopsis": "From the author of the international bestseller Sapiens: A Brief History of Humankind comes an extraordinary follow-up that explores the future of the human species. Humans today enjoy unprecedented levels of power and an increasingly god-like status. The great epidemics of the past—famine, plague and war—no longer control our lives. We are the only species in history that has single-handedly changed the entire planet, and we can no longer blame a higher being for our fate. But as our gods take a back seat, and Homo Sapiens becomes Homo Deus, what are we going to do with ourselves? How do we set the agenda for our own future without pushing our species—and the rest of the world—beyond its limits? In this vivid, challenging new book from the author of Sapiens, Yuval Noah Harari examines the implications of our newly upgraded condition, from our dogged pursuit of status and happiness to our constant quest to overcome death by pushing the boundaries of science. He explores how Homo Sapiens conquered the world, our creation of today's human-centred environment, our current predicament and our possible future. And, above all, he asks the fundamental questions: Where do we go from here? And how will we protect this fragile world from our own destructive powers?",
-    "synopsis_length": 1275,
-    "covers": [
-      {
-        "size": "small",
-        "url": "https://books.google.com/books/content?id=0_uOEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
-      }
-    ],
-    "verified_identity": {
-      "titulo_real": "Homo Deus",
-      "subtitulo": "A Brief History of Tomorrow",
-      "autor_completo": "Yuval Noah Harari",
-      "año": "2017",
-      "editorial": "National Geographic Books",
-      "paginas": null,
-      "isbn": "9780771038709",
-      "isbn13": "9780771038709",
-      "isbn10": "0771038704",
-      "categorias": [
-        "History"
-      ],
-      "idioma": "en",
-      "preview_link": "http://books.google.com/books?id=0_uOEAAAQBAJ&dq=intitle:Homo+Deus+inauthor:Yuval+Noah+Harari&hl=&cd=2&source=gbs_api"
-    }
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
   },
   "openlibrary": {
     "ok": true,
@@ -119,25 +91,9 @@
     }
   },
   "amazon": {
-    "ok": true,
-    "source": "amazon",
-    "match_score": 0.85,
-    "covers": [
-      {
-        "size": "large",
-        "url": "https://images-na.ssl-images-amazon.com/images/P/0771038704.01.LZZZZZZZ.jpg"
-      }
-    ],
-    "synopsis": "",
-    "synopsis_length": 0,
-    "verified_identity": {
-      "isbn": "0771038704",
-      "isbn13": "9780771038709",
-      "isbn10": "0771038704",
-      "titulo_real": null,
-      "autor_completo": null,
-      "año": null
-    }
+    "ok": false,
+    "reason": "skipped",
+    "source": "amazon"
   },
   "valid_covers": [
     {
@@ -165,12 +121,6 @@
       "valid": true
     },
     {
-      "source": "google_books",
-      "size": "small",
-      "url": "https://books.google.com/books/content?id=0_uOEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
-      "valid": true
-    },
-    {
       "source": "openlibrary",
       "size": "large",
       "url": "https://covers.openlibrary.org/b/id/14421556-L.jpg",
@@ -181,27 +131,22 @@
       "size": "medium",
       "url": "https://covers.openlibrary.org/b/id/14421556-M.jpg",
       "valid": true
-    },
-    {
-      "source": "amazon",
-      "size": "large",
-      "url": "https://images-na.ssl-images-amazon.com/images/P/0771038704.01.LZZZZZZZ.jpg",
-      "valid": true
     }
   ],
   "_sources_succeeded": [
     "apple_books",
-    "google_books",
-    "openlibrary",
-    "amazon"
+    "openlibrary"
   ],
-  "_sources_failed": [],
+  "_sources_failed": [
+    "google_books:no_good_match",
+    "amazon:skipped"
+  ],
   "_timing": {
-    "phase1_parallel_ms": 550,
-    "phase2_isbn_chain_ms": 98,
-    "cover_validation_ms": 1291,
-    "total_ms": 1939
+    "phase1_parallel_ms": 16467,
+    "phase2_isbn_chain_ms": 0,
+    "cover_validation_ms": 863,
+    "total_ms": 17330
   },
   "_version": "3.6",
-  "_cached_at": "2026-04-26T19:47:24.097Z"
+  "_cached_at": "2026-05-02T03:31:17.047Z"
 }

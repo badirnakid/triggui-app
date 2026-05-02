@@ -1,29 +1,42 @@
 {
-  "ground_truth": "SINOPSIS OFICIAL (Google Books):\n\n¡Tú sabes que hay una mejor manera de vivir y quieres más de la vida! ¡Tienes esperanzas y sueños! Anhelas salirte de esa rueda de la rutina que te exprime financieramente mes a mes y dejar de vivir por las reglas que te imponen la sociedad y otras personas. Sin embargo, nunca has tenido claro cuál es la manera más eficaz de alcanzar tus metas... hasta ahora. El fin de semana de 5 días es: *Un conjunto de estrategias que te ayudarán a dejar de lado esa rutina de trabajo de 8:00 am a 6:00 pm para que comiences a ir tras tus metas más soñadas y las logres. *Más que inspiración, un plan que te mostrará cómo construir múltiples fuentes de ingreso. *Más que un concepto, una visión real del mundo. Sus historias acerca de emprendedores de la vida diaria te servirán de ejemplo y guía. *Más que una forma de conseguir dinero, una forma de tener un propósito de vida. *Más que una rutina, una concepción del mundo que te muestra más y mejores opciones sobre cómo sentirte realizado. Es tu momento de dejar de estar atascado. ¿Estás listo para avanzar hacia un estilo de vida lleno de libertad financiera y propósitos? El fin de semana de 5 días es tu puerta de acceso hacia mejores expectativas.\n\nMETADATA VERIFICADA:\n- Título: El fin de semana de 5 días\n- Autor: Nik Halik, Garret B. Gunderson\n- Año: 2019\n- Categorías: Business & Economics",
-  "grounding_source": "google_books",
-  "book_identity_confidence": 0.95,
+  "ground_truth": "TEMA INFERIDO (el modelo no conoce este libro directamente, infiere desde similares):\n\nSuperación personal y libertad financiera, con un enfoque en la gestión del tiempo y la búsqueda de un estilo de vida más satisfactorio.\n\nVOZ INFERIDA:\nMotivacional y práctico, con un enfoque en la acción y el cambio personal.\n\nLIBROS SIMILARES QUE COMPARTEN ADN CON ESTE:\n- \"Los secretos de la mente millonaria\" (T. Harv Eker): Aborda la mentalidad necesaria para alcanzar la libertad financiera.\n- \"Piense y hágase rico\" (Napoleon Hill): Un clásico sobre la mentalidad y estrategias para lograr el éxito financiero.\n- \"La semana laboral de 4 horas\" (Tim Ferriss): Explora la optimización del tiempo y la búsqueda de un estilo de vida más libre.\n- \"El hombre más rico de Babilonia\" (George S. Clason): Ofrece lecciones sobre la gestión del dinero y la creación de riqueza.",
+  "grounding_source": "model_inference",
+  "book_identity_confidence": 0.6000000000000001,
   "verified_identity": {
     "titulo_real": "El fin de semana de 5 días",
-    "subtitulo": "Encuentra la libertad para construir una vida próspera y con propósito",
-    "autor_completo": "Nik Halik, Garret B. Gunderson",
-    "año": "2019",
-    "editorial": null,
-    "paginas": 215,
-    "isbn": "9781607385721",
-    "isbn13": "9781607385721",
-    "isbn10": "1607385724",
-    "categorias": [
-      "Business & Economics"
-    ],
-    "idioma": "es",
-    "preview_link": "http://books.google.com/books?id=FSrEDwAAQBAJ&pg=PT88&dq=intitle:El+fin+de+semana+de+5+d%C3%ADas+inauthor:Nik+Halik&hl=&cd=1&source=gbs_api"
+    "autor_completo": "Nik Halik",
+    "año": null
   },
-  "match_score": 1,
-  "other_sources_agreed": [],
-  "resolution_path": [
-    "evidence_fetched_2sources"
+  "inference_confidence": 0.8,
+  "book_known_directly": false,
+  "rich_inference": true,
+  "similar_books": [
+    {
+      "titulo": "Los secretos de la mente millonaria",
+      "autor": "T. Harv Eker",
+      "razon": "Aborda la mentalidad necesaria para alcanzar la libertad financiera."
+    },
+    {
+      "titulo": "Piense y hágase rico",
+      "autor": "Napoleon Hill",
+      "razon": "Un clásico sobre la mentalidad y estrategias para lograr el éxito financiero."
+    },
+    {
+      "titulo": "La semana laboral de 4 horas",
+      "autor": "Tim Ferriss",
+      "razon": "Explora la optimización del tiempo y la búsqueda de un estilo de vida más libre."
+    },
+    {
+      "titulo": "El hombre más rico de Babilonia",
+      "autor": "George S. Clason",
+      "razon": "Ofrece lecciones sobre la gestión del dinero y la creación de riqueza."
+    }
   ],
-  "tier_reached": 2,
-  "cost_tokens": 0,
-  "cached_at": "2026-04-21T11:02:06.396Z"
+  "resolution_path": [
+    "evidence_fetched_0sources",
+    "tier3_conf_0.80"
+  ],
+  "tier_reached": 3,
+  "cost_tokens": 562,
+  "cached_at": "2026-05-02T03:28:53.539Z"
 }

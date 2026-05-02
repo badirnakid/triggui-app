@@ -7,7 +7,8 @@
     "autor_completo": "Chris Voss",
     "año": "2016",
     "editorial": null,
-    "isbn": "1159881469",
+    "isbn": "",
+    "apple_track_id": "1159881469",
     "categorias": [
       "Administración y liderazgo",
       "Libros",
@@ -16,13 +17,11 @@
     "track_view_url": "https://books.apple.com/mx/book/rompe-la-barrera-del-no/id1159881469?uo=4"
   },
   "match_score": 1,
-  "other_sources_agreed": [
-    "google_books"
-  ],
+  "other_sources_agreed": [],
   "resolution_path": [
-    "evidence_fetched_3sources"
+    "evidence_fetched_1sources"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-21T13:31:04.112Z"
+  "cached_at": "2026-05-02T03:40:03.225Z"
 }

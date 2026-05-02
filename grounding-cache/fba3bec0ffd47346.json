@@ -1,0 +1,30 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nLlega a México el experto en concentración que conquistódurante más de un año las listas de más vendidos en Japón. Entiende cómo funciona tu mente, aumenta la concentración, el rendimiento y la productividad en tu vida profesional y personal. La magia de la concentración presenta técnicas y estrategias para incrementar tu fuerza de voluntad, evitar el cansancio mental y fortalecer tus hábitos. Luego de varios años con problemas de hiperactividad, el pequeño Dai Go se cansó de todo el acoso escolar del que era víctima; tanto fue su hartazgo que decidió leer e investigar hasta convertirse en experto del tema. Actualmente DaiGo aparece con regularidad en la televisión japonesa, revistas y redes sociales de aquel país asiático. Además, es reconocido por haber desarrollado un método revolucionario para mejorar la concentración. Dicho método -que nos comparte en este libro- permite que cualquier persona cumpla la tarea o reto que quiera, sin importar cuán grande o pequeña sea.\n\nMETADATA VERIFICADA:\n- Título: La magia de la concentración\n- Autor: DAIGO\n- Año: 2021\n- Categorías: Espiritualidad, Libros, Salud, mente y cuerpo, Superación personal",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.95,
+  "verified_identity": {
+    "titulo_real": "La magia de la concentración",
+    "autor_completo": "DAIGO",
+    "año": "2021",
+    "editorial": null,
+    "isbn": "",
+    "apple_track_id": "1567762818",
+    "categorias": [
+      "Espiritualidad",
+      "Libros",
+      "Salud, mente y cuerpo",
+      "Superación personal"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/la-magia-de-la-concentraci%C3%B3n/id1567762818?uo=4"
+  },
+  "match_score": 1,
+  "other_sources_agreed": [
+    "openlibrary"
+  ],
+  "resolution_path": [
+    "evidence_fetched_2sources"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-05-02T03:24:49.745Z"
+}

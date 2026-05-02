@@ -2,7 +2,10 @@
   "titulo_input": "Conciencia",
   "autor_input": "Osho",
   "isbn_seed": "",
-  "isbn_discovered": "469026857",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "",
+  "isbn_discovered_raw": "",
   "apple": {
     "ok": true,
     "source": "apple_books",
@@ -36,7 +39,8 @@
       "autor_completo": "Osho",
       "año": "2011",
       "editorial": null,
-      "isbn": "469026857",
+      "isbn": "",
+      "apple_track_id": "469026857",
       "categorias": [
         "Espiritualidad",
         "Libros",
@@ -86,23 +90,9 @@
     }
   },
   "amazon": {
-    "ok": true,
-    "source": "amazon",
-    "match_score": 0.85,
-    "covers": [
-      {
-        "size": "large",
-        "url": "https://images-na.ssl-images-amazon.com/images/P/469026857.01.LZZZZZZZ.jpg"
-      }
-    ],
-    "synopsis": "",
-    "synopsis_length": 0,
-    "verified_identity": {
-      "isbn": "469026857",
-      "titulo_real": null,
-      "autor_completo": null,
-      "año": null
-    }
+    "ok": false,
+    "reason": "skipped",
+    "source": "amazon"
   },
   "valid_covers": [
     {
@@ -140,33 +130,22 @@
       "size": "medium",
       "url": "https://covers.openlibrary.org/b/id/10691386-M.jpg",
       "valid": true
-    },
-    {
-      "source": "openlibrary",
-      "size": "small",
-      "url": "https://covers.openlibrary.org/b/id/10691386-S.jpg",
-      "valid": true
-    },
-    {
-      "source": "amazon",
-      "size": "large",
-      "url": "https://images-na.ssl-images-amazon.com/images/P/469026857.01.LZZZZZZZ.jpg",
-      "valid": true
     }
   ],
   "_sources_succeeded": [
     "apple_books",
-    "openlibrary",
-    "amazon"
+    "openlibrary"
   ],
   "_sources_failed": [
-    "google_books:no_good_match"
+    "google_books:no_good_match",
+    "amazon:skipped"
   ],
   "_timing": {
-    "phase1_parallel_ms": 4215,
-    "phase2_isbn_chain_ms": 522,
-    "cover_validation_ms": 431,
-    "total_ms": 5168
+    "phase1_parallel_ms": 16376,
+    "phase2_isbn_chain_ms": 0,
+    "cover_validation_ms": 1101,
+    "total_ms": 17477
   },
-  "_cached_at": "2026-04-21T13:54:08.059Z"
+  "_version": "3.6",
+  "_cached_at": "2026-05-02T03:23:59.190Z"
 }

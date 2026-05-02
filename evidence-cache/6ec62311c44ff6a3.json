@@ -1,0 +1,127 @@
+{
+  "titulo_input": "La magia de la concentración",
+  "autor_input": "Daigo",
+  "isbn_seed": "",
+  "isbn_seed_raw": "",
+  "isbn_seed_rejected": null,
+  "isbn_discovered": "",
+  "isbn_discovered_raw": "",
+  "apple": {
+    "ok": true,
+    "source": "apple_books",
+    "match_score": 1,
+    "match_details": {
+      "matched_title": "La magia de la concentración",
+      "matched_author": "DAIGO"
+    },
+    "synopsis": "Llega a México el experto en concentración que conquistódurante más de un año las listas de más vendidos en Japón. Entiende cómo funciona tu mente, aumenta la concentración, el rendimiento y la productividad en tu vida profesional y personal. La magia de la concentración presenta técnicas y estrategias para incrementar tu fuerza de voluntad, evitar el cansancio mental y fortalecer tus hábitos. Luego de varios años con problemas de hiperactividad, el pequeño Dai Go se cansó de todo el acoso escolar del que era víctima; tanto fue su hartazgo que decidió leer e investigar hasta convertirse en experto del tema. Actualmente DaiGo aparece con regularidad en la televisión japonesa, revistas y redes sociales de aquel país asiático. Además, es reconocido por haber desarrollado un método revolucionario para mejorar la concentración. Dicho método -que nos comparte en este libro- permite que cualquier persona cumpla la tarea o reto que quiera, sin importar cuán grande o pequeña sea.",
+    "synopsis_length": 985,
+    "covers": [
+      {
+        "size": "xxlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication125/v4/eb/a8/56/eba85611-fb88-bcbb-f0af-f87aac877f5a/9786073192934.jpg/3000x3000bb.jpg"
+      },
+      {
+        "size": "xlarge",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication125/v4/eb/a8/56/eba85611-fb88-bcbb-f0af-f87aac877f5a/9786073192934.jpg/1200x1200bb.jpg"
+      },
+      {
+        "size": "large",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication125/v4/eb/a8/56/eba85611-fb88-bcbb-f0af-f87aac877f5a/9786073192934.jpg/600x600bb.jpg"
+      },
+      {
+        "size": "medium",
+        "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication125/v4/eb/a8/56/eba85611-fb88-bcbb-f0af-f87aac877f5a/9786073192934.jpg/100x100bb.jpg"
+      }
+    ],
+    "verified_identity": {
+      "titulo_real": "La magia de la concentración",
+      "autor_completo": "DAIGO",
+      "año": "2021",
+      "editorial": null,
+      "isbn": "",
+      "apple_track_id": "1567762818",
+      "categorias": [
+        "Espiritualidad",
+        "Libros",
+        "Salud, mente y cuerpo",
+        "Superación personal"
+      ],
+      "track_view_url": "https://books.apple.com/mx/book/la-magia-de-la-concentraci%C3%B3n/id1567762818?uo=4"
+    }
+  },
+  "google": {
+    "ok": false,
+    "reason": "no_good_match",
+    "source": "google_books"
+  },
+  "openlibrary": {
+    "ok": true,
+    "source": "openlibrary",
+    "match_score": 0.6826923076923077,
+    "match_details": {
+      "matched_title": "Magia de la Concentración / the Magic of Concentration",
+      "matched_author": "Daigo"
+    },
+    "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2021.",
+    "synopsis_length": 65,
+    "covers": [],
+    "verified_identity": {
+      "titulo_real": "Magia de la Concentración / the Magic of Concentration",
+      "autor_completo": "Daigo",
+      "año": "2021",
+      "editorial": null,
+      "isbn": "",
+      "categorias": [],
+      "idioma": "spa",
+      "paginas": null
+    }
+  },
+  "amazon": {
+    "ok": false,
+    "reason": "skipped",
+    "source": "amazon"
+  },
+  "valid_covers": [
+    {
+      "source": "apple_books",
+      "size": "xxlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication125/v4/eb/a8/56/eba85611-fb88-bcbb-f0af-f87aac877f5a/9786073192934.jpg/3000x3000bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "xlarge",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication125/v4/eb/a8/56/eba85611-fb88-bcbb-f0af-f87aac877f5a/9786073192934.jpg/1200x1200bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "large",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication125/v4/eb/a8/56/eba85611-fb88-bcbb-f0af-f87aac877f5a/9786073192934.jpg/600x600bb.jpg",
+      "valid": true
+    },
+    {
+      "source": "apple_books",
+      "size": "medium",
+      "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication125/v4/eb/a8/56/eba85611-fb88-bcbb-f0af-f87aac877f5a/9786073192934.jpg/100x100bb.jpg",
+      "valid": true
+    }
+  ],
+  "_sources_succeeded": [
+    "apple_books",
+    "openlibrary"
+  ],
+  "_sources_failed": [
+    "google_books:no_good_match",
+    "amazon:skipped"
+  ],
+  "_timing": {
+    "phase1_parallel_ms": 16198,
+    "phase2_isbn_chain_ms": 0,
+    "cover_validation_ms": 943,
+    "total_ms": 17141
+  },
+  "_version": "3.6",
+  "_cached_at": "2026-05-02T03:24:49.744Z"
+}

@@ -1,0 +1,42 @@
+{
+  "ground_truth": "TEMA INFERIDO (el modelo no conoce este libro directamente, infiere desde similares):\n\nEl libro probablemente trata sobre lecciones de vida y finanzas que son relevantes a lo largo del tiempo, enfatizando la adaptabilidad y la sabiduría en la gestión personal y financiera.\n\nVOZ INFERIDA:\nEs probable que la voz del autor sea reflexiva y accesible, ofreciendo consejos prácticos y motivacionales para mejorar la vida personal y financiera.\n\nLIBROS SIMILARES QUE COMPARTEN ADN CON ESTE:\n- \"El hombre más rico de Babilonia\" (George S. Clason): Ofrece lecciones sobre finanzas personales a través de parábolas atemporales.\n- \"Padre rico, padre pobre\" (Robert T. Kiyosaki): Explora conceptos de educación financiera y mentalidad sobre el dinero.\n- \"Los secretos de la mente millonaria\" (T. Harv Eker): Aborda la psicología detrás de la riqueza y cómo cambiar la mentalidad financiera.\n- \"La magia del orden\" (Marie Kondo): Aunque se centra en la organización, también trata sobre el cambio en la vida personal y la toma de decisiones.",
+  "grounding_source": "model_inference",
+  "book_identity_confidence": 0.6000000000000001,
+  "verified_identity": {
+    "titulo_real": "Lo que nunca cambia en un mundo cambiante",
+    "autor_completo": "Morgan Housel",
+    "año": null
+  },
+  "inference_confidence": 0.8,
+  "book_known_directly": false,
+  "rich_inference": true,
+  "similar_books": [
+    {
+      "titulo": "El hombre más rico de Babilonia",
+      "autor": "George S. Clason",
+      "razon": "Ofrece lecciones sobre finanzas personales a través de parábolas atemporales."
+    },
+    {
+      "titulo": "Padre rico, padre pobre",
+      "autor": "Robert T. Kiyosaki",
+      "razon": "Explora conceptos de educación financiera y mentalidad sobre el dinero."
+    },
+    {
+      "titulo": "Los secretos de la mente millonaria",
+      "autor": "T. Harv Eker",
+      "razon": "Aborda la psicología detrás de la riqueza y cómo cambiar la mentalidad financiera."
+    },
+    {
+      "titulo": "La magia del orden",
+      "autor": "Marie Kondo",
+      "razon": "Aunque se centra en la organización, también trata sobre el cambio en la vida personal y la toma de decisiones."
+    }
+  ],
+  "resolution_path": [
+    "evidence_fetched_0sources",
+    "tier3_conf_0.80"
+  ],
+  "tier_reached": 3,
+  "cost_tokens": 566,
+  "cached_at": "2026-05-02T03:37:25.395Z"
+}

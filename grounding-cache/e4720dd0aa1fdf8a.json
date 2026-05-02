@@ -7,7 +7,8 @@
     "autor_completo": "Napoleon Hill",
     "año": "2022",
     "editorial": null,
-    "isbn": "1623003976",
+    "isbn": "",
+    "apple_track_id": "1623003976",
     "categorias": [
       "Superación personal",
       "Libros",
@@ -19,9 +20,9 @@
   "match_score": 1,
   "other_sources_agreed": [],
   "resolution_path": [
-    "evidence_fetched_2sources"
+    "evidence_fetched_1sources"
   ],
   "tier_reached": 2,
   "cost_tokens": 0,
-  "cached_at": "2026-04-21T11:03:11.292Z"
+  "cached_at": "2026-05-02T03:29:41.383Z"
 }
