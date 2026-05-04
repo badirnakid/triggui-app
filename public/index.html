@@ -2306,7 +2306,15 @@ function buildPort(i){
   const wrap=document.createElement("div"); wrap.className="port-text-wrap";
   const box=document.createElement("div"); box.className="port-text";
   const tituloI18n = TriggguiI18n.fromBook(libro, 'titulo');
-  box.innerHTML=`<h2>${tituloI18n}</h2><p>${libro.autor}</p>`;
+  // 🌒 v15: usar textContent en vez de innerHTML para prevenir XSS
+  // si el JSON del catálogo se compromete o un título contiene HTML.
+  // Funcionalidad idéntica para usuarios — solo cambia la forma de pintar.
+  const titleEl = document.createElement('h2');
+  titleEl.textContent = tituloI18n;
+  const authorEl = document.createElement('p');
+  authorEl.textContent = libro.autor || '';
+  box.appendChild(titleEl);
+  box.appendChild(authorEl);
   const emoji=document.createElement("div"); emoji.className="emoji-big";
   emoji.textContent=emojis[i%emojis.length];
   wrap.append(box,emoji);
@@ -4735,6 +4743,37 @@ async function loadCatalogWithRetry(maxAttempts) {
   throw lastErr || new Error('unknown');
 }
 
+// ══════════════════════════════════════════════════════════════════════════
+// 🌒 v15: BRIDGE A REACT NATIVE — FIRST_PAINT en momento matemáticamente exacto
+//
+// Reemplaza el viejo js-react-native-bridge que disparaba FIRST_PAINT al
+// DOMContentLoaded (momento PREMATURO — la barra mágica aún no era visible).
+//
+// Ahora FIRST_PAINT se envía cuando el overlay alcanza opacity:1, garantizando
+// cero gap entre splash móvil y barra mágica visible.
+//
+// Tres disparos posibles, idempotentes:
+//   1. transitionend del overlay opacity (caso ideal)
+//   2. Fallback a 500ms del bootTriggui (si transitionend no dispara)
+//   3. Timeout de seguridad a 3000ms (si bootTriggui falla por red sin
+//      internet, JSON corrupto, etc.) — el splash móvil no se queda eternamente
+//
+// Lock: solo se envía UNA vez por boot. Las llamadas posteriores son no-op.
+// ══════════════════════════════════════════════════════════════════════════
+let __trigguiFirstPaintSent = false;
+function signalFirstPaintOnce() {
+  if (__trigguiFirstPaintSent) return;
+  __trigguiFirstPaintSent = true;
+  try {
+    if (window.ReactNativeWebView && typeof window.ReactNativeWebView.postMessage === 'function') {
+      window.ReactNativeWebView.postMessage("FIRST_PAINT");
+    }
+  } catch (_) {}
+}
+// Fallback de seguridad ABSOLUTO: a los 3000ms forzar FIRST_PAINT pase lo que pase.
+// Esto previene que el splash móvil se quede eternamente si bootTriggui falla.
+setTimeout(signalFirstPaintOnce, 3000);
+
 // INIT
 function isWebView(){ const ua=navigator.userAgent||navigator.vendor||window.opera; return (/wv/i.test(ua)||/WebView/i.test(ua)||(ua.includes("Android")&&ua.includes("Version/"))||(ua.includes("iPhone")&&!ua.includes("Safari"))); }
 if(isWebView()) document.body.classList.add("webview");
@@ -4793,6 +4832,9 @@ async function bootTriggui() {
       track('empty_catalog_seen', { lang: TriggguiI18n.lang });
       try { updateBadge(); } catch(_) {}
       try { refreshGlobalCounter(); } catch(_) {}
+      // 🌒 v15: FIRST_PAINT incluso si catálogo vacío — el splash móvil debe
+      // desaparecer para mostrar el mensaje de "Triggui está preparando libros".
+      signalFirstPaintOnce();
       return;
     }
 
@@ -4826,6 +4868,10 @@ async function bootTriggui() {
             overlay.removeEventListener('transitionend', onFadeInDone);
             document.body.classList.remove('booting');
             document.documentElement.classList.remove('booting');
+            // 🌒 v15: FIRST_PAINT enviado AHORA — barra mágica al 100% visible.
+            // Esto hace que el splash de la app móvil se desvanezca exactamente
+            // cuando la barra mágica está pintada, sin gap intermedio.
+            signalFirstPaintOnce();
           };
           overlay.addEventListener('transitionend', onFadeInDone);
           // Fallback de seguridad: si transitionend no dispara (navegador raro,
@@ -4834,6 +4880,8 @@ async function bootTriggui() {
             overlay.removeEventListener('transitionend', onFadeInDone);
             document.body.classList.remove('booting');
             document.documentElement.classList.remove('booting');
+            // 🌒 v15: FIRST_PAINT también en el fallback de 500ms.
+            signalFirstPaintOnce();
           }, 500);
 
           overlay.style.transition = 'opacity 450ms cubic-bezier(0.25, 0.1, 0.25, 1)';
@@ -4843,6 +4891,8 @@ async function bootTriggui() {
           // Sin overlay → remover gate de inmediato (caso degradado)
           document.body.classList.remove('booting');
           document.documentElement.classList.remove('booting');
+          // 🌒 v15: FIRST_PAINT también en caso degradado (sin overlay).
+          signalFirstPaintOnce();
         }
         // Focus al terminar la transición (solo desktop)
         setTimeout(() => {
@@ -4869,16 +4919,27 @@ async function bootTriggui() {
     if (overlay) overlay.style.display = 'none';
     document.body.classList.remove('booting'); document.documentElement.classList.remove('booting');
     showLoadingOrError('network_error', { onRetry: bootTriggui });
+    // 🌒 v15: FIRST_PAINT incluso si hay error — el splash móvil debe
+    // desaparecer para mostrar el mensaje de error con botón de reintentar.
+    signalFirstPaintOnce();
   }
 }
 
 bootTriggui();
 </script>
 
-<script id="js-react-native-bridge">
-  const signalFirstPaint = () => { requestAnimationFrame(() => { try { window.ReactNativeWebView?.postMessage("FIRST_PAINT"); } catch (_) {} }); };
-  if (document.readyState === "interactive" || document.readyState === "complete") { signalFirstPaint(); } else { document.addEventListener("DOMContentLoaded", signalFirstPaint, { once: true }); }
-</script>
+<!-- 🌒 v15: js-react-native-bridge ELIMINADO de aquí.
+     Antes este script enviaba FIRST_PAINT al disparar DOMContentLoaded, pero ese
+     momento es PREMATURO: la barra mágica todavía está en boot-gate (opacity:0)
+     mientras se carga contenido.json. El splash de la app móvil se desvanecía
+     al recibir FIRST_PAINT y el usuario veía pantalla negra hasta que la barra
+     mágica realmente apareciera.
+
+     Ahora FIRST_PAINT se envía DESDE bootTriggui() en el momento exacto en que
+     el overlay de la barra mágica alcanza opacity:1 (transitionend). Eso
+     garantiza cero gap entre splash móvil y barra mágica visible.
+
+     Ver función signalFirstPaintOnce() en js-app-logic. -->
 
 </body>
 </html>
