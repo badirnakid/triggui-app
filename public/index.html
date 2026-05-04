@@ -633,6 +633,69 @@ const BarraMagica = {
   animation: first-visit-hint 1.8s ease-in-out 1;
   animation-delay: 2s;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   🌒 v20.1 TEST — ENTRADA ESCALONADA DE BLOQUES
+   CSS-only. Sin JS. Sin blur. Sin tocar layout.
+   
+   Cuando los .block aparecen (al cerrar la barra mágica), entran con una
+   cascada cuántica muy sutil:
+   - opacity 0 → 1
+   - translateY(8px) → 0
+   - scale(0.992) → 1  (refinado por ChatGPT: 0.985 era percibido como
+     "crece"; 0.992 es casi imperceptible y más elegante)
+   - delays: 40, 90, 140, 190ms — sweet spot mathemático
+   - duración: 520ms
+   - easing: cubic-bezier(0.19, 1, 0.22, 1) — "ease-out-quint" suave
+   
+   Compatibilidad: iOS Safari ≥10, Chrome ≥30, Android WebView ≥4.4
+   Solo usa: opacity, transform translateY/scale, animation-delay.
+   Costo GPU: cero (transform y opacity son free en compositor).
+   Reversible: borrar este bloque y todo vuelve al estado v21.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@keyframes tg-block-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.992);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.block {
+  animation: tg-block-enter 520ms cubic-bezier(0.19, 1, 0.22, 1) both;
+}
+
+.block:nth-child(1) { animation-delay: 40ms; }
+.block:nth-child(2) { animation-delay: 90ms; }
+.block:nth-child(3) { animation-delay: 140ms; }
+.block:nth-child(4) { animation-delay: 190ms; }
+
+/* Compatibilidad con first-visit-hint existente.
+   Los bloques con .first-visit-hint llevan AMBAS animaciones:
+   primero entran (cascada), después respiran (hint).
+   La sintaxis con coma combina dos animaciones independientes. */
+.block.first-visit-hint {
+  animation:
+    tg-block-enter 520ms cubic-bezier(0.19, 1, 0.22, 1) both,
+    first-visit-hint 1.8s ease-in-out 2s 1;
+}
+
+.block.first-visit-hint:nth-child(1) { animation-delay: 40ms, 2s; }
+.block.first-visit-hint:nth-child(2) { animation-delay: 90ms, 2s; }
+.block.first-visit-hint:nth-child(3) { animation-delay: 140ms, 2s; }
+.block.first-visit-hint:nth-child(4) { animation-delay: 190ms, 2s; }
+
+/* Respeto a usuarios con preferencia de movimiento reducido (accessibility) */
+@media (prefers-reduced-motion: reduce) {
+  .block,
+  .block.first-visit-hint {
+    animation: none !important;
+  }
+}
 </style>
 
 <style id="portada-cover">
