@@ -81,6 +81,41 @@
     opacity: 0 !important;
     animation: none !important;
   }
+
+  /* 🌒 v16 FIX FLASH B: Anular gradients inline + pseudo-elementos durante booting.
+     
+     Bug observado: en desktop con refresh, los 4 bloques aparecían por ~1 frame
+     (16ms) antes de que la barra mágica se montara. Causa raíz:
+     
+     1. render() crea cards con style="background: gradient(...)" inline
+     2. visibility:hidden NO previene que el browser haga un paint cached del
+        gradient antes de aplicar la visibility (bug histórico Chromium/Webkit
+        cuando background-size es grande, en este caso 320%)
+     3. .block::before tiene gradient blanco semitransparente que también
+        puede pintarse por 1 frame
+     
+     Fix matemáticamente preciso:
+     - background: transparent !important — anula el style inline (CSS !important
+       gana sobre inline styles que no tienen !important)
+     - background-image: none !important — refuerzo defensivo
+     - .block::before/::after display:none — elimina los pseudo-elementos
+       completamente, cero paint posible
+     
+     Cuando se quita la clase 'booting', los bloques recuperan su gradient
+     inline automáticamente — el !important solo aplica MIENTRAS la clase
+     está activa. */
+  html.booting .block,
+  body.booting .block {
+    background: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+  }
+  html.booting .block::before,
+  html.booting .block::after,
+  body.booting .block::before,
+  body.booting .block::after {
+    display: none !important;
+  }
   
   /* Fallback extra: si por cualquier motivo el JS no corre, la intro se 
      muestra con su animación original tras 300ms. No es lo ideal pero 
