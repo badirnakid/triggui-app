@@ -4873,9 +4873,20 @@ async function bootTriggui() {
       return;
     }
 
-    // Elegir libro y pre-renderizar bloques MIENTRAS body.booting los oculta
+    // 🌒 v17 FIX FLASH B DEFINITIVO:
+    // NO renderizamos los bloques aquí. El render se mueve al transitionend
+    // del overlay (cuando opacity:1 garantiza que los bloques quedan
+    // matemáticamente tapados por el overlay opaco).
+    //
+    // Antes (v15-v16): render() se llamaba ANTES del overlay visible, y los
+    // bloques aparecían visibles brevemente durante el fade-in del overlay
+    // (mientras el overlay aún estaba en opacity:0.5).
+    //
+    // Ahora (v17): el libro se elige aquí (necesitamos el accent para la
+    // barra mágica), pero render() solo se llama cuando el overlay ya
+    // alcanzó opacity:1 y tapa TODO el viewport (z-index:9998, inset:0,
+    // background:#000 opaco).
     libro = data.libros[pickLibroNoRepetido(data.libros)];
-    render();
     updateBadge();
     refreshGlobalCounter();
 
@@ -4901,6 +4912,12 @@ async function bootTriggui() {
           const onFadeInDone = (e) => {
             if (e.propertyName !== 'opacity') return;
             overlay.removeEventListener('transitionend', onFadeInDone);
+            // 🌒 v17: AHORA SÍ renderizar los bloques. El overlay está al 100%
+            // de opacity (negro opaco), tapa todo el viewport. Los bloques se
+            // crean detrás del overlay completamente invisibles. Cuando el
+            // usuario submitea y el overlay hace fade-out, los bloques aparecen
+            // limpios. Cero flash posible.
+            try { render(); } catch(e) { console.error('[Triggui] render error:', e); }
             document.body.classList.remove('booting');
             document.documentElement.classList.remove('booting');
             // 🌒 v15: FIRST_PAINT enviado AHORA — barra mágica al 100% visible.
@@ -4913,6 +4930,9 @@ async function bootTriggui() {
           // animaciones deshabilitadas por OS), removemos el gate tras 500ms.
           setTimeout(() => {
             overlay.removeEventListener('transitionend', onFadeInDone);
+            // 🌒 v17: render aquí también (igual que en transitionend), por si
+            // el evento nunca disparó. Idempotente por el reset interno de render().
+            try { render(); } catch(e) { console.error('[Triggui] render error:', e); }
             document.body.classList.remove('booting');
             document.documentElement.classList.remove('booting');
             // 🌒 v15: FIRST_PAINT también en el fallback de 500ms.
