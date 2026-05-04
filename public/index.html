@@ -2360,6 +2360,11 @@ function buildPort(i){
 }
 
 function render(){
+  // 🔬 DEBUG TEMPORAL: trackear EXACTAMENTE cuándo y desde dónde se llama render()
+  console.log('[TRIGGUI-DEBUG] render() called at T=' + (performance.now()|0) + 'ms');
+  console.log('[TRIGGUI-DEBUG] body.classList:', document.body.classList.toString());
+  console.log('[TRIGGUI-DEBUG] overlay opacity:', document.getElementById('barraMagicaOverlay')?.style.opacity);
+  console.log('[TRIGGUI-DEBUG] Stack trace:', new Error().stack.split('\n').slice(1, 5).join(' | '));
   // 🔧 FIX BUG ZOMBIE: reset de estado completo en cada render para permitir
   // re-invocación desde la barra mágica sin residuos del render anterior.
   revealed = false;
@@ -4823,6 +4828,8 @@ function pickLibroNoRepetido(libros){
 // Estado compartido del boot: no declaramos variables globales adicionales,
 // usamos una closure que la IIFE captura.
 async function bootTriggui() {
+  // 🔬 DEBUG TEMPORAL
+  console.log('[TRIGGUI-DEBUG] bootTriggui START at T=' + (performance.now()|0) + 'ms');
   // 🌒 v10: LO PRIMERO QUE SE VE ES LA BARRA MÁGICA. PUNTO.
   //
   // 1. body.booting está activo desde ANTES del DOMContentLoaded (boot-gate script).
@@ -4908,9 +4915,13 @@ async function bootTriggui() {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         if (overlay) {
+          // 🔬 DEBUG TEMPORAL
+          console.log('[TRIGGUI-DEBUG] About to start overlay fade-in at T=' + (performance.now()|0) + 'ms');
           // Listener que remueve el gate SOLO cuando opacity llegue a 1
           const onFadeInDone = (e) => {
             if (e.propertyName !== 'opacity') return;
+            // 🔬 DEBUG TEMPORAL
+            console.log('[TRIGGUI-DEBUG] transitionend FIRED at T=' + (performance.now()|0) + 'ms, opacity=' + overlay.style.opacity);
             overlay.removeEventListener('transitionend', onFadeInDone);
             // 🌒 v17: AHORA SÍ renderizar los bloques. El overlay está al 100%
             // de opacity (negro opaco), tapa todo el viewport. Los bloques se
