@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" style="background:#000000;">
+<html lang="es" class="mood-active" style="background:#000000;">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -80,22 +80,89 @@
     animation: none !important;
   }
 
-  /* 🌒 v18 FIX FLASH B DEFINITIVO (cuántico, garantizado al 100%):
+  /* ═══════════════════════════════════════════════════════════════════════
+     🌒 v19 ARQUITECTURA "BOOT COMO ESTADO, NO COMO COREOGRAFÍA"
+     ═══════════════════════════════════════════════════════════════════════
      
-     El bug v15-v17: el browser, en modo optimizado (sin DevTools), bypaseaba
-     el visibility:hidden de los .block durante el GPU compositing. Los bloques
-     con style="background: gradient" inline eran pintados en una capa GPU
-     antes de que el CSS aplicara la visibility.
+     Diagnóstico cuántico real (v15-v18 fallaron porque atacaban el síntoma):
      
-     Validación experimental: el flash desaparece cuando DevTools está abierto
-     (porque deshabilita el GPU compositor fast path). Esto confirma que es
-     un bug de paint del browser, no de timing del JavaScript.
+     El bug NO era "los bloques se ven aunque están ocultos". El bug era
+     "los bloques entran al render tree antes de que el estado inicial
+     visual esté cerrado por contrato CSS". 
      
-     Solución matemáticamente garantizada: usar display:none en lugar de
-     visibility:hidden para los .block específicamente. display:none elimina
-     el elemento del layout completamente — no hay paint posible, ni en GPU
-     ni en ningún otro lugar. El browser literalmente no puede pintar lo
-     que no existe en el árbol de layout. */
+     v15-v18 intentaban controlar QUE pinta JS y CUÁNDO. Pero mientras la
+     pantalla "¿Cómo te sientes?" dependiera de JS + doble rAF + transitionend
+     + setTimeout fallback para encenderse, SIEMPRE existía una ventana
+     entre el primer paint y el JS donde la app principal podía ser
+     candidata visual.
+     
+     Solución arquitectónica (no parche): el overlay debe ser el ESTADO
+     INICIAL ESTRUCTURAL del documento, visible desde el primer paint POR
+     CONTRATO CSS, no por JavaScript.
+     
+     Mecanismo:
+       1. <html> nace con clase "mood-active" desde el HTML inicial
+       2. CSS hace que el overlay sea visible cuando mood-active esté presente
+       3. CSS oculta TODA la app principal (no solo .block) durante mood-active
+       4. JS NO necesita hacer fade-in en el boot inicial — el overlay ya
+          está visible. Solo debe cargar datos, renderizar bloques DETRÁS
+          del overlay, y al final quitar mood-active (con fade-out al
+          submitear, o sin fade en boot inicial)
+       
+     El primer frame que ve el usuario es: NEGRO + barra mágica. PUNTO. */
+  
+  /* 🌒 v19.1: SEPARACIÓN DE RESPONSABILIDADES (corrección crítica)
+     
+     Bug detectado en v19.0: ambas clases (booting y mood-active) forzaban
+     opacity:1 !important al overlay. Esto hacía que la cinematografía de
+     re-apertura (openOverlay con fade-in 450ms) NO funcionara, porque
+     CSS !important ganaba contra el style.opacity = '0' inline de JS.
+     
+     Solución cuántica: separar estrictamente las responsabilidades:
+     
+     - `booting` controla PRIMER PAINT (blindaje absoluto, opacity:1 forzado,
+       transition:none). Solo activa en el boot inicial. Se quita después
+       de finishBootOnce() — momento en que el overlay puede animar.
+     
+     - `mood-active` controla el ESTADO de "hay barra activa". Mantiene
+       overlay montado (display:flex, pointer-events) y esconde app principal,
+       PERO no fuerza opacity. Así openOverlay puede hacer fade-in cuando el
+       usuario reabre la barra desde la lupa, y closeOverlay puede hacer
+       fade-out cuando submitea.
+  */
+  
+  /* `booting`: blindaje absoluto del primer paint */
+  html.booting #barraMagicaOverlay {
+    display: flex !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transition: none !important;
+  }
+  
+  /* `mood-active`: overlay montado, app principal escondida.
+     NO fuerza opacity para permitir animaciones JS controladas. */
+  html.mood-active #barraMagicaOverlay {
+    display: flex !important;
+    pointer-events: auto !important;
+  }
+  
+  /* Durante mood-active O booting: app principal completamente fuera del 
+     render tree. Imposible que pinte porque no existe estructuralmente. */
+  html.mood-active #grid,
+  html.mood-active .grid,
+  html.mood-active .intro,
+  html.mood-active .cta,
+  html.mood-active #cta,
+  html.mood-active #progressBadge,
+  html.mood-active #barraLupaBtn,
+  html.mood-active #tarjetaOverlay,
+  html.mood-active #cele,
+  html.booting #grid,
+  html.booting .grid,
+  html.booting .cta,
+  html.booting #cta,
+  html.booting #tarjetaOverlay,
+  html.booting #cele,
   html.booting .block,
   body.booting .block {
     display: none !important;
@@ -2504,22 +2571,16 @@ function createFloatingHeart(x, y) {
 
 // HANDLERS
 
-// 🌒 v12: requestNewBook — reemplazo NIVEL DIOS del location.reload()
+// 🌒 v19.2: requestNewBook — sin reload, sin booting reutilizado.
 //
-// El usuario impaciente NO debe ver los bloques cambiar. NO debe ver flash.
-// NO debe ver nada transitorio. Solo ve: "toco bloque → aparece la barra
-// mágica → elijo sentimiento → aparecen bloques nuevos".
+// Regla absoluta:
+//   - booting     = solo primer paint.
+//   - mood-active = barra activa / app principal escondida.
+//   - JS controla opacity. CSS controla estructura.
 //
-// La secuencia correcta:
-//   1. ANTES de cambiar libro, mostrar la barra mágica al 100% sobre los bloques
-//      actuales (el overlay los tapa totalmente con z-index:9998)
-//   2. CUANDO la barra está 100% visible, activar body.booting → bloques
-//      viejos se vuelven visibility:hidden detrás del overlay
-//   3. Elegir nuevo libro, llamar render() (nuevos bloques siguen hidden)
-//   4. El usuario submite → barra cierra → bloques nuevos aparecen limpios
-//
-// Esto elimina completamente el flash porque la barra mágica es SIEMPRE lo
-// primero que el usuario ve antes de que haya cualquier cambio de estado.
+// Para cambiar de libro: mood-active esconde la app principal, el overlay
+// hace fade-in real, render() prepara el nuevo libro detrás, y closeOverlay()
+// quita mood-active para revelar limpio.
 function requestNewBook() {
   const overlay = document.getElementById('barraMagicaOverlay');
   if (!overlay) {
@@ -2530,24 +2591,16 @@ function requestNewBook() {
 
   track('new_book_requested');
 
-  // 🌒 v12: Secuencia cinematográfica nivel dios.
-  //
-  // Importante: NO removemos el gate hasta que el overlay esté al 100%.
-  // Si lo removiéramos al instante, los bloques viejos serían visibles
-  // detrás del overlay semi-transparente durante el fade-in.
-  //
-  // 1. Aplicar gate YA → bloques viejos visibility:hidden al instante
-  // 2. applyStrings pinta la barra (aún invisible con opacity:0)
-  // 3. Pre-mount overlay opacity:0, display:flex
-  // 4. Doble rAF → fade-in 350ms
-  // 5. transitionend → cambiar libro y render() (con gate aún activo)
-  // 6. El usuario submite → closeOverlay remueve gate al inicio del fade-out
-  //    (el fade-out revela los bloques nuevos gradualmente)
-
-  document.documentElement.classList.add('booting');
-  document.body.classList.add('booting');
+  // 🌒 v19.2: para nuevo libro NO usamos booting. mood-active esconde la
+  // app principal y permite que JS controle opacity con fade-in real.
+  // Si usáramos booting, su CSS forzaría opacity:1 !important + transition:none
+  // y romperíamos el fade-in cinematográfico.
+  document.documentElement.classList.add('mood-active');
+  document.documentElement.classList.remove('booting');
+  document.body.classList.remove('booting');
 
   BarraMagica.applyStrings();
+  overlay.classList.remove('visible');
   overlay.style.display = 'flex';
   overlay.style.opacity = '0';
   overlay.style.pointerEvents = '';
@@ -2557,44 +2610,43 @@ function requestNewBook() {
   const lupa = document.getElementById('barraLupaBtn');
   if (lupa) lupa.classList.remove('visible');
 
+  // 🌒 v19.2: render guardado idempotente (transitionend + fallback)
+  let __renderDone = false;
+  const renderNewBookOnce = () => {
+    if (__renderDone) return;
+    __renderDone = true;
+    try {
+      if (window.__TRIGGUI_DATA__ && window.__TRIGGUI_DATA__.libros) {
+        const idx = pickLibroNoRepetido(window.__TRIGGUI_DATA__.libros);
+        libro = window.__TRIGGUI_DATA__.libros[idx];
+        render();
+        updateBadge();
+      }
+    } catch (err) {
+      console.error('[Triggui] requestNewBook render error:', err);
+    }
+  };
+
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       // Listener que dispara SOLO cuando fade-in complete
       const onFadeInDone = (e) => {
         if (e.propertyName !== 'opacity') return;
         overlay.removeEventListener('transitionend', onFadeInDone);
-        // NO removemos gate aquí — se mantiene activo hasta que el usuario
-        // submite y closeOverlay lo remueva al inicio del fade-out (reveal).
-        try {
-          if (window.__TRIGGUI_DATA__ && window.__TRIGGUI_DATA__.libros) {
-            const idx = pickLibroNoRepetido(window.__TRIGGUI_DATA__.libros);
-            libro = window.__TRIGGUI_DATA__.libros[idx];
-            render();
-            updateBadge();
-          }
-        } catch (err) {
-          console.error('[Triggui] requestNewBook render error:', err);
-        }
+        // mood-active sigue activa — los bloques siguen display:none por CSS
+        // hasta que closeOverlay quite mood-active y revele los bloques nuevos.
+        renderNewBookOnce();
       };
       overlay.addEventListener('transitionend', onFadeInDone);
       // Fallback 400ms
       setTimeout(() => {
         overlay.removeEventListener('transitionend', onFadeInDone);
-        try {
-          if (window.__TRIGGUI_DATA__ && window.__TRIGGUI_DATA__.libros) {
-            const idx = pickLibroNoRepetido(window.__TRIGGUI_DATA__.libros);
-            libro = window.__TRIGGUI_DATA__.libros[idx];
-            render();
-            updateBadge();
-          }
-        } catch (err) {
-          console.error('[Triggui] requestNewBook render error:', err);
-        }
+        renderNewBookOnce();
       }, 400);
 
       overlay.style.transition = 'opacity 350ms cubic-bezier(0.25, 0.1, 0.25, 1)';
-      overlay.style.opacity = '1';
       overlay.classList.add('visible');
+      overlay.style.opacity = '1';
 
       setTimeout(() => {
         const inp = document.getElementById('barraInput');
@@ -4293,27 +4345,21 @@ BarraMagica.openOverlay = function(force) {
   const overlay = document.getElementById('barraMagicaOverlay');
   if (!overlay) return false;
 
-  // 🌒 v12: Apertura cinematográfica nivel dios.
-  //
-  // Regla matemática: el gate (html.booting, body.booting) debe estar activo
-  // durante TODO el fade-in del overlay. Sin gate, los bloques son visibles
-  // detrás del overlay semi-transparente — exactamente el flash que el usuario
-  // reportó.
-  //
-  // Secuencia exacta:
-  //   1. Aplicar gate AL INSTANTE (si no estaba) → bloques visibility:hidden
-  //   2. applyStrings pinta strings/colores
-  //   3. Pre-mount overlay opacity:0 con transition:none (no animar el display)
-  //   4. Doble rAF para garantizar que el CSS aplicó
-  //   5. Enable transition + opacity:1 → fade-in 450ms
-  //   6. transitionend dispara → remover gate (solo cuando opacity === 1)
-
-  // Gate INMEDIATO — antes de cualquier otra cosa
-  document.documentElement.classList.add('booting');
-  document.body.classList.add('booting');
+  // 🌒 v19.2: REGLA ABSOLUTA — booting solo primer paint, mood-active para todo
+  // lo demás. Aquí en reapertura usamos SOLO mood-active porque:
+  //   - mood-active esconde la app principal (.grid, .cta, etc) por CSS
+  //   - mood-active mantiene el overlay con display:flex pero NO fuerza opacity
+  //   - Eso permite que JS controle opacity con fade-in real (450ms)
+  // Si usáramos booting, su CSS forzaría opacity:1 !important + transition:none
+  // y rompería completamente la animación.
+  document.documentElement.classList.add('mood-active');
+  // Defensa: por si quedó booting prendido por error previo, lo apagamos.
+  document.documentElement.classList.remove('booting');
+  document.body.classList.remove('booting');
 
   this.applyStrings();
 
+  overlay.classList.remove('visible');
   overlay.style.display = 'flex';
   overlay.style.opacity = '0';
   overlay.style.transition = 'none';
@@ -4325,24 +4371,10 @@ BarraMagica.openOverlay = function(force) {
 
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
-      // Listener que remueve el gate SOLO cuando opacity llegue a 1
-      const onFadeInDone = (e) => {
-        if (e.propertyName !== 'opacity') return;
-        overlay.removeEventListener('transitionend', onFadeInDone);
-        document.body.classList.remove('booting');
-        document.documentElement.classList.remove('booting');
-      };
-      overlay.addEventListener('transitionend', onFadeInDone);
-      // Fallback 500ms (por si transitionend no dispara)
-      setTimeout(() => {
-        overlay.removeEventListener('transitionend', onFadeInDone);
-        document.body.classList.remove('booting');
-        document.documentElement.classList.remove('booting');
-      }, 500);
-
+      // 🌒 v19.2: fade-in puro, sin remover booting (ya no está activa).
       overlay.style.transition = 'opacity 450ms cubic-bezier(0.25, 0.1, 0.25, 1)';
-      overlay.style.opacity = '1';
       overlay.classList.add('visible');
+      overlay.style.opacity = '1';
 
       setTimeout(() => {
         const inp = document.getElementById('barraInput');
@@ -4360,12 +4392,15 @@ BarraMagica.closeOverlay = function(skipped, skipRender) {
 
   this._clearSubmitTimers && this._clearSubmitTimers();
 
-  // 🌒 v12: Si venimos de requestNewBook(), body.booting está activo.
-  // Hay que removerlo ANTES de que el overlay se desvanezca, así los
-  // bloques nuevos aparecen limpios (sin el gate de visibility:hidden).
-  // Los bloques YA están renderizados debajo del overlay (por requestNewBook
-  // o por BarraMagica.submit), así que removerlos del gate los vuelve
-  // visibles al mismo tiempo que el overlay desaparece.
+  // 🌒 v19.2: revelar la app principal debajo del fade-out.
+  // Quitamos mood-active al inicio para que .grid/.cta/etc. dejen de ser
+  // display:none. Los bloques YA están renderizados (por bootTriggui o
+  // requestNewBook), así que aparecen limpios cuando el overlay termine
+  // de desvanecerse.
+  document.documentElement.classList.remove('mood-active');
+
+  // Defensa: booting nunca debería estar activo aquí (v19.2 nunca lo activa
+  // fuera del boot inicial), pero por seguridad lo apagamos.
   document.documentElement.classList.remove('booting');
   document.body.classList.remove('booting');
 
@@ -4806,34 +4841,56 @@ function pickLibroNoRepetido(libros){
 
 // Estado compartido del boot: no declaramos variables globales adicionales,
 // usamos una closure que la IIFE captura.
-async function bootTriggui() {
-  // 🌒 v10: LO PRIMERO QUE SE VE ES LA BARRA MÁGICA. PUNTO.
-  //
-  // 1. body.booting está activo desde ANTES del DOMContentLoaded (boot-gate script).
-  //    CSS oculta: .intro, .block, #likeBtnTarjeta, #barraLupaBtn, .card-reveal-trigger.
-  // 2. Solo el overlay de la barra mágica puede ser visible durante esta fase.
-  // 3. Pre-montamos el overlay en opacity:0, display:flex desde ya (cubre cualquier
-  //    render() que pase por detrás).
-  // 4. Cuando el overlay está TOTALMENTE listo (strings, colores, fade-in iniciado),
-  //    removemos body.booting. Cualquier otro elemento que el JS haya tocado
-  //    (intro, bloques) sigue invisible hasta que se necesiten (al cerrar la barra).
+// ═══════════════════════════════════════════════════════════════════════
+// 🌒 v19: BOOT COMO ESTADO, NO COREOGRAFÍA
+// ═══════════════════════════════════════════════════════════════════════
+//
+// Arquitectura v19 — eliminar el flash de raíz:
+//
+// 1. <html class="mood-active"> está aplicada desde el primer paint.
+// 2. CSS hace que #barraMagicaOverlay sea visible al 100% durante mood-active.
+// 3. CSS oculta TODA la app principal (.grid, .cta, .intro, etc) durante
+//    mood-active — no solo .block. La app NO existe en el render tree.
+// 4. bootTriggui NO hace fade-in ni double rAF ni transitionend ni setTimeout
+//    fallback. Solo:
+//      a. carga catálogo
+//      b. elige libro
+//      c. aplica strings al overlay (que ya es visible)
+//      d. renderiza bloques (que están display:none por mood-active)
+//      e. cierra el boot con finishBootOnce() — guard idempotente
+// 5. mood-active SE QUEDA hasta que el usuario submite/salta. Ahí se quita
+//    con fade-out el overlay y la app principal aparece.
+//
+// El primer frame que ve el usuario es: NEGRO + barra mágica. PUNTO.
+// No hay coreografía de boot. No hay race conditions posibles.
+// ═══════════════════════════════════════════════════════════════════════
 
+let __trigguiBootFinalized = false;
+function finishBootOnce() {
+  if (__trigguiBootFinalized) return;
+  __trigguiBootFinalized = true;
+  
+  // Quitar booting (mood-active SE QUEDA — el overlay sigue visible)
+  document.body.classList.remove('booting');
+  document.documentElement.classList.remove('booting');
+  
+  // Notificar al splash móvil
+  signalFirstPaintOnce();
+}
+
+async function bootTriggui() {
+  // 🌒 v19: el overlay YA es visible por contrato CSS (html.mood-active).
+  // No hacemos overlay.style.display = 'flex' ni opacity = '0'. CSS lo gestiona.
+  // Solo aseguramos que la clase 'visible' exista (para compatibilidad con
+  // los handlers de re-apertura que existen en el código).
   const overlay = document.getElementById('barraMagicaOverlay');
   if (overlay) {
-    overlay.style.display = 'flex';
-    overlay.style.opacity = '0';
-    overlay.style.transition = 'none';
-    // Forzar reflow antes de habilitar la transición
-    void overlay.offsetWidth;
+    overlay.classList.add('visible');
   }
 
-  // 🌒 v10: CANCELAR la animación del .intro — en el HTML original entra
-  // automáticamente con animation:introIn. Como ya tenemos la barra mágica
-  // como la primera pantalla, la intro NO debe verse nunca al boot.
-  // La escondemos y anulamos su animación para que no consuma ciclos.
+  // 🌒 v19: cancelar la animación del .intro (legacy, ya no se ve por mood-active)
   const introEl = document.getElementById('intro');
   if (introEl) {
-    introEl.style.display = 'none';
     introEl.style.animation = 'none';
   }
 
@@ -4845,106 +4902,41 @@ async function bootTriggui() {
     // Catálogo vacío: la app está lista pero no hay nada que mostrar.
     if (!data.libros || data.libros.length === 0) {
       console.warn('[Triggui] catálogo vacío');
+      // Limpiar mood-active para que el mensaje de error sea visible
+      document.documentElement.classList.remove('mood-active');
       if (overlay) overlay.style.display = 'none';
-      document.body.classList.remove('booting'); document.documentElement.classList.remove('booting');
       showLoadingOrError('empty_catalog');
       track('empty_catalog_seen', { lang: TriggguiI18n.lang });
       try { updateBadge(); } catch(_) {}
       try { refreshGlobalCounter(); } catch(_) {}
-      // 🌒 v15: FIRST_PAINT incluso si catálogo vacío — el splash móvil debe
-      // desaparecer para mostrar el mensaje de "Triggui está preparando libros".
-      signalFirstPaintOnce();
+      finishBootOnce();
       return;
     }
 
-    // 🌒 v17 FIX FLASH B DEFINITIVO:
-    // NO renderizamos los bloques aquí. El render se mueve al transitionend
-    // del overlay (cuando opacity:1 garantiza que los bloques quedan
-    // matemáticamente tapados por el overlay opaco).
-    //
-    // Antes (v15-v16): render() se llamaba ANTES del overlay visible, y los
-    // bloques aparecían visibles brevemente durante el fade-in del overlay
-    // (mientras el overlay aún estaba en opacity:0.5).
-    //
-    // Ahora (v17): el libro se elige aquí (necesitamos el accent para la
-    // barra mágica), pero render() solo se llama cuando el overlay ya
-    // alcanzó opacity:1 y tapa TODO el viewport (z-index:9998, inset:0,
-    // background:#000 opaco).
+    // Elegir libro y aplicar strings al overlay
     libro = data.libros[pickLibroNoRepetido(data.libros)];
     updateBadge();
     refreshGlobalCounter();
-
-    // Aplicar strings (pinta la pregunta con el accent del día)
     BarraMagica.applyStrings();
 
-    // ═══ APERTURA CINEMATOGRÁFICA v10 ═══
-    // Secuencia exacta:
-    //   1. overlay opacity:0 ya está montado con display:flex
-    //   2. Doble rAF para garantizar que TODO está pintado (aurora, accent, strings)
-    //   3. Habilitar transition y subir opacity a 1
-    //   4. AL MISMO TIEMPO remover body.booting (los bloques ocultos debajo
-    //      se vuelven "visibles" pero el overlay a 100% los tapa totalmente)
-    //   5. El usuario SOLO ve: negro → barra mágica entra suavemente
-    // 🌒 v12: remover gate DESPUÉS de que el overlay esté al 100% de opacity.
-    // Antes se removía al INSTANTE del fade-in, lo que creaba una ventana de
-    // 50-400ms donde el overlay estaba semi-transparente y los bloques eran
-    // visibles detrás. Ahora usamos transitionend para matemática exacta.
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        if (overlay) {
-          // Listener que remueve el gate SOLO cuando opacity llegue a 1
-          const onFadeInDone = (e) => {
-            if (e.propertyName !== 'opacity') return;
-            overlay.removeEventListener('transitionend', onFadeInDone);
-            // 🌒 v17: AHORA SÍ renderizar los bloques. El overlay está al 100%
-            // de opacity (negro opaco), tapa todo el viewport. Los bloques se
-            // crean detrás del overlay completamente invisibles. Cuando el
-            // usuario submitea y el overlay hace fade-out, los bloques aparecen
-            // limpios. Cero flash posible.
-            try { render(); } catch(e) { console.error('[Triggui] render error:', e); }
-            document.body.classList.remove('booting');
-            document.documentElement.classList.remove('booting');
-            // 🌒 v15: FIRST_PAINT enviado AHORA — barra mágica al 100% visible.
-            // Esto hace que el splash de la app móvil se desvanezca exactamente
-            // cuando la barra mágica está pintada, sin gap intermedio.
-            signalFirstPaintOnce();
-          };
-          overlay.addEventListener('transitionend', onFadeInDone);
-          // Fallback de seguridad: si transitionend no dispara (navegador raro,
-          // animaciones deshabilitadas por OS), removemos el gate tras 500ms.
-          setTimeout(() => {
-            overlay.removeEventListener('transitionend', onFadeInDone);
-            // 🌒 v17: render aquí también (igual que en transitionend), por si
-            // el evento nunca disparó. Idempotente por el reset interno de render().
-            try { render(); } catch(e) { console.error('[Triggui] render error:', e); }
-            document.body.classList.remove('booting');
-            document.documentElement.classList.remove('booting');
-            // 🌒 v15: FIRST_PAINT también en el fallback de 500ms.
-            signalFirstPaintOnce();
-          }, 500);
+    // 🌒 v19: render() ahora puede correr libre. Los .block están display:none
+    // por html.mood-active. No hay forma de que sean candidatos a primer paint.
+    try { render(); } catch(e) { console.error('[Triggui] render error:', e); }
 
-          overlay.style.transition = 'opacity 450ms cubic-bezier(0.25, 0.1, 0.25, 1)';
-          overlay.style.opacity = '1';
-          overlay.classList.add('visible');
-        } else {
-          // Sin overlay → remover gate de inmediato (caso degradado)
-          document.body.classList.remove('booting');
-          document.documentElement.classList.remove('booting');
-          // 🌒 v15: FIRST_PAINT también en caso degradado (sin overlay).
-          signalFirstPaintOnce();
-        }
-        // Focus al terminar la transición (solo desktop)
-        setTimeout(() => {
-          const inp = document.getElementById('barraInput');
-          if (inp && !('ontouchstart' in window)) inp.focus();
-        }, 500);
-      });
+    // Cerrar boot — idempotente, una sola vez
+    finishBootOnce();
+
+    // Focus al input (solo desktop, y tras un frame para no romper layout)
+    requestAnimationFrame(() => {
+      const inp = document.getElementById('barraInput');
+      if (inp && !('ontouchstart' in window)) inp.focus();
     });
 
     // Tracking
     track('barra_opened', { force: true, lang: TriggguiI18n.lang });
     track('app_loaded', { streak: getLocal('streak',0), books: getLocal('books_opened',0), lang: TriggguiI18n.lang });
 
+    // Hint de primera visita (en background, no afecta el boot)
     if (!getLocal('has_visited')) {
       setTimeout(() => {
         document.querySelectorAll('.block').forEach(b => b.classList.add('first-visit-hint'));
@@ -4954,13 +4946,11 @@ async function bootTriggui() {
   } catch (err) {
     console.error('[Triggui] init error:', err);
     track('boot_error', { message: String(err && err.message || err).slice(0, 80) });
-    // NO re-wire aquí — ya se hizo arriba. Re-wiring causa dobles listeners.
+    // En error: limpiar mood-active para que se vea el mensaje de error
+    document.documentElement.classList.remove('mood-active');
     if (overlay) overlay.style.display = 'none';
-    document.body.classList.remove('booting'); document.documentElement.classList.remove('booting');
     showLoadingOrError('network_error', { onRetry: bootTriggui });
-    // 🌒 v15: FIRST_PAINT incluso si hay error — el splash móvil debe
-    // desaparecer para mostrar el mensaje de error con botón de reintentar.
-    signalFirstPaintOnce();
+    finishBootOnce();
   }
 }
 
