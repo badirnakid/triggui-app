@@ -767,8 +767,11 @@ const BarraMagica = {
    Compatibilidad:
    - text-wrap: balance → soportado en navegadores modernos. Si no,
      se ignora silenciosamente (cero impacto).
-   - overflow-wrap: anywhere → soportado universalmente. Defensa contra
-     palabras largas (URLs, etc.) que rompan el bloque.
+   - overflow-wrap: break-word → soportado universalmente. Defensa contra
+     palabras larguísimas (URLs, etc.) sin romper palabras normales.
+     CORREGIDO de "anywhere" a "break-word" en v20.3.1: "anywhere" rompía
+     palabras como "responsabilidad" en mobile estrecho preventivamente.
+     "break-word" solo rompe si la palabra entera no cabe.
    - letter-spacing en em → escala con la fuente, mobile-safe.
    - line-height numérico → herencia limpia.
    
@@ -780,14 +783,14 @@ const BarraMagica = {
   margin-left: auto;
   margin-right: auto;
   text-wrap: balance;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
   letter-spacing: -0.01em;
   line-height: 1.32;
 }
 
 .frase {
   text-wrap: balance;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
   letter-spacing: -0.012em;
   line-height: 1.38;
 }
