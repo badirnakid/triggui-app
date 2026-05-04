@@ -747,53 +747,6 @@ const BarraMagica = {
     0 1px 3px rgba(0,0,0,.12),
     0 10px 28px rgba(0,0,0,.34);
 }
-
-/* ═══════════════════════════════════════════════════════════════════════
-   🌒 v20.3 TEST — TEXTO EDITORIAL SEGURO EN BLOQUES
-   CSS-only. Sin cambiar fuente. Sin tocar layout. Sin JS.
-   
-   Versión cuántica corregida (cross-validada con ChatGPT):
-   - .label es flex child normal del .block → puede recibir max-width
-     y margin:auto sin conflicto.
-   - .frase es position:absolute + inset:0 + display:flex → si le
-     aplicáramos max-width tendríamos conflicto con inset:0 (el browser
-     tiene que decidir entre "estírate al borde" y "no más ancho que X")
-     y margin:auto no funcionaría con position:absolute. Solución:
-     aplicar SOLO mejoras tipográficas seguras a .frase.
-   
-   Resultado: ambos textos respiran como editorial fino, sin riesgo
-   de centrado roto ni layout shift.
-   
-   Compatibilidad:
-   - text-wrap: balance → soportado en navegadores modernos. Si no,
-     se ignora silenciosamente (cero impacto).
-   - overflow-wrap: break-word → soportado universalmente. Defensa contra
-     palabras larguísimas (URLs, etc.) sin romper palabras normales.
-     CORREGIDO de "anywhere" a "break-word" en v20.3.1: "anywhere" rompía
-     palabras como "responsabilidad" en mobile estrecho preventivamente.
-     "break-word" solo rompe si la palabra entera no cabe.
-   - letter-spacing en em → escala con la fuente, mobile-safe.
-   - line-height numérico → herencia limpia.
-   
-   Reversible: borrar este bloque y vuelve al estado v23.
-   ═══════════════════════════════════════════════════════════════════════ */
-
-.label {
-  max-width: min(84%, 28ch);
-  margin-left: auto;
-  margin-right: auto;
-  text-wrap: balance;
-  overflow-wrap: break-word;
-  letter-spacing: -0.01em;
-  line-height: 1.32;
-}
-
-.frase {
-  text-wrap: balance;
-  overflow-wrap: break-word;
-  letter-spacing: -0.012em;
-  line-height: 1.38;
-}
 </style>
 
 <style id="portada-cover">
