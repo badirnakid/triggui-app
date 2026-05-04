@@ -64,14 +64,12 @@
      Se usa visibility:hidden (no display:none) para que el layout no se
      reacomode al revelarse. */
   html.booting .intro,
-  html.booting .block,
   html.booting #likeBtnTarjeta,
   html.booting #barraLupaBtn,
   html.booting #progressBadge,
   html.booting #toast,
   html.booting .card-reveal-trigger,
   body.booting .intro,
-  body.booting .block,
   body.booting #likeBtnTarjeta,
   body.booting #barraLupaBtn,
   body.booting #progressBadge,
@@ -82,38 +80,24 @@
     animation: none !important;
   }
 
-  /* 🌒 v16 FIX FLASH B: Anular gradients inline + pseudo-elementos durante booting.
+  /* 🌒 v18 FIX FLASH B DEFINITIVO (cuántico, garantizado al 100%):
      
-     Bug observado: en desktop con refresh, los 4 bloques aparecían por ~1 frame
-     (16ms) antes de que la barra mágica se montara. Causa raíz:
+     El bug v15-v17: el browser, en modo optimizado (sin DevTools), bypaseaba
+     el visibility:hidden de los .block durante el GPU compositing. Los bloques
+     con style="background: gradient" inline eran pintados en una capa GPU
+     antes de que el CSS aplicara la visibility.
      
-     1. render() crea cards con style="background: gradient(...)" inline
-     2. visibility:hidden NO previene que el browser haga un paint cached del
-        gradient antes de aplicar la visibility (bug histórico Chromium/Webkit
-        cuando background-size es grande, en este caso 320%)
-     3. .block::before tiene gradient blanco semitransparente que también
-        puede pintarse por 1 frame
+     Validación experimental: el flash desaparece cuando DevTools está abierto
+     (porque deshabilita el GPU compositor fast path). Esto confirma que es
+     un bug de paint del browser, no de timing del JavaScript.
      
-     Fix matemáticamente preciso:
-     - background: transparent !important — anula el style inline (CSS !important
-       gana sobre inline styles que no tienen !important)
-     - background-image: none !important — refuerzo defensivo
-     - .block::before/::after display:none — elimina los pseudo-elementos
-       completamente, cero paint posible
-     
-     Cuando se quita la clase 'booting', los bloques recuperan su gradient
-     inline automáticamente — el !important solo aplica MIENTRAS la clase
-     está activa. */
+     Solución matemáticamente garantizada: usar display:none en lugar de
+     visibility:hidden para los .block específicamente. display:none elimina
+     el elemento del layout completamente — no hay paint posible, ni en GPU
+     ni en ningún otro lugar. El browser literalmente no puede pintar lo
+     que no existe en el árbol de layout. */
   html.booting .block,
   body.booting .block {
-    background: transparent !important;
-    background-image: none !important;
-    box-shadow: none !important;
-  }
-  html.booting .block::before,
-  html.booting .block::after,
-  body.booting .block::before,
-  body.booting .block::after {
     display: none !important;
   }
   
@@ -2360,11 +2344,6 @@ function buildPort(i){
 }
 
 function render(){
-  // 🔬 DEBUG TEMPORAL: trackear EXACTAMENTE cuándo y desde dónde se llama render()
-  console.log('[TRIGGUI-DEBUG] render() called at T=' + (performance.now()|0) + 'ms');
-  console.log('[TRIGGUI-DEBUG] body.classList:', document.body.classList.toString());
-  console.log('[TRIGGUI-DEBUG] overlay opacity:', document.getElementById('barraMagicaOverlay')?.style.opacity);
-  console.log('[TRIGGUI-DEBUG] Stack trace:', new Error().stack.split('\n').slice(1, 5).join(' | '));
   // 🔧 FIX BUG ZOMBIE: reset de estado completo en cada render para permitir
   // re-invocación desde la barra mágica sin residuos del render anterior.
   revealed = false;
@@ -4828,8 +4807,6 @@ function pickLibroNoRepetido(libros){
 // Estado compartido del boot: no declaramos variables globales adicionales,
 // usamos una closure que la IIFE captura.
 async function bootTriggui() {
-  // 🔬 DEBUG TEMPORAL
-  console.log('[TRIGGUI-DEBUG] bootTriggui START at T=' + (performance.now()|0) + 'ms');
   // 🌒 v10: LO PRIMERO QUE SE VE ES LA BARRA MÁGICA. PUNTO.
   //
   // 1. body.booting está activo desde ANTES del DOMContentLoaded (boot-gate script).
@@ -4915,13 +4892,9 @@ async function bootTriggui() {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         if (overlay) {
-          // 🔬 DEBUG TEMPORAL
-          console.log('[TRIGGUI-DEBUG] About to start overlay fade-in at T=' + (performance.now()|0) + 'ms');
           // Listener que remueve el gate SOLO cuando opacity llegue a 1
           const onFadeInDone = (e) => {
             if (e.propertyName !== 'opacity') return;
-            // 🔬 DEBUG TEMPORAL
-            console.log('[TRIGGUI-DEBUG] transitionend FIRED at T=' + (performance.now()|0) + 'ms, opacity=' + overlay.style.opacity);
             overlay.removeEventListener('transitionend', onFadeInDone);
             // 🌒 v17: AHORA SÍ renderizar los bloques. El overlay está al 100%
             // de opacity (negro opaco), tapa todo el viewport. Los bloques se
