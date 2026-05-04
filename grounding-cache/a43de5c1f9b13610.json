@@ -1,0 +1,31 @@
+{
+  "ground_truth": "SINOPSIS OFICIAL (Apple Books):\n\nMuchos sentimos una conexión intuitiva con el maestro Jesús y, sin embargo, hallamos que el modo en que se ha articulado quién fue y lo que enseñó crea una desconexión con nuestra alma. En este libro innovador, Alan Cohen nos ofrece un nuevo marco de interpretación en el que desmantela los esquemas de pensamiento tradicionales. El autor hace comprensibles las enseñanzas de Jesús para nuestro mundo moderno.&#xa0; A través de su inspiración, el Maestro se dirige directa y personalmente a cada uno de nosotros, hablando a nuestro crecimiento espiritual. El Mesías Místico demuestra que Jesús iluminó profundos principios psicológicos que cambian las vidas de quienes los aplican. Mientras parecemos estar batallando con entidades externas, en realidad estamos lidiando con dinámicas internas. Si quieres llegar al núcleo de tus problemas y sanarlos profundamente desde dentro, aquí encontrarás un tesoro de herramientas que acelerarán tu crecimiento personal y espiritual de manera asombrosa.\n\nMETADATA VERIFICADA:\n- Título: El Mesías Místico\n- Autor: Allan Cohen\n- Año: 2023\n- Categorías: Superación personal, Libros, Salud, mente y cuerpo, Religión y espiritualidad",
+  "grounding_source": "apple_books",
+  "book_identity_confidence": 0.9336363636363637,
+  "verified_identity": {
+    "titulo_real": "El Mesías Místico",
+    "autor_completo": "Allan Cohen",
+    "año": "2023",
+    "editorial": null,
+    "isbn": "",
+    "apple_track_id": "6472074120",
+    "categorias": [
+      "Superación personal",
+      "Libros",
+      "Salud, mente y cuerpo",
+      "Religión y espiritualidad",
+      "Cristianismo"
+    ],
+    "track_view_url": "https://books.apple.com/mx/book/el-mes%C3%ADas-m%C3%ADstico/id6472074120?uo=4"
+  },
+  "match_score": 0.9590909090909091,
+  "other_sources_agreed": [
+    "google_books"
+  ],
+  "resolution_path": [
+    "evidence_preloaded"
+  ],
+  "tier_reached": 2,
+  "cost_tokens": 0,
+  "cached_at": "2026-05-04T13:39:45.768Z"
+}
