@@ -1706,7 +1706,8 @@ body.webview #tarjetaCard {
   font-style: italic;
 }
 
-#barraInput:focus {
+#barraInput:focus,
+#barraInput.touch-active {
   background: rgba(255, 255, 255, 0.055);
   border-color: rgba(255, 94, 0, 0.4);
   box-shadow:
@@ -2649,8 +2650,8 @@ function requestNewBook() {
       overlay.style.opacity = '1';
 
       setTimeout(() => {
-        const inp = document.getElementById('barraInput');
-        if (inp && !('ontouchstart' in window)) inp.focus();
+        // 🌒 v20: activación visual unificada (focus en desktop, .touch-active en mobile)
+        activateInputVisual();
       }, 500);
 
       track('barra_opened', { force: true, lang: TriggguiI18n.lang, source: 'new_book' });
@@ -4377,8 +4378,8 @@ BarraMagica.openOverlay = function(force) {
       overlay.style.opacity = '1';
 
       setTimeout(() => {
-        const inp = document.getElementById('barraInput');
-        if (inp && !('ontouchstart' in window)) inp.focus();
+        // 🌒 v20: activación visual unificada (focus en desktop, .touch-active en mobile)
+        activateInputVisual();
       }, 500);
     });
   });
@@ -4566,6 +4567,11 @@ function wireBarraMagicaEvents() {
   const lupa = document.getElementById('barraLupaBtn');
 
   if (input && submit) {
+    // 🌒 v20: cuando el usuario hace tap real en el input, el :focus nativo
+    // aplica el mismo estilo que .touch-active. Quitamos la clase para no
+    // duplicar reglas y para que al perder focus el input vuelva a su estado
+    // base limpio (sin border activo "fantasma").
+    input.addEventListener('focus', deactivateInputVisual);
     // 🌒 v10: doSubmit SIEMPRE dispara, con fallback robusto.
     // NO usamos submit.disabled para prevenir doble click, porque:
     //   - en iOS/Android WebView, disabled tras click del botón puede perder
@@ -4669,6 +4675,9 @@ function showLoadingOrError(state, opts) {
     netError: isEn
       ? 'Network issue. Tap to try again.'
       : 'Problema de red. Toca para reintentar.',
+    offline: isEn
+      ? 'No internet connection. Triggui will continue when the connection returns.'
+      : 'Sin conexión a internet. Triggui seguirá cuando regrese la conexión.',
     retryLabel: isEn ? 'Try again' : 'Reintentar'
   };
 
@@ -4679,6 +4688,9 @@ function showLoadingOrError(state, opts) {
   } else if (state === 'empty_catalog') {
     title = copy.preparing;
     action = null;
+  } else if (state === 'offline') {
+    title = copy.offline;
+    action = null; // Sin botón de retry — auto-retry cuando vuelva la red
   } else {
     title = copy.netError;
     action = copy.retryLabel;
@@ -4738,7 +4750,7 @@ function showLoadingOrError(state, opts) {
     wrap.appendChild(btn);
   }
 
-  if (state === 'loading') {
+  if (state === 'loading' || state === 'offline') {
     const dot = document.createElement('div');
     dot.style.cssText = 'margin-top:12px;width:6px;height:6px;border-radius:50%;background:#FF5E00;margin-left:auto;margin-right:auto;animation:trigguiBootPulse 1.2s ease-in-out infinite;';
     wrap.appendChild(dot);
@@ -4832,6 +4844,36 @@ setTimeout(signalFirstPaintOnce, 3000);
 function isWebView(){ const ua=navigator.userAgent||navigator.vendor||window.opera; return (/wv/i.test(ua)||/WebView/i.test(ua)||(ua.includes("Android")&&ua.includes("Version/"))||(ua.includes("iPhone")&&!ua.includes("Safari"))); }
 if(isWebView()) document.body.classList.add("webview");
 
+// 🌒 v20: Activación visual del input para mobile.
+//
+// Problema: en desktop, autofocus al input hace que el border se ponga naranja-rosa
+// y el usuario sabe inmediatamente que ahí debe escribir. En mobile, hacer focus
+// abriría el teclado virtual (intrusivo), así que NO hacemos focus.
+// Pero el usuario mobile no tiene pista visual de dónde escribir.
+//
+// Solución: en mobile aplicamos clase .touch-active al input que replica
+// visualmente el estilo de :focus (mismo border, mismo glow), SIN abrir teclado.
+// Cuando el usuario hace tap real en el input, el :focus nativo aplica y la
+// clase deja de ser necesaria — la quitamos para no acumular estilos.
+function isTouchDevice() {
+  return ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+}
+function activateInputVisual() {
+  const inp = document.getElementById('barraInput');
+  if (!inp) return;
+  if (isTouchDevice()) {
+    // Mobile: pista visual sin abrir teclado
+    inp.classList.add('touch-active');
+  } else {
+    // Desktop: focus real (abre cursor, mismo estilo activo)
+    inp.focus();
+  }
+}
+function deactivateInputVisual() {
+  const inp = document.getElementById('barraInput');
+  if (inp) inp.classList.remove('touch-active');
+}
+
 function pickLibroNoRepetido(libros){
   let last=sessionStorage.getItem("lastLibroIdx"); if(last!==null)last=parseInt(last);
   let idx=Math.floor(Math.random()*libros.length);
@@ -4894,6 +4936,47 @@ async function bootTriggui() {
     introEl.style.animation = 'none';
   }
 
+  // 🌒 v20: detección preventiva de offline.
+  //
+  // navigator.onLine == false → certero: NO hay red, mostrar mensaje
+  // inmediato sin esperar 33s de retries fallidos.
+  //
+  // navigator.onLine == true → puede ser unreliable (router sin internet,
+  // captive portal, etc), por eso seguimos al fetch normal y dejamos que
+  // loadCatalogWithRetry haga su trabajo.
+  //
+  // El listener 'online' se registra UNA vez para retry automático cuando
+  // la conexión regrese.
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+    console.warn('[Triggui] navigator.onLine = false, esperando conexión');
+    document.documentElement.classList.remove('mood-active');
+    if (overlay) overlay.style.display = 'none';
+    showLoadingOrError('offline');
+    track('offline_detected', { lang: TriggguiI18n.lang });
+    finishBootOnce();
+    // Listener para retry automático cuando regrese la red
+    if (!window.__trigguiOnlineListenerWired) {
+      window.__trigguiOnlineListenerWired = true;
+      window.addEventListener('online', () => {
+        console.log('[Triggui] conexión restaurada, reintentando boot');
+        track('online_restored', { lang: TriggguiI18n.lang });
+        // Reset flag boot para permitir re-finishBoot tras retry exitoso
+        __trigguiBootFinalized = false;
+        // Re-mostrar la barra mágica (estado activo)
+        document.documentElement.classList.add('mood-active');
+        if (overlay) {
+          overlay.style.display = '';
+          overlay.style.opacity = '';
+          overlay.classList.add('visible');
+        }
+        showLoadingOrError('hide');
+        // Re-bootear
+        bootTriggui();
+      }, { once: true });
+    }
+    return;
+  }
+
   try {
     const data = await loadCatalogWithRetry(3);
     window.__TRIGGUI_DATA__ = data;
@@ -4926,10 +5009,11 @@ async function bootTriggui() {
     // Cerrar boot — idempotente, una sola vez
     finishBootOnce();
 
-    // Focus al input (solo desktop, y tras un frame para no romper layout)
+    // 🌒 v20: activación visual unificada del input
+    // Desktop: focus real → cursor parpadeante + estilo activo
+    // Mobile: clase .touch-active → estilo activo SIN abrir teclado virtual
     requestAnimationFrame(() => {
-      const inp = document.getElementById('barraInput');
-      if (inp && !('ontouchstart' in window)) inp.focus();
+      activateInputVisual();
     });
 
     // Tracking
@@ -4949,7 +5033,35 @@ async function bootTriggui() {
     // En error: limpiar mood-active para que se vea el mensaje de error
     document.documentElement.classList.remove('mood-active');
     if (overlay) overlay.style.display = 'none';
-    showLoadingOrError('network_error', { onRetry: bootTriggui });
+
+    // 🌒 v20: distinguir offline vs error genérico de red.
+    // Si navigator.onLine cayó a false durante el fetch, mostrar mensaje
+    // de offline (sin botón retry) y montar listener para retry automático.
+    // Si onLine sigue true pero el fetch falló (servidor caído, DNS, etc),
+    // mensaje genérico con botón de reintentar manual.
+    const isOffline = (typeof navigator !== 'undefined' && navigator.onLine === false);
+    if (isOffline) {
+      showLoadingOrError('offline');
+      track('offline_during_fetch', { lang: TriggguiI18n.lang });
+      if (!window.__trigguiOnlineListenerWired) {
+        window.__trigguiOnlineListenerWired = true;
+        window.addEventListener('online', () => {
+          console.log('[Triggui] conexión restaurada, reintentando boot');
+          track('online_restored', { lang: TriggguiI18n.lang });
+          __trigguiBootFinalized = false;
+          document.documentElement.classList.add('mood-active');
+          if (overlay) {
+            overlay.style.display = '';
+            overlay.style.opacity = '';
+            overlay.classList.add('visible');
+          }
+          showLoadingOrError('hide');
+          bootTriggui();
+        }, { once: true });
+      }
+    } else {
+      showLoadingOrError('network_error', { onRetry: bootTriggui });
+    }
     finishBootOnce();
   }
 }
