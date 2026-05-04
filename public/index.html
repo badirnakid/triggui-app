@@ -696,6 +696,57 @@ const BarraMagica = {
     animation: none !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   🌒 v20.2 TEST — SOMBRA FÍSICA FINA DE BLOQUES
+   CSS-only. Sin JS. Sin tocar layout. Sin cambiar tamaño.
+   
+   Filosofía: la sombra buena no grita. Cobra más caro en silencio.
+   
+   Capas (de más interna a más externa):
+   1. inset top-1px: highlight finísimo (luz cenital sobre el bloque)
+   2. inset bottom-1px: sombra inferior interna (peso óptico real)
+   3. inset 0 0 0 1px: borde interno sobrio (definición de pieza)
+   4. 0 2px 5px: contact shadow (el bloque "toca" el fondo)
+   5. 0 14px 36px: deep shadow (el bloque flota sobre negro)
+   
+   Resultado: piezas físicas de vidrio/luz flotando sobre negro.
+   No son rectángulos planos. Son objetos con peso.
+   
+   Hover (solo desktop): se intensifica suavemente (+lift coherente)
+   Active (tap): se "hunde" — sombras superiores se atenúan, peso aumenta
+   
+   Compatibilidad: box-shadow es CSS1, soportado en todos los browsers
+   Costo GPU: cero (no afecta layout, no force reflow)
+   Reversible: borrar este bloque y vuelve al estado v22.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.block {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.24),
+    inset 0 -1px 0 rgba(0,0,0,.14),
+    inset 0 0 0 1px rgba(255,255,255,.12),
+    0 2px 5px rgba(0,0,0,.12),
+    0 14px 36px rgba(0,0,0,.36);
+}
+
+.block:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.28),
+    inset 0 -1px 0 rgba(0,0,0,.16),
+    inset 0 0 0 1px rgba(255,255,255,.16),
+    0 3px 7px rgba(0,0,0,.14),
+    0 18px 46px rgba(0,0,0,.42);
+}
+
+.block:active {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.20),
+    inset 0 -1px 0 rgba(0,0,0,.18),
+    inset 0 0 0 1px rgba(255,255,255,.10),
+    0 1px 3px rgba(0,0,0,.12),
+    0 10px 28px rgba(0,0,0,.34);
+}
 </style>
 
 <style id="portada-cover">
