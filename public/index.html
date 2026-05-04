@@ -747,6 +747,79 @@ const BarraMagica = {
     0 1px 3px rgba(0,0,0,.12),
     0 10px 28px rgba(0,0,0,.34);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   🌒 v25 — FIX HIT AREA EN CENTRO DE BLOQUES
+   CSS-only. Sin JS. Sin tocar render(). Sin tocar layout.
+   
+   Bug detectado por usuario: cerca del centro de los bloques revelados,
+   el click no responde. Diagnóstico cuántico identificó 3 causas
+   convergentes — los 3 fixes son defensivos, independientes, reversibles.
+   
+   ── FIX A: .frase invisible bloqueando clicks ────────────────────────
+   .frase tiene z-index:2 + position:absolute + inset:0. Cuando NO está
+   en estado .show (es decir, cuando NO está visible al usuario), su
+   opacity es 0 PERO captura clicks porque pointer-events default es
+   "auto", no "none". En el bloque de portada, .frase invisible queda
+   ENCIMA de la portada y absorbe taps centrales.
+   
+   Solución: pointer-events:none cuando .frase NO está en .show.
+   Cuando esté en .show (bloque NO portada con frase visible),
+   pointer-events:auto vuelve para que el click bubble normalmente.
+   
+   ── FIX B: <img> de la portada con comportamiento iOS ────────────────
+   En iOS Safari, las <img> tienen comportamiento especial:
+   - -webkit-touch-callout: long-press → popup "Save Image"
+   - -webkit-user-drag: drag-and-drop puede consumir el touch
+   - user-select: highlights pueden interferir
+   Si el usuario hace tap "imperfecto" (con micro-deslizamiento), el
+   browser puede interpretarlo como inicio de drag y NO disparar click.
+   
+   Solución: pointer-events:none en la imagen → clicks la atraviesan
+   y van directo a .portada (que tiene su listener ya wireado).
+   Plus: deshabilitar callout/drag/select para evitar conflictos.
+   
+   ── FIX C: touch-action en .block ────────────────────────────────────
+   body tiene touch-action:manipulation pero NO se hereda automáticamente
+   para gestos. Sin touch-action explícito, el browser puede esperar
+   ~300ms para detectar doble-tap-zoom, demorando o cancelando clicks.
+   
+   Solución: touch-action:manipulation directo en .block.
+   Respuesta táctil instantánea, cero ambigüedad de gestos.
+   
+   ── Compatibilidad ───────────────────────────────────────────────────
+   - pointer-events: CSS3, soportado universalmente desde IE11
+   - -webkit-touch-callout: Safari iOS 3+
+   - -webkit-user-drag: WebKit (Safari + Chrome)
+   - touch-action: CSS Touch Events Level 1, soportado iOS 13+, Chrome 36+
+   
+   Reversible: borrar este bloque y vuelve al estado v23.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* FIX A: .frase invisible no captura clicks */
+.frase {
+  pointer-events: none;
+}
+
+/* Cuando el bloque está en .show, la frase es visible y debe capturar
+   clicks normalmente para que el bubble llegue al .block */
+.block.show .frase {
+  pointer-events: auto;
+}
+
+/* FIX B: imagen de portada no captura clicks (van directo a .portada) */
+.portada img {
+  pointer-events: none;
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* FIX C: respuesta táctil instantánea en bloques */
+.block {
+  touch-action: manipulation;
+}
 </style>
 
 <style id="portada-cover">
