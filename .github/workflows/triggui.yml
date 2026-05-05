@@ -435,7 +435,6 @@ jobs:
           echo "📂 Archivos generados:"
           ls -la contenido*.json 2>/dev/null || echo "(ninguno)"
 
-          [ -f contenido_edicion.json ] && cp -v contenido_edicion.json "$GITHUB_WORKSPACE/contenido_edicion.json"
           [ -f contenido.json ] && cp -v contenido.json "$GITHUB_WORKSPACE/contenido.json"
           [ -f contenido.shadow.json ] && cp -v contenido.shadow.json "$GITHUB_WORKSPACE/contenido.shadow.json"
 
@@ -457,28 +456,18 @@ jobs:
 
       - name: 🌐 Generar edición viva HTML
         if: ${{ inputs.generar_imagenes && (steps.modo.outputs.modo_tecnico == 'single_book' || steps.modo.outputs.modo_tecnico == 'trigger_constrained' || steps.modo.outputs.modo_tecnico == 'trigger_discover') }}
-        env:
-          TRIGGUI_EDICION_JSON: ${{ github.workspace }}/contenido_edicion.json
         run: |
-          if [ ! -f "$GITHUB_WORKSPACE/contenido_edicion.json" ]; then
-            echo "❌ contenido_edicion.json no existe"
-            exit 1
-          fi
           python3 scripts/build-editions.py
           find public/t -name "index.html" 2>/dev/null | head -5
 
       - name: 🎨 Generar tarjeta PNG 1080×1920
         if: ${{ inputs.generar_imagenes && (steps.modo.outputs.modo_tecnico == 'single_book' || steps.modo.outputs.modo_tecnico == 'trigger_constrained' || steps.modo.outputs.modo_tecnico == 'trigger_discover') }}
-        env:
-          TRIGGUI_EDICION_JSON: ${{ github.workspace }}/contenido_edicion.json
         run: |
           node scripts/build-tarjeta-png.js
           find public/t -name "tarjeta.png" 2>/dev/null | head -5
 
       - name: 🖼️ Generar OG image PNG 1200×630
         if: ${{ inputs.generar_imagenes && (steps.modo.outputs.modo_tecnico == 'single_book' || steps.modo.outputs.modo_tecnico == 'trigger_constrained' || steps.modo.outputs.modo_tecnico == 'trigger_discover') }}
-        env:
-          TRIGGUI_EDICION_JSON: ${{ github.workspace }}/contenido_edicion.json
         run: |
           node scripts/build-og-image.js
           find public/t -name "og.png" 2>/dev/null | head -5
@@ -495,10 +484,6 @@ jobs:
             cp contenido.json triggui-content/contenido.json
             echo "✅ contenido.json sincronizado"
           fi
-          if [ -f contenido_edicion.json ]; then
-            cp contenido_edicion.json triggui-content/contenido_edicion.json
-            echo "✅ contenido_edicion.json sincronizado"
-          fi
 
       # ╔══════════════════════════════════════════════════════════════════╗
       # ║  FASE 9 — Commit y push a AMBOS repos                             ║
@@ -514,7 +499,6 @@ jobs:
           git config user.email "bot@triggui.com"
 
           [ -d public/t ] && git add public/t/ || true
-          [ -f contenido_edicion.json ] && git add contenido_edicion.json || true
           [ -f contenido.shadow.json ] && git add contenido.shadow.json || true
           # v3.4: persistir ring de anti-duplicados
           [ -f recent-books.json ] && git add recent-books.json || true
@@ -543,7 +527,6 @@ jobs:
             git config user.email "bot@triggui.com"
 
             [ -f contenido.json ] && git add contenido.json || true
-            [ -f contenido_edicion.json ] && git add contenido_edicion.json || true
             # Si hubo backups por corrupto/inválido en Fase 3, se versionan también
             ls contenido.json.backup-* >/dev/null 2>&1 && git add contenido.json.backup-* || true
 
@@ -613,7 +596,6 @@ jobs:
             echo "- Manuales curados: ${MANUALES}" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
           fi
-
           if [ -f /tmp/triggui-slug.txt ]; then
             echo "### 🔗 Links" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
