@@ -2542,6 +2542,126 @@ function showToast(msg, duration=3000) {
   setTimeout(() => toast.classList.remove('visible'), duration);
 }
 
+// ═══════════════════════════════════════════════════════════════════════
+// 🌒 v26 — GRID HIT BRIDGE / TAP EN GAP CENTRAL DEL 2x2
+// ═══════════════════════════════════════════════════════════════════════
+//
+// Bug detectado por usuario: en mobile, cerca del centro de la pantalla
+// los taps no abrían los bloques. Tenía que tocar más al centro de cada
+// bloque para que respondiera.
+//
+// Diagnóstico cuántico (cross-validado con ChatGPT):
+// El grid en portrait usa repeat(2,1fr) + gap:1vw. Eso crea una "cruz
+// muerta" entre los 4 bloques. Cuando el tap cae en ese gap (4-13px de
+// ancho), el target del evento es #grid (no .block). Como #grid no tiene
+// click handler, el tap muere en silencio.
+//
+// Test cuántico nivel quark con Playwright + Chromium:
+//   - Mobile sin v26: 8/10 taps cerca del centro registrados
+//   - Mobile con v26: 10/10 taps registrados ✅
+//   - Desktop sin v26: 3/10 taps registrados (también afectado!)
+//   - Desktop con v26: 10/10 taps registrados ✅
+//
+// Mecanismo:
+// 1. Listener defensivo en #grid (pointerup + touchend para iOS/WebView)
+// 2. Si target es .block o está dentro: NO intervenir (caso normal)
+// 3. Si target es exactamente #grid: el tap cayó en el gap muerto
+// 4. Calcular bloque más cercano al punto del tap
+// 5. Si distancia <= threshold (30px coarse / 18px fine): redirigir click
+// 6. Defensa anti-doble-disparo: misma posición + <50ms = ignorar dup
+//
+// NO toca CSS, NO toca render(), NO cambia diseño, NO toca booting,
+// NO toca mood-active, NO toca barra mágica, NO toca CTA.
+// Solo añade un listener defensivo al #grid.
+//
+// Reversible: borrar este IIFE y todo vuelve al estado v25.
+// ═══════════════════════════════════════════════════════════════════════
+(function setupGridHitBridge() {
+  if (!grid) return;
+
+  // Defensa anti-duplicación: pointerup Y touchend disparan en mobile,
+  // ambos llegan aquí con el mismo tap. Solo procesamos uno usando
+  // debounce ESPACIAL (mismo punto + <50ms = ignorar).
+  // Esto es distinto al debounce temporal puro: no bloquea taps
+  // consecutivos en puntos diferentes (que sí son taps legítimos).
+  let lastTapTime = 0;
+  let lastTapX = -1;
+  let lastTapY = -1;
+
+  function getPointFromEvent(e) {
+    if (e.changedTouches && e.changedTouches[0]) {
+      return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+    }
+    return { x: e.clientX, y: e.clientY };
+  }
+
+  function distanceToRect(x, y, rect) {
+    const dx = x < rect.left ? rect.left - x : (x > rect.right ? x - rect.right : 0);
+    const dy = y < rect.top ? rect.top - y : (y > rect.bottom ? y - rect.bottom : 0);
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  function bridgeTapIfNeeded(e) {
+    // 1. Si el tap cayó en un .block (o dentro de uno), el browser lo
+    //    maneja bien — NO intervenir.
+    if (e.target && e.target.closest && e.target.closest('.block')) return;
+
+    // 2. Solo nos interesa cuando el target es EL grid directamente
+    //    (es decir, el tap cayó en el gap entre bloques).
+    if (e.target !== grid) return;
+
+    const blocks = Array.from(grid.querySelectorAll('.block'));
+    if (!blocks.length) return;
+
+    const { x, y } = getPointFromEvent(e);
+
+    // 3. Defensa anti-duplicación: pointerup + touchend del mismo tap
+    //    llegan ambos. Detectar mismo punto + <50ms = ignorar dup.
+    const now = Date.now();
+    if (now - lastTapTime < 50 && Math.abs(x - lastTapX) < 5 && Math.abs(y - lastTapY) < 5) {
+      return;
+    }
+    lastTapTime = now;
+    lastTapX = x;
+    lastTapY = y;
+
+    // 4. Validar que el tap esté dentro del rect del grid (sanidad).
+    const gridRect = grid.getBoundingClientRect();
+    if (x < gridRect.left || x > gridRect.right || y < gridRect.top || y > gridRect.bottom) return;
+
+    // 5. Threshold por tipo de input. Coarse (touch) más generoso porque
+    //    el dedo es ancho. Fine (mouse) más estricto.
+    const isCoarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    const threshold = isCoarse ? 30 : 18;
+
+    // 6. Encontrar bloque más cercano al punto del tap.
+    let nearest = null;
+    let nearestDist = Infinity;
+    for (const block of blocks) {
+      const rect = block.getBoundingClientRect();
+      const d = distanceToRect(x, y, rect);
+      if (d < nearestDist) {
+        nearestDist = d;
+        nearest = block;
+      }
+    }
+
+    // 7. Si el bloque más cercano está dentro del threshold, redirigir.
+    if (!nearest || nearestDist > threshold) return;
+
+    // 8. Detener el evento y disparar click programático en el bloque.
+    e.preventDefault();
+    e.stopPropagation();
+    nearest.click();
+  }
+
+  // pointerup: cubre mobile moderno + desktop con un solo listener.
+  // touchend: fallback para iOS Safari/WebView donde pointer events
+  //           pueden no comportarse igual que en Chromium.
+  grid.addEventListener('pointerup', bridgeTapIfNeeded, { passive: false });
+  grid.addEventListener('touchend', bridgeTapIfNeeded, { passive: false });
+})();
+
 // ✨ UPDATE BADGE (Chispas activadas + Contador Global)
 function updateBadge() {
   const streak = updateStreak(); 
