@@ -1,6 +1,7 @@
 /**
  * ════════════════════════════════════════════════════════════════════════════
- * prompt-composer.js — COMPOSITOR DINÁMICO DE LENTES
+ * prompt-composer.js v2 — COMPOSITOR DINÁMICO DE LENTES
+ * Arquitectura: ZERO duplication of curated data
  * ════════════════════════════════════════════════════════════════════════════
  *
  * QUÉ HACE ESTE ARCHIVO
@@ -9,38 +10,25 @@
  * el contenido de cada lente activo, y los une en UN solo string que se
  * pasa como parámetro `lens` a las funciones de extractors.js.
  *
- * El motor de Triggui (extractors.js) ya acepta `lens` como string. Este
- * compositor solo construye un string MÁS RICO que el que venía por
- * env var antes — no hay que tocar extractors.js.
+ * PRINCIPIO ARQUITECTÓNICO
+ * ────────────────────────
+ * Los archivos de configuración (constitution, registry, lenses) viven SOLO
+ * en triggui-content. Este motor (en triggui-app) NUNCA mantiene copias.
  *
- * POR QUÉ EXISTE
- * ──────────────
- * Hasta v6, el sistema corría con prompts inline y un solo lens opcional
- * pasado por env var. Esto significaba que:
- *   1. La constitución filosófica (164 líneas) NO se inyectaba al modelo
- *   2. Los lentes formalizados (chronobiology, game-theory, etc) NO se
- *      cargaban dinámicamente
- *   3. Activar/desactivar lentes requería cambios de código
+ * Para resolver dónde están los archivos en runtime, intenta en orden:
  *
- * Este archivo arregla las 3 cosas leyendo:
- *   - prompts/constitution/triggui-core.md (siempre se inyecta)
- *   - lenses-registry.json (qué lentes están activos)
- *   - prompts/lenses/<id>.md por cada lente activo
+ *   1. $TRIGGUI_CONTENT_ROOT (env var override) — útil para setups custom
+ *   2. ./triggui-content/ relativo al CWD                — CI: actions/checkout pone el repo aquí
+ *   3. ../triggui-content/ relativo al motor             — dev: si ambos repos están adyacentes
+ *   4. HTTPS fetch desde raw.githubusercontent.com/badirnakid/triggui-content/main/
+ *      → fallback universal: funciona en cualquier entorno con red
  *
- * Y produciendo un string compuesto listo para pasar a extractors.js.
+ * El método #4 garantiza que el motor puede correr en CUALQUIER lugar
+ * (tu Codespace de triggui-app sin clonar content, contenedores, etc) y
+ * siempre obtiene la versión más reciente pusheada a main.
  *
- * CÓMO SE USA
- * ───────────
- *   import { composeLensSystemBlock } from './prompt-composer.js';
- *
- *   // Al inicio de un run de generación:
- *   INPUTS.lens = await composeLensSystemBlock({
- *     baseLens: process.env.TRIGGUI_LENS || ""
- *   });
- *
- *   // Después: extractors.js usa INPUTS.lens igual que antes,
- *   // pero ahora ese string contiene constitución + 5 lentes
- *   // formalizados + el lens base opcional.
+ * Ventaja crítica: el curador edita SOLO en triggui-content. Push. Listo.
+ * Cero sincronización manual entre repos. Cero drift posible.
  *
  * ════════════════════════════════════════════════════════════════════════════
  */
@@ -52,43 +40,177 @@ import { fileURLToPath } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Resolución de paths relativos. El motor vive en experiments/nucleus/, así
-// que para llegar a la raíz del repo subimos dos niveles.
-const REPO_ROOT = path.resolve(__dirname, "..", "..");
+// Repo de datos canónico (puede cambiarse via env var si se hace fork)
+const GITHUB_OWNER = process.env.TRIGGUI_CONTENT_OWNER || "badirnakid";
+const GITHUB_REPO = process.env.TRIGGUI_CONTENT_REPO || "triggui-content";
+const GITHUB_BRANCH = process.env.TRIGGUI_CONTENT_BRANCH || "main";
+const GITHUB_RAW_BASE = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_BRANCH}`;
 
-const PATHS = {
-  constitution: path.join(REPO_ROOT, "prompts", "constitution", "triggui-core.md"),
-  registry:     path.join(REPO_ROOT, "lenses-registry.json"),
-  lensesDir:    path.join(REPO_ROOT, "prompts", "lenses"),
+// Paths relativos dentro del repo de content
+const RELATIVE_PATHS = {
+  constitution: "prompts/constitution/triggui-core.md",
+  registry: "lenses-registry.json",
+  lensDir: "prompts/lenses",
 };
 
-// Cache en memoria — la composición se hace UNA vez por run, no por libro.
+// Cache en memoria — se resuelven UNA vez por run
 let _cachedComposition = null;
 let _cachedSourceMtime = null;
+let _resolvedSource = null;  // Para diagnóstico: dónde se encontraron los archivos
 
 /**
- * Carga la constitución desde disco.
- * Si no existe el archivo (no debería pasar pero por defensa), devuelve "".
+ * Verifica si un path local existe.
  */
-async function loadConstitution() {
+async function pathExists(p) {
   try {
-    const raw = await fs.readFile(PATHS.constitution, "utf8");
-    return raw.trim();
-  } catch (err) {
-    console.warn(`⚠ prompt-composer: no pude cargar constitución desde ${PATHS.constitution}`);
-    console.warn(`   Razón: ${err.message}`);
-    console.warn(`   El sistema funcionará sin constitución inyectada.`);
-    return "";
+    await fs.access(p);
+    return true;
+  } catch {
+    return false;
   }
 }
 
 /**
- * Carga el registro de lentes desde disco.
- * Si no existe, devuelve registro vacío (sin lentes activos).
+ * Lee un archivo desde una URL HTTPS.
+ * Devuelve el contenido como string, o null si falla.
+ */
+async function fetchFromGitHub(relativePath) {
+  const url = `${GITHUB_RAW_BASE}/${relativePath}`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.warn(`⚠ HTTPS fetch falló para ${relativePath}: HTTP ${response.status}`);
+      return null;
+    }
+    return await response.text();
+  } catch (err) {
+    console.warn(`⚠ HTTPS fetch error para ${relativePath}: ${err.message}`);
+    return null;
+  }
+}
+
+/**
+ * Construye los candidatos de directorio raíz (filesystem) en orden de prioridad.
+ */
+function getFilesystemCandidates() {
+  const candidates = [];
+
+  // 1. Override explícito por env var
+  if (process.env.TRIGGUI_CONTENT_ROOT) {
+    candidates.push({
+      kind: "env_var",
+      root: path.resolve(process.env.TRIGGUI_CONTENT_ROOT),
+    });
+  }
+
+  // 2. ./triggui-content relativo al CWD (CI: actions/checkout pone el repo aquí)
+  candidates.push({
+    kind: "cwd_subfolder",
+    root: path.resolve(process.cwd(), "triggui-content"),
+  });
+
+  // 2b. ../triggui-content relativo al CWD (cuando script corre desde experiments/nucleus/)
+  candidates.push({
+    kind: "cwd_parent_subfolder",
+    root: path.resolve(process.cwd(), "..", "..", "triggui-content"),
+  });
+
+  // 3. ../triggui-content relativo al motor (dev: ambos repos adyacentes)
+  // El motor vive en experiments/nucleus/, así que sube 3 niveles.
+  candidates.push({
+    kind: "motor_adjacent",
+    root: path.resolve(__dirname, "..", "..", "..", "triggui-content"),
+  });
+
+  return candidates;
+}
+
+/**
+ * Intenta resolver dónde están los archivos de configuración.
+ * Devuelve { kind: "filesystem"|"https", root: string|null } o null si todo falla.
+ *
+ * La detección se basa en encontrar uno de los archivos esperados
+ * (constitution o registry) en una ubicación candidata.
+ */
+async function resolveSource() {
+  if (_resolvedSource) return _resolvedSource;
+
+  // Intentar filesystem primero (más rápido, sin red)
+  const candidates = getFilesystemCandidates();
+  for (const candidate of candidates) {
+    const constitutionPath = path.join(candidate.root, RELATIVE_PATHS.constitution);
+    const registryPath = path.join(candidate.root, RELATIVE_PATHS.registry);
+
+    if (await pathExists(constitutionPath) || await pathExists(registryPath)) {
+      _resolvedSource = {
+        kind: "filesystem",
+        sub_kind: candidate.kind,
+        root: candidate.root,
+      };
+      return _resolvedSource;
+    }
+  }
+
+  // Filesystem no encontró nada: probar HTTPS (con un fetch pequeño)
+  const testFetch = await fetchFromGitHub(RELATIVE_PATHS.registry);
+  if (testFetch !== null) {
+    _resolvedSource = {
+      kind: "https",
+      root: GITHUB_RAW_BASE,
+    };
+    return _resolvedSource;
+  }
+
+  // Nada funcionó
+  _resolvedSource = null;
+  return null;
+}
+
+/**
+ * Lee un archivo desde la fuente resuelta (filesystem o HTTPS).
+ * Si no hay fuente, devuelve string vacío y warning.
+ */
+async function readFromSource(relativePath) {
+  const source = await resolveSource();
+  if (!source) {
+    console.warn(`⚠ prompt-composer: ninguna fuente disponible para "${relativePath}"`);
+    return "";
+  }
+
+  if (source.kind === "filesystem") {
+    const fullPath = path.join(source.root, relativePath);
+    try {
+      return await fs.readFile(fullPath, "utf8");
+    } catch (err) {
+      // Filesystem dijo que existe el directorio pero un archivo específico no
+      console.warn(`⚠ prompt-composer: no pude leer ${fullPath}: ${err.message}`);
+      return "";
+    }
+  }
+
+  if (source.kind === "https") {
+    const content = await fetchFromGitHub(relativePath);
+    return content || "";
+  }
+
+  return "";
+}
+
+/**
+ * Carga la constitución desde la fuente resuelta.
+ */
+async function loadConstitution() {
+  const raw = await readFromSource(RELATIVE_PATHS.constitution);
+  return raw.trim();
+}
+
+/**
+ * Carga el registro de lentes desde la fuente resuelta.
  */
 async function loadRegistry() {
+  const raw = await readFromSource(RELATIVE_PATHS.registry);
+  if (!raw) return { lenses: [] };
   try {
-    const raw = await fs.readFile(PATHS.registry, "utf8");
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed.lenses)) {
       console.warn(`⚠ prompt-composer: lenses-registry.json no tiene array 'lenses'. Asumiendo vacío.`);
@@ -96,35 +218,22 @@ async function loadRegistry() {
     }
     return parsed;
   } catch (err) {
-    console.warn(`⚠ prompt-composer: no pude cargar registry desde ${PATHS.registry}`);
-    console.warn(`   Razón: ${err.message}`);
-    console.warn(`   El sistema funcionará SIN lentes formalizados.`);
+    console.warn(`⚠ prompt-composer: lenses-registry.json no es JSON válido: ${err.message}`);
     return { lenses: [] };
   }
 }
 
 /**
  * Carga el contenido .md de un lente específico.
- *
- * @param {string} lensId - "chronobiology", "game-theory", etc
- * @returns {Promise<string>} - Contenido del archivo, o "" si no existe
  */
 async function loadLens(lensId) {
-  const lensPath = path.join(PATHS.lensesDir, `${lensId}.md`);
-  try {
-    const raw = await fs.readFile(lensPath, "utf8");
-    return raw.trim();
-  } catch (err) {
-    console.warn(`⚠ prompt-composer: no pude cargar lente "${lensId}" (${lensPath})`);
-    return "";
-  }
+  const relativePath = `${RELATIVE_PATHS.lensDir}/${lensId}.md`;
+  const raw = await readFromSource(relativePath);
+  return raw.trim();
 }
 
 /**
  * Lista los IDs de lentes activos (active === 1) del registro.
- *
- * @param {Object} registry - El objeto del registry
- * @returns {Array<string>} - IDs de lentes activos
  */
 function getActiveLensIds(registry) {
   if (!registry || !Array.isArray(registry.lenses)) return [];
@@ -136,24 +245,6 @@ function getActiveLensIds(registry) {
 /**
  * FUNCIÓN PRINCIPAL — compone el bloque completo que se pasa a extractors.js
  * como parámetro `lens`.
- *
- * Estructura del bloque resultante:
- *
- *   ═══ CONSTITUCIÓN TRIGGUI ═══
- *   [contenido de prompts/constitution/triggui-core.md]
- *
- *   ═══ LENTES EPISTEMOLÓGICOS ACTIVOS (N) ═══
- *
- *   ─── Lente 1: chronobiology ───
- *   [contenido de prompts/lenses/chronobiology.md]
- *
- *   ─── Lente 2: game-theory ───
- *   [contenido de prompts/lenses/game-theory.md]
- *
- *   ... (todos los lentes activos)
- *
- *   ═══ LENTE BASE DEL CURADOR (opcional) ═══
- *   [baseLens del env var, si existe]
  *
  * @param {Object} opts - Opciones
  * @param {string} opts.baseLens - Lens base opcional del env var TRIGGUI_LENS
@@ -228,7 +319,13 @@ export async function composeLensSystemBlock(opts = {}) {
     const tieneConstitucion = constitution.length > 0 ? "✓" : "✗";
     const lentesTxt = activeIds.length > 0 ? activeIds.join(", ") : "(ninguno)";
     const tieneBaseLens = baseLens && baseLens.trim() ? "✓" : "✗";
-    console.log(`📜 prompt-composer: constitución ${tieneConstitucion} | lentes [${lentesTxt}] | baseLens ${tieneBaseLens}`);
+    const sourceLabel = _resolvedSource
+      ? (_resolvedSource.kind === "https"
+          ? `HTTPS (${GITHUB_OWNER}/${GITHUB_REPO}@${GITHUB_BRANCH})`
+          : `filesystem (${_resolvedSource.sub_kind}: ${_resolvedSource.root})`)
+      : "NINGUNA (degradación)";
+    console.log(`📜 prompt-composer: fuente=${sourceLabel}`);
+    console.log(`   constitución ${tieneConstitucion} | lentes [${lentesTxt}] | baseLens ${tieneBaseLens}`);
     console.log(`   Total bloque: ${composed.length} caracteres`);
     _cachedSourceMtime = Date.now();
   }
@@ -240,8 +337,6 @@ export async function composeLensSystemBlock(opts = {}) {
  * Devuelve la lista de IDs de lentes activos. Útil para que otros módulos
  * (ej: lens-compatibility-scorer.js) sepan qué lentes scorear sin volver
  * a leer el registry.
- *
- * @returns {Promise<Array<string>>} - IDs activos
  */
 export async function getActiveLenses() {
   const registry = await loadRegistry();
@@ -249,84 +344,72 @@ export async function getActiveLenses() {
 }
 
 /**
- * Limpia el cache. Útil para tests o si el registry cambia mid-run.
+ * Limpia el cache. Útil para tests o si la fuente cambia mid-run.
  */
 export function clearCache() {
   _cachedComposition = null;
   _cachedSourceMtime = null;
+  _resolvedSource = null;
 }
 
 /**
- * Diagnóstico — verifica que todos los archivos referenciados existen.
- * Útil para correr al inicio del workflow y abortar con error claro si algo falta.
+ * Diagnóstico — verifica que la fuente sea resoluble y que los archivos
+ * referenciados existan/sean accesibles.
  *
- * @returns {Promise<Object>} - { ok: bool, missing: [...], summary: "..." }
+ * @returns {Promise<Object>} - { ok, source, missing, found, summary }
  */
 export async function diagnose() {
+  const source = await resolveSource();
+
+  if (!source) {
+    return {
+      ok: false,
+      source: null,
+      missing: ["TODOS — ninguna fuente disponible (ni filesystem ni HTTPS)"],
+      found: [],
+      active_lenses: [],
+      summary: "❌ Sin fuente disponible. Verifica conectividad o config.",
+    };
+  }
+
   const missing = [];
   const found = [];
 
   // Constitución
-  try {
-    await fs.access(PATHS.constitution);
-    found.push("constitution");
-  } catch {
-    missing.push(PATHS.constitution);
-  }
+  const constitution = await readFromSource(RELATIVE_PATHS.constitution);
+  if (constitution) found.push("constitution");
+  else missing.push(RELATIVE_PATHS.constitution);
 
   // Registry
+  const registryRaw = await readFromSource(RELATIVE_PATHS.registry);
   let registry = { lenses: [] };
-  try {
-    const raw = await fs.readFile(PATHS.registry, "utf8");
-    registry = JSON.parse(raw);
+  if (registryRaw) {
     found.push("registry");
-  } catch {
-    missing.push(PATHS.registry);
+    try { registry = JSON.parse(registryRaw); } catch {}
+  } else {
+    missing.push(RELATIVE_PATHS.registry);
   }
 
   // Cada lente activo
   const activeIds = getActiveLensIds(registry);
   for (const id of activeIds) {
-    const lensPath = path.join(PATHS.lensesDir, `${id}.md`);
-    try {
-      await fs.access(lensPath);
-      found.push(`lens:${id}`);
-    } catch {
-      missing.push(lensPath);
-    }
+    const lensRaw = await readFromSource(`${RELATIVE_PATHS.lensDir}/${id}.md`);
+    if (lensRaw) found.push(`lens:${id}`);
+    else missing.push(`${RELATIVE_PATHS.lensDir}/${id}.md`);
   }
+
+  const sourceLabel = source.kind === "https"
+    ? `HTTPS desde GitHub (${GITHUB_OWNER}/${GITHUB_REPO}@${GITHUB_BRANCH})`
+    : `filesystem (${source.sub_kind}: ${source.root})`;
 
   return {
     ok: missing.length === 0,
+    source: sourceLabel,
     missing,
     found,
     active_lenses: activeIds,
     summary: missing.length === 0
-      ? `✓ ${found.length} archivos OK`
+      ? `✓ ${found.length} archivos OK desde ${sourceLabel}`
       : `⚠ ${missing.length} archivos faltantes: ${missing.join(", ")}`,
   };
 }
-
-// ════════════════════════════════════════════════════════════════════════════
-// EJEMPLO DE USO (descomentar para probar)
-// ════════════════════════════════════════════════════════════════════════════
-//
-// import { composeLensSystemBlock, diagnose } from './prompt-composer.js';
-//
-// // Diagnóstico al inicio
-// const diag = await diagnose();
-// if (!diag.ok) {
-//   console.error(diag.summary);
-//   console.error("Archivos faltantes:", diag.missing);
-//   process.exit(1);
-// }
-//
-// // Componer el bloque
-// const lensBlock = await composeLensSystemBlock({
-//   baseLens: process.env.TRIGGUI_LENS || ""
-// });
-//
-// // Pasar a extractors.js como antes (no cambia su API)
-// // extractAnchors(openai, book, groundTruth, lensBlock, opts);
-//
-// ════════════════════════════════════════════════════════════════════════════
