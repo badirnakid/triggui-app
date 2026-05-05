@@ -479,6 +479,18 @@ const BarraMagica = {
   opacity:0; 
   transform:translate(-50%,-52%) scale(.985);
   animation:introIn .6s ease-out .15s forwards, introHide 3.2s 1.7s forwards;
+  /* 🌒 v27: la .intro es decorativa — NUNCA debe capturar clicks.
+     Está fixed en el CENTRO de la pantalla con z-index:120, encima del grid.
+     Sin pointer-events:none, intercepta TODOS los taps del centro durante
+     los primeros 5s (mientras la animación introHide corre) Y DESPUÉS
+     porque el browser no aplica visibility:hidden de @keyframes con forwards
+     correctamente — el elemento queda con opacity:0 + visibility:visible +
+     pointer-events:auto en el centro de la pantalla, capturando taps muertos.
+     
+     Test cuántico confirmó: con .intro presente, taps en (195,332) caen en
+     SPAN.t (de la intro) y mueren. Con pointer-events:none, taps llegan al
+     #grid o directamente al .block más cercano vía v26 bridge. */
+  pointer-events: none;
 }
 
 .intro .t{ 
