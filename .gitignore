@@ -69,3 +69,11 @@ node_modules/
 # Backups locales
 *.backup-*
 *.tmp-*
+
+# ─── Outputs del motor v3.7.1+step3 cuando se corre desde raíz del repo ───
+# (los del subfolder experiments/nucleus/ ya estaban arriba)
+/evidence-cache/
+/grounding-cache/
+/inputs-history/
+/quality-reports/
+/metrics/
