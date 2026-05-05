@@ -92,7 +92,6 @@ const CFG = {
     csv: "data/libros_master.csv",
     outBatch: "contenido.json",
     outShadow: "contenido.shadow.json",
-    outSingle: "contenido_edicion.json",
     tmpBook: "/tmp/triggui-book.json",
     metricsDir: "metrics",
     inputsHistoryDir: "inputs-history",
@@ -1113,8 +1112,6 @@ async function runSingle() {
   result.mapped._manual = true;
   result.mapped._manual_generated_at = new Date().toISOString();
 
-  await writeJSON(CFG.files.outSingle, { libros: [result.mapped] });
-  console.log(`\n✅ ${CFG.files.outSingle}`);
 
   const unifiedMode = process.env.UNIFIED_MODE !== "false";
   if (unifiedMode) {
