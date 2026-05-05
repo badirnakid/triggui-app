@@ -121,6 +121,16 @@
       "timestamp": "2026-05-01T15:26:35.410Z",
       "trigger_input": "ilusion, mantenerla aunque la situacion se ponga dificil continuamente sostenidamente",
       "selected_via": "constrained_catalog"
+    },
+    {
+      "titulo": "El poder del ahora",
+      "autor": "Eckhart Tolle",
+      "slug": "el-poder-del-ahora",
+      "titulo_normalizado": "el poder del ahora",
+      "autor_normalizado": "eckhart tolle",
+      "timestamp": "2026-05-05T23:47:38.722Z",
+      "trigger_input": "estoy molesto, frustrado cansado no tengo mucha esperanza de que todo mejore, no sé que pasa!",
+      "selected_via": "discover_trigger"
     }
   ],
   "_note": "FIFO ring de últimos 30 libros generados por selección automática (constrained o discover). Filtro pre-rerank en validate-book.js. Inicializa vacío y se rellena con cada run exitoso. Si se borra, el sistema arranca limpio sin daño."

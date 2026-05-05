@@ -1,0 +1,927 @@
+{
+  "history": [
+    {
+      "at": "2026-05-05T23:47:14.257Z",
+      "stage": "trigger_analysis",
+      "trigger_analysis": {
+        "raw_input": "estoy molesto, frustrado cansado no tengo mucha esperanza de que todo mejore, no sé que pasa!",
+        "semantic_query": "libros sobre manejo de la frustración y la esperanza",
+        "intent_summary": "Buscar libros que ayuden a lidiar con la frustración y encontrar esperanza.",
+        "editorial_requests": [],
+        "source_preference": null,
+        "ranking_preference": null,
+        "unsupported_runtime_constraints": [],
+        "supported_constraints": {
+          "year_min": null,
+          "year_max": null,
+          "prefer_recent": false
+        },
+        "search_queries": [
+          "manejo de la frustración",
+          "libros sobre esperanza",
+          "superar la tristeza",
+          "autoayuda",
+          "motivación personal",
+          "bienestar emocional",
+          "libros sobre manejo de la frustración y la esperanza",
+          "libros manejo frustracion"
+        ],
+        "concept_hints": [
+          "frustration",
+          "hope",
+          "emotional well-being"
+        ],
+        "clean_for_selection": "libros sobre manejo de la frustración y la esperanza",
+        "notes": {
+          "used_ai_normalizer": true,
+          "looked_like_book_intent": false,
+          "semantic_overlap_vs_raw": 0.14285714285714285
+        }
+      }
+    },
+    {
+      "at": "2026-05-05T23:47:15.082Z",
+      "stage": "live_candidates_filter_recent",
+      "before": 0,
+      "after": 0,
+      "removed": 0,
+      "ring_size": 12
+    },
+    {
+      "at": "2026-05-05T23:47:15.083Z",
+      "stage": "live_candidates_merged",
+      "count": 0,
+      "top": []
+    },
+    {
+      "at": "2026-05-05T23:47:18.669Z",
+      "stage": "discover_attempt_result",
+      "attempt": 1,
+      "parsed_preview": {
+        "recommendations": [
+          {
+            "titulo": "El poder del ahora",
+            "autor": "Eckhart Tolle",
+            "motivo_corto": "Ofrece herramientas para vivir en el presente y manejar la frustración.",
+            "tagline": "Descubre la paz en el presente."
+          },
+          {
+            "titulo": "La magia del orden",
+            "autor": "Marie Kondo",
+            "motivo_corto": "Ayuda a liberar el espacio físico y mental, promoviendo la esperanza y la claridad emocional.",
+            "tagline": "Transforma tu vida organizando tu hogar."
+          },
+          {
+            "titulo": "Los hombres son de Marte, las mujeres son de Venus",
+            "autor": "John Gray",
+            "motivo_corto": "Explora las diferencias en la comunicación y ofrece estrategias para mejorar relaciones y manejar frustraciones.",
+            "tagline": "Entiende a los demás para encontrar la paz."
+          }
+        ]
+      },
+      "raw_preview": "{\n  \"recommendations\": [\n    { \"titulo\": \"El poder del ahora\", \"autor\": \"Eckhart Tolle\", \"motivo_corto\": \"Ofrece herramientas para vivir en el presente y manejar la frustración.\", \"tagline\": \"Descubre la paz en el presente.\" },\n    { \"titulo\": \"La magia del orden\", \"autor\": \"Marie Kondo\", \"motivo_corto\": \"Ayuda a liberar el espacio físico y mental, promoviendo la esperanza y la claridad emocional.\", \"tagline\": \"Transforma tu vida organizando tu hogar.\" },\n    { \"titulo\": \"Los hombres son de Marte, las mujeres son de Venus\", \"autor\": \"John Gray\", \"motivo_corto\": \"Explora las diferencias en la comunicación y ofrece estrategias para mejorar relaciones y manejar frustraciones.\", \"tagline\": \"Entiende a los demás para encontrar la paz.\" }\n  ]\n}",
+      "recommendations": [
+        {
+          "titulo": "El poder del ahora",
+          "autor": "Eckhart Tolle",
+          "motivo_corto": "Ofrece herramientas para vivir en el presente y manejar la frustración.",
+          "tagline": "Descubre la paz en el presente.",
+          "source_label": "",
+          "source_url": "",
+          "published_year": null,
+          "live_score": 0,
+          "ai_fit_score": 0,
+          "ai_fit_reason": ""
+        },
+        {
+          "titulo": "La magia del orden",
+          "autor": "Marie Kondo",
+          "motivo_corto": "Ayuda a liberar el espacio físico y mental, promoviendo la esperanza y la claridad emocional.",
+          "tagline": "Transforma tu vida organizando tu hogar.",
+          "source_label": "",
+          "source_url": "",
+          "published_year": null,
+          "live_score": 0,
+          "ai_fit_score": 0,
+          "ai_fit_reason": ""
+        },
+        {
+          "titulo": "Los hombres son de Marte, las mujeres son de Venus",
+          "autor": "John Gray",
+          "motivo_corto": "Explora las diferencias en la comunicación y ofrece estrategias para mejorar relaciones y manejar frustraciones.",
+          "tagline": "Entiende a los demás para encontrar la paz.",
+          "source_label": "",
+          "source_url": "",
+          "published_year": null,
+          "live_score": 0,
+          "ai_fit_score": 0,
+          "ai_fit_reason": ""
+        }
+      ],
+      "temperature": 0.7
+    },
+    {
+      "at": "2026-05-05T23:47:21.592Z",
+      "stage": "ai_rerank_candidates",
+      "stageLabel": "discover_gpt_rerank_attempt_1",
+      "ranked": [
+        {
+          "idx": 1,
+          "fit_score": 0.85,
+          "reason": "El poder del ahora aborda la importancia de vivir en el presente, lo que puede ayudar a manejar la frustración y fomentar la esperanza."
+        },
+        {
+          "idx": 3,
+          "fit_score": 0.7,
+          "reason": "Los hombres son de Marte, las mujeres son de Venus ofrece perspectivas sobre las relaciones, lo que puede contribuir a la comprensión emocional y la esperanza en la comunicación."
+        },
+        {
+          "idx": 2,
+          "fit_score": 0.5,
+          "reason": "La magia del orden se centra en la organización del entorno, lo que puede indirectamente ayudar a manejar la frustración, aunque no aborda directamente la esperanza."
+        }
+      ]
+    },
+    {
+      "at": "2026-05-05T23:47:38.696Z",
+      "stage": "gpt_candidates_inspected",
+      "attempt": 1,
+      "inspected": [
+        {
+          "recommendation": {
+            "titulo": "El poder del ahora",
+            "autor": "Eckhart Tolle",
+            "motivo_corto": "Ofrece herramientas para vivir en el presente y manejar la frustración.",
+            "tagline": "Descubre la paz en el presente.",
+            "source_label": "",
+            "source_url": "",
+            "published_year": null,
+            "live_score": 0,
+            "ai_fit_score": 0.85,
+            "ai_fit_reason": "El poder del ahora aborda la importancia de vivir en el presente, lo que puede ayudar a manejar la frustración y fomentar la esperanza."
+          },
+          "evidence": {
+            "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/3000x3000bb.jpg",
+            "isbn": "",
+            "editorial": "Eckhart Tolle",
+            "source": "apple_books",
+            "year": "2014",
+            "matched_title": "El poder del ahora",
+            "matched_author": "Eckhart Tolle",
+            "match_score": 1,
+            "synopsis": "En este libro el autor nos comparte cómo se puede alcanzar un estado de iluminación aquí y ahora; y que es posible vivir libre del sufrimiento, de la ansiedad y de la neurosis. Más de 4,000,000 ejemplares vendidos. El Bestseller #1 del New York Times. El clásico que consagró a Eckhart Tolle como uno de los gurús más importantes del mundo. El poder del ahora es un libro único. Tiene la capacidad de crear una experiencia en los lectores y de cambiar su vida. Hoy ya es considerado una obra maestra. \"Uno de los mejores libros de los últimos años. Cada frase evoca verdad y poder.\" Deepak Chopra Para lograr la iluminación aquí y ahora sólo tenemos que comprender nuestro papel de creadores de nuestro dolor. Es nuestra propia mente la que causa nuestros problemas con su corriente constante de pensamientos, aferrándose al pasado, preocupándose por el futuro. Cometemos el error de identificarnos con ella, de pensar que eso es lo que somos, cuando de hecho somos seres mucho más grandes. Escrito en un formato de preguntas y respuestas que lo hace muy accesible, El poder del ahora es una invitación a la reflexión, que le abrirá las puertas a la plenitud espiritual y le permitirá ver la vida con nuevos ojos y empezar a disfrutar del verdadero poder del ahora.",
+            "synopsis_length": 1265,
+            "covers": [
+              {
+                "size": "xxlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/3000x3000bb.jpg"
+              },
+              {
+                "size": "xlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/1200x1200bb.jpg"
+              },
+              {
+                "size": "large",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/600x600bb.jpg"
+              },
+              {
+                "size": "medium",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/100x100bb.jpg"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "El poder del ahora",
+              "autor_completo": "Eckhart Tolle",
+              "año": "2014",
+              "editorial": null,
+              "isbn": "",
+              "apple_track_id": "698946532",
+              "categorias": [
+                "Espiritualidad",
+                "Libros",
+                "Salud, mente y cuerpo",
+                "Superación personal"
+              ],
+              "track_view_url": "https://books.apple.com/mx/book/el-poder-del-ahora/id698946532?uo=4"
+            },
+            "_evidence": {
+              "titulo_input": "El poder del ahora",
+              "autor_input": "Eckhart Tolle",
+              "isbn_seed": "",
+              "isbn_seed_raw": "",
+              "isbn_seed_rejected": null,
+              "isbn_discovered": "",
+              "isbn_discovered_raw": "",
+              "apple": {
+                "ok": true,
+                "source": "apple_books",
+                "match_score": 1,
+                "match_details": {
+                  "matched_title": "El poder del ahora",
+                  "matched_author": "Eckhart Tolle"
+                },
+                "synopsis": "En este libro el autor nos comparte cómo se puede alcanzar un estado de iluminación aquí y ahora; y que es posible vivir libre del sufrimiento, de la ansiedad y de la neurosis. Más de 4,000,000 ejemplares vendidos. El Bestseller #1 del New York Times. El clásico que consagró a Eckhart Tolle como uno de los gurús más importantes del mundo. El poder del ahora es un libro único. Tiene la capacidad de crear una experiencia en los lectores y de cambiar su vida. Hoy ya es considerado una obra maestra. \"Uno de los mejores libros de los últimos años. Cada frase evoca verdad y poder.\" Deepak Chopra Para lograr la iluminación aquí y ahora sólo tenemos que comprender nuestro papel de creadores de nuestro dolor. Es nuestra propia mente la que causa nuestros problemas con su corriente constante de pensamientos, aferrándose al pasado, preocupándose por el futuro. Cometemos el error de identificarnos con ella, de pensar que eso es lo que somos, cuando de hecho somos seres mucho más grandes. Escrito en un formato de preguntas y respuestas que lo hace muy accesible, El poder del ahora es una invitación a la reflexión, que le abrirá las puertas a la plenitud espiritual y le permitirá ver la vida con nuevos ojos y empezar a disfrutar del verdadero poder del ahora.",
+                "synopsis_length": 1265,
+                "covers": [
+                  {
+                    "size": "xxlarge",
+                    "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/3000x3000bb.jpg"
+                  },
+                  {
+                    "size": "xlarge",
+                    "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/1200x1200bb.jpg"
+                  },
+                  {
+                    "size": "large",
+                    "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/600x600bb.jpg"
+                  },
+                  {
+                    "size": "medium",
+                    "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/100x100bb.jpg"
+                  }
+                ],
+                "verified_identity": {
+                  "titulo_real": "El poder del ahora",
+                  "autor_completo": "Eckhart Tolle",
+                  "año": "2014",
+                  "editorial": null,
+                  "isbn": "",
+                  "apple_track_id": "698946532",
+                  "categorias": [
+                    "Espiritualidad",
+                    "Libros",
+                    "Salud, mente y cuerpo",
+                    "Superación personal"
+                  ],
+                  "track_view_url": "https://books.apple.com/mx/book/el-poder-del-ahora/id698946532?uo=4"
+                }
+              },
+              "google": {
+                "ok": false,
+                "reason": "no_good_match",
+                "source": "google_books"
+              },
+              "openlibrary": {
+                "ok": true,
+                "source": "openlibrary",
+                "match_score": 1,
+                "match_details": {
+                  "matched_title": "El poder del ahora",
+                  "matched_author": "Eckhart Tolle, Gaia Ediciones"
+                },
+                "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2013.",
+                "synopsis_length": 65,
+                "covers": [
+                  {
+                    "size": "large",
+                    "url": "https://covers.openlibrary.org/b/id/12335770-L.jpg"
+                  },
+                  {
+                    "size": "medium",
+                    "url": "https://covers.openlibrary.org/b/id/12335770-M.jpg"
+                  },
+                  {
+                    "size": "small",
+                    "url": "https://covers.openlibrary.org/b/id/12335770-S.jpg"
+                  }
+                ],
+                "verified_identity": {
+                  "titulo_real": "El poder del ahora",
+                  "autor_completo": "Eckhart Tolle, Gaia Ediciones",
+                  "año": "2013",
+                  "editorial": null,
+                  "isbn": "",
+                  "categorias": [],
+                  "idioma": null,
+                  "paginas": null
+                }
+              },
+              "amazon": {
+                "ok": false,
+                "reason": "skipped",
+                "source": "amazon"
+              },
+              "valid_covers": [
+                {
+                  "source": "apple_books",
+                  "size": "xxlarge",
+                  "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/3000x3000bb.jpg",
+                  "valid": true
+                },
+                {
+                  "source": "apple_books",
+                  "size": "xlarge",
+                  "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/1200x1200bb.jpg",
+                  "valid": true
+                },
+                {
+                  "source": "apple_books",
+                  "size": "large",
+                  "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/600x600bb.jpg",
+                  "valid": true
+                },
+                {
+                  "source": "apple_books",
+                  "size": "medium",
+                  "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/100x100bb.jpg",
+                  "valid": true
+                },
+                {
+                  "source": "openlibrary",
+                  "size": "large",
+                  "url": "https://covers.openlibrary.org/b/id/12335770-L.jpg",
+                  "valid": true
+                },
+                {
+                  "source": "openlibrary",
+                  "size": "medium",
+                  "url": "https://covers.openlibrary.org/b/id/12335770-M.jpg",
+                  "valid": true
+                }
+              ],
+              "_sources_succeeded": [
+                "apple_books",
+                "openlibrary"
+              ],
+              "_sources_failed": [
+                "google_books:no_good_match",
+                "amazon:skipped"
+              ],
+              "_timing": {
+                "phase1_parallel_ms": 16179,
+                "phase2_isbn_chain_ms": 0,
+                "cover_validation_ms": 920,
+                "total_ms": 17099
+              },
+              "_version": "3.6"
+            }
+          },
+          "constraintsCheck": {
+            "exact_ok": true,
+            "hard_ok": true,
+            "issues": [],
+            "warnings": [],
+            "reason": "Año verificado 2014"
+          },
+          "sourceLabel": "gpt_attempt_1",
+          "semantic_score": 0.85,
+          "fallback_score": 145
+        }
+      ]
+    },
+    {
+      "at": "2026-05-05T23:47:38.724Z",
+      "stage": "success",
+      "bookData": {
+        "titulo": "El poder del ahora",
+        "autor": "Eckhart Tolle",
+        "slug": "el-poder-del-ahora",
+        "tagline": "Descubre la paz en el presente.",
+        "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/3000x3000bb.jpg",
+        "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/3000x3000bb.jpg",
+        "portada_source": "apple_books",
+        "portada_candidates": [
+          {
+            "source": "apple_books",
+            "size": "xxlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/3000x3000bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "xlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/1200x1200bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "large",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/600x600bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "medium",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/100x100bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "openlibrary",
+            "size": "large",
+            "url": "https://covers.openlibrary.org/b/id/12335770-L.jpg",
+            "valid": true
+          },
+          {
+            "source": "openlibrary",
+            "size": "medium",
+            "url": "https://covers.openlibrary.org/b/id/12335770-M.jpg",
+            "valid": true
+          }
+        ],
+        "needs_fallback_cover": false,
+        "isbn": "",
+        "editorial": "Eckhart Tolle",
+        "publication_year": "2014",
+        "source": "apple_books",
+        "duplicado": false,
+        "selected_via": "discover_trigger",
+        "selection_reason": "Ofrece herramientas para vivir en el presente y manejar la frustración.",
+        "trigger_input": "estoy molesto, frustrado cansado no tengo mucha esperanza de que todo mejore, no sé que pasa!",
+        "trigger_analysis": {
+          "raw_input": "estoy molesto, frustrado cansado no tengo mucha esperanza de que todo mejore, no sé que pasa!",
+          "semantic_query": "libros sobre manejo de la frustración y la esperanza",
+          "intent_summary": "Buscar libros que ayuden a lidiar con la frustración y encontrar esperanza.",
+          "editorial_requests": [],
+          "source_preference": null,
+          "ranking_preference": null,
+          "unsupported_runtime_constraints": [],
+          "supported_constraints": {
+            "year_min": null,
+            "year_max": null,
+            "prefer_recent": false
+          },
+          "search_queries": [
+            "manejo de la frustración",
+            "libros sobre esperanza",
+            "superar la tristeza",
+            "autoayuda",
+            "motivación personal",
+            "bienestar emocional",
+            "libros sobre manejo de la frustración y la esperanza",
+            "libros manejo frustracion"
+          ],
+          "concept_hints": [
+            "frustration",
+            "hope",
+            "emotional well-being"
+          ],
+          "clean_for_selection": "libros sobre manejo de la frustración y la esperanza",
+          "notes": {
+            "used_ai_normalizer": true,
+            "looked_like_book_intent": false,
+            "semantic_overlap_vs_raw": 0.14285714285714285
+          }
+        },
+        "selection_validation": {
+          "semantic_score": 0.85,
+          "ai_fit_score": 0.85,
+          "match_score": 1,
+          "validation_source": "apple_books",
+          "constraint_reason": "Año verificado 2014",
+          "mode": "exact_gpt",
+          "source_label": "gpt_attempt_1",
+          "fallback_score": 145
+        },
+        "catalog_scope": "",
+        "contexto_2026": {},
+        "identity_sealed": true,
+        "_evidence": {
+          "titulo_input": "El poder del ahora",
+          "autor_input": "Eckhart Tolle",
+          "isbn_seed": "",
+          "isbn_seed_raw": "",
+          "isbn_seed_rejected": null,
+          "isbn_discovered": "",
+          "isbn_discovered_raw": "",
+          "apple": {
+            "ok": true,
+            "source": "apple_books",
+            "match_score": 1,
+            "match_details": {
+              "matched_title": "El poder del ahora",
+              "matched_author": "Eckhart Tolle"
+            },
+            "synopsis": "En este libro el autor nos comparte cómo se puede alcanzar un estado de iluminación aquí y ahora; y que es posible vivir libre del sufrimiento, de la ansiedad y de la neurosis. Más de 4,000,000 ejemplares vendidos. El Bestseller #1 del New York Times. El clásico que consagró a Eckhart Tolle como uno de los gurús más importantes del mundo. El poder del ahora es un libro único. Tiene la capacidad de crear una experiencia en los lectores y de cambiar su vida. Hoy ya es considerado una obra maestra. \"Uno de los mejores libros de los últimos años. Cada frase evoca verdad y poder.\" Deepak Chopra Para lograr la iluminación aquí y ahora sólo tenemos que comprender nuestro papel de creadores de nuestro dolor. Es nuestra propia mente la que causa nuestros problemas con su corriente constante de pensamientos, aferrándose al pasado, preocupándose por el futuro. Cometemos el error de identificarnos con ella, de pensar que eso es lo que somos, cuando de hecho somos seres mucho más grandes. Escrito en un formato de preguntas y respuestas que lo hace muy accesible, El poder del ahora es una invitación a la reflexión, que le abrirá las puertas a la plenitud espiritual y le permitirá ver la vida con nuevos ojos y empezar a disfrutar del verdadero poder del ahora.",
+            "synopsis_length": 1265,
+            "covers": [
+              {
+                "size": "xxlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/3000x3000bb.jpg"
+              },
+              {
+                "size": "xlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/1200x1200bb.jpg"
+              },
+              {
+                "size": "large",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/600x600bb.jpg"
+              },
+              {
+                "size": "medium",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/100x100bb.jpg"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "El poder del ahora",
+              "autor_completo": "Eckhart Tolle",
+              "año": "2014",
+              "editorial": null,
+              "isbn": "",
+              "apple_track_id": "698946532",
+              "categorias": [
+                "Espiritualidad",
+                "Libros",
+                "Salud, mente y cuerpo",
+                "Superación personal"
+              ],
+              "track_view_url": "https://books.apple.com/mx/book/el-poder-del-ahora/id698946532?uo=4"
+            }
+          },
+          "google": {
+            "ok": false,
+            "reason": "no_good_match",
+            "source": "google_books"
+          },
+          "openlibrary": {
+            "ok": true,
+            "source": "openlibrary",
+            "match_score": 1,
+            "match_details": {
+              "matched_title": "El poder del ahora",
+              "matched_author": "Eckhart Tolle, Gaia Ediciones"
+            },
+            "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2013.",
+            "synopsis_length": 65,
+            "covers": [
+              {
+                "size": "large",
+                "url": "https://covers.openlibrary.org/b/id/12335770-L.jpg"
+              },
+              {
+                "size": "medium",
+                "url": "https://covers.openlibrary.org/b/id/12335770-M.jpg"
+              },
+              {
+                "size": "small",
+                "url": "https://covers.openlibrary.org/b/id/12335770-S.jpg"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "El poder del ahora",
+              "autor_completo": "Eckhart Tolle, Gaia Ediciones",
+              "año": "2013",
+              "editorial": null,
+              "isbn": "",
+              "categorias": [],
+              "idioma": null,
+              "paginas": null
+            }
+          },
+          "amazon": {
+            "ok": false,
+            "reason": "skipped",
+            "source": "amazon"
+          },
+          "valid_covers": [
+            {
+              "source": "apple_books",
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/3000x3000bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/1200x1200bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/600x600bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/100x100bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "openlibrary",
+              "size": "large",
+              "url": "https://covers.openlibrary.org/b/id/12335770-L.jpg",
+              "valid": true
+            },
+            {
+              "source": "openlibrary",
+              "size": "medium",
+              "url": "https://covers.openlibrary.org/b/id/12335770-M.jpg",
+              "valid": true
+            }
+          ],
+          "_sources_succeeded": [
+            "apple_books",
+            "openlibrary"
+          ],
+          "_sources_failed": [
+            "google_books:no_good_match",
+            "amazon:skipped"
+          ],
+          "_timing": {
+            "phase1_parallel_ms": 16179,
+            "phase2_isbn_chain_ms": 0,
+            "cover_validation_ms": 920,
+            "total_ms": 17099
+          },
+          "_version": "3.6"
+        },
+        "_evidence_synopsis": "En este libro el autor nos comparte cómo se puede alcanzar un estado de iluminación aquí y ahora; y que es posible vivir libre del sufrimiento, de la ansiedad y de la neurosis. Más de 4,000,000 ejemplares vendidos. El Bestseller #1 del New York Times. El clásico que consagró a Eckhart Tolle como uno de los gurús más importantes del mundo. El poder del ahora es un libro único. Tiene la capacidad de crear una experiencia en los lectores y de cambiar su vida. Hoy ya es considerado una obra maestra. \"Uno de los mejores libros de los últimos años. Cada frase evoca verdad y poder.\" Deepak Chopra Para lograr la iluminación aquí y ahora sólo tenemos que comprender nuestro papel de creadores de nuestro dolor. Es nuestra propia mente la que causa nuestros problemas con su corriente constante de pensamientos, aferrándose al pasado, preocupándose por el futuro. Cometemos el error de identificarnos con ella, de pensar que eso es lo que somos, cuando de hecho somos seres mucho más grandes. Escrito en un formato de preguntas y respuestas que lo hace muy accesible, El poder del ahora es una invitación a la reflexión, que le abrirá las puertas a la plenitud espiritual y le permitirá ver la vida con nuevos ojos y empezar a disfrutar del verdadero poder del ahora.",
+        "_evidence_verified_identity": {
+          "titulo_real": "El poder del ahora",
+          "autor_completo": "Eckhart Tolle",
+          "año": "2014",
+          "editorial": null,
+          "isbn": "",
+          "apple_track_id": "698946532",
+          "categorias": [
+            "Espiritualidad",
+            "Libros",
+            "Salud, mente y cuerpo",
+            "Superación personal"
+          ],
+          "track_view_url": "https://books.apple.com/mx/book/el-poder-del-ahora/id698946532?uo=4"
+        },
+        "_evidence_match_score": 1
+      },
+      "ring_updated": true
+    }
+  ],
+  "last": {
+    "at": "2026-05-05T23:47:38.724Z",
+    "stage": "success",
+    "bookData": {
+      "titulo": "El poder del ahora",
+      "autor": "Eckhart Tolle",
+      "slug": "el-poder-del-ahora",
+      "tagline": "Descubre la paz en el presente.",
+      "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/3000x3000bb.jpg",
+      "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/3000x3000bb.jpg",
+      "portada_source": "apple_books",
+      "portada_candidates": [
+        {
+          "source": "apple_books",
+          "size": "xxlarge",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/3000x3000bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "xlarge",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/1200x1200bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "large",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/600x600bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "medium",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/100x100bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "openlibrary",
+          "size": "large",
+          "url": "https://covers.openlibrary.org/b/id/12335770-L.jpg",
+          "valid": true
+        },
+        {
+          "source": "openlibrary",
+          "size": "medium",
+          "url": "https://covers.openlibrary.org/b/id/12335770-M.jpg",
+          "valid": true
+        }
+      ],
+      "needs_fallback_cover": false,
+      "isbn": "",
+      "editorial": "Eckhart Tolle",
+      "publication_year": "2014",
+      "source": "apple_books",
+      "duplicado": false,
+      "selected_via": "discover_trigger",
+      "selection_reason": "Ofrece herramientas para vivir en el presente y manejar la frustración.",
+      "trigger_input": "estoy molesto, frustrado cansado no tengo mucha esperanza de que todo mejore, no sé que pasa!",
+      "trigger_analysis": {
+        "raw_input": "estoy molesto, frustrado cansado no tengo mucha esperanza de que todo mejore, no sé que pasa!",
+        "semantic_query": "libros sobre manejo de la frustración y la esperanza",
+        "intent_summary": "Buscar libros que ayuden a lidiar con la frustración y encontrar esperanza.",
+        "editorial_requests": [],
+        "source_preference": null,
+        "ranking_preference": null,
+        "unsupported_runtime_constraints": [],
+        "supported_constraints": {
+          "year_min": null,
+          "year_max": null,
+          "prefer_recent": false
+        },
+        "search_queries": [
+          "manejo de la frustración",
+          "libros sobre esperanza",
+          "superar la tristeza",
+          "autoayuda",
+          "motivación personal",
+          "bienestar emocional",
+          "libros sobre manejo de la frustración y la esperanza",
+          "libros manejo frustracion"
+        ],
+        "concept_hints": [
+          "frustration",
+          "hope",
+          "emotional well-being"
+        ],
+        "clean_for_selection": "libros sobre manejo de la frustración y la esperanza",
+        "notes": {
+          "used_ai_normalizer": true,
+          "looked_like_book_intent": false,
+          "semantic_overlap_vs_raw": 0.14285714285714285
+        }
+      },
+      "selection_validation": {
+        "semantic_score": 0.85,
+        "ai_fit_score": 0.85,
+        "match_score": 1,
+        "validation_source": "apple_books",
+        "constraint_reason": "Año verificado 2014",
+        "mode": "exact_gpt",
+        "source_label": "gpt_attempt_1",
+        "fallback_score": 145
+      },
+      "catalog_scope": "",
+      "contexto_2026": {},
+      "identity_sealed": true,
+      "_evidence": {
+        "titulo_input": "El poder del ahora",
+        "autor_input": "Eckhart Tolle",
+        "isbn_seed": "",
+        "isbn_seed_raw": "",
+        "isbn_seed_rejected": null,
+        "isbn_discovered": "",
+        "isbn_discovered_raw": "",
+        "apple": {
+          "ok": true,
+          "source": "apple_books",
+          "match_score": 1,
+          "match_details": {
+            "matched_title": "El poder del ahora",
+            "matched_author": "Eckhart Tolle"
+          },
+          "synopsis": "En este libro el autor nos comparte cómo se puede alcanzar un estado de iluminación aquí y ahora; y que es posible vivir libre del sufrimiento, de la ansiedad y de la neurosis. Más de 4,000,000 ejemplares vendidos. El Bestseller #1 del New York Times. El clásico que consagró a Eckhart Tolle como uno de los gurús más importantes del mundo. El poder del ahora es un libro único. Tiene la capacidad de crear una experiencia en los lectores y de cambiar su vida. Hoy ya es considerado una obra maestra. \"Uno de los mejores libros de los últimos años. Cada frase evoca verdad y poder.\" Deepak Chopra Para lograr la iluminación aquí y ahora sólo tenemos que comprender nuestro papel de creadores de nuestro dolor. Es nuestra propia mente la que causa nuestros problemas con su corriente constante de pensamientos, aferrándose al pasado, preocupándose por el futuro. Cometemos el error de identificarnos con ella, de pensar que eso es lo que somos, cuando de hecho somos seres mucho más grandes. Escrito en un formato de preguntas y respuestas que lo hace muy accesible, El poder del ahora es una invitación a la reflexión, que le abrirá las puertas a la plenitud espiritual y le permitirá ver la vida con nuevos ojos y empezar a disfrutar del verdadero poder del ahora.",
+          "synopsis_length": 1265,
+          "covers": [
+            {
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/3000x3000bb.jpg"
+            },
+            {
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/1200x1200bb.jpg"
+            },
+            {
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/600x600bb.jpg"
+            },
+            {
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/100x100bb.jpg"
+            }
+          ],
+          "verified_identity": {
+            "titulo_real": "El poder del ahora",
+            "autor_completo": "Eckhart Tolle",
+            "año": "2014",
+            "editorial": null,
+            "isbn": "",
+            "apple_track_id": "698946532",
+            "categorias": [
+              "Espiritualidad",
+              "Libros",
+              "Salud, mente y cuerpo",
+              "Superación personal"
+            ],
+            "track_view_url": "https://books.apple.com/mx/book/el-poder-del-ahora/id698946532?uo=4"
+          }
+        },
+        "google": {
+          "ok": false,
+          "reason": "no_good_match",
+          "source": "google_books"
+        },
+        "openlibrary": {
+          "ok": true,
+          "source": "openlibrary",
+          "match_score": 1,
+          "match_details": {
+            "matched_title": "El poder del ahora",
+            "matched_author": "Eckhart Tolle, Gaia Ediciones"
+          },
+          "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2013.",
+          "synopsis_length": 65,
+          "covers": [
+            {
+              "size": "large",
+              "url": "https://covers.openlibrary.org/b/id/12335770-L.jpg"
+            },
+            {
+              "size": "medium",
+              "url": "https://covers.openlibrary.org/b/id/12335770-M.jpg"
+            },
+            {
+              "size": "small",
+              "url": "https://covers.openlibrary.org/b/id/12335770-S.jpg"
+            }
+          ],
+          "verified_identity": {
+            "titulo_real": "El poder del ahora",
+            "autor_completo": "Eckhart Tolle, Gaia Ediciones",
+            "año": "2013",
+            "editorial": null,
+            "isbn": "",
+            "categorias": [],
+            "idioma": null,
+            "paginas": null
+          }
+        },
+        "amazon": {
+          "ok": false,
+          "reason": "skipped",
+          "source": "amazon"
+        },
+        "valid_covers": [
+          {
+            "source": "apple_books",
+            "size": "xxlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/3000x3000bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "xlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/1200x1200bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "large",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/600x600bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "medium",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/58/94/48/58944837-a079-5e0e-371a-a559e0deabb1/9786073119276.jpg/100x100bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "openlibrary",
+            "size": "large",
+            "url": "https://covers.openlibrary.org/b/id/12335770-L.jpg",
+            "valid": true
+          },
+          {
+            "source": "openlibrary",
+            "size": "medium",
+            "url": "https://covers.openlibrary.org/b/id/12335770-M.jpg",
+            "valid": true
+          }
+        ],
+        "_sources_succeeded": [
+          "apple_books",
+          "openlibrary"
+        ],
+        "_sources_failed": [
+          "google_books:no_good_match",
+          "amazon:skipped"
+        ],
+        "_timing": {
+          "phase1_parallel_ms": 16179,
+          "phase2_isbn_chain_ms": 0,
+          "cover_validation_ms": 920,
+          "total_ms": 17099
+        },
+        "_version": "3.6"
+      },
+      "_evidence_synopsis": "En este libro el autor nos comparte cómo se puede alcanzar un estado de iluminación aquí y ahora; y que es posible vivir libre del sufrimiento, de la ansiedad y de la neurosis. Más de 4,000,000 ejemplares vendidos. El Bestseller #1 del New York Times. El clásico que consagró a Eckhart Tolle como uno de los gurús más importantes del mundo. El poder del ahora es un libro único. Tiene la capacidad de crear una experiencia en los lectores y de cambiar su vida. Hoy ya es considerado una obra maestra. \"Uno de los mejores libros de los últimos años. Cada frase evoca verdad y poder.\" Deepak Chopra Para lograr la iluminación aquí y ahora sólo tenemos que comprender nuestro papel de creadores de nuestro dolor. Es nuestra propia mente la que causa nuestros problemas con su corriente constante de pensamientos, aferrándose al pasado, preocupándose por el futuro. Cometemos el error de identificarnos con ella, de pensar que eso es lo que somos, cuando de hecho somos seres mucho más grandes. Escrito en un formato de preguntas y respuestas que lo hace muy accesible, El poder del ahora es una invitación a la reflexión, que le abrirá las puertas a la plenitud espiritual y le permitirá ver la vida con nuevos ojos y empezar a disfrutar del verdadero poder del ahora.",
+      "_evidence_verified_identity": {
+        "titulo_real": "El poder del ahora",
+        "autor_completo": "Eckhart Tolle",
+        "año": "2014",
+        "editorial": null,
+        "isbn": "",
+        "apple_track_id": "698946532",
+        "categorias": [
+          "Espiritualidad",
+          "Libros",
+          "Salud, mente y cuerpo",
+          "Superación personal"
+        ],
+        "track_view_url": "https://books.apple.com/mx/book/el-poder-del-ahora/id698946532?uo=4"
+      },
+      "_evidence_match_score": 1
+    },
+    "ring_updated": true
+  }
+}
