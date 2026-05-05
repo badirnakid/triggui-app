@@ -1,29 +1,36 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
-   build-contenido-nucleus.js — ORQUESTADOR v3.7.1 NIVEL DIOS
+   build-contenido-nucleus.js — ORQUESTADOR v3.7.1 + STEP 3 NIVEL DIOS
+
+   v3.7.1+step3 (2026-05-05): SISTEMA MODULAR DE LENTES + COMPATIBILITY SCORING
+   ─────────────────────────────────────────────────────────────────────────────
+   Sobre v3.7.1, agrega 6 modificaciones quirurgicas (todas marcadas ⭐ STEP 3 ⭐):
+
+   1. Imports: prompt-composer.js + lens-compatibility-scorer.js
+   2. INPUTS.lens ahora se rellena async en main() via composeLensSystemBlock()
+      (carga constitution + lentes activos + base lens del env var TRIGGUI_LENS)
+   3. NUEVA FASE F9: lens-compatibility-scoring (1 llamada LLM despues de F2.7)
+      - Calcula vector _lens_compatibility por libro
+      - Agrega _hawkins_range y _chronobiology_optimal
+      - Es lo que app.triggui.com va a usar para matching matematico runtime sin LLM
+   4. writeQualityReport: nueva seccion "Lens Compatibility" con formato visual
+   5. snapshotInputs: resume el lens compuesto (40k+ chars) en vez de dump completo
+   6. main(): diagnostico inicial + composicion del lens block antes de runners
+
+   Cero cambios en v3.7.1 lo previo: F2.5 cover validation, F2.7 highlight judge,
+   mergeIntoContenidoJson con _manual protection, atomic writes, identity sealing,
+   prompts existentes, schema, compatMapper, render-tarjeta — todo SAGRADO.
 
    v3.7.1 (2026-04-26): FIX QUIRÚRGICO DE F2.7 — POSICIÓN POST-COMPATMAPPER
-   ─────────────────────────────────────────────────────────────────────────────
    v3.7 original tenía F2.7 mal posicionada: corría DESPUÉS de F6 (judge EN)
    pero ANTES del compatMapper, sobre `_nucleus.card_es.parrafoTop` que NO
    contiene [H]...[/H] (los inyecta `ensureHighlight()` dentro de
    `renderTarjetaES/EN`, que el compatMapper llama).
 
-   Resultado: el judge corría sobre [] segmentos vacíos, devolvía pass trivial,
-   y el bug de Brooks "merece ser" / "podemos" seguía intacto en producción.
-
    v3.7.1 mueve F2.7 a su posición correcta: DESPUÉS del compatMapper, sobre
    `mapped.tarjeta.parrafoTop` (donde sí hay [H]). Mutaciones se propagan
-   a las 6 ubicaciones renderizadas:
-     - mapped.tarjeta, mapped.tarjeta_base, mapped.tarjeta_presentacion (ES)
-     - mapped.tarjeta_en, mapped.tarjeta_base_en, mapped.tarjeta_presentacion_en (EN)
-   porque compatMapper hace 3 spreads independientes (son COPIAS, no refs).
+   a las 6 ubicaciones renderizadas.
 
-   Cambios sobre v3.7:
-   - F2.7 reubicada (post-compatMapper)
-   - Propagación explícita a 6 ubicaciones renderizadas
-   - Sin cambios en triggui-physics, extractors, schema o quality-validator
-
-   Pipeline de 9 fases:
+   Pipeline ampliado de 9 → 10 fases (F9 nueva del Step 3):
      F0  grounding-resolver          (curator / api / inference / blind) + evidence
      F1  extractAnchors               (1 llamada LLM)
      F2  synthesizePalette            (determinista, matemático)
@@ -35,15 +42,8 @@
      F7  voice-judge                  (1 llamada LLM, existente)
      F8  emoji-inject + confidence + compat-map
      F2.7 highlight coherence judge   (✨ v3.7.1 — POST-compatMapper)
-     F9  validator + report
-
-   Lo NO tocado:
-   - Prompts existentes (sagrados)
-   - Schema (sagrado, agregado highlight_judge en v3.7)
-   - compatMapper (sagrado)
-   - render-tarjeta.js (sagrado)
-   - v3.6 auto-healing portadas (intacto)
-   - v3.5 judge bilingüe + retry (intacto)
+     F9  ⭐ lens-compatibility-scoring (1 llamada LLM, STEP 3, NUEVA)
+     F10 validator + report
 ═══════════════════════════════════════════════════════════════════════════════ */
 
 import fs from "node:fs/promises";
@@ -70,7 +70,15 @@ import { injectEmojis, calculateConfidence, compatMapper } from "./post-processo
 import { judgeBothVoices } from "./voice-judge.js";
 import { validateFinalNucleus } from "./quality-validator.js";
 import { generateFallbackCover } from "./typographic-cover.js";
-import { selectBestCover, checkImageURL } from "./evidence-fetcher.js"; // 🌒 v3.6: import checkImageURL
+import { selectBestCover, checkImageURL } from "./evidence-fetcher.js";
+
+// ⭐ STEP 3 ⭐ — imports del sistema modular de lentes
+import { composeLensSystemBlock, diagnose as diagnoseLenses } from "./prompt-composer.js";
+import {
+  scoreLensCompatibility,
+  puntoHawkinsToRange,
+  deriveChronobiologyOptimal
+} from "./lens-compatibility-scorer.js";
 
 const KEY = process.env.OPENAI_KEY;
 if (!KEY) { console.log("🔕 Sin OPENAI_KEY"); process.exit(0); }
@@ -97,8 +105,10 @@ const CFG = {
   groundingJudgeMinScore: Number(process.env.TRIGGUI_JUDGE_MIN || 0.55)
 };
 
+// ⭐ STEP 3 ⭐ — INPUTS.lens ahora se rellena async en main() via composeLensSystemBlock
 const INPUTS = {
-  lens: process.env.TRIGGUI_LENS || "",
+  lens: "",  // se rellena async en main() — combina constitution + lentes activos + baseLens
+  baseLens: process.env.TRIGGUI_LENS || "",  // override puntual del curador (preservado)
   visualIntent: process.env.TRIGGUI_VISUAL_INTENT || "",
   bookContext: process.env.TRIGGUI_BOOK_CONTEXT || ""
 };
@@ -188,7 +198,7 @@ async function retryOnce(fn, label) {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   PROCESO DE UN LIBRO — pipeline completo de 8 fases
+   PROCESO DE UN LIBRO — pipeline completo de 10 fases (F9 NUEVA en Step 3)
 ────────────────────────────────────────────────────────────────────────────── */
 
 async function processBook(book, inputs, inputsSnapshot) {
@@ -261,24 +271,7 @@ async function processBook(book, inputs, inputsSnapshot) {
   tokensByPhase.palette = 0;
   console.log(`   🎨 Paleta: paper=${palette.paper} accent=${palette.accent} contrast=${palette.contrast_ratio}:1`);
 
-  // ═══ F2.5: PORTADA — VALIDATION + RESCATE + SVG FALLBACK ═══════════
-  //
-  // 🌒 v3.6 NIVEL DIOS: AUTO-HEALING de portadas fantasma.
-  //
-  // El bug original (v3.2-v3.5): si book.portada venía con URL existente
-  // pero rota (placeholder Amazon GIF de 43 bytes, URL muerta), el sistema
-  // confiaba en ella sin validar y servía cuadro vacío al usuario.
-  //
-  // El fix v3.6 valida la URL REAL antes de confiar:
-  //   1. Si book.portada existe → validar con checkImageURL v3.6 (HEAD + tamaño >= 2KB)
-  //   2. Si la validación pasa → usar tal cual (caso normal)
-  //   3. Si la validación falla → tratar como si NO hubiera portada
-  //      (continúa al rescate de evidence del v3.3)
-  //   4. Si evidence tampoco tiene cover → SVG fallback (último recurso)
-  //
-  // Esto crea AUTO-HEALING: el próximo run que toque un libro con URL
-  // fantasma la detecta y la reemplaza por una válida desde evidence,
-  // o por SVG fallback si nadie tiene cover real.
+  // ═══ F2.5: PORTADA — VALIDATION + RESCATE + SVG FALLBACK (intacta v3.6) ═════
   const tF2b = Date.now();
   const csvPortadaRaw = book.portada_url || book.portada || "";
   const csvPortadaPresent = Boolean(csvPortadaRaw);
@@ -295,29 +288,23 @@ async function processBook(book, inputs, inputsSnapshot) {
     if (!csvPortadaValid) {
       csvPortadaRejectReason = "url_failed_size_or_type_check_v3.6";
       console.log(`   🛡️  v3.6: portada CSV/precargada rechazada (URL fantasma o <2KB): ${csvPortadaRaw.slice(0, 80)}`);
-      // Limpiar la portada falsa para que el flujo siguiente la trate como ausente
       book.portada = "";
       book.portada_url = "";
       book.portada_was_invalid = true;
       book.portada_invalid_url = csvPortadaRaw;
       book.portada_invalid_reason = csvPortadaRejectReason;
     } else {
-      // Portada válida: marcar como tal para trazabilidad
       if (!book.portada_source) {
         book.portada_source = book.portada_source || "csv_or_precargada_validated";
       }
     }
   }
 
-  // Recalcular si tenemos portada válida después de la limpieza v3.6
   const hasValidCoverFromCSV = csvPortadaValid;
 
-  // Rescate de evidence (lógica v3.3 intacta)
   if (!hasValidCoverFromCSV && groundTruthMeta.evidence) {
     const bestCover = selectBestCover(groundTruthMeta.evidence);
     if (bestCover && bestCover.url) {
-      // v3.6: validar también el rescate (defensa extra, aunque selectBestCover
-      // ya filtra por valid_covers que pasó checkImageURL en evidence-fetcher)
       const rescuedValid = await checkImageURL(bestCover.url);
       if (rescuedValid) {
         book.portada = bestCover.url;
@@ -336,7 +323,6 @@ async function processBook(book, inputs, inputsSnapshot) {
     }
   }
 
-  // Después del rescate, recalcular si tenemos portada definitiva
   const hasValidCover = Boolean(book.portada_url || book.portada);
 
   if (!hasValidCover || book.needs_fallback_cover) {
@@ -474,18 +460,6 @@ async function processBook(book, inputs, inputsSnapshot) {
 
   const contentENFinal = contentENFinalRaw;
 
-  // ═══ NOTA v3.7.1 NIVEL DIOS: F2.7 MOVIDA POST-COMPATMAPPER ═══════════════
-  //
-  // En v3.7 original F2.7 corría aquí, pero los [H]...[/H] todavía no existían:
-  // los inyecta `ensureHighlight()` dentro de renderTarjetaES/EN (que llama
-  // compatMapper). El judge corría sobre [] y devolvía pass trivial.
-  //
-  // En v3.7.1 F2.7 se ejecuta DESPUÉS del compatMapper, sobre los campos
-  // `mapped.tarjeta.parrafoTop/parrafoBot` (y EN) que sí tienen [H] inyectados.
-  //
-  // Variables que F2.7 actualizará después: highlightDegradationFlags,
-  // highlightAutoCorrected, totalCorrections.
-  // ═════════════════════════════════════════════════════════════════════════
   const highlightDegradationFlags = [];
   const highlightAutoCorrected = { es: { top: false, bot: false }, en: { top: false, bot: false } };
 
@@ -525,25 +499,7 @@ async function processBook(book, inputs, inputsSnapshot) {
     qualityWarning: null
   });
 
-  // ═══ F2.7 v3.7.1 — HIGHLIGHT COHERENCE JUDGE + AUTO-CORRECT ═════════
-  //
-  // CONTEXTO ARQUITECTÓNICO:
-  // Los [H]...[/H] se inyectan dentro de compatMapper vía renderTarjetaES/EN
-  // → ensureHighlight → placeHighlightOnDensestSpan. Por eso F2.7 corre AQUÍ
-  // (post-compatMapper), no antes. En v3.7 original corría antes y operaba
-  // sobre _nucleus.card_es que NO tiene [H], por eso no detectaba nada.
-  //
-  // ESTRATEGIA:
-  // 1. Juzgar `mapped.tarjeta.parrafoTop/parrafoBot` (ES) y `mapped.tarjeta_en.parrafoTop/parrafoBot` (EN)
-  // 2. Si el LLM judge dice colgado → expandHighlightToFullSentence
-  // 3. Re-juzgar UNA vez para confirmar mejora
-  // 4. Propagar los textos finales a las 6 ubicaciones renderizadas:
-  //    tarjeta, tarjeta_base, tarjeta_presentacion (ES) +
-  //    tarjeta_en, tarjeta_base_en, tarjeta_presentacion_en (EN)
-  //    porque compatMapper hace 3 spreads independientes — son COPIAS, no refs.
-  //
-  // COSTO: 4 llamadas base × ~110 tokens = ~$0.000017 USD/libro
-  // FILOSOFÍA: cero hardcoding de listas léxicas — LLM como detector universal
+  // ═══ F2.7 v3.7.1 — HIGHLIGHT COHERENCE JUDGE + AUTO-CORRECT (intacta) ═════
   const tF27 = Date.now();
 
   async function judgeAndCorrectField(targetObj, field, language) {
@@ -551,9 +507,8 @@ async function processBook(book, inputs, inputsSnapshot) {
     if (!original) return null;
 
     const segments = getHighlightSegments(original);
-    if (segments.length === 0) return null; // sin highlights: nada que juzgar
+    if (segments.length === 0) return null;
 
-    // Primer juicio
     const firstJudge = await judgeHighlightCoherence(openai, segments, {
       model: CFG.modelMini,
       language
@@ -564,22 +519,19 @@ async function processBook(book, inputs, inputsSnapshot) {
       highlightDegradationFlags.push(`highlight_judge_${language}_${field}_degraded`);
     }
 
-    // Si coherente, listo (no auto-corregir)
     if (firstJudge.data.feels_naturally_finished && firstJudge.data.is_grammatically_complete) {
       return null;
     }
 
     console.log(`   ✂  HighlightJudge ${language.toUpperCase()} ${field}: colgado (score=${fmt(firstJudge.data.coherence_score)}) — auto-corrigiendo`);
 
-    // Auto-correct: expandir a frase completa
     const corrected = expandHighlightToFullSentence(original);
     if (corrected === original) {
-      console.log(`   ⚠  HighlightJudge ${language.toUpperCase()} ${field}: no se pudo auto-expandir (frase contenedora >22 palabras sin coma natural)`);
+      console.log(`   ⚠  HighlightJudge ${language.toUpperCase()} ${field}: no se pudo auto-expandir`);
       highlightDegradationFlags.push(`highlight_${language}_${field}_uncorrectable`);
       return null;
     }
 
-    // Re-juzgar UNA vez para verificar que mejoró
     const newSegments = getHighlightSegments(corrected);
     const secondJudge = await judgeHighlightCoherence(openai, newSegments, {
       model: CFG.modelMini,
@@ -593,21 +545,18 @@ async function processBook(book, inputs, inputsSnapshot) {
     if (secondJudge.data.feels_naturally_finished && secondJudge.data.is_grammatically_complete) {
       console.log(`   ✅ HighlightJudge ${language.toUpperCase()} ${field}: auto-corregido (score=${fmt(secondJudge.data.coherence_score)})`);
     } else {
-      console.log(`   🟡 HighlightJudge ${language.toUpperCase()} ${field}: aplicado pero residual warning (score=${fmt(secondJudge.data.coherence_score)})`);
+      console.log(`   🟡 HighlightJudge ${language.toUpperCase()} ${field}: aplicado pero residual warning`);
       highlightDegradationFlags.push(`highlight_${language}_${field}_residual_warning`);
     }
 
     return corrected;
   }
 
-  // Procesar los 4 campos canónicos: ES top/bot (sobre mapped.tarjeta) + EN top/bot (sobre mapped.tarjeta_en)
   const correctedES_top = await judgeAndCorrectField(mapped.tarjeta, "parrafoTop", "es");
   const correctedES_bot = await judgeAndCorrectField(mapped.tarjeta, "parrafoBot", "es");
   const correctedEN_top = await judgeAndCorrectField(mapped.tarjeta_en, "parrafoTop", "en");
   const correctedEN_bot = await judgeAndCorrectField(mapped.tarjeta_en, "parrafoBot", "en");
 
-  // PROPAGACIÓN: si hubo correcciones, aplicar a las 6 ubicaciones (copias independientes
-  // creadas por compatMapper). Si no hubo corrección, no tocar nada.
   if (correctedES_top !== null) {
     mapped.tarjeta.parrafoTop = correctedES_top;
     mapped.tarjeta_base.parrafoTop = correctedES_top;
@@ -637,10 +586,46 @@ async function processBook(book, inputs, inputsSnapshot) {
     console.log(`   ✅ HighlightJudge v3.7.1: todos los highlights gramaticalmente coherentes`);
   }
 
-  // Validación semántica final
+  // ═══ ⭐ STEP 3 ⭐ F9: LENS COMPATIBILITY SCORING ═══════════════════════════
+  // Una llamada LLM extra que produce el vector _lens_compatibility por libro.
+  // Es lo que app.triggui.com usa para matching matemático en runtime sin LLM.
+  // Cristaliza inteligencia AQUÍ una vez, para que selección sea gratis después.
+  // Costo: ~$0.0003 por libro. En batch de 20 libros: ~$0.006 extra por batch.
+  let lensCompatDegraded = false;
+  const tF9 = Date.now();
+  try {
+    const lensCompat = await scoreLensCompatibility(openai, {
+      book,
+      groundTruth: groundTruthMeta.ground_truth,
+      anchors: anchorsData,
+      contentES: contentESFinal,
+    }, { model: CFG.modelMini });
+
+    mapped._lens_compatibility = lensCompat;
+    mapped._hawkins_range = puntoHawkinsToRange(anchorsData.surface_hints.punto_hawkins);
+    mapped._chronobiology_optimal = deriveChronobiologyOptimal(anchorsData);
+
+    elapsedByPhase.lens_compatibility = Date.now() - tF9;
+    llmCallsCount += 1;
+
+    // Log resumido (solo lentes simples, no pilares para no saturar)
+    const lensScores = Object.entries(lensCompat)
+      .filter(([k]) => k !== "pilares" && typeof lensCompat[k] === "number")
+      .map(([k, v]) => `${k}=${v.toFixed(2)}`)
+      .join(" | ");
+    console.log(`   🪞 Lens compat: ${lensScores}`);
+  } catch (err) {
+    console.log(`   ⚠ Lens compatibility falló: ${err.message}`);
+    mapped._lens_compatibility = null;
+    mapped._hawkins_range = null;
+    mapped._chronobiology_optimal = null;
+    lensCompatDegraded = true;
+  }
+
+  // ═══ F10: VALIDACIÓN SEMÁNTICA FINAL + AGREGADO DE WARNINGS ═════════
   const finalValidation = validateFinalNucleus(mapped);
   const allWarnings = [...(finalValidation.warnings || []), ...judgeDegradationFlags, ...highlightDegradationFlags];
-  // v3.6: agregar warning si hubo auto-healing de portada (visibilidad para auditoría)
+  // v3.6: agregar warning si hubo auto-healing de portada
   if (book.portada_was_invalid) {
     allWarnings.push(`portada_auto_healed_v3.6: original "${(book.portada_invalid_url || "").slice(0, 60)}" rechazada por ${book.portada_invalid_reason}`);
   }
@@ -648,7 +633,18 @@ async function processBook(book, inputs, inputsSnapshot) {
   if (totalCorrections > 0) {
     allWarnings.push(`highlights_auto_corrected_v3.7: ${totalCorrections} highlight(s) extendidos a frase completa por LLM judge`);
   }
-  const overallStatus = (judgeDegradationFlags.length > 0 || book.portada_was_invalid || totalCorrections > 0 || highlightDegradationFlags.length > 0) && finalValidation.overall === "pass"
+  // ⭐ STEP 3 ⭐ — agregar warning si lens compat falló
+  if (lensCompatDegraded) {
+    allWarnings.push(`lens_compatibility_degraded_step3: scoreLensCompatibility falló o devolvió null`);
+  }
+
+  const overallStatus = (
+    judgeDegradationFlags.length > 0 ||
+    book.portada_was_invalid ||
+    totalCorrections > 0 ||
+    highlightDegradationFlags.length > 0 ||
+    lensCompatDegraded
+  ) && finalValidation.overall === "pass"
     ? "pass_with_warnings"
     : finalValidation.overall;
 
@@ -661,6 +657,7 @@ async function processBook(book, inputs, inputsSnapshot) {
   mapped._metrics.portada_auto_healed = Boolean(book.portada_was_invalid);
   mapped._metrics.highlights_auto_corrected = totalCorrections;
   mapped._metrics.highlight_degradations = highlightDegradationFlags;
+  mapped._metrics.lens_compat_degraded = lensCompatDegraded;  // ⭐ STEP 3 ⭐
 
   elapsedByPhase.post_processing = Date.now() - tF8;
 
@@ -677,6 +674,31 @@ async function processBook(book, inputs, inputsSnapshot) {
    QUALITY REPORT — archivo Markdown por libro (observabilidad)
 ────────────────────────────────────────────────────────────────────────────── */
 
+// ⭐ STEP 3 ⭐ — helper para formatear lens compatibility en el report
+function formatLensCompatibility(compat) {
+  if (!compat || typeof compat !== "object") return "_(no disponible)_";
+
+  const lines = [];
+
+  for (const [k, v] of Object.entries(compat)) {
+    if (k === "pilares") continue;
+    if (typeof v === "number") {
+      lines.push(`- **${k}:** ${v.toFixed(2)}`);
+    }
+  }
+
+  if (compat.pilares && typeof compat.pilares === "object") {
+    lines.push("- **pilares:**");
+    for (const [pilar, valor] of Object.entries(compat.pilares)) {
+      if (typeof valor === "number") {
+        lines.push(`  - ${pilar}: ${valor.toFixed(2)}`);
+      }
+    }
+  }
+
+  return lines.join("\n");
+}
+
 async function writeQualityReport(result, stamp) {
   const { mapped, groundTruthMeta, confidence, finalValidation, anchorsData } = result;
   const safeName = String(mapped.titulo).replace(/[^\w-]+/g, "_").slice(0, 60);
@@ -684,11 +706,25 @@ async function writeQualityReport(result, stamp) {
   await fs.mkdir(dir, { recursive: true });
   const p = path.join(dir, `${stamp}_${safeName}.md`);
 
+  // ⭐ STEP 3 ⭐ — sección de lens compatibility en el report
+  const lensCompatSection = mapped._lens_compatibility
+    ? `\n## 🪞 Lens Compatibility (Step 3)
+
+${formatLensCompatibility(mapped._lens_compatibility)}
+
+- **Hawkins range estimado:** ${mapped._hawkins_range ? `[${mapped._hawkins_range[0]}, ${mapped._hawkins_range[1]}]` : "n/a"}
+- **Chronobiology optimal:** franjas=${(mapped._chronobiology_optimal?.preferred_franjas || []).join(", ") || "n/a"}, energy_min=${mapped._chronobiology_optimal?.energy_minimum_required ?? "n/a"}
+${mapped._metrics?.lens_compat_degraded ? "\n⚠️ **Lens scoring degraded** — vector usa fallback neutro (todos 0.5). Investigar logs." : ""}
+`
+    : (mapped._metrics?.lens_compat_degraded
+        ? `\n## 🪞 Lens Compatibility\n\n⚠️ **Falló el scoring** — vector no disponible. Investigar logs.`
+        : "");
+
   const md = `# Quality Report — ${mapped.titulo}
 
 **Autor:** ${mapped.autor}
 **Ejecutado:** ${stamp}
-**Pipeline:** nucleus-canonical-v3.7.1
+**Pipeline:** nucleus-canonical-v3.7.1+step3
 
 ---
 
@@ -773,7 +809,7 @@ ${mapped._metrics?.judge_degradations?.length ? `**🛡️ Degradaciones:** ${ma
 - **specificity:** ${confidence.specificity} ← anti-genericidad de anchors
 - **grounding_judge:** ${confidence.grounding_judge} ← promedio de los 2 judges
 - **Combined:** **${confidence.combined}**
-
+${lensCompatSection}
 ---
 
 ## ✅ Validación final
@@ -852,7 +888,7 @@ async function loadSingle() {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   FUSIÓN CON contenido.json
+   FUSIÓN CON contenido.json (intacta de v3.7.1)
 ────────────────────────────────────────────────────────────────────────────── */
 
 function normalizeBookKey(titulo, autor) {
@@ -931,6 +967,15 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
 async function snapshotInputs(inputs, crono) {
   const stamp = new Date().toISOString().replace(/[:]/g, "-").replace(/\..+$/, "");
   await fs.mkdir(CFG.files.inputsHistoryDir, { recursive: true });
+
+  // ⭐ STEP 3 ⭐ — el snapshot resume el lens compuesto en vez de dump completo
+  const lensSummary = inputs.lens && inputs.lens.length > 0
+    ? `_(bloque compuesto: ${inputs.lens.length} caracteres — constitución + lentes activos + baseLens)_\n\nVer console.log de prompt-composer al inicio del run para detalle de lentes activos.`
+    : "_(vacío)_";
+  const baseLensSummary = inputs.baseLens && inputs.baseLens.trim()
+    ? inputs.baseLens
+    : "_(vacío)_";
+
   const content = `# Triggui run — ${stamp}
 
 ## Cronobiología automática
@@ -940,8 +985,11 @@ async function snapshotInputs(inputs, crono) {
 - Energía: ${Math.round(crono.energia * 100)}%
 - Modo: ${crono.modo}
 
-## Lens
-${inputs.lens || "_(vacío)_"}
+## Lens compuesto (Step 3)
+${lensSummary}
+
+## Base lens del curador (env var TRIGGUI_LENS — override puntual)
+${baseLensSummary}
 
 ## Visual intent
 ${inputs.visualIntent || "_(vacío)_"}
@@ -968,7 +1016,7 @@ async function runBatch() {
   const crono = cronobioContext();
   const inputsSnapshot = await snapshotInputs(INPUTS, crono);
 
-  console.log(`\n🚀 BATCH v3.7.1 — ${selected.length}/${books.length} libros`);
+  console.log(`\n🚀 BATCH v3.7.1+step3 — ${selected.length}/${books.length} libros`);
   console.log(`   Modo: ${CFG.shadowMode ? "🌒 SHADOW" : "⚡ PRODUCCIÓN"}`);
   console.log(`   ${crono.dia} ${crono.hora}h ${crono.franja} | energía ${Math.round(crono.energia * 100)}%`);
   console.log(`   Output: ${outputFile}`);
@@ -1023,9 +1071,9 @@ async function runBatch() {
   const runMs = Date.now() - t0;
   await fs.mkdir(CFG.files.metricsDir, { recursive: true });
   const stamp = new Date().toISOString().replace(/[:.]/g, "-");
-  await writeJSON(`${CFG.files.metricsDir}/nucleus-v3.7.1-${stamp}.json`, {
+  await writeJSON(`${CFG.files.metricsDir}/nucleus-v3.7.1-step3-${stamp}.json`, {
     timestamp: new Date().toISOString(),
-    pipeline: "nucleus-canonical-v3.7.1",
+    pipeline: "nucleus-canonical-v3.7.1+step3",
     mode: CFG.shadowMode ? "shadow" : "production",
     requested: selected.length,
     exitosos: exitosos.length,
@@ -1058,7 +1106,7 @@ async function runSingle() {
 
   const crono = cronobioContext();
   const inputsSnapshot = await snapshotInputs(INPUTS, crono);
-  console.log(`\n🚀 SINGLE v3.7.1: ${book.titulo}`);
+  console.log(`\n🚀 SINGLE v3.7.1+step3: ${book.titulo}`);
 
   const result = await processBook(book, INPUTS, inputsSnapshot);
 
@@ -1081,6 +1129,22 @@ async function runSingle() {
 }
 
 async function main() {
+  // ⭐ STEP 3 ⭐ — Diagnóstico inicial: verificar que constitución + lentes existen
+  console.log(`🔍 Diagnóstico de sistema modular de lentes (Step 3):`);
+  const diag = await diagnoseLenses();
+  if (!diag.ok) {
+    console.warn(`⚠ prompt-composer diagnóstico: ${diag.summary}`);
+    console.warn(`   Faltantes: ${diag.missing.join(", ")}`);
+    console.warn(`   El sistema continuará pero sin esos archivos (degradación elegante).`);
+  } else {
+    console.log(`   ✓ Lentes activos: ${diag.active_lenses.join(", ")}`);
+    console.log(`   ✓ ${diag.found.length} archivos de configuración OK`);
+  }
+
+  // ⭐ STEP 3 ⭐ — Componer el lens block una sola vez al inicio del run
+  // Combina: constitution + lentes activos del registry + baseLens del env var
+  INPUTS.lens = await composeLensSystemBlock({ baseLens: INPUTS.baseLens });
+
   const isSingle = process.env.SINGLE_MODE === "true" || await fileExists(CFG.files.tmpBook);
   if (isSingle) await runSingle();
   else await runBatch();
