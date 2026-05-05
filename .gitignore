@@ -27,3 +27,45 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+
+# ═══════════════════════════════════════════════════════════════
+# CONSOLIDACIÓN MAYO 2026 — limpiar ruido del filesystem local
+# ═══════════════════════════════════════════════════════════════
+
+# Auditorías de sesión / handoff (no commitear)
+*audit*.txt
+DIAG_*.txt
+handoff_*.txt
+index_audit.txt
+
+# Nested repo de triggui-content (workflows lo crean fresh en CI con actions/checkout)
+triggui-content/
+
+# Caches operacionales del motor (se regeneran en cada run)
+experiments/nucleus/evidence-cache/
+experiments/nucleus/grounding-cache/
+
+# Snapshots y reports históricos (output de runs, no source)
+experiments/nucleus/inputs-history/
+experiments/nucleus/quality-reports/
+
+# Outputs sample/test del motor (el contenido.json canónico vive en triggui-content)
+experiments/nucleus/contenido.json
+experiments/nucleus/contenido.shadow.json
+experiments/nucleus/contenido_edicion.json
+experiments/nucleus/contenido_manual.json
+experiments/nucleus/contenido.legacy.test.json
+experiments/nucleus/contenido.external.test.json
+experiments/nucleus/contenido.external.test.v2.json
+experiments/nucleus/lab-pulse.json
+experiments/nucleus/metrics/
+
+# Mobile build artifacts
+mobile/.expo/
+
+# Node deps
+node_modules/
+
+# Backups locales
+*.backup-*
+*.tmp-*
