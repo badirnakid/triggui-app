@@ -113,107 +113,125 @@ Ejemplos de MALOS anchors (demasiado genéricos, podrían aplicar a cualquier li
 - "enfoque en lo esencial"
 
 ═══════════════════════════════════════════════════════════════════
-INTENCIÓN VISUAL — FILOSOFÍA AWSMCOLOR DOPAMINÉRGICA
+INTENCIÓN VISUAL — HUELLA DIGITAL CROMÁTICA CUÁNTICA
 ═══════════════════════════════════════════════════════════════════
 
-Cada libro merece una identidad cromática ÚNICA, DOPAMINÉRGICA y MEMORABLE.
-NO eres conservador. La paleta debe ser ADICTIVA visualmente, como cubierta
-de revista de diseño contemporáneo (referencia: instagram.com/awsmcolor).
+🌒 PRINCIPIO FUNDAMENTAL
+
+Cada libro tiene UN solo hue posible — el suyo.
+NO pienses en categorías. NO pienses en buckets. NO pienses en arquetipos.
+PIENSA: si este libro fuera un objeto único en el mundo,
+¿qué color exacto tendría que ningún otro objeto pudiera tener?
+
+El círculo cromático tiene 360 hues posibles.
+Multiplicado por 60 temperature_shifts y 5 strategies, hay
+~108,000 firmas cromáticas únicas. Tu trabajo NO es elegir entre
+opciones genéricas. Tu trabajo es DETECTAR la firma que ya existe
+en este libro específico.
 
 🎨 PRINCIPIOS NO NEGOCIABLES
 
-1. DOPAMINÉRGICO ANTES QUE SEGURO
-   La saturación alta y el contraste fuerte producen dopamina visual.
-   Tu default es "vivid". "balanced" solo si el libro tiene dualidad clara.
-   "muted" SOLO si el libro exige contemplación monástica explícita
-   (zen, monje, meditación silenciosa, duelo). Para todo lo demás → vivid.
+1. HUELLA DIGITAL ANTES QUE CATEGORÍA
+   Si pensaste "este libro es de productividad → hue=70 amarillo
+   eléctrico" estás categorizando, no detectando. Refínalo.
+   ¿Qué amarillo exacto? ¿Por qué ESE número y no 71 o 38?
+   Si no puedes justificar el dígito específico, no es la firma.
 
-2. CONEXIÓN CON LA PORTADA REAL
+2. PERMITIR LO INESPERADO
+   - Un libro de productividad puede ser hue=23 (naranja quemado)
+     si su voz interna habla de "trabajo del artesano".
+   - Un libro de filosofía puede ser hue=337 (rosa-rojo) si tiene
+     calor humano crudo, no contemplación distante.
+   - Un libro de finanzas puede ser hue=185 (turquesa profundo)
+     si propone abundancia como agua que fluye.
+
+   NO te quedes con la primera asociación obvia. Pregúntate:
+   "¿Cuál es el hue que NADIE esperaría pero que es perfecto?"
+
+3. DOPAMINÉRGICO ANTES QUE SEGURO
+   Saturación alta y contraste fuerte producen dopamina visual.
+   Default: "vivid". "balanced" solo con dualidad emocional clara.
+   "muted" SOLO con contemplación monástica explícita.
+
+4. CONEXIÓN CON LA PORTADA REAL
    Imagina la portada del libro como objeto físico en una mesa.
-   Los 4 colores de la paleta son UN DETALLE de esa portada — el lomo,
-   el title-treatment, el background dominante. NO inventes colores
-   genéricos del tema; SIENTE los pigmentos del libro físico.
+   Los 4 colores son UN DETALLE de esa portada — no inventes
+   colores genéricos del tema; SIENTE los pigmentos del libro físico.
 
-3. ZONA MUERTA PROHIBIDA
-   La combinación hue=190-220 + saturation=balanced + strategy=analogous
-   está PROHIBIDA. Es "azul corporativo aburrido" que mata la dopamina.
-   Si tu instinto natural cae ahí → empújate a complementary o triadic
-   o desplaza el hue al menos 60° (ej: a verde-menta 145 o magenta 320).
-
-4. DIVERSIDAD POR LIBRO
-   Cada libro es un mundo cromático distinto. La paleta debe sorprender,
-   no repetir. Si el libro anterior fue azul-analogous, este NO debe serlo.
+5. ANTI-CONTAMINACIÓN DE BATCH
+   Si te muestran hues ya usados en libros anteriores de este batch,
+   tu hue DEBE estar al menos 30° de distancia de TODOS ellos.
+   Cada libro es un mundo cerrado. Cuántico = único.
 
 ═══════════════════════════════════════════════════════════════════
 PARÁMETROS NUMÉRICOS
 ═══════════════════════════════════════════════════════════════════
 
-- hue_primary: entero 0-359 (círculo cromático completo).
+- hue_primary: entero 0-359.
 
-  MAPEO REFINADO DOPAMINÉRGICO (no genérico — atmósfera específica):
-    0-15 o 345-359 = ROJO SANGRE (manipulación, urgencia, deseo, peligro)
-    15-35          = NARANJA QUEMADO (artesanía, otoño, leña, tradición)
-    35-55          = ÁMBAR/MOSTAZA (sabiduría, sol antiguo, miel, madera)
-    55-75          = AMARILLO ELÉCTRICO (descubrimiento, alegría, neón, sol pleno)
-    75-105         = VERDE LIMA (vitalidad, primavera, novedad, energía joven)
-    105-135        = VERDE BOSQUE (introspección, naturaleza profunda, salud)
-    135-165        = VERDE MENTA/AGUA (calma activa, sanación, esperanza)
-    165-195        = TURQUESA/CIAN (claridad mental, agua, frescura, movimiento)
-    195-220        = AZUL CIELO (apertura, libertad, expansión — USAR CON CUIDADO)
-    220-250        = AZUL ÍNDIGO (profundidad, nocturno, tecnología, sueño)
-    250-275        = VIOLETA (misterio, espiritualidad evolutiva, conciencia alta)
-    275-300        = MAGENTA (creatividad, ruptura, vanguardia, energía)
-    300-330        = ROSA INTENSO (corazón, vulnerabilidad audaz, feminidad fuerte)
-    330-345        = ROSA-ROJO (pasión, romance crudo, drama humano)
+  El círculo cromático completo está disponible. NO uses solo
+  "zonas seguras". Cada libro merece su grado específico.
 
-  EJEMPLOS GUÍA POR ARQUETIPO DE LIBRO:
-    "Trillion Dollar Coach" (corporate coaching)     → hue=45  (mostaza/dorado)
-    "El monje y el filósofo" (zen + occidente)       → hue=110 (verde bosque)
-    "Confía en mí estoy mintiendo" (manipulación)    → hue=355 (rojo sangre)
-    "Cómo sanar tu ansiedad" (esperanza, calma)      → hue=155 (verde menta)
-    "Las leyes de la naturaleza humana" (estrategia) → hue=290 (magenta)
-    "El poder del ahora" (presencia)                 → hue=70  (amarillo eléctrico)
-    "Suficiente" (filosofía dinero)                  → hue=40  (ámbar dorado)
-    "Vida contemplativa" (filosofía moderna)         → hue=265 (violeta)
+  Atmósferas (referencia, NO categorías rígidas):
+    0-30 = ROJO SANGRE (manipulación, urgencia, deseo, peligro)
+    30-60 = NARANJA-ÁMBAR (artesanía, otoño, leña, sol antiguo)
+    60-90 = AMARILLO ELÉCTRICO (descubrimiento, alegría, neón)
+    90-150 = VERDES (vitalidad, naturaleza, sanación)
+    150-210 = TURQUESAS-AZULES CIELO (claridad, agua, expansión)
+    210-270 = AZULES ÍNDIGO (profundidad, nocturno, sueño)
+    270-330 = VIOLETAS-MAGENTAS (creatividad, ruptura, conciencia)
+    330-359 = ROSAS (vulnerabilidad audaz, drama humano)
+
+  PROHIBIDO: caer mecánicamente en "esta es zona X porque el libro
+  trata de Y". Cada libro es huella única, no categoría.
+
+  Antes de devolver tu hue final, pregúntate:
+  - ¿Otro libro del catálogo merecería exactamente este número?
+    Si SÍ → el hue es genérico, refínalo (sube/baja 5-25 grados).
+    Si NO → es la firma del libro, devuélvelo.
+  - ¿Mi hue está al menos 30° de los hues ya usados en este batch?
+    Si NO → pívota a otra atmósfera completamente.
 
 - saturation: "muted" | "balanced" | "vivid"
   Default agresivo: "vivid".
-  Usa "balanced" si hay dualidad emocional clara (libros de duelo procesado, transición).
-  Usa "muted" SOLO si el libro es contemplación silenciosa explícita
-  (meditación, zen, monasterio, duelo profundo no procesado).
+  "balanced" si hay dualidad emocional clara.
+  "muted" SOLO si el libro es contemplación silenciosa explícita.
 
 - lightness_paper: "dark" | "medium_dark" | "medium_light" | "light"
   Default: "light" (papel claro permite que los colores brillen).
-  "medium_light" si hay sofisticación nocturna (ensayo profundo, filosofía moderna).
-  "dark" SOLO si el libro es muy nocturno o místico explícitamente.
+  "medium_light" si hay sofisticación nocturna.
+  "dark" SOLO si el libro es muy nocturno o místico.
 
 - temperature_shift: entero -30 a +30.
+  Úsalo para refinar la firma. Un hue=70 con shift=-15 NO es
+  igual que hue=70 con shift=+15. Cada libro merece su offset.
   -20 a -10 = frío sutil (mística, agua, tecnología)
-  0          = neutral (default seguro)
+  0 = neutral (úsalo solo si NO hay razón para shift)
   +10 a +20 = cálido sutil (humano, hogar, tradición)
-  Evita extremos (-30, +30) salvo razón clara.
 
 - palette_strategy: "monochromatic" | "analogous" | "complementary" | "triadic" | "split_complementary"
 
-  PROHIBIDO usar "analogous" como default fácil.
-  Tu jerarquía dopaminérgica preferida:
-    1. complementary (tensión visual = dopamina)
+  Jerarquía dopaminérgica:
+    1. complementary (tensión = dopamina)
     2. triadic (variedad rítmica)
     3. split_complementary (equilibrio con tensión)
-    4. monochromatic (solo si el libro es DISCIPLINA pura)
-    5. analogous (último recurso — sólo si la armonía es esencial)
+    4. monochromatic (solo si DISCIPLINA pura)
+    5. analogous (último recurso)
 
 - typography_family, density, rhythm, era, genre_visual: elige enums según voz y género.
 
 ═══════════════════════════════════════════════════════════════════
-AUTOEXAMEN ANTES DE DEVOLVER
+AUTOEXAMEN CUÁNTICO ANTES DE DEVOLVER
 ═══════════════════════════════════════════════════════════════════
-Antes de cerrar tu visual_intent, verifica:
-1. ¿Mi hue cae en zona muerta 190-220? Si sí, ¿tengo razón fortísima?
-2. ¿Estoy usando analogous + balanced juntos? Si sí, cambia uno.
-3. ¿Mis 4 colores se sentirían como portada de revista contemporánea?
-4. ¿Otro libro de mi catálogo tendría exactamente estos parámetros?
-   Si sí, diferéncialo.
+Antes de cerrar tu visual_intent, verifica las 5 preguntas:
+
+1. ¿Mi hue es ESTE NÚMERO ESPECÍFICO o estoy en un default genérico?
+2. ¿Está al menos 30° de cada hue del batch previo (si me dieron contexto)?
+3. ¿Otro libro merecería exactamente estos 5 parámetros?
+   Si sí → diferéncialos.
+4. ¿Estoy categorizando ("libros de X son color Y") o detectando huella?
+5. ¿Mi paleta se sentiría como portada de revista contemporánea
+   única en el catálogo? Si no → refina.
 
 ═══════════════════════════════════════════════════════════════════
 SURFACE HINTS
@@ -226,12 +244,16 @@ SURFACE HINTS
 En esta llamada NO escribes cards, og_phrases ni edition_blocks. Solo extraes anchors + visual_intent + lens_analysis + identity.`;
 }
 
-function anchorsUserPrompt(book, groundTruth, lens) {
+function anchorsUserPrompt(book, groundTruth, lens, previousHues = []) {
   let p = `LIBRO:\nTítulo proporcionado: "${book.titulo}"\nAutor proporcionado: "${book.autor}"`;
   if (book.tagline) p += `\nContexto editorial: "${book.tagline}"`;
   p += `\n\n═══════════════════════════════════════════════════════════════════\nGROUND TRUTH (fuente de verdad sobre el libro):\n═══════════════════════════════════════════════════════════════════\n${groundTruth}`;
   if (lens && lens.trim()) {
     p += `\n\n═══════════════════════════════════════════════════════════════════\nLENTE DEL CURADOR:\n═══════════════════════════════════════════════════════════════════\n${lens}\n\nAnaliza honestamente en lens_analysis cómo (o si) el libro aborda este tema.`;
+  }
+  // 🌒 ANTI-CONTAMINACIÓN DE BATCH: hues ya usados en libros anteriores
+  if (Array.isArray(previousHues) && previousHues.length > 0) {
+    p += `\n\n═══════════════════════════════════════════════════════════════════\n🌒 HUES YA USADOS EN ESTE BATCH (NO REPETIR):\n═══════════════════════════════════════════════════════════════════\n[${previousHues.join(', ')}]\n\nTu hue_primary DEBE estar al menos 30° de distancia de TODOS estos números (en cualquier dirección del círculo cromático). Cada libro es huella digital ÚNICA. Si tu instinto inicial cae cerca de uno de estos hues, pívota a otra atmósfera completamente — el catálogo merece diversidad cuántica real.`;
   }
   p += `\n\nExtrae anchors + visual_intent numérico + lens_analysis + identity. No escribas cards.`;
   return p;
@@ -240,14 +262,16 @@ function anchorsUserPrompt(book, groundTruth, lens) {
 export async function extractAnchors(openai, book, groundTruth, lens = "", options = {}) {
   const schemas = await loadSchemas();
   const model = options.model || "gpt-4o-mini";
-  const temperature = options.temperature ?? 0.5;
+  // 🌒 FASE C: temperature alta para creatividad cuántica (default 0.85, antes 0.5)
+  const temperature = options.temperature ?? 0.85;
+  const previousHues = Array.isArray(options.previousHues) ? options.previousHues : [];
 
   const response = await openai.chat.completions.create({
     model,
     temperature,
     messages: [
       { role: "system", content: anchorsSystemPrompt() },
-      { role: "user", content: anchorsUserPrompt(book, groundTruth, lens) }
+      { role: "user", content: anchorsUserPrompt(book, groundTruth, lens, previousHues) }
     ],
     response_format: {
       type: "json_schema",

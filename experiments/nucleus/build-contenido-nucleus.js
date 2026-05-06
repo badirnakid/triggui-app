@@ -239,8 +239,15 @@ async function processBook(book, inputs, inputsSnapshot) {
 
   // ═══ F1: ANCHORS + VISUAL INTENT ════════════════════════════════════
   const tF1 = Date.now();
+  // 🌒 FIRMA CUÁNTICA: recolectar hues ya usados en libros anteriores del batch
+  // El array global __TRIGGUI_BATCH_HUES__ se mantiene vivo entre libros del mismo batch
+  if (typeof globalThis.__TRIGGUI_BATCH_HUES__ === "undefined") {
+    globalThis.__TRIGGUI_BATCH_HUES__ = [];
+  }
+  const __batchHues = globalThis.__TRIGGUI_BATCH_HUES__.slice();
+
   const anchorsRes = await retryOnce(
-    () => extractAnchors(openai, book, groundTruthMeta.ground_truth, inputs.lens, { model: CFG.modelMini }),
+    () => extractAnchors(openai, book, groundTruthMeta.ground_truth, inputs.lens, { model: CFG.modelMini, previousHues: __batchHues }),
     "extractAnchors"
   );
   elapsedByPhase.anchors = Date.now() - tF1;
@@ -262,6 +269,10 @@ async function processBook(book, inputs, inputsSnapshot) {
   console.log(`   ⚓ Anchors: ${anchorsData.book_grounding_anchors.concepts.slice(0, 2).map((c) => c.slice(0, 45)).join(" | ")}`);
   console.log(`   📘 Identity: "${anchorsData.book_identity.titulo_en}" | autor="${anchorsData.book_identity.autor_completo}"`);
   console.log(`   🎨 Visual: hue=${anchorsData.visual_intent.hue_primary}, sat=${anchorsData.visual_intent.saturation}, strategy=${anchorsData.visual_intent.palette_strategy}`);
+  // 🌒 FIRMA CUÁNTICA: registrar hue en el batch para anti-contaminación de siguientes libros
+  if (typeof anchorsData.visual_intent.hue_primary === "number") {
+    globalThis.__TRIGGUI_BATCH_HUES__.push(anchorsData.visual_intent.hue_primary);
+  }
 
   // ═══ F2: PALETTE SYNTHESIS (determinista) ═══════════════════════════
   const tF2 = Date.now();
