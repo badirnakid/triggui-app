@@ -6612,52 +6612,41 @@ bootTriggui();
 // Top-K libros candidatos via TF-IDF + random pool de sus frases
 // Para revertir: eliminar este bloque <script id="js-bocado-eco">
 // ═══════════════════════════════════════════════════════════════════════
-// 🌒 TRIGGUI BOCADO Y ECO v2 — Magia matemática nivel cuántico
+// 🌒 TRIGGUI BOCADO Y ECO v3 — Magia matemática nivel quark
 // ═══════════════════════════════════════════════════════════════════════
 //
-// Filosofía v2: continuidad fluida total. NO cortar la atmósfera cromática.
-// Mismas tipografías que la barra mágica. Mismos colores cuánticos. Mismo
-// subrayadito característico. Animación cinematográfica con blur y stagger.
+// FIXES v3 sobre v2:
+//   1. Bloques entran con ritmo taichi: blur + stagger + cubic-bezier
+//      armónico al bocado (mismo cubic-bezier(0.19, 1, 0.22, 1))
+//   2. Detección universal de cierre de tarjeta: MutationObserver +
+//      hooks a closeCard, BarraMagica.openOverlay (lupa también)
+//   3. Tarjeta se cierra INSTANTÁNEAMENTE (display:none sin transition)
+//      antes de mostrar el eco → cero flicker, cero líneas, cero artifacts
+//   4. Backdrop-filter solo durante fade-in/out del eco; durante el hold
+//      el background es sólido con tinte del libro (sin recalcular blur)
+//   5. Después del eco → reabrir barra mágica con nueva pregunta
+//      (ciclo armónico de descubrimiento)
 //
-// BOCADO:
-//   - Modifica el contenido del overlay barra mágica (NO crea overlay nuevo)
-//   - El input/pregunta se desvanece con blur
-//   - Aparece la frase con misma tipografía SF Pro Display weight 300
-//   - Accent del día (--bm-accent) en última palabra + subrayadito
-//   - Auroras y partículas SIGUEN VIVAS detrás
-//
-// ECO:
-//   - Overlay con backdrop-filter blur(40px) saturate(1.6) sobre bloques
-//   - Background gradient con colores cuánticos del libro
-//   - Accent del libro (window._lastQuantumBlocks) en última palabra
-//   - Misma tipografía + subrayadito
-//
-// TIMING:
-//   - Aparición: 1500ms (blur 12px→0 + opacity 0→1, stagger 60ms/palabra)
-//   - Permanencia visible: 2000ms (tiempo congelado)
-//   - Desaparición: 1200ms (blur 0→10px + opacity 1→0)
-//   - Total: ~4700ms
-//
-// Pool de frases: TF-IDF top-K candidatos del catálogo (ya validado v1)
+// Pool de frases: TF-IDF top-K candidatos del catálogo (validado v1)
 // ═══════════════════════════════════════════════════════════════════════
 
-(function setupBocadoEcoV2() {
+(function setupBocadoEcoV3() {
   'use strict';
 
-  // ── Configuración cuántica ──
   var APPEAR_MS = 1500;
   var HOLD_MS = 2000;
   var DISAPPEAR_MS = 1200;
   var WORD_STAGGER_MS = 60;
+  var BLOCK_STAGGER_MS = 120;
+  var BLOCK_DURATION_MS = 800;
   var BOCADO_DELAY_MS = 100;
-  var ECO_DELAY_MS = 350;
   var TOP_K = 5;
 
-  // ── Estado ──
   var lastCandidatePool = [];
   var usedInThisSession = new Set();
   var bocadoActive = false;
   var ecoActive = false;
+  var pendingReopenAfterEco = false;
 
   // ── Random verdadero ──
   function trueRandom() {
@@ -6676,11 +6665,9 @@ bootTriggui();
     return text.replace(/\[\/?H\]/gi, '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
   }
 
-  // ── Top-K candidatos via TF-IDF ──
   function getTopKCandidates(libros, query, k) {
     if (!libros || libros.length === 0) return [];
     var cleanQuery = String(query || '').trim();
-
     function shuffleSlice(arr, n) {
       var s = arr.slice();
       for (var i = s.length - 1; i > 0; i--) {
@@ -6689,14 +6676,11 @@ bootTriggui();
       }
       return s.slice(0, n);
     }
-
     if (!cleanQuery) return shuffleSlice(libros, k);
     if (typeof TrigguiFiltro === 'undefined' || !TrigguiFiltro._idxCache) return shuffleSlice(libros, k);
-
     var idx = TrigguiFiltro._idxCache;
     var tokens = TrigguiFiltro.tokenize ? TrigguiFiltro.tokenize(cleanQuery) : cleanQuery.toLowerCase().split(/\s+/);
     if (!tokens || tokens.length === 0) return libros.slice(0, k);
-
     var scores = [];
     for (var i = 0; i < libros.length; i++) {
       var bookVec = (idx.bookVectors && idx.bookVectors[i]) || {};
@@ -6710,7 +6694,6 @@ bootTriggui();
     }
     scores.sort(function(a, b) { return b.score - a.score; });
     if (scores[0].score === 0) return shuffleSlice(libros, k);
-
     var result = [];
     for (var r = 0; r < Math.min(k, scores.length); r++) result.push(scores[r].libro);
     return result;
@@ -6720,11 +6703,9 @@ bootTriggui();
     var candidates = getTopKCandidates(libros, query, TOP_K);
     var pool = [];
     var lang = (typeof TriggguiI18n !== 'undefined' && TriggguiI18n.lang) || 'es';
-
     for (var c = 0; c < candidates.length; c++) {
       var libro = candidates[c];
       if (!libro) continue;
-
       var frasesField = (lang === 'en' && Array.isArray(libro.frases_en) && libro.frases_en.length === 4) ? libro.frases_en : libro.frases;
       if (Array.isArray(frasesField)) {
         for (var f = 0; f < frasesField.length; f++) {
@@ -6732,7 +6713,6 @@ bootTriggui();
           if (clean.length >= 8 && clean.length <= 140) pool.push({ text: clean, source: libro.titulo || 'unknown' });
         }
       }
-
       var tarjeta = (lang === 'en' && libro.tarjeta_en) ? libro.tarjeta_en : libro.tarjeta;
       if (tarjeta && tarjeta.subtitulo) {
         var cleanSub = cleanText(tarjeta.subtitulo);
@@ -6755,7 +6735,6 @@ bootTriggui();
     return available[Math.floor(trueRandom() * available.length)];
   }
 
-  // ── Segmentar frase: cuerpo + ancla (regla C: ≤4 palabras → 1, ≥5 → 2) ──
   function segmentPhrase(text) {
     var words = String(text || '').split(/\s+/).filter(function(w) { return w.length > 0; });
     var n = words.length;
@@ -6767,32 +6746,22 @@ bootTriggui();
     };
   }
 
-  // ── Construir HTML de la frase con stagger por palabra y subrayadito ──
-  function buildPhraseHTML(text, accentColor, accentColor40) {
+  function buildPhraseHTML(text, accentColor) {
     var seg = segmentPhrase(text);
     var html = '';
     var delay = 0;
-
     if (seg.body) {
       var bodyWords = seg.body.split(/\s+/);
       for (var i = 0; i < bodyWords.length; i++) {
-        html += '<span class="bm-bocado-w" style="animation-delay:' + delay + 'ms">' +
-                bodyWords[i] + (i < bodyWords.length - 1 ? '&nbsp;' : '&nbsp;') + '</span>';
+        html += '<span class="bm-bocado-w" style="animation-delay:' + delay + 'ms">' + bodyWords[i] + '&nbsp;</span>';
         delay += WORD_STAGGER_MS;
       }
     }
-
-    // Anchor con subrayadito
-    html += '<span class="bm-bocado-anchor" style="' +
-            'animation-delay:' + delay + 'ms;' +
-            'color:' + accentColor + ';' +
-            'position:relative;' +
-            '">' + seg.anchor + '</span>';
-
+    html += '<span class="bm-bocado-anchor" style="animation-delay:' + delay + 'ms;color:' + accentColor + ';position:relative;">' + seg.anchor + '</span>';
     return html;
   }
 
-  // ── Inyectar CSS de animación una sola vez ──
+  // ── Inyectar CSS de animación + clases armónicas para bloques ──
   function ensureStyles() {
     if (document.getElementById('triggui-bocado-eco-styles')) return;
     var style = document.createElement('style');
@@ -6815,32 +6784,38 @@ bootTriggui();
       '}',
       '.bm-bocado-anchor {',
       '  font-weight: 400;',
-      '  transition: color 1.5s ease;',
       '}',
       '.bm-bocado-anchor::after {',
       '  content: "";',
       '  position: absolute;',
-      '  left: 8%;',
-      '  right: 8%;',
-      '  bottom: -6px;',
-      '  height: 1px;',
-      '  opacity: 0;',
-      '  transform: scaleX(0);',
+      '  left: 8%; right: 8%; bottom: -6px; height: 1px;',
+      '  opacity: 0; transform: scaleX(0);',
       '  animation: triggui-underline-appear ' + (APPEAR_MS + 600) + 'ms cubic-bezier(0.19, 1, 0.22, 1) forwards;',
       '  animation-delay: ' + (APPEAR_MS * 0.6) + 'ms;',
       '}',
-      '/* fade-out de toda la frase */',
       '.bm-bocado-fading {',
       '  transition: opacity ' + DISAPPEAR_MS + 'ms cubic-bezier(0.55, 0, 0.55, 1), filter ' + DISAPPEAR_MS + 'ms cubic-bezier(0.55, 0, 0.55, 1) !important;',
-      '  opacity: 0 !important;',
-      '  filter: blur(10px) !important;',
+      '  opacity: 0 !important; filter: blur(10px) !important;',
       '}',
-      '/* desvanecimiento del contenido de la barra para dar paso al bocado */',
       '.bm-content-fading {',
       '  transition: opacity 600ms cubic-bezier(0.55, 0, 0.55, 1), filter 600ms cubic-bezier(0.55, 0, 0.55, 1) !important;',
+      '  opacity: 0 !important; filter: blur(8px) !important; pointer-events: none !important;',
+      '}',
+      // ── Entrada armónica de bloques (taichi) ──
+      '.bm-harmonic-entry {',
       '  opacity: 0 !important;',
+      '  transform: translateY(12px) !important;',
       '  filter: blur(8px) !important;',
-      '  pointer-events: none !important;',
+      '  transition: opacity ' + BLOCK_DURATION_MS + 'ms cubic-bezier(0.19, 1, 0.22, 1), ' +
+      '              transform ' + BLOCK_DURATION_MS + 'ms cubic-bezier(0.19, 1, 0.22, 1), ' +
+      '              filter ' + BLOCK_DURATION_MS + 'ms cubic-bezier(0.19, 1, 0.22, 1) !important;',
+      '  animation: none !important;',
+      '  will-change: opacity, transform, filter;',
+      '}',
+      '.bm-harmonic-show {',
+      '  opacity: 1 !important;',
+      '  transform: translateY(0) !important;',
+      '  filter: blur(0) !important;',
       '}'
     ].join('\n');
     document.head.appendChild(style);
@@ -6852,84 +6827,44 @@ bootTriggui();
     if (!phrase) return;
     usedInThisSession.add(phrase.text);
     bocadoActive = true;
-
     ensureStyles();
 
     var overlay = document.getElementById('barraMagicaOverlay');
     if (!overlay) { bocadoActive = false; return; }
 
-    // Color accent del día (ya seteado por Quantum Atmosphere)
-    var accentColor = getComputedStyle(overlay).getPropertyValue('--bm-accent').trim() || '#FF5E00';
-    var accentColor40 = getComputedStyle(overlay).getPropertyValue('--bm-accent-40').trim() || 'rgba(255, 94, 0, 0.4)';
+    var accentColor = (getComputedStyle(overlay).getPropertyValue('--bm-accent') || '').trim() || '#FF5E00';
 
-    // Desvanecer contenido actual de la barra (input, pregunta, eyebrow, skip, lang)
     var inner = overlay.querySelector('.barra-magica-inner');
     var skipEl = document.getElementById('barraSkip');
     var langEl = document.getElementById('barraLangToggle');
     var streakEl = document.getElementById('barraStreak');
-
     if (inner) inner.classList.add('bm-content-fading');
     if (skipEl) skipEl.classList.add('bm-content-fading');
     if (langEl) langEl.classList.add('bm-content-fading');
     if (streakEl) streakEl.classList.add('bm-content-fading');
 
-    // Crear contenedor del bocado dentro del overlay
     var bocadoBox = document.createElement('div');
     bocadoBox.id = 'triggui-bocado-box';
-    bocadoBox.style.cssText = [
-      'position:absolute',
-      'inset:0',
-      'z-index:5',
-      'display:flex',
-      'align-items:center',
-      'justify-content:center',
-      'padding:0 32px',
-      'pointer-events:none'
-    ].join(';');
+    bocadoBox.style.cssText = 'position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;padding:0 32px;pointer-events:none';
 
     var phraseEl = document.createElement('div');
     phraseEl.className = 'bm-bocado-phrase';
-    phraseEl.style.cssText = [
-      "font-family:'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Archivo', sans-serif",
-      'font-weight:300',
-      'font-size:clamp(22px, 6vw, 30px)',
-      'line-height:1.32',
-      'color:#fff',
-      'text-align:center',
-      'max-width:640px',
-      'letter-spacing:-0.5px',
-      '-webkit-font-smoothing:antialiased',
-      'opacity:1'
-    ].join(';');
-    phraseEl.innerHTML = buildPhraseHTML(phrase.text, accentColor, accentColor40);
+    phraseEl.style.cssText = "font-family:'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Archivo', sans-serif;font-weight:300;font-size:clamp(22px, 6vw, 30px);line-height:1.32;color:#fff;text-align:center;max-width:640px;letter-spacing:-0.5px;-webkit-font-smoothing:antialiased";
+    phraseEl.innerHTML = buildPhraseHTML(phrase.text, accentColor);
 
-    // Subrayado: aplicar color al ::after via custom property
-    bocadoBox.style.setProperty('--triggui-anchor-color', accentColor);
-
-    // Inyectar styles inline para el ::after del anchor (ya viene del style global pero asegurar color)
     var customStyle = document.createElement('style');
     customStyle.id = 'triggui-bocado-anchor-color';
-    customStyle.textContent =
-      '#triggui-bocado-box .bm-bocado-anchor::after {' +
-      '  background: linear-gradient(90deg, transparent, ' + accentColor + ', transparent);' +
-      '}';
+    customStyle.textContent = '#triggui-bocado-box .bm-bocado-anchor::after { background: linear-gradient(90deg, transparent, ' + accentColor + ', transparent); }';
     document.head.appendChild(customStyle);
 
     bocadoBox.appendChild(phraseEl);
     overlay.appendChild(bocadoBox);
 
-    // Calcular cuándo iniciar fade-out
-    // Tiempo de aparición = APPEAR_MS + (palabras * stagger)
     var totalWords = phrase.text.split(/\s+/).length;
     var fullAppearMs = APPEAR_MS + totalWords * WORD_STAGGER_MS + 300;
     var holdEndMs = fullAppearMs + HOLD_MS;
 
-    // Fade-out de la frase
-    setTimeout(function() {
-      phraseEl.classList.add('bm-bocado-fading');
-    }, holdEndMs);
-
-    // Limpieza
+    setTimeout(function() { phraseEl.classList.add('bm-bocado-fading'); }, holdEndMs);
     setTimeout(function() {
       if (bocadoBox.parentNode) bocadoBox.parentNode.removeChild(bocadoBox);
       var cs = document.getElementById('triggui-bocado-anchor-color');
@@ -6937,75 +6872,102 @@ bootTriggui();
       bocadoActive = false;
     }, holdEndMs + DISAPPEAR_MS + 100);
 
-    if (typeof console !== 'undefined' && console.log) {
-      console.log('[Triggui Bocado v2]', '"' + phrase.text + '"', '←', phrase.source);
-    }
+    if (typeof console !== 'undefined' && console.log) console.log('[Triggui Bocado v3]', '"' + phrase.text + '"', '←', phrase.source);
   }
 
-  // ── ECO: overlay con backdrop-blur sobre bloques, colores del libro ──
-  function showEco() {
+  // ── Aplicar entrada armónica taichi a los bloques ──
+  function harmonizeBlocks() {
+    var blocks = document.querySelectorAll('#grid .block, .block');
+    if (!blocks || blocks.length === 0) return;
+
+    blocks.forEach(function(block, i) {
+      // Asegurar que tenga clase entry (puede que no la tenga si render corrió antes que observer)
+      block.classList.add('bm-harmonic-entry');
+      block.style.transitionDelay = (i * BLOCK_STAGGER_MS) + 'ms';
+    });
+
+    // Forzar reflow para que la transición se aplique
+    void document.body.offsetHeight;
+
+    // Animar a estado final con stagger
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        blocks.forEach(function(block) {
+          block.classList.add('bm-harmonic-show');
+        });
+      });
+    });
+
+    // Limpieza después de la animación completa
+    var totalDuration = (blocks.length - 1) * BLOCK_STAGGER_MS + BLOCK_DURATION_MS + 200;
+    setTimeout(function() {
+      blocks.forEach(function(block) {
+        block.classList.remove('bm-harmonic-entry');
+        block.classList.remove('bm-harmonic-show');
+        block.style.transitionDelay = '';
+      });
+    }, totalDuration);
+  }
+
+  // ── ECO: cerrar tarjeta INSTANTÁNEAMENTE + overlay limpio ──
+  function showEcoWithCleanCardClose() {
+    if (ecoActive) return;
     var phrase = pickPhrase();
     if (!phrase) return;
     usedInThisSession.add(phrase.text);
     ecoActive = true;
-
     ensureStyles();
 
-    // Determinar accent del libro actual (de Quantum Blocks)
+    // ── PASO 1: Cerrar tarjeta INSTANTÁNEAMENTE sin transition (sin flicker) ──
+    var tarjeta = document.getElementById('tarjetaOverlay');
+    if (tarjeta) {
+      tarjeta.style.transition = 'none';
+      tarjeta.classList.remove('visible');
+      tarjeta.style.opacity = '0';
+      tarjeta.style.display = 'none';
+      // Restore transition for future use
+      requestAnimationFrame(function() { tarjeta.style.transition = ''; });
+    }
+    if (typeof window.cleanupCardListeners === 'function') {
+      try { window.cleanupCardListeners(); } catch (_) {}
+    }
+
+    // ── PASO 2: Determinar accent del libro ──
     var accentColor = '#FF5E00';
-    var accentColorFog = 'rgba(0, 0, 0, 0.55)';
+    var accentColorFog = 'hsla(20, 70%, 6%, 0.65)';
     try {
       if (window._lastQuantumBlocks && window._lastQuantumBlocks.blocks && window._lastQuantumBlocks.blocks[0]) {
         var c = window._lastQuantumBlocks.blocks[0].c1;
         accentColor = 'hsl(' + c.h.toFixed(0) + ', ' + (c.s * 100).toFixed(0) + '%, ' +
                       Math.min(70, Math.max(55, c.l * 100 + 15)).toFixed(0) + '%)';
-        // Fog: hue del libro pero MUY oscuro
-        accentColorFog = 'hsla(' + c.h.toFixed(0) + ', ' + (c.s * 100 * 0.7).toFixed(0) + '%, 6%, 0.65)';
+        accentColorFog = 'hsla(' + c.h.toFixed(0) + ', ' + (c.s * 100 * 0.7).toFixed(0) + '%, 6%, 0.78)';
       }
     } catch (_) {}
 
-    // Crear overlay del eco
+    // ── PASO 3: Crear overlay del eco ──
     var ecoBox = document.createElement('div');
     ecoBox.id = 'triggui-eco-box';
     ecoBox.style.cssText = [
-      'position:fixed',
-      'inset:0',
-      'z-index:99999',
-      'display:flex',
-      'align-items:center',
-      'justify-content:center',
-      'padding:0 32px',
+      'position:fixed', 'inset:0', 'z-index:99999',
+      'display:flex', 'align-items:center', 'justify-content:center', 'padding:0 32px',
       'background:' + accentColorFog,
       'backdrop-filter:blur(40px) saturate(1.4) brightness(0.85)',
       '-webkit-backdrop-filter:blur(40px) saturate(1.4) brightness(0.85)',
       'opacity:0',
-      'transition:opacity ' + APPEAR_MS + 'ms cubic-bezier(0.19, 1, 0.22, 1), backdrop-filter ' + APPEAR_MS + 'ms cubic-bezier(0.19, 1, 0.22, 1)',
+      'transition:opacity ' + APPEAR_MS + 'ms cubic-bezier(0.19, 1, 0.22, 1)',
       'pointer-events:none',
-      'will-change:opacity, backdrop-filter'
+      'will-change:opacity',
+      'transform:translateZ(0)' // forzar capa de composición separada (evita artifacts)
     ].join(';');
 
     var phraseEl = document.createElement('div');
     phraseEl.className = 'bm-eco-phrase';
-    phraseEl.style.cssText = [
-      "font-family:'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Archivo', sans-serif",
-      'font-weight:300',
-      'font-size:clamp(20px, 5.4vw, 28px)',
-      'line-height:1.36',
-      'color:rgba(255, 255, 255, 0.92)',
-      'text-align:center',
-      'max-width:600px',
-      'letter-spacing:-0.4px',
-      '-webkit-font-smoothing:antialiased'
-    ].join(';');
-    phraseEl.innerHTML = buildPhraseHTML(phrase.text, accentColor, accentColor);
+    phraseEl.style.cssText = "font-family:'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Archivo', sans-serif;font-weight:300;font-size:clamp(20px, 5.4vw, 28px);line-height:1.36;color:rgba(255, 255, 255, 0.92);text-align:center;max-width:600px;letter-spacing:-0.4px;-webkit-font-smoothing:antialiased";
+    phraseEl.innerHTML = buildPhraseHTML(phrase.text, accentColor);
 
-    // Color del subrayado para el eco
     var customStyle = document.createElement('style');
     customStyle.id = 'triggui-eco-anchor-color';
-    customStyle.textContent =
-      '#triggui-eco-box .bm-bocado-anchor::after {' +
-      '  background: linear-gradient(90deg, transparent, ' + accentColor + ', transparent);' +
-      '}';
+    customStyle.textContent = '#triggui-eco-box .bm-bocado-anchor::after { background: linear-gradient(90deg, transparent, ' + accentColor + ', transparent); }';
     document.head.appendChild(customStyle);
 
     ecoBox.appendChild(phraseEl);
@@ -7013,17 +6975,14 @@ bootTriggui();
 
     // Fade in
     requestAnimationFrame(function() {
-      requestAnimationFrame(function() {
-        ecoBox.style.opacity = '1';
-      });
+      requestAnimationFrame(function() { ecoBox.style.opacity = '1'; });
     });
 
-    // Calcular timing
     var totalWords = phrase.text.split(/\s+/).length;
     var fullAppearMs = APPEAR_MS + totalWords * WORD_STAGGER_MS + 300;
     var holdEndMs = fullAppearMs + HOLD_MS;
 
-    // Fade out
+    // Fade out con backdrop-filter decreciendo
     setTimeout(function() {
       ecoBox.style.transition = 'opacity ' + DISAPPEAR_MS + 'ms cubic-bezier(0.55, 0, 0.55, 1), backdrop-filter ' + DISAPPEAR_MS + 'ms cubic-bezier(0.55, 0, 0.55, 1)';
       ecoBox.style.opacity = '0';
@@ -7031,25 +6990,105 @@ bootTriggui();
       ecoBox.style.webkitBackdropFilter = 'blur(0px)';
     }, holdEndMs);
 
-    // Limpieza
+    // Limpieza + reabrir barra mágica
     setTimeout(function() {
       if (ecoBox.parentNode) ecoBox.parentNode.removeChild(ecoBox);
       var cs = document.getElementById('triggui-eco-anchor-color');
       if (cs && cs.parentNode) cs.parentNode.removeChild(cs);
       ecoActive = false;
+
+      // Reabrir barra mágica con nueva pregunta (ciclo armónico)
+      tryReopenBarraMagica();
     }, holdEndMs + DISAPPEAR_MS + 100);
 
-    if (typeof console !== 'undefined' && console.log) {
-      console.log('[Triggui Eco v2]', '"' + phrase.text + '"', '←', phrase.source);
-    }
+    if (typeof console !== 'undefined' && console.log) console.log('[Triggui Eco v3]', '"' + phrase.text + '"', '←', phrase.source);
   }
 
-  // ── HOOK 1: BarraMagica.submit + extender closeOverlay ──
+  // ── Reabrir barra mágica con nueva pregunta ──
+  function tryReopenBarraMagica() {
+    if (typeof BarraMagica === 'undefined') return false;
+
+    // Refresh question (si la función existe)
+    try {
+      if (typeof BarraMagica.refreshQuestion === 'function') BarraMagica.refreshQuestion();
+      else if (typeof BarraMagica.pickQuestion === 'function') BarraMagica.pickQuestion();
+    } catch (_) {}
+
+    // Open overlay
+    try {
+      if (typeof BarraMagica.openOverlay === 'function') {
+        BarraMagica.openOverlay();
+        return true;
+      }
+      if (typeof BarraMagica.show === 'function') {
+        BarraMagica.show();
+        return true;
+      }
+      if (typeof BarraMagica.open === 'function') {
+        BarraMagica.open();
+        return true;
+      }
+    } catch (_) {}
+
+    // Fallback: click en magnifier button
+    var candidates = ['magnifierBtn', 'magnifier', 'lupaBtn', 'lupa', 'searchBtn'];
+    for (var i = 0; i < candidates.length; i++) {
+      var el = document.getElementById(candidates[i]);
+      if (el) { try { el.click(); return true; } catch (_) {} }
+    }
+    return false;
+  }
+
+  // ── Detectar cualquier cierre de tarjeta (X, lupa, etc.) ──
+  function setupTarjetaObserver() {
+    var tarjeta = document.getElementById('tarjetaOverlay');
+    if (!tarjeta) return false;
+    if (tarjeta._bocadoEcoObserved) return true;
+
+    var wasVisible = tarjeta.classList.contains('visible') && tarjeta.style.display !== 'none';
+
+    var observer = new MutationObserver(function(mutations) {
+      var isVisible = tarjeta.classList.contains('visible') && tarjeta.style.display !== 'none';
+      if (wasVisible && !isVisible && !ecoActive) {
+        // La tarjeta acaba de cerrarse — disparar Eco si no está activo ya
+        // (el Eco probablemente ya se disparó por el hook de closeCard, pero por si acaso)
+      }
+      wasVisible = isVisible;
+    });
+
+    observer.observe(tarjeta, { attributes: true, attributeFilter: ['class', 'style'] });
+    tarjeta._bocadoEcoObserved = true;
+    return true;
+  }
+
+  // ── Observer para aplicar bm-harmonic-entry a nuevos bloques ──
+  function setupBlockObserver() {
+    var grid = document.getElementById('grid');
+    if (!grid) return false;
+    if (grid._bocadoEcoObserved) return true;
+
+    var observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(m) {
+        for (var i = 0; i < m.addedNodes.length; i++) {
+          var node = m.addedNodes[i];
+          if (node.nodeType === 1 && node.classList && node.classList.contains('block')) {
+            // Aplicar clase entry para que esté listo cuando harmonizeBlocks() corra
+            node.classList.add('bm-harmonic-entry');
+          }
+        }
+      });
+    });
+
+    observer.observe(grid, { childList: true });
+    grid._bocadoEcoObserved = true;
+    return true;
+  }
+
+  // ── HOOK 1: BarraMagica.submit + closeOverlay extendido + harmonize ──
   function patchBarraMagica() {
     if (typeof BarraMagica === 'undefined') return false;
-    if (BarraMagica._bocadoEcoV2Patched) return true;
+    if (BarraMagica._bocadoEcoV3Patched) return true;
 
-    // Hook submit: build pool + show bocado dentro del overlay
     var originalSubmit = BarraMagica.submit.bind(BarraMagica);
     BarraMagica.submit = function(query) {
       try {
@@ -7059,64 +7098,101 @@ bootTriggui();
           usedInThisSession.clear();
         }
       } catch (e) {}
-
-      // Mostrar bocado dentro del overlay barra mágica
       setTimeout(function() {
-        try { showBocado(); }
-        catch (e) { if (typeof console !== 'undefined') console.error('[BocadoEcoV2] showBocado error:', e); }
+        try { showBocado(); } catch (e) {}
       }, BOCADO_DELAY_MS);
-
       return originalSubmit(query);
     };
 
-    // Hook closeOverlay: retrasar mientras el bocado está activo
     var originalCloseOverlay = BarraMagica.closeOverlay.bind(BarraMagica);
     BarraMagica.closeOverlay = function(skipped, skipRender) {
+      function doClose() {
+        try { originalCloseOverlay(skipped, skipRender); } catch (e) {}
+        // Aplicar entrada armónica a los bloques DESPUÉS de cerrar el overlay
+        setTimeout(function() {
+          try { harmonizeBlocks(); } catch (e) {}
+        }, 50);
+      }
       if (bocadoActive) {
-        // Esperar a que el bocado termine
-        var maxWait = 6000; // safety cap
-        var elapsed = 0;
-        var checkInterval = setInterval(function() {
+        var maxWait = 6000, elapsed = 0;
+        var iv = setInterval(function() {
           elapsed += 100;
           if (!bocadoActive || elapsed >= maxWait) {
-            clearInterval(checkInterval);
-            try { originalCloseOverlay(skipped, skipRender); } catch (e) {}
+            clearInterval(iv);
+            doClose();
           }
         }, 100);
         return;
       }
-      return originalCloseOverlay(skipped, skipRender);
+      doClose();
     };
 
-    BarraMagica._bocadoEcoV2Patched = true;
+    BarraMagica._bocadoEcoV3Patched = true;
     return true;
   }
 
-  // ── HOOK 2: window.closeCard → mostrar Eco con backdrop-blur ──
+  // ── HOOK 2: window.closeCard → eco con cleanup limpio ──
   function patchCloseCard() {
     if (typeof window.closeCard !== 'function') return false;
-    if (window._closeCardBocadoEcoV2Patched) return true;
+    if (window._closeCardBocadoEcoV3Patched) return true;
 
+    // El hook reemplaza completamente closeCard:
+    // En vez de llamar al original (que hace fade-out con flicker),
+    // llamamos directamente a showEcoWithCleanCardClose que cierra
+    // la tarjeta instantáneamente y muestra el eco encima.
     var originalCloseCard = window.closeCard;
     window.closeCard = function() {
-      var ret = originalCloseCard.apply(this, arguments);
-      setTimeout(function() {
-        try { showEco(); }
-        catch (e) { if (typeof console !== 'undefined') console.error('[BocadoEcoV2] showEco error:', e); }
-      }, ECO_DELAY_MS);
-      return ret;
+      try { showEcoWithCleanCardClose(); } catch (e) {
+        // Fallback al original si algo falla
+        try { originalCloseCard.apply(this, arguments); } catch (_) {}
+      }
     };
 
-    window._closeCardBocadoEcoV2Patched = true;
+    window._closeCardBocadoEcoV3Patched = true;
+    return true;
+  }
+
+  // ── HOOK 3: Si la lupa abre la barra y hay tarjeta abierta → eco primero ──
+  function patchOpenOverlayForLupa() {
+    if (typeof BarraMagica === 'undefined') return false;
+    if (BarraMagica._lupaBocadoEcoPatched) return true;
+
+    var possibleOpenFns = ['openOverlay', 'open', 'show'];
+    for (var i = 0; i < possibleOpenFns.length; i++) {
+      var fnName = possibleOpenFns[i];
+      if (typeof BarraMagica[fnName] !== 'function') continue;
+
+      (function(name) {
+        var original = BarraMagica[name].bind(BarraMagica);
+        BarraMagica[name] = function() {
+          var tarjeta = document.getElementById('tarjetaOverlay');
+          var tarjetaVisible = tarjeta && tarjeta.classList.contains('visible') && tarjeta.style.display !== 'none';
+          if (tarjetaVisible && !ecoActive) {
+            // Hay tarjeta abierta — disparar eco primero, abrir barra después del eco
+            try { showEcoWithCleanCardClose(); } catch (e) {}
+            // El eco al terminar reabrirá la barra mágica automáticamente
+            return;
+          }
+          return original.apply(this, arguments);
+        };
+      })(fnName);
+    }
+
+    BarraMagica._lupaBocadoEcoPatched = true;
     return true;
   }
 
   function tryInstall() {
-    var sub = patchBarraMagica();
-    var card = patchCloseCard();
+    var ok1 = patchBarraMagica();
+    var ok2 = patchCloseCard();
+    var ok3 = patchOpenOverlayForLupa();
+    var ok4 = setupBlockObserver();
+    var ok5 = setupTarjetaObserver();
+
     if (typeof console !== 'undefined' && console.log) {
-      console.log('[Triggui BocadoEco v2] ' +
-        (sub && card ? 'instalado nivel cuántico mágico' : 'instalación parcial: submit=' + sub + ' card=' + card));
+      console.log('[Triggui BocadoEco v3] ' +
+        (ok1 && ok2 ? 'instalado nivel quark cuántico' : 'parcial') +
+        ' submit=' + ok1 + ' card=' + ok2 + ' lupa=' + ok3 + ' grid=' + ok4 + ' tarjeta=' + ok5);
     }
   }
 
