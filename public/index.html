@@ -6098,7 +6098,7 @@ bootTriggui();
         hueBase,
         (hueBase + rand(8, 22)) % 360,
         (hueBase - rand(8, 22) + 360) % 360,
-        (hueBase + rand(20, 40)) % 360
+        (hueBase + rand(60, 90)) % 360
       ];
     } else if (strategy === 'analogous-loose') {
       hues = [
@@ -6122,12 +6122,12 @@ bootTriggui();
         (hueBase + rand(85, 130)) % 360
       ];
     } else if (strategy === 'monochromatic-rich') {
-      // Mismo hue (con jitter sutil), riqueza vía S y L distintos
+      // Mismo hue para 3 con jitter sutil + 1 con shift de 55-90° para variedad visible
       hues = [
         hueBase,
         (hueBase + rand(-10, 10) + 360) % 360,
         (hueBase + rand(-10, 10) + 360) % 360,
-        (hueBase + rand(-10, 10) + 360) % 360
+        (hueBase + rand(55, 90)) % 360
       ];
     } else if (strategy === 'split-warm-cool') {
       hues = [
@@ -6309,6 +6309,31 @@ bootTriggui();
     return lightOverlay + ', ' + linear;
   }
 
+  // ── DETECCIÓN DE INSISTENCIA — variedad agresiva si el usuario repite ─
+  var _lastHueBase = null;
+  var _lastApplyTime = 0;
+
+  // Estrategia AGRESIVA: 4 hues distribuidos por TODO el círculo cromático.
+  // El primero sigue derivado del libro (identidad), los otros 3 a 90°/180°/270°
+  // con jitter para no parecer mecánicos. Garantiza variedad VISUAL absoluta.
+  function generateAggressiveVariety(hueBase) {
+    var hues = [
+      hueBase,
+      (hueBase + rand(70, 110)) % 360,
+      (hueBase + rand(160, 200)) % 360,
+      (hueBase + rand(250, 290)) % 360
+    ];
+    var colors = [];
+    for (var i = 0; i < hues.length; i++) {
+      colors.push({
+        h: hues[i],
+        s: rand(0.65, 0.95),
+        l: rand(0.42, 0.62)
+      });
+    }
+    return { strategy: 'aggressive-variety', colors: colors };
+  }
+
   // ── EXTRAER HUE BASE DEL DOM (libro está en closure cerrado del index.html) ─
   // El index.html declara `let libro` que NO se cuelga de window. Por eso leemos
   // el primer .block ya pintado por el render original y extraemos su primer color
@@ -6396,11 +6421,21 @@ bootTriggui();
     // Like button (id='like') queda con su rojo fijo del index.html
   }
 
-  // ── PREPARAR DESDE EL DOM (sin libro) ─────────────────────────────────
+  // ── PREPARAR DESDE EL DOM (sin libro) — CON DETECCIÓN DE INSISTENCIA ──
   function prepareFromDOM() {
     var hueBase = extractHueBaseFromDOM();
     if (hueBase === null) return null;
-    var palette = generateBookPalette(hueBase);
+
+    // Detectar insistencia del usuario: si el mismo hueBase aparece en <30s
+    // significa que el filtro está dando el mismo libro repetidamente.
+    // Activar variedad cromática agresiva para dar la sensación de "infinito".
+    var now = Date.now();
+    var deltaHue = _lastHueBase !== null ? Math.abs(hueBase - _lastHueBase) : 999;
+    var isInsistent = (_lastHueBase !== null && deltaHue < 5 && (now - _lastApplyTime) < 30000);
+    _lastHueBase = hueBase;
+    _lastApplyTime = now;
+
+    var palette = isInsistent ? generateAggressiveVariety(hueBase) : generateBookPalette(hueBase);
     var geometry = generateBlockGeometry();
     var blocks = [];
     var hexColors = [];
