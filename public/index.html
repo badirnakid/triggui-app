@@ -6612,45 +6612,70 @@ bootTriggui();
 // Top-K libros candidatos via TF-IDF + random pool de sus frases
 // Para revertir: eliminar este bloque <script id="js-bocado-eco">
 // ═══════════════════════════════════════════════════════════════════════
-// 🌒 TRIGGUI BOCADO Y ECO v9 — Defensa cuántica nivel quark del dado
+// 🌒 TRIGGUI BOCADO Y ECO v10.1 — Armonía cromática + session timer 45s
 // ═══════════════════════════════════════════════════════════════════════
 //
-// PROBLEMAS REPORTADOS EN V8:
+// CAMBIOS v10.1 sobre v10:
 //
-// BUG H — "El dado no funciona":
-//   Diagnóstico cuántico nivel quark del index.html actual reveló TRES bugs:
+// 1. SESSION TIMER (NO idle timer):
+//    Antes el timer se reseteaba con cada interacción (idle/inactividad).
+//    Eso era incorrecto: si el usuario interactúa, ¡es buena señal!
+//    Ahora el timer es ABSOLUTO: 45s desde que arranca la sesión.
+//    Si el usuario sigue ahí después de 45s (incluso interactuando), aparece
+//    el popup. Captura justo el momento donde está enganchado pero todavía
+//    no ha tomado la decisión de suscribirse.
 //
-//   1. btnOtro.onclick original es `() => { location.reload(); }` que
-//      recarga toda la página. Si mi `btn.onclick = ...` no gana o es
-//      sobrescrito, el original se ejecuta → reload completo.
-//      FIX: capture-phase delegation con stopImmediatePropagation que
-//      NO se puede sobrescribir por nadie.
+//    Si las condiciones no permiten mostrar (barra mágica abierta, tarjeta
+//    visible, bocado/eco activos), reintenta cada 5s hasta que pueda.
 //
-//   2. Después del primer reveal, `revealed=true` persiste. Cuando llamo
-//      render() sin resetear, los nuevos onclick handlers ven revealed=true
-//      (closure compartido) y los bloques NO portada llaman btnShare.click()
-//      en lugar de revelar la portada. El usuario nunca ve los bloques con
-//      palabras del libro 2.
-//      FIX: resetear revealed=false y cardOpenedThisSession=false antes
-//      de render().
+// CAMBIOS v10 sobre v9:
 //
-//   3. Los botones del CTA tienen inline styles del libro previo
-//      (background gradients, text colors). Persisten visualmente.
-//      FIX: limpiar inline styles antes de re-render.
+// 1. CTA CENTRADO PERFECTAMENTE (BUG I):
+//    `display: flex` + `align-items: center` + `justify-content: center` +
+//    `box-sizing: border-box` + `line-height: 1` garantiza centrado total
+//    horizontal y vertical sin importar el contenido.
 //
-// MANTIENE TODO lo de v8:
-//   - Cierre con X normal (no eco)
-//   - Lupa de tarjeta dispara eco
-//   - Popup suscribete con paleta gold/coral
+// 2. TEXTO CTA: "Quiero suscribirme" (era "Que el libro me encuentre")
+//
+// 3. ARMONÍA CROMÁTICA TOTAL:
+//    El popup hereda los colores del libro actual via CSS variables.
+//    Usa libro.colores[0..3] para componer:
+//      - Background gradient sutil con tinte del color 0
+//      - Border con color 1
+//      - Glow soft + strong con color 1
+//      - Title accent gradient con colores 0→1→2
+//      - CTA gradient con colores 0→1→2
+//      - Feature checkmark con color 1
+//      - Eyebrow con color 1 atenuado
+//    Si no hay libro accesible, fallback al gold/coral del landing.
+//
+// 4. MULTI-TRIGGER SYSTEM:
+//    El popup ya no solo aparece después del 2do dado. También:
+//      a) Después de 45s de PERMANENCIA en la app (v10.1)
+//      b) Después de 3 tarjetas abiertas en sesión (8s después de la 3ra)
+//    Solo UNA vez por sesión (popupShownThisSession lock).
+//
+// 5. REVISIÓN CUÁNTICA del flujo completo:
+//    - shouldShowSessionPopup() previene popup si bocado/eco/rotate activos
+//    - Previene popup si barra mágica o tarjeta están visibles
+//    - Reintenta cada 5s si las condiciones no permiten mostrar
+//    - Glow del card también deriva del libro (box-shadow inherited)
+//    - Emoji drop-shadow también deriva del libro
+//
+// MANTIENE TODO lo de v9:
+//   - Capture-phase delegation del dado (no sobrescribible)
+//   - Reset de revealed + cardOpenedThisSession antes de re-render
+//   - Reset de inline styles del CTA antes de re-render
+//   - Cierre con X normal (no eco), lupa de tarjeta dispara eco
 //   - Modernización de Modals viejos
 //   - Cleanup fading distribuido
 //   - Cleanup inline styles del tarjetaOverlay
 // ═══════════════════════════════════════════════════════════════════════
 
-(function setupBocadoEcoV9() {
+(function setupBocadoEcoV10_1() {
   'use strict';
   if (typeof console !== 'undefined' && console.log) {
-    console.log('[Triggui BocadoEco v9] script LOADED, starting setup');
+    console.log('[Triggui BocadoEco v10.1] script LOADED, starting setup');
   }
 
   // ══════════════════════════════════════════════════════════════════════
@@ -6678,6 +6703,12 @@ bootTriggui();
   var queryCandidates = [];
   var queryCurrentIdx = 0;
   var rotateActive = false;
+
+  // 🔥 v10.1: Multi-trigger system para popup
+  var popupShownThisSession = false;
+  var SESSION_TIMER_MS = 45000; // 45s de permanencia total en la app
+  var cardsOpenedCount = 0;
+  var CARDS_OPENED_THRESHOLD = 3; // 3 tarjetas abiertas en sesión → popup
 
   // ══════════════════════════════════════════════════════════════════════
   // UTILITIES
@@ -6963,8 +6994,8 @@ bootTriggui();
       '#triggui-suscribete-overlay.visible { display: flex; opacity: 1; }',
       '#triggui-suscribete-card {',
       '  position: relative;',
-      '  background: linear-gradient(180deg, rgba(232, 168, 56, 0.06) 0%, rgba(20, 24, 38, 0.85) 60%);',
-      '  border: 1px solid rgba(232, 168, 56, 0.32);',
+      '  background: var(--t-pop-bg, linear-gradient(180deg, rgba(232, 168, 56, 0.06) 0%, rgba(20, 24, 38, 0.85) 60%));',
+      '  border: 1px solid var(--t-pop-border, rgba(232, 168, 56, 0.32));',
       '  backdrop-filter: blur(16px);',
       '  -webkit-backdrop-filter: blur(16px);',
       '  border-radius: 24px;',
@@ -6974,7 +7005,7 @@ bootTriggui();
       '  transform: scale(0.94) translateY(20px);',
       '  opacity: 0;',
       '  transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.4s ease;',
-      '  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.08);',
+      '  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7), 0 0 60px var(--t-pop-glow, rgba(232, 168, 56, 0.18)), inset 0 1px 0 rgba(255, 255, 255, 0.08);',
       '  -webkit-font-smoothing: antialiased;',
       '}',
       '#triggui-suscribete-overlay.visible #triggui-suscribete-card {',
@@ -6983,13 +7014,13 @@ bootTriggui();
       '}',
       '.t-suscribete-emoji {',
       '  font-size: 44px; margin-bottom: 14px;',
-      '  filter: drop-shadow(0 6px 16px rgba(232, 168, 56, 0.5));',
+      '  filter: drop-shadow(0 6px 16px var(--t-pop-glow-strong, rgba(232, 168, 56, 0.5)));',
       '  animation: t-fire 4s ease infinite;',
       '}',
       '.t-suscribete-eyebrow {',
       '  font-size: 10.5px; font-weight: 700;',
       '  letter-spacing: 2.8px; text-transform: uppercase;',
-      '  color: rgba(245, 240, 232, 0.4);',
+      '  color: var(--t-pop-eyebrow, rgba(245, 240, 232, 0.4));',
       '  margin-bottom: 10px;',
       '}',
       '.t-suscribete-title {',
@@ -6998,7 +7029,7 @@ bootTriggui();
       '  color: #F5F0E8; margin-bottom: 14px;',
       '}',
       '.t-suscribete-title-accent {',
-      '  background: linear-gradient(135deg, #E8A838 0%, #FF6B4A 50%, #FF3F6C 100%);',
+      '  background: var(--t-pop-gradient, linear-gradient(135deg, #E8A838 0%, #FF6B4A 50%, #FF3F6C 100%));',
       '  background-size: 200% 200%;',
       '  -webkit-background-clip: text; background-clip: text;',
       '  -webkit-text-fill-color: transparent;',
@@ -7025,27 +7056,28 @@ bootTriggui();
       '  padding: 5px 0; display: flex; align-items: center; justify-content: center; gap: 8px;',
       '}',
       '.t-suscribete-feature::before {',
-      '  content: "✓"; color: #E8A838; font-weight: 700; font-size: 14px;',
+      '  content: "✓"; color: var(--t-pop-check, #E8A838); font-weight: 700; font-size: 14px;',
       '}',
       '.t-suscribete-cta {',
-      '  display: block; width: 100%;',
-      '  padding: 16px; margin-bottom: 12px;',
-      '  background: linear-gradient(135deg, #E8A838 0%, #FF6B4A 100%);',
+      '  display: flex; align-items: center; justify-content: center;',
+      '  width: 100%; box-sizing: border-box;',
+      '  padding: 16px 20px; margin: 0 auto 12px;',
+      '  background: var(--t-pop-cta, linear-gradient(135deg, #E8A838 0%, #FF6B4A 100%));',
       '  background-size: 200% 200%;',
       '  border: none; border-radius: 14px;',
       '  color: white; font-family: inherit;',
       '  font-weight: 700; font-size: 15px;',
       '  letter-spacing: 0.3px; text-transform: uppercase;',
       '  text-decoration: none; text-align: center;',
-      '  cursor: pointer;',
-      '  box-shadow: 0 10px 30px rgba(232, 168, 56, 0.35);',
+      '  cursor: pointer; line-height: 1;',
+      '  box-shadow: 0 10px 30px var(--t-pop-glow, rgba(232, 168, 56, 0.35));',
       '  animation: t-fire 4s infinite;',
-      '  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);',
+      '  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), filter 0.3s ease, box-shadow 0.4s ease;',
       '}',
       '.t-suscribete-cta:hover {',
       '  transform: scale(1.03);',
       '  filter: brightness(1.1);',
-      '  box-shadow: 0 14px 38px rgba(232, 168, 56, 0.5);',
+      '  box-shadow: 0 14px 38px var(--t-pop-glow-strong, rgba(232, 168, 56, 0.5));',
       '}',
       '.t-suscribete-cta:active { transform: scale(0.97); }',
       '.t-suscribete-secondary {',
@@ -7155,7 +7187,7 @@ bootTriggui();
       bocadoActive = false;
     }, holdEndMs + DISAPPEAR_MS + 100);
 
-    if (typeof console !== 'undefined' && console.log) console.log('[Triggui Bocado v8]', '"' + phrase.text + '"', '←', phrase.source);
+    if (typeof console !== 'undefined' && console.log) console.log('[Triggui Bocado v10]', '"' + phrase.text + '"', '←', phrase.source);
   }
 
   // ══════════════════════════════════════════════════════════════════════
@@ -7366,7 +7398,7 @@ bootTriggui();
       }, holdEndMs + DISAPPEAR_MS + 100);
     });
 
-    if (typeof console !== 'undefined' && console.log) console.log('[Triggui Eco v8]', '"' + phrase.text + '"', '←', phrase.source);
+    if (typeof console !== 'undefined' && console.log) console.log('[Triggui Eco v10]', '"' + phrase.text + '"', '←', phrase.source);
   }
 
   // ══════════════════════════════════════════════════════════════════════
@@ -7400,7 +7432,7 @@ bootTriggui();
       '  <li class="t-suscribete-feature">App incluida gratis</li>',
       '  <li class="t-suscribete-feature">Cancela cuando quieras</li>',
       '</ul>',
-      '<a href="' + STRIPE_LINK + '" target="_blank" rel="noopener noreferrer" class="t-suscribete-cta">Que el libro me encuentre</a>',
+      '<a href="' + STRIPE_LINK + '" target="_blank" rel="noopener noreferrer" class="t-suscribete-cta">Quiero suscribirme</a>',
       '<button class="t-suscribete-secondary" type="button">Seguir explorando</button>',
       '<p class="t-suscribete-footnote">Si no puedes leerlo ahora, ahí se queda esperando.</p>'
     ].join('\n');
@@ -7434,14 +7466,86 @@ bootTriggui();
     });
   }
 
+  // 🔥 v10: Computar paleta del libro actual y aplicarla como CSS vars al popup.
+  // Usamos los colores del libro (libro.colores) para armonizar el popup con
+  // la atmósfera visual del momento. Si no hay libro accesible, fallback al gold.
+  function computeBookHarmony() {
+    var harmony = {
+      bg: 'linear-gradient(180deg, rgba(232, 168, 56, 0.06) 0%, rgba(20, 24, 38, 0.85) 60%)',
+      border: 'rgba(232, 168, 56, 0.32)',
+      glow: 'rgba(232, 168, 56, 0.18)',
+      glowStrong: 'rgba(232, 168, 56, 0.5)',
+      gradient: 'linear-gradient(135deg, #E8A838 0%, #FF6B4A 50%, #FF3F6C 100%)',
+      cta: 'linear-gradient(135deg, #E8A838 0%, #FF6B4A 100%)',
+      check: '#E8A838',
+      eyebrow: 'rgba(245, 240, 232, 0.4)'
+    };
+
+    var currentLibro = null;
+    try { currentLibro = libro; } catch (_) {}
+    if (!currentLibro) {
+      try { currentLibro = window.__trigguiCurrentLibro; } catch (_) {}
+    }
+
+    if (!currentLibro || !Array.isArray(currentLibro.colores) || currentLibro.colores.length < 4) {
+      return harmony;
+    }
+
+    var c = currentLibro.colores;
+    function hexToRgba(hex, alpha) {
+      try {
+        var h = hex.replace('#', '');
+        if (h.length === 3) h = h.split('').map(function(x) { return x + x; }).join('');
+        var r = parseInt(h.substring(0, 2), 16);
+        var g = parseInt(h.substring(2, 4), 16);
+        var b = parseInt(h.substring(4, 6), 16);
+        return 'rgba(' + r + ', ' + g + ', ' + b + ', ' + alpha + ')';
+      } catch (_) {
+        return 'rgba(232, 168, 56, ' + alpha + ')';
+      }
+    }
+
+    // bg sutil con tinte del primer color, manteniendo legibilidad
+    harmony.bg = 'linear-gradient(180deg, ' + hexToRgba(c[0], 0.08) + ' 0%, rgba(20, 24, 38, 0.88) 60%)';
+    harmony.border = hexToRgba(c[1], 0.36);
+    harmony.glow = hexToRgba(c[1], 0.20);
+    harmony.glowStrong = hexToRgba(c[1], 0.5);
+    harmony.gradient = 'linear-gradient(135deg, ' + c[0] + ' 0%, ' + c[1] + ' 50%, ' + c[2] + ' 100%)';
+    harmony.cta = 'linear-gradient(135deg, ' + c[0] + ' 0%, ' + c[1] + ' 50%, ' + c[2] + ' 100%)';
+    harmony.check = c[1];
+    harmony.eyebrow = hexToRgba(c[1], 0.55);
+
+    return harmony;
+  }
+
+  function applyHarmonyToPopup() {
+    var card = document.getElementById('triggui-suscribete-card');
+    if (!card) return;
+    var h = computeBookHarmony();
+    card.style.setProperty('--t-pop-bg', h.bg);
+    card.style.setProperty('--t-pop-border', h.border);
+    card.style.setProperty('--t-pop-glow', h.glow);
+    card.style.setProperty('--t-pop-glow-strong', h.glowStrong);
+    card.style.setProperty('--t-pop-gradient', h.gradient);
+    card.style.setProperty('--t-pop-cta', h.cta);
+    card.style.setProperty('--t-pop-check', h.check);
+    card.style.setProperty('--t-pop-eyebrow', h.eyebrow);
+  }
+
   function showSuscribetePopup(reason) {
     ensureSuscribetePopup();
     var overlay = document.getElementById('triggui-suscribete-overlay');
     if (!overlay) return;
 
+    // 🔥 v10: Aplicar armonía cromática del libro actual ANTES de mostrar
+    applyHarmonyToPopup();
+
     overlay.style.display = 'flex';
     void overlay.offsetWidth; // reflow
     overlay.classList.add('visible');
+
+    // Marcar como mostrado en esta sesión (previene spam de triggers temporales)
+    popupShownThisSession = true;
 
     try {
       if (typeof gtag !== 'undefined') {
@@ -7452,7 +7556,7 @@ bootTriggui();
       }
     } catch (_) {}
 
-    if (typeof console !== 'undefined' && console.log) console.log('[Triggui SuscribetePopup v8] visible —', reason || 'unknown');
+    if (typeof console !== 'undefined' && console.log) console.log('[Triggui SuscribetePopup v10] visible —', reason || 'unknown');
   }
 
   function hideSuscribetePopup() {
@@ -7476,7 +7580,7 @@ bootTriggui();
   // ══════════════════════════════════════════════════════════════════════
   function rotateToNextBookFromQuery() {
     if (typeof console !== 'undefined' && console.log) {
-      console.log('[Triggui Dado v9] CLICK detectado idx=' + queryCurrentIdx + ' candidates=' + queryCandidates.length + ' rotateActive=' + rotateActive);
+      console.log('[Triggui Dado v10] CLICK detectado idx=' + queryCurrentIdx + ' candidates=' + queryCandidates.length + ' rotateActive=' + rotateActive);
     }
 
     if (rotateActive) return;
@@ -7486,7 +7590,7 @@ bootTriggui();
     // Después de MAX_QUERY_LIBROS rotaciones → popup
     if (queryCurrentIdx >= MAX_QUERY_LIBROS || queryCurrentIdx >= queryCandidates.length) {
       queryCurrentIdx--; // rollback para próximos clicks
-      if (typeof console !== 'undefined' && console.log) console.log('[Triggui Dado v9] límite alcanzado idx=' + queryCurrentIdx + ' candidates=' + queryCandidates.length + ' → popup');
+      if (typeof console !== 'undefined' && console.log) console.log('[Triggui Dado v10] límite alcanzado idx=' + queryCurrentIdx + ' candidates=' + queryCandidates.length + ' → popup');
       showSuscribetePopup('dado_limit');
       return;
     }
@@ -7494,29 +7598,29 @@ bootTriggui();
     var nextLibro = queryCandidates[queryCurrentIdx];
     if (!nextLibro) {
       queryCurrentIdx--;
-      if (typeof console !== 'undefined' && console.log) console.log('[Triggui Dado v9] nextLibro null → popup');
+      if (typeof console !== 'undefined' && console.log) console.log('[Triggui Dado v10] nextLibro null → popup');
       showSuscribetePopup('dado_no_libro');
       return;
     }
 
     rotateActive = true;
-    if (typeof console !== 'undefined' && console.log) console.log('[Triggui Dado v9] rotando a "' + (nextLibro.titulo || 'unknown') + '"');
+    if (typeof console !== 'undefined' && console.log) console.log('[Triggui Dado v10] rotando a "' + (nextLibro.titulo || 'unknown') + '"');
 
     // ── 1. ASIGNAR libro (intent directo, libro es let top-level del script) ──
     var libroAssignedOk = false;
     try {
       libro = nextLibro;
       libroAssignedOk = true;
-      if (typeof console !== 'undefined' && console.log) console.log('[Triggui Dado v9] libro asignado OK: "' + libro.titulo + '"');
+      if (typeof console !== 'undefined' && console.log) console.log('[Triggui Dado v10] libro asignado OK: "' + libro.titulo + '"');
     } catch (e) {
-      if (typeof console !== 'undefined' && console.error) console.error('[Triggui Dado v9] libro NO accesible:', e.message);
+      if (typeof console !== 'undefined' && console.error) console.error('[Triggui Dado v10] libro NO accesible:', e.message);
     }
 
     if (!libroAssignedOk) {
       // Fallback: no podemos cambiar el libro globalmente. Mostrar popup.
       rotateActive = false;
       queryCurrentIdx--;
-      if (typeof console !== 'undefined' && console.warn) console.warn('[Triggui Dado v9] FALLBACK: libro inaccesible, mostrando popup');
+      if (typeof console !== 'undefined' && console.warn) console.warn('[Triggui Dado v10] FALLBACK: libro inaccesible, mostrando popup');
       showSuscribetePopup('dado_libro_inaccesible');
       return;
     }
@@ -7562,10 +7666,10 @@ bootTriggui();
         } else if (typeof render === 'function') {
           render();
         } else {
-          if (typeof console !== 'undefined' && console.error) console.error('[Triggui Dado v9] render NO existe');
+          if (typeof console !== 'undefined' && console.error) console.error('[Triggui Dado v10] render NO existe');
         }
       } catch (e) {
-        if (typeof console !== 'undefined' && console.error) console.error('[Triggui Dado v9] render error:', e);
+        if (typeof console !== 'undefined' && console.error) console.error('[Triggui Dado v10] render error:', e);
       }
 
       // Aplicar entry INMEDIATAMENTE a los nuevos bloques (antes del paint)
@@ -7597,9 +7701,73 @@ bootTriggui();
       var totalDuration = (4 - 1) * BLOCK_STAGGER_MS + BLOCK_DURATION_MS + 300;
       setTimeout(function() {
         rotateActive = false;
-        if (typeof console !== 'undefined' && console.log) console.log('[Triggui Dado v9] rotate completo, lock liberado');
+        if (typeof console !== 'undefined' && console.log) console.log('[Triggui Dado v10] rotate completo, lock liberado');
       }, totalDuration);
     }, 300);
+  }
+
+  // ══════════════════════════════════════════════════════════════════════
+  // 🔥 v10.1: MULTI-TRIGGER SYSTEM — Session timer + cards opened tracker
+  // ══════════════════════════════════════════════════════════════════════
+  // El popup también aparece (no solo después del 2do dado):
+  //   1. Después de 45s de PERMANENCIA TOTAL en la app (no inactividad).
+  //      Si el usuario sigue ahí después de 45s, ya está enganchado y es
+  //      el momento de invitarlo a suscribirse.
+  //   2. Después de 3 tarjetas abiertas sin suscribirse
+  // Solo una vez por sesión (popupShownThisSession lock).
+  // ══════════════════════════════════════════════════════════════════════
+
+  function shouldShowSessionPopup() {
+    if (popupShownThisSession) return false;
+    if (bocadoActive || ecoActive || rotateActive) return false;
+    // No interrumpir si la barra mágica está abierta (usuario escribiendo)
+    var bm = document.getElementById('barraMagicaOverlay');
+    if (bm && bm.classList.contains('visible')) return false;
+    // No interrumpir si hay tarjeta visible (usuario leyendo)
+    var tarjeta = document.getElementById('tarjetaOverlay');
+    if (tarjeta && tarjeta.classList.contains('visible')) return false;
+    return true;
+  }
+
+  // 🔥 v10.1: Timer ABSOLUTO desde que arranca la sesión.
+  // No se resetea con interacción — al contrario, queremos que el popup
+  // aparezca PRECISAMENTE cuando el usuario sigue activo después de 45s.
+  // Si no se cumplen las condiciones (barra mágica abierta, tarjeta visible),
+  // reintenta cada 5s hasta que se pueda mostrar.
+  function startSessionTimer() {
+    if (window._trigguiSessionTimerStarted) return;
+    window._trigguiSessionTimerStarted = true;
+
+    var sessionStartedAt = Date.now();
+
+    setTimeout(function tryShowPopup() {
+      if (popupShownThisSession) return;
+      if (shouldShowSessionPopup()) {
+        var elapsed = Math.round((Date.now() - sessionStartedAt) / 1000);
+        if (typeof console !== 'undefined' && console.log) console.log('[Triggui Session v10.1] ' + elapsed + 's en la app → popup');
+        showSuscribetePopup('session_45s');
+      } else {
+        // Reintentar en 5s si las condiciones no permiten mostrar ahora
+        if (typeof console !== 'undefined' && console.log) console.log('[Triggui Session v10.1] condiciones no permiten popup, reintento en 5s');
+        setTimeout(tryShowPopup, 5000);
+      }
+    }, SESSION_TIMER_MS);
+
+    if (typeof console !== 'undefined' && console.log) console.log('[Triggui Session v10.1] timer arrancado, popup aparecerá a los ' + (SESSION_TIMER_MS / 1000) + 's de permanencia');
+  }
+
+  function trackCardOpened() {
+    if (popupShownThisSession) return;
+    cardsOpenedCount++;
+    if (typeof console !== 'undefined' && console.log) console.log('[Triggui Cards v10.1] tarjetas abiertas: ' + cardsOpenedCount + '/' + CARDS_OPENED_THRESHOLD);
+    if (cardsOpenedCount >= CARDS_OPENED_THRESHOLD) {
+      // Esperar un poco para no abrumar (la tarjeta acaba de abrirse)
+      setTimeout(function() {
+        if (shouldShowSessionPopup()) {
+          showSuscribetePopup('cards_opened_3');
+        }
+      }, 8000); // 8 segundos después de la 3ra tarjeta
+    }
   }
 
   // ══════════════════════════════════════════════════════════════════════
@@ -7724,9 +7892,10 @@ bootTriggui();
     return true;
   }
 
-  // 🔥 v8: NO parchear window.closeCard. La X usa el original (cierra normal).
+  // 🔥 v9: NO parchear window.closeCard. La X usa el original (cierra normal).
   // En su lugar, parcheamos la lupa de la tarjeta (card-lupa-btn) cuando
   // btnShare.onclick construye su HTML.
+  // 🔥 v10: También trackeamos cards opened para multi-trigger del popup.
   function patchBtnShareForLupa() {
     var btnShare = document.getElementById('share');
     if (!btnShare) return false;
@@ -7737,6 +7906,8 @@ bootTriggui();
       var ret = originalOnclick ? originalOnclick.apply(this, arguments) : undefined;
       // Después de que el HTML se construye, parchear card-lupa-btn
       setTimeout(patchCardLupaButton, 0);
+      // Trackear apertura de tarjeta para multi-trigger del popup
+      trackCardOpened();
       return ret;
     };
     btnShare._patchedByMeForLupa = true;
@@ -7769,7 +7940,7 @@ bootTriggui();
     document.addEventListener('click', function(e) {
       var btn = e.target && e.target.closest && e.target.closest('#otro');
       if (btn) {
-        if (typeof console !== 'undefined' && console.log) console.log('[Triggui Dado v9] CLICK detected via capture-phase delegation');
+        if (typeof console !== 'undefined' && console.log) console.log('[Triggui Dado v10] CLICK detected via capture-phase delegation');
         e.preventDefault();
         e.stopPropagation();
         e.stopImmediatePropagation();
@@ -7778,7 +7949,7 @@ bootTriggui();
     }, true); // CAPTURE phase — corre PRIMERO, antes que cualquier .onclick
 
     window._btnOtroRobustHandlerV9 = true;
-    if (typeof console !== 'undefined' && console.log) console.log('[Triggui Dado v9] Robust capture-phase handler instalado en document');
+    if (typeof console !== 'undefined' && console.log) console.log('[Triggui Dado v10] Robust capture-phase handler instalado en document');
   }
 
   // ══════════════════════════════════════════════════════════════════════
@@ -7796,9 +7967,12 @@ bootTriggui();
     // Pre-crear el popup (lazy)
     try { ensureSuscribetePopup(); } catch (_) {}
 
+    // 🔥 v10.1: Iniciar timer de permanencia para popup contextual
+    startSessionTimer();
+
     if (typeof console !== 'undefined' && console.log) {
-      console.log('[Triggui BocadoEco v9] ' +
-        (ok1 && ok2 && ok3 ? 'instalado nivel quark — fixes F G H activos + popup' : 'parcial') +
+      console.log('[Triggui BocadoEco v10.1] ' +
+        (ok1 && ok2 && ok3 ? 'instalado nivel dios — fixes F G H I + popup armónico + session 45s' : 'parcial') +
         ' submit/close/applyStrings=' + ok1 + ' openOverlay=' + ok2 + ' lupaCard=' + ok3 + ' dado=robust-delegation');
     }
   }
