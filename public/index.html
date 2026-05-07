@@ -6612,42 +6612,46 @@ bootTriggui();
 // Top-K libros candidatos via TF-IDF + random pool de sus frases
 // Para revertir: eliminar este bloque <script id="js-bocado-eco">
 // ═══════════════════════════════════════════════════════════════════════
-// 🌒 TRIGGUI BOCADO Y ECO v8 — Ciclo cuántico completo + Suscribete popup
+// 🌒 TRIGGUI BOCADO Y ECO v9 — Defensa cuántica nivel quark del dado
 // ═══════════════════════════════════════════════════════════════════════
 //
-// CAMBIOS v8 sobre v7:
+// PROBLEMAS REPORTADOS EN V8:
 //
-// 1. DADO ROTATION (BUG F):
-//    Click dado #otro NO abre la barra mágica más. Ahora rota a
-//    queryCandidates[1] (segundo libro de la query) con animación armónica
-//    de cierre + render + entrada. Después del 2do libro → popup suscribete.
+// BUG H — "El dado no funciona":
+//   Diagnóstico cuántico nivel quark del index.html actual reveló TRES bugs:
 //
-// 2. CIERRE CON X (BUG G):
-//    La X (card-close-btn) ya NO dispara eco. Ahora cierra tarjeta normal
-//    con fade-out 300ms y deja bloques revelados con portada visible.
-//    Solo la LUPA de la tarjeta dispara eco. Esto se logra parcheando
-//    card-lupa-btn después de que btnShare.onclick construye su HTML
-//    (sin tocar window.closeCard que es usado por X y background).
+//   1. btnOtro.onclick original es `() => { location.reload(); }` que
+//      recarga toda la página. Si mi `btn.onclick = ...` no gana o es
+//      sobrescrito, el original se ejecuta → reload completo.
+//      FIX: capture-phase delegation con stopImmediatePropagation que
+//      NO se puede sobrescribir por nadie.
 //
-// 3. SUSCRIBETE POPUP (NUEVO):
-//    Popup nivel dios con paleta gold/coral del landing. $149/mes con link
-//    a Stripe. Reutilizable: window.TrigguiSuscribetePopup.show()
-//    Aparece cuando usuario hace click dado por 3ra vez (limit 2 rotaciones).
+//   2. Después del primer reveal, `revealed=true` persiste. Cuando llamo
+//      render() sin resetear, los nuevos onclick handlers ven revealed=true
+//      (closure compartido) y los bloques NO portada llaman btnShare.click()
+//      en lugar de revelar la portada. El usuario nunca ve los bloques con
+//      palabras del libro 2.
+//      FIX: resetear revealed=false y cardOpenedThisSession=false antes
+//      de render().
 //
-// 4. MODALS MODERNIZADOS (NUEVO):
-//    Sobrescribe CSS de los popups viejos del index.html (Modal de
-//    handleBookReveal, btnLike, intro.t, cele-msg, etc) con paleta
-//    gold/coral del landing. Coherencia visual total.
+//   3. Los botones del CTA tienen inline styles del libro previo
+//      (background gradients, text colors). Persisten visualmente.
+//      FIX: limpiar inline styles antes de re-render.
 //
-// 5. MANTIENE FIXES v7:
-//    - Override CSS nuclear (mata animación CSS nativa de bloques)
-//    - Sin inline styles en bloques (solo classes)
-//    - Cleanup fading distribuido (openOverlay + applyStrings parcheados)
-//    - Cleanup inline styles del tarjetaOverlay al final del eco
+// MANTIENE TODO lo de v8:
+//   - Cierre con X normal (no eco)
+//   - Lupa de tarjeta dispara eco
+//   - Popup suscribete con paleta gold/coral
+//   - Modernización de Modals viejos
+//   - Cleanup fading distribuido
+//   - Cleanup inline styles del tarjetaOverlay
 // ═══════════════════════════════════════════════════════════════════════
 
-(function setupBocadoEcoV8() {
+(function setupBocadoEcoV9() {
   'use strict';
+  if (typeof console !== 'undefined' && console.log) {
+    console.log('[Triggui BocadoEco v9] script LOADED, starting setup');
+  }
 
   // ══════════════════════════════════════════════════════════════════════
   // CONSTANTS
@@ -7468,18 +7472,21 @@ bootTriggui();
   };
 
   // ══════════════════════════════════════════════════════════════════════
-  // 🔥 v8: ROTATE BOOK FROM QUERY (DADO 🎲)
+  // 🔥 v9: ROTATE BOOK FROM QUERY (DADO 🎲) — Defensa cuántica nivel quark
   // ══════════════════════════════════════════════════════════════════════
   function rotateToNextBookFromQuery() {
+    if (typeof console !== 'undefined' && console.log) {
+      console.log('[Triggui Dado v9] CLICK detectado idx=' + queryCurrentIdx + ' candidates=' + queryCandidates.length + ' rotateActive=' + rotateActive);
+    }
+
     if (rotateActive) return;
 
     queryCurrentIdx++;
 
     // Después de MAX_QUERY_LIBROS rotaciones → popup
     if (queryCurrentIdx >= MAX_QUERY_LIBROS || queryCurrentIdx >= queryCandidates.length) {
-      // Rollback el idx para que próximo click siga mostrando popup
-      queryCurrentIdx--;
-      if (typeof console !== 'undefined' && console.log) console.log('[Triggui Dado v8] límite alcanzado idx=' + queryCurrentIdx + ' candidates=' + queryCandidates.length + ' → popup');
+      queryCurrentIdx--; // rollback para próximos clicks
+      if (typeof console !== 'undefined' && console.log) console.log('[Triggui Dado v9] límite alcanzado idx=' + queryCurrentIdx + ' candidates=' + queryCandidates.length + ' → popup');
       showSuscribetePopup('dado_limit');
       return;
     }
@@ -7487,28 +7494,56 @@ bootTriggui();
     var nextLibro = queryCandidates[queryCurrentIdx];
     if (!nextLibro) {
       queryCurrentIdx--;
+      if (typeof console !== 'undefined' && console.log) console.log('[Triggui Dado v9] nextLibro null → popup');
       showSuscribetePopup('dado_no_libro');
       return;
     }
 
-    // Asignar nuevo libro al global del script (libro es let top-level
-    // del js-app-logic, accesible desde aquí porque comparten lexical scope)
+    rotateActive = true;
+    if (typeof console !== 'undefined' && console.log) console.log('[Triggui Dado v9] rotando a "' + (nextLibro.titulo || 'unknown') + '"');
+
+    // ── 1. ASIGNAR libro (intent directo, libro es let top-level del script) ──
+    var libroAssignedOk = false;
     try {
       libro = nextLibro;
+      libroAssignedOk = true;
+      if (typeof console !== 'undefined' && console.log) console.log('[Triggui Dado v9] libro asignado OK: "' + libro.titulo + '"');
     } catch (e) {
-      // libro no accesible (edge case)
-      try { window.__trigguiCurrentLibro = nextLibro; } catch (_) {}
-      if (typeof console !== 'undefined' && console.warn) console.warn('[Triggui Dado v8] libro no accesible directamente:', e);
+      if (typeof console !== 'undefined' && console.error) console.error('[Triggui Dado v9] libro NO accesible:', e.message);
     }
 
-    rotateActive = true;
-    if (typeof console !== 'undefined' && console.log) console.log('[Triggui Dado v8] rotate idx → ' + queryCurrentIdx + ' libro: "' + (nextLibro.titulo || 'unknown') + '"');
+    if (!libroAssignedOk) {
+      // Fallback: no podemos cambiar el libro globalmente. Mostrar popup.
+      rotateActive = false;
+      queryCurrentIdx--;
+      if (typeof console !== 'undefined' && console.warn) console.warn('[Triggui Dado v9] FALLBACK: libro inaccesible, mostrando popup');
+      showSuscribetePopup('dado_libro_inaccesible');
+      return;
+    }
 
-    // Animación de cierre + re-render + entrada armónica
-    var grid = document.getElementById('grid');
+    // ── 2. RESET revealed y cardOpenedThisSession (closures de los bloques) ──
+    try { revealed = false; } catch (_) {}
+    try {
+      if (typeof cardOpenedThisSession !== 'undefined') cardOpenedThisSession = false;
+    } catch (_) {}
+
+    // ── 3. RESET CTA y botones (limpiar inline styles del libro previo) ──
     var cta = document.getElementById('cta');
+    if (cta) {
+      cta.style.display = 'none';
+    }
 
-    // Fade out actual con transición suave
+    ['otro','fisico','share','like'].forEach(function(id) {
+      var b = document.getElementById(id);
+      if (b) {
+        b.style.background = '';
+        b.style.color = '';
+      }
+    });
+
+    // ── 4. ANIMACIÓN: fade out → render → entrada armónica ──
+    var grid = document.getElementById('grid');
+
     if (grid) {
       grid.style.transition = 'opacity 280ms cubic-bezier(0.4, 0, 0.2, 1)';
       grid.style.opacity = '0';
@@ -7519,15 +7554,18 @@ bootTriggui();
     }
 
     setTimeout(function() {
-      // Re-render con nuevo libro
+      // Re-render con nuevo libro. Usar window.render para que Quantum Blocks
+      // (si está parcheado window.render) corra su lógica de enhanceBlockBackgrounds.
       try {
-        if (typeof render === 'function') {
-          render();
-        } else if (window.render) {
+        if (typeof window.render === 'function') {
           window.render();
+        } else if (typeof render === 'function') {
+          render();
+        } else {
+          if (typeof console !== 'undefined' && console.error) console.error('[Triggui Dado v9] render NO existe');
         }
       } catch (e) {
-        if (typeof console !== 'undefined' && console.error) console.error('[Triggui Dado v8] render error:', e);
+        if (typeof console !== 'undefined' && console.error) console.error('[Triggui Dado v9] render error:', e);
       }
 
       // Aplicar entry INMEDIATAMENTE a los nuevos bloques (antes del paint)
@@ -7536,7 +7574,7 @@ bootTriggui();
         block.classList.add('bm-harmonic-entry');
       });
 
-      // Restore opacity del grid (los bloques siguen invisibles por entry class)
+      // Restore opacity (los bloques siguen invisibles por entry class)
       if (grid) {
         grid.style.opacity = '';
         grid.style.transition = '';
@@ -7555,10 +7593,11 @@ bootTriggui();
         });
       });
 
-      // Liberar lock
+      // Liberar lock después de que termine la animación
       var totalDuration = (4 - 1) * BLOCK_STAGGER_MS + BLOCK_DURATION_MS + 300;
       setTimeout(function() {
         rotateActive = false;
+        if (typeof console !== 'undefined' && console.log) console.log('[Triggui Dado v9] rotate completo, lock liberado');
       }, totalDuration);
     }, 300);
   }
@@ -7719,18 +7758,27 @@ bootTriggui();
     });
   }
 
-  // Parchear btnOtro (dado 🎲) → rotateToNextBookFromQuery
-  function patchBtnOtro() {
-    var btn = document.getElementById('otro');
-    if (!btn) return false;
-    if (btn._patchedByMeForRotate) return true;
+  // 🔥 v9: Capture-phase delegation que NO se puede sobrescribir.
+  // En lugar de btnOtro.onclick = ... (que el js-app-logic puede sobrescribir
+  // o que ya tenía location.reload()), usamos un listener global en document
+  // en CAPTURE phase con stopImmediatePropagation. Esto corre ANTES del .onclick
+  // del btnOtro y previene que el original se ejecute.
+  function setupRobustBtnOtroHandler() {
+    if (window._btnOtroRobustHandlerV9) return;
 
-    btn.onclick = function(e) {
-      if (e) e.stopPropagation && e.stopPropagation();
-      rotateToNextBookFromQuery();
-    };
-    btn._patchedByMeForRotate = true;
-    return true;
+    document.addEventListener('click', function(e) {
+      var btn = e.target && e.target.closest && e.target.closest('#otro');
+      if (btn) {
+        if (typeof console !== 'undefined' && console.log) console.log('[Triggui Dado v9] CLICK detected via capture-phase delegation');
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        rotateToNextBookFromQuery();
+      }
+    }, true); // CAPTURE phase — corre PRIMERO, antes que cualquier .onclick
+
+    window._btnOtroRobustHandlerV9 = true;
+    if (typeof console !== 'undefined' && console.log) console.log('[Triggui Dado v9] Robust capture-phase handler instalado en document');
   }
 
   // ══════════════════════════════════════════════════════════════════════
@@ -7740,15 +7788,18 @@ bootTriggui();
     var ok1 = patchBarraMagica();
     var ok2 = patchOpenOverlay();
     var ok3 = patchBtnShareForLupa();
-    var ok4 = patchBtnOtro();
+
+    // 🔥 v9: setupRobustBtnOtroHandler NO depende del DOM existente,
+    // se puede llamar inmediatamente sin esperar a btnOtro
+    setupRobustBtnOtroHandler();
 
     // Pre-crear el popup (lazy)
     try { ensureSuscribetePopup(); } catch (_) {}
 
     if (typeof console !== 'undefined' && console.log) {
-      console.log('[Triggui BocadoEco v8] ' +
-        (ok1 && ok2 && ok3 && ok4 ? 'instalado nivel dios — fixes F G activos + popup' : 'parcial') +
-        ' submit/close/applyStrings=' + ok1 + ' openOverlay=' + ok2 + ' lupaCard=' + ok3 + ' dado=' + ok4);
+      console.log('[Triggui BocadoEco v9] ' +
+        (ok1 && ok2 && ok3 ? 'instalado nivel quark — fixes F G H activos + popup' : 'parcial') +
+        ' submit/close/applyStrings=' + ok1 + ' openOverlay=' + ok2 + ' lupaCard=' + ok3 + ' dado=robust-delegation');
     }
   }
 
@@ -7758,6 +7809,10 @@ bootTriggui();
     setTimeout(function() { waitFor(predicate, action, attempts - 1); }, 50);
   }
 
+  // 🔥 v9: setupRobustBtnOtroHandler corre INMEDIATAMENTE (no necesita DOM)
+  // para garantizar que el handler captura clicks desde el primer momento
+  setupRobustBtnOtroHandler();
+
   waitFor(
     function() {
       return typeof BarraMagica !== 'undefined' &&
@@ -7765,8 +7820,7 @@ bootTriggui();
              typeof BarraMagica.openOverlay === 'function' &&
              typeof BarraMagica.applyStrings === 'function' &&
              typeof window.closeCard === 'function' &&
-             document.getElementById('share') &&
-             document.getElementById('otro');
+             document.getElementById('share');
     },
     tryInstall,
     100
