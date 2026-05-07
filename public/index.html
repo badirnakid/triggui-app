@@ -6612,34 +6612,47 @@ bootTriggui();
 // Top-K libros candidatos via TF-IDF + random pool de sus frases
 // Para revertir: eliminar este bloque <script id="js-bocado-eco">
 // ═══════════════════════════════════════════════════════════════════════
-// 🌒 TRIGGUI BOCADO Y ECO v6 — Fixes basados en feedback de Badir v5
+// 🌒 TRIGGUI BOCADO Y ECO v7 — Diagnóstico cuántico del ciclo completo
 // ═══════════════════════════════════════════════════════════════════════
 //
-// PROBLEMAS REPORTADOS EN V5 (en orden):
+// PROBLEMAS REPORTADOS EN V6:
 //
-// 1. Transición de bloques "medio brusca" — inline styles ganaban sobre !important
-//    de las classes y rompían la interpolación de transition.
-//    FIX v6: ELIMINAR inline styles. Solo classes con !important.
+// BUG D — "Después del bocado, se ve rápidamente la barra mágica y luego
+//          luego entran los bloques" (todas las vueltas):
+//   Mi v6 quitaba bm-content-fading al final del bocado para arreglar
+//   BUG B (botones primera vuelta atmósfera vacía). Pero eso hacía visible
+//   el inner ANTES de que el overlay iniciara fade-out (650ms). Flash.
 //
-// 2. Primera vuelta: botones dado/lupa llevan a "atmósfera vacía con logo".
-//    Causa: showBocado aplicaba bm-content-fading al inner pero NUNCA lo quitaba.
-//    Cuando lupa reabría overlay, inner seguía con opacity:0 + blur:8px.
-//    En segunda vuelta funcionaba accidentalmente porque restoring del eco
-//    previo (1000ms) seguía sobrescribiendo el fading nuevo del bocado.
-//    FIX v6: showBocado limpia fading al final, igual que showEco.
+//   FIX v7: NO quitar fading al final del bocado. En su lugar, limpiar
+//   fading dentro de openOverlay y applyStrings (con guardas para no
+//   romper bocado/eco activos).
 //
-// 3. Segunda vuelta: imagen portada no hace nada, emoji libro reinicia barra.
-//    Probablemente relacionado al bug 1 (inline styles) — los bloques quedan
-//    en estado inválido por inline residuales. Fix indirecto al eliminar
-//    inline styles. Si persiste, será fix quirúrgico v7.
+// BUG E — Segunda vuelta: primer click "selecciona", segundo "reinicia con
+//         eco" en lugar de abrir tarjeta:
+//   Mi showEco aplicaba inline tarjeta.style.opacity='0' + display='none'.
+//   Al final del eco, v6 solo restauraba transition. opacity y display
+//   QUEDABAN como inline styles persistentes.
 //
-// FIXES v6 (3 cambios mínimos sobre v5):
-//   A. Eliminar TODOS los inline styles en prepareBlocksForHarmonic y revealBlocksHarmonic
-//   B. showBocado limpia bm-content-fading al final + aplica restoring transitorio
-//   C. Limpieza adicional al final de revealBlocksHarmonic (defensivo)
+//   Cuando la segunda vuelta abría tarjeta:
+//     - btnShare.onclick: tarjeta.style.display='flex' → sobrescribe inline ✓
+//     - classList.add('visible') → CSS .visible dice opacity:1 PERO inline
+//       opacity:'0' GANA sobre clase con !important.
+//   Tarjeta quedaba display:flex + opacity:0 (invisible pero clickable).
+//   Click en bloque → btnShare.click() → tarjeta abre invisible.
+//   Segundo click → cae sobre tarjetaOverlay invisible (z-index 999) →
+//   onclick="closeCard()" → showEco. ¡Eco en lugar de tarjeta visible!
+//
+//   FIX v7: al FINAL del eco, limpiar TODOS los inline styles del
+//   tarjetaOverlay (opacity, display, transition). El CSS por default
+//   aplica display:none + opacity:0 cuando no tiene clase 'visible'.
+//
+// FIXES v7 mantiene:
+//   - Override CSS nuclear (mata animación CSS nativa de bloques)
+//   - Sin inline styles en bloques (solo classes)
+//   - Defensa anti doble-trigger lupa
 // ═══════════════════════════════════════════════════════════════════════
 
-(function setupBocadoEcoV6() {
+(function setupBocadoEcoV7() {
   'use strict';
 
   var APPEAR_MS = 1500;
@@ -6809,9 +6822,7 @@ bootTriggui();
       '  opacity: 1 !important; filter: blur(0) !important;',
       '}',
       // ═══════════════════════════════════════════════════════════════════
-      // 🔥 OVERRIDE NUCLEAR: matar la animación CSS nativa de bloques
-      // El index.html tiene `.block { animation: tg-block-enter 520ms ... both }`
-      // con cascada nth-child(40/90/140/190ms). La eliminamos completamente.
+      // 🔥 OVERRIDE NUCLEAR: matar animación CSS nativa de bloques
       // ═══════════════════════════════════════════════════════════════════
       '#grid .block, .grid .block, body .block {',
       '  animation: none !important;',
@@ -6828,7 +6839,7 @@ bootTriggui();
       '  animation-delay: 0s !important;',
       '  -webkit-animation-delay: 0s !important;',
       '}',
-      // ── Entrada armónica de bloques (3 estados con !important) ──
+      // ── Entrada armónica de bloques ──
       '#grid .block.bm-harmonic-entry, .block.bm-harmonic-entry {',
       '  opacity: 0 !important;',
       '  transform: translateY(12px) !important;',
@@ -6856,7 +6867,25 @@ bootTriggui();
     document.head.appendChild(style);
   }
 
-  // ── BOCADO: dentro del overlay barra mágica ──
+  // 🔥 v7: Limpia bm-content-fading del inner del overlay barra mágica.
+  // Llamada por openOverlay y applyStrings (con guardas) ANTES de mostrar
+  // para que el contenido no aparezca invisible cuando la barra mágica
+  // se reabre después de un bocado/eco.
+  // NO toca bm-content-restoring (es transitorio, lo controla el eco).
+  function cleanupContentFading() {
+    var overlay = document.getElementById('barraMagicaOverlay');
+    if (!overlay) return;
+    var inner = overlay.querySelector('.barra-magica-inner');
+    var skipEl = document.getElementById('barraSkip');
+    var langEl = document.getElementById('barraLangToggle');
+    var streakEl = document.getElementById('barraStreak');
+    if (inner) inner.classList.remove('bm-content-fading');
+    if (skipEl) skipEl.classList.remove('bm-content-fading');
+    if (langEl) langEl.classList.remove('bm-content-fading');
+    if (streakEl) streakEl.classList.remove('bm-content-fading');
+  }
+
+  // ── BOCADO ──
   function showBocado() {
     var phrase = pickPhrase();
     if (!phrase) return;
@@ -6874,7 +6903,6 @@ bootTriggui();
     var langEl = document.getElementById('barraLangToggle');
     var streakEl = document.getElementById('barraStreak');
 
-    // Aplicar fading
     if (inner) inner.classList.add('bm-content-fading');
     if (skipEl) skipEl.classList.add('bm-content-fading');
     if (langEl) langEl.classList.add('bm-content-fading');
@@ -6903,43 +6931,20 @@ bootTriggui();
 
     setTimeout(function() { phraseEl.classList.add('bm-bocado-fading'); }, holdEndMs);
 
-    // 🔥 FIX v6 BUG B: limpiar fading al final del bocado
-    // Cuando el bocado termina, quitar bm-content-fading e ignorar bm-content-restoring.
-    // Usamos restoring transitorio para fade-in suave del contenido inner antes
-    // de que el overlay se cierre con closeOverlay (que ocurre después).
+    // 🔥 FIX v7 BUG D: NO quitar fading aquí. El inner debe quedar invisible
+    // hasta que el overlay se cierre. cleanupContentFading se llamará desde
+    // openOverlay/applyStrings cuando el overlay se reabra después.
     setTimeout(function() {
       if (bocadoBox.parentNode) bocadoBox.parentNode.removeChild(bocadoBox);
       var cs = document.getElementById('triggui-bocado-anchor-color');
       if (cs && cs.parentNode) cs.parentNode.removeChild(cs);
-
-      // CRITICAL: limpiar fading del inner para próxima apertura del overlay
-      if (inner) {
-        inner.classList.remove('bm-content-fading');
-        inner.classList.remove('bm-content-restoring');
-      }
-      if (skipEl) {
-        skipEl.classList.remove('bm-content-fading');
-        skipEl.classList.remove('bm-content-restoring');
-      }
-      if (langEl) {
-        langEl.classList.remove('bm-content-fading');
-        langEl.classList.remove('bm-content-restoring');
-      }
-      if (streakEl) {
-        streakEl.classList.remove('bm-content-fading');
-        streakEl.classList.remove('bm-content-restoring');
-      }
-
       bocadoActive = false;
     }, holdEndMs + DISAPPEAR_MS + 100);
 
-    if (typeof console !== 'undefined' && console.log) console.log('[Triggui Bocado v6]', '"' + phrase.text + '"', '←', phrase.source);
+    if (typeof console !== 'undefined' && console.log) console.log('[Triggui Bocado v7]', '"' + phrase.text + '"', '←', phrase.source);
   }
 
-  // ── BLOQUES: aplicar entry — SOLO CLASS, sin inline styles ──
-  // 🔥 FIX v6 BUG A: el override CSS nuclear ya garantiza que la animación
-  // CSS nativa NO corra. La clase entry con !important es suficiente.
-  // Inline styles ganaban sobre !important y rompían la transición.
+  // ── BLOQUES (sin inline styles) ──
   function prepareBlocksForHarmonic() {
     var blocks = document.querySelectorAll('#grid .block, .grid .block');
     if (!blocks || blocks.length === 0) return 0;
@@ -6955,11 +6960,9 @@ bootTriggui();
 
     blocks.forEach(function(block, i) {
       block.classList.add('bm-harmonic-entry');
-      // SOLO transition-delay inline (no opacity/transform/filter)
       block.style.transitionDelay = (i * BLOCK_STAGGER_MS) + 'ms';
     });
 
-    // Forzar reflow
     void document.body.offsetHeight;
 
     requestAnimationFrame(function() {
@@ -6974,7 +6977,6 @@ bootTriggui();
       });
     });
 
-    // Limpieza después de la animación
     var totalDuration = (blocks.length - 1) * BLOCK_STAGGER_MS + BLOCK_DURATION_MS + 200;
     setTimeout(function() {
       blocks.forEach(function(block) {
@@ -6982,7 +6984,6 @@ bootTriggui();
         block.classList.remove('bm-harmonic-prepare');
         block.classList.remove('bm-harmonic-show');
         block.style.transitionDelay = '';
-        // 🔥 FIX v6 BUG C defensivo: también limpiar inline styles si quedaron
         block.style.opacity = '';
         block.style.transform = '';
         block.style.filter = '';
@@ -7004,9 +7005,10 @@ bootTriggui();
     ensureStyles();
 
     var tarjeta = document.getElementById('tarjetaOverlay');
-    var savedTarjetaTransition = '';
+    // 🔥 FIX v7 BUG E: ya NO guardamos inline styles para "restaurar" — los
+    // limpiaremos completamente al final. Esto es porque cualquier inline
+    // style residual rompe la próxima apertura de tarjeta.
     if (tarjeta) {
-      savedTarjetaTransition = tarjeta.style.transition;
       tarjeta.style.transition = 'none';
       tarjeta.classList.remove('visible');
       tarjeta.style.opacity = '0';
@@ -7019,7 +7021,12 @@ bootTriggui();
     var overlay = document.getElementById('barraMagicaOverlay');
     if (!overlay) {
       ecoActive = false;
-      if (tarjeta) tarjeta.style.transition = savedTarjetaTransition;
+      // 🔥 FIX v7: limpiar inline styles del tarjetaOverlay aún si overlay no existe
+      if (tarjeta) {
+        tarjeta.style.transition = '';
+        tarjeta.style.opacity = '';
+        tarjeta.style.display = '';
+      }
       return;
     }
 
@@ -7027,7 +7034,6 @@ bootTriggui();
     document.documentElement.classList.remove('booting');
     document.body.classList.remove('booting');
 
-    // Regenerar atmósfera ANTES del eco
     try {
       if (typeof BarraMagica !== 'undefined' && typeof BarraMagica.applyStrings === 'function') {
         BarraMagica.applyStrings();
@@ -7133,19 +7139,28 @@ bootTriggui();
           if (streakEl) streakEl.classList.remove('bm-content-restoring');
         }, 1000);
 
-        if (tarjeta) tarjeta.style.transition = savedTarjetaTransition;
+        // 🔥 FIX v7 BUG E: limpiar TODOS los inline styles del tarjetaOverlay
+        // para que CSS default aplique (display:none + opacity:0). Cuando la
+        // tarjeta se vuelva a abrir, los nuevos inline styles del btnShare
+        // se aplicarán limpiamente sin conflictos persistentes.
+        if (tarjeta) {
+          tarjeta.style.transition = '';
+          tarjeta.style.opacity = '';
+          tarjeta.style.display = '';
+          tarjeta.classList.remove('visible'); // por si acaso quedó
+        }
 
         ecoActive = false;
         ecoJustEnded = Date.now();
       }, holdEndMs + DISAPPEAR_MS + 100);
     });
 
-    if (typeof console !== 'undefined' && console.log) console.log('[Triggui Eco v6]', '"' + phrase.text + '"', '←', phrase.source);
+    if (typeof console !== 'undefined' && console.log) console.log('[Triggui Eco v7]', '"' + phrase.text + '"', '←', phrase.source);
   }
 
   function patchBarraMagica() {
     if (typeof BarraMagica === 'undefined') return false;
-    if (BarraMagica._bocadoEcoV6Patched) return true;
+    if (BarraMagica._bocadoEcoV7Patched) return true;
 
     var originalSubmit = BarraMagica.submit.bind(BarraMagica);
     BarraMagica.submit = function(query) {
@@ -7191,13 +7206,24 @@ bootTriggui();
       doClose();
     };
 
-    BarraMagica._bocadoEcoV6Patched = true;
+    // 🔥 FIX v7 BUG D: parchear applyStrings para limpiar fading residual
+    // antes de aplicar strings. Guarda: si bocado o eco están activos, no
+    // limpiar (ellos manejan su propio fading).
+    var originalApplyStrings = BarraMagica.applyStrings.bind(BarraMagica);
+    BarraMagica.applyStrings = function() {
+      if (!bocadoActive && !ecoActive) {
+        cleanupContentFading();
+      }
+      return originalApplyStrings.apply(this, arguments);
+    };
+
+    BarraMagica._bocadoEcoV7Patched = true;
     return true;
   }
 
   function patchCloseCard() {
     if (typeof window.closeCard !== 'function') return false;
-    if (window._closeCardBocadoEcoV6Patched) return true;
+    if (window._closeCardBocadoEcoV7Patched) return true;
 
     var originalCloseCard = window.closeCard;
     window.closeCard = function() {
@@ -7208,13 +7234,13 @@ bootTriggui();
       }
     };
 
-    window._closeCardBocadoEcoV6Patched = true;
+    window._closeCardBocadoEcoV7Patched = true;
     return true;
   }
 
   function patchOpenOverlayForLupa() {
     if (typeof BarraMagica === 'undefined') return false;
-    if (BarraMagica._lupaBocadoEcoV6Patched) return true;
+    if (BarraMagica._lupaBocadoEcoV7Patched) return true;
     if (typeof BarraMagica.openOverlay !== 'function') return false;
 
     var original = BarraMagica.openOverlay.bind(BarraMagica);
@@ -7230,10 +7256,14 @@ bootTriggui();
 
       if (ecoActive) return false;
 
+      // 🔥 FIX v7 BUG D: limpiar fading residual del bocado/eco previo
+      // ANTES de mostrar overlay. Defensa adicional al patch de applyStrings.
+      cleanupContentFading();
+
       return original(force);
     };
 
-    BarraMagica._lupaBocadoEcoV6Patched = true;
+    BarraMagica._lupaBocadoEcoV7Patched = true;
     return true;
   }
 
@@ -7242,8 +7272,8 @@ bootTriggui();
     var ok2 = patchCloseCard();
     var ok3 = patchOpenOverlayForLupa();
     if (typeof console !== 'undefined' && console.log) {
-      console.log('[Triggui BocadoEco v6] ' +
-        (ok1 && ok2 && ok3 ? 'instalado nivel quark — fixes A B C activos' : 'parcial') +
+      console.log('[Triggui BocadoEco v7] ' +
+        (ok1 && ok2 && ok3 ? 'instalado nivel quark — fixes D E activos' : 'parcial') +
         ' submit=' + ok1 + ' card=' + ok2 + ' lupa=' + ok3);
     }
   }
@@ -7259,6 +7289,7 @@ bootTriggui();
       return typeof BarraMagica !== 'undefined' &&
              typeof BarraMagica.submit === 'function' &&
              typeof BarraMagica.openOverlay === 'function' &&
+             typeof BarraMagica.applyStrings === 'function' &&
              typeof window.closeCard === 'function';
     },
     tryInstall,
