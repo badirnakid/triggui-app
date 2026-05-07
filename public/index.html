@@ -6211,7 +6211,7 @@ bootTriggui();
     return {
       distribution: distribution,
       angles: angles,
-      lightIntensity: rand(0.10, 0.22)  // v4: rango ajustado para luz tintada
+      lightIntensity: rand(0.08, 0.18)  // v4.1: rango más sutil (sin línea visible)
     };
   }
 
@@ -6319,8 +6319,9 @@ bootTriggui();
     var avgS = (c1.s + c2.s) / 2;
 
     // Variación inteligente por luminance — drama o sutileza según contexto
-    var lightBoost = avgL < 0.42 ? 1.55 : (avgL > 0.68 ? 0.55 : 1.0);
-    var shadowBoost = avgL < 0.42 ? 0.50 : (avgL > 0.68 ? 1.30 : 0.85);
+    // v4.1: rangos suavizados (1.55/0.55 → 1.30/0.65) para más naturalidad
+    var lightBoost = avgL < 0.42 ? 1.30 : (avgL > 0.68 ? 0.65 : 1.0);
+    var shadowBoost = avgL < 0.42 ? 0.55 : (avgL > 0.68 ? 1.20 : 0.85);
 
     // Posiciones derivadas del ángulo — coherencia matemática
     var lightPos = angleToLightPos(angle);
@@ -6331,23 +6332,31 @@ bootTriggui();
                  hslCss(c1.h, c1.s, c1.l) + ' 0%, ' +
                  hslCss(c2.h, c2.s, c2.l) + ' 100%)';
 
-    // Luz tintada — hue del bloque, desaturada al 25%, casi blanca, alpha modulado
-    var lightAlpha = clamp(alpha * lightBoost, 0.05, 0.28);
-    var lightColor = 'hsla(' + avgH.toFixed(0) + ', 25%, 95%, ' + lightAlpha.toFixed(3) + ')';
-    var light = 'radial-gradient(ellipse 75% 55% at ' +
+    // ── LUZ TINTADA con CAÍDA SIGMOIDAL (4 stops, sin borde visible) ───
+    // v4.1: tamaño extendido (110% 90%) — los bordes de la elipse caen
+    //       FUERA del bloque, invisibles. Multi-stop para desvanecimiento
+    //       natural sin "línea" perceptible.
+    var lightAlpha = clamp(alpha * lightBoost, 0.04, 0.22);
+    var lhPart = 'hsla(' + avgH.toFixed(0) + ', 25%, 95%, ';
+    var light = 'radial-gradient(ellipse 110% 90% at ' +
                 lightPos.x.toFixed(0) + '% ' + lightPos.y.toFixed(0) + '%, ' +
-                lightColor + ' 0%, transparent 60%)';
+                lhPart + lightAlpha.toFixed(3) + ') 0%, ' +
+                lhPart + (lightAlpha * 0.55).toFixed(3) + ') 25%, ' +
+                lhPart + (lightAlpha * 0.18).toFixed(3) + ') 55%, ' +
+                'transparent 90%)';
 
-    // Sombra tintada — hue del bloque, saturado al 50%, MUY oscuro, alpha modulado
-    var shadowAlpha = clamp(alpha * shadowBoost, 0.04, 0.20);
+    // ── SOMBRA TINTADA con CAÍDA SIGMOIDAL (4 stops) ──────────────────
+    var shadowAlpha = clamp(alpha * shadowBoost, 0.03, 0.16);
     var shadowSat = clamp(avgS * 0.6, 0.15, 0.75);
-    var shadowColor = 'hsla(' + avgH.toFixed(0) + ', ' + (shadowSat * 100).toFixed(0) + '%, 8%, ' + shadowAlpha.toFixed(3) + ')';
-    var shadow = 'radial-gradient(ellipse 75% 55% at ' +
+    var shPart = 'hsla(' + avgH.toFixed(0) + ', ' + (shadowSat * 100).toFixed(0) + '%, 8%, ';
+    var shadow = 'radial-gradient(ellipse 110% 90% at ' +
                  shadowPos.x.toFixed(0) + '% ' + shadowPos.y.toFixed(0) + '%, ' +
-                 shadowColor + ' 0%, transparent 60%)';
+                 shPart + shadowAlpha.toFixed(3) + ') 0%, ' +
+                 shPart + (shadowAlpha * 0.55).toFixed(3) + ') 25%, ' +
+                 shPart + (shadowAlpha * 0.18).toFixed(3) + ') 55%, ' +
+                 'transparent 90%)';
 
-    // Orden CSS: primera capa = arriba en el stack visual
-    // Light arriba (más visible), shadow medio, linear base abajo
+    // Orden CSS: primera capa = arriba del stack visual
     return light + ', ' + shadow + ', ' + linear;
   }
 
