@@ -1,0 +1,945 @@
+{
+  "history": [
+    {
+      "at": "2026-05-07T03:00:30.603Z",
+      "stage": "trigger_analysis",
+      "trigger_analysis": {
+        "raw_input": "Siento que ya leí demasiados libros ya no me quiero levantar 4 am a leer mas. Qué me pasa?",
+        "semantic_query": "Necesito entender por qué me siento abrumado por la lectura y cómo manejarlo.",
+        "intent_summary": "Busco respuestas sobre mi relación con la lectura y el agotamiento que siento.",
+        "editorial_requests": [],
+        "source_preference": null,
+        "ranking_preference": null,
+        "unsupported_runtime_constraints": [],
+        "supported_constraints": {
+          "year_min": null,
+          "year_max": null,
+          "prefer_recent": false
+        },
+        "search_queries": [
+          "agotamiento por lectura",
+          "relación con la lectura",
+          "cómo disfrutar de los libros",
+          "estrategias para leer menos",
+          "motivos para dejar de leer",
+          "equilibrio entre lectura y descanso",
+          "Necesito entender por qué me siento abrumado por la lectura y cómo manejarlo.",
+          "necesito entender siento"
+        ],
+        "concept_hints": [
+          "psicología",
+          "bienestar",
+          "autoayuda"
+        ],
+        "clean_for_selection": "Necesito entender por qué me siento abrumado por la lectura y cómo manejarlo.",
+        "notes": {
+          "used_ai_normalizer": true,
+          "looked_like_book_intent": true,
+          "semantic_overlap_vs_raw": 0.1875
+        }
+      }
+    },
+    {
+      "at": "2026-05-07T03:00:32.182Z",
+      "stage": "live_candidates_filter_recent",
+      "before": 0,
+      "after": 0,
+      "removed": 0,
+      "ring_size": 13
+    },
+    {
+      "at": "2026-05-07T03:00:32.182Z",
+      "stage": "live_candidates_merged",
+      "count": 0,
+      "top": []
+    },
+    {
+      "at": "2026-05-07T03:00:34.869Z",
+      "stage": "discover_attempt_result",
+      "attempt": 1,
+      "parsed_preview": {
+        "recommendations": [
+          {
+            "titulo": "Cómo leer libros",
+            "autor": "Mortimer J. Adler y Charles Van Doren",
+            "motivo_corto": "Ofrece estrategias para mejorar la comprensión y disfrutar más de la lectura.",
+            "tagline": "Transforma tu experiencia de lectura."
+          },
+          {
+            "titulo": "El arte de la lectura",
+            "autor": "David Ulin",
+            "motivo_corto": "Explora la relación personal con los libros y el impacto del agotamiento por lectura.",
+            "tagline": "Redescubre la alegría de leer."
+          },
+          {
+            "titulo": "El lector común",
+            "autor": "Santiago Posteguillo",
+            "motivo_corto": "Reflexiona sobre el placer y la presión de la lectura en la vida moderna.",
+            "tagline": "Encuentra el equilibrio en tu vida lectora."
+          }
+        ]
+      },
+      "raw_preview": "{\n  \"recommendations\": [\n    { \"titulo\": \"Cómo leer libros\", \"autor\": \"Mortimer J. Adler y Charles Van Doren\", \"motivo_corto\": \"Ofrece estrategias para mejorar la comprensión y disfrutar más de la lectura.\", \"tagline\": \"Transforma tu experiencia de lectura.\" },\n    { \"titulo\": \"El arte de la lectura\", \"autor\": \"David Ulin\", \"motivo_corto\": \"Explora la relación personal con los libros y el impacto del agotamiento por lectura.\", \"tagline\": \"Redescubre la alegría de leer.\" },\n    { \"titulo\": \"El lector común\", \"autor\": \"Santiago Posteguillo\", \"motivo_corto\": \"Reflexiona sobre el placer y la presión de la lectura en la vida moderna.\", \"tagline\": \"Encuentra el equilibrio en tu vida lectora.\" }\n  ]\n}",
+      "recommendations": [
+        {
+          "titulo": "Cómo leer libros",
+          "autor": "Mortimer J. Adler y Charles Van Doren",
+          "motivo_corto": "Ofrece estrategias para mejorar la comprensión y disfrutar más de la lectura.",
+          "tagline": "Transforma tu experiencia de lectura.",
+          "source_label": "",
+          "source_url": "",
+          "published_year": null,
+          "live_score": 0,
+          "ai_fit_score": 0,
+          "ai_fit_reason": ""
+        },
+        {
+          "titulo": "El arte de la lectura",
+          "autor": "David Ulin",
+          "motivo_corto": "Explora la relación personal con los libros y el impacto del agotamiento por lectura.",
+          "tagline": "Redescubre la alegría de leer.",
+          "source_label": "",
+          "source_url": "",
+          "published_year": null,
+          "live_score": 0,
+          "ai_fit_score": 0,
+          "ai_fit_reason": ""
+        },
+        {
+          "titulo": "El lector común",
+          "autor": "Santiago Posteguillo",
+          "motivo_corto": "Reflexiona sobre el placer y la presión de la lectura en la vida moderna.",
+          "tagline": "Encuentra el equilibrio en tu vida lectora.",
+          "source_label": "",
+          "source_url": "",
+          "published_year": null,
+          "live_score": 0,
+          "ai_fit_score": 0,
+          "ai_fit_reason": ""
+        }
+      ],
+      "temperature": 0.7
+    },
+    {
+      "at": "2026-05-07T03:00:38.140Z",
+      "stage": "ai_rerank_candidates",
+      "stageLabel": "discover_gpt_rerank_attempt_1",
+      "ranked": [
+        {
+          "idx": 3,
+          "fit_score": 0.92,
+          "reason": "El lector común aborda la relación con la lectura y cómo encontrar un equilibrio, lo que se alinea directamente con la sensación de agobio y la búsqueda de respuestas sobre la experiencia lectora."
+        },
+        {
+          "idx": 2,
+          "fit_score": 0.88,
+          "reason": "El arte de la lectura se centra en redescubrir la alegría de leer, lo que puede ayudar a manejar el agotamiento y mejorar la relación con la lectura."
+        },
+        {
+          "idx": 1,
+          "fit_score": 0.75,
+          "reason": "Cómo leer libros ofrece herramientas para transformar la experiencia de lectura, pero no se enfoca tanto en el aspecto emocional del agotamiento."
+        }
+      ]
+    },
+    {
+      "at": "2026-05-07T03:01:27.712Z",
+      "stage": "gpt_candidates_inspected",
+      "attempt": 1,
+      "inspected": [
+        {
+          "recommendation": {
+            "titulo": "El lector común",
+            "autor": "Santiago Posteguillo",
+            "motivo_corto": "Reflexiona sobre el placer y la presión de la lectura en la vida moderna.",
+            "tagline": "Encuentra el equilibrio en tu vida lectora.",
+            "source_label": "",
+            "source_url": "",
+            "published_year": null,
+            "live_score": 0,
+            "ai_fit_score": 0.92,
+            "ai_fit_reason": "El lector común aborda la relación con la lectura y cómo encontrar un equilibrio, lo que se alinea directamente con la sensación de agobio y la búsqueda de respuestas sobre la experiencia lectora."
+          },
+          "evidence": {
+            "portada": "",
+            "isbn": "",
+            "editorial": "",
+            "year": "",
+            "source": "none",
+            "matched_title": "",
+            "matched_author": "",
+            "match_score": 0,
+            "_evidence": {
+              "titulo_input": "El lector común",
+              "autor_input": "Santiago Posteguillo",
+              "isbn_seed": "",
+              "isbn_seed_raw": "",
+              "isbn_seed_rejected": null,
+              "isbn_discovered": "",
+              "isbn_discovered_raw": "",
+              "apple": {
+                "ok": false,
+                "reason": "no_results",
+                "source": "apple_books"
+              },
+              "google": {
+                "ok": false,
+                "reason": "no_good_match",
+                "source": "google_books"
+              },
+              "openlibrary": {
+                "ok": false,
+                "reason": "no_results",
+                "source": "openlibrary"
+              },
+              "amazon": {
+                "ok": false,
+                "reason": "skipped",
+                "source": "amazon"
+              },
+              "valid_covers": [],
+              "_sources_succeeded": [],
+              "_sources_failed": [
+                "apple_books:no_results",
+                "google_books:no_good_match",
+                "openlibrary:no_results",
+                "amazon:skipped"
+              ],
+              "_timing": {
+                "phase1_parallel_ms": 16105,
+                "phase2_isbn_chain_ms": 0,
+                "cover_validation_ms": 0,
+                "total_ms": 16105
+              },
+              "_version": "3.6"
+            }
+          },
+          "constraintsCheck": {
+            "exact_ok": true,
+            "hard_ok": true,
+            "issues": [],
+            "warnings": [],
+            "reason": "Válido por evidencia bibliográfica"
+          },
+          "sourceLabel": "gpt_attempt_1",
+          "semantic_score": 0.92,
+          "fallback_score": 112
+        },
+        {
+          "recommendation": {
+            "titulo": "El arte de la lectura",
+            "autor": "David Ulin",
+            "motivo_corto": "Explora la relación personal con los libros y el impacto del agotamiento por lectura.",
+            "tagline": "Redescubre la alegría de leer.",
+            "source_label": "",
+            "source_url": "",
+            "published_year": null,
+            "live_score": 0,
+            "ai_fit_score": 0.88,
+            "ai_fit_reason": "El arte de la lectura se centra en redescubrir la alegría de leer, lo que puede ayudar a manejar el agotamiento y mejorar la relación con la lectura."
+          },
+          "evidence": {
+            "portada": "",
+            "isbn": "",
+            "editorial": "",
+            "year": "",
+            "source": "none",
+            "matched_title": "",
+            "matched_author": "",
+            "match_score": 0,
+            "_evidence": {
+              "titulo_input": "El arte de la lectura",
+              "autor_input": "David Ulin",
+              "isbn_seed": "",
+              "isbn_seed_raw": "",
+              "isbn_seed_rejected": null,
+              "isbn_discovered": "",
+              "isbn_discovered_raw": "",
+              "apple": {
+                "ok": false,
+                "reason": "no_results",
+                "source": "apple_books"
+              },
+              "google": {
+                "ok": false,
+                "reason": "no_good_match",
+                "source": "google_books"
+              },
+              "openlibrary": {
+                "ok": false,
+                "reason": "no_results",
+                "source": "openlibrary"
+              },
+              "amazon": {
+                "ok": false,
+                "reason": "skipped",
+                "source": "amazon"
+              },
+              "valid_covers": [],
+              "_sources_succeeded": [],
+              "_sources_failed": [
+                "apple_books:no_results",
+                "google_books:no_good_match",
+                "openlibrary:no_results",
+                "amazon:skipped"
+              ],
+              "_timing": {
+                "phase1_parallel_ms": 16441,
+                "phase2_isbn_chain_ms": 0,
+                "cover_validation_ms": 0,
+                "total_ms": 16441
+              },
+              "_version": "3.6"
+            }
+          },
+          "constraintsCheck": {
+            "exact_ok": true,
+            "hard_ok": true,
+            "issues": [],
+            "warnings": [],
+            "reason": "Válido por evidencia bibliográfica"
+          },
+          "sourceLabel": "gpt_attempt_1",
+          "semantic_score": 0.88,
+          "fallback_score": 108
+        },
+        {
+          "recommendation": {
+            "titulo": "Cómo leer libros",
+            "autor": "Mortimer J. Adler y Charles Van Doren",
+            "motivo_corto": "Ofrece estrategias para mejorar la comprensión y disfrutar más de la lectura.",
+            "tagline": "Transforma tu experiencia de lectura.",
+            "source_label": "",
+            "source_url": "",
+            "published_year": null,
+            "live_score": 0,
+            "ai_fit_score": 0.75,
+            "ai_fit_reason": "Cómo leer libros ofrece herramientas para transformar la experiencia de lectura, pero no se enfoca tanto en el aspecto emocional del agotamiento."
+          },
+          "evidence": {
+            "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/3000x3000bb.jpg",
+            "isbn": "",
+            "editorial": "Mortimer J. Adler",
+            "source": "apple_books",
+            "year": "2024",
+            "matched_title": "Como Ler um Livro",
+            "matched_author": "Mortimer J. Adler",
+            "match_score": 0.7608823529411766,
+            "synopsis": "«CENTENAS DE PÁGINAS REPLETAS DE ASSUNTOS RELEVANTES QUE NINGUÉM ATENTO À LEITURA E AO DESTINO DOS LIVROS SE PODE DAR AO LUXO DE NÃO CONHECER.» JACQUES BARZUN Incontornável para todos os que gostam de livros, esta aclamada obra de Mortimer J. Adler e Charles Van Doren, publicado originalmente em 1940, é um prodígio raro, um clássico vivo sobre os vários níveis de leitura e a forma de os alcançar – desde a leitura elementar, passando pela leitura sistemática, profunda e introspetiva, até à leitura rápida. Aqui, o leitor terá a oportunidade de intensificar o prazer da leitura, aprender a avaliar (ou não) um livro pela capa, fazer uma análise pormenorizada do conteúdo, desenvolver uma leitura crítica aprofundada e extrair de forma eficaz a mensagem que o autor deseja transmitir. Como Ler Um Livro inclui resumos, esquemas e instruções sobre diversas técnicas de leitura, adaptadas a cada género literário, desde peças de teatro a poesia até filosofia e ciências sociais. Além disso, oferece excelentes recomendações de obras imperdíveis e testes que permitem avaliar o progresso em termos de capacidade de leitura, compreensão e rapidez. Quando estamos atentos, aprendemos e desenvolvemos as nossas capacidades e avançamos no conhecimento que desejamos. Esta obra conduz-nos por uma agradável viagem pelo mundo da leitura e explora as razões fundamentais pelas quais devemos ler.",
+            "synopsis_length": 1387,
+            "covers": [
+              {
+                "size": "xxlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/3000x3000bb.jpg"
+              },
+              {
+                "size": "xlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/1200x1200bb.jpg"
+              },
+              {
+                "size": "large",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/600x600bb.jpg"
+              },
+              {
+                "size": "medium",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/100x100bb.jpg"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "Como Ler um Livro",
+              "autor_completo": "Mortimer J. Adler",
+              "año": "2024",
+              "editorial": null,
+              "isbn": "",
+              "apple_track_id": "6737574290",
+              "categorias": [
+                "Artes y disciplinas lingüísticas",
+                "Libros",
+                "Técnicos y profesionales",
+                "Educación",
+                "Referencia",
+                "Recursos de estudio"
+              ],
+              "track_view_url": "https://books.apple.com/mx/book/como-ler-um-livro/id6737574290?uo=4"
+            },
+            "_evidence": {
+              "titulo_input": "Cómo leer libros",
+              "autor_input": "Mortimer J. Adler y Charles Van Doren",
+              "isbn_seed": "",
+              "isbn_seed_raw": "",
+              "isbn_seed_rejected": null,
+              "isbn_discovered": "",
+              "isbn_discovered_raw": "",
+              "apple": {
+                "ok": true,
+                "source": "apple_books",
+                "match_score": 0.7608823529411766,
+                "match_details": {
+                  "matched_title": "Como Ler um Livro",
+                  "matched_author": "Mortimer J. Adler"
+                },
+                "synopsis": "«CENTENAS DE PÁGINAS REPLETAS DE ASSUNTOS RELEVANTES QUE NINGUÉM ATENTO À LEITURA E AO DESTINO DOS LIVROS SE PODE DAR AO LUXO DE NÃO CONHECER.» JACQUES BARZUN Incontornável para todos os que gostam de livros, esta aclamada obra de Mortimer J. Adler e Charles Van Doren, publicado originalmente em 1940, é um prodígio raro, um clássico vivo sobre os vários níveis de leitura e a forma de os alcançar – desde a leitura elementar, passando pela leitura sistemática, profunda e introspetiva, até à leitura rápida. Aqui, o leitor terá a oportunidade de intensificar o prazer da leitura, aprender a avaliar (ou não) um livro pela capa, fazer uma análise pormenorizada do conteúdo, desenvolver uma leitura crítica aprofundada e extrair de forma eficaz a mensagem que o autor deseja transmitir. Como Ler Um Livro inclui resumos, esquemas e instruções sobre diversas técnicas de leitura, adaptadas a cada género literário, desde peças de teatro a poesia até filosofia e ciências sociais. Além disso, oferece excelentes recomendações de obras imperdíveis e testes que permitem avaliar o progresso em termos de capacidade de leitura, compreensão e rapidez. Quando estamos atentos, aprendemos e desenvolvemos as nossas capacidades e avançamos no conhecimento que desejamos. Esta obra conduz-nos por uma agradável viagem pelo mundo da leitura e explora as razões fundamentais pelas quais devemos ler.",
+                "synopsis_length": 1387,
+                "covers": [
+                  {
+                    "size": "xxlarge",
+                    "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/3000x3000bb.jpg"
+                  },
+                  {
+                    "size": "xlarge",
+                    "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/1200x1200bb.jpg"
+                  },
+                  {
+                    "size": "large",
+                    "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/600x600bb.jpg"
+                  },
+                  {
+                    "size": "medium",
+                    "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/100x100bb.jpg"
+                  }
+                ],
+                "verified_identity": {
+                  "titulo_real": "Como Ler um Livro",
+                  "autor_completo": "Mortimer J. Adler",
+                  "año": "2024",
+                  "editorial": null,
+                  "isbn": "",
+                  "apple_track_id": "6737574290",
+                  "categorias": [
+                    "Artes y disciplinas lingüísticas",
+                    "Libros",
+                    "Técnicos y profesionales",
+                    "Educación",
+                    "Referencia",
+                    "Recursos de estudio"
+                  ],
+                  "track_view_url": "https://books.apple.com/mx/book/como-ler-um-livro/id6737574290?uo=4"
+                }
+              },
+              "google": {
+                "ok": false,
+                "reason": "no_good_match",
+                "source": "google_books"
+              },
+              "openlibrary": {
+                "ok": false,
+                "reason": "no_results",
+                "source": "openlibrary"
+              },
+              "amazon": {
+                "ok": false,
+                "reason": "skipped",
+                "source": "amazon"
+              },
+              "valid_covers": [
+                {
+                  "source": "apple_books",
+                  "size": "xxlarge",
+                  "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/3000x3000bb.jpg",
+                  "valid": true
+                },
+                {
+                  "source": "apple_books",
+                  "size": "xlarge",
+                  "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/1200x1200bb.jpg",
+                  "valid": true
+                },
+                {
+                  "source": "apple_books",
+                  "size": "large",
+                  "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/600x600bb.jpg",
+                  "valid": true
+                },
+                {
+                  "source": "apple_books",
+                  "size": "medium",
+                  "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/100x100bb.jpg",
+                  "valid": true
+                }
+              ],
+              "_sources_succeeded": [
+                "apple_books"
+              ],
+              "_sources_failed": [
+                "google_books:no_good_match",
+                "openlibrary:no_results",
+                "amazon:skipped"
+              ],
+              "_timing": {
+                "phase1_parallel_ms": 16318,
+                "phase2_isbn_chain_ms": 0,
+                "cover_validation_ms": 699,
+                "total_ms": 17017
+              },
+              "_version": "3.6"
+            }
+          },
+          "constraintsCheck": {
+            "exact_ok": true,
+            "hard_ok": true,
+            "issues": [],
+            "warnings": [],
+            "reason": "Año verificado 2024"
+          },
+          "sourceLabel": "gpt_attempt_1",
+          "semantic_score": 0.75,
+          "fallback_score": 130.22
+        }
+      ]
+    },
+    {
+      "at": "2026-05-07T03:01:27.733Z",
+      "stage": "success",
+      "bookData": {
+        "titulo": "Cómo leer libros",
+        "autor": "Mortimer J. Adler y Charles Van Doren",
+        "slug": "como-leer-libros",
+        "tagline": "Transforma tu experiencia de lectura.",
+        "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/3000x3000bb.jpg",
+        "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/3000x3000bb.jpg",
+        "portada_source": "apple_books",
+        "portada_candidates": [
+          {
+            "source": "apple_books",
+            "size": "xxlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/3000x3000bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "xlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/1200x1200bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "large",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/600x600bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "medium",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/100x100bb.jpg",
+            "valid": true
+          }
+        ],
+        "needs_fallback_cover": false,
+        "isbn": "",
+        "editorial": "Mortimer J. Adler",
+        "publication_year": "2024",
+        "source": "apple_books",
+        "duplicado": false,
+        "selected_via": "discover_trigger",
+        "selection_reason": "Ofrece estrategias para mejorar la comprensión y disfrutar más de la lectura.",
+        "trigger_input": "Siento que ya leí demasiados libros ya no me quiero levantar 4 am a leer mas. Qué me pasa?",
+        "trigger_analysis": {
+          "raw_input": "Siento que ya leí demasiados libros ya no me quiero levantar 4 am a leer mas. Qué me pasa?",
+          "semantic_query": "Necesito entender por qué me siento abrumado por la lectura y cómo manejarlo.",
+          "intent_summary": "Busco respuestas sobre mi relación con la lectura y el agotamiento que siento.",
+          "editorial_requests": [],
+          "source_preference": null,
+          "ranking_preference": null,
+          "unsupported_runtime_constraints": [],
+          "supported_constraints": {
+            "year_min": null,
+            "year_max": null,
+            "prefer_recent": false
+          },
+          "search_queries": [
+            "agotamiento por lectura",
+            "relación con la lectura",
+            "cómo disfrutar de los libros",
+            "estrategias para leer menos",
+            "motivos para dejar de leer",
+            "equilibrio entre lectura y descanso",
+            "Necesito entender por qué me siento abrumado por la lectura y cómo manejarlo.",
+            "necesito entender siento"
+          ],
+          "concept_hints": [
+            "psicología",
+            "bienestar",
+            "autoayuda"
+          ],
+          "clean_for_selection": "Necesito entender por qué me siento abrumado por la lectura y cómo manejarlo.",
+          "notes": {
+            "used_ai_normalizer": true,
+            "looked_like_book_intent": true,
+            "semantic_overlap_vs_raw": 0.1875
+          }
+        },
+        "selection_validation": {
+          "semantic_score": 0.75,
+          "ai_fit_score": 0.75,
+          "match_score": 0.7608823529411766,
+          "validation_source": "apple_books",
+          "constraint_reason": "Año verificado 2024",
+          "mode": "exact_gpt",
+          "source_label": "gpt_attempt_1",
+          "fallback_score": 130.22
+        },
+        "catalog_scope": "",
+        "contexto_2026": {},
+        "identity_sealed": true,
+        "_evidence": {
+          "titulo_input": "Cómo leer libros",
+          "autor_input": "Mortimer J. Adler y Charles Van Doren",
+          "isbn_seed": "",
+          "isbn_seed_raw": "",
+          "isbn_seed_rejected": null,
+          "isbn_discovered": "",
+          "isbn_discovered_raw": "",
+          "apple": {
+            "ok": true,
+            "source": "apple_books",
+            "match_score": 0.7608823529411766,
+            "match_details": {
+              "matched_title": "Como Ler um Livro",
+              "matched_author": "Mortimer J. Adler"
+            },
+            "synopsis": "«CENTENAS DE PÁGINAS REPLETAS DE ASSUNTOS RELEVANTES QUE NINGUÉM ATENTO À LEITURA E AO DESTINO DOS LIVROS SE PODE DAR AO LUXO DE NÃO CONHECER.» JACQUES BARZUN Incontornável para todos os que gostam de livros, esta aclamada obra de Mortimer J. Adler e Charles Van Doren, publicado originalmente em 1940, é um prodígio raro, um clássico vivo sobre os vários níveis de leitura e a forma de os alcançar – desde a leitura elementar, passando pela leitura sistemática, profunda e introspetiva, até à leitura rápida. Aqui, o leitor terá a oportunidade de intensificar o prazer da leitura, aprender a avaliar (ou não) um livro pela capa, fazer uma análise pormenorizada do conteúdo, desenvolver uma leitura crítica aprofundada e extrair de forma eficaz a mensagem que o autor deseja transmitir. Como Ler Um Livro inclui resumos, esquemas e instruções sobre diversas técnicas de leitura, adaptadas a cada género literário, desde peças de teatro a poesia até filosofia e ciências sociais. Além disso, oferece excelentes recomendações de obras imperdíveis e testes que permitem avaliar o progresso em termos de capacidade de leitura, compreensão e rapidez. Quando estamos atentos, aprendemos e desenvolvemos as nossas capacidades e avançamos no conhecimento que desejamos. Esta obra conduz-nos por uma agradável viagem pelo mundo da leitura e explora as razões fundamentais pelas quais devemos ler.",
+            "synopsis_length": 1387,
+            "covers": [
+              {
+                "size": "xxlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/3000x3000bb.jpg"
+              },
+              {
+                "size": "xlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/1200x1200bb.jpg"
+              },
+              {
+                "size": "large",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/600x600bb.jpg"
+              },
+              {
+                "size": "medium",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/100x100bb.jpg"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "Como Ler um Livro",
+              "autor_completo": "Mortimer J. Adler",
+              "año": "2024",
+              "editorial": null,
+              "isbn": "",
+              "apple_track_id": "6737574290",
+              "categorias": [
+                "Artes y disciplinas lingüísticas",
+                "Libros",
+                "Técnicos y profesionales",
+                "Educación",
+                "Referencia",
+                "Recursos de estudio"
+              ],
+              "track_view_url": "https://books.apple.com/mx/book/como-ler-um-livro/id6737574290?uo=4"
+            }
+          },
+          "google": {
+            "ok": false,
+            "reason": "no_good_match",
+            "source": "google_books"
+          },
+          "openlibrary": {
+            "ok": false,
+            "reason": "no_results",
+            "source": "openlibrary"
+          },
+          "amazon": {
+            "ok": false,
+            "reason": "skipped",
+            "source": "amazon"
+          },
+          "valid_covers": [
+            {
+              "source": "apple_books",
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/3000x3000bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/1200x1200bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/600x600bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/100x100bb.jpg",
+              "valid": true
+            }
+          ],
+          "_sources_succeeded": [
+            "apple_books"
+          ],
+          "_sources_failed": [
+            "google_books:no_good_match",
+            "openlibrary:no_results",
+            "amazon:skipped"
+          ],
+          "_timing": {
+            "phase1_parallel_ms": 16318,
+            "phase2_isbn_chain_ms": 0,
+            "cover_validation_ms": 699,
+            "total_ms": 17017
+          },
+          "_version": "3.6"
+        },
+        "_evidence_synopsis": "«CENTENAS DE PÁGINAS REPLETAS DE ASSUNTOS RELEVANTES QUE NINGUÉM ATENTO À LEITURA E AO DESTINO DOS LIVROS SE PODE DAR AO LUXO DE NÃO CONHECER.» JACQUES BARZUN Incontornável para todos os que gostam de livros, esta aclamada obra de Mortimer J. Adler e Charles Van Doren, publicado originalmente em 1940, é um prodígio raro, um clássico vivo sobre os vários níveis de leitura e a forma de os alcançar – desde a leitura elementar, passando pela leitura sistemática, profunda e introspetiva, até à leitura rápida. Aqui, o leitor terá a oportunidade de intensificar o prazer da leitura, aprender a avaliar (ou não) um livro pela capa, fazer uma análise pormenorizada do conteúdo, desenvolver uma leitura crítica aprofundada e extrair de forma eficaz a mensagem que o autor deseja transmitir. Como Ler Um Livro inclui resumos, esquemas e instruções sobre diversas técnicas de leitura, adaptadas a cada género literário, desde peças de teatro a poesia até filosofia e ciências sociais. Além disso, oferece excelentes recomendações de obras imperdíveis e testes que permitem avaliar o progresso em termos de capacidade de leitura, compreensão e rapidez. Quando estamos atentos, aprendemos e desenvolvemos as nossas capacidades e avançamos no conhecimento que desejamos. Esta obra conduz-nos por uma agradável viagem pelo mundo da leitura e explora as razões fundamentais pelas quais devemos ler.",
+        "_evidence_verified_identity": {
+          "titulo_real": "Como Ler um Livro",
+          "autor_completo": "Mortimer J. Adler",
+          "año": "2024",
+          "editorial": null,
+          "isbn": "",
+          "apple_track_id": "6737574290",
+          "categorias": [
+            "Artes y disciplinas lingüísticas",
+            "Libros",
+            "Técnicos y profesionales",
+            "Educación",
+            "Referencia",
+            "Recursos de estudio"
+          ],
+          "track_view_url": "https://books.apple.com/mx/book/como-ler-um-livro/id6737574290?uo=4"
+        },
+        "_evidence_match_score": 0.7608823529411766
+      },
+      "ring_updated": true
+    }
+  ],
+  "last": {
+    "at": "2026-05-07T03:01:27.733Z",
+    "stage": "success",
+    "bookData": {
+      "titulo": "Cómo leer libros",
+      "autor": "Mortimer J. Adler y Charles Van Doren",
+      "slug": "como-leer-libros",
+      "tagline": "Transforma tu experiencia de lectura.",
+      "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/3000x3000bb.jpg",
+      "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/3000x3000bb.jpg",
+      "portada_source": "apple_books",
+      "portada_candidates": [
+        {
+          "source": "apple_books",
+          "size": "xxlarge",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/3000x3000bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "xlarge",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/1200x1200bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "large",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/600x600bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "medium",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/100x100bb.jpg",
+          "valid": true
+        }
+      ],
+      "needs_fallback_cover": false,
+      "isbn": "",
+      "editorial": "Mortimer J. Adler",
+      "publication_year": "2024",
+      "source": "apple_books",
+      "duplicado": false,
+      "selected_via": "discover_trigger",
+      "selection_reason": "Ofrece estrategias para mejorar la comprensión y disfrutar más de la lectura.",
+      "trigger_input": "Siento que ya leí demasiados libros ya no me quiero levantar 4 am a leer mas. Qué me pasa?",
+      "trigger_analysis": {
+        "raw_input": "Siento que ya leí demasiados libros ya no me quiero levantar 4 am a leer mas. Qué me pasa?",
+        "semantic_query": "Necesito entender por qué me siento abrumado por la lectura y cómo manejarlo.",
+        "intent_summary": "Busco respuestas sobre mi relación con la lectura y el agotamiento que siento.",
+        "editorial_requests": [],
+        "source_preference": null,
+        "ranking_preference": null,
+        "unsupported_runtime_constraints": [],
+        "supported_constraints": {
+          "year_min": null,
+          "year_max": null,
+          "prefer_recent": false
+        },
+        "search_queries": [
+          "agotamiento por lectura",
+          "relación con la lectura",
+          "cómo disfrutar de los libros",
+          "estrategias para leer menos",
+          "motivos para dejar de leer",
+          "equilibrio entre lectura y descanso",
+          "Necesito entender por qué me siento abrumado por la lectura y cómo manejarlo.",
+          "necesito entender siento"
+        ],
+        "concept_hints": [
+          "psicología",
+          "bienestar",
+          "autoayuda"
+        ],
+        "clean_for_selection": "Necesito entender por qué me siento abrumado por la lectura y cómo manejarlo.",
+        "notes": {
+          "used_ai_normalizer": true,
+          "looked_like_book_intent": true,
+          "semantic_overlap_vs_raw": 0.1875
+        }
+      },
+      "selection_validation": {
+        "semantic_score": 0.75,
+        "ai_fit_score": 0.75,
+        "match_score": 0.7608823529411766,
+        "validation_source": "apple_books",
+        "constraint_reason": "Año verificado 2024",
+        "mode": "exact_gpt",
+        "source_label": "gpt_attempt_1",
+        "fallback_score": 130.22
+      },
+      "catalog_scope": "",
+      "contexto_2026": {},
+      "identity_sealed": true,
+      "_evidence": {
+        "titulo_input": "Cómo leer libros",
+        "autor_input": "Mortimer J. Adler y Charles Van Doren",
+        "isbn_seed": "",
+        "isbn_seed_raw": "",
+        "isbn_seed_rejected": null,
+        "isbn_discovered": "",
+        "isbn_discovered_raw": "",
+        "apple": {
+          "ok": true,
+          "source": "apple_books",
+          "match_score": 0.7608823529411766,
+          "match_details": {
+            "matched_title": "Como Ler um Livro",
+            "matched_author": "Mortimer J. Adler"
+          },
+          "synopsis": "«CENTENAS DE PÁGINAS REPLETAS DE ASSUNTOS RELEVANTES QUE NINGUÉM ATENTO À LEITURA E AO DESTINO DOS LIVROS SE PODE DAR AO LUXO DE NÃO CONHECER.» JACQUES BARZUN Incontornável para todos os que gostam de livros, esta aclamada obra de Mortimer J. Adler e Charles Van Doren, publicado originalmente em 1940, é um prodígio raro, um clássico vivo sobre os vários níveis de leitura e a forma de os alcançar – desde a leitura elementar, passando pela leitura sistemática, profunda e introspetiva, até à leitura rápida. Aqui, o leitor terá a oportunidade de intensificar o prazer da leitura, aprender a avaliar (ou não) um livro pela capa, fazer uma análise pormenorizada do conteúdo, desenvolver uma leitura crítica aprofundada e extrair de forma eficaz a mensagem que o autor deseja transmitir. Como Ler Um Livro inclui resumos, esquemas e instruções sobre diversas técnicas de leitura, adaptadas a cada género literário, desde peças de teatro a poesia até filosofia e ciências sociais. Além disso, oferece excelentes recomendações de obras imperdíveis e testes que permitem avaliar o progresso em termos de capacidade de leitura, compreensão e rapidez. Quando estamos atentos, aprendemos e desenvolvemos as nossas capacidades e avançamos no conhecimento que desejamos. Esta obra conduz-nos por uma agradável viagem pelo mundo da leitura e explora as razões fundamentais pelas quais devemos ler.",
+          "synopsis_length": 1387,
+          "covers": [
+            {
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/3000x3000bb.jpg"
+            },
+            {
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/1200x1200bb.jpg"
+            },
+            {
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/600x600bb.jpg"
+            },
+            {
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/100x100bb.jpg"
+            }
+          ],
+          "verified_identity": {
+            "titulo_real": "Como Ler um Livro",
+            "autor_completo": "Mortimer J. Adler",
+            "año": "2024",
+            "editorial": null,
+            "isbn": "",
+            "apple_track_id": "6737574290",
+            "categorias": [
+              "Artes y disciplinas lingüísticas",
+              "Libros",
+              "Técnicos y profesionales",
+              "Educación",
+              "Referencia",
+              "Recursos de estudio"
+            ],
+            "track_view_url": "https://books.apple.com/mx/book/como-ler-um-livro/id6737574290?uo=4"
+          }
+        },
+        "google": {
+          "ok": false,
+          "reason": "no_good_match",
+          "source": "google_books"
+        },
+        "openlibrary": {
+          "ok": false,
+          "reason": "no_results",
+          "source": "openlibrary"
+        },
+        "amazon": {
+          "ok": false,
+          "reason": "skipped",
+          "source": "amazon"
+        },
+        "valid_covers": [
+          {
+            "source": "apple_books",
+            "size": "xxlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/3000x3000bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "xlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/1200x1200bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "large",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/600x600bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "medium",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/03/43/18/034318ed-fb6b-0c0f-9a32-5938c22c692e/9789895703364.jpg/100x100bb.jpg",
+            "valid": true
+          }
+        ],
+        "_sources_succeeded": [
+          "apple_books"
+        ],
+        "_sources_failed": [
+          "google_books:no_good_match",
+          "openlibrary:no_results",
+          "amazon:skipped"
+        ],
+        "_timing": {
+          "phase1_parallel_ms": 16318,
+          "phase2_isbn_chain_ms": 0,
+          "cover_validation_ms": 699,
+          "total_ms": 17017
+        },
+        "_version": "3.6"
+      },
+      "_evidence_synopsis": "«CENTENAS DE PÁGINAS REPLETAS DE ASSUNTOS RELEVANTES QUE NINGUÉM ATENTO À LEITURA E AO DESTINO DOS LIVROS SE PODE DAR AO LUXO DE NÃO CONHECER.» JACQUES BARZUN Incontornável para todos os que gostam de livros, esta aclamada obra de Mortimer J. Adler e Charles Van Doren, publicado originalmente em 1940, é um prodígio raro, um clássico vivo sobre os vários níveis de leitura e a forma de os alcançar – desde a leitura elementar, passando pela leitura sistemática, profunda e introspetiva, até à leitura rápida. Aqui, o leitor terá a oportunidade de intensificar o prazer da leitura, aprender a avaliar (ou não) um livro pela capa, fazer uma análise pormenorizada do conteúdo, desenvolver uma leitura crítica aprofundada e extrair de forma eficaz a mensagem que o autor deseja transmitir. Como Ler Um Livro inclui resumos, esquemas e instruções sobre diversas técnicas de leitura, adaptadas a cada género literário, desde peças de teatro a poesia até filosofia e ciências sociais. Além disso, oferece excelentes recomendações de obras imperdíveis e testes que permitem avaliar o progresso em termos de capacidade de leitura, compreensão e rapidez. Quando estamos atentos, aprendemos e desenvolvemos as nossas capacidades e avançamos no conhecimento que desejamos. Esta obra conduz-nos por uma agradável viagem pelo mundo da leitura e explora as razões fundamentais pelas quais devemos ler.",
+      "_evidence_verified_identity": {
+        "titulo_real": "Como Ler um Livro",
+        "autor_completo": "Mortimer J. Adler",
+        "año": "2024",
+        "editorial": null,
+        "isbn": "",
+        "apple_track_id": "6737574290",
+        "categorias": [
+          "Artes y disciplinas lingüísticas",
+          "Libros",
+          "Técnicos y profesionales",
+          "Educación",
+          "Referencia",
+          "Recursos de estudio"
+        ],
+        "track_view_url": "https://books.apple.com/mx/book/como-ler-um-livro/id6737574290?uo=4"
+      },
+      "_evidence_match_score": 0.7608823529411766
+    },
+    "ring_updated": true
+  }
+}

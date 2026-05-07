@@ -131,6 +131,16 @@
       "timestamp": "2026-05-05T23:47:38.722Z",
       "trigger_input": "estoy molesto, frustrado cansado no tengo mucha esperanza de que todo mejore, no sé que pasa!",
       "selected_via": "discover_trigger"
+    },
+    {
+      "titulo": "Cómo leer libros",
+      "autor": "Mortimer J. Adler y Charles Van Doren",
+      "slug": "como-leer-libros",
+      "titulo_normalizado": "como leer libros",
+      "autor_normalizado": "mortimer j adler y charles van doren",
+      "timestamp": "2026-05-07T03:01:27.732Z",
+      "trigger_input": "Siento que ya leí demasiados libros ya no me quiero levantar 4 am a leer mas. Qué me pasa?",
+      "selected_via": "discover_trigger"
     }
   ],
   "_note": "FIFO ring de últimos 30 libros generados por selección automática (constrained o discover). Filtro pre-rerank en validate-book.js. Inicializa vacío y se rellena con cada run exitoso. Si se borra, el sistema arranca limpio sin daño."
