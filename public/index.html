@@ -6309,6 +6309,25 @@ bootTriggui();
     return lightOverlay + ', ' + linear;
   }
 
+  // ── EXTRAER HUE BASE DEL DOM (libro está en closure cerrado del index.html) ─
+  // El index.html declara `let libro` que NO se cuelga de window. Por eso leemos
+  // el primer .block ya pintado por el render original y extraemos su primer color
+  // (que es libro.colores[0] aplicado por la función grad()) → su hue.
+  function extractHueBaseFromDOM() {
+    var firstBlock = document.querySelector('#grid .block');
+    if (!firstBlock) return null;
+    var bg = (firstBlock.style.background || '') + ' ' +
+             (firstBlock.style.backgroundImage || '');
+    var hexMatch = bg.match(/#[0-9a-f]{6}/i);
+    if (hexMatch) return hexToHsl(hexMatch[0]).h;
+    var rgbMatch = bg.match(/rgb\((\d+)\s*,\s*(\d+)\s*,\s*(\d+)\)/i);
+    if (rgbMatch) {
+      function tx(n) { var h = parseInt(n).toString(16); return h.length === 1 ? '0' + h : h; }
+      return hexToHsl('#' + tx(rgbMatch[1]) + tx(rgbMatch[2]) + tx(rgbMatch[3])).h;
+    }
+    return rand(0, 360);
+  }
+
   // ── PREPARAR ATMÓSFERA CUÁNTICA COMPLETA DEL LIBRO ────────────────────
   function prepareQuantumPalette(libro) {
     var hueBase = extractHueBase(libro);
@@ -6356,66 +6375,121 @@ bootTriggui();
     }
   }
 
+  // ── ENHANCE CTA BUTTONS CON COLORES CUÁNTICOS ──────────────────────────
+  // Los CTA del index.html se asignan en el reveal handler con libro.colores
+  // originales. Como no podemos modificar libro.colores (closure cerrado),
+  // un MutationObserver detecta cuando el cta se hace display:flex y
+  // re-aplica los colores cuánticos por encima.
+  function enhanceCTA(quantum) {
+    if (!quantum) return;
+    var c = quantum.blocks;
+    var ids = ['otro', 'fisico', 'share'];
+    for (var i = 0; i < ids.length; i++) {
+      var btn = document.getElementById(ids[i]);
+      if (!btn) continue;
+      var b1 = c[i % 4], b2 = c[(i + 1) % 4];
+      btn.style.background = 'linear-gradient(135deg, ' +
+        hslCss(b1.c1.h, b1.c1.s, b1.c1.l) + ', ' +
+        hslCss(b2.c1.h, b2.c1.s, b2.c1.l) + ')';
+      btn.style.color = b1.textColor;
+    }
+    // Like button (id='like') queda con su rojo fijo del index.html
+  }
+
+  // ── PREPARAR DESDE EL DOM (sin libro) ─────────────────────────────────
+  function prepareFromDOM() {
+    var hueBase = extractHueBaseFromDOM();
+    if (hueBase === null) return null;
+    var palette = generateBookPalette(hueBase);
+    var geometry = generateBlockGeometry();
+    var blocks = [];
+    var hexColors = [];
+    var textColors = [];
+    for (var i = 0; i < 4; i++) {
+      var c1 = palette.colors[i];
+      var c2 = palette.colors[(i + 1) % 4];
+      var legib = ensureLegibility(c1, c2);
+      blocks.push({ c1: legib.c1Adj, c2: legib.c2Adj, textColor: legib.textColor, adjusted: legib.adjusted });
+      hexColors.push(hslToHex(legib.c1Adj.h, legib.c1Adj.s, legib.c1Adj.l));
+      textColors.push(legib.textColor);
+    }
+    return {
+      hueBase: hueBase, palette: palette, geometry: geometry,
+      blocks: blocks, hexColors: hexColors, textColors: textColors
+    };
+  }
+
   // ── HOOK: monkey-patch a window.render ────────────────────────────────
   function install() {
     if (typeof window.render !== 'function') return false;
     if (window._quantumBlocksPatched) return true;
 
     var original = window.render;
-    window.render = function() {
-      var quantum = null;
-      try {
-        if (window.libro) {
-          quantum = prepareQuantumPalette(window.libro);
-          // Inyectar ANTES del render — así el render original usa nuestros colores
-          window.libro.colores = quantum.hexColors;
-          window.libro.textColors = quantum.textColors;
-          window._lastQuantumBlocks = quantum;
-        }
-      } catch (e) {
-        if (typeof console !== 'undefined') console.error('[Triggui Quantum Blocks] prepare error:', e);
-      }
+    var ctaObserverInstalled = false;
 
+    window.render = function() {
+      // 1. Render original — pinta los .block con linear-gradient del catálogo
       var ret;
       try { ret = original.apply(this, arguments); }
       catch (e) { if (typeof console !== 'undefined') console.error('[Triggui Quantum Blocks] render error:', e); }
 
-      // Enhance backgrounds after render — requestAnimationFrame para evitar flash
-      if (quantum) {
-        requestAnimationFrame(function() {
-          try { enhanceBlockBackgrounds(quantum); }
-          catch (e) { if (typeof console !== 'undefined') console.error('[Triggui Quantum Blocks] enhance error:', e); }
-        });
-      }
+      // 2. DESPUÉS leer hue del DOM y aplicar paleta cuántica
+      requestAnimationFrame(function() {
+        try {
+          var quantum = prepareFromDOM();
+          if (!quantum) return;
+          window._lastQuantumBlocks = quantum;
+          enhanceBlockBackgrounds(quantum);
 
-      // Telemetría
-      if (typeof console !== 'undefined' && console.log && quantum) {
-        console.log('[Triggui Quantum Blocks]',
-          'strategy=' + quantum.palette.strategy,
-          'distribution=' + quantum.geometry.distribution,
-          'hueBase=' + quantum.hueBase.toFixed(0) + '°',
-          'adjusted=' + quantum.blocks.filter(function(b){return b.adjusted;}).length + '/4 (WCAG)'
-        );
-      }
+          // 3. Instalar observer del CTA UNA SOLA VEZ
+          if (!ctaObserverInstalled) {
+            var ctaEl = document.getElementById('cta');
+            if (ctaEl && typeof MutationObserver !== 'undefined') {
+              var obs = new MutationObserver(function(muts) {
+                for (var m = 0; m < muts.length; m++) {
+                  if (muts[m].attributeName === 'style' && ctaEl.style.display === 'flex') {
+                    setTimeout(function() { enhanceCTA(window._lastQuantumBlocks); }, 0);
+                    break;
+                  }
+                }
+              });
+              obs.observe(ctaEl, { attributes: true, attributeFilter: ['style'] });
+              ctaObserverInstalled = true;
+            }
+          }
+
+          // 4. Telemetría
+          if (typeof console !== 'undefined' && console.log) {
+            console.log('[Triggui Quantum Blocks v2]',
+              'strategy=' + quantum.palette.strategy,
+              'distribution=' + quantum.geometry.distribution,
+              'hueBase=' + quantum.hueBase.toFixed(0) + '°',
+              'WCAG-fixes=' + quantum.blocks.filter(function(b){return b.adjusted;}).length + '/4'
+            );
+          }
+        } catch (e) {
+          if (typeof console !== 'undefined') console.error('[Triggui Quantum Blocks] enhance error:', e);
+        }
+      });
 
       return ret;
     };
     window._quantumBlocksPatched = true;
 
-    // Si render ya corrió antes del install, re-aplicar
+    // Aplicación inicial si los .block ya estaban en DOM
     setTimeout(function() {
-      if (window.libro && document.querySelectorAll('#grid .block').length === 4) {
+      if (document.querySelectorAll('#grid .block').length === 4) {
         try {
-          var quantum = prepareQuantumPalette(window.libro);
-          window.libro.colores = quantum.hexColors;
-          window.libro.textColors = quantum.textColors;
-          window._lastQuantumBlocks = quantum;
-          enhanceBlockBackgrounds(quantum);
+          var quantum = prepareFromDOM();
+          if (quantum) {
+            window._lastQuantumBlocks = quantum;
+            enhanceBlockBackgrounds(quantum);
+          }
         } catch (e) { if (typeof console !== 'undefined') console.error('[Triggui Quantum Blocks] initial apply error:', e); }
       }
     }, 100);
 
-    if (typeof console !== 'undefined' && console.log) console.log('[Triggui Quantum Blocks] instalado nivel dios');
+    if (typeof console !== 'undefined' && console.log) console.log('[Triggui Quantum Blocks v2] instalado nivel dios todopoderoso');
     return true;
   }
 
