@@ -6605,5 +6605,379 @@ bootTriggui();
 })();
 
 </script>
+
+
+<script id="js-bocado-eco">
+// 🌒 BOCADO Y ECO — Frases vivas regenerables del catálogo
+// Top-K libros candidatos via TF-IDF + random pool de sus frases
+// Para revertir: eliminar este bloque <script id="js-bocado-eco">
+// ═══════════════════════════════════════════════════════════════════════
+// 🌒 TRIGGUI BOCADO Y ECO — Frases vivas regenerables
+// ═══════════════════════════════════════════════════════════════════════
+//
+// Filosofía: el bocado es la frase oracular ANTES del libro (anticipación
+// sensorial). El eco es la frase de despedida AL CERRAR la tarjeta del
+// libro (cierre con peso emocional). Ambos son del mismo pool.
+//
+// Pool construido dinámicamente cada apertura:
+//   1. TF-IDF + Quantum filter ya identifica top-K libros candidatos
+//      según lo que el usuario escribió
+//   2. Para cada candidato, agregamos sus 4 frases + el subtítulo de tarjeta
+//   3. Random TRUE (crypto) pick del pool agregado
+//   4. Excluir frases ya usadas en esta sesión (no repetir)
+//
+// Cuando cambia contenido.json (nuevo batch), las frases se renuevan
+// automáticamente. Cero hardcoding. Cero mantenimiento manual.
+//
+// Hooks:
+//   - BarraMagica.submit  → construir pool + mostrar Bocado
+//   - window.closeCard    → mostrar Eco
+//
+// Reversible: borrar el bloque <script id="js-bocado-eco">.
+// Cero librerías. Cero red. Cero costo.
+// ═══════════════════════════════════════════════════════════════════════
+
+(function setupBocadoEco() {
+  'use strict';
+
+  // ── Configuración cuántica ──
+  var BOCADO_VISIBLE_MS = 1800;
+  var ECO_VISIBLE_MS = 2000;
+  var FADE_MS = 600;
+  var TOP_K = 5;
+  var BOCADO_DELAY_MS = 80;     // desde submit hasta showBocado
+  var ECO_DELAY_MS = 350;       // desde closeCard hasta showEco
+
+  // ── Estado de sesión ──
+  var lastCandidatePool = [];
+  var usedInThisSession = new Set();
+  var activeOverlay = null;     // referencia al overlay actual (para evitar dobles)
+
+  // ── Random VERDADERO (crypto si disponible) ──
+  function trueRandom() {
+    try {
+      if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+        var arr = new Uint32Array(1);
+        crypto.getRandomValues(arr);
+        return arr[0] / 4294967296; // 2^32
+      }
+    } catch (_) {}
+    return Math.random();
+  }
+
+  // ── Limpiar texto: remover [H]...[/H], HTML residual, espacios extra ──
+  function cleanText(text) {
+    if (!text || typeof text !== 'string') return '';
+    return text
+      .replace(/\[\/?H\]/gi, '')
+      .replace(/<[^>]+>/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  // ── Top-K candidatos basado en lo que el usuario escribió ──
+  function getTopKCandidates(libros, query, k) {
+    if (!libros || libros.length === 0) return [];
+    var cleanQuery = String(query || '').trim();
+
+    // Sin query → random K
+    if (!cleanQuery) {
+      var shuf = libros.slice();
+      for (var i = shuf.length - 1; i > 0; i--) {
+        var j = Math.floor(trueRandom() * (i + 1));
+        var tmp = shuf[i]; shuf[i] = shuf[j]; shuf[j] = tmp;
+      }
+      return shuf.slice(0, k);
+    }
+
+    // Con query → usar el cache TF-IDF del filtro existente
+    if (typeof TrigguiFiltro === 'undefined' || !TrigguiFiltro._idxCache) {
+      // Cache no construido todavía → fallback random
+      var fallback = libros.slice();
+      for (var i2 = fallback.length - 1; i2 > 0; i2--) {
+        var j2 = Math.floor(trueRandom() * (i2 + 1));
+        var tmp2 = fallback[i2]; fallback[i2] = fallback[j2]; fallback[j2] = tmp2;
+      }
+      return fallback.slice(0, k);
+    }
+
+    var idx = TrigguiFiltro._idxCache;
+    var tokens = TrigguiFiltro.tokenize ? TrigguiFiltro.tokenize(cleanQuery) : cleanQuery.toLowerCase().split(/\s+/);
+    if (!tokens || tokens.length === 0) {
+      return libros.slice(0, k);
+    }
+
+    // Score por TF-IDF (mismo modelo que el filtro)
+    var scores = [];
+    for (var i3 = 0; i3 < libros.length; i3++) {
+      var bookVec = (idx.bookVectors && idx.bookVectors[i3]) || {};
+      var score = 0;
+      for (var t = 0; t < tokens.length; t++) {
+        var token = tokens[t];
+        var tf = bookVec[token] || 0;
+        if (tf > 0) {
+          var termIdf = (idx.idf && idx.idf[token]) || 1;
+          score += tf * termIdf;
+        }
+      }
+      scores.push({ libro: libros[i3], score: score });
+    }
+
+    scores.sort(function(a, b) { return b.score - a.score; });
+
+    // Si nadie matchea el query, random
+    if (scores[0].score === 0) {
+      var rnd = libros.slice();
+      for (var i4 = rnd.length - 1; i4 > 0; i4--) {
+        var j4 = Math.floor(trueRandom() * (i4 + 1));
+        var tmp4 = rnd[i4]; rnd[i4] = rnd[j4]; rnd[j4] = tmp4;
+      }
+      return rnd.slice(0, k);
+    }
+
+    var result = [];
+    for (var i5 = 0; i5 < Math.min(k, scores.length); i5++) {
+      result.push(scores[i5].libro);
+    }
+    return result;
+  }
+
+  // ── Construir pool de frases de los top-K candidatos ──
+  function buildPhrasePool(libros, query) {
+    var candidates = getTopKCandidates(libros, query, TOP_K);
+    var pool = [];
+    var lang = (typeof TriggguiI18n !== 'undefined' && TriggguiI18n.lang) || 'es';
+
+    for (var c = 0; c < candidates.length; c++) {
+      var libro = candidates[c];
+      if (!libro) continue;
+
+      // 4 frases del libro
+      var frasesField = (lang === 'en' && Array.isArray(libro.frases_en) && libro.frases_en.length === 4)
+        ? libro.frases_en
+        : libro.frases;
+      if (Array.isArray(frasesField)) {
+        for (var f = 0; f < frasesField.length; f++) {
+          var clean = cleanText(frasesField[f]);
+          if (clean.length >= 8 && clean.length <= 140) {
+            pool.push({ text: clean, source: libro.titulo || 'unknown' });
+          }
+        }
+      }
+
+      // Subtítulo de tarjeta (frase central editorial)
+      var tarjeta = (lang === 'en' && libro.tarjeta_en) ? libro.tarjeta_en : libro.tarjeta;
+      if (tarjeta && tarjeta.subtitulo) {
+        var cleanSub = cleanText(tarjeta.subtitulo);
+        if (cleanSub.length >= 8 && cleanSub.length <= 140) {
+          pool.push({ text: cleanSub, source: libro.titulo || 'unknown' });
+        }
+      }
+    }
+
+    return pool;
+  }
+
+  // ── Pick aleatorio del pool, excluyendo lo ya usado ──
+  function pickPhrase() {
+    if (!lastCandidatePool || lastCandidatePool.length === 0) return null;
+
+    var available = [];
+    for (var i = 0; i < lastCandidatePool.length; i++) {
+      if (!usedInThisSession.has(lastCandidatePool[i].text)) {
+        available.push(lastCandidatePool[i]);
+      }
+    }
+
+    // Si todas se usaron, resetear (mejor repetir alguna que no mostrar nada)
+    if (available.length === 0) {
+      usedInThisSession.clear();
+      available = lastCandidatePool.slice();
+    }
+
+    var idx = Math.floor(trueRandom() * available.length);
+    return available[idx];
+  }
+
+  // ── Crear y mostrar overlay (Bocado o Eco) ──
+  function showOverlay(phrase, durationMs, kind) {
+    if (!phrase || !phrase.text) return;
+
+    // Quitar overlay previo si existe (evitar acumulación)
+    if (activeOverlay && activeOverlay.parentNode) {
+      activeOverlay.parentNode.removeChild(activeOverlay);
+    }
+    var prev = document.getElementById('triggui-' + kind);
+    if (prev && prev.parentNode) prev.parentNode.removeChild(prev);
+
+    var isEco = kind === 'eco';
+
+    // Estilo cinemático nivel dios
+    var fontSize = isEco ? 'clamp(20px, 4.6vw, 28px)' : 'clamp(24px, 5.6vw, 36px)';
+    var color = isEco ? '#e8e6e0' : '#f5f3ee';
+    var textOpacity = isEco ? '0.82' : '0.92';
+    var lineHeight = isEco ? '1.45' : '1.42';
+
+    var el = document.createElement('div');
+    el.id = 'triggui-' + kind;
+    el.setAttribute('aria-hidden', 'true');
+    el.style.cssText = [
+      'position:fixed',
+      'inset:0',
+      'z-index:99999',
+      'display:flex',
+      'align-items:center',
+      'justify-content:center',
+      'background:#000',
+      'padding:0 32px',
+      'opacity:0',
+      'transition:opacity ' + FADE_MS + 'ms cubic-bezier(0.25, 1, 0.5, 1)',
+      'pointer-events:none',
+      'will-change:opacity'
+    ].join(';');
+
+    var inner = document.createElement('div');
+    inner.style.cssText = [
+      "font-family:'Instrument Serif', Georgia, 'Times New Roman', serif",
+      'font-style:italic',
+      'font-weight:400',
+      'font-size:' + fontSize,
+      'line-height:' + lineHeight,
+      'color:' + color,
+      'text-align:center',
+      'max-width:680px',
+      'letter-spacing:0.2px',
+      'opacity:' + textOpacity,
+      'text-rendering:optimizeLegibility',
+      '-webkit-font-smoothing:antialiased'
+    ].join(';');
+    inner.textContent = phrase.text;
+
+    el.appendChild(inner);
+    document.body.appendChild(el);
+    activeOverlay = el;
+
+    // Fade in (doble rAF para evitar flash)
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        el.style.opacity = '1';
+      });
+    });
+
+    // Fade out después de duration
+    setTimeout(function() {
+      el.style.opacity = '0';
+      setTimeout(function() {
+        if (el.parentNode) el.parentNode.removeChild(el);
+        if (activeOverlay === el) activeOverlay = null;
+      }, FADE_MS);
+    }, durationMs);
+  }
+
+  function showBocado() {
+    var phrase = pickPhrase();
+    if (!phrase) return;
+    usedInThisSession.add(phrase.text);
+    showOverlay(phrase, BOCADO_VISIBLE_MS, 'bocado');
+    if (typeof console !== 'undefined' && console.log) {
+      console.log('[Triggui Bocado]', '"' + phrase.text + '"', '←', phrase.source);
+    }
+  }
+
+  function showEco() {
+    var phrase = pickPhrase();
+    if (!phrase) return;
+    usedInThisSession.add(phrase.text);
+    showOverlay(phrase, ECO_VISIBLE_MS, 'eco');
+    if (typeof console !== 'undefined' && console.log) {
+      console.log('[Triggui Eco]', '"' + phrase.text + '"', '←', phrase.source);
+    }
+  }
+
+  // ── HOOK 1: BarraMagica.submit → construir pool + mostrar Bocado ──
+  function patchBarraMagicaSubmit() {
+    if (typeof BarraMagica === 'undefined') return false;
+    if (BarraMagica._bocadoEcoPatched) return true;
+
+    var originalSubmit = BarraMagica.submit.bind(BarraMagica);
+    BarraMagica.submit = function(query) {
+      // Construir pool ANTES (con el query del usuario para top-K relevante)
+      try {
+        var data = window.__TRIGGUI_DATA__;
+        if (data && Array.isArray(data.libros) && data.libros.length > 0) {
+          lastCandidatePool = buildPhrasePool(data.libros, query || '');
+          usedInThisSession.clear();
+        }
+      } catch (e) {
+        if (typeof console !== 'undefined') console.error('[BocadoEco] build pool error:', e);
+      }
+
+      // Mostrar Bocado con pequeño delay para que el submit empiece su lógica detrás
+      setTimeout(function() {
+        try { showBocado(); }
+        catch (e) { if (typeof console !== 'undefined') console.error('[BocadoEco] showBocado error:', e); }
+      }, BOCADO_DELAY_MS);
+
+      // Submit original sigue su flow normal (render, closeOverlay, etc) DETRÁS del bocado
+      return originalSubmit(query);
+    };
+
+    BarraMagica._bocadoEcoPatched = true;
+    return true;
+  }
+
+  // ── HOOK 2: window.closeCard → mostrar Eco al cerrar tarjeta del libro ──
+  function patchCloseCard() {
+    if (typeof window.closeCard !== 'function') return false;
+    if (window._closeCardBocadoEcoPatched) return true;
+
+    var originalCloseCard = window.closeCard;
+    window.closeCard = function() {
+      var ret = originalCloseCard.apply(this, arguments);
+
+      // Eco aparece después de que la tarjeta termine su fade-out (300ms)
+      setTimeout(function() {
+        try { showEco(); }
+        catch (e) { if (typeof console !== 'undefined') console.error('[BocadoEco] showEco error:', e); }
+      }, ECO_DELAY_MS);
+
+      return ret;
+    };
+
+    window._closeCardBocadoEcoPatched = true;
+    return true;
+  }
+
+  // ── Wait + install ──
+  function tryInstall() {
+    var sub = patchBarraMagicaSubmit();
+    var card = patchCloseCard();
+    if (typeof console !== 'undefined' && console.log) {
+      console.log('[Triggui BocadoEco] ' +
+        (sub && card ? 'instalado nivel dios todopoderoso' : 'instalación parcial: submit=' + sub + ' card=' + card));
+    }
+  }
+
+  function waitFor(predicate, action, attempts) {
+    if (predicate()) { action(); return; }
+    if (attempts <= 0) {
+      if (typeof console !== 'undefined') console.warn('[BocadoEco] BarraMagica/closeCard nunca aparecieron');
+      return;
+    }
+    setTimeout(function() { waitFor(predicate, action, attempts - 1); }, 50);
+  }
+
+  waitFor(
+    function() {
+      return typeof BarraMagica !== 'undefined' &&
+             typeof BarraMagica.submit === 'function' &&
+             typeof window.closeCard === 'function';
+    },
+    tryInstall,
+    60
+  );
+})();
+
+</script>
 </body>
 </html>
