@@ -6612,32 +6612,45 @@ bootTriggui();
 // Top-K libros candidatos via TF-IDF + random pool de sus frases
 // Para revertir: eliminar este bloque <script id="js-bocado-eco">
 // ═══════════════════════════════════════════════════════════════════════
-// 🌒 TRIGGUI BOCADO Y ECO v3 — Magia matemática nivel quark
+// 🌒 TRIGGUI BOCADO Y ECO v4 — Unificación nivel quark
 // ═══════════════════════════════════════════════════════════════════════
 //
-// FIXES v3 sobre v2:
-//   1. Bloques entran con ritmo taichi: blur + stagger + cubic-bezier
-//      armónico al bocado (mismo cubic-bezier(0.19, 1, 0.22, 1))
-//   2. Detección universal de cierre de tarjeta: MutationObserver +
-//      hooks a closeCard, BarraMagica.openOverlay (lupa también)
-//   3. Tarjeta se cierra INSTANTÁNEAMENTE (display:none sin transition)
-//      antes de mostrar el eco → cero flicker, cero líneas, cero artifacts
-//   4. Backdrop-filter solo durante fade-in/out del eco; durante el hold
-//      el background es sólido con tinte del libro (sin recalcular blur)
-//   5. Después del eco → reabrir barra mágica con nueva pregunta
-//      (ciclo armónico de descubrimiento)
+// BREAKTHROUGH v4: el ECO usa la barra mágica como contenedor (igual
+// que el BOCADO). Misma estética, misma magia, ciclo armónico perfecto.
 //
-// Pool de frases: TF-IDF top-K candidatos del catálogo (validado v1)
+// FIX 1 — Bloques entrada taichi (sin doble entrada):
+//   3 clases: bm-harmonic-entry (invisible sin transition),
+//             bm-harmonic-prepare (transition lista),
+//             bm-harmonic-show (estado final)
+//   Todos con !important para sobreescribir cualquier animación CSS/inline
+//
+// FIX 2 — Eco con atmósfera colorida:
+//   1. Cierra tarjeta INSTANTÁNEAMENTE (display:none sin transition)
+//   2. INMEDIATAMENTE muestra barra mágica (z-index alto, sin animación)
+//   3. Aplica bm-content-fading al contenido (input, pregunta, etc.)
+//   4. Muestra el eco DENTRO del overlay barra mágica (auroras vivas)
+//   5. Mismo HTML, misma tipografía, mismo subrayadito que bocado
+//
+// FIX 3 — Después del eco → barra mágica visible con nueva pregunta:
+//   1. Quitar bm-content-fading del contenido de la barra
+//   2. Refresh question si BarraMagica tiene método para ello
+//   3. Reset input value
+//   4. La barra queda lista para nuevo submit
+//
+// FIX 4 — Comportamiento idéntico X y Lupa:
+//   - patchCloseCard reemplaza window.closeCard
+//   - patchOpenOverlayForLupa hookea apertura desde lupa
+//   - Ambos disparan la misma función showEco()
 // ═══════════════════════════════════════════════════════════════════════
 
-(function setupBocadoEcoV3() {
+(function setupBocadoEcoV4() {
   'use strict';
 
   var APPEAR_MS = 1500;
   var HOLD_MS = 2000;
   var DISAPPEAR_MS = 1200;
   var WORD_STAGGER_MS = 60;
-  var BLOCK_STAGGER_MS = 120;
+  var BLOCK_STAGGER_MS = 110;
   var BLOCK_DURATION_MS = 800;
   var BOCADO_DELAY_MS = 100;
   var TOP_K = 5;
@@ -6646,7 +6659,6 @@ bootTriggui();
   var usedInThisSession = new Set();
   var bocadoActive = false;
   var ecoActive = false;
-  var pendingReopenAfterEco = false;
 
   // ── Random verdadero ──
   function trueRandom() {
@@ -6761,7 +6773,7 @@ bootTriggui();
     return html;
   }
 
-  // ── Inyectar CSS de animación + clases armónicas para bloques ──
+  // ── CSS ──
   function ensureStyles() {
     if (document.getElementById('triggui-bocado-eco-styles')) return;
     var style = document.createElement('style');
@@ -6777,17 +6789,13 @@ bootTriggui();
       '  100% { opacity: 0.65; transform: scaleX(1); }',
       '}',
       '.bm-bocado-w, .bm-bocado-anchor {',
-      '  display: inline-block;',
-      '  opacity: 0;',
+      '  display: inline-block; opacity: 0;',
       '  animation: triggui-word-appear ' + APPEAR_MS + 'ms cubic-bezier(0.19, 1, 0.22, 1) forwards;',
       '  will-change: opacity, transform, filter;',
       '}',
-      '.bm-bocado-anchor {',
-      '  font-weight: 400;',
-      '}',
+      '.bm-bocado-anchor { font-weight: 400; }',
       '.bm-bocado-anchor::after {',
-      '  content: "";',
-      '  position: absolute;',
+      '  content: ""; position: absolute;',
       '  left: 8%; right: 8%; bottom: -6px; height: 1px;',
       '  opacity: 0; transform: scaleX(0);',
       '  animation: triggui-underline-appear ' + (APPEAR_MS + 600) + 'ms cubic-bezier(0.19, 1, 0.22, 1) forwards;',
@@ -6801,18 +6809,27 @@ bootTriggui();
       '  transition: opacity 600ms cubic-bezier(0.55, 0, 0.55, 1), filter 600ms cubic-bezier(0.55, 0, 0.55, 1) !important;',
       '  opacity: 0 !important; filter: blur(8px) !important; pointer-events: none !important;',
       '}',
-      // ── Entrada armónica de bloques (taichi) ──
-      '.bm-harmonic-entry {',
+      '.bm-content-restoring {',
+      '  transition: opacity 800ms cubic-bezier(0.19, 1, 0.22, 1), filter 800ms cubic-bezier(0.19, 1, 0.22, 1) !important;',
+      '  opacity: 1 !important; filter: blur(0) !important;',
+      '}',
+      // ── Entrada armónica de bloques (3 estados con !important) ──
+      '#grid .block.bm-harmonic-entry, .block.bm-harmonic-entry {',
       '  opacity: 0 !important;',
       '  transform: translateY(12px) !important;',
       '  filter: blur(8px) !important;',
+      '  animation: none !important;',
+      '  -webkit-animation: none !important;',
+      '  transition: none !important;',
+      '  -webkit-transition: none !important;',
+      '  will-change: opacity, transform, filter;',
+      '}',
+      '#grid .block.bm-harmonic-prepare, .block.bm-harmonic-prepare {',
       '  transition: opacity ' + BLOCK_DURATION_MS + 'ms cubic-bezier(0.19, 1, 0.22, 1), ' +
       '              transform ' + BLOCK_DURATION_MS + 'ms cubic-bezier(0.19, 1, 0.22, 1), ' +
       '              filter ' + BLOCK_DURATION_MS + 'ms cubic-bezier(0.19, 1, 0.22, 1) !important;',
-      '  animation: none !important;',
-      '  will-change: opacity, transform, filter;',
       '}',
-      '.bm-harmonic-show {',
+      '#grid .block.bm-harmonic-prepare.bm-harmonic-show, .block.bm-harmonic-prepare.bm-harmonic-show {',
       '  opacity: 1 !important;',
       '  transform: translateY(0) !important;',
       '  filter: blur(0) !important;',
@@ -6821,7 +6838,7 @@ bootTriggui();
     document.head.appendChild(style);
   }
 
-  // ── BOCADO: modifica el contenido del overlay barra mágica ──
+  // ── BOCADO: dentro del overlay barra mágica ──
   function showBocado() {
     var phrase = pickPhrase();
     if (!phrase) return;
@@ -6872,25 +6889,41 @@ bootTriggui();
       bocadoActive = false;
     }, holdEndMs + DISAPPEAR_MS + 100);
 
-    if (typeof console !== 'undefined' && console.log) console.log('[Triggui Bocado v3]', '"' + phrase.text + '"', '←', phrase.source);
+    if (typeof console !== 'undefined' && console.log) console.log('[Triggui Bocado v4]', '"' + phrase.text + '"', '←', phrase.source);
   }
 
-  // ── Aplicar entrada armónica taichi a los bloques ──
-  function harmonizeBlocks() {
+  // ── BLOQUES: aplicar entry a TODOS antes del cierre del overlay ──
+  function prepareBlocksForHarmonic() {
+    var blocks = document.querySelectorAll('#grid .block, .block');
+    if (!blocks || blocks.length === 0) return 0;
+    blocks.forEach(function(block) {
+      block.classList.add('bm-harmonic-entry');
+    });
+    return blocks.length;
+  }
+
+  // ── BLOQUES: animar entrada armónica con stagger ──
+  function revealBlocksHarmonic() {
     var blocks = document.querySelectorAll('#grid .block, .block');
     if (!blocks || blocks.length === 0) return;
 
     blocks.forEach(function(block, i) {
-      // Asegurar que tenga clase entry (puede que no la tenga si render corrió antes que observer)
+      // Asegurar entry
       block.classList.add('bm-harmonic-entry');
+      // Aplicar stagger via transition-delay
       block.style.transitionDelay = (i * BLOCK_STAGGER_MS) + 'ms';
     });
 
-    // Forzar reflow para que la transición se aplique
+    // Forzar reflow para que las clases entry se apliquen instantáneamente
     void document.body.offsetHeight;
 
-    // Animar a estado final con stagger
+    // Frame siguiente: agregar prepare (que añade transition)
     requestAnimationFrame(function() {
+      blocks.forEach(function(block) {
+        block.classList.add('bm-harmonic-prepare');
+      });
+
+      // Frame siguiente: agregar show (que dispara la transición)
       requestAnimationFrame(function() {
         blocks.forEach(function(block) {
           block.classList.add('bm-harmonic-show');
@@ -6898,19 +6931,20 @@ bootTriggui();
       });
     });
 
-    // Limpieza después de la animación completa
+    // Limpieza después de toda la animación
     var totalDuration = (blocks.length - 1) * BLOCK_STAGGER_MS + BLOCK_DURATION_MS + 200;
     setTimeout(function() {
       blocks.forEach(function(block) {
         block.classList.remove('bm-harmonic-entry');
+        block.classList.remove('bm-harmonic-prepare');
         block.classList.remove('bm-harmonic-show');
         block.style.transitionDelay = '';
       });
     }, totalDuration);
   }
 
-  // ── ECO: cerrar tarjeta INSTANTÁNEAMENTE + overlay limpio ──
-  function showEcoWithCleanCardClose() {
+  // ── ECO: usa la barra mágica como contenedor (atmósfera colorida) ──
+  function showEco() {
     if (ecoActive) return;
     var phrase = pickPhrase();
     if (!phrase) return;
@@ -6918,51 +6952,74 @@ bootTriggui();
     ecoActive = true;
     ensureStyles();
 
-    // ── PASO 1: Cerrar tarjeta INSTANTÁNEAMENTE sin transition (sin flicker) ──
+    // ── PASO 1: Cerrar tarjeta INSTANTÁNEAMENTE (sin transición) ──
     var tarjeta = document.getElementById('tarjetaOverlay');
+    var savedTarjetaTransition = '';
     if (tarjeta) {
+      savedTarjetaTransition = tarjeta.style.transition;
       tarjeta.style.transition = 'none';
       tarjeta.classList.remove('visible');
       tarjeta.style.opacity = '0';
       tarjeta.style.display = 'none';
-      // Restore transition for future use
-      requestAnimationFrame(function() { tarjeta.style.transition = ''; });
     }
     if (typeof window.cleanupCardListeners === 'function') {
       try { window.cleanupCardListeners(); } catch (_) {}
     }
 
-    // ── PASO 2: Determinar accent del libro ──
-    var accentColor = '#FF5E00';
-    var accentColorFog = 'hsla(20, 70%, 6%, 0.65)';
+    // ── PASO 2: Mostrar barra mágica overlay (con auroras vivas) ──
+    var overlay = document.getElementById('barraMagicaOverlay');
+    if (!overlay) {
+      // Sin overlay no se puede hacer eco — abortar
+      ecoActive = false;
+      if (tarjeta) tarjeta.style.transition = savedTarjetaTransition;
+      return;
+    }
+
+    // Mostrar el overlay sin animación de entrada
+    overlay.style.transition = 'none';
+    overlay.style.display = 'flex';
+    overlay.style.opacity = '1';
+    overlay.style.visibility = 'visible';
+    overlay.style.pointerEvents = 'auto';
+    overlay.classList.add('active');
+    document.body.classList.add('mood-active');
+
+    // Forzar reflow
+    void overlay.offsetHeight;
+    // Restore transition para futuro uso
+    overlay.style.transition = '';
+
+    // Determinar accent: usar el del libro actual si existe, sino el de la barra mágica
+    var accentColor = '';
     try {
       if (window._lastQuantumBlocks && window._lastQuantumBlocks.blocks && window._lastQuantumBlocks.blocks[0]) {
         var c = window._lastQuantumBlocks.blocks[0].c1;
         accentColor = 'hsl(' + c.h.toFixed(0) + ', ' + (c.s * 100).toFixed(0) + '%, ' +
-                      Math.min(70, Math.max(55, c.l * 100 + 15)).toFixed(0) + '%)';
-        accentColorFog = 'hsla(' + c.h.toFixed(0) + ', ' + (c.s * 100 * 0.7).toFixed(0) + '%, 6%, 0.78)';
+                      Math.min(72, Math.max(58, c.l * 100 + 18)).toFixed(0) + '%)';
       }
     } catch (_) {}
+    if (!accentColor) {
+      accentColor = (getComputedStyle(overlay).getPropertyValue('--bm-accent') || '').trim() || '#FF5E00';
+    }
 
-    // ── PASO 3: Crear overlay del eco ──
+    // ── PASO 3: Aplicar fading al contenido de la barra ──
+    var inner = overlay.querySelector('.barra-magica-inner');
+    var skipEl = document.getElementById('barraSkip');
+    var langEl = document.getElementById('barraLangToggle');
+    var streakEl = document.getElementById('barraStreak');
+    if (inner) inner.classList.add('bm-content-fading');
+    if (skipEl) skipEl.classList.add('bm-content-fading');
+    if (langEl) langEl.classList.add('bm-content-fading');
+    if (streakEl) streakEl.classList.add('bm-content-fading');
+
+    // ── PASO 4: Mostrar el eco DENTRO del overlay ──
     var ecoBox = document.createElement('div');
     ecoBox.id = 'triggui-eco-box';
-    ecoBox.style.cssText = [
-      'position:fixed', 'inset:0', 'z-index:99999',
-      'display:flex', 'align-items:center', 'justify-content:center', 'padding:0 32px',
-      'background:' + accentColorFog,
-      'backdrop-filter:blur(40px) saturate(1.4) brightness(0.85)',
-      '-webkit-backdrop-filter:blur(40px) saturate(1.4) brightness(0.85)',
-      'opacity:0',
-      'transition:opacity ' + APPEAR_MS + 'ms cubic-bezier(0.19, 1, 0.22, 1)',
-      'pointer-events:none',
-      'will-change:opacity',
-      'transform:translateZ(0)' // forzar capa de composición separada (evita artifacts)
-    ].join(';');
+    ecoBox.style.cssText = 'position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;padding:0 32px;pointer-events:none';
 
     var phraseEl = document.createElement('div');
     phraseEl.className = 'bm-eco-phrase';
-    phraseEl.style.cssText = "font-family:'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Archivo', sans-serif;font-weight:300;font-size:clamp(20px, 5.4vw, 28px);line-height:1.36;color:rgba(255, 255, 255, 0.92);text-align:center;max-width:600px;letter-spacing:-0.4px;-webkit-font-smoothing:antialiased";
+    phraseEl.style.cssText = "font-family:'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Archivo', sans-serif;font-weight:300;font-size:clamp(22px, 6vw, 30px);line-height:1.32;color:#fff;text-align:center;max-width:640px;letter-spacing:-0.5px;-webkit-font-smoothing:antialiased";
     phraseEl.innerHTML = buildPhraseHTML(phrase.text, accentColor);
 
     var customStyle = document.createElement('style');
@@ -6971,123 +7028,80 @@ bootTriggui();
     document.head.appendChild(customStyle);
 
     ecoBox.appendChild(phraseEl);
-    document.body.appendChild(ecoBox);
-
-    // Fade in
-    requestAnimationFrame(function() {
-      requestAnimationFrame(function() { ecoBox.style.opacity = '1'; });
-    });
+    overlay.appendChild(ecoBox);
 
     var totalWords = phrase.text.split(/\s+/).length;
     var fullAppearMs = APPEAR_MS + totalWords * WORD_STAGGER_MS + 300;
     var holdEndMs = fullAppearMs + HOLD_MS;
 
-    // Fade out con backdrop-filter decreciendo
+    // ── PASO 5: Fade-out de la frase del eco ──
     setTimeout(function() {
-      ecoBox.style.transition = 'opacity ' + DISAPPEAR_MS + 'ms cubic-bezier(0.55, 0, 0.55, 1), backdrop-filter ' + DISAPPEAR_MS + 'ms cubic-bezier(0.55, 0, 0.55, 1)';
-      ecoBox.style.opacity = '0';
-      ecoBox.style.backdropFilter = 'blur(0px)';
-      ecoBox.style.webkitBackdropFilter = 'blur(0px)';
+      phraseEl.classList.add('bm-bocado-fading');
     }, holdEndMs);
 
-    // Limpieza + reabrir barra mágica
+    // ── PASO 6: Cleanup eco + restaurar contenido de la barra ──
     setTimeout(function() {
       if (ecoBox.parentNode) ecoBox.parentNode.removeChild(ecoBox);
       var cs = document.getElementById('triggui-eco-anchor-color');
       if (cs && cs.parentNode) cs.parentNode.removeChild(cs);
-      ecoActive = false;
 
-      // Reabrir barra mágica con nueva pregunta (ciclo armónico)
-      tryReopenBarraMagica();
+      // Restaurar contenido de la barra (quitar fading)
+      if (inner) {
+        inner.classList.remove('bm-content-fading');
+        inner.classList.add('bm-content-restoring');
+      }
+      if (skipEl) {
+        skipEl.classList.remove('bm-content-fading');
+        skipEl.classList.add('bm-content-restoring');
+      }
+      if (langEl) {
+        langEl.classList.remove('bm-content-fading');
+        langEl.classList.add('bm-content-restoring');
+      }
+      if (streakEl) {
+        streakEl.classList.remove('bm-content-fading');
+        streakEl.classList.add('bm-content-restoring');
+      }
+
+      // Refresh question si BarraMagica tiene método
+      try {
+        if (typeof BarraMagica !== 'undefined') {
+          if (typeof BarraMagica.refreshQuestion === 'function') BarraMagica.refreshQuestion();
+          else if (typeof BarraMagica.pickQuestion === 'function') BarraMagica.pickQuestion();
+          else if (typeof BarraMagica.applyStrings === 'function') BarraMagica.applyStrings();
+        }
+      } catch (_) {}
+
+      // Reset input
+      try {
+        var input = document.getElementById('barraInput');
+        if (input) {
+          input.value = '';
+          setTimeout(function() { try { input.focus(); } catch (_) {} }, 200);
+        }
+      } catch (_) {}
+
+      // Limpiar clases restoring después de la animación
+      setTimeout(function() {
+        if (inner) inner.classList.remove('bm-content-restoring');
+        if (skipEl) skipEl.classList.remove('bm-content-restoring');
+        if (langEl) langEl.classList.remove('bm-content-restoring');
+        if (streakEl) streakEl.classList.remove('bm-content-restoring');
+      }, 1000);
+
+      // Restore tarjeta transition para futuro
+      if (tarjeta) tarjeta.style.transition = savedTarjetaTransition;
+
+      ecoActive = false;
     }, holdEndMs + DISAPPEAR_MS + 100);
 
-    if (typeof console !== 'undefined' && console.log) console.log('[Triggui Eco v3]', '"' + phrase.text + '"', '←', phrase.source);
+    if (typeof console !== 'undefined' && console.log) console.log('[Triggui Eco v4]', '"' + phrase.text + '"', '←', phrase.source);
   }
 
-  // ── Reabrir barra mágica con nueva pregunta ──
-  function tryReopenBarraMagica() {
-    if (typeof BarraMagica === 'undefined') return false;
-
-    // Refresh question (si la función existe)
-    try {
-      if (typeof BarraMagica.refreshQuestion === 'function') BarraMagica.refreshQuestion();
-      else if (typeof BarraMagica.pickQuestion === 'function') BarraMagica.pickQuestion();
-    } catch (_) {}
-
-    // Open overlay
-    try {
-      if (typeof BarraMagica.openOverlay === 'function') {
-        BarraMagica.openOverlay();
-        return true;
-      }
-      if (typeof BarraMagica.show === 'function') {
-        BarraMagica.show();
-        return true;
-      }
-      if (typeof BarraMagica.open === 'function') {
-        BarraMagica.open();
-        return true;
-      }
-    } catch (_) {}
-
-    // Fallback: click en magnifier button
-    var candidates = ['magnifierBtn', 'magnifier', 'lupaBtn', 'lupa', 'searchBtn'];
-    for (var i = 0; i < candidates.length; i++) {
-      var el = document.getElementById(candidates[i]);
-      if (el) { try { el.click(); return true; } catch (_) {} }
-    }
-    return false;
-  }
-
-  // ── Detectar cualquier cierre de tarjeta (X, lupa, etc.) ──
-  function setupTarjetaObserver() {
-    var tarjeta = document.getElementById('tarjetaOverlay');
-    if (!tarjeta) return false;
-    if (tarjeta._bocadoEcoObserved) return true;
-
-    var wasVisible = tarjeta.classList.contains('visible') && tarjeta.style.display !== 'none';
-
-    var observer = new MutationObserver(function(mutations) {
-      var isVisible = tarjeta.classList.contains('visible') && tarjeta.style.display !== 'none';
-      if (wasVisible && !isVisible && !ecoActive) {
-        // La tarjeta acaba de cerrarse — disparar Eco si no está activo ya
-        // (el Eco probablemente ya se disparó por el hook de closeCard, pero por si acaso)
-      }
-      wasVisible = isVisible;
-    });
-
-    observer.observe(tarjeta, { attributes: true, attributeFilter: ['class', 'style'] });
-    tarjeta._bocadoEcoObserved = true;
-    return true;
-  }
-
-  // ── Observer para aplicar bm-harmonic-entry a nuevos bloques ──
-  function setupBlockObserver() {
-    var grid = document.getElementById('grid');
-    if (!grid) return false;
-    if (grid._bocadoEcoObserved) return true;
-
-    var observer = new MutationObserver(function(mutations) {
-      mutations.forEach(function(m) {
-        for (var i = 0; i < m.addedNodes.length; i++) {
-          var node = m.addedNodes[i];
-          if (node.nodeType === 1 && node.classList && node.classList.contains('block')) {
-            // Aplicar clase entry para que esté listo cuando harmonizeBlocks() corra
-            node.classList.add('bm-harmonic-entry');
-          }
-        }
-      });
-    });
-
-    observer.observe(grid, { childList: true });
-    grid._bocadoEcoObserved = true;
-    return true;
-  }
-
-  // ── HOOK 1: BarraMagica.submit + closeOverlay extendido + harmonize ──
+  // ── HOOK 1: BarraMagica.submit + closeOverlay con harmonización ──
   function patchBarraMagica() {
     if (typeof BarraMagica === 'undefined') return false;
-    if (BarraMagica._bocadoEcoV3Patched) return true;
+    if (BarraMagica._bocadoEcoV4Patched) return true;
 
     var originalSubmit = BarraMagica.submit.bind(BarraMagica);
     BarraMagica.submit = function(query) {
@@ -7107,11 +7121,22 @@ bootTriggui();
     var originalCloseOverlay = BarraMagica.closeOverlay.bind(BarraMagica);
     BarraMagica.closeOverlay = function(skipped, skipRender) {
       function doClose() {
+        // PASO 1: Aplicar entry a los bloques ANTES de cerrar overlay
+        // Esto los hace invisibles ANTES de que mood-active salga
+        prepareBlocksForHarmonic();
+        // Doble forzado para asegurar que se aplique antes del cierre
+        void document.body.offsetHeight;
+
+        // PASO 2: Cerrar el overlay original (mood-active sale, bloques visibles
+        // pero invisibles por la clase entry)
         try { originalCloseOverlay(skipped, skipRender); } catch (e) {}
-        // Aplicar entrada armónica a los bloques DESPUÉS de cerrar el overlay
-        setTimeout(function() {
-          try { harmonizeBlocks(); } catch (e) {}
-        }, 50);
+
+        // PASO 3: Después de un frame, animar bloques con stagger
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() {
+            try { revealBlocksHarmonic(); } catch (e) {}
+          });
+        });
       }
       if (bocadoActive) {
         var maxWait = 6000, elapsed = 0;
@@ -7127,35 +7152,30 @@ bootTriggui();
       doClose();
     };
 
-    BarraMagica._bocadoEcoV3Patched = true;
+    BarraMagica._bocadoEcoV4Patched = true;
     return true;
   }
 
-  // ── HOOK 2: window.closeCard → eco con cleanup limpio ──
+  // ── HOOK 2: window.closeCard → eco unificado ──
   function patchCloseCard() {
     if (typeof window.closeCard !== 'function') return false;
-    if (window._closeCardBocadoEcoV3Patched) return true;
+    if (window._closeCardBocadoEcoV4Patched) return true;
 
-    // El hook reemplaza completamente closeCard:
-    // En vez de llamar al original (que hace fade-out con flicker),
-    // llamamos directamente a showEcoWithCleanCardClose que cierra
-    // la tarjeta instantáneamente y muestra el eco encima.
     var originalCloseCard = window.closeCard;
     window.closeCard = function() {
-      try { showEcoWithCleanCardClose(); } catch (e) {
-        // Fallback al original si algo falla
+      try { showEco(); } catch (e) {
         try { originalCloseCard.apply(this, arguments); } catch (_) {}
       }
     };
 
-    window._closeCardBocadoEcoV3Patched = true;
+    window._closeCardBocadoEcoV4Patched = true;
     return true;
   }
 
-  // ── HOOK 3: Si la lupa abre la barra y hay tarjeta abierta → eco primero ──
+  // ── HOOK 3: lupa abre la barra → si hay tarjeta, eco primero ──
   function patchOpenOverlayForLupa() {
     if (typeof BarraMagica === 'undefined') return false;
-    if (BarraMagica._lupaBocadoEcoPatched) return true;
+    if (BarraMagica._lupaBocadoEcoV4Patched) return true;
 
     var possibleOpenFns = ['openOverlay', 'open', 'show'];
     for (var i = 0; i < possibleOpenFns.length; i++) {
@@ -7168,9 +7188,7 @@ bootTriggui();
           var tarjeta = document.getElementById('tarjetaOverlay');
           var tarjetaVisible = tarjeta && tarjeta.classList.contains('visible') && tarjeta.style.display !== 'none';
           if (tarjetaVisible && !ecoActive) {
-            // Hay tarjeta abierta — disparar eco primero, abrir barra después del eco
-            try { showEcoWithCleanCardClose(); } catch (e) {}
-            // El eco al terminar reabrirá la barra mágica automáticamente
+            try { showEco(); } catch (e) {}
             return;
           }
           return original.apply(this, arguments);
@@ -7178,7 +7196,7 @@ bootTriggui();
       })(fnName);
     }
 
-    BarraMagica._lupaBocadoEcoPatched = true;
+    BarraMagica._lupaBocadoEcoV4Patched = true;
     return true;
   }
 
@@ -7186,13 +7204,10 @@ bootTriggui();
     var ok1 = patchBarraMagica();
     var ok2 = patchCloseCard();
     var ok3 = patchOpenOverlayForLupa();
-    var ok4 = setupBlockObserver();
-    var ok5 = setupTarjetaObserver();
-
     if (typeof console !== 'undefined' && console.log) {
-      console.log('[Triggui BocadoEco v3] ' +
-        (ok1 && ok2 ? 'instalado nivel quark cuántico' : 'parcial') +
-        ' submit=' + ok1 + ' card=' + ok2 + ' lupa=' + ok3 + ' grid=' + ok4 + ' tarjeta=' + ok5);
+      console.log('[Triggui BocadoEco v4] ' +
+        (ok1 && ok2 ? 'instalado nivel quark unificado' : 'parcial') +
+        ' submit=' + ok1 + ' card=' + ok2 + ' lupa=' + ok3);
     }
   }
 
