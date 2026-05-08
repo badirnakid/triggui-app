@@ -151,6 +151,16 @@
       "timestamp": "2026-05-08T11:38:09.341Z",
       "trigger_input": "Michael Jackson",
       "selected_via": "discover_live_google_books"
+    },
+    {
+      "titulo": "Michael Jackson Legacy",
+      "autor": "Maya Iyer, AI",
+      "slug": "michael-jackson-legacy",
+      "titulo_normalizado": "michael jackson legacy",
+      "autor_normalizado": "maya iyer ai",
+      "timestamp": "2026-05-08T11:49:16.250Z",
+      "trigger_input": "Michael Jackson",
+      "selected_via": "discover_live_google_books"
     }
   ],
   "_note": "FIFO ring de últimos 30 libros generados por selección automática (constrained o discover). Filtro pre-rerank en validate-book.js. Inicializa vacío y se rellena con cada run exitoso. Si se borra, el sistema arranca limpio sin daño."

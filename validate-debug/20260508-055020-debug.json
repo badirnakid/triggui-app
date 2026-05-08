@@ -1,0 +1,948 @@
+{
+  "history": [
+    {
+      "at": "2026-05-08T11:48:58.783Z",
+      "stage": "trigger_analysis",
+      "trigger_analysis": {
+        "raw_input": "Michael Jackson",
+        "semantic_query": "Libros sobre Michael Jackson",
+        "intent_summary": "Buscar libros relacionados con Michael Jackson.",
+        "editorial_requests": [],
+        "source_preference": null,
+        "ranking_preference": null,
+        "unsupported_runtime_constraints": [],
+        "supported_constraints": {
+          "year_min": null,
+          "year_max": null,
+          "prefer_recent": false
+        },
+        "search_queries": [
+          "Michael Jackson biography",
+          "Michael Jackson music",
+          "Michael Jackson legacy",
+          "Michael Jackson history",
+          "Michael Jackson influence",
+          "Michael Jackson interviews",
+          "Libros sobre Michael Jackson",
+          "libros michael jackson"
+        ],
+        "concept_hints": [],
+        "clean_for_selection": "Libros sobre Michael Jackson",
+        "notes": {
+          "used_ai_normalizer": true,
+          "looked_like_book_intent": false,
+          "semantic_overlap_vs_raw": 1
+        }
+      }
+    },
+    {
+      "at": "2026-05-08T11:49:03.555Z",
+      "stage": "live_candidates_filter_recent",
+      "before": 15,
+      "after": 15,
+      "removed": 0,
+      "ring_size": 15
+    },
+    {
+      "at": "2026-05-08T11:49:14.577Z",
+      "stage": "ai_rerank_candidates",
+      "stageLabel": "live_candidates_rerank",
+      "ranked": [
+        {
+          "idx": 3,
+          "fit_score": 0.95,
+          "reason": "Explora el impacto duradero de Michael Jackson en la música y la cultura pop, lo que se alinea perfectamente con la intención de buscar libros sobre él."
+        },
+        {
+          "idx": 4,
+          "fit_score": 0.94,
+          "reason": "Analiza la influencia monumental de Michael Jackson en la danza y la cultura pop, lo que es relevante para quienes buscan entender su legado."
+        },
+        {
+          "idx": 5,
+          "fit_score": 0.93,
+          "reason": "Se centra en cómo Michael Jackson redefinió la cultura popular, lo que es esencial para cualquier discusión sobre su impacto."
+        },
+        {
+          "idx": 1,
+          "fit_score": 0.91,
+          "reason": "Ofrece una visión general de la carrera de Michael Jackson y su impacto en la imaginación pública, lo que es relevante para los interesados en su vida."
+        },
+        {
+          "idx": 2,
+          "fit_score": 0.9,
+          "reason": "Proporciona un análisis de la influencia de Michael Jackson más allá de la música, lo que es útil para entender su relevancia cultural."
+        },
+        {
+          "idx": 12,
+          "fit_score": 0.88,
+          "reason": "Aunque es más reciente, su enfoque en la esperanza y la fragilidad puede ofrecer una perspectiva única sobre la vida de Michael Jackson."
+        },
+        {
+          "idx": 11,
+          "fit_score": 0.87,
+          "reason": "Describe la vida y logros de Michael Jackson, lo que es fundamental para quienes buscan información sobre su carrera."
+        },
+        {
+          "idx": 6,
+          "fit_score": 0.85,
+          "reason": "Proporciona un enfoque detallado sobre la carrera de Michael Jackson, aunque es menos reciente que otros candidatos."
+        }
+      ]
+    },
+    {
+      "at": "2026-05-08T11:49:14.577Z",
+      "stage": "live_candidates_merged",
+      "count": 15,
+      "top": [
+        {
+          "titulo": "Michael Jackson Legacy",
+          "autor": "Maya Iyer, AI",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "\"\"Michael Jackson Legacy\"\" explores the profound and lasting impact of Michael Jackson on music, dance, and global pop culture.",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/wW1LEQAAQBAJ",
+          "published_year": 2025,
+          "live_score": 60.5,
+          "ai_fit_score": 0.95,
+          "ai_fit_reason": "Explora el impacto duradero de Michael Jackson en la música y la cultura pop, lo que se alinea perfectamente con la intención de buscar libros sobre él."
+        },
+        {
+          "titulo": "Michael Jackson Influence",
+          "autor": "Ambrose Delaney, AI",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "Michael Jackson Influence explores the King of Pop's monumental impact on dance and pop culture.",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/U21LEQAAQBAJ",
+          "published_year": 2025,
+          "live_score": 60.5,
+          "ai_fit_score": 0.94,
+          "ai_fit_reason": "Analiza la influencia monumental de Michael Jackson en la danza y la cultura pop, lo que es relevante para quienes buscan entender su legado."
+        },
+        {
+          "titulo": "Michael Jackson Impact",
+          "autor": "Hannah Martin, AI",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "Michael Jackson Impact explores how the King of Pop redefined popular culture through innovative music, performance, and visual storytelling.",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/y2tLEQAAQBAJ",
+          "published_year": 2025,
+          "live_score": 60.5,
+          "ai_fit_score": 0.93,
+          "ai_fit_reason": "Se centra en cómo Michael Jackson redefinió la cultura popular, lo que es esencial para cualquier discusión sobre su impacto."
+        },
+        {
+          "titulo": "Michael Jackson",
+          "autor": "ChristopherR. Smit",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "Throughout his 40-year career, Michael Jackson intrigued and captivated public imagination through musical ingenuity, sexual and racial spectacle, savvy publicity stunts…",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/iCYxDwAAQBAJ",
+          "published_year": 2017,
+          "live_score": 65.5,
+          "ai_fit_score": 0.91,
+          "ai_fit_reason": "Ofrece una visión general de la carrera de Michael Jackson y su impacto en la imaginación pública, lo que es relevante para los interesados en su vida."
+        },
+        {
+          "titulo": "Michael Jackson FAQ",
+          "autor": "Kit O'Toole",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "Michael Jackson may be the King of Pop, but his influence extends much further.",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/UNCGDwAAQBAJ",
+          "published_year": 2015,
+          "live_score": 60.5,
+          "ai_fit_score": 0.9,
+          "ai_fit_reason": "Proporciona un análisis de la influencia de Michael Jackson más allá de la música, lo que es útil para entender su relevancia cultural."
+        },
+        {
+          "titulo": "Michael Jackson",
+          "autor": "Chris Williams",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "\"Hope is such a beautiful word, but it often seems very fragile.",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/zqit0AEACAAJ",
+          "published_year": 2024,
+          "live_score": 45.5,
+          "ai_fit_score": 0.88,
+          "ai_fit_reason": "Aunque es más reciente, su enfoque en la esperanza y la fragilidad puede ofrecer una perspectiva única sobre la vida de Michael Jackson."
+        },
+        {
+          "titulo": "Who was Michael Jackson?",
+          "autor": "Megan Stine",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "Describes the life and accomplishments of the superstar singer, from his early career with the Jackson Five to his success as a solo performer and his personal troubles.",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/01LaCwAAQBAJ",
+          "published_year": 2015,
+          "live_score": 48,
+          "ai_fit_score": 0.87,
+          "ai_fit_reason": "Describe la vida y logros de Michael Jackson, lo que es fundamental para quienes buscan información sobre su carrera."
+        },
+        {
+          "titulo": "Michael Jackson The Maestro The Definitive A-Z Volume II - K-Z",
+          "autor": "Chris Cadman",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "Michael Jackson was no ordinary performer.",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/tAJ5BwAAQBAJ",
+          "published_year": 2015,
+          "live_score": 53.5,
+          "ai_fit_score": 0.85,
+          "ai_fit_reason": "Proporciona un enfoque detallado sobre la carrera de Michael Jackson, aunque es menos reciente que otros candidatos."
+        },
+        {
+          "titulo": "Michael Jackson",
+          "autor": "Sarah Tieck",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "Presents the life and career of singer Michael Jackson.",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/zPesDVULIaoC",
+          "published_year": 2011,
+          "live_score": 51.5,
+          "ai_fit_score": 0,
+          "ai_fit_reason": ""
+        },
+        {
+          "titulo": "Michael Jackson",
+          "autor": "Lisa Brisse",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "It was 1982 and Lisa Brisse, a 13-year-old, small-town, Midwestern girl, was a fan of Michael Jackson like millions of other people.",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/g8y5rQEACAAJ",
+          "published_year": 2014,
+          "live_score": 51.5,
+          "ai_fit_score": 0,
+          "ai_fit_reason": ""
+        }
+      ]
+    },
+    {
+      "at": "2026-05-08T11:49:16.225Z",
+      "stage": "live_candidates_inspected",
+      "inspected": [
+        {
+          "recommendation": {
+            "titulo": "Michael Jackson Legacy",
+            "autor": "Maya Iyer, AI",
+            "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+            "tagline": "\"\"Michael Jackson Legacy\"\" explores the profound and lasting impact of Michael Jackson on music, dance, and global pop culture.",
+            "source_label": "google_books_newest",
+            "source_url": "https://www.googleapis.com/books/v1/volumes/wW1LEQAAQBAJ",
+            "published_year": 2025,
+            "live_score": 60.5,
+            "ai_fit_score": 0.95,
+            "ai_fit_reason": "Explora el impacto duradero de Michael Jackson en la música y la cultura pop, lo que se alinea perfectamente con la intención de buscar libros sobre él."
+          },
+          "evidence": {
+            "portada": "https://books.google.com/books/content?id=wW1LEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+            "isbn": "9788235215680",
+            "editorial": "Publifye AS",
+            "source": "google_books",
+            "year": "2025",
+            "matched_title": "Michael Jackson Legacy",
+            "matched_author": "Maya Iyer, AI",
+            "match_score": 1,
+            "synopsis": "\"\"Michael Jackson Legacy\"\" explores the profound and lasting impact of Michael Jackson on music, dance, and global pop culture. The book analyzes his innovative approach to music production, highlighting how he blended genres and utilized cutting-edge studio technology to create a signature sound. It also examines his revolutionary choreography, noting how his athletic and graceful moves redefined performance standards and influenced countless artists. The book progresses chronologically, starting with Jackson's early years and musical apprenticeship, tracing his evolution into an innovative artist. It then analyzes his groundbreaking albums, dissecting his songwriting skills and dance innovations. The analysis culminates by examining Jackson's widespread influence on fashion, music videos, and the broader pop culture landscape, while also addressing controversies surrounding his personal life and their impact on his legacy. This biography offers a balanced and in-depth analysis of Jackson's artistic achievements and cultural impact. Instead of sensationalism, it focuses on factual assessments of his music, dance, and carefully constructed public persona, offering valuable insights into the creative process and the dynamics of celebrity for music enthusiasts, dance aficionados, and anyone interested in understanding Jackson's enduring legacy.",
+            "synopsis_length": 1364,
+            "covers": [
+              {
+                "size": "small",
+                "url": "https://books.google.com/books/content?id=wW1LEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "Michael Jackson Legacy",
+              "subtitulo": "",
+              "autor_completo": "Maya Iyer, AI",
+              "año": "2025",
+              "editorial": "Publifye AS",
+              "paginas": 144,
+              "isbn": "9788235215680",
+              "isbn13": "9788235215680",
+              "isbn10": "8235215683",
+              "categorias": [
+                "Biography & Autobiography"
+              ],
+              "idioma": "en",
+              "preview_link": "http://books.google.com/books?id=wW1LEQAAQBAJ&printsec=frontcover&dq=intitle:Michael+Jackson+Legacy+inauthor:Maya+Iyer,+AI&hl=&cd=2&source=gbs_api"
+            },
+            "_evidence": {
+              "titulo_input": "Michael Jackson Legacy",
+              "autor_input": "Maya Iyer, AI",
+              "isbn_seed": "",
+              "isbn_seed_raw": "",
+              "isbn_seed_rejected": null,
+              "isbn_discovered": "9788235215680",
+              "isbn_discovered_raw": "9788235215680",
+              "apple": {
+                "ok": true,
+                "source": "apple_books",
+                "match_score": 0.9550000000000001,
+                "match_details": {
+                  "matched_title": "Michael Jackson Legacy",
+                  "matched_author": "Maya Iyer"
+                },
+                "synopsis": "\"Michael Jackson Legacy\" explores the profound and lasting impact of Michael Jackson on music, dance, and global pop culture. The book analyzes his innovative approach to music production, highlighting how he blended genres and utilized cutting-edge studio technology to create a signature sound. It also examines his revolutionary choreography, noting how his athletic and graceful moves redefined performance standards and influenced countless artists. The book progresses chronologically, starting with Jackson's early years and musical apprenticeship, tracing his evolution into an innovative artist. It then analyzes his groundbreaking albums, dissecting his songwriting skills and dance innovations. The analysis culminates by examining Jackson's widespread influence on fashion, music videos, and the broader pop culture landscape, while also addressing controversies surrounding his personal life and their impact on his legacy. This biography offers a balanced and in-depth analysis of Jackson's artistic achievements and cultural impact. Instead of sensationalism, it focuses on factual assessments of his music, dance, and carefully constructed public persona, offering valuable insights into the creative process and the dynamics of celebrity for music enthusiasts, dance aficionados, and anyone interested in understanding Jackson's enduring legacy.",
+                "synopsis_length": 1362,
+                "covers": [
+                  {
+                    "size": "xxlarge",
+                    "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/7f/89/a3/7f89a30d-c6e3-abfd-054c-91d93b737a60/9788235215680.jpg/3000x3000bb.jpg"
+                  },
+                  {
+                    "size": "xlarge",
+                    "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/7f/89/a3/7f89a30d-c6e3-abfd-054c-91d93b737a60/9788235215680.jpg/1200x1200bb.jpg"
+                  },
+                  {
+                    "size": "large",
+                    "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/7f/89/a3/7f89a30d-c6e3-abfd-054c-91d93b737a60/9788235215680.jpg/600x600bb.jpg"
+                  },
+                  {
+                    "size": "medium",
+                    "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/7f/89/a3/7f89a30d-c6e3-abfd-054c-91d93b737a60/9788235215680.jpg/100x100bb.jpg"
+                  }
+                ],
+                "verified_identity": {
+                  "titulo_real": "Michael Jackson Legacy",
+                  "autor_completo": "Maya Iyer",
+                  "año": "2025",
+                  "editorial": null,
+                  "isbn": "",
+                  "apple_track_id": "6742708788",
+                  "categorias": [
+                    "Biografías y memorias",
+                    "Libros",
+                    "Arte y espectáculo",
+                    "Música"
+                  ],
+                  "track_view_url": "https://books.apple.com/mx/book/michael-jackson-legacy/id6742708788?uo=4"
+                }
+              },
+              "google": {
+                "ok": true,
+                "source": "google_books",
+                "match_score": 1,
+                "match_details": {
+                  "matched_title": "Michael Jackson Legacy",
+                  "matched_author": "Maya Iyer, AI"
+                },
+                "synopsis": "\"\"Michael Jackson Legacy\"\" explores the profound and lasting impact of Michael Jackson on music, dance, and global pop culture. The book analyzes his innovative approach to music production, highlighting how he blended genres and utilized cutting-edge studio technology to create a signature sound. It also examines his revolutionary choreography, noting how his athletic and graceful moves redefined performance standards and influenced countless artists. The book progresses chronologically, starting with Jackson's early years and musical apprenticeship, tracing his evolution into an innovative artist. It then analyzes his groundbreaking albums, dissecting his songwriting skills and dance innovations. The analysis culminates by examining Jackson's widespread influence on fashion, music videos, and the broader pop culture landscape, while also addressing controversies surrounding his personal life and their impact on his legacy. This biography offers a balanced and in-depth analysis of Jackson's artistic achievements and cultural impact. Instead of sensationalism, it focuses on factual assessments of his music, dance, and carefully constructed public persona, offering valuable insights into the creative process and the dynamics of celebrity for music enthusiasts, dance aficionados, and anyone interested in understanding Jackson's enduring legacy.",
+                "synopsis_length": 1364,
+                "covers": [
+                  {
+                    "size": "small",
+                    "url": "https://books.google.com/books/content?id=wW1LEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+                  }
+                ],
+                "verified_identity": {
+                  "titulo_real": "Michael Jackson Legacy",
+                  "subtitulo": "",
+                  "autor_completo": "Maya Iyer, AI",
+                  "año": "2025",
+                  "editorial": "Publifye AS",
+                  "paginas": 144,
+                  "isbn": "9788235215680",
+                  "isbn13": "9788235215680",
+                  "isbn10": "8235215683",
+                  "categorias": [
+                    "Biography & Autobiography"
+                  ],
+                  "idioma": "en",
+                  "preview_link": "http://books.google.com/books?id=wW1LEQAAQBAJ&printsec=frontcover&dq=intitle:Michael+Jackson+Legacy+inauthor:Maya+Iyer,+AI&hl=&cd=2&source=gbs_api"
+                }
+              },
+              "openlibrary": {
+                "ok": false,
+                "reason": "no_results",
+                "source": "openlibrary"
+              },
+              "amazon": {
+                "ok": false,
+                "reason": "no_amazon_cover_or_only_placeholders",
+                "source": "amazon"
+              },
+              "valid_covers": [
+                {
+                  "source": "apple_books",
+                  "size": "xxlarge",
+                  "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/7f/89/a3/7f89a30d-c6e3-abfd-054c-91d93b737a60/9788235215680.jpg/3000x3000bb.jpg",
+                  "valid": true
+                },
+                {
+                  "source": "apple_books",
+                  "size": "xlarge",
+                  "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/7f/89/a3/7f89a30d-c6e3-abfd-054c-91d93b737a60/9788235215680.jpg/1200x1200bb.jpg",
+                  "valid": true
+                },
+                {
+                  "source": "apple_books",
+                  "size": "large",
+                  "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/7f/89/a3/7f89a30d-c6e3-abfd-054c-91d93b737a60/9788235215680.jpg/600x600bb.jpg",
+                  "valid": true
+                },
+                {
+                  "source": "apple_books",
+                  "size": "medium",
+                  "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/7f/89/a3/7f89a30d-c6e3-abfd-054c-91d93b737a60/9788235215680.jpg/100x100bb.jpg",
+                  "valid": true
+                },
+                {
+                  "source": "google_books",
+                  "size": "small",
+                  "url": "https://books.google.com/books/content?id=wW1LEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+                  "valid": true
+                }
+              ],
+              "_sources_succeeded": [
+                "apple_books",
+                "google_books"
+              ],
+              "_sources_failed": [
+                "openlibrary:no_results",
+                "amazon:no_amazon_cover_or_only_placeholders"
+              ],
+              "_timing": {
+                "phase1_parallel_ms": 863,
+                "phase2_isbn_chain_ms": 323,
+                "cover_validation_ms": 455,
+                "total_ms": 1641
+              },
+              "_version": "3.6"
+            }
+          },
+          "constraintsCheck": {
+            "exact_ok": true,
+            "hard_ok": true,
+            "issues": [],
+            "warnings": [],
+            "reason": "Año verificado 2025"
+          },
+          "sourceLabel": "live_candidates",
+          "semantic_score": 0.95,
+          "fallback_score": 155
+        }
+      ]
+    },
+    {
+      "at": "2026-05-08T11:49:16.251Z",
+      "stage": "success",
+      "bookData": {
+        "titulo": "Michael Jackson Legacy",
+        "autor": "Maya Iyer, AI",
+        "slug": "michael-jackson-legacy",
+        "tagline": "\"\"Michael Jackson Legacy\"\" explores the profound and lasting impact of Michael Jackson on music, dance, and global pop culture.",
+        "portada": "https://books.google.com/books/content?id=wW1LEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+        "portada_url": "https://books.google.com/books/content?id=wW1LEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+        "portada_source": "google_books",
+        "portada_candidates": [
+          {
+            "source": "apple_books",
+            "size": "xxlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/7f/89/a3/7f89a30d-c6e3-abfd-054c-91d93b737a60/9788235215680.jpg/3000x3000bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "xlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/7f/89/a3/7f89a30d-c6e3-abfd-054c-91d93b737a60/9788235215680.jpg/1200x1200bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "large",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/7f/89/a3/7f89a30d-c6e3-abfd-054c-91d93b737a60/9788235215680.jpg/600x600bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "medium",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/7f/89/a3/7f89a30d-c6e3-abfd-054c-91d93b737a60/9788235215680.jpg/100x100bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "google_books",
+            "size": "small",
+            "url": "https://books.google.com/books/content?id=wW1LEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+            "valid": true
+          }
+        ],
+        "needs_fallback_cover": false,
+        "isbn": "9788235215680",
+        "editorial": "Publifye AS",
+        "publication_year": "2025",
+        "source": "google_books",
+        "duplicado": false,
+        "selected_via": "discover_live_google_books",
+        "selection_reason": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+        "trigger_input": "Michael Jackson",
+        "trigger_analysis": {
+          "raw_input": "Michael Jackson",
+          "semantic_query": "Libros sobre Michael Jackson",
+          "intent_summary": "Buscar libros relacionados con Michael Jackson.",
+          "editorial_requests": [],
+          "source_preference": null,
+          "ranking_preference": null,
+          "unsupported_runtime_constraints": [],
+          "supported_constraints": {
+            "year_min": null,
+            "year_max": null,
+            "prefer_recent": false
+          },
+          "search_queries": [
+            "Michael Jackson biography",
+            "Michael Jackson music",
+            "Michael Jackson legacy",
+            "Michael Jackson history",
+            "Michael Jackson influence",
+            "Michael Jackson interviews",
+            "Libros sobre Michael Jackson",
+            "libros michael jackson"
+          ],
+          "concept_hints": [],
+          "clean_for_selection": "Libros sobre Michael Jackson",
+          "notes": {
+            "used_ai_normalizer": true,
+            "looked_like_book_intent": false,
+            "semantic_overlap_vs_raw": 1
+          }
+        },
+        "selection_validation": {
+          "semantic_score": 0.95,
+          "ai_fit_score": 0.95,
+          "match_score": 1,
+          "validation_source": "google_books",
+          "constraint_reason": "Año verificado 2025",
+          "mode": "exact_live",
+          "source_label": "google_books_newest",
+          "fallback_score": 155
+        },
+        "catalog_scope": "",
+        "contexto_2026": {},
+        "identity_sealed": true,
+        "_evidence": {
+          "titulo_input": "Michael Jackson Legacy",
+          "autor_input": "Maya Iyer, AI",
+          "isbn_seed": "",
+          "isbn_seed_raw": "",
+          "isbn_seed_rejected": null,
+          "isbn_discovered": "9788235215680",
+          "isbn_discovered_raw": "9788235215680",
+          "apple": {
+            "ok": true,
+            "source": "apple_books",
+            "match_score": 0.9550000000000001,
+            "match_details": {
+              "matched_title": "Michael Jackson Legacy",
+              "matched_author": "Maya Iyer"
+            },
+            "synopsis": "\"Michael Jackson Legacy\" explores the profound and lasting impact of Michael Jackson on music, dance, and global pop culture. The book analyzes his innovative approach to music production, highlighting how he blended genres and utilized cutting-edge studio technology to create a signature sound. It also examines his revolutionary choreography, noting how his athletic and graceful moves redefined performance standards and influenced countless artists. The book progresses chronologically, starting with Jackson's early years and musical apprenticeship, tracing his evolution into an innovative artist. It then analyzes his groundbreaking albums, dissecting his songwriting skills and dance innovations. The analysis culminates by examining Jackson's widespread influence on fashion, music videos, and the broader pop culture landscape, while also addressing controversies surrounding his personal life and their impact on his legacy. This biography offers a balanced and in-depth analysis of Jackson's artistic achievements and cultural impact. Instead of sensationalism, it focuses on factual assessments of his music, dance, and carefully constructed public persona, offering valuable insights into the creative process and the dynamics of celebrity for music enthusiasts, dance aficionados, and anyone interested in understanding Jackson's enduring legacy.",
+            "synopsis_length": 1362,
+            "covers": [
+              {
+                "size": "xxlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/7f/89/a3/7f89a30d-c6e3-abfd-054c-91d93b737a60/9788235215680.jpg/3000x3000bb.jpg"
+              },
+              {
+                "size": "xlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/7f/89/a3/7f89a30d-c6e3-abfd-054c-91d93b737a60/9788235215680.jpg/1200x1200bb.jpg"
+              },
+              {
+                "size": "large",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/7f/89/a3/7f89a30d-c6e3-abfd-054c-91d93b737a60/9788235215680.jpg/600x600bb.jpg"
+              },
+              {
+                "size": "medium",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/7f/89/a3/7f89a30d-c6e3-abfd-054c-91d93b737a60/9788235215680.jpg/100x100bb.jpg"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "Michael Jackson Legacy",
+              "autor_completo": "Maya Iyer",
+              "año": "2025",
+              "editorial": null,
+              "isbn": "",
+              "apple_track_id": "6742708788",
+              "categorias": [
+                "Biografías y memorias",
+                "Libros",
+                "Arte y espectáculo",
+                "Música"
+              ],
+              "track_view_url": "https://books.apple.com/mx/book/michael-jackson-legacy/id6742708788?uo=4"
+            }
+          },
+          "google": {
+            "ok": true,
+            "source": "google_books",
+            "match_score": 1,
+            "match_details": {
+              "matched_title": "Michael Jackson Legacy",
+              "matched_author": "Maya Iyer, AI"
+            },
+            "synopsis": "\"\"Michael Jackson Legacy\"\" explores the profound and lasting impact of Michael Jackson on music, dance, and global pop culture. The book analyzes his innovative approach to music production, highlighting how he blended genres and utilized cutting-edge studio technology to create a signature sound. It also examines his revolutionary choreography, noting how his athletic and graceful moves redefined performance standards and influenced countless artists. The book progresses chronologically, starting with Jackson's early years and musical apprenticeship, tracing his evolution into an innovative artist. It then analyzes his groundbreaking albums, dissecting his songwriting skills and dance innovations. The analysis culminates by examining Jackson's widespread influence on fashion, music videos, and the broader pop culture landscape, while also addressing controversies surrounding his personal life and their impact on his legacy. This biography offers a balanced and in-depth analysis of Jackson's artistic achievements and cultural impact. Instead of sensationalism, it focuses on factual assessments of his music, dance, and carefully constructed public persona, offering valuable insights into the creative process and the dynamics of celebrity for music enthusiasts, dance aficionados, and anyone interested in understanding Jackson's enduring legacy.",
+            "synopsis_length": 1364,
+            "covers": [
+              {
+                "size": "small",
+                "url": "https://books.google.com/books/content?id=wW1LEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "Michael Jackson Legacy",
+              "subtitulo": "",
+              "autor_completo": "Maya Iyer, AI",
+              "año": "2025",
+              "editorial": "Publifye AS",
+              "paginas": 144,
+              "isbn": "9788235215680",
+              "isbn13": "9788235215680",
+              "isbn10": "8235215683",
+              "categorias": [
+                "Biography & Autobiography"
+              ],
+              "idioma": "en",
+              "preview_link": "http://books.google.com/books?id=wW1LEQAAQBAJ&printsec=frontcover&dq=intitle:Michael+Jackson+Legacy+inauthor:Maya+Iyer,+AI&hl=&cd=2&source=gbs_api"
+            }
+          },
+          "openlibrary": {
+            "ok": false,
+            "reason": "no_results",
+            "source": "openlibrary"
+          },
+          "amazon": {
+            "ok": false,
+            "reason": "no_amazon_cover_or_only_placeholders",
+            "source": "amazon"
+          },
+          "valid_covers": [
+            {
+              "source": "apple_books",
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/7f/89/a3/7f89a30d-c6e3-abfd-054c-91d93b737a60/9788235215680.jpg/3000x3000bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/7f/89/a3/7f89a30d-c6e3-abfd-054c-91d93b737a60/9788235215680.jpg/1200x1200bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/7f/89/a3/7f89a30d-c6e3-abfd-054c-91d93b737a60/9788235215680.jpg/600x600bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/7f/89/a3/7f89a30d-c6e3-abfd-054c-91d93b737a60/9788235215680.jpg/100x100bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "google_books",
+              "size": "small",
+              "url": "https://books.google.com/books/content?id=wW1LEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+              "valid": true
+            }
+          ],
+          "_sources_succeeded": [
+            "apple_books",
+            "google_books"
+          ],
+          "_sources_failed": [
+            "openlibrary:no_results",
+            "amazon:no_amazon_cover_or_only_placeholders"
+          ],
+          "_timing": {
+            "phase1_parallel_ms": 863,
+            "phase2_isbn_chain_ms": 323,
+            "cover_validation_ms": 455,
+            "total_ms": 1641
+          },
+          "_version": "3.6"
+        },
+        "_evidence_synopsis": "\"\"Michael Jackson Legacy\"\" explores the profound and lasting impact of Michael Jackson on music, dance, and global pop culture. The book analyzes his innovative approach to music production, highlighting how he blended genres and utilized cutting-edge studio technology to create a signature sound. It also examines his revolutionary choreography, noting how his athletic and graceful moves redefined performance standards and influenced countless artists. The book progresses chronologically, starting with Jackson's early years and musical apprenticeship, tracing his evolution into an innovative artist. It then analyzes his groundbreaking albums, dissecting his songwriting skills and dance innovations. The analysis culminates by examining Jackson's widespread influence on fashion, music videos, and the broader pop culture landscape, while also addressing controversies surrounding his personal life and their impact on his legacy. This biography offers a balanced and in-depth analysis of Jackson's artistic achievements and cultural impact. Instead of sensationalism, it focuses on factual assessments of his music, dance, and carefully constructed public persona, offering valuable insights into the creative process and the dynamics of celebrity for music enthusiasts, dance aficionados, and anyone interested in understanding Jackson's enduring legacy.",
+        "_evidence_verified_identity": {
+          "titulo_real": "Michael Jackson Legacy",
+          "subtitulo": "",
+          "autor_completo": "Maya Iyer, AI",
+          "año": "2025",
+          "editorial": "Publifye AS",
+          "paginas": 144,
+          "isbn": "9788235215680",
+          "isbn13": "9788235215680",
+          "isbn10": "8235215683",
+          "categorias": [
+            "Biography & Autobiography"
+          ],
+          "idioma": "en",
+          "preview_link": "http://books.google.com/books?id=wW1LEQAAQBAJ&printsec=frontcover&dq=intitle:Michael+Jackson+Legacy+inauthor:Maya+Iyer,+AI&hl=&cd=2&source=gbs_api"
+        },
+        "_evidence_match_score": 1
+      },
+      "ring_updated": true
+    }
+  ],
+  "last": {
+    "at": "2026-05-08T11:49:16.251Z",
+    "stage": "success",
+    "bookData": {
+      "titulo": "Michael Jackson Legacy",
+      "autor": "Maya Iyer, AI",
+      "slug": "michael-jackson-legacy",
+      "tagline": "\"\"Michael Jackson Legacy\"\" explores the profound and lasting impact of Michael Jackson on music, dance, and global pop culture.",
+      "portada": "https://books.google.com/books/content?id=wW1LEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "portada_url": "https://books.google.com/books/content?id=wW1LEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "portada_source": "google_books",
+      "portada_candidates": [
+        {
+          "source": "apple_books",
+          "size": "xxlarge",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/7f/89/a3/7f89a30d-c6e3-abfd-054c-91d93b737a60/9788235215680.jpg/3000x3000bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "xlarge",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/7f/89/a3/7f89a30d-c6e3-abfd-054c-91d93b737a60/9788235215680.jpg/1200x1200bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "large",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/7f/89/a3/7f89a30d-c6e3-abfd-054c-91d93b737a60/9788235215680.jpg/600x600bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "medium",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/7f/89/a3/7f89a30d-c6e3-abfd-054c-91d93b737a60/9788235215680.jpg/100x100bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "google_books",
+          "size": "small",
+          "url": "https://books.google.com/books/content?id=wW1LEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+          "valid": true
+        }
+      ],
+      "needs_fallback_cover": false,
+      "isbn": "9788235215680",
+      "editorial": "Publifye AS",
+      "publication_year": "2025",
+      "source": "google_books",
+      "duplicado": false,
+      "selected_via": "discover_live_google_books",
+      "selection_reason": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+      "trigger_input": "Michael Jackson",
+      "trigger_analysis": {
+        "raw_input": "Michael Jackson",
+        "semantic_query": "Libros sobre Michael Jackson",
+        "intent_summary": "Buscar libros relacionados con Michael Jackson.",
+        "editorial_requests": [],
+        "source_preference": null,
+        "ranking_preference": null,
+        "unsupported_runtime_constraints": [],
+        "supported_constraints": {
+          "year_min": null,
+          "year_max": null,
+          "prefer_recent": false
+        },
+        "search_queries": [
+          "Michael Jackson biography",
+          "Michael Jackson music",
+          "Michael Jackson legacy",
+          "Michael Jackson history",
+          "Michael Jackson influence",
+          "Michael Jackson interviews",
+          "Libros sobre Michael Jackson",
+          "libros michael jackson"
+        ],
+        "concept_hints": [],
+        "clean_for_selection": "Libros sobre Michael Jackson",
+        "notes": {
+          "used_ai_normalizer": true,
+          "looked_like_book_intent": false,
+          "semantic_overlap_vs_raw": 1
+        }
+      },
+      "selection_validation": {
+        "semantic_score": 0.95,
+        "ai_fit_score": 0.95,
+        "match_score": 1,
+        "validation_source": "google_books",
+        "constraint_reason": "Año verificado 2025",
+        "mode": "exact_live",
+        "source_label": "google_books_newest",
+        "fallback_score": 155
+      },
+      "catalog_scope": "",
+      "contexto_2026": {},
+      "identity_sealed": true,
+      "_evidence": {
+        "titulo_input": "Michael Jackson Legacy",
+        "autor_input": "Maya Iyer, AI",
+        "isbn_seed": "",
+        "isbn_seed_raw": "",
+        "isbn_seed_rejected": null,
+        "isbn_discovered": "9788235215680",
+        "isbn_discovered_raw": "9788235215680",
+        "apple": {
+          "ok": true,
+          "source": "apple_books",
+          "match_score": 0.9550000000000001,
+          "match_details": {
+            "matched_title": "Michael Jackson Legacy",
+            "matched_author": "Maya Iyer"
+          },
+          "synopsis": "\"Michael Jackson Legacy\" explores the profound and lasting impact of Michael Jackson on music, dance, and global pop culture. The book analyzes his innovative approach to music production, highlighting how he blended genres and utilized cutting-edge studio technology to create a signature sound. It also examines his revolutionary choreography, noting how his athletic and graceful moves redefined performance standards and influenced countless artists. The book progresses chronologically, starting with Jackson's early years and musical apprenticeship, tracing his evolution into an innovative artist. It then analyzes his groundbreaking albums, dissecting his songwriting skills and dance innovations. The analysis culminates by examining Jackson's widespread influence on fashion, music videos, and the broader pop culture landscape, while also addressing controversies surrounding his personal life and their impact on his legacy. This biography offers a balanced and in-depth analysis of Jackson's artistic achievements and cultural impact. Instead of sensationalism, it focuses on factual assessments of his music, dance, and carefully constructed public persona, offering valuable insights into the creative process and the dynamics of celebrity for music enthusiasts, dance aficionados, and anyone interested in understanding Jackson's enduring legacy.",
+          "synopsis_length": 1362,
+          "covers": [
+            {
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/7f/89/a3/7f89a30d-c6e3-abfd-054c-91d93b737a60/9788235215680.jpg/3000x3000bb.jpg"
+            },
+            {
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/7f/89/a3/7f89a30d-c6e3-abfd-054c-91d93b737a60/9788235215680.jpg/1200x1200bb.jpg"
+            },
+            {
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/7f/89/a3/7f89a30d-c6e3-abfd-054c-91d93b737a60/9788235215680.jpg/600x600bb.jpg"
+            },
+            {
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/7f/89/a3/7f89a30d-c6e3-abfd-054c-91d93b737a60/9788235215680.jpg/100x100bb.jpg"
+            }
+          ],
+          "verified_identity": {
+            "titulo_real": "Michael Jackson Legacy",
+            "autor_completo": "Maya Iyer",
+            "año": "2025",
+            "editorial": null,
+            "isbn": "",
+            "apple_track_id": "6742708788",
+            "categorias": [
+              "Biografías y memorias",
+              "Libros",
+              "Arte y espectáculo",
+              "Música"
+            ],
+            "track_view_url": "https://books.apple.com/mx/book/michael-jackson-legacy/id6742708788?uo=4"
+          }
+        },
+        "google": {
+          "ok": true,
+          "source": "google_books",
+          "match_score": 1,
+          "match_details": {
+            "matched_title": "Michael Jackson Legacy",
+            "matched_author": "Maya Iyer, AI"
+          },
+          "synopsis": "\"\"Michael Jackson Legacy\"\" explores the profound and lasting impact of Michael Jackson on music, dance, and global pop culture. The book analyzes his innovative approach to music production, highlighting how he blended genres and utilized cutting-edge studio technology to create a signature sound. It also examines his revolutionary choreography, noting how his athletic and graceful moves redefined performance standards and influenced countless artists. The book progresses chronologically, starting with Jackson's early years and musical apprenticeship, tracing his evolution into an innovative artist. It then analyzes his groundbreaking albums, dissecting his songwriting skills and dance innovations. The analysis culminates by examining Jackson's widespread influence on fashion, music videos, and the broader pop culture landscape, while also addressing controversies surrounding his personal life and their impact on his legacy. This biography offers a balanced and in-depth analysis of Jackson's artistic achievements and cultural impact. Instead of sensationalism, it focuses on factual assessments of his music, dance, and carefully constructed public persona, offering valuable insights into the creative process and the dynamics of celebrity for music enthusiasts, dance aficionados, and anyone interested in understanding Jackson's enduring legacy.",
+          "synopsis_length": 1364,
+          "covers": [
+            {
+              "size": "small",
+              "url": "https://books.google.com/books/content?id=wW1LEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+            }
+          ],
+          "verified_identity": {
+            "titulo_real": "Michael Jackson Legacy",
+            "subtitulo": "",
+            "autor_completo": "Maya Iyer, AI",
+            "año": "2025",
+            "editorial": "Publifye AS",
+            "paginas": 144,
+            "isbn": "9788235215680",
+            "isbn13": "9788235215680",
+            "isbn10": "8235215683",
+            "categorias": [
+              "Biography & Autobiography"
+            ],
+            "idioma": "en",
+            "preview_link": "http://books.google.com/books?id=wW1LEQAAQBAJ&printsec=frontcover&dq=intitle:Michael+Jackson+Legacy+inauthor:Maya+Iyer,+AI&hl=&cd=2&source=gbs_api"
+          }
+        },
+        "openlibrary": {
+          "ok": false,
+          "reason": "no_results",
+          "source": "openlibrary"
+        },
+        "amazon": {
+          "ok": false,
+          "reason": "no_amazon_cover_or_only_placeholders",
+          "source": "amazon"
+        },
+        "valid_covers": [
+          {
+            "source": "apple_books",
+            "size": "xxlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/7f/89/a3/7f89a30d-c6e3-abfd-054c-91d93b737a60/9788235215680.jpg/3000x3000bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "xlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/7f/89/a3/7f89a30d-c6e3-abfd-054c-91d93b737a60/9788235215680.jpg/1200x1200bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "large",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/7f/89/a3/7f89a30d-c6e3-abfd-054c-91d93b737a60/9788235215680.jpg/600x600bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "medium",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/7f/89/a3/7f89a30d-c6e3-abfd-054c-91d93b737a60/9788235215680.jpg/100x100bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "google_books",
+            "size": "small",
+            "url": "https://books.google.com/books/content?id=wW1LEQAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+            "valid": true
+          }
+        ],
+        "_sources_succeeded": [
+          "apple_books",
+          "google_books"
+        ],
+        "_sources_failed": [
+          "openlibrary:no_results",
+          "amazon:no_amazon_cover_or_only_placeholders"
+        ],
+        "_timing": {
+          "phase1_parallel_ms": 863,
+          "phase2_isbn_chain_ms": 323,
+          "cover_validation_ms": 455,
+          "total_ms": 1641
+        },
+        "_version": "3.6"
+      },
+      "_evidence_synopsis": "\"\"Michael Jackson Legacy\"\" explores the profound and lasting impact of Michael Jackson on music, dance, and global pop culture. The book analyzes his innovative approach to music production, highlighting how he blended genres and utilized cutting-edge studio technology to create a signature sound. It also examines his revolutionary choreography, noting how his athletic and graceful moves redefined performance standards and influenced countless artists. The book progresses chronologically, starting with Jackson's early years and musical apprenticeship, tracing his evolution into an innovative artist. It then analyzes his groundbreaking albums, dissecting his songwriting skills and dance innovations. The analysis culminates by examining Jackson's widespread influence on fashion, music videos, and the broader pop culture landscape, while also addressing controversies surrounding his personal life and their impact on his legacy. This biography offers a balanced and in-depth analysis of Jackson's artistic achievements and cultural impact. Instead of sensationalism, it focuses on factual assessments of his music, dance, and carefully constructed public persona, offering valuable insights into the creative process and the dynamics of celebrity for music enthusiasts, dance aficionados, and anyone interested in understanding Jackson's enduring legacy.",
+      "_evidence_verified_identity": {
+        "titulo_real": "Michael Jackson Legacy",
+        "subtitulo": "",
+        "autor_completo": "Maya Iyer, AI",
+        "año": "2025",
+        "editorial": "Publifye AS",
+        "paginas": 144,
+        "isbn": "9788235215680",
+        "isbn13": "9788235215680",
+        "isbn10": "8235215683",
+        "categorias": [
+          "Biography & Autobiography"
+        ],
+        "idioma": "en",
+        "preview_link": "http://books.google.com/books?id=wW1LEQAAQBAJ&printsec=frontcover&dq=intitle:Michael+Jackson+Legacy+inauthor:Maya+Iyer,+AI&hl=&cd=2&source=gbs_api"
+      },
+      "_evidence_match_score": 1
+    },
+    "ring_updated": true
+  }
+}
