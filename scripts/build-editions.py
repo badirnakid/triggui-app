@@ -651,16 +651,11 @@ body::before {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse at 30% 20%, rgba(48,255,228,0.08), transparent 50%),
-    radial-gradient(ellipse at 70% 80%, rgba(255,0,128,0.06), transparent 50%);
+    radial-gradient(ellipse at 30% 20%, rgba(40, 100, 220, 0.14), transparent 65%),
+    radial-gradient(ellipse at 70% 80%, rgba(80, 230, 200, 0.06), transparent 65%);
   z-index: -1;
   pointer-events: none;
-  animation: nebula-breathe 20s ease-in-out infinite;
-}
-
-@keyframes nebula-breathe {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+  opacity: 0.9;
 }
 
 @keyframes fire-move {
@@ -746,11 +741,22 @@ body::before {
 .block:hover {
   transform: translateY(-2px) scale(1.005);
   box-shadow:
-    inset 0 0 0 1.5px rgba(255,255,255,.22),
-    0 6px 12px rgba(0,0,0,.2),
-    0 16px 48px rgba(0,0,0,.45);
+    inset 0 1px 0 rgba(255,255,255,.28),
+    inset 0 -1px 0 rgba(0,0,0,.16),
+    inset 0 0 0 1px rgba(255,255,255,.16),
+    0 3px 7px rgba(0,0,0,.14),
+    0 18px 46px rgba(0,0,0,.42);
 }
-.block:active { transform: translateY(0) scale(0.995); transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1); }
+.block:active {
+  transform: translateY(0) scale(0.995);
+  transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.20),
+    inset 0 -1px 0 rgba(0,0,0,.18),
+    inset 0 0 0 1px rgba(255,255,255,.10),
+    0 1px 3px rgba(0,0,0,.12),
+    0 8px 24px rgba(0,0,0,.30);
+}
 .block.dim { opacity: 0.6; transform: scale(0.98); }
 
 .label, .frase {
@@ -1153,9 +1159,13 @@ body::before {
   justify-content: center;
   padding: 0 32px;
   pointer-events: none;
-  background: transparent;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
 }
-.bocado-eco-overlay.visible { display: flex; }
+.bocado-eco-overlay.visible { display: flex; opacity: 1; }
 
 .bocado-eco-phrase {
   font-family: 'Archivo', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -1208,11 +1218,12 @@ body::before {
   filter: blur(10px) !important;
 }
 
-/* Cuando el bocado o eco están activos, los bloques quedan invisibles */
+/* Cuando el bocado o eco están activos, los bloques quedan atenuados como contexto detrás del blur */
 .grid.bocado-active, .grid.eco-active {
-  opacity: 0;
+  opacity: 0.25;
   pointer-events: none;
-  transition: opacity 0.4s ease;
+  filter: saturate(0.7);
+  transition: opacity 0.5s ease, filter 0.5s ease;
 }
 
 @media (max-width: 640px) {
