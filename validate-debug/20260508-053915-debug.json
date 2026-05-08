@@ -1,0 +1,790 @@
+{
+  "history": [
+    {
+      "at": "2026-05-08T11:37:53.527Z",
+      "stage": "trigger_analysis",
+      "trigger_analysis": {
+        "raw_input": "Michael Jackson",
+        "semantic_query": "libros sobre Michael Jackson",
+        "intent_summary": "Buscar libros relacionados con Michael Jackson.",
+        "editorial_requests": [],
+        "source_preference": null,
+        "ranking_preference": null,
+        "unsupported_runtime_constraints": [],
+        "supported_constraints": {
+          "year_min": null,
+          "year_max": null,
+          "prefer_recent": false
+        },
+        "search_queries": [
+          "Michael Jackson biography",
+          "libros sobre Michael Jackson",
+          "historia de Michael Jackson",
+          "análisis de la música de Michael Jackson",
+          "Michael Jackson y su impacto cultural",
+          "Michael Jackson en la industria musical",
+          "libros michael jackson"
+        ],
+        "concept_hints": [],
+        "clean_for_selection": "libros sobre Michael Jackson",
+        "notes": {
+          "used_ai_normalizer": true,
+          "looked_like_book_intent": false,
+          "semantic_overlap_vs_raw": 1
+        }
+      }
+    },
+    {
+      "at": "2026-05-08T11:37:57.524Z",
+      "stage": "live_candidates_filter_recent",
+      "before": 15,
+      "after": 15,
+      "removed": 0,
+      "ring_size": 14
+    },
+    {
+      "at": "2026-05-08T11:38:04.585Z",
+      "stage": "ai_rerank_candidates",
+      "stageLabel": "live_candidates_rerank",
+      "ranked": [
+        {
+          "idx": 1,
+          "fit_score": 0.92,
+          "reason": "Reciente y ofrece una visión general sobre la carrera y el impacto cultural de Michael Jackson."
+        },
+        {
+          "idx": 5,
+          "fit_score": 0.91,
+          "reason": "Proporciona una biografía reciente que destaca su influencia en la música y la cultura."
+        },
+        {
+          "idx": 4,
+          "fit_score": 0.89,
+          "reason": "Biografía que explora tanto su carrera como sus relaciones en la industria musical."
+        },
+        {
+          "idx": 2,
+          "fit_score": 0.88,
+          "reason": "Ofrece una narrativa sobre su vida y legado, relevante casi diez años después de su muerte."
+        },
+        {
+          "idx": 3,
+          "fit_score": 0.87,
+          "reason": "Enfocada en su estatus como el Rey del Pop, relevante para entender su impacto."
+        },
+        {
+          "idx": 7,
+          "fit_score": 0.86,
+          "reason": "Biografía accesible que cubre su vida desde la infancia hasta su carrera."
+        },
+        {
+          "idx": 14,
+          "fit_score": 0.85,
+          "reason": "Describe su vida y logros, incluyendo su carrera con los Jackson Five."
+        },
+        {
+          "idx": 9,
+          "fit_score": 0.84,
+          "reason": "Ofrece una biografía comprensiva que detalla su impacto en la música."
+        }
+      ]
+    },
+    {
+      "at": "2026-05-08T11:38:04.586Z",
+      "stage": "live_candidates_merged",
+      "count": 15,
+      "top": [
+        {
+          "titulo": "Michael Jackson",
+          "autor": "Kelly Mass",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "The legendary American singer, songwriter, and dancer Michael Joseph Jackson revolutionized popular music and culture over his 40-year career.",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/CP3tEAAAQBAJ",
+          "published_year": 2024,
+          "live_score": 65.5,
+          "ai_fit_score": 0.92,
+          "ai_fit_reason": "Reciente y ofrece una visión general sobre la carrera y el impacto cultural de Michael Jackson."
+        },
+        {
+          "titulo": "Michael Jackson Bio",
+          "autor": "Cara Thomas",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "Michael Jackson: A Life in Music He was more than the King of Pop-he was a global phenomenon who redefined the boundaries of music, dance, and stardom.",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/riZa0QEACAAJ",
+          "published_year": 2025,
+          "live_score": 60.5,
+          "ai_fit_score": 0.91,
+          "ai_fit_reason": "Proporciona una biografía reciente que destaca su influencia en la música y la cultura."
+        },
+        {
+          "titulo": "Michael",
+          "autor": "Mariana Luzuriaga",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "\" Michael\" es una biografía sobre Michael Jackson que enfoca además de su carrera su relación con varios artistas y personalidades de la industria musical, describe los…",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/FbHbugEACAAJ",
+          "published_year": 2018,
+          "live_score": 64.25,
+          "ai_fit_score": 0.89,
+          "ai_fit_reason": "Biografía que explora tanto su carrera como sus relaciones en la industria musical."
+        },
+        {
+          "titulo": "Michael Jackson",
+          "autor": "Ziggy Watson",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "MICHAEL JACKSON: The True Story of An American Music Legend Even almost ten years after his death, there are few alive that do not know who Michael Jackson is.",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/bAOUswEACAAJ",
+          "published_year": 2017,
+          "live_score": 65.5,
+          "ai_fit_score": 0.88,
+          "ai_fit_reason": "Ofrece una narrativa sobre su vida y legado, relevante casi diez años después de su muerte."
+        },
+        {
+          "titulo": "Michael Jackson",
+          "autor": "K. C. Kelley",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "\"Known as the King of Pop, Michael Jackson is one of the most amazing entertainers in history.",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/I8hWtAEACAAJ",
+          "published_year": 2018,
+          "live_score": 65.5,
+          "ai_fit_score": 0.87,
+          "ai_fit_reason": "Enfocada en su estatus como el Rey del Pop, relevante para entender su impacto."
+        },
+        {
+          "titulo": "Who Was Michael Jackson?",
+          "autor": "Megan Stine, Who HQ",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "Born in Gary, Indiana, on August 29, 1958, Michael Jackson was definitely not a regular kid.",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/O95vCQAAQBAJ",
+          "published_year": 2015,
+          "live_score": 58,
+          "ai_fit_score": 0.86,
+          "ai_fit_reason": "Biografía accesible que cubre su vida desde la infancia hasta su carrera."
+        },
+        {
+          "titulo": "Who was Michael Jackson?",
+          "autor": "Megan Stine",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "Describes the life and accomplishments of the superstar singer, from his early career with the Jackson Five to his success as a solo performer and his personal troubles.",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/01LaCwAAQBAJ",
+          "published_year": 2015,
+          "live_score": 48,
+          "ai_fit_score": 0.85,
+          "ai_fit_reason": "Describe su vida y logros, incluyendo su carrera con los Jackson Five."
+        },
+        {
+          "titulo": "Michael Jackson: Biography of the King of Pop Who Changed Music Forever",
+          "autor": "Esther Godwin",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "Michael Jackson: The King of Pop – A Comprehensive Biography Step behind the curtain of the greatest entertainer in modern history with Michael Jackson: The King of Pop…",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/r-HSEQAAQBAJ",
+          "published_year": null,
+          "live_score": 53.23,
+          "ai_fit_score": 0.84,
+          "ai_fit_reason": "Ofrece una biografía comprensiva que detalla su impacto en la música."
+        },
+        {
+          "titulo": "Objetivo: Michael Jackson",
+          "autor": "Concha Calleja",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "La madrugada del 25 de junio de 2009, el médico de Michael Jackson entra en su habitación y lo encuentra sin respiración.",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/esuvDwAAQBAJ",
+          "published_year": null,
+          "live_score": 60.5,
+          "ai_fit_score": 0,
+          "ai_fit_reason": ""
+        },
+        {
+          "titulo": "Michael",
+          "autor": "Toni Arias",
+          "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+          "tagline": "Ni siquiera una enciclopedia completa tendría espacio suficiente para contener una historia como la de Michael Jackson.",
+          "source_label": "google_books_newest",
+          "source_url": "https://www.googleapis.com/books/v1/volumes/CVrNEQAAQBAJ",
+          "published_year": 2026,
+          "live_score": 54.25,
+          "ai_fit_score": 0,
+          "ai_fit_reason": ""
+        }
+      ]
+    },
+    {
+      "at": "2026-05-08T11:38:09.315Z",
+      "stage": "live_candidates_inspected",
+      "inspected": [
+        {
+          "recommendation": {
+            "titulo": "Michael Jackson",
+            "autor": "Kelly Mass",
+            "motivo_corto": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+            "tagline": "The legendary American singer, songwriter, and dancer Michael Joseph Jackson revolutionized popular music and culture over his 40-year career.",
+            "source_label": "google_books_newest",
+            "source_url": "https://www.googleapis.com/books/v1/volumes/CP3tEAAAQBAJ",
+            "published_year": 2024,
+            "live_score": 65.5,
+            "ai_fit_score": 0.92,
+            "ai_fit_reason": "Reciente y ofrece una visión general sobre la carrera y el impacto cultural de Michael Jackson."
+          },
+          "evidence": {
+            "portada": "https://books.google.com/books/content?id=CP3tEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+            "isbn": "9791222495866",
+            "editorial": "Efalon Acies",
+            "source": "google_books",
+            "year": "2024",
+            "matched_title": "Michael Jackson",
+            "matched_author": "Kelly Mass",
+            "match_score": 1,
+            "synopsis": "The legendary American singer, songwriter, and dancer Michael Joseph Jackson revolutionized popular music and culture over his 40-year career. Dubbed the \"King of Pop,\" Jackson was one of the most influential entertainers of the 20th century. His musical talent, iconic dance moves like the moonwalk, fashion sense, and much-publicized personal life made him a global pop culture icon. Jackson first rose to fame as a child star with his brothers in the Jackson 5. After launching an incredibly successful solo career in the 1970s, Jackson cemented his status as a global superstar with his sixth solo album Thriller in 1982. Thriller went on to become the world's best-selling album of all time. Jackson's revolutionary music videos for hits like \"Beat It,\" \"Billie Jean,\" and the epic \"Thriller\" broke down racial barriers and transformed the medium into an art form. His dance moves, like the moonwalk he debuted during a performance of \"Billie Jean,\" captivated audiences. Jackson continued innovating with subsequent albums like Bad and Dangerous, scoring more chart-topping hits and honing his signature dance techniques. His stage presence and choreography inspired countless musicians across all genres of music. Over his unparalleled career, Jackson amassed a record-breaking number of accolades, including 13 Grammy Awards for his musical artistry. Though a deeply private person, Jackson's personal life remained in the public eye. But it was his immense talent and trailblazing music that cemented Michael Jackson's legacy as the King of Pop.",
+            "synopsis_length": 1554,
+            "covers": [
+              {
+                "size": "small",
+                "url": "https://books.google.com/books/content?id=CP3tEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "Michael Jackson",
+              "subtitulo": "Biography of the Most Famous Singer of All Time",
+              "autor_completo": "Kelly Mass",
+              "año": "2024",
+              "editorial": "Efalon Acies",
+              "paginas": 53,
+              "isbn": "9791222495866",
+              "isbn13": "9791222495866",
+              "isbn10": "",
+              "categorias": [
+                "Biography & Autobiography"
+              ],
+              "idioma": "en",
+              "preview_link": "http://books.google.com/books?id=CP3tEAAAQBAJ&printsec=frontcover&dq=intitle:Michael+Jackson+inauthor:Kelly+Mass&hl=&cd=1&source=gbs_api"
+            },
+            "_evidence": {
+              "titulo_input": "Michael Jackson",
+              "autor_input": "Kelly Mass",
+              "isbn_seed": "",
+              "isbn_seed_raw": "",
+              "isbn_seed_rejected": null,
+              "isbn_discovered": "9791222495866",
+              "isbn_discovered_raw": "9791222495866",
+              "apple": {
+                "ok": true,
+                "source": "apple_books",
+                "match_score": 0.3833746898263028,
+                "match_details": {
+                  "matched_title": "Advantages of Social Networking",
+                  "matched_author": "Kelly Jackson"
+                },
+                "synopsis": "We get to make friends out of social networking. This is One out of the several benefits that we get from Social networking. Other than that we look forward to interact with several persons over the online social networking site. Scope of diversification generated , you come to learn varied culture , new languages and other good things from interacting on social networking sites. Social networking site usually have open membership. This suggest that anybody can be a member irrespective of their hobbies likes and interests. However when you are inside the site you can create your own group. Online Social Networking is the most prominent social media for mass communication. Read this out to learn more.",
+                "synopsis_length": 709,
+                "covers": [
+                  {
+                    "size": "xxlarge",
+                    "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication7/v4/8a/11/24/8a1124c7-127a-b9b3-0dee-43fdac45c445/Advantages_of_Social_Networking.jpg/3000x3000bb.jpg"
+                  },
+                  {
+                    "size": "xlarge",
+                    "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication7/v4/8a/11/24/8a1124c7-127a-b9b3-0dee-43fdac45c445/Advantages_of_Social_Networking.jpg/1200x1200bb.jpg"
+                  },
+                  {
+                    "size": "large",
+                    "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication7/v4/8a/11/24/8a1124c7-127a-b9b3-0dee-43fdac45c445/Advantages_of_Social_Networking.jpg/600x600bb.jpg"
+                  },
+                  {
+                    "size": "medium",
+                    "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication7/v4/8a/11/24/8a1124c7-127a-b9b3-0dee-43fdac45c445/Advantages_of_Social_Networking.jpg/100x100bb.jpg"
+                  }
+                ],
+                "verified_identity": {
+                  "titulo_real": "Advantages of Social Networking",
+                  "autor_completo": "Kelly Jackson",
+                  "año": "2015",
+                  "editorial": null,
+                  "isbn": "",
+                  "apple_track_id": "996208109",
+                  "categorias": [
+                    "Internet",
+                    "Libros",
+                    "Informática e Internet"
+                  ],
+                  "track_view_url": "https://books.apple.com/mx/book/advantages-of-social-networking/id996208109?uo=4"
+                }
+              },
+              "google": {
+                "ok": true,
+                "source": "google_books",
+                "match_score": 1,
+                "match_details": {
+                  "matched_title": "Michael Jackson",
+                  "matched_author": "Kelly Mass"
+                },
+                "synopsis": "The legendary American singer, songwriter, and dancer Michael Joseph Jackson revolutionized popular music and culture over his 40-year career. Dubbed the \"King of Pop,\" Jackson was one of the most influential entertainers of the 20th century. His musical talent, iconic dance moves like the moonwalk, fashion sense, and much-publicized personal life made him a global pop culture icon. Jackson first rose to fame as a child star with his brothers in the Jackson 5. After launching an incredibly successful solo career in the 1970s, Jackson cemented his status as a global superstar with his sixth solo album Thriller in 1982. Thriller went on to become the world's best-selling album of all time. Jackson's revolutionary music videos for hits like \"Beat It,\" \"Billie Jean,\" and the epic \"Thriller\" broke down racial barriers and transformed the medium into an art form. His dance moves, like the moonwalk he debuted during a performance of \"Billie Jean,\" captivated audiences. Jackson continued innovating with subsequent albums like Bad and Dangerous, scoring more chart-topping hits and honing his signature dance techniques. His stage presence and choreography inspired countless musicians across all genres of music. Over his unparalleled career, Jackson amassed a record-breaking number of accolades, including 13 Grammy Awards for his musical artistry. Though a deeply private person, Jackson's personal life remained in the public eye. But it was his immense talent and trailblazing music that cemented Michael Jackson's legacy as the King of Pop.",
+                "synopsis_length": 1554,
+                "covers": [
+                  {
+                    "size": "small",
+                    "url": "https://books.google.com/books/content?id=CP3tEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+                  }
+                ],
+                "verified_identity": {
+                  "titulo_real": "Michael Jackson",
+                  "subtitulo": "Biography of the Most Famous Singer of All Time",
+                  "autor_completo": "Kelly Mass",
+                  "año": "2024",
+                  "editorial": "Efalon Acies",
+                  "paginas": 53,
+                  "isbn": "9791222495866",
+                  "isbn13": "9791222495866",
+                  "isbn10": "",
+                  "categorias": [
+                    "Biography & Autobiography"
+                  ],
+                  "idioma": "en",
+                  "preview_link": "http://books.google.com/books?id=CP3tEAAAQBAJ&printsec=frontcover&dq=intitle:Michael+Jackson+inauthor:Kelly+Mass&hl=&cd=1&source=gbs_api"
+                }
+              },
+              "openlibrary": {
+                "ok": false,
+                "reason": "no_results",
+                "source": "openlibrary"
+              },
+              "amazon": {
+                "ok": false,
+                "reason": "isbn13_conversion_failed_or_not_978",
+                "source": "amazon",
+                "_attempted_isbn": "9791222495866"
+              },
+              "valid_covers": [],
+              "_sources_succeeded": [
+                "apple_books",
+                "google_books"
+              ],
+              "_sources_failed": [
+                "openlibrary:no_results",
+                "amazon:isbn13_conversion_failed_or_not_978"
+              ],
+              "_timing": {
+                "phase1_parallel_ms": 547,
+                "phase2_isbn_chain_ms": 173,
+                "cover_validation_ms": 4004,
+                "total_ms": 4724
+              },
+              "_version": "3.6"
+            }
+          },
+          "constraintsCheck": {
+            "exact_ok": true,
+            "hard_ok": true,
+            "issues": [],
+            "warnings": [],
+            "reason": "Año verificado 2024"
+          },
+          "sourceLabel": "live_candidates",
+          "semantic_score": 0.92,
+          "fallback_score": 152
+        }
+      ]
+    },
+    {
+      "at": "2026-05-08T11:38:09.342Z",
+      "stage": "success",
+      "bookData": {
+        "titulo": "Michael Jackson",
+        "autor": "Kelly Mass",
+        "slug": "michael-jackson",
+        "tagline": "The legendary American singer, songwriter, and dancer Michael Joseph Jackson revolutionized popular music and culture over his 40-year career.",
+        "portada": "https://books.google.com/books/content?id=CP3tEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+        "portada_url": "https://books.google.com/books/content?id=CP3tEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+        "portada_source": "google_books",
+        "portada_candidates": [],
+        "needs_fallback_cover": false,
+        "isbn": "9791222495866",
+        "editorial": "Efalon Acies",
+        "publication_year": "2024",
+        "source": "google_books",
+        "duplicado": false,
+        "selected_via": "discover_live_google_books",
+        "selection_reason": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+        "trigger_input": "Michael Jackson",
+        "trigger_analysis": {
+          "raw_input": "Michael Jackson",
+          "semantic_query": "libros sobre Michael Jackson",
+          "intent_summary": "Buscar libros relacionados con Michael Jackson.",
+          "editorial_requests": [],
+          "source_preference": null,
+          "ranking_preference": null,
+          "unsupported_runtime_constraints": [],
+          "supported_constraints": {
+            "year_min": null,
+            "year_max": null,
+            "prefer_recent": false
+          },
+          "search_queries": [
+            "Michael Jackson biography",
+            "libros sobre Michael Jackson",
+            "historia de Michael Jackson",
+            "análisis de la música de Michael Jackson",
+            "Michael Jackson y su impacto cultural",
+            "Michael Jackson en la industria musical",
+            "libros michael jackson"
+          ],
+          "concept_hints": [],
+          "clean_for_selection": "libros sobre Michael Jackson",
+          "notes": {
+            "used_ai_normalizer": true,
+            "looked_like_book_intent": false,
+            "semantic_overlap_vs_raw": 1
+          }
+        },
+        "selection_validation": {
+          "semantic_score": 0.92,
+          "ai_fit_score": 0.92,
+          "match_score": 1,
+          "validation_source": "google_books",
+          "constraint_reason": "Año verificado 2024",
+          "mode": "exact_live",
+          "source_label": "google_books_newest",
+          "fallback_score": 152
+        },
+        "catalog_scope": "",
+        "contexto_2026": {},
+        "identity_sealed": true,
+        "_evidence": {
+          "titulo_input": "Michael Jackson",
+          "autor_input": "Kelly Mass",
+          "isbn_seed": "",
+          "isbn_seed_raw": "",
+          "isbn_seed_rejected": null,
+          "isbn_discovered": "9791222495866",
+          "isbn_discovered_raw": "9791222495866",
+          "apple": {
+            "ok": true,
+            "source": "apple_books",
+            "match_score": 0.3833746898263028,
+            "match_details": {
+              "matched_title": "Advantages of Social Networking",
+              "matched_author": "Kelly Jackson"
+            },
+            "synopsis": "We get to make friends out of social networking. This is One out of the several benefits that we get from Social networking. Other than that we look forward to interact with several persons over the online social networking site. Scope of diversification generated , you come to learn varied culture , new languages and other good things from interacting on social networking sites. Social networking site usually have open membership. This suggest that anybody can be a member irrespective of their hobbies likes and interests. However when you are inside the site you can create your own group. Online Social Networking is the most prominent social media for mass communication. Read this out to learn more.",
+            "synopsis_length": 709,
+            "covers": [
+              {
+                "size": "xxlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication7/v4/8a/11/24/8a1124c7-127a-b9b3-0dee-43fdac45c445/Advantages_of_Social_Networking.jpg/3000x3000bb.jpg"
+              },
+              {
+                "size": "xlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication7/v4/8a/11/24/8a1124c7-127a-b9b3-0dee-43fdac45c445/Advantages_of_Social_Networking.jpg/1200x1200bb.jpg"
+              },
+              {
+                "size": "large",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication7/v4/8a/11/24/8a1124c7-127a-b9b3-0dee-43fdac45c445/Advantages_of_Social_Networking.jpg/600x600bb.jpg"
+              },
+              {
+                "size": "medium",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication7/v4/8a/11/24/8a1124c7-127a-b9b3-0dee-43fdac45c445/Advantages_of_Social_Networking.jpg/100x100bb.jpg"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "Advantages of Social Networking",
+              "autor_completo": "Kelly Jackson",
+              "año": "2015",
+              "editorial": null,
+              "isbn": "",
+              "apple_track_id": "996208109",
+              "categorias": [
+                "Internet",
+                "Libros",
+                "Informática e Internet"
+              ],
+              "track_view_url": "https://books.apple.com/mx/book/advantages-of-social-networking/id996208109?uo=4"
+            }
+          },
+          "google": {
+            "ok": true,
+            "source": "google_books",
+            "match_score": 1,
+            "match_details": {
+              "matched_title": "Michael Jackson",
+              "matched_author": "Kelly Mass"
+            },
+            "synopsis": "The legendary American singer, songwriter, and dancer Michael Joseph Jackson revolutionized popular music and culture over his 40-year career. Dubbed the \"King of Pop,\" Jackson was one of the most influential entertainers of the 20th century. His musical talent, iconic dance moves like the moonwalk, fashion sense, and much-publicized personal life made him a global pop culture icon. Jackson first rose to fame as a child star with his brothers in the Jackson 5. After launching an incredibly successful solo career in the 1970s, Jackson cemented his status as a global superstar with his sixth solo album Thriller in 1982. Thriller went on to become the world's best-selling album of all time. Jackson's revolutionary music videos for hits like \"Beat It,\" \"Billie Jean,\" and the epic \"Thriller\" broke down racial barriers and transformed the medium into an art form. His dance moves, like the moonwalk he debuted during a performance of \"Billie Jean,\" captivated audiences. Jackson continued innovating with subsequent albums like Bad and Dangerous, scoring more chart-topping hits and honing his signature dance techniques. His stage presence and choreography inspired countless musicians across all genres of music. Over his unparalleled career, Jackson amassed a record-breaking number of accolades, including 13 Grammy Awards for his musical artistry. Though a deeply private person, Jackson's personal life remained in the public eye. But it was his immense talent and trailblazing music that cemented Michael Jackson's legacy as the King of Pop.",
+            "synopsis_length": 1554,
+            "covers": [
+              {
+                "size": "small",
+                "url": "https://books.google.com/books/content?id=CP3tEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "Michael Jackson",
+              "subtitulo": "Biography of the Most Famous Singer of All Time",
+              "autor_completo": "Kelly Mass",
+              "año": "2024",
+              "editorial": "Efalon Acies",
+              "paginas": 53,
+              "isbn": "9791222495866",
+              "isbn13": "9791222495866",
+              "isbn10": "",
+              "categorias": [
+                "Biography & Autobiography"
+              ],
+              "idioma": "en",
+              "preview_link": "http://books.google.com/books?id=CP3tEAAAQBAJ&printsec=frontcover&dq=intitle:Michael+Jackson+inauthor:Kelly+Mass&hl=&cd=1&source=gbs_api"
+            }
+          },
+          "openlibrary": {
+            "ok": false,
+            "reason": "no_results",
+            "source": "openlibrary"
+          },
+          "amazon": {
+            "ok": false,
+            "reason": "isbn13_conversion_failed_or_not_978",
+            "source": "amazon",
+            "_attempted_isbn": "9791222495866"
+          },
+          "valid_covers": [],
+          "_sources_succeeded": [
+            "apple_books",
+            "google_books"
+          ],
+          "_sources_failed": [
+            "openlibrary:no_results",
+            "amazon:isbn13_conversion_failed_or_not_978"
+          ],
+          "_timing": {
+            "phase1_parallel_ms": 547,
+            "phase2_isbn_chain_ms": 173,
+            "cover_validation_ms": 4004,
+            "total_ms": 4724
+          },
+          "_version": "3.6"
+        },
+        "_evidence_synopsis": "The legendary American singer, songwriter, and dancer Michael Joseph Jackson revolutionized popular music and culture over his 40-year career. Dubbed the \"King of Pop,\" Jackson was one of the most influential entertainers of the 20th century. His musical talent, iconic dance moves like the moonwalk, fashion sense, and much-publicized personal life made him a global pop culture icon. Jackson first rose to fame as a child star with his brothers in the Jackson 5. After launching an incredibly successful solo career in the 1970s, Jackson cemented his status as a global superstar with his sixth solo album Thriller in 1982. Thriller went on to become the world's best-selling album of all time. Jackson's revolutionary music videos for hits like \"Beat It,\" \"Billie Jean,\" and the epic \"Thriller\" broke down racial barriers and transformed the medium into an art form. His dance moves, like the moonwalk he debuted during a performance of \"Billie Jean,\" captivated audiences. Jackson continued innovating with subsequent albums like Bad and Dangerous, scoring more chart-topping hits and honing his signature dance techniques. His stage presence and choreography inspired countless musicians across all genres of music. Over his unparalleled career, Jackson amassed a record-breaking number of accolades, including 13 Grammy Awards for his musical artistry. Though a deeply private person, Jackson's personal life remained in the public eye. But it was his immense talent and trailblazing music that cemented Michael Jackson's legacy as the King of Pop.",
+        "_evidence_verified_identity": {
+          "titulo_real": "Michael Jackson",
+          "subtitulo": "Biography of the Most Famous Singer of All Time",
+          "autor_completo": "Kelly Mass",
+          "año": "2024",
+          "editorial": "Efalon Acies",
+          "paginas": 53,
+          "isbn": "9791222495866",
+          "isbn13": "9791222495866",
+          "isbn10": "",
+          "categorias": [
+            "Biography & Autobiography"
+          ],
+          "idioma": "en",
+          "preview_link": "http://books.google.com/books?id=CP3tEAAAQBAJ&printsec=frontcover&dq=intitle:Michael+Jackson+inauthor:Kelly+Mass&hl=&cd=1&source=gbs_api"
+        },
+        "_evidence_match_score": 1
+      },
+      "ring_updated": true
+    }
+  ],
+  "last": {
+    "at": "2026-05-08T11:38:09.342Z",
+    "stage": "success",
+    "bookData": {
+      "titulo": "Michael Jackson",
+      "autor": "Kelly Mass",
+      "slug": "michael-jackson",
+      "tagline": "The legendary American singer, songwriter, and dancer Michael Joseph Jackson revolutionized popular music and culture over his 40-year career.",
+      "portada": "https://books.google.com/books/content?id=CP3tEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "portada_url": "https://books.google.com/books/content?id=CP3tEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "portada_source": "google_books",
+      "portada_candidates": [],
+      "needs_fallback_cover": false,
+      "isbn": "9791222495866",
+      "editorial": "Efalon Acies",
+      "publication_year": "2024",
+      "source": "google_books",
+      "duplicado": false,
+      "selected_via": "discover_live_google_books",
+      "selection_reason": "Hallado por búsqueda viva de Google Books ordenada por novedad",
+      "trigger_input": "Michael Jackson",
+      "trigger_analysis": {
+        "raw_input": "Michael Jackson",
+        "semantic_query": "libros sobre Michael Jackson",
+        "intent_summary": "Buscar libros relacionados con Michael Jackson.",
+        "editorial_requests": [],
+        "source_preference": null,
+        "ranking_preference": null,
+        "unsupported_runtime_constraints": [],
+        "supported_constraints": {
+          "year_min": null,
+          "year_max": null,
+          "prefer_recent": false
+        },
+        "search_queries": [
+          "Michael Jackson biography",
+          "libros sobre Michael Jackson",
+          "historia de Michael Jackson",
+          "análisis de la música de Michael Jackson",
+          "Michael Jackson y su impacto cultural",
+          "Michael Jackson en la industria musical",
+          "libros michael jackson"
+        ],
+        "concept_hints": [],
+        "clean_for_selection": "libros sobre Michael Jackson",
+        "notes": {
+          "used_ai_normalizer": true,
+          "looked_like_book_intent": false,
+          "semantic_overlap_vs_raw": 1
+        }
+      },
+      "selection_validation": {
+        "semantic_score": 0.92,
+        "ai_fit_score": 0.92,
+        "match_score": 1,
+        "validation_source": "google_books",
+        "constraint_reason": "Año verificado 2024",
+        "mode": "exact_live",
+        "source_label": "google_books_newest",
+        "fallback_score": 152
+      },
+      "catalog_scope": "",
+      "contexto_2026": {},
+      "identity_sealed": true,
+      "_evidence": {
+        "titulo_input": "Michael Jackson",
+        "autor_input": "Kelly Mass",
+        "isbn_seed": "",
+        "isbn_seed_raw": "",
+        "isbn_seed_rejected": null,
+        "isbn_discovered": "9791222495866",
+        "isbn_discovered_raw": "9791222495866",
+        "apple": {
+          "ok": true,
+          "source": "apple_books",
+          "match_score": 0.3833746898263028,
+          "match_details": {
+            "matched_title": "Advantages of Social Networking",
+            "matched_author": "Kelly Jackson"
+          },
+          "synopsis": "We get to make friends out of social networking. This is One out of the several benefits that we get from Social networking. Other than that we look forward to interact with several persons over the online social networking site. Scope of diversification generated , you come to learn varied culture , new languages and other good things from interacting on social networking sites. Social networking site usually have open membership. This suggest that anybody can be a member irrespective of their hobbies likes and interests. However when you are inside the site you can create your own group. Online Social Networking is the most prominent social media for mass communication. Read this out to learn more.",
+          "synopsis_length": 709,
+          "covers": [
+            {
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication7/v4/8a/11/24/8a1124c7-127a-b9b3-0dee-43fdac45c445/Advantages_of_Social_Networking.jpg/3000x3000bb.jpg"
+            },
+            {
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication7/v4/8a/11/24/8a1124c7-127a-b9b3-0dee-43fdac45c445/Advantages_of_Social_Networking.jpg/1200x1200bb.jpg"
+            },
+            {
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication7/v4/8a/11/24/8a1124c7-127a-b9b3-0dee-43fdac45c445/Advantages_of_Social_Networking.jpg/600x600bb.jpg"
+            },
+            {
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication7/v4/8a/11/24/8a1124c7-127a-b9b3-0dee-43fdac45c445/Advantages_of_Social_Networking.jpg/100x100bb.jpg"
+            }
+          ],
+          "verified_identity": {
+            "titulo_real": "Advantages of Social Networking",
+            "autor_completo": "Kelly Jackson",
+            "año": "2015",
+            "editorial": null,
+            "isbn": "",
+            "apple_track_id": "996208109",
+            "categorias": [
+              "Internet",
+              "Libros",
+              "Informática e Internet"
+            ],
+            "track_view_url": "https://books.apple.com/mx/book/advantages-of-social-networking/id996208109?uo=4"
+          }
+        },
+        "google": {
+          "ok": true,
+          "source": "google_books",
+          "match_score": 1,
+          "match_details": {
+            "matched_title": "Michael Jackson",
+            "matched_author": "Kelly Mass"
+          },
+          "synopsis": "The legendary American singer, songwriter, and dancer Michael Joseph Jackson revolutionized popular music and culture over his 40-year career. Dubbed the \"King of Pop,\" Jackson was one of the most influential entertainers of the 20th century. His musical talent, iconic dance moves like the moonwalk, fashion sense, and much-publicized personal life made him a global pop culture icon. Jackson first rose to fame as a child star with his brothers in the Jackson 5. After launching an incredibly successful solo career in the 1970s, Jackson cemented his status as a global superstar with his sixth solo album Thriller in 1982. Thriller went on to become the world's best-selling album of all time. Jackson's revolutionary music videos for hits like \"Beat It,\" \"Billie Jean,\" and the epic \"Thriller\" broke down racial barriers and transformed the medium into an art form. His dance moves, like the moonwalk he debuted during a performance of \"Billie Jean,\" captivated audiences. Jackson continued innovating with subsequent albums like Bad and Dangerous, scoring more chart-topping hits and honing his signature dance techniques. His stage presence and choreography inspired countless musicians across all genres of music. Over his unparalleled career, Jackson amassed a record-breaking number of accolades, including 13 Grammy Awards for his musical artistry. Though a deeply private person, Jackson's personal life remained in the public eye. But it was his immense talent and trailblazing music that cemented Michael Jackson's legacy as the King of Pop.",
+          "synopsis_length": 1554,
+          "covers": [
+            {
+              "size": "small",
+              "url": "https://books.google.com/books/content?id=CP3tEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+            }
+          ],
+          "verified_identity": {
+            "titulo_real": "Michael Jackson",
+            "subtitulo": "Biography of the Most Famous Singer of All Time",
+            "autor_completo": "Kelly Mass",
+            "año": "2024",
+            "editorial": "Efalon Acies",
+            "paginas": 53,
+            "isbn": "9791222495866",
+            "isbn13": "9791222495866",
+            "isbn10": "",
+            "categorias": [
+              "Biography & Autobiography"
+            ],
+            "idioma": "en",
+            "preview_link": "http://books.google.com/books?id=CP3tEAAAQBAJ&printsec=frontcover&dq=intitle:Michael+Jackson+inauthor:Kelly+Mass&hl=&cd=1&source=gbs_api"
+          }
+        },
+        "openlibrary": {
+          "ok": false,
+          "reason": "no_results",
+          "source": "openlibrary"
+        },
+        "amazon": {
+          "ok": false,
+          "reason": "isbn13_conversion_failed_or_not_978",
+          "source": "amazon",
+          "_attempted_isbn": "9791222495866"
+        },
+        "valid_covers": [],
+        "_sources_succeeded": [
+          "apple_books",
+          "google_books"
+        ],
+        "_sources_failed": [
+          "openlibrary:no_results",
+          "amazon:isbn13_conversion_failed_or_not_978"
+        ],
+        "_timing": {
+          "phase1_parallel_ms": 547,
+          "phase2_isbn_chain_ms": 173,
+          "cover_validation_ms": 4004,
+          "total_ms": 4724
+        },
+        "_version": "3.6"
+      },
+      "_evidence_synopsis": "The legendary American singer, songwriter, and dancer Michael Joseph Jackson revolutionized popular music and culture over his 40-year career. Dubbed the \"King of Pop,\" Jackson was one of the most influential entertainers of the 20th century. His musical talent, iconic dance moves like the moonwalk, fashion sense, and much-publicized personal life made him a global pop culture icon. Jackson first rose to fame as a child star with his brothers in the Jackson 5. After launching an incredibly successful solo career in the 1970s, Jackson cemented his status as a global superstar with his sixth solo album Thriller in 1982. Thriller went on to become the world's best-selling album of all time. Jackson's revolutionary music videos for hits like \"Beat It,\" \"Billie Jean,\" and the epic \"Thriller\" broke down racial barriers and transformed the medium into an art form. His dance moves, like the moonwalk he debuted during a performance of \"Billie Jean,\" captivated audiences. Jackson continued innovating with subsequent albums like Bad and Dangerous, scoring more chart-topping hits and honing his signature dance techniques. His stage presence and choreography inspired countless musicians across all genres of music. Over his unparalleled career, Jackson amassed a record-breaking number of accolades, including 13 Grammy Awards for his musical artistry. Though a deeply private person, Jackson's personal life remained in the public eye. But it was his immense talent and trailblazing music that cemented Michael Jackson's legacy as the King of Pop.",
+      "_evidence_verified_identity": {
+        "titulo_real": "Michael Jackson",
+        "subtitulo": "Biography of the Most Famous Singer of All Time",
+        "autor_completo": "Kelly Mass",
+        "año": "2024",
+        "editorial": "Efalon Acies",
+        "paginas": 53,
+        "isbn": "9791222495866",
+        "isbn13": "9791222495866",
+        "isbn10": "",
+        "categorias": [
+          "Biography & Autobiography"
+        ],
+        "idioma": "en",
+        "preview_link": "http://books.google.com/books?id=CP3tEAAAQBAJ&printsec=frontcover&dq=intitle:Michael+Jackson+inauthor:Kelly+Mass&hl=&cd=1&source=gbs_api"
+      },
+      "_evidence_match_score": 1
+    },
+    "ring_updated": true
+  }
+}
