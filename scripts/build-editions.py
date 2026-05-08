@@ -90,6 +90,58 @@ def resolve_palabra_dominante(libro_data):
     )
 
 
+def build_bocado_eco_pool(libro_data):
+    """
+    🌒 Construye el pool de frases para bocado y eco de la edición viva.
+
+    Fuentes (Solución A acordada con Badir):
+      - libro.tagline (1 frase descriptiva del libro)
+      - libro._nucleus.book_grounding_anchors.concepts[] (~5 conceptos del libro)
+
+    Excluidos a propósito:
+      - frases[] / frases_en[] (ya se ven en los 4 bloques)
+      - frases_og[] (sagrado para WhatsApp link preview)
+      - tarjeta.* (ya se ven en la tarjeta editorial)
+
+    Transformación cuántica:
+      - capitalizar primera letra
+      - agregar punto si no tiene cierre (. ? !)
+    """
+    pool = []
+    seen = set()
+
+    def add_phrase(text):
+        if not text:
+            return
+        clean = normalize_text(strip_highlight_tags(text))
+        if not clean:
+            return
+        # Capitalizar primera letra (preservando el resto)
+        clean = clean[0].upper() + clean[1:] if len(clean) >= 1 else clean
+        # Agregar punto si no tiene cierre legítimo
+        if not clean.endswith((".", "?", "!", "…")):
+            clean += "."
+        # Anti-duplicado por casefold
+        key = clean.casefold()
+        if key in seen:
+            return
+        seen.add(key)
+        pool.append(clean)
+
+    # Source 1: tagline
+    tagline = libro_data.get("tagline", "")
+    add_phrase(tagline)
+
+    # Source 2: concepts del nucleus
+    nucleus = libro_data.get("_nucleus", {}) or {}
+    grounding = nucleus.get("book_grounding_anchors", {}) or {}
+    concepts = grounding.get("concepts", []) or []
+    for concept in concepts:
+        add_phrase(concept)
+
+    return pool
+
+
 def strip_highlight_tags(text):
     return re.sub(r"\[/?H\]", "", str(text or ""), flags=re.IGNORECASE)
 
@@ -498,6 +550,7 @@ def render_edicion(edicion, mode="lab"):
         "ogImage": og_image,
         "portada": portada,
         "tagline": tagline,
+        "bocadoEcoPool": edicion.get("bocadoEcoPool") or [],
     }
 
     cover_cta_html = ""
@@ -1086,6 +1139,82 @@ body::before {
 .silence-screen .sil-mark { opacity: 0.2; animation: silCallIn 1s ease 1s both; }
 .silence-screen .sil-mark img { height: 22px; width: auto; display: block; margin: 0 auto; filter: invert(1) brightness(1.5); }
 
+/* ════════════════════════════════════════════════════════════════════
+   🌒 BOCADO + ECO — Frase oracular antes/después
+   Pool: tagline + concepts del libro (cap + punto en Python)
+   Timing: 1500ms appear + 2000ms hold + 1200ms fade = 4.7s total
+═══════════════════════════════════════════════════════════════════════ */
+.bocado-eco-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0 32px;
+  pointer-events: none;
+  background: transparent;
+}
+.bocado-eco-overlay.visible { display: flex; }
+
+.bocado-eco-phrase {
+  font-family: 'Archivo', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 300;
+  font-size: clamp(22px, 6vw, 32px);
+  line-height: 1.32;
+  color: #fff;
+  text-align: center;
+  max-width: 640px;
+  letter-spacing: -0.5px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@keyframes triggui-word-appear {
+  0%   { opacity: 0; transform: translateY(8px); filter: blur(12px); }
+  100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+@keyframes triggui-underline-appear {
+  0%   { opacity: 0; transform: scaleX(0); }
+  60%  { opacity: 1; transform: scaleX(1); }
+  100% { opacity: 0.65; transform: scaleX(1); }
+}
+.bm-bocado-w, .bm-bocado-anchor {
+  display: inline-block;
+  opacity: 0;
+  animation: triggui-word-appear 1500ms cubic-bezier(0.19, 1, 0.22, 1) forwards;
+  will-change: opacity, transform, filter;
+}
+.bm-bocado-anchor {
+  font-weight: 400;
+  position: relative;
+}
+.bm-bocado-anchor::after {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: -6px;
+  height: 1px;
+  opacity: 0;
+  transform: scaleX(0);
+  background: linear-gradient(90deg, transparent, var(--bocado-anchor-color, #FF5E00), transparent);
+  animation: triggui-underline-appear 2100ms cubic-bezier(0.19, 1, 0.22, 1) forwards;
+  animation-delay: 900ms;
+}
+.bm-bocado-fading {
+  transition: opacity 1200ms cubic-bezier(0.55, 0, 0.55, 1), filter 1200ms cubic-bezier(0.55, 0, 0.55, 1) !important;
+  opacity: 0 !important;
+  filter: blur(10px) !important;
+}
+
+/* Cuando el bocado o eco están activos, los bloques quedan invisibles */
+.grid.bocado-active, .grid.eco-active {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
 @media (max-width: 640px) {
   .grid { gap: 1.2vw; }
   .label { font-size: clamp(0.95rem,4vw,1.4rem); }
@@ -1110,6 +1239,9 @@ body::before {
 <body data-lab-v="live-edition-card-v3" style="__BODY_STYLE__">
 
 <div id="pulseLine" class="pulse-line"></div>
+<div class="bocado-eco-overlay" id="bocadoEcoOverlay">
+  <div class="bocado-eco-phrase" id="bocadoEcoPhrase"></div>
+</div>
 <div class="grid" id="grid"></div>
 
 <div id="revealOverlay" class="reveal-overlay">
@@ -1268,8 +1400,20 @@ function openOverlayFromBlocks() {
 }
 
 function closeOverlayToBlocks() {
+  // 🌒 Si venimos de tarjeta o silence-screen, disparar eco antes de los bloques
+  const cameFromCardOrSilence = (overlayView === 'card' || overlayView === 'silence');
   setOverlayView('blocks');
-  setTimeout(() => showGrid(), 180);
+  setTimeout(() => {
+    showGrid();
+    if (cameFromCardOrSilence && state.bocadoEcoPool && state.bocadoEcoPool.length > 0) {
+      grid.classList.add('eco-active');
+      setTimeout(() => {
+        showEco(() => {
+          grid.classList.remove('eco-active');
+        });
+      }, 100);
+    }
+  }, 180);
 }
 
 function moveToSilence() {
@@ -1460,6 +1604,112 @@ function fitRevealTypography() {
   }
 }
 
+/* ════════════════════════════════════════════════════════════════════
+   🌒 BOCADO + ECO — funciones cuánticas
+═══════════════════════════════════════════════════════════════════════ */
+const bocadoEcoState = {
+  used: new Set(),
+  active: false,
+};
+const BOCADO_TIMING = { appear: 1500, hold: 2000, fade: 1200, wordStagger: 60 };
+
+function pickFromPool() {
+  const pool = (state.bocadoEcoPool || []).filter(p => p && p.length >= 8);
+  if (pool.length === 0) return null;
+  let available = pool.filter(p => !bocadoEcoState.used.has(p));
+  if (available.length === 0) {
+    bocadoEcoState.used.clear();
+    available = pool.slice();
+  }
+  const phrase = available[Math.floor(Math.random() * available.length)];
+  bocadoEcoState.used.add(phrase);
+  return phrase;
+}
+
+function segmentPhrase(text) {
+  const words = String(text || '').split(/\\s+/).filter(w => w.length > 0);
+  const n = words.length;
+  if (n < 2) return { body: '', anchor: words.join(' ') };
+  const anchorCount = n <= 4 ? 1 : 2;
+  return {
+    body: words.slice(0, n - anchorCount).join(' '),
+    anchor: words.slice(n - anchorCount).join(' '),
+  };
+}
+
+function buildPhraseHTML(text, accentColor) {
+  const seg = segmentPhrase(text);
+  let html = '';
+  let delay = 0;
+  if (seg.body) {
+    const bodyWords = seg.body.split(/\\s+/);
+    for (const w of bodyWords) {
+      html += '<span class="bm-bocado-w" style="animation-delay:' + delay + 'ms">' + w + '&nbsp;</span>';
+      delay += BOCADO_TIMING.wordStagger;
+    }
+  }
+  html += '<span class="bm-bocado-anchor" style="animation-delay:' + delay + 'ms;color:' + accentColor + ';">' + seg.anchor + '</span>';
+  return html;
+}
+
+function showBocadoEco(kind, onComplete) {
+  if (bocadoEcoState.active) return false;
+  const phrase = pickFromPool();
+  if (!phrase) {
+    if (typeof onComplete === 'function') onComplete();
+    return false;
+  }
+  bocadoEcoState.active = true;
+
+  const overlay = document.getElementById('bocadoEcoOverlay');
+  const phraseEl = document.getElementById('bocadoEcoPhrase');
+  if (!overlay || !phraseEl) {
+    bocadoEcoState.active = false;
+    if (typeof onComplete === 'function') onComplete();
+    return false;
+  }
+
+  // Color del anchor: usar el accent del libro o color de bloque 1
+  let accentColor = '#FF5E00';
+  try {
+    if (state.colores && state.colores[1]) {
+      accentColor = state.colores[1];
+    }
+  } catch (_) {}
+  overlay.style.setProperty('--bocado-anchor-color', accentColor);
+
+  phraseEl.classList.remove('bm-bocado-fading');
+  phraseEl.innerHTML = buildPhraseHTML(phrase, accentColor);
+  overlay.classList.add('visible');
+
+  const totalWords = phrase.split(/\\s+/).length;
+  const fullAppear = BOCADO_TIMING.appear + totalWords * BOCADO_TIMING.wordStagger + 300;
+  const holdEnd = fullAppear + BOCADO_TIMING.hold;
+
+  setTimeout(() => phraseEl.classList.add('bm-bocado-fading'), holdEnd);
+
+  setTimeout(() => {
+    overlay.classList.remove('visible');
+    phraseEl.innerHTML = '';
+    phraseEl.classList.remove('bm-bocado-fading');
+    bocadoEcoState.active = false;
+    if (typeof onComplete === 'function') onComplete();
+    if (typeof console !== 'undefined' && console.log) {
+      console.log('[Triggui ' + kind + '] "' + phrase + '"');
+    }
+  }, holdEnd + BOCADO_TIMING.fade + 100);
+
+  return true;
+}
+
+function showBocado(onComplete) {
+  return showBocadoEco('Bocado', onComplete);
+}
+
+function showEco(onComplete) {
+  return showBocadoEco('Eco', onComplete);
+}
+
 function renderBlocks() {
   grid.innerHTML = '';
 
@@ -1577,6 +1827,19 @@ window.addEventListener('resize', () => {
 renderBlocks();
 applyDynamicActionLinks();
 setOverlayView('blocks');
+
+// 🌒 Bocado al cargar — primero ocultamos bloques, mostramos bocado, y
+// cuando termina volvemos a mostrar bloques con su atmósfera intacta.
+(function triggerOpeningBocado() {
+  if (!state.bocadoEcoPool || state.bocadoEcoPool.length === 0) return;
+  grid.classList.add('bocado-active');
+  // Pequeño delay para que el browser pinte la página primero
+  setTimeout(() => {
+    showBocado(() => {
+      grid.classList.remove('bocado-active');
+    });
+  }, 200);
+})();
 
 (function() {
   const k = () => {
@@ -1718,6 +1981,9 @@ def build_single():
     tarjeta["parrafoTop"] = normalize_highlight_syntax(tarjeta.get("parrafoTop", ""))
     tarjeta["parrafoBot"] = normalize_highlight_syntax(tarjeta.get("parrafoBot", ""))
 
+    bocado_eco_pool = build_bocado_eco_pool(libro_data)
+    print(f"🌒 Pool bocado/eco: {len(bocado_eco_pool)} frases únicas (tagline + concepts)")
+
     edicion_single = {
         "id": slug,
         "titulo": book_meta.get("titulo", libro_data.get("titulo", "")),
@@ -1732,6 +1998,7 @@ def build_single():
         "textColors": text_colors,
         "fondo": libro_data.get("fondo", "#0a0a0a"),
         "tarjeta": tarjeta,
+        "bocadoEcoPool": bocado_eco_pool,
     }
 
     html_content = render_edicion(edicion_single, mode="single")
