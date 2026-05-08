@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 
-<title>El valor del caos en la vida · Antifragil · Triggui</title>
-<meta name="description" content="⏳ ¿Cuántas veces has dejado pasar una oportunidad por miedo al caos" />
+<title>Florecer en el caos: lo antifrágil · Antifragil · Triggui</title>
+<meta name="description" content="⏳ ¿Qué cosas en tu vida se benefician realmente de la incertidumbre" />
 <link rel="canonical" href="https://app.triggui.com/t/antifragil/" />
 
-<meta property="og:title" content="fortaleza · adaptación · transformación · oportunidad" />
-<meta property="og:description" content="⏳ ¿Cuántas veces has dejado pasar una oportunidad por miedo al caos" />
+<meta property="og:title" content="fortaleza · adaptabilidad · desapego · crecimiento" />
+<meta property="og:description" content="⏳ ¿Qué cosas en tu vida se benefician realmente de la incertidumbre" />
 <meta property="og:image" content="https://app.triggui.com/t/antifragil/og.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
@@ -19,8 +19,8 @@
 <meta property="og:locale" content="es_MX" />
 
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="fortaleza · adaptación · transformación · oportunidad" />
-<meta name="twitter:description" content="⏳ ¿Cuántas veces has dejado pasar una oportunidad por miedo al caos" />
+<meta name="twitter:title" content="fortaleza · adaptabilidad · desapego · crecimiento" />
+<meta name="twitter:description" content="⏳ ¿Qué cosas en tu vida se benefician realmente de la incertidumbre" />
 <meta name="twitter:image" content="https://app.triggui.com/t/antifragil/og.png" />
 
 <link rel="preconnect" href="https://www.penguinlibros.com" crossorigin>
@@ -53,11 +53,16 @@ body::before {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse at 30% 20%, rgba(255,0,85,0.18), transparent 65%),
-    radial-gradient(ellipse at 70% 80%, rgba(255,94,0,0.08), transparent 65%);
+    radial-gradient(ellipse at 30% 20%, rgba(48,255,228,0.08), transparent 50%),
+    radial-gradient(ellipse at 70% 80%, rgba(255,0,128,0.06), transparent 50%);
   z-index: -1;
   pointer-events: none;
-  opacity: 0.85;
+  animation: nebula-breathe 20s ease-in-out infinite;
+}
+
+@keyframes nebula-breathe {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
 }
 
 @keyframes fire-move {
@@ -140,8 +145,14 @@ body::before {
   z-index: 0;
 }
 .block:hover::after { opacity: 1; }
-.block:hover { transform: translateY(-2px) scale(1.005); }
-.block:active { transform: translateY(0) scale(0.995); transition: transform 0.1s; }
+.block:hover {
+  transform: translateY(-2px) scale(1.005);
+  box-shadow:
+    inset 0 0 0 1.5px rgba(255,255,255,.22),
+    0 6px 12px rgba(0,0,0,.2),
+    0 16px 48px rgba(0,0,0,.45);
+}
+.block:active { transform: translateY(0) scale(0.995); transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1); }
 .block.dim { opacity: 0.6; transform: scale(0.98); }
 
 .label, .frase {
@@ -154,8 +165,11 @@ body::before {
   z-index: 2;
   text-align: center;
   transition: opacity 0.25s ease, transform 0.25s ease;
+  text-shadow: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
-.label { opacity: 1; transform: translateY(0); font-size: clamp(1.05rem, 3.2vw, 1.7rem); line-height: 1.35; }
+.label { opacity: 1; transform: translateY(0); font-size: clamp(1.05rem, 3.2vw, 1.7rem); font-weight: 700; line-height: 1.35; letter-spacing: 0.2px; }
 .frase { opacity: 0; transform: translateY(6px); font-size: clamp(1rem, 3vw, 1.5rem); font-weight: 600; line-height: 1.4; }
 .block.show .label { opacity: 0; transform: translateY(-6px); }
 .block.show .frase { opacity: 1; transform: translateY(0); }
@@ -548,7 +562,7 @@ body::before {
 }
 </style>
 </head>
-<body data-lab-v="live-edition-card-v3" style="--accent:#1269E2;--marker:#1269E230;--chip-bg:#1269E214;--card-paper:#F7F7F5;--card-ink:#1A1A1A;--card-border:rgba(26,26,26,0.06);--ed-title-size:25.4px;--ed-title-size-mobile:22.8px;--ed-para-size:17.4px;--ed-para-size-mobile:17.0px;--ed-sub-size:17.2px;--ed-sub-size-mobile:16.8px;--ed-chip-size:14.3px;--ed-chip-size-mobile:13.6px;--ed-cover-width:110.0px;--ed-cover-width-mobile:98.0px;">
+<body data-lab-v="live-edition-card-v3" style="--accent:#9312E2;--marker:#9312E230;--chip-bg:#9312E214;--card-paper:#F7F7F5;--card-ink:#1A1A1A;--card-border:rgba(26,26,26,0.06);--ed-title-size:25.4px;--ed-title-size-mobile:22.8px;--ed-para-size:17.4px;--ed-para-size-mobile:17.0px;--ed-sub-size:17.2px;--ed-sub-size-mobile:16.8px;--ed-chip-size:14.3px;--ed-chip-size-mobile:13.6px;--ed-cover-width:110.0px;--ed-cover-width-mobile:98.0px;">
 
 <div id="pulseLine" class="pulse-line"></div>
 <div class="grid" id="grid"></div>
@@ -565,15 +579,15 @@ body::before {
             <img src="https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/a7/85/0f/a7850f17-37da-468a-5c30-fd0fde47f2c6/9788449337338.jpg/3000x3000bb.jpg" alt="Antifragil" />
             <span class="cover-hint">Toca el libro</span>
           </div>
-          <div class="ed-title" id="editorialTitle">El valor del caos en la vida</div>
+          <div class="ed-title" id="editorialTitle">Florecer en el caos: lo antifrágil</div>
           <div class="ed-chip" id="editorialChip">Nassim Taleb</div>
-          <div class="ed-para" id="editorialTopPara"><span class="tg-hl">El caos no es solo un enemigo a temer, sino un aliado poderoso.</span> Como los huesos que se fortalecen bajo presión, hay sistemas que prosperan en la incertidumbre, convirtiendo cada desafío en una oportunidad de crecimiento.</div>
+          <div class="ed-para" id="editorialTopPara"><span class="tg-hl">La incertidumbre es el terreno fértil donde lo antifrágil prospera.</span> Aquello que se beneficia del caos no se limita a resistir la presión, sino que se fortalece con ella, como un músculo que crece bajo la tensión. La vida está llena de cisnes negros, eventos impredecibles que pueden desestabilizarnos, pero en lugar de c</div>
         </div>
       </div>
       <div class="ed-gap"></div>
       <div class="ed-block" id="editorialBlockBottom">
-        <div class="ed-sub" id="editorialSub">¿Cómo puedes transformar la adversidad en fortaleza?</div>
-        <div class="ed-para" id="editorialBottomPara"><span class="tg-hl">Aceptar la antifragilidad implica entender que cada crisis puede ser un catalizador.</span> Cuando las estructuras se ven amenazadas, es la capacidad de adaptarse y aprender lo que realmente determina la supervivencia.</div>
+        <div class="ed-sub" id="editorialSub">¿Cómo abrazar la inestabilidad para crecer?</div>
+        <div class="ed-para" id="editorialBottomPara"><span class="tg-hl">Aceptar la incertidumbre es esencial para la supervivencia.</span> Lo antifrágil no solo resiste las crisis, sino que las necesita para florecer. En un mundo donde el error de la predicción es común, es crucial aprender a navegar el caos con agilidad y adaptabilidad.</div>
       </div>
 
       <div class="card-actions">
@@ -621,7 +635,7 @@ body::before {
 </div>
 
 <script>
-const state = {"id": "antifragil", "titulo": "Antifragil", "autor": "Nassim Taleb", "palabra": "El valor del caos en la vida", "descripcion": "El caos no es solo un enemigo a temer, sino un aliado poderoso. Como los huesos que se fortalecen bajo presión, hay sistemas que prosperan en la incertidumbre, convirtiendo cada desafío en una oportunidad de crecimiento.", "palabras": ["fortaleza", "adaptación", "transformación", "oportunidad"], "frases": ["💫 Permite que la tensión te impulse hacia adelante. Avanza con determinación.", "⏳ ¿Cuántas veces has dejado pasar una oportunidad por miedo al caos?", "🔭 Imagina un río que fluye entre las rocas: el caos lo moldea y lo fortalece.", "🌌 Crisis y caos: los motores de la antifragilidad."], "colores": ["#7EAEF1", "#E89C30", "#132DAE", "#65560B"], "textColors": ["#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF"], "ogImage": "https://app.triggui.com/t/antifragil/og.png", "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/a7/85/0f/a7850f17-37da-468a-5c30-fd0fde47f2c6/9788449337338.jpg/3000x3000bb.jpg", "tagline": ""};
+const state = {"id": "antifragil", "titulo": "Antifragil", "autor": "Nassim Taleb", "palabra": "Florecer en el caos: lo antifrágil", "descripcion": "La incertidumbre es el terreno fértil donde lo antifrágil prospera. Aquello que se beneficia del caos no se limita a resistir la presión, sino que se fortalece con ella, como un músculo que crece bajo la tensión. La vida está llena de cisnes negros, eventos impredecibles que pueden desestabilizarnos, pero en lugar de c", "palabras": ["fortaleza", "adaptabilidad", "desapego", "crecimiento"], "frases": ["💫 Muévete con agilidad ante la presión. Permite que el caos te fortalezca.", "⏳ ¿Qué cosas en tu vida se benefician realmente de la incertidumbre?", "🔭 Imagina un árbol que crece en un terreno rocoso, sus raíces se afianzan con cada tormenta.", "🌌 En el caos, el antifrágil encuentra su lugar y su razón de ser."], "colores": ["#C57EF1", "#77E830", "#9A13AE", "#17650B"], "textColors": ["#FFFFFF", "#000000", "#FFFFFF", "#FFFFFF"], "ogImage": "https://app.triggui.com/t/antifragil/og.png", "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/a7/85/0f/a7850f17-37da-468a-5c30-fd0fde47f2c6/9788449337338.jpg/3000x3000bb.jpg", "tagline": ""};
 const grid = document.getElementById('grid');
 const revealOverlay = document.getElementById('revealOverlay');
 const btnBack = document.getElementById('btnBack');
@@ -642,7 +656,7 @@ function grad(i) {
 let overlayView = 'blocks';
 let coverBusy = false;
 const revealIndex = Math.floor(Math.random() * 4);
-const emojis = ['🌊', '🛡️', '🧠', '✨'];
+const emojis = ['🌊', '🛡️', '🧠', '✨', '📘', '🔮', '❤️', '🪞'];
 
 function clearBlockStates() {
   Array.from(grid.children).forEach((block) => {
