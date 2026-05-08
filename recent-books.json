@@ -161,6 +161,16 @@
       "timestamp": "2026-05-08T11:49:16.250Z",
       "trigger_input": "Michael Jackson",
       "selected_via": "discover_live_google_books"
+    },
+    {
+      "titulo": "¿Quién es Michael Jordan?",
+      "autor": "Kirsten Anderson, Who HQ",
+      "slug": "quien-es-michael-jordan",
+      "titulo_normalizado": "quien es michael jordan",
+      "autor_normalizado": "kirsten anderson who hq",
+      "timestamp": "2026-05-08T14:30:28.939Z",
+      "trigger_input": "Michael Jordan",
+      "selected_via": "discover_live_google_books"
     }
   ],
   "_note": "FIFO ring de últimos 30 libros generados por selección automática (constrained o discover). Filtro pre-rerank en validate-book.js. Inicializa vacío y se rellena con cada run exitoso. Si se borra, el sistema arranca limpio sin daño."
