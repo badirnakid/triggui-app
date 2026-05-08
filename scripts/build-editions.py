@@ -598,11 +598,16 @@ body::before {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse at 30% 20%, rgba(255,0,85,0.18), transparent 65%),
-    radial-gradient(ellipse at 70% 80%, rgba(255,94,0,0.08), transparent 65%);
+    radial-gradient(ellipse at 30% 20%, rgba(48,255,228,0.08), transparent 50%),
+    radial-gradient(ellipse at 70% 80%, rgba(255,0,128,0.06), transparent 50%);
   z-index: -1;
   pointer-events: none;
-  opacity: 0.85;
+  animation: nebula-breathe 20s ease-in-out infinite;
+}
+
+@keyframes nebula-breathe {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
 }
 
 @keyframes fire-move {
@@ -685,8 +690,14 @@ body::before {
   z-index: 0;
 }
 .block:hover::after { opacity: 1; }
-.block:hover { transform: translateY(-2px) scale(1.005); }
-.block:active { transform: translateY(0) scale(0.995); transition: transform 0.1s; }
+.block:hover {
+  transform: translateY(-2px) scale(1.005);
+  box-shadow:
+    inset 0 0 0 1.5px rgba(255,255,255,.22),
+    0 6px 12px rgba(0,0,0,.2),
+    0 16px 48px rgba(0,0,0,.45);
+}
+.block:active { transform: translateY(0) scale(0.995); transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1); }
 .block.dim { opacity: 0.6; transform: scale(0.98); }
 
 .label, .frase {
@@ -699,8 +710,11 @@ body::before {
   z-index: 2;
   text-align: center;
   transition: opacity 0.25s ease, transform 0.25s ease;
+  text-shadow: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
-.label { opacity: 1; transform: translateY(0); font-size: clamp(1.05rem, 3.2vw, 1.7rem); line-height: 1.35; }
+.label { opacity: 1; transform: translateY(0); font-size: clamp(1.05rem, 3.2vw, 1.7rem); font-weight: 700; line-height: 1.35; letter-spacing: 0.2px; }
 .frase { opacity: 0; transform: translateY(6px); font-size: clamp(1rem, 3vw, 1.5rem); font-weight: 600; line-height: 1.4; }
 .block.show .label { opacity: 0; transform: translateY(-6px); }
 .block.show .frase { opacity: 1; transform: translateY(0); }
@@ -1177,7 +1191,7 @@ function grad(i) {
 let overlayView = 'blocks';
 let coverBusy = false;
 const revealIndex = Math.floor(Math.random() * 4);
-const emojis = ['🌊', '🛡️', '🧠', '✨'];
+const emojis = ['🌊', '🛡️', '🧠', '✨', '📘', '🔮', '❤️', '🪞'];
 
 function clearBlockStates() {
   Array.from(grid.children).forEach((block) => {
