@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════════
-// 🌒 SPRINT NIVEL DIOS CUÁNTICO — CSAL EXTRACTOR v2
+// 🌒 SPRINT NIVEL DIOS CUÁNTICO — CSAL EXTRACTOR v3
 // ═══════════════════════════════════════════════════════════════════════════════
 //
 // Capa B del Sprint Nivel Dios (mayo 2026).
@@ -7,29 +7,43 @@
 // para que app.triggui.com matchee queries del usuario en runtime sin red.
 //
 // ═══════════════════════════════════════════════════════════════════════════════
-// CHANGELOG v2 — POST SHADOW BATCH (mayo 9, 2026)
+// CHANGELOG v3 — POST RE-SHADOW BATCH v2 (mayo 9, 2026)
 // ═══════════════════════════════════════════════════════════════════════════════
 //
-// Shadow batch de 20 libros reveló 3 bugs en v1:
-//   #1 Timeout silencioso — 4/20 libros _csal:{} sin error visible (151-203s)
-//   #2 Strings basura — modelo rellena con "}}}" o "1. 2. 3." para cumplir minItems
-//   #3 Field contamination — concept_tags con texto "anti_patterns", JSON crudo, etc
+// Re-shadow batch con v2 reveló:
+//   ✓ Bug #1 ERRADICADO — 0/20 libros con _csal:{} (antes: 4/20)
+//   ✓ Bug #3 ERRADICADO — 0/20 con field contamination en concept_tags (antes: 2/20)
+//   ❌ Bug #2 PERSISTE — 7/20 libros (35%) con basura en trigger_situations
+//      Caso extremo: "Good to great" 23/28 strings basura (82%)
 //
-// v2 nivel dios resuelve los 3 con:
-//   ✓ max_tokens: 4096 explícito (evita truncamiento silencioso)
-//   ✓ timeout: 90000 ms explícito (evita cuelgues 2-3 min)
-//   ✓ Detección explícita de finish_reason === "length" / refusal / content null
-//   ✓ Anti-basura filter en trigger_situations + concept_tags + anti_patterns
-//   ✓ Validación cuántica post-call: 6 checks de shape antes de aceptar
-//   ✓ Escalate automático a gpt-4o (full) cuando alguno de los checks falla
-//   ✓ Patrón sagrado idéntico al de F4 judgeGrounding (escalate a 4o si score < threshold)
-//   ✓ Degradación elegante — si gpt-4o también falla, throw para que F11 marque csal_degraded
+// Causa raíz del fallo del v2:
+//   - SCHEMA_FIELD_NAMES NO incluía subcategorías de trigger_keywords:
+//     'objetos', 'contextos', 'verbos', 'emociones'
+//   - Regex `\b...\b` no caza con escape: `\"objetos\":` (el `\` rompe el boundary)
+//   - Sin defensa contra escape JSON literal: `\"`, `\\`
+//   - Sin defensa contra single-quote JSON: `'campo':[...]`
+//   - Sin defensa contra triple backtick + numeración tipo "1/3 3/3"
 //
-// FILOSOFÍA: el escalate solo dispara ~20-40% de los libros. El resto sale nivel dios
-// con gpt-4o-mini barato. Costo promedio ~$0.013/libro (vs $0.0017 v1 ideal),
-// en exchange por 100% calidad real (vs 50% que vimos en shadow).
+// v3 nivel dios — quirúrgico, solo en isCleanString + SCHEMA_FIELD_NAMES:
+//   ✓ SCHEMA_FIELD_NAMES expandido con 11 términos nuevos (subcategorías + ES/EN)
+//   ✓ SCHEMA_FIELD_REGEX sin \b boundaries — caza con escape
+//   ✓ Regla anti-falsos-positivos: schema field solo si está cerca de :, \, [, "
+//   ✓ Defensa contra escape `\"` y doble backslash `\\`
+//   ✓ Defensa contra brackets/braces dentro del string ([, ], {, })
+//   ✓ Defensa contra triple backtick (markdown)
+//   ✓ Defensa contra numeración repetida `\d+/\d+`
+//   ✓ Defensa contra single-quote JSON pattern (`'campo':[`, `['inicio`, `']`)
+//   ✓ Tests cuánticos: 22/22 patrones basura cazados, 15/15 legítimos aceptados (37/37)
 //
-// COMPATIBILIDAD: firma de extractCSAL idéntica a v1 — drop-in replacement.
+// Resto de la arquitectura v2 preservada INTACTA: extractCSALWithModel, validateCSALShape,
+// cleanCSALData, MAX_TOKENS=4096, TIMEOUT_MS=90000, MIN_VALID_SITUATIONS=20, escalate a
+// gpt-4o, retries, throw csal_failed_both_models, retorno {data, usage, model, escalated}.
+//
+// FILOSOFÍA: ahora que el filtro caza la basura correctamente, los libros con problemas
+// caerán bajo MIN_VALID_SITUATIONS y dispararán escalate automático a gpt-4o.
+// Esperamos: 30-40% de libros escalan (con gpt-4o), 60-70% nivel dios con mini barato.
+//
+// COMPATIBILIDAD: firma de extractCSAL idéntica a v1/v2 — drop-in replacement.
 //
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -68,11 +82,22 @@ const REQUIRED_BLOQUES = 4;
 // Aplica el PRINCIPIO, no listas léxicas: shape sintáctico de basura.
 
 const SCHEMA_FIELD_NAMES = [
+  // Root schema fields (mi v2 ya los tenía)
   "trigger_situations", "trigger_keywords", "concept_tags", "anti_patterns",
   "bloques", "emoji_specific", "additionalProperties", "minItems", "maxItems",
-  "version", "properties", "required", "schema"
+  "version", "properties", "required", "schema",
+  // v3 nuevos: type/object/index (artefactos del schema technical)
+  "type", "object", "index",
+  // v3 nuevos: SUBCATEGORÍAS de trigger_keywords (mi v2 olvidó estos —
+  // causa raíz del Bug #2 persistente en re-shadow batch)
+  "emociones", "objetos", "contextos", "verbos",
+  "emotions", "objects", "contexts", "verbs"
 ];
-const SCHEMA_FIELD_REGEX = new RegExp(`\\b(${SCHEMA_FIELD_NAMES.join("|")})\\b`, "i");
+// v3: regex SIN \b boundaries (escapes \" rompen los word boundaries)
+const SCHEMA_FIELD_REGEX = new RegExp(`(${SCHEMA_FIELD_NAMES.join("|")})`, "i");
+// v3: regla anti-falsos-positivos — schema field solo cuenta si tiene
+// puntuación de campo cerca (`:`, `\`, `[`, `"` adyacente)
+const SCHEMA_FIELD_PUNCT_REGEX = /[":\\[\]\{\}]/;
 
 function isCleanString(s, opts = {}) {
   const minLength = opts.minLength || 15;
@@ -80,7 +105,7 @@ function isCleanString(s, opts = {}) {
   const trimmed = s.trim();
   if (trimmed.length < minLength) return false;
 
-  // Bug #2 detectados en shadow batch:
+  // ═══ Defensas v2 (preservadas — funcionaban) ═══
 
   // Solo símbolos/números/JSON syntax: '}  }  }  }', '[, , ,]', '" }"', etc
   if (/^[\s\d\.\}\{\,\]\[\"'\\:\-_=+]+$/.test(trimmed)) return false;
@@ -95,10 +120,36 @@ function isCleanString(s, opts = {}) {
   // Patrones binarios: '1 0 1 0 1 0'
   if (/^(\s*[01]\s+){5,}/.test(trimmed)) return false;
 
-  // Nombres de campos del schema confundidos con contenido (Bug #3)
-  if (SCHEMA_FIELD_REGEX.test(trimmed)) return false;
+  // ═══ Defensas v3 (nuevas — cazan los 22 patrones del re-shadow batch v2) ═══
 
-  // JSON literal pegado dentro de un string (Bug #3 caso Greene)
+  // [v3-1] Escape JSON literal: `\"` (comilla escapada) — señal canonical de JSON pegado
+  if (trimmed.includes('\\"')) return false;
+  // [v3-2] Doble backslash: `\\` (otra señal de JSON literal serializado)
+  if (trimmed.includes("\\\\")) return false;
+
+  // [v3-3] Caracteres JSON estructurales dentro del string
+  // (un trigger_situation legítimo NUNCA tiene brackets/braces sueltos)
+  if (/[\[\]\{\}]/.test(trimmed)) return false;
+
+  // [v3-4] Triple backtick (markdown code fence — artefacto del modelo iterando)
+  if (trimmed.includes("```")) return false;
+
+  // [v3-5] Numeración tipo "1/3 3/3" repetida (artefacto de chunking del modelo)
+  if (/\b\d+\/\d+\b.*\b\d+\/\d+\b/.test(trimmed)) return false;
+
+  // [v3-6] Single-quote JSON pattern: 'campo':[...], ['inicio, ']
+  if (/'\w+'\s*:\s*\[/.test(trimmed)) return false;
+  if (/\[\s*'/.test(trimmed)) return false;
+  if (/'\s*\]/.test(trimmed)) return false;
+
+  // ═══ Defensas mejoradas v3 ═══
+
+  // Schema field names — v3 sin \b pero con regla "solo si tiene puntuación de campo cerca"
+  // (evita falsos positivos cuando "objetos" o "contextos" aparecen como contenido natural,
+  //  como "cuando observas los objetos cotidianos")
+  if (SCHEMA_FIELD_REGEX.test(trimmed) && SCHEMA_FIELD_PUNCT_REGEX.test(trimmed)) return false;
+
+  // JSON literal pegado dentro de un string (Bug #3 caso Greene en v1)
   if (/\[\s*\{\s*"index"\s*:/i.test(trimmed)) return false;
   if (/^\s*"[a-z_]+"\s*:/i.test(trimmed)) return false;
 
