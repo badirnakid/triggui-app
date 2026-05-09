@@ -68,6 +68,9 @@ import {
 import { synthesizePalette } from "./palette-synthesizer.js";
 import { injectEmojis, calculateConfidence, compatMapper } from "./post-processors.js";
 import { judgeBothVoices } from "./voice-judge.js";
+// 🌒 SPRINT NIVEL DIOS — Capa A Pilar 2 (Voice-Judge Universal) + Capa B (CSAL)
+import { judgeAllVoiceLayers, regeneratePhrasesByFeedback } from "./voice-judge-universal.js";
+import { extractCSAL } from "./csal-extractor.js";
 import { validateFinalNucleus } from "./quality-validator.js";
 import { generateFallbackCover } from "./typographic-cover.js";
 import { selectBestCover, checkImageURL } from "./evidence-fetcher.js";
@@ -487,6 +490,63 @@ async function processBook(book, inputs, inputsSnapshot) {
   }
   console.log(`   🎭 Voice: ${voiceVerdict.consolidated || "pagina"} (conf ${fmt(voiceVerdict.confidence)})`);
 
+  // ═══ 🌒 F7-EXTENDED: VOICE-JUDGE UNIVERSAL (Sprint Nivel Dios Capa A Pilar 2) ═══
+  // El judgeBothVoices anterior cubre solo card_es y card_en (parrafoTop/parrafoBot).
+  // Aquí extendemos cobertura a 16 phrases adicionales:
+  //   - 4 og_phrases_es + 4 og_phrases_en
+  //   - 4 edition_blocks_es + 4 edition_blocks_en
+  // Si alguna sale "fuera" (suena a contraportada), regeneramos in-place
+  // como autor encarnado y re-validamos.
+  // Costo: ~$0.0036 + ~$0.0008 si hay 1-2 retries = ~$0.004 por libro.
+  // Latencia: ~1 segundo (Promise.all paralelo).
+  let voiceJudgeExtendedDegraded = false;
+  let voiceJudgeExtendedRegenerations = 0;
+  let mapped_voiceJudgeExt_finalVerdicts = null;
+  const tF7ext = Date.now();
+  try {
+    let extResult = await judgeAllVoiceLayers(openai, contentESFinal, contentENFinal, book, { model: CFG.modelMini });
+    tokensByPhase.voice_extended = extResult.total_tokens || 0;
+    llmCallsCount += extResult.total_evaluated || 0;
+
+    if (extResult.failures && extResult.failures.length > 0) {
+      console.log(`   🎭 Voice-Ext: ${extResult.failures.length}/${extResult.total_evaluated} phrases "fuera" → regenerando`);
+      const regen = await regeneratePhrasesByFeedback(
+        openai,
+        anchorsData,
+        extResult.failures,
+        contentESFinal,
+        contentENFinal,
+        { model: CFG.modelMini }
+      );
+      tokensByPhase.voice_extended += regen.total_tokens || 0;
+      llmCallsCount += regen.regenerated || 0;
+      voiceJudgeExtendedRegenerations = regen.regenerated || 0;
+
+      // Re-validar después de las regeneraciones
+      const reExtResult = await judgeAllVoiceLayers(openai, contentESFinal, contentENFinal, book, { model: CFG.modelMini });
+      tokensByPhase.voice_extended += reExtResult.total_tokens || 0;
+      llmCallsCount += reExtResult.total_evaluated || 0;
+
+      if (reExtResult.failures && reExtResult.failures.length > 0) {
+        // Aún hay fallos después del retry — degradación parcial pero el sistema sigue
+        voiceJudgeExtendedDegraded = true;
+        console.log(`   ⚠ Voice-Ext: ${reExtResult.failures.length} phrase(s) aún "fuera" después de regenerar`);
+      } else {
+        console.log(`   ✅ Voice-Ext: todas las phrases "dentro" después de regenerar (${regen.regenerated} corregidas)`);
+      }
+      mapped_voiceJudgeExt_finalVerdicts = reExtResult.verdicts;
+    } else {
+      console.log(`   ✅ Voice-Ext: todas las ${extResult.total_evaluated} phrases pasaron al primer intento`);
+      mapped_voiceJudgeExt_finalVerdicts = extResult.verdicts;
+    }
+    elapsedByPhase.voice_extended = Date.now() - tF7ext;
+  } catch (err) {
+    console.log(`   ⚠ Voice-Ext falló: ${err.message}`);
+    voiceJudgeExtendedDegraded = true;
+    elapsedByPhase.voice_extended = Date.now() - tF7ext;
+  }
+  // (mapped_voiceJudgeExt_finalVerdicts queda accesible al construir mapped abajo)
+
   // ═══ F8: POST-PROCESADORES DETERMINISTAS ════════════════════════════
   const tF8 = Date.now();
   const emojiInjected = injectEmojis(contentESFinal, contentENFinal, book.titulo, book.autor);
@@ -632,6 +692,64 @@ async function processBook(book, inputs, inputsSnapshot) {
     lensCompatDegraded = true;
   }
 
+  // ═══ 🌒 F11: EXTRACT CSAL (Sprint Nivel Dios Capa B) ═════════════════
+  // Una llamada LLM extra que produce el _csal del libro:
+  //   - 30-50 trigger_situations (puertas semánticas universales)
+  //   - 200+ trigger_keywords categorizados (con variantes regionales)
+  //   - 10-25 concept_tags (específicos al libro)
+  //   - 3-12 anti_patterns (para qué NO es)
+  //   - 4 bloques con emoji_specific por libro
+  //
+  // Es lo que app.triggui.com usará para matching semántico runtime sin LLM,
+  // deprecando QUANTUM_LENS_MAP + TRIGGUI_SYNONYMS hardcoded en el frontend.
+  //
+  // Costo: ~$0.0017 por libro. En batch de 20: ~$0.034 extra.
+  let csalDegraded = false;
+  const tF11 = Date.now();
+
+  // Anti-contaminación de batch: paralelo a __TRIGGUI_BATCH_HUES__
+  if (typeof globalThis.__TRIGGUI_BATCH_TRIGGER_SITUATIONS__ === "undefined") {
+    globalThis.__TRIGGUI_BATCH_TRIGGER_SITUATIONS__ = [];
+  }
+  const __batchSituationsSnapshot = globalThis.__TRIGGUI_BATCH_TRIGGER_SITUATIONS__.slice();
+
+  try {
+    const csalRes = await retryOnce(
+      () => extractCSAL(
+        openai,
+        book,
+        groundTruthMeta.ground_truth,
+        anchorsData,
+        contentESFinal,
+        {
+          model: CFG.modelMini,
+          previousSituations: __batchSituationsSnapshot
+        }
+      ),
+      "extractCSAL"
+    );
+
+    mapped._csal = csalRes.data;
+    elapsedByPhase.csal = Date.now() - tF11;
+    tokensByPhase.csal = csalRes.usage?.total_tokens || 0;
+    llmCallsCount += 1;
+
+    // Registrar las situations del libro al global del batch (para evitar repetición)
+    if (csalRes.data && Array.isArray(csalRes.data.trigger_situations)) {
+      globalThis.__TRIGGUI_BATCH_TRIGGER_SITUATIONS__.push(...csalRes.data.trigger_situations);
+    }
+
+    const sitCount = csalRes.data?.trigger_situations?.length || 0;
+    const tagCount = csalRes.data?.concept_tags?.length || 0;
+    const antiCount = csalRes.data?.anti_patterns?.length || 0;
+    console.log(`   🌒 CSAL: ${sitCount} situations | ${tagCount} concept_tags | ${antiCount} anti_patterns`);
+  } catch (err) {
+    console.log(`   ⚠ CSAL falló: ${err.message}`);
+    mapped._csal = null;
+    csalDegraded = true;
+    elapsedByPhase.csal = Date.now() - tF11;
+  }
+
   // ═══ F10: VALIDACIÓN SEMÁNTICA FINAL + AGREGADO DE WARNINGS ═════════
   const finalValidation = validateFinalNucleus(mapped);
   const allWarnings = [...(finalValidation.warnings || []), ...judgeDegradationFlags, ...highlightDegradationFlags];
@@ -647,13 +765,22 @@ async function processBook(book, inputs, inputsSnapshot) {
   if (lensCompatDegraded) {
     allWarnings.push(`lens_compatibility_degraded_step3: scoreLensCompatibility falló o devolvió null`);
   }
+  // 🌒 SPRINT NIVEL DIOS — agregar warnings si voice-extended o CSAL fallaron
+  if (voiceJudgeExtendedDegraded) {
+    allWarnings.push(`voice_judge_extended_degraded_sprint: phrases siguen "fuera" después de regenerar (Capa A Pilar 2)`);
+  }
+  if (csalDegraded) {
+    allWarnings.push(`csal_degraded_sprint: extractCSAL falló o devolvió null (Capa B)`);
+  }
 
   const overallStatus = (
     judgeDegradationFlags.length > 0 ||
     book.portada_was_invalid ||
     totalCorrections > 0 ||
     highlightDegradationFlags.length > 0 ||
-    lensCompatDegraded
+    lensCompatDegraded ||
+    voiceJudgeExtendedDegraded ||
+    csalDegraded
   ) && finalValidation.overall === "pass"
     ? "pass_with_warnings"
     : finalValidation.overall;
@@ -668,6 +795,13 @@ async function processBook(book, inputs, inputsSnapshot) {
   mapped._metrics.highlights_auto_corrected = totalCorrections;
   mapped._metrics.highlight_degradations = highlightDegradationFlags;
   mapped._metrics.lens_compat_degraded = lensCompatDegraded;  // ⭐ STEP 3 ⭐
+  // 🌒 SPRINT NIVEL DIOS — métricas extendidas
+  mapped._metrics.voice_judge_extended_degraded = voiceJudgeExtendedDegraded;
+  mapped._metrics.voice_judge_extended_regenerations = voiceJudgeExtendedRegenerations;
+  mapped._metrics.csal_degraded = csalDegraded;
+  if (mapped_voiceJudgeExt_finalVerdicts) {
+    mapped._voice_judge_extended_verdicts = mapped_voiceJudgeExt_finalVerdicts;
+  }
 
   elapsedByPhase.post_processing = Date.now() - tF8;
 

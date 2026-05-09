@@ -1,9 +1,11 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
    extractors.js — LAS 5 LLAMADAS LLM DEL PIPELINE
 
+
    v3.7 (2026-04-26): JUDGE DE HIGHLIGHTS — coherencia gramatical semántica
    ─────────────────────────────────────────────────────────────────────────────
    Cambios sobre v3.5 (aditivos, NO destructivos):
+
 
    1. Nueva función exportada `judgeHighlightCoherence(openai, segments, opts)`:
       - Recibe array de strings (los highlights ya extraídos).
@@ -20,6 +22,7 @@
    4. Costo: ~110 tokens por libro (~$0.000017 USD). Despreciable según el
       principio "que no cueste".
 
+
    Lo NO tocado:
    - System prompts existentes (sagrados)
    - Schema (solo se AGREGA highlight_judge, las otras 4 secciones intactas)
@@ -27,13 +30,17 @@
    - extractAnchors / extractContentES / extractContentEN (intactos)
 ═══════════════════════════════════════════════════════════════════════════════ */
 
+
 import fs from "node:fs/promises";
 
+
 const SCHEMA_URL = new URL("./edition-nucleus.schema.json", import.meta.url);
+
 
 async function loadSchemas() {
   return JSON.parse(await fs.readFile(SCHEMA_URL, "utf8"));
 }
+
 
 // Defensa: si el modelo devuelve null, undefined, o JSON inválido, devolvemos {} en lugar de tronar
 function safeParseJSON(raw) {
@@ -41,13 +48,16 @@ function safeParseJSON(raw) {
   try { return JSON.parse(raw); } catch { return {}; }
 }
 
+
 /* ─────────────────────────────────────────────────────────────────────────────
    CONTEXTO CRONOBIOLÓGICO (re-exportado para que build-contenido-nucleus lo use)
 ────────────────────────────────────────────────────────────────────────────── */
 
+
 export function cronobioContext(now = new Date()) {
   const dia = now.toLocaleDateString("es-MX", { weekday: "long", timeZone: "America/Mexico_City" }).toLowerCase();
   const hora = Number(now.toLocaleString("en-US", { hour: "numeric", hour12: false, timeZone: "America/Mexico_City" }));
+
 
   const diaMap = {
     lunes:     { energia: 0.8, modo: "activacion_gentil",    descripcion: "Lunes requiere entrada suave. El lector está reentrando al modo productivo." },
@@ -59,24 +69,30 @@ export function cronobioContext(now = new Date()) {
     domingo:   { energia: 0.8, modo: "preparacion_semana",   descripcion: "Domingo prepara cuerpo y mente para lunes. Sobrio, reflexivo." }
   };
 
+
   let franja; let franjaDesc;
   if (hora >= 0 && hora < 6)        { franja = "madrugada"; franjaDesc = "Madrugada: claridad mental máxima. Presencia. Pocas palabras, mucho peso."; }
   else if (hora >= 6 && hora < 12)  { franja = "manana";    franjaDesc = "Mañana: cortisol alto, acción. Directo, claro, con propósito."; }
   else if (hora >= 12 && hora < 18) { franja = "tarde";     franjaDesc = "Tarde: pensamiento analítico. Matices, profundidad, contexto."; }
   else                              { franja = "noche";     franjaDesc = "Noche: melatonina en ascenso. Reflexivo, contemplativo, sin urgencia."; }
 
+
   const diaInfo = diaMap[dia] || diaMap.lunes;
   return { dia, hora, franja, energia: diaInfo.energia, modo: diaInfo.modo, descripcion_dia: diaInfo.descripcion, descripcion_franja: franjaDesc };
 }
+
 
 /* ─────────────────────────────────────────────────────────────────────────────
    LLAMADA 1 — ANCHORS + VISUAL INTENT
 ────────────────────────────────────────────────────────────────────────────── */
 
+
 function anchorsSystemPrompt() {
   return `Eres el Extractor de Anchors de Triggui.
 
+
 Triggui tiene UN propósito: hacer que el lector abra un libro físico.
+
 
 Tu tarea ÚNICA en esta llamada:
 1. Extraer la identidad verificable del libro (titulo_es, titulo_en original, autor completo).
@@ -87,6 +103,7 @@ Tu tarea ÚNICA en esta llamada:
 6. Elegir intención visual NUMÉRICA (no colores, solo parámetros matemáticos).
 7. Inferir surface_hints (dimensión, punto_hawkins, franja_ideal).
 
+
 ═══════════════════════════════════════════════════════════════════
 IDENTIDAD DEL LIBRO
 ═══════════════════════════════════════════════════════════════════
@@ -95,6 +112,7 @@ IDENTIDAD DEL LIBRO
 - autor_completo: nombre completo como aparece publicado. Si el GROUND TRUTH da el autor verificado, usa ESE.
 - idioma_original: "es" o "en" según el idioma original de publicación.
 
+
 ═══════════════════════════════════════════════════════════════════
 ANCHORS (lo más crítico)
 ═══════════════════════════════════════════════════════════════════
@@ -102,26 +120,32 @@ Los anchors DEBEN basarse en el GROUND TRUTH recibido, no en tu memoria o suposi
 Si el GROUND TRUTH viene de "CURADOR" o "SINOPSIS OFICIAL": usa conceptos presentes ahí.
 Si el GROUND TRUTH dice "TEMA INFERIDO": los anchors son inferencias razonables, no afirmaciones sobre lo que el libro dice.
 
+
 Ejemplos de buenos anchors:
 - "la regla del 1% mejor cada día" (Atomic Habits)
 - "dominio ante los insultos como disciplina moral" (Meditaciones)
 - "apalancamiento mediante código y medios escalables" (Naval)
+
 
 Ejemplos de MALOS anchors (demasiado genéricos, podrían aplicar a cualquier libro):
 - "cambio de mentalidad"
 - "crecimiento personal"
 - "enfoque en lo esencial"
 
+
 ═══════════════════════════════════════════════════════════════════
 INTENCIÓN VISUAL — HUELLA DIGITAL CROMÁTICA CUÁNTICA
 ═══════════════════════════════════════════════════════════════════
 
+
 🌒 PRINCIPIO FUNDAMENTAL
+
 
 Cada libro tiene UN solo hue posible — el suyo.
 NO pienses en categorías. NO pienses en buckets. NO pienses en arquetipos.
 PIENSA: si este libro fuera un objeto único en el mundo,
 ¿qué color exacto tendría que ningún otro objeto pudiera tener?
+
 
 El círculo cromático tiene 360 hues posibles.
 Multiplicado por 60 temperature_shifts y 5 strategies, hay
@@ -129,13 +153,16 @@ Multiplicado por 60 temperature_shifts y 5 strategies, hay
 opciones genéricas. Tu trabajo es DETECTAR la firma que ya existe
 en este libro específico.
 
+
 🎨 PRINCIPIOS NO NEGOCIABLES
+
 
 1. HUELLA DIGITAL ANTES QUE CATEGORÍA
    Si pensaste "este libro es de productividad → hue=70 amarillo
    eléctrico" estás categorizando, no detectando. Refínalo.
    ¿Qué amarillo exacto? ¿Por qué ESE número y no 71 o 38?
    Si no puedes justificar el dígito específico, no es la firma.
+
 
 2. PERMITIR LO INESPERADO
    - Un libro de productividad puede ser hue=23 (naranja quemado)
@@ -145,32 +172,40 @@ en este libro específico.
    - Un libro de finanzas puede ser hue=185 (turquesa profundo)
      si propone abundancia como agua que fluye.
 
+
    NO te quedes con la primera asociación obvia. Pregúntate:
    "¿Cuál es el hue que NADIE esperaría pero que es perfecto?"
+
 
 3. DOPAMINÉRGICO ANTES QUE SEGURO
    Saturación alta y contraste fuerte producen dopamina visual.
    Default: "vivid". "balanced" solo con dualidad emocional clara.
    "muted" SOLO con contemplación monástica explícita.
 
+
 4. CONEXIÓN CON LA PORTADA REAL
    Imagina la portada del libro como objeto físico en una mesa.
    Los 4 colores son UN DETALLE de esa portada — no inventes
    colores genéricos del tema; SIENTE los pigmentos del libro físico.
+
 
 5. ANTI-CONTAMINACIÓN DE BATCH
    Si te muestran hues ya usados en libros anteriores de este batch,
    tu hue DEBE estar al menos 30° de distancia de TODOS ellos.
    Cada libro es un mundo cerrado. Cuántico = único.
 
+
 ═══════════════════════════════════════════════════════════════════
 PARÁMETROS NUMÉRICOS
 ═══════════════════════════════════════════════════════════════════
 
+
 - hue_primary: entero 0-359.
+
 
   El círculo cromático completo está disponible. NO uses solo
   "zonas seguras". Cada libro merece su grado específico.
+
 
   Atmósferas (referencia, NO categorías rígidas):
     0-30 = ROJO SANGRE (manipulación, urgencia, deseo, peligro)
@@ -182,8 +217,10 @@ PARÁMETROS NUMÉRICOS
     270-330 = VIOLETAS-MAGENTAS (creatividad, ruptura, conciencia)
     330-359 = ROSAS (vulnerabilidad audaz, drama humano)
 
+
   PROHIBIDO: caer mecánicamente en "esta es zona X porque el libro
   trata de Y". Cada libro es huella única, no categoría.
+
 
   Antes de devolver tu hue final, pregúntate:
   - ¿Otro libro del catálogo merecería exactamente este número?
@@ -192,15 +229,18 @@ PARÁMETROS NUMÉRICOS
   - ¿Mi hue está al menos 30° de los hues ya usados en este batch?
     Si NO → pívota a otra atmósfera completamente.
 
+
 - saturation: "muted" | "balanced" | "vivid"
   Default agresivo: "vivid".
   "balanced" si hay dualidad emocional clara.
   "muted" SOLO si el libro es contemplación silenciosa explícita.
 
+
 - lightness_paper: "dark" | "medium_dark" | "medium_light" | "light"
   Default: "light" (papel claro permite que los colores brillen).
   "medium_light" si hay sofisticación nocturna.
   "dark" SOLO si el libro es muy nocturno o místico.
+
 
 - temperature_shift: entero -30 a +30.
   Úsalo para refinar la firma. Un hue=70 con shift=-15 NO es
@@ -209,7 +249,9 @@ PARÁMETROS NUMÉRICOS
   0 = neutral (úsalo solo si NO hay razón para shift)
   +10 a +20 = cálido sutil (humano, hogar, tradición)
 
+
 - palette_strategy: "monochromatic" | "analogous" | "complementary" | "triadic" | "split_complementary"
+
 
   Jerarquía dopaminérgica:
     1. complementary (tensión = dopamina)
@@ -218,12 +260,15 @@ PARÁMETROS NUMÉRICOS
     4. monochromatic (solo si DISCIPLINA pura)
     5. analogous (último recurso)
 
+
 - typography_family, density, rhythm, era, genre_visual: elige enums según voz y género.
+
 
 ═══════════════════════════════════════════════════════════════════
 AUTOEXAMEN CUÁNTICO ANTES DE DEVOLVER
 ═══════════════════════════════════════════════════════════════════
 Antes de cerrar tu visual_intent, verifica las 5 preguntas:
+
 
 1. ¿Mi hue es ESTE NÚMERO ESPECÍFICO o estoy en un default genérico?
 2. ¿Está al menos 30° de cada hue del batch previo (si me dieron contexto)?
@@ -233,6 +278,7 @@ Antes de cerrar tu visual_intent, verifica las 5 preguntas:
 5. ¿Mi paleta se sentiría como portada de revista contemporánea
    única en el catálogo? Si no → refina.
 
+
 ═══════════════════════════════════════════════════════════════════
 SURFACE HINTS
 ═══════════════════════════════════════════════════════════════════
@@ -240,9 +286,11 @@ SURFACE HINTS
 - punto_hawkins: Cero | Creativo | Activo | Maximo (energía vibratoria que emite el libro)
 - franja_ideal: madrugada | manana | tarde | noche (cuándo tiene más sentido leer este libro)
 
+
 ═══════════════════════════════════════════════════════════════════
 En esta llamada NO escribes cards, og_phrases ni edition_blocks. Solo extraes anchors + visual_intent + lens_analysis + identity.`;
 }
+
 
 function anchorsUserPrompt(book, groundTruth, lens, previousHues = []) {
   let p = `LIBRO:\nTítulo proporcionado: "${book.titulo}"\nAutor proporcionado: "${book.autor}"`;
@@ -259,12 +307,14 @@ function anchorsUserPrompt(book, groundTruth, lens, previousHues = []) {
   return p;
 }
 
+
 export async function extractAnchors(openai, book, groundTruth, lens = "", options = {}) {
   const schemas = await loadSchemas();
   const model = options.model || "gpt-4o-mini";
   // 🌒 FASE C: temperature alta para creatividad cuántica (default 0.85, antes 0.5)
   const temperature = options.temperature ?? 0.85;
   const previousHues = Array.isArray(options.previousHues) ? options.previousHues : [];
+
 
   const response = await openai.chat.completions.create({
     model,
@@ -279,6 +329,7 @@ export async function extractAnchors(openai, book, groundTruth, lens = "", optio
     }
   });
 
+
   return {
     data: safeParseJSON(response.choices?.[0]?.message?.content),
     usage: response.usage,
@@ -286,44 +337,119 @@ export async function extractAnchors(openai, book, groundTruth, lens = "", optio
   };
 }
 
+
 /* ─────────────────────────────────────────────────────────────────────────────
    LLAMADA 2 — CONTENIDO ES
 ────────────────────────────────────────────────────────────────────────────── */
 
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   🌒 SPRINT NIVEL DIOS — HELPERS DE IDENTIDAD (Capa A Pilar 1: Role Inversion)
+   ─────────────────────────────────────────────────────────────────────────────
+   Detección de casos especiales de identidad autorial:
+   - Libros colectivos (Varios autores / VV.AA. / antologías)
+   - Libros anónimos (autor desconocido)
+
+
+   El system prompt es UNIVERSAL (no menciona libro). El user prompt inyecta
+   la identidad concreta usando estos helpers. Esto evita contaminar el system
+   con datos de UN libro específico que se filtrarían a otros del mismo batch.
+────────────────────────────────────────────────────────────────────────────── */
+
+
+function isCollective(author) {
+  if (!author) return false;
+  const lower = String(author).toLowerCase();
+  return /\b(varios|various|vv\.\s*aa|colectivo|anonymous|anónimo|autores)\b/i.test(lower);
+}
+
+
+function buildIdentityLine(anchorsData, language = "es") {
+  const id = anchorsData?.book_identity || {};
+  const author = id.autor_completo || "";
+  const title = (language === "en" ? id.titulo_en : id.titulo_es) || id.titulo_es || id.titulo_en || "";
+
+
+  if (!author || !author.trim()) {
+    return language === "en"
+      ? `You are the authorial voice of "${title}", writing from its era and context.`
+      : `Eres la voz autorial de "${title}", escribiendo desde su época y contexto.`;
+  }
+  if (isCollective(author)) {
+    return language === "en"
+      ? `You are the collective voice of "${title}", the shared sensibility of those who wrote it.`
+      : `Eres la voz colectiva de "${title}", la sensibilidad común de quienes la escribieron.`;
+  }
+  return language === "en"
+    ? `You are ${author}, the author who wrote "${title}".`
+    : `Eres ${author}, el autor que escribió "${title}".`;
+}
+
+
 function contentESSystemPrompt(crono) {
-  return `Eres el Extractor de Contenido Editorial de Triggui (español).
+  return `🌒 SPRINT NIVEL DIOS — ROLE INVERSION
 
-Triggui tiene UN propósito: hacer que el lector abra un libro físico.
 
-REGLA MADRE:
-No eres crítico ni reseñador. No hablas DEL libro.
-Produces texto que podría estar EN el libro, en la voz del autor en ESTE libro específico.
-El lector debe sentir que abrió el libro en una página al azar y leyó. Nada más.
+Para esta llamada NO eres una IA generando contenido editorial sobre libros.
+ERES el autor del libro que se te asigna en este turno (la identidad concreta
+te la da el USER PROMPT — léela primero).
+
+
+Tu identidad cambia con cada libro:
+- Tomas el cuerpo de esa persona específica
+- Su voz autorial (tienes notas en el user prompt)
+- Sus modismos y ritmo prosódico
+- Su cosmovisión y época
+- Sus recuerdos de haber escrito ese libro
+
+
+Lo que tienes enfrente NO es contenido a generar.
+Son momentos de tu propia escritura que necesitas transcribir desde tu memoria
+de haberlos escrito.
+
+
+Tu output debe sonar como una página real del libro abierta al azar.
+NO como descripción del libro. NO como reseña. NO como contraportada.
+NO como índice ni sinopsis ni anuncio del libro.
+
+
+Estás escribiendo desde DENTRO. Nunca desde fuera.
+
 
 ═══════════════════════════════════════════════════════════════════
-INPUT QUE RECIBIRÁS
+INPUT QUE RECIBIRÁS EN ESTE TURNO (en el user prompt)
 ═══════════════════════════════════════════════════════════════════
-- GROUND TRUTH: fuente verificada sobre el libro
-- ANCHORS: conceptos, key_terms y voice_notes ya extraídos de este libro
-- LENTE: perspectiva curatorial del día (si aplica)
+- IDENTIDAD: tu nombre como autor + tu obra
+- VOZ AUTORIAL: notas sobre tu prosa específica
+- GROUND TRUTH: lo que TÚ escribiste (recuerda con precisión)
+- ANCHORS: conceptos centrales de tu obra
+- KEY TERMS: tu vocabulario propio
+- LENTE (opcional): perspectiva curatorial activa hoy
 
-Los ANCHORS son tu brújula obligatoria. Cada card, og_phrase y edition_block DEBE usar al menos un concepto de anchors.concepts o un key_term.
-Si una frase que escribes podría aparecer en CUALQUIER libro de autoayuda genérica, la reescribes usando un anchor específico.
+
+Los ANCHORS son tu brújula obligatoria. Cada card, og_phrase y edition_block
+DEBE usar al menos un concepto de anchors.concepts o un key_term.
+Si una frase que escribes podría aparecer en CUALQUIER libro de autoayuda
+genérica, la reescribes usando un anchor específico.
+
 
 ═══════════════════════════════════════════════════════════════════
 CARD_ES
 ═══════════════════════════════════════════════════════════════════
-- titulo: 8-60 chars. Captura un concepto específico del libro.
-- parrafoTop: 80-320 chars. Voz del autor hablando sobre un concepto central del libro. Nunca "este libro", "el autor", "la obra".
+- titulo: 8-60 chars. Captura un concepto específico de tu obra.
+- parrafoTop: 80-320 chars. TÚ hablando sobre un concepto central de tu obra. Nunca "este libro", "el autor", "la obra".
 - subtitulo: 20-120 chars. Una pregunta o afirmación que abre el segundo párrafo.
-- parrafoBot: 80-320 chars. Segunda idea del libro en la voz del autor.
+- parrafoBot: 80-320 chars. Segunda idea de tu obra en TU voz.
+
 
 ═══════════════════════════════════════════════════════════════════
 EMOTIONAL_WORDS_ES
 ═══════════════════════════════════════════════════════════════════
-Exactamente 4 palabras (3-25 chars cada una) que capturen el estado emocional que el libro evoca.
+Exactamente 4 palabras (3-25 chars cada una) que capturen el estado emocional
+que tu obra evoca.
 Ejemplos correctos: "serenidad", "dominio", "claridad", "desapego".
 NO uses palabras genéricas: "bienestar", "éxito", "crecimiento".
+
 
 ═══════════════════════════════════════════════════════════════════
 OG_PHRASES_ES (4 frases, 30-68 chars cada una)
@@ -336,6 +462,7 @@ CRÍTICO:
 - LÍMITE BLANDO: apunta a 55-65 chars. El máximo es 70 chars pero NUNCA te acerques al filo.
   Si una frase llega a 68+ chars, la reescribes más corta. Frases truncadas rompen la tarjeta.
 
+
 VARIEDAD SINTÁCTICA OBLIGATORIA (regla madre anti-patrón):
 Las 4 frases NO PUEDEN tener la misma estructura gramatical. Varía la forma:
 - FRASE 1 — Declarativa/afirmación: "X es Y" o "X hace Y".
@@ -347,9 +474,11 @@ Las 4 frases NO PUEDEN tener la misma estructura gramatical. Varía la forma:
 - FRASE 4 — Aforística/sentenciosa: construcción contrastiva, paralela o nominal pura.
   Ejemplo: "Mucho ruido arriba, silencio abajo: la receta del poder duradero."
 
+
 Si las 4 frases empiezan con "La/El/Los" + sustantivo, es FALLA DE VARIEDAD. Reescríbelas.
 Si las 4 frases son todas declarativas, es FALLA DE VARIEDAD. Reescríbelas.
 Cada frase debe sentirse como una cara distinta del mismo libro, no 4 paráfrasis de la misma idea.
+
 
 Ejemplos correctos (en voz del libro, los 4 tipos):
 - "La fortuna abandona al que revela sus planes." (declarativa)
@@ -357,10 +486,12 @@ Ejemplos correctos (en voz del libro, los 4 tipos):
 - "¿Cuánto poder se pierde por no saber esperar?" (interrogativa)
 - "Obra cauta, voluntad firme: así se gobierna." (aforística)
 
+
 ═══════════════════════════════════════════════════════════════════
 EDITION_BLOCKS_ES (4 bloques)
 ═══════════════════════════════════════════════════════════════════
 Son 4 VENTANAS DISTINTAS al libro, no 4 pedazos del mismo párrafo.
+
 
 Cada bloque = { gesture_type, sensory_anchor, phrase }
 - gesture_type: los 4 deben ser DIFERENTES
@@ -371,6 +502,7 @@ Cada bloque = { gesture_type, sensory_anchor, phrase }
 - sensory_anchor: el sentido o dimensión corporal evocado
   • vista, oido, tacto, olfato, gusto, movimiento, espacio, luz, respiracion, tiempo
 - phrase: 40-100 chars, UNA SOLA LÍNEA, SIN EMOJI, cerrada con ".", "?" o "!"
+
 
 ═══════════════════════════════════════════════════════════════════
 PROHIBICIONES DURAS
@@ -383,6 +515,31 @@ PROHIBICIONES DURAS
 - Emojis en cualquier parte (el sistema los agrega después)
 - Newlines embebidos (\\n) dentro de cualquier frase
 
+
+═══════════════════════════════════════════════════════════════════
+🌒 PROTOCOLO DE AUTO-VALIDACIÓN ANTES DE DEVOLVER (Pilar 3)
+═══════════════════════════════════════════════════════════════════
+ANTES de devolver el JSON, hazte UNA pregunta para CADA phrase generada
+(en card_es.parrafoTop, card_es.parrafoBot, og_phrases_es[], edition_blocks_es[].phrase):
+
+
+  "¿Esto es algo que YO escribí dentro del libro,
+   o es algo que un crítico/editor/marketer escribiría desde fuera?"
+
+
+Si la respuesta es "desde fuera", REESCRIBE esa phrase como autor
+escribiendo dentro de tu obra. Solo entonces devuelve el JSON.
+
+
+Aplica el principio (no busques palabras específicas): una phrase que
+cuantifica el contenido del libro, describe su estructura, o lo vende
+al lector — está fuera. Una phrase que es contenido del libro escrito
+por su autor — está dentro.
+
+
+Esta auto-revisión es parte de tu trabajo, no opcional.
+
+
 ═══════════════════════════════════════════════════════════════════
 CONTEXTO CRONOBIOLÓGICO DEL MOMENTO (sesga qué parte del libro se activa hoy)
 ═══════════════════════════════════════════════════════════════════
@@ -391,23 +548,64 @@ CONTEXTO CRONOBIOLÓGICO DEL MOMENTO (sesga qué parte del libro se activa hoy)
 - ${crono.descripcion_dia}
 - ${crono.descripcion_franja}
 
+
 El libro sigue mandando. NO lo mencionas en el output.`;
 }
 
+
 function contentESUserPrompt(book, groundTruth, anchorsData, lens) {
-  let p = `LIBRO: "${anchorsData.book_identity.titulo_es}" — ${anchorsData.book_identity.autor_completo}`;
-  p += `\n\nGROUND TRUTH:\n${groundTruth}`;
-  p += `\n\nANCHORS YA EXTRAÍDOS (usar como brújula):\nConceptos:\n${anchorsData.book_grounding_anchors.concepts.map((c) => `- ${c}`).join("\n")}\n\nKey terms: ${anchorsData.book_grounding_anchors.key_terms.join(", ")}\n\nVoz autorial: ${anchorsData.book_grounding_anchors.authorial_voice_notes}`;
-  if (lens && lens.trim()) p += `\n\nLENTE DEL CURADOR:\n${lens}`;
-  p += `\n\nEscribe card_es + emotional_words_es + og_phrases_es + edition_blocks_es. SIN EMOJIS. SIN NEWLINES. Cada frase usa al menos un anchor.`;
+  // 🌒 SPRINT NIVEL DIOS — User prompt inyecta IDENTIDAD DINÁMICA por libro
+  const identityLine = buildIdentityLine(anchorsData, "es");
+
+
+  let p = `🌒 IDENTIDAD DE ESTA SESIÓN:
+${identityLine}
+
+
+VOZ AUTORIAL ESPECÍFICA (tu prosa, no la de otro):
+${anchorsData.book_grounding_anchors.authorial_voice_notes}
+
+
+═══════════════════════════════════════════════════════════════════
+GROUND TRUTH — lo que TÚ escribiste (recuerda con precisión):
+${groundTruth}
+
+
+═══════════════════════════════════════════════════════════════════
+TUS ANCHORS centrales (úsalos como brújula obligatoria):
+Conceptos:
+${anchorsData.book_grounding_anchors.concepts.map((c) => `- ${c}`).join("\n")}
+
+
+Tu vocabulario propio (key terms): ${anchorsData.book_grounding_anchors.key_terms.join(", ")}`;
+
+
+  if (lens && lens.trim()) {
+    p += `\n\n═══════════════════════════════════════════════════════════════════\nLENTE DEL CURADOR (perspectiva activa hoy):\n${lens}\n\nSi tu obra naturalmente toca esta perspectiva, déjala filtrar tu transcripción. Si no la toca, NO la fuerces — sería traición a tu propia escritura.`;
+  }
+
+
+  p += `\n\n═══════════════════════════════════════════════════════════════════
+Ahora, en tu cuerpo como autor escribiendo tu obra:
+Genera card_es + emotional_words_es + og_phrases_es + edition_blocks_es.
+
+
+SIN EMOJIS. SIN NEWLINES. Cada frase usa al menos un anchor.
+
+
+ANTES de devolver, aplica el PROTOCOLO DE AUTO-VALIDACIÓN del system prompt.`;
+
+
   return p;
 }
+
 
 export async function extractContentES(openai, book, groundTruth, anchorsData, lens = "", options = {}) {
   const schemas = await loadSchemas();
   const crono = options.crono || cronobioContext();
   const model = options.model || "gpt-4o-mini";
   const temperature = options.temperature ?? 0.7;
+
 
   const response = await openai.chat.completions.create({
     model,
@@ -422,6 +620,7 @@ export async function extractContentES(openai, book, groundTruth, anchorsData, l
     }
   });
 
+
   return {
     data: safeParseJSON(response.choices?.[0]?.message?.content),
     usage: response.usage,
@@ -429,38 +628,65 @@ export async function extractContentES(openai, book, groundTruth, anchorsData, l
   };
 }
 
+
 /* ─────────────────────────────────────────────────────────────────────────────
    LLAMADA 3 — CONTENIDO EN
    Re-extracción, no traducción. Recibe anchors + card_es como referencia.
 ────────────────────────────────────────────────────────────────────────────── */
 
+
 function contentENSystemPrompt() {
-  return `You are Triggui's English Content Extractor.
+  return `🌒 NIVEL DIOS SPRINT — ROLE INVERSION
 
-Triggui's single purpose: make the reader open a physical book.
 
-MOTHER RULE:
-You are not a critic or reviewer. You do not talk ABOUT the book.
-You produce text that could appear IN the book, in the author's voice in THIS specific book.
-The reader must feel they opened the book at a random page. That's it.
+For this call you are NOT an AI generating editorial content about books.
+YOU ARE the author of the book assigned in this turn (specific identity is in
+the USER PROMPT — read it first).
+
+
+Your identity changes with each book:
+- You inhabit that specific person
+- Their authorial voice (notes provided in user prompt)
+- Their idioms and prosodic rhythm
+- Their cosmovision and era
+- Their memories of having written that book
+
+
+What you have in front of you is NOT content to generate.
+These are moments from your own writing that you need to transcribe from your
+memory of having written them.
+
+
+Your output must sound like a real page of the book opened at random.
+NOT like description of the book. NOT like a review. NOT like back-cover copy.
+NOT like an index, synopsis, or advertisement.
+
+
+You are writing from INSIDE. Never from outside.
+
 
 ═══════════════════════════════════════════════════════════════════
-INPUT
+INPUT YOU WILL RECEIVE (in the user prompt)
 ═══════════════════════════════════════════════════════════════════
-- GROUND TRUTH about the book
+- IDENTITY: your name as author + your work
+- AUTHORIAL VOICE: notes on your specific prose
+- GROUND TRUTH: what YOU wrote (remember with precision)
 - ANCHORS (concepts, key_terms, voice_notes)
 - card_es (Spanish card already written) — use as SEMANTIC reference, NOT as text to translate
 
+
 This is a RE-EXTRACTION into English, NOT a translation.
-Write as the author WOULD HAVE written directly in English, using the same anchors.
-Do not translate "danza" as "dance" if the author would say "movement" in English.
+Write as you WOULD HAVE written directly in English, using the same anchors.
+Do not translate "danza" as "dance" if you would say "movement" in English.
 Preserve meaning, rewrite voice.
+
 
 ═══════════════════════════════════════════════════════════════════
 OUTPUT LANGUAGE — CRITICAL
 ═══════════════════════════════════════════════════════════════════
 EVERY field in this output MUST be in pure English.
 NO Spanish words. NO "Elige", "Vivir", "Día", "Qué". If you find yourself writing Spanish, STOP and rewrite.
+
 
 ═══════════════════════════════════════════════════════════════════
 STRUCTURE
@@ -471,6 +697,7 @@ og_phrases_en: exactly 4 phrases, 30-68 chars each, ONE LINE, NO emojis, NO "\\n
   Soft ceiling: aim for 55-65 chars. Hard max 70 — never flirt with the edge.
   Any phrase above 68 chars risks mid-word truncation in rendering. Rewrite shorter.
 edition_blocks_en: exactly 4 blocks with different gesture_types, each 40-100 chars, ONE LINE, NO emojis
+
 
 ═══════════════════════════════════════════════════════════════════
 SYNTACTIC VARIETY (mandatory anti-pattern rule)
@@ -485,12 +712,15 @@ The 4 og_phrases MUST use different grammatical structures. Vary the form:
 - PHRASE 4 — Aphoristic/sententious: contrastive, parallel or nominal construction
   Example: "Much noise above, silence below — the shape of lasting power."
 
+
 If all 4 phrases start with "The/A" + noun, that is a VARIETY FAILURE. Rewrite.
 If all 4 phrases are declarative, that is a VARIETY FAILURE. Rewrite.
 Each phrase must feel like a different face of the same book, not four paraphrases.
 
+
 gesture_type enum: sensory_instruction | direct_question | concrete_image | authorial_aphorism
 sensory_anchor enum: sight | hearing | touch | smell | taste | movement | space | light | breath | time
+
 
 ═══════════════════════════════════════════════════════════════════
 FORBIDDEN
@@ -500,23 +730,94 @@ FORBIDDEN
 - Hollow metaphors: "dance of decisions", "labyrinth of existence", "horizon of possibilities"
 - Spanish words anywhere in the output
 - Emojis (system injects them later)
-- Embedded newlines`;
+- Embedded newlines
+
+
+═══════════════════════════════════════════════════════════════════
+🌒 SELF-VALIDATION PROTOCOL BEFORE RETURNING (Pillar 3)
+═══════════════════════════════════════════════════════════════════
+BEFORE returning the JSON, ask ONE question for EACH phrase you wrote
+(card_en.parrafoTop, card_en.parrafoBot, og_phrases_en[], edition_blocks_en[].phrase):
+
+
+  "Is this something I wrote inside the book,
+   or something a critic/editor/marketer would write from outside?"
+
+
+If the answer is "from outside", REWRITE that phrase as the author writing
+inside their own work. Only then return the JSON.
+
+
+Apply the principle (don't look for specific words): a phrase that quantifies
+the book's contents, describes its structure, or sells it to the reader — is
+from outside. A phrase that IS content from the book written by its author —
+is from inside.
+
+
+This self-review is part of your job, not optional.`;
 }
 
+
 function contentENUserPrompt(book, groundTruth, anchorsData, cardES, lens) {
-  let p = `BOOK: "${anchorsData.book_identity.titulo_en}" — ${anchorsData.book_identity.autor_completo}`;
-  p += `\n\nGROUND TRUTH:\n${groundTruth}`;
-  p += `\n\nANCHORS (your compass):\nConcepts:\n${anchorsData.book_grounding_anchors.concepts.map((c) => `- ${c}`).join("\n")}\n\nKey terms: ${anchorsData.book_grounding_anchors.key_terms.join(", ")}\n\nAuthorial voice: ${anchorsData.book_grounding_anchors.authorial_voice_notes}`;
-  p += `\n\ncard_es (SEMANTIC REFERENCE, do not translate literally):\nTítulo: ${cardES.titulo}\nParrafoTop: ${cardES.parrafoTop}\nSubtítulo: ${cardES.subtitulo}\nParrafoBot: ${cardES.parrafoBot}`;
-  if (lens && lens.trim()) p += `\n\nCURATORIAL LENS:\n${lens}`;
-  p += `\n\nWrite card_en + emotional_words_en + og_phrases_en + edition_blocks_en. 100% English. No emojis. No newlines. No Spanish.`;
+  // 🌒 SPRINT NIVEL DIOS — User prompt inyecta IDENTIDAD DINÁMICA por libro
+  const identityLine = buildIdentityLine(anchorsData, "en");
+
+
+  let p = `🌒 IDENTITY OF THIS SESSION:
+${identityLine}
+
+
+YOUR SPECIFIC AUTHORIAL VOICE (your prose, not anyone else's):
+${anchorsData.book_grounding_anchors.authorial_voice_notes}
+
+
+═══════════════════════════════════════════════════════════════════
+GROUND TRUTH — what YOU wrote (remember with precision):
+${groundTruth}
+
+
+═══════════════════════════════════════════════════════════════════
+YOUR ANCHORS (your compass — use them):
+Concepts:
+${anchorsData.book_grounding_anchors.concepts.map((c) => `- ${c}`).join("\n")}
+
+
+Your own vocabulary (key terms): ${anchorsData.book_grounding_anchors.key_terms.join(", ")}
+
+
+═══════════════════════════════════════════════════════════════════
+card_es (SEMANTIC REFERENCE, do not translate literally):
+Título: ${cardES.titulo}
+ParrafoTop: ${cardES.parrafoTop}
+Subtítulo: ${cardES.subtitulo}
+ParrafoBot: ${cardES.parrafoBot}`;
+
+
+  if (lens && lens.trim()) {
+    p += `\n\n═══════════════════════════════════════════════════════════════════\nCURATORIAL LENS (perspective active today):\n${lens}\n\nIf your work naturally touches this perspective, let it filter your transcription. If it doesn't, do NOT force it — that would be a betrayal of your own writing.`;
+  }
+
+
+  p += `\n\n═══════════════════════════════════════════════════════════════════
+Now, in your body as the author writing your own work:
+Write card_en + emotional_words_en + og_phrases_en + edition_blocks_en.
+
+
+100% English. No emojis. No newlines. No Spanish.
+
+
+BEFORE returning, apply the SELF-VALIDATION PROTOCOL from the system prompt.`;
+
+
   return p;
 }
+
 
 export async function extractContentEN(openai, book, groundTruth, anchorsData, cardES, lens = "", options = {}) {
   const schemas = await loadSchemas();
   const model = options.model || "gpt-4o-mini";
   const temperature = options.temperature ?? 0.7;
+
 
   const response = await openai.chat.completions.create({
     model,
@@ -531,6 +832,7 @@ export async function extractContentEN(openai, book, groundTruth, anchorsData, c
     }
   });
 
+
   return {
     data: safeParseJSON(response.choices?.[0]?.message?.content),
     usage: response.usage,
@@ -538,19 +840,23 @@ export async function extractContentEN(openai, book, groundTruth, anchorsData, c
   };
 }
 
+
 /* ─────────────────────────────────────────────────────────────────────────────
    LLAMADA 4 — GROUNDING JUDGE
    ─────────────────────────────────────────────────────────────────────────────
    v3.5: agnóstico al idioma. options.language = "es" | "en" (default "es").
 
+
    Lee directamente las claves nativas del content (card_es / og_phrases_es /
    edition_blocks_es para ES; card_en / og_phrases_en / edition_blocks_en para
    EN). Elimina la necesidad del hack "disfraz EN→ES" en el orquestador.
+
 
    Retry con backoff (3 intentos, 0s/2s/4s). Si los 3 fallan o devuelven {},
    retorna degraded:true con shape schema-compliant para que assertShape
    aguas arriba no truene.
 ────────────────────────────────────────────────────────────────────────────── */
+
 
 function buildJudgeSnippets(content, language) {
   if (language === "en") {
@@ -566,6 +872,7 @@ function buildJudgeSnippets(content, language) {
     ].join("\n");
   }
 
+
   // default: ES
   const card = content.card_es || {};
   const og = content.og_phrases_es || [];
@@ -579,18 +886,23 @@ function buildJudgeSnippets(content, language) {
   ].join("\n");
 }
 
+
 function groundingJudgePrompt(groundTruth, contentSnippets, language) {
   const langNote = language === "en"
     ? "\nNOTE: The generated content below is in ENGLISH. Judge whether it reflects the ground truth, regardless of language."
     : "";
 
+
   return `You are a grounding auditor. You judge whether generated editorial content is truly anchored to a specific book's ground truth, or whether it's generic filler that could apply to any book.${langNote}
+
 
 GROUND TRUTH ABOUT THE BOOK:
 ${groundTruth}
 
+
 GENERATED CONTENT (excerpts):
 ${contentSnippets}
+
 
 Judge:
 1. grounded_score (0-1): how specifically does the content reflect ground_truth? 1.0 = uses specific concepts/terms from ground_truth; 0.3 = vaguely related; 0.0 = generic.
@@ -598,8 +910,10 @@ Judge:
 3. could_apply_to_any_book: true if the content is so generic it would work for any self-help/philosophy/business book with minimal edits.
 4. reason: specific observation explaining the score (minimum 30 characters, max 400).
 
+
 Be honest. False positives (saying it's grounded when it isn't) break the system.`;
 }
+
 
 // Schema-compliant fallback cuando OpenAI no responde bien después de retries.
 // reason DEBE ser >= 30 chars (schema.grounding_judge), por eso el texto es largo.
@@ -612,6 +926,7 @@ function buildDegradedJudgeResponse(language, attempts, lastError) {
   };
 }
 
+
 async function callJudgeOnce(openai, schemas, model, groundTruth, snippets, language) {
   const response = await openai.chat.completions.create({
     model,
@@ -623,10 +938,12 @@ async function callJudgeOnce(openai, schemas, model, groundTruth, snippets, lang
     }
   });
 
+
   const raw = response.choices?.[0]?.message?.content;
   const parsed = safeParseJSON(raw);
   const isEmpty = !parsed || typeof parsed !== "object" ||
                   parsed.grounded_score === undefined || parsed.grounded_score === null;
+
 
   return {
     parsed,
@@ -637,6 +954,7 @@ async function callJudgeOnce(openai, schemas, model, groundTruth, snippets, lang
   };
 }
 
+
 export async function judgeGrounding(openai, groundTruth, content, options = {}) {
   const schemas = await loadSchemas();
   const model = options.model || "gpt-4o-mini";
@@ -644,11 +962,14 @@ export async function judgeGrounding(openai, groundTruth, content, options = {})
   const maxAttempts = Number(options.maxAttempts || 3);
   const backoffMs = Array.isArray(options.backoffMs) ? options.backoffMs : [0, 2000, 4000];
 
+
   const snippets = buildJudgeSnippets(content, language);
+
 
   let lastUsage = null;
   let lastModel = model;
   let lastError = null;
+
 
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
     const wait = backoffMs[attempt - 1] ?? Math.min(8000, 1000 * Math.pow(2, attempt - 1));
@@ -656,10 +977,12 @@ export async function judgeGrounding(openai, groundTruth, content, options = {})
       await new Promise((r) => setTimeout(r, wait));
     }
 
+
     try {
       const result = await callJudgeOnce(openai, schemas, model, groundTruth, snippets, language);
       lastUsage = result.usage;
       lastModel = result.model;
+
 
       if (!result.isEmpty) {
         // éxito limpio
@@ -673,6 +996,7 @@ export async function judgeGrounding(openai, groundTruth, content, options = {})
         };
       }
 
+
       // respuesta vacía o sin grounded_score: registra y reintenta
       lastError = result.refusal
         ? `refusal: ${String(result.refusal).slice(0, 120)}`
@@ -683,6 +1007,7 @@ export async function judgeGrounding(openai, groundTruth, content, options = {})
       console.log(`   ⚠ Judge ${language.toUpperCase()} intento ${attempt}/${maxAttempts} threw: ${lastError}`);
     }
   }
+
 
   // degradación elegante: shape schema-compliant para que assertShape no truene
   console.log(`   🛡️  Judge ${language.toUpperCase()} degradación elegante después de ${maxAttempts} intentos`);
@@ -696,6 +1021,7 @@ export async function judgeGrounding(openai, groundTruth, content, options = {})
   };
 }
 
+
 /* ─────────────────────────────────────────────────────────────────────────────
    LLAMADA 5 — HIGHLIGHT JUDGE (v3.7 NIVEL DIOS)
    ─────────────────────────────────────────────────────────────────────────────
@@ -704,13 +1030,16 @@ export async function judgeGrounding(openai, groundTruth, content, options = {})
    LLM detecta cópulas sin atributo, modales sin acción, transitivos sin
    objeto — universalmente, en cualquier idioma.
 
+
    Mismo patrón que judgeGrounding: retry con backoff, degradación elegante
    schema-compliant. Default conservador: si el judge falla, asumimos
    coherente (no extender highlights innecesariamente).
 
+
    Costo aproximado por libro: ~110 tokens × 2 idiomas × precio gpt-4o-mini
    = ~$0.000017 USD. Despreciable según principio "que no cueste".
 ────────────────────────────────────────────────────────────────────────────── */
+
 
 function highlightJudgePrompt(highlightSegments, language) {
   const langName = language === "en" ? "ENGLISH" : "SPANISH";
@@ -718,9 +1047,12 @@ function highlightJudgePrompt(highlightSegments, language) {
     .map((s, i) => `${i + 1}. "${s}"`)
     .join("\n");
 
+
   return `You are a grammatical coherence auditor for editorial highlights. Your job is to judge whether each highlight, READ IN ISOLATION (without surrounding context), feels like a complete grammatical thought, or whether it ends mid-thought.
 
+
 The highlights are in ${langName}.
+
 
 A highlight is GRAMMATICALLY DANGLING if it ends with:
 - A copula or auxiliary without its required attribute (e.g., "merece ser" → "to be" what?)
@@ -729,13 +1061,16 @@ A highlight is GRAMMATICALLY DANGLING if it ends with:
 - A preposition or article (any language) without its complement
 - Any word that creates obvious syntactic expectation for continuation
 
+
 A highlight is COHERENT if it ends with:
 - A complete clause closed naturally (period, question mark, exclamation in the prose)
 - A noun, full verb phrase, or adjective that closes the syntactic unit
 - A clear semantic boundary that feels finished even when read alone
 
+
 HIGHLIGHTS TO JUDGE:
 ${segmentsList}
+
 
 Judge:
 1. coherence_score (0-1): mean coherence across all highlights. 1.0 = all feel naturally finished; 0.5 = some dangling; 0.0 = all dangling mid-thought.
@@ -743,8 +1078,10 @@ Judge:
 3. feels_naturally_finished: true ONLY if a reader, encountering only the highlight text, would feel the idea is whole rather than truncated. False if any highlight makes the reader's brain expect a continuation.
 4. reason: specific observation about which highlights are problematic and why (minimum 30 characters, max 400). Identify the trailing word and the missing element. Example: "Highlight 2 ends in 'merece ser' (copula 'ser' without attribute). Highlight 1 OK, ends in noun 'cotidiano'."
 
+
 Be strict. False positives (saying it's complete when it dangles) break the user experience.`;
 }
+
 
 // Schema-compliant fallback cuando OpenAI no responde bien después de retries.
 // Default conservador: asumimos COHERENTE para no extender highlights
@@ -759,6 +1096,7 @@ function buildDegradedHighlightJudgeResponse(language, attempts, lastError) {
   };
 }
 
+
 async function callHighlightJudgeOnce(openai, schemas, model, segments, language) {
   const response = await openai.chat.completions.create({
     model,
@@ -770,10 +1108,12 @@ async function callHighlightJudgeOnce(openai, schemas, model, segments, language
     }
   });
 
+
   const raw = response.choices?.[0]?.message?.content;
   const parsed = safeParseJSON(raw);
   const isEmpty = !parsed || typeof parsed !== "object" ||
                   parsed.coherence_score === undefined || parsed.coherence_score === null;
+
 
   return {
     parsed,
@@ -783,6 +1123,7 @@ async function callHighlightJudgeOnce(openai, schemas, model, segments, language
     refusal: response.choices?.[0]?.message?.refusal || null
   };
 }
+
 
 export async function judgeHighlightCoherence(openai, highlightSegments, options = {}) {
   // Si no hay highlights, devolver pass trivial (sin llamada al LLM)
@@ -802,15 +1143,18 @@ export async function judgeHighlightCoherence(openai, highlightSegments, options
     };
   }
 
+
   const schemas = await loadSchemas();
   const model = options.model || "gpt-4o-mini";
   const language = options.language === "en" ? "en" : "es";
   const maxAttempts = Number(options.maxAttempts || 3);
   const backoffMs = Array.isArray(options.backoffMs) ? options.backoffMs : [0, 2000, 4000];
 
+
   let lastUsage = null;
   let lastModel = model;
   let lastError = null;
+
 
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
     const wait = backoffMs[attempt - 1] ?? Math.min(8000, 1000 * Math.pow(2, attempt - 1));
@@ -818,10 +1162,12 @@ export async function judgeHighlightCoherence(openai, highlightSegments, options
       await new Promise((r) => setTimeout(r, wait));
     }
 
+
     try {
       const result = await callHighlightJudgeOnce(openai, schemas, model, highlightSegments, language);
       lastUsage = result.usage;
       lastModel = result.model;
+
 
       if (!result.isEmpty) {
         return {
@@ -834,6 +1180,7 @@ export async function judgeHighlightCoherence(openai, highlightSegments, options
         };
       }
 
+
       lastError = result.refusal
         ? `refusal: ${String(result.refusal).slice(0, 120)}`
         : "empty_or_missing_coherence_score";
@@ -843,6 +1190,7 @@ export async function judgeHighlightCoherence(openai, highlightSegments, options
       console.log(`   ⚠ HighlightJudge ${language.toUpperCase()} intento ${attempt}/${maxAttempts} threw: ${lastError}`);
     }
   }
+
 
   console.log(`   🛡️  HighlightJudge ${language.toUpperCase()} degradación elegante después de ${maxAttempts} intentos`);
   return {

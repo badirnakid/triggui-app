@@ -1,5 +1,5 @@
 {
-  "note": "Schema v3 dividido en 4 sub-schemas para las 4 llamadas LLM + 1 para el judge de highlights v3.7. El schema completo se arma en memoria desde estos.",
+  "note": "Schema v4 NIVEL DIOS — Sprint Cuántico Mayo 2026. 8 sub-schemas: 4 originales (anchors_and_intent, content_es, content_en, grounding_judge) + 2 judges (highlight_judge, voice_judge_universal NUEVO) + 1 nuevo CSAL (csal_extraction). grounding_judge extendido con detección de meta-descripciones disfrazadas de contenido específico.",
   "anchors_and_intent": {
     "name": "AnchorsAndIntent",
     "description": "Extrae anchors del libro + intención visual numérica + análisis de lente. NO escribe cards ni og_phrases.",
@@ -18,50 +18,100 @@
         "book_identity": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["titulo_es", "titulo_en", "autor_completo", "idioma_original"],
+          "required": [
+            "titulo_es",
+            "titulo_en",
+            "autor_completo",
+            "idioma_original"
+          ],
           "properties": {
-            "titulo_es": { "type": "string", "minLength": 2, "maxLength": 150 },
-            "titulo_en": { "type": "string", "minLength": 2, "maxLength": 150 },
-            "autor_completo": { "type": "string", "minLength": 2, "maxLength": 120 },
-            "idioma_original": { "type": "string", "enum": ["es", "en"] }
+            "titulo_es": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 150
+            },
+            "titulo_en": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 150
+            },
+            "autor_completo": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 120
+            },
+            "idioma_original": {
+              "type": "string",
+              "enum": [
+                "es",
+                "en"
+              ]
+            }
           }
         },
-
         "book_grounding_anchors": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["concepts", "key_terms", "authorial_voice_notes"],
+          "required": [
+            "concepts",
+            "key_terms",
+            "authorial_voice_notes"
+          ],
           "properties": {
             "concepts": {
               "type": "array",
               "minItems": 3,
               "maxItems": 5,
-              "items": { "type": "string", "minLength": 15, "maxLength": 150 }
+              "items": {
+                "type": "string",
+                "minLength": 15,
+                "maxLength": 150
+              }
             },
             "key_terms": {
               "type": "array",
               "minItems": 3,
               "maxItems": 6,
-              "items": { "type": "string", "minLength": 2, "maxLength": 40 }
+              "items": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 40
+              }
             },
-            "authorial_voice_notes": { "type": "string", "minLength": 80, "maxLength": 500 }
-          }
-        },
-
-        "lens_analysis": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["lens_provided", "analysis", "decision"],
-          "properties": {
-            "lens_provided": { "type": "boolean" },
-            "analysis": { "type": "string", "minLength": 5, "maxLength": 600 },
-            "decision": {
+            "authorial_voice_notes": {
               "type": "string",
-              "enum": ["apply_directly", "apply_through_adjacent_concept", "dont_apply_book_is_about_something_else"]
+              "minLength": 80,
+              "maxLength": 500
             }
           }
         },
-
+        "lens_analysis": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "lens_provided",
+            "analysis",
+            "decision"
+          ],
+          "properties": {
+            "lens_provided": {
+              "type": "boolean"
+            },
+            "analysis": {
+              "type": "string",
+              "minLength": 5,
+              "maxLength": 600
+            },
+            "decision": {
+              "type": "string",
+              "enum": [
+                "apply_directly",
+                "apply_through_adjacent_concept",
+                "dont_apply_book_is_about_something_else"
+              ]
+            }
+          }
+        },
         "visual_intent": {
           "type": "object",
           "additionalProperties": false,
@@ -78,39 +128,137 @@
             "genre_visual"
           ],
           "properties": {
-            "hue_primary": { "type": "integer", "minimum": 0, "maximum": 359 },
-            "saturation": { "type": "string", "enum": ["muted", "balanced", "vivid"] },
-            "lightness_paper": { "type": "string", "enum": ["dark", "medium_dark", "medium_light", "light"] },
-            "temperature_shift": { "type": "integer", "minimum": -30, "maximum": 30 },
+            "hue_primary": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 359
+            },
+            "saturation": {
+              "type": "string",
+              "enum": [
+                "muted",
+                "balanced",
+                "vivid"
+              ]
+            },
+            "lightness_paper": {
+              "type": "string",
+              "enum": [
+                "dark",
+                "medium_dark",
+                "medium_light",
+                "light"
+              ]
+            },
+            "temperature_shift": {
+              "type": "integer",
+              "minimum": -30,
+              "maximum": 30
+            },
             "palette_strategy": {
               "type": "string",
-              "enum": ["monochromatic", "analogous", "complementary", "triadic", "split_complementary"]
+              "enum": [
+                "monochromatic",
+                "analogous",
+                "complementary",
+                "triadic",
+                "split_complementary"
+              ]
             },
             "typography_family": {
               "type": "string",
-              "enum": ["serif_clasico", "serif_literario", "serif_moderno", "sans_geometrico", "sans_humanista", "sans_tecnologico", "mono_precision", "mixta_editorial"]
+              "enum": [
+                "serif_clasico",
+                "serif_literario",
+                "serif_moderno",
+                "sans_geometrico",
+                "sans_humanista",
+                "sans_tecnologico",
+                "mono_precision",
+                "mixta_editorial"
+              ]
             },
-            "density": { "type": "string", "enum": ["aireado", "equilibrado", "denso"] },
-            "rhythm": { "type": "string", "enum": ["lento", "medio", "rapido", "staccato"] },
-            "era": { "type": "string", "enum": ["clasico", "moderno", "contemporaneo", "atemporal"] },
-            "genre_visual": { "type": "string", "enum": ["academico", "literario", "manifiesto", "poesia", "narrativa", "ensayo", "tecnico", "espiritual"] }
+            "density": {
+              "type": "string",
+              "enum": [
+                "aireado",
+                "equilibrado",
+                "denso"
+              ]
+            },
+            "rhythm": {
+              "type": "string",
+              "enum": [
+                "lento",
+                "medio",
+                "rapido",
+                "staccato"
+              ]
+            },
+            "era": {
+              "type": "string",
+              "enum": [
+                "clasico",
+                "moderno",
+                "contemporaneo",
+                "atemporal"
+              ]
+            },
+            "genre_visual": {
+              "type": "string",
+              "enum": [
+                "academico",
+                "literario",
+                "manifiesto",
+                "poesia",
+                "narrativa",
+                "ensayo",
+                "tecnico",
+                "espiritual"
+              ]
+            }
           }
         },
-
         "surface_hints": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["dimension", "punto_hawkins", "franja_ideal"],
+          "required": [
+            "dimension",
+            "punto_hawkins",
+            "franja_ideal"
+          ],
           "properties": {
-            "dimension": { "type": "string", "enum": ["Bienestar", "Prosperidad", "Conexion"] },
-            "punto_hawkins": { "type": "string", "enum": ["Cero", "Creativo", "Activo", "Maximo"] },
-            "franja_ideal": { "type": "string", "enum": ["madrugada", "manana", "tarde", "noche"] }
+            "dimension": {
+              "type": "string",
+              "enum": [
+                "Bienestar",
+                "Prosperidad",
+                "Conexion"
+              ]
+            },
+            "punto_hawkins": {
+              "type": "string",
+              "enum": [
+                "Cero",
+                "Creativo",
+                "Activo",
+                "Maximo"
+              ]
+            },
+            "franja_ideal": {
+              "type": "string",
+              "enum": [
+                "madrugada",
+                "manana",
+                "tarde",
+                "noche"
+              ]
+            }
           }
         }
       }
     }
   },
-
   "content_es": {
     "name": "ContentES",
     "description": "Contenido editorial en ESPAÑOL. Recibe anchors como input obligatorio. Sin emoji (se inyecta después). Sin newlines.",
@@ -128,25 +276,54 @@
         "card_es": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["titulo", "parrafoTop", "subtitulo", "parrafoBot"],
+          "required": [
+            "titulo",
+            "parrafoTop",
+            "subtitulo",
+            "parrafoBot"
+          ],
           "properties": {
-            "titulo": { "type": "string", "minLength": 8, "maxLength": 60 },
-            "parrafoTop": { "type": "string", "minLength": 80, "maxLength": 320 },
-            "subtitulo": { "type": "string", "minLength": 20, "maxLength": 120 },
-            "parrafoBot": { "type": "string", "minLength": 80, "maxLength": 320 }
+            "titulo": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 60
+            },
+            "parrafoTop": {
+              "type": "string",
+              "minLength": 80,
+              "maxLength": 320
+            },
+            "subtitulo": {
+              "type": "string",
+              "minLength": 20,
+              "maxLength": 120
+            },
+            "parrafoBot": {
+              "type": "string",
+              "minLength": 80,
+              "maxLength": 320
+            }
           }
         },
         "emotional_words_es": {
           "type": "array",
           "minItems": 4,
           "maxItems": 4,
-          "items": { "type": "string", "minLength": 3, "maxLength": 25 }
+          "items": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 25
+          }
         },
         "og_phrases_es": {
           "type": "array",
           "minItems": 4,
           "maxItems": 4,
-          "items": { "type": "string", "minLength": 30, "maxLength": 70 }
+          "items": {
+            "type": "string",
+            "minLength": 30,
+            "maxLength": 70
+          }
         },
         "edition_blocks_es": {
           "type": "array",
@@ -155,24 +332,47 @@
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["gesture_type", "sensory_anchor", "phrase"],
+            "required": [
+              "gesture_type",
+              "sensory_anchor",
+              "phrase"
+            ],
             "properties": {
               "gesture_type": {
                 "type": "string",
-                "enum": ["instruccion_sensorial", "pregunta_directa", "imagen_concreta", "aforismo_autorial"]
+                "enum": [
+                  "instruccion_sensorial",
+                  "pregunta_directa",
+                  "imagen_concreta",
+                  "aforismo_autorial"
+                ]
               },
               "sensory_anchor": {
                 "type": "string",
-                "enum": ["vista", "oido", "tacto", "olfato", "gusto", "movimiento", "espacio", "luz", "respiracion", "tiempo"]
+                "enum": [
+                  "vista",
+                  "oido",
+                  "tacto",
+                  "olfato",
+                  "gusto",
+                  "movimiento",
+                  "espacio",
+                  "luz",
+                  "respiracion",
+                  "tiempo"
+                ]
               },
-              "phrase": { "type": "string", "minLength": 40, "maxLength": 100 }
+              "phrase": {
+                "type": "string",
+                "minLength": 40,
+                "maxLength": 100
+              }
             }
           }
         }
       }
     }
   },
-
   "content_en": {
     "name": "ContentEN",
     "description": "Contenido editorial en INGLÉS. Recibe anchors y card_es como referencia semántica. Re-extracción, no traducción.",
@@ -190,25 +390,54 @@
         "card_en": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["titulo", "parrafoTop", "subtitulo", "parrafoBot"],
+          "required": [
+            "titulo",
+            "parrafoTop",
+            "subtitulo",
+            "parrafoBot"
+          ],
           "properties": {
-            "titulo": { "type": "string", "minLength": 8, "maxLength": 60 },
-            "parrafoTop": { "type": "string", "minLength": 80, "maxLength": 320 },
-            "subtitulo": { "type": "string", "minLength": 20, "maxLength": 120 },
-            "parrafoBot": { "type": "string", "minLength": 80, "maxLength": 320 }
+            "titulo": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 60
+            },
+            "parrafoTop": {
+              "type": "string",
+              "minLength": 80,
+              "maxLength": 320
+            },
+            "subtitulo": {
+              "type": "string",
+              "minLength": 20,
+              "maxLength": 120
+            },
+            "parrafoBot": {
+              "type": "string",
+              "minLength": 80,
+              "maxLength": 320
+            }
           }
         },
         "emotional_words_en": {
           "type": "array",
           "minItems": 4,
           "maxItems": 4,
-          "items": { "type": "string", "minLength": 3, "maxLength": 25 }
+          "items": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 25
+          }
         },
         "og_phrases_en": {
           "type": "array",
           "minItems": 4,
           "maxItems": 4,
-          "items": { "type": "string", "minLength": 30, "maxLength": 70 }
+          "items": {
+            "type": "string",
+            "minLength": 30,
+            "maxLength": 70
+          }
         },
         "edition_blocks_en": {
           "type": "array",
@@ -217,41 +446,85 @@
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["gesture_type", "sensory_anchor", "phrase"],
+            "required": [
+              "gesture_type",
+              "sensory_anchor",
+              "phrase"
+            ],
             "properties": {
               "gesture_type": {
                 "type": "string",
-                "enum": ["sensory_instruction", "direct_question", "concrete_image", "authorial_aphorism"]
+                "enum": [
+                  "sensory_instruction",
+                  "direct_question",
+                  "concrete_image",
+                  "authorial_aphorism"
+                ]
               },
               "sensory_anchor": {
                 "type": "string",
-                "enum": ["sight", "hearing", "touch", "smell", "taste", "movement", "space", "light", "breath", "time"]
+                "enum": [
+                  "sight",
+                  "hearing",
+                  "touch",
+                  "smell",
+                  "taste",
+                  "movement",
+                  "space",
+                  "light",
+                  "breath",
+                  "time"
+                ]
               },
-              "phrase": { "type": "string", "minLength": 40, "maxLength": 100 }
+              "phrase": {
+                "type": "string",
+                "minLength": 40,
+                "maxLength": 100
+              }
             }
           }
         }
       }
     }
   },
-
   "grounding_judge": {
     "name": "GroundingJudge",
-    "description": "Juzga si el contenido generado está realmente anclado al ground_truth del libro.",
+    "description": "Juzga si el contenido generado está realmente anclado al ground_truth del libro. Sprint cuántico: extendido con detección de meta-descripciones (contraportada/sinopsis/anuncio).",
     "strict": true,
     "schema": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["grounded_score", "uses_book_specific_concepts", "could_apply_to_any_book", "reason"],
+      "required": [
+        "grounded_score",
+        "uses_book_specific_concepts",
+        "could_apply_to_any_book",
+        "feels_like_back_cover_meta_description",
+        "reason"
+      ],
       "properties": {
-        "grounded_score": { "type": "number", "minimum": 0, "maximum": 1 },
-        "uses_book_specific_concepts": { "type": "boolean" },
-        "could_apply_to_any_book": { "type": "boolean" },
-        "reason": { "type": "string", "minLength": 30, "maxLength": 400 }
+        "grounded_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "uses_book_specific_concepts": {
+          "type": "boolean"
+        },
+        "could_apply_to_any_book": {
+          "type": "boolean"
+        },
+        "feels_like_back_cover_meta_description": {
+          "type": "boolean",
+          "description": "🆕 Sprint cuántico: detecta meta-descripciones tipo contraportada disfrazadas de contenido específico (ej: phrases que cuantifican el contenido del libro, describen su estructura, o lo venden al lector). True = es meta-descripción aunque sea específica al libro."
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 30,
+          "maxLength": 400
+        }
       }
     }
   },
-
   "highlight_judge": {
     "name": "HighlightJudge",
     "description": "v3.7: juzga semánticamente si los highlights [H]...[/H] quedan gramaticalmente colgados (verbo cópula sin atributo, modal sin acción, transitivo sin objeto). Sin diccionarios. Sin hardcoding. LLM como validador universal.",
@@ -259,12 +532,192 @@
     "schema": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["coherence_score", "is_grammatically_complete", "feels_naturally_finished", "reason"],
+      "required": [
+        "coherence_score",
+        "is_grammatically_complete",
+        "feels_naturally_finished",
+        "reason"
+      ],
       "properties": {
-        "coherence_score": { "type": "number", "minimum": 0, "maximum": 1 },
-        "is_grammatically_complete": { "type": "boolean" },
-        "feels_naturally_finished": { "type": "boolean" },
-        "reason": { "type": "string", "minLength": 30, "maxLength": 400 }
+        "coherence_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "is_grammatically_complete": {
+          "type": "boolean"
+        },
+        "feels_naturally_finished": {
+          "type": "boolean"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 30,
+          "maxLength": 400
+        }
+      }
+    }
+  },
+  "voice_judge_universal": {
+    "name": "VoiceJudgeUniversal",
+    "description": "Juzga si una frase suena a voz DENTRO del libro (autor escribiendo) vs voz FUERA (crítico/editor/contraportada describiendo). Operación semántica universal: una sola pregunta aplicada a cualquier frase. Sin enumeración de patrones léxicos prohibidos. Sprint cuántico Mayo 2026.",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "category",
+        "confidence",
+        "reason"
+      ],
+      "properties": {
+        "category": {
+          "type": "string",
+          "enum": [
+            "dentro",
+            "fuera"
+          ]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 20,
+          "maxLength": 200
+        }
+      }
+    }
+  },
+  "csal_extraction": {
+    "name": "CSALExtraction",
+    "description": "Concept Surface Area del Libro (CSAL) — superficie semántica para matching de queries del usuario en runtime sin red. Generado por el LLM encarnado como autor del libro. Reemplaza QUANTUM_LENS_MAP + TRIGGUI_SYNONYMS hardcoded. Sprint cuántico Mayo 2026.",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "trigger_situations",
+        "trigger_keywords",
+        "concept_tags",
+        "anti_patterns",
+        "bloques"
+      ],
+      "properties": {
+        "trigger_situations": {
+          "type": "array",
+          "minItems": 30,
+          "maxItems": 50,
+          "description": "Situaciones humanas universales en las que esta obra responde, escritas en lenguaje natural del usuario (no del libro). Ejemplo: 'cuando lo social te abruma', 'cuando no sabes cómo decir lo que sientes'. Forma típica: 'cuando X', 'antes de Y', 'después de Z'.",
+          "items": {
+            "type": "string",
+            "minLength": 15,
+            "maxLength": 140
+          }
+        },
+        "trigger_keywords": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "emociones",
+            "objetos",
+            "contextos",
+            "verbos"
+          ],
+          "description": "Palabras categorizadas que un usuario usaría al escribir sobre su situación. Incluye variantes regionales (mexicano coloquial), inglés americano coloquial cuando aplique. Cada categoría con variantes y sinónimos del libro.",
+          "properties": {
+            "emociones": {
+              "type": "array",
+              "minItems": 10,
+              "maxItems": 30,
+              "items": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 30
+              }
+            },
+            "objetos": {
+              "type": "array",
+              "minItems": 5,
+              "maxItems": 25,
+              "items": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 30
+              }
+            },
+            "contextos": {
+              "type": "array",
+              "minItems": 5,
+              "maxItems": 25,
+              "items": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 30
+              }
+            },
+            "verbos": {
+              "type": "array",
+              "minItems": 5,
+              "maxItems": 25,
+              "items": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 30
+              }
+            }
+          }
+        },
+        "concept_tags": {
+          "type": "array",
+          "minItems": 10,
+          "maxItems": 25,
+          "description": "Conceptos ESPECÍFICOS al libro. Si lees solo estos tags sin saber el título, deberías reconocer la obra. PROHIBIDO: tags genéricos como 'filosofía oriental', 'auto-ayuda', 'mindfulness', 'psicología popular' (categorías de marketing).",
+          "items": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 80
+          }
+        },
+        "anti_patterns": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 12,
+          "description": "Situaciones o dominios para los que la obra NO sirve. Honestidad sobre lo que el libro NO es. Genera penalty en el matcher cuando el query del usuario contiene esos términos.",
+          "items": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 60
+          }
+        },
+        "bloques": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "description": "Para cada uno de los 4 edition_blocks ya generados (índices 0-3), un emoji_specific que conecte con la phrase específica de ese bloque y con la obra. PROHIBIDO emojis genéricos (📘 ✨ 💡 🌟 ❤️). Ejemplo Wa: 🪷 🍵 🎋 👘. Ejemplo 48 Leyes: ⚔️ 🦂 ♟️ 👑.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "index",
+              "emoji_specific"
+            ],
+            "properties": {
+              "index": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 3
+              },
+              "emoji_specific": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 8
+              }
+            }
+          }
+        }
       }
     }
   }
