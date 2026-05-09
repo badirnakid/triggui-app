@@ -972,10 +972,13 @@ const BarraMagica = {
   height: auto; 
   max-height: 85vh;
   
-  /* Scroll Invisible */
-  overflow-y: auto; 
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
+  /* 🌒 FIX scroll-bug Android: el card NO scrollea. El scroll vive en
+     .card-content-wrap. Así los botones .card-close-btn / .card-lupa-btn
+     (position:absolute hijos del card) quedan SIEMPRE fijos en top:16px
+     del viewport del card, sin importar la posición del scroll interno. */
+  overflow: hidden; 
+  display: flex;
+  flex-direction: column;
   
   /* Estilo Físico */
   border-radius: 24px; 
@@ -993,9 +996,8 @@ const BarraMagica = {
     0 60px 120px -30px rgba(0, 0, 0, 0.85), 
     0 0 0 1px rgba(255,255,255,0.08);
   cursor: default;
+  box-sizing: border-box;
 }
-
-#tarjetaCard::-webkit-scrollbar { display: none; }
 
 /* Textura de papel "Grain" */
 #tarjetaCard::after {
@@ -1029,9 +1031,22 @@ body.webview #tarjetaCard {
   padding: 36px 28px;
   display: flex; 
   flex-direction: column; 
-  min-height: 100%; 
   box-sizing: border-box;
+  
+  /* 🌒 FIX scroll-bug Android: el wrap es el área scrollable real.
+     - flex: 1 1 auto    → llena el card respetando su max-height
+     - min-height: 0     → trick obligatorio para flex+overflow
+     - overflow-y: auto  → scroll interno
+     Los botones cruz/lupa (siblings del wrap, hijos del card) quedan
+     fuera del wrap y por tanto fuera del scroll → siempre visibles. */
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
+
+.card-content-wrap::-webkit-scrollbar { display: none; }
 
 /* Logo Triggui Header (ARRIBA) */
 .card-header-logo {
