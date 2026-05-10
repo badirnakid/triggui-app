@@ -1069,6 +1069,45 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
       console.log(`   ℹ️  ${targetPath} no existe todavía, creando nuevo`);
     }
 
+    // 🌒 V10 NUMERACIÓN NIVEL DIOS CUÁNTICO-QUARK
+    // ════════════════════════════════════════════════════════════════════════
+    // Inicializar/preservar meta con next_edition_number
+    // Default 36 (35 ediciones existentes en public/t/ + 1)
+    // Configurable vía env var TRIGGUI_EDICION_START_NUMBER
+    if (!existing.meta || typeof existing.meta !== "object") {
+      existing.meta = {};
+    }
+    if (typeof existing.meta.next_edition_number !== "number" || existing.meta.next_edition_number < 1) {
+      const envStart = parseInt(process.env.TRIGGUI_EDICION_START_NUMBER, 10);
+      existing.meta.next_edition_number = (!isNaN(envStart) && envStart >= 1) ? envStart : 36;
+    }
+
+    // Defensa cuántica anti-corrupción: meta.next >= max(_edicion_numero) + 1
+    let maxLibroEdNum = 0;
+    for (const libro of existing.libros) {
+      if (typeof libro._edicion_numero === "number" && libro._edicion_numero > maxLibroEdNum) {
+        maxLibroEdNum = libro._edicion_numero;
+      }
+    }
+    if (existing.meta.next_edition_number <= maxLibroEdNum) {
+      existing.meta.next_edition_number = maxLibroEdNum + 1;
+    }
+    // ════════════════════════════════════════════════════════════════════════
+
+    // 🌒 V10 BUG 2 WARNING — parrafoTop sin cierre legítimo
+    // No bloquea, solo avisa (el render aplica ensure_text_closure como defensa)
+    try {
+      const tarjeta = newBook.tarjeta || newBook.tarjeta_presentacion || {};
+      const parrafoTop = String(tarjeta.parrafoTop || "").trim();
+      if (parrafoTop) {
+        const lastChar = parrafoTop.slice(-1);
+        const LEGITIMATE_CLOSURES = [".", "?", "!", "…", "—", '"', "»", ")", "]"];
+        if (!LEGITIMATE_CLOSURES.includes(lastChar)) {
+          console.warn(`   ⚠️  parrafoTop sin cierre legítimo en "${newBook.titulo}": "...${parrafoTop.slice(-40)}"`);
+        }
+      }
+    } catch (_) { /* warning best-effort, no afecta merge */ }
+
     const beforeCount = existing.libros.length;
     const newKey = normalizeBookKey(newBook.titulo, newBook.autor);
     const existingIndex = existing.libros.findIndex((b) => normalizeBookKey(b.titulo, b.autor) === newKey);
@@ -1085,6 +1124,18 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
         return true;
       }
 
+      // 🌒 V10 IDEMPOTENCIA NIVEL DIOS — preservar _edicion_numero al sobrescribir
+      // Si el libro existente ya tenía número (porque fue single previamente),
+      // se preserva incluso si lo sobrescribe un batch.
+      if (typeof existingBook._edicion_numero === "number" && existingBook._edicion_numero >= 1) {
+        newBook._edicion_numero = existingBook._edicion_numero;
+      } else if (!isFromBatch) {
+        // Single mode: asignar nuevo número si el libro existente no tenía
+        newBook._edicion_numero = existing.meta.next_edition_number;
+        existing.meta.next_edition_number += 1;
+      }
+      // (Si es batch y libro existente no tenía número, no se asigna)
+
       existing.libros[existingIndex] = newBook;
       action = existingIsManual && newIsManual
         ? "reemplazado (manual→manual)"
@@ -1092,6 +1143,11 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
           ? "reemplazado (manual sobrescrito)"
           : "reemplazado";
     } else {
+      // 🌒 V10 LIBRO NUEVO — asignar número solo si NO es batch
+      if (!isFromBatch) {
+        newBook._edicion_numero = existing.meta.next_edition_number;
+        existing.meta.next_edition_number += 1;
+      }
       existing.libros.unshift(newBook);
       action = newBook._manual ? "agregado al inicio (manual)" : "agregado al inicio";
     }
@@ -1100,7 +1156,10 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
     await writeJSON(targetPath, existing);
 
     const elapsedMs = Date.now() - t0;
-    console.log(`   🔗 Fusión ${targetPath}: libro ${action} — ${beforeCount} → ${afterCount} libros (${elapsedMs}ms)`);
+    const edicionInfo = typeof newBook._edicion_numero === "number"
+      ? ` [edición #${String(newBook._edicion_numero).padStart(3, "0")}]`
+      : "";
+    console.log(`   🔗 Fusión ${targetPath}: libro ${action}${edicionInfo} — ${beforeCount} → ${afterCount} libros (${elapsedMs}ms)`);
     return true;
   } catch (err) {
     console.error(`   ❌ mergeIntoContenidoJson falló: ${err.message}`);
