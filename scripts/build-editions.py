@@ -1387,7 +1387,7 @@ body::before {
 
 /* ════════════════════════════════════════════════════════════════════
    🌒 BOCADO + ECO — Frase oracular antes/después
-   Pool: tagline + concepts del libro (cap + punto en Python)
+   Pool: concepts del nucleus del libro (cap + punto en Python)
    Timing: 1500ms appear + 2000ms hold + 1200ms fade = 4.7s total
 ═══════════════════════════════════════════════════════════════════════ */
 .bocado-eco-overlay {
@@ -2324,7 +2324,7 @@ def build_single():
     tarjeta["parrafoBot"] = normalize_highlight_syntax(tarjeta.get("parrafoBot", ""))
 
     bocado_eco_pool = build_bocado_eco_pool(libro_data)
-    print(f"🌒 Pool bocado/eco: {len(bocado_eco_pool)} frases únicas (tagline + concepts)")
+    print(f"🌒 Pool bocado/eco: {len(bocado_eco_pool)} frases únicas (concepts del nucleus)")
 
     edicion_single = {
         "id": slug,
