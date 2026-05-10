@@ -1043,7 +1043,8 @@ body::before {
    ════════════════════════════════════════════════════════════════════════════ */
 .edicion-eyebrow {
   display: block;
-  margin: 0 0 10px 0;
+  /* 🌒 V15: aire arriba (separa del techo) + abajo (separa del título) */
+  margin: 6px 0 14px 0;
   font-family: 'Archivo', sans-serif;
   font-size: 13px;
   font-weight: 600;

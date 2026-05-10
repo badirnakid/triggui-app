@@ -534,7 +534,8 @@ function buildHTML({
   highlight,
   initial,
   edicionLabel,
-  accent
+  accent,
+  cardBorder
 }) {
   const portadaSection = portadaURL
     ? `
@@ -593,7 +594,7 @@ function buildHTML({
     `--highlight-radius:${PX.highlightRadius}px`,
     `--paper:${APP.paper}`,
     `--background:${APP.background}`,
-    `--border:${APP.border}`,
+    `--border:${cardBorder}`,
     `--card-shadow:${APP.cardShadow}`,
     `--cover-shadow:${APP.coverShadow}`,
     `--title-color:${titleColor}`,
@@ -745,7 +746,8 @@ function buildHTML({
      ════════════════════════════════════════════════════════════════════════ */
   .edicion-eyebrow {
     display: block;
-    margin: 0 0 22px 0;
+    /* 🌒 V15: aire arriba (separa del techo del card) + abajo (separa del título) */
+    margin: 22px 0 32px 0;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 40px;
     font-weight: 600;
@@ -911,9 +913,17 @@ const style = libro?.tarjeta?.style || libro?.tarjeta_presentacion?.style || {};
 
 const titleColor = style.titleColor || APP.titleColor;
 const paragraphColor = style.paragraphColor || APP.paragraphColor;
-const chipBg = style.authorChipBg || APP.authorChipBg;
-const chipColor = style.authorChipColor || APP.authorChipColor;
 const accent = style.accent || APP.border;
+// 🌒 V15 NIVEL DIOS CUÁNTICO-QUARK
+// Antes: chipBg/chipColor caían a APP defaults (#FFF3E0 / #E65100 NARANJA)
+// cuando el libro no tenía style.authorChipBg explícito → discrepancia con
+// HTML edición viva que SÍ deriva del accent.
+// V15: derivar del accent del libro para consistencia cromática perfecta
+// entre los 3 renders (viva + PNG + cualquier futuro).
+const chipBg = style.authorChipBg || withAlpha(accent, "14") || APP.authorChipBg;
+const chipColor = style.authorChipColor || accent || APP.authorChipColor;
+// V15: border del card también deriva del accent (con alpha bajo, sutil)
+const cardBorder = style.border || withAlpha(accent, "20") || APP.border;
 const highlight = buildLiveAccentHighlightStyle(accent, paragraphColor);
 const initial = computeInitialLayout(display, Boolean(portadaURL));
 
@@ -931,7 +941,8 @@ const html = buildHTML({
   highlight,
   initial,
   edicionLabel,
-  accent
+  accent,
+  cardBorder
 });
 
 /* ═══════════════════════════════════════════════════════════════
