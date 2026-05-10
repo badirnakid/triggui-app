@@ -181,6 +181,16 @@
       "timestamp": "2026-05-10T20:30:17.049Z",
       "trigger_input": "no entiendo la vida",
       "selected_via": "constrained_catalog"
+    },
+    {
+      "titulo": "Cómo dejar de ser tu peor enemigo",
+      "autor": "Alba Cardalda",
+      "slug": "como-dejar-de-ser-tu-peor-enemigo",
+      "titulo_normalizado": "como dejar de ser tu peor enemigo",
+      "autor_normalizado": "alba cardalda",
+      "timestamp": "2026-05-10T21:01:37.614Z",
+      "trigger_input": "hay que cuidar lo que comemos no?",
+      "selected_via": "constrained_catalog"
     }
   ],
   "_note": "FIFO ring de últimos 30 libros generados por selección automática (constrained o discover). Filtro pre-rerank en validate-book.js. Inicializa vacío y se rellena con cada run exitoso. Si se borra, el sistema arranca limpio sin daño."
