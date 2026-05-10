@@ -201,6 +201,16 @@
       "timestamp": "2026-05-10T21:39:21.876Z",
       "trigger_input": "es tan dificl ganar dinero?",
       "selected_via": "constrained_catalog"
+    },
+    {
+      "titulo": "Destino libertad y alma",
+      "autor": "Osho",
+      "slug": "destino-libertad-y-alma",
+      "titulo_normalizado": "destino libertad y alma",
+      "autor_normalizado": "osho",
+      "timestamp": "2026-05-10T22:16:10.191Z",
+      "trigger_input": "que es el alma",
+      "selected_via": "constrained_catalog"
     }
   ],
   "_note": "FIFO ring de últimos 30 libros generados por selección automática (constrained o discover). Filtro pre-rerank en validate-book.js. Inicializa vacío y se rellena con cada run exitoso. Si se borra, el sistema arranca limpio sin daño."

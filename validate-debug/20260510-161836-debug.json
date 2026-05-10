@@ -1,0 +1,606 @@
+{
+  "history": [
+    {
+      "at": "2026-05-10T22:15:50.303Z",
+      "stage": "trigger_analysis",
+      "trigger_analysis": {
+        "raw_input": "que es el alma",
+        "semantic_query": "definición y comprensión del alma",
+        "intent_summary": "Buscar información sobre el concepto del alma.",
+        "editorial_requests": [],
+        "source_preference": null,
+        "ranking_preference": null,
+        "unsupported_runtime_constraints": [],
+        "supported_constraints": {
+          "year_min": null,
+          "year_max": null,
+          "prefer_recent": false
+        },
+        "search_queries": [
+          "qué es el alma",
+          "definición del alma",
+          "concepto de alma",
+          "filosofía del alma",
+          "alma en la espiritualidad",
+          "alma en diferentes culturas",
+          "definición y comprensión del alma",
+          "definicion comprension alma"
+        ],
+        "concept_hints": [
+          "spirituality",
+          "philosophy"
+        ],
+        "clean_for_selection": "definición y comprensión del alma",
+        "notes": {
+          "used_ai_normalizer": true,
+          "looked_like_book_intent": false,
+          "semantic_overlap_vs_raw": 0.25
+        }
+      }
+    },
+    {
+      "at": "2026-05-10T22:16:10.192Z",
+      "stage": "success",
+      "bookData": {
+        "titulo": "Destino libertad y alma",
+        "autor": "Osho",
+        "slug": "destino-libertad-y-alma",
+        "tagline": "Respuestas para saber cuál es el significado de la vida.Desde el momento en que nace empieza a surgir una gran búsqueda en lo más profundo de cada ser humano.",
+        "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/03/90/c4/0390c4d9-ea87-1945-aec1-6e3f0b4d4ed7/9786074807820.jpg/3000x3000bb.jpg",
+        "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/03/90/c4/0390c4d9-ea87-1945-aec1-6e3f0b4d4ed7/9786074807820.jpg/3000x3000bb.jpg",
+        "portada_source": "apple_books",
+        "portada_candidates": [
+          {
+            "source": "apple_books",
+            "size": "xxlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/03/90/c4/0390c4d9-ea87-1945-aec1-6e3f0b4d4ed7/9786074807820.jpg/3000x3000bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "xlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/03/90/c4/0390c4d9-ea87-1945-aec1-6e3f0b4d4ed7/9786074807820.jpg/1200x1200bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "large",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/03/90/c4/0390c4d9-ea87-1945-aec1-6e3f0b4d4ed7/9786074807820.jpg/600x600bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "medium",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/03/90/c4/0390c4d9-ea87-1945-aec1-6e3f0b4d4ed7/9786074807820.jpg/100x100bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "openlibrary",
+            "size": "large",
+            "url": "https://covers.openlibrary.org/b/id/13563603-L.jpg",
+            "valid": true
+          },
+          {
+            "source": "openlibrary",
+            "size": "medium",
+            "url": "https://covers.openlibrary.org/b/id/13563603-M.jpg",
+            "valid": true
+          }
+        ],
+        "needs_fallback_cover": false,
+        "isbn": "",
+        "editorial": "Osho",
+        "publication_year": "2014",
+        "source": "apple_books",
+        "duplicado": true,
+        "selected_via": "constrained_catalog",
+        "selection_reason": "Ofrece respuestas sobre el significado de la vida y la búsqueda del alma.",
+        "trigger_input": "que es el alma",
+        "trigger_analysis": {
+          "raw_input": "que es el alma",
+          "semantic_query": "definición y comprensión del alma",
+          "intent_summary": "Buscar información sobre el concepto del alma.",
+          "editorial_requests": [],
+          "source_preference": null,
+          "ranking_preference": null,
+          "unsupported_runtime_constraints": [],
+          "supported_constraints": {
+            "year_min": null,
+            "year_max": null,
+            "prefer_recent": false
+          },
+          "search_queries": [
+            "qué es el alma",
+            "definición del alma",
+            "concepto de alma",
+            "filosofía del alma",
+            "alma en la espiritualidad",
+            "alma en diferentes culturas",
+            "definición y comprensión del alma",
+            "definicion comprension alma"
+          ],
+          "concept_hints": [
+            "spirituality",
+            "philosophy"
+          ],
+          "clean_for_selection": "definición y comprensión del alma",
+          "notes": {
+            "used_ai_normalizer": true,
+            "looked_like_book_intent": false,
+            "semantic_overlap_vs_raw": 0.25
+          }
+        },
+        "selection_validation": {},
+        "catalog_scope": "libros_master_csv",
+        "contexto_2026": {
+          "aplicacion_badir_hoy": "",
+          "trigger_diagnostics": {
+            "semantic_query": "definición y comprensión del alma",
+            "editorial_requests": [],
+            "supported_constraints": {
+              "year_min": null,
+              "year_max": null,
+              "prefer_recent": false
+            },
+            "source_preference": null,
+            "ranking_preference": null
+          }
+        },
+        "identity_sealed": true,
+        "_evidence": {
+          "titulo_input": "Destino libertad y alma",
+          "autor_input": "Osho",
+          "isbn_seed": "",
+          "isbn_seed_raw": "",
+          "isbn_seed_rejected": null,
+          "isbn_discovered": "",
+          "isbn_discovered_raw": "",
+          "apple": {
+            "ok": true,
+            "source": "apple_books",
+            "match_score": 1,
+            "match_details": {
+              "matched_title": "Destino, libertad y alma",
+              "matched_author": "Osho"
+            },
+            "synopsis": "Respuestas para saber cuál es el significado de la vida. Desde el momento en que nace empieza a surgir una gran búsqueda en lo más profundo de cada ser humano. Podemos reprimir esa búsqueda, desviarla y sustituirla, pero no podemos eliminarla, ya que es intrínseca a la naturaleza humana. Hasta que no se resuelve, seguiremos buscando. Por supuesto, hay muchas formas de equivocarse y solo una forma de acertar, así que la búsqueda está llena de riesgos.",
+            "synopsis_length": 454,
+            "covers": [
+              {
+                "size": "xxlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/03/90/c4/0390c4d9-ea87-1945-aec1-6e3f0b4d4ed7/9786074807820.jpg/3000x3000bb.jpg"
+              },
+              {
+                "size": "xlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/03/90/c4/0390c4d9-ea87-1945-aec1-6e3f0b4d4ed7/9786074807820.jpg/1200x1200bb.jpg"
+              },
+              {
+                "size": "large",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/03/90/c4/0390c4d9-ea87-1945-aec1-6e3f0b4d4ed7/9786074807820.jpg/600x600bb.jpg"
+              },
+              {
+                "size": "medium",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/03/90/c4/0390c4d9-ea87-1945-aec1-6e3f0b4d4ed7/9786074807820.jpg/100x100bb.jpg"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "Destino, libertad y alma",
+              "autor_completo": "Osho",
+              "año": "2014",
+              "editorial": null,
+              "isbn": "",
+              "apple_track_id": "1456182763",
+              "categorias": [
+                "Superación personal",
+                "Libros",
+                "Salud, mente y cuerpo",
+                "Religión y espiritualidad",
+                "Espiritualidad"
+              ],
+              "track_view_url": "https://books.apple.com/mx/book/destino-libertad-y-alma/id1456182763?uo=4"
+            }
+          },
+          "google": {
+            "ok": false,
+            "reason": "no_good_match",
+            "source": "google_books"
+          },
+          "openlibrary": {
+            "ok": true,
+            "source": "openlibrary",
+            "match_score": 1,
+            "match_details": {
+              "matched_title": "Destino, libertad y alma",
+              "matched_author": "Osho, Traducciones Imposibles  S. L."
+            },
+            "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2011.",
+            "synopsis_length": 65,
+            "covers": [
+              {
+                "size": "large",
+                "url": "https://covers.openlibrary.org/b/id/13563603-L.jpg"
+              },
+              {
+                "size": "medium",
+                "url": "https://covers.openlibrary.org/b/id/13563603-M.jpg"
+              },
+              {
+                "size": "small",
+                "url": "https://covers.openlibrary.org/b/id/13563603-S.jpg"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "Destino, libertad y alma",
+              "autor_completo": "Osho, Traducciones Imposibles  S. L.",
+              "año": "2011",
+              "editorial": null,
+              "isbn": "",
+              "categorias": [],
+              "idioma": null,
+              "paginas": null
+            }
+          },
+          "amazon": {
+            "ok": false,
+            "reason": "skipped",
+            "source": "amazon"
+          },
+          "valid_covers": [
+            {
+              "source": "apple_books",
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/03/90/c4/0390c4d9-ea87-1945-aec1-6e3f0b4d4ed7/9786074807820.jpg/3000x3000bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/03/90/c4/0390c4d9-ea87-1945-aec1-6e3f0b4d4ed7/9786074807820.jpg/1200x1200bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/03/90/c4/0390c4d9-ea87-1945-aec1-6e3f0b4d4ed7/9786074807820.jpg/600x600bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/03/90/c4/0390c4d9-ea87-1945-aec1-6e3f0b4d4ed7/9786074807820.jpg/100x100bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "openlibrary",
+              "size": "large",
+              "url": "https://covers.openlibrary.org/b/id/13563603-L.jpg",
+              "valid": true
+            },
+            {
+              "source": "openlibrary",
+              "size": "medium",
+              "url": "https://covers.openlibrary.org/b/id/13563603-M.jpg",
+              "valid": true
+            }
+          ],
+          "_sources_succeeded": [
+            "apple_books",
+            "openlibrary"
+          ],
+          "_sources_failed": [
+            "google_books:no_good_match",
+            "amazon:skipped"
+          ],
+          "_timing": {
+            "phase1_parallel_ms": 15789,
+            "phase2_isbn_chain_ms": 0,
+            "cover_validation_ms": 2440,
+            "total_ms": 18229
+          },
+          "_version": "3.6"
+        },
+        "_evidence_synopsis": "Respuestas para saber cuál es el significado de la vida. Desde el momento en que nace empieza a surgir una gran búsqueda en lo más profundo de cada ser humano. Podemos reprimir esa búsqueda, desviarla y sustituirla, pero no podemos eliminarla, ya que es intrínseca a la naturaleza humana. Hasta que no se resuelve, seguiremos buscando. Por supuesto, hay muchas formas de equivocarse y solo una forma de acertar, así que la búsqueda está llena de riesgos.",
+        "_evidence_verified_identity": {
+          "titulo_real": "Destino, libertad y alma",
+          "autor_completo": "Osho",
+          "año": "2014",
+          "editorial": null,
+          "isbn": "",
+          "apple_track_id": "1456182763",
+          "categorias": [
+            "Superación personal",
+            "Libros",
+            "Salud, mente y cuerpo",
+            "Religión y espiritualidad",
+            "Espiritualidad"
+          ],
+          "track_view_url": "https://books.apple.com/mx/book/destino-libertad-y-alma/id1456182763?uo=4"
+        },
+        "_evidence_match_score": 1
+      },
+      "ring_updated": true
+    }
+  ],
+  "last": {
+    "at": "2026-05-10T22:16:10.192Z",
+    "stage": "success",
+    "bookData": {
+      "titulo": "Destino libertad y alma",
+      "autor": "Osho",
+      "slug": "destino-libertad-y-alma",
+      "tagline": "Respuestas para saber cuál es el significado de la vida.Desde el momento en que nace empieza a surgir una gran búsqueda en lo más profundo de cada ser humano.",
+      "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/03/90/c4/0390c4d9-ea87-1945-aec1-6e3f0b4d4ed7/9786074807820.jpg/3000x3000bb.jpg",
+      "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/03/90/c4/0390c4d9-ea87-1945-aec1-6e3f0b4d4ed7/9786074807820.jpg/3000x3000bb.jpg",
+      "portada_source": "apple_books",
+      "portada_candidates": [
+        {
+          "source": "apple_books",
+          "size": "xxlarge",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/03/90/c4/0390c4d9-ea87-1945-aec1-6e3f0b4d4ed7/9786074807820.jpg/3000x3000bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "xlarge",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/03/90/c4/0390c4d9-ea87-1945-aec1-6e3f0b4d4ed7/9786074807820.jpg/1200x1200bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "large",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/03/90/c4/0390c4d9-ea87-1945-aec1-6e3f0b4d4ed7/9786074807820.jpg/600x600bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "medium",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/03/90/c4/0390c4d9-ea87-1945-aec1-6e3f0b4d4ed7/9786074807820.jpg/100x100bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "openlibrary",
+          "size": "large",
+          "url": "https://covers.openlibrary.org/b/id/13563603-L.jpg",
+          "valid": true
+        },
+        {
+          "source": "openlibrary",
+          "size": "medium",
+          "url": "https://covers.openlibrary.org/b/id/13563603-M.jpg",
+          "valid": true
+        }
+      ],
+      "needs_fallback_cover": false,
+      "isbn": "",
+      "editorial": "Osho",
+      "publication_year": "2014",
+      "source": "apple_books",
+      "duplicado": true,
+      "selected_via": "constrained_catalog",
+      "selection_reason": "Ofrece respuestas sobre el significado de la vida y la búsqueda del alma.",
+      "trigger_input": "que es el alma",
+      "trigger_analysis": {
+        "raw_input": "que es el alma",
+        "semantic_query": "definición y comprensión del alma",
+        "intent_summary": "Buscar información sobre el concepto del alma.",
+        "editorial_requests": [],
+        "source_preference": null,
+        "ranking_preference": null,
+        "unsupported_runtime_constraints": [],
+        "supported_constraints": {
+          "year_min": null,
+          "year_max": null,
+          "prefer_recent": false
+        },
+        "search_queries": [
+          "qué es el alma",
+          "definición del alma",
+          "concepto de alma",
+          "filosofía del alma",
+          "alma en la espiritualidad",
+          "alma en diferentes culturas",
+          "definición y comprensión del alma",
+          "definicion comprension alma"
+        ],
+        "concept_hints": [
+          "spirituality",
+          "philosophy"
+        ],
+        "clean_for_selection": "definición y comprensión del alma",
+        "notes": {
+          "used_ai_normalizer": true,
+          "looked_like_book_intent": false,
+          "semantic_overlap_vs_raw": 0.25
+        }
+      },
+      "selection_validation": {},
+      "catalog_scope": "libros_master_csv",
+      "contexto_2026": {
+        "aplicacion_badir_hoy": "",
+        "trigger_diagnostics": {
+          "semantic_query": "definición y comprensión del alma",
+          "editorial_requests": [],
+          "supported_constraints": {
+            "year_min": null,
+            "year_max": null,
+            "prefer_recent": false
+          },
+          "source_preference": null,
+          "ranking_preference": null
+        }
+      },
+      "identity_sealed": true,
+      "_evidence": {
+        "titulo_input": "Destino libertad y alma",
+        "autor_input": "Osho",
+        "isbn_seed": "",
+        "isbn_seed_raw": "",
+        "isbn_seed_rejected": null,
+        "isbn_discovered": "",
+        "isbn_discovered_raw": "",
+        "apple": {
+          "ok": true,
+          "source": "apple_books",
+          "match_score": 1,
+          "match_details": {
+            "matched_title": "Destino, libertad y alma",
+            "matched_author": "Osho"
+          },
+          "synopsis": "Respuestas para saber cuál es el significado de la vida. Desde el momento en que nace empieza a surgir una gran búsqueda en lo más profundo de cada ser humano. Podemos reprimir esa búsqueda, desviarla y sustituirla, pero no podemos eliminarla, ya que es intrínseca a la naturaleza humana. Hasta que no se resuelve, seguiremos buscando. Por supuesto, hay muchas formas de equivocarse y solo una forma de acertar, así que la búsqueda está llena de riesgos.",
+          "synopsis_length": 454,
+          "covers": [
+            {
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/03/90/c4/0390c4d9-ea87-1945-aec1-6e3f0b4d4ed7/9786074807820.jpg/3000x3000bb.jpg"
+            },
+            {
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/03/90/c4/0390c4d9-ea87-1945-aec1-6e3f0b4d4ed7/9786074807820.jpg/1200x1200bb.jpg"
+            },
+            {
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/03/90/c4/0390c4d9-ea87-1945-aec1-6e3f0b4d4ed7/9786074807820.jpg/600x600bb.jpg"
+            },
+            {
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/03/90/c4/0390c4d9-ea87-1945-aec1-6e3f0b4d4ed7/9786074807820.jpg/100x100bb.jpg"
+            }
+          ],
+          "verified_identity": {
+            "titulo_real": "Destino, libertad y alma",
+            "autor_completo": "Osho",
+            "año": "2014",
+            "editorial": null,
+            "isbn": "",
+            "apple_track_id": "1456182763",
+            "categorias": [
+              "Superación personal",
+              "Libros",
+              "Salud, mente y cuerpo",
+              "Religión y espiritualidad",
+              "Espiritualidad"
+            ],
+            "track_view_url": "https://books.apple.com/mx/book/destino-libertad-y-alma/id1456182763?uo=4"
+          }
+        },
+        "google": {
+          "ok": false,
+          "reason": "no_good_match",
+          "source": "google_books"
+        },
+        "openlibrary": {
+          "ok": true,
+          "source": "openlibrary",
+          "match_score": 1,
+          "match_details": {
+            "matched_title": "Destino, libertad y alma",
+            "matched_author": "Osho, Traducciones Imposibles  S. L."
+          },
+          "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2011.",
+          "synopsis_length": 65,
+          "covers": [
+            {
+              "size": "large",
+              "url": "https://covers.openlibrary.org/b/id/13563603-L.jpg"
+            },
+            {
+              "size": "medium",
+              "url": "https://covers.openlibrary.org/b/id/13563603-M.jpg"
+            },
+            {
+              "size": "small",
+              "url": "https://covers.openlibrary.org/b/id/13563603-S.jpg"
+            }
+          ],
+          "verified_identity": {
+            "titulo_real": "Destino, libertad y alma",
+            "autor_completo": "Osho, Traducciones Imposibles  S. L.",
+            "año": "2011",
+            "editorial": null,
+            "isbn": "",
+            "categorias": [],
+            "idioma": null,
+            "paginas": null
+          }
+        },
+        "amazon": {
+          "ok": false,
+          "reason": "skipped",
+          "source": "amazon"
+        },
+        "valid_covers": [
+          {
+            "source": "apple_books",
+            "size": "xxlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/03/90/c4/0390c4d9-ea87-1945-aec1-6e3f0b4d4ed7/9786074807820.jpg/3000x3000bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "xlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/03/90/c4/0390c4d9-ea87-1945-aec1-6e3f0b4d4ed7/9786074807820.jpg/1200x1200bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "large",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/03/90/c4/0390c4d9-ea87-1945-aec1-6e3f0b4d4ed7/9786074807820.jpg/600x600bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "medium",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/03/90/c4/0390c4d9-ea87-1945-aec1-6e3f0b4d4ed7/9786074807820.jpg/100x100bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "openlibrary",
+            "size": "large",
+            "url": "https://covers.openlibrary.org/b/id/13563603-L.jpg",
+            "valid": true
+          },
+          {
+            "source": "openlibrary",
+            "size": "medium",
+            "url": "https://covers.openlibrary.org/b/id/13563603-M.jpg",
+            "valid": true
+          }
+        ],
+        "_sources_succeeded": [
+          "apple_books",
+          "openlibrary"
+        ],
+        "_sources_failed": [
+          "google_books:no_good_match",
+          "amazon:skipped"
+        ],
+        "_timing": {
+          "phase1_parallel_ms": 15789,
+          "phase2_isbn_chain_ms": 0,
+          "cover_validation_ms": 2440,
+          "total_ms": 18229
+        },
+        "_version": "3.6"
+      },
+      "_evidence_synopsis": "Respuestas para saber cuál es el significado de la vida. Desde el momento en que nace empieza a surgir una gran búsqueda en lo más profundo de cada ser humano. Podemos reprimir esa búsqueda, desviarla y sustituirla, pero no podemos eliminarla, ya que es intrínseca a la naturaleza humana. Hasta que no se resuelve, seguiremos buscando. Por supuesto, hay muchas formas de equivocarse y solo una forma de acertar, así que la búsqueda está llena de riesgos.",
+      "_evidence_verified_identity": {
+        "titulo_real": "Destino, libertad y alma",
+        "autor_completo": "Osho",
+        "año": "2014",
+        "editorial": null,
+        "isbn": "",
+        "apple_track_id": "1456182763",
+        "categorias": [
+          "Superación personal",
+          "Libros",
+          "Salud, mente y cuerpo",
+          "Religión y espiritualidad",
+          "Espiritualidad"
+        ],
+        "track_view_url": "https://books.apple.com/mx/book/destino-libertad-y-alma/id1456182763?uo=4"
+      },
+      "_evidence_match_score": 1
+    },
+    "ring_updated": true
+  }
+}
