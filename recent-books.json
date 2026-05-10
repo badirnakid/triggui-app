@@ -191,6 +191,16 @@
       "timestamp": "2026-05-10T21:01:37.614Z",
       "trigger_input": "hay que cuidar lo que comemos no?",
       "selected_via": "constrained_catalog"
+    },
+    {
+      "titulo": "El código del dinero",
+      "autor": "Raimon Samsó Queraltó",
+      "slug": "el-codigo-del-dinero",
+      "titulo_normalizado": "el codigo del dinero",
+      "autor_normalizado": "raimon samso queralto",
+      "timestamp": "2026-05-10T21:39:21.876Z",
+      "trigger_input": "es tan dificl ganar dinero?",
+      "selected_via": "constrained_catalog"
     }
   ],
   "_note": "FIFO ring de últimos 30 libros generados por selección automática (constrained o discover). Filtro pre-rerank en validate-book.js. Inicializa vacío y se rellena con cada run exitoso. Si se borra, el sistema arranca limpio sin daño."
