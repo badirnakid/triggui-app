@@ -224,6 +224,54 @@ function withAlpha(hex, alpha = "30") {
   return "";
 }
 
+// ════════════════════════════════════════════════════════════════════════════
+// 🌒 NUMERACIÓN NIVEL DIOS CUÁNTICO-QUARK (V10)
+// ════════════════════════════════════════════════════════════════════════════
+const PADDING_DIGITS = 3;
+
+function formatEdicionNumero(n) {
+  if (n === null || n === undefined) return null;
+  const num = parseInt(n, 10);
+  if (isNaN(num) || num < 1) return null;
+  return "#" + String(num).padStart(PADDING_DIGITS, "0");
+}
+
+// 🌒 BUG 2 defensa — parrafoTop cortado
+function ensureTextClosure(text) {
+  if (!text) return text;
+  let value = String(text).replace(/\s+$/g, "");
+  if (!value) return value;
+  // Cierres legítimos
+  const LEGITIMATE_CLOSURES = ['.', '?', '!', '…', '—', '"', '»', ')', ']'];
+  if (LEGITIMATE_CLOSURES.some(c => value.endsWith(c))) return value;
+  // Estrategia A: buscar último cierre legítimo a >=50% del texto
+  const half = Math.max(1, Math.floor(value.length / 2));
+  let bestIdx = -1;
+  for (const closure of ['.', '?', '!', '…']) {
+    const idx = value.lastIndexOf(closure);
+    if (idx >= half && idx > bestIdx) bestIdx = idx;
+  }
+  if (bestIdx >= 0) {
+    return value.slice(0, bestIdx + 1).replace(/\s+$/g, "");
+  }
+  // Estrategia B: agregar elipsis tras limpiar trailing comas/conjunciones
+  return value.replace(/[ ,;:]+$/g, "") + "…";
+}
+
+// 🌒 BUG 3 defensa — tags pseudo-HTML inventados (PARES emparejados)
+function removePseudoHtmlPairs(value) {
+  if (!value) return value;
+  // Pattern: [name]X[/name] donde name != H, name puede tener atributos
+  // Lazy match para no consumir múltiples pares como uno solo
+  const pattern = /\[(?!H\])([a-zA-Z][a-zA-Z0-9]*)(?:\s[^\]]*)?\]([\s\S]*?)\[\/\1\]/g;
+  let prev = null;
+  while (value !== prev) {
+    prev = value;
+    value = value.replace(pattern, (_, _name, content) => content);
+  }
+  return value;
+}
+
 function normalizeHighlightSyntax(input) {
   let text = String(input || "").trim();
   if (!text) return "";
@@ -234,27 +282,28 @@ function normalizeHighlightSyntax(input) {
     .replace(/\[h\]/g, "[H]")
     .replace(/\[\/h\]/g, "[/H]");
 
-  let toggleOpen = true;
-  text = text.replace(/\[H\]/g, () => {
-    const token = toggleOpen ? "[H]" : "[/H]";
-    toggleOpen = !toggleOpen;
-    return token;
-  });
-
+  // 🌒 BUG 4 FIX (V10): eliminar toggle que rompía múltiples [H] legítimos
+  // ANTES (bug): `[H]uno[/H] y [H]dos[/H]` → toggle convertía 2do [H] a [/H]
+  //              → balanceación eliminaba [/H] extras → "[H]uno[/H] y dos"
+  // DESPUÉS:    [H] = apertura, [/H] = cierre, balance al final solo si necesita
   const opens = (text.match(/\[H\]/g) || []).length;
   const closes = (text.match(/\[\/H\]/g) || []).length;
 
   if (opens > closes) {
     text += "[/H]".repeat(opens - closes);
+  } else if (closes > opens) {
+    let extraClose = closes - opens;
+    while (extraClose > 0) {
+      const idx = text.lastIndexOf("[/H]");
+      if (idx === -1) break;
+      text = text.slice(0, idx) + text.slice(idx + 4);
+      extraClose -= 1;
+    }
   }
 
-  let extraClose = (text.match(/\[\/H\]/g) || []).length - (text.match(/\[H\]/g) || []).length;
-  while (extraClose > 0) {
-    const idx = text.lastIndexOf("[/H]");
-    if (idx === -1) break;
-    text = text.slice(0, idx) + text.slice(idx + 4);
-    extraClose -= 1;
-  }
+  // 🌒 BUG 3 FIX (V10): eliminar tags pseudo-HTML inventados por el modelo
+  // Aplicado DESPUÉS del balanceo de [H] para no romper highlights legítimos
+  text = removePseudoHtmlPairs(text);
 
   return text
     .replace(/\[H\]\s*\[\/H\]/g, "")
@@ -441,8 +490,10 @@ function buildPresentationCopy(libro, bookMeta) {
   // (Apple Books, Google Books). bookMeta.autor viene del input crudo del workflow
   // y puede estar truncado ("Greene" vs "Robert Greene"). El grounding siempre gana.
   const author = sanitizeShortText(libro.autor || bookMeta.autor || "", "");
-  const top = ensureOneHighlight(source.parrafoTop || "");
-  const bottom = ensureOneHighlight(source.parrafoBot || "");
+  // 🌒 BUG 2 FIX (V10): ensureTextClosure aplicado para evitar parrafoTop cortado
+  // (gpt-4o-mini a veces termina respuesta por max_tokens dejando texto incompleto)
+  const top = ensureTextClosure(ensureOneHighlight(source.parrafoTop || ""));
+  const bottom = ensureTextClosure(ensureOneHighlight(source.parrafoBot || ""));
 
   const bodyParts = [];
   if (top) bodyParts.push(renderHighlightHTML(top));
@@ -481,12 +532,22 @@ function buildHTML({
   chipBg,
   chipColor,
   highlight,
-  initial
+  initial,
+  edicionLabel
 }) {
   const portadaSection = portadaURL
     ? `
       <div class="cover-wrap" id="coverWrap">
         <img class="cover" src="${portadaURL}" alt="Portada de ${escapeHTML(display.title)}" />
+      </div>`
+    : "";
+
+  // 🌒 NUMERACIÓN (V10): badge tipográfico minimal superior-derecha
+  const edicionBadgeSection = edicionLabel
+    ? `
+      <div class="edicion-badge" aria-hidden="true">
+        <span class="edicion-badge-label">EDICIÓN</span>
+        <strong class="edicion-badge-num">${escapeHTML(edicionLabel)}</strong>
       </div>`
     : "";
 
@@ -586,6 +647,7 @@ function buildHTML({
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    position: relative;  /* 🌒 V10: ancla para el .edicion-badge absolute */
   }
 
   .hero {
@@ -656,14 +718,62 @@ function buildHTML({
     color: var(--author-chip-color);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
     font-size: var(--author-chip-size);
-    line-height: 1;
+    line-height: 1.35;
     font-weight: 700;
     letter-spacing: 0.3px;
     margin: 2px 0 20px 0;
+    /* 🌒 BUG 1 FIX (V10): permitir wrap natural cuando autor es largo */
+    /* Antes: chip inline-flex + texto largo creaba hueco vertical bajo el título */
+    /* Ahora: el chip se rompe en líneas dentro de su contenedor sin afectar layout */
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    text-align: center;
+    vertical-align: top;
+    /* TODO: refactor a CSS Grid en Phase futura para eliminar dependencia de float */
   }
 
   .author-chip.is-hidden {
     display: none;
+  }
+
+  /* ════════════════════════════════════════════════════════════════════════
+     🌒 NUMERACIÓN NIVEL DIOS CUÁNTICO-QUARK (V10) — badge en tarjeta PNG
+     Posición: superior-derecha del .card, dentro del padding interno
+     Tipografía: Inter weight 600 small caps (label) + serif italic (número)
+     Escala: optimizada para PNG 1066×1600 (más grande que el HTML web)
+     ════════════════════════════════════════════════════════════════════════ */
+  .edicion-badge {
+    position: absolute;
+    top: 24px;
+    right: 28px;
+    text-align: right;
+    pointer-events: none;
+    z-index: 5;
+    user-select: none;
+    line-height: 1;
+  }
+  .edicion-badge-label {
+    display: block;
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.20em;
+    text-transform: uppercase;
+    color: rgba(26, 26, 26, 0.45);
+    line-height: 1;
+  }
+  .edicion-badge-num {
+    display: block;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 28px;
+    font-weight: 700;
+    font-style: italic;
+    letter-spacing: -0.01em;
+    color: rgba(26, 26, 26, 0.78);
+    line-height: 1.05;
+    margin-top: 4px;
   }
 
   .body-text {
@@ -737,6 +847,7 @@ function buildHTML({
 <body style="${cssVars}">
   <div class="frame">
     <div class="card">
+      ${edicionBadgeSection}
       <div class="hero" id="content">
         <div class="flow">
           ${portadaSection}
@@ -809,6 +920,9 @@ const accent = style.accent || APP.border;
 const highlight = buildLiveAccentHighlightStyle(accent, paragraphColor);
 const initial = computeInitialLayout(display, Boolean(portadaURL));
 
+// 🌒 NUMERACIÓN (V10): formatear número de edición si el libro lo tiene
+const edicionLabel = formatEdicionNumero(libro._edicion_numero);
+
 const html = buildHTML({
   display,
   portadaURL,
@@ -818,7 +932,8 @@ const html = buildHTML({
   chipBg,
   chipColor,
   highlight,
-  initial
+  initial,
+  edicionLabel
 });
 
 /* ═══════════════════════════════════════════════════════════════

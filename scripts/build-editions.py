@@ -26,6 +26,94 @@ BASE_URL = os.environ.get("BASE_URL", "https://app.triggui.com").rstrip("/")
 TRIGGUI_EDICION_JSON_ENV = os.environ.get("TRIGGUI_EDICION_JSON", "").strip()
 
 
+# ════════════════════════════════════════════════════════════════════════════
+# 🌒 NUMERACIÓN NIVEL DIOS CUÁNTICO-QUARK (V10)
+# ════════════════════════════════════════════════════════════════════════════
+# PADDING_DIGITS controla cuántos dígitos del número se renderean.
+# Cambiar a 4 cuando se acerque #800 (próximas 4 décadas con 1 edición/semana).
+# El integer en contenido.json NO cambia — solo cómo se renderea.
+PADDING_DIGITS = 3
+
+
+def format_edicion_numero(n):
+    """
+    Formatea un número de edición como '#047' (con padding).
+    Retorna None si n no es un entero válido (no se renderea badge).
+    """
+    if n is None:
+        return None
+    try:
+        num = int(n)
+    except (TypeError, ValueError):
+        return None
+    if num < 1:
+        return None
+    return "#" + str(num).zfill(PADDING_DIGITS)
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# 🌒 ENSURE_TEXT_CLOSURE — Bug 2 defensa (parrafoTop cortado)
+# ════════════════════════════════════════════════════════════════════════════
+# Si el modelo terminó la respuesta sin completar la frase (max_tokens limit),
+# detectar texto sin cierre y aplicar estrategia A+B:
+#   A) Buscar último signo de cierre legítimo (. ? ! … —) a >50% del texto
+#      y truncar ahí
+#   B) Si no hay, agregar "…" al final
+# Texto que YA termina con cierre legítimo se preserva intacto.
+def ensure_text_closure(text):
+    if not text:
+        return text
+    value = str(text).rstrip()
+    if not value:
+        return value
+    # Cierres legítimos
+    LEGITIMATE_CLOSURES = (".", "?", "!", "…", "—", '"', "»", ")", "]", "."  )
+    if value.endswith(LEGITIMATE_CLOSURES):
+        return value
+    # Estrategia A: buscar último cierre legítimo a >=50% del texto
+    half = max(1, len(value) // 2)
+    best_idx = -1
+    for closure in (".", "?", "!", "…"):
+        idx = value.rfind(closure)
+        if idx >= half and idx > best_idx:
+            best_idx = idx
+    if best_idx >= 0:
+        # Truncar incluyendo el carácter de cierre
+        return value[: best_idx + 1].rstrip()
+    # Estrategia B: agregar elipsis
+    # Limpiar trailing comas, conjunciones cortadas, etc.
+    value = value.rstrip(" ,;:")
+    return value + "…"
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# 🌒 REMOVE_PSEUDO_HTML_PAIRS — Bug 3 defensa (tags inventados por modelo)
+# ════════════════════════════════════════════════════════════════════════════
+# El modelo (gpt-4o-mini) a veces inventa tags pseudo-HTML como [em]...[/em],
+# [dB]...[/dB], [strong]...[/strong]. Estos NO son [H] (highlight legítimo).
+#
+# Filosofía cuántico-quark: SOLO eliminar PARES emparejados [name]X[/name].
+# Texto editorial entre corchetes SIN par (ej. "[sic]", "[música]", "[1]")
+# se preserva intacto porque NO es tag, es notación literal.
+#
+# Aplicado iterativamente para tags anidados (ej. [em][strong]X[/strong][/em]).
+def remove_pseudo_html_pairs(value):
+    if not value:
+        return value
+    # Pattern: [name]X[/name] donde name != H (case-sensitive)
+    # name puede tener atributos opcionales (ej. [span class=foo])
+    # X es el contenido (lazy match)
+    pattern = re.compile(
+        r'\[(?!H\])([a-zA-Z][a-zA-Z0-9]*)(?:\s[^\]]*)?\](.*?)\[/\1\]',
+        re.DOTALL
+    )
+    prev = None
+    while value != prev:
+        prev = value
+        value = pattern.sub(lambda m: m.group(2), value)
+    return value
+
+
 def esc(value):
     return html.escape(str(value or ""), quote=True)
 
@@ -415,23 +503,18 @@ def normalize_highlight_syntax(text):
     value = re.sub(r"\[h\]", "[H]", value)
     value = re.sub(r"\[\/h\]", "[/H]", value)
 
-    toggle_open = True
-
-    def replace_open(_match):
-        nonlocal toggle_open
-        token = "[H]" if toggle_open else "[/H]"
-        toggle_open = not toggle_open
-        return token
-
-    value = re.sub(r"\[H\]", replace_open, value)
-
+    # 🌒 BUG 4 FIX (V10): eliminar toggle que rompía múltiples [H] legítimos
+    # ANTES (bug): `[H]uno[/H] y [H]dos[/H]` → toggle convertía 2do [H] a [/H]
+    #              → balanceación eliminaba [/H] extras → "[H]uno[/H] y dos"
+    # DESPUÉS:    [H] = apertura, [/H] = cierre, balance al final solo si necesita
     opens = len(re.findall(r"\[H\]", value))
     closes = len(re.findall(r"\[/H\]", value))
 
     if opens > closes:
+        # Agregar [/H] faltantes al final
         value += "[/H]" * (opens - closes)
-
-    if closes > opens:
+    elif closes > opens:
+        # Eliminar [/H] extras desde el final
         extra = closes - opens
         while extra > 0:
             idx = value.rfind("[/H]")
@@ -439,6 +522,10 @@ def normalize_highlight_syntax(text):
                 break
             value = value[:idx] + value[idx + 4 :]
             extra -= 1
+
+    # 🌒 BUG 3 FIX (V10): eliminar tags pseudo-HTML inventados por el modelo
+    # Aplicado DESPUÉS del balanceo de [H] para no romper highlights legítimos
+    value = remove_pseudo_html_pairs(value)
 
     value = re.sub(r"\[H\]\s*\[/H\]", "", value)
     value = re.sub(r"[ \t]{2,}", " ", value).strip()
@@ -502,6 +589,16 @@ def render_edicion(edicion, mode="lab"):
     t_parrafo_top = normalize_highlight_syntax(tarjeta.get("parrafoTop", "") or "")
     t_subtitulo = str(tarjeta.get("subtitulo", "") or "").strip()
     t_parrafo_bot = normalize_highlight_syntax(tarjeta.get("parrafoBot", "") or "")
+
+    # 🌒 BUG 2 FIX (V10): aplicar ensure_text_closure al render
+    # Si el modelo cortó el parrafoTop por max_tokens, aplicar elipsis o
+    # truncar a última oración completa. Defensa final en render.
+    t_parrafo_top = ensure_text_closure(t_parrafo_top)
+    t_parrafo_bot = ensure_text_closure(t_parrafo_bot)
+
+    # 🌒 NUMERACIÓN NIVEL DIOS (V10): extraer número de edición si existe
+    edicion_numero_raw = edicion.get("_edicion_numero")
+    edicion_label = format_edicion_numero(edicion_numero_raw)
 
     style = tarjeta.get("style", {}) or {}
     accent = style.get("accent") or "#E35D30"
@@ -887,6 +984,16 @@ body::before {
   border-radius: 12px;
   letter-spacing: 0.3px;
   margin: 0 0 12px 0;
+  /* 🌒 BUG 1 FIX (V10): permitir wrap natural cuando autor es largo */
+  /* Antes: chip inline-block + texto largo creaba hueco vertical bajo el título */
+  /* Ahora: el chip se rompe en líneas dentro de su contenedor sin afectar layout */
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  vertical-align: top;
+  line-height: 1.35;
+  /* TODO: refactor a CSS Grid en Phase futura para eliminar dependencia de float */
 }
 
 .ed-block .ed-para {
@@ -918,6 +1025,48 @@ body::before {
   border-radius: 0.14em;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   🌒 NUMERACIÓN NIVEL DIOS CUÁNTICO-QUARK (V10) — sello tipográfico minimal
+   Posición: superior-derecha del reveal-card
+   Tipografía: Archivo small caps (label) + Playfair Display italic (número)
+   Estilo: sin contenedor, sin borde, sin fondo — solo tipografía premium
+   ════════════════════════════════════════════════════════════════════════════ */
+.edicion-badge {
+  position: absolute;
+  top: 22px;
+  right: 56px;  /* libra espacio del btn-close (×) */
+  text-align: right;
+  pointer-events: none;
+  z-index: 5;
+  user-select: none;
+}
+.edicion-badge-label {
+  display: block;
+  font-family: 'Archivo', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1;
+}
+.edicion-badge-num {
+  display: block;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 24px;
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: -0.01em;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.05;
+  margin-top: 3px;
+}
+@media (max-width: 480px) {
+  .edicion-badge { top: 18px; right: 50px; }
+  .edicion-badge-label { font-size: 9px; letter-spacing: 0.16em; }
+  .edicion-badge-num { font-size: 20px; margin-top: 2px; }
 }
 
 .ed-cover-wrap {
@@ -1258,6 +1407,7 @@ body::before {
 <div id="revealOverlay" class="reveal-overlay">
   <div class="reveal-card" onclick="event.stopPropagation()">
     <button class="btn-close" id="btnBack" aria-label="Cerrar">×</button>
+    __EDICION_BADGE_HTML__
     <div class="card-inner">
 
       <div class="ed-block" id="editorialBlockTop">
@@ -1907,8 +2057,17 @@ setOverlayView('blocks');
     )
 
     replacements = {
-        "__TITLE_PAGE__": esc(f"{palabra} · {titulo} · Triggui"),
-        "__OG_TITLE__": esc(og_title),
+        # 🌒 NUMERACIÓN (V10): prefix "Edición #047 · " si hay número
+        "__TITLE_PAGE__": esc(
+            f"Edición {edicion_label} · {titulo} · Triggui"
+            if edicion_label
+            else f"{palabra} · {titulo} · Triggui"
+        ),
+        "__OG_TITLE__": esc(
+            f"Edición {edicion_label} · {og_title}"
+            if edicion_label
+            else og_title
+        ),
         "__META_DESCRIPTION__": esc(og_description),
         "__OG_IMAGE__": esc(og_image),
         "__OG_URL__": esc(og_url),
@@ -1924,6 +2083,15 @@ setOverlayView('blocks');
         "__PENGUIN_Q__": esc(penguin_q),
         "__SILENCE_COVER_HTML__": silence_cover_html,
         "__SILENCE_TITLE__": esc(titulo),
+        # 🌒 NUMERACIÓN (V10): badge HTML del sello superior-derecha
+        "__EDICION_BADGE_HTML__": (
+            f'<div class="edicion-badge" aria-hidden="true">'
+            f'<span class="edicion-badge-label">EDICIÓN</span>'
+            f'<strong class="edicion-badge-num">{esc(edicion_label)}</strong>'
+            f'</div>'
+            if edicion_label
+            else ""
+        ),
     }
 
     for key, value in replacements.items():
