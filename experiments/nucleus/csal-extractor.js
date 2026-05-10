@@ -1,10 +1,41 @@
 // ═══════════════════════════════════════════════════════════════════════════════
-// 🌒 SPRINT NIVEL DIOS CUÁNTICO — CSAL EXTRACTOR v3
+// 🌒 SPRINT NIVEL DIOS CUÁNTICO — CSAL EXTRACTOR v4
 // ═══════════════════════════════════════════════════════════════════════════════
 //
 // Capa B del Sprint Nivel Dios (mayo 2026).
 // Genera la "superficie semántica" de cada libro (Concept Surface Area del Libro)
 // para que app.triggui.com matchee queries del usuario en runtime sin red.
+//
+// ═══════════════════════════════════════════════════════════════════════════════
+// CHANGELOG v4 — POST TERCER SHADOW BATCH v3 (mayo 9, 2026)
+// ═══════════════════════════════════════════════════════════════════════════════
+//
+// Tercer shadow batch con v3 reveló:
+//   ✓ Bug #1 ERRADICADO — 0/20 timeouts silenciosos
+//   ✓ Bug #2 ERRADICADO — 0/20 strings basura en arrays (vs 7/20 en v2)
+//   ⚠ Bug #3 reaparece — 1/20 con field contamination caso edge:
+//      "The messy middle" tenía concept_tags=["..., 'anti_patterns', 'bloques']
+//
+// Causa raíz del fallo del v3:
+//   - v3 ablandó la regla "schema field name" exigiendo puntuación adyacente
+//     para evitar falsos positivos con palabras naturales (objetos, contextos, verbos)
+//   - Pero "anti_patterns" (snake_case) NUNCA es contenido natural en español
+//   - Plus: cleanCSALData usa minLength=4 para concept_tags (keywords cortos),
+//     así que "anti_patterns" (13 chars) pasaba el filtro mínimo
+//
+// v4 nivel dios — quirúrgico, 1 línea adicional en isCleanString:
+//   ✓ Nueva regla [v4-EXACT]: si el string es EXACTAMENTE un schema field name
+//     (case insensitive, tras trim) → contaminación garantizada → rechazar
+//   ✓ Caza "anti_patterns", "bloques", "concept_tags", "objetos" (cuando son standalone)
+//   ✓ NO caza "los bloques de construcción", "objetos cotidianos" (contenido natural)
+//   ✓ Tests cuánticos v4: 10/10 contaminaciones cazadas, 10/10 naturales aceptados
+//
+// Resto de la arquitectura v3 preservada INTACTA: SCHEMA_FIELD_NAMES,
+// SCHEMA_FIELD_PUNCT_REGEX, las 6 defensas v3 (escape \", brackets, triple backtick,
+// numeración 1/3, single-quote), extractCSALWithModel con escalate, validateCSALShape,
+// MAX_TOKENS=4096, TIMEOUT_MS=90000, MIN_VALID_SITUATIONS=20.
+//
+// COMPATIBILIDAD: firma de extractCSAL idéntica a v1/v2/v3 — drop-in replacement.
 //
 // ═══════════════════════════════════════════════════════════════════════════════
 // CHANGELOG v3 — POST RE-SHADOW BATCH v2 (mayo 9, 2026)
@@ -104,6 +135,13 @@ function isCleanString(s, opts = {}) {
   if (typeof s !== "string") return false;
   const trimmed = s.trim();
   if (trimmed.length < minLength) return false;
+
+  // ═══ Defensa v4 (NUEVA — caza Bug #3 caso edge "The messy middle") ═══
+  // [v4-EXACT] Si el string es EXACTAMENTE un schema field name (tras trim,
+  // case insensitive), es contaminación garantizada — incluso sin puntuación adyacente.
+  // Caza: "anti_patterns", "bloques", "concept_tags", "objetos" standalone
+  // No caza: "los bloques de construcción", "objetos cotidianos" (contenido natural)
+  if (SCHEMA_FIELD_NAMES.includes(trimmed.toLowerCase())) return false;
 
   // ═══ Defensas v2 (preservadas — funcionaban) ═══
 
