@@ -13,8 +13,9 @@ LAB_OUT_DIR = LAB_BASE_DIR / "t"
 
 # Configuración Single (Pipeline)
 TMP_BOOK_FILE = Path("/tmp/triggui-book.json")
-DEFAULT_SINGLE_JSON = Path("contenido_edicion.json")
-FALLBACK_SINGLE_JSON = Path("contenido.json")
+# 🌒 V13 NIVEL DIOS CUÁNTICO-QUARK: contenido.json es la ÚNICA fuente de verdad
+# Eliminado contenido_edicion.json fósil que tenía data del 5 mayo (El mesias mistico)
+SINGLE_JSON = Path("contenido.json")
 SINGLE_OUT_DIR = Path("public/t")
 
 # Base URL dinámica:
@@ -22,7 +23,8 @@ SINGLE_OUT_DIR = Path("public/t")
 # - previews -> https://beta.app.triggui.com
 BASE_URL = os.environ.get("BASE_URL", "https://app.triggui.com").rstrip("/")
 
-# Archivo canónico del pipeline single-book
+# 🌒 V13: env var aún soportada para tests/CI (override explícito), pero ya no
+# busca contenido_edicion.json automáticamente
 TRIGGUI_EDICION_JSON_ENV = os.environ.get("TRIGGUI_EDICION_JSON", "").strip()
 
 
@@ -137,17 +139,17 @@ def with_alpha(hex_color, alpha="2e"):
 
 
 def resolve_single_json_file():
-    candidates = []
-
+    """
+    🌒 V13 NIVEL DIOS CUÁNTICO-QUARK: solo busca contenido.json
+    (excepto si TRIGGUI_EDICION_JSON env var explícita override)
+    """
     if TRIGGUI_EDICION_JSON_ENV:
-        candidates.append(Path(TRIGGUI_EDICION_JSON_ENV))
+        env_path = Path(TRIGGUI_EDICION_JSON_ENV)
+        if env_path.exists():
+            return env_path
 
-    candidates.append(DEFAULT_SINGLE_JSON)
-    candidates.append(FALLBACK_SINGLE_JSON)
-
-    for candidate in candidates:
-        if candidate.exists():
-            return candidate
+    if SINGLE_JSON.exists():
+        return SINGLE_JSON
 
     return None
 
@@ -180,13 +182,22 @@ def resolve_palabra_dominante(libro_data):
 
 def build_bocado_eco_pool(libro_data):
     """
-    🌒 Construye el pool de frases para bocado y eco de la edición viva.
+    🌒 V13 NIVEL DIOS CUÁNTICO-QUARK: pool SOLO de concepts del nucleus.
 
-    Fuentes (Solución A acordada con Badir):
-      - libro.tagline (1 frase descriptiva del libro)
-      - libro._nucleus.book_grounding_anchors.concepts[] (~5 conceptos del libro)
+    V12 → V13 cambio:
+      - ANTES: tagline + concepts
+      - AHORA: solo concepts
+
+    Razón: el tagline es meta-descriptivo (autopromoción tipo "El curso de Yale
+    que se volvió bestseller..."). NO es frase poética para eco cuántico.
+    Los concepts vienen curados por GPT directamente del contenido del libro,
+    son frases auténticas y específicas.
+
+    Fuentes (V13):
+      - libro._nucleus.book_grounding_anchors.concepts[] (~5 conceptos)
 
     Excluidos a propósito:
+      - tagline (V13 cambio: meta-descripción, no frase de eco)
       - frases[] / frases_en[] (ya se ven en los 4 bloques)
       - frases_og[] (sagrado para WhatsApp link preview)
       - tarjeta.* (ya se ven en la tarjeta editorial)
@@ -216,11 +227,7 @@ def build_bocado_eco_pool(libro_data):
         seen.add(key)
         pool.append(clean)
 
-    # Source 1: tagline
-    tagline = libro_data.get("tagline", "")
-    add_phrase(tagline)
-
-    # Source 2: concepts del nucleus
+    # 🌒 V13: SOLO concepts del nucleus (eliminado tagline meta-descriptivo)
     nucleus = libro_data.get("_nucleus", {}) or {}
     grounding = nucleus.get("book_grounding_anchors", {}) or {}
     concepts = grounding.get("concepts", []) or []
@@ -2100,6 +2107,66 @@ setOverlayView('blocks');
     return html_output
 
 
+# ════════════════════════════════════════════════════════════════════════════
+# 🌒 V14 FIX CRÍTICO ARQUITECTÓNICO NIVEL DIOS CUÁNTICO-QUARK
+# ════════════════════════════════════════════════════════════════════════════
+def find_libro_by_meta(libros, book_meta):
+    """
+    🌒 V14: Busca el libro_data correcto en contenido["libros"] basándose
+    en el book_meta del run actual (TMP_BOOK_FILE).
+
+    Estrategia (en orden de prioridad):
+      1. Match por slug (si existe en libro_data — actualmente NO existe)
+      2. Match por titulo + autor exacto (case-insensitive, normalized)
+      3. Match por titulo solamente (case-insensitive, normalized)
+
+    NO hay fallback a libros[0] — si no hay match, abortar el build.
+    El bug V10-V13 era usar libros[0] como fallback, lo que generaba HTMLs
+    con contenido del libro equivocado cuando el array estaba desordenado.
+    """
+    def normalize(s):
+        return re.sub(r"\s+", " ", str(s or "")).strip().casefold()
+
+    meta_slug = book_meta.get("slug", "").strip()
+    meta_titulo = normalize(book_meta.get("titulo", ""))
+    meta_autor = normalize(book_meta.get("autor", ""))
+
+    # Estrategia 1: match exacto por slug (si libro_data tiene slug)
+    if meta_slug:
+        for l in libros:
+            if l.get("slug") and l.get("slug") == meta_slug:
+                return l
+            if l.get("id") and l.get("id") == meta_slug:
+                return l
+
+    # Estrategia 2: match por titulo + autor (más preciso)
+    if meta_titulo and meta_autor:
+        for l in libros:
+            if (normalize(l.get("titulo", "")) == meta_titulo
+                    and normalize(l.get("autor", "")) == meta_autor):
+                return l
+
+    # Estrategia 3: match solo por titulo (fallback aceptable, único en el array)
+    if meta_titulo:
+        matches = [l for l in libros if normalize(l.get("titulo", "")) == meta_titulo]
+        if len(matches) == 1:
+            return matches[0]
+        if len(matches) > 1:
+            # Múltiples libros con mismo título — preferir el que tenga _edicion_numero
+            with_num = [l for l in matches if isinstance(l.get("_edicion_numero"), int)]
+            if with_num:
+                return with_num[0]
+            return matches[0]
+
+    # NO hay match — abortar
+    raise SystemExit(
+        f"❌ V14 ABORT: no se encontró libro_data para book_meta. "
+        f"slug='{meta_slug}', titulo='{meta_titulo}', autor='{meta_autor}'. "
+        f"Total libros en contenido.json: {len(libros)}. "
+        f"Esto previene generar HTMLs con contenido del libro equivocado."
+    )
+
+
 def build_lab():
     if not LAB_DATA_FILE.exists():
         raise SystemExit(f"No existe {LAB_DATA_FILE}")
@@ -2126,7 +2193,7 @@ def build_single():
     contenido_file = resolve_single_json_file()
 
     if not contenido_file:
-        print("❌ Error: no existe TRIGGUI_EDICION_JSON ni contenido_edicion.json ni contenido.json. Abortando build_single.")
+        print("❌ Error: no existe TRIGGUI_EDICION_JSON ni contenido.json. Abortando build_single.")
         sys.exit(1)
 
     if not TMP_BOOK_FILE.exists():
@@ -2140,7 +2207,18 @@ def build_single():
         print(f"❌ Error: {contenido_file} no tiene libros. Abortando.")
         sys.exit(1)
 
-    libro_data = contenido["libros"][0]
+    # 🌒 V14 FIX CRÍTICO ARQUITECTÓNICO NIVEL DIOS CUÁNTICO-QUARK
+    # ANTES (V10-V13): libro_data = contenido["libros"][0]
+    # PROBLEMA: el libro recién agregado NO siempre está en posición [0].
+    # En el caso real diagnosticado, Cardalda (#038) quedó en [18] mientras
+    # Volf (#037) ocupaba [0]. Eso causaba que TODOS los HTMLs nuevos llevaran
+    # contenido del libro Volf (título, texto, número, eco) — solo el slug y
+    # la portada venían del book_meta correcto.
+    #
+    # FIX V14: matchear el libro_data por TÍTULO (única propiedad confiable
+    # presente en ambos lados — slug e id son undefined en libro_data).
+    # Tie-breaker por autor. ABORT si no hay match (NO fallback a [0]).
+    libro_data = find_libro_by_meta(contenido["libros"], book_meta)
     slug = book_meta.get("slug") or libro_data.get("slug")
 
     if not slug:

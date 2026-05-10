@@ -738,28 +738,27 @@ function buildHTML({
   }
 
   /* ════════════════════════════════════════════════════════════════════════
-     🌒 NUMERACIÓN V12 NIVEL DIOS CUÁNTICO-QUARK — eyebrow ARRIBA del título
-     Posición: dentro del hero, inmediatamente antes del .title
-     Filosofía: notable PREMIUM. Label sans + número serif italic con color accent
-     V12 cambios: tamaño DRÁSTICAMENTE aumentado (12→24px label, 15→36px num)
-     porque en 1066×1600 el eyebrow V11 era invisible. Color accent en el #N.
+     🌒 NUMERACIÓN V13 NIVEL DIOS CUÁNTICO-QUARK — eyebrow PROMINENTE
+     V12 → V13: 24/36px → 40/64px (que LUZCA de tarjeta coleccionable)
+     Para PNG 1066×1600 con título 80-100px, este tamaño es proporcional.
+     Color accent del libro = coherencia cromática única por edición.
      ════════════════════════════════════════════════════════════════════════ */
   .edicion-eyebrow {
     display: block;
-    margin: 0 0 14px 0;
+    margin: 0 0 22px 0;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 24px;
+    font-size: 40px;
     font-weight: 600;
-    letter-spacing: 0.34em;
+    letter-spacing: 0.32em;
     text-transform: uppercase;
-    color: rgba(26, 26, 26, 0.45);
+    color: rgba(26, 26, 26, 0.50);
     line-height: 1;
     user-select: none;
   }
   .edicion-eyebrow-sep {
     display: inline-block;
-    margin: 0 0.55em;
-    opacity: 0.5;
+    margin: 0 0.5em;
+    opacity: 0.45;
     font-weight: 400;
   }
   .edicion-eyebrow-num {
@@ -767,11 +766,11 @@ function buildHTML({
     font-weight: 700;
     font-style: italic;
     letter-spacing: 0;
-    font-size: 36px;
+    font-size: 64px;
     color: var(--accent, #1a1a1a);
     text-transform: none;
     vertical-align: baseline;
-    margin-left: 4px;
+    margin-left: 6px;
   }
 
   .body-text {
