@@ -211,6 +211,16 @@
       "timestamp": "2026-05-10T22:16:10.191Z",
       "trigger_input": "que es el alma",
       "selected_via": "constrained_catalog"
+    },
+    {
+      "titulo": "Cuestión de límites",
+      "autor": "Nedra Glover",
+      "slug": "cuestion-de-limites",
+      "titulo_normalizado": "cuestion de limites",
+      "autor_normalizado": "nedra glover",
+      "timestamp": "2026-05-10T22:46:02.113Z",
+      "trigger_input": "cansado, hasta donde damos el maximo?y hasta donde descansamos",
+      "selected_via": "constrained_catalog"
     }
   ],
   "_note": "FIFO ring de últimos 30 libros generados por selección automática (constrained o discover). Filtro pre-rerank en validate-book.js. Inicializa vacío y se rellena con cada run exitoso. Si se borra, el sistema arranca limpio sin daño."
