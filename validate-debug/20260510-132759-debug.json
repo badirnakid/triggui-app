@@ -1,0 +1,544 @@
+{
+  "history": [
+    {
+      "at": "2026-05-10T19:26:30.821Z",
+      "stage": "success",
+      "bookData": {
+        "titulo": "Elon Musk",
+        "autor": "Walter Isaacson",
+        "slug": "elon-musk",
+        "tagline": "",
+        "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/e1/13/9e/e1139e4f-949f-f741-b070-4601aa773681/9789636201944.jpg/3000x3000bb.jpg",
+        "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/e1/13/9e/e1139e4f-949f-f741-b070-4601aa773681/9789636201944.jpg/3000x3000bb.jpg",
+        "portada_source": "apple_books",
+        "portada_candidates": [
+          {
+            "source": "apple_books",
+            "size": "xxlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/e1/13/9e/e1139e4f-949f-f741-b070-4601aa773681/9789636201944.jpg/3000x3000bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "xlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/e1/13/9e/e1139e4f-949f-f741-b070-4601aa773681/9789636201944.jpg/1200x1200bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "large",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/e1/13/9e/e1139e4f-949f-f741-b070-4601aa773681/9789636201944.jpg/600x600bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "medium",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/e1/13/9e/e1139e4f-949f-f741-b070-4601aa773681/9789636201944.jpg/100x100bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "google_books",
+            "size": "small",
+            "url": "https://books.google.com/books/content?id=6_mzEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+            "valid": true
+          },
+          {
+            "source": "openlibrary",
+            "size": "large",
+            "url": "https://covers.openlibrary.org/b/id/14420016-L.jpg",
+            "valid": true
+          },
+          {
+            "source": "openlibrary",
+            "size": "medium",
+            "url": "https://covers.openlibrary.org/b/id/14420016-M.jpg",
+            "valid": true
+          }
+        ],
+        "needs_fallback_cover": false,
+        "isbn": "",
+        "editorial": "Walter Isaacson",
+        "publication_year": "2023",
+        "source": "apple_books",
+        "duplicado": false,
+        "selected_via": "direct_book",
+        "selection_reason": "Libro explícito proporcionado en workflow_dispatch",
+        "trigger_input": "",
+        "trigger_analysis": null,
+        "selection_validation": {},
+        "catalog_scope": "",
+        "contexto_2026": {},
+        "identity_sealed": false,
+        "_evidence": {
+          "titulo_input": "Elon Musk",
+          "autor_input": "Walter Isaacson",
+          "isbn_seed": "",
+          "isbn_seed_raw": "",
+          "isbn_seed_rejected": null,
+          "isbn_discovered": "9781761422621",
+          "isbn_discovered_raw": "9781761422621",
+          "apple": {
+            "ok": true,
+            "source": "apple_books",
+            "match_score": 1,
+            "match_details": {
+              "matched_title": "Elon Musk",
+              "matched_author": "Walter Isaacson"
+            },
+            "synopsis": "Steve Jobs, Leonardo Da Vinci és Albert Einstein életrajzírójának új életrajzi könyve korunk egyik legizgalmasabb és legellentmondásosabb innovátoráról a világpremierrel egy időben jelenik meg magyar nyelven. Walter Isaacson eddigi munkáihoz méltó alapossággal írta meg Elon Musk történetét, amelyben egészen közelről ismerhetjük meg az embert, aki elképesztő álmainak megvalósítása érdekében megszegte szinte az összes létező szabályt, aki segített átevezni a világot az elektromos járművek, a magán űrkutatás és a mesterséges intelligencia korszakába. És persze még a Twittert is megvette.Gyerekkorában rendszeresen bántalmazták társai, de excentrikus apja is erősen nyomott hagyott pszichéjén. Kemény, de sebezhető fiúvá, majd férfivá vált, aki hajlamos volt a hirtelen, Jekyll és Hyde-szerű hangulatingadozásokra. Rendkívül magas kockázattűrő képessége, erősen konfliktusos és gyakran mániákus viselkedése, már-már földöntúli küldetéstudata és érzéketlensége időnként pusztító volt a környezete számára.Isaacson két éven át követte Muskot, részt vett a megbeszélésein, együtt végigjárták a gyárait, és hosszú órákon át tartó beszélgetéseket folytatott vele, de kérdezte a családját, a barátait, a munkatársait és az ellenfeleit is róla. A könyv különleges betekintést nyújt Elon Musk sikereinek és kudarcainak történeteibe és soha nem látott közelségből vizsgálja meg, hogy Musk démonjai vajon zálogai-e az innovációnak és a kreativitásnak.",
+            "synopsis_length": 1444,
+            "covers": [
+              {
+                "size": "xxlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/e1/13/9e/e1139e4f-949f-f741-b070-4601aa773681/9789636201944.jpg/3000x3000bb.jpg"
+              },
+              {
+                "size": "xlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/e1/13/9e/e1139e4f-949f-f741-b070-4601aa773681/9789636201944.jpg/1200x1200bb.jpg"
+              },
+              {
+                "size": "large",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/e1/13/9e/e1139e4f-949f-f741-b070-4601aa773681/9789636201944.jpg/600x600bb.jpg"
+              },
+              {
+                "size": "medium",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/e1/13/9e/e1139e4f-949f-f741-b070-4601aa773681/9789636201944.jpg/100x100bb.jpg"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "Elon Musk",
+              "autor_completo": "Walter Isaacson",
+              "año": "2023",
+              "editorial": null,
+              "isbn": "",
+              "apple_track_id": "6471654827",
+              "categorias": [
+                "Biografías y memorias",
+                "Libros"
+              ],
+              "track_view_url": "https://books.apple.com/mx/book/elon-musk/id6471654827?uo=4"
+            }
+          },
+          "google": {
+            "ok": true,
+            "source": "google_books",
+            "match_score": 1,
+            "match_details": {
+              "matched_title": "Elon Musk",
+              "matched_author": "Walter Isaacson"
+            },
+            "synopsis": "From the author of Steve Jobs and other bestselling biographies, this is the astonishingly intimate story of the most fascinating and controversial innovator of our era—a rule-breaking visionary who helped to lead the world into the era of electric vehicles, private space exploration, and artificial intelligence. Oh, and took over Twitter. Australian Financial Review Top 20 Read for 2023​ When Elon Musk was a kid in South Africa, he was regularly beaten by bullies. One day a group pushed him down some concrete steps and kicked him until his face was a swollen ball of flesh. He was in the hospital for a week. But the physical scars were minor compared to the emotional ones inflicted by his father, an engineer, rogue, and charismatic fantasist. His father’s impact on his psyche would linger. He developed into a tough yet vulnerable man-child, prone to abrupt Jekyll-and-Hyde mood swings, with an exceedingly high tolerance for risk, a craving for drama, an epic sense of mission, and a maniacal intensity that was callous and at times destructive. At the beginning of 2022—after a year marked by SpaceX launching thirty-one rockets into orbit, Tesla selling a million cars, and him becoming the richest man on earth—Musk spoke ruefully about his compulsion to stir up dramas. “I need to shift my mindset away from being in crisis mode, which it has been for about fourteen years now, or arguably most of my life,” he said. It was a wistful comment, not a New Year’s resolution. Even as he said it, he was secretly buying up shares of Twitter, the world’s ultimate playground. Over the years, whenever he was in a dark place, his mind went back to being bullied on the playground. Now he had the chance to own the playground. For two years, Isaacson shadowed Musk, attended his meetings, walked his factories with him, and spent hours interviewing him, his family, friends, coworkers, and adversaries. The result is the revealing inside story, filled with amazing tales of triumphs and turmoil, that addresses the question: are the demons that drive Musk also what it takes to drive innovation and progress?",
+            "synopsis_length": 2116,
+            "covers": [
+              {
+                "size": "small",
+                "url": "https://books.google.com/books/content?id=6_mzEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "Elon Musk",
+              "subtitulo": "",
+              "autor_completo": "Walter Isaacson",
+              "año": "2023",
+              "editorial": "Simon and Schuster",
+              "paginas": 532,
+              "isbn": "9781761422621",
+              "isbn13": "9781761422621",
+              "isbn10": "1761422626",
+              "categorias": [
+                "Biography & Autobiography"
+              ],
+              "idioma": "en",
+              "preview_link": "http://books.google.com/books?id=6_mzEAAAQBAJ&printsec=frontcover&dq=intitle:Elon+Musk+inauthor:Walter+Isaacson&hl=&cd=1&source=gbs_api"
+            }
+          },
+          "openlibrary": {
+            "ok": true,
+            "source": "openlibrary",
+            "match_score": 1,
+            "match_details": {
+              "matched_title": "Elon Musk",
+              "matched_author": "Walter Isaacson"
+            },
+            "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2023.",
+            "synopsis_length": 65,
+            "covers": [
+              {
+                "size": "large",
+                "url": "https://covers.openlibrary.org/b/id/14420016-L.jpg"
+              },
+              {
+                "size": "medium",
+                "url": "https://covers.openlibrary.org/b/id/14420016-M.jpg"
+              },
+              {
+                "size": "small",
+                "url": "https://covers.openlibrary.org/b/id/14420016-S.jpg"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "Elon Musk",
+              "autor_completo": "Walter Isaacson",
+              "año": "2023",
+              "editorial": null,
+              "isbn": "",
+              "categorias": [],
+              "idioma": "eng",
+              "paginas": null
+            }
+          },
+          "amazon": {
+            "ok": false,
+            "reason": "no_amazon_cover_or_only_placeholders",
+            "source": "amazon"
+          },
+          "valid_covers": [
+            {
+              "source": "apple_books",
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/e1/13/9e/e1139e4f-949f-f741-b070-4601aa773681/9789636201944.jpg/3000x3000bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/e1/13/9e/e1139e4f-949f-f741-b070-4601aa773681/9789636201944.jpg/1200x1200bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/e1/13/9e/e1139e4f-949f-f741-b070-4601aa773681/9789636201944.jpg/600x600bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/e1/13/9e/e1139e4f-949f-f741-b070-4601aa773681/9789636201944.jpg/100x100bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "google_books",
+              "size": "small",
+              "url": "https://books.google.com/books/content?id=6_mzEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+              "valid": true
+            },
+            {
+              "source": "openlibrary",
+              "size": "large",
+              "url": "https://covers.openlibrary.org/b/id/14420016-L.jpg",
+              "valid": true
+            },
+            {
+              "source": "openlibrary",
+              "size": "medium",
+              "url": "https://covers.openlibrary.org/b/id/14420016-M.jpg",
+              "valid": true
+            }
+          ],
+          "_sources_succeeded": [
+            "apple_books",
+            "google_books",
+            "openlibrary"
+          ],
+          "_sources_failed": [
+            "amazon:no_amazon_cover_or_only_placeholders"
+          ],
+          "_timing": {
+            "phase1_parallel_ms": 474,
+            "phase2_isbn_chain_ms": 221,
+            "cover_validation_ms": 875,
+            "total_ms": 1570
+          },
+          "_version": "3.6"
+        },
+        "_evidence_synopsis": "Steve Jobs, Leonardo Da Vinci és Albert Einstein életrajzírójának új életrajzi könyve korunk egyik legizgalmasabb és legellentmondásosabb innovátoráról a világpremierrel egy időben jelenik meg magyar nyelven. Walter Isaacson eddigi munkáihoz méltó alapossággal írta meg Elon Musk történetét, amelyben egészen közelről ismerhetjük meg az embert, aki elképesztő álmainak megvalósítása érdekében megszegte szinte az összes létező szabályt, aki segített átevezni a világot az elektromos járművek, a magán űrkutatás és a mesterséges intelligencia korszakába. És persze még a Twittert is megvette.Gyerekkorában rendszeresen bántalmazták társai, de excentrikus apja is erősen nyomott hagyott pszichéjén. Kemény, de sebezhető fiúvá, majd férfivá vált, aki hajlamos volt a hirtelen, Jekyll és Hyde-szerű hangulatingadozásokra. Rendkívül magas kockázattűrő képessége, erősen konfliktusos és gyakran mániákus viselkedése, már-már földöntúli küldetéstudata és érzéketlensége időnként pusztító volt a környezete számára.Isaacson két éven át követte Muskot, részt vett a megbeszélésein, együtt végigjárták a gyárait, és hosszú órákon át tartó beszélgetéseket folytatott vele, de kérdezte a családját, a barátait, a munkatársait és az ellenfeleit is róla. A könyv különleges betekintést nyújt Elon Musk sikereinek és kudarcainak történeteibe és soha nem látott közelségből vizsgálja meg, hogy Musk démonjai vajon zálogai-e az innovációnak és a kreativitásnak.",
+        "_evidence_verified_identity": {
+          "titulo_real": "Elon Musk",
+          "autor_completo": "Walter Isaacson",
+          "año": "2023",
+          "editorial": null,
+          "isbn": "",
+          "apple_track_id": "6471654827",
+          "categorias": [
+            "Biografías y memorias",
+            "Libros"
+          ],
+          "track_view_url": "https://books.apple.com/mx/book/elon-musk/id6471654827?uo=4"
+        },
+        "_evidence_match_score": 1
+      },
+      "ring_updated": false
+    }
+  ],
+  "last": {
+    "at": "2026-05-10T19:26:30.821Z",
+    "stage": "success",
+    "bookData": {
+      "titulo": "Elon Musk",
+      "autor": "Walter Isaacson",
+      "slug": "elon-musk",
+      "tagline": "",
+      "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/e1/13/9e/e1139e4f-949f-f741-b070-4601aa773681/9789636201944.jpg/3000x3000bb.jpg",
+      "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/e1/13/9e/e1139e4f-949f-f741-b070-4601aa773681/9789636201944.jpg/3000x3000bb.jpg",
+      "portada_source": "apple_books",
+      "portada_candidates": [
+        {
+          "source": "apple_books",
+          "size": "xxlarge",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/e1/13/9e/e1139e4f-949f-f741-b070-4601aa773681/9789636201944.jpg/3000x3000bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "xlarge",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/e1/13/9e/e1139e4f-949f-f741-b070-4601aa773681/9789636201944.jpg/1200x1200bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "large",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/e1/13/9e/e1139e4f-949f-f741-b070-4601aa773681/9789636201944.jpg/600x600bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "medium",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/e1/13/9e/e1139e4f-949f-f741-b070-4601aa773681/9789636201944.jpg/100x100bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "google_books",
+          "size": "small",
+          "url": "https://books.google.com/books/content?id=6_mzEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+          "valid": true
+        },
+        {
+          "source": "openlibrary",
+          "size": "large",
+          "url": "https://covers.openlibrary.org/b/id/14420016-L.jpg",
+          "valid": true
+        },
+        {
+          "source": "openlibrary",
+          "size": "medium",
+          "url": "https://covers.openlibrary.org/b/id/14420016-M.jpg",
+          "valid": true
+        }
+      ],
+      "needs_fallback_cover": false,
+      "isbn": "",
+      "editorial": "Walter Isaacson",
+      "publication_year": "2023",
+      "source": "apple_books",
+      "duplicado": false,
+      "selected_via": "direct_book",
+      "selection_reason": "Libro explícito proporcionado en workflow_dispatch",
+      "trigger_input": "",
+      "trigger_analysis": null,
+      "selection_validation": {},
+      "catalog_scope": "",
+      "contexto_2026": {},
+      "identity_sealed": false,
+      "_evidence": {
+        "titulo_input": "Elon Musk",
+        "autor_input": "Walter Isaacson",
+        "isbn_seed": "",
+        "isbn_seed_raw": "",
+        "isbn_seed_rejected": null,
+        "isbn_discovered": "9781761422621",
+        "isbn_discovered_raw": "9781761422621",
+        "apple": {
+          "ok": true,
+          "source": "apple_books",
+          "match_score": 1,
+          "match_details": {
+            "matched_title": "Elon Musk",
+            "matched_author": "Walter Isaacson"
+          },
+          "synopsis": "Steve Jobs, Leonardo Da Vinci és Albert Einstein életrajzírójának új életrajzi könyve korunk egyik legizgalmasabb és legellentmondásosabb innovátoráról a világpremierrel egy időben jelenik meg magyar nyelven. Walter Isaacson eddigi munkáihoz méltó alapossággal írta meg Elon Musk történetét, amelyben egészen közelről ismerhetjük meg az embert, aki elképesztő álmainak megvalósítása érdekében megszegte szinte az összes létező szabályt, aki segített átevezni a világot az elektromos járművek, a magán űrkutatás és a mesterséges intelligencia korszakába. És persze még a Twittert is megvette.Gyerekkorában rendszeresen bántalmazták társai, de excentrikus apja is erősen nyomott hagyott pszichéjén. Kemény, de sebezhető fiúvá, majd férfivá vált, aki hajlamos volt a hirtelen, Jekyll és Hyde-szerű hangulatingadozásokra. Rendkívül magas kockázattűrő képessége, erősen konfliktusos és gyakran mániákus viselkedése, már-már földöntúli küldetéstudata és érzéketlensége időnként pusztító volt a környezete számára.Isaacson két éven át követte Muskot, részt vett a megbeszélésein, együtt végigjárták a gyárait, és hosszú órákon át tartó beszélgetéseket folytatott vele, de kérdezte a családját, a barátait, a munkatársait és az ellenfeleit is róla. A könyv különleges betekintést nyújt Elon Musk sikereinek és kudarcainak történeteibe és soha nem látott közelségből vizsgálja meg, hogy Musk démonjai vajon zálogai-e az innovációnak és a kreativitásnak.",
+          "synopsis_length": 1444,
+          "covers": [
+            {
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/e1/13/9e/e1139e4f-949f-f741-b070-4601aa773681/9789636201944.jpg/3000x3000bb.jpg"
+            },
+            {
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/e1/13/9e/e1139e4f-949f-f741-b070-4601aa773681/9789636201944.jpg/1200x1200bb.jpg"
+            },
+            {
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/e1/13/9e/e1139e4f-949f-f741-b070-4601aa773681/9789636201944.jpg/600x600bb.jpg"
+            },
+            {
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/e1/13/9e/e1139e4f-949f-f741-b070-4601aa773681/9789636201944.jpg/100x100bb.jpg"
+            }
+          ],
+          "verified_identity": {
+            "titulo_real": "Elon Musk",
+            "autor_completo": "Walter Isaacson",
+            "año": "2023",
+            "editorial": null,
+            "isbn": "",
+            "apple_track_id": "6471654827",
+            "categorias": [
+              "Biografías y memorias",
+              "Libros"
+            ],
+            "track_view_url": "https://books.apple.com/mx/book/elon-musk/id6471654827?uo=4"
+          }
+        },
+        "google": {
+          "ok": true,
+          "source": "google_books",
+          "match_score": 1,
+          "match_details": {
+            "matched_title": "Elon Musk",
+            "matched_author": "Walter Isaacson"
+          },
+          "synopsis": "From the author of Steve Jobs and other bestselling biographies, this is the astonishingly intimate story of the most fascinating and controversial innovator of our era—a rule-breaking visionary who helped to lead the world into the era of electric vehicles, private space exploration, and artificial intelligence. Oh, and took over Twitter. Australian Financial Review Top 20 Read for 2023​ When Elon Musk was a kid in South Africa, he was regularly beaten by bullies. One day a group pushed him down some concrete steps and kicked him until his face was a swollen ball of flesh. He was in the hospital for a week. But the physical scars were minor compared to the emotional ones inflicted by his father, an engineer, rogue, and charismatic fantasist. His father’s impact on his psyche would linger. He developed into a tough yet vulnerable man-child, prone to abrupt Jekyll-and-Hyde mood swings, with an exceedingly high tolerance for risk, a craving for drama, an epic sense of mission, and a maniacal intensity that was callous and at times destructive. At the beginning of 2022—after a year marked by SpaceX launching thirty-one rockets into orbit, Tesla selling a million cars, and him becoming the richest man on earth—Musk spoke ruefully about his compulsion to stir up dramas. “I need to shift my mindset away from being in crisis mode, which it has been for about fourteen years now, or arguably most of my life,” he said. It was a wistful comment, not a New Year’s resolution. Even as he said it, he was secretly buying up shares of Twitter, the world’s ultimate playground. Over the years, whenever he was in a dark place, his mind went back to being bullied on the playground. Now he had the chance to own the playground. For two years, Isaacson shadowed Musk, attended his meetings, walked his factories with him, and spent hours interviewing him, his family, friends, coworkers, and adversaries. The result is the revealing inside story, filled with amazing tales of triumphs and turmoil, that addresses the question: are the demons that drive Musk also what it takes to drive innovation and progress?",
+          "synopsis_length": 2116,
+          "covers": [
+            {
+              "size": "small",
+              "url": "https://books.google.com/books/content?id=6_mzEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+            }
+          ],
+          "verified_identity": {
+            "titulo_real": "Elon Musk",
+            "subtitulo": "",
+            "autor_completo": "Walter Isaacson",
+            "año": "2023",
+            "editorial": "Simon and Schuster",
+            "paginas": 532,
+            "isbn": "9781761422621",
+            "isbn13": "9781761422621",
+            "isbn10": "1761422626",
+            "categorias": [
+              "Biography & Autobiography"
+            ],
+            "idioma": "en",
+            "preview_link": "http://books.google.com/books?id=6_mzEAAAQBAJ&printsec=frontcover&dq=intitle:Elon+Musk+inauthor:Walter+Isaacson&hl=&cd=1&source=gbs_api"
+          }
+        },
+        "openlibrary": {
+          "ok": true,
+          "source": "openlibrary",
+          "match_score": 1,
+          "match_details": {
+            "matched_title": "Elon Musk",
+            "matched_author": "Walter Isaacson"
+          },
+          "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 2023.",
+          "synopsis_length": 65,
+          "covers": [
+            {
+              "size": "large",
+              "url": "https://covers.openlibrary.org/b/id/14420016-L.jpg"
+            },
+            {
+              "size": "medium",
+              "url": "https://covers.openlibrary.org/b/id/14420016-M.jpg"
+            },
+            {
+              "size": "small",
+              "url": "https://covers.openlibrary.org/b/id/14420016-S.jpg"
+            }
+          ],
+          "verified_identity": {
+            "titulo_real": "Elon Musk",
+            "autor_completo": "Walter Isaacson",
+            "año": "2023",
+            "editorial": null,
+            "isbn": "",
+            "categorias": [],
+            "idioma": "eng",
+            "paginas": null
+          }
+        },
+        "amazon": {
+          "ok": false,
+          "reason": "no_amazon_cover_or_only_placeholders",
+          "source": "amazon"
+        },
+        "valid_covers": [
+          {
+            "source": "apple_books",
+            "size": "xxlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/e1/13/9e/e1139e4f-949f-f741-b070-4601aa773681/9789636201944.jpg/3000x3000bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "xlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/e1/13/9e/e1139e4f-949f-f741-b070-4601aa773681/9789636201944.jpg/1200x1200bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "large",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/e1/13/9e/e1139e4f-949f-f741-b070-4601aa773681/9789636201944.jpg/600x600bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "medium",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/e1/13/9e/e1139e4f-949f-f741-b070-4601aa773681/9789636201944.jpg/100x100bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "google_books",
+            "size": "small",
+            "url": "https://books.google.com/books/content?id=6_mzEAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+            "valid": true
+          },
+          {
+            "source": "openlibrary",
+            "size": "large",
+            "url": "https://covers.openlibrary.org/b/id/14420016-L.jpg",
+            "valid": true
+          },
+          {
+            "source": "openlibrary",
+            "size": "medium",
+            "url": "https://covers.openlibrary.org/b/id/14420016-M.jpg",
+            "valid": true
+          }
+        ],
+        "_sources_succeeded": [
+          "apple_books",
+          "google_books",
+          "openlibrary"
+        ],
+        "_sources_failed": [
+          "amazon:no_amazon_cover_or_only_placeholders"
+        ],
+        "_timing": {
+          "phase1_parallel_ms": 474,
+          "phase2_isbn_chain_ms": 221,
+          "cover_validation_ms": 875,
+          "total_ms": 1570
+        },
+        "_version": "3.6"
+      },
+      "_evidence_synopsis": "Steve Jobs, Leonardo Da Vinci és Albert Einstein életrajzírójának új életrajzi könyve korunk egyik legizgalmasabb és legellentmondásosabb innovátoráról a világpremierrel egy időben jelenik meg magyar nyelven. Walter Isaacson eddigi munkáihoz méltó alapossággal írta meg Elon Musk történetét, amelyben egészen közelről ismerhetjük meg az embert, aki elképesztő álmainak megvalósítása érdekében megszegte szinte az összes létező szabályt, aki segített átevezni a világot az elektromos járművek, a magán űrkutatás és a mesterséges intelligencia korszakába. És persze még a Twittert is megvette.Gyerekkorában rendszeresen bántalmazták társai, de excentrikus apja is erősen nyomott hagyott pszichéjén. Kemény, de sebezhető fiúvá, majd férfivá vált, aki hajlamos volt a hirtelen, Jekyll és Hyde-szerű hangulatingadozásokra. Rendkívül magas kockázattűrő képessége, erősen konfliktusos és gyakran mániákus viselkedése, már-már földöntúli küldetéstudata és érzéketlensége időnként pusztító volt a környezete számára.Isaacson két éven át követte Muskot, részt vett a megbeszélésein, együtt végigjárták a gyárait, és hosszú órákon át tartó beszélgetéseket folytatott vele, de kérdezte a családját, a barátait, a munkatársait és az ellenfeleit is róla. A könyv különleges betekintést nyújt Elon Musk sikereinek és kudarcainak történeteibe és soha nem látott közelségből vizsgálja meg, hogy Musk démonjai vajon zálogai-e az innovációnak és a kreativitásnak.",
+      "_evidence_verified_identity": {
+        "titulo_real": "Elon Musk",
+        "autor_completo": "Walter Isaacson",
+        "año": "2023",
+        "editorial": null,
+        "isbn": "",
+        "apple_track_id": "6471654827",
+        "categorias": [
+          "Biografías y memorias",
+          "Libros"
+        ],
+        "track_view_url": "https://books.apple.com/mx/book/elon-musk/id6471654827?uo=4"
+      },
+      "_evidence_match_score": 1
+    },
+    "ring_updated": false
+  }
+}
