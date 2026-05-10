@@ -543,6 +543,83 @@ def escape_with_breaks(text):
     return esc(text).replace("\n", "<br>")
 
 
+# ════════════════════════════════════════════════════════════════════════════
+# 🌒 V16 NIVEL DIOS CUÁNTICO-QUARK MATEMÁTICO GEOMÉTRICO AXIOMÁTICO
+# Paridad exacta con build-tarjeta-png.js para garantizar consistencia
+# visual perfecta entre HTML edición viva y tarjeta.png.
+#
+# ANTES V15: si el modelo no puso [H]...[/H] en parrafoTop, la viva quedaba
+# SIN highlights mientras tarjeta.png los forzaba con ensureOneHighlight().
+# Resultado: discrepancia visual entre los dos renders del mismo libro.
+#
+# AHORA V16: ambos renderers fuerzan al menos un highlight cuando el modelo
+# no puso ninguno. Estrategia: primer segmento ≥18 chars como [H]...[/H].
+# ════════════════════════════════════════════════════════════════════════════
+def count_highlights(text):
+    """🌒 V16 NIVEL DIOS: cuenta highlights NO-VACÍOS en el texto.
+
+    Paridad EXACTA con countHighlights() de build-tarjeta-png.js línea 318-322.
+    - Normaliza la sintaxis [H]...[/H]
+    - Busca patrón [H](.*?)[/H] con flags case-insensitive + dotall
+    - Cuenta solo los matches con contenido no-vacío después de trim
+    """
+    normalized = normalize_highlight_syntax(text)
+    if not normalized:
+        return 0
+    matches = re.findall(r"\[H\](.*?)\[/H\]", normalized, flags=re.IGNORECASE | re.DOTALL)
+    return sum(1 for m in matches if m.strip())
+
+
+def ensure_one_highlight(text):
+    """🌒 V16 NIVEL DIOS: fuerza al menos un highlight si el modelo no puso ninguno.
+
+    Paridad EXACTA con ensureOneHighlight() de build-tarjeta-png.js línea 324-339.
+
+    Estrategia:
+      1. Si ya hay ≥1 highlight no-vacío, retornar sin cambios (respeta modelo)
+      2. Sino, obtener texto plano sin tags
+      3. Dividir por oraciones (split después de . ! ? con lookbehind)
+      4. Filtrar segmentos ≥18 caracteres
+      5. Tomar el primer segmento (o el plano completo si no hay)
+      6. Escapar caracteres regex especiales del segmento
+      7. Reemplazar la PRIMERA ocurrencia por [H]{segmento}[/H]
+      8. Normalizar resultado
+
+    Garantía cuántico-quark: idempotente (aplicar 2 veces da mismo resultado).
+    """
+    normalized = normalize_highlight_syntax(text)
+    if not normalized:
+        return normalized
+
+    # Si ya hay highlights del modelo, respetarlos
+    if count_highlights(normalized) >= 1:
+        return normalized
+
+    # Obtener texto plano sin tags
+    plain = strip_highlight_tags(normalized)
+    if not plain:
+        return normalized
+
+    # Dividir por oraciones usando lookbehind: split después de . ! ?
+    # Equivalente exacto de /(?<=[.!?])\s+/ en JS
+    segments = re.split(r"(?<=[.!?])\s+", plain)
+    segments = [s.strip() for s in segments if len(s.strip()) >= 18]
+
+    chosen = segments[0] if segments else plain.strip()
+    if not chosen:
+        return normalized
+
+    # Escapar caracteres regex especiales del segmento elegido
+    # Equivalente de /[.*+?^${}()|[\]\\]/g en JS
+    safe = re.escape(chosen)
+
+    # Reemplazar SOLO la primera ocurrencia (count=1 equivale a sin flag /g en JS)
+    result = re.sub(safe, f"[H]{chosen}[/H]", normalized, count=1)
+
+    # Re-normalizar por si quedaron tags extra
+    return normalize_highlight_syntax(result)
+
+
 def render_highlight_html(text):
     normalized = normalize_highlight_syntax(text)
     if not normalized:
@@ -596,6 +673,13 @@ def render_edicion(edicion, mode="lab"):
     t_parrafo_top = normalize_highlight_syntax(tarjeta.get("parrafoTop", "") or "")
     t_subtitulo = str(tarjeta.get("subtitulo", "") or "").strip()
     t_parrafo_bot = normalize_highlight_syntax(tarjeta.get("parrafoBot", "") or "")
+
+    # 🌒 V16 NIVEL DIOS CUÁNTICO-QUARK MATEMÁTICO AXIOMÁTICO:
+    # Forzar al menos un highlight en cada párrafo si el modelo no puso ninguno.
+    # Paridad EXACTA con build-tarjeta-png.js para consistencia entre renders.
+    # Si el modelo ya puso [H]...[/H], se respetan tal cual (idempotente).
+    t_parrafo_top = ensure_one_highlight(t_parrafo_top)
+    t_parrafo_bot = ensure_one_highlight(t_parrafo_bot)
 
     # 🌒 BUG 2 FIX (V10): aplicar ensure_text_closure al render
     # Si el modelo cortó el parrafoTop por max_tokens, aplicar elipsis o
