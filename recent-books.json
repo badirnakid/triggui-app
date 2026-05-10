@@ -171,6 +171,16 @@
       "timestamp": "2026-05-08T14:30:28.939Z",
       "trigger_input": "Michael Jordan",
       "selected_via": "discover_live_google_books"
+    },
+    {
+      "titulo": "La vida que vale la pena vivir",
+      "autor": "Miroslav Volf",
+      "slug": "la-vida-que-vale-la-pena-vivir",
+      "titulo_normalizado": "la vida que vale la pena vivir",
+      "autor_normalizado": "miroslav volf",
+      "timestamp": "2026-05-10T20:30:17.049Z",
+      "trigger_input": "no entiendo la vida",
+      "selected_via": "constrained_catalog"
     }
   ],
   "_note": "FIFO ring de últimos 30 libros generados por selección automática (constrained o discover). Filtro pre-rerank en validate-book.js. Inicializa vacío y se rellena con cada run exitoso. Si se borra, el sistema arranca limpio sin daño."
