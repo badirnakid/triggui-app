@@ -163,12 +163,49 @@
     letter-spacing: -0.35px;
     color: rgba(247,244,239,0.96);
   }
+
+  /* ════════════════════════════════════════════════════════════════════════
+     🌒 NUMERACIÓN V11 NIVEL DIOS CUÁNTICO-QUARK — eyebrow en OG image
+     Una sola línea tipográfica arriba del headline, fondo oscuro
+     Filosofía: discreto pero notable. NO compite con frase ni con portada.
+     Visible en preview de WhatsApp y redes incluso comprimido a 300-400px.
+     ════════════════════════════════════════════════════════════════════════ */
+  .edicion-eyebrow {
+    display: block;
+    margin: 0 0 18px 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0.38em;
+    text-transform: uppercase;
+    color: rgba(247, 244, 239, 0.55);
+    line-height: 1;
+    user-select: none;
+  }
+  .edicion-eyebrow-sep {
+    display: inline-block;
+    margin: 0 0.55em;
+    opacity: 0.6;
+  }
+  .edicion-eyebrow-num {
+    font-family: 'Fraunces', 'Source Serif Pro', Georgia, serif;
+    font-optical-sizing: auto;
+    font-variation-settings: 'SOFT' 50, 'WONK' 0;
+    font-weight: 700;
+    font-style: italic;
+    letter-spacing: 0;
+    font-size: 26px;
+    color: rgba(247, 244, 239, 0.78);
+    text-transform: none;
+    vertical-align: baseline;
+  }
 </style>
 </head>
 <body>
   <div class="stage">
     <div class="card">
       <div class="content">
+        {{EDICION_EYEBROW}}
         <div class="headline">{{HEADLINE}}</div>
       </div>
 

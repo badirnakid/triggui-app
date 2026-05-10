@@ -1028,45 +1028,41 @@ body::before {
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
-   🌒 NUMERACIÓN NIVEL DIOS CUÁNTICO-QUARK (V10) — sello tipográfico minimal
-   Posición: superior-derecha del reveal-card
-   Tipografía: Archivo small caps (label) + Playfair Display italic (número)
-   Estilo: sin contenedor, sin borde, sin fondo — solo tipografía premium
+   🌒 NUMERACIÓN V11 NIVEL DIOS CUÁNTICO-QUARK — eyebrow ARRIBA del título
+   Posición: dentro del ed-block, inmediatamente antes del .ed-title
+   Filosofía: sutil, discreto, fino — UNA línea pequeña, no desplaza el layout
+   Altura total: ~13px + 4px margen = 17px (imperceptible)
    ════════════════════════════════════════════════════════════════════════════ */
-.edicion-badge {
-  position: absolute;
-  top: 22px;
-  right: 56px;  /* libra espacio del btn-close (×) */
-  text-align: right;
-  pointer-events: none;
-  z-index: 5;
-  user-select: none;
-}
-.edicion-badge-label {
+.edicion-eyebrow {
   display: block;
+  margin: 0 0 4px 0;
   font-family: 'Archivo', sans-serif;
   font-size: 10px;
   font-weight: 600;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.32em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(26, 26, 26, 0.42);
   line-height: 1;
+  user-select: none;
 }
-.edicion-badge-num {
-  display: block;
+.edicion-eyebrow-sep {
+  display: inline-block;
+  margin: 0 0.5em;
+  opacity: 0.6;
+}
+.edicion-eyebrow-num {
   font-family: 'Playfair Display', Georgia, serif;
-  font-size: 24px;
   font-weight: 700;
   font-style: italic;
-  letter-spacing: -0.01em;
-  color: rgba(255, 255, 255, 0.85);
-  line-height: 1.05;
-  margin-top: 3px;
+  letter-spacing: 0;
+  font-size: 12px;
+  color: rgba(26, 26, 26, 0.62);
+  text-transform: none;
+  vertical-align: baseline;
 }
 @media (max-width: 480px) {
-  .edicion-badge { top: 18px; right: 50px; }
-  .edicion-badge-label { font-size: 9px; letter-spacing: 0.16em; }
-  .edicion-badge-num { font-size: 20px; margin-top: 2px; }
+  .edicion-eyebrow { font-size: 9px; letter-spacing: 0.28em; margin-bottom: 3px; }
+  .edicion-eyebrow-num { font-size: 11px; }
 }
 
 .ed-cover-wrap {
@@ -1407,12 +1403,12 @@ body::before {
 <div id="revealOverlay" class="reveal-overlay">
   <div class="reveal-card" onclick="event.stopPropagation()">
     <button class="btn-close" id="btnBack" aria-label="Cerrar">×</button>
-    __EDICION_BADGE_HTML__
     <div class="card-inner">
 
       <div class="ed-block" id="editorialBlockTop">
         <div class="ed-flow" id="editorialFlowTop">
           __COVER_CTA_HTML__
+          __EDICION_EYEBROW_HTML__
           <div class="ed-title" id="editorialTitle">__CARD_TITLE__</div>
           <div class="ed-chip" id="editorialChip">__CARD_AUTHOR__</div>
           <div class="ed-para" id="editorialTopPara">__TOP_HTML__</div>
@@ -2083,11 +2079,12 @@ setOverlayView('blocks');
         "__PENGUIN_Q__": esc(penguin_q),
         "__SILENCE_COVER_HTML__": silence_cover_html,
         "__SILENCE_TITLE__": esc(titulo),
-        # 🌒 NUMERACIÓN (V10): badge HTML del sello superior-derecha
-        "__EDICION_BADGE_HTML__": (
-            f'<div class="edicion-badge" aria-hidden="true">'
-            f'<span class="edicion-badge-label">EDICIÓN</span>'
-            f'<strong class="edicion-badge-num">{esc(edicion_label)}</strong>'
+        # 🌒 NUMERACIÓN (V11): eyebrow HTML arriba del título — sutil, una línea
+        "__EDICION_EYEBROW_HTML__": (
+            f'<div class="edicion-eyebrow" aria-hidden="true">'
+            f'EDICIÓN'
+            f'<span class="edicion-eyebrow-sep">·</span>'
+            f'<span class="edicion-eyebrow-num">{esc(edicion_label)}</span>'
             f'</div>'
             if edicion_label
             else ""
@@ -2178,6 +2175,9 @@ def build_single():
         "fondo": libro_data.get("fondo", "#0a0a0a"),
         "tarjeta": tarjeta,
         "bocadoEcoPool": bocado_eco_pool,
+        # 🌒 V11 FIX CRÍTICO: propagar número de edición del libro al edicion dict
+        # Sin esto, render_edicion() no podía detectar el número y el badge no aparecía
+        "_edicion_numero": libro_data.get("_edicion_numero"),
     }
 
     html_content = render_edicion(edicion_single, mode="single")

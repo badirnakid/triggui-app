@@ -454,7 +454,22 @@ const brandSection = brandLogoDataURL
   ? `<img src="${brandLogoDataURL}" alt="Triggui" />`
   : `<div class="brand-fallback">triggui</div>`;
 
+// 🌒 NUMERACIÓN V11 NIVEL DIOS CUÁNTICO-QUARK
+// Leer _edicion_numero del libro y generar eyebrow HTML sutil arriba del headline
+const V11_PADDING_DIGITS = 3;
+function formatEdicionNumeroV11(n) {
+  if (n === null || n === undefined) return null;
+  const num = parseInt(n, 10);
+  if (isNaN(num) || num < 1) return null;
+  return "#" + String(num).padStart(V11_PADDING_DIGITS, "0");
+}
+const edicionLabel = formatEdicionNumeroV11(libro?._edicion_numero);
+const edicionEyebrow = edicionLabel
+  ? `<div class="edicion-eyebrow" aria-hidden="true">EDICIÓN<span class="edicion-eyebrow-sep">·</span><span class="edicion-eyebrow-num">${escapeHTML(edicionLabel)}</span></div>`
+  : "";
+
 let html = template
+  .replace("{{EDICION_EYEBROW}}", edicionEyebrow)
   .replace("{{HEADLINE}}", escapeHTML(headline))
   .replace("{{COVER_SECTION}}", coverSection)
   .replace("{{BRAND_SECTION}}", brandSection);

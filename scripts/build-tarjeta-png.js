@@ -542,13 +542,11 @@ function buildHTML({
       </div>`
     : "";
 
-  // 🌒 NUMERACIÓN (V10): badge tipográfico minimal superior-derecha
-  const edicionBadgeSection = edicionLabel
+  // 🌒 NUMERACIÓN (V11): eyebrow tipográfico minimal arriba del título
+  // Una sola línea sutil, no desplaza significativamente el layout
+  const edicionEyebrowSection = edicionLabel
     ? `
-      <div class="edicion-badge" aria-hidden="true">
-        <span class="edicion-badge-label">EDICIÓN</span>
-        <strong class="edicion-badge-num">${escapeHTML(edicionLabel)}</strong>
-      </div>`
+        <div class="edicion-eyebrow" aria-hidden="true">EDICIÓN<span class="edicion-eyebrow-sep">·</span><span class="edicion-eyebrow-num">${escapeHTML(edicionLabel)}</span></div>`
     : "";
 
   const footerSection = logoDataURL
@@ -647,7 +645,6 @@ function buildHTML({
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    position: relative;  /* 🌒 V10: ancla para el .edicion-badge absolute */
   }
 
   .hero {
@@ -739,41 +736,37 @@ function buildHTML({
   }
 
   /* ════════════════════════════════════════════════════════════════════════
-     🌒 NUMERACIÓN NIVEL DIOS CUÁNTICO-QUARK (V10) — badge en tarjeta PNG
-     Posición: superior-derecha del .card, dentro del padding interno
-     Tipografía: Inter weight 600 small caps (label) + serif italic (número)
-     Escala: optimizada para PNG 1066×1600 (más grande que el HTML web)
+     🌒 NUMERACIÓN V11 NIVEL DIOS CUÁNTICO-QUARK — eyebrow ARRIBA del título
+     Posición: dentro del hero, inmediatamente antes del .title
+     Filosofía: sutil, discreto, fino — UNA línea pequeña, no rompe layout
+     Escala: optimizada para PNG 1066×1600 (un poco más grande que HTML web)
      ════════════════════════════════════════════════════════════════════════ */
-  .edicion-badge {
-    position: absolute;
-    top: 24px;
-    right: 28px;
-    text-align: right;
-    pointer-events: none;
-    z-index: 5;
-    user-select: none;
-    line-height: 1;
-  }
-  .edicion-badge-label {
+  .edicion-eyebrow {
     display: block;
-    font-family: 'Inter', -apple-system, sans-serif;
-    font-size: 11px;
+    margin: 0 0 6px 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 12px;
     font-weight: 600;
-    letter-spacing: 0.20em;
+    letter-spacing: 0.34em;
     text-transform: uppercase;
-    color: rgba(26, 26, 26, 0.45);
+    color: rgba(26, 26, 26, 0.42);
     line-height: 1;
+    user-select: none;
   }
-  .edicion-badge-num {
-    display: block;
+  .edicion-eyebrow-sep {
+    display: inline-block;
+    margin: 0 0.55em;
+    opacity: 0.6;
+  }
+  .edicion-eyebrow-num {
     font-family: Georgia, 'Times New Roman', serif;
-    font-size: 28px;
     font-weight: 700;
     font-style: italic;
-    letter-spacing: -0.01em;
-    color: rgba(26, 26, 26, 0.78);
-    line-height: 1.05;
-    margin-top: 4px;
+    letter-spacing: 0;
+    font-size: 15px;
+    color: rgba(26, 26, 26, 0.62);
+    text-transform: none;
+    vertical-align: baseline;
   }
 
   .body-text {
@@ -847,10 +840,10 @@ function buildHTML({
 <body style="${cssVars}">
   <div class="frame">
     <div class="card">
-      ${edicionBadgeSection}
       <div class="hero" id="content">
         <div class="flow">
           ${portadaSection}
+          ${edicionEyebrowSection}
           <div class="title" id="title">${escapeHTML(display.title)}</div>
           ${authorHTML}
           <div class="body-text" id="bodyText">${display.bodyHTML}</div>
