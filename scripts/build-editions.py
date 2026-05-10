@@ -1028,41 +1028,44 @@ body::before {
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
-   🌒 NUMERACIÓN V11 NIVEL DIOS CUÁNTICO-QUARK — eyebrow ARRIBA del título
+   🌒 NUMERACIÓN V12 NIVEL DIOS CUÁNTICO-QUARK — eyebrow ARRIBA del título
    Posición: dentro del ed-block, inmediatamente antes del .ed-title
-   Filosofía: sutil, discreto, fino — UNA línea pequeña, no desplaza el layout
-   Altura total: ~13px + 4px margen = 17px (imperceptible)
+   Filosofía: notable PREMIUM. Label sans + número Playfair italic con color accent
+   V12 cambios: tamaño aumentado para ser visible + color accent en #N para
+   coherencia cromática con el resto del diseño del libro
    ════════════════════════════════════════════════════════════════════════════ */
 .edicion-eyebrow {
   display: block;
-  margin: 0 0 4px 0;
+  margin: 0 0 10px 0;
   font-family: 'Archivo', sans-serif;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 600;
-  letter-spacing: 0.32em;
+  letter-spacing: 0.34em;
   text-transform: uppercase;
-  color: rgba(26, 26, 26, 0.42);
+  color: rgba(26, 26, 26, 0.48);
   line-height: 1;
   user-select: none;
 }
 .edicion-eyebrow-sep {
   display: inline-block;
-  margin: 0 0.5em;
-  opacity: 0.6;
+  margin: 0 0.55em;
+  opacity: 0.5;
+  font-weight: 400;
 }
 .edicion-eyebrow-num {
   font-family: 'Playfair Display', Georgia, serif;
   font-weight: 700;
   font-style: italic;
   letter-spacing: 0;
-  font-size: 12px;
-  color: rgba(26, 26, 26, 0.62);
+  font-size: 22px;
+  color: var(--accent, #1a1a1a);
   text-transform: none;
   vertical-align: baseline;
+  margin-left: 2px;
 }
 @media (max-width: 480px) {
-  .edicion-eyebrow { font-size: 9px; letter-spacing: 0.28em; margin-bottom: 3px; }
-  .edicion-eyebrow-num { font-size: 11px; }
+  .edicion-eyebrow { font-size: 12px; letter-spacing: 0.30em; margin-bottom: 8px; }
+  .edicion-eyebrow-num { font-size: 20px; }
 }
 
 .ed-cover-wrap {

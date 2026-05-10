@@ -533,7 +533,8 @@ function buildHTML({
   chipColor,
   highlight,
   initial,
-  edicionLabel
+  edicionLabel,
+  accent
 }) {
   const portadaSection = portadaURL
     ? `
@@ -602,7 +603,8 @@ function buildHTML({
     `--author-chip-color:${chipColor}`,
     `--highlight-bg:${highlight.bg}`,
     `--highlight-ink:${highlight.ink}`,
-    `--highlight-shadow:${highlight.shadow}`
+    `--highlight-shadow:${highlight.shadow}`,
+    `--accent:${accent}`
   ].join(";");
 
   return `<!doctype html>
@@ -736,37 +738,40 @@ function buildHTML({
   }
 
   /* ════════════════════════════════════════════════════════════════════════
-     🌒 NUMERACIÓN V11 NIVEL DIOS CUÁNTICO-QUARK — eyebrow ARRIBA del título
+     🌒 NUMERACIÓN V12 NIVEL DIOS CUÁNTICO-QUARK — eyebrow ARRIBA del título
      Posición: dentro del hero, inmediatamente antes del .title
-     Filosofía: sutil, discreto, fino — UNA línea pequeña, no rompe layout
-     Escala: optimizada para PNG 1066×1600 (un poco más grande que HTML web)
+     Filosofía: notable PREMIUM. Label sans + número serif italic con color accent
+     V12 cambios: tamaño DRÁSTICAMENTE aumentado (12→24px label, 15→36px num)
+     porque en 1066×1600 el eyebrow V11 era invisible. Color accent en el #N.
      ════════════════════════════════════════════════════════════════════════ */
   .edicion-eyebrow {
     display: block;
-    margin: 0 0 6px 0;
+    margin: 0 0 14px 0;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 12px;
+    font-size: 24px;
     font-weight: 600;
     letter-spacing: 0.34em;
     text-transform: uppercase;
-    color: rgba(26, 26, 26, 0.42);
+    color: rgba(26, 26, 26, 0.45);
     line-height: 1;
     user-select: none;
   }
   .edicion-eyebrow-sep {
     display: inline-block;
     margin: 0 0.55em;
-    opacity: 0.6;
+    opacity: 0.5;
+    font-weight: 400;
   }
   .edicion-eyebrow-num {
     font-family: Georgia, 'Times New Roman', serif;
     font-weight: 700;
     font-style: italic;
     letter-spacing: 0;
-    font-size: 15px;
-    color: rgba(26, 26, 26, 0.62);
+    font-size: 36px;
+    color: var(--accent, #1a1a1a);
     text-transform: none;
     vertical-align: baseline;
+    margin-left: 4px;
   }
 
   .body-text {
@@ -926,7 +931,8 @@ const html = buildHTML({
   chipColor,
   highlight,
   initial,
-  edicionLabel
+  edicionLabel,
+  accent
 });
 
 /* ═══════════════════════════════════════════════════════════════

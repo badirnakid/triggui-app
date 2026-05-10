@@ -454,23 +454,35 @@ const brandSection = brandLogoDataURL
   ? `<img src="${brandLogoDataURL}" alt="Triggui" />`
   : `<div class="brand-fallback">triggui</div>`;
 
-// 🌒 NUMERACIÓN V11 NIVEL DIOS CUÁNTICO-QUARK
-// Leer _edicion_numero del libro y generar eyebrow HTML sutil arriba del headline
-const V11_PADDING_DIGITS = 3;
-function formatEdicionNumeroV11(n) {
-  if (n === null || n === undefined) return null;
-  const num = parseInt(n, 10);
-  if (isNaN(num) || num < 1) return null;
-  return "#" + String(num).padStart(V11_PADDING_DIGITS, "0");
+// 🌒 V12 NIVEL DIOS CUÁNTICO-QUARK — Cierre semántico del headline
+// Detecta texto cortado en preposición + punto (caso "el corazón de.") y aplica elipsis
+// Cierres legítimos: . ? ! … — » ) ]
+// Cierres ilegítimos detectables: termina en preposición + período (texto cortado por modelo o clamping)
+function ensureHeadlineClosure(text) {
+  if (!text) return text;
+  let value = String(text).replace(/\s+$/g, "");
+  if (!value) return value;
+
+  const PREPOSITIONS_BAD = /\s(de|del|al|en|con|por|para|sobre|sin|entre|hacia|tras|durante|según|mediante|hasta|desde|bajo|a|y|o|u|e|que|si|ni|pero|mas|sino)\.$/i;
+
+  // Si termina en "preposición + período", está mal cerrado — aplicar elipsis
+  if (PREPOSITIONS_BAD.test(value)) {
+    // Quitar el período + reemplazar por elipsis
+    return value.replace(/\.$/, "…");
+  }
+
+  // Si termina en cierre legítimo, conservar
+  const LEGIT = /[.?!…—»\)\]"]\s*$/;
+  if (LEGIT.test(value)) return value;
+
+  // Si no termina en nada, agregar elipsis
+  return `${value}…`;
 }
-const edicionLabel = formatEdicionNumeroV11(libro?._edicion_numero);
-const edicionEyebrow = edicionLabel
-  ? `<div class="edicion-eyebrow" aria-hidden="true">EDICIÓN<span class="edicion-eyebrow-sep">·</span><span class="edicion-eyebrow-num">${escapeHTML(edicionLabel)}</span></div>`
-  : "";
+
+const headlineClean = ensureHeadlineClosure(headline);
 
 let html = template
-  .replace("{{EDICION_EYEBROW}}", edicionEyebrow)
-  .replace("{{HEADLINE}}", escapeHTML(headline))
+  .replace("{{HEADLINE}}", escapeHTML(headlineClean))
   .replace("{{COVER_SECTION}}", coverSection)
   .replace("{{BRAND_SECTION}}", brandSection);
 
@@ -618,4 +630,4 @@ await browser.close();
 const stats = await fs.stat(outPath);
 console.log(`   ✅ OG image: ${outPath} (${(stats.size / 1024).toFixed(0)} KB)`);
 console.log(`   🖼️  Portada: ${portadaURL ? portadaSource : "tipográfica"}`);
-console.log(`   ✨ Headline: ${headline}`);
+console.log(`   ✨ Headline: ${headlineClean}`);
