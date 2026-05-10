@@ -2480,7 +2480,24 @@ const grid=document.getElementById("grid"), cta=document.getElementById("cta"),
 
 let libro=null, revealed=false;
 let portIdx = Math.floor(Math.random()*4);
-const emojis=["🌊","🛡️","🧠","✨","📘","🔮","❤️","🪞"];
+// 🌒 Capa C — emojis específicos por libro vía CSAL
+// FALLBACK_EMOJIS se usa solo si el libro no tiene _csal.bloques con emoji_specific
+const FALLBACK_EMOJIS=["🌊","🛡️","🧠","✨","📘","🔮","❤️","🪞"];
+const emojis=FALLBACK_EMOJIS; // alias retro-compat (no romper código viejo si quedara)
+
+function getBlockEmoji(libro, blockIndex){
+  // Si el libro tiene CSAL, usar emoji específico de su bloque
+  try {
+    if (libro && libro._csal && Array.isArray(libro._csal.bloques)) {
+      const bloque = libro._csal.bloques.find(b => b && typeof b.index === 'number' && b.index === blockIndex);
+      if (bloque && typeof bloque.emoji_specific === 'string' && bloque.emoji_specific.length > 0) {
+        return bloque.emoji_specific;
+      }
+    }
+  } catch(_) {}
+  // Fallback al array hardcoded
+  return FALLBACK_EMOJIS[blockIndex % FALLBACK_EMOJIS.length];
+}
 const isURL = s => /^https?:\/\//i.test(s || "");
 const ANG = [115,205,35,320];
 const grad = i => `linear-gradient(${ANG[i%4]}deg,${libro.colores[i]},${libro.colores[(i+1)%4]})`;
@@ -2742,7 +2759,7 @@ function buildPort(i){
   box.appendChild(titleEl);
   box.appendChild(authorEl);
   const emoji=document.createElement("div"); emoji.className="emoji-big";
-  emoji.textContent=emojis[i%emojis.length];
+  emoji.textContent=getBlockEmoji(libro, i);
   wrap.append(box,emoji);
   if(isURL(libro.portada)){ d.append(Object.assign(new Image(),{src:libro.portada,loading:"lazy"})); }
   else{ d.append(wrap); setTimeout(()=>adjustScale(wrap),0); }
@@ -2768,7 +2785,7 @@ function render(){
   for(let i=0;i<4;i++){
     const card=document.createElement("div"); card.className="block"; card.style.background=grad(i);
     const label=document.createElement("div"); label.className="label";
-    label.textContent=`${emojis[i%emojis.length]} ${palabrasI18n[i]}`;
+    label.textContent=`${getBlockEmoji(libro, i)} ${palabrasI18n[i]}`;
     label.style.color=libro.textColors?.[i]||"#fff";
     const frase=document.createElement("div"); frase.className="frase";
     frase.textContent=frasesI18n[i]; frase.style.color=libro.textColors?.[i]||"#fff";
@@ -4306,49 +4323,191 @@ const TrigguiFiltro = {
     return items[seed % items.length];
   },
 
+  // ════════════════════════════════════════════════════════════════════════
+  // 🌒 CAPA C — CSAL MATCHING NIVEL DIOS
+  // ════════════════════════════════════════════════════════════════════════
+  // El _csal del libro contiene 4 capas curadas por el extractor v4:
+  //   - trigger_situations: 30-50 frases naturales en lenguaje del usuario
+  //   - trigger_keywords:   emociones/objetos/contextos/verbos categorizados
+  //   - concept_tags:       conceptos identitarios del libro
+  //   - anti_patterns:      situaciones para las que el libro NO sirve
+  //
+  // Cuando un libro tiene _csal, su score CSAL puro reemplaza al QUANTUM_LENS
+  // (vector 11-dim hardcoded). TF-IDF clásico se preserva como capa secundaria
+  // (10%) para rescatar casos donde el usuario usa palabras del copy editorial.
+  //
+  // Si NINGÚN libro del catálogo tiene _csal (caso pre-sprint), el filter
+  // automáticamente usa el camino antiguo (QUANTUM 80% + TF-IDF 20%).
+  // ════════════════════════════════════════════════════════════════════════
+
+  _csalIdxCache: null,
+  _csalIdxCacheKey: null,
+
+  // Pre-computa el índice CSAL del catálogo. Se cachea por (libros.length × lang).
+  buildCSALIndex: function(libros, lang) {
+    const cacheKey = `${libros.length}:${lang}:csal-v1`;
+    if (this._csalIdxCacheKey === cacheKey) return this._csalIdxCache;
+
+    const perBook = [];
+    let coverageCount = 0;
+
+    for (let i = 0; i < libros.length; i++) {
+      const libro = libros[i];
+      const csal = libro && libro._csal;
+
+      if (!csal || typeof csal !== 'object') {
+        perBook.push(null); // libro sin CSAL → fallback a QUANTUM
+        continue;
+      }
+      coverageCount++;
+
+      // Tokenizar trigger_situations (frases largas: matching por solapamiento)
+      const situationTokens = (csal.trigger_situations || [])
+        .filter(s => typeof s === 'string')
+        .map(s => this.tokenize(s));
+
+      // Aplanar trigger_keywords (emociones/objetos/contextos/verbos)
+      const kw = csal.trigger_keywords || {};
+      const allKeywords = [
+        ...(Array.isArray(kw.emociones) ? kw.emociones : []),
+        ...(Array.isArray(kw.objetos)   ? kw.objetos   : []),
+        ...(Array.isArray(kw.contextos) ? kw.contextos : []),
+        ...(Array.isArray(kw.verbos)    ? kw.verbos    : [])
+      ].filter(k => typeof k === 'string');
+      // Cada keyword puede ser frase compuesta ("ansiedad social"). Tokenizamos
+      // y guardamos como Set para lookup O(1).
+      const keywordTokens = new Set();
+      for (const k of allKeywords) {
+        for (const t of this.tokenize(k)) keywordTokens.add(t);
+      }
+
+      // concept_tags: tokenizar y guardar como Set
+      const conceptTagTokens = new Set();
+      for (const ct of (csal.concept_tags || [])) {
+        if (typeof ct !== 'string') continue;
+        for (const t of this.tokenize(ct)) conceptTagTokens.add(t);
+      }
+
+      // anti_patterns: tokenizar y guardar como Set (penalty)
+      const antiPatternTokens = new Set();
+      for (const ap of (csal.anti_patterns || [])) {
+        if (typeof ap !== 'string') continue;
+        for (const t of this.tokenize(ap)) antiPatternTokens.add(t);
+      }
+
+      perBook.push({
+        situationTokens,    // array de arrays (matching por overlap)
+        keywordTokens,      // Set
+        conceptTagTokens,   // Set
+        antiPatternTokens   // Set
+      });
+    }
+
+    this._csalIdxCache = { perBook, coverageCount, total: libros.length };
+    this._csalIdxCacheKey = cacheKey;
+    return this._csalIdxCache;
+  },
+
+  // Score CSAL para un libro contra los tokens del usuario.
+  // Pesos justificados (sección 20.2 del Maestro V9):
+  //   situations 45%: frases naturales completas, mayor riqueza semántica
+  //   keywords   30%: matching directo de tokens curados
+  //   tags       20%: identidad del libro
+  //   anti     -50%: penalty fuerte cuando el libro NO sirve para el query
+  // Stopwords se filtran ANTES (ver filter()). Tokens vacíos se ignoran.
+  scoreCSAL: function(userTokensFiltered, bookData) {
+    if (!bookData) return 0;
+    if (!userTokensFiltered || userTokensFiltered.length === 0) return 0;
+
+    // ─── Score A — trigger_situations (peso 45%) ─────────────────────────
+    // Para cada situation del libro, contar cuántos tokens del usuario aparecen.
+    // Normalizar por longitud de la situation (TF normalizado).
+    let situationScore = 0;
+    let situationsHit = 0;
+    for (const sitTokens of bookData.situationTokens) {
+      if (sitTokens.length === 0) continue;
+      let matches = 0;
+      for (const ut of userTokensFiltered) {
+        if (sitTokens.includes(ut)) matches++;
+      }
+      if (matches > 0) {
+        situationsHit++;
+        situationScore += matches / Math.max(1, Math.sqrt(sitTokens.length));
+      }
+    }
+    // Bonus por diversidad: hits en muchas situations distintas (max 20%)
+    const diversityBonus = Math.min(1, situationsHit / 5);
+    situationScore = situationScore * (1 + diversityBonus * 0.2);
+
+    // ─── Score B — trigger_keywords (peso 30%) ───────────────────────────
+    // Matching directo de tokens del usuario contra keywords curados del libro.
+    let keywordScore = 0;
+    for (const ut of userTokensFiltered) {
+      if (bookData.keywordTokens.has(ut)) keywordScore += 1;
+    }
+
+    // ─── Score C — concept_tags (peso 20%) ───────────────────────────────
+    // Matching de tokens del usuario contra tags identitarios del libro.
+    let tagScore = 0;
+    for (const ut of userTokensFiltered) {
+      if (bookData.conceptTagTokens.has(ut)) tagScore += 0.7;
+    }
+
+    // ─── Score D — anti_patterns (penalty -50%) ───────────────────────────
+    // Si el query del usuario toca un anti_pattern del libro, penalizar fuerte.
+    let antiPenalty = 0;
+    for (const ut of userTokensFiltered) {
+      if (bookData.antiPatternTokens.has(ut)) antiPenalty += 1;
+    }
+
+    // Combinación ponderada (clamp a 0+ — un libro nunca tiene score negativo)
+    const finalScore =
+      situationScore * 0.45 +
+      keywordScore   * 0.30 +
+      tagScore       * 0.20
+      - antiPenalty  * 0.50;
+
+    return Math.max(0, finalScore);
+  },
+
+  // Setter para que pickPhrase() pueda leer los tokens del último query
+  // (matching semántico del bocado/eco, opcional bonus).
+  _lastQueryTokens: [],
+
   // Función principal. Retorna { libro, index, score, reason }.
   // reason puede ser:
-  //   'solo'  — solo hay 1 libro en el catálogo
-  //   'empty' — query vacío o el usuario no escribió nada
-  //   'match' — se encontró al menos un libro con score relevante
-  //   'whisper' — ningún match claro; elige con semilla diaria del top
+  //   'solo'      — solo hay 1 libro en el catálogo
+  //   'empty'     — query vacío o el usuario no escribió nada
+  //   'csal'      — match nivel dios vía CSAL (camino preferido)
+  //   'match'     — match clásico vía QUANTUM_LENS_MAP (fallback pre-sprint)
+  //   'whisper'   — ningún match claro; elige con semilla diaria del top
   filter: function(libros, query) {
     if (!libros || libros.length === 0) return null;
     if (libros.length === 1) {
+      this._lastQueryTokens = [];
       return { libro: libros[0], index: 0, score: 0, reason: 'solo' };
     }
 
     const q = String(query || '').trim();
     if (!q) {
       // Query vacío: elige con semilla diaria sobre todo el catálogo.
-      // Esto da "libro del día" consistente si el usuario abre sin escribir.
+      this._lastQueryTokens = [];
       const seed = this.daySeed('');
       const idx = seed % libros.length;
       return { libro: libros[idx], index: idx, score: 0, reason: 'empty' };
     }
 
-    const idx = this.buildIndex(libros);
     const queryTokens = this.tokenize(q);
 
     if (queryTokens.length === 0) {
-      // El usuario escribió solo puntuación, emojis, o 1 carácter
+      this._lastQueryTokens = [];
       const seed = this.daySeed(q);
       const i = seed % libros.length;
       return { libro: libros[i], index: i, score: 0, reason: 'empty' };
     }
 
-    // 🌒 v10: Expansión con sinónimos emocionales.
-    // Originales: peso 1.0. Sinónimos del diccionario: peso 0.5.
-    // El match parcial (subcadena) solo se aplica a originales — los sinónimos
-    // ya son aproximaciones, no aproximamos sobre aproximaciones.
-    const expandedTokens = this.expandWithSynonyms(queryTokens);
-
-    // Scoring TF-IDF: por cada libro, score = Σ(token_tf_in_book × idf_of_token × weight)
-    // 🌒 BARRA MÁGICA — CAPA CUÁNTICA v3 (stopwords filter + proporcional)
-    const queryVecQuantum = buildQueryVector(queryTokens, TriggguiI18n.lang);
-
-    // Stopwords ES + EN: palabras que NO deben dar peso al TF-IDF
-    // porque son ultra-comunes y contaminan el ranking.
+    // Stopwords ES + EN — definidas inline porque son específicas de matching
+    // (no de tokenización). El TF-IDF antiguo y el CSAL las usan ambas.
     const STOPWORDS_QUANTUM = new Set([
       // Español
       'no','si','sí','ya','ni','el','la','los','las','un','una','unos','unas',
@@ -4367,31 +4526,132 @@ const TrigguiFiltro = {
       'a','con','sin','por','para','sobre','entre','hasta','desde','contra',
       'también','tampoco','solo','sólo','siempre','nunca','jamás',
       // Inglés
-      'no','not','yes','the','a','an','of','to','in','on','at','for',
+      'not','yes','the','an','of','to','in','on','at','for',
       'and','or','but','if','then','than','so','as','because','though',
-      'i','you','he','she','it','we','they','me','him','her','us','them',
-      'my','your','his','its','our','their','this','that','these','those',
+      'i','you','he','she','it','we','they','him','her','us','them',
+      'your','his','its','our','their','that','these','those',
       'can','could','will','would','should','may','might','must','shall',
-      'am','is','are','was','were','be','being','been',
+      'am','are','was','were','be','being','been',
       'have','has','had','having','do','does','did','doing','done',
       'want','need','feel','think','know','make','get','take','give',
       'when','where','why','how','what','which','who','whom','whose',
-      'more','less','very','much','little','few','some','any','all','none',
-      'here','there','where','everywhere','somewhere','anywhere','nowhere',
+      'more','less','very','much','little','few','any','all','none',
+      'here','there','everywhere','somewhere','anywhere','nowhere',
       'too','also','either','neither','both','each','every'
     ]);
 
-    // PASS 1: calcular tfidfRaw + quantum por libro, FILTRANDO stopwords
+    // Tokens del usuario filtrados de stopwords y de palabras <3 chars
+    const userTokensFiltered = queryTokens.filter(t =>
+      t.length >= 3 && !STOPWORDS_QUANTUM.has(t)
+    );
+
+    // Setear para pickPhrase() (matching semántico del bocado/eco)
+    this._lastQueryTokens = userTokensFiltered.slice();
+
+    // Si después del filtro no quedan tokens, semilla diaria
+    if (userTokensFiltered.length === 0) {
+      const seed = this.daySeed(q);
+      const i = seed % libros.length;
+      return { libro: libros[i], index: i, score: 0, reason: 'empty' };
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // CAMINO 1 — CSAL MATCHING (preferido cuando los libros tienen _csal)
+    // ════════════════════════════════════════════════════════════════════
+    const csalIdx = this.buildCSALIndex(libros, TriggguiI18n.lang);
+    const csalCoverage = csalIdx.coverageCount / csalIdx.total;
+
+    // Si al menos 30% del catálogo tiene CSAL, intentamos primero por CSAL.
+    // Threshold conservador: con catálogo regenerado desde cero será 100%.
+    if (csalCoverage >= 0.30) {
+      const csalScores = libros.map((libro, index) => {
+        const bookData = csalIdx.perBook[index];
+        const csalScore = this.scoreCSAL(userTokensFiltered, bookData);
+        return { libro, index, csalScore };
+      });
+
+      // Normalizar al máximo del batch para que el peso 0-1 sea consistente
+      let maxCSAL = 0;
+      for (const r of csalScores) if (r.csalScore > maxCSAL) maxCSAL = r.csalScore;
+
+      // Si hay match real CSAL (max > umbral), usar camino CSAL puro
+      if (maxCSAL > 0.5) {
+        const idx = this.buildIndex(libros);
+
+        // PASS 2 con CSAL: combinar CSAL (85%) + TF-IDF (10%) + crono (5%)
+        const expandedTokens = this.expandWithSynonyms(queryTokens);
+        const tfidfRawByBook = libros.map((libro, index) => {
+          const bookVec = idx.bookVectors[index];
+          let tfidfRaw = 0;
+          for (const { token, weight } of expandedTokens) {
+            if (token.length < 3 || STOPWORDS_QUANTUM.has(token)) continue;
+            const tf = bookVec[token] || 0;
+            if (tf === 0) {
+              if (weight < 1.0) continue;
+              for (const bookTerm of Object.keys(bookVec)) {
+                if (bookTerm.length >= 4 && token.length >= 4) {
+                  if (bookTerm.includes(token) || token.includes(bookTerm)) {
+                    const partialTf = bookVec[bookTerm] * 0.5;
+                    tfidfRaw += partialTf * (idx.idf[bookTerm] || 1) * weight;
+                    break;
+                  }
+                }
+              }
+            } else {
+              const termIdf = idx.idf[token] || 1;
+              tfidfRaw += tf * termIdf * weight;
+            }
+          }
+          return tfidfRaw;
+        });
+
+        let maxTfidf = 0;
+        for (const t of tfidfRawByBook) if (t > maxTfidf) maxTfidf = t;
+        const useTfidf = maxTfidf > 1.5;
+
+        const scoredCSAL = csalScores.map(({ libro, index, csalScore }) => {
+          const csalNorm = csalScore / maxCSAL; // 0-1
+          const tfidfNorm = useTfidf ? (tfidfRawByBook[index] / maxTfidf) : 0;
+          const crono = (csalNorm > 0 || tfidfNorm > 0) ? this.cronoBoost(libro) : 0;
+          // Pesos nivel dios: CSAL 85% + TF-IDF 10% + crono 5%
+          const finalScore = (csalNorm * 0.85) + (tfidfNorm * 0.10) + (crono * 0.05);
+          return {
+            libro, index, score: finalScore,
+            _csal: csalNorm, _csalRaw: csalScore,
+            _tfidf: tfidfNorm, _tfidfRaw: tfidfRawByBook[index],
+            _crono: crono
+          };
+        });
+
+        scoredCSAL.sort((a, b) => b.score - a.score);
+        const best = scoredCSAL[0];
+
+        // Top-group con semilla diaria (variedad sutil)
+        const topGroup = scoredCSAL.filter(s => s.score >= best.score * 0.85).slice(0, 3);
+        const seed = this.daySeed(q);
+        const pick = topGroup[seed % topGroup.length];
+        return { ...pick, reason: 'csal' };
+      }
+      // Si CSAL no encontró match fuerte (max ≤ 0.5), caemos a QUANTUM
+      // Ojo: NO usamos un fallback más permisivo de CSAL, porque sin matches
+      // fuertes el QUANTUM clásico (con sinónimos hardcoded) puede rescatar
+      // queries que CSAL no cubre (palabras del copy editorial directo).
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    // CAMINO 2 — QUANTUM CLÁSICO (fallback pre-sprint, siempre disponible)
+    // ════════════════════════════════════════════════════════════════════
+    const idx = this.buildIndex(libros);
+    const expandedTokens = this.expandWithSynonyms(queryTokens);
+    const queryVecQuantum = buildQueryVector(queryTokens, TriggguiI18n.lang);
+
     const rawScores = libros.map((libro, index) => {
       const bookVec = idx.bookVectors[index];
       let tfidfRaw = 0;
       for (const { token, weight } of expandedTokens) {
-        // Skip stopwords y palabras de 1-2 letras
         if (token.length < 3 || STOPWORDS_QUANTUM.has(token)) continue;
         const tf = bookVec[token] || 0;
         if (tf === 0) {
-          // Match parcial SOLO para originales (peso 1.0). Los sinónimos no
-          // hacen match parcial — eso sería aproximación de aproximación = ruido.
           if (weight < 1.0) continue;
           for (const bookTerm of Object.keys(bookVec)) {
             if (bookTerm.length >= 4 && token.length >= 4) {
@@ -4411,9 +4671,6 @@ const TrigguiFiltro = {
       return { libro, index, tfidfRaw, quantum };
     });
 
-    // PASS 2: normalizar TF-IDF proporcional al MAX del batch
-    // Threshold 1.5 — si maxTfidf es muy bajo, no hay match TF-IDF real,
-    // dejamos que cuántico domine sin ruido.
     let maxTfidf = 0;
     for (const r of rawScores) if (r.tfidfRaw > maxTfidf) maxTfidf = r.tfidfRaw;
     const useTfidf = maxTfidf > 1.5;
@@ -4429,16 +4686,12 @@ const TrigguiFiltro = {
 
     const best = scored[0];
     if (best.score <= 0.01) {
-      // Ningún libro matcheó nada del query. Usar semilla para dar consistencia
-      // diaria sin parecer random puro. Top 3 con semilla para variedad sutil.
       const top3 = scored.slice(0, Math.min(3, scored.length));
       const seed = this.daySeed(q);
       const pick = top3[seed % top3.length];
       return { ...pick, reason: 'whisper' };
     }
 
-    // Hay match real. Elegir del grupo con score >= 85% del mejor
-    // para dar variedad sin perder precisión. Semilla diaria = consistencia.
     const topGroup = scored.filter(s => s.score >= best.score * 0.85).slice(0, 3);
     const seed = this.daySeed(q);
     const pick = topGroup[seed % topGroup.length];
@@ -6801,6 +7054,10 @@ bootTriggui();
     return pool;
   }
 
+  // 🌒 Capa C — pickPhrase con matching semántico opcional contra el último query.
+  // Si TrigguiFiltro tiene tokens del último query (vía _lastQueryTokens), el
+  // bocado/eco que aparece RESPONDE al input del usuario en lugar de ser random.
+  // Si no hay tokens (query vacío) o no hay matches, fallback a random como antes.
   function pickPhrase() {
     if (!lastCandidatePool || lastCandidatePool.length === 0) return null;
     var available = [];
@@ -6811,6 +7068,38 @@ bootTriggui();
       usedInThisSession.clear();
       available = lastCandidatePool.slice();
     }
+
+    // Intentar matching semántico contra el query del usuario
+    try {
+      var userTokens = (typeof TrigguiFiltro !== 'undefined' && Array.isArray(TrigguiFiltro._lastQueryTokens))
+        ? TrigguiFiltro._lastQueryTokens
+        : [];
+      if (userTokens.length > 0 && typeof TrigguiFiltro.tokenize === 'function') {
+        var scored = [];
+        for (var j = 0; j < available.length; j++) {
+          var phraseTokens = TrigguiFiltro.tokenize(available[j].text || '');
+          if (phraseTokens.length === 0) continue;
+          var matches = 0;
+          for (var k = 0; k < userTokens.length; k++) {
+            if (phraseTokens.indexOf(userTokens[k]) !== -1) matches++;
+          }
+          if (matches > 0) {
+            // Normalizar por longitud de la phrase (TF normalizado)
+            var score = matches / Math.max(1, Math.sqrt(phraseTokens.length));
+            scored.push({ item: available[j], score: score });
+          }
+        }
+        if (scored.length > 0) {
+          scored.sort(function(a, b) { return b.score - a.score; });
+          // Top group con leve aleatoriedad (variedad sin perder relevancia)
+          var topGroup = scored.filter(function(s) { return s.score >= scored[0].score * 0.7; });
+          var pickIdx = Math.floor(trueRandom() * topGroup.length);
+          return topGroup[pickIdx].item;
+        }
+      }
+    } catch(_) {}
+
+    // Fallback: random (comportamiento original)
     return available[Math.floor(trueRandom() * available.length)];
   }
 
