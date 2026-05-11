@@ -1136,12 +1136,38 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
       }
       // (Si es batch y libro existente no tenía número, no se asigna)
 
-      existing.libros[existingIndex] = newBook;
-      action = existingIsManual && newIsManual
-        ? "reemplazado (manual→manual)"
-        : existingIsManual && !newIsManual
-          ? "reemplazado (manual sobrescrito)"
-          : "reemplazado";
+      // 🌒 V19 NIVEL DIOS CUÁNTICO-QUARK MATEMÁTICO AXIOMÁTICO
+      // ════════════════════════════════════════════════════════════════════
+      // SINGLE mode: regen TAMBIÉN va a posición [0] (semántica "más reciente
+      // cronológicamente"). Antes V10: replace en posición original.
+      // Ahora V19: splice(idx, 1) + unshift(newBook).
+      //
+      // Razón: el email del lunes (Apps Script V18) lee libros[0]. Si Badir
+      // regenera un libro existente con mejor contenido, queremos que el
+      // email refleje esa regeneración. Antes quedaba "atrapado" en su
+      // posición original y el email mandaba un libro más viejo.
+      //
+      // BATCH mode: se mantiene la lógica V10 (replace en posición original)
+      // porque los libros del batch no deben reordenar el feed de la app.
+      // ════════════════════════════════════════════════════════════════════
+      if (!isFromBatch) {
+        // Single mode: mover al inicio (mismo comportamiento que libro nuevo)
+        existing.libros.splice(existingIndex, 1);
+        existing.libros.unshift(newBook);
+        action = existingIsManual && newIsManual
+          ? "regenerado al inicio (manual→manual, V19)"
+          : existingIsManual && !newIsManual
+            ? "regenerado al inicio (manual sobrescrito, V19)"
+            : "regenerado al inicio (V19)";
+      } else {
+        // Batch mode: replace en posición original (V10 legacy)
+        existing.libros[existingIndex] = newBook;
+        action = existingIsManual && newIsManual
+          ? "reemplazado (manual→manual)"
+          : existingIsManual && !newIsManual
+            ? "reemplazado (manual sobrescrito)"
+            : "reemplazado";
+      }
     } else {
       // 🌒 V10 LIBRO NUEVO — asignar número solo si NO es batch
       if (!isFromBatch) {
