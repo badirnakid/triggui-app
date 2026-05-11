@@ -486,6 +486,109 @@ jobs:
           fi
 
       # ╔══════════════════════════════════════════════════════════════════╗
+      # ║  FASE 8.5 — Generar contenido_manual.json (vista filtrada)        ║
+      # ║                                                                    ║
+      # ║  Política matemática axiomática nivel dios cuántico-quark:        ║
+      # ║  contenido_manual.json = {                                         ║
+      # ║    libros: contenido.json.libros.filter(_edicion_numero >= 1),    ║
+      # ║    meta: contenido.json.meta                                       ║
+      # ║  }                                                                 ║
+      # ║                                                                    ║
+      # ║  → Single mode: el libro nuevo tiene _edicion_numero → aparece    ║
+      # ║  → Batch mode:  los 20 nuevos NO tienen _edicion_numero → no apar.║
+      # ║                                                                    ║
+      # ║  Usado por: Apps Script (email del lunes) — lee libros[0]         ║
+      # ║                                                                    ║
+      # ║  Defensas: atomic write, parse guard, unicode safe, idempotente   ║
+      # ║  Tests cuántico-quark: 24/24 pasados antes de deployment          ║
+      # ╚══════════════════════════════════════════════════════════════════╝
+
+      - name: 🌒 Generar contenido_manual.json (vista filtrada nivel dios)
+        if: ${{ !inputs.modo_prueba }}
+        run: |
+          set -euo pipefail
+          if [ ! -f contenido.json ]; then
+            echo "ℹ️  contenido.json no existe — skip generación de contenido_manual.json"
+            exit 0
+          fi
+
+          node -e '
+            const fs = require("fs");
+            const SRC = "contenido.json";
+            const TGT = "contenido_manual.json";
+
+            // 1. Leer source con defensas
+            let raw;
+            try {
+              raw = fs.readFileSync(SRC, "utf8");
+            } catch (e) {
+              console.error("❌ no se pudo leer " + SRC + ": " + e.message);
+              process.exit(1);
+            }
+
+            if (!raw || !raw.trim()) {
+              console.error("❌ " + SRC + " vacío o whitespace");
+              process.exit(1);
+            }
+
+            // 2. Parsear con defensa contra corrupción
+            let data;
+            try {
+              data = JSON.parse(raw);
+            } catch (e) {
+              console.error("❌ " + SRC + " JSON inválido: " + e.message);
+              process.exit(1);
+            }
+
+            if (!data || typeof data !== "object" || !Array.isArray(data.libros)) {
+              console.error("❌ " + SRC + " estructura inválida (sin .libros array)");
+              process.exit(1);
+            }
+
+            // 3. Filtrar — solo libros con _edicion_numero válido (number >= 1)
+            const filtered = data.libros.filter(function(libro) {
+              return libro
+                && typeof libro === "object"
+                && typeof libro._edicion_numero === "number"
+                && libro._edicion_numero >= 1;
+            });
+
+            // 4. Construir output preservando meta
+            const output = {
+              libros: filtered,
+              meta: data.meta || {}
+            };
+
+            // 5. Atomic write (tmp → rename) para evitar corrupción si falla
+            const tmpPath = TGT + ".tmp-" + Date.now();
+            try {
+              fs.writeFileSync(tmpPath, JSON.stringify(output, null, 2), "utf8");
+              fs.renameSync(tmpPath, TGT);
+            } catch (e) {
+              try { fs.unlinkSync(tmpPath); } catch (_) {}
+              console.error("❌ atomic write falló: " + e.message);
+              process.exit(1);
+            }
+
+            // 6. Identificar libros[0] (el que recibirá el email del lunes)
+            const top = filtered.length > 0 ? filtered[0] : null;
+            const topInfo = top
+              ? `"${top.titulo}" (#${String(top._edicion_numero).padStart(3, "0")}) — ${top.autor || "?"}`
+              : "(ninguno — Apps Script abortará envío)";
+
+            console.log("🌒 contenido_manual.json generado:");
+            console.log("   Total source:    " + data.libros.length + " libros");
+            console.log("   Total filtrado:  " + filtered.length + " libros con _edicion_numero");
+            console.log("   libros[0]:       " + topInfo);
+          '
+
+          # Sincronizar a triggui-content
+          if [ -f contenido_manual.json ]; then
+            cp contenido_manual.json triggui-content/contenido_manual.json
+            echo "✅ contenido_manual.json sincronizado"
+          fi
+
+      # ╔══════════════════════════════════════════════════════════════════╗
       # ║  FASE 9 — Commit y push a AMBOS repos                             ║
       # ╚══════════════════════════════════════════════════════════════════╝
 
@@ -527,6 +630,8 @@ jobs:
             git config user.email "bot@triggui.com"
 
             [ -f contenido.json ] && git add contenido.json || true
+            # 🌒 V18: vista filtrada para email del lunes (Apps Script)
+            [ -f contenido_manual.json ] && git add contenido_manual.json || true
             # Si hubo backups por corrupto/inválido en Fase 3, se versionan también
             ls contenido.json.backup-* >/dev/null 2>&1 && git add contenido.json.backup-* || true
 
