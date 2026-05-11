@@ -221,6 +221,16 @@
       "timestamp": "2026-05-10T22:46:02.113Z",
       "trigger_input": "cansado, hasta donde damos el maximo?y hasta donde descansamos",
       "selected_via": "constrained_catalog"
+    },
+    {
+      "titulo": "La inflamación de la mente",
+      "autor": "Edward Bullmore",
+      "slug": "la-inflamacion-de-la-mente",
+      "titulo_normalizado": "la inflamacion de la mente",
+      "autor_normalizado": "edward bullmore",
+      "timestamp": "2026-05-11T02:15:02.050Z",
+      "trigger_input": "inflamacion es mala",
+      "selected_via": "constrained_catalog"
     }
   ],
   "_note": "FIFO ring de últimos 30 libros generados por selección automática (constrained o discover). Filtro pre-rerank en validate-book.js. Inicializa vacío y se rellena con cada run exitoso. Si se borra, el sistema arranca limpio sin daño."
