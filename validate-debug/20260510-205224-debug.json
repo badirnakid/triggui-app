@@ -1,0 +1,368 @@
+{
+  "history": [
+    {
+      "at": "2026-05-11T02:51:21.073Z",
+      "stage": "success",
+      "bookData": {
+        "titulo": "Cuestión de límites",
+        "autor": "Nedra Glover Tawwab",
+        "slug": "cuestion-de-limites",
+        "tagline": "",
+        "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/29/fa/ec/29faec67-bd2d-33cd-ac52-65919451c292/9780593421499.d.jpg/3000x3000bb.jpg",
+        "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/29/fa/ec/29faec67-bd2d-33cd-ac52-65919451c292/9780593421499.d.jpg/3000x3000bb.jpg",
+        "portada_source": "apple_books",
+        "portada_candidates": [
+          {
+            "source": "apple_books",
+            "size": "xxlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/29/fa/ec/29faec67-bd2d-33cd-ac52-65919451c292/9780593421499.d.jpg/3000x3000bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "xlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/29/fa/ec/29faec67-bd2d-33cd-ac52-65919451c292/9780593421499.d.jpg/1200x1200bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "large",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/29/fa/ec/29faec67-bd2d-33cd-ac52-65919451c292/9780593421499.d.jpg/600x600bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "medium",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/29/fa/ec/29faec67-bd2d-33cd-ac52-65919451c292/9780593421499.d.jpg/100x100bb.jpg",
+            "valid": true
+          }
+        ],
+        "needs_fallback_cover": false,
+        "isbn": "",
+        "editorial": "Nedra Glover Tawwab",
+        "publication_year": "2021",
+        "source": "apple_books",
+        "duplicado": true,
+        "selected_via": "direct_book",
+        "selection_reason": "Libro explícito proporcionado en workflow_dispatch",
+        "trigger_input": "",
+        "trigger_analysis": null,
+        "selection_validation": {},
+        "catalog_scope": "",
+        "contexto_2026": {},
+        "identity_sealed": false,
+        "_evidence": {
+          "titulo_input": "Cuestión de límites",
+          "autor_input": "Nedra Glover Tawwab",
+          "isbn_seed": "",
+          "isbn_seed_raw": "",
+          "isbn_seed_rejected": null,
+          "isbn_discovered": "",
+          "isbn_discovered_raw": "",
+          "apple": {
+            "ok": true,
+            "source": "apple_books",
+            "match_score": 0.5925925925925927,
+            "match_details": {
+              "matched_title": "The Set Boundaries Workbook",
+              "matched_author": "Nedra Glover Tawwab"
+            },
+            "synopsis": "An accessible, step-by-step resource for setting, communicating, and enforcing healthy boundaries at home, at work, and in life We all want to have healthy boundaries. But what does that really mean – and what steps are needed to implement them in our daily lives? Sought-after therapist and relationship expert Nedra Glover Tawwab presents clear explanations and interactive exercises to help you gain insight and then put it into action. Filled with thought-provoking checklists, questions, writing prompts, and more, The Set Boundaries Workbook is a valuable tool for everyone who wants to speak up for what they want and need, and show up more authentically in the world. &#xa0;",
+            "synopsis_length": 682,
+            "covers": [
+              {
+                "size": "xxlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/29/fa/ec/29faec67-bd2d-33cd-ac52-65919451c292/9780593421499.d.jpg/3000x3000bb.jpg"
+              },
+              {
+                "size": "xlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/29/fa/ec/29faec67-bd2d-33cd-ac52-65919451c292/9780593421499.d.jpg/1200x1200bb.jpg"
+              },
+              {
+                "size": "large",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/29/fa/ec/29faec67-bd2d-33cd-ac52-65919451c292/9780593421499.d.jpg/600x600bb.jpg"
+              },
+              {
+                "size": "medium",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/29/fa/ec/29faec67-bd2d-33cd-ac52-65919451c292/9780593421499.d.jpg/100x100bb.jpg"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "The Set Boundaries Workbook",
+              "autor_completo": "Nedra Glover Tawwab",
+              "año": "2021",
+              "editorial": null,
+              "isbn": "",
+              "apple_track_id": "1598830981",
+              "categorias": [
+                "Superación personal",
+                "Libros",
+                "Salud, mente y cuerpo",
+                "No ficción",
+                "Familia y relaciones"
+              ],
+              "track_view_url": "https://books.apple.com/mx/book/the-set-boundaries-workbook/id1598830981?uo=4"
+            }
+          },
+          "google": {
+            "ok": false,
+            "reason": "no_good_match",
+            "source": "google_books"
+          },
+          "openlibrary": {
+            "ok": false,
+            "reason": "no_results",
+            "source": "openlibrary"
+          },
+          "amazon": {
+            "ok": false,
+            "reason": "skipped",
+            "source": "amazon"
+          },
+          "valid_covers": [
+            {
+              "source": "apple_books",
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/29/fa/ec/29faec67-bd2d-33cd-ac52-65919451c292/9780593421499.d.jpg/3000x3000bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/29/fa/ec/29faec67-bd2d-33cd-ac52-65919451c292/9780593421499.d.jpg/1200x1200bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/29/fa/ec/29faec67-bd2d-33cd-ac52-65919451c292/9780593421499.d.jpg/600x600bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/29/fa/ec/29faec67-bd2d-33cd-ac52-65919451c292/9780593421499.d.jpg/100x100bb.jpg",
+              "valid": true
+            }
+          ],
+          "_sources_succeeded": [
+            "apple_books"
+          ],
+          "_sources_failed": [
+            "google_books:no_good_match",
+            "openlibrary:no_results",
+            "amazon:skipped"
+          ],
+          "_timing": {
+            "phase1_parallel_ms": 16529,
+            "phase2_isbn_chain_ms": 0,
+            "cover_validation_ms": 1209,
+            "total_ms": 17738
+          },
+          "_version": "3.6"
+        },
+        "_evidence_synopsis": "An accessible, step-by-step resource for setting, communicating, and enforcing healthy boundaries at home, at work, and in life We all want to have healthy boundaries. But what does that really mean – and what steps are needed to implement them in our daily lives? Sought-after therapist and relationship expert Nedra Glover Tawwab presents clear explanations and interactive exercises to help you gain insight and then put it into action. Filled with thought-provoking checklists, questions, writing prompts, and more, The Set Boundaries Workbook is a valuable tool for everyone who wants to speak up for what they want and need, and show up more authentically in the world. &#xa0;",
+        "_evidence_verified_identity": {
+          "titulo_real": "The Set Boundaries Workbook",
+          "autor_completo": "Nedra Glover Tawwab",
+          "año": "2021",
+          "editorial": null,
+          "isbn": "",
+          "apple_track_id": "1598830981",
+          "categorias": [
+            "Superación personal",
+            "Libros",
+            "Salud, mente y cuerpo",
+            "No ficción",
+            "Familia y relaciones"
+          ],
+          "track_view_url": "https://books.apple.com/mx/book/the-set-boundaries-workbook/id1598830981?uo=4"
+        },
+        "_evidence_match_score": 0.5925925925925927
+      },
+      "ring_updated": false
+    }
+  ],
+  "last": {
+    "at": "2026-05-11T02:51:21.073Z",
+    "stage": "success",
+    "bookData": {
+      "titulo": "Cuestión de límites",
+      "autor": "Nedra Glover Tawwab",
+      "slug": "cuestion-de-limites",
+      "tagline": "",
+      "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/29/fa/ec/29faec67-bd2d-33cd-ac52-65919451c292/9780593421499.d.jpg/3000x3000bb.jpg",
+      "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/29/fa/ec/29faec67-bd2d-33cd-ac52-65919451c292/9780593421499.d.jpg/3000x3000bb.jpg",
+      "portada_source": "apple_books",
+      "portada_candidates": [
+        {
+          "source": "apple_books",
+          "size": "xxlarge",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/29/fa/ec/29faec67-bd2d-33cd-ac52-65919451c292/9780593421499.d.jpg/3000x3000bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "xlarge",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/29/fa/ec/29faec67-bd2d-33cd-ac52-65919451c292/9780593421499.d.jpg/1200x1200bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "large",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/29/fa/ec/29faec67-bd2d-33cd-ac52-65919451c292/9780593421499.d.jpg/600x600bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "medium",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/29/fa/ec/29faec67-bd2d-33cd-ac52-65919451c292/9780593421499.d.jpg/100x100bb.jpg",
+          "valid": true
+        }
+      ],
+      "needs_fallback_cover": false,
+      "isbn": "",
+      "editorial": "Nedra Glover Tawwab",
+      "publication_year": "2021",
+      "source": "apple_books",
+      "duplicado": true,
+      "selected_via": "direct_book",
+      "selection_reason": "Libro explícito proporcionado en workflow_dispatch",
+      "trigger_input": "",
+      "trigger_analysis": null,
+      "selection_validation": {},
+      "catalog_scope": "",
+      "contexto_2026": {},
+      "identity_sealed": false,
+      "_evidence": {
+        "titulo_input": "Cuestión de límites",
+        "autor_input": "Nedra Glover Tawwab",
+        "isbn_seed": "",
+        "isbn_seed_raw": "",
+        "isbn_seed_rejected": null,
+        "isbn_discovered": "",
+        "isbn_discovered_raw": "",
+        "apple": {
+          "ok": true,
+          "source": "apple_books",
+          "match_score": 0.5925925925925927,
+          "match_details": {
+            "matched_title": "The Set Boundaries Workbook",
+            "matched_author": "Nedra Glover Tawwab"
+          },
+          "synopsis": "An accessible, step-by-step resource for setting, communicating, and enforcing healthy boundaries at home, at work, and in life We all want to have healthy boundaries. But what does that really mean – and what steps are needed to implement them in our daily lives? Sought-after therapist and relationship expert Nedra Glover Tawwab presents clear explanations and interactive exercises to help you gain insight and then put it into action. Filled with thought-provoking checklists, questions, writing prompts, and more, The Set Boundaries Workbook is a valuable tool for everyone who wants to speak up for what they want and need, and show up more authentically in the world. &#xa0;",
+          "synopsis_length": 682,
+          "covers": [
+            {
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/29/fa/ec/29faec67-bd2d-33cd-ac52-65919451c292/9780593421499.d.jpg/3000x3000bb.jpg"
+            },
+            {
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/29/fa/ec/29faec67-bd2d-33cd-ac52-65919451c292/9780593421499.d.jpg/1200x1200bb.jpg"
+            },
+            {
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/29/fa/ec/29faec67-bd2d-33cd-ac52-65919451c292/9780593421499.d.jpg/600x600bb.jpg"
+            },
+            {
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/29/fa/ec/29faec67-bd2d-33cd-ac52-65919451c292/9780593421499.d.jpg/100x100bb.jpg"
+            }
+          ],
+          "verified_identity": {
+            "titulo_real": "The Set Boundaries Workbook",
+            "autor_completo": "Nedra Glover Tawwab",
+            "año": "2021",
+            "editorial": null,
+            "isbn": "",
+            "apple_track_id": "1598830981",
+            "categorias": [
+              "Superación personal",
+              "Libros",
+              "Salud, mente y cuerpo",
+              "No ficción",
+              "Familia y relaciones"
+            ],
+            "track_view_url": "https://books.apple.com/mx/book/the-set-boundaries-workbook/id1598830981?uo=4"
+          }
+        },
+        "google": {
+          "ok": false,
+          "reason": "no_good_match",
+          "source": "google_books"
+        },
+        "openlibrary": {
+          "ok": false,
+          "reason": "no_results",
+          "source": "openlibrary"
+        },
+        "amazon": {
+          "ok": false,
+          "reason": "skipped",
+          "source": "amazon"
+        },
+        "valid_covers": [
+          {
+            "source": "apple_books",
+            "size": "xxlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/29/fa/ec/29faec67-bd2d-33cd-ac52-65919451c292/9780593421499.d.jpg/3000x3000bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "xlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/29/fa/ec/29faec67-bd2d-33cd-ac52-65919451c292/9780593421499.d.jpg/1200x1200bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "large",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/29/fa/ec/29faec67-bd2d-33cd-ac52-65919451c292/9780593421499.d.jpg/600x600bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "medium",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication116/v4/29/fa/ec/29faec67-bd2d-33cd-ac52-65919451c292/9780593421499.d.jpg/100x100bb.jpg",
+            "valid": true
+          }
+        ],
+        "_sources_succeeded": [
+          "apple_books"
+        ],
+        "_sources_failed": [
+          "google_books:no_good_match",
+          "openlibrary:no_results",
+          "amazon:skipped"
+        ],
+        "_timing": {
+          "phase1_parallel_ms": 16529,
+          "phase2_isbn_chain_ms": 0,
+          "cover_validation_ms": 1209,
+          "total_ms": 17738
+        },
+        "_version": "3.6"
+      },
+      "_evidence_synopsis": "An accessible, step-by-step resource for setting, communicating, and enforcing healthy boundaries at home, at work, and in life We all want to have healthy boundaries. But what does that really mean – and what steps are needed to implement them in our daily lives? Sought-after therapist and relationship expert Nedra Glover Tawwab presents clear explanations and interactive exercises to help you gain insight and then put it into action. Filled with thought-provoking checklists, questions, writing prompts, and more, The Set Boundaries Workbook is a valuable tool for everyone who wants to speak up for what they want and need, and show up more authentically in the world. &#xa0;",
+      "_evidence_verified_identity": {
+        "titulo_real": "The Set Boundaries Workbook",
+        "autor_completo": "Nedra Glover Tawwab",
+        "año": "2021",
+        "editorial": null,
+        "isbn": "",
+        "apple_track_id": "1598830981",
+        "categorias": [
+          "Superación personal",
+          "Libros",
+          "Salud, mente y cuerpo",
+          "No ficción",
+          "Familia y relaciones"
+        ],
+        "track_view_url": "https://books.apple.com/mx/book/the-set-boundaries-workbook/id1598830981?uo=4"
+      },
+      "_evidence_match_score": 0.5925925925925927
+    },
+    "ring_updated": false
+  }
+}
