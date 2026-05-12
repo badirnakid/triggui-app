@@ -1,0 +1,490 @@
+{
+  "history": [
+    {
+      "at": "2026-05-12T16:52:23.385Z",
+      "stage": "trigger_analysis",
+      "trigger_analysis": {
+        "raw_input": "La muerte me preocupa",
+        "semantic_query": "preocupación por la muerte",
+        "intent_summary": "Buscar libros que aborden el tema de la muerte y la preocupación que genera.",
+        "editorial_requests": [],
+        "source_preference": null,
+        "ranking_preference": null,
+        "unsupported_runtime_constraints": [],
+        "supported_constraints": {
+          "year_min": null,
+          "year_max": null,
+          "prefer_recent": false
+        },
+        "search_queries": [
+          "muerte",
+          "temor a la muerte",
+          "filosofía de la muerte",
+          "libros sobre la muerte",
+          "aceptación de la muerte",
+          "vida y muerte",
+          "preocupación por la muerte"
+        ],
+        "concept_hints": [
+          "mortalidad",
+          "filosofía",
+          "espiritualidad"
+        ],
+        "clean_for_selection": "preocupación por la muerte",
+        "notes": {
+          "used_ai_normalizer": true,
+          "looked_like_book_intent": false,
+          "semantic_overlap_vs_raw": 0.5
+        }
+      }
+    },
+    {
+      "at": "2026-05-12T16:52:50.693Z",
+      "stage": "success",
+      "bookData": {
+        "titulo": "Las Intermitencias De La Muerte",
+        "autor": "José Saramago",
+        "slug": "las-intermitencias-de-la-muerte",
+        "tagline": "Sabemos cada vez menos del ser humano",
+        "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/23/45/9e/23459eee-6ca8-8064-06bf-8192f3b53b06/9788420491578.jpg/3000x3000bb.jpg",
+        "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/23/45/9e/23459eee-6ca8-8064-06bf-8192f3b53b06/9788420491578.jpg/3000x3000bb.jpg",
+        "portada_source": "apple_books",
+        "portada_candidates": [
+          {
+            "source": "apple_books",
+            "size": "xxlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/23/45/9e/23459eee-6ca8-8064-06bf-8192f3b53b06/9788420491578.jpg/3000x3000bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "xlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/23/45/9e/23459eee-6ca8-8064-06bf-8192f3b53b06/9788420491578.jpg/1200x1200bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "large",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/23/45/9e/23459eee-6ca8-8064-06bf-8192f3b53b06/9788420491578.jpg/600x600bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "medium",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/23/45/9e/23459eee-6ca8-8064-06bf-8192f3b53b06/9788420491578.jpg/100x100bb.jpg",
+            "valid": true
+          }
+        ],
+        "needs_fallback_cover": false,
+        "isbn": "",
+        "editorial": "José Saramago",
+        "publication_year": "2010",
+        "source": "apple_books",
+        "duplicado": true,
+        "selected_via": "constrained_catalog",
+        "selection_reason": "Aborda directamente la muerte y su percepción de manera singular y reflexiva.",
+        "trigger_input": "La muerte me preocupa",
+        "trigger_analysis": {
+          "raw_input": "La muerte me preocupa",
+          "semantic_query": "preocupación por la muerte",
+          "intent_summary": "Buscar libros que aborden el tema de la muerte y la preocupación que genera.",
+          "editorial_requests": [],
+          "source_preference": null,
+          "ranking_preference": null,
+          "unsupported_runtime_constraints": [],
+          "supported_constraints": {
+            "year_min": null,
+            "year_max": null,
+            "prefer_recent": false
+          },
+          "search_queries": [
+            "muerte",
+            "temor a la muerte",
+            "filosofía de la muerte",
+            "libros sobre la muerte",
+            "aceptación de la muerte",
+            "vida y muerte",
+            "preocupación por la muerte"
+          ],
+          "concept_hints": [
+            "mortalidad",
+            "filosofía",
+            "espiritualidad"
+          ],
+          "clean_for_selection": "preocupación por la muerte",
+          "notes": {
+            "used_ai_normalizer": true,
+            "looked_like_book_intent": false,
+            "semantic_overlap_vs_raw": 0.5
+          }
+        },
+        "selection_validation": {},
+        "catalog_scope": "libros_master_csv",
+        "contexto_2026": {
+          "aplicacion_badir_hoy": "",
+          "trigger_diagnostics": {
+            "semantic_query": "preocupación por la muerte",
+            "editorial_requests": [],
+            "supported_constraints": {
+              "year_min": null,
+              "year_max": null,
+              "prefer_recent": false
+            },
+            "source_preference": null,
+            "ranking_preference": null
+          }
+        },
+        "identity_sealed": true,
+        "_evidence": {
+          "titulo_input": "Las Intermitencias De La Muerte",
+          "autor_input": "José Saramago",
+          "isbn_seed": "",
+          "isbn_seed_raw": "",
+          "isbn_seed_rejected": null,
+          "isbn_discovered": "",
+          "isbn_discovered_raw": "",
+          "apple": {
+            "ok": true,
+            "source": "apple_books",
+            "match_score": 1,
+            "match_details": {
+              "matched_title": "Las intermitencias de la muerte",
+              "matched_author": "José Saramago"
+            },
+            "synopsis": "2022: AÑO SARAMAGO ¿Y si la gente dejara de morirse? Una brillante sátira del Nobel de Literatura que juega con el miedo más profundo del ser humano. «Sabremos cada vez menos qué es un ser humano». Libro de las Previsiones En un país cuyo nombre no será mencionado se produce algo nunca visto desde el principio del mundo: la muerte decide suspender su trabajo letal, la gente deja de morir. La euforia colectiva se desata, pero muy pronto dará paso a la desesperación y al caos. Sobran los motivos. Si es cierto que las personas ya no mueren, eso no significa que el tiempo haya parado. El destino de los humanos será una vejez eterna. Se buscarán maneras de forzar a la muerte a matar, se corromperán las conciencias en los «acuerdos de caballeros» entre el poder político, las mafias y las familias, los ancianos serán detestados por haberse convertido en estorbos inamovibles. Hasta el día en que la muerte, vestida de mujer, vuelve para descifrar un enigma, se encuentra con un músico, oye un concierto, establece una relación, escucha de nuevo a Bach... Entonces la novela sigue como sigue la vida, con todas sus contradicciones. Arrancando de una proposición contraria a la evidencia de los hechos corrientes, José Saramago desarrolla una narrativa de gran fecundidad literaria, social y filosófica que sitúa en el centro la perplejidad del ser humano ante la impostergable finitud de la existencia. Parábola de la corta distancia que separa lo efímero y lo eterno, la historia bien podría terminar tal como empieza: «Al día siguiente no murió nadie». La crítica ha dicho: «Saramago vuelve comprensible una realidad huidiza, con parábolas sostenidas por la imaginación, la compasión y la ironía». Comité Nobel «Un hombre con una sensibilidad y una capacidad de ver y de entender que están muy por encima de lo que en general vemos y entendemos los comunes mortales». Héctor Abad Faciolince «Saramago es un ejemplo, un estilo dignísimo de vida y literatura, que demuestra la posibilidad de navegar a contracorriente [...]. Su palabra tiene el valor de un anticongelante, de un remedio personal contra los vendavales de cinismo que nos envuelven». Luis García Montero «Yo no sé, ni quiero saberlo, de dónde ha sacado Saramago ese diabólico tono narrativo, duro y piadoso a un tiempo, [...] que le permite contar tan cerca del corazón y a la vez tan cerca de la historia». Luis Landero «Saramago escribe novelas sobre los mitos para desmitificarlos, [...] siempre para abordar la realidad que le rodea, para tratar de los problemas actuales que son de todos, y para que todo quede claro desde el principio». Rafael Conte, Babelia «Como Günter Grass o Cees Nooteboom, Saramago aspira a enlazar con un público que desborde límites nacionales». El País",
+            "synopsis_length": 2753,
+            "covers": [
+              {
+                "size": "xxlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/23/45/9e/23459eee-6ca8-8064-06bf-8192f3b53b06/9788420491578.jpg/3000x3000bb.jpg"
+              },
+              {
+                "size": "xlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/23/45/9e/23459eee-6ca8-8064-06bf-8192f3b53b06/9788420491578.jpg/1200x1200bb.jpg"
+              },
+              {
+                "size": "large",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/23/45/9e/23459eee-6ca8-8064-06bf-8192f3b53b06/9788420491578.jpg/600x600bb.jpg"
+              },
+              {
+                "size": "medium",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/23/45/9e/23459eee-6ca8-8064-06bf-8192f3b53b06/9788420491578.jpg/100x100bb.jpg"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "Las intermitencias de la muerte",
+              "autor_completo": "José Saramago",
+              "año": "2010",
+              "editorial": null,
+              "isbn": "",
+              "apple_track_id": "896268619",
+              "categorias": [
+                "Ficción literaria",
+                "Libros",
+                "Ficción y literatura"
+              ],
+              "track_view_url": "https://books.apple.com/mx/book/las-intermitencias-de-la-muerte/id896268619?uo=4"
+            }
+          },
+          "google": {
+            "ok": false,
+            "reason": "no_good_match",
+            "source": "google_books"
+          },
+          "openlibrary": {
+            "ok": false,
+            "reason": "error_This operation was aborted",
+            "source": "openlibrary"
+          },
+          "amazon": {
+            "ok": false,
+            "reason": "skipped",
+            "source": "amazon"
+          },
+          "valid_covers": [
+            {
+              "source": "apple_books",
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/23/45/9e/23459eee-6ca8-8064-06bf-8192f3b53b06/9788420491578.jpg/3000x3000bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/23/45/9e/23459eee-6ca8-8064-06bf-8192f3b53b06/9788420491578.jpg/1200x1200bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/23/45/9e/23459eee-6ca8-8064-06bf-8192f3b53b06/9788420491578.jpg/600x600bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/23/45/9e/23459eee-6ca8-8064-06bf-8192f3b53b06/9788420491578.jpg/100x100bb.jpg",
+              "valid": true
+            }
+          ],
+          "_sources_succeeded": [
+            "apple_books"
+          ],
+          "_sources_failed": [
+            "google_books:no_good_match",
+            "openlibrary:error_This operation was aborted",
+            "amazon:skipped"
+          ],
+          "_timing": {
+            "phase1_parallel_ms": 25005,
+            "phase2_isbn_chain_ms": 0,
+            "cover_validation_ms": 1014,
+            "total_ms": 26019
+          },
+          "_version": "3.6"
+        },
+        "_evidence_synopsis": "2022: AÑO SARAMAGO ¿Y si la gente dejara de morirse? Una brillante sátira del Nobel de Literatura que juega con el miedo más profundo del ser humano. «Sabremos cada vez menos qué es un ser humano». Libro de las Previsiones En un país cuyo nombre no será mencionado se produce algo nunca visto desde el principio del mundo: la muerte decide suspender su trabajo letal, la gente deja de morir. La euforia colectiva se desata, pero muy pronto dará paso a la desesperación y al caos. Sobran los motivos. Si es cierto que las personas ya no mueren, eso no significa que el tiempo haya parado. El destino de los humanos será una vejez eterna. Se buscarán maneras de forzar a la muerte a matar, se corromperán las conciencias en los «acuerdos de caballeros» entre el poder político, las mafias y las familias, los ancianos serán detestados por haberse convertido en estorbos inamovibles. Hasta el día en que la muerte, vestida de mujer, vuelve para descifrar un enigma, se encuentra con un músico, oye un concierto, establece una relación, escucha de nuevo a Bach... Entonces la novela sigue como sigue la vida, con todas sus contradicciones. Arrancando de una proposición contraria a la evidencia de los hechos corrientes, José Saramago desarrolla una narrativa de gran fecundidad literaria, social y filosófica que sitúa en el centro la perplejidad del ser humano ante la impostergable finitud de la existencia. Parábola de la corta distancia que separa lo efímero y lo eterno, la historia bien podría terminar tal como empieza: «Al día siguiente no murió nadie». La crítica ha dicho: «Saramago vuelve comprensible una realidad huidiza, con parábolas sostenidas por la imaginación, la compasión y la ironía». Comité Nobel «Un hombre con una sensibilidad y una capacidad de ver y de entender que están muy por encima de lo que en general vemos y entendemos los comunes mortales». Héctor Abad Faciolince «Saramago es un ejemplo, un estilo dignísimo de vida y literatura, que demuestra la posibilidad de navegar a contracorriente [...]. Su palabra tiene el valor de un anticongelante, de un remedio personal contra los vendavales de cinismo que nos envuelven». Luis García Montero «Yo no sé, ni quiero saberlo, de dónde ha sacado Saramago ese diabólico tono narrativo, duro y piadoso a un tiempo, [...] que le permite contar tan cerca del corazón y a la vez tan cerca de la historia». Luis Landero «Saramago escribe novelas sobre los mitos para desmitificarlos, [...] siempre para abordar la realidad que le rodea, para tratar de los problemas actuales que son de todos, y para que todo quede claro desde el principio». Rafael Conte, Babelia «Como Günter Grass o Cees Nooteboom, Saramago aspira a enlazar con un público que desborde límites nacionales». El País",
+        "_evidence_verified_identity": {
+          "titulo_real": "Las intermitencias de la muerte",
+          "autor_completo": "José Saramago",
+          "año": "2010",
+          "editorial": null,
+          "isbn": "",
+          "apple_track_id": "896268619",
+          "categorias": [
+            "Ficción literaria",
+            "Libros",
+            "Ficción y literatura"
+          ],
+          "track_view_url": "https://books.apple.com/mx/book/las-intermitencias-de-la-muerte/id896268619?uo=4"
+        },
+        "_evidence_match_score": 1
+      },
+      "ring_updated": true
+    }
+  ],
+  "last": {
+    "at": "2026-05-12T16:52:50.693Z",
+    "stage": "success",
+    "bookData": {
+      "titulo": "Las Intermitencias De La Muerte",
+      "autor": "José Saramago",
+      "slug": "las-intermitencias-de-la-muerte",
+      "tagline": "Sabemos cada vez menos del ser humano",
+      "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/23/45/9e/23459eee-6ca8-8064-06bf-8192f3b53b06/9788420491578.jpg/3000x3000bb.jpg",
+      "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/23/45/9e/23459eee-6ca8-8064-06bf-8192f3b53b06/9788420491578.jpg/3000x3000bb.jpg",
+      "portada_source": "apple_books",
+      "portada_candidates": [
+        {
+          "source": "apple_books",
+          "size": "xxlarge",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/23/45/9e/23459eee-6ca8-8064-06bf-8192f3b53b06/9788420491578.jpg/3000x3000bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "xlarge",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/23/45/9e/23459eee-6ca8-8064-06bf-8192f3b53b06/9788420491578.jpg/1200x1200bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "large",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/23/45/9e/23459eee-6ca8-8064-06bf-8192f3b53b06/9788420491578.jpg/600x600bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "medium",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/23/45/9e/23459eee-6ca8-8064-06bf-8192f3b53b06/9788420491578.jpg/100x100bb.jpg",
+          "valid": true
+        }
+      ],
+      "needs_fallback_cover": false,
+      "isbn": "",
+      "editorial": "José Saramago",
+      "publication_year": "2010",
+      "source": "apple_books",
+      "duplicado": true,
+      "selected_via": "constrained_catalog",
+      "selection_reason": "Aborda directamente la muerte y su percepción de manera singular y reflexiva.",
+      "trigger_input": "La muerte me preocupa",
+      "trigger_analysis": {
+        "raw_input": "La muerte me preocupa",
+        "semantic_query": "preocupación por la muerte",
+        "intent_summary": "Buscar libros que aborden el tema de la muerte y la preocupación que genera.",
+        "editorial_requests": [],
+        "source_preference": null,
+        "ranking_preference": null,
+        "unsupported_runtime_constraints": [],
+        "supported_constraints": {
+          "year_min": null,
+          "year_max": null,
+          "prefer_recent": false
+        },
+        "search_queries": [
+          "muerte",
+          "temor a la muerte",
+          "filosofía de la muerte",
+          "libros sobre la muerte",
+          "aceptación de la muerte",
+          "vida y muerte",
+          "preocupación por la muerte"
+        ],
+        "concept_hints": [
+          "mortalidad",
+          "filosofía",
+          "espiritualidad"
+        ],
+        "clean_for_selection": "preocupación por la muerte",
+        "notes": {
+          "used_ai_normalizer": true,
+          "looked_like_book_intent": false,
+          "semantic_overlap_vs_raw": 0.5
+        }
+      },
+      "selection_validation": {},
+      "catalog_scope": "libros_master_csv",
+      "contexto_2026": {
+        "aplicacion_badir_hoy": "",
+        "trigger_diagnostics": {
+          "semantic_query": "preocupación por la muerte",
+          "editorial_requests": [],
+          "supported_constraints": {
+            "year_min": null,
+            "year_max": null,
+            "prefer_recent": false
+          },
+          "source_preference": null,
+          "ranking_preference": null
+        }
+      },
+      "identity_sealed": true,
+      "_evidence": {
+        "titulo_input": "Las Intermitencias De La Muerte",
+        "autor_input": "José Saramago",
+        "isbn_seed": "",
+        "isbn_seed_raw": "",
+        "isbn_seed_rejected": null,
+        "isbn_discovered": "",
+        "isbn_discovered_raw": "",
+        "apple": {
+          "ok": true,
+          "source": "apple_books",
+          "match_score": 1,
+          "match_details": {
+            "matched_title": "Las intermitencias de la muerte",
+            "matched_author": "José Saramago"
+          },
+          "synopsis": "2022: AÑO SARAMAGO ¿Y si la gente dejara de morirse? Una brillante sátira del Nobel de Literatura que juega con el miedo más profundo del ser humano. «Sabremos cada vez menos qué es un ser humano». Libro de las Previsiones En un país cuyo nombre no será mencionado se produce algo nunca visto desde el principio del mundo: la muerte decide suspender su trabajo letal, la gente deja de morir. La euforia colectiva se desata, pero muy pronto dará paso a la desesperación y al caos. Sobran los motivos. Si es cierto que las personas ya no mueren, eso no significa que el tiempo haya parado. El destino de los humanos será una vejez eterna. Se buscarán maneras de forzar a la muerte a matar, se corromperán las conciencias en los «acuerdos de caballeros» entre el poder político, las mafias y las familias, los ancianos serán detestados por haberse convertido en estorbos inamovibles. Hasta el día en que la muerte, vestida de mujer, vuelve para descifrar un enigma, se encuentra con un músico, oye un concierto, establece una relación, escucha de nuevo a Bach... Entonces la novela sigue como sigue la vida, con todas sus contradicciones. Arrancando de una proposición contraria a la evidencia de los hechos corrientes, José Saramago desarrolla una narrativa de gran fecundidad literaria, social y filosófica que sitúa en el centro la perplejidad del ser humano ante la impostergable finitud de la existencia. Parábola de la corta distancia que separa lo efímero y lo eterno, la historia bien podría terminar tal como empieza: «Al día siguiente no murió nadie». La crítica ha dicho: «Saramago vuelve comprensible una realidad huidiza, con parábolas sostenidas por la imaginación, la compasión y la ironía». Comité Nobel «Un hombre con una sensibilidad y una capacidad de ver y de entender que están muy por encima de lo que en general vemos y entendemos los comunes mortales». Héctor Abad Faciolince «Saramago es un ejemplo, un estilo dignísimo de vida y literatura, que demuestra la posibilidad de navegar a contracorriente [...]. Su palabra tiene el valor de un anticongelante, de un remedio personal contra los vendavales de cinismo que nos envuelven». Luis García Montero «Yo no sé, ni quiero saberlo, de dónde ha sacado Saramago ese diabólico tono narrativo, duro y piadoso a un tiempo, [...] que le permite contar tan cerca del corazón y a la vez tan cerca de la historia». Luis Landero «Saramago escribe novelas sobre los mitos para desmitificarlos, [...] siempre para abordar la realidad que le rodea, para tratar de los problemas actuales que son de todos, y para que todo quede claro desde el principio». Rafael Conte, Babelia «Como Günter Grass o Cees Nooteboom, Saramago aspira a enlazar con un público que desborde límites nacionales». El País",
+          "synopsis_length": 2753,
+          "covers": [
+            {
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/23/45/9e/23459eee-6ca8-8064-06bf-8192f3b53b06/9788420491578.jpg/3000x3000bb.jpg"
+            },
+            {
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/23/45/9e/23459eee-6ca8-8064-06bf-8192f3b53b06/9788420491578.jpg/1200x1200bb.jpg"
+            },
+            {
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/23/45/9e/23459eee-6ca8-8064-06bf-8192f3b53b06/9788420491578.jpg/600x600bb.jpg"
+            },
+            {
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/23/45/9e/23459eee-6ca8-8064-06bf-8192f3b53b06/9788420491578.jpg/100x100bb.jpg"
+            }
+          ],
+          "verified_identity": {
+            "titulo_real": "Las intermitencias de la muerte",
+            "autor_completo": "José Saramago",
+            "año": "2010",
+            "editorial": null,
+            "isbn": "",
+            "apple_track_id": "896268619",
+            "categorias": [
+              "Ficción literaria",
+              "Libros",
+              "Ficción y literatura"
+            ],
+            "track_view_url": "https://books.apple.com/mx/book/las-intermitencias-de-la-muerte/id896268619?uo=4"
+          }
+        },
+        "google": {
+          "ok": false,
+          "reason": "no_good_match",
+          "source": "google_books"
+        },
+        "openlibrary": {
+          "ok": false,
+          "reason": "error_This operation was aborted",
+          "source": "openlibrary"
+        },
+        "amazon": {
+          "ok": false,
+          "reason": "skipped",
+          "source": "amazon"
+        },
+        "valid_covers": [
+          {
+            "source": "apple_books",
+            "size": "xxlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/23/45/9e/23459eee-6ca8-8064-06bf-8192f3b53b06/9788420491578.jpg/3000x3000bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "xlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/23/45/9e/23459eee-6ca8-8064-06bf-8192f3b53b06/9788420491578.jpg/1200x1200bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "large",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/23/45/9e/23459eee-6ca8-8064-06bf-8192f3b53b06/9788420491578.jpg/600x600bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "medium",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/23/45/9e/23459eee-6ca8-8064-06bf-8192f3b53b06/9788420491578.jpg/100x100bb.jpg",
+            "valid": true
+          }
+        ],
+        "_sources_succeeded": [
+          "apple_books"
+        ],
+        "_sources_failed": [
+          "google_books:no_good_match",
+          "openlibrary:error_This operation was aborted",
+          "amazon:skipped"
+        ],
+        "_timing": {
+          "phase1_parallel_ms": 25005,
+          "phase2_isbn_chain_ms": 0,
+          "cover_validation_ms": 1014,
+          "total_ms": 26019
+        },
+        "_version": "3.6"
+      },
+      "_evidence_synopsis": "2022: AÑO SARAMAGO ¿Y si la gente dejara de morirse? Una brillante sátira del Nobel de Literatura que juega con el miedo más profundo del ser humano. «Sabremos cada vez menos qué es un ser humano». Libro de las Previsiones En un país cuyo nombre no será mencionado se produce algo nunca visto desde el principio del mundo: la muerte decide suspender su trabajo letal, la gente deja de morir. La euforia colectiva se desata, pero muy pronto dará paso a la desesperación y al caos. Sobran los motivos. Si es cierto que las personas ya no mueren, eso no significa que el tiempo haya parado. El destino de los humanos será una vejez eterna. Se buscarán maneras de forzar a la muerte a matar, se corromperán las conciencias en los «acuerdos de caballeros» entre el poder político, las mafias y las familias, los ancianos serán detestados por haberse convertido en estorbos inamovibles. Hasta el día en que la muerte, vestida de mujer, vuelve para descifrar un enigma, se encuentra con un músico, oye un concierto, establece una relación, escucha de nuevo a Bach... Entonces la novela sigue como sigue la vida, con todas sus contradicciones. Arrancando de una proposición contraria a la evidencia de los hechos corrientes, José Saramago desarrolla una narrativa de gran fecundidad literaria, social y filosófica que sitúa en el centro la perplejidad del ser humano ante la impostergable finitud de la existencia. Parábola de la corta distancia que separa lo efímero y lo eterno, la historia bien podría terminar tal como empieza: «Al día siguiente no murió nadie». La crítica ha dicho: «Saramago vuelve comprensible una realidad huidiza, con parábolas sostenidas por la imaginación, la compasión y la ironía». Comité Nobel «Un hombre con una sensibilidad y una capacidad de ver y de entender que están muy por encima de lo que en general vemos y entendemos los comunes mortales». Héctor Abad Faciolince «Saramago es un ejemplo, un estilo dignísimo de vida y literatura, que demuestra la posibilidad de navegar a contracorriente [...]. Su palabra tiene el valor de un anticongelante, de un remedio personal contra los vendavales de cinismo que nos envuelven». Luis García Montero «Yo no sé, ni quiero saberlo, de dónde ha sacado Saramago ese diabólico tono narrativo, duro y piadoso a un tiempo, [...] que le permite contar tan cerca del corazón y a la vez tan cerca de la historia». Luis Landero «Saramago escribe novelas sobre los mitos para desmitificarlos, [...] siempre para abordar la realidad que le rodea, para tratar de los problemas actuales que son de todos, y para que todo quede claro desde el principio». Rafael Conte, Babelia «Como Günter Grass o Cees Nooteboom, Saramago aspira a enlazar con un público que desborde límites nacionales». El País",
+      "_evidence_verified_identity": {
+        "titulo_real": "Las intermitencias de la muerte",
+        "autor_completo": "José Saramago",
+        "año": "2010",
+        "editorial": null,
+        "isbn": "",
+        "apple_track_id": "896268619",
+        "categorias": [
+          "Ficción literaria",
+          "Libros",
+          "Ficción y literatura"
+        ],
+        "track_view_url": "https://books.apple.com/mx/book/las-intermitencias-de-la-muerte/id896268619?uo=4"
+      },
+      "_evidence_match_score": 1
+    },
+    "ring_updated": true
+  }
+}
