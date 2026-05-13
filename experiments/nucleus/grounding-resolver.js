@@ -216,7 +216,7 @@ export async function resolveGrounding(openai, book, inputs = {}) {
   // ═══ TIER 1.5: IDENTITY SEALED
   if (identitySealed) {
     const gt = buildGroundTruthFromEvidence(evidence);
-    if (gt && gt.match_score >= 0.5) {
+    if (gt && gt.match_score >= 0.65) {  // 🌒 v3.7 NIVEL DIOS: era 0.5, subido para evitar falsos positivos
       const result = {
         ground_truth: `LIBRO SELECCIONADO POR EL CURADOR AUTOMÁTICO:\nTítulo: ${titulo}\nAutor: ${autor}\n\n${gt.ground_truth}`,
         grounding_source: "identity_sealed_with_evidence",
@@ -245,7 +245,7 @@ export async function resolveGrounding(openai, book, inputs = {}) {
 
   // ═══ TIER 2: EVIDENCE
   const gt = buildGroundTruthFromEvidence(evidence);
-  if (gt && gt.match_score >= 0.55) {
+  if (gt && gt.match_score >= 0.65) {  // 🌒 v3.7 NIVEL DIOS: era 0.55, subido para eliminar falsos positivos arquitectónicos
     const result = {
       ground_truth: gt.ground_truth,
       grounding_source: gt.source,

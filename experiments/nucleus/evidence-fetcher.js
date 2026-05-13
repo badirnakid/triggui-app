@@ -44,7 +44,7 @@ import path from "node:path";
 const CACHE_DIR = "evidence-cache";
 const CACHE_TTL_DAYS = 30;
 const REQUEST_TIMEOUT_MS = 8000;
-const MIN_MATCH_SCORE = 0.38;
+const MIN_MATCH_SCORE = 0.55;  // 🌒 v3.7 NIVEL DIOS: era 0.38, subido para eliminar falsos positivos por solo coincidencia de autor
 
 // v3.6: tamaño mínimo de imagen para considerarla "real" (no placeholder).
 // Amazon devuelve GIFs de 43 bytes para ISBNs inválidos. Cualquier portada
@@ -118,6 +118,18 @@ function scoreMatch(titleA, authorA, titleB, authorB) {
     else if (E.includes(F)) authorScore = 0.9;
     else authorScore = levenshteinRatio(E, F);
   }
+
+  // 🌒 v3.7 NIVEL DIOS — PROTECCIÓN ANTI-BAIT:
+  // Si los títulos son muy diferentes (titleScore < 0.4), el match es esencialmente
+  // inválido sin importar cuán perfecto sea el autor. Esto evita falsos positivos
+  // catastróficos cuando un autor con varios libros famosos (Robin Sharma, Carmine
+  // Gallo, Daniel Goleman) devuelve un libro DISTINTO del solicitado.
+  // Ej: "Audaz productivo y feliz" — Sharma → API devuelve "The 5 AM Club" — Sharma
+  // Capa el score al titleScore para que NO supere thresholds aguas abajo.
+  if (titleScore < 0.4) {
+    return Math.min(titleScore * 0.55 + authorScore * 0.45, titleScore);
+  }
+
   return titleScore * 0.55 + authorScore * 0.45;
 }
 
@@ -380,8 +392,10 @@ async function fetchApple(titulo, autor, isbn) {
       synopsis_length: description.length,
       covers,
       verified_identity: {
-        titulo_real: best.trackName || best.collectionName || titulo,
-        autor_completo: best.artistName || autor,
+        titulo_real: titulo,                                       // 🌒 v3.7 NIVEL DIOS: SAGRADO del CSV
+        autor_completo: autor,                                     // 🌒 v3.7 NIVEL DIOS: SAGRADO del CSV
+        titulo_api: best.trackName || best.collectionName || "",   // 🌒 v3.7: referencia solo (no reemplaza)
+        autor_api: best.artistName || "",                          // 🌒 v3.7: referencia solo (no reemplaza)
         año: year,
         editorial: null,
         isbn: "", // v3.6: NUNCA usar trackId como ISBN
@@ -482,9 +496,11 @@ function buildGoogleEvidence(candidate, titulo, autor) {
     synopsis_length: description.length,
     covers,
     verified_identity: {
-      titulo_real: info.title || titulo,
+      titulo_real: titulo,                            // 🌒 v3.7 NIVEL DIOS: SAGRADO del CSV
+      autor_completo: autor,                          // 🌒 v3.7 NIVEL DIOS: SAGRADO del CSV
+      titulo_api: info.title || "",                   // 🌒 v3.7: referencia solo
+      autor_api: authors.join(", ") || "",            // 🌒 v3.7: referencia solo
       subtitulo: info.subtitle || "",
-      autor_completo: authors.join(", ") || autor,
       año: year,
       editorial: info.publisher || null,
       paginas: info.pageCount || null,
@@ -569,8 +585,10 @@ async function fetchOpenLibrary(titulo, autor, isbn) {
       synopsis_length: synopsis.length,
       covers,
       verified_identity: {
-        titulo_real: doc.title || titulo,
-        autor_completo: authors.join(", ") || autor,
+        titulo_real: titulo,                          // 🌒 v3.7 NIVEL DIOS: SAGRADO del CSV
+        autor_completo: autor,                        // 🌒 v3.7 NIVEL DIOS: SAGRADO del CSV
+        titulo_api: doc.title || "",                  // 🌒 v3.7: referencia solo
+        autor_api: authors.join(", ") || "",          // 🌒 v3.7: referencia solo
         año: year,
         editorial: publisher || null,
         isbn: isbnFromDoc,
