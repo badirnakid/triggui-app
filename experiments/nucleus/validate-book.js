@@ -44,6 +44,10 @@ const CATALOG_SCOPE = String(process.env.CATALOG_SCOPE || "none").trim().toLower
 const CATALOG_CSV_PATH_ENV = String(process.env.CATALOG_CSV_PATH || "").trim();
 const OPENAI_KEY = String(process.env.OPENAI_KEY || "").trim();
 
+// 🌒 Triggui Kids: detección de modo catálogo para fallback CSV en direct_book
+const CATALOG_MODE_VB = String(process.env.CATALOG_MODE || "adulto").trim().toLowerCase();
+const IS_KIDS_VB = CATALOG_MODE_VB === "kids";
+
 const MODE = INPUT_MODE || (LIBRO_INPUT ? "book" : "");
 const SELECTOR = SELECTOR_MODE || (LIBRO_INPUT ? "direct" : "");
 const DEBUG_PATH = "/tmp/triggui-validate-debug.json";
@@ -812,10 +816,11 @@ function logTriggerAnalysis(analysis) {
 ═══════════════════════════════════════════════════════════════ */
 
 async function getMasterCsvPath() {
+  const csvName = IS_KIDS_VB ? "libros_master_kids.csv" : "libros_master.csv";
   const candidates = [
     CATALOG_CSV_PATH_ENV,
-    "triggui-content/data/libros_master.csv",
-    "data/libros_master.csv"
+    `triggui-content/data/${csvName}`,
+    `data/${csvName}`
   ].filter(Boolean);
 
   for (const candidate of candidates) {
@@ -1985,9 +1990,53 @@ async function resolveDiscoverFromTrigger(triggerAnalysis, recentBooks) {
 function parseBookInput(raw) {
   const [tituloRaw, autorRaw] = String(raw || "").split("|").map(s => s.trim());
   const titulo = tituloRaw || "";
-  const autor = autorRaw || "Autor desconocido";
   if (!titulo) throw new Error("Título vacío en LIBRO_INPUT");
+  // 🌒 Nivel dios: si no hay autor en input, devolvemos vacío para que resolveBookData
+  // intente lookup en CSV (kids o adulto) ANTES de rendirse con "Autor desconocido"
+  const autor = autorRaw || "";
   return { titulo, autor };
+}
+
+// 🌒 Lookup nivel dios en CSV (kids o adulto según CATALOG_MODE)
+// 2 niveles de match: exacto normalizado y parcial bidireccional
+// Devuelve null si no encuentra; el evidence fetcher hará fallback con Tier 3 GPT
+async function findInCatalog(titulo) {
+  try {
+    const csvPath = await getMasterCsvPath();
+    if (!csvPath) return null;
+    const csv = await fs.readFile(csvPath, "utf8");
+    const rows = parse(csv, { columns: true, skip_empty_lines: true })
+      .map((row, index) => mapCatalogRow(row, index))
+      .filter(row => row.titulo);
+
+    const norm = (s) => normalizeText(s || "").toLowerCase().trim();
+    const tNorm = norm(titulo);
+    if (!tNorm) return null;
+
+    // Nivel 1: match exacto normalizado
+    let match = rows.find(r => norm(r.titulo) === tNorm);
+    // Nivel 2: match parcial bidireccional (input ⊂ csv o csv ⊂ input)
+    if (!match) {
+      match = rows.find(r => {
+        const rT = norm(r.titulo);
+        return rT && (rT.includes(tNorm) || tNorm.includes(rT));
+      });
+    }
+    if (!match) return null;
+
+    console.log(`📚 Match en CSV (${csvPath}): "${match.titulo}" — ${match.autor || "(sin autor en CSV)"}`);
+    return {
+      titulo_exacto: match.titulo,
+      autor: match.autor || null,
+      isbn: match.isbn || null,
+      portada: match.portada || null,
+      tagline: match.tagline || null,
+      editorial: match.editorial || null,
+    };
+  } catch (e) {
+    console.log(`⚠️  findInCatalog error: ${e.message}`);
+    return null;
+  }
 }
 
 async function getBestCover(titulo, autor) {
@@ -2013,15 +2062,42 @@ async function resolveBookData(recentBooks) {
       console.log(`ℹ️  Modo book fuerza selector direct (recibido: ${SELECTOR})`);
     }
     const parsed = parseBookInput(LIBRO_INPUT);
+
+    // 🌒 Nivel dios: si autor no vino en input, buscar en CSV (kids o adulto) antes de rendirse
+    let autor = parsed.autor;
+    let tagline = "";
+    let portada = "";
+    let isbn = "";
+    let editorial = "";
+    let enrichedFrom = null;
+
+    if (!autor) {
+      console.log(`🔎 Sin autor en LIBRO_INPUT — buscando "${parsed.titulo}" en CSV (CATALOG_MODE=${CATALOG_MODE_VB})…`);
+      const fromCsv = await findInCatalog(parsed.titulo);
+      if (fromCsv && fromCsv.autor) {
+        autor = fromCsv.autor;
+        tagline = fromCsv.tagline || "";
+        portada = fromCsv.portada || "";
+        isbn = fromCsv.isbn || "";
+        editorial = fromCsv.editorial || "";
+        enrichedFrom = `csv_${CATALOG_MODE_VB}`;
+      } else {
+        console.log(`⚠️  "${parsed.titulo}" no encontrado en CSV (${CATALOG_MODE_VB}) — evidence fetcher hará el trabajo con título solo`);
+        autor = "Autor desconocido";
+      }
+    }
+
     return {
       titulo: parsed.titulo,
-      autor: parsed.autor,
-      tagline: "",
-      portada: "",
-      isbn: "",
-      editorial: "",
+      autor,
+      tagline,
+      portada,
+      isbn,
+      editorial,
       selected_via: "direct_book",
-      selection_reason: "Libro explícito proporcionado en workflow_dispatch"
+      selection_reason: enrichedFrom
+        ? `Libro explícito (workflow_dispatch) + autor enriquecido desde ${enrichedFrom}`
+        : "Libro explícito proporcionado en workflow_dispatch"
     };
   }
 
