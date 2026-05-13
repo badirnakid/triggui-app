@@ -1192,19 +1192,68 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
     }
     // ════════════════════════════════════════════════════════════════════════
 
-    // 🌒 V10 BUG 2 WARNING — parrafoTop sin cierre legítimo
-    // No bloquea, solo avisa (el render aplica ensure_text_closure como defensa)
+    // 🌒 v3.8.2 cirugia 7.1B — DEFENSA ACTIVA para parrafoTop/parrafoBot truncados
+    // Antes era warning pasivo (V10 BUG 2). Ahora REPARA truncando al ultimo cierre valido.
+    // Cubre lo que el prompt (cirugia 7.1A) no logra: GPT-4o-mini obedece mejor en EN que en ES.
+    // Filosofia: no confiar en stochastic LLM, validar matematicamente en codigo.
     try {
-      const tarjeta = newBook.tarjeta || newBook.tarjeta_presentacion || {};
-      const parrafoTop = String(tarjeta.parrafoTop || "").trim();
-      if (parrafoTop) {
-        const lastChar = parrafoTop.slice(-1);
-        const LEGITIMATE_CLOSURES = [".", "?", "!", "…", "—", '"', "»", ")", "]"];
-        if (!LEGITIMATE_CLOSURES.includes(lastChar)) {
-          console.warn(`   ⚠️  parrafoTop sin cierre legítimo en "${newBook.titulo}": "...${parrafoTop.slice(-40)}"`);
+      const LEGITIMATE = [".", "?", "!", "…", "—", '"', "»", ")", "]"];
+      const repairTruncatedField = (text) => {
+        if (!text || typeof text !== "string") return text;
+        const trimmed = text.trim();
+        if (!trimmed) return trimmed;
+        const plain = trimmed.replace(/\[\/?H\]/g, "");
+        if (LEGITIMATE.includes(plain.slice(-1))) return trimmed;
+        let plainCut = -1;
+        for (let i = plain.length - 1; i >= 0; i--) {
+          if (LEGITIMATE.includes(plain[i])) { plainCut = i; break; }
+        }
+        if (plainCut === -1) return trimmed;
+        let plainIdx = 0, origIdx = 0, cutOrig = -1;
+        while (origIdx < trimmed.length) {
+          if (trimmed.startsWith("[H]", origIdx)) { origIdx += 3; continue; }
+          if (trimmed.startsWith("[/H]", origIdx)) { origIdx += 4; continue; }
+          if (plainIdx === plainCut) { cutOrig = origIdx; break; }
+          plainIdx++; origIdx++;
+        }
+        if (cutOrig === -1) return trimmed;
+        let repaired = trimmed.substring(0, cutOrig + 1);
+        const opens = (repaired.match(/\[H\]/g) || []).length;
+        const closes = (repaired.match(/\[\/H\]/g) || []).length;
+        if (opens > closes) repaired += "[/H]";
+        else if (closes > opens) {
+          const lastClose = repaired.lastIndexOf("[/H]");
+          if (lastClose >= 0) repaired = repaired.substring(0, lastClose) + repaired.substring(lastClose + 4);
+        }
+        return repaired;
+      };
+      const cards = [
+        { card: newBook.tarjeta, base: newBook.tarjeta_base, pres: newBook.tarjeta_presentacion, lang: "ES" },
+        { card: newBook.tarjeta_en, base: newBook.tarjeta_base_en, pres: newBook.tarjeta_presentacion_en, lang: "EN" }
+      ];
+      for (const { card, base, pres, lang } of cards) {
+        if (!card) continue;
+        for (const field of ["parrafoTop", "parrafoBot"]) {
+          if (!card[field]) continue;
+          const original = String(card[field]);
+          const repaired = repairTruncatedField(original);
+          if (repaired !== original) {
+            const beforeTail = original.replace(/\[\/?H\]/g, "").trim().slice(-30);
+            const afterTail = repaired.replace(/\[\/?H\]/g, "").trim().slice(-30);
+            card[field] = repaired;
+            if (base) base[field] = repaired;
+            if (pres) pres[field] = repaired;
+            console.log(`   🪡 ${lang} ${field} REPARADO en "${newBook.titulo}": "...${beforeTail}" → "...${afterTail}"`);
+          } else {
+            const plain = original.replace(/\[\/?H\]/g, "").trim();
+            const lastChar = plain.slice(-1);
+            if (!LEGITIMATE.includes(lastChar)) {
+              console.warn(`   ⚠️  ${lang} ${field} sin cierre y sin punto interno reparable en "${newBook.titulo}": "...${plain.slice(-40)}"`);
+            }
+          }
         }
       }
-    } catch (_) { /* warning best-effort, no afecta merge */ }
+    } catch (e) { console.warn(`   ⚠️  repair-parrafo error: ${e.message}`); }
 
     const beforeCount = existing.libros.length;
     const newKey = normalizeBookKey(newBook.titulo, newBook.autor);
