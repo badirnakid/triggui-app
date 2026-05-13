@@ -67,6 +67,42 @@ import {
 } from "./triggui-physics.js";
 import { synthesizePalette } from "./palette-synthesizer.js";
 import { injectEmojis, calculateConfidence, compatMapper } from "./post-processors.js";
+
+// ════════════════════════════════════════════════════════════════════════════
+// 🌒 v3.8 NIVEL DIOS CUÁNTICO — Counter global UNICO (edition-counter.json)
+// ════════════════════════════════════════════════════════════════════════════
+// Single source of truth para _edicion_numero. Vive en triggui-content/
+// junto a contenido*.json. Cada generacion !isFromBatch (single) consume el
+// counter: lee next -> asigna -> incrementa -> escribe atomico.
+//
+// Filosofia Badir: "si se genero cuenta, esten o no las carpetas o whatever".
+// El counter es independiente de filesystem y JSONs. Una vez asignado un
+// numero, vive en counter.history para siempre.
+//
+// Las cirugias 2A/2B (defensa cuantica de meta del otro JSON) quedan como
+// red de seguridad de capa inferior si counter file falla.
+// ════════════════════════════════════════════════════════════════════════════
+async function assignEditionFromCounter(targetPath, newBook) {
+  const counterPath = String(targetPath).replace(/contenido(_kids)?\.json$/, "edition-counter.json");
+  const counterRaw = await fs.readFile(counterPath, "utf8");
+  const counter = JSON.parse(counterRaw);
+  if (typeof counter.next !== "number" || counter.next < 1) {
+    throw new Error(`counter.next invalido en ${counterPath}: ${counter.next}`);
+  }
+  const assigned = counter.next;
+  counter.last_assigned = assigned;
+  counter.next = assigned + 1;
+  counter.history = counter.history || [];
+  counter.history.push({
+    edicion: assigned,
+    catalogo: String(targetPath).includes("_kids") ? "kids" : "adulto",
+    slug: newBook.slug || null,
+    titulo: newBook.titulo || null,
+    at: new Date().toISOString()
+  });
+  await fs.writeFile(counterPath, JSON.stringify(counter, null, 2));
+  return assigned;
+}
 import { judgeBothVoices } from "./voice-judge.js";
 // 🌒 SPRINT NIVEL DIOS — Capa A Pilar 2 (Voice-Judge Universal) + Capa B (CSAL)
 import { judgeAllVoiceLayers, regeneratePhrasesByFeedback } from "./voice-judge-universal.js";
@@ -1192,9 +1228,18 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
       if (typeof existingBook._edicion_numero === "number" && existingBook._edicion_numero >= 1) {
         newBook._edicion_numero = existingBook._edicion_numero;
       } else if (!isFromBatch) {
-        // Single mode: asignar nuevo número si el libro existente no tenía
-        newBook._edicion_numero = existing.meta.next_edition_number;
-        existing.meta.next_edition_number += 1;
+        // 🌒 v3.8 cirugia 3 — Single regen: asignar desde counter file (SSOT)
+        try {
+          const assigned = await assignEditionFromCounter(targetPath, newBook);
+          newBook._edicion_numero = assigned;
+          if (existing.meta.next_edition_number <= assigned) {
+            existing.meta.next_edition_number = assigned + 1;
+          }
+        } catch (err) {
+          console.warn(`   counter file no disponible, fallback a meta: ${err.message}`);
+          newBook._edicion_numero = existing.meta.next_edition_number;
+          existing.meta.next_edition_number += 1;
+        }
       }
       // (Si es batch y libro existente no tenía número, no se asigna)
 
@@ -1232,9 +1277,19 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
       }
     } else {
       // 🌒 V10 LIBRO NUEVO — asignar número solo si NO es batch
+      // 🌒 v3.8 cirugia 3 — usa counter file (SSOT)
       if (!isFromBatch) {
-        newBook._edicion_numero = existing.meta.next_edition_number;
-        existing.meta.next_edition_number += 1;
+        try {
+          const assigned = await assignEditionFromCounter(targetPath, newBook);
+          newBook._edicion_numero = assigned;
+          if (existing.meta.next_edition_number <= assigned) {
+            existing.meta.next_edition_number = assigned + 1;
+          }
+        } catch (err) {
+          console.warn(`   counter file no disponible, fallback a meta: ${err.message}`);
+          newBook._edicion_numero = existing.meta.next_edition_number;
+          existing.meta.next_edition_number += 1;
+        }
       }
       existing.libros.unshift(newBook);
       action = newBook._manual ? "agregado al inicio (manual)" : "agregado al inicio";
