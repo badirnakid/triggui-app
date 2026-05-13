@@ -109,7 +109,7 @@ const CFG = {
     csv:       IS_KIDS ? "data/libros_master_kids.csv"      : "data/libros_master.csv",
     outBatch:  IS_KIDS ? "contenido_kids.json"              : "contenido.json",
     outShadow: IS_KIDS ? "contenido_kids.shadow.json"       : "contenido.shadow.json",
-    tmpBook:   IS_KIDS ? "/tmp/triggui-book-kids.json"      : "/tmp/triggui-book.json",
+    tmpBook:   "/tmp/triggui-book.json",
     metricsDir: "metrics",
     inputsHistoryDir: "inputs-history",
     reportsDir: "quality-reports"
