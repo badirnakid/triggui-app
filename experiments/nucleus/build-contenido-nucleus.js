@@ -1093,7 +1093,32 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
     }
     if (typeof existing.meta.next_edition_number !== "number" || existing.meta.next_edition_number < 1) {
       const envStart = parseInt(process.env.TRIGGUI_EDICION_START_NUMBER, 10);
-      existing.meta.next_edition_number = (!isNaN(envStart) && envStart >= 1) ? envStart : 36;
+      if (!isNaN(envStart) && envStart >= 1) {
+        existing.meta.next_edition_number = envStart;
+      } else {
+        // 🌒 v3.8 NIVEL DIOS — Init contador GLOBAL combinado (adulto + kids):
+        // Sin esto, fallback hardcoded a 36. Con esto, lee max del OTRO catálogo
+        // para que kids y adulto compartan numeración consecutiva desde cero.
+        let globalMax = 0;
+        try {
+          const otherCatalogPath = String(targetPath).includes("_kids")
+            ? String(targetPath).replace("_kids", "")
+            : String(targetPath).replace(".json", "_kids.json");
+          const otherExists = await fs.access(otherCatalogPath).then(() => true).catch(() => false);
+          if (otherExists) {
+            const otherJson = JSON.parse(await fs.readFile(otherCatalogPath, "utf8"));
+            if (typeof otherJson.meta?.next_edition_number === "number" && otherJson.meta.next_edition_number >= 2) {
+              globalMax = Math.max(globalMax, otherJson.meta.next_edition_number - 1);
+            }
+            for (const libro of (otherJson.libros || [])) {
+              if (typeof libro._edicion_numero === "number" && libro._edicion_numero > globalMax) {
+                globalMax = libro._edicion_numero;
+              }
+            }
+          }
+        } catch { /* best-effort */ }
+        existing.meta.next_edition_number = globalMax + 1;
+      }
     }
 
     // Defensa cuántica anti-corrupción: meta.next >= max(_edicion_numero) + 1
@@ -1103,6 +1128,29 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
         maxLibroEdNum = libro._edicion_numero;
       }
     }
+
+    // 🌒 v3.8 NIVEL DIOS — CONTADOR GLOBAL COMBINADO (adulto + kids):
+    // Cada vez que se asigna un _edicion_numero, leer también el max del OTRO
+    // catálogo. Garantiza consecutivos globales sin colisión entre kids/adulto.
+    // Sin este bloque, adulto #36 y kids #36 podrían coexistir.
+    try {
+      const otherCatalogPath = String(targetPath).includes("_kids")
+        ? String(targetPath).replace("_kids", "")
+        : String(targetPath).replace(".json", "_kids.json");
+      const otherExists = await fs.access(otherCatalogPath).then(() => true).catch(() => false);
+      if (otherExists) {
+        const otherJson = JSON.parse(await fs.readFile(otherCatalogPath, "utf8"));
+        if (typeof otherJson.meta?.next_edition_number === "number" && otherJson.meta.next_edition_number >= 2) {
+          maxLibroEdNum = Math.max(maxLibroEdNum, otherJson.meta.next_edition_number - 1);
+        }
+        for (const libro of (otherJson.libros || [])) {
+          if (typeof libro._edicion_numero === "number" && libro._edicion_numero > maxLibroEdNum) {
+            maxLibroEdNum = libro._edicion_numero;
+          }
+        }
+      }
+    } catch { /* best-effort */ }
+
     if (existing.meta.next_edition_number <= maxLibroEdNum) {
       existing.meta.next_edition_number = maxLibroEdNum + 1;
     }

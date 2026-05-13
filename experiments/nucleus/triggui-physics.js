@@ -426,8 +426,46 @@ export function expandHighlightToFullSentence(text) {
     let replacement;
 
     if (sentenceWords.length <= 22) {
-      // Caso normal: respetar la frase como la escribió el autor (sin puntuación final)
-      replacement = containingSentence.trim().replace(/[\.!?]+$/, "");
+      // 🌒 v3.8 NIVEL DIOS CUÁNTICO — Detectar sentence colgada (truncada por schema)
+      // Cuando GPT corta la frase por el límite de chars del schema (320 chars
+      // parrafoTop), la sentence misma no termina en cierre legítimo (.!?). En
+      // ese caso, EXPANDIR no resuelve (el highlight ya cubre toda la sentence
+      // truncada). Aplicar CONTRACCIÓN: retreat weak trailing words + detectar
+      // "isla colgada" (artículo + sustantivo huérfano sin verbo principal).
+      //
+      // Caso real Test 1 ("El libro del cementerio" EN):
+      //   Input:  "Each of them has their own voice, a tale"
+      //   "tale" es sustantivo fuerte, retreat estándar lo respeta (idx=9).
+      //   PERO penúltima ("a") es weak → es ISLA artículo+sustantivo huérfano.
+      //   Fix v3.8 retrocede 2 posiciones → idx=7 → "Each of them has their own voice"
+      const sentenceTrimmed = containingSentence.trim();
+      const endedNaturally = /[.!?]$/.test(sentenceTrimmed);
+
+      if (endedNaturally) {
+        // Caso v3.7: respetar frase completa sin puntuación final
+        replacement = sentenceTrimmed.replace(/[\.!?]+$/, "");
+      } else {
+        // 🌒 v3.8: sentence colgada → contraer retrocediendo
+        let safeIdx = retreatFromWeakTrailing(sentenceWords, sentenceWords.length, 4);
+        // Detección de isla colgada: si retreat no logró retroceder (todas las
+        // palabras finales fuertes) pero la penúltima es weak, retroceder DOS
+        // posiciones para eliminar artículo+sustantivo huérfano.
+        if (safeIdx >= sentenceWords.length && sentenceWords.length > 5) {
+          const penultimate = sentenceWords[sentenceWords.length - 2];
+          if (isWeakTrailingWord(penultimate)) {
+            safeIdx = sentenceWords.length - 2;
+            // Recursivo: seguir retrocediendo si quedan más weak words
+            while (safeIdx > 4 && isWeakTrailingWord(sentenceWords[safeIdx - 1])) {
+              safeIdx -= 1;
+            }
+          }
+        }
+        if (safeIdx >= sentenceWords.length) {
+          // Ni retreat estándar ni isla detectada → abortar segmento (queda como está)
+          continue;
+        }
+        replacement = sentenceWords.slice(0, safeIdx).join(" ").replace(/[,:;]+$/g, "").trim();
+      }
     } else {
       // Caso edge: frase >22 palabras. Buscar coma natural anterior con palabra fuerte.
       let bestCutIdx = sentenceWords.length;
