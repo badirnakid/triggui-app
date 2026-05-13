@@ -677,7 +677,12 @@ jobs:
           git config user.name "Triggui Bot"
           git config user.email "bot@triggui.com"
 
-          [ -d public/t ] && git add public/t/ || true
+          # 🌒 v3.7 FASE 7B: commit kids-aware
+          if [ "$CATALOG_MODE" = "kids" ]; then
+            [ -d public/kids/t ] && git add public/kids/t/ || true
+          else
+            [ -d public/t ] && git add public/t/ || true
+          fi
           [ -f "$SHADOW_FILE" ] && git add "$SHADOW_FILE" || true
           # v3.4: persistir ring de anti-duplicados
           [ -f recent-books.json ] && git add recent-books.json || true
