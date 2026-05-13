@@ -301,14 +301,22 @@ jobs:
           NOW=$(date -u +%Y-%m-%dT%H:%M:%SZ)
           EMPTY_JSON='{"libros":[],"meta":{"version":"1.0.0","generated_at":"'"${NOW}"'","total":0,"note":"Catálogo vacío — listo para generación"}}'
 
-          SRC="triggui-content/contenido.json"
-          DEST="experiments/nucleus/contenido.json"
+          # 🌒 Triggui Kids: el archivo histórico depende de CATALOG_MODE
+          if [ "$CATALOG_MODE" = "kids" ]; then
+            CONTENIDO_FILE="contenido_kids.json"
+          else
+            CONTENIDO_FILE="contenido.json"
+          fi
+          echo "📥 CATALOG_MODE=$CATALOG_MODE → CONTENIDO_FILE=$CONTENIDO_FILE"
+
+          SRC="triggui-content/$CONTENIDO_FILE"
+          DEST="experiments/nucleus/$CONTENIDO_FILE"
 
           # Estado 1: no existe
           if [ ! -f "${SRC}" ]; then
-            echo "ℹ️  contenido.json no existe en triggui-content — creando estructura vacía válida"
+            echo "ℹ️  $CONTENIDO_FILE no existe en triggui-content — creando estructura vacía válida"
             printf '%s' "${EMPTY_JSON}" > "${DEST}"
-            echo "📚 contenido.json: 0 libros (0 manuales) · inicializado"
+            echo "📚 $CONTENIDO_FILE: 0 libros (0 manuales) · inicializado"
             exit 0
           fi
 
@@ -341,29 +349,29 @@ jobs:
               # set -euo pipefail + $() mataría el job si node -e falla sin ||
               LIBROS=$(node -e "try{console.log(JSON.parse(require('fs').readFileSync('${DEST}','utf8').trim()).libros.length)}catch(e){console.log('0')}" 2>/dev/null || echo "0")
               MANUALES=$(node -e "try{const d=JSON.parse(require('fs').readFileSync('${DEST}','utf8').trim()); console.log(d.libros.filter(l=>l && l._manual===true).length)}catch(e){console.log('0')}" 2>/dev/null || echo "0")
-              echo "📚 contenido.json histórico: ${LIBROS} libros (${MANUALES} manuales)"
+              echo "📚 $CONTENIDO_FILE histórico: ${LIBROS} libros (${MANUALES} manuales)"
               ;;
             2)
-              echo "⚠️  contenido.json está VACÍO — reemplazando por estructura vacía válida"
+              echo "⚠️  $CONTENIDO_FILE está VACÍO — reemplazando por estructura vacía válida"
               printf '%s' "${EMPTY_JSON}" > "${DEST}"
-              echo "📚 contenido.json: 0 libros (0 manuales) · reinicializado"
+              echo "📚 $CONTENIDO_FILE: 0 libros (0 manuales) · reinicializado"
               ;;
             3)
-              echo "⚠️  contenido.json tiene estructura inválida — backup + reemplazo"
-              BACKUP="triggui-content/contenido.json.backup-$(date +%Y%m%d-%H%M%S)"
+              echo "⚠️  $CONTENIDO_FILE tiene estructura inválida — backup + reemplazo"
+              BACKUP="triggui-content/${CONTENIDO_FILE}.backup-$(date +%Y%m%d-%H%M%S)"
               cp "${SRC}" "${BACKUP}" && echo "💾 backup: ${BACKUP}"
               printf '%s' "${EMPTY_JSON}" > "${DEST}"
-              echo "📚 contenido.json: 0 libros (0 manuales) · reconstruido"
+              echo "📚 $CONTENIDO_FILE: 0 libros (0 manuales) · reconstruido"
               ;;
             4)
-              echo "⚠️  contenido.json está CORRUPTO (JSON inválido) — backup + reemplazo"
-              BACKUP="triggui-content/contenido.json.backup-corrupto-$(date +%Y%m%d-%H%M%S)"
+              echo "⚠️  $CONTENIDO_FILE está CORRUPTO (JSON inválido) — backup + reemplazo"
+              BACKUP="triggui-content/${CONTENIDO_FILE}.backup-corrupto-$(date +%Y%m%d-%H%M%S)"
               cp "${SRC}" "${BACKUP}" && echo "💾 backup: ${BACKUP}"
               printf '%s' "${EMPTY_JSON}" > "${DEST}"
-              echo "📚 contenido.json: 0 libros (0 manuales) · reconstruido desde corrupto"
+              echo "📚 $CONTENIDO_FILE: 0 libros (0 manuales) · reconstruido desde corrupto"
               ;;
             *)
-              echo "❌ Estado desconocido de contenido.json (exit ${VALIDATION_EXIT})"
+              echo "❌ Estado desconocido de $CONTENIDO_FILE (exit ${VALIDATION_EXIT})"
               exit 1
               ;;
           esac
@@ -389,7 +397,8 @@ jobs:
           SELECTOR_MODE: constrained
           ENTRADA_RAW: ${{ inputs.sentimiento }}
           CATALOG_SCOPE: libros_master_csv
-          CATALOG_CSV_PATH: data/libros_master.csv
+          # 🌒 Triggui Kids: CSV depende de CATALOG_MODE
+          CATALOG_CSV_PATH: ${{ inputs.catalogo == 'kids' && 'data/libros_master_kids.csv' || 'data/libros_master.csv' }}
         run: node validate-book.js
 
       - name: 📖 Validate DISCOVER (modo 🌍)
@@ -453,8 +462,18 @@ jobs:
           echo "📂 Archivos generados:"
           ls -la contenido*.json 2>/dev/null || echo "(ninguno)"
 
-          [ -f contenido.json ] && cp -v contenido.json "$GITHUB_WORKSPACE/contenido.json"
-          [ -f contenido.shadow.json ] && cp -v contenido.shadow.json "$GITHUB_WORKSPACE/contenido.shadow.json"
+          # 🌒 Triggui Kids: los outputs dependen de CATALOG_MODE
+          if [ "$CATALOG_MODE" = "kids" ]; then
+            CONTENIDO_FILE="contenido_kids.json"
+            SHADOW_FILE="contenido_kids.shadow.json"
+          else
+            CONTENIDO_FILE="contenido.json"
+            SHADOW_FILE="contenido.shadow.json"
+          fi
+          echo "📦 CATALOG_MODE=$CATALOG_MODE → CONTENIDO_FILE=$CONTENIDO_FILE, SHADOW_FILE=$SHADOW_FILE"
+
+          [ -f "$CONTENIDO_FILE" ] && cp -v "$CONTENIDO_FILE" "$GITHUB_WORKSPACE/$CONTENIDO_FILE"
+          [ -f "$SHADOW_FILE" ] && cp -v "$SHADOW_FILE" "$GITHUB_WORKSPACE/$SHADOW_FILE"
 
           for dir in inputs-history metrics quality-reports grounding-cache evidence-cache; do
             if [ -d "$dir" ]; then
@@ -532,15 +551,26 @@ jobs:
         if: ${{ !inputs.modo_prueba }}
         run: |
           set -euo pipefail
-          if [ ! -f contenido.json ]; then
-            echo "ℹ️  contenido.json no existe — skip generación de contenido_manual.json"
+
+          # 🌒 Triggui Kids: archivos manuales dependen de CATALOG_MODE
+          if [ "$CATALOG_MODE" = "kids" ]; then
+            CONTENIDO_FILE="contenido_kids.json"
+            MANUAL_FILE="contenido_kids_manual.json"
+          else
+            CONTENIDO_FILE="contenido.json"
+            MANUAL_FILE="contenido_manual.json"
+          fi
+          echo "🌒 CATALOG_MODE=$CATALOG_MODE → CONTENIDO=$CONTENIDO_FILE, MANUAL=$MANUAL_FILE"
+
+          if [ ! -f "$CONTENIDO_FILE" ]; then
+            echo "ℹ️  $CONTENIDO_FILE no existe — skip generación de $MANUAL_FILE"
             exit 0
           fi
 
-          node -e '
+          SRC_FILE="$CONTENIDO_FILE" TGT_FILE="$MANUAL_FILE" node -e '
             const fs = require("fs");
-            const SRC = "contenido.json";
-            const TGT = "contenido_manual.json";
+            const SRC = process.env.SRC_FILE;
+            const TGT = process.env.TGT_FILE;
 
             // 1. Leer source con defensas
             let raw;
@@ -601,16 +631,16 @@ jobs:
               ? `"${top.titulo}" (#${String(top._edicion_numero).padStart(3, "0")}) — ${top.autor || "?"}`
               : "(ninguno — Apps Script abortará envío)";
 
-            console.log("🌒 contenido_manual.json generado:");
+            console.log("🌒 " + TGT + " generado:");
             console.log("   Total source:    " + data.libros.length + " libros");
             console.log("   Total filtrado:  " + filtered.length + " libros con _edicion_numero");
             console.log("   libros[0]:       " + topInfo);
           '
 
           # Sincronizar a triggui-content
-          if [ -f contenido_manual.json ]; then
-            cp contenido_manual.json triggui-content/contenido_manual.json
-            echo "✅ contenido_manual.json sincronizado"
+          if [ -f "$MANUAL_FILE" ]; then
+            cp "$MANUAL_FILE" "triggui-content/$MANUAL_FILE"
+            echo "✅ $MANUAL_FILE sincronizado"
           fi
 
       # ╔══════════════════════════════════════════════════════════════════╗
@@ -622,12 +652,24 @@ jobs:
           set -euo pipefail
           SLUG=$([ -f /tmp/triggui-slug.txt ] && cat /tmp/triggui-slug.txt || echo "${{ steps.modo.outputs.modo_tecnico }}")
 
+          # 🌒 Triggui Kids: archivos a commitear dependen de CATALOG_MODE
+          if [ "$CATALOG_MODE" = "kids" ]; then
+            CONTENIDO_FILE="contenido_kids.json"
+            SHADOW_FILE="contenido_kids.shadow.json"
+            MANUAL_FILE="contenido_kids_manual.json"
+          else
+            CONTENIDO_FILE="contenido.json"
+            SHADOW_FILE="contenido.shadow.json"
+            MANUAL_FILE="contenido_manual.json"
+          fi
+          echo "💾 CATALOG_MODE=$CATALOG_MODE → CONTENIDO=$CONTENIDO_FILE, SHADOW=$SHADOW_FILE, MANUAL=$MANUAL_FILE"
+
           # ─── triggui-app ───
           git config user.name "Triggui Bot"
           git config user.email "bot@triggui.com"
 
           [ -d public/t ] && git add public/t/ || true
-          [ -f contenido.shadow.json ] && git add contenido.shadow.json || true
+          [ -f "$SHADOW_FILE" ] && git add "$SHADOW_FILE" || true
           # v3.4: persistir ring de anti-duplicados
           [ -f recent-books.json ] && git add recent-books.json || true
 
@@ -654,11 +696,11 @@ jobs:
             git config user.name "Triggui Bot"
             git config user.email "bot@triggui.com"
 
-            [ -f contenido.json ] && git add contenido.json || true
+            [ -f "$CONTENIDO_FILE" ] && git add "$CONTENIDO_FILE" || true
             # 🌒 V18: vista filtrada para email del lunes (Apps Script)
-            [ -f contenido_manual.json ] && git add contenido_manual.json || true
+            [ -f "$MANUAL_FILE" ] && git add "$MANUAL_FILE" || true
             # Si hubo backups por corrupto/inválido en Fase 3, se versionan también
-            ls contenido.json.backup-* >/dev/null 2>&1 && git add contenido.json.backup-* || true
+            ls "${CONTENIDO_FILE}.backup-"* >/dev/null 2>&1 && git add "${CONTENIDO_FILE}.backup-"* || true
 
             if git diff --cached --quiet; then
               echo "🟡 triggui-content: sin cambios"
@@ -685,11 +727,21 @@ jobs:
           SLUG=$([ -f /tmp/triggui-slug.txt ] && cat /tmp/triggui-slug.txt || echo "${{ steps.modo.outputs.modo_tecnico }}")
           TITULO=$([ -f /tmp/triggui-titulo.txt ] && cat /tmp/triggui-titulo.txt || echo "${SLUG}")
 
+          # 🌒 Triggui Kids: archivo a leer depende de CATALOG_MODE
+          if [ "$CATALOG_MODE" = "kids" ]; then
+            CONTENIDO_FILE="contenido_kids.json"
+            CATALOGO_LABEL="🌒 Kids"
+          else
+            CONTENIDO_FILE="contenido.json"
+            CATALOGO_LABEL="Adulto"
+          fi
+
           echo "## 🌒 Triggui — Ejecutado" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Campo | Valor |" >> $GITHUB_STEP_SUMMARY
           echo "|---|---|" >> $GITHUB_STEP_SUMMARY
           echo "| Modo | ${{ inputs.modo }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Catálogo | ${CATALOGO_LABEL} |" >> $GITHUB_STEP_SUMMARY
           echo "| Libro | ${TITULO} |" >> $GITHUB_STEP_SUMMARY
           echo "| Imágenes | ${{ inputs.generar_imagenes }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Manuales protegidos | ${{ inputs.preservar_manuales }} |" >> $GITHUB_STEP_SUMMARY
@@ -704,10 +756,10 @@ jobs:
           fi
 
           # Summary blindado: usa la misma validación que Fase 3 con graceful fallback
-          if [ -f "${GITHUB_WORKSPACE}/contenido.json" ]; then
-            COUNT_OUTPUT=$(node -e "
+          if [ -f "${GITHUB_WORKSPACE}/${CONTENIDO_FILE}" ]; then
+            COUNT_OUTPUT=$(CONTENIDO_PATH="${GITHUB_WORKSPACE}/${CONTENIDO_FILE}" node -e "
               try {
-                const raw = require('fs').readFileSync('${GITHUB_WORKSPACE}/contenido.json','utf8').trim();
+                const raw = require('fs').readFileSync(process.env.CONTENIDO_PATH,'utf8').trim();
                 if (!raw) { console.log('0 0'); process.exit(0); }
                 const d = JSON.parse(raw);
                 if (!d || !Array.isArray(d.libros)) { console.log('0 0'); process.exit(0); }
@@ -720,7 +772,7 @@ jobs:
             " 2>/dev/null || echo "0 0")
             LIBROS=$(echo "${COUNT_OUTPUT}" | awk '{print $1}')
             MANUALES=$(echo "${COUNT_OUTPUT}" | awk '{print $2}')
-            echo "### 📊 Producción" >> $GITHUB_STEP_SUMMARY
+            echo "### 📊 Producción (${CONTENIDO_FILE})" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "- Libros totales: ${LIBROS}" >> $GITHUB_STEP_SUMMARY
             echo "- Manuales curados: ${MANUALES}" >> $GITHUB_STEP_SUMMARY
