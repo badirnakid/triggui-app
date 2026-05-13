@@ -438,8 +438,10 @@ CARD_ES
 ═══════════════════════════════════════════════════════════════════
 - titulo: 8-60 chars. Captura un concepto específico de tu obra.
 - parrafoTop: 80-320 chars. TÚ hablando sobre un concepto central de tu obra. Nunca "este libro", "el autor", "la obra".
+  CIERRE OBLIGATORIO: DEBE terminar en frase completa con punto final (. ! ?). Si la última oración no cabe completa dentro de 320 chars, OMÍTELA — prefiere 240-280 chars cerrados que 320 chars truncados. PROHIBIDO truncar a mitad de palabra, conjunción suelta ("y", "que", "se"), preposición sin objeto ("en", "con"), o verbo sin completar. El cierre gramatical limpio prevalece SIEMPRE sobre el límite numérico.
 - subtitulo: 20-120 chars. Una pregunta o afirmación que abre el segundo párrafo.
 - parrafoBot: 80-320 chars. Segunda idea de tu obra en TU voz.
+  CIERRE OBLIGATORIO: mismas reglas que parrafoTop. SIEMPRE frase completa con punto final (. ! ?). Prefiere quedar corto antes que truncar.
 
 
 ═══════════════════════════════════════════════════════════════════
@@ -692,6 +694,7 @@ NO Spanish words. NO "Elige", "Vivir", "Día", "Qué". If you find yourself writ
 STRUCTURE
 ═══════════════════════════════════════════════════════════════════
 card_en: titulo (8-60 chars), parrafoTop (80-320), subtitulo (20-120), parrafoBot (80-320)
+  MANDATORY CLOSURE: parrafoTop AND parrafoBot MUST end in a complete sentence with a final period/exclamation/question mark (. ! ?). If the last sentence does not fit within 320 chars, OMIT IT — prefer 240-280 chars closed over 320 chars truncated. FORBIDDEN: truncating mid-word, dangling conjunction ("and", "but", "that"), preposition without object ("in", "with"), or unfinished verb. Grammatical closure ALWAYS prevails over the numeric limit.
 emotional_words_en: exactly 4 words, 3-25 chars each
 og_phrases_en: exactly 4 phrases, 30-68 chars each, ONE LINE, NO emojis, NO "\\n"
   Soft ceiling: aim for 55-65 chars. Hard max 70 — never flirt with the edge.
