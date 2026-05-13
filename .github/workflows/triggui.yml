@@ -739,6 +739,11 @@ jobs:
             [ -f "$MANUAL_FILE" ] && git add "$MANUAL_FILE" || true
             # Si hubo backups por corrupto/inválido en Fase 3, se versionan también
             ls "${CONTENIDO_FILE}.backup-"* >/dev/null 2>&1 && git add "${CONTENIDO_FILE}.backup-"* || true
+            # 🌒 v3.8 cirugia 5 — git add edition-counter.json al staging (SSOT contador global)
+            # FASE 8 (cirugia 4B) copia el counter de experiments/nucleus/ a triggui-content/,
+            # pero queda como modificacion no staged. Sin este git add el rebase aborta con
+            # "You have unstaged changes" (bug detectado en test matilda kids 2026-05-13).
+            [ -f edition-counter.json ] && git add edition-counter.json || true
 
             if git diff --cached --quiet; then
               echo "🟡 triggui-content: sin cambios"
