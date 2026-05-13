@@ -2063,7 +2063,15 @@ async function resolveBookData(recentBooks) {
     }
     const parsed = parseBookInput(LIBRO_INPUT);
 
-    // 🌒 Nivel dios: si autor no vino en input, buscar en CSV (kids o adulto) antes de rendirse
+    // 🌒 v3.8.4 cirugia 8 — Title Canonicalization (Nivel dios cuantico-quark)
+    // SIEMPRE busca en CSV (no solo cuando falta autor) para canonicalizar el titulo.
+    // El CSV es SSOT del titulo limpio — elimina contaminacion del input del usuario:
+    //   "Vida contemplativa — Byung-Chul Han" → "Vida contemplativa"
+    //   "Vida contemplativa | Byung-Chul Han" → "Vida contemplativa"
+    //   "Vida contemplativa de Byung-Chul Han" → "Vida contemplativa"
+    // El match parcial bidireccional de findInCatalog (csv ⊂ input | input ⊂ csv) cubre los 5 modos.
+    // Si no hay match → preserva input crudo (comportamiento original).
+    let tituloCanonico = parsed.titulo;
     let autor = parsed.autor;
     let tagline = "";
     let portada = "";
@@ -2071,24 +2079,32 @@ async function resolveBookData(recentBooks) {
     let editorial = "";
     let enrichedFrom = null;
 
-    if (!autor) {
-      console.log(`🔎 Sin autor en LIBRO_INPUT — buscando "${parsed.titulo}" en CSV (CATALOG_MODE=${CATALOG_MODE_VB})…`);
-      const fromCsv = await findInCatalog(parsed.titulo);
-      if (fromCsv && fromCsv.autor) {
+    // Cirugia 8: SIEMPRE intentar canonicalizacion en CSV (no solo cuando falta autor)
+    const fromCsv = await findInCatalog(parsed.titulo);
+    if (fromCsv) {
+      // Canonicalizar titulo desde CSV (override input crudo si difieren)
+      if (fromCsv.titulo_exacto && fromCsv.titulo_exacto !== parsed.titulo) {
+        console.log(`🪡 Titulo canonicalizado desde CSV: "${parsed.titulo}" → "${fromCsv.titulo_exacto}"`);
+        tituloCanonico = fromCsv.titulo_exacto;
+      }
+      // Enriquecer si falta autor (logica original preservada)
+      if (!autor && fromCsv.autor) {
         autor = fromCsv.autor;
         tagline = fromCsv.tagline || "";
         portada = fromCsv.portada || "";
         isbn = fromCsv.isbn || "";
         editorial = fromCsv.editorial || "";
         enrichedFrom = `csv_${CATALOG_MODE_VB}`;
-      } else {
-        console.log(`⚠️  "${parsed.titulo}" no encontrado en CSV (${CATALOG_MODE_VB}) — evidence fetcher hará el trabajo con título solo`);
-        autor = "Autor desconocido";
       }
     }
 
+    if (!autor) {
+      console.log(`⚠️  "${parsed.titulo}" no encontrado en CSV (${CATALOG_MODE_VB}) — evidence fetcher hara el trabajo con titulo solo`);
+      autor = "Autor desconocido";
+    }
+
     return {
-      titulo: parsed.titulo,
+      titulo: tituloCanonico,
       autor,
       tagline,
       portada,
@@ -2096,7 +2112,7 @@ async function resolveBookData(recentBooks) {
       editorial,
       selected_via: "direct_book",
       selection_reason: enrichedFrom
-        ? `Libro explícito (workflow_dispatch) + autor enriquecido desde ${enrichedFrom}`
+        ? `Libro explícito (workflow_dispatch) + canonicalizado desde ${enrichedFrom}`
         : "Libro explícito proporcionado en workflow_dispatch"
     };
   }
