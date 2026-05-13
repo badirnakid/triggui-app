@@ -302,12 +302,92 @@ function findSmartCutIndex(words, minIdx, maxIdx) {
   return retreatFromWeakTrailing(words, safeMax, minIdx);
 }
 
+/* ──────────────────────────────────────────────────────────────────────────────
+   🌒 v3.8.1 cirugia 1.1 — Split robusto basado en PATRONES, no en listas
+   ──────────────────────────────────────────────────────────────────────────────
+   El split nativo /(?<=[\.\!\?])\s+/ NO diferencia abreviaciones puntuales
+   ("Mr.", "Dr.", "e.g.", "U.S.") de fin de frase real. Genera frases falsas que
+   el algoritmo de expansion trata como completas, produciendo highlights rotos
+   tipo "[H]Charlie Bucket gazed...by Mr[/H]" (caso real Charlie EN 2026-05-13).
+
+   En lugar de listar abreviaciones (que siempre tienen fugas), detectamos el
+   PATRON matematico universal que las define:
+
+   1. Palabra corta (1-4 chars) capitalizada + siguiente capitalizada
+      → "Mr. Willy", "Sra. García", "Dr. House", "St. Mary"
+   2. Patron interno letra.letra (abreviacion compleja)
+      → "e.g.", "i.e.", "U.S.", "Ph.D.", "U.S.A."
+   3. Numero decimal
+      → "1.5", "$2.99", "3.14"
+
+   Funciona en cualquier idioma con la misma estructura. Cero hardcoding.
+   Aplicado a 2 funciones: placeHighlightOnDensestSpan + expandHighlightToFullSentence.
+   ────────────────────────────────────────────────────────────────────────────── */
+function isAbbreviationDot(text, dotIdx) {
+  const before = text.slice(0, dotIdx);
+  const wordMatch = before.match(/(\S+)$/);
+  if (!wordMatch) return false;
+  const word = wordMatch[1];
+
+  const after = text.slice(dotIdx + 1);
+  const nextMatch = after.match(/^\s*(\S)/);
+  const nextChar = nextMatch ? nextMatch[1] : null;
+
+  // REGLA 1: Palabra corta capitalizada + siguiente capitalizada
+  if (word.length >= 1 && word.length <= 4
+      && /^[A-ZÁÉÍÓÚÑ]/.test(word)
+      && nextChar && /^[A-ZÁÉÍÓÚÑ]/.test(nextChar)) {
+    return true;
+  }
+
+  // REGLA 2: Patron interno letra.letra (e.g., U.S., Ph.D.)
+  if (/[A-Za-z]\.[A-Za-z]/.test(word)) {
+    return true;
+  }
+
+  // REGLA 3: Numero decimal
+  if (/\d$/.test(word) && nextChar && /\d/.test(nextChar)) {
+    return true;
+  }
+
+  return false;
+}
+
+function splitIntoSentencesRobust(plain) {
+  const result = [];
+  let buffer = '';
+  let i = 0;
+
+  while (i < plain.length) {
+    const char = plain[i];
+    buffer += char;
+
+    if (char === '.' || char === '!' || char === '?') {
+      const isAbbr = (char === '.') && isAbbreviationDot(plain, i);
+
+      if (!isAbbr) {
+        let j = i + 1;
+        while (j < plain.length && /\s/.test(plain[j])) j++;
+        if (buffer.trim()) result.push(buffer.trim());
+        buffer = '';
+        i = j;
+        continue;
+      }
+    }
+    i++;
+  }
+
+  if (buffer.trim()) result.push(buffer.trim());
+  return result;
+}
+
 export function placeHighlightOnDensestSpan(text) {
   const plain = stripHighlightTags(text).replace(/\s+/g, " ").trim();
   if (!plain) return text;
   if (countHighlights(text) > 0) return normalizeHighlightSyntax(text);
 
-  const sentences = plain.split(/(?<=[\.\!\?])\s+/).filter(Boolean);
+  // 🌒 v3.8.1 cirugia 1.1 — split robusto sin hardcoding (deteccion por patron)
+  const sentences = splitIntoSentencesRobust(plain);
   if (sentences.length === 0) return text;
 
   const scored = sentences.map((s) => {
@@ -413,7 +493,8 @@ export function expandHighlightToFullSentence(text) {
   const segments = getHighlightSegments(original);
   if (segments.length === 0) return text;
 
-  const sentences = plain.split(/(?<=[\.\!\?])\s+/).filter(Boolean);
+  // 🌒 v3.8.1 cirugia 1.1 — split robusto sin hardcoding (deteccion por patron)
+  const sentences = splitIntoSentencesRobust(plain);
 
   // Para cada highlight original, calcular qué frase completa lo contiene y
   // qué replacement debe usar. Construimos un plan de expansiones.
