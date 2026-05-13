@@ -87,15 +87,29 @@ const KEY = process.env.OPENAI_KEY;
 if (!KEY) { console.log("🔕 Sin OPENAI_KEY"); process.exit(0); }
 const openai = new OpenAI({ apiKey: KEY });
 
+// ═══════════════════════════════════════════════════════════════════════
+// 🌒 CATALOG_MODE — soporte multi-catálogo Triggui Kids
+// ═══════════════════════════════════════════════════════════════════════
+// Controla qué catálogo de libros se procesa.
+// Default: "adulto" (preserva comportamiento original al 100%)
+// Alternativa: "kids" (activa Triggui Kids con catálogo + overlay constitucional)
+// ═══════════════════════════════════════════════════════════════════════
+const CATALOG_MODE = (process.env.CATALOG_MODE || "adulto").toLowerCase();
+const IS_KIDS = CATALOG_MODE === "kids";
+console.log(IS_KIDS
+  ? "🌒 CATALOG_MODE=kids — Triggui Kids activado"
+  : "🌒 CATALOG_MODE=adulto — Triggui (default)");
+
 const CFG = {
   modelMini: process.env.TRIGGUI_MODEL || "gpt-4o-mini",
   modelBig: process.env.TRIGGUI_MODEL_BIG || "gpt-4o",
   temperature: Number(process.env.TRIGGUI_TEMP || 0.7),
+  catalogMode: CATALOG_MODE,
   files: {
-    csv: "data/libros_master.csv",
-    outBatch: "contenido.json",
-    outShadow: "contenido.shadow.json",
-    tmpBook: "/tmp/triggui-book.json",
+    csv:       IS_KIDS ? "data/libros_master_kids.csv"      : "data/libros_master.csv",
+    outBatch:  IS_KIDS ? "contenido_kids.json"              : "contenido.json",
+    outShadow: IS_KIDS ? "contenido_kids.shadow.json"       : "contenido.shadow.json",
+    tmpBook:   IS_KIDS ? "/tmp/triggui-book-kids.json"      : "/tmp/triggui-book.json",
     metricsDir: "metrics",
     inputsHistoryDir: "inputs-history",
     reportsDir: "quality-reports"
@@ -1370,7 +1384,11 @@ async function main() {
 
   // ⭐ STEP 3 ⭐ — Componer el lens block una sola vez al inicio del run
   // Combina: constitution + lentes activos del registry + baseLens del env var
-  INPUTS.lens = await composeLensSystemBlock({ baseLens: INPUTS.baseLens });
+  // 🌒 Triggui Kids: si CATALOG_MODE=kids, también appendea overlay constitucional
+  INPUTS.lens = await composeLensSystemBlock({
+    baseLens: INPUTS.baseLens,
+    mode: CATALOG_MODE
+  });
 
   const isSingle = process.env.SINGLE_MODE === "true" || await fileExists(CFG.files.tmpBook);
   if (isSingle) await runSingle();
