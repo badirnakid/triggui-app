@@ -424,7 +424,8 @@ if (!slug) {
   process.exit(1);
 }
 
-const outDir = `public/t/${slug}`;
+const outBase = process.env.TRIGGUI_OUT_BASE || "public/t";
+const outDir = `${outBase}/${slug}`;
 await fs.mkdir(outDir, { recursive: true });
 
 console.log(`🖼️  Generando OG image: "${bookMeta.titulo || libro.titulo}"`);

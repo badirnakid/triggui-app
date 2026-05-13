@@ -16,7 +16,7 @@ TMP_BOOK_FILE = Path("/tmp/triggui-book.json")
 # 🌒 V13 NIVEL DIOS CUÁNTICO-QUARK: contenido.json es la ÚNICA fuente de verdad
 # Eliminado contenido_edicion.json fósil que tenía data del 5 mayo (El mesias mistico)
 SINGLE_JSON = Path("contenido.json")
-SINGLE_OUT_DIR = Path("public/t")
+SINGLE_OUT_DIR = Path(os.environ.get("TRIGGUI_OUT_BASE", "public/t"))
 
 # Base URL dinámica:
 # - main -> https://app.triggui.com

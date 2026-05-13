@@ -493,21 +493,30 @@ jobs:
 
       - name: 🌐 Generar edición viva HTML
         if: ${{ inputs.generar_imagenes && (steps.modo.outputs.modo_tecnico == 'single_book' || steps.modo.outputs.modo_tecnico == 'trigger_constrained' || steps.modo.outputs.modo_tecnico == 'trigger_discover') }}
+        env:
+          TRIGGUI_EDICION_JSON: ${{ inputs.catalogo == 'kids' && 'contenido_kids.json' || 'contenido.json' }}
+          TRIGGUI_OUT_BASE: ${{ inputs.catalogo == 'kids' && 'public/kids/t' || 'public/t' }}
         run: |
           python3 scripts/build-editions.py
-          find public/t -name "index.html" 2>/dev/null | head -5
+          find "${TRIGGUI_OUT_BASE}" -name "index.html" 2>/dev/null | head -5
 
       - name: 🎨 Generar tarjeta PNG 1080×1920
         if: ${{ inputs.generar_imagenes && (steps.modo.outputs.modo_tecnico == 'single_book' || steps.modo.outputs.modo_tecnico == 'trigger_constrained' || steps.modo.outputs.modo_tecnico == 'trigger_discover') }}
+        env:
+          TRIGGUI_EDICION_JSON: ${{ inputs.catalogo == 'kids' && 'contenido_kids.json' || 'contenido.json' }}
+          TRIGGUI_OUT_BASE: ${{ inputs.catalogo == 'kids' && 'public/kids/t' || 'public/t' }}
         run: |
           node scripts/build-tarjeta-png.js
-          find public/t -name "tarjeta.png" 2>/dev/null | head -5
+          find "${TRIGGUI_OUT_BASE}" -name "tarjeta.png" 2>/dev/null | head -5
 
       - name: 🖼️ Generar OG image PNG 1200×630
         if: ${{ inputs.generar_imagenes && (steps.modo.outputs.modo_tecnico == 'single_book' || steps.modo.outputs.modo_tecnico == 'trigger_constrained' || steps.modo.outputs.modo_tecnico == 'trigger_discover') }}
+        env:
+          TRIGGUI_EDICION_JSON: ${{ inputs.catalogo == 'kids' && 'contenido_kids.json' || 'contenido.json' }}
+          TRIGGUI_OUT_BASE: ${{ inputs.catalogo == 'kids' && 'public/kids/t' || 'public/t' }}
         run: |
           node scripts/build-og-image.js
-          find public/t -name "og.png" 2>/dev/null | head -5
+          find "${TRIGGUI_OUT_BASE}" -name "og.png" 2>/dev/null | head -5
 
       # ╔══════════════════════════════════════════════════════════════════╗
       # ║  FASE 8 — Sincronizar contenido.json → triggui-content            ║
