@@ -1,0 +1,488 @@
+{
+  "history": [
+    {
+      "at": "2026-05-13T19:54:53.296Z",
+      "stage": "success",
+      "bookData": {
+        "titulo": "Matilda",
+        "autor": "Roald Dahl",
+        "slug": "matilda",
+        "tagline": "",
+        "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/bb/56/a9/bb56a9b9-1d51-f4fe-3ab7-6bfd6fbcf09f/9780141378541.jpg/3000x3000bb.jpg",
+        "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/bb/56/a9/bb56a9b9-1d51-f4fe-3ab7-6bfd6fbcf09f/9780141378541.jpg/3000x3000bb.jpg",
+        "portada_source": "apple_books",
+        "portada_candidates": [
+          {
+            "source": "apple_books",
+            "size": "xxlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/bb/56/a9/bb56a9b9-1d51-f4fe-3ab7-6bfd6fbcf09f/9780141378541.jpg/3000x3000bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "xlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/bb/56/a9/bb56a9b9-1d51-f4fe-3ab7-6bfd6fbcf09f/9780141378541.jpg/1200x1200bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "large",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/bb/56/a9/bb56a9b9-1d51-f4fe-3ab7-6bfd6fbcf09f/9780141378541.jpg/600x600bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "medium",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/bb/56/a9/bb56a9b9-1d51-f4fe-3ab7-6bfd6fbcf09f/9780141378541.jpg/100x100bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "openlibrary",
+            "size": "large",
+            "url": "https://covers.openlibrary.org/b/id/12889769-L.jpg",
+            "valid": true
+          },
+          {
+            "source": "openlibrary",
+            "size": "medium",
+            "url": "https://covers.openlibrary.org/b/id/12889769-M.jpg",
+            "valid": true
+          }
+        ],
+        "needs_fallback_cover": false,
+        "isbn": "",
+        "editorial": "Roald Dahl",
+        "publication_year": "2016",
+        "source": "apple_books",
+        "duplicado": true,
+        "selected_via": "direct_book",
+        "selection_reason": "Libro explícito (workflow_dispatch) + autor enriquecido desde csv_kids",
+        "trigger_input": "",
+        "trigger_analysis": null,
+        "selection_validation": {},
+        "catalog_scope": "",
+        "contexto_2026": {},
+        "identity_sealed": false,
+        "_evidence": {
+          "titulo_input": "Matilda",
+          "autor_input": "Roald Dahl",
+          "isbn_seed": "",
+          "isbn_seed_raw": "",
+          "isbn_seed_rejected": null,
+          "isbn_discovered": "",
+          "isbn_discovered_raw": "",
+          "apple": {
+            "ok": true,
+            "source": "apple_books",
+            "match_score": 1,
+            "match_details": {
+              "matched_title": "Matilda",
+              "matched_author": "Roald Dahl"
+            },
+            "synopsis": "Roald Dahl's much-loved Matilda, now with Quentin Blake's original illustrations in full colour. Matilda Wormwood's father thinks she's a little scab. Matilda's mother spends all afternoon playing bingo. And Matilda's headmistress Miss Trunchbull? Well, she's the worst of all. She is a big bully, who thinks all her pupils are rotten and locks them in the dreaded Chokey. As for Matilda, she's an extraordinary little girl with a magical mind - and now she's had enough. So all these grown-ups had better watch out, because Matilda is going to teach them a lesson they'll never forget. Matilda is also a phenomenally successful, award-winning London stage musical, adapted for the stage by Dennis Kelly with music by Tim Minchin. 'A true genius . . . Roald Dahl is my hero' - David Walliams Look out for new Roald Dahl apps in the App store and Google Play- including the disgusting TWIT OR MISS! inspired by the revolting Twits.",
+            "synopsis_length": 930,
+            "covers": [
+              {
+                "size": "xxlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/bb/56/a9/bb56a9b9-1d51-f4fe-3ab7-6bfd6fbcf09f/9780141378541.jpg/3000x3000bb.jpg"
+              },
+              {
+                "size": "xlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/bb/56/a9/bb56a9b9-1d51-f4fe-3ab7-6bfd6fbcf09f/9780141378541.jpg/1200x1200bb.jpg"
+              },
+              {
+                "size": "large",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/bb/56/a9/bb56a9b9-1d51-f4fe-3ab7-6bfd6fbcf09f/9780141378541.jpg/600x600bb.jpg"
+              },
+              {
+                "size": "medium",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/bb/56/a9/bb56a9b9-1d51-f4fe-3ab7-6bfd6fbcf09f/9780141378541.jpg/100x100bb.jpg"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "Matilda",
+              "autor_completo": "Roald Dahl",
+              "titulo_api": "Matilda",
+              "autor_api": "Roald Dahl",
+              "año": "2016",
+              "editorial": null,
+              "isbn": "",
+              "apple_track_id": "1151475082",
+              "categorias": [
+                "Infantil: clásicos",
+                "Libros",
+                "Niños",
+                "Ficción infantil",
+                "Infantil: fantasía"
+              ],
+              "track_view_url": "https://books.apple.com/mx/book/matilda/id1151475082?uo=4"
+            }
+          },
+          "google": {
+            "ok": false,
+            "reason": "no_good_match",
+            "source": "google_books"
+          },
+          "openlibrary": {
+            "ok": true,
+            "source": "openlibrary",
+            "match_score": 1,
+            "match_details": {
+              "matched_title": "Matilda",
+              "matched_author": "Roald Dahl"
+            },
+            "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 1988.",
+            "synopsis_length": 65,
+            "covers": [
+              {
+                "size": "large",
+                "url": "https://covers.openlibrary.org/b/id/12889769-L.jpg"
+              },
+              {
+                "size": "medium",
+                "url": "https://covers.openlibrary.org/b/id/12889769-M.jpg"
+              },
+              {
+                "size": "small",
+                "url": "https://covers.openlibrary.org/b/id/12889769-S.jpg"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "Matilda",
+              "autor_completo": "Roald Dahl",
+              "titulo_api": "Matilda",
+              "autor_api": "Roald Dahl",
+              "año": "1988",
+              "editorial": null,
+              "isbn": "",
+              "categorias": [],
+              "idioma": "ger",
+              "paginas": null
+            }
+          },
+          "amazon": {
+            "ok": false,
+            "reason": "skipped",
+            "source": "amazon"
+          },
+          "valid_covers": [
+            {
+              "source": "apple_books",
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/bb/56/a9/bb56a9b9-1d51-f4fe-3ab7-6bfd6fbcf09f/9780141378541.jpg/3000x3000bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/bb/56/a9/bb56a9b9-1d51-f4fe-3ab7-6bfd6fbcf09f/9780141378541.jpg/1200x1200bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/bb/56/a9/bb56a9b9-1d51-f4fe-3ab7-6bfd6fbcf09f/9780141378541.jpg/600x600bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/bb/56/a9/bb56a9b9-1d51-f4fe-3ab7-6bfd6fbcf09f/9780141378541.jpg/100x100bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "openlibrary",
+              "size": "large",
+              "url": "https://covers.openlibrary.org/b/id/12889769-L.jpg",
+              "valid": true
+            },
+            {
+              "source": "openlibrary",
+              "size": "medium",
+              "url": "https://covers.openlibrary.org/b/id/12889769-M.jpg",
+              "valid": true
+            }
+          ],
+          "_sources_succeeded": [
+            "apple_books",
+            "openlibrary"
+          ],
+          "_sources_failed": [
+            "google_books:no_good_match",
+            "amazon:skipped"
+          ],
+          "_timing": {
+            "phase1_parallel_ms": 15886,
+            "phase2_isbn_chain_ms": 0,
+            "cover_validation_ms": 3286,
+            "total_ms": 19172
+          },
+          "_version": "3.6"
+        },
+        "_evidence_synopsis": "Roald Dahl's much-loved Matilda, now with Quentin Blake's original illustrations in full colour. Matilda Wormwood's father thinks she's a little scab. Matilda's mother spends all afternoon playing bingo. And Matilda's headmistress Miss Trunchbull? Well, she's the worst of all. She is a big bully, who thinks all her pupils are rotten and locks them in the dreaded Chokey. As for Matilda, she's an extraordinary little girl with a magical mind - and now she's had enough. So all these grown-ups had better watch out, because Matilda is going to teach them a lesson they'll never forget. Matilda is also a phenomenally successful, award-winning London stage musical, adapted for the stage by Dennis Kelly with music by Tim Minchin. 'A true genius . . . Roald Dahl is my hero' - David Walliams Look out for new Roald Dahl apps in the App store and Google Play- including the disgusting TWIT OR MISS! inspired by the revolting Twits.",
+        "_evidence_verified_identity": {
+          "titulo_real": "Matilda",
+          "autor_completo": "Roald Dahl",
+          "titulo_api": "Matilda",
+          "autor_api": "Roald Dahl",
+          "año": "2016",
+          "editorial": null,
+          "isbn": "",
+          "apple_track_id": "1151475082",
+          "categorias": [
+            "Infantil: clásicos",
+            "Libros",
+            "Niños",
+            "Ficción infantil",
+            "Infantil: fantasía"
+          ],
+          "track_view_url": "https://books.apple.com/mx/book/matilda/id1151475082?uo=4"
+        },
+        "_evidence_match_score": 1
+      },
+      "ring_updated": false
+    }
+  ],
+  "last": {
+    "at": "2026-05-13T19:54:53.296Z",
+    "stage": "success",
+    "bookData": {
+      "titulo": "Matilda",
+      "autor": "Roald Dahl",
+      "slug": "matilda",
+      "tagline": "",
+      "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/bb/56/a9/bb56a9b9-1d51-f4fe-3ab7-6bfd6fbcf09f/9780141378541.jpg/3000x3000bb.jpg",
+      "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/bb/56/a9/bb56a9b9-1d51-f4fe-3ab7-6bfd6fbcf09f/9780141378541.jpg/3000x3000bb.jpg",
+      "portada_source": "apple_books",
+      "portada_candidates": [
+        {
+          "source": "apple_books",
+          "size": "xxlarge",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/bb/56/a9/bb56a9b9-1d51-f4fe-3ab7-6bfd6fbcf09f/9780141378541.jpg/3000x3000bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "xlarge",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/bb/56/a9/bb56a9b9-1d51-f4fe-3ab7-6bfd6fbcf09f/9780141378541.jpg/1200x1200bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "large",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/bb/56/a9/bb56a9b9-1d51-f4fe-3ab7-6bfd6fbcf09f/9780141378541.jpg/600x600bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "medium",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/bb/56/a9/bb56a9b9-1d51-f4fe-3ab7-6bfd6fbcf09f/9780141378541.jpg/100x100bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "openlibrary",
+          "size": "large",
+          "url": "https://covers.openlibrary.org/b/id/12889769-L.jpg",
+          "valid": true
+        },
+        {
+          "source": "openlibrary",
+          "size": "medium",
+          "url": "https://covers.openlibrary.org/b/id/12889769-M.jpg",
+          "valid": true
+        }
+      ],
+      "needs_fallback_cover": false,
+      "isbn": "",
+      "editorial": "Roald Dahl",
+      "publication_year": "2016",
+      "source": "apple_books",
+      "duplicado": true,
+      "selected_via": "direct_book",
+      "selection_reason": "Libro explícito (workflow_dispatch) + autor enriquecido desde csv_kids",
+      "trigger_input": "",
+      "trigger_analysis": null,
+      "selection_validation": {},
+      "catalog_scope": "",
+      "contexto_2026": {},
+      "identity_sealed": false,
+      "_evidence": {
+        "titulo_input": "Matilda",
+        "autor_input": "Roald Dahl",
+        "isbn_seed": "",
+        "isbn_seed_raw": "",
+        "isbn_seed_rejected": null,
+        "isbn_discovered": "",
+        "isbn_discovered_raw": "",
+        "apple": {
+          "ok": true,
+          "source": "apple_books",
+          "match_score": 1,
+          "match_details": {
+            "matched_title": "Matilda",
+            "matched_author": "Roald Dahl"
+          },
+          "synopsis": "Roald Dahl's much-loved Matilda, now with Quentin Blake's original illustrations in full colour. Matilda Wormwood's father thinks she's a little scab. Matilda's mother spends all afternoon playing bingo. And Matilda's headmistress Miss Trunchbull? Well, she's the worst of all. She is a big bully, who thinks all her pupils are rotten and locks them in the dreaded Chokey. As for Matilda, she's an extraordinary little girl with a magical mind - and now she's had enough. So all these grown-ups had better watch out, because Matilda is going to teach them a lesson they'll never forget. Matilda is also a phenomenally successful, award-winning London stage musical, adapted for the stage by Dennis Kelly with music by Tim Minchin. 'A true genius . . . Roald Dahl is my hero' - David Walliams Look out for new Roald Dahl apps in the App store and Google Play- including the disgusting TWIT OR MISS! inspired by the revolting Twits.",
+          "synopsis_length": 930,
+          "covers": [
+            {
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/bb/56/a9/bb56a9b9-1d51-f4fe-3ab7-6bfd6fbcf09f/9780141378541.jpg/3000x3000bb.jpg"
+            },
+            {
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/bb/56/a9/bb56a9b9-1d51-f4fe-3ab7-6bfd6fbcf09f/9780141378541.jpg/1200x1200bb.jpg"
+            },
+            {
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/bb/56/a9/bb56a9b9-1d51-f4fe-3ab7-6bfd6fbcf09f/9780141378541.jpg/600x600bb.jpg"
+            },
+            {
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/bb/56/a9/bb56a9b9-1d51-f4fe-3ab7-6bfd6fbcf09f/9780141378541.jpg/100x100bb.jpg"
+            }
+          ],
+          "verified_identity": {
+            "titulo_real": "Matilda",
+            "autor_completo": "Roald Dahl",
+            "titulo_api": "Matilda",
+            "autor_api": "Roald Dahl",
+            "año": "2016",
+            "editorial": null,
+            "isbn": "",
+            "apple_track_id": "1151475082",
+            "categorias": [
+              "Infantil: clásicos",
+              "Libros",
+              "Niños",
+              "Ficción infantil",
+              "Infantil: fantasía"
+            ],
+            "track_view_url": "https://books.apple.com/mx/book/matilda/id1151475082?uo=4"
+          }
+        },
+        "google": {
+          "ok": false,
+          "reason": "no_good_match",
+          "source": "google_books"
+        },
+        "openlibrary": {
+          "ok": true,
+          "source": "openlibrary",
+          "match_score": 1,
+          "match_details": {
+            "matched_title": "Matilda",
+            "matched_author": "Roald Dahl"
+          },
+          "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 1988.",
+          "synopsis_length": 65,
+          "covers": [
+            {
+              "size": "large",
+              "url": "https://covers.openlibrary.org/b/id/12889769-L.jpg"
+            },
+            {
+              "size": "medium",
+              "url": "https://covers.openlibrary.org/b/id/12889769-M.jpg"
+            },
+            {
+              "size": "small",
+              "url": "https://covers.openlibrary.org/b/id/12889769-S.jpg"
+            }
+          ],
+          "verified_identity": {
+            "titulo_real": "Matilda",
+            "autor_completo": "Roald Dahl",
+            "titulo_api": "Matilda",
+            "autor_api": "Roald Dahl",
+            "año": "1988",
+            "editorial": null,
+            "isbn": "",
+            "categorias": [],
+            "idioma": "ger",
+            "paginas": null
+          }
+        },
+        "amazon": {
+          "ok": false,
+          "reason": "skipped",
+          "source": "amazon"
+        },
+        "valid_covers": [
+          {
+            "source": "apple_books",
+            "size": "xxlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/bb/56/a9/bb56a9b9-1d51-f4fe-3ab7-6bfd6fbcf09f/9780141378541.jpg/3000x3000bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "xlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/bb/56/a9/bb56a9b9-1d51-f4fe-3ab7-6bfd6fbcf09f/9780141378541.jpg/1200x1200bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "large",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/bb/56/a9/bb56a9b9-1d51-f4fe-3ab7-6bfd6fbcf09f/9780141378541.jpg/600x600bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "medium",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication62/v4/bb/56/a9/bb56a9b9-1d51-f4fe-3ab7-6bfd6fbcf09f/9780141378541.jpg/100x100bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "openlibrary",
+            "size": "large",
+            "url": "https://covers.openlibrary.org/b/id/12889769-L.jpg",
+            "valid": true
+          },
+          {
+            "source": "openlibrary",
+            "size": "medium",
+            "url": "https://covers.openlibrary.org/b/id/12889769-M.jpg",
+            "valid": true
+          }
+        ],
+        "_sources_succeeded": [
+          "apple_books",
+          "openlibrary"
+        ],
+        "_sources_failed": [
+          "google_books:no_good_match",
+          "amazon:skipped"
+        ],
+        "_timing": {
+          "phase1_parallel_ms": 15886,
+          "phase2_isbn_chain_ms": 0,
+          "cover_validation_ms": 3286,
+          "total_ms": 19172
+        },
+        "_version": "3.6"
+      },
+      "_evidence_synopsis": "Roald Dahl's much-loved Matilda, now with Quentin Blake's original illustrations in full colour. Matilda Wormwood's father thinks she's a little scab. Matilda's mother spends all afternoon playing bingo. And Matilda's headmistress Miss Trunchbull? Well, she's the worst of all. She is a big bully, who thinks all her pupils are rotten and locks them in the dreaded Chokey. As for Matilda, she's an extraordinary little girl with a magical mind - and now she's had enough. So all these grown-ups had better watch out, because Matilda is going to teach them a lesson they'll never forget. Matilda is also a phenomenally successful, award-winning London stage musical, adapted for the stage by Dennis Kelly with music by Tim Minchin. 'A true genius . . . Roald Dahl is my hero' - David Walliams Look out for new Roald Dahl apps in the App store and Google Play- including the disgusting TWIT OR MISS! inspired by the revolting Twits.",
+      "_evidence_verified_identity": {
+        "titulo_real": "Matilda",
+        "autor_completo": "Roald Dahl",
+        "titulo_api": "Matilda",
+        "autor_api": "Roald Dahl",
+        "año": "2016",
+        "editorial": null,
+        "isbn": "",
+        "apple_track_id": "1151475082",
+        "categorias": [
+          "Infantil: clásicos",
+          "Libros",
+          "Niños",
+          "Ficción infantil",
+          "Infantil: fantasía"
+        ],
+        "track_view_url": "https://books.apple.com/mx/book/matilda/id1151475082?uo=4"
+      },
+      "_evidence_match_score": 1
+    },
+    "ring_updated": false
+  }
+}
