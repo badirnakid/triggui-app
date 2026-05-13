@@ -1,0 +1,406 @@
+{
+  "history": [
+    {
+      "at": "2026-05-13T22:29:27.933Z",
+      "stage": "success",
+      "bookData": {
+        "titulo": "Charlie y la fábrica de chocolate",
+        "autor": "Roald Dahl",
+        "slug": "charlie-y-la-fabrica-de-chocolate",
+        "tagline": "",
+        "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/fc/ac/13/fcac13ef-7b32-ded4-06c4-0a37acf6d57e/e7f7ff65-b658-4abe-a493-1aa227849bbf_cover_image.jpg/3000x3000bb.jpg",
+        "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/fc/ac/13/fcac13ef-7b32-ded4-06c4-0a37acf6d57e/e7f7ff65-b658-4abe-a493-1aa227849bbf_cover_image.jpg/3000x3000bb.jpg",
+        "portada_source": "apple_books",
+        "portada_candidates": [
+          {
+            "source": "apple_books",
+            "size": "xxlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/fc/ac/13/fcac13ef-7b32-ded4-06c4-0a37acf6d57e/e7f7ff65-b658-4abe-a493-1aa227849bbf_cover_image.jpg/3000x3000bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "xlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/fc/ac/13/fcac13ef-7b32-ded4-06c4-0a37acf6d57e/e7f7ff65-b658-4abe-a493-1aa227849bbf_cover_image.jpg/1200x1200bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "large",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/fc/ac/13/fcac13ef-7b32-ded4-06c4-0a37acf6d57e/e7f7ff65-b658-4abe-a493-1aa227849bbf_cover_image.jpg/600x600bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "medium",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/fc/ac/13/fcac13ef-7b32-ded4-06c4-0a37acf6d57e/e7f7ff65-b658-4abe-a493-1aa227849bbf_cover_image.jpg/100x100bb.jpg",
+            "valid": true
+          }
+        ],
+        "needs_fallback_cover": false,
+        "isbn": "",
+        "editorial": "Roald Dahl",
+        "publication_year": "2024",
+        "source": "apple_books",
+        "duplicado": true,
+        "selected_via": "direct_book",
+        "selection_reason": "Libro explícito (workflow_dispatch) + autor enriquecido desde csv_kids",
+        "trigger_input": "",
+        "trigger_analysis": null,
+        "selection_validation": {},
+        "catalog_scope": "",
+        "contexto_2026": {},
+        "identity_sealed": false,
+        "_evidence": {
+          "titulo_input": "Charlie y la fábrica de chocolate",
+          "autor_input": "Roald Dahl",
+          "isbn_seed": "",
+          "isbn_seed_raw": "",
+          "isbn_seed_rejected": null,
+          "isbn_discovered": "",
+          "isbn_discovered_raw": "",
+          "apple": {
+            "ok": true,
+            "source": "apple_books",
+            "match_score": 1,
+            "match_details": {
+              "matched_title": "Charlie y la fábrica de chocolate",
+              "matched_author": "Roald Dahl"
+            },
+            "synopsis": "El dueño de la fábrica de chocolate Wonka ha escondido cinco billetes dorados en sus chocolates. Los afortunados que los encuentren podrán visitar la misteriosa fábrica y obtener un fabuloso regalo. El sueño de Charlie es ser uno de los niños elegidos, pero¿cómo le hará para obtener un billete dorado?¿Cuál es el verdadero propósito del señor Wonka?",
+            "synopsis_length": 350,
+            "covers": [
+              {
+                "size": "xxlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/fc/ac/13/fcac13ef-7b32-ded4-06c4-0a37acf6d57e/e7f7ff65-b658-4abe-a493-1aa227849bbf_cover_image.jpg/3000x3000bb.jpg"
+              },
+              {
+                "size": "xlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/fc/ac/13/fcac13ef-7b32-ded4-06c4-0a37acf6d57e/e7f7ff65-b658-4abe-a493-1aa227849bbf_cover_image.jpg/1200x1200bb.jpg"
+              },
+              {
+                "size": "large",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/fc/ac/13/fcac13ef-7b32-ded4-06c4-0a37acf6d57e/e7f7ff65-b658-4abe-a493-1aa227849bbf_cover_image.jpg/600x600bb.jpg"
+              },
+              {
+                "size": "medium",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/fc/ac/13/fcac13ef-7b32-ded4-06c4-0a37acf6d57e/e7f7ff65-b658-4abe-a493-1aa227849bbf_cover_image.jpg/100x100bb.jpg"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "Charlie y la fábrica de chocolate",
+              "autor_completo": "Roald Dahl",
+              "titulo_api": "Charlie y la fábrica de chocolate",
+              "autor_api": "Roald Dahl",
+              "año": "2024",
+              "editorial": null,
+              "isbn": "",
+              "apple_track_id": "6541757835",
+              "categorias": [
+                "Ciencia ficción y fantasía",
+                "Libros",
+                "Fantasía"
+              ],
+              "track_view_url": "https://books.apple.com/mx/book/charlie-y-la-f%C3%A1brica-de-chocolate/id6541757835?uo=4"
+            }
+          },
+          "google": {
+            "ok": false,
+            "reason": "no_good_match",
+            "source": "google_books"
+          },
+          "openlibrary": {
+            "ok": true,
+            "source": "openlibrary",
+            "match_score": 1,
+            "match_details": {
+              "matched_title": "Charlie y la Fabrica de Chocolate",
+              "matched_author": "Roald Dahl"
+            },
+            "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 1996.",
+            "synopsis_length": 65,
+            "covers": [],
+            "verified_identity": {
+              "titulo_real": "Charlie y la fábrica de chocolate",
+              "autor_completo": "Roald Dahl",
+              "titulo_api": "Charlie y la Fabrica de Chocolate",
+              "autor_api": "Roald Dahl",
+              "año": "1996",
+              "editorial": null,
+              "isbn": "",
+              "categorias": [],
+              "idioma": null,
+              "paginas": null
+            }
+          },
+          "amazon": {
+            "ok": false,
+            "reason": "skipped",
+            "source": "amazon"
+          },
+          "valid_covers": [
+            {
+              "source": "apple_books",
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/fc/ac/13/fcac13ef-7b32-ded4-06c4-0a37acf6d57e/e7f7ff65-b658-4abe-a493-1aa227849bbf_cover_image.jpg/3000x3000bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/fc/ac/13/fcac13ef-7b32-ded4-06c4-0a37acf6d57e/e7f7ff65-b658-4abe-a493-1aa227849bbf_cover_image.jpg/1200x1200bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/fc/ac/13/fcac13ef-7b32-ded4-06c4-0a37acf6d57e/e7f7ff65-b658-4abe-a493-1aa227849bbf_cover_image.jpg/600x600bb.jpg",
+              "valid": true
+            },
+            {
+              "source": "apple_books",
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/fc/ac/13/fcac13ef-7b32-ded4-06c4-0a37acf6d57e/e7f7ff65-b658-4abe-a493-1aa227849bbf_cover_image.jpg/100x100bb.jpg",
+              "valid": true
+            }
+          ],
+          "_sources_succeeded": [
+            "apple_books",
+            "openlibrary"
+          ],
+          "_sources_failed": [
+            "google_books:no_good_match",
+            "amazon:skipped"
+          ],
+          "_timing": {
+            "phase1_parallel_ms": 16336,
+            "phase2_isbn_chain_ms": 0,
+            "cover_validation_ms": 1009,
+            "total_ms": 17345
+          },
+          "_version": "3.6"
+        },
+        "_evidence_synopsis": "El dueño de la fábrica de chocolate Wonka ha escondido cinco billetes dorados en sus chocolates. Los afortunados que los encuentren podrán visitar la misteriosa fábrica y obtener un fabuloso regalo. El sueño de Charlie es ser uno de los niños elegidos, pero¿cómo le hará para obtener un billete dorado?¿Cuál es el verdadero propósito del señor Wonka?",
+        "_evidence_verified_identity": {
+          "titulo_real": "Charlie y la fábrica de chocolate",
+          "autor_completo": "Roald Dahl",
+          "titulo_api": "Charlie y la fábrica de chocolate",
+          "autor_api": "Roald Dahl",
+          "año": "2024",
+          "editorial": null,
+          "isbn": "",
+          "apple_track_id": "6541757835",
+          "categorias": [
+            "Ciencia ficción y fantasía",
+            "Libros",
+            "Fantasía"
+          ],
+          "track_view_url": "https://books.apple.com/mx/book/charlie-y-la-f%C3%A1brica-de-chocolate/id6541757835?uo=4"
+        },
+        "_evidence_match_score": 1
+      },
+      "ring_updated": false
+    }
+  ],
+  "last": {
+    "at": "2026-05-13T22:29:27.933Z",
+    "stage": "success",
+    "bookData": {
+      "titulo": "Charlie y la fábrica de chocolate",
+      "autor": "Roald Dahl",
+      "slug": "charlie-y-la-fabrica-de-chocolate",
+      "tagline": "",
+      "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/fc/ac/13/fcac13ef-7b32-ded4-06c4-0a37acf6d57e/e7f7ff65-b658-4abe-a493-1aa227849bbf_cover_image.jpg/3000x3000bb.jpg",
+      "portada_url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/fc/ac/13/fcac13ef-7b32-ded4-06c4-0a37acf6d57e/e7f7ff65-b658-4abe-a493-1aa227849bbf_cover_image.jpg/3000x3000bb.jpg",
+      "portada_source": "apple_books",
+      "portada_candidates": [
+        {
+          "source": "apple_books",
+          "size": "xxlarge",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/fc/ac/13/fcac13ef-7b32-ded4-06c4-0a37acf6d57e/e7f7ff65-b658-4abe-a493-1aa227849bbf_cover_image.jpg/3000x3000bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "xlarge",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/fc/ac/13/fcac13ef-7b32-ded4-06c4-0a37acf6d57e/e7f7ff65-b658-4abe-a493-1aa227849bbf_cover_image.jpg/1200x1200bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "large",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/fc/ac/13/fcac13ef-7b32-ded4-06c4-0a37acf6d57e/e7f7ff65-b658-4abe-a493-1aa227849bbf_cover_image.jpg/600x600bb.jpg",
+          "valid": true
+        },
+        {
+          "source": "apple_books",
+          "size": "medium",
+          "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/fc/ac/13/fcac13ef-7b32-ded4-06c4-0a37acf6d57e/e7f7ff65-b658-4abe-a493-1aa227849bbf_cover_image.jpg/100x100bb.jpg",
+          "valid": true
+        }
+      ],
+      "needs_fallback_cover": false,
+      "isbn": "",
+      "editorial": "Roald Dahl",
+      "publication_year": "2024",
+      "source": "apple_books",
+      "duplicado": true,
+      "selected_via": "direct_book",
+      "selection_reason": "Libro explícito (workflow_dispatch) + autor enriquecido desde csv_kids",
+      "trigger_input": "",
+      "trigger_analysis": null,
+      "selection_validation": {},
+      "catalog_scope": "",
+      "contexto_2026": {},
+      "identity_sealed": false,
+      "_evidence": {
+        "titulo_input": "Charlie y la fábrica de chocolate",
+        "autor_input": "Roald Dahl",
+        "isbn_seed": "",
+        "isbn_seed_raw": "",
+        "isbn_seed_rejected": null,
+        "isbn_discovered": "",
+        "isbn_discovered_raw": "",
+        "apple": {
+          "ok": true,
+          "source": "apple_books",
+          "match_score": 1,
+          "match_details": {
+            "matched_title": "Charlie y la fábrica de chocolate",
+            "matched_author": "Roald Dahl"
+          },
+          "synopsis": "El dueño de la fábrica de chocolate Wonka ha escondido cinco billetes dorados en sus chocolates. Los afortunados que los encuentren podrán visitar la misteriosa fábrica y obtener un fabuloso regalo. El sueño de Charlie es ser uno de los niños elegidos, pero¿cómo le hará para obtener un billete dorado?¿Cuál es el verdadero propósito del señor Wonka?",
+          "synopsis_length": 350,
+          "covers": [
+            {
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/fc/ac/13/fcac13ef-7b32-ded4-06c4-0a37acf6d57e/e7f7ff65-b658-4abe-a493-1aa227849bbf_cover_image.jpg/3000x3000bb.jpg"
+            },
+            {
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/fc/ac/13/fcac13ef-7b32-ded4-06c4-0a37acf6d57e/e7f7ff65-b658-4abe-a493-1aa227849bbf_cover_image.jpg/1200x1200bb.jpg"
+            },
+            {
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/fc/ac/13/fcac13ef-7b32-ded4-06c4-0a37acf6d57e/e7f7ff65-b658-4abe-a493-1aa227849bbf_cover_image.jpg/600x600bb.jpg"
+            },
+            {
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/fc/ac/13/fcac13ef-7b32-ded4-06c4-0a37acf6d57e/e7f7ff65-b658-4abe-a493-1aa227849bbf_cover_image.jpg/100x100bb.jpg"
+            }
+          ],
+          "verified_identity": {
+            "titulo_real": "Charlie y la fábrica de chocolate",
+            "autor_completo": "Roald Dahl",
+            "titulo_api": "Charlie y la fábrica de chocolate",
+            "autor_api": "Roald Dahl",
+            "año": "2024",
+            "editorial": null,
+            "isbn": "",
+            "apple_track_id": "6541757835",
+            "categorias": [
+              "Ciencia ficción y fantasía",
+              "Libros",
+              "Fantasía"
+            ],
+            "track_view_url": "https://books.apple.com/mx/book/charlie-y-la-f%C3%A1brica-de-chocolate/id6541757835?uo=4"
+          }
+        },
+        "google": {
+          "ok": false,
+          "reason": "no_good_match",
+          "source": "google_books"
+        },
+        "openlibrary": {
+          "ok": true,
+          "source": "openlibrary",
+          "match_score": 1,
+          "match_details": {
+            "matched_title": "Charlie y la Fabrica de Chocolate",
+            "matched_author": "Roald Dahl"
+          },
+          "synopsis": "Libro verificado en OpenLibrary. Publicado originalmente en 1996.",
+          "synopsis_length": 65,
+          "covers": [],
+          "verified_identity": {
+            "titulo_real": "Charlie y la fábrica de chocolate",
+            "autor_completo": "Roald Dahl",
+            "titulo_api": "Charlie y la Fabrica de Chocolate",
+            "autor_api": "Roald Dahl",
+            "año": "1996",
+            "editorial": null,
+            "isbn": "",
+            "categorias": [],
+            "idioma": null,
+            "paginas": null
+          }
+        },
+        "amazon": {
+          "ok": false,
+          "reason": "skipped",
+          "source": "amazon"
+        },
+        "valid_covers": [
+          {
+            "source": "apple_books",
+            "size": "xxlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/fc/ac/13/fcac13ef-7b32-ded4-06c4-0a37acf6d57e/e7f7ff65-b658-4abe-a493-1aa227849bbf_cover_image.jpg/3000x3000bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "xlarge",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/fc/ac/13/fcac13ef-7b32-ded4-06c4-0a37acf6d57e/e7f7ff65-b658-4abe-a493-1aa227849bbf_cover_image.jpg/1200x1200bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "large",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/fc/ac/13/fcac13ef-7b32-ded4-06c4-0a37acf6d57e/e7f7ff65-b658-4abe-a493-1aa227849bbf_cover_image.jpg/600x600bb.jpg",
+            "valid": true
+          },
+          {
+            "source": "apple_books",
+            "size": "medium",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/fc/ac/13/fcac13ef-7b32-ded4-06c4-0a37acf6d57e/e7f7ff65-b658-4abe-a493-1aa227849bbf_cover_image.jpg/100x100bb.jpg",
+            "valid": true
+          }
+        ],
+        "_sources_succeeded": [
+          "apple_books",
+          "openlibrary"
+        ],
+        "_sources_failed": [
+          "google_books:no_good_match",
+          "amazon:skipped"
+        ],
+        "_timing": {
+          "phase1_parallel_ms": 16336,
+          "phase2_isbn_chain_ms": 0,
+          "cover_validation_ms": 1009,
+          "total_ms": 17345
+        },
+        "_version": "3.6"
+      },
+      "_evidence_synopsis": "El dueño de la fábrica de chocolate Wonka ha escondido cinco billetes dorados en sus chocolates. Los afortunados que los encuentren podrán visitar la misteriosa fábrica y obtener un fabuloso regalo. El sueño de Charlie es ser uno de los niños elegidos, pero¿cómo le hará para obtener un billete dorado?¿Cuál es el verdadero propósito del señor Wonka?",
+      "_evidence_verified_identity": {
+        "titulo_real": "Charlie y la fábrica de chocolate",
+        "autor_completo": "Roald Dahl",
+        "titulo_api": "Charlie y la fábrica de chocolate",
+        "autor_api": "Roald Dahl",
+        "año": "2024",
+        "editorial": null,
+        "isbn": "",
+        "apple_track_id": "6541757835",
+        "categorias": [
+          "Ciencia ficción y fantasía",
+          "Libros",
+          "Fantasía"
+        ],
+        "track_view_url": "https://books.apple.com/mx/book/charlie-y-la-f%C3%A1brica-de-chocolate/id6541757835?uo=4"
+      },
+      "_evidence_match_score": 1
+    },
+    "ring_updated": false
+  }
+}
