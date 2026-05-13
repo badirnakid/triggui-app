@@ -49,6 +49,7 @@ const GITHUB_RAW_BASE = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GIT
 // Paths relativos dentro del repo de content
 const RELATIVE_PATHS = {
   constitution: "prompts/constitution/triggui-core.md",
+  kidsOverlay: "prompts/constitution/triggui-core-kids-overlay.md",
   registry: "lenses-registry.json",
   lensDir: "prompts/lenses",
 };
@@ -204,6 +205,12 @@ async function loadConstitution() {
   return raw.trim();
 }
 
+// 🌒 Triggui Kids · overlay constitucional (solo se carga si CATALOG_MODE=kids)
+async function loadKidsOverlay() {
+  const raw = await readFromSource(RELATIVE_PATHS.kidsOverlay);
+  return raw ? raw.trim() : "";
+}
+
 /**
  * Carga el registro de lentes desde la fuente resuelta.
  */
@@ -252,10 +259,11 @@ function getActiveLensIds(registry) {
  * @returns {Promise<string>} - Bloque completo listo para usar
  */
 export async function composeLensSystemBlock(opts = {}) {
-  const { baseLens = "", refresh = false } = opts;
+  const { baseLens = "", refresh = false, mode = "adulto" } = opts;
+  const isKids = String(mode).toLowerCase() === "kids";
 
-  // Si tenemos cache y no se pidió refresh, devolverlo
-  if (_cachedComposition !== null && !refresh && !baseLens) {
+  // Cache: solo si no hay baseLens y modo adulto default (kids se compone fresh)
+  if (_cachedComposition !== null && !refresh && !baseLens && !isKids) {
     return _cachedComposition;
   }
 
@@ -268,6 +276,20 @@ export async function composeLensSystemBlock(opts = {}) {
     partes.push("CONSTITUCIÓN TRIGGUI");
     partes.push("═══════════════════════════════════════════════════════════════════");
     partes.push(constitution);
+  }
+
+  // ─── 1.5 🌒 Overlay Kids (solo si CATALOG_MODE=kids) ────────────────────
+  let kidsOverlayLoaded = false;
+  if (isKids) {
+    const kidsOverlay = await loadKidsOverlay();
+    if (kidsOverlay) {
+      partes.push("");
+      partes.push("═══════════════════════════════════════════════════════════════════");
+      partes.push("OVERLAY TRIGGUI KIDS");
+      partes.push("═══════════════════════════════════════════════════════════════════");
+      partes.push(kidsOverlay);
+      kidsOverlayLoaded = true;
+    }
   }
 
   // ─── 2. Lentes activos ──────────────────────────────────────────────────
@@ -309,8 +331,8 @@ export async function composeLensSystemBlock(opts = {}) {
 
   const composed = partes.join("\n");
 
-  // Guardar en cache solo si no había baseLens (porque baseLens es por-run)
-  if (!baseLens) {
+  // Guardar en cache solo si no hay baseLens NI es modo kids (ambos son por-run)
+  if (!baseLens && !isKids) {
     _cachedComposition = composed;
   }
 
@@ -324,8 +346,12 @@ export async function composeLensSystemBlock(opts = {}) {
           ? `HTTPS (${GITHUB_OWNER}/${GITHUB_REPO}@${GITHUB_BRANCH})`
           : `filesystem (${_resolvedSource.sub_kind}: ${_resolvedSource.root})`)
       : "NINGUNA (degradación)";
+    const tieneKidsOverlay = kidsOverlayLoaded ? "✓" : "✗";
     console.log(`📜 prompt-composer: fuente=${sourceLabel}`);
     console.log(`   constitución ${tieneConstitucion} | lentes [${lentesTxt}] | baseLens ${tieneBaseLens}`);
+    if (isKids) {
+      console.log(`   🌒 modo=kids | kids-overlay ${tieneKidsOverlay}`);
+    }
     console.log(`   Total bloque: ${composed.length} caracteres`);
     _cachedSourceMtime = Date.now();
   }
