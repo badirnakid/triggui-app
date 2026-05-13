@@ -376,6 +376,20 @@ jobs:
               ;;
           esac
 
+          # 🌒 v3.8 cirugia 4A — Linkear edition-counter.json (SSOT contador global)
+          # El counter file vive en triggui-content/ y se linkea a experiments/nucleus/
+          # para que el codigo del nucleus pueda leer/escribir. Sync de vuelta en FASE 8.
+          COUNTER_SRC="triggui-content/edition-counter.json"
+          COUNTER_DEST="experiments/nucleus/edition-counter.json"
+          if [ -f "${COUNTER_SRC}" ]; then
+            cp "${COUNTER_SRC}" "${COUNTER_DEST}"
+            COUNTER_NEXT=$(node -e "try{console.log(JSON.parse(require('fs').readFileSync('${COUNTER_DEST}','utf8').trim()).next)}catch(e){console.log('?')}" 2>/dev/null || echo "?")
+            COUNTER_LAST=$(node -e "try{const d=JSON.parse(require('fs').readFileSync('${COUNTER_DEST}','utf8').trim()); console.log(d.last_assigned !== undefined && d.last_assigned !== null ? d.last_assigned : 'null')}catch(e){console.log('?')}" 2>/dev/null || echo "?")
+            echo "📊 edition-counter.json linkeado: next=${COUNTER_NEXT} last_assigned=${COUNTER_LAST}"
+          else
+            echo "⚠️  edition-counter.json NO existe en triggui-content — fallback meta activado"
+          fi
+
       # ╔══════════════════════════════════════════════════════════════════╗
       # ║  FASE 4 — Validate book (para single/trigger)                     ║
       # ╚══════════════════════════════════════════════════════════════════╝
@@ -536,6 +550,16 @@ jobs:
           if [ -f "$OUT_FILE" ]; then
             cp "$OUT_FILE" "triggui-content/$OUT_FILE"
             echo "✅ $OUT_FILE sincronizado"
+          fi
+
+          # 🌒 v3.8 cirugia 4B — Sincronizar edition-counter.json a triggui-content
+          # Si el nucleus asigno un nuevo _edicion_numero, el counter local ya fue
+          # actualizado (next++ y history++). Persistirlo de vuelta al SSOT.
+          COUNTER_LOCAL="experiments/nucleus/edition-counter.json"
+          if [ -f "${COUNTER_LOCAL}" ]; then
+            cp "${COUNTER_LOCAL}" "triggui-content/edition-counter.json"
+            COUNTER_NEXT=$(node -e "try{console.log(JSON.parse(require('fs').readFileSync('${COUNTER_LOCAL}','utf8').trim()).next)}catch(e){console.log('?')}" 2>/dev/null || echo "?")
+            echo "📊 edition-counter.json sincronizado a triggui-content: next=${COUNTER_NEXT}"
           fi
 
       # ╔══════════════════════════════════════════════════════════════════╗
