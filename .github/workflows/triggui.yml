@@ -60,6 +60,15 @@ on:
           - '🎲 Generar 20 libros nuevos para la app'
           - '🧪 Prueba de 20 libros sin tocar la app'
 
+      catalogo:
+        description: '🌒 Catálogo (default: adulto)'
+        required: false
+        default: 'adulto'
+        type: choice
+        options:
+          - adulto
+          - kids
+
       libro_input:
         description: '📘 Título y autor. Solo para modo 📘. Formato: Título | Autor'
         required: false
@@ -125,6 +134,8 @@ jobs:
       BASE_URL: ${{ github.ref_name == 'main' && 'https://app.triggui.com' || 'https://beta.app.triggui.com' }}
       # v3.4: ruta absoluta al ring para que validate-book.js no dependa de cwd
       RECENT_BOOKS_PATH: ${{ github.workspace }}/recent-books.json
+      # 🌒 Triggui Kids · soporte multi-catálogo (default: adulto)
+      CATALOG_MODE: ${{ inputs.catalogo || 'adulto' }}
 
     steps:
       # ╔══════════════════════════════════════════════════════════════════╗
