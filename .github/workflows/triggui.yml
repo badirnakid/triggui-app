@@ -232,14 +232,21 @@ jobs:
         working-directory: experiments/nucleus
         run: |
           mkdir -p data
-          if [ -f "$GITHUB_WORKSPACE/triggui-content/data/libros_master.csv" ]; then
-            ln -sf "$GITHUB_WORKSPACE/triggui-content/data/libros_master.csv" data/libros_master.csv
-            echo "✓ CSV linkeado desde triggui-content"
-          elif [ -f "$GITHUB_WORKSPACE/data/libros_master.csv" ]; then
-            ln -sf "$GITHUB_WORKSPACE/data/libros_master.csv" data/libros_master.csv
-            echo "✓ CSV linkeado desde triggui-app"
+          # 🌒 Triggui Kids: el CSV depende de CATALOG_MODE
+          if [ "$CATALOG_MODE" = "kids" ]; then
+            CSV_FILE="libros_master_kids.csv"
           else
-            echo "⚠️  libros_master.csv no encontrado — modos constrained y batch fallarán"
+            CSV_FILE="libros_master.csv"
+          fi
+          echo "📚 CATALOG_MODE=$CATALOG_MODE → CSV_FILE=$CSV_FILE"
+          if [ -f "$GITHUB_WORKSPACE/triggui-content/data/$CSV_FILE" ]; then
+            ln -sf "$GITHUB_WORKSPACE/triggui-content/data/$CSV_FILE" "data/$CSV_FILE"
+            echo "✓ CSV linkeado desde triggui-content: $CSV_FILE"
+          elif [ -f "$GITHUB_WORKSPACE/data/$CSV_FILE" ]; then
+            ln -sf "$GITHUB_WORKSPACE/data/$CSV_FILE" "data/$CSV_FILE"
+            echo "✓ CSV linkeado desde triggui-app: $CSV_FILE"
+          else
+            echo "⚠️  $CSV_FILE no encontrado — modos constrained y batch fallarán"
           fi
 
       # ╔══════════════════════════════════════════════════════════════════╗
@@ -491,9 +498,16 @@ jobs:
         if: ${{ !inputs.modo_prueba }}
         run: |
           set -euo pipefail
-          if [ -f contenido.json ]; then
-            cp contenido.json triggui-content/contenido.json
-            echo "✅ contenido.json sincronizado"
+          # 🌒 Triggui Kids: el output depende de CATALOG_MODE
+          if [ "$CATALOG_MODE" = "kids" ]; then
+            OUT_FILE="contenido_kids.json"
+          else
+            OUT_FILE="contenido.json"
+          fi
+          echo "📤 CATALOG_MODE=$CATALOG_MODE → OUT_FILE=$OUT_FILE"
+          if [ -f "$OUT_FILE" ]; then
+            cp "$OUT_FILE" "triggui-content/$OUT_FILE"
+            echo "✅ $OUT_FILE sincronizado"
           fi
 
       # ╔══════════════════════════════════════════════════════════════════╗
