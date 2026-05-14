@@ -442,9 +442,21 @@ try { document.documentElement.setAttribute('data-mode', window.TRIGGUI_MODE); }
 // Capa 4 (iOS scrollIntoView fix): garantiza visibilidad del input al focus
 
 // Capa 2: virtualKeyboard API (Chrome 94+ Android, Edge 94+)
+// Cuando overlaysContent=true, el viewport NO cambia, así que visualViewport
+// listener no detecta el keyboard. Usamos geometrychange + boundingRect que es
+// la API CORRECTA cuando overlays-content está activo. Defense in depth.
 try {
   if ('virtualKeyboard' in navigator) {
     navigator.virtualKeyboard.overlaysContent = true;
+    navigator.virtualKeyboard.addEventListener('geometrychange', function() {
+      try {
+        const rect = navigator.virtualKeyboard.boundingRect;
+        const kbHeight = rect && rect.height ? rect.height : 0;
+        document.documentElement.style.setProperty('--triggui-kb-h', kbHeight + 'px');
+        document.documentElement.style.setProperty('--triggui-kb-offset', kbHeight + 'px');
+        document.documentElement.classList.toggle('keyboard-open', kbHeight > 0);
+      } catch(_) {}
+    });
   }
 } catch(_) {}
 
@@ -606,26 +618,69 @@ const BarraMagica = {
   }
 }
 
-/* 🌒 v3.8.12 — KEYBOARD-OPEN STATE NIVEL DIOS
-   Cuando html.keyboard-open (detectado por visualViewport JS):
-   - El .barra-magica-inner se traslada hacia arriba la mitad del kb height,
-     centrándose en el viewport VISIBLE (no en el layout viewport completo).
-   - El barraSkip + barraFooterLogo se desvanecen suavemente para no competir
-     visualmente con el input que está focused. */
+/* 🌒 v3.8.13 — KEYBOARD-OPEN STATE NIVEL DIOS UX ABSOLUTO
+   Comportamiento basado en Apple Mail, Google Search, WhatsApp:
+   - Input + pregunta SIEMPRE visibles cuando keyboard está abierto
+   - Elementos secundarios fade-out para no competir visualmente
+   - En landscape: hide TODO lo secundario (input nunca queda detrás del kb) */
 .barra-magica-inner {
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 html.keyboard-open .barra-magica-inner {
-  transform: translateY(calc(-1 * var(--triggui-kb-h, 0px) / 2));
+  /* Cap a -30vh para que el inner nunca salga del top del viewport */
+  transform: translateY(max(
+    calc(-1 * var(--triggui-kb-h, 0px) / 2),
+    -30vh
+  ));
 }
 #barraSkip,
-#barraFooterLogo {
+#barraFooterLogo,
+#barraStreak,
+#barraLangToggle,
+#barraEyebrow,
+#barraMicro {
   transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* Portrait keyboard-open: hide solo pill + footer (lo demás cabe) */
 html.keyboard-open #barraSkip,
 html.keyboard-open #barraFooterLogo {
   opacity: 0;
   pointer-events: none;
+}
+
+/* 🌒 v3.8.13 — Landscape + keyboard: hide TODO lo secundario.
+   El input + pregunta DEBEN ser visibles, lo demás se sacrifica. */
+@media (orientation: landscape) {
+  html.keyboard-open #barraEyebrow,
+  html.keyboard-open #barraMicro,
+  html.keyboard-open #barraStreak,
+  html.keyboard-open #barraLangToggle {
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+  html.keyboard-open #barraQuestion {
+    margin-bottom: 12px !important;
+    font-size: 17px !important;
+  }
+  /* En landscape, transform más conservador (kb_h/3 en vez de /2) */
+  html.keyboard-open .barra-magica-inner {
+    transform: translateY(max(
+      calc(-1 * var(--triggui-kb-h, 0px) / 3),
+      -20vh
+    ));
+  }
+}
+
+/* 🌒 v3.8.13 — Landscape ultra-corto + keyboard: layout extra compacto */
+@media (orientation: landscape) and (max-height: 420px) {
+  html.keyboard-open #barraQuestion {
+    margin-bottom: 8px !important;
+    font-size: 15px !important;
+  }
+  html.keyboard-open .barra-magica-inner {
+    transform: translateY(-15vh);
+  }
 }
 @media(orientation:portrait){.grid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr)}}
 </style>
