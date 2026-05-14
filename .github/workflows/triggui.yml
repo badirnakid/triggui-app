@@ -471,6 +471,55 @@ jobs:
         run: node build-contenido-nucleus.js
 
       # ╔══════════════════════════════════════════════════════════════════╗
+      # ║  FASE 5.5 — v3.7 CAPA 4: Auto-sanitize JSON (self-healing)        ║
+      # ║                                                                  ║
+      # ║  Walker recursivo del JSON: limpia control chars C0, ANSI         ║
+      # ║  escapes, y repara emojis con bug \u001f<hex> de gpt-4o-mini.     ║
+      # ║  NUNCA aborta — limpia, registra, deja pasar.                     ║
+      # ║                                                                  ║
+      # ║  Arquitectura defensiva nivel dios cuántico-quark (V10 §30.3):    ║
+      # ║    Capa 1 = LLM (probabilístico, no garantizable)                ║
+      # ║    Capa 2 = safeJSONParse al recibir response (pending)          ║
+      # ║    Capa 3 = pre-writeFile en build-contenido (pending)           ║
+      # ║    Capa 4 = ESTE STEP (auto-clean workflow)                       ║
+      # ║    Capa 5 = frontend __triggguiSanitizeAll (ya existe)            ║
+      # ╚══════════════════════════════════════════════════════════════════════╝
+
+      - name: 🌒 v3.7 Capa 4 — Auto-sanitize JSON generado
+        working-directory: experiments/nucleus
+        env:
+          SANITIZE_NO_BACKUP: "1"
+        run: |
+          set +e
+
+          if [ "$CATALOG_MODE" = "kids" ]; then
+            REGULAR="contenido_kids.json"
+            SHADOW="contenido_kids.shadow.json"
+          else
+            REGULAR="contenido.json"
+            SHADOW="contenido.shadow.json"
+          fi
+
+          FILES=""
+          [ -f "$REGULAR" ] && FILES="$FILES $REGULAR"
+          [ -f "$SHADOW" ]  && FILES="$FILES $SHADOW"
+
+          if [ -n "$FILES" ]; then
+            echo "🌒 Capa 4 — sanitize sobre:$FILES"
+            node "$GITHUB_WORKSPACE/triggui-content/sanitize-catalog.mjs" $FILES
+            EXIT=$?
+            if [ $EXIT -eq 0 ]; then
+              echo "✓ Capa 4 OK — JSON limpio"
+            else
+              echo "⚠️  Capa 4 reportó exit=$EXIT — workflow continúa (defensa en N capas)"
+            fi
+          else
+            echo "ℹ️  Sin archivos JSON — skip Capa 4"
+          fi
+
+          exit 0
+
+      # ╔══════════════════════════════════════════════════════════════════╗
       # ║  FASE 6 — Mover outputs al workspace                              ║
       # ╚══════════════════════════════════════════════════════════════════╝
 
