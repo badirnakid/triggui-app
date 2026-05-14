@@ -2,7 +2,7 @@
 <html lang="es" class="mood-active" style="background:#000000;">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=overlays-content">
 <title>Triggui — Cuando el impulso llega, el libro ya te espera</title>
 
 <link rel="preconnect" href="https://www.penguinlibros.com" crossorigin>
@@ -435,30 +435,56 @@ window.TRIGGUI_MODE = IS_KIDS_MODE ? 'kids' : 'adult';
 try { document.documentElement.classList.add(IS_KIDS_MODE ? 'kids-mode' : 'adult-mode'); } catch(_) {}
 try { document.documentElement.setAttribute('data-mode', window.TRIGGUI_MODE); } catch(_) {}
 
-// 🌒 v3.8.11 — Defensa Android keyboard cuántico-quark:
-// 1) navigator.virtualKeyboard.overlaysContent (Chrome 94+, Edge 94+): explicitly
-//    pide al browser que el teclado virtual sea OVERLAY (no redimensione el layout).
-//    Comportamiento iOS-like forzado en Android moderno.
-// 2) visualViewport listener (fallback): si el viewport SÍ se redimensiona,
-//    compensa con CSS custom property --keyboard-offset que el barraSkip puede
-//    usar para mantenerse anclado al fondo visual del documento (no del reducido).
+// 🌒 v3.8.12 — DEFENSA KEYBOARD CUÁNTICO-QUARK NIVEL DIOS (mejora de v3.8.11)
+// Capa 1 (HTML meta viewport): interactive-widget=overlays-content
+// Capa 2 (JS virtualKeyboard API): explicitamente overlays-content
+// Capa 3 (visualViewport listener): aplica html.keyboard-open class + custom prop
+// Capa 4 (iOS scrollIntoView fix): garantiza visibilidad del input al focus
+
+// Capa 2: virtualKeyboard API (Chrome 94+ Android, Edge 94+)
 try {
   if ('virtualKeyboard' in navigator) {
     navigator.virtualKeyboard.overlaysContent = true;
   }
 } catch(_) {}
+
+// Capa 3: visualViewport detector — aplica html.keyboard-open + --triggui-kb-h
 try {
   if (window.visualViewport) {
-    const updateKbOffset = () => {
+    const updateKeyboard = () => {
       const vv = window.visualViewport;
-      const offset = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
-      document.documentElement.style.setProperty('--triggui-kb-offset', offset + 'px');
+      const kbHeight = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+      document.documentElement.style.setProperty('--triggui-kb-h', kbHeight + 'px');
+      // Mantener --triggui-kb-offset por compatibilidad con v3.8.11
+      document.documentElement.style.setProperty('--triggui-kb-offset', kbHeight + 'px');
+      // Threshold 100px filtra fluctuaciones del browser UI (URL bar, etc)
+      const isOpen = kbHeight > 100;
+      document.documentElement.classList.toggle('keyboard-open', isOpen);
     };
-    window.visualViewport.addEventListener('resize', updateKbOffset);
-    window.visualViewport.addEventListener('scroll', updateKbOffset);
-    updateKbOffset();
+    window.visualViewport.addEventListener('resize', updateKeyboard);
+    window.visualViewport.addEventListener('scroll', updateKeyboard);
+    updateKeyboard();
   }
 } catch(_) {}
+
+// Capa 4: iOS bug fix — segundo tap del input no scrollea automáticamente.
+// scrollIntoView garantiza que el input sea siempre visible al focus.
+document.addEventListener('DOMContentLoaded', function() {
+  try {
+    const input = document.getElementById('barraInput');
+    if (!input) return;
+    input.addEventListener('focus', function() {
+      // 300ms espera a que el teclado termine de aparecer + transform CSS
+      setTimeout(function() {
+        try {
+          input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } catch(_) {
+          try { input.scrollIntoView(); } catch(_) {}
+        }
+      }, 300);
+    });
+  } catch(_) {}
+});
 // 🌒 v8: sincronizar html[lang] con el idioma detectado al arranque
 try { document.documentElement.lang = TriggguiI18n.lang; } catch(_) {}
 
@@ -578,6 +604,28 @@ const BarraMagica = {
     margin-bottom: 10px !important;
     font-size: 16px !important;
   }
+}
+
+/* 🌒 v3.8.12 — KEYBOARD-OPEN STATE NIVEL DIOS
+   Cuando html.keyboard-open (detectado por visualViewport JS):
+   - El .barra-magica-inner se traslada hacia arriba la mitad del kb height,
+     centrándose en el viewport VISIBLE (no en el layout viewport completo).
+   - El barraSkip + barraFooterLogo se desvanecen suavemente para no competir
+     visualmente con el input que está focused. */
+.barra-magica-inner {
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+html.keyboard-open .barra-magica-inner {
+  transform: translateY(calc(-1 * var(--triggui-kb-h, 0px) / 2));
+}
+#barraSkip,
+#barraFooterLogo {
+  transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+html.keyboard-open #barraSkip,
+html.keyboard-open #barraFooterLogo {
+  opacity: 0;
+  pointer-events: none;
 }
 @media(orientation:portrait){.grid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr)}}
 </style>
