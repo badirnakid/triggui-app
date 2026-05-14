@@ -128,6 +128,10 @@ jobs:
     env:
       TZ: America/Mexico_City
       OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
+      # v3.7: Google Books API key (quota 1M/dia vs anonimo 1k/dia)
+      # Repository Secret. Consumido por evidence-fetcher.js > fetchGoogle.
+      # Si el secret no esta seteado, el fetcher degrada a anonimo sin romper.
+      GOOGLE_BOOKS_API_KEY: ${{ secrets.GOOGLE_BOOKS_API_KEY }}
       TRIGGUI_LENS: ${{ inputs.lente }}
       TRIGGUI_BOOK_CONTEXT: ${{ inputs.nota_libro }}
       TRIGGUI_CRONO_ENABLED: ${{ inputs.cronobiologia }}

@@ -1,5 +1,29 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
-   evidence-fetcher.js — v3.6 NIVEL DIOS MATEMÁTICO CUÁNTICO
+   evidence-fetcher.js — v3.7 NIVEL DIOS QUARK MATEMÁTICO CUÁNTICO
+
+   v3.7 (2026-05-14): VARIANTES + GOOGLE API KEY + STOPWORDS + OPENLIB ISBN
+   ─────────────────────────────────────────────────────────────────────────────
+   Cirugías aplicadas sobre v3.6 (cero remiendos, todo aditivo):
+
+   1. GOOGLE_BOOKS_API_KEY desde process.env (Secret en GitHub Actions de
+      triggui-app). Quota 1M/día. Antes: anónimo 1k/día → HTTP 429 al saturar.
+   2. STOPWORDS ES + EN y helper sigWords() — previenen falsos matches en
+      títulos largos (palabras como "de", "la", "the" inflaban el score).
+   3. KNOWN_ORIGINAL_TITLES: mapping clásicos traducidos para que Apple/Google/
+      OpenLibrary los encuentren cuando solo indexan el original inglés
+      (ej. "La telaraña de Carlota" → "Charlotte's Web").
+   4. generateTitleVariants(): genera v1 original / v2 sin subtítulo /
+      v2b sin frase final / v3 primeras 4 palabras / v4 título inglés.
+   5. fetchApple / fetchGoogle / fetchOpenLibrary iteran sobre variantes hasta
+      encontrar match >= MIN_MATCH_SCORE. Antes solo probaban v1 literal y
+      perdían libros con subtítulos largos (Slim, Play Nice But Win, Gracias).
+   6. fetchOpenLibraryByISBN: cover directo por ISBN como capa extra después
+      del ISBN chain. Validada empíricamente: 65KB de cover real para 978-X.
+   7. Orquestador marca _status: "EXHAUSTED" cuando validCovers.length === 0,
+      permitiendo a build-contenido emitir warning ruidoso en lugar de caer a
+      SVG fallback silencioso.
+   8. selectBestCover incluye "openlib_isbn" en sourcePreference con ranking
+      correcto (después de OpenLib search por calidad típica).
 
    v3.6 (2026-04-26): FIX PORTADA FANTASMA
    ─────────────────────────────────────────────────────────────────────────────
@@ -46,6 +70,10 @@ const CACHE_TTL_DAYS = 30;
 const REQUEST_TIMEOUT_MS = 8000;
 const MIN_MATCH_SCORE = 0.55;  // 🌒 v3.7 NIVEL DIOS: era 0.38, subido para eliminar falsos positivos por solo coincidencia de autor
 
+// v3.7: Google Books API key desde Secret en GitHub Actions de triggui-app.
+// Si está definida, las queries usan quota 1M/día. Si no, anónimo 1k/día → 429.
+const GOOGLE_BOOKS_API_KEY = process.env.GOOGLE_BOOKS_API_KEY || "";
+
 // v3.6: tamaño mínimo de imagen para considerarla "real" (no placeholder).
 // Amazon devuelve GIFs de 43 bytes para ISBNs inválidos. Cualquier portada
 // de libro pesa >5KB típicamente. 2KB es un margen seguro que descarta
@@ -88,6 +116,23 @@ async function writeEvidenceCache(hash, data) {
 
 function normalize(s) {
   return String(s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\w\s]/g, " ").replace(/\s+/g, " ").trim();
+}
+
+// v3.7: stopwords ES + EN para filtrar palabras vacías en matching de títulos.
+// Sin esto, palabras como "de" / "la" / "the" inflan scores de falsos positivos.
+const STOPWORDS = new Set([
+  "el","la","los","las","un","una","unos","unas","de","del","en","con","por",
+  "para","tu","su","mi","y","o","u","que","se","es","al","lo","ser","ya","no",
+  "sus","como","mas","muy","sin","sobre","entre","cuando","si","este","esta",
+  "esto","estos","estas","esa","eso","esas","esos",
+  "the","a","an","of","in","on","at","to","for","with","by","from","and",
+  "or","but","is","are","be","been","being","this","that","these","those",
+  "as","it","its","jr","sr"
+]);
+
+// v3.7: extrae palabras significativas. Filtra stopwords + palabras 1-2 chars.
+function sigWords(s) {
+  return normalize(s).split(/\s+/).filter((w) => w.length > 2 && !STOPWORDS.has(w));
 }
 
 function levenshteinRatio(a, b) {
@@ -146,6 +191,83 @@ function cleanHTMLEntities(raw) {
     .replace(/&gt;/g, ">")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   v3.7 — VARIANTES DE TÍTULO + MAPPING CLÁSICOS TRADUCIDOS
+────────────────────────────────────────────────────────────────────────────── */
+
+/**
+ * Mapping de títulos en español → título original en inglés.
+ * Útil para clásicos kids cuyo CSV tiene la traducción ES pero las APIs
+ * (Apple / Google / OpenLibrary) los indexan solo en el idioma original.
+ *
+ * Keys deben pasarse por normalize() — minúsculas sin acentos.
+ * Mantener corto y curado: solo casos validados empíricamente.
+ */
+const KNOWN_ORIGINAL_TITLES = {
+  "la pequena casa en la pradera": "Little House on the Prairie",
+  "la sastreria de gloucester": "The Tailor of Gloucester",
+  "la telarana de carlota": "Charlotte's Web",
+  "la casa del arbol el valle de los dinosaurios": "Magic Tree House Dinosaurs",
+  "pequeno libro de instrucciones para la vida": "Life's Little Instruction Book"
+};
+
+/**
+ * v3.7 — generateTitleVariants(titulo)
+ *
+ * Devuelve array de variantes ordenadas de más específica a más amplia:
+ *
+ *   v1_original          — título completo del CSV
+ *   v2_sin_subtitulo     — corte en : ( — – (subtítulos editoriales)
+ *   v2b_sin_frase_final  — corte en . seguido de espacio + letra
+ *   v3_primeras_4        — primeras 4 palabras (catch-all títulos eternos)
+ *   v4_titulo_ingles     — si normalize(titulo) está en KNOWN_ORIGINAL_TITLES
+ *
+ * Sin duplicados. Mínimo 4 chars cada variante.
+ * Casos edge: titulo vacío → []. titulo < 4 chars → [v1_original solo].
+ */
+function generateTitleVariants(titulo) {
+  const t = String(titulo || "").trim();
+  if (!t) return [];
+  if (t.length < 4) return [{ name: "v1_original", q: t }];
+
+  const variants = [{ name: "v1_original", q: t }];
+
+  // v2: sin subtítulo (corte en : ( — –)
+  const cutMatch = t.match(/^(.+?)\s*[:(—–]/);
+  if (cutMatch && cutMatch[1] !== t && cutMatch[1].length >= 4) {
+    const cut = cutMatch[1].trim();
+    if (!variants.some((v) => v.q === cut)) {
+      variants.push({ name: "v2_sin_subtitulo", q: cut });
+    }
+  }
+
+  // v2b: sin frase final (corte en . seguido de espacio + letra)
+  const dotMatch = t.match(/^(.+?)\.\s+\w/);
+  if (dotMatch && dotMatch[1].length >= 4) {
+    const cut = dotMatch[1].trim();
+    if (!variants.some((v) => v.q === cut)) {
+      variants.push({ name: "v2b_sin_frase_final", q: cut });
+    }
+  }
+
+  // v3: primeras 4 palabras
+  const words = t.split(/\s+/);
+  if (words.length > 4) {
+    const short = words.slice(0, 4).join(" ");
+    if (!variants.some((v) => v.q === short)) {
+      variants.push({ name: "v3_primeras_4", q: short });
+    }
+  }
+
+  // v4: título original inglés (si está en el mapping)
+  const eng = KNOWN_ORIGINAL_TITLES[normalize(t)];
+  if (eng && !variants.some((v) => v.q === eng)) {
+    variants.push({ name: "v4_titulo_ingles", q: eng });
+  }
+
+  return variants;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -323,15 +445,34 @@ async function checkImageURLByRange(url) {
    APPLE BOOKS (iTunes Search API)
 ────────────────────────────────────────────────────────────────────────────── */
 
+// v3.7: Orquestador Apple — ISBN primero (si válido), después itera variantes.
+// titulo y autor son SAGRADOS del CSV (se preservan en verified_identity).
 async function fetchApple(titulo, autor, isbn) {
+  if (isbn && isValidIsbnFormat(isbn)) {
+    const r = await fetchAppleAttempt(titulo, autor, { isbn });
+    if (r.ok) return r;
+  }
+
+  const variants = generateTitleVariants(titulo);
+  let lastFail = { ok: false, reason: "no_variants_tried", source: "apple_books" };
+  for (const v of variants) {
+    const r = await fetchAppleAttempt(titulo, autor, { query: v.q, variantName: v.name });
+    if (r.ok) return r;
+    lastFail = r;
+  }
+  return lastFail;
+}
+
+async function fetchAppleAttempt(titulo, autor, options = {}) {
   try {
     let url;
-    // v3.6: solo usar isbn como query param si tiene formato válido (10 o 13 chars)
-    // Antes: cualquier string en isbn se pasaba, incluyendo trackIds basura
-    if (isbn && isValidIsbnFormat(isbn)) {
-      url = `https://itunes.apple.com/lookup?isbn=${encodeURIComponent(isbn.trim())}`;
+    // v3.6 + v3.7: ISBN si tiene formato válido. Si no, usa options.query (variante)
+    // o titulo (sagrado original) como query default.
+    if (options.isbn && isValidIsbnFormat(options.isbn)) {
+      url = `https://itunes.apple.com/lookup?isbn=${encodeURIComponent(options.isbn.trim())}`;
     } else {
-      const term = `${titulo} ${autor}`.trim();
+      const searchTitle = options.query || titulo;
+      const term = `${searchTitle} ${autor}`.trim();
       url = `https://itunes.apple.com/search?term=${encodeURIComponent(term)}&entity=ebook&limit=5&country=mx`;
     }
     const res = await fetchWithRetry(url);
@@ -344,7 +485,10 @@ async function fetchApple(titulo, autor, isbn) {
     const results = Array.isArray(data.results) ? data.results : [];
     if (results.length === 0) return { ok: false, reason: "no_results", source: "apple_books" };
 
-    // Scoring de candidatos
+    // v3.7: scoring contra la VARIANTE buscada (no el título sagrado original),
+    // porque la API indexa solo metadatos de la edición. Sagrado se preserva en
+    // verified_identity.titulo_real intacto.
+    const scoringTitle = options.query || titulo;
     const candidates = results
       .filter((item) => !item.kind || item.kind === "ebook")
       .map((item) => {
@@ -352,7 +496,7 @@ async function fetchApple(titulo, autor, isbn) {
         const foundAuthor = item.artistName || "";
         return {
           ...item,
-          _match_score: scoreMatch(titulo, autor, foundTitle, foundAuthor)
+          _match_score: scoreMatch(scoringTitle, autor, foundTitle, foundAuthor)
         };
       })
       .sort((a, b) => b._match_score - a._match_score);
@@ -402,7 +546,8 @@ async function fetchApple(titulo, autor, isbn) {
         apple_track_id: best.trackId ? String(best.trackId) : "", // Preservado para auditoría
         categorias: genres,
         track_view_url: best.trackViewUrl || null
-      }
+      },
+      _variant_used: options.variantName || null
     };
   } catch (err) {
     return { ok: false, reason: `error_${err.message.slice(0, 60)}`, source: "apple_books" };
@@ -433,29 +578,43 @@ async function fetchGoogleBooksAttempt(url, titulo, autor) {
 
 async function fetchGoogle(titulo, autor, isbn) {
   try {
-    // v3.6: solo usar ISBN si tiene formato válido
+    // v3.7: API key desde Secret. Quota 1M/día. Sin key: anónimo 1k/día → 429.
+    const keyParam = GOOGLE_BOOKS_API_KEY ? `&key=${encodeURIComponent(GOOGLE_BOOKS_API_KEY)}` : "";
+
+    // 1. ISBN primero si tiene formato válido (v3.6)
     if (isbn && isValidIsbnFormat(isbn)) {
-      const urlIsbn = `https://www.googleapis.com/books/v1/volumes?q=isbn:${encodeURIComponent(isbn.trim())}&maxResults=3`;
+      const urlIsbn = `https://www.googleapis.com/books/v1/volumes?q=isbn:${encodeURIComponent(isbn.trim())}&maxResults=3${keyParam}`;
       const isbnResult = await fetchGoogleBooksAttempt(urlIsbn, titulo, autor);
       if (isbnResult.ok && isbnResult.candidates.length > 0 && isbnResult.candidates[0]._match_score >= MIN_MATCH_SCORE) {
         return buildGoogleEvidence(isbnResult.candidates[0], titulo, autor);
       }
     }
 
-    // Estrategia 2: búsqueda estricta con operadores
-    const qStrict = `intitle:${encodeURIComponent(titulo)}+inauthor:${encodeURIComponent(autor)}`;
-    const urlStrict = `https://www.googleapis.com/books/v1/volumes?q=${qStrict}&maxResults=5`;
-    const strictResult = await fetchGoogleBooksAttempt(urlStrict, titulo, autor);
-    if (strictResult.ok && strictResult.candidates.length > 0 && strictResult.candidates[0]._match_score >= MIN_MATCH_SCORE) {
-      return buildGoogleEvidence(strictResult.candidates[0], titulo, autor);
-    }
+    // 2. v3.7: iterar variantes, cada una × estrategia (strict, relaxed).
+    // Las APIs casi nunca indexan subtítulos editoriales — las variantes
+    // (sin subtítulo, título inglés, primeras-4) son críticas para Slim,
+    // Master Coach, La telaraña de Carlota, Gracias, Play Nice But Win.
+    const variants = generateTitleVariants(titulo);
+    for (const v of variants) {
+      const scoringTitle = v.q;
 
-    // Estrategia 3: búsqueda relaxed (títulos traducidos)
-    const qRelaxed = `${titulo} ${autor}`;
-    const urlRelaxed = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(qRelaxed)}&maxResults=8`;
-    const relaxedResult = await fetchGoogleBooksAttempt(urlRelaxed, titulo, autor);
-    if (relaxedResult.ok && relaxedResult.candidates.length > 0 && relaxedResult.candidates[0]._match_score >= MIN_MATCH_SCORE) {
-      return buildGoogleEvidence(relaxedResult.candidates[0], titulo, autor);
+      // strict: operadores intitle + inauthor
+      const qStrict = `intitle:${encodeURIComponent(v.q)}+inauthor:${encodeURIComponent(autor)}`;
+      const urlStrict = `https://www.googleapis.com/books/v1/volumes?q=${qStrict}&maxResults=5${keyParam}`;
+      const strictResult = await fetchGoogleBooksAttempt(urlStrict, scoringTitle, autor);
+      if (strictResult.ok && strictResult.candidates.length > 0 && strictResult.candidates[0]._match_score >= MIN_MATCH_SCORE) {
+        const ev = buildGoogleEvidence(strictResult.candidates[0], titulo, autor);
+        return { ...ev, _variant_used: v.name, _query_mode: "strict" };
+      }
+
+      // relaxed: sin operadores (catch-all)
+      const qRelaxed = `${v.q} ${autor}`;
+      const urlRelaxed = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(qRelaxed)}&maxResults=8${keyParam}`;
+      const relaxedResult = await fetchGoogleBooksAttempt(urlRelaxed, scoringTitle, autor);
+      if (relaxedResult.ok && relaxedResult.candidates.length > 0 && relaxedResult.candidates[0]._match_score >= MIN_MATCH_SCORE) {
+        const ev = buildGoogleEvidence(relaxedResult.candidates[0], titulo, autor);
+        return { ...ev, _variant_used: v.name, _query_mode: "relaxed" };
+      }
     }
 
     return { ok: false, reason: "no_good_match", source: "google_books" };
@@ -518,14 +677,32 @@ function buildGoogleEvidence(candidate, titulo, autor) {
    OPEN LIBRARY
 ────────────────────────────────────────────────────────────────────────────── */
 
+// v3.7: Orquestador OpenLibrary — ISBN primero, después itera variantes.
 async function fetchOpenLibrary(titulo, autor, isbn) {
+  if (isbn && isValidIsbnFormat(isbn)) {
+    const r = await fetchOpenLibraryAttempt(titulo, autor, { isbn });
+    if (r.ok) return r;
+  }
+
+  const variants = generateTitleVariants(titulo);
+  let lastFail = { ok: false, reason: "no_variants_tried", source: "openlibrary" };
+  for (const v of variants) {
+    const r = await fetchOpenLibraryAttempt(titulo, autor, { query: v.q, variantName: v.name });
+    if (r.ok) return r;
+    lastFail = r;
+  }
+  return lastFail;
+}
+
+async function fetchOpenLibraryAttempt(titulo, autor, options = {}) {
   try {
     let url;
-    // v3.6: solo usar ISBN si tiene formato válido
-    if (isbn && isValidIsbnFormat(isbn)) {
-      url = `https://openlibrary.org/search.json?isbn=${encodeURIComponent(isbn.trim())}&limit=3`;
+    // v3.6 + v3.7: ISBN si formato válido, sino usa options.query (variante) o titulo (sagrado).
+    if (options.isbn && isValidIsbnFormat(options.isbn)) {
+      url = `https://openlibrary.org/search.json?isbn=${encodeURIComponent(options.isbn.trim())}&limit=3`;
     } else {
-      url = `https://openlibrary.org/search.json?title=${encodeURIComponent(titulo)}&author=${encodeURIComponent(autor)}&limit=5`;
+      const searchTitle = options.query || titulo;
+      url = `https://openlibrary.org/search.json?title=${encodeURIComponent(searchTitle)}&author=${encodeURIComponent(autor)}&limit=5`;
     }
     const res = await fetchWithRetry(url);
     if (!res.ok) return { ok: false, reason: `http_${res.status}`, source: "openlibrary" };
@@ -533,11 +710,13 @@ async function fetchOpenLibrary(titulo, autor, isbn) {
     const data = await res.json();
     if (!data.docs || data.docs.length === 0) return { ok: false, reason: "no_results", source: "openlibrary" };
 
+    // v3.7: scoring contra la variante (sagrado preservado en verified_identity)
+    const scoringTitle = options.query || titulo;
     const candidates = data.docs.map((doc) => {
       const authors = Array.isArray(doc.author_name) ? doc.author_name : [];
       return {
         doc,
-        _match_score: scoreMatch(titulo, autor, doc.title || "", authors.join(", "))
+        _match_score: scoreMatch(scoringTitle, autor, doc.title || "", authors.join(", "))
       };
     }).sort((a, b) => b._match_score - a._match_score);
 
@@ -595,11 +774,58 @@ async function fetchOpenLibrary(titulo, autor, isbn) {
         categorias: Array.isArray(doc.subject) ? doc.subject.slice(0, 5) : [],
         idioma: Array.isArray(doc.language) ? doc.language[0] : null,
         paginas: doc.number_of_pages_median || null
-      }
+      },
+      _variant_used: options.variantName || null
     };
   } catch (err) {
     return { ok: false, reason: `error_${err.message.slice(0, 60)}`, source: "openlibrary" };
   }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   v3.7 — OPENLIBRARY COVER BY ISBN DIRECTO
+────────────────────────────────────────────────────────────────────────────── */
+
+/**
+ * Cover directo de OpenLibrary por ISBN. No requiere búsqueda previa, solo
+ * construye URL determinística:
+ *   https://covers.openlibrary.org/b/isbn/{ISBN}-L.jpg
+ *
+ * Validado empíricamente: para ISBNs de libros populares (978-X), devuelve
+ * cover real de 30-200 KB. Para ISBNs sin cover, OpenLib responde 200 con
+ * placeholder <1KB (rechazado por checkImageURL que exige 2KB).
+ *
+ * Solo se invoca después del ISBN chain cuando descubrimos un ISBN válido
+ * de otra fuente (Google u OpenLib search — Apple no expone ISBN real).
+ */
+async function fetchOpenLibraryByISBN(isbn) {
+  if (!isbn || !isValidIsbnFormat(isbn)) {
+    return { ok: false, reason: "no_valid_isbn", source: "openlib_isbn" };
+  }
+
+  const clean = isbn.replace(/[-\s]/g, "").trim();
+  const url = `https://covers.openlibrary.org/b/isbn/${encodeURIComponent(clean)}-L.jpg`;
+
+  // checkImageURL valida tamaño >= 2KB (rechaza placeholders OpenLibrary)
+  const valid = await checkImageURL(url);
+  if (!valid) {
+    return { ok: false, reason: "cover_unavailable_or_placeholder", source: "openlib_isbn", _attempted_isbn: clean };
+  }
+
+  return {
+    ok: true,
+    source: "openlib_isbn",
+    match_score: 0.99, // alto pero ligeramente menor que match perfecto título+autor
+    covers: [{ size: "large", url }],
+    synopsis: "",
+    synopsis_length: 0,
+    verified_identity: {
+      isbn: clean,
+      titulo_real: null,    // se preserva el titulo SAGRADO en otras fuentes con match
+      autor_completo: null,
+      año: null
+    }
+  };
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -790,6 +1016,15 @@ export async function fetchEvidence(book, options = {}) {
     }
   }
 
+  // FASE 2.5 (v3.7): OpenLibrary cover directo por ISBN. Útil cuando Apple/Google
+  // encontraron metadata + ISBN pero ninguno tenía cover válida (o de baja calidad).
+  let openlibIsbnResult = { ok: false, reason: "skipped", source: "openlib_isbn" };
+  if (cleanDiscoveredIsbn && isValidIsbnFormat(cleanDiscoveredIsbn)) {
+    const t25 = Date.now();
+    openlibIsbnResult = await fetchOpenLibraryByISBN(cleanDiscoveredIsbn);
+    phase2Ms += Date.now() - t25;
+  }
+
   // FASE 3: Amazon solo si tenemos ISBN VERIFICADO Y VÁLIDO
   // v3.6: doble verificación porque Amazon era el origen del problema
   let amazonResult = { ok: false, reason: "skipped", source: "amazon" };
@@ -801,7 +1036,7 @@ export async function fetchEvidence(book, options = {}) {
     amazonResult = { ok: false, reason: "isbn_format_invalid", source: "amazon", _attempted: cleanDiscoveredIsbn };
   }
 
-  const allResults = [finalApple, finalGoogle, finalOpenLibrary, amazonResult];
+  const allResults = [finalApple, finalGoogle, finalOpenLibrary, openlibIsbnResult, amazonResult];
 
   // FASE 4: validar covers en paralelo (con tamaño mínimo v3.6)
   const t3 = Date.now();
@@ -824,8 +1059,10 @@ export async function fetchEvidence(book, options = {}) {
     apple: finalApple,
     google: finalGoogle,
     openlibrary: finalOpenLibrary,
+    openlib_isbn: openlibIsbnResult, // v3.7: cover directo por ISBN
     amazon: amazonResult,
     valid_covers: validCovers,
+    _status: validCovers.length > 0 ? "FOUND" : "EXHAUSTED", // v3.7: build-contenido emite warning si EXHAUSTED
     _sources_succeeded: succeeded,
     _sources_failed: failed,
     _timing: {
@@ -834,7 +1071,7 @@ export async function fetchEvidence(book, options = {}) {
       cover_validation_ms: coverValidationMs,
       total_ms: phase1Ms + phase2Ms + coverValidationMs
     },
-    _version: "3.6"
+    _version: "3.7"
   };
 
   await writeEvidenceCache(hash, evidence);
@@ -845,7 +1082,7 @@ export async function fetchEvidence(book, options = {}) {
    SELECTORS — sin cambios v3.6
 ────────────────────────────────────────────────────────────────────────────── */
 
-export function selectBestCover(evidence, sourcePreference = ["apple_books", "google_books", "openlibrary", "amazon"]) {
+export function selectBestCover(evidence, sourcePreference = ["apple_books", "google_books", "openlibrary", "openlib_isbn", "amazon"]) {
   const valid = evidence.valid_covers || [];
   if (valid.length === 0) return null;
 

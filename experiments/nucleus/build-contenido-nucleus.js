@@ -384,6 +384,20 @@ async function processBook(book, inputs, inputsSnapshot) {
       } else {
         console.log(`   ⚠ v3.6: rescate también devolvió URL inválida (${bestCover.url.slice(0, 60)}) — saltando a SVG`);
       }
+    } else if (groundTruthMeta.evidence._status === "EXHAUSTED") {
+      // v3.7: selectBestCover no devolvió URL y evidence está EXHAUSTED.
+      // Diagnóstico ruidoso antes de caer al SVG typográfico — esto convierte
+      // el fallback silencioso en auditable. Cada fuente reporta su reason.
+      const ev = groundTruthMeta.evidence;
+      console.error(`   ❌ v3.7 EVIDENCE EXHAUSTED — sin cover válida para "${book.titulo}" / ${book.autor}`);
+      console.error(`      apple.reason:        ${ev.apple?.reason || (ev.apple?.ok ? "ok_pero_sin_cover" : "n/a")}`);
+      console.error(`      google.reason:       ${ev.google?.reason || (ev.google?.ok ? "ok_pero_sin_cover" : "n/a")}`);
+      console.error(`      openlibrary.reason:  ${ev.openlibrary?.reason || (ev.openlibrary?.ok ? "ok_pero_sin_cover" : "n/a")}`);
+      console.error(`      openlib_isbn.reason: ${ev.openlib_isbn?.reason || (ev.openlib_isbn?.ok ? "ok_pero_sin_cover" : "n/a")}`);
+      console.error(`      amazon.reason:       ${ev.amazon?.reason || (ev.amazon?.ok ? "ok_pero_sin_cover" : "n/a")}`);
+      console.error(`      isbn_discovered:     ${ev.isbn_discovered || "(ninguno)"}`);
+      console.error(`      → cae a SVG typográfico — requiere intervención manual o cascade externo`);
+      book.portada_evidence_exhausted = true;
     }
   }
 
@@ -397,12 +411,25 @@ async function processBook(book, inputs, inputsSnapshot) {
     );
     book.portada = fallback.data_uri;
     book.portada_url = fallback.data_uri;
-    book.portada_source = "typographic_svg_fallback";
+    // v3.7: portada_source diferenciado para auditoría post-mortem.
+    // Tres categorías: _intentional (input marcado), _evidence_exhausted (peor caso),
+    // fallback estándar (CSV inválido sin evidence — caso normal de v3.6).
+    if (book.needs_fallback_cover) {
+      book.portada_source = "typographic_svg_fallback_intentional";
+    } else if (book.portada_evidence_exhausted) {
+      book.portada_source = "typographic_svg_fallback_evidence_exhausted";
+    } else {
+      book.portada_source = "typographic_svg_fallback";
+    }
     book.portada_fallback_generated = true;
     book.portada_fallback_size_kb = Math.round(fallback.size_uri_bytes / 1024);
     if (book.portada_was_invalid) {
       book.portada_auto_healed_to_svg = true;
       console.log(`   🩹 v3.6: AUTO-HEALING fallback — SVG ${book.portada_fallback_size_kb}KB reemplaza URL fantasma (sin evidence cover)`);
+    } else if (book.portada_evidence_exhausted) {
+      console.error(`   ⚠️  v3.7 SVG fallback por EVIDENCE EXHAUSTED: ${book.portada_fallback_size_kb}KB — auditar logs arriba`);
+    } else if (book.needs_fallback_cover) {
+      console.log(`   🎨 v3.7 SVG fallback intencional (needs_fallback_cover=true): ${book.portada_fallback_size_kb}KB`);
     } else {
       console.log(`   🎨 SVG fallback generado: ${book.portada_fallback_size_kb}KB (paleta+tipografía de la card)`);
     }
