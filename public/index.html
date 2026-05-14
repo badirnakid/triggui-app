@@ -2,7 +2,7 @@
 <html lang="es" class="mood-active" style="background:#000000;">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <title>Triggui — Cuando el impulso llega, el libro ya te espera</title>
 
 <link rel="preconnect" href="https://www.penguinlibros.com" crossorigin>
@@ -434,6 +434,31 @@ const IS_KIDS_MODE = window.location.pathname.startsWith('/kids');
 window.TRIGGUI_MODE = IS_KIDS_MODE ? 'kids' : 'adult';
 try { document.documentElement.classList.add(IS_KIDS_MODE ? 'kids-mode' : 'adult-mode'); } catch(_) {}
 try { document.documentElement.setAttribute('data-mode', window.TRIGGUI_MODE); } catch(_) {}
+
+// 🌒 v3.8.11 — Defensa Android keyboard cuántico-quark:
+// 1) navigator.virtualKeyboard.overlaysContent (Chrome 94+, Edge 94+): explicitly
+//    pide al browser que el teclado virtual sea OVERLAY (no redimensione el layout).
+//    Comportamiento iOS-like forzado en Android moderno.
+// 2) visualViewport listener (fallback): si el viewport SÍ se redimensiona,
+//    compensa con CSS custom property --keyboard-offset que el barraSkip puede
+//    usar para mantenerse anclado al fondo visual del documento (no del reducido).
+try {
+  if ('virtualKeyboard' in navigator) {
+    navigator.virtualKeyboard.overlaysContent = true;
+  }
+} catch(_) {}
+try {
+  if (window.visualViewport) {
+    const updateKbOffset = () => {
+      const vv = window.visualViewport;
+      const offset = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+      document.documentElement.style.setProperty('--triggui-kb-offset', offset + 'px');
+    };
+    window.visualViewport.addEventListener('resize', updateKbOffset);
+    window.visualViewport.addEventListener('scroll', updateKbOffset);
+    updateKbOffset();
+  }
+} catch(_) {}
 // 🌒 v8: sincronizar html[lang] con el idioma detectado al arranque
 try { document.documentElement.lang = TriggguiI18n.lang; } catch(_) {}
 
@@ -522,6 +547,38 @@ const BarraMagica = {
   gap:1vw;
 }
 @media(orientation:landscape){.grid{grid-template-columns:repeat(4,1fr)}}
+
+/* 🌒 v3.8.11 — Landscape extremo (altura muy corta, ej. phone landscape).
+   Maximizar espacio vertical: eyebrow compacto, gap reducido. El clamp() del
+   #barraSkip ya escala matemáticamente, esto es defense in depth final. */
+@media (max-height: 480px) {
+  #barraMagicaOverlay {
+    padding-top: env(safe-area-inset-top, 0);
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+  #barraEyebrow {
+    margin-bottom: 12px !important;
+    font-size: 8.5px !important;
+  }
+  #barraQuestion {
+    margin-bottom: 14px !important;
+    font-size: 18px !important;
+  }
+  #barraMicro {
+    margin-top: 14px !important;
+  }
+}
+
+/* 🌒 v3.8.11 — Landscape ultra-corto (phone landscape con keyboard abierto). */
+@media (max-height: 380px) {
+  #barraEyebrow {
+    display: none !important;
+  }
+  #barraQuestion {
+    margin-bottom: 10px !important;
+    font-size: 16px !important;
+  }
+}
 @media(orientation:portrait){.grid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr)}}
 </style>
 
@@ -2010,7 +2067,13 @@ body.webview #tarjetaCard {
 
 #barraSkip {
   position: absolute;
-  bottom: max(140px, calc(env(safe-area-inset-bottom, 0px) + 120px));
+  /* 🌒 v3.8.11 — Bottom proporcional matemático (clamp escala con viewport).
+     Portrait 1000px → 120px (cap MAX). Landscape 400px → 60px (cap MIN).
+     Cualquier orientation/tamaño = posición correcta sin choques. */
+  bottom: max(
+    clamp(60px, 14vh, 120px),
+    calc(env(safe-area-inset-bottom, 0px) + clamp(50px, 12vh, 110px))
+  );
   left: 0;
   right: 0;
   background: none;
@@ -2198,7 +2261,11 @@ html.kids-mode #tarjetaCard {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: max(34px, calc(env(safe-area-inset-bottom, 0px) + 26px));
+  /* 🌒 v3.8.11 — Bottom proporcional (escala con viewport). */
+  bottom: max(
+    clamp(14px, 3vh, 26px),
+    calc(env(safe-area-inset-bottom, 0px) + clamp(10px, 2.5vh, 22px))
+  );
   z-index: 3;
   display: flex;
   align-items: center;
