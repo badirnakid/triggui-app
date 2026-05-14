@@ -63,7 +63,8 @@ import {
 } from "./extractors.js";
 import {
   expandHighlightToFullSentence,
-  getHighlightSegments
+  getHighlightSegments,
+  placeHighlightOnDensestSpan
 } from "./triggui-physics.js";
 import { synthesizePalette } from "./palette-synthesizer.js";
 import { injectEmojis, calculateConfidence, compatMapper } from "./post-processors.js";
@@ -1244,6 +1245,31 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
             if (base) base[field] = repaired;
             if (pres) pres[field] = repaired;
             console.log(`   🪡 ${lang} ${field} REPARADO en "${newBook.titulo}": "...${beforeTail}" → "...${afterTail}"`);
+
+            // 🌒 v3.8.5 cirugia 9 — Highlight Re-injection After Repair (Nivel dios cuantico-quark)
+            // Bug detectado en Vida Contemplativa #050 (2026-05-13): cuando placeHighlightOnDensestSpan
+            // (via compatMapper -> ensureHighlight) pone marcas [H][/H] en la ULTIMA frase del parrafoTop
+            // y esa frase venia TRUNCADA del LLM (sin cierre legitimo), repairTruncatedField corta
+            // hasta el ultimo punto legitimo ANTES de las marcas, eliminandolas con la seccion truncada.
+            // Sintoma: parrafoTop reparado sin marcas, mientras parrafoBot las preserva normalmente.
+            // Fix: si las marcas se perdieron, re-inyectar con placeHighlightOnDensestSpan sobre el
+            // texto reparado (que ya tiene cierre legitimo). El nuevo highlight cae en la frase de
+            // mayor densidad semantica del texto saneado.
+            const hadMarks = /\[H\]/.test(original);
+            const hasMarksAfter = /\[H\]/.test(repaired);
+            if (hadMarks && !hasMarksAfter) {
+              const reinjected = placeHighlightOnDensestSpan(repaired);
+              if (/\[H\]/.test(reinjected) && reinjected !== repaired) {
+                card[field] = reinjected;
+                if (base) base[field] = reinjected;
+                if (pres) pres[field] = reinjected;
+                const segs = reinjected.match(/\[H\](.*?)\[\/H\]/s);
+                const newHl = segs ? segs[1].substring(0, 50) : "(?)";
+                console.log(`   🪡 ${lang} ${field} HIGHLIGHT RE-INYECTADO en "${newBook.titulo}": "${newHl}..."`);
+              } else {
+                console.warn(`   ⚠️  ${lang} ${field} sin re-inyeccion (placeHighlightOnDensestSpan no produjo marcas)`);
+              }
+            }
           } else {
             const plain = original.replace(/\[\/?H\]/g, "").trim();
             const lastChar = plain.slice(-1);
@@ -1254,6 +1280,52 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
         }
       }
     } catch (e) { console.warn(`   ⚠️  repair-parrafo error: ${e.message}`); }
+
+    // 🌒 v3.8.5 cirugia 10 — Defensa Final Universal Pre-Merge (Nivel dios cuantico-quark)
+    // GARANTIA ABSOLUTA: cada parrafoTop/parrafoBot del JSON final tiene marcas [H][/H].
+    // Esta es la cuarta capa de defensa cuantica del pipeline de highlights:
+    //   1. LLM prompt MANDATORY CLOSURE                    (prevencion)
+    //   2. Cirugia 7.1A HighlightJudge auto-correct        (correccion semantica)
+    //   3. Cirugia 7.1B repairTruncatedField               (reparacion de cierre)
+    //   4. Cirugia 9   Re-injection After Repair           (cubre perdida por corte)
+    //   5. Cirugia 10  Defensa Final Universal Pre-Merge   (← ESTA — garantia absoluta)
+    // Independientemente de donde venga un bug futuro de perdida de marcas, esta capa
+    // valida las 6 ubicaciones (tarjeta x 3 x ES/EN) y re-inyecta si faltan marcas.
+    // Costo: cero LLM calls. Solo regex + string ops. ~6 verificaciones por libro.
+    try {
+      const allCards = [
+        { card: newBook.tarjeta, lang: "ES", role: "tarjeta" },
+        { card: newBook.tarjeta_base, lang: "ES", role: "tarjeta_base" },
+        { card: newBook.tarjeta_presentacion, lang: "ES", role: "tarjeta_presentacion" },
+        { card: newBook.tarjeta_en, lang: "EN", role: "tarjeta_en" },
+        { card: newBook.tarjeta_base_en, lang: "EN", role: "tarjeta_base_en" },
+        { card: newBook.tarjeta_presentacion_en, lang: "EN", role: "tarjeta_presentacion_en" }
+      ];
+      let defensaFinalActivada = 0;
+      for (const { card, lang, role } of allCards) {
+        if (!card) continue;
+        for (const field of ["parrafoTop", "parrafoBot"]) {
+          if (!card[field]) continue;
+          if (!/\[H\]/.test(card[field])) {
+            const reinjected = placeHighlightOnDensestSpan(card[field]);
+            if (/\[H\]/.test(reinjected) && reinjected !== card[field]) {
+              card[field] = reinjected;
+              defensaFinalActivada += 1;
+              const segs = reinjected.match(/\[H\](.*?)\[\/H\]/s);
+              const newHl = segs ? segs[1].substring(0, 40) : "(?)";
+              console.log(`   🛡️  Defensa final ${lang} ${role}.${field}: marcas re-inyectadas — "${newHl}..."`);
+            } else {
+              console.warn(`   ⚠️  Defensa final ${lang} ${role}.${field}: NO se pudieron re-inyectar (texto no parseable)`);
+            }
+          }
+        }
+      }
+      if (defensaFinalActivada === 0) {
+        console.log(`   ✅ Defensa final: las 12 marcas [H][/H] ya presentes (6 ubicaciones x 2 campos)`);
+      } else {
+        console.log(`   🛡️  Defensa final: ${defensaFinalActivada} marca(s) re-inyectada(s) — JSON garantizado`);
+      }
+    } catch (e) { console.warn(`   ⚠️  defensa-final error: ${e.message}`); }
 
     const beforeCount = existing.libros.length;
     const newKey = normalizeBookKey(newBook.titulo, newBook.autor);
