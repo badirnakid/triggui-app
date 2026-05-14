@@ -2182,13 +2182,15 @@ body.webview #tarjetaCard {
   background: none;
   border: none;
   padding: 0;
-  cursor: pointer;
-  touch-action: manipulation;
   display: flex;
   align-items: center;
   justify-content: center;
   animation: bm-fade-up 1s ease 1.5s both;
   z-index: 3;
+  /* 🌒 v3.8.14 — Container NO clickeable. Solo el inner (.bm-skip-inner) responde
+     al click. El handler está en el button via event bubbling. Precisión absoluta:
+     área de click = exactamente el pill visible, ni un pixel extra. */
+  pointer-events: none;
 }
 
 /* 🌒 v3.8.9 — #barraSkip reutilizado como SEGMENTED PILL Kids/Adultos NIVEL DIOS
@@ -2200,6 +2202,11 @@ body.webview #tarjetaCard {
 #barraSkip .bm-skip-inner {
   position: relative;
   display: inline-flex;
+  /* 🌒 v3.8.14 — Solo el pill visible es clickeable. Movido desde el button
+     padre que ahora tiene pointer-events: none. Click area = pill exacto. */
+  pointer-events: auto;
+  cursor: pointer;
+  touch-action: manipulation;
   background: rgba(255, 255, 255, 0.05);
   border: 0.5px solid rgba(255, 255, 255, 0.12);
   border-radius: 99px;
