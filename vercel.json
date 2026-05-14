@@ -21,6 +21,22 @@
       "destination": "/public/t/:slug/og.png"
     },
     {
+      "source": "/kids/t/:slug/",
+      "destination": "/public/kids/t/:slug/index.html"
+    },
+    {
+      "source": "/kids/t/:slug",
+      "destination": "/public/kids/t/:slug/index.html"
+    },
+    {
+      "source": "/kids/t/:slug/tarjeta.png",
+      "destination": "/public/kids/t/:slug/tarjeta.png"
+    },
+    {
+      "source": "/kids/t/:slug/og.png",
+      "destination": "/public/kids/t/:slug/og.png"
+    },
+    {
       "source": "/api/:path*",
       "destination": "/api/:path*"
     },
@@ -46,6 +62,26 @@
     },
     {
       "source": "/t/:slug/",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=300, s-maxage=300" }
+      ]
+    },
+    {
+      "source": "/kids/t/:slug/og.png",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=3600, s-maxage=3600" },
+        { "key": "Content-Type", "value": "image/png" }
+      ]
+    },
+    {
+      "source": "/kids/t/:slug/tarjeta.png",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=3600, s-maxage=3600" },
+        { "key": "Content-Type", "value": "image/png" }
+      ]
+    },
+    {
+      "source": "/kids/t/:slug/",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=300, s-maxage=300" }
       ]

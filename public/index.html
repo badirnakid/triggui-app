@@ -426,6 +426,14 @@ const TriggguiI18n = {
   }
 };
 TriggguiI18n.lang = TriggguiI18n.detectLang();
+
+// 🌒 v3.8.6 — Detección de modo Kids vs Adultos (por URL)
+// app.triggui.com         → adulto (carga contenido.json)
+// app.triggui.com/kids/   → kids   (carga contenido_kids.json)
+const IS_KIDS_MODE = window.location.pathname.startsWith('/kids');
+window.TRIGGUI_MODE = IS_KIDS_MODE ? 'kids' : 'adult';
+try { document.documentElement.classList.add(IS_KIDS_MODE ? 'kids-mode' : 'adult-mode'); } catch(_) {}
+try { document.documentElement.setAttribute('data-mode', window.TRIGGUI_MODE); } catch(_) {}
 // 🌒 v8: sincronizar html[lang] con el idioma detectado al arranque
 try { document.documentElement.lang = TriggguiI18n.lang; } catch(_) {}
 
@@ -2090,6 +2098,78 @@ body.webview #tarjetaCard {
 #barraLangToggle span.lang-inactive,
 #barraLangToggle .lang-sep { display: none; }
 
+/* ═══════════════════════════════════════════════════════════════════════
+   🌒 v3.8.6 — Toggle Kids/Adultos (segmented pill nivel dios)
+   - Base: misma estética que langToggle
+   - CAPA 1: color activo dinámico (toma --triggui-accent del libro actual)
+   - CAPA 2: padding más generoso en kids-mode (sensación amable)
+   - CAPA 3: cards con border-radius más amable en kids-mode
+   - CAPA 4: hover pop juguetón solo en kids-mode (spring physics)
+═══════════════════════════════════════════════════════════════════════ */
+#barraKidsToggle {
+  position: fixed;
+  top: max(54px, calc(env(safe-area-inset-top, 0px) + 14px));
+  right: calc(16px + 56px + 8px);
+  z-index: 9999;
+  display: flex;
+  background: rgba(255, 255, 255, 0.05);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 99px;
+  padding: 3px;
+  font-family: -apple-system, 'SF Pro Text', 'Archivo', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  cursor: pointer;
+  touch-action: manipulation;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2), inset 0 0.5px 0 rgba(255, 255, 255, 0.1);
+  opacity: 1;
+  transition: padding 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+#barraKidsToggle.bm-first-appear {
+  opacity: 0;
+  animation: bm-fade-up 1s cubic-bezier(0.19, 1, 0.22, 1) 1.7s forwards;
+}
+#barraKidsToggle span {
+  padding: 5px 11px;
+  border-radius: 99px;
+  transition: all 0.35s cubic-bezier(0.19, 1, 0.22, 1);
+  color: rgba(255, 255, 255, 0.45);
+  min-width: 42px;
+  text-align: center;
+}
+/* CAPA 1: color activo = accent del libro current (fallback blanco) */
+#barraKidsToggle span.kids-active {
+  color: var(--triggui-accent-contrast, #000);
+  background: var(--triggui-accent, #fff);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* CAPA 2: padding +1px / span padding +1/+2px / min-width +6px en kids */
+html.kids-mode #barraKidsToggle { padding: 4px; }
+html.kids-mode #barraKidsToggle span {
+  padding: 6px 13px;
+  min-width: 48px;
+}
+
+/* CAPA 3: cards más amables (border-radius +10px) en kids */
+html.kids-mode .card,
+html.kids-mode #tarjetaCard {
+  border-radius: 28px;
+}
+
+/* CAPA 4: hover pop spring solo en kids — juguetón, sutil */
+html.kids-mode #barraKidsToggle:hover {
+  animation: kids-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes kids-pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
 #barraStreak {
   position: fixed;
   top: max(54px, calc(env(safe-area-inset-top, 0px) + 14px));
@@ -2350,6 +2430,12 @@ body.webview #tarjetaCard {
     <span id="barraStreakNum">0</span>
     <span id="barraStreakUnit">días</span>
   </div>
+
+  <!-- 🌒 v3.8.6 — Toggle Kids/Adultos (segmented pill estilo iOS) -->
+  <button id="barraKidsToggle" class="bm-first-appear" type="button" aria-label="Toggle catalog mode">
+    <span id="kidsToggleAll" class="kids-active">TODOS</span>
+    <span id="kidsToggleKids" class="kids-inactive">NIÑOS</span>
+  </button>
 
   <button id="barraLangToggle" class="bm-first-appear" type="button" aria-label="Toggle language">
     <span id="langToggleEs" class="lang-active">ES</span>
@@ -3381,6 +3467,11 @@ btnShare.onclick = () => {
   // Modo Oscuro
   const isDark = pickTextColor(sPaper) === '#fff';
   card.style.setProperty('--marker-col', isDark ? hexToRgba(sAccent, 0.34) : hexToRgba(sAccent, 0.24));
+  // 🌒 v3.8.6 — Propagar accent del libro actual al :root para que el toggle kids lo herede
+  try {
+    document.documentElement.style.setProperty('--triggui-accent', sAccent);
+    document.documentElement.style.setProperty('--triggui-accent-contrast', isDark ? '#fff' : '#000');
+  } catch(_) {}
   if (isDark) { card.classList.add('card-dark-mode'); } 
   else { card.classList.remove('card-dark-mode'); }
 
@@ -5383,6 +5474,18 @@ function wireBarraMagicaEvents() {
           if (libro) { render(); updateBadge(); }
         }
       } catch(_) {}
+      // 🌒 v3.8.6 — sincronizar texto del toggle kids con el nuevo idioma
+      try { applyKidsToggleStrings(); } catch(_) {}
+    });
+  }
+
+  // 🌒 v3.8.6 — Toggle Kids/Adultos: click → navegar al home del otro modo
+  const kidsToggle = document.getElementById('barraKidsToggle');
+  if (kidsToggle) {
+    kidsToggle.addEventListener('click', () => {
+      const target = (window.TRIGGUI_MODE === 'kids') ? '/' : '/kids/';
+      try { track('mode_toggle_click', { from: window.TRIGGUI_MODE, to: target }); } catch(_) {}
+      window.location.href = target;
     });
   }
   if (lupa) {
@@ -5402,7 +5505,34 @@ function wireBarraMagicaEvents() {
     }, 2800);
   }
 
+  // 🌒 v3.8.6 — Toggle Kids: estado inicial + cleanup animación
+  try { applyKidsToggleStrings(); } catch(_) {}
+  const kidsToggleEl = document.getElementById('barraKidsToggle');
+  if (kidsToggleEl && kidsToggleEl.classList.contains('bm-first-appear')) {
+    setTimeout(() => {
+      kidsToggleEl.classList.remove('bm-first-appear');
+    }, 2800);
+  }
+
   __trigguiEventsWired = true;
+}
+
+// 🌒 v3.8.6 — Sincroniza texto + estado activo del toggle kids/adultos
+function applyKidsToggleStrings() {
+  const all = document.getElementById('kidsToggleAll');
+  const kids = document.getElementById('kidsToggleKids');
+  if (!all || !kids) return;
+  // Traducciones: ES (TODOS/NIÑOS), EN (ALL/KIDS)
+  all.textContent  = TriggguiI18n.lang === 'en' ? 'ALL'  : 'TODOS';
+  kids.textContent = TriggguiI18n.lang === 'en' ? 'KIDS' : 'NIÑOS';
+  // Estado activo según TRIGGUI_MODE (en URL al cargar)
+  if (window.TRIGGUI_MODE === 'kids') {
+    all.classList.remove('kids-active');  all.classList.add('kids-inactive');
+    kids.classList.remove('kids-inactive'); kids.classList.add('kids-active');
+  } else {
+    all.classList.remove('kids-inactive'); all.classList.add('kids-active');
+    kids.classList.remove('kids-active');  kids.classList.add('kids-inactive');
+  }
 }
 
 // ══════════════════════════════════════════════════════════════════════════
@@ -5621,7 +5751,9 @@ window.__TRIGGUI_SANITIZE__ = __triggguiSanitizeAll;
 
 async function loadCatalogWithRetry(maxAttempts) {
   maxAttempts = maxAttempts || 3;
-  const url = "https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json?ts=" + Date.now();
+  // 🌒 v3.8.6 — catalog dinámico según TRIGGUI_MODE
+  const catalogFile = (window.TRIGGUI_MODE === 'kids') ? 'contenido_kids.json' : 'contenido.json';
+  const url = "https://raw.githubusercontent.com/badirnakid/triggui-content/main/" + catalogFile + "?ts=" + Date.now();
   let lastErr;
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
