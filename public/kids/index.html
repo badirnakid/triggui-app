@@ -2010,7 +2010,7 @@ body.webview #tarjetaCard {
 
 #barraSkip {
   position: absolute;
-  bottom: max(96px, calc(env(safe-area-inset-bottom, 0px) + 76px));
+  bottom: max(140px, calc(env(safe-area-inset-bottom, 0px) + 120px));
   left: 0;
   right: 0;
   background: none;
@@ -2025,32 +2025,48 @@ body.webview #tarjetaCard {
   z-index: 3;
 }
 
-/* 🌒 v3.8.7 — #barraSkip reutilizado como chip Kids/Adultos
-   Hereda show/hide coordinado con la barra mágica vía clase bm-content-fading
-   (aplicada desde 7 referencias JS existentes). El background se actualiza
-   dinámicamente vía updateKidsBtnGradient con los colores del libro current. */
+/* 🌒 v3.8.9 — #barraSkip reutilizado como SEGMENTED PILL Kids/Adultos NIVEL DIOS
+   - Hereda show/hide coordinado con la barra magica vía bm-content-fading
+     (aplicada desde 7 referencias JS existentes).
+   - El segmento activo usa var(--bm-accent) heredado del libro current
+     (mismo color que .bm-w3 "sientes?" en la pregunta).
+   - Glow fosforescente sutil con color-mix del accent. */
 #barraSkip .bm-skip-inner {
-  color: #fff;
-  font-family: 'SF Pro Text', -apple-system, 'Archivo', sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-  padding: 7px 16px;
-  border-radius: 99px;
   display: inline-flex;
-  align-items: center;
-  background: linear-gradient(135deg, #FF0055 0%, #FF5E00 50%, #FFD700 100%);
-  box-shadow: 0 2px 8px rgba(255, 95, 0, 0.45), 0 0 16px rgba(255, 95, 0, 0.25);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
-  transition: transform 0.3s cubic-bezier(0.19, 1, 0.22, 1), filter 0.3s, box-shadow 0.3s;
+  background: rgba(255, 255, 255, 0.05);
+  border: 0.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 99px;
+  padding: 3px;
+  font-family: -apple-system, 'SF Pro Text', 'Archivo', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  backdrop-filter: blur(20px) saturate(1.3);
+  -webkit-backdrop-filter: blur(20px) saturate(1.3);
+  box-shadow:
+    0 4px 16px color-mix(in srgb, var(--bm-accent, #FF5E00) 35%, transparent),
+    0 0 24px  color-mix(in srgb, var(--bm-accent, #FF5E00) 18%, transparent);
+  transition: box-shadow 0.4s cubic-bezier(0.19, 1, 0.22, 1), transform 0.3s;
 }
 #barraSkip:hover .bm-skip-inner {
   transform: translateY(-1px);
-  filter: brightness(1.08);
 }
 #barraSkip:active .bm-skip-inner {
   transform: translateY(0);
-  filter: brightness(0.96);
+}
+#barraSkip .bm-skip-seg {
+  padding: 6px 14px;
+  border-radius: 99px;
+  color: rgba(255, 255, 255, 0.42);
+  background: transparent;
+  min-width: 36px;
+  text-align: center;
+  transition: all 0.35s cubic-bezier(0.19, 1, 0.22, 1);
+}
+#barraSkip .bm-skip-seg.active {
+  color: #fff;
+  background: var(--bm-accent, #FF5E00);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--bm-accent, #FF5E00) 50%, transparent);
 }
 
 
@@ -2392,8 +2408,8 @@ html.kids-mode #tarjetaCard {
     <div id="barraMicro" aria-live="polite"></div>
   </div>
 
-  <!-- 🌒 v3.8.7 — barraSkip reutilizado como chip Kids/Adultos -->
-  <button id="barraSkip" type="button" aria-label="Cambiar entre catálogo de adultos y niños"><span class="bm-skip-inner">Niños</span></button>
+  <!-- 🌒 v3.8.9 — barraSkip reutilizado como segmented pill Kids/Adultos (hereda show/hide) -->
+  <button id="barraSkip" type="button" aria-label="Cambiar entre catálogo de adultos y niños"><span class="bm-skip-inner"><span class="bm-skip-seg bm-skip-seg-all active">All</span><span class="bm-skip-seg bm-skip-seg-kids">Kids</span></span></button>
 
   <div id="barraFooterLogo" aria-hidden="true">
     <div class="bm-logo-stage">
@@ -3403,8 +3419,6 @@ btnShare.onclick = () => {
   try {
     document.documentElement.style.setProperty('--triggui-accent', sAccent);
     document.documentElement.style.setProperty('--triggui-accent-contrast', isDark ? '#fff' : '#000');
-    // 🌒 v3.8.7 — actualizar gradient del chip Kids con colores del libro current
-    if (typeof updateKidsBtnGradient === 'function') updateKidsBtnGradient(libro);
   } catch(_) {}
   if (isDark) { card.classList.add('card-dark-mode'); } 
   else { card.classList.remove('card-dark-mode'); }
@@ -5441,36 +5455,25 @@ function wireBarraMagicaEvents() {
   __trigguiEventsWired = true;
 }
 
-// 🌒 v3.8.7 — Sincroniza texto del chip Kids según TRIGGUI_MODE + idioma
+// 🌒 v3.8.9 — Sincroniza segmented pill: texto + estado activo según TRIGGUI_MODE + idioma
+// El color del segmento activo lo aplica el CSS automáticamente via var(--bm-accent),
+// heredado del libro current (mismo color que .bm-w3 "sientes?" en la pregunta).
+// Cero JS para color: todo declarativo via CSS variable cuántico-quark.
 function applyKidsBtnStrings() {
-  const inner = document.querySelector('#barraSkip .bm-skip-inner');
-  if (!inner) return;
+  const allEl = document.querySelector('#barraSkip .bm-skip-seg-all');
+  const kidsEl = document.querySelector('#barraSkip .bm-skip-seg-kids');
+  if (!allEl || !kidsEl) return;
   const isKids = window.TRIGGUI_MODE === 'kids';
   const lang = TriggguiI18n.lang;
+  allEl.textContent = lang === 'en' ? 'All' : 'Todos';
+  kidsEl.textContent = lang === 'en' ? 'Kids' : 'Niños';
   if (isKids) {
-    inner.textContent = lang === 'en' ? 'All' : 'Todos';
+    allEl.classList.remove('active');
+    kidsEl.classList.add('active');
   } else {
-    inner.textContent = lang === 'en' ? 'Kids' : 'Niños';
+    allEl.classList.add('active');
+    kidsEl.classList.remove('active');
   }
-}
-
-// 🌒 v3.8.7 — Aplica gradient + glow fosforescente del libro current al chip Kids
-function updateKidsBtnGradient(libro) {
-  const inner = document.querySelector('#barraSkip .bm-skip-inner');
-  if (!inner || !libro) return;
-  try {
-    const colors = Array.isArray(libro.colores) ? libro.colores : null;
-    if (!colors || colors.length < 2) return;
-    const c0 = colors[0], c1 = colors[1];
-    if (typeof c0 !== 'string' || typeof c1 !== 'string') return;
-    if (!c0.startsWith('#') || c0.length < 7) return;
-    const r = parseInt(c0.slice(1, 3), 16);
-    const g = parseInt(c0.slice(3, 5), 16);
-    const b = parseInt(c0.slice(5, 7), 16);
-    if (isNaN(r) || isNaN(g) || isNaN(b)) return;
-    inner.style.background = 'linear-gradient(135deg, ' + c0 + ' 0%, ' + c1 + ' 100%)';
-    inner.style.boxShadow = '0 2px 8px rgba(' + r + ',' + g + ',' + b + ',0.45), 0 0 16px rgba(' + r + ',' + g + ',' + b + ',0.25)';
-  } catch(_) {}
 }
 
 // ══════════════════════════════════════════════════════════════════════════
@@ -5635,9 +5638,24 @@ async function fetchWithTimeout(url, timeoutMs) {
 function __triggguiSanitizeText(s) {
   if (typeof s !== 'string' || s.length === 0) return s;
   
+  // 🌒 v3.8.9 Pase 0a: ANSI escape sequences COMPLETAS (CSI \x1B[...m)
+  // El LLM ocasionalmente genera ANSI codes para "bold": "\x1B[1m❄\x1B[0m ternura"
+  let result = s.replace(/\x1B\[[0-9;]*[a-zA-Z]/g, '');
+  
+  // 🌒 v3.8.9 Pase 0b: residuos ANSI SIN escape prefix ("[1m", "[m", "[N;Nm"
+  // sueltos en texto, defensa contra sanitización previa que removió \x1B).
+  result = result.replace(/\[[\d;]*m/g, '');
+  
+  // 🌒 v3.8.9 Pase 0c: brackets "[" huérfanos sin "]" cercano (residuos ANSI parciales).
+  // Lookahead negativo (?![^\[\]]{0,40}\]) garantiza que SOLO se limpia "[" si NO
+  // hay "]" correspondiente en los próximos 40 chars. Preserva "[NOTE]", "[1]", etc.
+  result = result.replace(/ \[ (?![^\[\]]{0,40}\])/g, ' ');
+  result = result.replace(/^\[ (?![^\[\]]{0,40}\])/g, '');
+  result = result.replace(/ \[$(?![^\[\]]{0,40}\])/g, '');
+  
   // Pase 1: control char (U+0000-U+001F excepto \t \n \r) seguido de hex literal.
   // Caso del bug: "\u001f440" donde firstCP="1f" + resto="440" → 0x1F440 → 👀
-  let result = s.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]([0-9a-fA-F]{2,5})/g, function(match, hexRest) {
+  result = result.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]([0-9a-fA-F]{2,5})/g, function(match, hexRest) {
     var firstCP = match.codePointAt(0);
     var intentedCP = parseInt(firstCP.toString(16) + hexRest, 16);
     var isValidEmoji = (
