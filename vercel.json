@@ -41,6 +41,14 @@
       "destination": "/api/:path*"
     },
     {
+      "source": "/kids",
+      "destination": "/public/index.html"
+    },
+    {
+      "source": "/kids/",
+      "destination": "/public/index.html"
+    },
+    {
       "source": "/(.*)",
       "destination": "/public/index.html"
     }
