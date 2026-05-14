@@ -2032,6 +2032,7 @@ body.webview #tarjetaCard {
      (mismo color que .bm-w3 "sientes?" en la pregunta).
    - Glow fosforescente sutil con color-mix del accent. */
 #barraSkip .bm-skip-inner {
+  position: relative;
   display: inline-flex;
   background: rgba(255, 255, 255, 0.05);
   border: 0.5px solid rgba(255, 255, 255, 0.12);
@@ -2048,6 +2049,27 @@ body.webview #tarjetaCard {
     0 0 24px  color-mix(in srgb, var(--bm-accent, #FF5E00) 18%, transparent);
   transition: box-shadow 0.4s cubic-bezier(0.19, 1, 0.22, 1), transform 0.3s;
 }
+/* 🌒 v3.8.10 — Indicador deslizante con spring overshoot 156% (cubic-bezier
+   0.34, 1.56, 0.64, 1) = feeling iOS Settings. GPU-accelerated por transform,
+   cero repintado del background. Soportado desde 2012 (caniuse 99.97%). */
+#barraSkip .bm-skip-indicator {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  height: calc(100% - 6px);
+  width: calc(50% - 3px);
+  border-radius: 99px;
+  background: var(--bm-accent, #FF5E00);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--bm-accent, #FF5E00) 50%, transparent);
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+              background 0.4s ease,
+              box-shadow 0.4s ease;
+  z-index: 0;
+  pointer-events: none;
+}
+html[data-mode="kids"] #barraSkip .bm-skip-indicator {
+  transform: translateX(100%);
+}
 #barraSkip:hover .bm-skip-inner {
   transform: translateY(-1px);
 }
@@ -2055,18 +2077,25 @@ body.webview #tarjetaCard {
   transform: translateY(0);
 }
 #barraSkip .bm-skip-seg {
+  position: relative;
+  z-index: 1;
   padding: 6px 14px;
   border-radius: 99px;
   color: rgba(255, 255, 255, 0.42);
   background: transparent;
   min-width: 36px;
   text-align: center;
-  transition: all 0.35s cubic-bezier(0.19, 1, 0.22, 1);
+  transition: color 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
+/* 🌒 v3.8.10 — Source of truth: html[data-mode]. Cero flash visual posible.
+   El data-mode se setea en script line ~436 ANTES del parse del body. */
+html[data-mode="adult"] #barraSkip .bm-skip-seg-all,
+html[data-mode="kids"]  #barraSkip .bm-skip-seg-kids {
+  color: #fff;
+}
+/* Fallback de compatibilidad: .active sigue funcionando si JS lo aplica */
 #barraSkip .bm-skip-seg.active {
   color: #fff;
-  background: var(--bm-accent, #FF5E00);
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--bm-accent, #FF5E00) 50%, transparent);
 }
 
 
@@ -2408,8 +2437,8 @@ html.kids-mode #tarjetaCard {
     <div id="barraMicro" aria-live="polite"></div>
   </div>
 
-  <!-- 🌒 v3.8.9 — barraSkip reutilizado como segmented pill Kids/Adultos (hereda show/hide) -->
-  <button id="barraSkip" type="button" aria-label="Cambiar entre catálogo de adultos y niños"><span class="bm-skip-inner"><span class="bm-skip-seg bm-skip-seg-all active">All</span><span class="bm-skip-seg bm-skip-seg-kids">Kids</span></span></button>
+  <!-- 🌒 v3.8.10 — segmented pill con indicator deslizable (spring iOS) -->
+  <button id="barraSkip" type="button" aria-label="Cambiar entre catálogo de adultos y niños"><span class="bm-skip-inner"><span class="bm-skip-indicator"></span><span class="bm-skip-seg bm-skip-seg-all active">All</span><span class="bm-skip-seg bm-skip-seg-kids">Kids</span></span></button>
 
   <div id="barraFooterLogo" aria-hidden="true">
     <div class="bm-logo-stage">
@@ -5402,11 +5431,15 @@ function wireBarraMagicaEvents() {
     // que keydown. No hay <form> pero podemos aprovechar el enterkeyhint.
   }
   if (skip) {
-    // 🌒 v3.8.7 — Click del chip Kids: navegar al home del otro modo
+    // 🌒 v3.8.10 — Click del pill Kids: SPA-style switch (sin reload)
     skip.addEventListener('click', () => {
-      const target = (window.TRIGGUI_MODE === 'kids') ? '/' : '/kids/';
-      try { track('mode_toggle_click', { from: window.TRIGGUI_MODE, to: target }); } catch(_) {}
-      window.location.href = target;
+      const targetMode = (window.TRIGGUI_MODE === 'kids') ? 'adult' : 'kids';
+      try { track('mode_toggle_click', { from: window.TRIGGUI_MODE, to: targetMode }); } catch(_) {}
+      if (typeof switchTrigguiMode === 'function') {
+        switchTrigguiMode(targetMode);
+      } else {
+        window.location.href = (targetMode === 'kids') ? '/kids/' : '/';
+      }
     });
   }
   if (langToggle) {
@@ -5454,6 +5487,107 @@ function wireBarraMagicaEvents() {
 
   __trigguiEventsWired = true;
 }
+
+// 🌒 v3.8.10 — SWITCH SPA NIVEL DIOS CUÁNTICO-QUARK
+// ════════════════════════════════════════════════════════════════════════════
+// Cambia entre catálogo adulto y kids SIN page reload, con transición fluida:
+//   1. Inmediato: html[data-mode] cambia → pill indicator desliza (CSS spring)
+//   2. history.pushState: URL cambia sin recargar
+//   3. Fetch del nuevo JSON en paralelo al fade-out del grid (250ms)
+//   4. Re-pickeo libro, applyStrings (cambia color de "sientes?"), render()
+//   5. Fade-in del grid (350ms) — usuario nunca ve flash blanco
+//
+// Defensas cuántico-quark:
+//   - Flag __TRIGGUI_SWITCHING__ bloquea re-entrada (click múltiple)
+//   - Try/catch global con fallback graceful a window.location.href
+//   - sessionStorage.removeItem('lastLibroIdx') limpia state stale
+//   - Reverso de URL si catálogo nuevo está vacío
+async function switchTrigguiMode(targetMode) {
+  if (window.__TRIGGUI_SWITCHING__) return;
+  if (targetMode !== 'kids' && targetMode !== 'adult') return;
+  if (targetMode === window.TRIGGUI_MODE) return;
+  window.__TRIGGUI_SWITCHING__ = true;
+
+  const targetUrl = targetMode === 'kids' ? '/kids/' : '/';
+  const prevMode = window.TRIGGUI_MODE;
+  const prevUrl = prevMode === 'kids' ? '/kids/' : '/';
+  const grid = document.getElementById('grid');
+
+  try {
+    // FASE 1: Cambio inmediato del modo + URL (UI feedback instantáneo)
+    window.TRIGGUI_MODE = targetMode;
+    document.documentElement.classList.toggle('kids-mode', targetMode === 'kids');
+    document.documentElement.classList.toggle('adult-mode', targetMode !== 'kids');
+    document.documentElement.setAttribute('data-mode', targetMode);
+    try { applyKidsBtnStrings(); } catch(_) {}
+    try { history.pushState({ mode: targetMode, source: 'switch' }, '', targetUrl); } catch(_) {}
+
+    // FASE 2: Fade-out del grid (paralelo al fetch)
+    if (grid) {
+      grid.style.transition = 'opacity 250ms cubic-bezier(0.4, 0, 0.2, 1)';
+      grid.style.opacity = '0';
+    }
+
+    // FASE 3: Fetch nuevo catálogo + esperar fade-out simultáneamente
+    const [dataRaw] = await Promise.all([
+      loadCatalogWithRetry(3),
+      new Promise(resolve => setTimeout(resolve, 250))
+    ]);
+
+    // FASE 4: Validar + sanitizar
+    if (!dataRaw || !Array.isArray(dataRaw.libros) || dataRaw.libros.length === 0) {
+      throw new Error('empty_or_invalid_catalog');
+    }
+    const data = window.__TRIGGUI_SANITIZE__(dataRaw);
+
+    // FASE 5: Reset state stale + aplicar nuevo data
+    try { sessionStorage.removeItem('lastLibroIdx'); } catch(_) {}
+    window.__TRIGGUI_DATA__ = data;
+    libro = data.libros[pickLibroNoRepetido(data.libros)];
+
+    // FASE 6: Re-aplicar strings (cambia accent color "sientes?") + render
+    try { BarraMagica.applyStrings(); } catch(_) {}
+    try { render(); } catch(e) { console.error('[Triggui] render error tras switch:', e); }
+    try { updateBadge(); } catch(_) {}
+    try { refreshGlobalCounter(); } catch(_) {}
+
+    // FASE 7: Fade-in del grid (post-render pintado)
+    requestAnimationFrame(() => {
+      if (grid) {
+        grid.style.transition = 'opacity 350ms cubic-bezier(0.4, 0, 0.2, 1)';
+        grid.style.opacity = '1';
+      }
+    });
+
+    // FASE 8: Tracking
+    try { track('mode_switched', { from: prevMode, to: targetMode, lang: TriggguiI18n.lang }); } catch(_) {}
+
+  } catch (err) {
+    console.error('[Triggui] switchTrigguiMode error:', err);
+    // Fallback graceful: revertir modo en memoria + page reload (comportamiento clásico)
+    window.TRIGGUI_MODE = prevMode;
+    document.documentElement.classList.toggle('kids-mode', prevMode === 'kids');
+    document.documentElement.classList.toggle('adult-mode', prevMode !== 'kids');
+    document.documentElement.setAttribute('data-mode', prevMode);
+    try { history.replaceState({ mode: prevMode }, '', prevUrl); } catch(_) {}
+    window.__TRIGGUI_SWITCHING__ = false;
+    window.location.href = targetUrl;
+    return;
+  } finally {
+    setTimeout(() => {
+      window.__TRIGGUI_SWITCHING__ = false;
+      if (grid) grid.style.transition = '';
+    }, 700);
+  }
+}
+
+// 🌒 v3.8.10 — Back/forward del browser sincronizado con el modo
+window.addEventListener('popstate', function(e) {
+  const targetMode = window.location.pathname.startsWith('/kids') ? 'kids' : 'adult';
+  if (targetMode !== window.TRIGGUI_MODE && typeof switchTrigguiMode === 'function') {
+    switchTrigguiMode(targetMode);
+  }
+});
 
 // 🌒 v3.8.9 — Sincroniza segmented pill: texto + estado activo según TRIGGUI_MODE + idioma
 // El color del segmento activo lo aplica el CSS automáticamente via var(--bm-accent),
