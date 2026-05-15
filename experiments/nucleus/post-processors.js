@@ -311,6 +311,9 @@ export function compatMapper({
     videoUrl: `https://duckduckgo.com/?q=!ducky+site:youtube.com+${encodeURIComponent(`${book.titulo} ${autorFinal} entrevista español`)}`,
     videoUrl_en: `https://duckduckgo.com/?q=!ducky+site:youtube.com+${encodeURIComponent(`${anchorsData.book_identity.titulo_en} ${autorFinal} interview`)}`,
 
+    // 🎯 SPRINT A v14 — DNA curatorial persistido
+    _curator_meta: globalThis.__TRIGGUI_CURATOR_CONTEXT__ || null,
+
     _nucleus: {
       book_identity: anchorsData.book_identity,
       book_grounding_anchors: anchorsData.book_grounding_anchors,

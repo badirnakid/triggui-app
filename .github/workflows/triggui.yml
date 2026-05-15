@@ -113,6 +113,80 @@ on:
         required: false
         type: string
 
+      # === 🎯 SPRINT A v14 — Contexto curatorial nivel dios ===
+
+      punto_ciclo:
+        description: '🔄 Punto del ciclo del lector destinatario'
+        required: true
+        default: 'auto'
+        type: choice
+        options:
+          - 'auto (inferir de cronobiología)'
+          - '0 — Cero (no pienso, no hago — contemplación)'
+          - '1 — Creativo (pienso, no hago — insight)'
+          - '2 — Activo (hago, no pienso — flow)'
+          - '3 — Máximo (pienso y hago — peak performance)'
+
+      pilar:
+        description: '🏛 Pilar a fortalecer (default: auto/sin sesgo)'
+        required: true
+        default: 'auto'
+        type: choice
+        options:
+          - 'auto (sin sesgo)'
+          - 'cuerpo'
+          - 'mente'
+          - 'negocio'
+          - 'familia'
+          - 'espiritu'
+          - 'relaciones'
+          - 'finanzas'
+
+      hawkins_target:
+        description: '🌒 Nivel Hawkins aspirado del libro (default: auto = elevación graduada)'
+        required: true
+        default: 'auto'
+        type: choice
+        options:
+          - 'auto (elevación graduada según sentimiento)'
+          - 'coraje (200)'
+          - 'voluntad (310)'
+          - 'aceptación (350)'
+          - 'razón (400)'
+          - 'amor (500)'
+          - 'alegría (540)'
+          - 'paz (600)'
+
+      lente_hawkins:
+        description: '🌒 Lente Hawkins (mapa de conciencia)'
+        required: true
+        default: true
+        type: boolean
+
+      lente_pilares:
+        description: '🏛 Lente Pilares (7 áreas de vida)'
+        required: true
+        default: true
+        type: boolean
+
+      lente_game_theory:
+        description: '🎲 Lente Game-Theory (estructura de decisiones)'
+        required: true
+        default: true
+        type: boolean
+
+      lente_self_knowledge:
+        description: '🪞 Lente Self-Knowledge (patrones internos)'
+        required: true
+        default: true
+        type: boolean
+
+      batch_size:
+        description: '📊 Número de libros (solo modos 🎲 y 🧪). Default: 10. Cualquier entero: 2, 10, 50, 98...'
+        required: false
+        default: '10'
+        type: string
+
 concurrency:
   group: triggui-content-${{ github.ref }}
   cancel-in-progress: false
@@ -140,6 +214,18 @@ jobs:
       RECENT_BOOKS_PATH: ${{ github.workspace }}/recent-books.json
       # 🌒 Triggui Kids · soporte multi-catálogo (default: adulto)
       CATALOG_MODE: ${{ inputs.catalogo || 'adulto' }}
+
+      # === 🎯 SPRINT A v14 — Contexto curatorial ===
+      TRIGGUI_PUNTO_CICLO: ${{ inputs.punto_ciclo }}
+      TRIGGUI_PILAR: ${{ inputs.pilar }}
+      TRIGGUI_HAWKINS_TARGET: ${{ inputs.hawkins_target }}
+      TRIGGUI_LENS_CHRONOBIOLOGY: ${{ inputs.cronobiologia }}
+      TRIGGUI_LENS_HAWKINS: ${{ inputs.lente_hawkins }}
+      TRIGGUI_LENS_PILARES: ${{ inputs.lente_pilares }}
+      TRIGGUI_LENS_GAME_THEORY: ${{ inputs.lente_game_theory }}
+      TRIGGUI_LENS_SELF_KNOWLEDGE: ${{ inputs.lente_self_knowledge }}
+      TRIGGUI_SENTIMIENTO: ${{ inputs.sentimiento }}
+      BATCH_SIZE: ${{ inputs.batch_size }}
 
     steps:
       # ╔══════════════════════════════════════════════════════════════════╗

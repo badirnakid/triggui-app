@@ -402,7 +402,182 @@ function buildIdentityLine(anchorsData, language = "es") {
 }
 
 
+// 🎯 SPRINT A v14 — Helpers para construir bloque CONTEXTO CURATORIAL
+function buildCuratorBlockES(cctx) {
+  cctx = cctx || {};
+  const hasContext = (cctx.punto_ciclo && cctx.punto_ciclo !== 'auto') ||
+                     (cctx.pilar && cctx.pilar !== 'auto') ||
+                     (cctx.hawkins_target && cctx.hawkins_target !== 'auto') ||
+                     cctx.nota_libro || cctx.lente_extra || cctx.sentimiento;
+  if (!hasContext) {
+    return `═══════════════════════════════════════════════════════════════════
+🎯 CONTEXTO CURATORIAL
+═══════════════════════════════════════════════════════════════════
+Badir no especificó sesgos editoriales para este libro.
+Procede con tu mejor juicio editorial y la riqueza natural del libro.
+═══════════════════════════════════════════════════════════════════`;
+  }
+  let block = `═══════════════════════════════════════════════════════════════════
+🎯 CONTEXTO CURATORIAL — lo que Badir decidió para este libro
+═══════════════════════════════════════════════════════════════════`;
+
+  if (cctx.punto_ciclo && cctx.punto_ciclo !== 'auto') {
+    const puntoMap = {
+      cero: 'Cero (no piensa, no hace — descanso, contemplación)',
+      creativo: 'Creativo (piensa, no hace — insight, ideación)',
+      activo: 'Activo (hace, no piensa — flow, ejecución)',
+      maximo: 'Máximo (piensa y hace — peak performance)'
+    };
+    const m = cctx.punto_ciclo.match(/cero|creativo|activo|m[áa]ximo/i);
+    const key = m ? m[0].toLowerCase().replace('á', 'a') : '';
+    block += `
+
+PUNTO DEL CICLO DESTINATARIO: ${puntoMap[key] || cctx.punto_ciclo}
+  → Sesga tu output al modo ejecutivo del lector en ese punto.
+  → Si es Cero/Creativo: verbos de pensamiento, descubrimiento, contemplación.
+  → Si es Activo/Máximo: verbos de acción, ejecución, presencia.`;
+  }
+
+  if (cctx.pilar && cctx.pilar !== 'auto') {
+    block += `
+
+PILAR A FORTALECER: ${cctx.pilar}
+  → El libro debe iluminar el área "${cctx.pilar}" del lector.
+  → Al menos 2 de los 4 edition_blocks_es deben tener sensibilidad explícita
+    a este pilar (sin caer en obvio).
+  → Si el libro no toca el pilar directamente, busca la conexión emocional
+    o temática que sí se relacione.`;
+  }
+
+  if (cctx.hawkins_target && cctx.hawkins_target !== 'auto') {
+    block += `
+
+HAWKINS ASPIRADO: ${cctx.hawkins_target}
+  → Eleva al lector hacia ese nivel (elevación graduada, no saltos forzados).
+  → Mantén eje_animo coherente con esta aspiración.`;
+  }
+
+  if (cctx.sentimiento) {
+    block += `
+
+SENTIMIENTO DEL DESTINATARIO: "${cctx.sentimiento}"
+  → El lector llega con este estado emocional.
+  → Tu output debe HONRAR el estado actual antes de elevar.`;
+  }
+
+  if (cctx.nota_libro) {
+    block += `
+
+NOTA EXTRA DE BADIR: "${cctx.nota_libro}"
+  → Honra esta nota explícitamente. El contexto humano gana sobre el algoritmo.`;
+  }
+
+  if (cctx.lente_extra) {
+    block += `
+
+LENTE EXTRA: ${cctx.lente_extra}
+  → Aplica este(os) lente(s) adicional(es) al output sin romper la integridad
+    del libro.`;
+  }
+
+  block += `
+
+═══════════════════════════════════════════════════════════════════`;
+  return block;
+}
+
+function buildCuratorBlockEN(cctx) {
+  cctx = cctx || {};
+  const hasContext = (cctx.punto_ciclo && cctx.punto_ciclo !== 'auto') ||
+                     (cctx.pilar && cctx.pilar !== 'auto') ||
+                     (cctx.hawkins_target && cctx.hawkins_target !== 'auto') ||
+                     cctx.nota_libro || cctx.lente_extra || cctx.sentimiento;
+  if (!hasContext) {
+    return `═══════════════════════════════════════════════════════════════════
+🎯 CURATORIAL CONTEXT
+═══════════════════════════════════════════════════════════════════
+Badir did not specify editorial bias for this book.
+Proceed with your best editorial judgment and the book's natural richness.
+═══════════════════════════════════════════════════════════════════`;
+  }
+  let block = `═══════════════════════════════════════════════════════════════════
+🎯 CURATORIAL CONTEXT — what Badir decided for this book
+═══════════════════════════════════════════════════════════════════`;
+
+  if (cctx.punto_ciclo && cctx.punto_ciclo !== 'auto') {
+    const puntoMap = {
+      cero: 'Zero (no thinking, no doing — rest, contemplation)',
+      creativo: 'Creative (thinking, not doing — insight, ideation)',
+      activo: 'Active (doing, not thinking — flow, execution)',
+      maximo: 'Maximum (thinking and doing — peak performance)'
+    };
+    const m = cctx.punto_ciclo.match(/cero|creativo|activo|m[áa]ximo/i);
+    const key = m ? m[0].toLowerCase().replace('á', 'a') : '';
+    block += `
+
+CYCLE POINT OF DESTINATION: ${puntoMap[key] || cctx.punto_ciclo}
+  → Bias your output to the reader's executive mode at that point.
+  → Zero/Creative: verbs of thought, discovery, contemplation.
+  → Active/Maximum: verbs of action, execution, presence.`;
+  }
+
+  if (cctx.pilar && cctx.pilar !== 'auto') {
+    const pilarMap = {
+      cuerpo: 'body', mente: 'mind', negocio: 'business',
+      familia: 'family', espiritu: 'spirit',
+      relaciones: 'relationships', finanzas: 'finances'
+    };
+    const pilarEN = pilarMap[cctx.pilar] || cctx.pilar;
+    block += `
+
+PILLAR TO STRENGTHEN: ${pilarEN}
+  → The book must illuminate the reader's "${pilarEN}" area.
+  → At least 2 of the 4 edition_blocks_en must have explicit sensitivity
+    to this pillar (without being obvious).
+  → If the book doesn't touch the pillar directly, find the emotional or
+    thematic connection that does relate.`;
+  }
+
+  if (cctx.hawkins_target && cctx.hawkins_target !== 'auto') {
+    block += `
+
+HAWKINS ASPIRATION: ${cctx.hawkins_target}
+  → Lift the reader toward that level (graduated elevation, no forced leaps).
+  → Keep mood_axis coherent with this aspiration.`;
+  }
+
+  if (cctx.sentimiento) {
+    block += `
+
+DESTINATION FEELING: "${cctx.sentimiento}"
+  → The reader arrives with this emotional state.
+  → Your output must HONOR the current state before elevating.`;
+  }
+
+  if (cctx.nota_libro) {
+    block += `
+
+BADIR'S NOTE: "${cctx.nota_libro}"
+  → Honor this note explicitly. Human context wins over algorithm.`;
+  }
+
+  if (cctx.lente_extra) {
+    block += `
+
+EXTRA LENS: ${cctx.lente_extra}
+  → Apply this additional lens to the output without breaking the book's
+    integrity.`;
+  }
+
+  block += `
+
+═══════════════════════════════════════════════════════════════════`;
+  return block;
+}
+
 function contentESSystemPrompt(crono) {
+  // 🎯 SPRINT A v14 — Bloque contexto curatorial dinámico
+  const curatorBlock = buildCuratorBlockES(globalThis.__TRIGGUI_CURATOR_CONTEXT__);
   return `🌒 SPRINT NIVEL DIOS — ROLE INVERSION
 
 
@@ -557,6 +732,8 @@ por su autor — está dentro.
 
 Esta auto-revisión es parte de tu trabajo, no opcional.
 
+
+${curatorBlock}
 
 ═══════════════════════════════════════════════════════════════════
 🎼 SINFONÍA — ROL_SINFÓNICO + EJE_ANIMO (Pilar 4, v12)
@@ -760,6 +937,8 @@ export async function extractContentES(openai, book, groundTruth, anchorsData, l
 
 
 function contentENSystemPrompt() {
+  // 🎯 SPRINT A v14 — Bloque contexto curatorial dinámico
+  const curatorBlock = buildCuratorBlockEN(globalThis.__TRIGGUI_CURATOR_CONTEXT__);
   return `🌒 NIVEL DIOS SPRINT — ROLE INVERSION
 
 
@@ -881,6 +1060,8 @@ is from inside.
 
 This self-review is part of your job, not optional.
 
+
+${curatorBlock}
 
 ═══════════════════════════════════════════════════════════════════
 🎼 SYMPHONY — ROLE_SYMPHONIC + MOOD_AXIS (Pillar 4, v12)

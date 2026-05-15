@@ -153,7 +153,7 @@ const CFG = {
     inputsHistoryDir: "inputs-history",
     reportsDir: "quality-reports"
   },
-  maxBatch: 20,
+  maxBatch: parseInt(process.env.BATCH_SIZE || '20', 10),  // 🎯 Sprint A v14
   delayMs: 4000,
   shadowMode: process.env.SHADOW_MODE === "true",
   cronoEnabled: process.env.TRIGGUI_CRONO_ENABLED !== "false",
@@ -341,6 +341,34 @@ function detectSpuriousBrackets(contentXX, lang) {
 }
 
 async function processBook(book, inputs, inputsSnapshot) {
+  // 🎯 SPRINT A v14 — Construir contexto curatorial desde env vars
+  const curatorContext = {
+    timestamp: new Date().toISOString(),
+    workflow_run_id: process.env.GITHUB_RUN_ID || 'local',
+    catalog_mode: process.env.CATALOG_MODE || 'adulto',
+    modo: process.env.SINGLE_MODE === 'true'
+      ? 'single_book'
+      : (process.env.SHADOW_MODE === 'true' ? 'shadow_batch' : 'production_batch'),
+    punto_ciclo: process.env.TRIGGUI_PUNTO_CICLO || 'auto',
+    pilar: process.env.TRIGGUI_PILAR || 'auto',
+    hawkins_target: process.env.TRIGGUI_HAWKINS_TARGET || 'auto',
+    lentes_activos: ['chronobiology', 'hawkins', 'pilares', 'game-theory', 'self-knowledge']
+      .filter(id => {
+        const envKey = 'TRIGGUI_LENS_' + id.toUpperCase().replace(/-/g, '_');
+        const value = process.env[envKey];
+        return value === undefined || value === 'true';  // default true si no está seteado
+      }),
+    lente_extra: process.env.TRIGGUI_LENS || '',
+    nota_libro: process.env.TRIGGUI_BOOK_CONTEXT || '',
+    sentimiento: process.env.TRIGGUI_SENTIMIENTO || ''
+  };
+  globalThis.__TRIGGUI_CURATOR_CONTEXT__ = curatorContext;
+  console.log(`   🎯 Curator: punto=${curatorContext.punto_ciclo} | pilar=${curatorContext.pilar} | hawkins=${curatorContext.hawkins_target}`);
+  console.log(`      lentes activos: ${curatorContext.lentes_activos.join(', ')}`);
+  if (curatorContext.lente_extra) console.log(`      lente extra: ${curatorContext.lente_extra}`);
+  if (curatorContext.nota_libro) console.log(`      nota: ${curatorContext.nota_libro.substring(0, 60)}${curatorContext.nota_libro.length > 60 ? '...' : ''}`);
+  if (curatorContext.sentimiento) console.log(`      sentimiento: ${curatorContext.sentimiento.substring(0, 60)}`);
+
   const t0 = Date.now();
   const crono = CFG.cronoEnabled ? cronobioContext() : cronobioContext(new Date());
   const tokensByPhase = {};
