@@ -115,7 +115,9 @@ export async function judgeAllVoiceLayers(openai, contentES, contentEN, book, op
   // og_phrases_es (4)
   if (Array.isArray(contentES.og_phrases_es)) {
     for (let i = 0; i < contentES.og_phrases_es.length; i++) {
-      const phrase = contentES.og_phrases_es[i];
+      const item = contentES.og_phrases_es[i];
+      // 🚨 C3-ND v2: extraer string del objeto v12, evitar "[object Object]"
+      const phrase = (typeof item === 'object' && item !== null) ? item.phrase : item;
       jobs.push(judgeOnePhraseVoice(openai, phrase, "es", { model }));
       tags.push({ field: "og_phrases_es", index: i, lang: "es", phrase });
     }
@@ -124,7 +126,9 @@ export async function judgeAllVoiceLayers(openai, contentES, contentEN, book, op
   // og_phrases_en (4)
   if (Array.isArray(contentEN.og_phrases_en)) {
     for (let i = 0; i < contentEN.og_phrases_en.length; i++) {
-      const phrase = contentEN.og_phrases_en[i];
+      const item = contentEN.og_phrases_en[i];
+      // 🚨 C3-ND v2: extraer string del objeto v12, evitar "[object Object]"
+      const phrase = (typeof item === 'object' && item !== null) ? item.phrase : item;
       jobs.push(judgeOnePhraseVoice(openai, phrase, "en", { model }));
       tags.push({ field: "og_phrases_en", index: i, lang: "en", phrase });
     }
@@ -296,10 +300,18 @@ Devuelve SOLO la frase reescrita.`;
 
       // Mutación IN-PLACE
       if (f.field === "og_phrases_es" && Array.isArray(contentES.og_phrases_es)) {
-        contentES.og_phrases_es[f.index] = newPhrase;
+        // 🚨 C3-ND v2: preservar metadata sinfónica al regenerar
+        const cur = contentES.og_phrases_es[f.index];
+        contentES.og_phrases_es[f.index] = (typeof cur === 'object' && cur !== null)
+          ? { ...cur, phrase: newPhrase }
+          : newPhrase;
         regenerated++;
       } else if (f.field === "og_phrases_en" && Array.isArray(contentEN.og_phrases_en)) {
-        contentEN.og_phrases_en[f.index] = newPhrase;
+        // 🚨 C3-ND v2: preservar metadata sinfónica al regenerar
+        const cur = contentEN.og_phrases_en[f.index];
+        contentEN.og_phrases_en[f.index] = (typeof cur === 'object' && cur !== null)
+          ? { ...cur, phrase: newPhrase }
+          : newPhrase;
         regenerated++;
       } else if (f.field === "edition_blocks_es" && Array.isArray(contentES.edition_blocks_es)) {
         contentES.edition_blocks_es[f.index].phrase = newPhrase;

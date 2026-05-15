@@ -280,6 +280,7 @@ function validateSinfonia(contentXX, lang) {
   const rolKey = lang === 'en' ? 'role_symphonic' : 'rol_sinfonico';
   const animoKey = lang === 'en' ? 'mood_axis' : 'eje_animo';
 
+  // ─── edition_blocks_{lang}: 4 objetos con 4 roles únicos ───
   const eb = contentXX && contentXX[ebKey];
   if (Array.isArray(eb)) {
     const roles = eb.map(b => b && b[rolKey]).filter(Boolean);
@@ -296,12 +297,26 @@ function validateSinfonia(contentXX, lang) {
     }
   }
 
+  // ─── og_phrases_{lang}: 4 objetos con 4 roles únicos (C3-ND v2: ZERO TOLERANCIA) ───
   const og = contentXX && contentXX[ogKey];
   if (Array.isArray(og)) {
-    const roles = og.map(b => (b && typeof b === 'object') ? b[rolKey] : null).filter(Boolean);
-    const unique = new Set(roles);
-    if (unique.size < 4 && og.some(b => b && typeof b === 'object')) {
-      issues.push(`${ogKey} cobertura ${unique.size}/4 (${[...unique].join(',')})`);
+    if (og.length === 0) {
+      issues.push(`${ogKey} vacío`);
+    } else {
+      const allStrings = og.every(b => typeof b === 'string');
+      const allObjects = og.every(b => b && typeof b === 'object');
+
+      if (allStrings) {
+        issues.push(`${ogKey} formato legacy strings (post-v12 requiere objetos con ${rolKey})`);
+      } else if (allObjects) {
+        const roles = og.map(b => b[rolKey]).filter(Boolean);
+        const unique = new Set(roles);
+        if (unique.size < 4) {
+          issues.push(`${ogKey} cobertura ${unique.size}/4 (${[...unique].join(',') || 'sin roles'})`);
+        }
+      } else {
+        issues.push(`${ogKey} mezcla strings y objetos — formato inconsistente`);
+      }
     }
   }
 
