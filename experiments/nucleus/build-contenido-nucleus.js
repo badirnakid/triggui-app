@@ -749,8 +749,13 @@ async function processBook(book, inputs, inputsSnapshot) {
   if (sinfoniaES.ok && sinfoniaEN.ok) {
     console.log(`   🎼 Sinfonía: 4/4 roles ES + 4/4 roles EN ✓`);
   } else {
-    if (!sinfoniaES.ok) console.warn(`   🎼 Sinfonía ES degradada: ${sinfoniaES.issues.join('; ')}`);
-    if (!sinfoniaEN.ok) console.warn(`   🎼 Sinfonía EN degradada: ${sinfoniaEN.issues.join('; ')}`);
+    // 🚨 C3-NIVEL DIOS — si <4/4, FALLA TOTAL (cero tolerancia)
+    const errores = [];
+    if (!sinfoniaES.ok) errores.push('ES: ' + sinfoniaES.issues.join('; '));
+    if (!sinfoniaEN.ok) errores.push('EN: ' + sinfoniaEN.issues.join('; '));
+    console.error(`   🚨 SINFONÍA INCOMPLETA — nivel dios requiere 4/4 EXACTO:`);
+    errores.forEach(e => console.error('      ' + e));
+    throw new Error('Sinfonía incompleta — cobertura <4/4 roles: ' + errores.join(' | '));
   }
   if (bracketsES.length > 0 || bracketsEN.length > 0) {
     console.warn(`   🛡️  Brackets espurios: ES=${bracketsES.length}, EN=${bracketsEN.length} (capa 5 frontend saneará)`);

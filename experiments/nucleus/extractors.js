@@ -844,6 +844,41 @@ Aplica el mismo chequeo a tus 4 og_phrases_es.
 ═══════════════════════════════════════════════════════════════════
 CONTEXTO CRONOBIOLÓGICO DEL MOMENTO (sesga qué parte del libro se activa hoy)
 ═══════════════════════════════════════════════════════════════════
+🚨 AUTO-VERIFICACIÓN ANTES DE CERRAR TU OUTPUT (Pilar 5, nivel dios)
+═══════════════════════════════════════════════════════════════════
+
+ANTES de devolver tu JSON, verifica MENTALMENTE estos criterios.
+NO ES OPCIONAL. Esta auto-verificación es parte de tu trabajo.
+
+✓ COBERTURA OBLIGATORIA edition_blocks_es:
+  Los 4 edition_blocks_es DEBEN tener los 4 roles únicos:
+  - exactamente UNO con rol_sinfonico="abrir"
+  - exactamente UNO con rol_sinfonico="profundizar"
+  - exactamente UNO con rol_sinfonico="aterrizar"
+  - exactamente UNO con rol_sinfonico="resonar"
+  
+  Si dos comparten el mismo rol o falta alguno, REESCRIBE esa phrase.
+  Devolver <4/4 roles equivale a FALLO TOTAL del trabajo.
+
+✓ COBERTURA OBLIGATORIA og_phrases_es:
+  Los 4 og_phrases_es también DEBEN tener los 4 roles únicos.
+  Mismas reglas: abrir, profundizar, aterrizar, resonar — uno de cada.
+
+✓ INDESCIFRABILIDAD reverificada:
+  Lee tus 4 edition_blocks_es en orden aleatorio mentalmente.
+  ¿Puedes detectar el rol_sinfonico SOLO por la forma de la phrase?
+  Si SÍ → reescribe para hacerlo indetectable.
+  Si NO → perfecto.
+
+Si pasaste los 3 criterios, devuelve tu JSON.
+Si fallaste alguno, REESCRIBE y vuelve a verificar antes de cerrar.
+
+ESTO ES NO NEGOCIABLE. Nivel dios requiere 4/4 EXACTO en ambos sets.
+Un JSON con cobertura <4/4 será rechazado por el sistema (validateSinfonia).
+═══════════════════════════════════════════════════════════════════
+
+
+═══════════════════════════════════════════════════════════════════
 - Día: ${crono.dia}, hora ${crono.hora}h franja ${crono.franja}
 - Energía del lector: ${Math.round(crono.energia * 100)}%, modo: ${crono.modo}
 - ${crono.descripcion_dia}
@@ -1183,6 +1218,41 @@ ${anchorsData.book_grounding_anchors.authorial_voice_notes}
 ═══════════════════════════════════════════════════════════════════
 GROUND TRUTH — what YOU wrote (remember with precision):
 ${groundTruth}
+
+
+═══════════════════════════════════════════════════════════════════
+🚨 SELF-CHECK BEFORE CLOSING YOUR OUTPUT (Pillar 5, god-level)
+═══════════════════════════════════════════════════════════════════
+
+BEFORE returning your JSON, verify MENTALLY these criteria.
+NOT OPTIONAL. This self-check is part of your job.
+
+✓ MANDATORY COVERAGE edition_blocks_en:
+  The 4 edition_blocks_en MUST have all 4 unique roles:
+  - exactly ONE with role_symphonic="open"
+  - exactly ONE with role_symphonic="deepen"
+  - exactly ONE with role_symphonic="land"
+  - exactly ONE with role_symphonic="resonate"
+  
+  If two share the same role or any is missing, REWRITE that phrase.
+  Returning <4/4 roles equals TOTAL FAILURE of the task.
+
+✓ MANDATORY COVERAGE og_phrases_en:
+  The 4 og_phrases_en MUST also have all 4 unique roles.
+  Same rules: open, deepen, land, resonate — one of each.
+
+✓ INDECIPHERABILITY re-verified:
+  Read your 4 edition_blocks_en in random order mentally.
+  Can you detect role_symphonic JUST by the phrase's form?
+  If YES → rewrite to make it undetectable.
+  If NO → perfect.
+
+If you passed all 3 criteria, return your JSON.
+If you failed any, REWRITE and verify again before closing.
+
+THIS IS NON-NEGOTIABLE. God-level requires 4/4 EXACT in both sets.
+A JSON with <4/4 coverage will be rejected by the system (validateSinfonia).
+═══════════════════════════════════════════════════════════════════
 
 
 ═══════════════════════════════════════════════════════════════════
