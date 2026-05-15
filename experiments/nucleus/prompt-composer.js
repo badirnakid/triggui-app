@@ -2,6 +2,7 @@
  * ════════════════════════════════════════════════════════════════════════════
  * prompt-composer.js v2 — COMPOSITOR DINÁMICO DE LENTES
  * Arquitectura: ZERO duplication of curated data
+ * + V15 Sprint A Fase 2 — env override de lentes NIVEL DIOS CUÁNTICO-QUARK
  * ════════════════════════════════════════════════════════════════════════════
  *
  * QUÉ HACE ESTE ARCHIVO
@@ -30,6 +31,19 @@
  * Ventaja crítica: el curador edita SOLO en triggui-content. Push. Listo.
  * Cero sincronización manual entre repos. Cero drift posible.
  *
+ * V15 SPRINT A FASE 2 — ENV OVERRIDE NIVEL DIOS CUÁNTICO-QUARK
+ * ─────────────────────────────────────────────────────────────
+ * El curador ahora puede activar/desactivar lentes desde workflow_dispatch
+ * sin tocar el registry. Las env vars TRIGGUI_LENS_* funcionan como override:
+ *
+ *   TRIGGUI_LENS_HAWKINS=false        → desactiva lens "hawkins" en este run
+ *   TRIGGUI_LENS_HAWKINS=true         → asegura "hawkins" activo (incluso si
+ *                                        el registry lo tiene desactivado)
+ *   TRIGGUI_LENS_HAWKINS sin setear  → respeta registry (default cuántico)
+ *
+ * Garantía axiomática: si NINGUNA env var TRIGGUI_LENS_* está seteada,
+ * el comportamiento es IDÉNTICO al de pre-Fase 2. Defensa total.
+ *
  * ════════════════════════════════════════════════════════════════════════════
  */
 
@@ -52,6 +66,31 @@ const RELATIVE_PATHS = {
   kidsOverlay: "prompts/constitution/triggui-core-kids-overlay.md",
   registry: "lenses-registry.json",
   lensDir: "prompts/lenses",
+};
+
+// ════════════════════════════════════════════════════════════════════════════
+// V15 SPRINT A FASE 2 — MAPEO DE ENV VARS A LENS IDS
+// ════════════════════════════════════════════════════════════════════════════
+//
+// Cada env var TRIGGUI_LENS_* del workflow_dispatch mapea a un lens ID
+// canónico del registry. Si el curador desactiva el toggle en el workflow,
+// la env var llega como "false" y se remueve ese lens de los activos del run.
+//
+// Si el curador activa un toggle que el registry tiene desactivado, el
+// override hacia ON solo aplica si el lens existe en el registry (no
+// inventamos lentes que no existen — defensa cuántico-quark anti-drift).
+//
+// Nota: TRIGGUI_CRONO_ENABLED es alias legacy de TRIGGUI_LENS_CHRONOBIOLOGY.
+// Ambas mapean a 'chronobiology'. Si las dos están seteadas, la última
+// procesada gana (mapeo determinista por orden del Object).
+// ════════════════════════════════════════════════════════════════════════════
+const ENV_TO_LENS_ID = {
+  TRIGGUI_LENS_HAWKINS:        'hawkins',
+  TRIGGUI_LENS_PILARES:        'pilares',
+  TRIGGUI_LENS_GAME_THEORY:    'game-theory',
+  TRIGGUI_LENS_SELF_KNOWLEDGE: 'self-knowledge',
+  TRIGGUI_LENS_CHRONOBIOLOGY:  'chronobiology',
+  TRIGGUI_CRONO_ENABLED:       'chronobiology',  // alias legacy
 };
 
 // Cache en memoria — se resuelven UNA vez por run
@@ -249,6 +288,67 @@ function getActiveLensIds(registry) {
     .map(l => l.id);
 }
 
+// ════════════════════════════════════════════════════════════════════════════
+// V15 SPRINT A FASE 2 — APLICAR ENV OVERRIDES NIVEL DIOS CUÁNTICO-QUARK
+// ════════════════════════════════════════════════════════════════════════════
+//
+// Aplica overrides de env vars TRIGGUI_LENS_* sobre la lista de IDs activos
+// que vino del registry. Permite al curador activar/desactivar lentes desde
+// el workflow_dispatch sin tocar archivos.
+//
+// Lógica matemática axiomática:
+//   - env var = "true"  → asegura que el lens esté activo (lo agrega si no está)
+//   - env var = "false" → remueve el lens de la lista
+//   - env var no seteada → respeta lo que vino del registry (default cuántico)
+//
+// Si el override quiere activar un lens que NO existe en el registry, se loggea
+// warning y se ignora (defensa anti-drift: no inventamos lentes fantasma).
+//
+// Cada override aplicado se loggea explícitamente para auditabilidad nivel dios.
+//
+// @param {Array<string>} activeIds - IDs activos del registry
+// @param {Object} registry - Registry completo (para validar existencia de lens)
+// @returns {Array<string>} - IDs activos finales después de aplicar overrides
+// ════════════════════════════════════════════════════════════════════════════
+function applyEnvOverrides(activeIds, registry) {
+  // Empezamos con la lista del registry (defensa: copia, no mutamos input)
+  let resultado = Array.isArray(activeIds) ? [...activeIds] : [];
+  const overrides = [];
+
+  for (const [envVar, lensId] of Object.entries(ENV_TO_LENS_ID)) {
+    const rawValue = process.env[envVar];
+    // Defensa cuántico-quark: undefined o cadena vacía = no override
+    if (rawValue === undefined || rawValue === "") continue;
+
+    // Normalizar a bool: "true" → true, todo lo demás → false
+    const enabled = String(rawValue).trim().toLowerCase() === "true";
+    const wasActive = resultado.includes(lensId);
+
+    if (enabled && !wasActive) {
+      // Override hacia ON: agregar a la lista SI existe en registry
+      const existsInRegistry = registry?.lenses?.some(l => l && l.id === lensId);
+      if (existsInRegistry) {
+        resultado.push(lensId);
+        overrides.push(`+${lensId} (env ${envVar}=true)`);
+      } else {
+        console.warn(`⚠ Sprint A Fase 2: env ${envVar}=true pero lens "${lensId}" no existe en registry. Override ignorado.`);
+      }
+    } else if (!enabled && wasActive) {
+      // Override hacia OFF: remover de la lista
+      resultado = resultado.filter(id => id !== lensId);
+      overrides.push(`-${lensId} (env ${envVar}=false)`);
+    }
+    // Si enabled === wasActive → no cambia nada (idempotente)
+  }
+
+  // Log nivel dios: solo si hubo overrides reales (no spamea cuando todo igual)
+  if (overrides.length > 0) {
+    console.log(`🎚️ Sprint A Fase 2 overrides aplicados: ${overrides.join(", ")}`);
+  }
+
+  return resultado;
+}
+
 /**
  * FUNCIÓN PRINCIPAL — compone el bloque completo que se pasa a extractors.js
  * como parámetro `lens`.
@@ -263,7 +363,13 @@ export async function composeLensSystemBlock(opts = {}) {
   const isKids = String(mode).toLowerCase() === "kids";
 
   // Cache: solo si no hay baseLens y modo adulto default (kids se compone fresh)
-  if (_cachedComposition !== null && !refresh && !baseLens && !isKids) {
+  // V15 Sprint A Fase 2: además invalidamos cache si hay env overrides activos,
+  // porque el contenido del block depende de qué lentes están activos en este run.
+  const hasEnvOverrides = Object.keys(ENV_TO_LENS_ID).some(k => {
+    const v = process.env[k];
+    return v !== undefined && v !== "";
+  });
+  if (_cachedComposition !== null && !refresh && !baseLens && !isKids && !hasEnvOverrides) {
     return _cachedComposition;
   }
 
@@ -292,9 +398,10 @@ export async function composeLensSystemBlock(opts = {}) {
     }
   }
 
-  // ─── 2. Lentes activos ──────────────────────────────────────────────────
+  // ─── 2. Lentes activos (con V15 Sprint A Fase 2 env override) ───────────
   const registry = await loadRegistry();
-  const activeIds = getActiveLensIds(registry);
+  const activeIds_raw = getActiveLensIds(registry);
+  const activeIds = applyEnvOverrides(activeIds_raw, registry);
 
   if (activeIds.length > 0) {
     partes.push("");
@@ -331,8 +438,8 @@ export async function composeLensSystemBlock(opts = {}) {
 
   const composed = partes.join("\n");
 
-  // Guardar en cache solo si no hay baseLens NI es modo kids (ambos son por-run)
-  if (!baseLens && !isKids) {
+  // Guardar en cache solo si no hay baseLens NI es modo kids NI hay env overrides
+  if (!baseLens && !isKids && !hasEnvOverrides) {
     _cachedComposition = composed;
   }
 
@@ -363,10 +470,14 @@ export async function composeLensSystemBlock(opts = {}) {
  * Devuelve la lista de IDs de lentes activos. Útil para que otros módulos
  * (ej: lens-compatibility-scorer.js) sepan qué lentes scorear sin volver
  * a leer el registry.
+ *
+ * V15 Sprint A Fase 2: ahora también aplica env overrides, para que otros
+ * módulos vean la MISMA lista que el system prompt. Coherencia matemática.
  */
 export async function getActiveLenses() {
   const registry = await loadRegistry();
-  return getActiveLensIds(registry);
+  const raw = getActiveLensIds(registry);
+  return applyEnvOverrides(raw, registry);
 }
 
 /**
@@ -382,6 +493,9 @@ export function clearCache() {
  * Diagnóstico — verifica que la fuente sea resoluble y que los archivos
  * referenciados existan/sean accesibles.
  *
+ * V15 Sprint A Fase 2: reporta tanto los lentes del registry como los que
+ * quedan activos DESPUÉS de aplicar env overrides. Auditabilidad total.
+ *
  * @returns {Promise<Object>} - { ok, source, missing, found, summary }
  */
 export async function diagnose() {
@@ -394,6 +508,8 @@ export async function diagnose() {
       missing: ["TODOS — ninguna fuente disponible (ni filesystem ni HTTPS)"],
       found: [],
       active_lenses: [],
+      active_lenses_after_overrides: [],
+      env_overrides_detected: [],
       summary: "❌ Sin fuente disponible. Verifica conectividad o config.",
     };
   }
@@ -416,9 +532,21 @@ export async function diagnose() {
     missing.push(RELATIVE_PATHS.registry);
   }
 
-  // Cada lente activo
-  const activeIds = getActiveLensIds(registry);
-  for (const id of activeIds) {
+  // V15 Sprint A Fase 2: calcular tanto los activos raw como los finales post-override
+  const activeIds_raw = getActiveLensIds(registry);
+  const activeIds_final = applyEnvOverrides(activeIds_raw, registry);
+
+  // Detectar qué env vars están seteadas para reportar
+  const env_overrides_detected = [];
+  for (const [envVar, lensId] of Object.entries(ENV_TO_LENS_ID)) {
+    const v = process.env[envVar];
+    if (v !== undefined && v !== "") {
+      env_overrides_detected.push(`${envVar}=${v} → ${lensId}`);
+    }
+  }
+
+  // Cada lente final activo (post-override) — verificar que su .md exista
+  for (const id of activeIds_final) {
     const lensRaw = await readFromSource(`${RELATIVE_PATHS.lensDir}/${id}.md`);
     if (lensRaw) found.push(`lens:${id}`);
     else missing.push(`${RELATIVE_PATHS.lensDir}/${id}.md`);
@@ -433,7 +561,9 @@ export async function diagnose() {
     source: sourceLabel,
     missing,
     found,
-    active_lenses: activeIds,
+    active_lenses: activeIds_raw,                  // del registry sin overrides
+    active_lenses_after_overrides: activeIds_final, // final después de Sprint A Fase 2
+    env_overrides_detected,
     summary: missing.length === 0
       ? `✓ ${found.length} archivos OK desde ${sourceLabel}`
       : `⚠ ${missing.length} archivos faltantes: ${missing.join(", ")}`,
