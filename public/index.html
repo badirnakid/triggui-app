@@ -4572,6 +4572,241 @@ const PUNTO_LABEL_EN_V15 = {
   maximo:   'burn'
 };
 
+
+// ════════════════════════════════════════════════════════════════════════════
+// V15 SPRINT B FASE 1.1 — EXPANSIÓN DE KEYWORDS NIVEL DIOS
+// Agrega variantes morfológicas y keywords críticos faltantes
+// MERGE en runtime con los mapas originales — no rompe Sprint B Fase 1
+// ════════════════════════════════════════════════════════════════════════════
+
+// HAWKINS EXTRA: keywords críticos que faltaban
+const KEYWORDS_HAWKINS_EXTRA_V15 = {
+  20:  ['humillacion', 'culpable'],
+  50:  ['rendirse', 'sin esperanza', 'agobiado', 'agobiada', 'hartos', 'harta', 'harto'],
+  75:  ['llorando', 'lloro', 'duelo', 'desconsuelo', 'lastimado', 'lastimada', 'dolido', 'dolida'],
+  100: ['ansioso', 'ansiosa', 'preocupacion', 'temor', 'miedos', 'inseguridad', 'inseguro', 'insegura'],
+  125: ['ansiedad', 'queriendo', 'anhelar', 'anhelo'],
+  150: [
+    // Keywords faltantes que detecté en TEST 1
+    'pelea', 'pelearon', 'pelearse', 'peleando', 'peleados', 'peleamos',
+    'conflicto', 'conflictos', 'conflictiva', 'conflictivo',
+    'discusion', 'discusiones', 'discutir', 'discutimos', 'discutiendo',
+    'pleito', 'pleitos',
+    'agresion', 'agresivo', 'agresiva', 'agresividad',
+    'molesto', 'molesta', 'molestia', 'molestos', 'molestas',
+    'furia', 'furioso', 'furiosa',
+    'fastidio', 'fastidiado', 'fastidiada'
+  ],
+  200: ['decidiendo', 'decision', 'animo'],
+  250: ['calma', 'aceptando', 'soltando'],
+  310: ['compromiso', 'comprometido', 'comprometida', 'voluntad'],
+  350: ['paz interior', 'perdonar'],
+  400: ['comprendiendo', 'analizar', 'razonar'],
+  500: ['amando', 'agradeciendo'],
+  540: ['contentos', 'contentas', 'alegre'],
+  600: ['paz absoluta'],
+  700: ['iluminado', 'iluminada']
+};
+
+// PILARES EXTRA: variantes morfológicas y keywords faltantes
+const KEYWORDS_PILARES_EXTRA_V15 = {
+  salud_fisica: [
+    // Verbos y variantes
+    'ejercitar', 'ejercitando', 'ejercitarse', 'ejercito',
+    'descansando', 'reposar', 'reposando',
+    'durmiendo', 'dormido', 'dormida',
+    'moderar', 'moderando', 'moderarse',
+    'limpiar', 'limpiando', 'ordenar', 'ordenando',
+    'ayunar', 'ayunando',
+    'disciplinarme', 'disciplinarse',
+    'gimnasio', 'correr', 'caminar', 'caminando',
+    'meditar', 'meditando' // también espiritualidad
+  ],
+
+  salud_emocional: [
+    // Expresiones de estados
+    'sintiendo', 'sentido', 'sentida',
+    'enojado', 'enojada', // también hawkins
+    'frustrado', 'frustrada',
+    'expresando', 'expresarse',
+    'desahogarse', 'desahogo'
+  ],
+
+  familia: [
+    // Variantes verbales
+    'familiar', 'familiares',
+    'amando', 'amar',
+    'comunicar', 'comunicando',
+    'aportando',
+    'equilibrar', 'balancear', 'balanceando'
+  ],
+
+  negocios: [
+    // VERBOS críticos que faltaban (TEST 2 reveló esto)
+    'enfocar', 'enfocando', 'enfocado', 'enfocada', 'enfocarme',
+    'concentrar', 'concentrarse', 'concentrando',
+    'decidir', 'decidiendo', 'decidirse',
+    'construir', 'construyendo', 'construido', 'construida',
+    'emprender', 'emprendiendo', 'emprendedor',
+    'liderar', 'liderando', 'lider', 'liderazgo',
+    'agregar', 'agregando',
+    'mejorar', 'mejorando',
+    'aprender', 'aprendiendo',
+    'crecer', 'creciendo',
+    'desarrollar', 'desarrollando',
+    'trabajando', 'trabajo', 'trabajos',
+    'productividad', 'productivo', 'productiva',
+    'estrategia', 'estrategico', 'estrategica',
+    'reuniones', 'objetivos', 'metas', 'meta',
+    'startup', 'idea', 'ideas', 'innovacion'
+  ],
+
+  espiritualidad: [
+    // Verbos y variantes
+    'reflexionar', 'reflexionando',
+    'iluminarse', 'iluminando',
+    'meditar', 'meditando', 'meditacion',
+    'silenciar', 'silenciando',
+    'aislarse', 'aislando',
+    'orar', 'orando',
+    'contemplar', 'contemplando', 'contemplativo',
+    'creer', 'creyendo'
+  ],
+
+  relaciones_clave: [
+    // Variantes verbales + estados
+    'agradecer', 'agradeciendo', 'agradecido', 'agradecida',
+    'respetar', 'respetando',
+    'compadecer', 'compadeciendo',
+    'dar', 'dando',
+    'amistad', 'amistades',
+    'conocidos', 'compañero', 'compañera',
+    'reunirse', 'reuniendo',
+    'separados', 'separadas', 'separarse',
+    'romper', 'rompimos', 'ruptura'
+  ],
+
+  salud_financiera: [
+    // Variantes verbales
+    'ahorrando',
+    'pagando',
+    'gastando', 'gastos', 'gastar',
+    'invirtiendo', 'invertir',
+    'cobrar', 'cobrando',
+    'facturar', 'facturando',
+    'crediticio', 'creditos',
+    'banco', 'bancos'
+  ]
+};
+
+// PUNTOS EXTRA: variantes morfológicas
+const KEYWORDS_PUNTOS_EXTRA_V15 = {
+  cero: [
+    // Variantes de space
+    'descansando', 'reposo', 'reposar', 'reposando',
+    'recuperandome', 'recuperando',
+    'silenciar', 'callado', 'callada',
+    'meditando',
+    'desconectarme', 'desconexion',
+    'paz interior', 'sosiego',
+    'siesta', 'siesta', 'dormir', 'durmiendo',
+    'parar', 'parando', 'pausa', 'pausas',
+    'lento', 'lenta', 'lentitud'
+  ],
+
+  creativo: [
+    // Variantes de think
+    'planeando', 'planeacion',
+    'pensando', 'pensamiento', 'pensamientos',
+    'idear', 'ideando',
+    'creando', 'creacion', 'creando',
+    'enfocando', 'concentrarse',
+    'imaginar', 'imaginando',
+    'sonar', 'soñar', 'sueño',
+    'reflexionando',
+    'analizar', 'analizando', 'analisis',
+    'visualizando',
+    'decidirse', 'decidiendo'
+  ],
+
+  activo: [
+    // Variantes de do
+    'ejecutando', 'realizando',
+    'actuando',
+    'emprendiendo',
+    'construyendo',
+    'movimiento', 'moviendome',
+    'avanzar', 'avanzando', 'avance',
+    'progresar', 'progresando',
+    'cumplir', 'cumpliendo',
+    'completar', 'completando',
+    'terminar', 'terminando'
+  ],
+
+  maximo: [
+    // Variantes de burn
+    'aguantando',
+    'resistiendo',
+    'intensidad', 'intenso', 'intensa',
+    'esfuerzo', 'esforzando', 'esforzarse',
+    'limite', 'limites',
+    'extremo', 'extrema',
+    'todo', 'maximo', 'maximos',
+    'agotamiento', 'agotador', 'agotadora',
+    'colapso', 'crisis',
+    'al limite'
+  ]
+};
+
+// ────────────────────────────────────────────────────────────────────────────
+// MERGE matemático de los EXTRA con los originales (deduplicado)
+// ────────────────────────────────────────────────────────────────────────────
+(function _mergeKeywordsExtraV15() {
+  function _mergeArray(original, extra) {
+    if (!Array.isArray(original) || !Array.isArray(extra)) return original;
+    var set = {};
+    for (var i = 0; i < original.length; i++) set[original[i]] = true;
+    for (var j = 0; j < extra.length; j++) set[extra[j]] = true;
+    return Object.keys(set);
+  }
+
+  // Merge hawkins
+  for (var lvl in KEYWORDS_HAWKINS_EXTRA_V15) {
+    if (KEYWORDS_HAWKINS_V15[lvl]) {
+      KEYWORDS_HAWKINS_V15[lvl] = _mergeArray(KEYWORDS_HAWKINS_V15[lvl], KEYWORDS_HAWKINS_EXTRA_V15[lvl]);
+    } else {
+      KEYWORDS_HAWKINS_V15[lvl] = KEYWORDS_HAWKINS_EXTRA_V15[lvl].slice();
+    }
+  }
+
+  // Merge pilares
+  for (var pilar in KEYWORDS_PILARES_EXTRA_V15) {
+    if (KEYWORDS_PILARES_V15[pilar]) {
+      KEYWORDS_PILARES_V15[pilar] = _mergeArray(KEYWORDS_PILARES_V15[pilar], KEYWORDS_PILARES_EXTRA_V15[pilar]);
+    } else {
+      KEYWORDS_PILARES_V15[pilar] = KEYWORDS_PILARES_EXTRA_V15[pilar].slice();
+    }
+  }
+
+  // Merge puntos
+  for (var punto in KEYWORDS_PUNTOS_EXTRA_V15) {
+    if (KEYWORDS_PUNTOS_V15[punto]) {
+      KEYWORDS_PUNTOS_V15[punto] = _mergeArray(KEYWORDS_PUNTOS_V15[punto], KEYWORDS_PUNTOS_EXTRA_V15[punto]);
+    } else {
+      KEYWORDS_PUNTOS_V15[punto] = KEYWORDS_PUNTOS_EXTRA_V15[punto].slice();
+    }
+  }
+
+  // Log auditable
+  var hawkinsTotal = 0, pilaresTotal = 0, puntosTotal = 0;
+  for (var l in KEYWORDS_HAWKINS_V15) hawkinsTotal += KEYWORDS_HAWKINS_V15[l].length;
+  for (var p in KEYWORDS_PILARES_V15) pilaresTotal += KEYWORDS_PILARES_V15[p].length;
+  for (var pt in KEYWORDS_PUNTOS_V15) puntosTotal += KEYWORDS_PUNTOS_V15[pt].length;
+  console.log('🎯 V15 Sprint B Fase 1.1 expansion LIVE — hawkins=' + hawkinsTotal +
+              ' pilares=' + pilaresTotal + ' puntos=' + puntosTotal + ' keywords totales');
+})();
+
+
 /**
  * analyzeInput(tokens) — análisis cuántico-quark del input del usuario.
  *
