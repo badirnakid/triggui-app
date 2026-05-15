@@ -77,3 +77,6 @@ node_modules/
 /inputs-history/
 /quality-reports/
 /metrics/
+
+# Apps Script local config (clasp)
+apps-script/.clasp.json
