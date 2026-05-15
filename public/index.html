@@ -8264,8 +8264,47 @@ bootTriggui();
         // 3. animoScore — elevación si query lo necesita
         var animoScore = (queryNeedsElevation && typeof item.eje_animo === 'number') ? item.eje_animo : 0;
 
-        var totalScore = queryScore * 1.5 + rolScore * 1.0 + animoScore * 0.5;
-        scored.push({ item: item, score: totalScore });
+        // V15 SPRINT B FASE 2 — 6 ejes scoring NIVEL DIOS
+        // 4. hawkinsElevationFit — premia eje_animo cerca del target Hawkins del usuario
+        var hawkinsElevationFit = 0;
+        if (typeof window.__TRIGGUI_QUERY_HAWKINS_TARGET__ === 'number' &&
+            typeof item.eje_animo === 'number') {
+          var targetNormV15 = window.__TRIGGUI_QUERY_HAWKINS_TARGET__ / 700;
+          hawkinsElevationFit = 1 - Math.abs(item.eje_animo - targetNormV15);
+          if (hawkinsElevationFit < 0) hawkinsElevationFit = 0;
+        }
+
+        // 5. pilarFit — premia frases del pilar detectado (Sprint C: usará item.pilar)
+        var pilarFit = 0;
+        var qPilaresV15 = window.__TRIGGUI_QUERY_PILARES__ || [];
+        if (qPilaresV15.length > 0 && item.pilar) {
+          if (qPilaresV15.indexOf(item.pilar) !== -1) pilarFit = 1.0;
+        }
+
+        // 6. puntoFit — premia frases alineadas con punto del ciclo (Sprint C: usará item.punto_optimo)
+        var puntoFit = 0;
+        var puntoActualV15 = window.__TRIGGUI_PUNTO_CICLO__;
+        if (puntoActualV15 && item.punto_optimo) {
+          if (item.punto_optimo === puntoActualV15) puntoFit = 1.0;
+          else if (Array.isArray(item.punto_optimo) && item.punto_optimo.indexOf(puntoActualV15) !== -1) puntoFit = 1.0;
+        }
+
+        // Score con 6 ejes cuántico-quark axiomático
+        var totalScore = queryScore * 1.5 + rolScore * 1.0 + animoScore * 0.5
+                       + hawkinsElevationFit * 0.7 + pilarFit * 0.6 + puntoFit * 0.5;
+        scored.push({
+          item: item,
+          score: totalScore,
+          // V15 Fase 2: breakdown auditable de los 6 ejes
+          breakdown: {
+            queryScore: queryScore,
+            rolScore: rolScore,
+            animoScore: animoScore,
+            hawkinsElevationFit: hawkinsElevationFit,
+            pilarFit: pilarFit,
+            puntoFit: puntoFit
+          }
+        });
       }
 
       if (scored.length > 0) {
@@ -8278,6 +8317,19 @@ bootTriggui();
 
         // 🎼 C7 v12 — console log para debug
         try {
+          // V15 SPRINT B FASE 2 — log de scoring auditable del ganador
+          console.log("[Triggui Scoring v15 Fase2]", {
+            winner_score: topGroup[pickIdx].score.toFixed(3),
+            breakdown: topGroup[pickIdx].breakdown,
+            // Contexto cuántico del momento
+            query_hawkins: window.__TRIGGUI_QUERY_HAWKINS__,
+            query_hawkins_target: window.__TRIGGUI_QUERY_HAWKINS_TARGET__,
+            query_pilares: window.__TRIGGUI_QUERY_PILARES__,
+            punto_ciclo: window.__TRIGGUI_PUNTO_CICLO__,
+            punto_label_en: window.__TRIGGUI_PUNTO_LABEL_EN__,
+            punto_source: window.__TRIGGUI_PUNTO_SOURCE__,
+            energia: window.__TRIGGUI_ENERGIA__
+          });
           console.log("[Triggui Bocado v12]", {
             role_solicitado: desiredRole || null,
             role_obtenido: picked.rol_sinfonico || null,
