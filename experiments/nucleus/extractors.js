@@ -803,6 +803,79 @@ al lector.
   0.9-1.0: contenido luminoso, elevador (asombro, gozo puro)
 
 ───────────────────────────────────────────────────────────────────
+PILAR — a cuál de los 7 pilares vitales pertenece esta phrase
+───────────────────────────────────────────────────────────────────
+
+Para cada phrase, eliges UNO de estos 7 pilares oficiales Triggui:
+
+  • "salud_fisica": cuerpo, energía, ejercicio, ayuno, disciplina
+    física, autoconocimiento físico, descanso, fuerza de voluntad,
+    orden, moderación. La phrase apela al cuerpo o al estar listo.
+
+  • "salud_emocional": expresar emociones, estar aquí y ahora,
+    darse cuenta, conciencia, dominar emociones. La phrase apela
+    al estado interno sin necesariamente involucrar a otros.
+
+  • "familia": núcleo familiar (hijos, padres, hermanos, pareja
+    en sentido marital). La phrase invoca dinámicas o vínculos
+    de hogar: comunicación, armonía, equilibrio, amor familiar,
+    presencia, empatía hacia los nuestros.
+
+  • "negocios": trabajo, proyectos, productividad. La phrase apela
+    a enfoque, simplicidad, perseverancia, determinación, honestidad,
+    mejora continua, agregar valor, tiempo inteligente, creación de
+    impacto profesional.
+
+  • "espiritualidad": dimensión trascendente. La phrase invoca fe,
+    sabiduría, reflexión, iluminación, paciencia, silencio, claridad,
+    tranquilidad, aislamiento contemplativo, conexión con algo más
+    grande.
+
+  • "relaciones_clave": vínculos significativos más allá de la
+    familia inmediata (amigos, mentores, comunidad, colaboradores).
+    La phrase apela a gratitud, compasión, humildad, calidez,
+    empatía, generosidad, respeto entre seres humanos.
+
+  • "salud_financiera": relación con el dinero como recurso. La
+    phrase apela a frugalidad, estabilidad, seguridad financiera,
+    libertad económica, abundancia responsable.
+
+REGLA: elige UN solo pilar predominante por phrase. Si una phrase
+toca dos pilares, elige el más fuerte. Si verdaderamente es ambiguo,
+elige el primero en este orden de prioridad: salud_fisica →
+salud_emocional → familia → negocios → espiritualidad →
+relaciones_clave → salud_financiera.
+
+───────────────────────────────────────────────────────────────────
+PUNTO_OPTIMO — en qué momento del ciclo florece esta phrase
+───────────────────────────────────────────────────────────────────
+
+Triggui modela el día humano en 4 puntos del ciclo. Cada phrase
+encuentra su mejor lectura en UN punto específico:
+
+  • "cero" (space): momento de descanso, retiro, recuperación,
+    presencia, intuición, silencio. La phrase pide pausa para
+    asentarse. Frases contemplativas, silenciosas, interiores.
+
+  • "creativo" (think): momento de ideación, claridad mental,
+    planeación, reflexión enfocada. La phrase abre posibilidades,
+    invita a pensar, despierta nuevas conexiones. Frases que
+    siembran preguntas o visualizaciones.
+
+  • "activo" (do): momento de ejecución, ritmo, hacer. La phrase
+    empuja a moverse, decidir, actuar, mantener constancia. Frases
+    que detonan acción inmediata o sostienen el ritmo.
+
+  • "maximo" (burn): momento de intensidad máxima, esfuerzo total,
+    resistencia. La phrase es para cuando el lector está al límite,
+    aguantando vara. Frases de alto voltaje motivacional o de
+    templanza extrema.
+
+REGLA: elige UN solo punto predominante por phrase. Si florece en
+dos, elige el más fuerte. Un libro tendrá distribución mixta
+natural entre los 4 puntos — no necesita ser 25/25/25/25.
+
+───────────────────────────────────────────────────────────────────
 INDESCIFRABILIDAD — la sinfonía no puede tener patrón visible
 ───────────────────────────────────────────────────────────────────
 
@@ -863,6 +936,15 @@ NO ES OPCIONAL. Esta auto-verificación es parte de tu trabajo.
 ✓ COBERTURA OBLIGATORIA og_phrases_es:
   Los 4 og_phrases_es también DEBEN tener los 4 roles únicos.
   Mismas reglas: abrir, profundizar, aterrizar, resonar — uno de cada.
+
+✓ COBERTURA OBLIGATORIA pilar + punto_optimo (V15 SPRINT C):
+  CADA edition_block_es y CADA og_phrase_es DEBE tener:
+  - pilar ∈ {salud_fisica, salud_emocional, familia, negocios,
+             espiritualidad, relaciones_clave, salud_financiera}
+  - punto_optimo ∈ {cero, creativo, activo, maximo}
+  Phrases sin esos campos = FALLO TOTAL del trabajo.
+  El pilar refleja el área vital donde opera la phrase.
+  El punto_optimo refleja el momento del día donde florece mejor.
 
 ✓ INDESCIFRABILIDAD reverificada:
   Lee tus 4 edition_blocks_es en orden aleatorio mentalmente.

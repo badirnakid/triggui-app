@@ -277,6 +277,45 @@ export function compatMapper({
   const gestureTypesES = (contentES.edition_blocks_es || []).map((b) => b?.gesture_type);
   const gestureTypesEN = (contentEN.edition_blocks_en || []).map((b) => b?.gesture_type);
 
+  // ════════════════════════════════════════════════════════════════════════
+  // V15 SPRINT C — meta agregada del libro nivel dios cuántico-quark
+  // Calcula _animo_promedio, _valor_predominante, _punto_ciclo_optimo
+  // Defensa graceful: si phrases no tienen pilar/punto_optimo → null
+  // ════════════════════════════════════════════════════════════════════════
+  const allPhrasesV15 = [
+    ...(emojiInjected.edition_blocks_es || []),
+    ...(emojiInjected.og_phrases_es || [])
+  ];
+
+  // _animo_promedio: avg de eje_animo de todas las phrases ES
+  const animoValuesV15 = allPhrasesV15
+    .map(p => (p && typeof p.eje_animo === 'number') ? p.eje_animo : null)
+    .filter(v => v !== null);
+  const animoPromedioV15 = animoValuesV15.length > 0
+    ? Math.round(animoValuesV15.reduce((a, b) => a + b, 0) / animoValuesV15.length * 100) / 100
+    : null;
+
+  // _valor_predominante: pilar más frecuente entre phrases
+  const pilarCountsV15 = {};
+  for (const p of allPhrasesV15) {
+    if (p && p.pilar) pilarCountsV15[p.pilar] = (pilarCountsV15[p.pilar] || 0) + 1;
+  }
+  const valorPredominanteV15 = Object.keys(pilarCountsV15).length > 0
+    ? Object.entries(pilarCountsV15).sort((a, b) => b[1] - a[1])[0][0]
+    : null;
+
+  // _punto_ciclo_optimo: punto más frecuente entre phrases
+  const puntoCountsV15 = {};
+  for (const p of allPhrasesV15) {
+    if (p && p.punto_optimo) puntoCountsV15[p.punto_optimo] = (puntoCountsV15[p.punto_optimo] || 0) + 1;
+  }
+  const puntoCicloOptimoV15 = Object.keys(puntoCountsV15).length > 0
+    ? Object.entries(puntoCountsV15).sort((a, b) => b[1] - a[1])[0][0]
+    : null;
+
+  console.log(`   🎯 V15 Sprint C meta: animo=${animoPromedioV15} valor=${valorPredominanteV15} punto=${puntoCicloOptimoV15}`);
+
+
   return {
     titulo: book.titulo,
     autor: autorFinal,
@@ -313,6 +352,12 @@ export function compatMapper({
 
     // 🎯 SPRINT A v14 — DNA curatorial persistido
     _curator_meta: globalThis.__TRIGGUI_CURATOR_CONTEXT__ || null,
+
+    // V15 SPRINT C — meta agregada del libro
+    _animo_promedio: animoPromedioV15,
+    _valor_predominante: valorPredominanteV15,
+    _punto_ciclo_optimo: puntoCicloOptimoV15,
+
 
     _nucleus: {
       book_identity: anchorsData.book_identity,
