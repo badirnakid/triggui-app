@@ -506,7 +506,7 @@ jobs:
 
           if [ -n "$FILES" ]; then
             echo "🌒 Capa 4 — sanitize sobre:$FILES"
-            node "$GITHUB_WORKSPACE/triggui-content/sanitize-catalog.mjs" $FILES
+            node ./sanitize-catalog.mjs $FILES
             EXIT=$?
             if [ $EXIT -eq 0 ]; then
               echo "✓ Capa 4 OK — JSON limpio"

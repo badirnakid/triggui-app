@@ -32,6 +32,8 @@
 
 
 import fs from "node:fs/promises";
+// v3.7 Capa 2: walker puro de sanitización (única fuente de verdad)
+import { sanitizeObject, formatStats } from "./sanitize-walker.js";
 
 
 const SCHEMA_URL = new URL("./edition-nucleus.schema.json", import.meta.url);
@@ -42,10 +44,24 @@ async function loadSchemas() {
 }
 
 
-// Defensa: si el modelo devuelve null, undefined, o JSON inválido, devolvemos {} en lugar de tronar
+// Defensa: si el modelo devuelve null, undefined, o JSON inválido, devolvemos {} en lugar de tronar.
+// v3.7 CAPA 2 NIVEL DIOS CUÁNTICO-QUARK: sanitización transparente al parsear.
+// Si el LLM escribió control chars (NULL, ANSI escapes) o emojis rotos
+// (bug \u001f<hex> de gpt-4o-mini), los reparamos AQUÍ antes de que la
+// mugre entre al pipeline. Filosofía self-healing: limpia + log + devuelve.
+// Las 5 llamadas a safeParseJSON (líneas 334, 627, 840, 946, 1116) heredan
+// la sanitización automáticamente — defensa en N capas sin tocar callsites.
 function safeParseJSON(raw) {
   if (!raw || typeof raw !== "string") return {};
-  try { return JSON.parse(raw); } catch { return {}; }
+  let parsed;
+  try { parsed = JSON.parse(raw); } catch { return {}; }
+
+  // v3.7 Capa 2: sanitize transparente vía sanitize-walker.js
+  const { clean, stats, modified } = sanitizeObject(parsed);
+  if (modified) {
+    console.log(`   🌒 v3.7 Capa 2 safeParseJSON sanitize: ${formatStats(stats)}`);
+  }
+  return clean;
 }
 
 

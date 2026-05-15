@@ -51,6 +51,8 @@ import path from "node:path";
 import { randomInt, createHash } from "node:crypto";
 import { parse } from "csv-parse/sync";
 import OpenAI from "openai";
+// v3.7 Capa 3: walker puro de sanitización (única fuente de verdad)
+import { sanitizeObject, formatStats } from "./sanitize-walker.js";
 
 import { resolveGrounding } from "./grounding-resolver.js";
 import {
@@ -173,8 +175,20 @@ const INPUTS = {
 async function fileExists(p) { try { await fs.access(p); return true; } catch { return false; } }
 
 async function writeJSON(p, data) {
+  // v3.7 CAPA 3 NIVEL DIOS CUÁNTICO-QUARK: sanitización transparente pre-disk.
+  // Toda escritura JSON del nucleus pasa por aquí (3 callsites: línea ~1447
+  // merge idempotente, línea ~1562 batch principal, línea ~1568 metrics).
+  // Sanitizar AQUÍ garantiza matemáticamente que NADA sucio llegue al disco,
+  // sin importar el origen (LLM, merge con archivo previo, estado intermedio).
+  // Defensa transparente: las 3 callsites heredan sanitización sin tocarlas.
+  // Filosofía self-healing: limpia + log + escribe. NUNCA aborta pipeline.
+  const { clean, stats, modified } = sanitizeObject(data);
+  if (modified) {
+    console.log(`   🌒 v3.7 Capa 3 writeJSON sanitize [${p}]: ${formatStats(stats)}`);
+  }
+
   const tmp = `${p}.tmp-${process.pid}-${Date.now()}`;
-  const content = `${JSON.stringify(data, null, 2)}\n`;
+  const content = `${JSON.stringify(clean, null, 2)}\n`;
   await fs.writeFile(tmp, content, "utf8");
   await fs.rename(tmp, p);
 }
