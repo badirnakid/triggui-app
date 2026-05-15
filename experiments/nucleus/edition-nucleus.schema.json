@@ -325,7 +325,8 @@
             "required": [
               "phrase",
               "rol_sinfonico",
-              "eje_animo"
+              "eje_animo",
+              "eje_valor"
             ],
             "properties": {
               "phrase": {
@@ -348,9 +349,16 @@
                 "maximum": 1
               },
               "eje_valor": {
-                "type": "string",
-                "minLength": 2,
-                "maxLength": 30
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 30
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               }
             }
           }
@@ -367,7 +375,8 @@
               "sensory_anchor",
               "phrase",
               "rol_sinfonico",
-              "eje_animo"
+              "eje_animo",
+              "eje_valor"
             ],
             "properties": {
               "gesture_type": {
@@ -414,9 +423,16 @@
                 "maximum": 1
               },
               "eje_valor": {
-                "type": "string",
-                "minLength": 2,
-                "maxLength": 30
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 30
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               }
             }
           }
@@ -490,7 +506,8 @@
             "required": [
               "phrase",
               "role_symphonic",
-              "mood_axis"
+              "mood_axis",
+              "value_axis"
             ],
             "properties": {
               "phrase": {
@@ -513,9 +530,16 @@
                 "maximum": 1
               },
               "value_axis": {
-                "type": "string",
-                "minLength": 2,
-                "maxLength": 30
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 30
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               }
             }
           }
@@ -532,7 +556,8 @@
               "sensory_anchor",
               "phrase",
               "role_symphonic",
-              "mood_axis"
+              "mood_axis",
+              "value_axis"
             ],
             "properties": {
               "gesture_type": {
@@ -579,9 +604,16 @@
                 "maximum": 1
               },
               "value_axis": {
-                "type": "string",
-                "minLength": 2,
-                "maxLength": 30
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 30
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               }
             }
           }
