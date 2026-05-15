@@ -2405,7 +2405,19 @@ def build_single():
     tarjeta["parrafoBot"] = normalize_highlight_syntax(tarjeta.get("parrafoBot", ""))
 
     bocado_eco_pool = build_bocado_eco_pool(libro_data)
-    print(f"🌒 Pool bocado/eco: {len(bocado_eco_pool)} frases únicas (concepts del nucleus)")
+    # 🌒 V14: contar sinfónicas (dicts con metadata) vs legacy (strings)
+    _sinfonico_count = sum(1 for p in bocado_eco_pool if isinstance(p, dict))
+    _legacy_count = sum(1 for p in bocado_eco_pool if isinstance(p, str))
+    if _sinfonico_count > 0:
+        # Cobertura por rol — para validación matemática del smoke
+        _roles = {}
+        for p in bocado_eco_pool:
+            if isinstance(p, dict) and p.get("rol"):
+                _roles[p["rol"]] = _roles.get(p["rol"], 0) + 1
+        _roles_str = ", ".join(f"{k}={v}" for k, v in sorted(_roles.items()))
+        print(f"🌒 Pool bocado/eco V14: {len(bocado_eco_pool)} frases sinfónicas ({_roles_str})")
+    else:
+        print(f"🌒 Pool bocado/eco V13 legacy: {len(bocado_eco_pool)} frases (concepts del nucleus, sin metadata sinfónica)")
 
     edicion_single = {
         "id": slug,
