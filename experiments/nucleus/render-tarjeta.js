@@ -51,7 +51,11 @@ export function renderTarjetaEN(cardEN, visualComposition) {
 
 export function prepareOGPhrases(phrases) {
   if (!Array.isArray(phrases)) return [];
-  return phrases.map((p) => String(p || "").trim()).filter(Boolean);
+  return phrases.map((p) => {
+    // v12+: items pueden ser strings (legacy) o objects {phrase, rol_sinfonico, eje_animo}
+    const raw = (p && typeof p === 'object') ? p.phrase : p;
+    return String(raw || "").trim();
+  }).filter(Boolean);
 }
 
 export function prepareEditionPhrases(blocks) {

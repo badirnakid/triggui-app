@@ -268,6 +268,78 @@ async function retryOnce(fn, label) {
    PROCESO DE UN LIBRO — pipeline completo de 10 fases (F9 NUEVA en Step 3)
 ────────────────────────────────────────────────────────────────────────────── */
 
+/* ═══════════════════════════════════════════════════════════════════════════════
+   C3 v12 — AUTO-VALIDACIÓN SINFÓNICA + ANTI-BRACKET
+   Helpers observatorios: registran issues, no fuerzan retry al LLM.
+═══════════════════════════════════════════════════════════════════════════════ */
+
+function validateSinfonia(contentXX, lang) {
+  const issues = [];
+  const ebKey = 'edition_blocks_' + lang;
+  const ogKey = 'og_phrases_' + lang;
+  const rolKey = lang === 'en' ? 'role_symphonic' : 'rol_sinfonico';
+  const animoKey = lang === 'en' ? 'mood_axis' : 'eje_animo';
+
+  const eb = contentXX && contentXX[ebKey];
+  if (Array.isArray(eb)) {
+    const roles = eb.map(b => b && b[rolKey]).filter(Boolean);
+    const unique = new Set(roles);
+    if (unique.size < 4) {
+      issues.push(`${ebKey} cobertura ${unique.size}/4 (${[...unique].join(',')})`);
+    }
+    for (const b of eb) {
+      const v = b && b[animoKey];
+      if (typeof v !== 'number' || v < 0 || v > 1) {
+        issues.push(`${animoKey} fuera de rango en ${ebKey}`);
+        break;
+      }
+    }
+  }
+
+  const og = contentXX && contentXX[ogKey];
+  if (Array.isArray(og)) {
+    const roles = og.map(b => (b && typeof b === 'object') ? b[rolKey] : null).filter(Boolean);
+    const unique = new Set(roles);
+    if (unique.size < 4 && og.some(b => b && typeof b === 'object')) {
+      issues.push(`${ogKey} cobertura ${unique.size}/4 (${[...unique].join(',')})`);
+    }
+  }
+
+  return { ok: issues.length === 0, issues };
+}
+
+function detectSpuriousBrackets(contentXX, lang) {
+  const ebKey = 'edition_blocks_' + lang;
+  const ogKey = 'og_phrases_' + lang;
+  const phrases = [];
+
+  const eb = contentXX && contentXX[ebKey];
+  if (Array.isArray(eb)) {
+    for (const b of eb) if (b && b.phrase) phrases.push(b.phrase);
+  }
+  const og = contentXX && contentXX[ogKey];
+  if (Array.isArray(og)) {
+    for (const p of og) {
+      const text = (typeof p === 'string') ? p : (p && p.phrase) || '';
+      if (text) phrases.push(text);
+    }
+  }
+
+  const dirty = [];
+  for (const phrase of phrases) {
+    if (/[\u{1F300}-\u{1F9FF}][\[\]]/u.test(phrase)) { dirty.push(phrase); continue; }
+    if (/[\[\]][\u{1F300}-\u{1F9FF}]/u.test(phrase)) { dirty.push(phrase); continue; }
+    const open = (phrase.match(/\[/g) || []).length;
+    const close = (phrase.match(/\]/g) || []).length;
+    if (open !== close) { dirty.push(phrase); continue; }
+    if (open > 0 && !/^[^\[\]]*\[H\][^\[\]]*\[\/H\][^\[\]]*$/.test(phrase)) {
+      dirty.push(phrase);
+    }
+  }
+
+  return dirty;
+}
+
 async function processBook(book, inputs, inputsSnapshot) {
   const t0 = Date.now();
   const crono = CFG.cronoEnabled ? cronobioContext() : cronobioContext(new Date());
@@ -641,6 +713,21 @@ async function processBook(book, inputs, inputsSnapshot) {
 
   // ═══ F8: POST-PROCESADORES DETERMINISTAS ════════════════════════════
   const tF8 = Date.now();
+  // ═══ C3: VALIDACIÓN SINFÓNICA + ANTI-BRACKET (v12) ════════════════════════
+  const sinfoniaES = validateSinfonia(contentESFinal, 'es');
+  const sinfoniaEN = validateSinfonia(contentENFinal, 'en');
+  const bracketsES = detectSpuriousBrackets(contentESFinal, 'es');
+  const bracketsEN = detectSpuriousBrackets(contentENFinal, 'en');
+  if (sinfoniaES.ok && sinfoniaEN.ok) {
+    console.log(`   🎼 Sinfonía: 4/4 roles ES + 4/4 roles EN ✓`);
+  } else {
+    if (!sinfoniaES.ok) console.warn(`   🎼 Sinfonía ES degradada: ${sinfoniaES.issues.join('; ')}`);
+    if (!sinfoniaEN.ok) console.warn(`   🎼 Sinfonía EN degradada: ${sinfoniaEN.issues.join('; ')}`);
+  }
+  if (bracketsES.length > 0 || bracketsEN.length > 0) {
+    console.warn(`   🛡️  Brackets espurios: ES=${bracketsES.length}, EN=${bracketsEN.length} (capa 5 frontend saneará)`);
+  }
+
   const emojiInjected = injectEmojis(contentESFinal, contentENFinal, book.titulo, book.autor);
   const confidence = calculateConfidence({
     bookIdentityConfidence: groundTruthMeta.book_identity_confidence,

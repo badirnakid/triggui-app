@@ -7513,6 +7513,7 @@ bootTriggui();
     return result;
   }
 
+  // 🎼 C5 v12 — Pool ampliado: lee metadata sinfónica desde _nucleus + retrocompat
   function buildPhrasePool(libros, query) {
     var candidates = getTopKCandidates(libros, query, TOP_K);
     var pool = [];
@@ -7520,27 +7521,120 @@ bootTriggui();
     for (var c = 0; c < candidates.length; c++) {
       var libro = candidates[c];
       if (!libro) continue;
-      var frasesField = (lang === 'en' && Array.isArray(libro.frases_en) && libro.frases_en.length === 4) ? libro.frases_en : libro.frases;
-      if (Array.isArray(frasesField)) {
-        for (var f = 0; f < frasesField.length; f++) {
-          var clean = cleanText(frasesField[f]);
-          if (clean.length >= 8 && clean.length <= 140) pool.push({ text: clean, source: libro.titulo || 'unknown' });
+
+      // ═══ FUENTE 1: edition_blocks desde _nucleus (con metadata sinfónica) ═══
+      var ebField = null;
+      if (libro._nucleus) {
+        ebField = (lang === 'en' && Array.isArray(libro._nucleus.edition_blocks_en) && libro._nucleus.edition_blocks_en.length === 4)
+          ? libro._nucleus.edition_blocks_en
+          : libro._nucleus.edition_blocks_es;
+      }
+      if (Array.isArray(ebField) && ebField.length > 0) {
+        for (var f = 0; f < ebField.length; f++) {
+          var b = ebField[f];
+          if (!b || !b.phrase) continue;
+          var cleanPh = cleanText(b.phrase);
+          if (cleanPh.length >= 8 && cleanPh.length <= 140) {
+            pool.push({
+              text: cleanPh,
+              source: libro.titulo || 'unknown',
+              rol_sinfonico: b.rol_sinfonico || b.role_symphonic || null,
+              eje_animo: typeof b.eje_animo === 'number' ? b.eje_animo : (typeof b.mood_axis === 'number' ? b.mood_axis : 0.5),
+              eje_valor: b.eje_valor || b.value_axis || null,
+              origin: 'edition_block'
+            });
+          }
+        }
+      } else {
+        // Fallback: libro.frases (libros pre-v12 sin _nucleus)
+        var frasesField = (lang === 'en' && Array.isArray(libro.frases_en) && libro.frases_en.length === 4) ? libro.frases_en : libro.frases;
+        if (Array.isArray(frasesField)) {
+          for (var f = 0; f < frasesField.length; f++) {
+            var clean = cleanText(frasesField[f]);
+            if (clean.length >= 8 && clean.length <= 140) {
+              pool.push({
+                text: clean, source: libro.titulo || 'unknown',
+                rol_sinfonico: null, eje_animo: 0.5, eje_valor: null,
+                origin: 'edition_block_legacy'
+              });
+            }
+          }
         }
       }
+
+      // ═══ FUENTE 2: og_phrases desde _nucleus (NUEVO en C5) ═══
+      var ogField = null;
+      if (libro._nucleus) {
+        ogField = (lang === 'en' && Array.isArray(libro._nucleus.og_phrases_en))
+          ? libro._nucleus.og_phrases_en
+          : libro._nucleus.og_phrases_es;
+      }
+      if (Array.isArray(ogField) && ogField.length > 0) {
+        for (var o = 0; o < ogField.length; o++) {
+          var ogItem = ogField[o];
+          var ogText, ogRol, ogAnimo, ogValor;
+          if (typeof ogItem === 'string') {
+            ogText = ogItem; ogRol = null; ogAnimo = 0.5; ogValor = null;
+          } else if (ogItem && ogItem.phrase) {
+            ogText = ogItem.phrase;
+            ogRol = ogItem.rol_sinfonico || ogItem.role_symphonic || null;
+            ogAnimo = typeof ogItem.eje_animo === 'number' ? ogItem.eje_animo : (typeof ogItem.mood_axis === 'number' ? ogItem.mood_axis : 0.5);
+            ogValor = ogItem.eje_valor || ogItem.value_axis || null;
+          } else continue;
+          var cleanOg = cleanText(ogText);
+          if (cleanOg.length >= 8 && cleanOg.length <= 140) {
+            pool.push({
+              text: cleanOg, source: libro.titulo || 'unknown',
+              rol_sinfonico: ogRol, eje_animo: ogAnimo, eje_valor: ogValor,
+              origin: 'og_phrase'
+            });
+          }
+        }
+      }
+
+      // ═══ FUENTE 3: card subtitulo (preservado de versión anterior) ═══
       var tarjeta = (lang === 'en' && libro.tarjeta_en) ? libro.tarjeta_en : libro.tarjeta;
       if (tarjeta && tarjeta.subtitulo) {
         var cleanSub = cleanText(tarjeta.subtitulo);
-        if (cleanSub.length >= 8 && cleanSub.length <= 140) pool.push({ text: cleanSub, source: libro.titulo || 'unknown' });
+        if (cleanSub.length >= 8 && cleanSub.length <= 140) {
+          pool.push({
+            text: cleanSub, source: libro.titulo || 'unknown',
+            rol_sinfonico: null, eje_animo: 0.5, eje_valor: null,
+            origin: 'subtitulo'
+          });
+        }
       }
     }
     return pool;
   }
 
-  // 🌒 Capa C — pickPhrase con matching semántico opcional contra el último query.
-  // Si TrigguiFiltro tiene tokens del último query (vía _lastQueryTokens), el
-  // bocado/eco que aparece RESPONDE al input del usuario en lugar de ser random.
-  // Si no hay tokens (query vacío) o no hay matches, fallback a random como antes.
-  function pickPhrase() {
+  // 🎼 C6 v12 — rolForSlot: distribución probabilística del rol por slot
+  //   bocado: predominantemente "abrir" (invita a entrar)
+  //   eco:    predominantemente "resonar" (queda dando vueltas)
+  function rolForSlot(slot) {
+    var r = trueRandom();
+    if (slot === 'bocado') {
+      if (r < 0.70) return 'abrir';
+      if (r < 0.90) return 'profundizar';
+      return 'resonar';
+    }
+    if (slot === 'eco') {
+      if (r < 0.70) return 'resonar';
+      if (r < 0.90) return 'aterrizar';
+      return 'abrir';
+    }
+    return null;
+  }
+
+  // 🎼 C6 v12 — pickPhrase con scoring sinfónico nivel dios
+  //   score_total = queryScore × 1.5 + rolScore × 1.0 + animoScore × 0.5
+  //
+  //   queryScore  : TF normalizado contra input del usuario (existente)
+  //   rolScore    : 2.0 si item.rol_sinfonico === desiredRole, 0.5 si no etiquetado, 0 si distinto
+  //   animoScore  : item.eje_animo si __TRIGGUI_QUERY_HAWKINS__ < 200 (necesita elevación)
+  //
+  // Si no se pasa desiredRole, rolScore = 0 para todos (no sesga). Backward compatible.
+  function pickPhrase(desiredRole) {
     if (!lastCandidatePool || lastCandidatePool.length === 0) return null;
     var available = [];
     for (var i = 0; i < lastCandidatePool.length; i++) {
@@ -7551,33 +7645,66 @@ bootTriggui();
       available = lastCandidatePool.slice();
     }
 
-    // Intentar matching semántico contra el query del usuario
+    var queryNeedsElevation = (typeof window.__TRIGGUI_QUERY_HAWKINS__ === 'number' && window.__TRIGGUI_QUERY_HAWKINS__ < 200);
+
     try {
       var userTokens = (typeof TrigguiFiltro !== 'undefined' && Array.isArray(TrigguiFiltro._lastQueryTokens))
         ? TrigguiFiltro._lastQueryTokens
         : [];
-      if (userTokens.length > 0 && typeof TrigguiFiltro.tokenize === 'function') {
-        var scored = [];
-        for (var j = 0; j < available.length; j++) {
-          var phraseTokens = TrigguiFiltro.tokenize(available[j].text || '');
-          if (phraseTokens.length === 0) continue;
-          var matches = 0;
-          for (var k = 0; k < userTokens.length; k++) {
-            if (phraseTokens.indexOf(userTokens[k]) !== -1) matches++;
-          }
-          if (matches > 0) {
-            // Normalizar por longitud de la phrase (TF normalizado)
-            var score = matches / Math.max(1, Math.sqrt(phraseTokens.length));
-            scored.push({ item: available[j], score: score });
-          }
+
+      var scored = [];
+      for (var j = 0; j < available.length; j++) {
+        var item = available[j];
+        var phraseTokens = (typeof TrigguiFiltro !== 'undefined' && typeof TrigguiFiltro.tokenize === 'function')
+          ? TrigguiFiltro.tokenize(item.text || '')
+          : [];
+
+        // 1. queryScore — TF normalizado contra el input
+        var matches = 0;
+        for (var k = 0; k < userTokens.length; k++) {
+          if (phraseTokens.indexOf(userTokens[k]) !== -1) matches++;
         }
-        if (scored.length > 0) {
-          scored.sort(function(a, b) { return b.score - a.score; });
-          // Top group con leve aleatoriedad (variedad sin perder relevancia)
-          var topGroup = scored.filter(function(s) { return s.score >= scored[0].score * 0.7; });
-          var pickIdx = Math.floor(trueRandom() * topGroup.length);
-          return topGroup[pickIdx].item;
+        var queryScore = (userTokens.length > 0 && phraseTokens.length > 0)
+          ? matches / Math.max(1, Math.sqrt(phraseTokens.length))
+          : 0;
+
+        // 2. rolScore — preferencia por rol_sinfonico solicitado
+        var rolScore = 0;
+        if (desiredRole) {
+          if (item.rol_sinfonico === desiredRole) rolScore = 2.0;
+          else if (!item.rol_sinfonico) rolScore = 0.5;
+          else rolScore = 0;
         }
+
+        // 3. animoScore — elevación si query lo necesita
+        var animoScore = (queryNeedsElevation && typeof item.eje_animo === 'number') ? item.eje_animo : 0;
+
+        var totalScore = queryScore * 1.5 + rolScore * 1.0 + animoScore * 0.5;
+        scored.push({ item: item, score: totalScore });
+      }
+
+      if (scored.length > 0) {
+        scored.sort(function(a, b) { return b.score - a.score; });
+        // Top group con 70% del best score → random pick del grupo
+        var topGroup = scored.filter(function(s) { return s.score >= scored[0].score * 0.7; });
+        if (topGroup.length === 0) topGroup = scored.slice(0, 1);
+        var pickIdx = Math.floor(trueRandom() * topGroup.length);
+        var picked = topGroup[pickIdx].item;
+
+        // 🎼 C7 v12 — console log para debug
+        try {
+          console.log("[Triggui Bocado v12]", {
+            role_solicitado: desiredRole || null,
+            role_obtenido: picked.rol_sinfonico || null,
+            eje_animo: picked.eje_animo,
+            source: picked.source,
+            origin: picked.origin,
+            score: topGroup[pickIdx].score.toFixed(3),
+            text: (picked.text || '').substring(0, 60) + ((picked.text || '').length > 60 ? '...' : '')
+          });
+        } catch(_) {}
+
+        return picked;
       }
     } catch(_) {}
 
@@ -7920,7 +8047,7 @@ bootTriggui();
   // BOCADO
   // ══════════════════════════════════════════════════════════════════════
   function showBocado() {
-    var phrase = pickPhrase();
+    var phrase = pickPhrase(rolForSlot('bocado'));
     if (!phrase) return;
     usedInThisSession.add(phrase.text);
     bocadoActive = true;
@@ -8032,7 +8159,7 @@ bootTriggui();
     if (ecoActive) return;
     if (Date.now() - ecoJustEnded < 500) return;
 
-    var phrase = pickPhrase();
+    var phrase = pickPhrase(rolForSlot('eco'));
     if (!phrase) {
       phrase = { text: 'gracias por leer', source: 'fallback' };
     }

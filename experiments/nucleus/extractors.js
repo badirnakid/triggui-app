@@ -559,6 +559,112 @@ Esta auto-revisión es parte de tu trabajo, no opcional.
 
 
 ═══════════════════════════════════════════════════════════════════
+🎼 SINFONÍA — ROL_SINFÓNICO + EJE_ANIMO (Pilar 4, v12)
+═══════════════════════════════════════════════════════════════════
+
+Tu output no son piezas sueltas. Son notas de una sola sinfonía.
+
+Cuando el usuario escribe en la barra mágica, recibe esta cadena
+en sucesión: Bocado → 4 palabras → 4 frases → tarjeta → Eco.
+Cada nota es del MISMO libro (tu obra) y conectada al input
+del usuario. Si una nota está en otro tono, se rompe la magia.
+
+Las 8 phrases que generas (4 en edition_blocks_es + 4 en og_phrases_es)
+forman el universo del libro disponible para la sinfonía. El sistema
+elegirá Bocado y Eco entre ellas según matche con el input del usuario,
+y mostrará las 4 edition_blocks_es como bloques visibles en la app.
+
+Para componer la sinfonía, etiquetas cada phrase con su rol
+sinfónico y su eje de ánimo.
+
+───────────────────────────────────────────────────────────────────
+ROL_SINFÓNICO — qué efecto produce esta phrase en el cuerpo del lector
+───────────────────────────────────────────────────────────────────
+
+Para cada phrase de edition_blocks_es y de og_phrases_es, eliges
+UNO de estos 4 roles:
+
+  • "abrir": la phrase entreabre la puerta del libro. El lector
+    siente curiosidad, no certeza. Termina dejándolo con ganas
+    de saber más, no satisfecho. Verbo del cuerpo: girar la cabeza.
+
+  • "profundizar": invita a bajar un escalón. El lector siente
+    que está entrando, no leyendo. Hay textura, imagen concreta,
+    sensación corporal. Verbo del cuerpo: inclinar el torso.
+
+  • "aterrizar": deposita la idea fuerte de tu obra. El lector
+    siente que algo cayó en su lugar — un "ah" o un "claro".
+    NO la idea ENTERA del libro: UNA idea fuerte completa en sí.
+    Verbo del cuerpo: respirar profundo.
+
+  • "resonar": es lo último que el lector lee antes de cerrar.
+    Debe quedarle dando vueltas 5-10 segundos después de soltar
+    el teléfono. NO resume ni concluye: deja una imagen, una
+    pregunta, una sensación abierta. Verbo del cuerpo: levantar
+    la mirada del teléfono.
+
+REGLA DE COBERTURA: las 4 edition_blocks_es cubren los 4 roles
+(uno por phrase, los 4 únicos). Las 4 og_phrases_es cubren los 4
+roles (uno por phrase, los 4 únicos). Sin repetir dentro de cada
+array. Entre los dos arrays puedes repetir el mismo rol — son
+universos paralelos del mismo libro.
+
+───────────────────────────────────────────────────────────────────
+EJE_ANIMO — qué tan reconfortante es esta phrase para el lector
+───────────────────────────────────────────────────────────────────
+
+Número entre 0 y 1. HONESTIDAD CRUDA. No infles.
+
+Un libro de duelo puede tener todas las phrases en 0.3. Un libro
+de tristeza profunda no produce 0.9. La inflación es traición
+al lector.
+
+  0.0-0.2: contenido pesado, real, necesario (duelo, dolor)
+  0.3-0.5: contenido suspendido, contemplativo
+           (la noche, el silencio, la pregunta sin respuesta)
+  0.6-0.8: contenido reconfortante (ternura, calma, cuidado)
+  0.9-1.0: contenido luminoso, elevador (asombro, gozo puro)
+
+───────────────────────────────────────────────────────────────────
+INDESCIFRABILIDAD — la sinfonía no puede tener patrón visible
+───────────────────────────────────────────────────────────────────
+
+Si el lector lee tus 4 edition_blocks_es en orden aleatorio (sin
+saber qué rol tiene cada una), NO debe poder reconstruir cuál es
+cuál solo por su forma. Mismo principio aplica a las 4 og_phrases_es.
+
+El rol vive en la FUNCIÓN INTERIOR de la phrase. NO en su forma.
+Una phrase "abrir" puede ser pregunta, afirmación, imagen pura
+o silencio suspendido. Una "resonar" puede ser pregunta o
+afirmación directa. Lo que define el rol es lo que produce en
+el lector, no cómo está construida.
+
+PROHIBIDO:
+- Que "abrir" siempre sea pregunta retórica
+- Que "resonar" siempre termine en elipsis o silencio
+- Que el rol sea detectable por una palabra-clave o por la
+  puntuación final
+- Que las 4 phrases del mismo array compartan estructura
+  sintáctica idéntica
+
+ALENTADO:
+- Variar registros entre las 4: poético / directo / sensorial / silencioso
+- Una phrase puede tener cualidades de DOS roles — está bien.
+  Asignas el rol predominante. La riqueza vive en la ambigüedad
+  parcial.
+
+AUTO-CHEQUEO SINFÓNICO ANTES DE DEVOLVER:
+Lee tus 4 edition_blocks_es en orden aleatorio (NO en orden de roles).
+Pregúntate: "¿podría un lector adivinar cuál rol tiene cada una
+solo por su forma?"
+
+Si la respuesta es SÍ, reescribe hasta que sea NO.
+La sinfonía solo funciona si es indescifrable.
+
+Aplica el mismo chequeo a tus 4 og_phrases_es.
+
+
+═══════════════════════════════════════════════════════════════════
 CONTEXTO CRONOBIOLÓGICO DEL MOMENTO (sesga qué parte del libro se activa hoy)
 ═══════════════════════════════════════════════════════════════════
 - Día: ${crono.dia}, hora ${crono.hora}h franja ${crono.franja}
@@ -773,7 +879,110 @@ from outside. A phrase that IS content from the book written by its author —
 is from inside.
 
 
-This self-review is part of your job, not optional.`;
+This self-review is part of your job, not optional.
+
+
+═══════════════════════════════════════════════════════════════════
+🎼 SYMPHONY — ROLE_SYMPHONIC + MOOD_AXIS (Pillar 4, v12)
+═══════════════════════════════════════════════════════════════════
+
+Your output isn't loose pieces. They are notes of a single symphony.
+
+When the user types in the magic bar, they receive this chain in
+succession: Mouthful → 4 words → 4 phrases → card → Echo.
+Each note is from the SAME book (your work) and connected to the
+user's input. If one note is in another key, the magic breaks.
+
+The 8 phrases you generate (4 in edition_blocks_en + 4 in og_phrases_en)
+form the universe of the book available for the symphony. The system
+will choose Mouthful and Echo among them based on how they match the
+user's input, and will show the 4 edition_blocks_en as visible blocks
+in the app.
+
+To compose the symphony, you label each phrase with its symphonic role
+and its mood axis.
+
+───────────────────────────────────────────────────────────────────
+ROLE_SYMPHONIC — what effect this phrase produces in the reader's body
+───────────────────────────────────────────────────────────────────
+
+For each phrase in edition_blocks_en and og_phrases_en, choose
+ONE of these 4 roles:
+
+  • "open": the phrase half-opens the door of the book. The reader
+    feels curiosity, not certainty. Leaves them wanting more, not
+    satisfied. Body verb: turn the head.
+
+  • "deepen": invites stepping down a level. The reader feels they
+    are entering, not reading. There is texture, concrete image,
+    bodily sensation. Body verb: lean the torso forward.
+
+  • "land": deposits the strong idea of your work. The reader feels
+    something fell into place — an "ah" or a "right". NOT the WHOLE
+    idea of the book: ONE strong idea complete in itself.
+    Body verb: breathe deeply.
+
+  • "resonate": it is the last thing the reader sees before closing.
+    Should keep echoing 5-10 seconds after they put the phone down.
+    Does NOT summarize or conclude: leaves an image, a question, an
+    open sensation. Body verb: lift the gaze from the phone.
+
+COVERAGE RULE: the 4 edition_blocks_en cover the 4 roles (one per
+phrase, the 4 unique). The 4 og_phrases_en cover the 4 roles (one
+per phrase, the 4 unique). No repeats within each array. Between
+the two arrays you can repeat the same role — they are parallel
+universes of the same book.
+
+───────────────────────────────────────────────────────────────────
+MOOD_AXIS — how comforting this phrase is for the reader
+───────────────────────────────────────────────────────────────────
+
+Number between 0 and 1. RAW HONESTY. Do not inflate.
+
+A book about grief can have all phrases at 0.3. A book of deep
+sadness does not produce 0.9. Inflation is betrayal to the reader.
+
+  0.0-0.2: heavy, real, necessary content (grief, pain)
+  0.3-0.5: suspended, contemplative content
+           (the night, the silence, the unanswered question)
+  0.6-0.8: comforting content (tenderness, calm, care)
+  0.9-1.0: luminous, elevating content (wonder, pure joy)
+
+───────────────────────────────────────────────────────────────────
+INDECIPHERABILITY — the symphony cannot have a visible pattern
+───────────────────────────────────────────────────────────────────
+
+If the reader reads your 4 edition_blocks_en in random order (without
+knowing which role each has), they should NOT be able to reconstruct
+which is which from form alone. Same principle applies to og_phrases_en.
+
+The role lives in the INTERIOR FUNCTION of the phrase. NOT in its form.
+An "open" phrase can be a question, statement, pure image or suspended
+silence. A "resonate" phrase can be a question or direct statement.
+What defines the role is what it produces in the reader, not how it
+is constructed.
+
+FORBIDDEN:
+- That "open" always be a rhetorical question
+- That "resonate" always end in ellipsis or silence
+- That the role be detectable by a keyword or final punctuation
+- That the 4 phrases of the same array share identical syntactic
+  structure
+
+ENCOURAGED:
+- Vary registers across the 4: poetic / direct / sensory / silent
+- A phrase can have qualities of TWO roles — that is fine.
+  Assign the dominant role. Richness lives in partial ambiguity.
+
+SYMPHONIC SELF-CHECK BEFORE RETURNING:
+Read your 4 edition_blocks_en in random order (NOT in role order).
+Ask yourself: "could a reader guess which role each has just by
+its form?"
+
+If the answer is YES, rewrite until it is NO.
+The symphony only works if it is indecipherable.
+
+Apply the same check to your 4 og_phrases_en.`;
 }
 
 

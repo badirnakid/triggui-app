@@ -162,19 +162,28 @@ export function injectEmojis(contentES, contentEN, titulo, autor) {
     return { ...block, phrase: `${emoji} ${phraseClosed}` };
   });
 
-  // OG phrases: emoji desde pool neutral rotando con seed
-  const ogES = (contentES.og_phrases_es || []).map((phrase, i) => {
+  // OG phrases ES — v12: preserva metadata sinfónica (rol_sinfonico, eje_animo)
+  const ogES = (contentES.og_phrases_es || []).map((item, i) => {
+    // Soporta string (legacy pre-v12) o object {phrase, rol_sinfonico, eje_animo} (post-v12)
+    const isObject = typeof item === 'object' && item !== null;
+    const rawPhrase = isObject ? (item.phrase || "") : (item || "");
     const emoji = pickWithSeed(EMOJI_OG_POOL, seed, i + 10);
-    const clean = String(phrase || "").trim().replace(/[\n\r]+/g, " ").replace(/\s+/g, " ");
+    const clean = String(rawPhrase).trim().replace(/[\n\r]+/g, " ").replace(/\s+/g, " ");
     const closed = ensureSentenceClosure(clean);
-    return `${emoji} ${closed}`;
+    const phraseWithEmoji = `${emoji} ${closed}`;
+    // Preserva metadata si era objeto (vital para C5 — pool de pickPhrase)
+    return isObject ? { ...item, phrase: phraseWithEmoji } : { phrase: phraseWithEmoji };
   });
 
-  const ogEN = (contentEN.og_phrases_en || []).map((phrase, i) => {
+  // OG phrases EN — v12: preserva metadata sinfónica (role_symphonic, mood_axis)
+  const ogEN = (contentEN.og_phrases_en || []).map((item, i) => {
+    const isObject = typeof item === 'object' && item !== null;
+    const rawPhrase = isObject ? (item.phrase || "") : (item || "");
     const emoji = pickWithSeed(EMOJI_OG_POOL, seed, i + 10);
-    const clean = String(phrase || "").trim().replace(/[\n\r]+/g, " ").replace(/\s+/g, " ");
+    const clean = String(rawPhrase).trim().replace(/[\n\r]+/g, " ").replace(/\s+/g, " ");
     const closed = ensureSentenceClosure(clean);
-    return `${emoji} ${closed}`;
+    const phraseWithEmoji = `${emoji} ${closed}`;
+    return isObject ? { ...item, phrase: phraseWithEmoji } : { phrase: phraseWithEmoji };
   });
 
   return {

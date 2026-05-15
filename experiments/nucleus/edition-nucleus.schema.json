@@ -320,9 +320,39 @@
           "minItems": 4,
           "maxItems": 4,
           "items": {
-            "type": "string",
-            "minLength": 30,
-            "maxLength": 70
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "phrase",
+              "rol_sinfonico",
+              "eje_animo"
+            ],
+            "properties": {
+              "phrase": {
+                "type": "string",
+                "minLength": 30,
+                "maxLength": 70
+              },
+              "rol_sinfonico": {
+                "type": "string",
+                "enum": [
+                  "abrir",
+                  "profundizar",
+                  "aterrizar",
+                  "resonar"
+                ]
+              },
+              "eje_animo": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "eje_valor": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 30
+              }
+            }
           }
         },
         "edition_blocks_es": {
@@ -335,7 +365,9 @@
             "required": [
               "gesture_type",
               "sensory_anchor",
-              "phrase"
+              "phrase",
+              "rol_sinfonico",
+              "eje_animo"
             ],
             "properties": {
               "gesture_type": {
@@ -366,6 +398,25 @@
                 "type": "string",
                 "minLength": 40,
                 "maxLength": 100
+              },
+              "rol_sinfonico": {
+                "type": "string",
+                "enum": [
+                  "abrir",
+                  "profundizar",
+                  "aterrizar",
+                  "resonar"
+                ]
+              },
+              "eje_animo": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "eje_valor": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 30
               }
             }
           }
@@ -434,9 +485,39 @@
           "minItems": 4,
           "maxItems": 4,
           "items": {
-            "type": "string",
-            "minLength": 30,
-            "maxLength": 70
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "phrase",
+              "role_symphonic",
+              "mood_axis"
+            ],
+            "properties": {
+              "phrase": {
+                "type": "string",
+                "minLength": 30,
+                "maxLength": 70
+              },
+              "role_symphonic": {
+                "type": "string",
+                "enum": [
+                  "open",
+                  "deepen",
+                  "land",
+                  "resonate"
+                ]
+              },
+              "mood_axis": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "value_axis": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 30
+              }
+            }
           }
         },
         "edition_blocks_en": {
@@ -449,7 +530,9 @@
             "required": [
               "gesture_type",
               "sensory_anchor",
-              "phrase"
+              "phrase",
+              "role_symphonic",
+              "mood_axis"
             ],
             "properties": {
               "gesture_type": {
@@ -480,6 +563,25 @@
                 "type": "string",
                 "minLength": 40,
                 "maxLength": 100
+              },
+              "role_symphonic": {
+                "type": "string",
+                "enum": [
+                  "open",
+                  "deepen",
+                  "land",
+                  "resonate"
+                ]
+              },
+              "mood_axis": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "value_axis": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 30
               }
             }
           }
