@@ -182,57 +182,84 @@ def resolve_palabra_dominante(libro_data):
 
 def build_bocado_eco_pool(libro_data):
     """
-    🌒 V13 NIVEL DIOS CUÁNTICO-QUARK: pool SOLO de concepts del nucleus.
+    🌒 V14 SINFÓNICO NIVEL DIOS CUÁNTICO-QUARK MATEMÁTICAMENTE.
 
-    V12 → V13 cambio:
-      - ANTES: tagline + concepts
-      - AHORA: solo concepts
+    V13 → V14 cambio:
+      - ANTES: pool = [str, str, ...] (concepts del nucleus, sin metadata)
+      - AHORA: pool = [{phrase, rol, animo, origin}, ...] (sinfónico con metadata)
 
-    Razón: el tagline es meta-descriptivo (autopromoción tipo "El curso de Yale
-    que se volvió bestseller..."). NO es frase poética para eco cuántico.
-    Los concepts vienen curados por GPT directamente del contenido del libro,
-    son frases auténticas y específicas.
+    Razón: la app webview ya usa _nucleus.edition_blocks_es + _nucleus.og_phrases_es
+    con rol_sinfonico (abrir/profundizar/aterrizar/resonar). La edición viva HTML
+    debe consumir lo mismo para paridad sinfónica entre ambos consumidores.
 
-    Fuentes (V13):
-      - libro._nucleus.book_grounding_anchors.concepts[] (~5 conceptos)
+    Cascade de fuentes (cero tolerancia, backwards-compatible):
+      1. _nucleus.edition_blocks_es  (Triggui v12+, 4 phrases con rol)
+      2. _nucleus.og_phrases_es      (Triggui v12+, 4 phrases con rol)
+      3. _nucleus.book_grounding_anchors.concepts[]  (legacy V13, ~5 strings)
 
-    Excluidos a propósito:
-      - tagline (V13 cambio: meta-descripción, no frase de eco)
-      - frases[] / frases_en[] (ya se ven en los 4 bloques)
-      - frases_og[] (sagrado para WhatsApp link preview)
-      - tarjeta.* (ya se ven en la tarjeta editorial)
+    Formato del item:
+      - Si hay metadata sinfónica → dict {phrase, rol, animo, origin}
+      - Si no (libros pre-v12) → string (backwards compat con JS V13)
 
-    Transformación cuántica:
-      - capitalizar primera letra
-      - agregar punto si no tiene cierre (. ? !)
+    El JS detecta el tipo automáticamente (typeof === 'object' vs 'string')
+    y elige modo de selección (por rol vs random).
     """
     pool = []
     seen = set()
 
-    def add_phrase(text):
+    def add_phrase(text, rol=None, animo=None, origin=None):
         if not text:
             return
         clean = normalize_text(strip_highlight_tags(text))
         if not clean:
             return
-        # Capitalizar primera letra (preservando el resto)
         clean = clean[0].upper() + clean[1:] if len(clean) >= 1 else clean
-        # Agregar punto si no tiene cierre legítimo
         if not clean.endswith((".", "?", "!", "…")):
             clean += "."
-        # Anti-duplicado por casefold
         key = clean.casefold()
         if key in seen:
             return
         seen.add(key)
-        pool.append(clean)
 
-    # 🌒 V13: SOLO concepts del nucleus (eliminado tagline meta-descriptivo)
+        # 🌒 V14: emitir OBJETO si hay metadata sinfónica, STRING si legacy
+        if rol is not None:
+            pool.append({
+                "phrase": clean,
+                "rol": rol,
+                "animo": animo,
+                "origin": origin,
+            })
+        else:
+            pool.append(clean)
+
     nucleus = libro_data.get("_nucleus", {}) or {}
-    grounding = nucleus.get("book_grounding_anchors", {}) or {}
-    concepts = grounding.get("concepts", []) or []
-    for concept in concepts:
-        add_phrase(concept)
+
+    # 🌒 V14 PRIORIDAD 1: edition_blocks_es (sinfónico)
+    for block in (nucleus.get("edition_blocks_es", []) or []):
+        if isinstance(block, dict) and block.get("rol_sinfonico"):
+            add_phrase(
+                block.get("phrase", ""),
+                rol=block.get("rol_sinfonico"),
+                animo=block.get("eje_animo"),
+                origin="edition_block_es",
+            )
+
+    # 🌒 V14 PRIORIDAD 2: og_phrases_es (sinfónico)
+    for og in (nucleus.get("og_phrases_es", []) or []):
+        if isinstance(og, dict) and og.get("rol_sinfonico"):
+            add_phrase(
+                og.get("phrase", ""),
+                rol=og.get("rol_sinfonico"),
+                animo=og.get("eje_animo"),
+                origin="og_phrase_es",
+            )
+
+    # 🌒 V14 FALLBACK: concepts del nucleus (legacy V13)
+    # Solo si NO se logró pool sinfónico
+    if not any(isinstance(p, dict) for p in pool):
+        grounding = nucleus.get("book_grounding_anchors", {}) or {}
+        for concept in (grounding.get("concepts", []) or []):
+            add_phrase(concept)
 
     return pool
 
@@ -1865,8 +1892,44 @@ const bocadoEcoState = {
 };
 const BOCADO_TIMING = { appear: 1500, hold: 2000, fade: 1200, wordStagger: 60 };
 
-function pickFromPool() {
-  const pool = (state.bocadoEcoPool || []).filter(p => p && p.length >= 8);
+function pickFromPool(roleHints) {
+  // 🌒 V14 sinfónico: detecta auto si pool es de objetos o strings
+  const raw = state.bocadoEcoPool || [];
+  if (raw.length === 0) return null;
+
+  const firstItem = raw[0];
+  const isSinfonico = firstItem && typeof firstItem === 'object';
+
+  if (isSinfonico) {
+    // Pool V14: objetos {phrase, rol, animo, origin}
+    let candidates = raw.filter(o => o && o.phrase && o.phrase.length >= 8);
+    if (candidates.length === 0) return null;
+
+    if (roleHints && roleHints.length > 0) {
+      const filtered = candidates.filter(o => roleHints.indexOf(o.rol) !== -1);
+      if (filtered.length > 0) candidates = filtered;
+    }
+
+    let available = candidates.filter(o => !bocadoEcoState.used.has(o.phrase));
+    if (available.length === 0) {
+      bocadoEcoState.used.clear();
+      available = candidates.slice();
+    }
+
+    const chosen = available[Math.floor(Math.random() * available.length)];
+    bocadoEcoState.used.add(chosen.phrase);
+
+    return {
+      phrase: chosen.phrase,
+      rol_solicitado: (roleHints && roleHints.length > 0) ? roleHints.join(',') : '(cualquiera)',
+      rol_obtenido: chosen.rol,
+      eje_animo: chosen.animo,
+      origin: chosen.origin,
+    };
+  }
+
+  // Pool V13 legacy: strings (backward-compat para libros pre-v12)
+  const pool = raw.filter(p => typeof p === 'string' && p && p.length >= 8);
   if (pool.length === 0) return null;
   let available = pool.filter(p => !bocadoEcoState.used.has(p));
   if (available.length === 0) {
@@ -1875,7 +1938,14 @@ function pickFromPool() {
   }
   const phrase = available[Math.floor(Math.random() * available.length)];
   bocadoEcoState.used.add(phrase);
-  return phrase;
+
+  return {
+    phrase: phrase,
+    rol_solicitado: (roleHints && roleHints.length > 0) ? roleHints.join(',') : '(cualquiera)',
+    rol_obtenido: '(legacy_string)',
+    eje_animo: null,
+    origin: 'concept_legacy',
+  };
 }
 
 function segmentPhrase(text) {
@@ -1904,13 +1974,14 @@ function buildPhraseHTML(text, accentColor) {
   return html;
 }
 
-function showBocadoEco(kind, onComplete) {
+function showBocadoEco(kind, onComplete, roleHints) {
   if (bocadoEcoState.active) return false;
-  const phrase = pickFromPool();
-  if (!phrase) {
+  const picked = pickFromPool(roleHints);
+  if (!picked) {
     if (typeof onComplete === 'function') onComplete();
     return false;
   }
+  const phrase = picked.phrase;
   bocadoEcoState.active = true;
 
   const overlay = document.getElementById('bocadoEcoOverlay');
@@ -1947,7 +2018,15 @@ function showBocadoEco(kind, onComplete) {
     bocadoEcoState.active = false;
     if (typeof onComplete === 'function') onComplete();
     if (typeof console !== 'undefined' && console.log) {
-      console.log('[Triggui ' + kind + '] "' + phrase + '"');
+      // 🌒 V14 SINFÓNICO: log con paridad matemática a la app webview
+      console.log('[Triggui ' + kind + ' v14]', {
+        role_solicitado: picked.rol_solicitado,
+        role_obtenido: picked.rol_obtenido,
+        eje_animo: picked.eje_animo,
+        source: state.titulo,
+        origin: picked.origin,
+        phrase: phrase,
+      });
     }
   }, holdEnd + BOCADO_TIMING.fade + 100);
 
@@ -1955,11 +2034,13 @@ function showBocadoEco(kind, onComplete) {
 }
 
 function showBocado(onComplete) {
-  return showBocadoEco('Bocado', onComplete);
+  // 🌒 V14: opening → preferir abrir/profundizar (lleva al usuario adentro)
+  return showBocadoEco('Bocado', onComplete, ['abrir', 'profundizar']);
 }
 
 function showEco(onComplete) {
-  return showBocadoEco('Eco', onComplete);
+  // 🌒 V14: closing → preferir resonar/aterrizar (deja resonancia al cerrar)
+  return showBocadoEco('Eco', onComplete, ['resonar', 'aterrizar']);
 }
 
 function renderBlocks() {
