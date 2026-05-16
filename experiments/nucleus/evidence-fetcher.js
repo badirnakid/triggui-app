@@ -601,6 +601,19 @@ async function fetchGoogle(titulo, autor, isbn) {
     // v3.7: API key desde Secret. Quota 1M/día. Sin key: anónimo 1k/día → 429.
     const keyParam = GOOGLE_BOOKS_API_KEY ? `&key=${encodeURIComponent(GOOGLE_BOOKS_API_KEY)}` : "";
 
+    // 🌒 V27b NIVEL DIOS — tracking del mejor candidato low_match cross-attempts
+    // para preservar covers cuando ningún attempt pasa MIN_MATCH_SCORE.
+    // Util para libros con autor genérico (Disney Books, Marvel Press, etc.)
+    let bestLowMatchG = null;
+    const trackLowMatchG = (result) => {
+      if (result && result.ok && Array.isArray(result.candidates) && result.candidates.length > 0) {
+        const top = result.candidates[0];
+        if (top._match_score < MIN_MATCH_SCORE && (!bestLowMatchG || top._match_score > bestLowMatchG._match_score)) {
+          bestLowMatchG = top;
+        }
+      }
+    };
+
     // 1. ISBN primero si tiene formato válido (v3.6)
     if (isbn && isValidIsbnFormat(isbn)) {
       const urlIsbn = `https://www.googleapis.com/books/v1/volumes?q=isbn:${encodeURIComponent(isbn.trim())}&maxResults=3${keyParam}`;
@@ -608,6 +621,7 @@ async function fetchGoogle(titulo, autor, isbn) {
       if (isbnResult.ok && isbnResult.candidates.length > 0 && isbnResult.candidates[0]._match_score >= MIN_MATCH_SCORE) {
         return buildGoogleEvidence(isbnResult.candidates[0], titulo, autor);
       }
+      trackLowMatchG(isbnResult);  // 🌒 V27b
     }
 
     // 2. v3.7: iterar variantes, cada una × estrategia (strict, relaxed).
@@ -626,6 +640,7 @@ async function fetchGoogle(titulo, autor, isbn) {
         const ev = buildGoogleEvidence(strictResult.candidates[0], titulo, autor);
         return { ...ev, _variant_used: v.name, _query_mode: "strict" };
       }
+      trackLowMatchG(strictResult);  // 🌒 V27b
 
       // relaxed: sin operadores (catch-all)
       const qRelaxed = `${v.q} ${autor}`;
@@ -635,6 +650,22 @@ async function fetchGoogle(titulo, autor, isbn) {
         const ev = buildGoogleEvidence(relaxedResult.candidates[0], titulo, autor);
         return { ...ev, _variant_used: v.name, _query_mode: "relaxed" };
       }
+      trackLowMatchG(relaxedResult);  // 🌒 V27b
+    }
+
+    // 🌒 V27b NIVEL DIOS — si ningún attempt pasó threshold pero hay candidato
+    // low_match cross-attempts, preservar sus covers como fallback
+    if (bestLowMatchG) {
+      const evLM = buildGoogleEvidence(bestLowMatchG, titulo, autor);
+      return {
+        ok: false,
+        reason: `low_match_${bestLowMatchG._match_score.toFixed(2)}`,
+        source: "google_books",
+        _low_match_covers: Array.isArray(evLM.covers) ? evLM.covers : [],
+        _low_match_score: bestLowMatchG._match_score,
+        _low_match_title: (evLM.match_details && evLM.match_details.matched_title) || "",
+        _low_match_author: (evLM.match_details && evLM.match_details.matched_author) || ""
+      };
     }
 
     return { ok: false, reason: "no_good_match", source: "google_books" };
@@ -741,7 +772,26 @@ async function fetchOpenLibraryAttempt(titulo, autor, options = {}) {
     }).sort((a, b) => b._match_score - a._match_score);
 
     const best = candidates[0];
-    if (best._match_score < MIN_MATCH_SCORE) return { ok: false, reason: `low_match_${best._match_score.toFixed(2)}`, source: "openlibrary" };
+    if (best._match_score < MIN_MATCH_SCORE) {
+      // 🌒 V27b NIVEL DIOS — preservar covers como fallback para autores genéricos
+      // Útil para libros donde el título es reconocible pero el autor del CSV
+      // no matchea con el autor que OpenLibrary tiene indexado
+      const lowMatchCoversOL = [];
+      if (best.doc && best.doc.cover_i) {
+        lowMatchCoversOL.push({ size: "large", url: `https://covers.openlibrary.org/b/id/${best.doc.cover_i}-L.jpg` });
+        lowMatchCoversOL.push({ size: "medium", url: `https://covers.openlibrary.org/b/id/${best.doc.cover_i}-M.jpg` });
+        lowMatchCoversOL.push({ size: "small", url: `https://covers.openlibrary.org/b/id/${best.doc.cover_i}-S.jpg` });
+      }
+      return {
+        ok: false,
+        reason: `low_match_${best._match_score.toFixed(2)}`,
+        source: "openlibrary",
+        _low_match_covers: lowMatchCoversOL,
+        _low_match_score: best._match_score,
+        _low_match_title: (best.doc && best.doc.title) || "",
+        _low_match_author: (best.doc && Array.isArray(best.doc.author_name)) ? best.doc.author_name.join(", ") : ""
+      };
+    }
 
     const doc = best.doc;
     const subjects = Array.isArray(doc.subject) ? doc.subject.slice(0, 12).join("; ") : "";
