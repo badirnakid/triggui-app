@@ -47,7 +47,15 @@ on:
   # ───────────────────────────────────────────────────────────────────────
 
   workflow_dispatch:
+    # V21 AUDITORÍA — UI workflow nivel dios cuántico-quark
+    # Orden matemático: lo más usado arriba, lo avanzado abajo.
+    # Defaults coinciden EXACTAMENTE con las options (fix de bug "vida propia").
     inputs:
+
+      # ══════════════════════════════════════════════════════════════════
+      # 1️⃣ CORE — Lo más importante (toca casi siempre)
+      # ══════════════════════════════════════════════════════════════════
+
       modo:
         description: '¿Qué quieres generar?'
         required: true
@@ -57,25 +65,35 @@ on:
           - '📘 Un libro que ya sé cuál quiero'
           - '💭 Triggui elige de mi catálogo de 700 libros'
           - '🌍 Triggui busca el libro perfecto del mundo'
-          - '🎲 Generar 20 libros nuevos para la app'
-          - '🧪 Prueba de 20 libros sin tocar la app'
+          - '🎲 Batch de libros para la app (cantidad ajustable)'
+          - '🧪 Prueba de batch sin tocar la app (shadow)'
 
       catalogo:
-        description: '🌒 Catálogo (default: adulto)'
-        required: false
+        description: '🌒 Catálogo: adulto o kids'
+        required: true
         default: 'adulto'
         type: choice
         options:
           - adulto
           - kids
 
+      batch_size:
+        description: '📊 Cantidad de libros (solo modos 🎲 y 🧪). Default: 20. Acepta cualquier entero.'
+        required: false
+        default: '20'
+        type: string
+
+      # ══════════════════════════════════════════════════════════════════
+      # 2️⃣ INPUTS CONDICIONALES (según modo, opcionales)
+      # ══════════════════════════════════════════════════════════════════
+
       libro_input:
-        description: '📘 Título y autor. Solo para modo 📘. Formato: Título | Autor'
+        description: '📘 Solo modo 📘. Formato: Título | Autor'
         required: false
         type: string
 
       sentimiento:
-        description: '💭 ¿Qué siente el usuario? Solo modos 💭 y 🌍. Ej: me siento en duelo'
+        description: '💭 Solo modos 💭 y 🌍. Ej: me siento en duelo'
         required: false
         type: string
 
@@ -84,42 +102,43 @@ on:
         required: false
         type: string
 
-      generar_imagenes:
-        description: '🖼️ Generar tarjeta PNG + OG + edición viva'
-        required: true
-        default: true
-        type: boolean
-
-      preservar_manuales:
-        description: '🛡️ No sobrescribir libros curados manualmente'
-        required: true
-        default: true
-        type: boolean
-
-      cronobiologia:
-        description: '🕒 Adaptar tono al día y hora actuales'
-        required: true
-        default: true
-        type: boolean
-
-      modo_prueba:
-        description: '🧪 Solo archivo shadow (NO toca app.triggui.com)'
-        required: true
-        default: false
-        type: boolean
-
       nota_libro:
-        description: '📝 Nota privada sobre el libro (casi nunca se usa)'
+        description: '📝 Nota privada sobre el libro (rara vez se usa)'
         required: false
         type: string
 
-      # === 🎯 SPRINT A v14 — Contexto curatorial nivel dios ===
+      # ══════════════════════════════════════════════════════════════════
+      # 3️⃣ TOGGLES BÁSICOS (defaults razonables, casi nunca cambiar)
+      # ══════════════════════════════════════════════════════════════════
+
+      generar_imagenes:
+        description: '🖼️ Generar tarjeta PNG + OG + edición viva'
+        type: boolean
+        default: true
+
+      preservar_manuales:
+        description: '🛡️ No sobrescribir libros curados manualmente'
+        type: boolean
+        default: true
+
+      cronobiologia:
+        description: '🕒 Adaptar tono al día y hora actuales'
+        type: boolean
+        default: true
+
+      modo_prueba:
+        description: '🧪 Solo archivo shadow (NO toca app.triggui.com)'
+        type: boolean
+        default: false
+
+      # ══════════════════════════════════════════════════════════════════
+      # 4️⃣ CONTEXTO CURATORIAL (Sprint A — defaults auto, rara vez cambiar)
+      # ══════════════════════════════════════════════════════════════════
 
       punto_ciclo:
         description: '🔄 Punto del ciclo del lector destinatario'
-        required: true
-        default: 'auto'
         type: choice
+        default: 'auto (inferir de cronobiología)'
         options:
           - 'auto (inferir de cronobiología)'
           - '0 — Cero (no pienso, no hago — contemplación)'
@@ -128,10 +147,9 @@ on:
           - '3 — Máximo (pienso y hago — peak performance)'
 
       pilar:
-        description: '🏛 Pilar a fortalecer (default: auto/sin sesgo)'
-        required: true
-        default: 'auto'
+        description: '🏛 Pilar a fortalecer'
         type: choice
+        default: 'auto (sin sesgo)'
         options:
           - 'auto (sin sesgo)'
           - 'cuerpo'
@@ -143,10 +161,9 @@ on:
           - 'finanzas'
 
       hawkins_target:
-        description: '🌒 Nivel Hawkins aspirado del libro (default: auto = elevación graduada)'
-        required: true
-        default: 'auto'
+        description: '🌒 Nivel Hawkins aspirado del libro'
         type: choice
+        default: 'auto (elevación graduada según sentimiento)'
         options:
           - 'auto (elevación graduada según sentimiento)'
           - 'coraje (200)'
@@ -157,35 +174,29 @@ on:
           - 'alegría (540)'
           - 'paz (600)'
 
+      # ══════════════════════════════════════════════════════════════════
+      # 5️⃣ LENTES DEL LLM (Sprint A — activar/desactivar perspectivas)
+      # ══════════════════════════════════════════════════════════════════
+
       lente_hawkins:
         description: '🌒 Lente Hawkins (mapa de conciencia)'
-        required: true
-        default: true
         type: boolean
+        default: true
 
       lente_pilares:
         description: '🏛 Lente Pilares (7 áreas de vida)'
-        required: true
-        default: true
         type: boolean
+        default: true
 
       lente_game_theory:
         description: '🎲 Lente Game-Theory (estructura de decisiones)'
-        required: true
-        default: true
         type: boolean
+        default: true
 
       lente_self_knowledge:
         description: '🪞 Lente Self-Knowledge (patrones internos)'
-        required: true
-        default: true
         type: boolean
-
-      batch_size:
-        description: '📊 Número de libros (solo modos 🎲 y 🧪). Default: 10. Cualquier entero: 2, 10, 50, 98...'
-        required: false
-        default: '10'
-        type: string
+        default: true
 
 concurrency:
   group: triggui-content-${{ github.ref }}
