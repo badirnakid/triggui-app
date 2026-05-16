@@ -359,12 +359,13 @@ jobs:
       #   Capa 1: CSV reparado (commit 57f20043 en triggui-content)
       #   Capa 2: endpoint con sanitize V20 (commit a90d409 en triggui.com)
       # ════════════════════════════════════════════════════════════════════
-      # V23 FIX — Step 0 V20 path absoluto (mata falso negativo)
-      - name: 🛡️ Validar CSV strict pre-pipeline (V20 anti-bomba)
+      # V25 NIVEL DIOS — Validación nativa sin dependencias externas
+      # (equivalente matemático a csv-parse strict bajo invariante V20:
+      #  sanitize garantiza CERO comillas dobles y N comas exactas)
+      # V23: path absoluto + V25: inmune a cwd/node_modules
+      - name: 🛡️ Validar CSV strict pre-pipeline (V20+V25 anti-bomba)
         run: |
           set -e
-          # V23: path absoluto al archivo real en triggui-content/
-          # (independiente del symlink y del cwd — matemáticamente robusto)
           if [ "$CATALOG_MODE" = "kids" ]; then
             CSV_FILE="$GITHUB_WORKSPACE/triggui-content/data/libros_master_kids.csv"
           else
@@ -374,17 +375,39 @@ jobs:
             echo "⚠️ $CSV_FILE no existe — modo discover/single acepta esto"
             exit 0
           fi
-          echo "🔍 Validando $CSV_FILE con csv-parse strict (V20 anti-bomba)..."
+          echo "🔍 Validando $CSV_FILE con node nativo strict (V25 — sin deps externas)..."
           CSV_PATH="$CSV_FILE" node -e "
             const fs = require('fs');
             const path = process.env.CSV_PATH;
             try {
-              const { parse } = require('csv-parse/sync');
               const data = fs.readFileSync(path, 'utf8');
-              const records = parse(data, { columns: true, skip_empty_lines: true });
-              console.log('✓ CSV válido:', records.length, 'records');
+              const lines = data.split('\n').map(l => l.replace(/\r$/, ''));
+              if (lines.length === 0) throw new Error('Archivo vacio');
+              const header = lines[0];
+              if (!header || !header.trim()) throw new Error('Header vacio');
+              const expectedCommas = (header.match(/,/g) || []).length;
+              if (expectedCommas === 0) throw new Error('Header sin columnas (0 comas)');
+              const DQ = String.fromCharCode(34);
+              let validRecords = 0;
+              let problemLine = null;
+              for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                if (!line.trim()) continue;
+                if (line.indexOf(DQ) !== -1) {
+                  problemLine = i + 1;
+                  throw new Error('Linea ' + problemLine + ' contiene comilla doble (causa bombas downstream): ' + line.substring(0, 80));
+                }
+                const commas = (line.match(/,/g) || []).length;
+                if (commas !== expectedCommas) {
+                  problemLine = i + 1;
+                  throw new Error('Linea ' + problemLine + ' tiene ' + commas + ' comas (esperaba ' + expectedCommas + '): ' + line.substring(0, 80));
+                }
+                validRecords++;
+              }
+              const recordsCount = validRecords > 0 ? validRecords - 1 : 0;
+              console.log('✓ CSV valido:', recordsCount, 'records (' + (expectedCommas + 1) + ' columnas)');
             } catch (e) {
-              console.error('❌ CSV INVÁLIDO:', e.message);
+              console.error('❌ CSV INVALIDO:', e.message);
               console.error('   Causa probable: caracteres no sanitizados en captura reciente');
               console.error('   Fix: ejecutar reparar-csv-master.py en triggui-content');
               process.exit(1);
