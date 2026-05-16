@@ -68,7 +68,14 @@ import path from "node:path";
 const CACHE_DIR = "evidence-cache";
 const CACHE_TTL_DAYS = 30;
 const REQUEST_TIMEOUT_MS = 8000;
-const MIN_MATCH_SCORE = 0.55;  // 🌒 v3.7 NIVEL DIOS: era 0.38, subido para eliminar falsos positivos por solo coincidencia de autor
+const MIN_MATCH_SCORE = 0.55;
+// 🌒 V28 NIVEL DIOS CUÁNTICO-QUARK — Title Similarity Gate
+// Threshold mínimo para aceptar cover de _low_match_covers en Fase 4.5.
+// Sin esto, "Shrek Para Siempre" + DreamWorks Press matchea con cualquier
+// ensayo académico que tenga "Shrek" en el título. Score 0.50 es balanceado:
+// rechaza ensayos completamente distintos pero acepta variantes de título
+// del mismo libro (ej: "Peppa Pig en la Granja" vs "Peppa Pig at the Farm").
+const MIN_TITLE_SIMILARITY = 0.50;  // 🌒 v3.7 NIVEL DIOS: era 0.38, subido para eliminar falsos positivos por solo coincidencia de autor
 
 // v3.7: Google Books API key desde Secret en GitHub Actions de triggui-app.
 // Si está definida, las queries usan quota 1M/día. Si no, anónimo 1k/día → 429.
@@ -151,6 +158,19 @@ function levenshteinRatio(a, b) {
   }
   const maxLen = Math.max(A.length, B.length);
   return 1 - matrix[A.length][B.length] / maxLen;
+}
+
+// 🌒 V28 NIVEL DIOS — Title-only similarity para Fase 4.5 low_match gate.
+// Wrapper minimalista sobre levenshteinRatio + normalize. Calcula similitud
+// entre dos títulos SIN considerar autores. Usado para validar que un cover
+// de _low_match_covers realmente corresponde al libro original (no a otro
+// libro popular que comparte palabras clave en el título).
+function titleSimilarity(titleA, titleB) {
+  if (!titleA || !titleB) return 0;
+  const a = normalize(titleA);
+  const b = normalize(titleB);
+  if (!a || !b) return 0;
+  return levenshteinRatio(a, b);
 }
 
 function scoreMatch(titleA, authorA, titleB, authorB) {
@@ -1116,7 +1136,21 @@ export async function fetchEvidence(book, options = {}) {
   // Útil para libros con autor genérico que las APIs no matchearon estrictamente
   // pero SÍ encontraron en su catálogo (Disney, Marvel, Pixar, etc.)
   if (validCovers.length === 0) {
-    const lowMatchResults = allResults.filter(r => r && Array.isArray(r._low_match_covers) && r._low_match_covers.length > 0);
+    const lowMatchResults = allResults.filter(r => {
+      if (!r || !Array.isArray(r._low_match_covers) || r._low_match_covers.length === 0) return false;
+      // 🌒 V28 NIVEL DIOS — Title Similarity Gate
+      // Rechaza covers cuyo título API no matchea el título original del CSV.
+      // Esto previene que libros con título popular (Shrek, Frozen, Cars)
+      // que NO existen como publicaciones reales reciban portadas erróneas
+      // de ensayos académicos o libros académicos con palabras compartidas.
+      const apiTitle = r._low_match_title || "";
+      const titleSim = titleSimilarity(titulo, apiTitle);
+      if (titleSim < MIN_TITLE_SIMILARITY) {
+        console.log(`   🚫 V28 RECHAZO low_match ${r.source}: title_sim=${titleSim.toFixed(2)} "${apiTitle}" vs "${titulo}"`);
+        return false;
+      }
+      return true;
+    });
     if (lowMatchResults.length > 0) {
       // Construir pseudo-results para que validateCoversParallel los procese
       const fallbackResults = lowMatchResults.map(r => ({
