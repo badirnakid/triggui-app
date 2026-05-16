@@ -197,7 +197,7 @@ permissions:
 jobs:
   generar:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 180
 
     env:
       TZ: America/Mexico_City
