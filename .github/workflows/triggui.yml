@@ -359,13 +359,16 @@ jobs:
       #   Capa 1: CSV reparado (commit 57f20043 en triggui-content)
       #   Capa 2: endpoint con sanitize V20 (commit a90d409 en triggui.com)
       # ════════════════════════════════════════════════════════════════════
+      # V23 FIX — Step 0 V20 path absoluto (mata falso negativo)
       - name: 🛡️ Validar CSV strict pre-pipeline (V20 anti-bomba)
         run: |
           set -e
+          # V23: path absoluto al archivo real en triggui-content/
+          # (independiente del symlink y del cwd — matemáticamente robusto)
           if [ "$CATALOG_MODE" = "kids" ]; then
-            CSV_FILE="data/libros_master_kids.csv"
+            CSV_FILE="$GITHUB_WORKSPACE/triggui-content/data/libros_master_kids.csv"
           else
-            CSV_FILE="data/libros_master.csv"
+            CSV_FILE="$GITHUB_WORKSPACE/triggui-content/data/libros_master.csv"
           fi
           if [ ! -f "$CSV_FILE" ]; then
             echo "⚠️ $CSV_FILE no existe — modo discover/single acepta esto"
