@@ -47,29 +47,26 @@ on:
   # ───────────────────────────────────────────────────────────────────────
 
   workflow_dispatch:
-    # V21 AUDITORÍA — UI workflow nivel dios cuántico-quark
-    # Orden matemático: lo más usado arriba, lo avanzado abajo.
-    # Defaults coinciden EXACTAMENTE con las options (fix de bug "vida propia").
+    # V22 MITIGACIÓN MÓVIL — reduce superficie del bug de scroll
+    # Descriptions <60 chars · Options <35 chars · required mínimo
     inputs:
 
-      # ══════════════════════════════════════════════════════════════════
-      # 1️⃣ CORE — Lo más importante (toca casi siempre)
-      # ══════════════════════════════════════════════════════════════════
+      # ── 1. CORE ────────────────────────────────────────────
 
       modo:
-        description: '¿Qué quieres generar?'
+        description: '¿Qué generar?'
         required: true
-        default: '📘 Un libro que ya sé cuál quiero'
+        default: '📘 Un libro específico'
         type: choice
         options:
-          - '📘 Un libro que ya sé cuál quiero'
-          - '💭 Triggui elige de mi catálogo de 700 libros'
-          - '🌍 Triggui busca el libro perfecto del mundo'
-          - '🎲 Batch de libros para la app (cantidad ajustable)'
-          - '🧪 Prueba de batch sin tocar la app (shadow)'
+          - '📘 Un libro específico'
+          - '💭 Triggui elige de catálogo'
+          - '🌍 Triggui busca el del mundo'
+          - '🎲 Batch para la app'
+          - '🧪 Batch shadow (no toca app)'
 
       catalogo:
-        description: '🌒 Catálogo: adulto o kids'
+        description: '🌒 Catálogo'
         required: true
         default: 'adulto'
         type: choice
@@ -78,14 +75,12 @@ on:
           - kids
 
       batch_size:
-        description: '📊 Cantidad de libros (solo modos 🎲 y 🧪). Default: 20. Acepta cualquier entero.'
+        description: '📊 Cantidad batch (solo 🎲/🧪). Default 20'
         required: false
         default: '20'
         type: string
 
-      # ══════════════════════════════════════════════════════════════════
-      # 2️⃣ INPUTS CONDICIONALES (según modo, opcionales)
-      # ══════════════════════════════════════════════════════════════════
+      # ── 2. CONDICIONALES ──────────────────────────────────
 
       libro_input:
         description: '📘 Solo modo 📘. Formato: Título | Autor'
@@ -93,65 +88,61 @@ on:
         type: string
 
       sentimiento:
-        description: '💭 Solo modos 💭 y 🌍. Ej: me siento en duelo'
+        description: '💭 Solo modos 💭/🌍. Ej: en duelo'
         required: false
         type: string
 
       lente:
-        description: '🔍 Perspectiva especial (opcional). Ej: bajo la lente de maternidad'
+        description: '🔍 Perspectiva especial (opcional)'
         required: false
         type: string
 
       nota_libro:
-        description: '📝 Nota privada sobre el libro (rara vez se usa)'
+        description: '📝 Nota privada (rara vez se usa)'
         required: false
         type: string
 
-      # ══════════════════════════════════════════════════════════════════
-      # 3️⃣ TOGGLES BÁSICOS (defaults razonables, casi nunca cambiar)
-      # ══════════════════════════════════════════════════════════════════
+      # ── 3. TOGGLES BÁSICOS ─────────────────────────────────
 
       generar_imagenes:
-        description: '🖼️ Generar tarjeta PNG + OG + edición viva'
+        description: '🖼️ Generar tarjeta + OG + edición viva'
         type: boolean
         default: true
 
       preservar_manuales:
-        description: '🛡️ No sobrescribir libros curados manualmente'
+        description: '🛡️ No sobrescribir manuales'
         type: boolean
         default: true
 
       cronobiologia:
-        description: '🕒 Adaptar tono al día y hora actuales'
+        description: '🕒 Adaptar al día/hora'
         type: boolean
         default: true
 
       modo_prueba:
-        description: '🧪 Solo archivo shadow (NO toca app.triggui.com)'
+        description: '🧪 Shadow (NO toca app.triggui.com)'
         type: boolean
         default: false
 
-      # ══════════════════════════════════════════════════════════════════
-      # 4️⃣ CONTEXTO CURATORIAL (Sprint A — defaults auto, rara vez cambiar)
-      # ══════════════════════════════════════════════════════════════════
+      # ── 4. CURATORIAL (Sprint A — auto rara vez tocar) ──────
 
       punto_ciclo:
-        description: '🔄 Punto del ciclo del lector destinatario'
+        description: '🔄 Punto del ciclo del lector'
         type: choice
-        default: 'auto (inferir de cronobiología)'
+        default: 'auto'
         options:
-          - 'auto (inferir de cronobiología)'
-          - '0 — Cero (no pienso, no hago — contemplación)'
-          - '1 — Creativo (pienso, no hago — insight)'
-          - '2 — Activo (hago, no pienso — flow)'
-          - '3 — Máximo (pienso y hago — peak performance)'
+          - 'auto'
+          - '0 — Cero (contemplación)'
+          - '1 — Creativo (insight)'
+          - '2 — Activo (flow)'
+          - '3 — Máximo (peak)'
 
       pilar:
         description: '🏛 Pilar a fortalecer'
         type: choice
-        default: 'auto (sin sesgo)'
+        default: 'auto'
         options:
-          - 'auto (sin sesgo)'
+          - 'auto'
           - 'cuerpo'
           - 'mente'
           - 'negocio'
@@ -161,11 +152,11 @@ on:
           - 'finanzas'
 
       hawkins_target:
-        description: '🌒 Nivel Hawkins aspirado del libro'
+        description: '🌒 Nivel Hawkins aspirado'
         type: choice
-        default: 'auto (elevación graduada según sentimiento)'
+        default: 'auto'
         options:
-          - 'auto (elevación graduada según sentimiento)'
+          - 'auto'
           - 'coraje (200)'
           - 'voluntad (310)'
           - 'aceptación (350)'
@@ -174,27 +165,25 @@ on:
           - 'alegría (540)'
           - 'paz (600)'
 
-      # ══════════════════════════════════════════════════════════════════
-      # 5️⃣ LENTES DEL LLM (Sprint A — activar/desactivar perspectivas)
-      # ══════════════════════════════════════════════════════════════════
+      # ── 5. LENTES DEL LLM ──────────────────────────────────
 
       lente_hawkins:
-        description: '🌒 Lente Hawkins (mapa de conciencia)'
+        description: '🌒 Lente Hawkins'
         type: boolean
         default: true
 
       lente_pilares:
-        description: '🏛 Lente Pilares (7 áreas de vida)'
+        description: '🏛 Lente Pilares'
         type: boolean
         default: true
 
       lente_game_theory:
-        description: '🎲 Lente Game-Theory (estructura de decisiones)'
+        description: '🎲 Lente Game-Theory'
         type: boolean
         default: true
 
       lente_self_knowledge:
-        description: '🪞 Lente Self-Knowledge (patrones internos)'
+        description: '🪞 Lente Self-Knowledge'
         type: boolean
         default: true
 
