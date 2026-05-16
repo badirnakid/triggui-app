@@ -504,7 +504,27 @@ async function fetchAppleAttempt(titulo, autor, options = {}) {
     if (!candidates.length) return { ok: false, reason: "no_ebook_results", source: "apple_books" };
 
     const best = candidates[0];
-    if (best._match_score < MIN_MATCH_SCORE) return { ok: false, reason: `low_match_${best._match_score.toFixed(2)}`, source: "apple_books" };
+    if (best._match_score < MIN_MATCH_SCORE) {
+      // 🌒 V27a NIVEL DIOS — preservar covers como fallback si nada mejor existe
+      // Útil para libros con autor genérico ("Disney Books", "Marvel Press", etc)
+      // donde la portada SÍ existe pero el autor exacto no matchea
+      const art100LM = best.artworkUrl100 || "";
+      const lowMatchCovers = art100LM ? [
+        { size: "xxlarge", url: art100LM.replace("100x100", "3000x3000") },
+        { size: "xlarge", url: art100LM.replace("100x100", "1200x1200") },
+        { size: "large", url: art100LM.replace("100x100", "600x600") },
+        { size: "medium", url: art100LM }
+      ] : [];
+      return {
+        ok: false,
+        reason: `low_match_${best._match_score.toFixed(2)}`,
+        source: "apple_books",
+        _low_match_covers: lowMatchCovers,
+        _low_match_score: best._match_score,
+        _low_match_title: best.trackName || best.collectionName || "",
+        _low_match_author: best.artistName || ""
+      };
+    }
 
     // Artwork multi-tamaño: Apple da artworkUrl100, escalable a 600, 1200, 3000
     const art100 = best.artworkUrl100 || "";
@@ -1040,7 +1060,34 @@ export async function fetchEvidence(book, options = {}) {
 
   // FASE 4: validar covers en paralelo (con tamaño mínimo v3.6)
   const t3 = Date.now();
-  const validCovers = await validateCoversParallel(allResults);
+  let validCovers = await validateCoversParallel(allResults);
+
+  // 🌒 V27a NIVEL DIOS — Fase 4.5: si validCovers vacío, intentar low_match fallback
+  // Útil para libros con autor genérico que las APIs no matchearon estrictamente
+  // pero SÍ encontraron en su catálogo (Disney, Marvel, Pixar, etc.)
+  if (validCovers.length === 0) {
+    const lowMatchResults = allResults.filter(r => r && Array.isArray(r._low_match_covers) && r._low_match_covers.length > 0);
+    if (lowMatchResults.length > 0) {
+      // Construir pseudo-results para que validateCoversParallel los procese
+      const fallbackResults = lowMatchResults.map(r => ({
+        ok: true,
+        source: r.source,
+        covers: r._low_match_covers,
+        _is_low_match_fallback: true,
+        _low_match_score: r._low_match_score,
+        match_details: {
+          matched_title: r._low_match_title || "",
+          matched_author: r._low_match_author || ""
+        }
+      }));
+      const lmValidated = await validateCoversParallel(fallbackResults);
+      if (lmValidated.length > 0) {
+        validCovers = lmValidated;
+        const summary = lowMatchResults.map(r => `${r.source}(${r._low_match_score?.toFixed(2) || "?"})`).join(", ");
+        console.log(`   🌒 V27a fallback ACTIVADO: ${lmValidated.length} covers de low_match [${summary}]`);
+      }
+    }
+  }
   const coverValidationMs = Date.now() - t3;
 
   // Log resumen
