@@ -9162,6 +9162,21 @@ bootTriggui();
       libro = nextLibro;
       libroAssignedOk = true;
       if (typeof console !== 'undefined' && console.log) console.log('[Triggui Dado v10] libro asignado OK: "' + libro.titulo + '"');
+
+      // 🌒 V26b NIVEL DIOS — actualizar pool con phrases del nuevo libro
+      // Garantiza que ECO al final sea del libro actualmente mostrado
+      try {
+        var v26bQuery = (typeof TrigguiFiltro !== 'undefined' && Array.isArray(TrigguiFiltro._lastQueryTokens))
+          ? TrigguiFiltro._lastQueryTokens.join(' ')
+          : '';
+        lastCandidatePool = buildPhrasePool([nextLibro], v26bQuery);
+        usedInThisSession.clear();
+        if (typeof console !== 'undefined' && console.log) {
+          console.log('[Triggui V26b] pool actualizado al rotar: "' + nextLibro.titulo + '" (' + lastCandidatePool.length + ' phrases)');
+        }
+      } catch (_v26e) {
+        if (typeof console !== 'undefined' && console.warn) console.warn('[Triggui V26b] error actualizando pool:', _v26e && _v26e.message);
+      }
     } catch (e) {
       if (typeof console !== 'undefined' && console.error) console.error('[Triggui Dado v10] libro NO accesible:', e.message);
     }
@@ -9334,10 +9349,6 @@ bootTriggui();
       try {
         var data = window.__TRIGGUI_DATA__;
         if (data && Array.isArray(data.libros) && data.libros.length > 0) {
-          // Pool de frases para bocado/eco
-          lastCandidatePool = buildPhrasePool(data.libros, query || '');
-          usedInThisSession.clear();
-
           // 🔥 v8: Reconstruir queryCandidates para el dado.
           // queryCandidates[0] = libro elegido por filter() (lo mismo que se mostrará).
           // queryCandidates[1+] = top-K excluyendo el primero.
@@ -9351,6 +9362,17 @@ bootTriggui();
               queryCandidates.push(firstResult.libro);
             }
           } catch (_) {}
+
+          // 🌒 V26a NIVEL DIOS — Pool SOLO del libro elegido (queryCandidates[0])
+          // Garantiza sinfonía 100%: bocado, bloques, tarjeta y eco del MISMO libro
+          var v26ChosenBook = queryCandidates[0];
+          lastCandidatePool = v26ChosenBook
+            ? buildPhrasePool([v26ChosenBook], query || '')
+            : buildPhrasePool(data.libros, query || '');
+          usedInThisSession.clear();
+          if (typeof console !== 'undefined' && console.log && v26ChosenBook) {
+            console.log('[Triggui V26a] pool del libro elegido: "' + v26ChosenBook.titulo + '" (' + lastCandidatePool.length + ' phrases)');
+          }
 
           var topK = getTopKCandidates(data.libros, query || '', TOP_K + 2);
           for (var i = 0; i < topK.length; i++) {
