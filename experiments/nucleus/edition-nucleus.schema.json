@@ -326,7 +326,9 @@
               "phrase",
               "rol_sinfonico",
               "eje_animo",
-              "eje_valor"
+              "eje_valor",
+              "pilar",
+              "punto_optimo"
             ],
             "properties": {
               "phrase": {
@@ -359,6 +361,27 @@
                     "type": "null"
                   }
                 ]
+              },
+              "pilar": {
+                "type": "string",
+                "enum": [
+                  "salud_fisica",
+                  "salud_emocional",
+                  "familia",
+                  "negocios",
+                  "espiritualidad",
+                  "relaciones_clave",
+                  "salud_financiera"
+                ]
+              },
+              "punto_optimo": {
+                "type": "string",
+                "enum": [
+                  "cero",
+                  "creativo",
+                  "activo",
+                  "maximo"
+                ]
               }
             }
           }
@@ -376,7 +399,9 @@
               "phrase",
               "rol_sinfonico",
               "eje_animo",
-              "eje_valor"
+              "eje_valor",
+              "pilar",
+              "punto_optimo"
             ],
             "properties": {
               "gesture_type": {
@@ -432,6 +457,27 @@
                   {
                     "type": "null"
                   }
+                ]
+              },
+              "pilar": {
+                "type": "string",
+                "enum": [
+                  "salud_fisica",
+                  "salud_emocional",
+                  "familia",
+                  "negocios",
+                  "espiritualidad",
+                  "relaciones_clave",
+                  "salud_financiera"
+                ]
+              },
+              "punto_optimo": {
+                "type": "string",
+                "enum": [
+                  "cero",
+                  "creativo",
+                  "activo",
+                  "maximo"
                 ]
               }
             }
@@ -507,7 +553,9 @@
               "phrase",
               "role_symphonic",
               "mood_axis",
-              "value_axis"
+              "value_axis",
+              "pilar",
+              "punto_optimo"
             ],
             "properties": {
               "phrase": {
@@ -540,6 +588,27 @@
                     "type": "null"
                   }
                 ]
+              },
+              "pilar": {
+                "type": "string",
+                "enum": [
+                  "salud_fisica",
+                  "salud_emocional",
+                  "familia",
+                  "negocios",
+                  "espiritualidad",
+                  "relaciones_clave",
+                  "salud_financiera"
+                ]
+              },
+              "punto_optimo": {
+                "type": "string",
+                "enum": [
+                  "cero",
+                  "creativo",
+                  "activo",
+                  "maximo"
+                ]
               }
             }
           }
@@ -557,7 +626,9 @@
               "phrase",
               "role_symphonic",
               "mood_axis",
-              "value_axis"
+              "value_axis",
+              "pilar",
+              "punto_optimo"
             ],
             "properties": {
               "gesture_type": {
@@ -613,6 +684,27 @@
                   {
                     "type": "null"
                   }
+                ]
+              },
+              "pilar": {
+                "type": "string",
+                "enum": [
+                  "salud_fisica",
+                  "salud_emocional",
+                  "familia",
+                  "negocios",
+                  "espiritualidad",
+                  "relaciones_clave",
+                  "salud_financiera"
+                ]
+              },
+              "punto_optimo": {
+                "type": "string",
+                "enum": [
+                  "cero",
+                  "creativo",
+                  "activo",
+                  "maximo"
                 ]
               }
             }
