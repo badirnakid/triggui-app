@@ -347,6 +347,47 @@ jobs:
       # ║  validate-book.js lo arranca con ring vacío sin fallar.           ║
       # ╚══════════════════════════════════════════════════════════════════╝
 
+      # ════════════════════════════════════════════════════════════════════
+      # V20 STEP 0 — defensa anti-bomba final (capa 3 de 3)
+      # ════════════════════════════════════════════════════════════════════
+      # Valida libros_master.csv con csv-parse strict ANTES de cualquier
+      # operación pesada. Si el CSV tiene una bomba (caracter raro que
+      # csv-parse strict rechaza), falla en 2 segundos con mensaje claro
+      # en vez de reventar 5 minutos después en loadCSV de build-contenido.
+      #
+      # COMPLEMENTO DE:
+      #   Capa 1: CSV reparado (commit 57f20043 en triggui-content)
+      #   Capa 2: endpoint con sanitize V20 (commit a90d409 en triggui.com)
+      # ════════════════════════════════════════════════════════════════════
+      - name: 🛡️ Validar CSV strict pre-pipeline (V20 anti-bomba)
+        run: |
+          set -e
+          if [ "$CATALOG_MODE" = "kids" ]; then
+            CSV_FILE="data/libros_master_kids.csv"
+          else
+            CSV_FILE="data/libros_master.csv"
+          fi
+          if [ ! -f "$CSV_FILE" ]; then
+            echo "⚠️ $CSV_FILE no existe — modo discover/single acepta esto"
+            exit 0
+          fi
+          echo "🔍 Validando $CSV_FILE con csv-parse strict (V20 anti-bomba)..."
+          CSV_PATH="$CSV_FILE" node -e "
+            const fs = require('fs');
+            const path = process.env.CSV_PATH;
+            try {
+              const { parse } = require('csv-parse/sync');
+              const data = fs.readFileSync(path, 'utf8');
+              const records = parse(data, { columns: true, skip_empty_lines: true });
+              console.log('✓ CSV válido:', records.length, 'records');
+            } catch (e) {
+              console.error('❌ CSV INVÁLIDO:', e.message);
+              console.error('   Causa probable: caracteres no sanitizados en captura reciente');
+              console.error('   Fix: ejecutar reparar-csv-master.py en triggui-content');
+              process.exit(1);
+            }
+          "
+
       - name: 🛡️ Inicializar recent-books.json (anti-duplicados v3.4)
         shell: bash
         run: |
