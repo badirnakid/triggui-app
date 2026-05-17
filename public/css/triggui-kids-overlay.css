@@ -1,81 +1,159 @@
 /* ═══════════════════════════════════════════════════════════════════════
- * TRIGGUI KIDS OVERLAY v3.0.0 — Coloring Book Universe Completo
+ * TRIGGUI KIDS OVERLAY v4.0.0 — Coloring Book + Accent Dinámico
  * ───────────────────────────────────────────────────────────────────────
- * SCOPE quirúrgico: dentro de #barraMagicaOverlay
- *   • Pantalla barra mágica
- *   • Pantalla bocado
- *   • Pantalla eco
+ * SELECTORES NIVEL DIOS:
+ *   • .bm-w3              = 3a palabra de pregunta (accent dinámico)
+ *   • #barraInputWrap     = wrapper del input (outline sticker)
+ *   • #barraInput         = input mismo (transparent)
+ *   • #barraSubmit        = botón flecha (yellow sticker)
+ *   • #barraEyebrow       = "pausa" label
+ *   • #barraMicro         = microtext
+ *   • .bm-bocado-w        = palabras del bocado (negras)
+ *   • .bm-bocado-anchor   = anchor del bocado (accent dinámico)
+ *   • .bm-eco-phrase      = frase del eco (negra)
+ *   • .bm-eco-anchor      = anchor del eco (accent dinámico)
  *
- * CERO IMPACTO A:
- *   ✗ #grid (palabras + frases + book cards)
- *   ✗ #tarjetaOverlay (book card popup)
- *   ✗ Pills globales fuera del overlay
- *   ✗ Modo adulto
+ * PILLS GLOBALES INTOCADAS:
+ *   ✗ #barraStreak, #barraLangToggle, #barraSkip, #barraFooterLogo (img)
  *
- * VERSIÓN: 3.0.0 — Coloring book completo con formas decorativas
- * FECHA:   2026-05-17
+ * FIXES vs v3:
+ *   1. Posiciones áureas: buffer 140px top, 110px bottom (sin encimajes)
+ *   2. Input wrapper: selector EXACTO #barraInputWrap
+ *   3. Accent .bm-w3 PRESERVADO (no se toca su color)
+ *   4. SVG con currentColor + color: var(--accent-col) → DINÁMICO con libro
+ *
+ * VERSIÓN: 4.0.0   FECHA: 2026-05-17
  * ═══════════════════════════════════════════════════════════════════════ */
 
 
-/* ═══ TOKENS — paleta triadic + stroke calibrado ═══════════════════════ */
+/* ═══ TOKENS ═══ */
 html[data-mode="kids"] #barraMagicaOverlay {
   --kids-canvas:    #FFFFFF;
   --kids-ink:       #000000;
   --kids-stroke:    2.5px;
   --kids-yellow:    #FFD60A;
-  --kids-cyan:      #14C7DA;
-  --kids-coral:     #FF6B9D;
   --kids-transit:   350ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 
-/* ═══ 1. BACKGROUND BLANCO + TRANSITION ════════════════════════════════ */
+/* ═══ 1. BACKGROUND BLANCO ═══ */
 html[data-mode="kids"] #barraMagicaOverlay {
   background: var(--kids-canvas) !important;
-  color: var(--kids-ink) !important;
   transition: background-color var(--kids-transit),
               opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 
-/* ═══ 2. TEXTO NEGRO COMPLETO (preserva accent en anchors) ═════════════
- * :not() excluye anchors que reciben accent color via inline style desde JS.
- * Estos conservan el color dinámico del libro.
+/* ═══ 2. APAGAR EFECTOS VISUALES ADULTOS ═══
+ * Aurora blobs, dust particles, spark indicator → invisibles en kids.
+ * Estos efectos son del universo dark del adulto.
  * ═══════════════════════════════════════════════════════════════════════ */
-html[data-mode="kids"] #barraMagicaOverlay *:not(.bm-bocado-anchor):not(.bm-eco-anchor) {
+html[data-mode="kids"] #barraAurora,
+html[data-mode="kids"] #barraDust,
+html[data-mode="kids"] #barraSparkIndicator {
+  display: none !important;
+}
+
+
+/* ═══ 3. TEXTO NEGRO COMPLETO — solo en .barra-magica-inner + bocado/eco ═
+ * Excluye:
+ *   • .bm-w3                 (accent dinámico del prompt)
+ *   • .bm-bocado-anchor      (accent dinámico bocado)
+ *   • .bm-eco-anchor         (accent dinámico eco)
+ *   • Pills globales (no son hijos de .barra-magica-inner)
+ * ═══════════════════════════════════════════════════════════════════════ */
+html[data-mode="kids"] #barraMagicaOverlay .barra-magica-inner,
+html[data-mode="kids"] #barraMagicaOverlay .barra-magica-inner *:not(.bm-w3):not(.bm-bocado-anchor):not(.bm-eco-anchor),
+html[data-mode="kids"] #barraMagicaOverlay .bm-bocado-w,
+html[data-mode="kids"] #barraMagicaOverlay .bm-eco-phrase {
   color: var(--kids-ink) !important;
 }
 
 
-/* ═══ 3. SVG DECORATIVOS — reasigno ::before del glow apagado ═══════════
- * Aprovecho el pseudo-element que antes hacía el glow naranja para 
- * renderizar 8 formas geométricas en posiciones áureas.
- * background-image con múltiples data: URLs SVG inline.
+/* ═══ 4. INPUT WRAPPER STICKER — #barraInputWrap ═══════════════════════ */
+html[data-mode="kids"] #barraInputWrap {
+  background: var(--kids-canvas) !important;
+  border: var(--kids-stroke) solid var(--kids-ink) !important;
+  border-radius: 14px !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+html[data-mode="kids"] #barraInput {
+  background: transparent !important;
+  color: var(--kids-ink) !important;
+  caret-color: var(--kids-ink);
+  border: none !important;
+  box-shadow: none !important;
+}
+
+html[data-mode="kids"] #barraInput::placeholder {
+  color: rgba(0, 0, 0, 0.5) !important;
+  opacity: 1 !important;
+}
+
+
+/* ═══ 5. BOTÓN SUBMIT — yellow sticker (anclaje fijo) ═══ */
+html[data-mode="kids"] #barraSubmit {
+  background: var(--kids-yellow) !important;
+  background-image: none !important;
+  border: var(--kids-stroke) solid var(--kids-ink) !important;
+  box-shadow: none !important;
+  color: var(--kids-ink) !important;
+}
+
+html[data-mode="kids"] #barraSubmit svg,
+html[data-mode="kids"] #barraSubmit svg * {
+  stroke: var(--kids-ink) !important;
+  fill: none !important;
+}
+
+
+/* ═══ 6. SVG DECORATIVOS CON ACCENT DINÁMICO DEL LIBRO ═══════════════════
+ * SVG usan currentColor en stroke/fill.
+ * El pseudo-element ::before tiene color: var(--accent-col).
+ * Resultado: 8 formas cambian de color CON EL LIBRO.
+ * Fallback cyan #14C7DA si --accent-col no disponible.
  * ═══════════════════════════════════════════════════════════════════════ */
 html[data-mode="kids"] #barraMagicaOverlay::before {
   content: "" !important;
   position: absolute !important;
   inset: 0 !important;
+  color: var(--accent-col, #14C7DA) !important;
   background-color: transparent !important;
   background-repeat: no-repeat !important;
   background-image:
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><circle cx='30' cy='30' r='14' fill='none' stroke='black' stroke-width='2.5'/><g stroke='black' stroke-width='2.5' stroke-linecap='round'><line x1='30' y1='3' x2='30' y2='8'/><line x1='30' y1='52' x2='30' y2='57'/><line x1='3' y1='30' x2='8' y2='30'/><line x1='52' y1='30' x2='57' y2='30'/><line x1='10' y1='10' x2='14' y2='14'/><line x1='46' y1='46' x2='50' y2='50'/><line x1='10' y1='50' x2='14' y2='46'/><line x1='46' y1='14' x2='50' y2='10'/></g></svg>"),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 45'><polygon points='25,5 45,42 5,42' fill='%2314C7DA' stroke='black' stroke-width='2.5' stroke-linejoin='round'/></svg>"),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 40'><path d='M5 38 A 30 30 0 0 1 65 38 Z' fill='%23FF6B9D' stroke='black' stroke-width='2.5' stroke-linejoin='round'/></svg>"),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50'><polygon points='25,5 45,25 25,45 5,25' fill='none' stroke='black' stroke-width='2.5' stroke-linejoin='round'/></svg>"),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><polygon points='20,4 24,15 36,15 26,22 30,34 20,27 10,34 14,22 4,15 16,15' fill='none' stroke='black' stroke-width='2.5' stroke-linejoin='round'/></svg>"),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'><circle cx='7' cy='7' r='5' fill='%23FFD60A' stroke='black' stroke-width='1.5'/></svg>"),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'><circle cx='7' cy='7' r='5' fill='%2314C7DA' stroke='black' stroke-width='1.5'/></svg>"),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 14'><path d='M2 7 q5 -7 10 0 q5 7 10 0 q5 -7 8 0' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round'/></svg>") !important;
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round'><circle cx='30' cy='30' r='14'/><line x1='30' y1='3' x2='30' y2='8'/><line x1='30' y1='52' x2='30' y2='57'/><line x1='3' y1='30' x2='8' y2='30'/><line x1='52' y1='30' x2='57' y2='30'/><line x1='10' y1='10' x2='14' y2='14'/><line x1='46' y1='46' x2='50' y2='50'/><line x1='10' y1='50' x2='14' y2='46'/><line x1='46' y1='14' x2='50' y2='10'/></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 45'><polygon points='25,5 45,42 5,42' fill='currentColor'/></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 40'><path d='M5 38 A 30 30 0 0 1 65 38 Z' fill='currentColor'/></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linejoin='round'><polygon points='25,5 45,25 25,45 5,25'/></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linejoin='round'><polygon points='20,4 24,15 36,15 26,22 30,34 20,27 10,34 14,22 4,15 16,15'/></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'><circle cx='7' cy='7' r='5' fill='currentColor'/></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'><circle cx='7' cy='7' r='5' fill='currentColor'/></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 14' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round'><path d='M2 7 q5 -7 10 0 q5 7 10 0 q5 -7 8 0'/></svg>") !important;
+  opacity: 1 !important;
+  animation: none !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+}
+
+
+/* ═══ 7. POSICIONES ÁUREAS DESKTOP (>768px) ══════════════════════════════
+ * BUFFER 140px desde top → lejos de pills streak + lang globales
+ * BUFFER 110px desde bottom → lejos de toggle skip + logo footer
+ * Distribución áurea: 4 esquinas + 4 acentos en líneas φ.
+ * ═══════════════════════════════════════════════════════════════════════ */
+html[data-mode="kids"] #barraMagicaOverlay::before {
   background-position:
-    40px 96px,
-    calc(100% - 36px) 88px,
-    36px calc(100% - 96px),
-    calc(100% - 36px) calc(100% - 96px),
-    calc(100% - 36px) 50%,
-    40px calc(50% - 80px),
-    calc(100% - 28px) calc(50% + 80px),
-    36px calc(50% + 40px) !important;
+    44px 140px,                              /* 1. Sol top-left */
+    calc(100% - 44px) 140px,                 /* 2. Triángulo top-right */
+    40px calc(100% - 110px),                 /* 3. Semicírculo bottom-left */
+    calc(100% - 40px) calc(100% - 110px),    /* 4. Diamante bottom-right */
+    calc(100% - 44px) 50%,                   /* 5. Estrella mid-right */
+    44px calc(50% - 90px),                   /* 6. Dot mid-left arriba */
+    calc(100% - 32px) calc(50% + 90px),      /* 7. Dot mid-right abajo */
+    40px calc(50% + 50px) !important;        /* 8. Squiggle mid-left abajo */
   background-size:
     60px 60px,
     50px 45px,
@@ -85,14 +163,35 @@ html[data-mode="kids"] #barraMagicaOverlay::before {
     14px 14px,
     14px 14px,
     30px 14px !important;
-  opacity: 1 !important;
-  animation: none !important;
-  pointer-events: none !important;
-  z-index: 0 !important;
 }
 
 
-/* ═══ 4. LOGO COLOR — trigguiletras2.png en lugar de versión blanca ═════ */
+/* ═══ 8. POSICIONES MOBILE (<=768px) — buffer aumentado a 120px top ═════ */
+@media (max-width: 768px) {
+  html[data-mode="kids"] #barraMagicaOverlay::before {
+    background-position:
+      22px 120px,                            /* 1. Sol top-left */
+      calc(100% - 22px) 120px,               /* 2. Triángulo top-right */
+      22px calc(100% - 100px),               /* 3. Semicírculo bottom-left */
+      calc(100% - 22px) calc(100% - 100px),  /* 4. Diamante bottom-right */
+      calc(100% - 22px) 50%,                 /* 5. Estrella mid-right */
+      22px calc(50% - 70px),                 /* 6. Dot mid-left arriba */
+      calc(100% - 18px) calc(50% + 70px),    /* 7. Dot mid-right abajo */
+      18px calc(50% + 35px) !important;      /* 8. Squiggle mid-left abajo */
+    background-size:
+      48px 48px,
+      40px 36px,
+      56px 32px,
+      40px 40px,
+      32px 32px,
+      12px 12px,
+      12px 12px,
+      26px 12px !important;
+  }
+}
+
+
+/* ═══ 9. LOGO COLOR — trigguiletras2.png ═══ */
 html[data-mode="kids"] #barraFooterLogo .bm-logo-stage {
   position: relative;
 }
@@ -111,93 +210,4 @@ html[data-mode="kids"] #barraFooterLogo .bm-logo-stage::after {
 }
 
 
-/* ═══ 5. INPUT SEARCH BOX STICKER ═══════════════════════════════════════
- * Wrapper del input con outline negro grueso (sticker style).
- * Selectores defensivos: capturan el contenedor sin saber su clase exacta.
- * ═══════════════════════════════════════════════════════════════════════ */
-html[data-mode="kids"] #barraMagicaOverlay form,
-html[data-mode="kids"] #barraMagicaOverlay [class*="input-wrapper"],
-html[data-mode="kids"] #barraMagicaOverlay [class*="search-box"],
-html[data-mode="kids"] #barraMagicaOverlay [class*="bm-input"],
-html[data-mode="kids"] #barraMagicaOverlay [class*="bm-search"],
-html[data-mode="kids"] #barraMagicaOverlay [class*="searchbox"] {
-  background: var(--kids-canvas) !important;
-  border: var(--kids-stroke) solid var(--kids-ink) !important;
-  border-radius: 12px !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
-
-html[data-mode="kids"] #barraMagicaOverlay input,
-html[data-mode="kids"] #barraMagicaOverlay textarea {
-  background: transparent !important;
-  color: var(--kids-ink) !important;
-  caret-color: var(--kids-ink);
-  border: none !important;
-  box-shadow: none !important;
-}
-
-html[data-mode="kids"] #barraMagicaOverlay input::placeholder,
-html[data-mode="kids"] #barraMagicaOverlay textarea::placeholder {
-  color: rgba(0, 0, 0, 0.5) !important;
-  opacity: 1 !important;
-}
-
-
-/* ═══ 6. BOTÓN SUBMIT STICKER YELLOW + flecha negra ════════════════════ */
-html[data-mode="kids"] #barraMagicaOverlay button[type="submit"],
-html[data-mode="kids"] #barraMagicaOverlay [class*="submit-btn"],
-html[data-mode="kids"] #barraMagicaOverlay [class*="bm-submit"],
-html[data-mode="kids"] #barraMagicaOverlay [class*="bm-send"],
-html[data-mode="kids"] #barraMagicaOverlay [class*="send-btn"] {
-  background: var(--kids-yellow) !important;
-  background-image: none !important;
-  border: var(--kids-stroke) solid var(--kids-ink) !important;
-  box-shadow: none !important;
-}
-
-html[data-mode="kids"] #barraMagicaOverlay button[type="submit"] svg,
-html[data-mode="kids"] #barraMagicaOverlay button[type="submit"] svg *,
-html[data-mode="kids"] #barraMagicaOverlay [class*="submit"] svg,
-html[data-mode="kids"] #barraMagicaOverlay [class*="submit"] svg * {
-  stroke: var(--kids-ink) !important;
-  fill: none !important;
-}
-
-
-/* ═══ 7. DIVIDERS / PAUSA LINES ═════════════════════════════════════════ */
-html[data-mode="kids"] #barraMagicaOverlay hr,
-html[data-mode="kids"] #barraMagicaOverlay [class*="divider"],
-html[data-mode="kids"] #barraMagicaOverlay [class*="separator"] {
-  border-color: var(--kids-ink) !important;
-  background-color: var(--kids-ink) !important;
-  opacity: 1 !important;
-}
-
-
-/* ═══ 8. RESPONSIVE MOBILE — formas más pequeñas <768px ═════════════════ */
-@media (max-width: 768px) {
-  html[data-mode="kids"] #barraMagicaOverlay::before {
-    background-size:
-      44px 44px,
-      36px 32px,
-      52px 30px,
-      36px 36px,
-      30px 30px,
-      10px 10px,
-      10px 10px,
-      24px 12px !important;
-    background-position:
-      20px 64px,
-      calc(100% - 18px) 60px,
-      18px calc(100% - 64px),
-      calc(100% - 18px) calc(100% - 64px),
-      calc(100% - 18px) 50%,
-      20px calc(50% - 50px),
-      calc(100% - 14px) calc(50% + 50px),
-      18px calc(50% + 28px) !important;
-  }
-}
-
-/* END OF v3.0.0 — coloring book universe completo */
+/* END OF v4.0.0 — coloring book con accent dinámico nivel dios */
