@@ -1,21 +1,35 @@
 /* ═══════════════════════════════════════════════════════════════════════
- * TRIGGUI KIDS OVERLAY v5.0.0 — Sublime nivel dios todopoderoso
+ * TRIGGUI KIDS OVERLAY v6.0.0 — NIVEL DIOS TODOPODEROSO REAL
  * ───────────────────────────────────────────────────────────────────────
- * FIXES vs v4:
- *   1. SVG con mask-image (currentColor en data: URL no funciona)
- *      → Las 8 formas SÍ cambian de color con el libro ahora
- *   2. Botón submit: background dinámico var(--accent-col)
- *      → Cambia de color con cada libro
- *   3. Streak pill: fondo blanco sólido + texto negro
- *      → Cero inconsistencias de fondo
- *   4. Skip toggle All/Kids: fondo blanco sólido, texto negro siempre
- *      Indicator del accent del libro (dinámico)
- *      → "All" y "Kids" siempre legibles
- *   5. Posiciones de estrella + squiggle: FUERA del input box
- *      Estrella: cuadrante superior derecho (y=50% - 160px)
- *      Squiggle: cuadrante inferior izquierdo (y=50% + 160px)
+ * DESCUBRIMIENTO MATEMÁTICO:
+ *   El código YA propaga el accent del libro al :root con:
+ *     --triggui-accent          (color del libro)
+ *     --triggui-accent-contrast (#fff o #000 auto según luminancia)
+ *   
+ *   Solo necesitamos USAR esas variables en el CSS overlay.
+ *   CERO JS modificado.
  *
- * VERSIÓN: 5.0.0   FECHA: 2026-05-17
+ * PALETA MIXTA NIVEL COLORING BOOK AUTÉNTICO:
+ *
+ * 4 FORMAS OUTLINE NEGRO (fijas, vacías para colorear):
+ *   • Sol top-left
+ *   • Diamante bottom-right
+ *   • Estrella mid-right top
+ *   • Squiggle mid-left bottom
+ *
+ * 4 FORMAS FILLED DINÁMICAS (cambian con el libro):
+ *   • Triángulo top-right
+ *   • Semicírculo bottom-left
+ *   • Dot mid-left top
+ *   • Dot mid-right bottom
+ *
+ * ELEMENTOS DINÁMICOS:
+ *   • Botón submit         (fondo = accent, flecha = contrast auto)
+ *   • Indicator toggle     (fondo = accent)
+ *   • Active text toggle   (color = contrast auto)
+ *   • Texto accent prompt  (ya dinámico nativamente)
+ *
+ * VERSIÓN: 6.0.0 — CSS-only, cero JS, accent dinámico real
  * ═══════════════════════════════════════════════════════════════════════ */
 
 
@@ -54,7 +68,7 @@ html[data-mode="kids"] #barraMagicaOverlay .bm-eco-phrase {
 }
 
 
-/* ═══ 4. STREAK PILL — fondo blanco sólido, texto negro consistente ════ */
+/* ═══ 4. STREAK PILL — fondo blanco sólido ═══ */
 html[data-mode="kids"] #barraStreak {
   background: rgba(255, 255, 255, 0.95) !important;
   color: var(--kids-ink) !important;
@@ -67,11 +81,9 @@ html[data-mode="kids"] #barraStreak {
 html[data-mode="kids"] #barraStreak * {
   color: var(--kids-ink) !important;
 }
-/* El emoji 🔥 mantiene su color nativo (los emojis no cambian con CSS color) */
 
 
-/* ═══ 5. SKIP TOGGLE All/Kids — fondo blanco, texto negro, 
-         indicator dinámico del color del libro ═════════════════════════ */
+/* ═══ 5. SKIP TOGGLE — fondo blanco, indicator DINÁMICO ═══ */
 html[data-mode="kids"] #barraSkip .bm-skip-inner {
   background: rgba(255, 255, 255, 0.95) !important;
   border: 1.5px solid rgba(0, 0, 0, 0.12) !important;
@@ -80,21 +92,24 @@ html[data-mode="kids"] #barraSkip .bm-skip-inner {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
 }
 
-/* Forzar AMBOS textos negros — el indicator del color detrás distingue */
+/* Inactive segment "All": negro fijo */
 html[data-mode="kids"] #barraSkip .bm-skip-seg,
-html[data-mode="kids"] #barraSkip .bm-skip-seg-all,
-html[data-mode="kids"] #barraSkip .bm-skip-seg-kids,
-html[data-mode="kids"] #barraSkip .bm-skip-seg.active {
+html[data-mode="kids"] #barraSkip .bm-skip-seg-all {
   color: var(--kids-ink) !important;
 }
 
-/* Indicator (pildora activa) del accent del libro DINÁMICO */
+/* Active segment "Kids": contrast auto (blanco si accent oscuro, negro si claro) */
+html[data-mode="kids"] #barraSkip .bm-skip-seg-kids {
+  color: var(--triggui-accent-contrast, var(--kids-ink)) !important;
+}
+
+/* INDICATOR DINÁMICO con accent del libro */
 html[data-mode="kids"] #barraSkip .bm-skip-indicator {
-  background: var(--accent-col, var(--kids-yellow)) !important;
+  background: var(--triggui-accent, var(--kids-yellow)) !important;
 }
 
 
-/* ═══ 6. INPUT WRAPPER STICKER (sin cambios vs v4) ═══ */
+/* ═══ 6. INPUT WRAPPER STICKER ═══ */
 html[data-mode="kids"] #barraInputWrap {
   background: var(--kids-canvas) !important;
   border: var(--kids-stroke) solid var(--kids-ink) !important;
@@ -118,55 +133,44 @@ html[data-mode="kids"] #barraInput::placeholder {
 }
 
 
-/* ═══ 7. BOTÓN SUBMIT — DINÁMICO con accent del libro ═══════════════════ */
+/* ═══ 7. BOTÓN SUBMIT — DINÁMICO con accent del libro ═══ */
 html[data-mode="kids"] #barraSubmit {
-  background: var(--accent-col, var(--kids-yellow)) !important;
+  background: var(--triggui-accent, var(--kids-yellow)) !important;
   background-image: none !important;
   border: var(--kids-stroke) solid var(--kids-ink) !important;
   box-shadow: none !important;
-  color: var(--kids-ink) !important;
 }
 
+/* Flecha del submit: contrast auto (visible sobre cualquier accent) */
 html[data-mode="kids"] #barraSubmit svg,
 html[data-mode="kids"] #barraSubmit svg * {
-  stroke: var(--kids-ink) !important;
+  stroke: var(--triggui-accent-contrast, var(--kids-ink)) !important;
   fill: none !important;
 }
 
 
-/* ═══ 8. SVG DECORATIVOS — mask-image + background-color ═════════════════
- * Los SVG ahora son MÁSCARAS (siluetas opacas en negro).
- * El background-color: var(--accent-col) rellena las máscaras.
- * Resultado: 8 formas pintadas del color del libro, dinámicamente.
- * 
- * VENTAJA: con mask-image el browser respeta el color del padre.
- * ═══════════════════════════════════════════════════════════════════════ */
+/* ═══ 8a. ::before — 4 FORMAS OUTLINE NEGRAS (fijas, vacías) ═══════════ */
 html[data-mode="kids"] #barraMagicaOverlay::before {
   content: "" !important;
   position: absolute !important;
   inset: 0 !important;
-  background-color: var(--accent-col, #14C7DA) !important;
-  background-image: none !important;
-  -webkit-mask-image:
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round'><circle cx='30' cy='30' r='14'/><line x1='30' y1='3' x2='30' y2='8'/><line x1='30' y1='52' x2='30' y2='57'/><line x1='3' y1='30' x2='8' y2='30'/><line x1='52' y1='30' x2='57' y2='30'/><line x1='10' y1='10' x2='14' y2='14'/><line x1='46' y1='46' x2='50' y2='50'/><line x1='10' y1='50' x2='14' y2='46'/><line x1='46' y1='14' x2='50' y2='10'/></svg>"),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 45'><polygon points='25,5 45,42 5,42' fill='black'/></svg>"),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 40'><path d='M5 38 A 30 30 0 0 1 65 38 Z' fill='black'/></svg>"),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50' fill='none' stroke='black' stroke-width='2.5' stroke-linejoin='round'><polygon points='25,5 45,25 25,45 5,25'/></svg>"),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40' fill='none' stroke='black' stroke-width='2.5' stroke-linejoin='round'><polygon points='20,4 24,15 36,15 26,22 30,34 20,27 10,34 14,22 4,15 16,15'/></svg>"),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'><circle cx='7' cy='7' r='5' fill='black'/></svg>"),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'><circle cx='7' cy='7' r='5' fill='black'/></svg>"),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 14' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round'><path d='M2 7 q5 -7 10 0 q5 7 10 0 q5 -7 8 0'/></svg>") !important;
-  mask-image:
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round'><circle cx='30' cy='30' r='14'/><line x1='30' y1='3' x2='30' y2='8'/><line x1='30' y1='52' x2='30' y2='57'/><line x1='3' y1='30' x2='8' y2='30'/><line x1='52' y1='30' x2='57' y2='30'/><line x1='10' y1='10' x2='14' y2='14'/><line x1='46' y1='46' x2='50' y2='50'/><line x1='10' y1='50' x2='14' y2='46'/><line x1='46' y1='14' x2='50' y2='10'/></svg>"),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 45'><polygon points='25,5 45,42 5,42' fill='black'/></svg>"),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 40'><path d='M5 38 A 30 30 0 0 1 65 38 Z' fill='black'/></svg>"),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50' fill='none' stroke='black' stroke-width='2.5' stroke-linejoin='round'><polygon points='25,5 45,25 25,45 5,25'/></svg>"),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40' fill='none' stroke='black' stroke-width='2.5' stroke-linejoin='round'><polygon points='20,4 24,15 36,15 26,22 30,34 20,27 10,34 14,22 4,15 16,15'/></svg>"),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'><circle cx='7' cy='7' r='5' fill='black'/></svg>"),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'><circle cx='7' cy='7' r='5' fill='black'/></svg>"),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 14' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round'><path d='M2 7 q5 -7 10 0 q5 7 10 0 q5 -7 8 0'/></svg>") !important;
-  -webkit-mask-repeat: no-repeat !important;
-  mask-repeat: no-repeat !important;
+  background-color: transparent !important;
+  background-repeat: no-repeat !important;
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='round'><circle cx='30' cy='30' r='14'/><line x1='30' y1='3' x2='30' y2='8'/><line x1='30' y1='52' x2='30' y2='57'/><line x1='3' y1='30' x2='8' y2='30'/><line x1='52' y1='30' x2='57' y2='30'/><line x1='10' y1='10' x2='14' y2='14'/><line x1='46' y1='46' x2='50' y2='50'/><line x1='10' y1='50' x2='14' y2='46'/><line x1='46' y1='14' x2='50' y2='10'/></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50' fill='none' stroke='%23000' stroke-width='2.5' stroke-linejoin='round'><polygon points='25,5 45,25 25,45 5,25'/></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40' fill='none' stroke='%23000' stroke-width='2.5' stroke-linejoin='round'><polygon points='20,4 24,15 36,15 26,22 30,34 20,27 10,34 14,22 4,15 16,15'/></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 14' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='round'><path d='M2 7 q5 -7 10 0 q5 7 10 0 q5 -7 8 0'/></svg>") !important;
+  background-position:
+    44px 140px,                              /* Sol top-left */
+    calc(100% - 40px) calc(100% - 110px),    /* Diamante bottom-right */
+    calc(100% - 44px) calc(50% - 170px),     /* Estrella mid-right TOP */
+    40px calc(50% + 170px) !important;       /* Squiggle mid-left BOTTOM */
+  background-size:
+    60px 60px,
+    50px 50px,
+    40px 40px,
+    30px 14px !important;
   opacity: 1 !important;
   animation: none !important;
   pointer-events: none !important;
@@ -174,94 +178,91 @@ html[data-mode="kids"] #barraMagicaOverlay::before {
 }
 
 
-/* ═══ 9. POSICIONES DESKTOP — Estrella + squiggle FUERA del input ════════
- * Buffer 140px top, 110px bottom.
- * Zona segura input: y=50% ± 150px. Estrella y squiggle más afuera.
- * ═══════════════════════════════════════════════════════════════════════ */
-html[data-mode="kids"] #barraMagicaOverlay::before {
+/* ═══ 8b. ::after — 4 FORMAS FILLED DINÁMICAS (color del libro) ════════ */
+html[data-mode="kids"] #barraMagicaOverlay::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background-color: var(--triggui-accent, #14C7DA) !important;
+  -webkit-mask-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 45'><polygon points='25,5 45,42 5,42' fill='black'/></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 40'><path d='M5 38 A 30 30 0 0 1 65 38 Z' fill='black'/></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'><circle cx='7' cy='7' r='5' fill='black'/></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'><circle cx='7' cy='7' r='5' fill='black'/></svg>") !important;
+  mask-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 45'><polygon points='25,5 45,42 5,42' fill='black'/></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 40'><path d='M5 38 A 30 30 0 0 1 65 38 Z' fill='black'/></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'><circle cx='7' cy='7' r='5' fill='black'/></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'><circle cx='7' cy='7' r='5' fill='black'/></svg>") !important;
   -webkit-mask-position:
-    44px 140px,                              /* 1. Sol top-left */
-    calc(100% - 44px) 140px,                 /* 2. Triángulo top-right */
-    40px calc(100% - 110px),                 /* 3. Semicírculo bottom-left */
-    calc(100% - 40px) calc(100% - 110px),    /* 4. Diamante bottom-right */
-    calc(100% - 44px) calc(50% - 170px),     /* 5. Estrella TOP-right (movida) */
-    44px calc(50% - 150px),                  /* 6. Dot top-left medio */
-    calc(100% - 32px) calc(50% + 150px),     /* 7. Dot bottom-right medio */
-    40px calc(50% + 170px) !important;       /* 8. Squiggle BOTTOM-left (movida) */
+    calc(100% - 44px) 140px,                 /* Triángulo top-right */
+    40px calc(100% - 110px),                 /* Semicírculo bottom-left */
+    44px calc(50% - 150px),                  /* Dot mid-left TOP */
+    calc(100% - 32px) calc(50% + 150px) !important;  /* Dot mid-right BOTTOM */
   mask-position:
-    44px 140px,
     calc(100% - 44px) 140px,
     40px calc(100% - 110px),
-    calc(100% - 40px) calc(100% - 110px),
-    calc(100% - 44px) calc(50% - 170px),
     44px calc(50% - 150px),
-    calc(100% - 32px) calc(50% + 150px),
-    40px calc(50% + 170px) !important;
+    calc(100% - 32px) calc(50% + 150px) !important;
   -webkit-mask-size:
-    60px 60px,
     50px 45px,
     70px 40px,
-    50px 50px,
-    40px 40px,
     14px 14px,
-    14px 14px,
-    30px 14px !important;
+    14px 14px !important;
   mask-size:
-    60px 60px,
     50px 45px,
     70px 40px,
-    50px 50px,
-    40px 40px,
     14px 14px,
-    14px 14px,
-    30px 14px !important;
+    14px 14px !important;
+  -webkit-mask-repeat: no-repeat !important;
+  mask-repeat: no-repeat !important;
+  opacity: 1 !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
 }
 
 
-/* ═══ 10. POSICIONES MOBILE — más comprimidas ═════════════════════════════ */
+/* ═══ 9. POSICIONES MOBILE ═══ */
 @media (max-width: 768px) {
   html[data-mode="kids"] #barraMagicaOverlay::before {
+    background-position:
+      22px 120px,
+      calc(100% - 22px) calc(100% - 100px),
+      calc(100% - 22px) calc(50% - 140px),
+      22px calc(50% + 140px) !important;
+    background-size:
+      48px 48px,
+      40px 40px,
+      32px 32px,
+      26px 12px !important;
+  }
+  
+  html[data-mode="kids"] #barraMagicaOverlay::after {
     -webkit-mask-position:
-      22px 120px,
       calc(100% - 22px) 120px,
       22px calc(100% - 100px),
-      calc(100% - 22px) calc(100% - 100px),
-      calc(100% - 22px) calc(50% - 140px),
       22px calc(50% - 130px),
-      calc(100% - 18px) calc(50% + 130px),
-      22px calc(50% + 140px) !important;
+      calc(100% - 18px) calc(50% + 130px) !important;
     mask-position:
-      22px 120px,
       calc(100% - 22px) 120px,
       22px calc(100% - 100px),
-      calc(100% - 22px) calc(100% - 100px),
-      calc(100% - 22px) calc(50% - 140px),
       22px calc(50% - 130px),
-      calc(100% - 18px) calc(50% + 130px),
-      22px calc(50% + 140px) !important;
+      calc(100% - 18px) calc(50% + 130px) !important;
     -webkit-mask-size:
-      48px 48px,
       40px 36px,
       56px 32px,
-      40px 40px,
-      32px 32px,
       12px 12px,
-      12px 12px,
-      26px 12px !important;
+      12px 12px !important;
     mask-size:
-      48px 48px,
       40px 36px,
       56px 32px,
-      40px 40px,
-      32px 32px,
       12px 12px,
-      12px 12px,
-      26px 12px !important;
+      12px 12px !important;
   }
 }
 
 
-/* ═══ 11. LOGO COLOR ═══ */
+/* ═══ 10. LOGO COLOR ═══ */
 html[data-mode="kids"] #barraFooterLogo .bm-logo-stage {
   position: relative;
 }
@@ -280,4 +281,4 @@ html[data-mode="kids"] #barraFooterLogo .bm-logo-stage::after {
 }
 
 
-/* END OF v5.0.0 — Sublime nivel dios todopoderoso */
+/* END OF v6.0.0 — Cero JS, accent dinámico real nivel dios */
