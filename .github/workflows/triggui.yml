@@ -791,6 +791,29 @@ jobs:
         run: |
           set -euo pipefail
 
+          # 🌒 DOCTRINA SINGLE-ONLY MANUAL.JSON — Nivel dios cuántico-quark axiomático
+          # ─────────────────────────────────────────────────────────────────
+          # manual.json es la vista filtrada para Apps Script email del lunes.
+          # Solo se REGENERA en modos que asignan _edicion_numero (single-like).
+          # Batch/shadow PRESERVAN manual.json intacto en disco.
+          # ─────────────────────────────────────────────────────────────────
+          MODO_GATE="${{ steps.modo.outputs.modo_tecnico }}"
+          case "${MODO_GATE}" in
+            single_book|trigger_constrained|trigger_discover)
+              echo "🌒 Modo ${MODO_GATE} (single-like) — regenerando manual.json"
+              ;;
+            production_batch|shadow_batch)
+              echo "🛡️  Modo ${MODO_GATE} (batch) — PRESERVANDO manual.json existente"
+              echo "    Doctrina: solo single asigna _edicion_numero, batch no toca manual.json"
+              exit 0
+              ;;
+            *)
+              echo "⚠️  Modo desconocido: ${MODO_GATE} — preservando manual.json por defensa"
+              exit 0
+              ;;
+          esac
+
+
           # 🌒 Triggui Kids: archivos manuales dependen de CATALOG_MODE
           if [ "$CATALOG_MODE" = "kids" ]; then
             CONTENIDO_FILE="contenido_kids.json"
