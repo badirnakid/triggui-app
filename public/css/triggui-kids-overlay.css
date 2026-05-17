@@ -1,35 +1,31 @@
 /* ═══════════════════════════════════════════════════════════════════════
- * TRIGGUI KIDS OVERLAY v6.0.0 — NIVEL DIOS TODOPODEROSO REAL
+ * TRIGGUI KIDS OVERLAY v7.0.0 — HÍBRIDO NIVEL DIOS
  * ───────────────────────────────────────────────────────────────────────
- * DESCUBRIMIENTO MATEMÁTICO:
- *   El código YA propaga el accent del libro al :root con:
- *     --triggui-accent          (color del libro)
- *     --triggui-accent-contrast (#fff o #000 auto según luminancia)
- *   
- *   Solo necesitamos USAR esas variables en el CSS overlay.
- *   CERO JS modificado.
+ * Paleta VARIADA hardcoded + future-proof con var(--triggui-accent).
  *
- * PALETA MIXTA NIVEL COLORING BOOK AUTÉNTICO:
+ * FORMAS COLORING BOOK MIXTAS (8 total):
  *
- * 4 FORMAS OUTLINE NEGRO (fijas, vacías para colorear):
+ * 4 OUTLINE NEGRAS (vacías para colorear):
  *   • Sol top-left
- *   • Diamante bottom-right
+ *   • Diamante bottom-right  
  *   • Estrella mid-right top
  *   • Squiggle mid-left bottom
  *
- * 4 FORMAS FILLED DINÁMICAS (cambian con el libro):
- *   • Triángulo top-right
- *   • Semicírculo bottom-left
- *   • Dot mid-left top
- *   • Dot mid-right bottom
+ * 4 FILLED CON COLORES DISTINTOS VARIADOS:
+ *   • Triángulo top-right:   CYAN    (#14C7DA)
+ *   • Semicírculo bot-left:  CORAL   (#FF6B9D)
+ *   • Dot mid-left top:      YELLOW  (#FFD60A)
+ *   • Dot mid-right bot:     PURPLE  (#9B6BFF)
  *
- * ELEMENTOS DINÁMICOS:
- *   • Botón submit         (fondo = accent, flecha = contrast auto)
- *   • Indicator toggle     (fondo = accent)
- *   • Active text toggle   (color = contrast auto)
- *   • Texto accent prompt  (ya dinámico nativamente)
+ * ELEMENTOS HÍBRIDOS (var --triggui-accent con fallback):
+ *   • Botón submit:    accent → fallback CORAL
+ *   • Indicator toggle: accent → fallback YELLOW
+ *   • Texto Kids activo: contrast → fallback NEGRO
  *
- * VERSIÓN: 6.0.0 — CSS-only, cero JS, accent dinámico real
+ * FUTURE-PROOF: si --triggui-accent algún día se propaga al :root,
+ * automáticamente los elementos híbridos lo respetan.
+ *
+ * VERSIÓN: 7.0.0   FECHA: 2026-05-17
  * ═══════════════════════════════════════════════════════════════════════ */
 
 
@@ -39,6 +35,9 @@ html[data-mode="kids"] #barraMagicaOverlay {
   --kids-ink:       #000000;
   --kids-stroke:    2.5px;
   --kids-yellow:    #FFD60A;
+  --kids-cyan:      #14C7DA;
+  --kids-coral:     #FF6B9D;
+  --kids-purple:    #9B6BFF;
   --kids-transit:   350ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -51,7 +50,7 @@ html[data-mode="kids"] #barraMagicaOverlay {
 }
 
 
-/* ═══ 2. APAGAR EFECTOS VISUALES ADULTOS ═══ */
+/* ═══ 2. APAGAR EFECTOS ADULTOS ═══ */
 html[data-mode="kids"] #barraAurora,
 html[data-mode="kids"] #barraDust,
 html[data-mode="kids"] #barraSparkIndicator {
@@ -59,7 +58,7 @@ html[data-mode="kids"] #barraSparkIndicator {
 }
 
 
-/* ═══ 3. TEXTO NEGRO COMPLETO (preserva accents dinámicos) ═══ */
+/* ═══ 3. TEXTO NEGRO COMPLETO (preserva accent dinámico) ═══ */
 html[data-mode="kids"] #barraMagicaOverlay .barra-magica-inner,
 html[data-mode="kids"] #barraMagicaOverlay .barra-magica-inner *:not(.bm-w3):not(.bm-bocado-anchor):not(.bm-eco-anchor),
 html[data-mode="kids"] #barraMagicaOverlay .bm-bocado-w,
@@ -68,7 +67,7 @@ html[data-mode="kids"] #barraMagicaOverlay .bm-eco-phrase {
 }
 
 
-/* ═══ 4. STREAK PILL — fondo blanco sólido ═══ */
+/* ═══ 4. STREAK PILL ═══ */
 html[data-mode="kids"] #barraStreak {
   background: rgba(255, 255, 255, 0.95) !important;
   color: var(--kids-ink) !important;
@@ -83,7 +82,7 @@ html[data-mode="kids"] #barraStreak * {
 }
 
 
-/* ═══ 5. SKIP TOGGLE — fondo blanco, indicator DINÁMICO ═══ */
+/* ═══ 5. SKIP TOGGLE — indicator HÍBRIDO ═══ */
 html[data-mode="kids"] #barraSkip .bm-skip-inner {
   background: rgba(255, 255, 255, 0.95) !important;
   border: 1.5px solid rgba(0, 0, 0, 0.12) !important;
@@ -92,18 +91,17 @@ html[data-mode="kids"] #barraSkip .bm-skip-inner {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
 }
 
-/* Inactive segment "All": negro fijo */
 html[data-mode="kids"] #barraSkip .bm-skip-seg,
 html[data-mode="kids"] #barraSkip .bm-skip-seg-all {
   color: var(--kids-ink) !important;
 }
 
-/* Active segment "Kids": contrast auto (blanco si accent oscuro, negro si claro) */
+/* Active "Kids" — contrast auto si accent llega, negro fallback */
 html[data-mode="kids"] #barraSkip .bm-skip-seg-kids {
   color: var(--triggui-accent-contrast, var(--kids-ink)) !important;
 }
 
-/* INDICATOR DINÁMICO con accent del libro */
+/* Indicator — accent del libro si llega, YELLOW fallback */
 html[data-mode="kids"] #barraSkip .bm-skip-indicator {
   background: var(--triggui-accent, var(--kids-yellow)) !important;
 }
@@ -133,15 +131,14 @@ html[data-mode="kids"] #barraInput::placeholder {
 }
 
 
-/* ═══ 7. BOTÓN SUBMIT — DINÁMICO con accent del libro ═══ */
+/* ═══ 7. BOTÓN SUBMIT — HÍBRIDO (accent → CORAL fallback) ═══ */
 html[data-mode="kids"] #barraSubmit {
-  background: var(--triggui-accent, var(--kids-yellow)) !important;
+  background: var(--triggui-accent, var(--kids-coral)) !important;
   background-image: none !important;
   border: var(--kids-stroke) solid var(--kids-ink) !important;
   box-shadow: none !important;
 }
 
-/* Flecha del submit: contrast auto (visible sobre cualquier accent) */
 html[data-mode="kids"] #barraSubmit svg,
 html[data-mode="kids"] #barraSubmit svg * {
   stroke: var(--triggui-accent-contrast, var(--kids-ink)) !important;
@@ -149,7 +146,7 @@ html[data-mode="kids"] #barraSubmit svg * {
 }
 
 
-/* ═══ 8a. ::before — 4 FORMAS OUTLINE NEGRAS (fijas, vacías) ═══════════ */
+/* ═══ 8a. ::before — 4 OUTLINE NEGRAS (vacías para colorear) ═══ */
 html[data-mode="kids"] #barraMagicaOverlay::before {
   content: "" !important;
   position: absolute !important;
@@ -178,44 +175,38 @@ html[data-mode="kids"] #barraMagicaOverlay::before {
 }
 
 
-/* ═══ 8b. ::after — 4 FORMAS FILLED DINÁMICAS (color del libro) ════════ */
+/* ═══ 8b. ::after — 4 FILLED CON COLORES DISTINTOS ═══════════════════════
+ * Cada forma con SU PROPIO color hardcoded variado.
+ * Resultado: paleta nivel coloring book auténtico.
+ * ═══════════════════════════════════════════════════════════════════════ */
 html[data-mode="kids"] #barraMagicaOverlay::after {
   content: "" !important;
   position: absolute !important;
   inset: 0 !important;
-  background-color: var(--triggui-accent, #14C7DA) !important;
-  -webkit-mask-image:
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 45'><polygon points='25,5 45,42 5,42' fill='black'/></svg>"),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 40'><path d='M5 38 A 30 30 0 0 1 65 38 Z' fill='black'/></svg>"),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'><circle cx='7' cy='7' r='5' fill='black'/></svg>"),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'><circle cx='7' cy='7' r='5' fill='black'/></svg>") !important;
-  mask-image:
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 45'><polygon points='25,5 45,42 5,42' fill='black'/></svg>"),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 40'><path d='M5 38 A 30 30 0 0 1 65 38 Z' fill='black'/></svg>"),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'><circle cx='7' cy='7' r='5' fill='black'/></svg>"),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'><circle cx='7' cy='7' r='5' fill='black'/></svg>") !important;
-  -webkit-mask-position:
+  background-color: transparent !important;
+  background-repeat: no-repeat !important;
+  background-image:
+    /* Triángulo CYAN */
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 45'><polygon points='25,5 45,42 5,42' fill='%2314C7DA' stroke='%23000' stroke-width='2' stroke-linejoin='round'/></svg>"),
+    /* Semicírculo CORAL */
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 40'><path d='M5 38 A 30 30 0 0 1 65 38 Z' fill='%23FF6B9D' stroke='%23000' stroke-width='2' stroke-linejoin='round'/></svg>"),
+    /* Dot YELLOW */
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'><circle cx='7' cy='7' r='5' fill='%23FFD60A' stroke='%23000' stroke-width='1.5'/></svg>"),
+    /* Dot PURPLE */
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'><circle cx='7' cy='7' r='5' fill='%239B6BFF' stroke='%23000' stroke-width='1.5'/></svg>") !important;
+  background-position:
     calc(100% - 44px) 140px,                 /* Triángulo top-right */
     40px calc(100% - 110px),                 /* Semicírculo bottom-left */
-    44px calc(50% - 150px),                  /* Dot mid-left TOP */
-    calc(100% - 32px) calc(50% + 150px) !important;  /* Dot mid-right BOTTOM */
-  mask-position:
-    calc(100% - 44px) 140px,
-    40px calc(100% - 110px),
-    44px calc(50% - 150px),
-    calc(100% - 32px) calc(50% + 150px) !important;
-  -webkit-mask-size:
+    44px calc(50% - 150px),                  /* Dot YELLOW mid-left TOP */
+    calc(100% - 32px) calc(50% + 150px) !important;  /* Dot PURPLE mid-right BOTTOM */
+  background-size:
     50px 45px,
     70px 40px,
     14px 14px,
     14px 14px !important;
-  mask-size:
-    50px 45px,
-    70px 40px,
-    14px 14px,
-    14px 14px !important;
-  -webkit-mask-repeat: no-repeat !important;
-  mask-repeat: no-repeat !important;
+  /* Apagar mask de v6 si quedó algo */
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
   opacity: 1 !important;
   pointer-events: none !important;
   z-index: 0 !important;
@@ -238,22 +229,12 @@ html[data-mode="kids"] #barraMagicaOverlay::after {
   }
   
   html[data-mode="kids"] #barraMagicaOverlay::after {
-    -webkit-mask-position:
+    background-position:
       calc(100% - 22px) 120px,
       22px calc(100% - 100px),
       22px calc(50% - 130px),
       calc(100% - 18px) calc(50% + 130px) !important;
-    mask-position:
-      calc(100% - 22px) 120px,
-      22px calc(100% - 100px),
-      22px calc(50% - 130px),
-      calc(100% - 18px) calc(50% + 130px) !important;
-    -webkit-mask-size:
-      40px 36px,
-      56px 32px,
-      12px 12px,
-      12px 12px !important;
-    mask-size:
+    background-size:
       40px 36px,
       56px 32px,
       12px 12px,
@@ -281,4 +262,4 @@ html[data-mode="kids"] #barraFooterLogo .bm-logo-stage::after {
 }
 
 
-/* END OF v6.0.0 — Cero JS, accent dinámico real nivel dios */
+/* END OF v7.0.0 — Híbrido nivel dios todopoderoso */
