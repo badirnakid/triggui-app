@@ -1,73 +1,203 @@
 /* ═══════════════════════════════════════════════════════════════════════
- * TRIGGUI KIDS OVERLAY — Scope quirúrgico nivel dios cuántico-quark
+ * TRIGGUI KIDS OVERLAY v3.0.0 — Coloring Book Universe Completo
  * ───────────────────────────────────────────────────────────────────────
- * Activado por:  html[data-mode="kids"]
- * Compartido:    public/index.html + public/kids/index.html
+ * SCOPE quirúrgico: dentro de #barraMagicaOverlay
+ *   • Pantalla barra mágica
+ *   • Pantalla bocado
+ *   • Pantalla eco
  *
- * SCOPE ÚNICO Y EXCLUSIVO:
- *   • Pantalla barra mágica  (contenido directo de #barraMagicaOverlay)
- *   • Pantalla bocado        (.bm-bocado-w, .bm-bocado-anchor dentro)
- *   • Pantalla eco           (.bm-eco-phrase dentro)
+ * CERO IMPACTO A:
+ *   ✗ #grid (palabras + frases + book cards)
+ *   ✗ #tarjetaOverlay (book card popup)
+ *   ✗ Pills globales fuera del overlay
+ *   ✗ Modo adulto
  *
- * QUARKS NO TOCADOS (matemáticamente garantizado):
- *   ✗ #grid           (palabras + frases + book cards)
- *   ✗ #tarjetaOverlay (book card overlay separado)
- *   ✗ Streak pill, lang toggle, skip toggle (globales, fuera del overlay)
- *   ✗ Modo adulto    (cero overlap por specificity)
- *
- * VERSIÓN: 2.0.0 — Scope barra mágica + bocado + eco
+ * VERSIÓN: 3.0.0 — Coloring book completo con formas decorativas
  * FECHA:   2026-05-17
  * ═══════════════════════════════════════════════════════════════════════ */
 
 
-/* ═══ 1. BACKGROUND BLANCO DEL OVERLAY ═══════════════════════════════════
- * Sobreescribe el background #000000 actual del overlay.
- * Aplica con !important para vencer la regla original.
- * La transition se hereda del overlay original (0.7s opacity cubic-bezier),
- * pero agregamos transition de background para fluidez al switchear modo.
- * ═══════════════════════════════════════════════════════════════════════ */
+/* ═══ TOKENS — paleta triadic + stroke calibrado ═══════════════════════ */
 html[data-mode="kids"] #barraMagicaOverlay {
-  background: #FFFFFF !important;
-  transition: background-color 350ms cubic-bezier(0.4, 0, 0.2, 1),
+  --kids-canvas:    #FFFFFF;
+  --kids-ink:       #000000;
+  --kids-stroke:    2.5px;
+  --kids-yellow:    #FFD60A;
+  --kids-cyan:      #14C7DA;
+  --kids-coral:     #FF6B9D;
+  --kids-transit:   350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+
+/* ═══ 1. BACKGROUND BLANCO + TRANSITION ════════════════════════════════ */
+html[data-mode="kids"] #barraMagicaOverlay {
+  background: var(--kids-canvas) !important;
+  color: var(--kids-ink) !important;
+  transition: background-color var(--kids-transit),
               opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 
-/* ═══ 2. APAGAR EL GLOW INTERIOR DEL OVERLAY ═════════════════════════════
- * En adulto, #barraMagicaOverlay::before tiene radial gradients naranja/rosa
- * con animación bm-breathe. En kids lo apagamos completamente.
+/* ═══ 2. TEXTO NEGRO COMPLETO (preserva accent en anchors) ═════════════
+ * :not() excluye anchors que reciben accent color via inline style desde JS.
+ * Estos conservan el color dinámico del libro.
+ * ═══════════════════════════════════════════════════════════════════════ */
+html[data-mode="kids"] #barraMagicaOverlay *:not(.bm-bocado-anchor):not(.bm-eco-anchor) {
+  color: var(--kids-ink) !important;
+}
+
+
+/* ═══ 3. SVG DECORATIVOS — reasigno ::before del glow apagado ═══════════
+ * Aprovecho el pseudo-element que antes hacía el glow naranja para 
+ * renderizar 8 formas geométricas en posiciones áureas.
+ * background-image con múltiples data: URLs SVG inline.
  * ═══════════════════════════════════════════════════════════════════════ */
 html[data-mode="kids"] #barraMagicaOverlay::before {
-  background: none !important;
-  background-image: none !important;
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background-color: transparent !important;
+  background-repeat: no-repeat !important;
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><circle cx='30' cy='30' r='14' fill='none' stroke='black' stroke-width='2.5'/><g stroke='black' stroke-width='2.5' stroke-linecap='round'><line x1='30' y1='3' x2='30' y2='8'/><line x1='30' y1='52' x2='30' y2='57'/><line x1='3' y1='30' x2='8' y2='30'/><line x1='52' y1='30' x2='57' y2='30'/><line x1='10' y1='10' x2='14' y2='14'/><line x1='46' y1='46' x2='50' y2='50'/><line x1='10' y1='50' x2='14' y2='46'/><line x1='46' y1='14' x2='50' y2='10'/></g></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 45'><polygon points='25,5 45,42 5,42' fill='%2314C7DA' stroke='black' stroke-width='2.5' stroke-linejoin='round'/></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 40'><path d='M5 38 A 30 30 0 0 1 65 38 Z' fill='%23FF6B9D' stroke='black' stroke-width='2.5' stroke-linejoin='round'/></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50'><polygon points='25,5 45,25 25,45 5,25' fill='none' stroke='black' stroke-width='2.5' stroke-linejoin='round'/></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><polygon points='20,4 24,15 36,15 26,22 30,34 20,27 10,34 14,22 4,15 16,15' fill='none' stroke='black' stroke-width='2.5' stroke-linejoin='round'/></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'><circle cx='7' cy='7' r='5' fill='%23FFD60A' stroke='black' stroke-width='1.5'/></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'><circle cx='7' cy='7' r='5' fill='%2314C7DA' stroke='black' stroke-width='1.5'/></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 14'><path d='M2 7 q5 -7 10 0 q5 7 10 0 q5 -7 8 0' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round'/></svg>") !important;
+  background-position:
+    40px 96px,
+    calc(100% - 36px) 88px,
+    36px calc(100% - 96px),
+    calc(100% - 36px) calc(100% - 96px),
+    calc(100% - 36px) 50%,
+    40px calc(50% - 80px),
+    calc(100% - 28px) calc(50% + 80px),
+    36px calc(50% + 40px) !important;
+  background-size:
+    60px 60px,
+    50px 45px,
+    70px 40px,
+    50px 50px,
+    40px 40px,
+    14px 14px,
+    14px 14px,
+    30px 14px !important;
+  opacity: 1 !important;
   animation: none !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+}
+
+
+/* ═══ 4. LOGO COLOR — trigguiletras2.png en lugar de versión blanca ═════ */
+html[data-mode="kids"] #barraFooterLogo .bm-logo-stage {
+  position: relative;
+}
+html[data-mode="kids"] #barraFooterLogo .bm-logo-blanco {
   opacity: 0 !important;
 }
-
-
-/* ═══ 3. TEXTO DEL OVERLAY → NEGRO LEGIBLE ═══════════════════════════════
- * Por defecto el overlay hereda color:#fff del body. Sobre fondo blanco
- * es invisible. Forzamos negro a TODO lo que esté dentro del overlay.
- * Esto cubre: prompt, hint, "PAUSA" label, "encuentras" (sin tocar accent),
- * y cualquier texto dentro de bocado/eco.
- * ═══════════════════════════════════════════════════════════════════════ */
-html[data-mode="kids"] #barraMagicaOverlay {
-  color: #000000;
-}
-
-html[data-mode="kids"] #barraMagicaOverlay .barra-magica-inner,
-html[data-mode="kids"] #barraMagicaOverlay .bm-bocado-w,
-html[data-mode="kids"] #barraMagicaOverlay .bm-eco-phrase {
-  color: #000000;
+html[data-mode="kids"] #barraFooterLogo .bm-logo-stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  pointer-events: none;
 }
 
 
-/* ═══════════════════════════════════════════════════════════════════════
- * NOTA SOBRE accent dinámico:
- *   .bm-bocado-anchor recibe `color: <accentColor>` via style inline en JS
- *   (línea 8374). Esto se preserva tal cual — el accent del libro sigue
- *   siendo dinámico tanto en adulto como en kids.
+/* ═══ 5. INPUT SEARCH BOX STICKER ═══════════════════════════════════════
+ * Wrapper del input con outline negro grueso (sticker style).
+ * Selectores defensivos: capturan el contenedor sin saber su clase exacta.
  * ═══════════════════════════════════════════════════════════════════════ */
+html[data-mode="kids"] #barraMagicaOverlay form,
+html[data-mode="kids"] #barraMagicaOverlay [class*="input-wrapper"],
+html[data-mode="kids"] #barraMagicaOverlay [class*="search-box"],
+html[data-mode="kids"] #barraMagicaOverlay [class*="bm-input"],
+html[data-mode="kids"] #barraMagicaOverlay [class*="bm-search"],
+html[data-mode="kids"] #barraMagicaOverlay [class*="searchbox"] {
+  background: var(--kids-canvas) !important;
+  border: var(--kids-stroke) solid var(--kids-ink) !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+html[data-mode="kids"] #barraMagicaOverlay input,
+html[data-mode="kids"] #barraMagicaOverlay textarea {
+  background: transparent !important;
+  color: var(--kids-ink) !important;
+  caret-color: var(--kids-ink);
+  border: none !important;
+  box-shadow: none !important;
+}
+
+html[data-mode="kids"] #barraMagicaOverlay input::placeholder,
+html[data-mode="kids"] #barraMagicaOverlay textarea::placeholder {
+  color: rgba(0, 0, 0, 0.5) !important;
+  opacity: 1 !important;
+}
 
 
-/* END OF v2.0.0 */
+/* ═══ 6. BOTÓN SUBMIT STICKER YELLOW + flecha negra ════════════════════ */
+html[data-mode="kids"] #barraMagicaOverlay button[type="submit"],
+html[data-mode="kids"] #barraMagicaOverlay [class*="submit-btn"],
+html[data-mode="kids"] #barraMagicaOverlay [class*="bm-submit"],
+html[data-mode="kids"] #barraMagicaOverlay [class*="bm-send"],
+html[data-mode="kids"] #barraMagicaOverlay [class*="send-btn"] {
+  background: var(--kids-yellow) !important;
+  background-image: none !important;
+  border: var(--kids-stroke) solid var(--kids-ink) !important;
+  box-shadow: none !important;
+}
+
+html[data-mode="kids"] #barraMagicaOverlay button[type="submit"] svg,
+html[data-mode="kids"] #barraMagicaOverlay button[type="submit"] svg *,
+html[data-mode="kids"] #barraMagicaOverlay [class*="submit"] svg,
+html[data-mode="kids"] #barraMagicaOverlay [class*="submit"] svg * {
+  stroke: var(--kids-ink) !important;
+  fill: none !important;
+}
+
+
+/* ═══ 7. DIVIDERS / PAUSA LINES ═════════════════════════════════════════ */
+html[data-mode="kids"] #barraMagicaOverlay hr,
+html[data-mode="kids"] #barraMagicaOverlay [class*="divider"],
+html[data-mode="kids"] #barraMagicaOverlay [class*="separator"] {
+  border-color: var(--kids-ink) !important;
+  background-color: var(--kids-ink) !important;
+  opacity: 1 !important;
+}
+
+
+/* ═══ 8. RESPONSIVE MOBILE — formas más pequeñas <768px ═════════════════ */
+@media (max-width: 768px) {
+  html[data-mode="kids"] #barraMagicaOverlay::before {
+    background-size:
+      44px 44px,
+      36px 32px,
+      52px 30px,
+      36px 36px,
+      30px 30px,
+      10px 10px,
+      10px 10px,
+      24px 12px !important;
+    background-position:
+      20px 64px,
+      calc(100% - 18px) 60px,
+      18px calc(100% - 64px),
+      calc(100% - 18px) calc(100% - 64px),
+      calc(100% - 18px) 50%,
+      20px calc(50% - 50px),
+      calc(100% - 14px) calc(50% + 50px),
+      18px calc(50% + 28px) !important;
+  }
+}
+
+/* END OF v3.0.0 — coloring book universe completo */
