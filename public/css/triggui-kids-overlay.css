@@ -1,0 +1,73 @@
+/* ═══════════════════════════════════════════════════════════════════════
+ * TRIGGUI KIDS OVERLAY — Scope quirúrgico nivel dios cuántico-quark
+ * ───────────────────────────────────────────────────────────────────────
+ * Activado por:  html[data-mode="kids"]
+ * Compartido:    public/index.html + public/kids/index.html
+ *
+ * SCOPE ÚNICO Y EXCLUSIVO:
+ *   • Pantalla barra mágica  (contenido directo de #barraMagicaOverlay)
+ *   • Pantalla bocado        (.bm-bocado-w, .bm-bocado-anchor dentro)
+ *   • Pantalla eco           (.bm-eco-phrase dentro)
+ *
+ * QUARKS NO TOCADOS (matemáticamente garantizado):
+ *   ✗ #grid           (palabras + frases + book cards)
+ *   ✗ #tarjetaOverlay (book card overlay separado)
+ *   ✗ Streak pill, lang toggle, skip toggle (globales, fuera del overlay)
+ *   ✗ Modo adulto    (cero overlap por specificity)
+ *
+ * VERSIÓN: 2.0.0 — Scope barra mágica + bocado + eco
+ * FECHA:   2026-05-17
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+
+/* ═══ 1. BACKGROUND BLANCO DEL OVERLAY ═══════════════════════════════════
+ * Sobreescribe el background #000000 actual del overlay.
+ * Aplica con !important para vencer la regla original.
+ * La transition se hereda del overlay original (0.7s opacity cubic-bezier),
+ * pero agregamos transition de background para fluidez al switchear modo.
+ * ═══════════════════════════════════════════════════════════════════════ */
+html[data-mode="kids"] #barraMagicaOverlay {
+  background: #FFFFFF !important;
+  transition: background-color 350ms cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+
+/* ═══ 2. APAGAR EL GLOW INTERIOR DEL OVERLAY ═════════════════════════════
+ * En adulto, #barraMagicaOverlay::before tiene radial gradients naranja/rosa
+ * con animación bm-breathe. En kids lo apagamos completamente.
+ * ═══════════════════════════════════════════════════════════════════════ */
+html[data-mode="kids"] #barraMagicaOverlay::before {
+  background: none !important;
+  background-image: none !important;
+  animation: none !important;
+  opacity: 0 !important;
+}
+
+
+/* ═══ 3. TEXTO DEL OVERLAY → NEGRO LEGIBLE ═══════════════════════════════
+ * Por defecto el overlay hereda color:#fff del body. Sobre fondo blanco
+ * es invisible. Forzamos negro a TODO lo que esté dentro del overlay.
+ * Esto cubre: prompt, hint, "PAUSA" label, "encuentras" (sin tocar accent),
+ * y cualquier texto dentro de bocado/eco.
+ * ═══════════════════════════════════════════════════════════════════════ */
+html[data-mode="kids"] #barraMagicaOverlay {
+  color: #000000;
+}
+
+html[data-mode="kids"] #barraMagicaOverlay .barra-magica-inner,
+html[data-mode="kids"] #barraMagicaOverlay .bm-bocado-w,
+html[data-mode="kids"] #barraMagicaOverlay .bm-eco-phrase {
+  color: #000000;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * NOTA SOBRE accent dinámico:
+ *   .bm-bocado-anchor recibe `color: <accentColor>` via style inline en JS
+ *   (línea 8374). Esto se preserva tal cual — el accent del libro sigue
+ *   siendo dinámico tanto en adulto como en kids.
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+
+/* END OF v2.0.0 */
