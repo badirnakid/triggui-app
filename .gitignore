@@ -80,3 +80,8 @@ node_modules/
 
 # Apps Script local config (clasp)
 apps-script/.clasp.json
+
+# Workflow backups (no commitear)
+.github/workflows/*.yml.bak-pre-*
+.github/workflows/*.yml.backup-*
+.github/workflows/*.yml.pre-*

@@ -906,6 +906,63 @@ jobs:
           fi
 
       # ╔══════════════════════════════════════════════════════════════════╗
+      # ║  FASE 8.7 — Auditoría Editorial Nivel Dios                        ║
+      # ║  Sanitize truncamientos LLM + scoring + auto-fix pre-commit       ║
+      # ║  Garantía nivel dios cuántico-quark: catálogo 100% limpio         ║
+      # ╚══════════════════════════════════════════════════════════════════╝
+
+      - name: 🔬 Auditoría Editorial Nivel Dios
+        run: |
+          set -euo pipefail
+
+          # En modo prueba: solo report (no modifica archivos). En real: auto-fix.
+          if [ "${{ inputs.modo_prueba }}" = "true" ]; then
+            AUDIT_MODE="report"
+          else
+            AUDIT_MODE="auto-fix"
+          fi
+
+          # Perfil según CATALOG_MODE (kids|adult)
+          if [ "$CATALOG_MODE" = "kids" ]; then
+            PROFILE="kids"
+            CATALOG_PATH="triggui-content/contenido_kids.json"
+            CSV_PATH="triggui-content/data/libros_master_kids.csv"
+          else
+            PROFILE="adult"
+            CATALOG_PATH="triggui-content/contenido.json"
+            CSV_PATH="triggui-content/data/libros_master.csv"
+          fi
+
+          # Verificar que el módulo existe (skip graceful si no)
+          if [ ! -f "triggui-content/auditoria-editorial/index.cjs" ]; then
+            echo "⚠️ Módulo auditoria-editorial/ no encontrado en triggui-content — skip audit"
+            exit 0
+          fi
+
+          if [ ! -f "$CATALOG_PATH" ]; then
+            echo "⚠️ $CATALOG_PATH no existe — skip audit"
+            exit 0
+          fi
+
+          echo "🔬 Audit profile=$PROFILE mode=$AUDIT_MODE"
+          echo "   Catalog: $CATALOG_PATH"
+          echo "   Pipeline: sanitize → score → decide → apply"
+          echo ""
+
+          mkdir -p audit-reports/
+
+          node triggui-content/auditoria-editorial/index.cjs \
+            --catalog="$CATALOG_PATH" \
+            --csv="$CSV_PATH" \
+            --profile="$PROFILE" \
+            --mode="$AUDIT_MODE" \
+            --output-dir=audit-reports/
+
+          echo ""
+          echo "📂 Reportes audit:"
+          ls -la audit-reports/ 2>/dev/null | tail -5
+
+      # ╔══════════════════════════════════════════════════════════════════╗
       # ║  FASE 9 — Commit y push a AMBOS repos                             ║
       # ╚══════════════════════════════════════════════════════════════════╝
 
@@ -966,6 +1023,15 @@ jobs:
             [ -f "$CONTENIDO_FILE" ] && git add "$CONTENIDO_FILE" || true
             # 🌒 V18: vista filtrada para email del lunes (Apps Script)
             [ -f "$MANUAL_FILE" ] && git add "$MANUAL_FILE" || true
+            # 🔬 FASE 8.7 audit: archivos modificados/creados por auto-fix
+            QUARANTINE_FILE="${CONTENIDO_FILE%.json}.quarantine.json"
+            [ -f "$QUARANTINE_FILE" ] && git add "$QUARANTINE_FILE" || true
+            # CSV master modificado por auto-fix REMOVE
+            if [ "$CATALOG_MODE" = "kids" ]; then
+              [ -f "data/libros_master_kids.csv" ] && git add "data/libros_master_kids.csv" || true
+            else
+              [ -f "data/libros_master.csv" ] && git add "data/libros_master.csv" || true
+            fi
             # Si hubo backups por corrupto/inválido en Fase 3, se versionan también
             ls "${CONTENIDO_FILE}.backup-"* >/dev/null 2>&1 && git add "${CONTENIDO_FILE}.backup-"* || true
             # 🌒 v3.8 cirugia 5 — git add edition-counter.json al staging (SSOT contador global)
