@@ -21,6 +21,16 @@
       "timestamp": "2026-05-18T22:59:22.617Z",
       "trigger_input": "Indeciso frustrado",
       "selected_via": "discover_trigger"
+    },
+    {
+      "titulo": "The Competitive Advantage of Nations",
+      "autor": "Michael E. Porter",
+      "slug": "the-competitive-advantage-of-nations",
+      "titulo_normalizado": "the competitive advantage of nations",
+      "autor_normalizado": "michael e porter",
+      "timestamp": "2026-05-18T23:10:04.366Z",
+      "trigger_input": "Competencia",
+      "selected_via": "discover_trigger"
     }
   ],
   "_note": "FIFO ring de últimos 30 libros generados por selección automática (constrained o discover). Filtro pre-rerank en validate-book.js. Inicializa vacío y se rellena con cada run exitoso. Si se borra, el sistema arranca limpio sin daño."
