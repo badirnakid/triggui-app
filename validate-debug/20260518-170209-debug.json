@@ -1,0 +1,1065 @@
+{
+  "history": [
+    {
+      "at": "2026-05-18T22:59:03.935Z",
+      "stage": "trigger_analysis",
+      "trigger_analysis": {
+        "raw_input": "Indeciso frustrado",
+        "semantic_query": "libros sobre la indecisión y la frustración",
+        "intent_summary": "Buscar libros que aborden la indecisión y la frustración personal.",
+        "editorial_requests": [],
+        "source_preference": null,
+        "ranking_preference": null,
+        "unsupported_runtime_constraints": [],
+        "supported_constraints": {
+          "year_min": null,
+          "year_max": null,
+          "prefer_recent": false
+        },
+        "search_queries": [
+          "indecisión",
+          "frustración personal",
+          "superar la indecisión",
+          "libros de autoayuda",
+          "manejo de la frustración",
+          "decisiones difíciles",
+          "libros sobre la indecisión y la frustración",
+          "libros indecision frustracion"
+        ],
+        "concept_hints": [
+          "psychology",
+          "self-help"
+        ],
+        "clean_for_selection": "libros sobre la indecisión y la frustración",
+        "notes": {
+          "used_ai_normalizer": true,
+          "looked_like_book_intent": false,
+          "semantic_overlap_vs_raw": 0
+        }
+      }
+    },
+    {
+      "at": "2026-05-18T22:59:04.890Z",
+      "stage": "live_candidates_filter_recent",
+      "before": 0,
+      "after": 0,
+      "removed": 0,
+      "ring_size": 1
+    },
+    {
+      "at": "2026-05-18T22:59:04.890Z",
+      "stage": "live_candidates_merged",
+      "count": 0,
+      "top": []
+    },
+    {
+      "at": "2026-05-18T22:59:10.830Z",
+      "stage": "discover_attempt_result",
+      "attempt": 1,
+      "parsed_preview": {
+        "recommendations": [
+          {
+            "titulo": "Decídete",
+            "autor": "Seth Godin",
+            "motivo_corto": "Explora cómo superar la indecisión y tomar decisiones más efectivas en la vida personal y profesional.",
+            "tagline": "Rompe el ciclo de la indecisión y actúa."
+          },
+          {
+            "titulo": "El poder de la frustración",
+            "autor": "Ana María Llopis",
+            "motivo_corto": "Ofrece herramientas para gestionar la frustración y convertirla en una fuerza motivadora.",
+            "tagline": "Transforma la frustración en acción."
+          },
+          {
+            "titulo": "La mente decidida",
+            "autor": "Robert C. Pozen",
+            "motivo_corto": "Proporciona estrategias para mejorar la toma de decisiones y manejar la indecisión en la vida diaria.",
+            "tagline": "Decidir con confianza."
+          }
+        ]
+      },
+      "raw_preview": "{\n  \"recommendations\": [\n    { \"titulo\": \"Decídete\", \"autor\": \"Seth Godin\", \"motivo_corto\": \"Explora cómo superar la indecisión y tomar decisiones más efectivas en la vida personal y profesional.\", \"tagline\": \"Rompe el ciclo de la indecisión y actúa.\" },\n    { \"titulo\": \"El poder de la frustración\", \"autor\": \"Ana María Llopis\", \"motivo_corto\": \"Ofrece herramientas para gestionar la frustración y convertirla en una fuerza motivadora.\", \"tagline\": \"Transforma la frustración en acción.\" },\n    { \"titulo\": \"La mente decidida\", \"autor\": \"Robert C. Pozen\", \"motivo_corto\": \"Proporciona estrategias para mejorar la toma de decisiones y manejar la indecisión en la vida diaria.\", \"tagline\": \"Decidir con confianza.\" }\n  ]\n}",
+      "recommendations": [
+        {
+          "titulo": "Decídete",
+          "autor": "Seth Godin",
+          "motivo_corto": "Explora cómo superar la indecisión y tomar decisiones más efectivas en la vida personal y profesional.",
+          "tagline": "Rompe el ciclo de la indecisión y actúa.",
+          "source_label": "",
+          "source_url": "",
+          "published_year": null,
+          "live_score": 0,
+          "ai_fit_score": 0,
+          "ai_fit_reason": ""
+        },
+        {
+          "titulo": "El poder de la frustración",
+          "autor": "Ana María Llopis",
+          "motivo_corto": "Ofrece herramientas para gestionar la frustración y convertirla en una fuerza motivadora.",
+          "tagline": "Transforma la frustración en acción.",
+          "source_label": "",
+          "source_url": "",
+          "published_year": null,
+          "live_score": 0,
+          "ai_fit_score": 0,
+          "ai_fit_reason": ""
+        },
+        {
+          "titulo": "La mente decidida",
+          "autor": "Robert C. Pozen",
+          "motivo_corto": "Proporciona estrategias para mejorar la toma de decisiones y manejar la indecisión en la vida diaria.",
+          "tagline": "Decidir con confianza.",
+          "source_label": "",
+          "source_url": "",
+          "published_year": null,
+          "live_score": 0,
+          "ai_fit_score": 0,
+          "ai_fit_reason": ""
+        }
+      ],
+      "temperature": 0.7
+    },
+    {
+      "at": "2026-05-18T22:59:14.109Z",
+      "stage": "ai_rerank_candidates",
+      "stageLabel": "discover_gpt_rerank_attempt_1",
+      "ranked": [
+        {
+          "idx": 1,
+          "fit_score": 0.92,
+          "reason": "El libro aborda directamente la indecisión y ofrece estrategias para actuar, lo que se alinea perfectamente con la búsqueda de soluciones a la indecisión."
+        },
+        {
+          "idx": 2,
+          "fit_score": 0.89,
+          "reason": "Este libro se centra en la frustración y cómo transformarla en acción, lo que es relevante para quienes buscan manejar sus emociones y decisiones."
+        },
+        {
+          "idx": 3,
+          "fit_score": 0.85,
+          "reason": "Aunque se enfoca en la toma de decisiones, su enfoque en la confianza puede ser útil, pero es menos específico sobre la frustración."
+        }
+      ]
+    },
+    {
+      "at": "2026-05-18T22:59:17.263Z",
+      "stage": "gpt_candidates_inspected",
+      "attempt": 1,
+      "inspected": [
+        {
+          "recommendation": {
+            "titulo": "Decídete",
+            "autor": "Seth Godin",
+            "motivo_corto": "Explora cómo superar la indecisión y tomar decisiones más efectivas en la vida personal y profesional.",
+            "tagline": "Rompe el ciclo de la indecisión y actúa.",
+            "source_label": "",
+            "source_url": "",
+            "published_year": null,
+            "live_score": 0,
+            "ai_fit_score": 0.92,
+            "ai_fit_reason": "El libro aborda directamente la indecisión y ofrece estrategias para actuar, lo que se alinea perfectamente con la búsqueda de soluciones a la indecisión."
+          },
+          "evidence": {
+            "portada": "",
+            "isbn": "",
+            "editorial": "",
+            "year": "",
+            "source": "none",
+            "matched_title": "",
+            "matched_author": "",
+            "match_score": 0,
+            "_evidence": {
+              "titulo_input": "Decídete",
+              "autor_input": "Seth Godin",
+              "isbn_seed": "",
+              "isbn_seed_raw": "",
+              "isbn_seed_rejected": null,
+              "isbn_discovered": "",
+              "isbn_discovered_raw": "",
+              "apple": {
+                "ok": false,
+                "reason": "no_results",
+                "source": "apple_books"
+              },
+              "google": {
+                "ok": false,
+                "reason": "low_match_0.26",
+                "source": "google_books",
+                "_low_match_covers": [
+                  {
+                    "size": "small",
+                    "url": "https://books.google.com/books/content?id=wpkFywAACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+                  }
+                ],
+                "_low_match_score": 0.26315789473684215,
+                "_low_match_title": "¿Eres imprescindible?",
+                "_low_match_author": "Seth Godin"
+              },
+              "openlibrary": {
+                "ok": false,
+                "reason": "no_results",
+                "source": "openlibrary"
+              },
+              "openlib_isbn": {
+                "ok": false,
+                "reason": "skipped",
+                "source": "openlib_isbn"
+              },
+              "amazon": {
+                "ok": false,
+                "reason": "skipped",
+                "source": "amazon"
+              },
+              "valid_covers": [],
+              "_status": "EXHAUSTED",
+              "_sources_succeeded": [],
+              "_sources_failed": [
+                "apple_books:no_results",
+                "google_books:low_match_0.26",
+                "openlibrary:no_results",
+                "openlib_isbn:skipped",
+                "amazon:skipped"
+              ],
+              "_timing": {
+                "phase1_parallel_ms": 884,
+                "phase2_isbn_chain_ms": 0,
+                "cover_validation_ms": 0,
+                "total_ms": 884
+              },
+              "_version": "3.7"
+            }
+          },
+          "constraintsCheck": {
+            "exact_ok": true,
+            "hard_ok": true,
+            "issues": [],
+            "warnings": [],
+            "reason": "Válido por evidencia bibliográfica"
+          },
+          "sourceLabel": "gpt_attempt_1",
+          "semantic_score": 0.92,
+          "fallback_score": 112
+        },
+        {
+          "recommendation": {
+            "titulo": "El poder de la frustración",
+            "autor": "Ana María Llopis",
+            "motivo_corto": "Ofrece herramientas para gestionar la frustración y convertirla en una fuerza motivadora.",
+            "tagline": "Transforma la frustración en acción.",
+            "source_label": "",
+            "source_url": "",
+            "published_year": null,
+            "live_score": 0,
+            "ai_fit_score": 0.89,
+            "ai_fit_reason": "Este libro se centra en la frustración y cómo transformarla en acción, lo que es relevante para quienes buscan manejar sus emociones y decisiones."
+          },
+          "evidence": {
+            "portada": "",
+            "isbn": "",
+            "editorial": "",
+            "year": "",
+            "source": "none",
+            "matched_title": "",
+            "matched_author": "",
+            "match_score": 0,
+            "_evidence": {
+              "titulo_input": "El poder de la frustración",
+              "autor_input": "Ana María Llopis",
+              "isbn_seed": "",
+              "isbn_seed_raw": "",
+              "isbn_seed_rejected": null,
+              "isbn_discovered": "",
+              "isbn_discovered_raw": "",
+              "apple": {
+                "ok": false,
+                "reason": "no_results",
+                "source": "apple_books"
+              },
+              "google": {
+                "ok": false,
+                "reason": "low_match_0.38",
+                "source": "google_books",
+                "_low_match_covers": [],
+                "_low_match_score": 0.3805288461538462,
+                "_low_match_title": "El poder del dolor",
+                "_low_match_author": "Paloma Rosado"
+              },
+              "openlibrary": {
+                "ok": false,
+                "reason": "no_results",
+                "source": "openlibrary"
+              },
+              "openlib_isbn": {
+                "ok": false,
+                "reason": "skipped",
+                "source": "openlib_isbn"
+              },
+              "amazon": {
+                "ok": false,
+                "reason": "skipped",
+                "source": "amazon"
+              },
+              "valid_covers": [],
+              "_status": "EXHAUSTED",
+              "_sources_succeeded": [],
+              "_sources_failed": [
+                "apple_books:no_results",
+                "google_books:low_match_0.38",
+                "openlibrary:no_results",
+                "openlib_isbn:skipped",
+                "amazon:skipped"
+              ],
+              "_timing": {
+                "phase1_parallel_ms": 1631,
+                "phase2_isbn_chain_ms": 0,
+                "cover_validation_ms": 0,
+                "total_ms": 1631
+              },
+              "_version": "3.7"
+            }
+          },
+          "constraintsCheck": {
+            "exact_ok": true,
+            "hard_ok": true,
+            "issues": [],
+            "warnings": [],
+            "reason": "Válido por evidencia bibliográfica"
+          },
+          "sourceLabel": "gpt_attempt_1",
+          "semantic_score": 0.89,
+          "fallback_score": 109
+        },
+        {
+          "recommendation": {
+            "titulo": "La mente decidida",
+            "autor": "Robert C. Pozen",
+            "motivo_corto": "Proporciona estrategias para mejorar la toma de decisiones y manejar la indecisión en la vida diaria.",
+            "tagline": "Decidir con confianza.",
+            "source_label": "",
+            "source_url": "",
+            "published_year": null,
+            "live_score": 0,
+            "ai_fit_score": 0.85,
+            "ai_fit_reason": "Aunque se enfoca en la toma de decisiones, su enfoque en la confianza puede ser útil, pero es menos específico sobre la frustración."
+          },
+          "evidence": {
+            "portada": "",
+            "isbn": "",
+            "editorial": "",
+            "year": "",
+            "source": "none",
+            "matched_title": "",
+            "matched_author": "",
+            "match_score": 0,
+            "_evidence": {
+              "titulo_input": "La mente decidida",
+              "autor_input": "Robert C. Pozen",
+              "isbn_seed": "",
+              "isbn_seed_raw": "",
+              "isbn_seed_rejected": null,
+              "isbn_discovered": "",
+              "isbn_discovered_raw": "",
+              "apple": {
+                "ok": false,
+                "reason": "no_results",
+                "source": "apple_books"
+              },
+              "google": {
+                "ok": false,
+                "reason": "no_good_match",
+                "source": "google_books"
+              },
+              "openlibrary": {
+                "ok": false,
+                "reason": "no_results",
+                "source": "openlibrary"
+              },
+              "openlib_isbn": {
+                "ok": false,
+                "reason": "skipped",
+                "source": "openlib_isbn"
+              },
+              "amazon": {
+                "ok": false,
+                "reason": "skipped",
+                "source": "amazon"
+              },
+              "valid_covers": [],
+              "_status": "EXHAUSTED",
+              "_sources_succeeded": [],
+              "_sources_failed": [
+                "apple_books:no_results",
+                "google_books:no_good_match",
+                "openlibrary:no_results",
+                "openlib_isbn:skipped",
+                "amazon:skipped"
+              ],
+              "_timing": {
+                "phase1_parallel_ms": 630,
+                "phase2_isbn_chain_ms": 0,
+                "cover_validation_ms": 0,
+                "total_ms": 630
+              },
+              "_version": "3.7"
+            }
+          },
+          "constraintsCheck": {
+            "exact_ok": true,
+            "hard_ok": true,
+            "issues": [],
+            "warnings": [],
+            "reason": "Válido por evidencia bibliográfica"
+          },
+          "sourceLabel": "gpt_attempt_1",
+          "semantic_score": 0.85,
+          "fallback_score": 105
+        }
+      ]
+    },
+    {
+      "at": "2026-05-18T22:59:18.863Z",
+      "stage": "discover_attempt_result",
+      "attempt": 2,
+      "parsed_preview": {
+        "recommendations": [
+          {
+            "titulo": "Decisive: How to Make Better Choices in Life and Work",
+            "autor": "Chip Heath y Dan Heath",
+            "motivo_corto": "Ofrece un enfoque práctico para tomar decisiones más efectivas y superar la indecisión.",
+            "tagline": "Transforma la forma en que tomas decisiones."
+          }
+        ]
+      },
+      "raw_preview": "{\n  \"recommendations\": [\n    {\n      \"titulo\": \"Decisive: How to Make Better Choices in Life and Work\",\n      \"autor\": \"Chip Heath y Dan Heath\",\n      \"motivo_corto\": \"Ofrece un enfoque práctico para tomar decisiones más efectivas y superar la indecisión.\",\n      \"tagline\": \"Transforma la forma en que tomas decisiones.\"\n    }\n  ]\n}",
+      "recommendations": [
+        {
+          "titulo": "Decisive: How to Make Better Choices in Life and Work",
+          "autor": "Chip Heath y Dan Heath",
+          "motivo_corto": "Ofrece un enfoque práctico para tomar decisiones más efectivas y superar la indecisión.",
+          "tagline": "Transforma la forma en que tomas decisiones.",
+          "source_label": "",
+          "source_url": "",
+          "published_year": null,
+          "live_score": 0,
+          "ai_fit_score": 0,
+          "ai_fit_reason": ""
+        }
+      ],
+      "temperature": 0.1
+    },
+    {
+      "at": "2026-05-18T22:59:20.192Z",
+      "stage": "ai_rerank_candidates",
+      "stageLabel": "discover_gpt_rerank_attempt_2",
+      "ranked": [
+        {
+          "idx": 1,
+          "fit_score": 0.91,
+          "reason": "El libro aborda directamente el proceso de toma de decisiones, lo que se relaciona con la indecisión y ofrece estrategias para mejorar la elección personal y profesional."
+        }
+      ]
+    },
+    {
+      "at": "2026-05-18T22:59:22.585Z",
+      "stage": "gpt_candidates_inspected",
+      "attempt": 2,
+      "inspected": [
+        {
+          "recommendation": {
+            "titulo": "Decisive: How to Make Better Choices in Life and Work",
+            "autor": "Chip Heath y Dan Heath",
+            "motivo_corto": "Ofrece un enfoque práctico para tomar decisiones más efectivas y superar la indecisión.",
+            "tagline": "Transforma la forma en que tomas decisiones.",
+            "source_label": "",
+            "source_url": "",
+            "published_year": null,
+            "live_score": 0,
+            "ai_fit_score": 0.91,
+            "ai_fit_reason": "El libro aborda directamente el proceso de toma de decisiones, lo que se relaciona con la indecisión y ofrece estrategias para mejorar la elección personal y profesional."
+          },
+          "evidence": {
+            "portada": "https://books.google.com/books/content?id=kLYG7pc5dTkC&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+            "isbn": "9780307956415",
+            "editorial": "Crown Currency",
+            "source": "google_books",
+            "year": "2013",
+            "matched_title": "Decisive",
+            "matched_author": "Chip Heath, Dan Heath",
+            "match_score": 0.9590909090909091,
+            "synopsis": "Chip and Dan Heath, the bestselling authors of Switch and Made to Stick, tackle one of the most critical topics in our work and personal lives: how to make better decisions. Research in psychology has revealed that our decisions are disrupted by an array of biases and irrationalities: We’re overconfident. We seek out information that supports us and downplay information that doesn’t. We get distracted by short-term emotions. When it comes to making choices, it seems, our brains are flawed instruments. Unfortunately, merely being aware of these shortcomings doesn’t fix the problem, any more than knowing that we are nearsighted helps us to see. The real question is: How can we do better? In Decisive, the Heaths, based on an exhaustive study of the decision-making literature, introduce a four-step process designed to counteract these biases. Written in an engaging and compulsively readable style, Decisive takes readers on an unforgettable journey, from a rock star’s ingenious decision-making trick to a CEO’s disastrous acquisition, to a single question that can often resolve thorny personal decisions. Along the way, we learn the answers to critical questions like these: How can we stop the cycle of agonizing over our decisions? How can we make group decisions without destructive politics? And how can we ensure that we don’t overlook precious opportunities to change our course? Decisive is the Heath brothers’ most powerful—and important—book yet, offering fresh strategies and practical tools enabling us to make better choices. Because the right decision, at the right moment, can make all the difference.",
+            "synopsis_length": 1626,
+            "covers": [
+              {
+                "size": "small",
+                "url": "https://books.google.com/books/content?id=kLYG7pc5dTkC&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "Decisive: How to Make Better Choices in Life and Work",
+              "autor_completo": "Chip Heath y Dan Heath",
+              "titulo_api": "Decisive",
+              "autor_api": "Chip Heath, Dan Heath",
+              "subtitulo": "How to Make Better Choices in Life and Work",
+              "año": "2013",
+              "editorial": "Crown Currency",
+              "paginas": 325,
+              "isbn": "9780307956415",
+              "isbn13": "9780307956415",
+              "isbn10": "0307956415",
+              "categorias": [
+                "Business & Economics"
+              ],
+              "idioma": "en",
+              "preview_link": "http://books.google.com/books?id=kLYG7pc5dTkC&printsec=frontcover&dq=intitle:Decisive+inauthor:Chip+Heath+y+Dan+Heath&hl=&cd=1&source=gbs_api"
+            },
+            "_evidence": {
+              "titulo_input": "Decisive: How to Make Better Choices in Life and Work",
+              "autor_input": "Chip Heath y Dan Heath",
+              "isbn_seed": "",
+              "isbn_seed_raw": "",
+              "isbn_seed_rejected": null,
+              "isbn_discovered": "9780307956415",
+              "isbn_discovered_raw": "9780307956415",
+              "apple": {
+                "ok": false,
+                "reason": "low_match_0.28",
+                "source": "apple_books",
+                "_low_match_covers": [
+                  {
+                    "size": "xxlarge",
+                    "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/5c/fa/63/5cfa6358-8c8a-a667-7108-5cc742c3399b/cover.jpg/3000x3000bb.jpg"
+                  },
+                  {
+                    "size": "xlarge",
+                    "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/5c/fa/63/5cfa6358-8c8a-a667-7108-5cc742c3399b/cover.jpg/1200x1200bb.jpg"
+                  },
+                  {
+                    "size": "large",
+                    "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/5c/fa/63/5cfa6358-8c8a-a667-7108-5cc742c3399b/cover.jpg/600x600bb.jpg"
+                  },
+                  {
+                    "size": "medium",
+                    "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/5c/fa/63/5cfa6358-8c8a-a667-7108-5cc742c3399b/cover.jpg/100x100bb.jpg"
+                  }
+                ],
+                "_low_match_score": 0.28,
+                "_low_match_title": "Parler chiffres, ça compte !",
+                "_low_match_author": "Chip Heath & Karla Starr"
+              },
+              "google": {
+                "ok": true,
+                "source": "google_books",
+                "match_score": 0.9590909090909091,
+                "match_details": {
+                  "matched_title": "Decisive",
+                  "matched_author": "Chip Heath, Dan Heath"
+                },
+                "synopsis": "Chip and Dan Heath, the bestselling authors of Switch and Made to Stick, tackle one of the most critical topics in our work and personal lives: how to make better decisions. Research in psychology has revealed that our decisions are disrupted by an array of biases and irrationalities: We’re overconfident. We seek out information that supports us and downplay information that doesn’t. We get distracted by short-term emotions. When it comes to making choices, it seems, our brains are flawed instruments. Unfortunately, merely being aware of these shortcomings doesn’t fix the problem, any more than knowing that we are nearsighted helps us to see. The real question is: How can we do better? In Decisive, the Heaths, based on an exhaustive study of the decision-making literature, introduce a four-step process designed to counteract these biases. Written in an engaging and compulsively readable style, Decisive takes readers on an unforgettable journey, from a rock star’s ingenious decision-making trick to a CEO’s disastrous acquisition, to a single question that can often resolve thorny personal decisions. Along the way, we learn the answers to critical questions like these: How can we stop the cycle of agonizing over our decisions? How can we make group decisions without destructive politics? And how can we ensure that we don’t overlook precious opportunities to change our course? Decisive is the Heath brothers’ most powerful—and important—book yet, offering fresh strategies and practical tools enabling us to make better choices. Because the right decision, at the right moment, can make all the difference.",
+                "synopsis_length": 1626,
+                "covers": [
+                  {
+                    "size": "small",
+                    "url": "https://books.google.com/books/content?id=kLYG7pc5dTkC&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+                  }
+                ],
+                "verified_identity": {
+                  "titulo_real": "Decisive: How to Make Better Choices in Life and Work",
+                  "autor_completo": "Chip Heath y Dan Heath",
+                  "titulo_api": "Decisive",
+                  "autor_api": "Chip Heath, Dan Heath",
+                  "subtitulo": "How to Make Better Choices in Life and Work",
+                  "año": "2013",
+                  "editorial": "Crown Currency",
+                  "paginas": 325,
+                  "isbn": "9780307956415",
+                  "isbn13": "9780307956415",
+                  "isbn10": "0307956415",
+                  "categorias": [
+                    "Business & Economics"
+                  ],
+                  "idioma": "en",
+                  "preview_link": "http://books.google.com/books?id=kLYG7pc5dTkC&printsec=frontcover&dq=intitle:Decisive+inauthor:Chip+Heath+y+Dan+Heath&hl=&cd=1&source=gbs_api"
+                },
+                "_variant_used": "v2_sin_subtitulo",
+                "_query_mode": "strict"
+              },
+              "openlibrary": {
+                "ok": false,
+                "reason": "no_results",
+                "source": "openlibrary"
+              },
+              "openlib_isbn": {
+                "ok": false,
+                "reason": "cover_unavailable_or_placeholder",
+                "source": "openlib_isbn",
+                "_attempted_isbn": "9780307956415"
+              },
+              "amazon": {
+                "ok": false,
+                "reason": "no_amazon_cover_or_only_placeholders",
+                "source": "amazon"
+              },
+              "valid_covers": [
+                {
+                  "source": "google_books",
+                  "size": "small",
+                  "url": "https://books.google.com/books/content?id=kLYG7pc5dTkC&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+                  "valid": true
+                }
+              ],
+              "_status": "FOUND",
+              "_sources_succeeded": [
+                "google_books"
+              ],
+              "_sources_failed": [
+                "apple_books:low_match_0.28",
+                "openlibrary:no_results",
+                "openlib_isbn:cover_unavailable_or_placeholder",
+                "amazon:no_amazon_cover_or_only_placeholders"
+              ],
+              "_timing": {
+                "phase1_parallel_ms": 1292,
+                "phase2_isbn_chain_ms": 1002,
+                "cover_validation_ms": 97,
+                "total_ms": 2391
+              },
+              "_version": "3.7"
+            }
+          },
+          "constraintsCheck": {
+            "exact_ok": true,
+            "hard_ok": true,
+            "issues": [],
+            "warnings": [],
+            "reason": "Año verificado 2013"
+          },
+          "sourceLabel": "gpt_attempt_2",
+          "semantic_score": 0.91,
+          "fallback_score": 150.18
+        }
+      ]
+    },
+    {
+      "at": "2026-05-18T22:59:22.618Z",
+      "stage": "success",
+      "bookData": {
+        "titulo": "Decisive: How to Make Better Choices in Life and Work",
+        "autor": "Chip Heath y Dan Heath",
+        "slug": "decisive-how-to-make-better-choices-in-life-and-work",
+        "tagline": "Transforma la forma en que tomas decisiones.",
+        "portada": "https://books.google.com/books/content?id=kLYG7pc5dTkC&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+        "portada_url": "https://books.google.com/books/content?id=kLYG7pc5dTkC&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+        "portada_source": "google_books",
+        "portada_candidates": [
+          {
+            "source": "google_books",
+            "size": "small",
+            "url": "https://books.google.com/books/content?id=kLYG7pc5dTkC&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+            "valid": true
+          }
+        ],
+        "needs_fallback_cover": false,
+        "isbn": "9780307956415",
+        "editorial": "Crown Currency",
+        "publication_year": "2013",
+        "source": "google_books",
+        "duplicado": false,
+        "selected_via": "discover_trigger",
+        "selection_reason": "Ofrece un enfoque práctico para tomar decisiones más efectivas y superar la indecisión.",
+        "trigger_input": "Indeciso frustrado",
+        "trigger_analysis": {
+          "raw_input": "Indeciso frustrado",
+          "semantic_query": "libros sobre la indecisión y la frustración",
+          "intent_summary": "Buscar libros que aborden la indecisión y la frustración personal.",
+          "editorial_requests": [],
+          "source_preference": null,
+          "ranking_preference": null,
+          "unsupported_runtime_constraints": [],
+          "supported_constraints": {
+            "year_min": null,
+            "year_max": null,
+            "prefer_recent": false
+          },
+          "search_queries": [
+            "indecisión",
+            "frustración personal",
+            "superar la indecisión",
+            "libros de autoayuda",
+            "manejo de la frustración",
+            "decisiones difíciles",
+            "libros sobre la indecisión y la frustración",
+            "libros indecision frustracion"
+          ],
+          "concept_hints": [
+            "psychology",
+            "self-help"
+          ],
+          "clean_for_selection": "libros sobre la indecisión y la frustración",
+          "notes": {
+            "used_ai_normalizer": true,
+            "looked_like_book_intent": false,
+            "semantic_overlap_vs_raw": 0
+          }
+        },
+        "selection_validation": {
+          "semantic_score": 0.91,
+          "ai_fit_score": 0.91,
+          "match_score": 0.9590909090909091,
+          "validation_source": "google_books",
+          "constraint_reason": "Año verificado 2013",
+          "mode": "exact_gpt",
+          "source_label": "gpt_attempt_2",
+          "fallback_score": 150.18
+        },
+        "catalog_scope": "",
+        "contexto_2026": {},
+        "identity_sealed": true,
+        "_evidence": {
+          "titulo_input": "Decisive: How to Make Better Choices in Life and Work",
+          "autor_input": "Chip Heath y Dan Heath",
+          "isbn_seed": "",
+          "isbn_seed_raw": "",
+          "isbn_seed_rejected": null,
+          "isbn_discovered": "9780307956415",
+          "isbn_discovered_raw": "9780307956415",
+          "apple": {
+            "ok": false,
+            "reason": "low_match_0.28",
+            "source": "apple_books",
+            "_low_match_covers": [
+              {
+                "size": "xxlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/5c/fa/63/5cfa6358-8c8a-a667-7108-5cc742c3399b/cover.jpg/3000x3000bb.jpg"
+              },
+              {
+                "size": "xlarge",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/5c/fa/63/5cfa6358-8c8a-a667-7108-5cc742c3399b/cover.jpg/1200x1200bb.jpg"
+              },
+              {
+                "size": "large",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/5c/fa/63/5cfa6358-8c8a-a667-7108-5cc742c3399b/cover.jpg/600x600bb.jpg"
+              },
+              {
+                "size": "medium",
+                "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/5c/fa/63/5cfa6358-8c8a-a667-7108-5cc742c3399b/cover.jpg/100x100bb.jpg"
+              }
+            ],
+            "_low_match_score": 0.28,
+            "_low_match_title": "Parler chiffres, ça compte !",
+            "_low_match_author": "Chip Heath & Karla Starr"
+          },
+          "google": {
+            "ok": true,
+            "source": "google_books",
+            "match_score": 0.9590909090909091,
+            "match_details": {
+              "matched_title": "Decisive",
+              "matched_author": "Chip Heath, Dan Heath"
+            },
+            "synopsis": "Chip and Dan Heath, the bestselling authors of Switch and Made to Stick, tackle one of the most critical topics in our work and personal lives: how to make better decisions. Research in psychology has revealed that our decisions are disrupted by an array of biases and irrationalities: We’re overconfident. We seek out information that supports us and downplay information that doesn’t. We get distracted by short-term emotions. When it comes to making choices, it seems, our brains are flawed instruments. Unfortunately, merely being aware of these shortcomings doesn’t fix the problem, any more than knowing that we are nearsighted helps us to see. The real question is: How can we do better? In Decisive, the Heaths, based on an exhaustive study of the decision-making literature, introduce a four-step process designed to counteract these biases. Written in an engaging and compulsively readable style, Decisive takes readers on an unforgettable journey, from a rock star’s ingenious decision-making trick to a CEO’s disastrous acquisition, to a single question that can often resolve thorny personal decisions. Along the way, we learn the answers to critical questions like these: How can we stop the cycle of agonizing over our decisions? How can we make group decisions without destructive politics? And how can we ensure that we don’t overlook precious opportunities to change our course? Decisive is the Heath brothers’ most powerful—and important—book yet, offering fresh strategies and practical tools enabling us to make better choices. Because the right decision, at the right moment, can make all the difference.",
+            "synopsis_length": 1626,
+            "covers": [
+              {
+                "size": "small",
+                "url": "https://books.google.com/books/content?id=kLYG7pc5dTkC&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+              }
+            ],
+            "verified_identity": {
+              "titulo_real": "Decisive: How to Make Better Choices in Life and Work",
+              "autor_completo": "Chip Heath y Dan Heath",
+              "titulo_api": "Decisive",
+              "autor_api": "Chip Heath, Dan Heath",
+              "subtitulo": "How to Make Better Choices in Life and Work",
+              "año": "2013",
+              "editorial": "Crown Currency",
+              "paginas": 325,
+              "isbn": "9780307956415",
+              "isbn13": "9780307956415",
+              "isbn10": "0307956415",
+              "categorias": [
+                "Business & Economics"
+              ],
+              "idioma": "en",
+              "preview_link": "http://books.google.com/books?id=kLYG7pc5dTkC&printsec=frontcover&dq=intitle:Decisive+inauthor:Chip+Heath+y+Dan+Heath&hl=&cd=1&source=gbs_api"
+            },
+            "_variant_used": "v2_sin_subtitulo",
+            "_query_mode": "strict"
+          },
+          "openlibrary": {
+            "ok": false,
+            "reason": "no_results",
+            "source": "openlibrary"
+          },
+          "openlib_isbn": {
+            "ok": false,
+            "reason": "cover_unavailable_or_placeholder",
+            "source": "openlib_isbn",
+            "_attempted_isbn": "9780307956415"
+          },
+          "amazon": {
+            "ok": false,
+            "reason": "no_amazon_cover_or_only_placeholders",
+            "source": "amazon"
+          },
+          "valid_covers": [
+            {
+              "source": "google_books",
+              "size": "small",
+              "url": "https://books.google.com/books/content?id=kLYG7pc5dTkC&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+              "valid": true
+            }
+          ],
+          "_status": "FOUND",
+          "_sources_succeeded": [
+            "google_books"
+          ],
+          "_sources_failed": [
+            "apple_books:low_match_0.28",
+            "openlibrary:no_results",
+            "openlib_isbn:cover_unavailable_or_placeholder",
+            "amazon:no_amazon_cover_or_only_placeholders"
+          ],
+          "_timing": {
+            "phase1_parallel_ms": 1292,
+            "phase2_isbn_chain_ms": 1002,
+            "cover_validation_ms": 97,
+            "total_ms": 2391
+          },
+          "_version": "3.7"
+        },
+        "_evidence_synopsis": "Chip and Dan Heath, the bestselling authors of Switch and Made to Stick, tackle one of the most critical topics in our work and personal lives: how to make better decisions. Research in psychology has revealed that our decisions are disrupted by an array of biases and irrationalities: We’re overconfident. We seek out information that supports us and downplay information that doesn’t. We get distracted by short-term emotions. When it comes to making choices, it seems, our brains are flawed instruments. Unfortunately, merely being aware of these shortcomings doesn’t fix the problem, any more than knowing that we are nearsighted helps us to see. The real question is: How can we do better? In Decisive, the Heaths, based on an exhaustive study of the decision-making literature, introduce a four-step process designed to counteract these biases. Written in an engaging and compulsively readable style, Decisive takes readers on an unforgettable journey, from a rock star’s ingenious decision-making trick to a CEO’s disastrous acquisition, to a single question that can often resolve thorny personal decisions. Along the way, we learn the answers to critical questions like these: How can we stop the cycle of agonizing over our decisions? How can we make group decisions without destructive politics? And how can we ensure that we don’t overlook precious opportunities to change our course? Decisive is the Heath brothers’ most powerful—and important—book yet, offering fresh strategies and practical tools enabling us to make better choices. Because the right decision, at the right moment, can make all the difference.",
+        "_evidence_verified_identity": {
+          "titulo_real": "Decisive: How to Make Better Choices in Life and Work",
+          "autor_completo": "Chip Heath y Dan Heath",
+          "titulo_api": "Decisive",
+          "autor_api": "Chip Heath, Dan Heath",
+          "subtitulo": "How to Make Better Choices in Life and Work",
+          "año": "2013",
+          "editorial": "Crown Currency",
+          "paginas": 325,
+          "isbn": "9780307956415",
+          "isbn13": "9780307956415",
+          "isbn10": "0307956415",
+          "categorias": [
+            "Business & Economics"
+          ],
+          "idioma": "en",
+          "preview_link": "http://books.google.com/books?id=kLYG7pc5dTkC&printsec=frontcover&dq=intitle:Decisive+inauthor:Chip+Heath+y+Dan+Heath&hl=&cd=1&source=gbs_api"
+        },
+        "_evidence_match_score": 0.9590909090909091
+      },
+      "ring_updated": true
+    }
+  ],
+  "last": {
+    "at": "2026-05-18T22:59:22.618Z",
+    "stage": "success",
+    "bookData": {
+      "titulo": "Decisive: How to Make Better Choices in Life and Work",
+      "autor": "Chip Heath y Dan Heath",
+      "slug": "decisive-how-to-make-better-choices-in-life-and-work",
+      "tagline": "Transforma la forma en que tomas decisiones.",
+      "portada": "https://books.google.com/books/content?id=kLYG7pc5dTkC&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "portada_url": "https://books.google.com/books/content?id=kLYG7pc5dTkC&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+      "portada_source": "google_books",
+      "portada_candidates": [
+        {
+          "source": "google_books",
+          "size": "small",
+          "url": "https://books.google.com/books/content?id=kLYG7pc5dTkC&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+          "valid": true
+        }
+      ],
+      "needs_fallback_cover": false,
+      "isbn": "9780307956415",
+      "editorial": "Crown Currency",
+      "publication_year": "2013",
+      "source": "google_books",
+      "duplicado": false,
+      "selected_via": "discover_trigger",
+      "selection_reason": "Ofrece un enfoque práctico para tomar decisiones más efectivas y superar la indecisión.",
+      "trigger_input": "Indeciso frustrado",
+      "trigger_analysis": {
+        "raw_input": "Indeciso frustrado",
+        "semantic_query": "libros sobre la indecisión y la frustración",
+        "intent_summary": "Buscar libros que aborden la indecisión y la frustración personal.",
+        "editorial_requests": [],
+        "source_preference": null,
+        "ranking_preference": null,
+        "unsupported_runtime_constraints": [],
+        "supported_constraints": {
+          "year_min": null,
+          "year_max": null,
+          "prefer_recent": false
+        },
+        "search_queries": [
+          "indecisión",
+          "frustración personal",
+          "superar la indecisión",
+          "libros de autoayuda",
+          "manejo de la frustración",
+          "decisiones difíciles",
+          "libros sobre la indecisión y la frustración",
+          "libros indecision frustracion"
+        ],
+        "concept_hints": [
+          "psychology",
+          "self-help"
+        ],
+        "clean_for_selection": "libros sobre la indecisión y la frustración",
+        "notes": {
+          "used_ai_normalizer": true,
+          "looked_like_book_intent": false,
+          "semantic_overlap_vs_raw": 0
+        }
+      },
+      "selection_validation": {
+        "semantic_score": 0.91,
+        "ai_fit_score": 0.91,
+        "match_score": 0.9590909090909091,
+        "validation_source": "google_books",
+        "constraint_reason": "Año verificado 2013",
+        "mode": "exact_gpt",
+        "source_label": "gpt_attempt_2",
+        "fallback_score": 150.18
+      },
+      "catalog_scope": "",
+      "contexto_2026": {},
+      "identity_sealed": true,
+      "_evidence": {
+        "titulo_input": "Decisive: How to Make Better Choices in Life and Work",
+        "autor_input": "Chip Heath y Dan Heath",
+        "isbn_seed": "",
+        "isbn_seed_raw": "",
+        "isbn_seed_rejected": null,
+        "isbn_discovered": "9780307956415",
+        "isbn_discovered_raw": "9780307956415",
+        "apple": {
+          "ok": false,
+          "reason": "low_match_0.28",
+          "source": "apple_books",
+          "_low_match_covers": [
+            {
+              "size": "xxlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/5c/fa/63/5cfa6358-8c8a-a667-7108-5cc742c3399b/cover.jpg/3000x3000bb.jpg"
+            },
+            {
+              "size": "xlarge",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/5c/fa/63/5cfa6358-8c8a-a667-7108-5cc742c3399b/cover.jpg/1200x1200bb.jpg"
+            },
+            {
+              "size": "large",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/5c/fa/63/5cfa6358-8c8a-a667-7108-5cc742c3399b/cover.jpg/600x600bb.jpg"
+            },
+            {
+              "size": "medium",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/5c/fa/63/5cfa6358-8c8a-a667-7108-5cc742c3399b/cover.jpg/100x100bb.jpg"
+            }
+          ],
+          "_low_match_score": 0.28,
+          "_low_match_title": "Parler chiffres, ça compte !",
+          "_low_match_author": "Chip Heath & Karla Starr"
+        },
+        "google": {
+          "ok": true,
+          "source": "google_books",
+          "match_score": 0.9590909090909091,
+          "match_details": {
+            "matched_title": "Decisive",
+            "matched_author": "Chip Heath, Dan Heath"
+          },
+          "synopsis": "Chip and Dan Heath, the bestselling authors of Switch and Made to Stick, tackle one of the most critical topics in our work and personal lives: how to make better decisions. Research in psychology has revealed that our decisions are disrupted by an array of biases and irrationalities: We’re overconfident. We seek out information that supports us and downplay information that doesn’t. We get distracted by short-term emotions. When it comes to making choices, it seems, our brains are flawed instruments. Unfortunately, merely being aware of these shortcomings doesn’t fix the problem, any more than knowing that we are nearsighted helps us to see. The real question is: How can we do better? In Decisive, the Heaths, based on an exhaustive study of the decision-making literature, introduce a four-step process designed to counteract these biases. Written in an engaging and compulsively readable style, Decisive takes readers on an unforgettable journey, from a rock star’s ingenious decision-making trick to a CEO’s disastrous acquisition, to a single question that can often resolve thorny personal decisions. Along the way, we learn the answers to critical questions like these: How can we stop the cycle of agonizing over our decisions? How can we make group decisions without destructive politics? And how can we ensure that we don’t overlook precious opportunities to change our course? Decisive is the Heath brothers’ most powerful—and important—book yet, offering fresh strategies and practical tools enabling us to make better choices. Because the right decision, at the right moment, can make all the difference.",
+          "synopsis_length": 1626,
+          "covers": [
+            {
+              "size": "small",
+              "url": "https://books.google.com/books/content?id=kLYG7pc5dTkC&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+            }
+          ],
+          "verified_identity": {
+            "titulo_real": "Decisive: How to Make Better Choices in Life and Work",
+            "autor_completo": "Chip Heath y Dan Heath",
+            "titulo_api": "Decisive",
+            "autor_api": "Chip Heath, Dan Heath",
+            "subtitulo": "How to Make Better Choices in Life and Work",
+            "año": "2013",
+            "editorial": "Crown Currency",
+            "paginas": 325,
+            "isbn": "9780307956415",
+            "isbn13": "9780307956415",
+            "isbn10": "0307956415",
+            "categorias": [
+              "Business & Economics"
+            ],
+            "idioma": "en",
+            "preview_link": "http://books.google.com/books?id=kLYG7pc5dTkC&printsec=frontcover&dq=intitle:Decisive+inauthor:Chip+Heath+y+Dan+Heath&hl=&cd=1&source=gbs_api"
+          },
+          "_variant_used": "v2_sin_subtitulo",
+          "_query_mode": "strict"
+        },
+        "openlibrary": {
+          "ok": false,
+          "reason": "no_results",
+          "source": "openlibrary"
+        },
+        "openlib_isbn": {
+          "ok": false,
+          "reason": "cover_unavailable_or_placeholder",
+          "source": "openlib_isbn",
+          "_attempted_isbn": "9780307956415"
+        },
+        "amazon": {
+          "ok": false,
+          "reason": "no_amazon_cover_or_only_placeholders",
+          "source": "amazon"
+        },
+        "valid_covers": [
+          {
+            "source": "google_books",
+            "size": "small",
+            "url": "https://books.google.com/books/content?id=kLYG7pc5dTkC&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+            "valid": true
+          }
+        ],
+        "_status": "FOUND",
+        "_sources_succeeded": [
+          "google_books"
+        ],
+        "_sources_failed": [
+          "apple_books:low_match_0.28",
+          "openlibrary:no_results",
+          "openlib_isbn:cover_unavailable_or_placeholder",
+          "amazon:no_amazon_cover_or_only_placeholders"
+        ],
+        "_timing": {
+          "phase1_parallel_ms": 1292,
+          "phase2_isbn_chain_ms": 1002,
+          "cover_validation_ms": 97,
+          "total_ms": 2391
+        },
+        "_version": "3.7"
+      },
+      "_evidence_synopsis": "Chip and Dan Heath, the bestselling authors of Switch and Made to Stick, tackle one of the most critical topics in our work and personal lives: how to make better decisions. Research in psychology has revealed that our decisions are disrupted by an array of biases and irrationalities: We’re overconfident. We seek out information that supports us and downplay information that doesn’t. We get distracted by short-term emotions. When it comes to making choices, it seems, our brains are flawed instruments. Unfortunately, merely being aware of these shortcomings doesn’t fix the problem, any more than knowing that we are nearsighted helps us to see. The real question is: How can we do better? In Decisive, the Heaths, based on an exhaustive study of the decision-making literature, introduce a four-step process designed to counteract these biases. Written in an engaging and compulsively readable style, Decisive takes readers on an unforgettable journey, from a rock star’s ingenious decision-making trick to a CEO’s disastrous acquisition, to a single question that can often resolve thorny personal decisions. Along the way, we learn the answers to critical questions like these: How can we stop the cycle of agonizing over our decisions? How can we make group decisions without destructive politics? And how can we ensure that we don’t overlook precious opportunities to change our course? Decisive is the Heath brothers’ most powerful—and important—book yet, offering fresh strategies and practical tools enabling us to make better choices. Because the right decision, at the right moment, can make all the difference.",
+      "_evidence_verified_identity": {
+        "titulo_real": "Decisive: How to Make Better Choices in Life and Work",
+        "autor_completo": "Chip Heath y Dan Heath",
+        "titulo_api": "Decisive",
+        "autor_api": "Chip Heath, Dan Heath",
+        "subtitulo": "How to Make Better Choices in Life and Work",
+        "año": "2013",
+        "editorial": "Crown Currency",
+        "paginas": 325,
+        "isbn": "9780307956415",
+        "isbn13": "9780307956415",
+        "isbn10": "0307956415",
+        "categorias": [
+          "Business & Economics"
+        ],
+        "idioma": "en",
+        "preview_link": "http://books.google.com/books?id=kLYG7pc5dTkC&printsec=frontcover&dq=intitle:Decisive+inauthor:Chip+Heath+y+Dan+Heath&hl=&cd=1&source=gbs_api"
+      },
+      "_evidence_match_score": 0.9590909090909091
+    },
+    "ring_updated": true
+  }
+}

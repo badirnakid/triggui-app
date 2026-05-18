@@ -11,6 +11,16 @@
       "timestamp": "2026-05-18T22:50:05.526Z",
       "trigger_input": "Frustrado",
       "selected_via": "discover_trigger"
+    },
+    {
+      "titulo": "Decisive: How to Make Better Choices in Life and Work",
+      "autor": "Chip Heath y Dan Heath",
+      "slug": "decisive-how-to-make-better-choices-in-life-and-work",
+      "titulo_normalizado": "decisive how to make better choices in life and work",
+      "autor_normalizado": "chip heath y dan heath",
+      "timestamp": "2026-05-18T22:59:22.617Z",
+      "trigger_input": "Indeciso frustrado",
+      "selected_via": "discover_trigger"
     }
   ],
   "_note": "FIFO ring de últimos 30 libros generados por selección automática (constrained o discover). Filtro pre-rerank en validate-book.js. Inicializa vacío y se rellena con cada run exitoso. Si se borra, el sistema arranca limpio sin daño."
