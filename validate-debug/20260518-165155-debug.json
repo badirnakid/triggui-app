@@ -1,0 +1,602 @@
+{
+  "history": [
+    {
+      "at": "2026-05-18T22:49:55.244Z",
+      "stage": "trigger_analysis",
+      "trigger_analysis": {
+        "raw_input": "Frustrado",
+        "semantic_query": "frustración",
+        "intent_summary": "Buscar libros que aborden la frustración y cómo manejarla.",
+        "editorial_requests": [],
+        "source_preference": null,
+        "ranking_preference": null,
+        "unsupported_runtime_constraints": [],
+        "supported_constraints": {
+          "year_min": null,
+          "year_max": null,
+          "prefer_recent": false
+        },
+        "search_queries": [
+          "frustración",
+          "manejo de la frustración",
+          "superar la frustración",
+          "libros sobre frustración",
+          "autoayuda frustración",
+          "estrategias para la frustración"
+        ],
+        "concept_hints": [],
+        "clean_for_selection": "frustración",
+        "notes": {
+          "used_ai_normalizer": true,
+          "looked_like_book_intent": false,
+          "semantic_overlap_vs_raw": 0
+        }
+      }
+    },
+    {
+      "at": "2026-05-18T22:49:55.529Z",
+      "stage": "live_candidates_filter_recent",
+      "before": 0,
+      "after": 0,
+      "removed": 0,
+      "ring_size": 0
+    },
+    {
+      "at": "2026-05-18T22:49:55.531Z",
+      "stage": "live_candidates_merged",
+      "count": 0,
+      "top": []
+    },
+    {
+      "at": "2026-05-18T22:50:00.134Z",
+      "stage": "discover_attempt_result",
+      "attempt": 1,
+      "parsed_preview": {
+        "recommendations": [
+          {
+            "titulo": "La trampa de la felicidad",
+            "autor": "Damon Zahariades",
+            "motivo_corto": "Ofrece estrategias prácticas para gestionar la frustración y alcanzar la satisfacción personal.",
+            "tagline": "Aprende a superar la frustración y a encontrar la felicidad."
+          },
+          {
+            "titulo": "¿Por qué no puedo concentrarme?",
+            "autor": "David Allen",
+            "motivo_corto": "Aborda la frustración que causa la falta de enfoque y ofrece herramientas para mejorar la productividad y la paz mental.",
+            "tagline": "Mejora tu enfoque y reduce la frustración."
+          },
+          {
+            "titulo": "La magia del orden",
+            "autor": "Marie Kondo",
+            "motivo_corto": "Explora cómo el orden físico puede reducir la frustración emocional y mental.",
+            "tagline": "Transforma tu espacio y tu mente."
+          }
+        ]
+      },
+      "raw_preview": "{\n  \"recommendations\": [\n    { \"titulo\": \"La trampa de la felicidad\", \"autor\": \"Damon Zahariades\", \"motivo_corto\": \"Ofrece estrategias prácticas para gestionar la frustración y alcanzar la satisfacción personal.\", \"tagline\": \"Aprende a superar la frustración y a encontrar la felicidad.\" },\n    { \"titulo\": \"¿Por qué no puedo concentrarme?\", \"autor\": \"David Allen\", \"motivo_corto\": \"Aborda la frustración que causa la falta de enfoque y ofrece herramientas para mejorar la productividad y la paz mental.\", \"tagline\": \"Mejora tu enfoque y reduce la frustración.\" },\n    { \"titulo\": \"La magia del orden\", \"autor\": \"Marie Kondo\", \"motivo_corto\": \"Explora cómo el orden físico puede reducir la frustración emocional y mental.\", \"tagline\": \"Transforma tu espacio y tu mente.\" }\n  ]\n}",
+      "recommendations": [
+        {
+          "titulo": "La trampa de la felicidad",
+          "autor": "Damon Zahariades",
+          "motivo_corto": "Ofrece estrategias prácticas para gestionar la frustración y alcanzar la satisfacción personal.",
+          "tagline": "Aprende a superar la frustración y a encontrar la felicidad.",
+          "source_label": "",
+          "source_url": "",
+          "published_year": null,
+          "live_score": 0,
+          "ai_fit_score": 0,
+          "ai_fit_reason": ""
+        },
+        {
+          "titulo": "¿Por qué no puedo concentrarme?",
+          "autor": "David Allen",
+          "motivo_corto": "Aborda la frustración que causa la falta de enfoque y ofrece herramientas para mejorar la productividad y la paz mental.",
+          "tagline": "Mejora tu enfoque y reduce la frustración.",
+          "source_label": "",
+          "source_url": "",
+          "published_year": null,
+          "live_score": 0,
+          "ai_fit_score": 0,
+          "ai_fit_reason": ""
+        },
+        {
+          "titulo": "La magia del orden",
+          "autor": "Marie Kondo",
+          "motivo_corto": "Explora cómo el orden físico puede reducir la frustración emocional y mental.",
+          "tagline": "Transforma tu espacio y tu mente.",
+          "source_label": "",
+          "source_url": "",
+          "published_year": null,
+          "live_score": 0,
+          "ai_fit_score": 0,
+          "ai_fit_reason": ""
+        }
+      ],
+      "temperature": 0.7
+    },
+    {
+      "at": "2026-05-18T22:50:03.340Z",
+      "stage": "ai_rerank_candidates",
+      "stageLabel": "discover_gpt_rerank_attempt_1",
+      "ranked": [
+        {
+          "idx": 1,
+          "fit_score": 0.92,
+          "reason": "Aborda directamente la superación de la frustración y la búsqueda de la felicidad."
+        },
+        {
+          "idx": 2,
+          "fit_score": 0.85,
+          "reason": "Se centra en mejorar el enfoque, lo que puede ayudar a reducir la frustración."
+        },
+        {
+          "idx": 3,
+          "fit_score": 0.75,
+          "reason": "Aunque trata sobre el orden, puede indirectamente ayudar a manejar la frustración al transformar el entorno."
+        }
+      ]
+    },
+    {
+      "at": "2026-05-18T22:50:05.497Z",
+      "stage": "gpt_candidates_inspected",
+      "attempt": 1,
+      "inspected": [
+        {
+          "recommendation": {
+            "titulo": "La trampa de la felicidad",
+            "autor": "Damon Zahariades",
+            "motivo_corto": "Ofrece estrategias prácticas para gestionar la frustración y alcanzar la satisfacción personal.",
+            "tagline": "Aprende a superar la frustración y a encontrar la felicidad.",
+            "source_label": "",
+            "source_url": "",
+            "published_year": null,
+            "live_score": 0,
+            "ai_fit_score": 0.92,
+            "ai_fit_reason": "Aborda directamente la superación de la frustración y la búsqueda de la felicidad."
+          },
+          "evidence": {
+            "portada": "",
+            "isbn": "9789708172004",
+            "editorial": "Damon Zahariades",
+            "source": "google_books",
+            "year": "2007",
+            "matched_title": "Las trampas de la felicidad",
+            "matched_author": "Russ Harris",
+            "match_score": 0.6498842592592593,
+            "synopsis": "",
+            "synopsis_length": 0,
+            "covers": [],
+            "verified_identity": {
+              "titulo_real": "La trampa de la felicidad",
+              "autor_completo": "Damon Zahariades",
+              "titulo_api": "Las trampas de la felicidad",
+              "autor_api": "Russ Harris",
+              "subtitulo": "deja de luchar, empieza a vivir",
+              "año": "2007",
+              "editorial": null,
+              "paginas": 431,
+              "isbn": "9789708172004",
+              "isbn13": "9789708172004",
+              "isbn10": "9708172006",
+              "categorias": [],
+              "idioma": "es",
+              "preview_link": "http://books.google.com/books?id=BIfUZwEACAAJ&dq=La+trampa+de+la+felicidad+Damon+Zahariades&hl=&cd=5&source=gbs_api"
+            },
+            "_evidence": {
+              "titulo_input": "La trampa de la felicidad",
+              "autor_input": "Damon Zahariades",
+              "isbn_seed": "",
+              "isbn_seed_raw": "",
+              "isbn_seed_rejected": null,
+              "isbn_discovered": "9789708172004",
+              "isbn_discovered_raw": "9789708172004",
+              "apple": {
+                "ok": false,
+                "reason": "no_results",
+                "source": "apple_books"
+              },
+              "google": {
+                "ok": true,
+                "source": "google_books",
+                "match_score": 0.6498842592592593,
+                "match_details": {
+                  "matched_title": "Las trampas de la felicidad",
+                  "matched_author": "Russ Harris"
+                },
+                "synopsis": "",
+                "synopsis_length": 0,
+                "covers": [],
+                "verified_identity": {
+                  "titulo_real": "La trampa de la felicidad",
+                  "autor_completo": "Damon Zahariades",
+                  "titulo_api": "Las trampas de la felicidad",
+                  "autor_api": "Russ Harris",
+                  "subtitulo": "deja de luchar, empieza a vivir",
+                  "año": "2007",
+                  "editorial": null,
+                  "paginas": 431,
+                  "isbn": "9789708172004",
+                  "isbn13": "9789708172004",
+                  "isbn10": "9708172006",
+                  "categorias": [],
+                  "idioma": "es",
+                  "preview_link": "http://books.google.com/books?id=BIfUZwEACAAJ&dq=La+trampa+de+la+felicidad+Damon+Zahariades&hl=&cd=5&source=gbs_api"
+                },
+                "_variant_used": "v1_original",
+                "_query_mode": "relaxed"
+              },
+              "openlibrary": {
+                "ok": false,
+                "reason": "no_results",
+                "source": "openlibrary"
+              },
+              "openlib_isbn": {
+                "ok": false,
+                "reason": "cover_unavailable_or_placeholder",
+                "source": "openlib_isbn",
+                "_attempted_isbn": "9789708172004"
+              },
+              "amazon": {
+                "ok": false,
+                "reason": "no_amazon_cover_or_only_placeholders",
+                "source": "amazon"
+              },
+              "valid_covers": [],
+              "_status": "EXHAUSTED",
+              "_sources_succeeded": [
+                "google_books"
+              ],
+              "_sources_failed": [
+                "apple_books:no_results",
+                "openlibrary:no_results",
+                "openlib_isbn:cover_unavailable_or_placeholder",
+                "amazon:no_amazon_cover_or_only_placeholders"
+              ],
+              "_timing": {
+                "phase1_parallel_ms": 764,
+                "phase2_isbn_chain_ms": 1387,
+                "cover_validation_ms": 0,
+                "total_ms": 2151
+              },
+              "_version": "3.7"
+            }
+          },
+          "constraintsCheck": {
+            "exact_ok": true,
+            "hard_ok": true,
+            "issues": [],
+            "warnings": [],
+            "reason": "Año verificado 2007"
+          },
+          "sourceLabel": "gpt_attempt_1",
+          "semantic_score": 0.92,
+          "fallback_score": 145
+        }
+      ]
+    },
+    {
+      "at": "2026-05-18T22:50:05.527Z",
+      "stage": "success",
+      "bookData": {
+        "titulo": "La trampa de la felicidad",
+        "autor": "Damon Zahariades",
+        "slug": "la-trampa-de-la-felicidad",
+        "tagline": "Aprende a superar la frustración y a encontrar la felicidad.",
+        "portada": "",
+        "portada_url": "",
+        "portada_source": "google_books",
+        "portada_candidates": [],
+        "needs_fallback_cover": true,
+        "isbn": "9789708172004",
+        "editorial": "Damon Zahariades",
+        "publication_year": "2007",
+        "source": "google_books",
+        "duplicado": false,
+        "selected_via": "discover_trigger",
+        "selection_reason": "Ofrece estrategias prácticas para gestionar la frustración y alcanzar la satisfacción personal.",
+        "trigger_input": "Frustrado",
+        "trigger_analysis": {
+          "raw_input": "Frustrado",
+          "semantic_query": "frustración",
+          "intent_summary": "Buscar libros que aborden la frustración y cómo manejarla.",
+          "editorial_requests": [],
+          "source_preference": null,
+          "ranking_preference": null,
+          "unsupported_runtime_constraints": [],
+          "supported_constraints": {
+            "year_min": null,
+            "year_max": null,
+            "prefer_recent": false
+          },
+          "search_queries": [
+            "frustración",
+            "manejo de la frustración",
+            "superar la frustración",
+            "libros sobre frustración",
+            "autoayuda frustración",
+            "estrategias para la frustración"
+          ],
+          "concept_hints": [],
+          "clean_for_selection": "frustración",
+          "notes": {
+            "used_ai_normalizer": true,
+            "looked_like_book_intent": false,
+            "semantic_overlap_vs_raw": 0
+          }
+        },
+        "selection_validation": {
+          "semantic_score": 0.92,
+          "ai_fit_score": 0.92,
+          "match_score": 0.6498842592592593,
+          "validation_source": "google_books",
+          "constraint_reason": "Año verificado 2007",
+          "mode": "exact_gpt",
+          "source_label": "gpt_attempt_1",
+          "fallback_score": 145
+        },
+        "catalog_scope": "",
+        "contexto_2026": {},
+        "identity_sealed": true,
+        "_evidence": {
+          "titulo_input": "La trampa de la felicidad",
+          "autor_input": "Damon Zahariades",
+          "isbn_seed": "",
+          "isbn_seed_raw": "",
+          "isbn_seed_rejected": null,
+          "isbn_discovered": "9789708172004",
+          "isbn_discovered_raw": "9789708172004",
+          "apple": {
+            "ok": false,
+            "reason": "no_results",
+            "source": "apple_books"
+          },
+          "google": {
+            "ok": true,
+            "source": "google_books",
+            "match_score": 0.6498842592592593,
+            "match_details": {
+              "matched_title": "Las trampas de la felicidad",
+              "matched_author": "Russ Harris"
+            },
+            "synopsis": "",
+            "synopsis_length": 0,
+            "covers": [],
+            "verified_identity": {
+              "titulo_real": "La trampa de la felicidad",
+              "autor_completo": "Damon Zahariades",
+              "titulo_api": "Las trampas de la felicidad",
+              "autor_api": "Russ Harris",
+              "subtitulo": "deja de luchar, empieza a vivir",
+              "año": "2007",
+              "editorial": null,
+              "paginas": 431,
+              "isbn": "9789708172004",
+              "isbn13": "9789708172004",
+              "isbn10": "9708172006",
+              "categorias": [],
+              "idioma": "es",
+              "preview_link": "http://books.google.com/books?id=BIfUZwEACAAJ&dq=La+trampa+de+la+felicidad+Damon+Zahariades&hl=&cd=5&source=gbs_api"
+            },
+            "_variant_used": "v1_original",
+            "_query_mode": "relaxed"
+          },
+          "openlibrary": {
+            "ok": false,
+            "reason": "no_results",
+            "source": "openlibrary"
+          },
+          "openlib_isbn": {
+            "ok": false,
+            "reason": "cover_unavailable_or_placeholder",
+            "source": "openlib_isbn",
+            "_attempted_isbn": "9789708172004"
+          },
+          "amazon": {
+            "ok": false,
+            "reason": "no_amazon_cover_or_only_placeholders",
+            "source": "amazon"
+          },
+          "valid_covers": [],
+          "_status": "EXHAUSTED",
+          "_sources_succeeded": [
+            "google_books"
+          ],
+          "_sources_failed": [
+            "apple_books:no_results",
+            "openlibrary:no_results",
+            "openlib_isbn:cover_unavailable_or_placeholder",
+            "amazon:no_amazon_cover_or_only_placeholders"
+          ],
+          "_timing": {
+            "phase1_parallel_ms": 764,
+            "phase2_isbn_chain_ms": 1387,
+            "cover_validation_ms": 0,
+            "total_ms": 2151
+          },
+          "_version": "3.7"
+        },
+        "_evidence_synopsis": "",
+        "_evidence_verified_identity": {
+          "titulo_real": "La trampa de la felicidad",
+          "autor_completo": "Damon Zahariades",
+          "titulo_api": "Las trampas de la felicidad",
+          "autor_api": "Russ Harris",
+          "subtitulo": "deja de luchar, empieza a vivir",
+          "año": "2007",
+          "editorial": null,
+          "paginas": 431,
+          "isbn": "9789708172004",
+          "isbn13": "9789708172004",
+          "isbn10": "9708172006",
+          "categorias": [],
+          "idioma": "es",
+          "preview_link": "http://books.google.com/books?id=BIfUZwEACAAJ&dq=La+trampa+de+la+felicidad+Damon+Zahariades&hl=&cd=5&source=gbs_api"
+        },
+        "_evidence_match_score": 0.6498842592592593
+      },
+      "ring_updated": true
+    }
+  ],
+  "last": {
+    "at": "2026-05-18T22:50:05.527Z",
+    "stage": "success",
+    "bookData": {
+      "titulo": "La trampa de la felicidad",
+      "autor": "Damon Zahariades",
+      "slug": "la-trampa-de-la-felicidad",
+      "tagline": "Aprende a superar la frustración y a encontrar la felicidad.",
+      "portada": "",
+      "portada_url": "",
+      "portada_source": "google_books",
+      "portada_candidates": [],
+      "needs_fallback_cover": true,
+      "isbn": "9789708172004",
+      "editorial": "Damon Zahariades",
+      "publication_year": "2007",
+      "source": "google_books",
+      "duplicado": false,
+      "selected_via": "discover_trigger",
+      "selection_reason": "Ofrece estrategias prácticas para gestionar la frustración y alcanzar la satisfacción personal.",
+      "trigger_input": "Frustrado",
+      "trigger_analysis": {
+        "raw_input": "Frustrado",
+        "semantic_query": "frustración",
+        "intent_summary": "Buscar libros que aborden la frustración y cómo manejarla.",
+        "editorial_requests": [],
+        "source_preference": null,
+        "ranking_preference": null,
+        "unsupported_runtime_constraints": [],
+        "supported_constraints": {
+          "year_min": null,
+          "year_max": null,
+          "prefer_recent": false
+        },
+        "search_queries": [
+          "frustración",
+          "manejo de la frustración",
+          "superar la frustración",
+          "libros sobre frustración",
+          "autoayuda frustración",
+          "estrategias para la frustración"
+        ],
+        "concept_hints": [],
+        "clean_for_selection": "frustración",
+        "notes": {
+          "used_ai_normalizer": true,
+          "looked_like_book_intent": false,
+          "semantic_overlap_vs_raw": 0
+        }
+      },
+      "selection_validation": {
+        "semantic_score": 0.92,
+        "ai_fit_score": 0.92,
+        "match_score": 0.6498842592592593,
+        "validation_source": "google_books",
+        "constraint_reason": "Año verificado 2007",
+        "mode": "exact_gpt",
+        "source_label": "gpt_attempt_1",
+        "fallback_score": 145
+      },
+      "catalog_scope": "",
+      "contexto_2026": {},
+      "identity_sealed": true,
+      "_evidence": {
+        "titulo_input": "La trampa de la felicidad",
+        "autor_input": "Damon Zahariades",
+        "isbn_seed": "",
+        "isbn_seed_raw": "",
+        "isbn_seed_rejected": null,
+        "isbn_discovered": "9789708172004",
+        "isbn_discovered_raw": "9789708172004",
+        "apple": {
+          "ok": false,
+          "reason": "no_results",
+          "source": "apple_books"
+        },
+        "google": {
+          "ok": true,
+          "source": "google_books",
+          "match_score": 0.6498842592592593,
+          "match_details": {
+            "matched_title": "Las trampas de la felicidad",
+            "matched_author": "Russ Harris"
+          },
+          "synopsis": "",
+          "synopsis_length": 0,
+          "covers": [],
+          "verified_identity": {
+            "titulo_real": "La trampa de la felicidad",
+            "autor_completo": "Damon Zahariades",
+            "titulo_api": "Las trampas de la felicidad",
+            "autor_api": "Russ Harris",
+            "subtitulo": "deja de luchar, empieza a vivir",
+            "año": "2007",
+            "editorial": null,
+            "paginas": 431,
+            "isbn": "9789708172004",
+            "isbn13": "9789708172004",
+            "isbn10": "9708172006",
+            "categorias": [],
+            "idioma": "es",
+            "preview_link": "http://books.google.com/books?id=BIfUZwEACAAJ&dq=La+trampa+de+la+felicidad+Damon+Zahariades&hl=&cd=5&source=gbs_api"
+          },
+          "_variant_used": "v1_original",
+          "_query_mode": "relaxed"
+        },
+        "openlibrary": {
+          "ok": false,
+          "reason": "no_results",
+          "source": "openlibrary"
+        },
+        "openlib_isbn": {
+          "ok": false,
+          "reason": "cover_unavailable_or_placeholder",
+          "source": "openlib_isbn",
+          "_attempted_isbn": "9789708172004"
+        },
+        "amazon": {
+          "ok": false,
+          "reason": "no_amazon_cover_or_only_placeholders",
+          "source": "amazon"
+        },
+        "valid_covers": [],
+        "_status": "EXHAUSTED",
+        "_sources_succeeded": [
+          "google_books"
+        ],
+        "_sources_failed": [
+          "apple_books:no_results",
+          "openlibrary:no_results",
+          "openlib_isbn:cover_unavailable_or_placeholder",
+          "amazon:no_amazon_cover_or_only_placeholders"
+        ],
+        "_timing": {
+          "phase1_parallel_ms": 764,
+          "phase2_isbn_chain_ms": 1387,
+          "cover_validation_ms": 0,
+          "total_ms": 2151
+        },
+        "_version": "3.7"
+      },
+      "_evidence_synopsis": "",
+      "_evidence_verified_identity": {
+        "titulo_real": "La trampa de la felicidad",
+        "autor_completo": "Damon Zahariades",
+        "titulo_api": "Las trampas de la felicidad",
+        "autor_api": "Russ Harris",
+        "subtitulo": "deja de luchar, empieza a vivir",
+        "año": "2007",
+        "editorial": null,
+        "paginas": 431,
+        "isbn": "9789708172004",
+        "isbn13": "9789708172004",
+        "isbn10": "9708172006",
+        "categorias": [],
+        "idioma": "es",
+        "preview_link": "http://books.google.com/books?id=BIfUZwEACAAJ&dq=La+trampa+de+la+felicidad+Damon+Zahariades&hl=&cd=5&source=gbs_api"
+      },
+      "_evidence_match_score": 0.6498842592592593
+    },
+    "ring_updated": true
+  }
+}

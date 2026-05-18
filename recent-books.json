@@ -1,6 +1,17 @@
 {
   "version": "3.4",
   "max_size": 30,
-  "books": [],
+  "books": [
+    {
+      "titulo": "La trampa de la felicidad",
+      "autor": "Damon Zahariades",
+      "slug": "la-trampa-de-la-felicidad",
+      "titulo_normalizado": "la trampa de la felicidad",
+      "autor_normalizado": "damon zahariades",
+      "timestamp": "2026-05-18T22:50:05.526Z",
+      "trigger_input": "Frustrado",
+      "selected_via": "discover_trigger"
+    }
+  ],
   "_note": "FIFO ring de últimos 30 libros generados por selección automática (constrained o discover). Filtro pre-rerank en validate-book.js. Inicializa vacío y se rellena con cada run exitoso. Si se borra, el sistema arranca limpio sin daño."
 }
