@@ -121,3 +121,6 @@ __pycache__/
 .DS_Store
 .vscode/
 .idea/
+
+# Debug del nucleus (no productivo)
+validate-debug/
