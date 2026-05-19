@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 🛡️ AUDIENCE BLOCKER v1.1 — Capa pre-commit del workflow Triggui
+ * 🛡️ AUDIENCE BLOCKER v1.2 — Capa pre-commit del workflow Triggui
  * ════════════════════════════════════════════════════════════════
  * Lee el libro RECIÉN GENERADO en un catálogo y verifica con GPT-4o-mini
  * si pertenece a la audiencia esperada (kids|adult).
@@ -11,10 +11,18 @@
  * Costo: ~$0.0002 por llamada. Sagrado: GPT-4o-mini.
  *
  * v1.1 fixes (2026-05-19):
- *   - FIX #1: lee libros[0] (recién generado) en vez de libros[length-1] (más viejo)
- *             porque build-contenido-nucleus.js agrega al inicio del array
- *   - FIX #2: prompt reorganizado con reglas SEPARADAS por audiencia objetivo
- *             para evitar que el LLM cruce reglas de kids al evaluar adult
+ *   - libros[0] en vez de libros[length-1]
+ *   - prompts separados por audiencia
+ *
+ * v1.2 fixes (2026-05-19):
+ *   - FIX #3: contexto enriquecido (~1500 chars) — combina tagline, card,
+ *             parrafoTop, parrafoBot, frases — para que el classifier
+ *             tenga señales reales en vez de solo un tagline poético.
+ *   - FIX #4: prompt kids reorientado de "rechaza en duda" a "acepta si
+ *             no hay señales adultas obvias", reconociendo que el libro
+ *             ya pasó el filtro de selección. El blocker debe atrapar
+ *             contaminación CLARA, no falsos positivos con contexto
+ *             abstracto/poético propio de literatura infantil.
  *
  * Uso:
  *   TARGET_AUDIENCE=kids \
@@ -48,53 +56,86 @@ if (!Array.isArray(catalog.libros) || catalog.libros.length === 0) {
   process.exit(0);
 }
 
-// 🔧 FIX #1 (v1.1): el libro recién generado está en libros[0]
-// porque build-contenido-nucleus.js hace unshift (agrega al inicio).
-// Antes leía libros[length-1] que era el libro MÁS VIEJO del catálogo.
+// FIX #1 (v1.1): libros[0] es el recién generado (unshift en nucleus)
 const libro = catalog.libros[0];
 
 const titulo = libro.titulo || "?";
 const autor  = libro.autor || "?";
-const sinopsis = (libro.tagline || libro._nucleus?.card_es?.parrafoTop || libro.frases?.[0] || "").slice(0, 400);
 
-console.log(`🛡️ AUDIENCE_BLOCKER v1.1 — audit pre-commit`);
+// 🔧 FIX #3 (v1.2): contexto enriquecido — antes solo tagline (~100 chars),
+// ahora combinamos múltiples campos del libro hasta ~1500 chars para que
+// el classifier tenga señales reales en vez de adivinar desde un tagline poético.
+function buildContext(b) {
+  const parts = [];
+  if (b.tagline) parts.push(`Tagline: ${b.tagline}`);
+  if (b._nucleus?.card_es?.titulo)    parts.push(`Card título: ${b._nucleus.card_es.titulo}`);
+  if (b._nucleus?.card_es?.subtitulo) parts.push(`Card subtítulo: ${b._nucleus.card_es.subtitulo}`);
+  if (b._nucleus?.card_es?.parrafoTop) parts.push(`Card top: ${b._nucleus.card_es.parrafoTop}`);
+  if (b._nucleus?.card_es?.parrafoBot) parts.push(`Card bottom: ${b._nucleus.card_es.parrafoBot}`);
+  if (Array.isArray(b.frases) && b.frases.length > 0) {
+    parts.push(`Frases destacadas: ${b.frases.slice(0, 3).filter(Boolean).join(' || ')}`);
+  }
+  if (Array.isArray(b._nucleus?.edition_blocks_es)) {
+    const ed = b._nucleus.edition_blocks_es
+      .map(x => x?.phrase)
+      .filter(Boolean)
+      .slice(0, 2);
+    if (ed.length) parts.push(`Edición viva: ${ed.join(' || ')}`);
+  }
+  return parts.join('\n').slice(0, 1500);
+}
+
+const sinopsis = buildContext(libro);
+
+console.log(`🛡️ AUDIENCE_BLOCKER v1.2 — audit pre-commit`);
 console.log(`   target_audience: ${TARGET}`);
 console.log(`   libro:           "${titulo}" — ${autor}`);
-console.log(`   contexto:        ${sinopsis.slice(0,120)}...`);
+console.log(`   contexto (${sinopsis.length} chars):`);
+console.log(`     ${sinopsis.slice(0,200).replace(/\n/g, '\n     ')}${sinopsis.length > 200 ? '...' : ''}`);
 
-// 🔧 FIX #2 (v1.1): prompts separados por audiencia objetivo.
-// Antes un solo prompt mezclaba las reglas y el LLM cruzaba listas.
-const system = `Eres un classifier estricto de audiencia editorial. Tu trabajo es proteger el catálogo de Triggui de contaminación de audiencia. Respondes SOLO con JSON.`;
+const system = `Eres un classifier estricto pero balanceado de audiencia editorial. Tu trabajo es proteger el catálogo de Triggui de contaminación OBVIA de audiencia. NO rechazas por contexto abstracto o poético propio del estilo Triggui. Respondes SOLO con JSON.`;
 
 let user;
 if (TARGET === "kids") {
+  // 🔧 FIX #4 (v1.2): prompt kids reorientado.
+  // Antes: "en duda razonable, rechaza" → falsos positivos en contexto
+  // abstracto/poético propio de literatura infantil (ej. Studio Ghibli).
+  // Ahora: "acepta si no hay señales adultas obvias", reconociendo que
+  // el libro ya pasó el filtro previo de selección.
   user = `Catálogo Triggui Kids — audiencia: NIÑOS de 4-12 años.
 
 Libro a evaluar:
 - Título: ${titulo}
 - Autor: ${autor}
-- Contexto: ${sinopsis}
+- Contexto del libro:
+${sinopsis}
 
-¿Este libro es apropiado para niños de 4-12 años?
+¿Este libro contiene contenido CLARAMENTE adulto que lo haga inapropiado para niños 4-12 años?
 
-RECHAZA (matches=false) si el libro trata sobre:
+RECHAZA (matches=false) SOLO si encuentras señales EXPLÍCITAS de:
 - Negocios, estrategia empresarial, management, liderazgo corporativo
-- Autoayuda adulta, terapia ACT/CBT, psicología clínica
-- Finanzas personales, inversión, dinero, riqueza
-- Política, geopolítica, historia política compleja
-- Filosofía abstracta (Kant, Heidegger, Byung-Chul Han, Sartre, etc.)
-- Novela erótica, romance adulto, true crime, thriller violento
-- Ciencia técnica avanzada (física cuántica, IA avanzada para profesionales)
-- Cualquier tema cuya comprensión requiera madurez cognitiva de adulto
+- Finanzas, inversión, dinero, riqueza, economía adulta
+- Autoayuda adulta, terapia clínica (ACT/CBT/DBT), psicoanálisis
+- Filosofía abstracta para adultos (Kant, Heidegger, Byung-Chul Han, Sartre, Foucault)
+- Política, geopolítica, ideología partidista
+- Novela erótica, romance explícito, contenido sexual
+- True crime, thriller violento, horror gráfico
+- Ciencia técnica avanzada para profesionales
+- Temas médicos clínicos para adultos
 
-ACEPTA (matches=true) si el libro es:
+ACEPTA (matches=true) en todos los demás casos. En particular:
 - Literatura infantil clásica o moderna (Roald Dahl, Eric Carle, Beatrix Potter, etc.)
+- Studio Ghibli, anime familiar, animaciones para niños (Miyazaki, Pixar, Disney)
 - Cuentos, fábulas, álbumes ilustrados
-- Aventura, fantasía o ciencia ficción accesible para niños
-- Libros educativos para niños (animales, naturaleza, ciencia simple)
+- Aventura, fantasía, ciencia ficción accesible
+- Libros educativos infantiles (animales, naturaleza, ciencia simple)
 - Poesía infantil, rimas, libros de actividades
+- Contexto poético, abstracto, contemplativo sobre cielo/sueños/naturaleza
+  → ESTO ES NORMAL EN LITERATURA INFANTIL, NO ES SEÑAL DE CONTENIDO ADULTO
 
-En duda razonable, RECHAZA.
+El libro YA pasó un filtro previo de selección que evaluó audiencia.
+Tu rol es atrapar contaminación OBVIA, no falsos positivos con contexto
+poético. En duda razonable con contexto neutral/poético, ACEPTA.
 
 Responde SOLO JSON:
 { "matches": true|false, "confidence": 0.0-1.0, "reason": "<10 palabras>", "detected_audience": "kids|young_adult|adult|unclear" }`;
@@ -105,7 +146,8 @@ Responde SOLO JSON:
 Libro a evaluar:
 - Título: ${titulo}
 - Autor: ${autor}
-- Contexto: ${sinopsis}
+- Contexto del libro:
+${sinopsis}
 
 ¿Este libro es apropiado para adultos?
 
