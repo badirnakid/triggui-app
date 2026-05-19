@@ -1063,16 +1063,18 @@ jobs:
             exit 0
           fi
 
-          echo "🛡️ LLM Sanitizer (capa B) — solo último libro"
-          echo "   catalog: $CATALOG_PATH"
-          echo "   modo:    fix con --only-last=true"
+          echo "🛡️ LLM Sanitizer (capa B) v3.1 — nuevos + healing rotation"
+          echo "   catalog:    $CATALOG_PATH"
+          echo "   batch_size: $BATCH_SIZE"
+          echo "   modo:       fix con --only-last + healing rotation"
 
           node "$SCRIPT" \
             --catalog="$CATALOG_PATH" \
             --mode=fix \
-            --only-last=true
+            --only-last=true \
+            --batch-size="$BATCH_SIZE"
 
-          echo "✅ FASE 8.8 completada — libro libre de truncamientos"
+          echo "✅ FASE 8.8 completada — nuevos + 1 healing libres de truncamientos"
 
       - name: 💾 Commit y push
         run: |
