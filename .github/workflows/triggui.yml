@@ -756,7 +756,7 @@ jobs:
         env:
           CATALOG_MODE: ${{ inputs.catalogo || 'adulto' }}
           TARGET_AUDIENCE: ${{ inputs.catalogo == 'kids' && 'kids' || 'adult' }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
         run: |
           set -euo pipefail
           if [ "$CATALOG_MODE" = "kids" ]; then
@@ -781,7 +781,7 @@ jobs:
 
           CATALOG_PATH="$CATALOG_PATH" \
           TARGET_AUDIENCE="$TARGET_AUDIENCE" \
-          OPENAI_API_KEY="$OPENAI_API_KEY" \
+          OPENAI_API_KEY="$OPENAI_KEY" \
             node experiments/nucleus/audience-blocker.cjs
 
       # ╔══════════════════════════════════════════════════════════════════╗
@@ -1027,7 +1027,7 @@ jobs:
         shell: bash
         env:
           CATALOG_MODE: ${{ inputs.catalogo || 'adulto' }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
         run: |
           set -euo pipefail
 
