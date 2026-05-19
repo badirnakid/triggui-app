@@ -1012,6 +1012,53 @@ jobs:
       # ║  FASE 9 — Commit y push a AMBOS repos                             ║
       # ╚══════════════════════════════════════════════════════════════════╝
 
+      # ╔══════════════════════════════════════════════════════════════════╗
+      # ║  FASE 8.8 — 🛡️ LLM Phrase Sanitizer (capa B semántica)            ║
+      # ║  Detecta truncamientos que regex no captura (palabras parciales, ║
+      # ║  preposiciones colgantes, ideas incompletas).                    ║
+      # ║  GPT-4o-mini classifier + guardrail anti-destrucción.            ║
+      # ║  --only-last=true: procesa SOLO el libro recién generado.        ║
+      # ║  Doctrina 2026-05-19: catálogo histórico se respeta, nuevos      ║
+      # ║  pasan por capa B obligatoria. Costo ~$0.0012/run.               ║
+      # ╚══════════════════════════════════════════════════════════════════╝
+
+      - name: 🛡️ FASE 8.8 — LLM Phrase Sanitizer (capa B)
+        if: ${{ success() && steps.modo.outputs.modo_tecnico != 'shadow_batch' && inputs.modo_prueba != true }}
+        shell: bash
+        env:
+          CATALOG_MODE: ${{ inputs.catalogo || 'adulto' }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          set -euo pipefail
+
+          if [ "$CATALOG_MODE" = "kids" ]; then
+            CATALOG_PATH="triggui-content/contenido_kids.json"
+          else
+            CATALOG_PATH="triggui-content/contenido.json"
+          fi
+
+          SCRIPT="triggui-content/auditoria-editorial/phrase-sanitizer-llm.cjs"
+
+          if [ ! -f "$CATALOG_PATH" ]; then
+            echo "🟡 LLM_SANITIZER: $CATALOG_PATH no existe — skip"
+            exit 0
+          fi
+          if [ ! -f "$SCRIPT" ]; then
+            echo "🟡 LLM_SANITIZER: script no encontrado en $SCRIPT — skip graceful"
+            exit 0
+          fi
+
+          echo "🛡️ LLM Sanitizer (capa B) — solo último libro"
+          echo "   catalog: $CATALOG_PATH"
+          echo "   modo:    fix con --only-last=true"
+
+          node "$SCRIPT" \
+            --catalog="$CATALOG_PATH" \
+            --mode=fix \
+            --only-last=true
+
+          echo "✅ FASE 8.8 completada — libro libre de truncamientos"
+
       - name: 💾 Commit y push
         run: |
           set -euo pipefail
