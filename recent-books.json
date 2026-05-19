@@ -21,6 +21,16 @@
       "timestamp": "2026-05-18T22:59:22.617Z",
       "trigger_input": "Indeciso frustrado",
       "selected_via": "discover_trigger"
+    },
+    {
+      "titulo": "Capital in the Twenty-First Century",
+      "autor": "Thomas Piketty",
+      "slug": "capital-in-the-twenty-first-century",
+      "titulo_normalizado": "capital in the twenty first century",
+      "autor_normalizado": "thomas piketty",
+      "timestamp": "2026-05-19T15:36:18.683Z",
+      "trigger_input": "existe el equilibrio? vale la pena buscarlo? la estabilidad economica? es decir los millonarios realmente tienen estabilidad economica?",
+      "selected_via": "discover_trigger"
     }
   ],
   "_note": "FIFO ring de últimos 30 libros generados por selección automática (constrained o discover). Filtro pre-rerank en validate-book.js. Inicializa vacío y se rellena con cada run exitoso. Si se borra, el sistema arranca limpio sin daño."
