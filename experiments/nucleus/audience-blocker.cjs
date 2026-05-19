@@ -1,70 +1,77 @@
 #!/usr/bin/env node
 /**
- * 🛡️ AUDIENCE BLOCKER v1.2 — Capa pre-commit del workflow Triggui
- * ════════════════════════════════════════════════════════════════
- * Lee el libro RECIÉN GENERADO en un catálogo y verifica con GPT-4o-mini
- * si pertenece a la audiencia esperada (kids|adult).
+ * 🛡️ AUDIENCE BLOCKER v2.0 — Capa pre-commit con quarantine selectiva
+ * ═══════════════════════════════════════════════════════════════════
+ * Audita los N libros RECIÉN GENERADOS de un batch (libros[0..N-1])
+ * y aplica QUARANTINE SELECTIVA: los aprobados quedan en el catálogo
+ * principal, los rechazados van a contenido_rejected.json con metadata
+ * forense. NADA se destruye — los rechazados son recuperables.
  *
- * Exit 0 → libro matchea audiencia, workflow continúa
- * Exit 1 → libro NO matchea audiencia, workflow ABORTA antes de commitear
+ * Costo: ~$0.0002 por libro auditado. Sagrado: GPT-4o-mini.
  *
- * Costo: ~$0.0002 por llamada. Sagrado: GPT-4o-mini.
+ * Exit codes:
+ *   0 → siempre (excepto error técnico). Workflow continúa.
+ *   1 → error técnico (catálogo inválido, OpenAI key faltante, etc.)
  *
- * v1.1 fixes (2026-05-19):
- *   - libros[0] en vez de libros[length-1]
- *   - prompts separados por audiencia
- *
- * v1.2 fixes (2026-05-19):
- *   - FIX #3: contexto enriquecido (~1500 chars) — combina tagline, card,
- *             parrafoTop, parrafoBot, frases — para que el classifier
- *             tenga señales reales en vez de solo un tagline poético.
- *   - FIX #4: prompt kids reorientado de "rechaza en duda" a "acepta si
- *             no hay señales adultas obvias", reconociendo que el libro
- *             ya pasó el filtro de selección. El blocker debe atrapar
- *             contaminación CLARA, no falsos positivos con contexto
- *             abstracto/poético propio de literatura infantil.
+ * Cambios v2.0 vs v1.2:
+ *   - Audita BATCH_SIZE libros en vez de solo libros[0]
+ *   - Particiona pass[] / fail[] en vez de abortar
+ *   - Reescribe catálogo principal SIN los rechazados
+ *   - Crea/actualiza {catalog}_rejected.json con metadata forense
+ *   - Exit 0 siempre (workflow nunca aborta — quarantine resuelve todo)
  *
  * Uso:
  *   TARGET_AUDIENCE=kids \
  *   CATALOG_PATH=triggui-content/contenido_kids.json \
+ *   BATCH_SIZE=20 \
  *   OPENAI_API_KEY=sk-... \
  *   node audience-blocker.cjs
  */
 "use strict";
 
 const fs = require("node:fs");
+const path = require("node:path");
 
+const VERSION = "2.0";
 const TARGET = String(process.env.TARGET_AUDIENCE || "adult").trim().toLowerCase();
 const CATALOG_PATH = process.env.CATALOG_PATH;
 const OPENAI_KEY = process.env.OPENAI_API_KEY;
+const BATCH_SIZE = Math.max(1, parseInt(process.env.BATCH_SIZE || "1", 10));
+const CONFIDENCE_THRESHOLD = 0.6;
 const MODEL = "gpt-4o-mini";
 
-if (!CATALOG_PATH) { console.error("❌ AUDIENCE_BLOCKER: falta CATALOG_PATH"); process.exit(2); }
-if (!OPENAI_KEY)   { console.error("❌ AUDIENCE_BLOCKER: falta OPENAI_API_KEY"); process.exit(2); }
+if (!CATALOG_PATH) { console.error("❌ AUDIENCE_BLOCKER: falta CATALOG_PATH"); process.exit(1); }
+if (!OPENAI_KEY)   { console.error("❌ AUDIENCE_BLOCKER: falta OPENAI_API_KEY"); process.exit(1); }
 if (!["kids","adult"].includes(TARGET)) {
   console.error(`❌ AUDIENCE_BLOCKER: TARGET_AUDIENCE inválido: ${TARGET}`);
-  process.exit(2);
+  process.exit(1);
 }
-
 if (!fs.existsSync(CATALOG_PATH)) {
   console.error(`❌ AUDIENCE_BLOCKER: catálogo no existe: ${CATALOG_PATH}`);
-  process.exit(2);
+  process.exit(1);
 }
+
 const catalog = JSON.parse(fs.readFileSync(CATALOG_PATH, "utf8"));
-if (!Array.isArray(catalog.libros) || catalog.libros.length === 0) {
-  console.log("🟡 AUDIENCE_BLOCKER: catálogo vacío — nada que validar, pasando.");
+if (!Array.isArray(catalog.libros)) {
+  console.error(`❌ AUDIENCE_BLOCKER: catálogo inválido (no libros[])`);
+  process.exit(1);
+}
+if (catalog.libros.length === 0) {
+  console.log("🟡 AUDIENCE_BLOCKER: catálogo vacío — nada que validar.");
   process.exit(0);
 }
 
-// FIX #1 (v1.1): libros[0] es el recién generado (unshift en nucleus)
-const libro = catalog.libros[0];
+// Los N libros recientes están en libros[0..N-1] (nucleus hace unshift)
+const N = Math.min(BATCH_SIZE, catalog.libros.length);
+const librosNuevos = catalog.libros.slice(0, N);
+const librosViejos = catalog.libros.slice(N);
 
-const titulo = libro.titulo || "?";
-const autor  = libro.autor || "?";
+console.log(`🛡️ AUDIENCE_BLOCKER v${VERSION} — multi-libro + quarantine`);
+console.log(`   target_audience: ${TARGET}`);
+console.log(`   batch_size:      ${BATCH_SIZE}`);
+console.log(`   catálogo:        ${path.basename(CATALOG_PATH)} (${catalog.libros.length} libros totales)`);
+console.log(`   auditando:       ${N} libros nuevos (libros[0..${N-1}])`);
 
-// 🔧 FIX #3 (v1.2): contexto enriquecido — antes solo tagline (~100 chars),
-// ahora combinamos múltiples campos del libro hasta ~1500 chars para que
-// el classifier tenga señales reales en vez de adivinar desde un tagline poético.
 function buildContext(b) {
   const parts = [];
   if (b.tagline) parts.push(`Tagline: ${b.tagline}`);
@@ -76,33 +83,17 @@ function buildContext(b) {
     parts.push(`Frases destacadas: ${b.frases.slice(0, 3).filter(Boolean).join(' || ')}`);
   }
   if (Array.isArray(b._nucleus?.edition_blocks_es)) {
-    const ed = b._nucleus.edition_blocks_es
-      .map(x => x?.phrase)
-      .filter(Boolean)
-      .slice(0, 2);
+    const ed = b._nucleus.edition_blocks_es.map(x => x?.phrase).filter(Boolean).slice(0, 2);
     if (ed.length) parts.push(`Edición viva: ${ed.join(' || ')}`);
   }
   return parts.join('\n').slice(0, 1500);
 }
 
-const sinopsis = buildContext(libro);
+const SYSTEM = `Eres un classifier estricto pero balanceado de audiencia editorial. Tu trabajo es proteger el catálogo de Triggui de contaminación OBVIA de audiencia. NO rechazas por contexto abstracto o poético propio del estilo Triggui. Respondes SOLO con JSON.`;
 
-console.log(`🛡️ AUDIENCE_BLOCKER v1.2 — audit pre-commit`);
-console.log(`   target_audience: ${TARGET}`);
-console.log(`   libro:           "${titulo}" — ${autor}`);
-console.log(`   contexto (${sinopsis.length} chars):`);
-console.log(`     ${sinopsis.slice(0,200).replace(/\n/g, '\n     ')}${sinopsis.length > 200 ? '...' : ''}`);
-
-const system = `Eres un classifier estricto pero balanceado de audiencia editorial. Tu trabajo es proteger el catálogo de Triggui de contaminación OBVIA de audiencia. NO rechazas por contexto abstracto o poético propio del estilo Triggui. Respondes SOLO con JSON.`;
-
-let user;
-if (TARGET === "kids") {
-  // 🔧 FIX #4 (v1.2): prompt kids reorientado.
-  // Antes: "en duda razonable, rechaza" → falsos positivos en contexto
-  // abstracto/poético propio de literatura infantil (ej. Studio Ghibli).
-  // Ahora: "acepta si no hay señales adultas obvias", reconociendo que
-  // el libro ya pasó el filtro previo de selección.
-  user = `Catálogo Triggui Kids — audiencia: NIÑOS de 4-12 años.
+function buildUserPrompt(titulo, autor, sinopsis, target) {
+  if (target === "kids") {
+    return `Catálogo Triggui Kids — audiencia: NIÑOS de 4-12 años.
 
 Libro a evaluar:
 - Título: ${titulo}
@@ -139,9 +130,10 @@ poético. En duda razonable con contexto neutral/poético, ACEPTA.
 
 Responde SOLO JSON:
 { "matches": true|false, "confidence": 0.0-1.0, "reason": "<10 palabras>", "detected_audience": "kids|young_adult|adult|unclear" }`;
-} else {
-  // TARGET === "adult"
-  user = `Catálogo Triggui — audiencia: ADULTOS (mayores de 13 años, lectores generales y profesionales).
+  }
+
+  // target === "adult"
+  return `Catálogo Triggui — audiencia: ADULTOS (mayores de 13 años, lectores generales y profesionales).
 
 Libro a evaluar:
 - Título: ${titulo}
@@ -171,7 +163,12 @@ Responde SOLO JSON:
 { "matches": true|false, "confidence": 0.0-1.0, "reason": "<10 palabras>", "detected_audience": "kids|young_adult|adult|unclear" }`;
 }
 
-(async () => {
+async function auditOne(libro) {
+  const titulo = libro.titulo || "?";
+  const autor  = libro.autor || "?";
+  const sinopsis = buildContext(libro);
+  const user = buildUserPrompt(titulo, autor, sinopsis, TARGET);
+
   try {
     const res = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -182,44 +179,151 @@ Responde SOLO JSON:
         response_format: { type: "json_object" },
         max_tokens: 150,
         messages: [
-          { role: "system", content: system },
+          { role: "system", content: SYSTEM },
           { role: "user", content: user }
         ]
       })
     });
     if (!res.ok) {
       const t = await res.text();
-      console.error(`❌ AUDIENCE_BLOCKER: OpenAI ${res.status} — ${t.slice(0,200)}`);
-      console.log(`⚠️  No se pudo verificar audiencia — dejando pasar (degradación elegante).`);
-      process.exit(0);
+      return { titulo, autor, pass: true, degraded: true,
+        reason: `OpenAI ${res.status}: ${t.slice(0,100)}`, confidence: null, detected_audience: "unknown" };
     }
     const data = await res.json();
     const raw = data.choices?.[0]?.message?.content || "{}";
     let parsed;
-    try { parsed = JSON.parse(raw); } catch { console.error(`❌ JSON inválido del classifier: ${raw}`); process.exit(0); }
+    try { parsed = JSON.parse(raw); } catch {
+      return { titulo, autor, pass: true, degraded: true,
+        reason: "JSON inválido del classifier", confidence: null, detected_audience: "unknown" };
+    }
+    const conf = parsed.confidence ?? 1;
+    const matches = parsed.matches !== false;
+    const rejected = !matches && conf >= CONFIDENCE_THRESHOLD;
+    return {
+      titulo, autor,
+      pass: !rejected,
+      matches,
+      confidence: conf,
+      detected_audience: parsed.detected_audience || "unclear",
+      reason: parsed.reason || ""
+    };
+  } catch (e) {
+    return { titulo, autor, pass: true, degraded: true,
+      reason: `Error: ${e.message}`, confidence: null, detected_audience: "unknown" };
+  }
+}
 
-    console.log(`   classifier:      matches=${parsed.matches} conf=${parsed.confidence} detected="${parsed.detected_audience}" reason="${parsed.reason}"`);
+function getRejectedPath(catalogPath) {
+  const dir = path.dirname(catalogPath);
+  const ext = path.extname(catalogPath);
+  const base = path.basename(catalogPath, ext);
+  return path.join(dir, `${base}_rejected${ext}`);
+}
 
-    if (parsed.matches === false && (parsed.confidence ?? 1) >= 0.6) {
-      console.error("");
-      console.error("════════════════════════════════════════════════════════════════");
-      console.error("❌ AUDIENCE_BLOCKER: LIBRO RECHAZADO — abortando workflow");
-      console.error("════════════════════════════════════════════════════════════════");
-      console.error(`   título:           "${titulo}" — ${autor}`);
-      console.error(`   audiencia esperada: ${TARGET}`);
-      console.error(`   audiencia detectada: ${parsed.detected_audience}`);
-      console.error(`   razón:            ${parsed.reason}`);
-      console.error(`   confianza:        ${parsed.confidence}`);
-      console.error("");
-      console.error("   El libro NO será commiteado. Catálogo intacto.");
-      console.error("════════════════════════════════════════════════════════════════");
-      process.exit(1);
+(async () => {
+  try {
+    const pass = [];
+    const fail = [];
+    const degraded = [];
+
+    console.log(``);
+    console.log(`📋 Auditando ${N} libros del batch:`);
+    for (let i = 0; i < N; i++) {
+      const libro = librosNuevos[i];
+      const titulo = libro.titulo || "?";
+      const autor  = libro.autor || "?";
+      console.log(`   [${i+1}/${N}] "${titulo}" — ${autor}`);
+      const r = await auditOne(libro);
+      if (r.degraded) {
+        console.log(`         🟡 DEGRADED (${r.reason}) — pasando por seguridad`);
+        degraded.push(libro);
+        pass.push(libro);
+      } else if (r.pass) {
+        console.log(`         ✅ PASS (conf=${r.confidence}, detected=${r.detected_audience})`);
+        pass.push(libro);
+      } else {
+        console.log(`         ❌ FAIL (conf=${r.confidence}, detected=${r.detected_audience})`);
+        console.log(`              razón: ${r.reason}`);
+        libro._rejected = {
+          timestamp: new Date().toISOString(),
+          target_audience: TARGET,
+          detected_audience: r.detected_audience,
+          reason: r.reason,
+          confidence: r.confidence,
+          blocker_version: VERSION
+        };
+        fail.push(libro);
+      }
     }
 
-    console.log(`✅ AUDIENCE_BLOCKER: libro matchea audiencia ${TARGET}.`);
+    console.log(``);
+    console.log(`📊 Resultados de la auditoría:`);
+    console.log(`   ✅ PASS:        ${pass.length}/${N}`);
+    console.log(`   ❌ QUARANTINE:  ${fail.length}/${N}`);
+    if (degraded.length > 0) {
+      console.log(`   🟡 DEGRADED:    ${degraded.length} (errores técnicos, pasaron por seguridad)`);
+    }
+
+    if (fail.length === 0) {
+      console.log(``);
+      console.log(`✅ Todos los libros del batch aprobados. Catálogo intacto.`);
+      process.exit(0);
+    }
+
+    console.log(``);
+    console.log(`🔀 Aplicando quarantine selectiva...`);
+
+    // 1. Reescribir catálogo principal SIN los rechazados
+    catalog.libros = [...pass, ...librosViejos];
+    catalog.meta = catalog.meta || {};
+    catalog.meta.total = catalog.libros.length;
+    catalog.meta.last_updated = new Date().toISOString();
+    fs.writeFileSync(CATALOG_PATH, JSON.stringify(catalog, null, 2));
+    console.log(`   ✓ Catálogo principal reescrito: ${path.basename(CATALOG_PATH)} (${catalog.libros.length} libros)`);
+
+    // 2. Crear/actualizar catálogo rejected
+    const rejectedPath = getRejectedPath(CATALOG_PATH);
+    let rejectedCatalog;
+    if (fs.existsSync(rejectedPath)) {
+      try {
+        rejectedCatalog = JSON.parse(fs.readFileSync(rejectedPath, "utf8"));
+        if (!Array.isArray(rejectedCatalog.libros)) rejectedCatalog.libros = [];
+      } catch {
+        rejectedCatalog = { libros: [], meta: {} };
+      }
+    } else {
+      rejectedCatalog = {
+        libros: [],
+        meta: {
+          version: "1.0.0",
+          generated_at: new Date().toISOString(),
+          total: 0,
+          note: "Quarantine catalog — libros rechazados por audience-blocker. Pueden recuperarse manualmente si fueron falsos positivos."
+        }
+      };
+    }
+    rejectedCatalog.libros = [...fail, ...rejectedCatalog.libros];
+    rejectedCatalog.meta = rejectedCatalog.meta || {};
+    rejectedCatalog.meta.total = rejectedCatalog.libros.length;
+    rejectedCatalog.meta.last_updated = new Date().toISOString();
+    fs.writeFileSync(rejectedPath, JSON.stringify(rejectedCatalog, null, 2));
+    console.log(`   ✓ Quarantine actualizada: ${path.basename(rejectedPath)} (${rejectedCatalog.libros.length} libros)`);
+
+    console.log(``);
+    console.log(`📦 Libros enviados a quarantine:`);
+    fail.forEach((b, i) => {
+      console.log(`   ${i+1}. "${b.titulo}" — ${b.autor}`);
+      console.log(`      razón:    ${b._rejected.reason}`);
+      console.log(`      conf:     ${b._rejected.confidence}`);
+      console.log(`      detected: ${b._rejected.detected_audience}`);
+    });
+
+    console.log(``);
+    console.log(`✅ Quarantine completada. Workflow continúa con catálogo limpio.`);
     process.exit(0);
   } catch (e) {
-    console.error(`❌ AUDIENCE_BLOCKER error: ${e.message}`);
+    console.error(`❌ AUDIENCE_BLOCKER error inesperado: ${e.message}`);
+    console.error(e.stack);
     console.log(`⚠️  Degradación elegante — dejando pasar.`);
     process.exit(0);
   }

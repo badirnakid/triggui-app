@@ -765,10 +765,13 @@ jobs:
             CATALOG_FILE="contenido.json"
           fi
 
-          if [ -f "$GITHUB_WORKSPACE/triggui-content/$CATALOG_FILE" ]; then
-            CATALOG_PATH="$GITHUB_WORKSPACE/triggui-content/$CATALOG_FILE"
-          elif [ -f "$GITHUB_WORKSPACE/$CATALOG_FILE" ]; then
+          # 🌒 v2.0: prioriza catálogo POST-NUCLEUS (en $GITHUB_WORKSPACE root,
+          # contiene los libros recién generados). Fallback al de triggui-content/
+          # (catálogo viejo, del checkout) solo si el copy post-nucleus falló.
+          if [ -f "$GITHUB_WORKSPACE/$CATALOG_FILE" ]; then
             CATALOG_PATH="$GITHUB_WORKSPACE/$CATALOG_FILE"
+          elif [ -f "$GITHUB_WORKSPACE/triggui-content/$CATALOG_FILE" ]; then
+            CATALOG_PATH="$GITHUB_WORKSPACE/triggui-content/$CATALOG_FILE"
           else
             echo "🟡 AUDIENCE_BLOCKER: catálogo no encontrado en workspace — skip"
             exit 0
@@ -782,6 +785,7 @@ jobs:
           CATALOG_PATH="$CATALOG_PATH" \
           TARGET_AUDIENCE="$TARGET_AUDIENCE" \
           OPENAI_API_KEY="$OPENAI_KEY" \
+          BATCH_SIZE="${BATCH_SIZE:-1}" \
             node experiments/nucleus/audience-blocker.cjs
 
       # ╔══════════════════════════════════════════════════════════════════╗
@@ -802,6 +806,17 @@ jobs:
           if [ -f "$OUT_FILE" ]; then
             cp "$OUT_FILE" "triggui-content/$OUT_FILE"
             echo "✅ $OUT_FILE sincronizado"
+          fi
+
+          # 🌒 v2.0 — Sincronizar catálogo de quarantine si existe
+          # Los libros rechazados por audience-blocker viven en *_rejected.json
+          # con metadata forense (_rejected.timestamp, reason, confidence, etc).
+          # Se preservan en triggui-content para auditoría y recuperación manual.
+          REJECTED_FILE="${OUT_FILE%.json}_rejected.json"
+          if [ -f "$REJECTED_FILE" ]; then
+            cp "$REJECTED_FILE" "triggui-content/$REJECTED_FILE"
+            REJECTED_COUNT=$(node -e "try{console.log(JSON.parse(require('fs').readFileSync('${REJECTED_FILE}','utf8').trim()).libros.length)}catch(e){console.log('?')}" 2>/dev/null || echo "?")
+            echo "📦 $REJECTED_FILE sincronizado (${REJECTED_COUNT} libros en quarantine total)"
           fi
 
           # 🌒 v3.8 cirugia 4B — Sincronizar edition-counter.json a triggui-content
