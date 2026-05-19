@@ -570,6 +570,8 @@ jobs:
           CATALOG_SCOPE: libros_master_csv
           # 🌒 Triggui Kids: CSV depende de CATALOG_MODE
           CATALOG_CSV_PATH: ${{ inputs.catalogo == 'kids' && 'data/libros_master_kids.csv' || 'data/libros_master.csv' }}
+          # 🛡️ Audience guard: audiencia explícita para prompts del LLM
+          TARGET_AUDIENCE: ${{ inputs.catalogo == 'kids' && 'kids' || 'adult' }}
         run: node validate-book.js
 
       - name: 📖 Validate DISCOVER (modo 🌍)
@@ -579,6 +581,8 @@ jobs:
           INPUT_MODE: trigger
           SELECTOR_MODE: discover
           ENTRADA_RAW: ${{ inputs.sentimiento }}
+          # 🛡️ Audience guard: audiencia explícita para prompts del LLM
+          TARGET_AUDIENCE: ${{ inputs.catalogo == 'kids' && 'kids' || 'adult' }}
         run: node validate-book.js
 
       # ╔══════════════════════════════════════════════════════════════════╗
@@ -737,6 +741,48 @@ jobs:
         run: |
           node scripts/build-og-image.js
           find "${TRIGGUI_OUT_BASE}" -name "og.png" 2>/dev/null | head -5
+
+      # ╔══════════════════════════════════════════════════════════════════╗
+      # ║  FASE 7.5 — 🛡️ Audience Blocker Pre-Commit (capa 4 nivel dios)    ║
+      # ╚══════════════════════════════════════════════════════════════════╝
+      # Verifica con GPT-4o-mini classifier que el libro recién generado
+      # matchee la audiencia (kids|adult) ANTES de commitear.
+      # Si no matchea -> exit 1 -> workflow aborta -> JSON intacto.
+      # Costo: ~$0.0001 por run. Bug detectado 2026-05-18: Porter en kids.
+
+      - name: 🛡️ Audience Blocker — verificación pre-commit
+        if: ${{ success() && steps.modo.outputs.modo_tecnico != 'shadow_batch' && inputs.modo_prueba != true }}
+        shell: bash
+        env:
+          CATALOG_MODE: ${{ inputs.catalogo || 'adulto' }}
+          TARGET_AUDIENCE: ${{ inputs.catalogo == 'kids' && 'kids' || 'adult' }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          set -euo pipefail
+          if [ "$CATALOG_MODE" = "kids" ]; then
+            CATALOG_FILE="contenido_kids.json"
+          else
+            CATALOG_FILE="contenido.json"
+          fi
+
+          if [ -f "$GITHUB_WORKSPACE/triggui-content/$CATALOG_FILE" ]; then
+            CATALOG_PATH="$GITHUB_WORKSPACE/triggui-content/$CATALOG_FILE"
+          elif [ -f "$GITHUB_WORKSPACE/$CATALOG_FILE" ]; then
+            CATALOG_PATH="$GITHUB_WORKSPACE/$CATALOG_FILE"
+          else
+            echo "🟡 AUDIENCE_BLOCKER: catálogo no encontrado en workspace — skip"
+            exit 0
+          fi
+
+          echo "🛡️ Audience blocker pre-commit"
+          echo "   CATALOG_MODE:     $CATALOG_MODE"
+          echo "   TARGET_AUDIENCE:  $TARGET_AUDIENCE"
+          echo "   CATALOG_PATH:     $CATALOG_PATH"
+
+          CATALOG_PATH="$CATALOG_PATH" \
+          TARGET_AUDIENCE="$TARGET_AUDIENCE" \
+          OPENAI_API_KEY="$OPENAI_API_KEY" \
+            node experiments/nucleus/audience-blocker.cjs
 
       # ╔══════════════════════════════════════════════════════════════════╗
       # ║  FASE 8 — Sincronizar contenido.json → triggui-content            ║

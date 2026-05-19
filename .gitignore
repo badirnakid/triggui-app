@@ -85,3 +85,39 @@ apps-script/.clasp.json
 .github/workflows/*.yml.bak-pre-*
 .github/workflows/*.yml.backup-*
 .github/workflows/*.yml.pre-*
+
+# ════════════════════════════════════════════════════════════════
+# 🛡️ Anti-contaminación local (post audience-guard sprint 2026-05-18)
+# ════════════════════════════════════════════════════════════════
+
+# Backups locales (cualquier patrón)
+*.bak
+*.bak-*
+*.bak-pre-*
+*.bak-audit-*
+*.bak-sanitize-*
+*.bak-svg-*
+*.pre-*.bak
+*.backup-*
+*.backup
+_backup-pre-*/
+**/_backup-pre-*/
+
+# Scripts de migración históricos (deben quedarse locales)
+aplicar-*.py
+aplicar-*.sh
+bump-version-*.py
+inyectar-*.py
+auditoria-nivel-dios.sh
+yml-actual-completo.yml
+apps-script-backups/
+
+# Python compilados
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE / OS
+.DS_Store
+.vscode/
+.idea/

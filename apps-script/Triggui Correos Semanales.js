@@ -97,6 +97,19 @@ const TOKEN_CLOSE = "{{/H}}";
 const URL_BUSCALIBRE_LOGO = "https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/buscalibre.png";
 const URL_PENGUIN_LOGO    = "https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/logopenguin.png";
 
+/* ════════════════════ V20 KIDS PROMO BANNER ═══════════════════════════════
+ * Banner promocional al inicio del email anunciando Triggui Kids.
+ *
+ * KIDS_PROMO_ENABLED:
+ *   true  → mostrar banner en TODOS los emails
+ *   false → desactivar (cuando ya no aplique, 2-3 semanas o cuando decidas)
+ *
+ * KIDS_URL_TARGET:
+ *   URL destino del CTA. No cambiar a menos que cambie el dominio.
+ * ════════════════════════════════════════════════════════════════════════ */
+const KIDS_PROMO_ENABLED = true;
+const KIDS_URL_TARGET = "https://app.triggui.com/kids";
+
 /* ═══════════════════════ CONFIGURACIÓN DE ESTILO ═══════════════════════════
  *
  * V18c NIVEL DIOS CUÁNTICO-QUARK MATEMÁTICO GEOMÉTRICO AXIOMÁTICO:
@@ -321,6 +334,71 @@ function generarWhatsAppPromoTopHTML(cardWidth) {
 }
 
 const WHATSAPP_PROMO_TOP_PLAIN = "\n────────────────────────────\nRECIBE TAMBIÉN TRIGGUI EN TU WHATSAPP\n\nUna tarjeta como esta en el momento exacto que mejore un poco tu ánimo.\n────────────────────────────\n";
+
+// ═══════════════════════════════════════════════════════════════════════════
+// V20 — KIDS PROMO BANNER (clonado del patrón WhatsApp promo)
+// Mismo formato visual (table-based, mismas fuentes, padding consistente).
+// Diferenciado por: borde sutil oro + CTA naranja Triggui.
+// Compatible Gmail/Outlook/iOS Mail (VML fallback para Outlook button).
+// Toggleable global con KIDS_PROMO_ENABLED.
+// ═══════════════════════════════════════════════════════════════════════════
+function generarKidsPromoTopHTML(cardWidth) {
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr><td align="center" style="padding:10px 12px 14px 12px;">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:${cardWidth}px;">
+        <tr><td style="text-align:center;background:#FAFAFA;border:1px solid #F0E6D0;border-radius:8px;padding:18px 18px 20px 18px;">
+          <div style="
+            font-family:'Inter',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
+            font-size:11px;
+            line-height:1;
+            font-weight:600;
+            color:#B8862A;
+            letter-spacing:0.22em;
+            text-transform:uppercase;
+            margin:0 0 12px 0;
+            mso-line-height-rule:exactly;
+          ">Algo nuevo</div>
+
+          <div style="
+            font-family:'Noto Serif Display',Georgia,'Times New Roman',serif;
+            font-size:16px;
+            line-height:1.5;
+            font-weight:400;
+            color:#1A1A1A;
+            letter-spacing:-0.1px;
+            margin:0 0 16px 0;
+            mso-line-height-rule:exactly;
+          ">Conoce <strong style="font-weight:600;">Triggui Kids</strong>. Un valor en 30 segundos para los niños.</div>
+
+          <!--[if mso]>
+          <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${KIDS_URL_TARGET}" style="height:38px;v-text-anchor:middle;width:150px;" arcsize="16%" stroke="f" fillcolor="#E8A838">
+            <w:anchorlock/>
+            <center style="color:#FFFFFF;font-family:Arial,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.05em;">Conocer &rarr;</center>
+          </v:roundrect>
+          <![endif]-->
+          <!--[if !mso]><!-->
+          <a href="${KIDS_URL_TARGET}" target="_blank" style="
+            display:inline-block;
+            background:#E8A838;
+            color:#FFFFFF;
+            text-decoration:none;
+            padding:10px 22px;
+            border-radius:6px;
+            font-family:'Inter',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
+            font-size:13px;
+            font-weight:600;
+            letter-spacing:0.05em;
+            mso-line-height-rule:exactly;
+            line-height:1;
+          ">Conocer &rarr;</a>
+          <!--<![endif]-->
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>`;
+}
+
+const KIDS_PROMO_TOP_PLAIN = "\n────────────────────────────\nALGO NUEVO · CONOCE TRIGGUI KIDS\n\nUn valor en 30 segundos para los niños.\n" + KIDS_URL_TARGET + "\n────────────────────────────\n";
 
 // V19.2.2: FOOTER PERMANENTE con triggui.com + número + cancelar (siempre presente).
 const FOOTER_CTA = {
@@ -2240,7 +2318,7 @@ function prepararEmailParaEnvio(nombreDestinatario, emailDestinatario, rowIdx) {
   // El greeting es ALEATORIO (100 variantes) por envío para no cansar al lector.
   // El trial banner aparece al inicio (después del saludo) para captar atención antes del libro.
   // El bloque "Recibe Triggui en tu WhatsApp" alterna aleatoriamente entre top y bottom.
-  const placeholdersTop = `\n  {{GREETING_BLOCK}}\n  {{TRIAL_BANNER_TOP}}\n  {{WHATSAPP_PROMO_TOP}}\n`;
+  const placeholdersTop = `\n  {{GREETING_BLOCK}}\n  {{TRIAL_BANNER_TOP}}\n  {{KIDS_PROMO_TOP}}\n  {{WHATSAPP_PROMO_TOP}}\n`;
   cuerpoHTML = cuerpoHTML.replace(
     /(<body[^>]*>)/i,
     `$1${placeholdersTop}`
@@ -2307,14 +2385,20 @@ function prepararEmailParaEnvio(nombreDestinatario, emailDestinatario, rowIdx) {
         const waTopHTML = mostrarWaArriba ? generarWhatsAppPromoTopHTML(c.cardWidth) : "";
         const waTopPlain = mostrarWaArriba ? WHATSAPP_PROMO_TOP_PLAIN : "";
 
+        // V20 — KIDS PROMO siempre si KIDS_PROMO_ENABLED
+        const kidsTopHTML = KIDS_PROMO_ENABLED ? generarKidsPromoTopHTML(c.cardWidth) : "";
+        const kidsTopPlain = KIDS_PROMO_ENABLED ? KIDS_PROMO_TOP_PLAIN : "";
+
         finalHTML  = finalHTML.replace(/\{\{GREETING_BLOCK\}\}/g, saludoHTML)
                               .replace(/\{\{TRIAL_BANNER_TOP\}\}/g, trialTopHTML)
+                              .replace(/\{\{KIDS_PROMO_TOP\}\}/g, kidsTopHTML)
                               .replace(/\{\{WHATSAPP_PROMO_TOP\}\}/g, waTopHTML);
         finalPlain = finalPlain.replace(/\{\{GREETING_PLAIN\}\}/g, saludoPlain)
                                .replace(/\{\{TRIAL_BANNER_TOP_PLAIN\}\}/g, trialTopPlain)
+                               .replace(/\{\{KIDS_PROMO_TOP_PLAIN\}\}/g, kidsTopPlain)
                                .replace(/\{\{WHATSAPP_PROMO_TOP_PLAIN\}\}/g, waTopPlain);
 
-        Logger.log(`✨ V19.2.2 fila ${rowIdx}: saludo + trial ${trialTopPlain ? 'SÍ' : 'NO'} + WA arriba ${mostrarWaArriba ? 'SÍ' : 'NO'}`);
+        Logger.log(`✨ V19.2.2 + V20 fila ${rowIdx}: saludo + trial ${trialTopPlain ? 'SÍ' : 'NO'} + KIDS ${KIDS_PROMO_ENABLED ? 'SÍ' : 'NO'} + WA arriba ${mostrarWaArriba ? 'SÍ' : 'NO'}`);
       }
     } catch (e) {
       Logger.log("⚠️ Error generando placeholders V19.2.2 en prepararEmail: " + e.message);
@@ -3174,15 +3258,21 @@ function enviarTrigguiLunes() {
     const waTopHTMLFila = mostrarWaArribaFila ? generarWhatsAppPromoTopHTML(cFila.cardWidth) : "";
     const waTopPlainFila = mostrarWaArribaFila ? WHATSAPP_PROMO_TOP_PLAIN : "";
 
+    // V20 — KIDS PROMO banner por fila (siempre si KIDS_PROMO_ENABLED)
+    const kidsTopHTMLFila = KIDS_PROMO_ENABLED ? generarKidsPromoTopHTML(cFila.cardWidth) : "";
+    const kidsTopPlainFila = KIDS_PROMO_ENABLED ? KIDS_PROMO_TOP_PLAIN : "";
+
     let htmlPersonalizado  = finalHTML
       .replace(/\{\{UNSUB_LINK\}\}/g, unsubLinkFila)
       .replace(/\{\{GREETING_BLOCK\}\}/g, saludoHTMLFila)
       .replace(/\{\{TRIAL_BANNER_TOP\}\}/g, trialTopHTMLFila)
+      .replace(/\{\{KIDS_PROMO_TOP\}\}/g, kidsTopHTMLFila)
       .replace(/\{\{WHATSAPP_PROMO_TOP\}\}/g, waTopHTMLFila);
     let plainPersonalizado = finalPlain
       .replace(/\{\{UNSUB_LINK\}\}/g, unsubLinkFila)
       .replace(/\{\{GREETING_PLAIN\}\}/g, saludoPlainFila)
       .replace(/\{\{TRIAL_BANNER_TOP_PLAIN\}\}/g, trialTopPlainFila)
+      .replace(/\{\{KIDS_PROMO_TOP_PLAIN\}\}/g, kidsTopPlainFila)
       .replace(/\{\{WHATSAPP_PROMO_TOP_PLAIN\}\}/g, waTopPlainFila);
 
     try {
@@ -3596,4 +3686,93 @@ function previewMasivo() {
   Logger.log("✓ DRY RUN COMPLETO — NO se envió ningún email");
   Logger.log("  Si los números se ven bien → Run > enviarTrigguiLunes");
   Logger.log("═══════════════════════════════════════════════════════════════");
+}
+
+
+/* ════════════════════════════════════════════════════════════════════════
+ * V20 — TEST KIDS BANNER (envia solo a tu email)
+ * ════════════════════════════════════════════════════════════════════════
+ *
+ * Como usar:
+ *   1. Push del codigo (clasp push)
+ *   2. Abre el editor Apps Script
+ *   3. Dropdown de funciones → testKidsBannerAMi
+ *   4. Click Run (boton ▶)
+ *   5. Autorizar permisos si los pide (primera vez)
+ *   6. Revisa tu Gmail: badirnakid@gmail.com
+ *
+ * Que hace:
+ *   - Busca tu email en la sheet para obtener rowIdx valida
+ *   - Si lo encuentra: usa esa fila (greeting, trial, etc. realistas)
+ *   - Si no lo encuentra: usa fila 2 como template
+ *   - Llama enviarTrigguiAUno() SOLO a tu email (no toca el resto de la base)
+ *   - El email incluye el banner KIDS recien agregado
+ *
+ * ⚠ Sigue el flujo NORMAL del email: greeting + trial + kids + WA random + tarjeta
+ * ⚠ NO modifica la sheet (no marca col J/K/L/M/N como enviado)
+ * ⚠ NO incrementa contador del lunes
+ * ════════════════════════════════════════════════════════════════════════ */
+function testKidsBannerAMi() {
+  const MY_EMAIL = "badirnakid@gmail.com";
+
+  Logger.log("══════════════════════════════════════════════════════════════");
+  Logger.log("🧪 TEST KIDS BANNER → " + MY_EMAIL);
+  Logger.log("══════════════════════════════════════════════════════════════");
+
+  // Verificar que KIDS_PROMO_ENABLED esta activo
+  Logger.log("KIDS_PROMO_ENABLED: " + KIDS_PROMO_ENABLED);
+  Logger.log("KIDS_URL_TARGET:    " + KIDS_URL_TARGET);
+
+  if (!KIDS_PROMO_ENABLED) {
+    Logger.log("⚠ KIDS_PROMO_ENABLED es false — el banner NO aparecera");
+    Logger.log("  Activa KIDS_PROMO_ENABLED = true en linea ~100 del script");
+    return;
+  }
+
+  // Buscar mi email en la sheet
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  if (!sheet) {
+    Logger.log("❌ No existe la hoja: " + SHEET_NAME);
+    return;
+  }
+  const data = sheet.getDataRange().getValues();
+
+  let rowIdx = -1;
+  let nombre = "Badir";
+
+  for (let i = 1; i < data.length; i++) {
+    const cellC = (data[i][2] || "").toString().toLowerCase();
+    if (cellC.includes(MY_EMAIL.toLowerCase())) {
+      rowIdx = i + 1; // 1-based para enviarTrigguiAUno
+      nombre = sanitizarNombre(data[i][0]) || nombre;
+      Logger.log("✓ Encontrado " + MY_EMAIL + " en fila " + rowIdx + " (nombre: " + nombre + ")");
+      break;
+    }
+  }
+
+  if (rowIdx === -1) {
+    Logger.log("⚠ Tu email no está en la sheet. Usando fila 2 como template.");
+    rowIdx = 2;
+  }
+
+  Logger.log("📨 Enviando email REAL a " + MY_EMAIL + " usando fila " + rowIdx);
+  Logger.log("   (el resto de la base NO recibe nada)");
+  Logger.log("");
+
+  try {
+    enviarTrigguiAUno(MY_EMAIL, rowIdx, nombre);
+    Logger.log("");
+    Logger.log("✅ Email de test enviado");
+    Logger.log("   Revisa tu inbox: " + MY_EMAIL);
+    Logger.log("");
+    Logger.log("CHECKLIST visual del email:");
+    Logger.log("   ✓ Banner 'ALGO NUEVO · Conoce Triggui Kids' arriba");
+    Logger.log("   ✓ Boton naranja [Conocer →] clickeable");
+    Logger.log("   ✓ Click abre app.triggui.com/kids");
+    Logger.log("   ✓ Tarjeta del libro intacta");
+    Logger.log("   ✓ Footer intacto");
+  } catch (e) {
+    Logger.log("❌ Error: " + e.message);
+    Logger.log(e.stack);
+  }
 }
