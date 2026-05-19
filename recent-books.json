@@ -41,6 +41,16 @@
       "timestamp": "2026-05-19T20:05:48.313Z",
       "trigger_input": "En decepción por injusticias o abusos absurdos en los negocios",
       "selected_via": "discover_trigger"
+    },
+    {
+      "titulo": "Your Money or Your Life",
+      "autor": "Vicki Robin y Joe Dominguez",
+      "slug": "your-money-or-your-life",
+      "titulo_normalizado": "your money or your life",
+      "autor_normalizado": "vicki robin y joe dominguez",
+      "timestamp": "2026-05-19T23:12:16.363Z",
+      "trigger_input": "existe la estabilidad en general? el equilibrio? la estabilidad economica? los millonarios realmente tienen estabilidad??",
+      "selected_via": "discover_trigger"
     }
   ],
   "_note": "FIFO ring de últimos 30 libros generados por selección automática (constrained o discover). Filtro pre-rerank en validate-book.js. Inicializa vacío y se rellena con cada run exitoso. Si se borra, el sistema arranca limpio sin daño."
