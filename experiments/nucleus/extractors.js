@@ -335,6 +335,7 @@ export async function extractAnchors(openai, book, groundTruth, lens = "", optio
   const response = await openai.chat.completions.create({
     model,
     temperature,
+    max_tokens: 1500, // 🌒 Capa C1: buffer >2x el output típico (anchors JSON pequeño)
     messages: [
       { role: "system", content: anchorsSystemPrompt() },
       { role: "user", content: anchorsUserPrompt(book, groundTruth, lens, previousHues) }
@@ -1028,6 +1029,7 @@ export async function extractContentES(openai, book, groundTruth, anchorsData, l
   const response = await openai.chat.completions.create({
     model,
     temperature,
+    max_tokens: 6000, // 🌒 Capa C1: buffer >2x output (nucleus completo ES ~2500-3500 tokens)
     messages: [
       { role: "system", content: contentESSystemPrompt(crono) },
       { role: "user", content: contentESUserPrompt(book, groundTruth, anchorsData, lens) }
@@ -1112,7 +1114,33 @@ NO Spanish words. NO "Elige", "Vivir", "Día", "Qué". If you find yourself writ
 STRUCTURE
 ═══════════════════════════════════════════════════════════════════
 card_en: titulo (8-60 chars), parrafoTop (80-320), subtitulo (20-120), parrafoBot (80-320)
-  MANDATORY CLOSURE: parrafoTop AND parrafoBot MUST end in a complete sentence with a final period/exclamation/question mark (. ! ?). If the last sentence does not fit within 320 chars, OMIT IT — prefer 240-280 chars closed over 320 chars truncated. FORBIDDEN: truncating mid-word, dangling conjunction ("and", "but", "that"), preposition without object ("in", "with"), or unfinished verb. Grammatical closure ALWAYS prevails over the numeric limit.
+  🌒 MANDATORY CLOSURE — APLICA UNIVERSALMENTE A TODOS LOS CAMPOS TEXTUALES:
+  Campos cubiertos: parrafoTop, parrafoBot, titulo, subtitulo, tagline, frases[*], frases_og[*], edition_blocks_es[*].phrase, og_phrases_es[*].phrase. 
+  CADA campo de texto DEBE terminar en oración completa con cierre gramatical (. ! ?). Si la última oración no cabe en el límite numérico, OMÍTELA — siempre prefiere más corto+cerrado sobre más largo+truncado. Grammatical closure ALWAYS prevails over numeric limits.
+  
+  FORBIDDEN endings (en cualquier campo, cualquier idioma):
+    × palabra cortada a la mitad ("incertid", "tambi", "af", "ind")
+    × conjunción colgante ("and", "but", "that", "y", "pero", "que")
+    × preposición sin objeto ("in", "with", "en", "con", "desde", "de")
+    × artículo solo ("the", "a", "el", "la", "un")
+    × verbo inacabado ("nos permite no", "is", "está")
+  
+  🌒 ANTI-TRUNCATION CHECK (garantía matemática post-escritura):
+  Después de escribir CADA campo de texto, releé los últimos 15 caracteres mentalmente.
+  Si terminan en palabra de <5 caracteres que NO sea cierre natural válido en el idioma:
+    es: prohibido terminar con "af.", "í.", "que.", "no.", "lo.", "de.", "en.", "un.", "el."
+    en: prohibido terminar con "ind.", "the.", "to.", "of.", "a.", "is.", "in.", "at."
+  → REESCRIBE el campo terminando una oración antes.
+  
+  Ejemplos NIVEL DIOS de cierre correcto:
+    ✓ "...la incertidumbre del cambio." (cierre completo)
+    ✓ "La trampa de la felicidad nos atrapa." (corto+cerrado)
+    × "...la incertid." (palabra cortada — REESCRIBIR)
+    × "...el af." (palabra cortada — REESCRIBIR)
+    × "...permite no" (verbo inacabado — REESCRIBIR)
+    × "...actúa desde." (preposición colgante — REESCRIBIR)
+  
+  Esta regla tiene PRIORIDAD ABSOLUTA sobre cualquier otra instrucción de longitud/contenido.
 emotional_words_en: exactly 4 words, 3-25 chars each
 og_phrases_en: exactly 4 phrases, 30-68 chars each, ONE LINE, NO emojis, NO "\\n"
   Soft ceiling: aim for 55-65 chars. Hard max 70 — never flirt with the edge.
@@ -1383,6 +1411,7 @@ export async function extractContentEN(openai, book, groundTruth, anchorsData, c
   const response = await openai.chat.completions.create({
     model,
     temperature,
+    max_tokens: 6000, // 🌒 Capa C1: buffer >2x output (nucleus completo EN ~2500-3500 tokens)
     messages: [
       { role: "system", content: contentENSystemPrompt() },
       { role: "user", content: contentENUserPrompt(book, groundTruth, anchorsData, cardES, lens) }
@@ -1492,6 +1521,7 @@ async function callJudgeOnce(openai, schemas, model, groundTruth, snippets, lang
   const response = await openai.chat.completions.create({
     model,
     temperature: 0.2,
+    max_tokens: 800, // 🌒 Capa C1: buffer cómodo para judge response
     messages: [{ role: "user", content: groundingJudgePrompt(groundTruth, snippets, language) }],
     response_format: {
       type: "json_schema",
@@ -1662,6 +1692,7 @@ async function callHighlightJudgeOnce(openai, schemas, model, segments, language
   const response = await openai.chat.completions.create({
     model,
     temperature: 0.1,
+    max_tokens: 800, // 🌒 Capa C1: buffer cómodo para highlight judge response
     messages: [{ role: "user", content: highlightJudgePrompt(segments, language) }],
     response_format: {
       type: "json_schema",

@@ -1375,17 +1375,131 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
     // Filosofia: no confiar en stochastic LLM, validar matematicamente en codigo.
     try {
       const LEGITIMATE = [".", "?", "!", "…", "—", '"', "»", ")", "]"];
-      const repairTruncatedField = (text) => {
+
+      // 🌒 v4.1 — Whitelist EXPANDIDO de palabras cortas válidas como cierre
+      // Incluye sustantivos, verbos y adverbios cortos comunes que SÍ cierran idea
+      const VALID_SHORT_CLOSURES = new Set([
+        // ES: 2-3 letras
+        "yo", "tú", "él", "sí", "no", "ya", "fe", "ti", "fui", "voy", "vas",
+        "ven", "ver", "dar", "ir", "es", "soy", "se", "le", "lo", "la", "él",
+        "fin", "mar", "rey", "ley", "día", "voz", "luz", "paz", "oro", "ego",
+        "ojo", "uña", "yes", "uva", "ola", "olo", "uno", "dos", "tres",
+        // ES: 4 letras comunes
+        "más", "vida", "amor", "alma", "arte", "casa", "agua", "ayer",
+        "hoy", "ahí", "aquí", "allí", "bien", "esto", "todo", "cosa",
+        "edad", "hijo", "hija", "país", "gente", "mente", "cielo",
+        // EN: 2-3 letras
+        "be", "do", "go", "me", "us", "we", "up", "no", "ok", "yes",
+        "all", "now", "see", "say", "one", "two", "end", "way", "day"
+      ]);
+
+      // 🌒 v4.0 — Stopwords prohibidas al final (preposiciones/artículos/conjunciones)
+      const STOPWORDS_INVALID_AT_END = new Set([
+        // ═══ ES ═══
+        // Artículos
+        "el", "la", "los", "las", "un", "una", "unos", "unas",
+        // Preposiciones (TODAS las del español)
+        "a", "ante", "bajo", "cabe", "con", "contra", "de", "del", "al",
+        "desde", "durante", "en", "entre", "hacia", "hasta", "mediante",
+        "para", "por", "según", "sin", "so", "sobre", "tras", "versus", "vía",
+        // Conjunciones
+        "y", "e", "o", "u", "ni", "que", "si", "pero", "mas", "aunque",
+        "porque", "pues", "como", "cuando", "donde",
+        // Pronombres/clíticos
+        "se", "lo", "le", "les", "su", "sus", "mi", "tu", "te", "me", "nos",
+        // Verbos auxiliares
+        "es", "está", "están", "fue", "fueron", "ha", "han", "haber", "hay",
+        "ser", "siendo", "siendo", "sido",
+        // ═══ EN ═══
+        // Articles
+        "the", "a", "an",
+        // Prepositions
+        "of", "in", "on", "at", "to", "for", "with", "by", "from",
+        "into", "onto", "upon", "about", "above", "across", "after",
+        "against", "along", "among", "around", "before", "behind",
+        "below", "beneath", "beside", "between", "beyond", "during",
+        "except", "inside", "near", "off", "over", "since", "through",
+        "throughout", "toward", "under", "underneath", "until", "up",
+        "via", "within", "without",
+        // Conjunctions
+        "and", "or", "but", "nor", "yet", "so", "that", "which", "who",
+        "this", "these", "those", "as", "if", "while", "because",
+        // Auxiliaries
+        "is", "are", "was", "were", "has", "had", "have", "be", "been",
+        "being", "do", "does", "did", "will", "would", "shall", "should",
+        "may", "might", "can", "could", "must"
+      ]);
+
+      // 🌒 v4.1 — Lista negra de prefijos truncados conocidos
+      // (palabras parciales que NUNCA cierran idea legítimamente)
+      const TRUNCATED_PREFIXES = new Set([
+        // ES: prefijos comunes de palabras largas que aparecen truncados
+        "incertid", "tambi", "frustr", "comprend", "interes",
+        "respons", "transform", "propor", "establ", "desarroll",
+        "particip", "experi", "necesit", "permit", "conseg",
+        "manten", "ofrec", "lograr", "alcanz", "encuentr",
+        "convirt", "resolv", "explor", "imagin", "siguien",
+        "anterior", "import", "diferen", "posib", "necess",
+        // EN
+        "incred", "succ", "diff", "addit", "import", "underst",
+        "becau", "throug", "betw", "amon", "abou"
+      ]);
+
+      const repairTruncatedField = (text, label = "?") => {
         if (!text || typeof text !== "string") return text;
         const trimmed = text.trim();
         if (!trimmed) return trimmed;
         const plain = trimmed.replace(/\[\/?H\]/g, "");
-        if (LEGITIMATE.includes(plain.slice(-1))) return trimmed;
+
+        // ═══════════════════════════════════════════════════════════════
+        // 🌒 v4.0 cirugia 7.1B+ — Detección dual de truncamiento:
+        //   (A) Sin cierre legítimo al final
+        //   (B) Con cierre legítimo PERO última palabra es truncamiento camuflado
+        //       (e.g. "...la incertid.", "...el af.", "...vivir en.")
+        // ═══════════════════════════════════════════════════════════════
+        let needsRepair = false;
+        let reason = "";
+
+        if (!LEGITIMATE.includes(plain.slice(-1))) {
+          needsRepair = true;
+          reason = "no-closure";
+        } else {
+          // (B) Análisis semántico de la última palabra
+          const beforeClose = plain.slice(0, -1).trim();
+          const words = beforeClose.split(/\s+/).filter(Boolean);
+          if (words.length > 3) { // no tocar títulos/frases muy cortas
+            const lastWord = (words[words.length - 1] || "")
+              .replace(/[^a-zA-ZáéíóúñÁÉÍÓÚÑ]/g, "")
+              .toLowerCase();
+            if (STOPWORDS_INVALID_AT_END.has(lastWord)) {
+              needsRepair = true;
+              reason = `dangling-stopword "${lastWord}"`;
+            } else if (TRUNCATED_PREFIXES.has(lastWord)) {
+              needsRepair = true;
+              reason = `known-trunc-prefix "${lastWord}"`;
+            } else if (lastWord.length > 0 && lastWord.length < 4
+                && !VALID_SHORT_CLOSURES.has(lastWord)) {
+              needsRepair = true;
+              reason = `suspect-short "${lastWord}"`;
+            }
+          }
+        }
+
+        if (!needsRepair) return trimmed;
+
+        // Reparar: buscar último cierre interno ANTES del final (descartando cierre final si era falso)
+        const skipFinal = LEGITIMATE.includes(plain.slice(-1)) ? 1 : 0;
+        const scanEnd = plain.length - skipFinal;
         let plainCut = -1;
-        for (let i = plain.length - 1; i >= 0; i--) {
+        for (let i = scanEnd - 1; i >= 0; i--) {
           if (LEGITIMATE.includes(plain[i])) { plainCut = i; break; }
         }
-        if (plainCut === -1) return trimmed;
+        if (plainCut === -1) {
+          console.warn(`   ⚠️  ${label}: repair imposible (sin punto interno) — ${reason}`);
+          return trimmed;
+        }
+
+        // Mapear posición del corte al texto original (con marcas [H][/H])
         let plainIdx = 0, origIdx = 0, cutOrig = -1;
         while (origIdx < trimmed.length) {
           if (trimmed.startsWith("[H]", origIdx)) { origIdx += 3; continue; }
@@ -1394,13 +1508,20 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
           plainIdx++; origIdx++;
         }
         if (cutOrig === -1) return trimmed;
+
         let repaired = trimmed.substring(0, cutOrig + 1);
+
+        // Balancear marcas [H][/H]
         const opens = (repaired.match(/\[H\]/g) || []).length;
         const closes = (repaired.match(/\[\/H\]/g) || []).length;
         if (opens > closes) repaired += "[/H]";
         else if (closes > opens) {
           const lastClose = repaired.lastIndexOf("[/H]");
           if (lastClose >= 0) repaired = repaired.substring(0, lastClose) + repaired.substring(lastClose + 4);
+        }
+
+        if (reason !== "no-closure") {
+          console.log(`   🔬 ${label}: truncamiento camuflado detectado (${reason}) — reparando`);
         }
         return repaired;
       };
@@ -1456,6 +1577,228 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
         }
       }
     } catch (e) { console.warn(`   ⚠️  repair-parrafo error: ${e.message}`); }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // 🌒 v4.0 cirugia 7.1C — UNIVERSAL REPAIR (extensión nivel dios)
+    // ════════════════════════════════════════════════════════════════════════
+    // Aplica repairTruncatedField a TODOS los campos textuales, no solo
+    // parrafoTop/parrafoBot. Determinístico: solo corta al último punto
+    // interno legítimo, NO inventa contenido. Si la frase entera está
+    // truncada sin punto interno reparable, queda como está y C5 abortará.
+    //
+    // Campos cubiertos:
+    //   • Strings simples: titulo, subtitulo, tagline (en cards y top-level)
+    //   • Arrays de strings: frases, frases_en, frases_og, frases_og_en
+    //   • Arrays de objetos con .phrase: edition_blocks_*, og_phrases_*
+    // ════════════════════════════════════════════════════════════════════════
+    try {
+      // (A.1) Strings simples a nivel card
+      for (const { card, lang } of [
+        { card: newBook.tarjeta, lang: "ES" },
+        { card: newBook.tarjeta_en, lang: "EN" }
+      ]) {
+        if (!card) continue;
+        for (const field of ["titulo", "subtitulo"]) {
+          const original = card[field];
+          if (typeof original !== "string" || !original.trim()) continue;
+          const repaired = repairTruncatedField(original, `${lang} ${field}`);
+          if (repaired !== original) {
+            card[field] = repaired;
+            console.log(`   🪡 ${lang} ${field} REPARADO en "${newBook.titulo}": "${original.slice(-30)}" → "${repaired.slice(-30)}"`);
+          }
+        }
+      }
+
+      // (A.2) Strings simples a nivel top-level (tagline)
+      if (typeof newBook.tagline === "string" && newBook.tagline.trim()) {
+        const repaired = repairTruncatedField(newBook.tagline, "tagline");
+        if (repaired !== newBook.tagline) {
+          console.log(`   🪡 tagline REPARADO en "${newBook.titulo}": "${newBook.tagline.slice(-30)}" → "${repaired.slice(-30)}"`);
+          newBook.tagline = repaired;
+        }
+      }
+
+      // (A.3) Arrays de strings (frases, frases_og, etc.) a nivel top-level
+      for (const arrField of ["frases", "frases_en", "frases_og", "frases_og_en"]) {
+        const arr = newBook[arrField];
+        if (!Array.isArray(arr)) continue;
+        for (let i = 0; i < arr.length; i++) {
+          const original = arr[i];
+          if (typeof original !== "string" || !original.trim()) continue;
+          const repaired = repairTruncatedField(original, `${arrField}[${i}]`);
+          if (repaired !== original) {
+            console.log(`   🪡 ${arrField}[${i}] REPARADO en "${newBook.titulo}": "${original.slice(-30)}" → "${repaired.slice(-30)}"`);
+            arr[i] = repaired;
+          }
+        }
+      }
+
+      // (A.4) Arrays de objetos con .phrase (edition_blocks_*, og_phrases_*)
+      const nucleus = newBook._nucleus;
+      if (nucleus && typeof nucleus === "object") {
+        for (const arrField of ["edition_blocks_es", "edition_blocks_en", "og_phrases_es", "og_phrases_en"]) {
+          const arr = nucleus[arrField];
+          if (!Array.isArray(arr)) continue;
+          for (let i = 0; i < arr.length; i++) {
+            const item = arr[i];
+            if (!item || typeof item !== "object" || typeof item.phrase !== "string") continue;
+            const original = item.phrase;
+            if (!original.trim()) continue;
+            const repaired = repairTruncatedField(original, `_nucleus.${arrField}[${i}].phrase`);
+            if (repaired !== original) {
+              console.log(`   🪡 _nucleus.${arrField}[${i}].phrase REPARADO en "${newBook.titulo}": "${original.slice(-30)}" → "${repaired.slice(-30)}"`);
+              item.phrase = repaired;
+            }
+          }
+        }
+        // (A.5) Strings a nivel _nucleus.card_es/_en (parrafoTop/Bot/titulo/subtitulo dentro de nucleus)
+        for (const cardKey of ["card_es", "card_en"]) {
+          const ncard = nucleus[cardKey];
+          if (!ncard || typeof ncard !== "object") continue;
+          for (const field of ["parrafoTop", "parrafoBot", "titulo", "subtitulo"]) {
+            const original = ncard[field];
+            if (typeof original !== "string" || !original.trim()) continue;
+            const repaired = repairTruncatedField(original, `_nucleus.${cardKey}.${field}`);
+            if (repaired !== original) {
+              console.log(`   🪡 _nucleus.${cardKey}.${field} REPARADO en "${newBook.titulo}": "${original.slice(-30)}" → "${repaired.slice(-30)}"`);
+              ncard[field] = repaired;
+            }
+          }
+        }
+      }
+    } catch (e) { console.warn(`   ⚠️  universal-repair error: ${e.message}`); }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // 🌒 v4.0 cirugia 8 — ASSERTION CUÁNTICA NIVEL DIOS (Capa C5)
+    // ════════════════════════════════════════════════════════════════════════
+    // Última defensa antes del merge al JSON. Recorre TODOS los campos textuales
+    // del libro y verifica que NINGUNO termine con truncamiento (palabra <5 chars
+    // no whitelisted, o stopword colgante).
+    //
+    // Si encuentra al menos un truncamiento NO REPARABLE (que C4 no pudo corregir
+    // porque no había punto interno legítimo), DETIENE el procesamiento del libro
+    // con throw. El libro NO se commitea al JSON.
+    //
+    // Esta es la garantía matemática: para que un truncamiento llegue al JSON
+    // final, las 5 capas (C1 max_tokens + C2 prompt universal + C3 anti-trunc
+    // check + C4 repair determinístico + C5 assertion) tendrían que fallar
+    // simultáneamente.
+    // ════════════════════════════════════════════════════════════════════════
+    try {
+      const truncamientosResiduales = [];
+
+      const checkPhrase = (text, fieldLabel) => {
+        if (typeof text !== "string") return;
+        const trimmed = text.trim();
+        if (!trimmed) return;
+        const plain = trimmed.replace(/\[\/?H\]/g, "");
+        // Detección dual igual que en repairTruncatedField
+        let truncado = false;
+        let reason = "";
+        if (!LEGITIMATE.includes(plain.slice(-1))) {
+          truncado = true;
+          reason = "no-closure";
+        } else {
+          const beforeClose = plain.slice(0, -1).trim();
+          const words = beforeClose.split(/\s+/).filter(Boolean);
+          if (words.length > 3) {
+            const lastWord = (words[words.length - 1] || "")
+              .replace(/[^a-zA-ZáéíóúñÁÉÍÓÚÑ]/g, "")
+              .toLowerCase();
+            if (STOPWORDS_INVALID_AT_END.has(lastWord)) {
+              truncado = true;
+              reason = `dangling-stopword "${lastWord}"`;
+            } else if (TRUNCATED_PREFIXES.has(lastWord)) {
+              truncado = true;
+              reason = `known-trunc-prefix "${lastWord}"`;
+            } else if (lastWord.length > 0 && lastWord.length < 4
+                && !VALID_SHORT_CLOSURES.has(lastWord)) {
+              truncado = true;
+              reason = `suspect-short "${lastWord}"`;
+            }
+          }
+        }
+        if (truncado) {
+          truncamientosResiduales.push({
+            field: fieldLabel,
+            reason,
+            tail: plain.slice(-50)
+          });
+        }
+      };
+
+      // Recorrer card_es / card_en — top level
+      for (const { card, lang } of [
+        { card: newBook.tarjeta, lang: "ES" },
+        { card: newBook.tarjeta_en, lang: "EN" }
+      ]) {
+        if (!card) continue;
+        for (const field of ["parrafoTop", "parrafoBot", "titulo", "subtitulo"]) {
+          checkPhrase(card[field], `${lang} tarjeta.${field}`);
+        }
+      }
+
+      // Top-level tagline
+      checkPhrase(newBook.tagline, "tagline");
+
+      // Arrays top-level
+      for (const arrField of ["frases", "frases_en", "frases_og", "frases_og_en"]) {
+        const arr = newBook[arrField];
+        if (!Array.isArray(arr)) continue;
+        for (let i = 0; i < arr.length; i++) {
+          checkPhrase(arr[i], `${arrField}[${i}]`);
+        }
+      }
+
+      // _nucleus arrays + cards
+      const nucleus = newBook._nucleus;
+      if (nucleus && typeof nucleus === "object") {
+        for (const arrField of ["edition_blocks_es", "edition_blocks_en", "og_phrases_es", "og_phrases_en"]) {
+          const arr = nucleus[arrField];
+          if (!Array.isArray(arr)) continue;
+          for (let i = 0; i < arr.length; i++) {
+            const item = arr[i];
+            if (item && typeof item === "object") {
+              checkPhrase(item.phrase, `_nucleus.${arrField}[${i}].phrase`);
+            }
+          }
+        }
+        for (const cardKey of ["card_es", "card_en"]) {
+          const ncard = nucleus[cardKey];
+          if (!ncard || typeof ncard !== "object") continue;
+          for (const field of ["parrafoTop", "parrafoBot", "titulo", "subtitulo"]) {
+            checkPhrase(ncard[field], `_nucleus.${cardKey}.${field}`);
+          }
+        }
+      }
+
+      // Veredicto cuántico
+      if (truncamientosResiduales.length > 0) {
+        console.error(``);
+        console.error(`   ╔══════════════════════════════════════════════════════════════════╗`);
+        console.error(`   ║  🚨 CAPA C5 — TRUNCAMIENTOS RESIDUALES DETECTADOS (NIVEL DIOS)      ║`);
+        console.error(`   ╚══════════════════════════════════════════════════════════════════╝`);
+        console.error(`   Libro: "${newBook.titulo}"`);
+        console.error(`   Truncamientos no reparables: ${truncamientosResiduales.length}`);
+        for (const t of truncamientosResiduales) {
+          console.error(`     • ${t.field}`);
+          console.error(`       razón: ${t.reason}`);
+          console.error(`       cola:  "...${t.tail}"`);
+        }
+        console.error(``);
+        console.error(`   GARANTÍA CUÁNTICA: este libro NO se commiteará al JSON.`);
+        console.error(`   Causa probable: max_tokens insuficiente, prompt ignorado por LLM,`);
+        console.error(`   o frase generada sin punto interno legítimo para reparar.`);
+        console.error(``);
+        throw new Error(`C5_QUANTUM_ASSERTION_FAILED: ${truncamientosResiduales.length} truncamientos residuales en "${newBook.titulo}"`);
+      }
+      console.log(`   ✅ C5 assertion: 0 truncamientos residuales en "${newBook.titulo}"`);
+    } catch (e) {
+      if (e.message && e.message.startsWith("C5_QUANTUM_ASSERTION_FAILED")) {
+        throw e; // re-throw para detener procesamiento
+      }
+      console.warn(`   ⚠️  C5 assertion error inesperado: ${e.message}`);
+    }
 
     // 🌒 v3.8.5 cirugia 10 — Defensa Final Universal Pre-Merge (Nivel dios cuantico-quark)
     // GARANTIA ABSOLUTA: cada parrafoTop/parrafoBot del JSON final tiene marcas [H][/H].
