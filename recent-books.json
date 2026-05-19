@@ -31,6 +31,16 @@
       "timestamp": "2026-05-19T15:36:18.683Z",
       "trigger_input": "existe el equilibrio? vale la pena buscarlo? la estabilidad economica? es decir los millonarios realmente tienen estabilidad economica?",
       "selected_via": "discover_trigger"
+    },
+    {
+      "titulo": "The Shock Doctrine: The Rise of Disaster Capitalism",
+      "autor": "Naomi Klein",
+      "slug": "the-shock-doctrine-the-rise-of-disaster-capitalism",
+      "titulo_normalizado": "the shock doctrine the rise of disaster capitalism",
+      "autor_normalizado": "naomi klein",
+      "timestamp": "2026-05-19T20:05:48.313Z",
+      "trigger_input": "En decepción por injusticias o abusos absurdos en los negocios",
+      "selected_via": "discover_trigger"
     }
   ],
   "_note": "FIFO ring de últimos 30 libros generados por selección automática (constrained o discover). Filtro pre-rerank en validate-book.js. Inicializa vacío y se rellena con cada run exitoso. Si se borra, el sistema arranca limpio sin daño."
