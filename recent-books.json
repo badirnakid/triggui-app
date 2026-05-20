@@ -51,6 +51,16 @@
       "timestamp": "2026-05-19T23:12:16.363Z",
       "trigger_input": "existe la estabilidad en general? el equilibrio? la estabilidad economica? los millonarios realmente tienen estabilidad??",
       "selected_via": "discover_trigger"
+    },
+    {
+      "titulo": "El poder de la actitud positiva",
+      "autor": "Jeff Keller",
+      "slug": "el-poder-de-la-actitud-positiva",
+      "titulo_normalizado": "el poder de la actitud positiva",
+      "autor_normalizado": "jeff keller",
+      "timestamp": "2026-05-20T03:21:12.328Z",
+      "trigger_input": "por qué realmente vale la pena tener buena actitud?",
+      "selected_via": "discover_trigger"
     }
   ],
   "_note": "FIFO ring de últimos 30 libros generados por selección automática (constrained o discover). Filtro pre-rerank en validate-book.js. Inicializa vacío y se rellena con cada run exitoso. Si se borra, el sistema arranca limpio sin daño."
