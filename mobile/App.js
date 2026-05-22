@@ -337,6 +337,20 @@ function AppInner() {
     true;
   `;
 
+  const injectedBeforeLoad = `
+    (function() {
+      try {
+        if (location.hostname.indexOf('triggui.com') === -1) {
+          var m = document.createElement('meta');
+          m.setAttribute('name', 'color-scheme');
+          m.setAttribute('content', 'light');
+          (document.head || document.documentElement).appendChild(m);
+        }
+      } catch (e) {}
+    })();
+    true;
+  `;
+
   // ═══════════════════════════════════════════════════════════════════════════
   // Construcción de gradientes con la paleta seleccionada
   //
@@ -423,6 +437,7 @@ function AppInner() {
           onMessage={handleMessage}
           onNavigationStateChange={handleNavigationStateChange}
           injectedJavaScript={injectedJS}
+          injectedJavaScriptBeforeContentLoaded={injectedBeforeLoad}
         />
       </View>
 

@@ -2,19 +2,19 @@
   "expo": {
     "name": "Triggui",
     "slug": "trigguiapp",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "orientation": "default",
     "icon": "./assets/adaptive-icon-1024.png",
     "userInterfaceStyle": "light",
     "backgroundColor": "#000000",
     "splash": {
-      "image": "./assets/splashtriggui.png",
+      "image": "./assets/splash-black.png",
       "resizeMode": "contain",
       "backgroundColor": "#000000"
     },
     "android": {
       "package": "com.triggui.app",
-      "versionCode": 5,
+      "versionCode": 6,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon-1024.png",
         "backgroundColor": "#000000"
@@ -63,7 +63,8 @@
             "useFrameworks": "static"
           }
         }
-      ]
+      ],
+      "./plugins/withNavBarContrast.js"
     ],
     "extra": {
       "eas": {
