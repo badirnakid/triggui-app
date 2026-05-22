@@ -1,0 +1,1409 @@
+<!doctype html>
+<html lang="es" style="background:#000;">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+
+<title>Edición #060 · Cómo hacer que las cosas pasen · Triggui</title>
+<meta name="description" content="👁 Imagina un camino lleno de obstáculos que se convierten en escalones hacia tu éxito" />
+<link rel="canonical" href="https://app.triggui.com/t/como-hacer-que-las-cosas-pasen/" />
+
+<meta property="og:title" content="Edición #060 · determinación · oportunidad · creatividad · crecimiento" />
+<meta property="og:description" content="👁 Imagina un camino lleno de obstáculos que se convierten en escalones hacia tu éxito" />
+<meta property="og:image" content="https://app.triggui.com/t/como-hacer-que-las-cosas-pasen/og.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:url" content="https://app.triggui.com/t/como-hacer-que-las-cosas-pasen/" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Triggui" />
+<meta property="og:locale" content="es_MX" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Edición #060 · determinación · oportunidad · creatividad · crecimiento" />
+<meta name="twitter:description" content="👁 Imagina un camino lleno de obstáculos que se convierten en escalones hacia tu éxito" />
+<meta name="twitter:image" content="https://app.triggui.com/t/como-hacer-que-las-cosas-pasen/og.png" />
+
+<link rel="preconnect" href="https://www.penguinlibros.com" crossorigin>
+<link rel="preconnect" href="https://www.buscalibre.com.mx" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,500;1,700&display=swap" rel="stylesheet">
+
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  background: #000 !important;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Archivo', sans-serif;
+  -webkit-overflow-scrolling: touch;
+  -webkit-text-size-adjust: 100%;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+vercel-live-feedback,[data-vercel-toolbar],#__vercel_live_token,vercel-toolbar{display:none!important;height:0!important;overflow:hidden!important;}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(40, 100, 220, 0.14), transparent 65%),
+    radial-gradient(ellipse at 70% 80%, rgba(80, 230, 200, 0.06), transparent 65%);
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+@keyframes fire-move {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.pulse-line {
+  position: fixed;
+  top: 16px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: rgba(255,255,255,.4);
+  z-index: 50;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity .8s ease, transform .8s ease;
+  pointer-events: none;
+  user-select: none;
+}
+.pulse-line.visible { opacity: 1; transform: translateY(0); }
+
+.grid {
+  position: absolute;
+  inset: 5vh 1.5vw;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(4, 1fr);
+  gap: 1vw;
+  transition: opacity .4s ease;
+}
+.grid.hidden { opacity: 0; pointer-events: none; }
+@media(orientation:landscape) { .grid { grid-template-columns: repeat(4,1fr); grid-template-rows: 1fr; } }
+
+.block {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  border-radius: 24px;
+  font-weight: 700;
+  cursor: pointer;
+  background-size: 320% 320%;
+  transition: transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  overflow: hidden;
+  isolation: isolate;
+  width: 100%;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+  box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.15), 0 4px 6px rgba(0,0,0,.15), 0 12px 32px rgba(0,0,0,.35);
+  z-index: 1;
+}
+
+.block * { pointer-events: none !important; }
+
+.block::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(145deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,.08) 40%, transparent 100%);
+  z-index: 1;
+}
+.block::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.12), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
+}
+.block:hover::after { opacity: 1; }
+.block:hover {
+  transform: translateY(-2px) scale(1.005);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.28),
+    inset 0 -1px 0 rgba(0,0,0,.16),
+    inset 0 0 0 1px rgba(255,255,255,.16),
+    0 3px 7px rgba(0,0,0,.14),
+    0 18px 46px rgba(0,0,0,.42);
+}
+.block:active {
+  transform: translateY(0) scale(0.995);
+  transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.20),
+    inset 0 -1px 0 rgba(0,0,0,.18),
+    inset 0 0 0 1px rgba(255,255,255,.10),
+    0 1px 3px rgba(0,0,0,.12),
+    0 8px 24px rgba(0,0,0,.30);
+}
+.block.dim { opacity: 0.6; transform: scale(0.98); }
+
+.label, .frase {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 2;
+  text-align: center;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  text-shadow: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.label { opacity: 1; transform: translateY(0); font-size: clamp(1.05rem, 3.2vw, 1.7rem); font-weight: 700; line-height: 1.35; letter-spacing: 0.2px; }
+.frase { opacity: 0; transform: translateY(6px); font-size: clamp(1rem, 3vw, 1.5rem); font-weight: 600; line-height: 1.4; }
+.block.show .label { opacity: 0; transform: translateY(-6px); }
+.block.show .frase { opacity: 1; transform: translateY(0); }
+
+.reveal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(0,0,0,0.92);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s ease;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: max(6px, env(safe-area-inset-top, 6px)) 6px max(6px, env(safe-area-inset-bottom, 6px));
+  cursor: pointer;
+}
+.reveal-overlay::-webkit-scrollbar { display: none; }
+
+.reveal-card {
+  width: 100%;
+  max-width: 520px;
+  margin: auto 0;
+  border-radius: 20px;
+  position: relative;
+  background-color: var(--card-paper);
+  color: var(--card-ink);
+  box-shadow: 0 25px 60px rgba(0,0,0,0.06), 0 0 0 1px var(--card-border);
+  overflow: visible;
+  cursor: default;
+  transform: scale(0.94) translateY(15px);
+  opacity: 0;
+  transition: transform 0.45s cubic-bezier(0.19,1,0.22,1), opacity 0.4s ease;
+}
+
+.reveal-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply;
+  opacity: 0.03;
+  border-radius: 20px;
+}
+
+.card-inner { position: relative; z-index: 2; padding: 0; }
+
+.btn-close {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 20;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.06);
+  color: #1A1A1A;
+  font-size: 18px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background .2s ease, transform .2s ease;
+  padding: 0;
+  touch-action: manipulation;
+}
+.btn-close:hover { background: rgba(0,0,0,0.12); }
+.btn-close:active { transform: scale(0.9); }
+
+.ed-block {
+  margin: 0 5px;
+  background: linear-gradient(145deg, #FFFFFF 0%, #F0F0EE 100%);
+  border: 1px solid rgba(26,26,26,0.05);
+  border-radius: 16px;
+  padding: 20px 22px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.03);
+}
+.ed-block:first-child { margin-top: 18px; }
+
+.ed-flow {
+  overflow: hidden;
+}
+
+.ed-block .ed-title {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: var(--ed-title-size, 28px);
+  line-height: 1.2;
+  font-weight: 700;
+  color: #1A1A1A;
+  letter-spacing: -0.5px;
+  margin: 0 0 8px 0;
+}
+
+.ed-block .ed-chip {
+  display: inline-block;
+  font-family: 'Archivo', sans-serif;
+  font-size: var(--ed-chip-size, 15px);
+  line-height: 1;
+  font-weight: 700;
+  background: var(--chip-bg);
+  color: var(--accent);
+  padding: 4px 11px;
+  border-radius: 12px;
+  letter-spacing: 0.3px;
+  margin: 0 0 12px 0;
+  /* 🌒 BUG 1 FIX (V10): permitir wrap natural cuando autor es largo */
+  /* Antes: chip inline-block + texto largo creaba hueco vertical bajo el título */
+  /* Ahora: el chip se rompe en líneas dentro de su contenedor sin afectar layout */
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  vertical-align: top;
+  line-height: 1.35;
+  /* TODO: refactor a CSS Grid en Phase futura para eliminar dependencia de float */
+}
+
+.ed-block .ed-para {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: var(--ed-para-size, 18px);
+  line-height: 1.7;
+  font-weight: 400;
+  color: #4A4A4A;
+  letter-spacing: 0.2px;
+  margin: 0;
+}
+
+.ed-block .ed-sub {
+  font-family: 'Archivo', sans-serif;
+  font-size: var(--ed-sub-size, 18px);
+  line-height: 1.4;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.15px;
+  margin: 0 0 8px 0;
+}
+
+.tg-hl {
+  display: inline;
+  color: inherit;
+  font-weight: 600;
+  background: var(--marker);
+  padding: 0.03em 0.10em 0.08em;
+  border-radius: 0.14em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   🌒 NUMERACIÓN V12 NIVEL DIOS CUÁNTICO-QUARK — eyebrow ARRIBA del título
+   Posición: dentro del ed-block, inmediatamente antes del .ed-title
+   Filosofía: notable PREMIUM. Label sans + número Playfair italic con color accent
+   V12 cambios: tamaño aumentado para ser visible + color accent en #N para
+   coherencia cromática con el resto del diseño del libro
+   ════════════════════════════════════════════════════════════════════════════ */
+.edicion-eyebrow {
+  display: block;
+  /* 🌒 V15: aire arriba (separa del techo) + abajo (separa del título) */
+  margin: 6px 0 14px 0;
+  font-family: 'Archivo', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: rgba(26, 26, 26, 0.48);
+  line-height: 1;
+  user-select: none;
+}
+.edicion-eyebrow-sep {
+  display: inline-block;
+  margin: 0 0.55em;
+  opacity: 0.5;
+  font-weight: 400;
+}
+.edicion-eyebrow-num {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: 0;
+  font-size: 22px;
+  color: var(--accent, #1a1a1a);
+  text-transform: none;
+  vertical-align: baseline;
+  margin-left: 2px;
+}
+@media (max-width: 480px) {
+  .edicion-eyebrow { font-size: 12px; letter-spacing: 0.30em; margin-bottom: 8px; }
+  .edicion-eyebrow-num { font-size: 20px; }
+}
+
+.ed-cover-wrap {
+  float: right;
+  width: var(--ed-cover-width, 120px);
+  cursor: pointer;
+  position: relative;
+  touch-action: manipulation;
+  padding: 0;
+  margin: 0 0 10px 18px;
+}
+.ed-cover-wrap img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid #EAEAEA;
+  border-radius: 4px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+  animation: coverBreathe 2.8s cubic-bezier(0.32,0.01,0.16,1) infinite;
+  will-change: transform, filter;
+}
+@keyframes coverBreathe {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0px rgba(0,0,0,0)); }
+  50% { transform: scale(1.03); filter: drop-shadow(0 10px 20px rgba(227,93,48,0.25)); }
+}
+.cover-hint {
+  display: block;
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(26,26,26,0.4);
+  margin-top: 6px;
+  letter-spacing: 0.3px;
+  animation: hintFade 4s ease forwards;
+}
+@keyframes hintFade { 0%, 70% { opacity: 1; } 100% { opacity: 0; } }
+
+.ed-gap { height: 14px; }
+
+.card-actions {
+  padding: 16px 22px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.btn-row { display: grid; gap: 8px; }
+.btn-row-2 { grid-template-columns: 1fr 48px; }
+.btn-row-3 { grid-template-columns: 1fr 48px 1fr; }
+
+.btn-light {
+  height: 46px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+  cursor: pointer;
+  background: #FFFFFF;
+  border: 1px solid rgba(26,26,26,0.08);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+  transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+.btn-light:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.05); border-color: rgba(26,26,26,0.15); }
+.btn-light:active { transform: scale(0.97); }
+
+.btn-light img { height: 16px; width: auto; display: block; }
+.btn-light .btn-triggui-logo { height: 20px; opacity: 0.9; }
+.btn-light .btn-ig-icon { width: 18px; height: 18px; opacity: 0.9; }
+.btn-ig-icon rect, .btn-ig-icon circle { stroke: #1A1A1A; }
+.btn-ig-icon circle[fill="white"] { fill: #1A1A1A; }
+
+.btn-dark {
+  height: 46px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+  cursor: pointer;
+  background: #1A1A1A;
+  border: 1px solid rgba(255,255,255,0.05);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+.btn-dark:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); border-color: rgba(255,255,255,0.1); }
+.btn-dark:active { transform: scale(0.97); }
+
+.btn-dark .btn-busca-logo {
+  height: 14px;
+  filter: none;
+  opacity: 0.95;
+}
+
+.btn-dark.btn-penguin-icon img {
+  height: 36px;
+  mix-blend-mode: screen;
+  filter: contrast(120%) grayscale(1);
+  opacity: 0.95;
+}
+
+.btn-crystal.btn-dark { background: #1A1A1A; }
+.btn-crystal .btn-emoji { font-size: 20px; line-height: 1; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+
+.silence-screen {
+  display: none;
+  position: absolute;
+  inset: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 32px;
+  background: radial-gradient(circle at 50% 35%, rgba(20,25,40,0.95) 0%, rgba(0,0,0,1) 80%);
+  overflow: hidden;
+}
+.silence-screen::before {
+  content: "";
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle, rgba(227,93,48,0.35) 0%, transparent 70%);
+  filter: blur(40px);
+  z-index: 0;
+  pointer-events: none;
+  animation: pulseGlow 4s ease-in-out infinite;
+}
+@keyframes pulseGlow { 0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(0.95); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); } }
+
+.silence-screen > * { position: relative; z-index: 1; }
+.silence-screen .sil-cover {
+  width: 180px;
+  height: auto;
+  border-radius: 6px;
+  opacity: 1;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 30px 60px -10px rgba(0,0,0,0.9), 0 0 50px rgba(227,93,48,0.4);
+  margin-bottom: 40px;
+  cursor: pointer;
+  animation: floatMagic 5s ease-in-out infinite;
+}
+@keyframes floatMagic {
+  0%, 100% { transform: translateY(0); box-shadow: 0 30px 60px -10px rgba(0,0,0,0.9), 0 0 50px rgba(227,93,48,0.4); }
+  50% { transform: translateY(-12px); box-shadow: 0 45px 75px -10px rgba(0,0,0,0.7), 0 0 70px rgba(227,93,48,0.65); }
+}
+.silence-screen .sil-cover:active { transform: scale(0.96) translateY(0); transition: transform .1s; }
+.silence-screen .sil-title {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: clamp(16px,4vw,22px);
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 20px;
+  font-weight: 700;
+  text-align: center;
+  text-shadow: 0 4px 20px rgba(255,255,255,0.4);
+  letter-spacing: 1px;
+}
+.silence-screen .sil-call {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(18px,5vw,26px);
+  font-weight: 600;
+  line-height: 1.5;
+  background: linear-gradient(180deg, #FFFFFF 0%, rgba(255,255,255,0.75) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+  text-align: center;
+  filter: drop-shadow(0 4px 15px rgba(0,0,0,0.6));
+  animation: silCallIn 1s ease .3s both;
+}
+.silence-screen .sil-sub {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(14px,3.5vw,18px);
+  font-weight: 500;
+  line-height: 1.4;
+  color: rgba(255,255,255,.5);
+  margin-bottom: 24px;
+  text-align: center;
+  animation: silCallIn 1s ease .5s both;
+}
+@keyframes silCallIn { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
+
+.silence-screen .sil-pulse {
+  font-family: 'Poppins', sans-serif;
+  margin-bottom: 28px;
+  text-align: center;
+  animation: silCallIn 1s ease .7s both;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+.pulse-num {
+  display: block;
+  font-size: clamp(48px,11vw,72px);
+  font-weight: 800;
+  line-height: 1;
+  background: linear-gradient(135deg, #FF0055 0%, #FF5E00 50%, #FFD700 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 4px;
+  filter: drop-shadow(0 10px 25px rgba(255,0,85,0.5));
+  animation: fire-move 4s ease infinite, popNumber 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes popNumber { 0% { opacity: 0; transform: scale(0.4) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+.pulse-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255,255,255,.6);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  animation: popNumber 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: 0.1s;
+}
+.loading-text { animation: breatheLoading 1.5s infinite ease-in-out; color: rgba(255,255,255,0.5); font-size: 15px; letter-spacing: 1.5px; }
+@keyframes breatheLoading { 0%, 100% { opacity: 0.3; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1.02); } }
+
+.silence-screen .sil-mark { opacity: 0.2; animation: silCallIn 1s ease 1s both; }
+.silence-screen .sil-mark img { height: 22px; width: auto; display: block; margin: 0 auto; filter: invert(1) brightness(1.5); }
+
+/* ════════════════════════════════════════════════════════════════════
+   🌒 BOCADO + ECO — Frase oracular antes/después
+   Pool: concepts del nucleus del libro (cap + punto en Python)
+   Timing: 1500ms appear + 2000ms hold + 1200ms fade = 4.7s total
+═══════════════════════════════════════════════════════════════════════ */
+.bocado-eco-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0 32px;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.bocado-eco-overlay.visible { display: flex; opacity: 1; }
+
+.bocado-eco-phrase {
+  font-family: 'Archivo', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 300;
+  font-size: clamp(22px, 6vw, 32px);
+  line-height: 1.32;
+  color: #fff;
+  text-align: center;
+  max-width: 640px;
+  letter-spacing: -0.5px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@keyframes triggui-word-appear {
+  0%   { opacity: 0; transform: translateY(8px); filter: blur(12px); }
+  100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+@keyframes triggui-underline-appear {
+  0%   { opacity: 0; transform: scaleX(0); }
+  60%  { opacity: 1; transform: scaleX(1); }
+  100% { opacity: 0.65; transform: scaleX(1); }
+}
+.bm-bocado-w, .bm-bocado-anchor {
+  display: inline-block;
+  opacity: 0;
+  animation: triggui-word-appear 1500ms cubic-bezier(0.19, 1, 0.22, 1) forwards;
+  will-change: opacity, transform, filter;
+}
+.bm-bocado-anchor {
+  font-weight: 400;
+  position: relative;
+}
+.bm-bocado-anchor::after {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: -6px;
+  height: 1px;
+  opacity: 0;
+  transform: scaleX(0);
+  background: linear-gradient(90deg, transparent, var(--bocado-anchor-color, #FF5E00), transparent);
+  animation: triggui-underline-appear 2100ms cubic-bezier(0.19, 1, 0.22, 1) forwards;
+  animation-delay: 900ms;
+}
+.bm-bocado-fading {
+  transition: opacity 1200ms cubic-bezier(0.55, 0, 0.55, 1), filter 1200ms cubic-bezier(0.55, 0, 0.55, 1) !important;
+  opacity: 0 !important;
+  filter: blur(10px) !important;
+}
+
+/* Cuando el bocado o eco están activos, los bloques quedan atenuados como contexto detrás del blur */
+.grid.bocado-active, .grid.eco-active {
+  opacity: 0.25;
+  pointer-events: none;
+  filter: saturate(0.7);
+  transition: opacity 0.5s ease, filter 0.5s ease;
+}
+
+@media (max-width: 640px) {
+  .grid { gap: 1.2vw; }
+  .label { font-size: clamp(0.95rem,4vw,1.4rem); }
+  .frase { font-size: clamp(0.9rem,3.5vw,1.3rem); }
+  .reveal-overlay { padding: max(4px, env(safe-area-inset-top, 4px)) 4px max(4px, env(safe-area-inset-bottom, 4px)); }
+  .reveal-card { border-radius: 18px; max-width: 100%; }
+  .reveal-card::after { border-radius: 18px; }
+  .ed-block { padding: 20px 18px; margin: 0 4px; }
+  .ed-block:first-child { margin-top: 12px; }
+  .ed-cover-wrap { width: var(--ed-cover-width-mobile, 110px); margin: 0 0 10px 14px; }
+  .ed-block .ed-title { font-size: var(--ed-title-size-mobile, 24px); line-height: 1.18; }
+  .ed-block .ed-para { font-size: var(--ed-para-size-mobile, 18px); line-height: 1.65; }
+  .ed-block .ed-sub { font-size: var(--ed-sub-size-mobile, 18px); }
+  .ed-block .ed-chip { font-size: var(--ed-chip-size-mobile, 14px); margin-bottom: 10px; }
+  .card-actions { padding: 14px 18px 20px; }
+  .btn-close { top: 8px; left: 8px; }
+  .silence-screen .sil-cover { width: 140px; margin-bottom: 25px; }
+  .silence-screen .sil-pulse { min-height: 100px; }
+}
+</style>
+</head>
+<body data-lab-v="live-edition-card-v3" style="--accent:#128CE2;--marker:#128CE230;--chip-bg:#128CE214;--card-paper:#F7F7F5;--card-ink:#1A1A1A;--card-border:rgba(26,26,26,0.06);--ed-title-size:25.4px;--ed-title-size-mobile:22.8px;--ed-para-size:17.4px;--ed-para-size-mobile:17.0px;--ed-sub-size:17.2px;--ed-sub-size-mobile:16.8px;--ed-chip-size:14.3px;--ed-chip-size-mobile:13.6px;--ed-cover-width:110.0px;--ed-cover-width-mobile:98.0px;">
+
+<div id="pulseLine" class="pulse-line"></div>
+<div class="bocado-eco-overlay" id="bocadoEcoOverlay">
+  <div class="bocado-eco-phrase" id="bocadoEcoPhrase"></div>
+</div>
+<div class="grid" id="grid"></div>
+
+<div id="revealOverlay" class="reveal-overlay">
+  <div class="reveal-card" onclick="event.stopPropagation()">
+    <button class="btn-close" id="btnBack" aria-label="Cerrar">×</button>
+    <div class="card-inner">
+
+      <div class="ed-block" id="editorialBlockTop">
+        <div class="ed-flow" id="editorialFlowTop">
+          
+          <div class="ed-cover-wrap" id="coverCTA">
+            <img src="https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/b5/6e/56/b56e562a-b367-aa8a-2c02-f6eed43ce1a3/1031313479.jpg/3000x3000bb.jpg" alt="Cómo hacer que las cosas pasen" />
+            <span class="cover-hint">Toca el libro</span>
+          </div>
+          <div class="edicion-eyebrow" aria-hidden="true">EDICIÓN<span class="edicion-eyebrow-sep">·</span><span class="edicion-eyebrow-num">#060</span></div>
+          <div class="ed-title" id="editorialTitle">Conviértete en tu mejor versión</div>
+          <div class="ed-chip" id="editorialChip">Guillermo Echevarria</div>
+          <div class="ed-para" id="editorialTopPara">Entrenar la creatividad es un viaje que transforma la percepción de los desafíos en oportunidades. <span class="tg-hl">Cada obstáculo puede convertirse en un peldaño hacia el crecimiento personal y profesional.</span> No se trata solo de visualizar el éxito, sino de actuar con determinación y valentía.</div>
+        </div>
+      </div>
+      <div class="ed-gap"></div>
+      <div class="ed-block" id="editorialBlockBottom">
+        <div class="ed-sub" id="editorialSub">¿Cómo convertir los imprevistos en oportunidades?</div>
+        <div class="ed-para" id="editorialBottomPara">Los imprevistos son parte de la vida, y la clave está en cómo los abordamos. <span class="tg-hl">En lugar de verlos como frenos, podemos aprender a reconfigurarlos como oportunidades de crecimiento.</span> Esto requiere un cambio de mentalidad, donde el autoboicot no tenga cabida, y cada paso dado sea hacia adelante.</div>
+      </div>
+
+      <div class="card-actions">
+        <div class="btn-row btn-row-2">
+          <a class="btn-light" href="https://triggui.com" target="_blank" rel="noopener noreferrer">
+            <img class="btn-triggui-logo" src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png" alt="Triggui">
+          </a>
+          <a class="btn-light" href="https://www.instagram.com/triggui/" target="_blank" rel="noopener noreferrer">
+            <svg class="btn-ig-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="2" width="20" height="20" rx="6" stroke="white" stroke-width="1.8"/>
+              <circle cx="12" cy="12" r="5" stroke="white" stroke-width="1.8"/>
+              <circle cx="17.5" cy="6.5" r="1.2" fill="white"/>
+            </svg>
+          </a>
+        </div>
+
+        <div class="btn-row btn-row-3">
+          <a class="btn-dark" href="https://www.buscalibre.com.mx/libros/search/?q=C%C3%B3mo%20hacer%20que%20las%20cosas%20pasen%20Guillermo%20Echevarria" target="_blank" rel="noopener noreferrer">
+            <img class="btn-busca-logo" src="/buscalibre.png" alt="Buscalibre">
+          </a>
+
+          <a class="btn-dark btn-crystal" id="btnCrystal" href="https://www.buscalibre.com.mx/libros/search/?q=determinaci%C3%B3n" target="_blank" rel="noopener noreferrer">
+            <span class="btn-emoji">🔮</span>
+          </a>
+
+          <a class="btn-dark btn-penguin-icon" id="btnPenguin" href="https://www.penguinlibros.com/mx/?mot_q=determinaci%C3%B3n" target="_blank" rel="noopener noreferrer">
+            <img src="/logopenguin.png" alt="Penguin">
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="silence-screen" id="silenceScreen">
+    <img class="sil-cover" id="silCover" src="https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/b5/6e/56/b56e562a-b367-aa8a-2c02-f6eed43ce1a3/1031313479.jpg/3000x3000bb.jpg" alt="Cómo hacer que las cosas pasen" />
+    <div class="sil-title">Cómo hacer que las cosas pasen</div>
+    <div class="sil-call">Queremos que te den ganas<br>de abrir un libro.</div>
+    <div class="sil-sub">Eso es Triggui.</div>
+    <div class="sil-pulse" id="silPulse"></div>
+    <div class="sil-mark">
+      <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png" alt="Triggui">
+    </div>
+  </div>
+</div>
+
+<script>
+const state = {"id": "como-hacer-que-las-cosas-pasen", "titulo": "Cómo hacer que las cosas pasen", "autor": "Guillermo Echevarria", "palabra": "Conviértete en tu mejor versión", "descripcion": "Entrenar la creatividad es un viaje que transforma la percepción de los desafíos en oportunidades. Cada obstáculo puede convertirse en un peldaño hacia el crecimiento personal y profesional. No se trata solo de visualizar el éxito, sino de actuar con determinación y valentía.", "palabras": ["determinación", "oportunidad", "creatividad", "crecimiento"], "frases": ["🌊 Cambia tu postura. Mantén la cabeza en alto y respira profundo: cada desafío es un llamado a la vida.", "🌓 ¿Qué harías hoy si no tuvieras miedo al fracaso?", "👁 Imagina un camino lleno de obstáculos que se convierten en escalones hacia tu éxito.", "🗺 Quien no se atreve a arriesgar, se queda estancado en la mediocridad."], "colores": ["#7EC1F1", "#E87D30", "#1347AE", "#65470B"], "textColors": ["#000000", "#FFFFFF", "#FFFFFF", "#FFFFFF"], "ogImage": "https://app.triggui.com/t/como-hacer-que-las-cosas-pasen/og.png", "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication113/v4/b5/6e/56/b56e562a-b367-aa8a-2c02-f6eed43ce1a3/1031313479.jpg/3000x3000bb.jpg", "tagline": "Cómo hacer que las cosas pasen es un libro para personas que quieren que empiece a pasar algo diferente en sus vidas. Para hacer que las cosas pasen es clave que entrenes tu creatividad para ser más grande que tus desafíos. En la obra se abordan temas como:Tratar con personas difíciles Crecer profesionalmente cuando no reconocen tu valor.Superar el autoboicot y la postergación.Convertir imprevistos en oportunidades.Rehacer tu vida y construir un futuro que te apasione.Cambiar más rápido y con menos estrés.Inspirarte para dar tu mejor versión.", "bocadoEcoPool": [{"phrase": "🌊 Cambia tu postura. Mantén la cabeza en alto y respira profundo: cada desafío es un llamado a la vida.", "rol": "profundizar", "animo": 0.6, "origin": "edition_block_es"}, {"phrase": "🌓 ¿Qué harías hoy si no tuvieras miedo al fracaso?", "rol": "abrir", "animo": 0.5, "origin": "edition_block_es"}, {"phrase": "👁 Imagina un camino lleno de obstáculos que se convierten en escalones hacia tu éxito.", "rol": "aterrizar", "animo": 0.7, "origin": "edition_block_es"}, {"phrase": "🗺 Quien no se atreve a arriesgar, se queda estancado en la mediocridad.", "rol": "resonar", "animo": 0.4, "origin": "edition_block_es"}, {"phrase": "⚡ Superar el autoboicot es el primer paso hacia el cambio.", "rol": "aterrizar", "animo": 0.6, "origin": "og_phrase_es"}, {"phrase": "🌿 ¿Qué oportunidad se esconde detrás de cada desafío?", "rol": "abrir", "animo": 0.5, "origin": "og_phrase_es"}, {"phrase": "🧭 Actuar es la forma más efectiva de desactivar la postergación.", "rol": "profundizar", "animo": 0.7, "origin": "og_phrase_es"}, {"phrase": "🔍 Un desafío no es más que una oportunidad disfrazada.", "rol": "resonar", "animo": 0.5, "origin": "og_phrase_es"}]};
+const grid = document.getElementById('grid');
+const revealOverlay = document.getElementById('revealOverlay');
+const btnBack = document.getElementById('btnBack');
+const coverCTA = document.getElementById('coverCTA');
+const coverHint = coverCTA ? coverCTA.querySelector('.cover-hint') : null;
+const revealCard = document.querySelector('.reveal-card');
+const silenceScreen = document.getElementById('silenceScreen');
+const silPulse = document.getElementById('silPulse');
+const pulseEditionKey = 'triggui_lab_opened_' + state.id;
+const btnCrystal = document.getElementById('btnCrystal');
+const btnPenguin = document.getElementById('btnPenguin');
+
+const ANG = [115, 205, 35, 320];
+function grad(i) {
+  return 'linear-gradient(' + ANG[i % 4] + 'deg,' + state.colores[i] + ',' + state.colores[(i + 1) % 4] + ')';
+}
+
+let overlayView = 'blocks';
+let coverBusy = false;
+const revealIndex = Math.floor(Math.random() * 4);
+const emojis = ['🌊', '🛡️', '🧠', '✨', '📘', '🔮', '❤️', '🪞'];
+
+function clearBlockStates() {
+  Array.from(grid.children).forEach((block) => {
+    block.classList.remove('show', 'dim');
+  });
+}
+
+function hideGrid() {
+  grid.classList.add('hidden');
+}
+
+function showGrid() {
+  clearBlockStates();
+  grid.classList.remove('hidden');
+}
+
+function resetCardState() {
+  coverBusy = false;
+  if (coverCTA) coverCTA.style.pointerEvents = '';
+  if (coverHint) coverHint.textContent = 'Toca el libro';
+}
+
+function setOverlayView(next) {
+  overlayView = next;
+  const overlayVisible = next !== 'blocks';
+
+  if (overlayVisible) {
+    revealOverlay.style.display = 'flex';
+    void revealOverlay.offsetWidth;
+  }
+
+  revealOverlay.style.opacity = overlayVisible ? '1' : '0';
+  revealOverlay.style.pointerEvents = overlayVisible ? 'auto' : 'none';
+
+  if (next === 'blocks') {
+    resetCardState();
+    revealCard.style.display = '';
+    silenceScreen.style.display = 'none';
+    revealCard.style.transform = 'scale(0.94) translateY(15px)';
+    revealCard.style.opacity = '0';
+
+    setTimeout(() => {
+      if (overlayView === 'blocks') {
+        revealOverlay.style.display = 'none';
+      }
+    }, 350);
+    return;
+  }
+
+  if (next === 'card') {
+    resetCardState();
+    revealCard.style.display = '';
+    silenceScreen.style.display = 'none';
+    revealCard.style.transform = 'scale(0.98) translateY(10px)';
+    revealCard.style.opacity = '0';
+
+    requestAnimationFrame(() => {
+      revealCard.style.transform = 'scale(1) translateY(0)';
+      revealCard.style.opacity = '1';
+      requestAnimationFrame(() => fitRevealTypography());
+    });
+    return;
+  }
+
+  if (next === 'silence') {
+    revealCard.style.display = 'none';
+    silenceScreen.style.display = 'flex';
+  }
+}
+
+function openOverlayFromBlocks() {
+  hideGrid();
+  setOverlayView('card');
+}
+
+function closeOverlayToBlocks() {
+  // 🌒 Si venimos de tarjeta o silence-screen, disparar eco antes de los bloques
+  const cameFromCardOrSilence = (overlayView === 'card' || overlayView === 'silence');
+  setOverlayView('blocks');
+  setTimeout(() => {
+    showGrid();
+    if (cameFromCardOrSilence && state.bocadoEcoPool && state.bocadoEcoPool.length > 0) {
+      grid.classList.add('eco-active');
+      setTimeout(() => {
+        showEco(() => {
+          grid.classList.remove('eco-active');
+        });
+      }, 100);
+    }
+  }, 180);
+}
+
+function moveToSilence() {
+  setOverlayView('silence');
+}
+
+async function getCollectivePulse() {
+  try {
+    const res = await fetch('https://triggui-api.vercel.app/api/get?cb=' + Date.now(), {
+      cache: 'no-store'
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const total = Number(data && data.total ? data.total : 0);
+    if (!isFinite(total) || total <= 0) return null;
+    return total;
+  } catch (e) {
+    console.warn('[pulse] get failed:', e && e.message ? e.message : e);
+    return null;
+  }
+}
+
+async function registerCollectivePhysicalOpen() {
+  try {
+    if (localStorage.getItem(pulseEditionKey) === '1') {
+      const count = await getCollectivePulse();
+      return { count: count, repeated: true, ok: count !== null };
+    }
+  } catch (e) {
+    // localStorage bloqueado (Safari private, cookies disabled): continuamos sin memoria
+  }
+
+  try {
+    const res = await fetch('https://triggui-api.vercel.app/api/increment', {
+      method: 'GET',
+      cache: 'no-store'
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const total = Number(data && data.total ? data.total : 0);
+
+    if (data && data.success !== false && total > 0) {
+      try { localStorage.setItem(pulseEditionKey, '1'); } catch (e) { /* ignore */ }
+      return { count: total, repeated: false, ok: true };
+    }
+    // Respuesta del servidor no OK semánticamente: fallback a get
+    const fallback = await getCollectivePulse();
+    return { count: fallback, repeated: false, ok: fallback !== null };
+  } catch (e) {
+    console.warn('[pulse] increment failed:', e && e.message ? e.message : e);
+    // Fallback graceful: si increment falla, lee el total actual
+    const fallback = await getCollectivePulse();
+    return { count: fallback, repeated: false, ok: fallback !== null };
+  }
+}
+
+// Animación suave 0 -> target con easeOutQuart (1.2-1.5s típicos).
+// Safe: si element es null, targetNumber no-positivo, o el span cambia, no rompe.
+function animatePulseNumber(element, targetNumber, durationMs) {
+  if (!element || typeof targetNumber !== 'number' || !isFinite(targetNumber) || targetNumber <= 0) return;
+  var duration = (typeof durationMs === 'number' && durationMs > 0) ? durationMs : 1200;
+  var start = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+  var raf = (typeof requestAnimationFrame !== 'undefined') ? requestAnimationFrame : function (cb) { return setTimeout(cb, 16); };
+  var step = function (now) {
+    // Si el elemento fue removido del DOM, abortar limpio
+    if (!document.body.contains(element)) return;
+    var elapsed = now - start;
+    var progress = Math.min(elapsed / duration, 1);
+    var eased = 1 - Math.pow(1 - progress, 4);
+    var current = Math.floor(targetNumber * eased);
+    try {
+      element.textContent = current.toLocaleString('es-MX');
+    } catch (e) {
+      element.textContent = String(current);
+    }
+    if (progress < 1) {
+      raf(step);
+    } else {
+      try { element.textContent = targetNumber.toLocaleString('es-MX'); }
+      catch (e) { element.textContent = String(targetNumber); }
+    }
+  };
+  raf(step);
+}
+
+function getChronoOrder(hour) {
+  if (hour >= 4 && hour <= 6) return [3, 2, 1, 0];
+  if (hour >= 7 && hour <= 11) return [0, 2, 1, 3];
+  if (hour >= 12 && hour <= 16) return [2, 0, 1, 3];
+  if (hour >= 17 && hour <= 20) return [1, 3, 2, 0];
+  return [3, 1, 2, 0];
+}
+
+const currentHour = new Date().getHours();
+const chronoOrder = getChronoOrder(currentHour);
+
+function getPrimaryChronoWord() {
+  const idx = chronoOrder[0];
+  const candidate = (state.palabras && state.palabras[idx]) || state.palabra || state.titulo || '';
+  return String(candidate || '').trim();
+}
+
+function applyDynamicActionLinks() {
+  const word = getPrimaryChronoWord();
+  if (!word) return;
+
+  const encoded = encodeURIComponent(word);
+
+  if (btnCrystal) {
+    btnCrystal.href = 'https://www.buscalibre.com.mx/libros/search/?q=' + encoded;
+  }
+
+  if (btnPenguin) {
+    btnPenguin.href = 'https://www.penguinlibros.com/mx/?mot_q=' + encoded;
+  }
+}
+
+function fitRevealTypography() {
+  const title = document.getElementById('editorialTitle');
+  const chip = document.getElementById('editorialChip');
+  const topPara = document.getElementById('editorialTopPara');
+  const sub = document.getElementById('editorialSub');
+  const bottomPara = document.getElementById('editorialBottomPara');
+  const cover = document.getElementById('coverCTA');
+
+  if (!title || !topPara) return;
+
+  const rootStyles = getComputedStyle(document.body);
+  const px = (el, prop) => el ? (parseFloat(getComputedStyle(el)[prop]) || 0) : 0;
+  const setPx = (el, prop, value) => { if (el) el.style[prop] = `${value}px`; };
+  const readVar = (name, fallback) => {
+    const value = parseFloat(rootStyles.getPropertyValue(name));
+    return Number.isFinite(value) ? value : fallback;
+  };
+  const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+  const limits = {
+    titleMin: readVar('--ed-title-size', 28) * 0.88,
+    titleMax: readVar('--ed-title-size', 28) * 1.10,
+    chipMin: readVar('--ed-chip-size', 15) * 0.92,
+    chipMax: readVar('--ed-chip-size', 15) * 1.08,
+    paraMin: readVar('--ed-para-size', 18) * 0.92,
+    paraMax: readVar('--ed-para-size', 18) * 1.10,
+    subMin: readVar('--ed-sub-size', 18) * 0.92,
+    subMax: readVar('--ed-sub-size', 18) * 1.08,
+    coverMin: readVar('--ed-cover-width', 120) * 0.90,
+    coverMax: readVar('--ed-cover-width', 120) * 1.08,
+  };
+
+  const textGapToCover = () => {
+    if (!cover) return 0;
+    const coverRect = cover.getBoundingClientRect();
+    const candidates = [title, chip, topPara].filter(Boolean);
+    const bottom = Math.max(...candidates.map((el) => el.getBoundingClientRect().bottom));
+    return coverRect.bottom - bottom;
+  };
+
+  let guard = 0;
+  while (cover && textGapToCover() > 12 && guard < 120) {
+    const nextTitle = clamp(px(title, 'fontSize') + 0.20, limits.titleMin, limits.titleMax);
+    const nextChip = clamp(px(chip, 'fontSize') + 0.06, limits.chipMin, limits.chipMax);
+    const nextPara = clamp(px(topPara, 'fontSize') + 0.14, limits.paraMin, limits.paraMax);
+    const nextCover = clamp(px(cover, 'width') + (guard % 2 === 0 ? 0.35 : 0), limits.coverMin, limits.coverMax);
+
+    if (
+      nextTitle === px(title, 'fontSize')
+      && nextChip === px(chip, 'fontSize')
+      && nextPara === px(topPara, 'fontSize')
+      && nextCover === px(cover, 'width')
+    ) {
+      break;
+    }
+
+    setPx(title, 'fontSize', nextTitle);
+    setPx(chip, 'fontSize', nextChip);
+    setPx(topPara, 'fontSize', nextPara);
+    setPx(cover, 'width', nextCover);
+    guard += 1;
+  }
+
+  if (sub && bottomPara) {
+    const density = (sub.textContent.trim().length * 0.85) + bottomPara.textContent.trim().length;
+    const boost = clamp((145 - density) / 145, 0, 1);
+    if (boost > 0) {
+      setPx(sub, 'fontSize', clamp(px(sub, 'fontSize') + (boost * 0.7), limits.subMin, limits.subMax));
+      setPx(bottomPara, 'fontSize', clamp(px(bottomPara, 'fontSize') + (boost * 0.9), limits.paraMin, limits.paraMax));
+    }
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   🌒 BOCADO + ECO — funciones cuánticas
+═══════════════════════════════════════════════════════════════════════ */
+const bocadoEcoState = {
+  used: new Set(),
+  active: false,
+};
+const BOCADO_TIMING = { appear: 1500, hold: 2000, fade: 1200, wordStagger: 60 };
+
+function pickFromPool(roleHints) {
+  // 🌒 V14 sinfónico: detecta auto si pool es de objetos o strings
+  const raw = state.bocadoEcoPool || [];
+  if (raw.length === 0) return null;
+
+  const firstItem = raw[0];
+  const isSinfonico = firstItem && typeof firstItem === 'object';
+
+  if (isSinfonico) {
+    // Pool V14: objetos {phrase, rol, animo, origin}
+    let candidates = raw.filter(o => o && o.phrase && o.phrase.length >= 8);
+    if (candidates.length === 0) return null;
+
+    if (roleHints && roleHints.length > 0) {
+      const filtered = candidates.filter(o => roleHints.indexOf(o.rol) !== -1);
+      if (filtered.length > 0) candidates = filtered;
+    }
+
+    let available = candidates.filter(o => !bocadoEcoState.used.has(o.phrase));
+    if (available.length === 0) {
+      bocadoEcoState.used.clear();
+      available = candidates.slice();
+    }
+
+    const chosen = available[Math.floor(Math.random() * available.length)];
+    bocadoEcoState.used.add(chosen.phrase);
+
+    return {
+      phrase: chosen.phrase,
+      rol_solicitado: (roleHints && roleHints.length > 0) ? roleHints.join(',') : '(cualquiera)',
+      rol_obtenido: chosen.rol,
+      eje_animo: chosen.animo,
+      origin: chosen.origin,
+    };
+  }
+
+  // Pool V13 legacy: strings (backward-compat para libros pre-v12)
+  const pool = raw.filter(p => typeof p === 'string' && p && p.length >= 8);
+  if (pool.length === 0) return null;
+  let available = pool.filter(p => !bocadoEcoState.used.has(p));
+  if (available.length === 0) {
+    bocadoEcoState.used.clear();
+    available = pool.slice();
+  }
+  const phrase = available[Math.floor(Math.random() * available.length)];
+  bocadoEcoState.used.add(phrase);
+
+  return {
+    phrase: phrase,
+    rol_solicitado: (roleHints && roleHints.length > 0) ? roleHints.join(',') : '(cualquiera)',
+    rol_obtenido: '(legacy_string)',
+    eje_animo: null,
+    origin: 'concept_legacy',
+  };
+}
+
+function segmentPhrase(text) {
+  const words = String(text || '').split(/\s+/).filter(w => w.length > 0);
+  const n = words.length;
+  if (n < 2) return { body: '', anchor: words.join(' ') };
+  const anchorCount = n <= 4 ? 1 : 2;
+  return {
+    body: words.slice(0, n - anchorCount).join(' '),
+    anchor: words.slice(n - anchorCount).join(' '),
+  };
+}
+
+function buildPhraseHTML(text, accentColor) {
+  const seg = segmentPhrase(text);
+  let html = '';
+  let delay = 0;
+  if (seg.body) {
+    const bodyWords = seg.body.split(/\s+/);
+    for (const w of bodyWords) {
+      html += '<span class="bm-bocado-w" style="animation-delay:' + delay + 'ms">' + w + '&nbsp;</span>';
+      delay += BOCADO_TIMING.wordStagger;
+    }
+  }
+  html += '<span class="bm-bocado-anchor" style="animation-delay:' + delay + 'ms;color:' + accentColor + ';">' + seg.anchor + '</span>';
+  return html;
+}
+
+function showBocadoEco(kind, onComplete, roleHints) {
+  if (bocadoEcoState.active) return false;
+  const picked = pickFromPool(roleHints);
+  if (!picked) {
+    if (typeof onComplete === 'function') onComplete();
+    return false;
+  }
+  const phrase = picked.phrase;
+  bocadoEcoState.active = true;
+
+  const overlay = document.getElementById('bocadoEcoOverlay');
+  const phraseEl = document.getElementById('bocadoEcoPhrase');
+  if (!overlay || !phraseEl) {
+    bocadoEcoState.active = false;
+    if (typeof onComplete === 'function') onComplete();
+    return false;
+  }
+
+  // Color del anchor: usar el accent del libro o color de bloque 1
+  let accentColor = '#FF5E00';
+  try {
+    if (state.colores && state.colores[1]) {
+      accentColor = state.colores[1];
+    }
+  } catch (_) {}
+  overlay.style.setProperty('--bocado-anchor-color', accentColor);
+
+  phraseEl.classList.remove('bm-bocado-fading');
+  phraseEl.innerHTML = buildPhraseHTML(phrase, accentColor);
+  overlay.classList.add('visible');
+
+  const totalWords = phrase.split(/\s+/).length;
+  const fullAppear = BOCADO_TIMING.appear + totalWords * BOCADO_TIMING.wordStagger + 300;
+  const holdEnd = fullAppear + BOCADO_TIMING.hold;
+
+  setTimeout(() => phraseEl.classList.add('bm-bocado-fading'), holdEnd);
+
+  setTimeout(() => {
+    overlay.classList.remove('visible');
+    phraseEl.innerHTML = '';
+    phraseEl.classList.remove('bm-bocado-fading');
+    bocadoEcoState.active = false;
+    if (typeof onComplete === 'function') onComplete();
+    if (typeof console !== 'undefined' && console.log) {
+      // 🌒 V14 SINFÓNICO: log con paridad matemática a la app webview
+      console.log('[Triggui ' + kind + ' v14]', {
+        role_solicitado: picked.rol_solicitado,
+        role_obtenido: picked.rol_obtenido,
+        eje_animo: picked.eje_animo,
+        source: state.titulo,
+        origin: picked.origin,
+        phrase: phrase,
+      });
+    }
+  }, holdEnd + BOCADO_TIMING.fade + 100);
+
+  return true;
+}
+
+function showBocado(onComplete) {
+  // 🌒 V14: opening → preferir abrir/profundizar (lleva al usuario adentro)
+  return showBocadoEco('Bocado', onComplete, ['abrir', 'profundizar']);
+}
+
+function showEco(onComplete) {
+  // 🌒 V14: closing → preferir resonar/aterrizar (deja resonancia al cerrar)
+  return showBocadoEco('Eco', onComplete, ['resonar', 'aterrizar']);
+}
+
+function renderBlocks() {
+  grid.innerHTML = '';
+
+  for (let visualIdx = 0; visualIdx < 4; visualIdx++) {
+    const realIdx = chronoOrder[visualIdx];
+
+    const card = document.createElement('div');
+    card.className = 'block';
+    card.style.background = grad(realIdx);
+    card.dataset.idx = String(visualIdx);
+    card.dataset.realIdx = String(realIdx);
+
+    const label = document.createElement('div');
+    label.className = 'label';
+    label.textContent = emojis[realIdx % emojis.length] + ' ' + state.palabras[realIdx];
+    label.style.color = state.textColors[realIdx] || '#fff';
+
+    const frase = document.createElement('div');
+    frase.className = 'frase';
+    frase.textContent = state.frases[realIdx];
+    frase.style.color = state.textColors[realIdx] || '#fff';
+
+    card.append(label, frase);
+
+    card.onclick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const blocks = Array.from(grid.children);
+
+      if (visualIdx === revealIndex) {
+        openOverlayFromBlocks();
+        return;
+      }
+
+      const already = card.classList.contains('show');
+      clearBlockStates();
+
+      if (!already) {
+        card.classList.add('show');
+        blocks.forEach((b, j) => {
+          if (j !== visualIdx) b.classList.add('dim');
+        });
+      }
+    };
+
+    grid.append(card);
+  }
+}
+
+btnBack.addEventListener('click', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  closeOverlayToBlocks();
+});
+
+revealOverlay.addEventListener('click', (e) => {
+  if (e.target === revealOverlay && overlayView === 'card') {
+    closeOverlayToBlocks();
+  }
+});
+
+if (coverCTA) {
+  coverCTA.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (overlayView !== 'card' || coverBusy) return;
+
+    coverBusy = true;
+    coverCTA.style.pointerEvents = 'none';
+    if (coverHint) coverHint.textContent = '...';
+
+    moveToSilence();
+    silPulse.innerHTML = '<span class="pulse-label loading-text">Conectando...</span>';
+
+    registerCollectivePhysicalOpen().then(function (result) {
+      if (result && result.ok && typeof result.count === 'number' && result.count > 0) {
+        // El CSS .pulse-num anima el span (gradiente fuego + popNumber bounce).
+        // El JS anima el textContent interno (0 -> total con easeOutQuart).
+        silPulse.innerHTML = '<span class="pulse-num" id="postTapNum">0</span><span class="pulse-label">libros abiertos juntos</span>';
+        var numEl = document.getElementById('postTapNum');
+        animatePulseNumber(numEl, result.count, 1400);
+      } else {
+        silPulse.innerHTML = '<span class="pulse-label">Se registró el acto.</span>';
+      }
+    }).catch(function (err) {
+      console.warn('[pulse] post-tap error:', err && err.message ? err.message : err);
+      silPulse.innerHTML = '<span class="pulse-label">Se registró el acto.</span>';
+    });
+  });
+}
+
+silenceScreen.addEventListener('click', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  if (overlayView === 'silence') {
+    closeOverlayToBlocks();
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  if (overlayView === 'silence' || overlayView === 'card') {
+    closeOverlayToBlocks();
+  }
+});
+
+window.addEventListener('resize', () => {
+  if (overlayView === 'card') {
+    requestAnimationFrame(() => fitRevealTypography());
+  }
+});
+
+renderBlocks();
+applyDynamicActionLinks();
+setOverlayView('blocks');
+
+// 🌒 Bocado al cargar — primero ocultamos bloques, mostramos bocado, y
+// cuando termina volvemos a mostrar bloques con su atmósfera intacta.
+(function triggerOpeningBocado() {
+  if (!state.bocadoEcoPool || state.bocadoEcoPool.length === 0) return;
+  grid.classList.add('bocado-active');
+  // Pequeño delay para que el browser pinte la página primero
+  setTimeout(() => {
+    showBocado(() => {
+      grid.classList.remove('bocado-active');
+    });
+  }, 200);
+})();
+
+(function() {
+  const k = () => {
+    document.querySelectorAll('vercel-live-feedback,vercel-toolbar,[data-vercel-toolbar]').forEach((el) => el.remove());
+    const v = document.getElementById('__vercel_live_token');
+    if (v) v.remove();
+  };
+  k();
+  setTimeout(k, 500);
+  setTimeout(k, 2000);
+  new MutationObserver(() => k()).observe(document.documentElement, { childList: true, subtree: true });
+})();
+
+(async () => {
+  // Precarga del contador global al cargar la edicion viva.
+  // Anima de 0 al total en 1.5s. Si la API falla, el pulseLine queda invisible.
+  try {
+    const total = await getCollectivePulse();
+    const el = document.getElementById('pulseLine');
+    if (!el) return;
+    if (total !== null && typeof total === 'number' && total > 0) {
+      el.innerHTML = 'Ya van <span id="pulseLineNum" style="font-weight:700;color:rgba(255,255,255,.75);">0</span> libros abiertos juntos.';
+      el.classList.add('visible');
+      const numEl = document.getElementById('pulseLineNum');
+      if (typeof animatePulseNumber === 'function') {
+        animatePulseNumber(numEl, total, 1500);
+      } else if (numEl) {
+        numEl.textContent = total.toLocaleString('es-MX');
+      }
+    }
+  } catch (e) {
+    console.warn('[pulse] preload error:', e && e.message ? e.message : e);
+  }
+})();
+</script>
+</body>
+</html>

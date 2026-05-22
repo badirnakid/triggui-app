@@ -61,6 +61,16 @@
       "timestamp": "2026-05-20T03:21:12.328Z",
       "trigger_input": "por qué realmente vale la pena tener buena actitud?",
       "selected_via": "discover_trigger"
+    },
+    {
+      "titulo": "Cómo hacer que las cosas pasen",
+      "autor": "Guillermo Echevarria",
+      "slug": "como-hacer-que-las-cosas-pasen",
+      "titulo_normalizado": "como hacer que las cosas pasen",
+      "autor_normalizado": "guillermo echevarria",
+      "timestamp": "2026-05-22T13:08:33.886Z",
+      "trigger_input": "siento que no avanzo, estoy atorado",
+      "selected_via": "constrained_catalog"
     }
   ],
   "_note": "FIFO ring de últimos 30 libros generados por selección automática (constrained o discover). Filtro pre-rerank en validate-book.js. Inicializa vacío y se rellena con cada run exitoso. Si se borra, el sistema arranca limpio sin daño."
