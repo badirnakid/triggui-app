@@ -1,5 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView, Platform, BackHandler, View, TouchableOpacity, Text, Animated, StyleSheet, Easing, Dimensions } from 'react-native';
+import { Platform, BackHandler, View, Animated, StyleSheet, Easing, useWindowDimensions } from 'react-native';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
@@ -16,31 +17,25 @@ import * as SplashScreen from 'expo-splash-screen';
 // Transición al WebView nivel dios (Plan A — fade orquestado matemático):
 //   - Logo del splash: micro-shrink 1.00 → 0.96 + fade out (300ms)
 //   - Subrayado: fade out simultáneo (300ms)
-//   - WebView: escala 1.04 → 1.00 + fade in (450ms, Apple ease)
+//   - WebView: aparece bajo el overlay (sin transform — bug Android conocido)
 //   - Fondo negro persiste — cero flash
 //
-// Timeline (1.8 segundos):
-//   0ms      → Pantalla negra
-//   0-800ms  → Línea aurora barre
-//   600ms    → Logo entra closeup (scale 1.4 → 1.0)
-//   1200ms   → Rebotín simpático (1.0 → 1.06 → 1.0)
-//   1400ms   → Subrayado pispireto se extiende
-//   2000ms   → Listo para fade orquestado al webview
+// ═══════════════════════════════════════════════════════════════════════════════
+// CAMBIOS NIVEL DIOS (UX divina Android — mayo 2026):
+//   1. react-native-safe-area-context con insets REACTIVOS → el WebView se ancla
+//      siempre al área visible real. Sobrevive resume del multitarea, rotación y
+//      el toggle de barras del sistema (raíz del bug "crece vertical" bajo el
+//      edge-to-edge forzado de SDK 54). Determinístico, se auto-corrige.
+//   2. useWindowDimensions (reactivo) en vez de Dimensions.get (estático) → la
+//      geometría del splash responde a la orientación.
+//   3. Botón "Atrás" visual ELIMINADO. El back nativo de Android queda (BackHandler
+//      → webview.goBack). En iOS, swipe-back nativo (allowsBackForwardNavigationGestures).
+//   4. Zoom explícito (accesibilidad): setBuiltInZoomControls + scalesPageToFit.
+//   5. cacheMode LOAD_DEFAULT (antes LOAD_CACHE_ELSE_NETWORK) → respeta headers HTTP;
+//      los cambios del web propagan sin republicar la app.
 // ═══════════════════════════════════════════════════════════════════════════════
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
-
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-
-// Logo pequeño y discreto
-const LOGO_WIDTH = Math.min(SCREEN_WIDTH * 0.32, 180);
-const LOGO_HEIGHT = LOGO_WIDTH * (160 / 500);
-
-// Subrayado pispireto
-const UNDERLINE_WIDTH = LOGO_WIDTH * 0.80;
-
-// Línea aurora
-const LINE_WIDTH = SCREEN_WIDTH * 1.4;
 
 // Easings
 const APPLE_EASE = Easing.bezier(0.16, 1, 0.3, 1);
@@ -102,12 +97,37 @@ function pickRandomPalette() {
   return PALETTES[Math.floor(Math.random() * PALETTES.length)];
 }
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// App = solo el provider de safe-area. Toda la lógica vive en AppInner para que
+// useSafeAreaInsets tenga el provider por encima (requisito de la librería).
+// ═══════════════════════════════════════════════════════════════════════════════
 export default function App() {
+  return (
+    <SafeAreaProvider>
+      <AppInner />
+    </SafeAreaProvider>
+  );
+}
+
+function AppInner() {
+  // Insets REACTIVOS — se recalculan en resume del multitarea, rotación y toggle
+  // de barras. Esta es la salvaguarda matemática contra el desbordamiento vertical.
+  const insets = useSafeAreaInsets();
+
+  // Dimensiones REACTIVAS — responden a la orientación.
+  const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = useWindowDimensions();
+
   const uri = 'https://app.triggui.com';
   const webViewRef = useRef(null);
 
   // Paleta de esta sesión (se elige UNA vez al montar, no cambia durante runtime)
   const palette = useMemo(() => pickRandomPalette(), []);
+
+  // ── Geometría del splash (derivada de las dimensiones reactivas) ──────────────
+  const LOGO_WIDTH = Math.min(SCREEN_WIDTH * 0.32, 180);
+  const LOGO_HEIGHT = LOGO_WIDTH * (160 / 500);
+  const UNDERLINE_WIDTH = LOGO_WIDTH * 0.80;
+  const LINE_WIDTH = SCREEN_WIDTH * 1.4;
 
   const [canGoBack, setCanGoBack] = useState(false);
   const [webViewReady, setWebViewReady] = useState(false);
@@ -131,15 +151,8 @@ export default function App() {
   const underlineOpacity = useRef(new Animated.Value(0)).current;
   const underlineScaleX = useRef(new Animated.Value(0)).current;
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // TRANSICIÓN PLAN A — fade orquestado matemático
-  // ═══════════════════════════════════════════════════════════════════════════
-
   // Splash: opacity (controla todo el splash overlay)
   const splashOpacity = useRef(new Animated.Value(1)).current;
-
-  // El WebView NO tiene animación propia en Android (causa crash).
-  // La transición se logra solo con el splash overlay haciendo fade out.
 
   // ═══════════════════════════════════════════════════════════════════════════
   // SECUENCIA DEL SPLASH
@@ -234,6 +247,7 @@ export default function App() {
     };
 
     runAnimation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -249,9 +263,6 @@ export default function App() {
     if (animationFinished && webViewReady && !exitTriggered) {
       setExitTriggered(true);
 
-      // CAPA 1: Splash overlay fade out (logo + subrayado se atenúan)
-      // CAPA 2: WebView fade in
-      // (Sin transform:scale en WebView — bug conocido en Android)
       Animated.parallel([
         // Splash desaparece (suave, 600ms)
         Animated.timing(splashOpacity, {
@@ -271,7 +282,7 @@ export default function App() {
         setShowSplashContent(false);
       });
     }
-  }, [animationFinished, webViewReady, exitTriggered]);
+  }, [animationFinished, webViewReady, exitTriggered, logoScale, splashOpacity]);
 
   // Fallback de seguridad
   useEffect(() => {
@@ -293,6 +304,12 @@ export default function App() {
     setCanGoBack(!isHome && navState.canGoBack);
   }, []);
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // BACK NATIVO DE ANDROID
+  // El botón/gesto físico de Android navega el historial del WebView. Si está en
+  // home, devuelve false → comportamiento por defecto (salir). Sin botón visual.
+  // En iOS, el swipe-back lo da allowsBackForwardNavigationGestures en el WebView.
+  // ═══════════════════════════════════════════════════════════════════════════
   useEffect(() => {
     if (Platform.OS !== 'android') return;
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -321,24 +338,11 @@ export default function App() {
   `;
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // RENDER
-  //
-  // Estructura de capas (de atrás hacia adelante):
-  //   1. Black background (siempre, never disappears)
-  //   2. WebView (con escala + opacity animadas — entra "desde adentro")
-  //   3. Splash overlay (con opacity animada — se desvanece al final)
-  //
-  // Notar: el WebView siempre está ahí, solo se hace visible al final.
-  // El fondo negro detrás del WebView garantiza CERO flash.
-  // ═══════════════════════════════════════════════════════════════════════════
-
-  // ═══════════════════════════════════════════════════════════════════════════
   // Construcción de gradientes con la paleta seleccionada
   //
   // FIX Android: los colores hex con alpha como sufijo (#RRGGBB + 'F2') NO son
   // soportados por expo-linear-gradient en Android. iOS los aceptaba.
   // El formato cross-platform seguro es rgba(r, g, b, a).
-  // Helper hexToRgba convierte de '#RRGGBB' + alpha 0..1 a 'rgba(r, g, b, a)'.
   // ═══════════════════════════════════════════════════════════════════════════
   const hexToRgba = (hex, alpha) => {
     const clean = hex.replace('#', '');
@@ -369,31 +373,30 @@ export default function App() {
     'rgba(0, 0, 0, 0)',
   ];
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // RENDER
+  //
+  // Estructura de capas (de atrás hacia adelante):
+  //   1. container negro (flex:1) — base persistente, nunca desaparece (cero flash)
+  //   2. webviewArea (flex:1) padeado por insets reactivos → WebView SIEMPRE en el
+  //      área visible real, pase lo que pase con las barras del sistema
+  //   3. Splash overlay (absoluteFill, full-screen) — se desvanece al final
+  // ═══════════════════════════════════════════════════════════════════════════
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar style="light" backgroundColor="#000000" translucent={false} />
+    <View style={styles.container}>
+      <StatusBar style="light" />
 
-      {/* CAPA 1: Fondo negro persistente — nunca desaparece, garantiza cero flash */}
-      <View style={styles.blackBackground} />
-
-      {/* CAPA 2: WebView SIN wrapper animado
-          
-          ARQUITECTURA QUE FUNCIONA EN ANDROID:
-          
-          react-native-webview en Android NO tolera estar envuelto en un
-          Animated.View que cambie sus propiedades (ni opacity ni scale).
-          Causa crash java.lang.String cannot be cast to java.lang.Double
-          durante createViewInstance. En iOS sí funciona.
-          
-          Solución: WebView siempre visible, sin animación propia. La 
-          transición al webview se logra ÚNICAMENTE con el splash overlay
-          haciendo fade out encima. El WebView ya está renderizado debajo
-          desde el inicio (invisible porque el splash lo cubre). Cuando el
-          splash hace fade, el WebView aparece naturalmente.
-          
-          Resultado visual: idéntico para el usuario. Cero animación del
-          WebView, todo el trabajo lo hace el fade del overlay. */}
-      <View style={styles.webviewWrapper}>
+      {/* CAPA 2: WebView anclado al área visible por insets reactivos.
+          paddingTop = barra de estado, paddingBottom = barra de navegación.
+          Si Android recompone alturas al volver del multitarea o al rotar, los
+          insets cambian y el WebView se reajusta solo. El contenido web (100vh/dvh)
+          nunca se desborda detrás de las barras. */}
+      <View
+        style={[
+          styles.webviewArea,
+          { paddingTop: insets.top, paddingBottom: insets.bottom },
+        ]}
+      >
         <WebView
           ref={webViewRef}
           source={{ uri }}
@@ -401,7 +404,7 @@ export default function App() {
           containerStyle={styles.webviewContainer}
           androidLayerType="hardware"
           cacheEnabled={true}
-          cacheMode="LOAD_CACHE_ELSE_NETWORK"
+          cacheMode="LOAD_DEFAULT"
           originWhitelist={['*']}
           allowsInlineMediaPlayback
           javaScriptEnabled
@@ -414,13 +417,16 @@ export default function App() {
           sharedCookiesEnabled={true}
           mediaPlaybackRequiresUserAction={false}
           allowsFullscreenVideo={true}
+          scalesPageToFit={true}
+          setBuiltInZoomControls={true}
+          setDisplayZoomControls={false}
           onMessage={handleMessage}
           onNavigationStateChange={handleNavigationStateChange}
           injectedJavaScript={injectedJS}
         />
       </View>
 
-      {/* CAPA 3: SPLASH OVERLAY — pantalla negra con la animación */}
+      {/* CAPA 3: SPLASH OVERLAY — full-screen (cubre también las áreas de las barras) */}
       {showSplashContent && (
         <Animated.View
           pointerEvents="none"
@@ -430,11 +436,13 @@ export default function App() {
             { opacity: splashOpacity },
           ]}
         >
-          {/* Línea aurora dopaminérgica (paleta aleatoria) */}
+          {/* Línea aurora dopaminérgica (paleta aleatoria) — centrada vertical
+              con la altura REACTIVA, así rota bien. */}
           <Animated.View
             style={[
               styles.lineContainer,
               {
+                top: SCREEN_HEIGHT / 2 - 1.25,
                 width: LINE_WIDTH,
                 opacity: lineOpacity,
                 transform: [{ translateX: lineX }],
@@ -488,40 +496,18 @@ export default function App() {
           </View>
         </Animated.View>
       )}
-
-      {/* BACK BUTTON */}
-      {canGoBack && (
-        <View style={styles.backButtonContainer}>
-          <TouchableOpacity
-            onPress={() => webViewRef.current && webViewRef.current.goBack()}
-            style={styles.backButton}
-            activeOpacity={0.8}
-          >
-            <View style={styles.backButtonInner}>
-              <Text style={styles.backChevron}>‹</Text>
-              <Text style={styles.backText}>Atrás</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-      )}
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  // Base negra persistente — flex:1, llena toda la pantalla (incl. detrás de barras).
   container: { flex: 1, backgroundColor: '#000000' },
 
-  // Fondo negro persistente — la base que nunca cambia
-  blackBackground: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#000000',
-  },
+  // Área del WebView — flex:1 dentro del container; el padding de insets la encoge
+  // al área visible real. Fondo negro detrás de las barras (look de barras negras).
+  webviewArea: { flex: 1, backgroundColor: '#000000' },
 
-  // WebView wrapper con transformaciones
-  webviewWrapper: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#000000',
-  },
   webview: { flex: 1, backgroundColor: '#000000' },
   webviewContainer: { backgroundColor: '#000000' },
 
@@ -531,13 +517,10 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
 
-  // Línea aurora — barra horizontal centrada verticalmente
-  // FIX Android: NO usar 'top: 50%' (string) — Android lo rechaza con
-  // java.lang.String cannot be cast to java.lang.Double. iOS lo toleraba.
-  // Calculamos la posición numérica directamente.
+  // Línea aurora — barra horizontal. El 'top' se calcula inline con la altura
+  // reactiva (no aquí) para que rote correctamente.
   lineContainer: {
     position: 'absolute',
-    top: SCREEN_HEIGHT / 2 - 1.25,
     left: 0,
     height: 2.5,
     zIndex: 5,
@@ -565,46 +548,5 @@ const styles = StyleSheet.create({
   },
   underlineFill: {
     flex: 1,
-  },
-
-  // Back button
-  backButtonContainer: {
-    position: 'absolute',
-    bottom: Platform.OS === 'ios' ? 40 : 24,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-    zIndex: 1000,
-  },
-  backButton: {
-    backgroundColor: 'rgba(20, 20, 24, 0.95)',
-    borderRadius: 30,
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.5,
-    shadowRadius: 10,
-    elevation: 6,
-  },
-  backButtonInner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  backChevron: {
-    color: '#FFFFFF',
-    fontSize: 22,
-    fontWeight: '400',
-    marginRight: 4,
-    marginTop: -2,
-  },
-  backText: {
-    color: '#FFFFFF',
-    fontSize: 15,
-    fontWeight: '600',
-    letterSpacing: 0.5,
   },
 });

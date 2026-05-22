@@ -2,10 +2,10 @@
   "expo": {
     "name": "Triggui",
     "slug": "trigguiapp",
-    "version": "1.0.2",
-    "orientation": "portrait",
+    "version": "1.0.3",
+    "orientation": "default",
     "icon": "./assets/adaptive-icon-1024.png",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "light",
     "backgroundColor": "#000000",
     "splash": {
       "image": "./assets/splashtriggui.png",
@@ -14,12 +14,12 @@
     },
     "android": {
       "package": "com.triggui.app",
-      "versionCode": 4,
+      "versionCode": 5,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon-1024.png",
         "backgroundColor": "#000000"
       },
-      "userInterfaceStyle": "dark",
+      "userInterfaceStyle": "light",
       "backgroundColor": "#000000",
       "jsEngine": "hermes"
     },
@@ -27,7 +27,7 @@
       "bundleIdentifier": "com.triggui.app",
       "buildNumber": "1.0.7",
       "supportsTablet": true,
-      "userInterfaceStyle": "dark",
+      "userInterfaceStyle": "light",
       "backgroundColor": "#000000",
       "infoPlist": {
         "NSAppTransportSecurity": {
@@ -44,7 +44,7 @@
         "expo-navigation-bar",
         {
           "position": "absolute",
-          "visibility": "hidden",
+          "visibility": "visible",
           "behavior": "inset-swipe",
           "backgroundColor": "#000000"
         }
