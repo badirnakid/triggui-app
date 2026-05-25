@@ -1155,7 +1155,7 @@ body::before {
 .edicion-eyebrow {
   display: block;
   /* 🌒 V15: aire arriba (separa del techo) + abajo (separa del título) */
-  margin: 6px 0 14px 0;
+  margin: 6px 27px 14px 27px;
   font-family: 'Archivo', sans-serif;
   font-size: 13px;
   font-weight: 600;
@@ -1183,7 +1183,7 @@ body::before {
   margin-left: 2px;
 }
 @media (max-width: 480px) {
-  .edicion-eyebrow { font-size: 12px; letter-spacing: 0.30em; margin-bottom: 8px; }
+  .edicion-eyebrow { font-size: 12px; letter-spacing: 0.30em; margin: 6px 22px 8px 22px; }
   .edicion-eyebrow-num { font-size: 20px; }
 }
 

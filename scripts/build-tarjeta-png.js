@@ -749,7 +749,7 @@ function buildHTML({
     /* 🌒 V15: aire arriba (separa del techo del card) + abajo (separa del título) */
     margin: 22px 0 32px 0;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 40px;
+    font-size: 22px;
     font-weight: 600;
     letter-spacing: 0.32em;
     text-transform: uppercase;
@@ -768,7 +768,7 @@ function buildHTML({
     font-weight: 700;
     font-style: italic;
     letter-spacing: 0;
-    font-size: 64px;
+    font-size: 37px;
     color: var(--accent, #1a1a1a);
     text-transform: none;
     vertical-align: baseline;
