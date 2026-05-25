@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { Platform, BackHandler, View, Animated, StyleSheet, Easing, useWindowDimensions } from 'react-native';
+import { Platform, BackHandler, View, Animated, StyleSheet, Easing, useWindowDimensions, TouchableOpacity, Text } from 'react-native';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -33,6 +33,12 @@ import * as SplashScreen from 'expo-splash-screen';
 //   4. Zoom explícito (accesibilidad): setBuiltInZoomControls + scalesPageToFit.
 //   5. cacheMode LOAD_DEFAULT (antes LOAD_CACHE_ELSE_NETWORK) → respeta headers HTTP;
 //      los cambios del web propagan sin republicar la app.
+//   6. Canvas del WebView por dominio (webBg): negro para Triggui (cero flash),
+//      blanco para sitios externos. Sin esto, el negro del WebView se asomaba bajo
+//      el <body> sin fondo opaco de sitios como Buscalibre y volvía ilegible su
+//      texto. Principio anti-parpadeo "light leads, dark trails": a claro se cambia
+//      en onLoadStart (antes de pintar), a oscuro en onLoadEnd (ya pintado) → la
+//      página saliente nunca bleedea. Replica el render de Chrome. Cross-platform.
 // ═══════════════════════════════════════════════════════════════════════════════
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -134,6 +140,14 @@ function AppInner() {
   const [animationFinished, setAnimationFinished] = useState(false);
   const [exitTriggered, setExitTriggered] = useState(false);
   const [showSplashContent, setShowSplashContent] = useState(true);
+
+  // Fondo (canvas) del WebView por dominio. Triggui = negro (cero flash, es dark
+  // por su CSS propio). Externos (Buscalibre, etc.) = blanco, porque muchos sitios
+  // NO pintan un fondo opaco en su <body> y confían en el blanco por defecto del
+  // navegador; si el canvas del WebView es negro, ese negro se asoma por debajo y
+  // el texto del sitio (diseñado para fondo claro) queda ilegible. Igualar el
+  // canvas a blanco para externos replica exactamente el render de Chrome.
+  const [webBg, setWebBg] = useState('#000000');
 
   // ═══════════════════════════════════════════════════════════════════════════
   // VALORES ANIMADOS
@@ -299,6 +313,34 @@ function AppInner() {
     if (event.nativeEvent.data === 'FIRST_PAINT') setWebViewReady(true);
   }, []);
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CANVAS DEL WEBVIEW — PRINCIPIO ANTI-PARPADEO ("light leads, dark trails")
+  //
+  // El canvas (#000/#fff) se asoma SOLO donde la página visible no pinta fondo
+  // opaco. Regla para que la página SALIENTE nunca herede un canvas más oscuro
+  // que el suyo (lo que causaría un bleed momentáneo):
+  //   • Transición HACIA CLARO (externo) → pinta blanco YA, en onLoadStart, antes
+  //     de pintar. Triggui (dark, body opaco) tapa ese blanco mientras transiciona
+  //     → cero flash en la salida.
+  //   • Transición HACIA OSCURO (Triggui) → pinta negro SOLO en onLoadEnd, cuando
+  //     Triggui ya pintó su body opaco. El flip es invisible y el sitio externo
+  //     saliente conserva su canvas blanco hasta el final → no bleedea oscuro.
+  // Las navegaciones cruzadas (Triggui⇄externo) son cargas completas → onLoadStart
+  // y onLoadEnd disparan siempre. Las SPA quedan dentro de un mismo dominio, donde
+  // el canvas ya es el correcto.
+  // ═══════════════════════════════════════════════════════════════════════════
+  const handleLoadStart = useCallback((e) => {
+    const url = e.nativeEvent && e.nativeEvent.url;
+    // Hacia un externo (claro): blanco adelante.
+    if (url && url.indexOf('triggui.com') === -1) setWebBg('#ffffff');
+  }, []);
+
+  const handleLoadEnd = useCallback((e) => {
+    const url = e.nativeEvent && e.nativeEvent.url;
+    // De vuelta en Triggui (oscuro): negro atrás, solo cuando ya pintó.
+    if (url && url.indexOf('triggui.com') !== -1) setWebBg('#000000');
+  }, []);
+
   const handleNavigationStateChange = useCallback((navState) => {
     const isHome = navState.url === uri || navState.url === uri + '/';
     setCanGoBack(!isHome && navState.canGoBack);
@@ -337,6 +379,17 @@ function AppInner() {
     true;
   `;
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // COLOR-SCHEME LIGHT POR DOMINIO (medida defensiva en sitios externos)
+  //
+  // NOTA: la causa real del "Buscalibre oscuro" NO era prefers-color-scheme — era
+  // el canvas negro del WebView asomándose bajo el <body> sin fondo opaco de
+  // Buscalibre (resuelto con webBg blanco para externos, arriba). Este meta es una
+  // salvaguarda adicional: declara que las páginas externas son light, evitando que
+  // el WebView aplique oscurecimiento algorítmico a sitios sin tema propio. Se
+  // inyecta SOLO en páginas que NO son triggui.com; Triggui (dark por su CSS) queda
+  // intacto. Corre antes de pintar contenido. Quirúrgico, por dominio, cross-platform.
+  // ═══════════════════════════════════════════════════════════════════════════
   const injectedBeforeLoad = `
     (function() {
       try {
@@ -414,8 +467,8 @@ function AppInner() {
         <WebView
           ref={webViewRef}
           source={{ uri }}
-          style={styles.webview}
-          containerStyle={styles.webviewContainer}
+          style={[styles.webview, { backgroundColor: webBg }]}
+          containerStyle={[styles.webviewContainer, { backgroundColor: webBg }]}
           androidLayerType="hardware"
           cacheEnabled={true}
           cacheMode="LOAD_DEFAULT"
@@ -435,11 +488,40 @@ function AppInner() {
           setBuiltInZoomControls={true}
           setDisplayZoomControls={false}
           onMessage={handleMessage}
+          onLoadStart={handleLoadStart}
+          onLoadEnd={handleLoadEnd}
           onNavigationStateChange={handleNavigationStateChange}
           injectedJavaScript={injectedJS}
           injectedJavaScriptBeforeContentLoaded={injectedBeforeLoad}
         />
       </View>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
+          BOTÓN DE REGRESO — SOLO iOS (Platform.OS === 'ios')
+          iOS no tiene barra de navegación nativa como Android, así que el back
+          visible vive aquí. Android NO lo renderiza (queda con su barra/gesto
+          nativo). Solo aparece cuando canGoBack === true (o sea, fuera de Triggui:
+          en Buscalibre/Penguin/externos); en el home de Triggui no se ve nada.
+          Diseño: círculo translúcido oscuro (contraste sobre cualquier fondo —
+          Buscalibre blanco u otro), arriba-izquierda dentro de la safe area
+          (respeta notch/Dynamic Island vía insets.top). El gesto de borde nativo
+          (allowsBackForwardNavigationGestures) sigue activo como respaldo.
+          Va fuera del webviewArea (flota encima del WebView) y antes del splash
+          (el splash lo tapa durante el arranque). */}
+      {Platform.OS === 'ios' && canGoBack && (
+        <TouchableOpacity
+          onPress={() => {
+            if (webViewRef.current) webViewRef.current.goBack();
+          }}
+          activeOpacity={0.7}
+          accessibilityRole="button"
+          accessibilityLabel="Regresar a Triggui"
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          style={[styles.iosBackButton, { top: insets.top + 8 }]}
+        >
+          <Text style={styles.iosBackChevron} accessible={false}>‹</Text>
+        </TouchableOpacity>
+      )}
 
       {/* CAPA 3: SPLASH OVERLAY — full-screen (cubre también las áreas de las barras) */}
       {showSplashContent && (
@@ -525,6 +607,31 @@ const styles = StyleSheet.create({
 
   webview: { flex: 1, backgroundColor: '#000000' },
   webviewContainer: { backgroundColor: '#000000' },
+
+  // Botón de regreso flotante — SOLO iOS. Círculo translúcido oscuro arriba-izq.
+  // El 'top' se setea inline con insets.top (safe area / notch). zIndex < splash
+  // (999) para que el splash lo tape al arrancar; > WebView para flotar encima.
+  iosBackButton: {
+    position: 'absolute',
+    left: 16,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(255, 255, 255, 0.25)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 500,
+  },
+  iosBackChevron: {
+    color: '#ffffff',
+    fontSize: 28,
+    lineHeight: 30,
+    marginLeft: -2,
+    marginTop: -2,
+    fontWeight: '300',
+  },
 
   overlay: {
     backgroundColor: '#000000',

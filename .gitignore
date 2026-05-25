@@ -1,0 +1,4 @@
+
+# Secretos locales (NUNCA commitear)
+.env.local
+.env*.local
