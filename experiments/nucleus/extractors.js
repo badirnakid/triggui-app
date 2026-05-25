@@ -1034,6 +1034,28 @@ function assertCompletionOK(response, label, maxTokens) {
   return content;
 }
 
+// AUTO-REINTENTO ANTI-TRUNCADO - si finish_reason=length o vacio, reintenta con mas tope.
+// Reusa assertCompletionOK para lanzar; refusal/content_filter no se reintentan.
+// Si tras el ladder sigue truncado/vacio -> lanza (fail-loud, ultima red).
+// El reintento solo dispara en truncada (raro); se cobra por tokens reales (centavos).
+async function createWithLengthRetry(openai, params, label, tokenLadder = [6000, 9000]) {
+  let response;
+  for (let i = 0; i < tokenLadder.length; i++) {
+    response = await openai.chat.completions.create({ ...params, max_tokens: tokenLadder[i] });
+    const choice = response?.choices?.[0];
+    const fr = choice?.finish_reason;
+    if (choice?.message?.refusal || fr === "content_filter") assertCompletionOK(response, label, tokenLadder[i]);
+    const recoverable = (fr === "length") || !choice?.message?.content;
+    if (recoverable && i < tokenLadder.length - 1) {
+      console.warn(`[nucleus] ${label} truncado/vacio (max_tokens=${tokenLadder[i]}) -> reintento con ${tokenLadder[i + 1]}`);
+      continue;
+    }
+    assertCompletionOK(response, label, tokenLadder[i]);
+    return response;
+  }
+  return response;
+}
+
 export async function extractContentES(openai, book, groundTruth, anchorsData, lens = "", options = {}) {
   const schemas = await loadSchemas();
   const crono = options.crono || cronobioContext();
@@ -1041,10 +1063,9 @@ export async function extractContentES(openai, book, groundTruth, anchorsData, l
   const temperature = options.temperature ?? 0.7;
 
 
-  const response = await openai.chat.completions.create({
+  const response = await createWithLengthRetry(openai, {
     model,
     temperature,
-    max_tokens: 6000, // 🌒 Capa C1: buffer >2x output (nucleus completo ES ~2500-3500 tokens)
     messages: [
       { role: "system", content: contentESSystemPrompt(crono) },
       { role: "user", content: contentESUserPrompt(book, groundTruth, anchorsData, lens) }
@@ -1053,9 +1074,7 @@ export async function extractContentES(openai, book, groundTruth, anchorsData, l
       type: "json_schema",
       json_schema: schemas.content_es
     }
-  });
-
-  assertCompletionOK(response, "contentES", 6000);
+  }, "contentES", [6000, 9000]);
 
 
   return {
@@ -1425,10 +1444,9 @@ export async function extractContentEN(openai, book, groundTruth, anchorsData, c
   const temperature = options.temperature ?? 0.7;
 
 
-  const response = await openai.chat.completions.create({
+  const response = await createWithLengthRetry(openai, {
     model,
     temperature,
-    max_tokens: 6000, // 🌒 Capa C1: buffer >2x output (nucleus completo EN ~2500-3500 tokens)
     messages: [
       { role: "system", content: contentENSystemPrompt() },
       { role: "user", content: contentENUserPrompt(book, groundTruth, anchorsData, cardES, lens) }
@@ -1437,9 +1455,7 @@ export async function extractContentEN(openai, book, groundTruth, anchorsData, c
       type: "json_schema",
       json_schema: schemas.content_en
     }
-  });
-
-  assertCompletionOK(response, "contentEN", 6000);
+  }, "contentEN", [6000, 9000]);
 
 
   return {
