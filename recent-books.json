@@ -71,6 +71,16 @@
       "timestamp": "2026-05-22T13:08:33.886Z",
       "trigger_input": "siento que no avanzo, estoy atorado",
       "selected_via": "constrained_catalog"
+    },
+    {
+      "titulo": "Gracias",
+      "autor": "Robert Emmons",
+      "slug": "gracias",
+      "titulo_normalizado": "gracias",
+      "autor_normalizado": "robert emmons",
+      "timestamp": "2026-05-25T17:38:12.385Z",
+      "trigger_input": "agradecimiento",
+      "selected_via": "discover_trigger"
     }
   ],
   "_note": "FIFO ring de últimos 30 libros generados por selección automática (constrained o discover). Filtro pre-rerank en validate-book.js. Inicializa vacío y se rellena con cada run exitoso. Si se borra, el sistema arranca limpio sin daño."
