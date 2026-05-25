@@ -619,6 +619,14 @@ function formatEdicionNumero(n) {
  * Garantía cuántico-quark: si retorna null, el caller usa el fallback legacy.
  * NUNCA rompe el email. Defensa total para libros pre-v12.
  */
+function stripEmojiParaEmail(s) {
+  // Doctrina Triggui: cero emojis en correo (deliverability cross-client).
+  return String(s == null ? "" : s)
+    .replace(/[\u{1F000}-\u{1FAFF}\u{2190}-\u{21FF}\u{2300}-\u{23FF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{1F1E6}-\u{1F1FF}\u{FE00}-\u{FE0F}\u{200D}\u{20E3}\u{FFFD}]/gu, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
 function pickSinfonicaPhrase(libro, rolesPreferidos, idioma) {
   const nucleus = (libro && libro._nucleus) || {};
   const isEN = (idioma === 'en');
@@ -638,7 +646,7 @@ function pickSinfonicaPhrase(libro, rolesPreferidos, idioma) {
     const rol = block.rol_sinfonico || block.role_symphonic;
     if (!rol) continue;
     pool.push({
-      phrase: String(block.phrase).trim(),
+      phrase: stripEmojiParaEmail(block.phrase),
       rol: rol,
       animo: block.eje_animo || block.mood_axis,
       origin: 'edition_block'
@@ -649,7 +657,7 @@ function pickSinfonicaPhrase(libro, rolesPreferidos, idioma) {
     const rol = og.rol_sinfonico || og.role_symphonic;
     if (!rol) continue;
     pool.push({
-      phrase: String(og.phrase).trim(),
+      phrase: stripEmojiParaEmail(og.phrase),
       rol: rol,
       animo: og.eje_animo || og.mood_axis,
       origin: 'og_phrase'
@@ -2272,7 +2280,7 @@ function prepararEmailParaEnvio(nombreDestinatario, emailDestinatario, rowIdx) {
     if (resp.getResponseCode() !== 200) {
       return { ok: false, reason: `HTTP ${resp.getResponseCode()} al leer contenido_manual.json` };
     }
-    const json = JSON.parse(resp.getContentText());
+    const json = JSON.parse(resp.getContentText("UTF-8"));
     libros = Array.isArray(json?.libros) ? json.libros : [];
   } catch (e) {
     return { ok: false, reason: "Error leyendo contenido_manual.json: " + e.message };
@@ -3439,7 +3447,7 @@ function guardarTarjetaEnDrive() {
   let libros = [];
   try {
     const resp = UrlFetchApp.fetch(CONTENIDO_URL);
-    libros = (JSON.parse(resp.getContentText()).libros || []);
+    libros = (JSON.parse(resp.getContentText("UTF-8")).libros || []);
   } catch (e) {
     Logger.log("❌ Error leyendo contenido_manual.json: " + e.message);
     return;
