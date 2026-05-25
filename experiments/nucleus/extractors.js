@@ -1019,6 +1019,21 @@ ANTES de devolver, aplica el PROTOCOLO DE AUTO-VALIDACIÓN del system prompt.`;
 }
 
 
+// GUARDIAN ANTI-TRUNCADO - mismo patron probado en csal-extractor.js (l.484-501)
+// Lanza si la respuesta vino cortada por max_tokens, rechazada, filtrada o vacia.
+// Asi una frase truncada NUNCA llega al contenido: se reintenta arriba o truena el build.
+function assertCompletionOK(response, label, maxTokens) {
+  const choice = response?.choices?.[0];
+  const finishReason = choice?.finish_reason;
+  const refusal = choice?.message?.refusal;
+  const content = choice?.message?.content;
+  if (refusal) throw new Error(`${label}_refusal: ${String(refusal).slice(0, 120)}`);
+  if (finishReason === "length") throw new Error(`${label}_truncado_por_max_tokens (excedio ${maxTokens}, finish_reason=length)`);
+  if (finishReason === "content_filter") throw new Error(`${label}_content_filter_blocked`);
+  if (!content) throw new Error(`${label}_empty_content (finish_reason=${finishReason || "unknown"})`);
+  return content;
+}
+
 export async function extractContentES(openai, book, groundTruth, anchorsData, lens = "", options = {}) {
   const schemas = await loadSchemas();
   const crono = options.crono || cronobioContext();
@@ -1039,6 +1054,8 @@ export async function extractContentES(openai, book, groundTruth, anchorsData, l
       json_schema: schemas.content_es
     }
   });
+
+  assertCompletionOK(response, "contentES", 6000);
 
 
   return {
@@ -1421,6 +1438,8 @@ export async function extractContentEN(openai, book, groundTruth, anchorsData, c
       json_schema: schemas.content_en
     }
   });
+
+  assertCompletionOK(response, "contentEN", 6000);
 
 
   return {
