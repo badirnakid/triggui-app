@@ -1088,10 +1088,6 @@ function renderTarjetaCard(libro, portadaRef, tarjetaKey, idioma, palabrasKey) {
   <table role="presentation" cellpadding="0" cellspacing="0" border="0"
          style="width:100%;max-width:${c.cardWidth}px;">
 
-    <!-- Eyebrow afuera del contenedor visual -->
-    <tr><td style="padding:0 4px ${c.spaceAfterEyebrow} 4px;">
-      ${eyebrowHTML}
-    </td></tr>
 
     <!-- ÚNICO contenedor visual con fondo blanco + border accent -->
     <tr><td>
@@ -1167,6 +1163,10 @@ function renderTarjetaCard(libro, portadaRef, tarjetaKey, idioma, palabrasKey) {
       </table>
     </td></tr>
 
+    <!-- Eyebrow afuera del contenedor visual -->
+    <tr><td style="padding:0 4px ${c.spaceAfterEyebrow} 4px;">
+      ${eyebrowHTML}
+    </td></tr>
     <!-- Botones afuera del contenedor -->
     <tr><td style="padding:0 4px;">
       ${botonesHTML}

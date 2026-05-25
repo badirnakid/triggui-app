@@ -1530,12 +1530,13 @@ body::before {
       <div class="ed-block" id="editorialBlockTop">
         <div class="ed-flow" id="editorialFlowTop">
           __COVER_CTA_HTML__
-          __EDICION_EYEBROW_HTML__
           <div class="ed-title" id="editorialTitle">__CARD_TITLE__</div>
           <div class="ed-chip" id="editorialChip">__CARD_AUTHOR__</div>
           <div class="ed-para" id="editorialTopPara">__TOP_HTML__</div>
         </div>
       </div>__SECOND_BLOCK_HTML__
+
+      __EDICION_EYEBROW_HTML__
 
       <div class="card-actions">
         <div class="btn-row btn-row-2">
@@ -2231,12 +2232,12 @@ setOverlayView('blocks');
     replacements = {
         # 🌒 NUMERACIÓN (V10): prefix "Edición #047 · " si hay número
         "__TITLE_PAGE__": esc(
-            f"Edición {edicion_label} · {titulo} · Triggui"
+            f"{titulo} · Triggui"
             if edicion_label
             else f"{palabra} · {titulo} · Triggui"
         ),
         "__OG_TITLE__": esc(
-            f"Edición {edicion_label} · {og_title}"
+            og_title
             if edicion_label
             else og_title
         ),

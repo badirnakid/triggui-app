@@ -849,10 +849,10 @@ function buildHTML({
       <div class="hero" id="content">
         <div class="flow">
           ${portadaSection}
-          ${edicionEyebrowSection}
           <div class="title" id="title">${escapeHTML(display.title)}</div>
           ${authorHTML}
           <div class="body-text" id="bodyText">${display.bodyHTML}</div>
+          ${edicionEyebrowSection}
         </div>
       </div>
       <div class="footer">
