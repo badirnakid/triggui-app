@@ -3077,48 +3077,6 @@ function handleBookReveal() {
       }
     })
     .catch(() => {});
-
-  const delay = 1500;
-  const userCount = getRealisticUserCount();
-
-  if (booksCount === 2) {
-    setTimeout(() => Modal.show({
-      emoji: '🔥', 
-      title: 'Cuando el impulso llega', 
-      text: 'El libro ya te espera en WhatsApp.<span class="m-highlight">Si no puedes leerlo ahora, ahí se queda esperando.</span>',
-      btnText: 'Quiero mi chispa semanal', 
-      onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
-      showCancel: true, 
-      cancelText: 'Seguir explorando'
-    }), delay);
-  } else if (booksCount === 5) {
-    setTimeout(() => Modal.show({
-      emoji: '⚡', 
-      title: 'La persistencia del impulso', 
-      text: 'Una idea por semana. Directo a tu WhatsApp. 30 segundos.<span class="m-highlight">$149/mes · Cancela cuando quieras</span>',
-      btnText: 'Activar ahora', 
-      onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
-      showCancel: true
-    }), delay);
-  } else if (booksCount === 10) {
-    setTimeout(() => Modal.show({
-      emoji: '🧠', 
-      title: 'No es falta de ganas', 
-      text: `Es fricción de empezar. ${userCount} personas lo eliminaron hoy.<span class="m-highlight">El libro te encuentra por WhatsApp</span>`,
-      btnText: 'Suscribirme', 
-      onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
-      showCancel: true
-    }), delay);
-  } else if ([15, 20, 30, 50, 75, 100].includes(booksCount)) {
-    setTimeout(() => Modal.show({
-      emoji: '💎', 
-      title: `${booksCount} chispas activadas`, 
-      text: 'Empezar ya no se siente pesado.<span class="m-highlight">Precio de lanzamiento hoy</span>',
-      btnText: 'Ver planes', 
-      onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
-      showCancel: true
-    }), delay);
-  }
 }
 
 // === LIKE & SHARE ===
