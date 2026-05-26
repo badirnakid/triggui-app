@@ -136,6 +136,7 @@ function AppInner() {
   const LINE_WIDTH = SCREEN_WIDTH * 1.4;
 
   const [canGoBack, setCanGoBack] = useState(false);
+  const [isExternal, setIsExternal] = useState(false); // iOS back: solo fuera de triggui.com
   const [webViewReady, setWebViewReady] = useState(false);
   const [animationFinished, setAnimationFinished] = useState(false);
   const [exitTriggered, setExitTriggered] = useState(false);
@@ -344,6 +345,9 @@ function AppInner() {
   const handleNavigationStateChange = useCallback((navState) => {
     const isHome = navState.url === uri || navState.url === uri + '/';
     setCanGoBack(!isHome && navState.canGoBack);
+    // iOS back: SOLO en URLs externas (fuera de triggui.com). Internas (/, /kids, /t/*, futuras) NO lo muestran.
+    const isExternalUrl = !!navState.url && navState.url.indexOf('triggui.com') === -1;
+    setIsExternal(isExternalUrl && navState.canGoBack);
   }, []);
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -500,7 +504,7 @@ function AppInner() {
           BOTÓN DE REGRESO — SOLO iOS (Platform.OS === 'ios')
           iOS no tiene barra de navegación nativa como Android, así que el back
           visible vive aquí. Android NO lo renderiza (queda con su barra/gesto
-          nativo). Solo aparece cuando canGoBack === true (o sea, fuera de Triggui:
+          nativo). Solo aparece cuando isExternal === true (fuera de triggui.com) (o sea, fuera de Triggui:
           en Buscalibre/Penguin/externos); en el home de Triggui no se ve nada.
           Diseño: círculo translúcido oscuro (contraste sobre cualquier fondo —
           Buscalibre blanco u otro), arriba-izquierda dentro de la safe area
@@ -508,7 +512,7 @@ function AppInner() {
           (allowsBackForwardNavigationGestures) sigue activo como respaldo.
           Va fuera del webviewArea (flota encima del WebView) y antes del splash
           (el splash lo tapa durante el arranque). */}
-      {Platform.OS === 'ios' && canGoBack && (
+      {Platform.OS === 'ios' && isExternal && (
         <TouchableOpacity
           onPress={() => {
             if (webViewRef.current) webViewRef.current.goBack();
