@@ -12,7 +12,8 @@
       "ios": {
         "simulator": false,
         "image": "latest"
-      }
+      },
+      "autoIncrement": true
     },
     "preview": {
       "distribution": "internal",
