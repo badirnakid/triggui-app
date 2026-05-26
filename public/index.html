@@ -8027,7 +8027,7 @@ bootTriggui();
   var BOCADO_DELAY_MS = 100;
   var TOP_K = 5;
   var MAX_QUERY_LIBROS = 2; // rotaciones permitidas antes del popup
-  var STRIPE_LINK = 'https://buy.stripe.com/8x2dRb4Zw6YkcuIbzf24003';
+  var STRIPE_LINK = ''; // link de pago retirado por politica de tiendas (Google/Apple)
 
   // ══════════════════════════════════════════════════════════════════════
   // STATE
@@ -9085,6 +9085,7 @@ bootTriggui();
   }
 
   function showSuscribetePopup(reason) {
+    return; // popup desactivado: comercio retirado por politica de tiendas (Google/Apple)
     ensureSuscribetePopup();
     var overlay = document.getElementById('triggui-suscribete-overlay');
     if (!overlay) return;
@@ -9139,19 +9140,15 @@ bootTriggui();
 
     queryCurrentIdx++;
 
-    // Después de MAX_QUERY_LIBROS rotaciones → popup
-    if (queryCurrentIdx >= MAX_QUERY_LIBROS || queryCurrentIdx >= queryCandidates.length) {
-      queryCurrentIdx--; // rollback para próximos clicks
-      if (typeof console !== 'undefined' && console.log) console.log('[Triggui Dado v10] límite alcanzado idx=' + queryCurrentIdx + ' candidates=' + queryCandidates.length + ' → popup');
-      showSuscribetePopup('dado_limit');
-      return;
+    // 🔄 v11: dado SIN tope — rueda libre SECUENCIAL por el pool, loopeando al inicio (sin popup, sin paywall)
+    if (queryCurrentIdx >= queryCandidates.length) {
+      queryCurrentIdx = 0; // volver al inicio del pool y seguir rodando
     }
 
     var nextLibro = queryCandidates[queryCurrentIdx];
     if (!nextLibro) {
       queryCurrentIdx--;
-      if (typeof console !== 'undefined' && console.log) console.log('[Triggui Dado v10] nextLibro null → popup');
-      showSuscribetePopup('dado_no_libro');
+      if (typeof console !== 'undefined' && console.log) console.log('[Triggui Dado v11] nextLibro null → no-op (sin popup)');
       return;
     }
 
@@ -9538,8 +9535,7 @@ bootTriggui();
     // se puede llamar inmediatamente sin esperar a btnOtro
     setupRobustBtnOtroHandler();
 
-    // Pre-crear el popup (lazy)
-    try { ensureSuscribetePopup(); } catch (_) {}
+    // Pre-crear el popup: DESACTIVADO (comercio retirado por politica de tiendas)
 
     // 🔥 v10.1: Iniciar timer de permanencia para popup contextual
     startSessionTimer();
