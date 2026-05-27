@@ -1,0 +1,11 @@
+#!/bin/bash
+# 🌒 Auto-sync: public/kids/index.html SIEMPRE espejo de public/index.html.
+# /kids/ requiere index.html físico (la rewrite de Vercel sola da 404 — ver v3.8.8).
+# ⚠️ NO editar public/kids/index.html a mano: se regenera desde public/index.html.
+set -e
+if git diff --cached --name-only | grep -qx "public/index.html"; then
+  echo "🌒 pre-commit: public/index.html cambió → sincronizando kids…"
+  bash sync-kids-index.sh
+  git add public/kids/index.html
+  echo "✅ public/kids/index.html sincronizado y agregado al commit"
+fi
