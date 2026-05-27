@@ -107,6 +107,24 @@ html[data-mode="kids"] #barraSkip .bm-skip-indicator {
 }
 
 
+/* ═══ 5b. LANG TOGGLE — sticker claro (espejo del adulto, legible sobre blanco) ═══ */
+html[data-mode="kids"] #barraLangToggle {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1.5px solid rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+html[data-mode="kids"] #barraLangToggle span {
+  color: rgba(0, 0, 0, 0.5) !important;
+}
+html[data-mode="kids"] #barraLangToggle span.lang-active {
+  color: #fff !important;
+  background: #000 !important;
+  box-shadow: none !important;
+}
+
+
 /* ═══ 6. INPUT WRAPPER STICKER ═══ */
 html[data-mode="kids"] #barraInputWrap {
   background: var(--kids-canvas) !important;
