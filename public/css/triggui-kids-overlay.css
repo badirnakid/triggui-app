@@ -98,12 +98,12 @@ html[data-mode="kids"] #barraSkip .bm-skip-seg-all {
 
 /* Active "Kids" — contrast auto si accent llega, negro fallback */
 html[data-mode="kids"] #barraSkip .bm-skip-seg-kids {
-  color: var(--triggui-accent-contrast, var(--kids-ink)) !important;
+  color: var(--bm-accent-contrast, var(--kids-ink)) !important;
 }
 
 /* Indicator — accent del libro si llega, YELLOW fallback */
 html[data-mode="kids"] #barraSkip .bm-skip-indicator {
-  background: var(--triggui-accent, var(--kids-yellow)) !important;
+  background: var(--bm-accent, var(--kids-yellow)) !important;
 }
 
 
@@ -133,7 +133,7 @@ html[data-mode="kids"] #barraInput::placeholder {
 
 /* ═══ 7. BOTÓN SUBMIT — HÍBRIDO (accent → CORAL fallback) ═══ */
 html[data-mode="kids"] #barraSubmit {
-  background: var(--triggui-accent, var(--kids-coral)) !important;
+  background: var(--bm-accent, var(--kids-coral)) !important;
   background-image: none !important;
   border: var(--kids-stroke) solid var(--kids-ink) !important;
   box-shadow: none !important;
@@ -141,7 +141,7 @@ html[data-mode="kids"] #barraSubmit {
 
 html[data-mode="kids"] #barraSubmit svg,
 html[data-mode="kids"] #barraSubmit svg * {
-  stroke: var(--triggui-accent-contrast, var(--kids-ink)) !important;
+  stroke: var(--bm-accent-contrast, var(--kids-ink)) !important;
   fill: none !important;
 }
 

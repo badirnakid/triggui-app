@@ -5845,6 +5845,7 @@ BarraMagica.applyStrings = function() {
     overlay.style.setProperty('--bm-accent-40', hexToRgba(accentColor, 0.40));
     overlay.style.setProperty('--bm-accent-10', hexToRgba(accentColor, 0.10));
     overlay.style.setProperty('--bm-accent-18', hexToRgba(accentColor, 0.18));
+    overlay.style.setProperty('--bm-accent-contrast', pickTextColor(accentColor));
   }
 
   // Placeholder contextual: elige basado en comportamiento del usuario
@@ -7197,6 +7198,7 @@ bootTriggui();
     overlay.style.setProperty('--bm-accent-40', hsla(ac.h, ac.s, ac.l, 0.40));
     overlay.style.setProperty('--bm-accent-10', hsla(ac.h, ac.s, ac.l, 0.10));
     overlay.style.setProperty('--bm-accent-18', hsla(ac.h, ac.s, ac.l, 0.18));
+    overlay.style.setProperty('--bm-accent-contrast', pickTextColor(hslToHex(ac.h, ac.s, ac.l)));
 
     // ── BOTÓN GO (#barraSubmit) — gradient del accent + segundo color ───
     // CSS base lo deja en linear-gradient(135deg, #FF5E00, #FF0055) hardcoded.
