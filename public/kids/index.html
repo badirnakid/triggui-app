@@ -13,7 +13,7 @@
 <link rel="preload" as="image" href="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png">
 <link rel="preload" as="image" href="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletrasblanco2.png">
 <link rel="preload" as="image" href="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/buscalibre.png">
-<link rel="preload" as="image" href="/logopenguin.png">
+<link rel="preload" as="image" href="logopenguin.png">
 
 <style id="base-styles">
   html, body { 
@@ -2285,7 +2285,7 @@ html[data-mode="kids"]  #barraSkip .bm-skip-seg-kids {
   font-family: -apple-system, 'SF Pro Text', 'Archivo', sans-serif;
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 1.5px;
+  letter-spacing: 0.3px;
   backdrop-filter: blur(24px) saturate(1.4);
   -webkit-backdrop-filter: blur(24px) saturate(1.4);
   cursor: pointer;
@@ -2316,7 +2316,6 @@ html[data-mode="kids"]  #barraSkip .bm-skip-seg-kids {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
-#barraLangToggle span.lang-inactive,
 #barraLangToggle .lang-sep { display: none; }
 
 /* 🌒 v3.8.7 — Mantener kids-mode cards más amables (de v3.8.6 CAPA 3) */
@@ -2593,9 +2592,9 @@ html.kids-mode #tarjetaCard {
   </div>
 
   <button id="barraLangToggle" class="bm-first-appear" type="button" aria-label="Toggle language">
-    <span id="langToggleEs" class="lang-active">ES</span>
+    <span id="langToggleEs" class="lang-active">Español</span>
     <span class="lang-sep">·</span>
-    <span id="langToggleEn" class="lang-inactive">EN</span>
+    <span id="langToggleEn" class="lang-inactive">English</span>
   </button>
 
   <div class="barra-magica-inner">
@@ -3077,48 +3076,6 @@ function handleBookReveal() {
       }
     })
     .catch(() => {});
-
-  const delay = 1500;
-  const userCount = getRealisticUserCount();
-
-  if (booksCount === 2) {
-    setTimeout(() => Modal.show({
-      emoji: '🔥', 
-      title: 'Cuando el impulso llega', 
-      text: 'El libro ya te espera en WhatsApp.<span class="m-highlight">Si no puedes leerlo ahora, ahí se queda esperando.</span>',
-      btnText: 'Quiero mi chispa semanal', 
-      onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
-      showCancel: true, 
-      cancelText: 'Seguir explorando'
-    }), delay);
-  } else if (booksCount === 5) {
-    setTimeout(() => Modal.show({
-      emoji: '⚡', 
-      title: 'La persistencia del impulso', 
-      text: 'Una idea por semana. Directo a tu WhatsApp. 30 segundos.<span class="m-highlight">$149/mes · Cancela cuando quieras</span>',
-      btnText: 'Activar ahora', 
-      onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
-      showCancel: true
-    }), delay);
-  } else if (booksCount === 10) {
-    setTimeout(() => Modal.show({
-      emoji: '🧠', 
-      title: 'No es falta de ganas', 
-      text: `Es fricción de empezar. ${userCount} personas lo eliminaron hoy.<span class="m-highlight">El libro te encuentra por WhatsApp</span>`,
-      btnText: 'Suscribirme', 
-      onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
-      showCancel: true
-    }), delay);
-  } else if ([15, 20, 30, 50, 75, 100].includes(booksCount)) {
-    setTimeout(() => Modal.show({
-      emoji: '💎', 
-      title: `${booksCount} chispas activadas`, 
-      text: 'Empezar ya no se siente pesado.<span class="m-highlight">Precio de lanzamiento hoy</span>',
-      btnText: 'Ver planes', 
-      onConfirm: () => window.open('https://triggui.com/#planes', '_blank'),
-      showCancel: true
-    }), delay);
-  }
 }
 
 // === LIKE & SHARE ===
@@ -3699,7 +3656,7 @@ btnShare.onclick = () => {
            rel="noopener noreferrer"
            class="btn-action btn-penguin"
            data-action="penguin">
-           <img src="/logopenguin.png" 
+           <img src="logopenguin.png" 
                 alt="Penguin Random House">
            <span>Explorar en Penguin</span>
         </a>
@@ -4395,7 +4352,561 @@ function quantumScore(queryVector, libro) {
 // FIN BLOQUE QUANTUM
 // ══════════════════════════════════════════════════════════════════════════
 
-const TrigguiFiltro = {
+
+// ════════════════════════════════════════════════════════════════════════════
+// V15 SPRINT B FASE 1 — NIVEL DIOS CUÁNTICO-QUARK
+// Analizador de input + inferencia de punto del ciclo
+// Integra doctrina REAL de Badir (mayo 2026):
+//   - 7 pilares vitales con keywords curados a mano
+//   - 4 puntos del ciclo (cero/creativo/activo/maximo) labels EN (space/think/do/burn)
+//   - Mapeo HORA → PUNTO biológicamente correcto (decisión del juez 14-16h)
+//   - Detección de punto desde keywords del input (input gana sobre hora)
+// ════════════════════════════════════════════════════════════════════════════
+
+// ────────────────────────────────────────────────────────────────────────────
+// MAPA KEYWORDS → PILAR (7 pilares oficiales Triggui)
+// Curados por Badir (imagen 1) + expansión coherente
+// ────────────────────────────────────────────────────────────────────────────
+const KEYWORDS_PILARES_V15 = {
+  salud_fisica: [
+    // Curado por Badir
+    'energia', 'ejercicio', 'orden', 'limpieza', 'ayuno', 'disciplina',
+    'autoconocimiento', 'moderacion', 'voluntad',
+    // Expansión: estados y vocabulario común
+    'cansado', 'cansada', 'agotado', 'agotada', 'fatiga', 'dolor', 'duele',
+    'cuerpo', 'sueño', 'insomnio', 'dormir', 'descansar', 'descanso',
+    'salud', 'enfermo', 'enferma', 'malestar', 'deporte', 'gym',
+    'comida', 'alimentacion', 'nutricion', 'bienestar', 'fuerza'
+  ],
+
+  salud_emocional: [
+    // Curado por Badir
+    'expresar', 'emociones', 'emocion', 'presente', 'conciencia',
+    'consciencia', 'dominar',
+    // Expansión
+    'sentir', 'sentimiento', 'sentimientos', 'estado', 'animo'
+  ],
+
+  familia: [
+    // Curado por Badir
+    'familia', 'aportar', 'dinamica', 'comunicacion', 'armonia',
+    'equilibrio', 'amor', 'alegria', 'diligencia', 'presencia', 'empatia',
+    // Roles familiares
+    'hijos', 'hijo', 'hija', 'padres', 'mama', 'papa', 'mami', 'papi',
+    'madre', 'padre', 'hermano', 'hermana', 'tio', 'tia',
+    'abuelo', 'abuela', 'sobrino', 'sobrina', 'primo', 'prima',
+    'casa', 'hogar'
+  ],
+
+  negocios: [
+    // Curado por Badir
+    'enfoque', 'simplicidad', 'confianza', 'perseverancia', 'determinacion',
+    'honestidad', 'mejora', 'continua', 'valor', 'tiempo', 'inteligente',
+    'empatia',
+    // Vocabulario de trabajo
+    'trabajo', 'trabajar', 'jefe', 'jefa', 'sueldo', 'negocio', 'empresa',
+    'emprendimiento', 'emprender', 'proyecto', 'cliente', 'venta', 'vender',
+    'marketing', 'equipo', 'ceo', 'oficina', 'reunion'
+  ],
+
+  espiritualidad: [
+    // Curado por Badir
+    'fe', 'sabiduria', 'reflexion', 'iluminacion', 'paciencia', 'silencio',
+    'claridad', 'tranquilidad', 'aislamiento',
+    // Espiritual amplio
+    'espiritual', 'sentido', 'proposito', 'vacio', 'meditacion', 'meditar',
+    'rezar', 'oracion', 'dios', 'alma', 'religion'
+  ],
+
+  relaciones_clave: [
+    // Curado por Badir
+    'gratitud', 'compasion', 'humildad', 'calidez', 'empatia',
+    'generosidad', 'respeto',
+    // Vocabulario de relaciones
+    'pareja', 'novia', 'novio', 'esposa', 'esposo', 'amar',
+    'pelea', 'separacion', 'divorcio', 'matrimonio', 'relacion', 'enamorado',
+    'amigo', 'amiga', 'amigos', 'amigas', 'soledad', 'solo', 'sola',
+    'fiesta', 'comunidad', 'grupo', 'gente', 'vinculo'
+  ],
+
+  salud_financiera: [
+    // Curado por Badir
+    'frugalidad', 'estabilidad', 'seguridad', 'libertad',
+    // Vocabulario financiero
+    'dinero', 'plata', 'deuda', 'gastos', 'pagar', 'pago', 'finanzas',
+    'ahorrar', 'ahorro', 'inversion', 'invertir', 'riqueza', 'pobreza',
+    'cuenta', 'banco', 'credito'
+  ]
+};
+
+// ────────────────────────────────────────────────────────────────────────────
+// MAPA KEYWORDS → PUNTO DEL CICLO (4 puntos oficiales Triggui)
+// Curados por Badir (imagen 2)
+// Naming interno: español (cero/creativo/activo/maximo)
+// Label EN: space/think/do/burn (para UI futura bilingual)
+// ────────────────────────────────────────────────────────────────────────────
+const KEYWORDS_PUNTOS_V15 = {
+  // SPACE — Lo opuesto de burn. Recuperación, presencia, intuición.
+  cero: [
+    'descanso', 'descansar', 'pausa', 'naturaleza', 'pasto',
+    'silencio', 'meditar', 'meditacion', 'intuicion', 'recuperarme',
+    'recuperar', 'recuperate', 'aislamiento', 'aislado',
+    'incertidumbre', 'parentesis', 'transicion', 'interior',
+    'integridad', 'etica', 'madrugar', 'autocontrol',
+    'metafisica', 'intangible', 'ahora', 'cuenta', 'distraccion',
+    'aburrimiento', 'aburrido', 'aburrida', 'vacaciones',
+    'reconectar', 'desconectar', 'retirarme', 'pause', 'sosiego'
+  ],
+
+  // THINK — Ideación, planeación, claridad creativa
+  creativo: [
+    'plan', 'planear', 'planeacion', 'actitud', 'mentalidad',
+    'positiva', 'positivo', 'despierta', 'motivacion', 'atencion',
+    'decidir', 'decidete', 'impulso', 'prioridad', 'valores',
+    'virtudes', 'principios', 'imposible', 'elegir', 'elige',
+    'disfrutar', 'proceso', 'enfocar', 'sistemas', 'sistema',
+    'holistico', 'estructurado', 'funcional', 'sincronia',
+    'diferenciar', 'diferente', 'distinto', 'asertivo',
+    'visualizar', 'visualiza', 'detalles', 'marca', 'idea',
+    'ideas', 'crear', 'creatividad', 'reflexionar', 'analizar',
+    'sencillez', 'pensar', 'pensamiento'
+  ],
+
+  // DO — Ejecución, acción, ritmo
+  activo: [
+    'haciendo', 'hacer', 'coraje', 'huevos',
+    'inventar', 'inventa', 'crecer', 'crece', 'innovar',
+    'innova', 'habitos', 'habito', 'paso', 'frecuencia',
+    'atravesar', 'obstaculo', 'limites', 'limite',
+    'liderar', 'lidera', 'dialogo', 'conversacion', 'palabras',
+    'business', 'modelo', 'templanza', 'conexion', 'relaciones',
+    'hazlo', 'rutina', 'constancia', 'consistencia',
+    'pares', 'parar', 'ejecutar', 'ejecucion', 'accion',
+    'actuar', 'mover'
+  ],
+
+  // BURN — Intensidad máxima, alto rendimiento, esfuerzo total
+  maximo: [
+    'maximo', 'burn', 'burnout', 'estres', 'adiccion',
+    'maestro', 'aguantar', 'aguanta', 'vara', 'resistir',
+    'resiste', 'resiliencia', 'autodisciplina', 'control', 'quejar',
+    'quejarte', 'rugir', 'ruge', 'incomodidad', 'voluntaria',
+    'ganar', 'gana', 'beneficio', 'rewards', 'ganas', 'hedonica',
+    'automatizar', 'automatiza', 'repeticion', 'intensidad', 'intenso',
+    'extremo'
+  ]
+};
+
+// ────────────────────────────────────────────────────────────────────────────
+// MAPA KEYWORDS → NIVEL HAWKINS (escala emocional 20-700)
+// ────────────────────────────────────────────────────────────────────────────
+const KEYWORDS_HAWKINS_V15 = {
+  20:  ['verguenza', 'culpa', 'humillado', 'humillada', 'arrepentido', 'arrepentida'],
+  50:  ['apatia', 'desesperanza', 'desmotivado', 'desmotivada', 'inutil', 'rendido', 'rendida'],
+  75:  ['triste', 'tristeza', 'duelo', 'perdida', 'depresion', 'deprimido', 'deprimida', 'llorar', 'desbordado', 'desbordada', 'roto', 'rota'],
+  100: ['miedo', 'ansiedad', 'panico', 'preocupado', 'preocupada', 'angustia', 'angustiado', 'angustiada', 'nervioso', 'nerviosa'],
+  125: ['deseo', 'envidia', 'antojo', 'celos', 'necesito', 'quiero', 'extrano'],
+  150: ['ira', 'enojo', 'enojado', 'enojada', 'rabia', 'frustracion', 'frustrado', 'frustrada', 'odio'],
+  175: ['orgullo', 'arrogante', 'soberbio', 'soberbia'],
+  200: ['valor', 'enfrentar', 'decision'],
+  250: ['neutralidad', 'aceptar', 'soltar', 'tranquilo', 'tranquila'],
+  310: ['compromiso', 'intencion'],
+  350: ['aceptacion', 'perdon', 'paz'],
+  400: ['razon', 'entender', 'logica', 'comprension'],
+  500: ['agradecimiento', 'conexion'],
+  540: ['felicidad', 'feliz', 'gozo', 'contento', 'contenta'],
+  600: ['serenidad'],
+  700: ['union']
+};
+
+const NIVELES_HAWKINS_V15 = [20, 50, 75, 100, 125, 150, 175, 200, 250, 310, 350, 400, 500, 540, 600, 700, 1000];
+
+// ────────────────────────────────────────────────────────────────────────────
+// MAPA NAMING ES → EN para los 4 puntos (UI bilingual futura)
+// ────────────────────────────────────────────────────────────────────────────
+const PUNTO_LABEL_EN_V15 = {
+  cero:     'space',
+  creativo: 'think',
+  activo:   'do',
+  maximo:   'burn'
+};
+
+
+// ════════════════════════════════════════════════════════════════════════════
+// V15 SPRINT B FASE 1.1 — EXPANSIÓN DE KEYWORDS NIVEL DIOS
+// Agrega variantes morfológicas y keywords críticos faltantes
+// MERGE en runtime con los mapas originales — no rompe Sprint B Fase 1
+// ════════════════════════════════════════════════════════════════════════════
+
+// HAWKINS EXTRA: keywords críticos que faltaban
+const KEYWORDS_HAWKINS_EXTRA_V15 = {
+  20:  ['humillacion', 'culpable'],
+  50:  ['rendirse', 'sin esperanza', 'agobiado', 'agobiada', 'hartos', 'harta', 'harto'],
+  75:  ['llorando', 'lloro', 'duelo', 'desconsuelo', 'lastimado', 'lastimada', 'dolido', 'dolida'],
+  100: ['ansioso', 'ansiosa', 'preocupacion', 'temor', 'miedos', 'inseguridad', 'inseguro', 'insegura'],
+  125: ['ansiedad', 'queriendo', 'anhelar', 'anhelo'],
+  150: [
+    // Keywords faltantes que detecté en TEST 1
+    'pelea', 'pelearon', 'pelearse', 'peleando', 'peleados', 'peleamos',
+    'conflicto', 'conflictos', 'conflictiva', 'conflictivo',
+    'discusion', 'discusiones', 'discutir', 'discutimos', 'discutiendo',
+    'pleito', 'pleitos',
+    'agresion', 'agresivo', 'agresiva', 'agresividad',
+    'molesto', 'molesta', 'molestia', 'molestos', 'molestas',
+    'furia', 'furioso', 'furiosa',
+    'fastidio', 'fastidiado', 'fastidiada'
+  ],
+  200: ['decidiendo', 'decision', 'animo'],
+  250: ['calma', 'aceptando', 'soltando'],
+  310: ['compromiso', 'comprometido', 'comprometida', 'voluntad'],
+  350: ['paz interior', 'perdonar'],
+  400: ['comprendiendo', 'analizar', 'razonar'],
+  500: ['amando', 'agradeciendo'],
+  540: ['contentos', 'contentas', 'alegre'],
+  600: ['paz absoluta'],
+  700: ['iluminado', 'iluminada']
+};
+
+// PILARES EXTRA: variantes morfológicas y keywords faltantes
+const KEYWORDS_PILARES_EXTRA_V15 = {
+  salud_fisica: [
+    // Verbos y variantes
+    'ejercitar', 'ejercitando', 'ejercitarse', 'ejercito',
+    'descansando', 'reposar', 'reposando',
+    'durmiendo', 'dormido', 'dormida',
+    'moderar', 'moderando', 'moderarse',
+    'limpiar', 'limpiando', 'ordenar', 'ordenando',
+    'ayunar', 'ayunando',
+    'disciplinarme', 'disciplinarse',
+    'gimnasio', 'correr', 'caminar', 'caminando',
+    'meditar', 'meditando' // también espiritualidad
+  ],
+
+  salud_emocional: [
+    // Expresiones de estados
+    'sintiendo', 'sentido', 'sentida',
+    'enojado', 'enojada', // también hawkins
+    'frustrado', 'frustrada',
+    'expresando', 'expresarse',
+    'desahogarse', 'desahogo'
+  ],
+
+  familia: [
+    // Variantes verbales
+    'familiar', 'familiares',
+    'amando', 'amar',
+    'comunicar', 'comunicando',
+    'aportando',
+    'equilibrar', 'balancear', 'balanceando'
+  ],
+
+  negocios: [
+    // VERBOS críticos que faltaban (TEST 2 reveló esto)
+    'enfocar', 'enfocando', 'enfocado', 'enfocada', 'enfocarme',
+    'concentrar', 'concentrarse', 'concentrando',
+    'decidir', 'decidiendo', 'decidirse',
+    'construir', 'construyendo', 'construido', 'construida',
+    'emprender', 'emprendiendo', 'emprendedor',
+    'liderar', 'liderando', 'lider', 'liderazgo',
+    'agregar', 'agregando',
+    'mejorar', 'mejorando',
+    'aprender', 'aprendiendo',
+    'crecer', 'creciendo',
+    'desarrollar', 'desarrollando',
+    'trabajando', 'trabajo', 'trabajos',
+    'productividad', 'productivo', 'productiva',
+    'estrategia', 'estrategico', 'estrategica',
+    'reuniones', 'objetivos', 'metas', 'meta',
+    'startup', 'idea', 'ideas', 'innovacion'
+  ],
+
+  espiritualidad: [
+    // Verbos y variantes
+    'reflexionar', 'reflexionando',
+    'iluminarse', 'iluminando',
+    'meditar', 'meditando', 'meditacion',
+    'silenciar', 'silenciando',
+    'aislarse', 'aislando',
+    'orar', 'orando',
+    'contemplar', 'contemplando', 'contemplativo',
+    'creer', 'creyendo'
+  ],
+
+  relaciones_clave: [
+    // Variantes verbales + estados
+    'agradecer', 'agradeciendo', 'agradecido', 'agradecida',
+    'respetar', 'respetando',
+    'compadecer', 'compadeciendo',
+    'dar', 'dando',
+    'amistad', 'amistades',
+    'conocidos', 'compañero', 'compañera',
+    'reunirse', 'reuniendo',
+    'separados', 'separadas', 'separarse',
+    'romper', 'rompimos', 'ruptura'
+  ],
+
+  salud_financiera: [
+    // Variantes verbales
+    'ahorrando',
+    'pagando',
+    'gastando', 'gastos', 'gastar',
+    'invirtiendo', 'invertir',
+    'cobrar', 'cobrando',
+    'facturar', 'facturando',
+    'crediticio', 'creditos',
+    'banco', 'bancos'
+  ]
+};
+
+// PUNTOS EXTRA: variantes morfológicas
+const KEYWORDS_PUNTOS_EXTRA_V15 = {
+  cero: [
+    // Variantes de space
+    'descansando', 'reposo', 'reposar', 'reposando',
+    'recuperandome', 'recuperando',
+    'silenciar', 'callado', 'callada',
+    'meditando',
+    'desconectarme', 'desconexion',
+    'paz interior', 'sosiego',
+    'siesta', 'siesta', 'dormir', 'durmiendo',
+    'parar', 'parando', 'pausa', 'pausas',
+    'lento', 'lenta', 'lentitud'
+  ],
+
+  creativo: [
+    // Variantes de think
+    'planeando', 'planeacion',
+    'pensando', 'pensamiento', 'pensamientos',
+    'idear', 'ideando',
+    'creando', 'creacion', 'creando',
+    'enfocando', 'concentrarse',
+    'imaginar', 'imaginando',
+    'sonar', 'soñar', 'sueño',
+    'reflexionando',
+    'analizar', 'analizando', 'analisis',
+    'visualizando',
+    'decidirse', 'decidiendo'
+  ],
+
+  activo: [
+    // Variantes de do
+    'ejecutando', 'realizando',
+    'actuando',
+    'emprendiendo',
+    'construyendo',
+    'movimiento', 'moviendome',
+    'avanzar', 'avanzando', 'avance',
+    'progresar', 'progresando',
+    'cumplir', 'cumpliendo',
+    'completar', 'completando',
+    'terminar', 'terminando'
+  ],
+
+  maximo: [
+    // Variantes de burn
+    'aguantando',
+    'resistiendo',
+    'intensidad', 'intenso', 'intensa',
+    'esfuerzo', 'esforzando', 'esforzarse',
+    'limite', 'limites',
+    'extremo', 'extrema',
+    'todo', 'maximo', 'maximos',
+    'agotamiento', 'agotador', 'agotadora',
+    'colapso', 'crisis',
+    'al limite'
+  ]
+};
+
+// ────────────────────────────────────────────────────────────────────────────
+// MERGE matemático de los EXTRA con los originales (deduplicado)
+// ────────────────────────────────────────────────────────────────────────────
+(function _mergeKeywordsExtraV15() {
+  function _mergeArray(original, extra) {
+    if (!Array.isArray(original) || !Array.isArray(extra)) return original;
+    var set = {};
+    for (var i = 0; i < original.length; i++) set[original[i]] = true;
+    for (var j = 0; j < extra.length; j++) set[extra[j]] = true;
+    return Object.keys(set);
+  }
+
+  // Merge hawkins
+  for (var lvl in KEYWORDS_HAWKINS_EXTRA_V15) {
+    if (KEYWORDS_HAWKINS_V15[lvl]) {
+      KEYWORDS_HAWKINS_V15[lvl] = _mergeArray(KEYWORDS_HAWKINS_V15[lvl], KEYWORDS_HAWKINS_EXTRA_V15[lvl]);
+    } else {
+      KEYWORDS_HAWKINS_V15[lvl] = KEYWORDS_HAWKINS_EXTRA_V15[lvl].slice();
+    }
+  }
+
+  // Merge pilares
+  for (var pilar in KEYWORDS_PILARES_EXTRA_V15) {
+    if (KEYWORDS_PILARES_V15[pilar]) {
+      KEYWORDS_PILARES_V15[pilar] = _mergeArray(KEYWORDS_PILARES_V15[pilar], KEYWORDS_PILARES_EXTRA_V15[pilar]);
+    } else {
+      KEYWORDS_PILARES_V15[pilar] = KEYWORDS_PILARES_EXTRA_V15[pilar].slice();
+    }
+  }
+
+  // Merge puntos
+  for (var punto in KEYWORDS_PUNTOS_EXTRA_V15) {
+    if (KEYWORDS_PUNTOS_V15[punto]) {
+      KEYWORDS_PUNTOS_V15[punto] = _mergeArray(KEYWORDS_PUNTOS_V15[punto], KEYWORDS_PUNTOS_EXTRA_V15[punto]);
+    } else {
+      KEYWORDS_PUNTOS_V15[punto] = KEYWORDS_PUNTOS_EXTRA_V15[punto].slice();
+    }
+  }
+
+  // Log auditable
+  var hawkinsTotal = 0, pilaresTotal = 0, puntosTotal = 0;
+  for (var l in KEYWORDS_HAWKINS_V15) hawkinsTotal += KEYWORDS_HAWKINS_V15[l].length;
+  for (var p in KEYWORDS_PILARES_V15) pilaresTotal += KEYWORDS_PILARES_V15[p].length;
+  for (var pt in KEYWORDS_PUNTOS_V15) puntosTotal += KEYWORDS_PUNTOS_V15[pt].length;
+  console.log('🎯 V15 Sprint B Fase 1.1 expansion LIVE — hawkins=' + hawkinsTotal +
+              ' pilares=' + pilaresTotal + ' puntos=' + puntosTotal + ' keywords totales');
+})();
+
+
+/**
+ * analyzeInput(tokens) — análisis cuántico-quark del input del usuario.
+ *
+ * @param {Array<string>} tokens - userTokensFiltered (>= 3 chars, sin stopwords)
+ * @returns {Object} {
+ *   pilares,           // array de pilares detectados (puede ser múltiples)
+ *   hawkins_current,   // nivel Hawkins detectado (o null)
+ *   hawkins_target,    // elevación +1 nivel (o null)
+ *   punto_inferido,    // 'cero' | 'creativo' | 'activo' | 'maximo' | null
+ *   punto_label_en,    // 'space' | 'think' | 'do' | 'burn' | null
+ *   raw_tokens         // tokens normalizados sin acentos
+ * }
+ */
+function analyzeInput(tokens) {
+  if (!Array.isArray(tokens) || tokens.length === 0) {
+    return {
+      pilares: [],
+      hawkins_current: null,
+      hawkins_target: null,
+      punto_inferido: null,
+      punto_label_en: null,
+      raw_tokens: []
+    };
+  }
+
+  // Normalizar tokens: lowercase + sin acentos
+  var normalized = tokens.map(function(t) {
+    return String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  });
+
+  // Detectar pilares (todos los que matchean — puede ser múltiples)
+  var pilares = [];
+  for (var pilar in KEYWORDS_PILARES_V15) {
+    var keywords = KEYWORDS_PILARES_V15[pilar];
+    for (var i = 0; i < keywords.length; i++) {
+      if (normalized.indexOf(keywords[i]) !== -1) {
+        if (pilares.indexOf(pilar) === -1) pilares.push(pilar);
+        break;
+      }
+    }
+  }
+
+  // Detectar hawkins_current (toma el MÁS BAJO encontrado — prioriza dolor)
+  var hawkins_current = null;
+  for (var level in KEYWORDS_HAWKINS_V15) {
+    var kws = KEYWORDS_HAWKINS_V15[level];
+    var lvl = Number(level);
+    for (var j = 0; j < kws.length; j++) {
+      if (normalized.indexOf(kws[j]) !== -1) {
+        if (hawkins_current === null || lvl < hawkins_current) hawkins_current = lvl;
+        break;
+      }
+    }
+  }
+
+  // Calcular hawkins_target: elevación +1 nivel
+  var hawkins_target = null;
+  if (hawkins_current !== null) {
+    var idx = NIVELES_HAWKINS_V15.indexOf(hawkins_current);
+    if (idx >= 0 && idx + 1 < NIVELES_HAWKINS_V15.length) {
+      hawkins_target = NIVELES_HAWKINS_V15[idx + 1];
+    } else {
+      hawkins_target = hawkins_current;
+    }
+  }
+
+  // Detectar punto inferido desde keywords (cuenta matches por punto)
+  var puntoMatches = { cero: 0, creativo: 0, activo: 0, maximo: 0 };
+  for (var punto in KEYWORDS_PUNTOS_V15) {
+    var pkws = KEYWORDS_PUNTOS_V15[punto];
+    for (var k = 0; k < pkws.length; k++) {
+      if (normalized.indexOf(pkws[k]) !== -1) puntoMatches[punto]++;
+    }
+  }
+
+  // Punto con MÁS matches gana (null si todos en 0)
+  var punto_inferido = null;
+  var maxMatches = 0;
+  for (var pt in puntoMatches) {
+    if (puntoMatches[pt] > maxMatches) {
+      maxMatches = puntoMatches[pt];
+      punto_inferido = pt;
+    }
+  }
+
+  var result = {
+    pilares: pilares,
+    hawkins_current: hawkins_current,
+    hawkins_target: hawkins_target,
+    punto_inferido: punto_inferido,
+    punto_label_en: punto_inferido ? PUNTO_LABEL_EN_V15[punto_inferido] : null,
+    raw_tokens: normalized
+  };
+
+  console.log('[analyzeInput v15]', result);
+  return result;
+}
+
+/**
+ * inferPuntoCiclo(date) — infiere PUNTO del ciclo desde la hora.
+ *
+ * Doctrina cuántico-quark biológicamente correcta de Badir:
+ *   06–09 → creativo (think) — cortisol matutino, ideación post-sueño
+ *   09–11 → activo  (do)    — alta energía operativa
+ *   11–14 → maximo  (burn)  — pre-comida, intensidad pico
+ *   14–16 → cero    (space) — POST-COMIDA, decisión del juez (Levav-Avnaim 2011)
+ *   16–17 → creativo (think) — rebote creativo media tarde
+ *   17–20 → maximo  (burn)  — último empuje vespertino
+ *   20–22 → creativo (think) — reflexión creativa pre-melatonina
+ *   22–06 → cero    (space) — descanso profundo, recuperación
+ *
+ * @param {Date} date - opcional, default new Date()
+ * @returns {Object} { punto, label_en, energia, hora, dia }
+ */
+function inferPuntoCiclo(date) {
+  date = date || new Date();
+  var hora = date.getHours();
+  var dia = date.getDay(); // 0=domingo, 6=sábado
+
+  var punto, energia;
+  if (hora >= 6 && hora < 9)        { punto = 'creativo'; energia = 0.8; }
+  else if (hora >= 9 && hora < 11)  { punto = 'activo';   energia = 1.0; }
+  else if (hora >= 11 && hora < 14) { punto = 'maximo';   energia = 1.2; }
+  else if (hora >= 14 && hora < 16) { punto = 'cero';     energia = 0.3; }
+  else if (hora >= 16 && hora < 17) { punto = 'creativo'; energia = 0.6; }
+  else if (hora >= 17 && hora < 20) { punto = 'maximo';   energia = 1.1; }
+  else if (hora >= 20 && hora < 22) { punto = 'creativo'; energia = 0.7; }
+  else                              { punto = 'cero';     energia = 0.2; }
+
+  var result = {
+    punto: punto,
+    label_en: PUNTO_LABEL_EN_V15[punto],
+    energia: energia,
+    hora: hora,
+    dia: dia
+  };
+  console.log('[inferPuntoCiclo v15]', result);
+  return result;
+}
+
+  const TrigguiFiltro = {
   // Cache del índice IDF. Se reconstruye cuando cambia el catálogo o el idioma.
   _idxCache: null,
   _idxCacheKey: null,
@@ -4796,6 +5307,37 @@ const TrigguiFiltro = {
 
     // Setear para pickPhrase() (matching semántico del bocado/eco)
     this._lastQueryTokens = userTokensFiltered.slice();
+
+    // ════════════════════════════════════════════════════════════════════
+    // V15 SPRINT B FASE 1 — setear hooks globales
+    // Doctrina cuántica: si usuario menciona punto explícito → ese gana sobre hora
+    // ════════════════════════════════════════════════════════════════════
+    try {
+      var _analysis = analyzeInput(userTokensFiltered);
+      var _ciclo = inferPuntoCiclo();
+      // Punto final: input gana sobre hora si hay detección clara del usuario
+      var _puntoFinal = _analysis.punto_inferido || _ciclo.punto;
+      var _puntoLabelFinal = _analysis.punto_label_en || _ciclo.label_en;
+
+      window.__TRIGGUI_QUERY_HAWKINS__ = _analysis.hawkins_current;
+      window.__TRIGGUI_QUERY_HAWKINS_TARGET__ = _analysis.hawkins_target;
+      window.__TRIGGUI_QUERY_PILARES__ = _analysis.pilares;
+      window.__TRIGGUI_PUNTO_CICLO__ = _puntoFinal;
+      window.__TRIGGUI_PUNTO_LABEL_EN__ = _puntoLabelFinal;
+      window.__TRIGGUI_PUNTO_SOURCE__ = _analysis.punto_inferido ? 'input' : 'hora';
+      window.__TRIGGUI_ENERGIA__ = _ciclo.energia;
+    } catch (_eAnalysis) {
+      // Degradación graceful: si análisis falla, limpiar hooks
+      console.warn('[Sprint B Fase 1] análisis falló:', _eAnalysis.message);
+      window.__TRIGGUI_QUERY_HAWKINS__ = null;
+      window.__TRIGGUI_QUERY_HAWKINS_TARGET__ = null;
+      window.__TRIGGUI_QUERY_PILARES__ = [];
+      window.__TRIGGUI_PUNTO_CICLO__ = null;
+      window.__TRIGGUI_PUNTO_LABEL_EN__ = null;
+      window.__TRIGGUI_PUNTO_SOURCE__ = null;
+      window.__TRIGGUI_ENERGIA__ = null;
+    }
+
 
     // Si después del filtro no quedan tokens, semilla diaria
     if (userTokensFiltered.length === 0) {
@@ -5302,6 +5844,7 @@ BarraMagica.applyStrings = function() {
     overlay.style.setProperty('--bm-accent-40', hexToRgba(accentColor, 0.40));
     overlay.style.setProperty('--bm-accent-10', hexToRgba(accentColor, 0.10));
     overlay.style.setProperty('--bm-accent-18', hexToRgba(accentColor, 0.18));
+    overlay.style.setProperty('--bm-accent-contrast', pickTextColor(accentColor));
   }
 
   // Placeholder contextual: elige basado en comportamiento del usuario
@@ -5622,8 +6165,13 @@ function wireBarraMagicaEvents() {
     });
   }
   if (langToggle) {
-    langToggle.addEventListener('click', () => {
-      const newLang = TriggguiI18n.lang === 'en' ? 'es' : 'en';
+    langToggle.addEventListener('click', (e) => {
+      let newLang;
+      const seg = (e.target && e.target.closest) ? e.target.closest('#langToggleEs, #langToggleEn') : null;
+      if (seg && seg.id === 'langToggleEs') newLang = 'es';
+      else if (seg && seg.id === 'langToggleEn') newLang = 'en';
+      else newLang = TriggguiI18n.lang === 'en' ? 'es' : 'en';
+      if (newLang === TriggguiI18n.lang) return;
       TriggguiI18n.setLang(newLang);
       BarraMagica.applyStrings();
       const toast = document.getElementById('toast');
@@ -6654,6 +7202,7 @@ bootTriggui();
     overlay.style.setProperty('--bm-accent-40', hsla(ac.h, ac.s, ac.l, 0.40));
     overlay.style.setProperty('--bm-accent-10', hsla(ac.h, ac.s, ac.l, 0.10));
     overlay.style.setProperty('--bm-accent-18', hsla(ac.h, ac.s, ac.l, 0.18));
+    overlay.style.setProperty('--bm-accent-contrast', pickTextColor(hslToHex(ac.h, ac.s, ac.l)));
 
     // ── BOTÓN GO (#barraSubmit) — gradient del accent + segundo color ───
     // CSS base lo deja en linear-gradient(135deg, #FF5E00, #FF0055) hardcoded.
@@ -7442,7 +7991,7 @@ bootTriggui();
   var BOCADO_DELAY_MS = 100;
   var TOP_K = 5;
   var MAX_QUERY_LIBROS = 2; // rotaciones permitidas antes del popup
-  var STRIPE_LINK = 'https://buy.stripe.com/8x2dRb4Zw6YkcuIbzf24003';
+  var STRIPE_LINK = ''; // link de pago retirado por politica de tiendas (Google/Apple)
 
   // ══════════════════════════════════════════════════════════════════════
   // STATE
@@ -7681,8 +8230,47 @@ bootTriggui();
         // 3. animoScore — elevación si query lo necesita
         var animoScore = (queryNeedsElevation && typeof item.eje_animo === 'number') ? item.eje_animo : 0;
 
-        var totalScore = queryScore * 1.5 + rolScore * 1.0 + animoScore * 0.5;
-        scored.push({ item: item, score: totalScore });
+        // V15 SPRINT B FASE 2 — 6 ejes scoring NIVEL DIOS
+        // 4. hawkinsElevationFit — premia eje_animo cerca del target Hawkins del usuario
+        var hawkinsElevationFit = 0;
+        if (typeof window.__TRIGGUI_QUERY_HAWKINS_TARGET__ === 'number' &&
+            typeof item.eje_animo === 'number') {
+          var targetNormV15 = window.__TRIGGUI_QUERY_HAWKINS_TARGET__ / 700;
+          hawkinsElevationFit = 1 - Math.abs(item.eje_animo - targetNormV15);
+          if (hawkinsElevationFit < 0) hawkinsElevationFit = 0;
+        }
+
+        // 5. pilarFit — premia frases del pilar detectado (Sprint C: usará item.pilar)
+        var pilarFit = 0;
+        var qPilaresV15 = window.__TRIGGUI_QUERY_PILARES__ || [];
+        if (qPilaresV15.length > 0 && item.pilar) {
+          if (qPilaresV15.indexOf(item.pilar) !== -1) pilarFit = 1.0;
+        }
+
+        // 6. puntoFit — premia frases alineadas con punto del ciclo (Sprint C: usará item.punto_optimo)
+        var puntoFit = 0;
+        var puntoActualV15 = window.__TRIGGUI_PUNTO_CICLO__;
+        if (puntoActualV15 && item.punto_optimo) {
+          if (item.punto_optimo === puntoActualV15) puntoFit = 1.0;
+          else if (Array.isArray(item.punto_optimo) && item.punto_optimo.indexOf(puntoActualV15) !== -1) puntoFit = 1.0;
+        }
+
+        // Score con 6 ejes cuántico-quark axiomático
+        var totalScore = queryScore * 1.5 + rolScore * 1.0 + animoScore * 0.5
+                       + hawkinsElevationFit * 0.7 + pilarFit * 0.6 + puntoFit * 0.5;
+        scored.push({
+          item: item,
+          score: totalScore,
+          // V15 Fase 2: breakdown auditable de los 6 ejes
+          breakdown: {
+            queryScore: queryScore,
+            rolScore: rolScore,
+            animoScore: animoScore,
+            hawkinsElevationFit: hawkinsElevationFit,
+            pilarFit: pilarFit,
+            puntoFit: puntoFit
+          }
+        });
       }
 
       if (scored.length > 0) {
@@ -7695,6 +8283,19 @@ bootTriggui();
 
         // 🎼 C7 v12 — console log para debug
         try {
+          // V15 SPRINT B FASE 2 — log de scoring auditable del ganador
+          console.log("[Triggui Scoring v15 Fase2]", {
+            winner_score: topGroup[pickIdx].score.toFixed(3),
+            breakdown: topGroup[pickIdx].breakdown,
+            // Contexto cuántico del momento
+            query_hawkins: window.__TRIGGUI_QUERY_HAWKINS__,
+            query_hawkins_target: window.__TRIGGUI_QUERY_HAWKINS_TARGET__,
+            query_pilares: window.__TRIGGUI_QUERY_PILARES__,
+            punto_ciclo: window.__TRIGGUI_PUNTO_CICLO__,
+            punto_label_en: window.__TRIGGUI_PUNTO_LABEL_EN__,
+            punto_source: window.__TRIGGUI_PUNTO_SOURCE__,
+            energia: window.__TRIGGUI_ENERGIA__
+          });
           console.log("[Triggui Bocado v12]", {
             role_solicitado: desiredRole || null,
             role_obtenido: picked.rol_sinfonico || null,
@@ -8448,6 +9049,7 @@ bootTriggui();
   }
 
   function showSuscribetePopup(reason) {
+    return; // popup desactivado: comercio retirado por politica de tiendas (Google/Apple)
     ensureSuscribetePopup();
     var overlay = document.getElementById('triggui-suscribete-overlay');
     if (!overlay) return;
@@ -8502,19 +9104,15 @@ bootTriggui();
 
     queryCurrentIdx++;
 
-    // Después de MAX_QUERY_LIBROS rotaciones → popup
-    if (queryCurrentIdx >= MAX_QUERY_LIBROS || queryCurrentIdx >= queryCandidates.length) {
-      queryCurrentIdx--; // rollback para próximos clicks
-      if (typeof console !== 'undefined' && console.log) console.log('[Triggui Dado v10] límite alcanzado idx=' + queryCurrentIdx + ' candidates=' + queryCandidates.length + ' → popup');
-      showSuscribetePopup('dado_limit');
-      return;
+    // 🔄 v11: dado SIN tope — rueda libre SECUENCIAL por el pool, loopeando al inicio (sin popup, sin paywall)
+    if (queryCurrentIdx >= queryCandidates.length) {
+      queryCurrentIdx = 0; // volver al inicio del pool y seguir rodando
     }
 
     var nextLibro = queryCandidates[queryCurrentIdx];
     if (!nextLibro) {
       queryCurrentIdx--;
-      if (typeof console !== 'undefined' && console.log) console.log('[Triggui Dado v10] nextLibro null → popup');
-      showSuscribetePopup('dado_no_libro');
+      if (typeof console !== 'undefined' && console.log) console.log('[Triggui Dado v11] nextLibro null → no-op (sin popup)');
       return;
     }
 
@@ -8527,6 +9125,21 @@ bootTriggui();
       libro = nextLibro;
       libroAssignedOk = true;
       if (typeof console !== 'undefined' && console.log) console.log('[Triggui Dado v10] libro asignado OK: "' + libro.titulo + '"');
+
+      // 🌒 V26b NIVEL DIOS — actualizar pool con phrases del nuevo libro
+      // Garantiza que ECO al final sea del libro actualmente mostrado
+      try {
+        var v26bQuery = (typeof TrigguiFiltro !== 'undefined' && Array.isArray(TrigguiFiltro._lastQueryTokens))
+          ? TrigguiFiltro._lastQueryTokens.join(' ')
+          : '';
+        lastCandidatePool = buildPhrasePool([nextLibro], v26bQuery);
+        usedInThisSession.clear();
+        if (typeof console !== 'undefined' && console.log) {
+          console.log('[Triggui V26b] pool actualizado al rotar: "' + nextLibro.titulo + '" (' + lastCandidatePool.length + ' phrases)');
+        }
+      } catch (_v26e) {
+        if (typeof console !== 'undefined' && console.warn) console.warn('[Triggui V26b] error actualizando pool:', _v26e && _v26e.message);
+      }
     } catch (e) {
       if (typeof console !== 'undefined' && console.error) console.error('[Triggui Dado v10] libro NO accesible:', e.message);
     }
@@ -8564,11 +9177,11 @@ bootTriggui();
     var grid = document.getElementById('grid');
 
     if (grid) {
-      grid.style.transition = 'opacity 280ms cubic-bezier(0.4, 0, 0.2, 1)';
+      grid.style.transition = 'opacity 140ms cubic-bezier(0.4, 0, 0.2, 1)';
       grid.style.opacity = '0';
     }
     if (cta) {
-      cta.style.transition = 'opacity 280ms cubic-bezier(0.4, 0, 0.2, 1)';
+      cta.style.transition = 'opacity 140ms cubic-bezier(0.4, 0, 0.2, 1)';
       cta.style.opacity = '0';
     }
 
@@ -8618,7 +9231,7 @@ bootTriggui();
         rotateActive = false;
         if (typeof console !== 'undefined' && console.log) console.log('[Triggui Dado v10] rotate completo, lock liberado');
       }, totalDuration);
-    }, 300);
+    }, 160);
   }
 
   // ══════════════════════════════════════════════════════════════════════
@@ -8699,10 +9312,6 @@ bootTriggui();
       try {
         var data = window.__TRIGGUI_DATA__;
         if (data && Array.isArray(data.libros) && data.libros.length > 0) {
-          // Pool de frases para bocado/eco
-          lastCandidatePool = buildPhrasePool(data.libros, query || '');
-          usedInThisSession.clear();
-
           // 🔥 v8: Reconstruir queryCandidates para el dado.
           // queryCandidates[0] = libro elegido por filter() (lo mismo que se mostrará).
           // queryCandidates[1+] = top-K excluyendo el primero.
@@ -8716,6 +9325,17 @@ bootTriggui();
               queryCandidates.push(firstResult.libro);
             }
           } catch (_) {}
+
+          // 🌒 V26a NIVEL DIOS — Pool SOLO del libro elegido (queryCandidates[0])
+          // Garantiza sinfonía 100%: bocado, bloques, tarjeta y eco del MISMO libro
+          var v26ChosenBook = queryCandidates[0];
+          lastCandidatePool = v26ChosenBook
+            ? buildPhrasePool([v26ChosenBook], query || '')
+            : buildPhrasePool(data.libros, query || '');
+          usedInThisSession.clear();
+          if (typeof console !== 'undefined' && console.log && v26ChosenBook) {
+            console.log('[Triggui V26a] pool del libro elegido: "' + v26ChosenBook.titulo + '" (' + lastCandidatePool.length + ' phrases)');
+          }
 
           var topK = getTopKCandidates(data.libros, query || '', TOP_K + 2);
           for (var i = 0; i < topK.length; i++) {
@@ -8879,8 +9499,7 @@ bootTriggui();
     // se puede llamar inmediatamente sin esperar a btnOtro
     setupRobustBtnOtroHandler();
 
-    // Pre-crear el popup (lazy)
-    try { ensureSuscribetePopup(); } catch (_) {}
+    // Pre-crear el popup: DESACTIVADO (comercio retirado por politica de tiendas)
 
     // 🔥 v10.1: Iniciar timer de permanencia para popup contextual
     startSessionTimer();
