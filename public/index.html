@@ -2285,7 +2285,7 @@ html[data-mode="kids"]  #barraSkip .bm-skip-seg-kids {
   font-family: -apple-system, 'SF Pro Text', 'Archivo', sans-serif;
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 1.5px;
+  letter-spacing: 0.3px;
   backdrop-filter: blur(24px) saturate(1.4);
   -webkit-backdrop-filter: blur(24px) saturate(1.4);
   cursor: pointer;
@@ -2316,7 +2316,6 @@ html[data-mode="kids"]  #barraSkip .bm-skip-seg-kids {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
-#barraLangToggle span.lang-inactive,
 #barraLangToggle .lang-sep { display: none; }
 
 /* 🌒 v3.8.7 — Mantener kids-mode cards más amables (de v3.8.6 CAPA 3) */
@@ -2593,9 +2592,9 @@ html.kids-mode #tarjetaCard {
   </div>
 
   <button id="barraLangToggle" class="bm-first-appear" type="button" aria-label="Toggle language">
-    <span id="langToggleEs" class="lang-active">ES</span>
+    <span id="langToggleEs" class="lang-active">Español</span>
     <span class="lang-sep">·</span>
-    <span id="langToggleEn" class="lang-inactive">EN</span>
+    <span id="langToggleEn" class="lang-inactive">English</span>
   </button>
 
   <div class="barra-magica-inner">
@@ -6166,8 +6165,13 @@ function wireBarraMagicaEvents() {
     });
   }
   if (langToggle) {
-    langToggle.addEventListener('click', () => {
-      const newLang = TriggguiI18n.lang === 'en' ? 'es' : 'en';
+    langToggle.addEventListener('click', (e) => {
+      let newLang;
+      const seg = (e.target && e.target.closest) ? e.target.closest('#langToggleEs, #langToggleEn') : null;
+      if (seg && seg.id === 'langToggleEs') newLang = 'es';
+      else if (seg && seg.id === 'langToggleEn') newLang = 'en';
+      else newLang = TriggguiI18n.lang === 'en' ? 'es' : 'en';
+      if (newLang === TriggguiI18n.lang) return;
       TriggguiI18n.setLang(newLang);
       BarraMagica.applyStrings();
       const toast = document.getElementById('toast');
