@@ -1719,6 +1719,16 @@ function isRowBulkLegacy(rowData) {
 // V19 — Constantes para Stripe links (centralizadas)
 const STRIPE_LINK_BASICO_129 = "https://buy.stripe.com/7sYeVfgIebeAbqEdHn24007";
 
+/**
+ * V21: detecta SUBSCRIBED_MEMBER_129 (pago básico $129 → cap 1/sem).
+ * Se evalúa ANTES que isRowSubscribedMember en getCapSemanal,
+ * porque "SUBSCRIBED_MEMBER_129" también empieza con "SUBSCRIBED_MEMBER".
+ */
+function isRowSubscribedMember129(rowData) {
+  const status = String((rowData[UNSUBSCRIBE_COL - 1] || "")).trim().toUpperCase();
+  return status.startsWith("SUBSCRIBED_MEMBER_129");
+}
+
 /* ════════════════════════════════════════════════════════════════════════
  * V19.2 — SALUDOS ROTATIVOS NIVEL DIOS (100 variantes naturales)
  * ════════════════════════════════════════════════════════════════════════
@@ -1980,7 +1990,15 @@ function generarTrialBannerTopPlain(rowData) {
 function getCapSemanal(rowData) {
   if (isRowUnsubscribed(rowData)) return 0;
   if (isRowSubscribedExpired(rowData)) return 0;
+  if (isRowSubscribedMember129(rowData)) return 1;   // V21: $129 básico → 1/sem
   if (isRowSubscribedMember(rowData)) return 2;
+
+  // FREE consentido / RESUSCRITO: 1/sem (nunca más que un $129 que paga) — V21
+  if (isRowResuscrito(rowData) || isRowSubscribedFree(rowData)) {
+    const dias = trialDiasRestantes(rowData);
+    if (dias === -1) return 1;
+    return dias > 0 ? 1 : 0;
+  }
 
   // TRIAL, RESUSCRITO, o legacy SUBSCRIBED_FREE: respeta días restantes del trial
   if (isRowSubscribedTrial(rowData) || isRowResuscrito(rowData) || isRowSubscribedFree(rowData)) {
