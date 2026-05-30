@@ -712,6 +712,113 @@ jobs:
           fi
 
       # ╔══════════════════════════════════════════════════════════════════╗
+      # ║  FASE 6.6 — 🛡️ Reparación de truncamientos ANTES de los outputs   ║
+      # ║  Movido aquí desde el final: así el HTML / PNG / OG / manual.json  ║
+      # ║  se generan ya sobre contenido REPARADO. Opera sobre el contenido  ║
+      # ║  del WORKSPACE; FASE 8 sincroniza la versión ya limpia.            ║
+      # ║  Orden interno: auditoría (sanitize+score) → sanitizer LLM (capa B)║
+      # ╚══════════════════════════════════════════════════════════════════╝
+
+      - name: 🔬 Auditoría Editorial Nivel Dios (pre-outputs)
+        run: |
+          set -euo pipefail
+
+          if [ "${{ inputs.modo_prueba }}" = "true" ]; then
+            AUDIT_MODE="report"
+          else
+            AUDIT_MODE="auto-fix"
+          fi
+
+          # v3.2: --catalog apunta al WORKSPACE (no a triggui-content), para reparar
+          # ANTES de generar assets/manual.json. Los scripts y el CSV siguen en triggui-content.
+          if [ "$CATALOG_MODE" = "kids" ]; then
+            PROFILE="kids"
+            CATALOG_PATH="contenido_kids.json"
+            CSV_PATH="triggui-content/data/libros_master_kids.csv"
+            QUAR="contenido_kids.quarantine.json"
+          else
+            PROFILE="adult"
+            CATALOG_PATH="contenido.json"
+            CSV_PATH="triggui-content/data/libros_master.csv"
+            QUAR="contenido.quarantine.json"
+          fi
+
+          if [ ! -f "triggui-content/auditoria-editorial/index.cjs" ]; then
+            echo "⚠️ Módulo auditoria-editorial/ no encontrado — skip audit"
+            exit 0
+          fi
+          if [ ! -f "$CATALOG_PATH" ]; then
+            echo "⚠️ $CATALOG_PATH (workspace) no existe — skip audit"
+            exit 0
+          fi
+
+          # Sembrar historial de quarantine para APPENDear (no sobreescribir el histórico)
+          if [ -f "triggui-content/$QUAR" ] && [ ! -f "$QUAR" ]; then
+            cp "triggui-content/$QUAR" "$QUAR"
+          fi
+
+          echo "🔬 Audit profile=$PROFILE mode=$AUDIT_MODE catalog=$CATALOG_PATH (workspace)"
+          echo "   Pipeline: sanitize → score → decide → apply"
+          mkdir -p audit-reports/
+
+          node triggui-content/auditoria-editorial/index.cjs \
+            --catalog="$CATALOG_PATH" \
+            --csv="$CSV_PATH" \
+            --profile="$PROFILE" \
+            --mode="$AUDIT_MODE" \
+            --output-dir=audit-reports/
+
+          echo "📂 Reportes audit:"
+          ls -la audit-reports/ 2>/dev/null | tail -5
+
+      - name: 📦 Sync quarantine a triggui-content
+        if: ${{ !inputs.modo_prueba }}
+        run: |
+          set -euo pipefail
+          if [ "$CATALOG_MODE" = "kids" ]; then QUAR="contenido_kids.quarantine.json"; else QUAR="contenido.quarantine.json"; fi
+          if [ -f "$QUAR" ]; then
+            cp "$QUAR" "triggui-content/$QUAR"
+            echo "📦 $QUAR sincronizado (historial preservado)"
+          fi
+
+      - name: 🛡️ LLM Phrase Sanitizer v3.2 (capa B, pre-outputs)
+        if: ${{ success() && steps.modo.outputs.modo_tecnico != 'shadow_batch' && inputs.modo_prueba != true }}
+        shell: bash
+        env:
+          CATALOG_MODE: ${{ inputs.catalogo || 'adulto' }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
+        run: |
+          set -euo pipefail
+
+          if [ "$CATALOG_MODE" = "kids" ]; then
+            CATALOG_PATH="contenido_kids.json"
+          else
+            CATALOG_PATH="contenido.json"
+          fi
+
+          SCRIPT="triggui-content/auditoria-editorial/phrase-sanitizer-llm.cjs"
+
+          if [ ! -f "$CATALOG_PATH" ]; then
+            echo "🟡 LLM_SANITIZER: $CATALOG_PATH (workspace) no existe — skip"
+            exit 0
+          fi
+          if [ ! -f "$SCRIPT" ]; then
+            echo "🟡 LLM_SANITIZER: script no encontrado en $SCRIPT — skip graceful"
+            exit 0
+          fi
+
+          echo "🛡️ LLM Sanitizer v3.2 — grounding + jerarquía completar→recortar→remover"
+          echo "   catalog:    $CATALOG_PATH (workspace)"
+          echo "   batch_size: $BATCH_SIZE"
+          node "$SCRIPT" \
+            --catalog="$CATALOG_PATH" \
+            --mode=fix \
+            --only-last=true \
+            --batch-size="$BATCH_SIZE"
+
+          echo "✅ Reparación pre-outputs completada (sobre workspace, antes de assets/manual.json)"
+
+      # ╔══════════════════════════════════════════════════════════════════╗
       # ║  FASE 7 — Generar assets (solo single/trigger)                    ║
       # ╚══════════════════════════════════════════════════════════════════╝
 
@@ -721,6 +828,10 @@ jobs:
           TRIGGUI_EDICION_JSON: ${{ inputs.catalogo == 'kids' && 'contenido_kids.json' || 'contenido.json' }}
           TRIGGUI_OUT_BASE: ${{ inputs.catalogo == 'kids' && 'public/kids/t' || 'public/t' }}
         run: |
+          # Guarda v3.2: si el libro nuevo fue a quarantine, libros[0] no existe → saltar sin tronar
+          if ! node -e "const d=JSON.parse(require('fs').readFileSync(process.env.TRIGGUI_EDICION_JSON,'utf8'));process.exit(d&&d.libros&&d.libros[0]?0:1)" 2>/dev/null; then
+            echo "⏭️  Sin libros[0] en ${TRIGGUI_EDICION_JSON} (¿quarantine del libro nuevo?) — skip edición HTML"; exit 0
+          fi
           python3 scripts/build-editions.py
           find "${TRIGGUI_OUT_BASE}" -name "index.html" 2>/dev/null | head -5
 
@@ -730,6 +841,10 @@ jobs:
           TRIGGUI_EDICION_JSON: ${{ inputs.catalogo == 'kids' && 'contenido_kids.json' || 'contenido.json' }}
           TRIGGUI_OUT_BASE: ${{ inputs.catalogo == 'kids' && 'public/kids/t' || 'public/t' }}
         run: |
+          # Guarda v3.2: si el libro nuevo fue a quarantine, libros[0] no existe → saltar sin tronar
+          if ! node -e "const d=JSON.parse(require('fs').readFileSync(process.env.TRIGGUI_EDICION_JSON,'utf8'));process.exit(d&&d.libros&&d.libros[0]?0:1)" 2>/dev/null; then
+            echo "⏭️  Sin libros[0] en ${TRIGGUI_EDICION_JSON} (¿quarantine del libro nuevo?) — skip tarjeta PNG"; exit 0
+          fi
           node scripts/build-tarjeta-png.js
           find "${TRIGGUI_OUT_BASE}" -name "tarjeta.png" 2>/dev/null | head -5
 
@@ -739,6 +854,10 @@ jobs:
           TRIGGUI_EDICION_JSON: ${{ inputs.catalogo == 'kids' && 'contenido_kids.json' || 'contenido.json' }}
           TRIGGUI_OUT_BASE: ${{ inputs.catalogo == 'kids' && 'public/kids/t' || 'public/t' }}
         run: |
+          # Guarda v3.2: si el libro nuevo fue a quarantine, libros[0] no existe → saltar sin tronar
+          if ! node -e "const d=JSON.parse(require('fs').readFileSync(process.env.TRIGGUI_EDICION_JSON,'utf8'));process.exit(d&&d.libros&&d.libros[0]?0:1)" 2>/dev/null; then
+            echo "⏭️  Sin libros[0] en ${TRIGGUI_EDICION_JSON} (¿quarantine del libro nuevo?) — skip OG"; exit 0
+          fi
           node scripts/build-og-image.js
           find "${TRIGGUI_OUT_BASE}" -name "og.png" 2>/dev/null | head -5
 
@@ -967,114 +1086,10 @@ jobs:
           fi
 
       # ╔══════════════════════════════════════════════════════════════════╗
-      # ║  FASE 8.7 — Auditoría Editorial Nivel Dios                        ║
-      # ║  Sanitize truncamientos LLM + scoring + auto-fix pre-commit       ║
-      # ║  Garantía nivel dios cuántico-quark: catálogo 100% limpio         ║
-      # ╚══════════════════════════════════════════════════════════════════╝
-
-      - name: 🔬 Auditoría Editorial Nivel Dios
-        run: |
-          set -euo pipefail
-
-          # En modo prueba: solo report (no modifica archivos). En real: auto-fix.
-          if [ "${{ inputs.modo_prueba }}" = "true" ]; then
-            AUDIT_MODE="report"
-          else
-            AUDIT_MODE="auto-fix"
-          fi
-
-          # Perfil según CATALOG_MODE (kids|adult)
-          if [ "$CATALOG_MODE" = "kids" ]; then
-            PROFILE="kids"
-            CATALOG_PATH="triggui-content/contenido_kids.json"
-            CSV_PATH="triggui-content/data/libros_master_kids.csv"
-          else
-            PROFILE="adult"
-            CATALOG_PATH="triggui-content/contenido.json"
-            CSV_PATH="triggui-content/data/libros_master.csv"
-          fi
-
-          # Verificar que el módulo existe (skip graceful si no)
-          if [ ! -f "triggui-content/auditoria-editorial/index.cjs" ]; then
-            echo "⚠️ Módulo auditoria-editorial/ no encontrado en triggui-content — skip audit"
-            exit 0
-          fi
-
-          if [ ! -f "$CATALOG_PATH" ]; then
-            echo "⚠️ $CATALOG_PATH no existe — skip audit"
-            exit 0
-          fi
-
-          echo "🔬 Audit profile=$PROFILE mode=$AUDIT_MODE"
-          echo "   Catalog: $CATALOG_PATH"
-          echo "   Pipeline: sanitize → score → decide → apply"
-          echo ""
-
-          mkdir -p audit-reports/
-
-          node triggui-content/auditoria-editorial/index.cjs \
-            --catalog="$CATALOG_PATH" \
-            --csv="$CSV_PATH" \
-            --profile="$PROFILE" \
-            --mode="$AUDIT_MODE" \
-            --output-dir=audit-reports/
-
-          echo ""
-          echo "📂 Reportes audit:"
-          ls -la audit-reports/ 2>/dev/null | tail -5
-
-      # ╔══════════════════════════════════════════════════════════════════╗
       # ║  FASE 9 — Commit y push a AMBOS repos                             ║
+      # ║  (la reparación de truncamientos se movió a FASE 6.6, ANTES de    ║
+      # ║   generar los outputs — ver arriba)                                ║
       # ╚══════════════════════════════════════════════════════════════════╝
-
-      # ╔══════════════════════════════════════════════════════════════════╗
-      # ║  FASE 8.8 — 🛡️ LLM Phrase Sanitizer (capa B semántica)            ║
-      # ║  Detecta truncamientos que regex no captura (palabras parciales, ║
-      # ║  preposiciones colgantes, ideas incompletas).                    ║
-      # ║  GPT-4o-mini classifier + guardrail anti-destrucción.            ║
-      # ║  --only-last=true: procesa SOLO el libro recién generado.        ║
-      # ║  Doctrina 2026-05-19: catálogo histórico se respeta, nuevos      ║
-      # ║  pasan por capa B obligatoria. Costo ~$0.0012/run.               ║
-      # ╚══════════════════════════════════════════════════════════════════╝
-
-      - name: 🛡️ FASE 8.8 — LLM Phrase Sanitizer (capa B)
-        if: ${{ success() && steps.modo.outputs.modo_tecnico != 'shadow_batch' && inputs.modo_prueba != true }}
-        shell: bash
-        env:
-          CATALOG_MODE: ${{ inputs.catalogo || 'adulto' }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
-        run: |
-          set -euo pipefail
-
-          if [ "$CATALOG_MODE" = "kids" ]; then
-            CATALOG_PATH="triggui-content/contenido_kids.json"
-          else
-            CATALOG_PATH="triggui-content/contenido.json"
-          fi
-
-          SCRIPT="triggui-content/auditoria-editorial/phrase-sanitizer-llm.cjs"
-
-          if [ ! -f "$CATALOG_PATH" ]; then
-            echo "🟡 LLM_SANITIZER: $CATALOG_PATH no existe — skip"
-            exit 0
-          fi
-          if [ ! -f "$SCRIPT" ]; then
-            echo "🟡 LLM_SANITIZER: script no encontrado en $SCRIPT — skip graceful"
-            exit 0
-          fi
-
-          echo "🛡️ LLM Sanitizer (capa B) v3.1 — nuevos + healing rotation"
-          echo "   catalog:    $CATALOG_PATH"
-          echo "   batch_size: $BATCH_SIZE"
-          echo "   modo:       fix con --only-last + healing rotation"
-
-          node "$SCRIPT" \
-            --catalog="$CATALOG_PATH" \
-            --mode=fix \
-            --only-last=true \
-            --batch-size="$BATCH_SIZE"
-
-          echo "✅ FASE 8.8 completada — nuevos + 1 healing libres de truncamientos"
 
       - name: 💾 Commit y push
         run: |
