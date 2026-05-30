@@ -1164,7 +1164,7 @@ function renderTarjetaCard(libro, portadaRef, tarjetaKey, idioma, palabrasKey) {
     </td></tr>
 
     <!-- Eyebrow afuera del contenedor visual -->
-    <tr><td style="padding:0 4px ${c.spaceAfterEyebrow} 4px;">
+    <tr><td style="padding:${c.spaceAfterEyebrow} 4px ${c.spaceAfterEyebrow} 4px;">
       ${eyebrowHTML}
     </td></tr>
     <!-- Botones afuera del contenedor -->
@@ -1934,14 +1934,14 @@ function generarTrialBannerTopHTML(rowData, configFont, configBg, cardWidth) {
   // EXPIRADO: captura a la app (gratis) + opcion $129
   if (esExpired) {
     return box(`<strong style="color:#7A4F0A;">Tu periodo gratis terminó, pero la barra mágica sigue gratis.</strong><br>
-            <span style="color:#6B7280;display:inline-block;margin-top:4px;">Descárgala: </span>${apps}
+            <span style="color:#6B7280;display:inline-block;margin-top:4px;">Descárgala:</span>&nbsp;${apps}
             <span style="display:block;color:#9CA3AF;margin-top:8px;font-size:12px;">o recibe tu libro cada semana — <a href="${L129}" style="color:#B8740F;text-decoration:underline;">suscríbete desde $129/mes</a></span>`, true);
   }
 
   // BULK (base sin consentimiento): solo app gratis, sin venta
   if (esBulk) {
     return box(`<strong style="color:#17171C;">La barra mágica está en la app, gratis.</strong><br>
-            <span style="color:#6B7280;display:inline-block;margin-top:4px;">Descárgala: </span>${apps}`, false);
+            <span style="color:#6B7280;display:inline-block;margin-top:4px;">Descárgala:</span>&nbsp;${apps}`, false);
   }
 
   const dias = trialDiasRestantes(rowData);
@@ -1950,7 +1950,7 @@ function generarTrialBannerTopHTML(rowData, configFont, configBg, cardWidth) {
   // FREE / RESUSCRITO: heroe app gratis + opcion $129
   if (esFree) {
     return box(`<strong style="color:#17171C;">¿Aún no quieres suscribirte? La barra mágica está en la app, gratis.</strong><br>
-            <span style="color:#6B7280;display:inline-block;margin-top:4px;">Descárgala: </span>${apps}
+            <span style="color:#6B7280;display:inline-block;margin-top:4px;">Descárgala:</span>&nbsp;${apps}
             <span style="display:block;color:#9CA3AF;margin-top:8px;font-size:12px;">o recibe tu libro cada semana — <a href="${L129}" style="color:#6B7280;text-decoration:underline;">desde $129/mes</a></span>`, false);
   }
 
