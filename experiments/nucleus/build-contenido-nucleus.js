@@ -1374,11 +1374,16 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
     // Cubre lo que el prompt (cirugia 7.1A) no logra: GPT-4o-mini obedece mejor en EN que en ES.
     // Filosofia: no confiar en stochastic LLM, validar matematicamente en codigo.
     try {
-      const LEGITIMATE = [".", "?", "!", "…", "—", '"', "»", ")", "]"];
+      // 🌒 v4.2 FIX SCOPE — LEGITIMATE + los 3 Sets + repairTruncatedField se declaran
+      // con `var` (scope de FUNCIÓN, no de bloque) A PROPÓSITO: los bloques hermanos
+      // universal-repair (cirugía 7.1C) y C5 assertion (cirugía 8) los necesitan, y un
+      // `const` aquí los dejaba atrapados dentro de este try ("not defined" en los hermanos).
+      // var los hoista al scope de la función; se asignan antes de que corran esos bloques.
+      var LEGITIMATE = [".", "?", "!", "…", "—", '"', "»", ")", "]"];
 
       // 🌒 v4.1 — Whitelist EXPANDIDO de palabras cortas válidas como cierre
       // Incluye sustantivos, verbos y adverbios cortos comunes que SÍ cierran idea
-      const VALID_SHORT_CLOSURES = new Set([
+      var VALID_SHORT_CLOSURES = new Set([
         // ES: 2-3 letras
         "yo", "tú", "él", "sí", "no", "ya", "fe", "ti", "fui", "voy", "vas",
         "ven", "ver", "dar", "ir", "es", "soy", "se", "le", "lo", "la", "él",
@@ -1394,7 +1399,7 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
       ]);
 
       // 🌒 v4.0 — Stopwords prohibidas al final (preposiciones/artículos/conjunciones)
-      const STOPWORDS_INVALID_AT_END = new Set([
+      var STOPWORDS_INVALID_AT_END = new Set([
         // ═══ ES ═══
         // Artículos
         "el", "la", "los", "las", "un", "una", "unos", "unas",
@@ -1432,7 +1437,7 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
 
       // 🌒 v4.1 — Lista negra de prefijos truncados conocidos
       // (palabras parciales que NUNCA cierran idea legítimamente)
-      const TRUNCATED_PREFIXES = new Set([
+      var TRUNCATED_PREFIXES = new Set([
         // ES: prefijos comunes de palabras largas que aparecen truncados
         "incertid", "tambi", "frustr", "comprend", "interes",
         "respons", "transform", "propor", "establ", "desarroll",
@@ -1445,7 +1450,7 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
         "becau", "throug", "betw", "amon", "abou"
       ]);
 
-      const repairTruncatedField = (text, label = "?") => {
+      var repairTruncatedField = (text, label = "?") => {
         if (!text || typeof text !== "string") return text;
         const trimmed = text.trim();
         if (!trimmed) return trimmed;
@@ -1593,9 +1598,9 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
     // ════════════════════════════════════════════════════════════════════════
     try {
       // (A.1) Strings simples a nivel card
-      for (const { card, lang } of [
-        { card: newBook.tarjeta, lang: "ES" },
-        { card: newBook.tarjeta_en, lang: "EN" }
+      for (const { card, base, pres, lang } of [
+        { card: newBook.tarjeta, base: newBook.tarjeta_base, pres: newBook.tarjeta_presentacion, lang: "ES" },
+        { card: newBook.tarjeta_en, base: newBook.tarjeta_base_en, pres: newBook.tarjeta_presentacion_en, lang: "EN" }
       ]) {
         if (!card) continue;
         for (const field of ["titulo", "subtitulo"]) {
@@ -1604,6 +1609,10 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
           const repaired = repairTruncatedField(original, `${lang} ${field}`);
           if (repaired !== original) {
             card[field] = repaired;
+            // 🌒 v4.2 — espejo a base/presentacion (congruencia tarjeta/edición/correo: la tarjeta PNG
+            // lee tarjeta_presentacion, el correo y la edición leen tarjeta — deben coincidir SIEMPRE)
+            if (base) base[field] = repaired;
+            if (pres) pres[field] = repaired;
             console.log(`   🪡 ${lang} ${field} REPARADO en "${newBook.titulo}": "${original.slice(-30)}" → "${repaired.slice(-30)}"`);
           }
         }
