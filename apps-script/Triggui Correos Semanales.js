@@ -308,7 +308,7 @@ function generarWhatsAppPromoTopHTML(cardWidth) {
           <div style="
             font-family:'Inter',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
             font-size:11px;
-            line-height:1;
+            line-height:1.4;
             font-weight:600;
             color:#9CA3AF;
             letter-spacing:0.22em;
