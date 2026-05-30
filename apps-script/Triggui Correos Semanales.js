@@ -1718,6 +1718,9 @@ function isRowBulkLegacy(rowData) {
 
 // V19 — Constantes para Stripe links (centralizadas)
 const STRIPE_LINK_BASICO_129 = "https://buy.stripe.com/7sYeVfgIebeAbqEdHn24007";
+const STRIPE_LINK_PREMIUM_149 = "https://buy.stripe.com/8x2dRb4Zw6YkcuIbzf24003";
+const URL_APP_IOS = "https://apps.apple.com/mx/app/triggui/id6752839016";
+const URL_APP_ANDROID = "https://play.google.com/store/apps/details?id=com.triggui.app";
 
 /**
  * V21: detecta SUBSCRIBED_MEMBER_129 (pago básico $129 → cap 1/sem).
@@ -1908,48 +1911,67 @@ function generarSaludoHTML(primerNombre, configFont, configBg, cardWidth) {
  * Diferencia del banner bottom: no necesita borde sutil porque ya está en el contexto cabecera.
  */
 function generarTrialBannerTopHTML(rowData, configFont, configBg, cardWidth) {
-  if (!isRowSubscribedTrial(rowData) && !isRowResuscrito(rowData) && !isRowSubscribedFree(rowData)) return "";
   if (isRowSubscribedMember(rowData)) return "";
-  if (isRowBulkLegacy(rowData)) return "";
+
+  const esTrial   = isRowSubscribedTrial(rowData);
+  const esFree    = isRowSubscribedFree(rowData) || isRowResuscrito(rowData);
+  const esExpired = isRowSubscribedExpired(rowData);
+  const esBulk    = isRowBulkLegacy(rowData);
+  if (!esTrial && !esFree && !esExpired && !esBulk) return "";
+
+  const L149 = STRIPE_LINK_PREMIUM_149;
+  const L129 = STRIPE_LINK_BASICO_129;
+  const apps = `<a href="${URL_APP_IOS}" style="color:#B8740F;text-decoration:underline;font-weight:700;">iPhone</a> &nbsp;·&nbsp; <a href="${URL_APP_ANDROID}" style="color:#B8740F;text-decoration:underline;font-weight:700;">Android</a>`;
+
+  const box = (inner, gold) => `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${configBg};">
+      <tr><td align="center" style="padding:8px 12px 16px 12px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:${cardWidth}px;">
+          <tr><td style="font-family:${configFont};font-size:13px;line-height:1.55;${gold ? "color:#7A4F0A;background:#FFF8E1;border:1px solid #E8A838;" : "color:#4A4A4A;background:#FFFFFF;border:1px solid #EBEBEB;"}border-radius:8px;padding:12px 14px;mso-line-height-rule:exactly;">${inner}</td></tr>
+        </table>
+      </td></tr>
+    </table>`;
+
+  // EXPIRADO: captura a la app (gratis) + opcion $129
+  if (esExpired) {
+    return box(`<strong style="color:#7A4F0A;">Tu periodo gratis terminó, pero la barra mágica sigue gratis.</strong><br>
+            <span style="color:#6B7280;display:inline-block;margin-top:4px;">Descárgala: </span>${apps}
+            <span style="display:block;color:#9CA3AF;margin-top:8px;font-size:12px;">o recibe tu libro cada semana — <a href="${L129}" style="color:#B8740F;text-decoration:underline;">suscríbete desde $129/mes</a></span>`, true);
+  }
+
+  // BULK (base sin consentimiento): solo app gratis, sin venta
+  if (esBulk) {
+    return box(`<strong style="color:#17171C;">La barra mágica está en la app, gratis.</strong><br>
+            <span style="color:#6B7280;display:inline-block;margin-top:4px;">Descárgala: </span>${apps}`, false);
+  }
+
   const dias = trialDiasRestantes(rowData);
   if (dias <= 0 || dias === -1) return "";
 
-  const link = STRIPE_LINK_BASICO_129;
+  // FREE / RESUSCRITO: heroe app gratis + opcion $129
+  if (esFree) {
+    return box(`<strong style="color:#17171C;">¿Aún no quieres suscribirte? La barra mágica está en la app, gratis.</strong><br>
+            <span style="color:#6B7280;display:inline-block;margin-top:4px;">Descárgala: </span>${apps}
+            <span style="display:block;color:#9CA3AF;margin-top:8px;font-size:12px;">o recibe tu libro cada semana — <a href="${L129}" style="color:#6B7280;text-decoration:underline;">desde $129/mes</a></span>`, false);
+  }
 
-  // Último mensaje (dias ≤ 4): banner fuerte naranja/oro
+  // TRIAL: heroe $149 (conserva tus 2/semana) + $129 ligero
   if (dias <= 4) {
-    return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${configBg};">
-      <tr><td align="center" style="padding:8px 12px 16px 12px;">
-        <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:${cardWidth}px;">
-          <tr><td style="font-family:${configFont};font-size:13px;line-height:1.55;color:#7A4F0A;background:#FFF8E1;border:1px solid #E8A838;border-radius:8px;padding:12px 14px;mso-line-height-rule:exactly;">
-            <strong style="color:#7A4F0A;">Este es probablemente tu último mensaje gratis.</strong><br>
-            <span style="color:#6B7280;display:inline-block;margin-top:4px;">Si quieres seguir, suscríbete a $129 MXN/mes (primer mes gratis): </span>
-            <a href="${link}" style="color:#B8740F;text-decoration:underline;font-weight:700;">Suscribirse</a>
-          </td></tr>
-        </table>
-      </td></tr>
-    </table>`;
+    return box(`<strong style="color:#7A4F0A;">Te quedan ${dias} días de tus dos libros a la semana.</strong><br>
+            <a href="${L149}" style="color:#B8740F;text-decoration:underline;font-weight:700;">Continúa por $149/mes</a>
+            <span style="display:block;color:#9CA3AF;margin-top:8px;font-size:12px;">o una versión más ligera, uno a la semana — <a href="${L129}" style="color:#6B7280;text-decoration:underline;">$129/mes</a></span>`, true);
   }
-
-  // 5-7 días: alerta sutil
   if (dias <= 7) {
-    return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${configBg};">
-      <tr><td align="center" style="padding:8px 12px 12px 12px;">
-        <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:${cardWidth}px;">
-          <tr><td style="font-family:${configFont};font-size:12px;line-height:1.55;color:#6B7280;padding:0 4px;mso-line-height-rule:exactly;">
-            Quedan <strong style="color:#B8740F;">${dias} días</strong> de tu periodo gratis. <a href="${link}" style="color:#6B7280;text-decoration:underline;">Suscríbete a $129/mes</a>
-          </td></tr>
-        </table>
-      </td></tr>
-    </table>`;
+    return box(`Quedan <strong style="color:#17171C;">${dias} días</strong> de tus dos libros a la semana.<br>
+            <a href="${L149}" style="color:#B8740F;text-decoration:underline;font-weight:700;">Continúa por $149/mes</a>
+            <span style="display:block;color:#9CA3AF;margin-top:8px;font-size:12px;">o una versión más ligera — <a href="${L129}" style="color:#6B7280;text-decoration:underline;">$129/mes</a></span>`, false);
   }
 
-  // 8-28 días: countdown discreto
+  // 8-28 dias: countdown discreto (respeta el trial, sin venta dura)
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${configBg};">
     <tr><td align="center" style="padding:8px 12px 12px 12px;">
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:${cardWidth}px;">
         <tr><td style="font-family:${configFont};font-size:11px;line-height:1.55;color:#9CA3AF;padding:0 4px;mso-line-height-rule:exactly;">
-          Tu periodo gratis: <strong style="color:#4A4A4A;">${dias} días restantes</strong>
+          Tu periodo: <strong style="color:#4A4A4A;">${dias} días</strong> con dos libros a la semana
         </td></tr>
       </table>
     </td></tr>
@@ -1960,20 +1982,40 @@ function generarTrialBannerTopHTML(rowData, configFont, configBg, cardWidth) {
  * V19.2: trial banner plain TOP (después del saludo).
  */
 function generarTrialBannerTopPlain(rowData) {
-  if (!isRowSubscribedTrial(rowData) && !isRowResuscrito(rowData) && !isRowSubscribedFree(rowData)) return "";
   if (isRowSubscribedMember(rowData)) return "";
-  if (isRowBulkLegacy(rowData)) return "";
+
+  const esTrial   = isRowSubscribedTrial(rowData);
+  const esFree    = isRowSubscribedFree(rowData) || isRowResuscrito(rowData);
+  const esExpired = isRowSubscribedExpired(rowData);
+  const esBulk    = isRowBulkLegacy(rowData);
+  if (!esTrial && !esFree && !esExpired && !esBulk) return "";
+
+  const L149 = STRIPE_LINK_PREMIUM_149;
+  const L129 = STRIPE_LINK_BASICO_129;
+  const apps = `iPhone: ${URL_APP_IOS}\nAndroid: ${URL_APP_ANDROID}`;
+
+  if (esExpired) {
+    return `\nTu periodo gratis terminó, pero la barra mágica sigue gratis en la app.\n${apps}\nO suscríbete desde $129/mes: ${L129}\n`;
+  }
+
+  if (esBulk) {
+    return `\nLa barra mágica está en la app, gratis.\n${apps}\n`;
+  }
+
   const dias = trialDiasRestantes(rowData);
   if (dias <= 0 || dias === -1) return "";
 
-  const link = STRIPE_LINK_BASICO_129;
+  if (esFree) {
+    return `\n¿Aún no quieres suscribirte? La barra mágica está en la app, gratis.\n${apps}\nO recibe tu libro cada semana desde $129/mes: ${L129}\n`;
+  }
+
   if (dias <= 4) {
-    return `\nEste es probablemente tu último mensaje gratis.\nSi quieres seguir, suscríbete a $129 MXN/mes (primer mes gratis): ${link}\n`;
+    return `\nTe quedan ${dias} días de tus dos libros a la semana.\nContinúa por $149/mes: ${L149}\nO una versión más ligera (1/semana) por $129/mes: ${L129}\n`;
   }
   if (dias <= 7) {
-    return `\nQuedan ${dias} días de tu periodo gratis. Suscríbete a $129/mes: ${link}\n`;
+    return `\nQuedan ${dias} días de tus dos libros a la semana.\nContinúa por $149/mes: ${L149}\nO más ligero por $129/mes: ${L129}\n`;
   }
-  return `\nTu periodo gratis: ${dias} días restantes.\n`;
+  return `\nTu periodo: ${dias} días con dos libros a la semana.\n`;
 }
 
 /**
@@ -2210,44 +2252,62 @@ function esUltimoMensajeTrial(rowData) {
  * Inserta antes de "Cancelar suscripción" en el footer del email.
  */
 function generarTrialBannerHTML(rowData) {
+  if (isRowSubscribedMember(rowData)) return "";
+
+  const esTrial   = isRowSubscribedTrial(rowData);
+  const esFree    = isRowSubscribedFree(rowData) || isRowResuscrito(rowData);
+  const esExpired = isRowSubscribedExpired(rowData);
+  const esBulk    = isRowBulkLegacy(rowData);
+  if (!esTrial && !esFree && !esExpired && !esBulk) return "";
+
+  const base = `font-family:'Inter',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;font-size:12px;line-height:1.55;color:#9CA3AF;margin:14px 0 4px 0;mso-line-height-rule:exactly;`;
+  const aGold = `color:#E8A838;text-decoration:underline;`;
+
+  if (esExpired) {
+    return `<div style="${base}">La barra mágica sigue gratis en la app: <a href="${URL_APP_IOS}" style="${aGold}">iPhone</a> · <a href="${URL_APP_ANDROID}" style="${aGold}">Android</a></div>`;
+  }
+
+  if (esBulk) {
+    return `<div style="${base}">La barra mágica está en la app, gratis: <a href="${URL_APP_IOS}" style="${aGold}">iPhone</a> · <a href="${URL_APP_ANDROID}" style="${aGold}">Android</a></div>`;
+  }
+
   const dias = trialDiasRestantes(rowData);
   if (dias <= 0 || dias === -1) return "";
-  if (isRowSubscribedMember(rowData)) return "";  // member no ve banner
-  if (isRowBulkLegacy(rowData)) return "";
 
-  const link = STRIPE_LINK_BASICO_129;
-
-  // Último mensaje (dias ≤ 4): alerta fuerte con CTA
-  if (dias <= 4) {
-    return `<div style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;font-size:13px;line-height:1.55;font-weight:600;color:#E8A838;margin:18px 0 8px 0;padding:14px 16px;border:1px solid rgba(232,168,56,0.3);border-radius:8px;background:rgba(232,168,56,0.05);mso-line-height-rule:exactly;">Este es probablemente tu último mensaje gratis.<br><span style="font-weight:400;color:#9CA3AF;display:inline-block;margin-top:4px;">Si quieres seguir, suscríbete a $129 MXN/mes (primer mes gratis): </span><a href="${link}" style="color:#E8A838;text-decoration:underline;font-weight:600;">Suscribirse</a></div>`;
+  if (esFree) {
+    return `<div style="${base}">¿Aún sin suscribirte? La barra mágica es gratis en la app: <a href="${URL_APP_IOS}" style="${aGold}">iPhone</a> · <a href="${URL_APP_ANDROID}" style="${aGold}">Android</a></div>`;
   }
 
-  // 5-7 días: alerta sutil con CTA
-  if (dias <= 7) {
-    return `<div style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;font-size:12px;line-height:1.55;color:#9CA3AF;margin:14px 0 4px 0;mso-line-height-rule:exactly;">Quedan <strong style="color:#E8A838;">${dias} días</strong> de tu periodo gratis. <a href="${link}" style="color:#9CA3AF;text-decoration:underline;">Suscríbete a $129/mes</a></div>`;
-  }
-
-  // 8-28 días: countdown discreto
-  return `<div style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;font-size:11px;line-height:1.55;color:#9CA3AF;margin:14px 0 4px 0;mso-line-height-rule:exactly;">Tu periodo gratis: <strong style="color:#C5C5C5;">${dias} días restantes</strong></div>`;
+  return `<div style="${base}">Continúa con tus dos libros a la semana: <a href="${STRIPE_LINK_PREMIUM_149}" style="${aGold}">$149/mes</a> <span style="color:#C5C5C5;">· o más ligero <a href="${STRIPE_LINK_BASICO_129}" style="color:#9CA3AF;text-decoration:underline;">$129</a></span></div>`;
 }
 
 /**
  * V19: genera texto plain del trial banner.
  */
 function generarTrialBannerPlain(rowData) {
+  if (isRowSubscribedMember(rowData)) return "";
+
+  const esTrial   = isRowSubscribedTrial(rowData);
+  const esFree    = isRowSubscribedFree(rowData) || isRowResuscrito(rowData);
+  const esExpired = isRowSubscribedExpired(rowData);
+  const esBulk    = isRowBulkLegacy(rowData);
+  if (!esTrial && !esFree && !esExpired && !esBulk) return "";
+
+  if (esExpired) {
+    return `\n\nLa barra mágica sigue gratis en la app:\niPhone: ${URL_APP_IOS}\nAndroid: ${URL_APP_ANDROID}`;
+  }
+
+  if (esBulk) {
+    return `\n\nLa barra mágica está en la app, gratis:\niPhone: ${URL_APP_IOS}\nAndroid: ${URL_APP_ANDROID}`;
+  }
+
   const dias = trialDiasRestantes(rowData);
   if (dias <= 0 || dias === -1) return "";
-  if (isRowSubscribedMember(rowData)) return "";
-  if (isRowBulkLegacy(rowData)) return "";
 
-  const link = STRIPE_LINK_BASICO_129;
-  if (dias <= 4) {
-    return `\n\nEste es probablemente tu último mensaje gratis.\nSuscríbete a $129 MXN/mes (primer mes gratis): ${link}`;
+  if (esFree) {
+    return `\n\n¿Aún sin suscribirte? La barra mágica es gratis en la app:\niPhone: ${URL_APP_IOS}\nAndroid: ${URL_APP_ANDROID}`;
   }
-  if (dias <= 7) {
-    return `\n\nQuedan ${dias} días de tu periodo gratis. Suscríbete a $129/mes: ${link}`;
-  }
-  return `\n\nTu periodo gratis: ${dias} días restantes.`;
+  return `\n\nContinúa con tus dos libros a la semana por $149/mes: ${STRIPE_LINK_PREMIUM_149}\nO más ligero (1/semana) por $129/mes: ${STRIPE_LINK_BASICO_129}`;
 }
 
 /**
