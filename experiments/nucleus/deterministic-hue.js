@@ -75,3 +75,23 @@ export function placeHueInGap(occupied, llmHue) {
   }
   return norm(gapStart + gapSize / 2); // centro del hueco
 }
+
+/* Garantía de unicidad al nivel de PALETA (lo que ve el usuario), no solo del hue.
+   En zonas "planas" del color, dos hues cercanos con receta idéntica producen el mismo
+   hex → misma paleta. Aquí, si la paleta colocada ya existe, se empuja el hue lo MÍNIMO
+   (offsets simétricos crecientes) hasta que la paleta sea provablemente única.
+   - placedHue: hue ya colocado por placeHueInGap.
+   - occupiedPaletteKeys: Set con las paletas ya usadas (string, p.ej. JSON de los 4 hex).
+   - paletteKeyOf: (hue) => string  — sintetiza la paleta en ese hue y devuelve su clave.
+   Determinista: mismas entradas → mismo resultado. Mínima perturbación del reparto. */
+export function uniquePaletteHue(placedHue, occupiedPaletteKeys, paletteKeyOf) {
+  const set = occupiedPaletteKeys || new Set();
+  if (!set.has(paletteKeyOf(placedHue))) return placedHue;
+  for (let i = 1; i <= 60; i++) {
+    const step = Math.ceil(i / 2) * 1.5;          // 1.5, 1.5, 3, 3, 4.5 ...
+    const d = (i % 2 === 1) ? step : -step;        // +1.5, -1.5, +3, -3 ... (explora cerca primero)
+    const h = norm(placedHue + d);
+    if (!set.has(paletteKeyOf(h))) return h;
+  }
+  return placedHue; // fallback teórico (con 90 paletas vs millones, nunca debería ocurrir)
+}
