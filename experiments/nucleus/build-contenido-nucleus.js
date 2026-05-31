@@ -1292,6 +1292,142 @@ function normalizeBookKey(titulo, autor) {
   return `${String(titulo || "").trim().toLowerCase()}__${String(autor || "").trim().toLowerCase()}`;
 }
 
+// ════════════════════════════════════════════════════════════════════════════
+// 🌒 v4.4 cirugia 12 — C4.5 ADJUDICADOR LLM GROUNDED (Nivel dios cuántico-quark)
+// ════════════════════════════════════════════════════════════════════════════
+// Lógica reusada VERBATIM del sanitizer probado (triggui-content/auditoria-editorial/
+// phrase-sanitizer-llm.cjs): classifyPhrase + bookGrounding + mirrorCardVariants.
+// Se invoca DENTRO de C5, ANTES del drop. La red determinista (C1–C5) sigue intacta
+// y AMPLIA (nunca se le escapa un truncamiento real). Para CADA frase que la red
+// marca, el LLM grounded decide:
+//   • falso positivo ("la red.", "to ask?", "The Silent Battle Within") → la limpia
+//   • truncamiento real ("...hacia el", tagline sin cierre)            → la completa fiel
+//   • roto e irreparable (rarísimo)                                    → cae el libro
+// Guarantee intacto: nada truncado llega al usuario. Costo: gpt-4o-mini, ~400 tokens,
+// solo dispara en frases marcadas (libros limpios = 0 llamadas extra).
+// ════════════════════════════════════════════════════════════════════════════
+
+// Grounding del libro: material REAL para completar fiel (no inventar). Vive en
+// _nucleus.book_grounding_anchors + _nucleus.book_identity. Si no hay → null (el LLM
+// completa "a ciegas" y la red determinista sigue garantizando que nada truncado pase).
+function buildBookGrounding(libro) {
+  const n = (libro && libro._nucleus) ? libro._nucleus : {};
+  const a = n.book_grounding_anchors || {};
+  const id = n.book_identity || {};
+  const concepts = Array.isArray(a.concepts) ? a.concepts.filter((x) => typeof x === "string" && x.trim()) : [];
+  const terms = Array.isArray(a.key_terms) ? a.key_terms.filter((x) => typeof x === "string" && x.trim()) : [];
+  const voice = (typeof a.authorial_voice_notes === "string") ? a.authorial_voice_notes.trim() : "";
+  const titulo = id.titulo_es || (libro && libro.titulo) || "";
+  const autor = id.autor_completo || (libro && libro.autor) || "";
+  if (!concepts.length && !terms.length && !voice) return null;
+  return { titulo, autor, concepts, terms, voice };
+}
+
+// Espejo de variantes de tarjeta (congruencia entre superficies: tarjeta es la
+// canónica; base/presentacion la espejan). Solo campos de TEXTO. Devuelve cuántos sincronizó.
+function mirrorCardVariants(libro) {
+  if (!libro || typeof libro !== "object") return 0;
+  let changed = 0;
+  const FIELDS = ["titulo", "subtitulo", "parrafoTop", "parrafoBot"];
+  const pairs = [
+    { src: libro.tarjeta, base: libro.tarjeta_base, pres: libro.tarjeta_presentacion },
+    { src: libro.tarjeta_en, base: libro.tarjeta_base_en, pres: libro.tarjeta_presentacion_en }
+  ];
+  for (const { src, base, pres } of pairs) {
+    if (!src || typeof src !== "object") continue;
+    for (const f of FIELDS) {
+      const v = src[f];
+      if (typeof v !== "string" || !v.trim()) continue;
+      if (base && typeof base === "object" && base[f] !== v) { base[f] = v; changed++; }
+      if (pres && typeof pres === "object" && pres[f] !== v) { pres[f] = v; changed++; }
+    }
+  }
+  return changed;
+}
+
+// Clasificador/corrector grounded — prompt PROBADO, idéntico al sanitizer (se reusa
+// verbatim, no se modifica). temp 0, max_tokens 400, json_object, gpt-4o-mini.
+// Devuelve { truncated, confidence, fixed_phrase, reason }.
+async function llmClassifyPhrase(openaiClient, phrase, grounding) {
+  const system = `Eres un detector y corrector estricto de frases truncadas en español o inglés. Respondes SOLO JSON.
+
+UNA FRASE ESTÁ TRUNCADA si:
+- Termina con palabra cortada (prefijo sin sufijo: "incertid", "tambi", "af.", "í.")
+- Termina con preposición/artículo sin completar idea ("vivir en", "actúa desde.", "el af.")
+- La idea sintáctica/semántica está claramente incompleta
+
+NO ESTÁ TRUNCADA si:
+- Termina con punto/?/! con idea cerrada coherente
+- Es pregunta retórica completa
+- Es título corto del catálogo
+- Termina con expresión válida ("tú eres mucho más." "la oscuridad del ego.")
+
+Sé CONSERVADOR: en duda razonable, di que NO está truncada.
+
+═══════════════════════════════════════════════════════════════════
+🛡️ REGLAS DURAS PARA "fixed_phrase" — NO LAS ROMPAS BAJO NINGUNA CIRCUNSTANCIA:
+
+1. "fixed_phrase" DEBE empezar con LITERALMENTE las mismas palabras del original
+   (incluido emoji inicial si lo tiene).
+2. Solo modificas/agregas al FINAL de la frase, corrigiendo el truncamiento.
+3. La longitud de "fixed_phrase" DEBE ser MAYOR O IGUAL al original.
+4. NUNCA reemplaces, resumas, o acortes el texto previo.
+5. Si el original es un párrafo de varias oraciones, PRESERVA TODAS las oraciones
+   completas y solo corrige la última que está truncada.
+6. Si no puedes corregir preservando todo el contexto, devuelve el original
+   TRUNCADO AL ÚLTIMO PUNTO COMPLETO VÁLIDO (sin agregar palabras inventadas).
+7. Si el truncamiento no tiene punto válido previo, omite "fixed_phrase".
+═══════════════════════════════════════════════════════════════════
+📚 FIDELIDAD AL LIBRO — cuando se te dé "CONTEXTO DEL LIBRO":
+8. Completa usando SOLO ideas, términos y tono coherentes con ese contexto.
+9. NUNCA inventes conceptos, datos o ideas ajenas al libro para rellenar.
+10. Si no puedes completar de forma fiel al contexto del libro, aplica la regla 6
+    (recorta al último punto completo) o la 7 (omite). Mejor corto y fiel del libro
+    que largo e inventado. La autenticidad pesa más que la longitud.
+═══════════════════════════════════════════════════════════════════
+
+EJEMPLO CORRECTO (con contexto del libro):
+  contexto:     conceptos del libro incluyen "la conexión entre emociones y eficacia en el trabajo"
+  original:     "La clave está en la conexión entre emociones y"
+  fixed_phrase: "La clave está en la conexión entre emociones y eficacia en el trabajo."
+
+EJEMPLO INCORRECTO (NO HACER):
+  original:     "La vida es compleja. El destino nos sorprende. Aceptar es la"
+  fixed_phrase: "Aceptar es la clave."   ← REEMPLAZÓ TODO, ESTÁ MAL
+
+Responde JSON:
+{
+  "truncated": true|false,
+  "confidence": 0.0-1.0,
+  "fixed_phrase": "<frase ENTERA original con final corregido, preservando TODO contexto previo>",
+  "reason": "<10 palabras max>"
+}`;
+
+  let groundingBlock = "";
+  if (grounding) {
+    groundingBlock =
+      "\n\nCONTEXTO DEL LIBRO (úsalo para completar FIEL — NO inventes nada fuera de esto):" +
+      "\nLibro: \"" + grounding.titulo + "\"" + (grounding.autor ? " — " + grounding.autor : "") +
+      (grounding.concepts.length ? "\nConceptos del libro: " + grounding.concepts.join("; ") : "") +
+      (grounding.terms.length ? "\nTérminos clave: " + grounding.terms.join(", ") : "") +
+      (grounding.voice ? "\nVoz del autor: " + grounding.voice : "");
+  }
+
+  const user = "Frase original:\n\"" + phrase + "\"\n\nLongitud original: " + phrase.length +
+    " chars.\nSi truncada, devuelve fixed_phrase de longitud ≥ " + phrase.length +
+    " chars con TODO el contexto previo preservado." + groundingBlock;
+
+  const res = await openaiClient.chat.completions.create({
+    model: "gpt-4o-mini",
+    temperature: 0,
+    max_tokens: 400,
+    response_format: { type: "json_object" },
+    messages: [{ role: "system", content: system }, { role: "user", content: user }]
+  });
+  const content = res?.choices?.[0]?.message?.content || "{}";
+  return JSON.parse(content);
+}
+
 async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
   try {
     const t0 = Date.now();
@@ -1747,104 +1883,169 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
     // simultáneamente.
     // ════════════════════════════════════════════════════════════════════════
     try {
-      const truncamientosResiduales = [];
+      const llmCleared = new Set(); // 🌒 C4.5: valores que el LLM confirmó COMPLETOS (falsos positivos) → no re-marcar
 
-      const checkPhrase = (text, fieldLabel) => {
-        if (typeof text !== "string") return;
-        const trimmed = text.trim();
-        if (!trimmed) return;
-        const plain = trimmed.replace(/\[\/?H\]/g, "");
-        // Detección dual igual que en repairTruncatedField (v4.3: títulos exentos de no-closure)
-        let truncado = false;
-        let reason = "";
-        const tituloField = isTitleField(fieldLabel);
-        const endsLegit = LEGITIMATE.includes(plain.slice(-1));
-        if (!endsLegit && !tituloField) {
-          truncado = true;
-          reason = "no-closure";
-        } else {
-          const beforeClose = (endsLegit && !tituloField) ? plain.slice(0, -1).trim() : plain.trim();
-          const words = beforeClose.split(/\s+/).filter(Boolean);
-          if (words.length > 3) {
-            const lastWord = (words[words.length - 1] || "")
-              .replace(/[^a-zA-ZáéíóúñÁÉÍÓÚÑ]/g, "")
-              .toLowerCase();
-            if (STOPWORDS_INVALID_AT_END.has(lastWord)) {
-              truncado = true;
-              reason = `dangling-stopword "${lastWord}"`;
-            } else if (TRUNCATED_PREFIXES.has(lastWord)) {
-              truncado = true;
-              reason = `known-trunc-prefix "${lastWord}"`;
-            } else if (!tituloField && lastWord.length > 0 && lastWord.length < 4
-                && !VALID_SHORT_CLOSURES.has(lastWord)) {
-              // 🌒 v4.3: suspect-short NO aplica a títulos (CEO/hoy/Cat son válidos)
-              truncado = true;
-              reason = `suspect-short "${lastWord}"`;
+      // 🌒 v4.4 cirugia 12 — detección re-ejecutable (corre antes y después del adjudicador).
+      // Lógica de detección IDÉNTICA a v4.3: no se toca ninguna regla (red amplia = guarantee).
+      const collectTruncations = () => {
+        const found = [];
+        const checkPhrase = (text, fieldLabel, applyFn) => {
+          if (typeof text !== "string") return;
+          const trimmed = text.trim();
+          if (!trimmed) return;
+          if (llmCleared.has(trimmed)) return; // 🌒 C4.5: ya confirmada COMPLETA por el LLM → no re-marcar
+          const plain = trimmed.replace(/\[\/?H\]/g, "");
+          // Detección dual igual que en repairTruncatedField (v4.3: títulos exentos de no-closure)
+          let truncado = false;
+          let reason = "";
+          const tituloField = isTitleField(fieldLabel);
+          const endsLegit = LEGITIMATE.includes(plain.slice(-1));
+          if (!endsLegit && !tituloField) {
+            truncado = true;
+            reason = "no-closure";
+          } else {
+            const beforeClose = (endsLegit && !tituloField) ? plain.slice(0, -1).trim() : plain.trim();
+            const words = beforeClose.split(/\s+/).filter(Boolean);
+            if (words.length > 3) {
+              const lastWord = (words[words.length - 1] || "")
+                .replace(/[^a-zA-ZáéíóúñÁÉÍÓÚÑ]/g, "")
+                .toLowerCase();
+              if (STOPWORDS_INVALID_AT_END.has(lastWord)) {
+                truncado = true;
+                reason = `dangling-stopword "${lastWord}"`;
+              } else if (TRUNCATED_PREFIXES.has(lastWord)) {
+                truncado = true;
+                reason = `known-trunc-prefix "${lastWord}"`;
+              } else if (!tituloField && lastWord.length > 0 && lastWord.length < 4
+                  && !VALID_SHORT_CLOSURES.has(lastWord)) {
+                // 🌒 v4.3: suspect-short NO aplica a títulos (CEO/hoy/Cat son válidos)
+                truncado = true;
+                reason = `suspect-short "${lastWord}"`;
+              }
             }
           }
-        }
-        if (truncado) {
-          truncamientosResiduales.push({
-            field: fieldLabel,
-            reason,
-            tail: plain.slice(-50)
-          });
-        }
-      };
+          if (truncado) {
+            found.push({
+              field: fieldLabel,
+              reason,
+              tail: plain.slice(-50),
+              value: trimmed,   // 🌒 C4.5: valor crudo para clasificar / aplicar fix
+              apply: applyFn    // 🌒 C4.5: setter que escribe el fix en su ubicación exacta
+            });
+          }
+        };
 
-      // Recorrer card_es / card_en — top level
-      for (const { card, lang } of [
-        { card: newBook.tarjeta, lang: "ES" },
-        { card: newBook.tarjeta_en, lang: "EN" }
-      ]) {
-        if (!card) continue;
-        for (const field of ["parrafoTop", "parrafoBot", "titulo", "subtitulo"]) {
-          checkPhrase(card[field], `${lang} tarjeta.${field}`);
+        // Recorrer card_es / card_en — top level
+        for (const { card, lang } of [
+          { card: newBook.tarjeta, lang: "ES" },
+          { card: newBook.tarjeta_en, lang: "EN" }
+        ]) {
+          if (!card) continue;
+          for (const field of ["parrafoTop", "parrafoBot", "titulo", "subtitulo"]) {
+            checkPhrase(card[field], `${lang} tarjeta.${field}`, (v) => { card[field] = v; });
+          }
         }
-      }
 
-      // Top-level tagline
-      checkPhrase(newBook.tagline, "tagline");
+        // Top-level tagline
+        checkPhrase(newBook.tagline, "tagline", (v) => { newBook.tagline = v; });
 
-      // Arrays top-level
-      for (const arrField of ["frases", "frases_en", "frases_og", "frases_og_en"]) {
-        const arr = newBook[arrField];
-        if (!Array.isArray(arr)) continue;
-        for (let i = 0; i < arr.length; i++) {
-          checkPhrase(arr[i], `${arrField}[${i}]`);
-        }
-      }
-
-      // _nucleus arrays + cards
-      const nucleus = newBook._nucleus;
-      if (nucleus && typeof nucleus === "object") {
-        for (const arrField of ["edition_blocks_es", "edition_blocks_en", "og_phrases_es", "og_phrases_en"]) {
-          const arr = nucleus[arrField];
+        // Arrays top-level
+        for (const arrField of ["frases", "frases_en", "frases_og", "frases_og_en"]) {
+          const arr = newBook[arrField];
           if (!Array.isArray(arr)) continue;
           for (let i = 0; i < arr.length; i++) {
-            const item = arr[i];
-            if (item && typeof item === "object") {
-              checkPhrase(item.phrase, `_nucleus.${arrField}[${i}].phrase`);
+            const idx = i;
+            checkPhrase(arr[idx], `${arrField}[${idx}]`, (v) => { arr[idx] = v; });
+          }
+        }
+
+        // _nucleus arrays + cards
+        const nucleus = newBook._nucleus;
+        if (nucleus && typeof nucleus === "object") {
+          for (const arrField of ["edition_blocks_es", "edition_blocks_en", "og_phrases_es", "og_phrases_en"]) {
+            const arr = nucleus[arrField];
+            if (!Array.isArray(arr)) continue;
+            for (let i = 0; i < arr.length; i++) {
+              const item = arr[i];
+              if (item && typeof item === "object") {
+                checkPhrase(item.phrase, `_nucleus.${arrField}[${i}].phrase`, (v) => { item.phrase = v; });
+              }
+            }
+          }
+          for (const cardKey of ["card_es", "card_en"]) {
+            const ncard = nucleus[cardKey];
+            if (!ncard || typeof ncard !== "object") continue;
+            for (const field of ["parrafoTop", "parrafoBot", "titulo", "subtitulo"]) {
+              checkPhrase(ncard[field], `_nucleus.${cardKey}.${field}`, (v) => { ncard[field] = v; });
             }
           }
         }
-        for (const cardKey of ["card_es", "card_en"]) {
-          const ncard = nucleus[cardKey];
-          if (!ncard || typeof ncard !== "object") continue;
-          for (const field of ["parrafoTop", "parrafoBot", "titulo", "subtitulo"]) {
-            checkPhrase(ncard[field], `_nucleus.${cardKey}.${field}`);
-          }
+        return found;
+      };
+
+      let truncamientosResiduales = collectTruncations();
+
+      // ════════════════════════════════════════════════════════════════════
+      // 🌒 v4.4 cirugia 12 — C4.5 ADJUDICADOR LLM GROUNDED (ANTES del drop)
+      // ════════════════════════════════════════════════════════════════════
+      // La red determinista de arriba es AMPLIA a propósito (nunca se le escapa un
+      // truncamiento real, aunque marque algún falso positivo como "la red." o
+      // "to ask?"). Para CADA frase marcada, el LLM grounded (classifyPhrase probado)
+      // decide: completar fiel (truncamiento real) o limpiar (falso positivo). Solo
+      // si el LLM TAMPOCO la resuelve, cae el libro. Guarantee intacto.
+      // Frases idénticas se clasifican UNA vez y el fix se aplica a TODAS sus
+      // ubicaciones (congruencia frases_og ↔ og_phrases, edition_blocks ↔ frases, etc).
+      if (truncamientosResiduales.length > 0) {
+        const grounding = buildBookGrounding(newBook);
+        const byValue = new Map();
+        for (const r of truncamientosResiduales) {
+          if (!byValue.has(r.value)) byValue.set(r.value, []);
+          byValue.get(r.value).push(r);
         }
+        console.log(`   🧬 C4.5 adjudicador LLM: ${byValue.size} frase(s) marcada(s), ${truncamientosResiduales.length} ubicación(es) — grounded=${grounding ? "sí" : "no"}`);
+        for (const [value, records] of byValue) {
+          let verdict = null;
+          try {
+            verdict = await llmClassifyPhrase(openai, value, grounding);
+          } catch (e) {
+            console.warn(`   ⚠️  C4.5 classify error (${records[0].field}): ${e.message} — se mantiene marcada`);
+            continue;
+          }
+          const plainVal = value.replace(/\[\/?H\]/g, "");
+          // (a) Falso positivo: el LLM confirma que NO está truncada → limpiar (se omite en la re-evaluación)
+          if (verdict && verdict.truncated === false) {
+            llmCleared.add(value);
+            console.log(`   ✅ C4.5 falso positivo confirmado: ${records[0].field} — "...${plainVal.slice(-40)}"`);
+            continue;
+          }
+          // (b) Truncamiento real con fix válido (preserva prefijo + longitud) → completar + espejar
+          const fixed = (verdict && typeof verdict.fixed_phrase === "string") ? verdict.fixed_phrase.trim() : "";
+          const plainFixed = fixed.replace(/\[\/?H\]/g, "");
+          const prefixLen = Math.min(12, plainVal.length);
+          const startsOk = plainFixed.length > 0 && plainVal.length > 0 &&
+            plainFixed.slice(0, prefixLen).toLowerCase() === plainVal.slice(0, prefixLen).toLowerCase();
+          if (verdict && verdict.truncated === true && fixed && plainFixed.length >= plainVal.length && startsOk) {
+            for (const r of records) r.apply(fixed);
+            console.log(`   🪡 C4.5 completada (${records.length} ubic.): ${records[0].field} — "...${plainVal.slice(-30)}" → "...${plainFixed.slice(-30)}"`);
+            continue;
+          }
+          // (c) El LLM no dio fix válido (no preservó prefijo/longitud) → se mantiene marcada (caerá en el veredicto)
+          console.warn(`   ⚠️  C4.5 sin fix válido: ${records[0].field} — el LLM no preservó prefijo/longitud`);
+        }
+        // Congruencia de las 3 variantes de tarjeta tras las correcciones
+        mirrorCardVariants(newBook);
+        // Re-evaluar tras adjudicación: cleared se omiten, completadas ya cierran, irreparables persisten
+        truncamientosResiduales = collectTruncations();
       }
 
-      // Veredicto cuántico
+      // Veredicto cuántico (solo cae si quedan truncamientos que ni la red ni el LLM resolvieron)
       if (truncamientosResiduales.length > 0) {
         console.error(``);
         console.error(`   ╔══════════════════════════════════════════════════════════════════╗`);
         console.error(`   ║  🚨 CAPA C5 — TRUNCAMIENTOS RESIDUALES DETECTADOS (NIVEL DIOS)      ║`);
         console.error(`   ╚══════════════════════════════════════════════════════════════════╝`);
         console.error(`   Libro: "${newBook.titulo}"`);
-        console.error(`   Truncamientos no reparables: ${truncamientosResiduales.length}`);
+        console.error(`   Truncamientos irreparables (post-C4.5): ${truncamientosResiduales.length}`);
         for (const t of truncamientosResiduales) {
           console.error(`     • ${t.field}`);
           console.error(`       razón: ${t.reason}`);
@@ -1852,8 +2053,8 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
         }
         console.error(``);
         console.error(`   GARANTÍA CUÁNTICA: este libro NO se commiteará al JSON.`);
-        console.error(`   Causa probable: max_tokens insuficiente, prompt ignorado por LLM,`);
-        console.error(`   o frase generada sin punto interno legítimo para reparar.`);
+        console.error(`   Causa: el LLM grounded no pudo completar fiel ni confirmar como completa`);
+        console.error(`   (frase sin grounding suficiente, o genuinamente rota sin cierre legítimo).`);
         console.error(``);
         throw new Error(`C5_QUANTUM_ASSERTION_FAILED: ${truncamientosResiduales.length} truncamientos residuales en "${newBook.titulo}"`);
       }
