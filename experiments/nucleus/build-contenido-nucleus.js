@@ -1450,6 +1450,21 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
         "becau", "throug", "betw", "amon", "abou"
       ]);
 
+      // 🌒 v4.3 cirugia 11 — TÍTULOS EXENTOS DE "no-closure" (Nivel dios cuántico-quark)
+      // Un título legítimo NO termina en punto ("Conquista interna: el primer paso
+      // hacia el éxito", "Internal Conquest: The First Step to Success"). La regla
+      // (A) "debe terminar en . ! ?" es correcta para PÁRRAFOS y frases, pero produce
+      // falsos positivos en títulos → C5 abortaba regeneraciones perfectamente válidas.
+      // Detección: el label de campo de título siempre contiene "titulo" (p.ej.
+      // "ES tarjeta.titulo", "_nucleus.card_en.titulo"). Subtítulos igual.
+      // IMPORTANTE: los títulos SIGUEN sujetos a la detección (B) de truncamiento
+      // REAL (palabra cortada: "El primer pas...", dangling-stopword, suspect-short).
+      // Solo se les exime de la regla "sin punto final = truncado".
+      var isTitleField = (label) => {
+        const l = String(label || "").toLowerCase();
+        return l.includes("titulo") || l.includes("subtitulo") || l.includes("title");
+      };
+
       var repairTruncatedField = (text, label = "?") => {
         if (!text || typeof text !== "string") return text;
         const trimmed = text.trim();
@@ -1465,12 +1480,20 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
         let needsRepair = false;
         let reason = "";
 
-        if (!LEGITIMATE.includes(plain.slice(-1))) {
+        // 🌒 v4.3: títulos exentos de "no-closure". Para títulos analizamos la
+        // ÚLTIMA palabra real (sin asumir puntuación final) buscando truncamiento
+        // verdadero; para no-títulos, lógica original intacta.
+        const tituloField = isTitleField(label);
+        const endsLegit = LEGITIMATE.includes(plain.slice(-1));
+
+        if (!endsLegit && !tituloField) {
           needsRepair = true;
           reason = "no-closure";
         } else {
-          // (B) Análisis semántico de la última palabra
-          const beforeClose = plain.slice(0, -1).trim();
+          // (B) Análisis semántico de la última palabra.
+          // Para no-títulos terminados en cierre: descartar el cierre final.
+          // Para títulos (con o sin cierre): analizar todas las palabras tal cual.
+          const beforeClose = (endsLegit && !tituloField) ? plain.slice(0, -1).trim() : plain.trim();
           const words = beforeClose.split(/\s+/).filter(Boolean);
           if (words.length > 3) { // no tocar títulos/frases muy cortas
             const lastWord = (words[words.length - 1] || "")
@@ -1482,8 +1505,12 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
             } else if (TRUNCATED_PREFIXES.has(lastWord)) {
               needsRepair = true;
               reason = `known-trunc-prefix "${lastWord}"`;
-            } else if (lastWord.length > 0 && lastWord.length < 4
+            } else if (!tituloField && lastWord.length > 0 && lastWord.length < 4
                 && !VALID_SHORT_CLOSURES.has(lastWord)) {
+              // 🌒 v4.3: suspect-short NO aplica a títulos — "CEO", "hoy", "Cat",
+              // "You" son palabras cortas COMPLETAS y legítimas como cierre de título.
+              // En títulos solo cuenta truncamiento inequívoco (stopword colgante o
+              // prefijo cortado conocido), nunca "palabra final corta".
               needsRepair = true;
               reason = `suspect-short "${lastWord}"`;
             }
@@ -1701,14 +1728,16 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
         const trimmed = text.trim();
         if (!trimmed) return;
         const plain = trimmed.replace(/\[\/?H\]/g, "");
-        // Detección dual igual que en repairTruncatedField
+        // Detección dual igual que en repairTruncatedField (v4.3: títulos exentos de no-closure)
         let truncado = false;
         let reason = "";
-        if (!LEGITIMATE.includes(plain.slice(-1))) {
+        const tituloField = isTitleField(fieldLabel);
+        const endsLegit = LEGITIMATE.includes(plain.slice(-1));
+        if (!endsLegit && !tituloField) {
           truncado = true;
           reason = "no-closure";
         } else {
-          const beforeClose = plain.slice(0, -1).trim();
+          const beforeClose = (endsLegit && !tituloField) ? plain.slice(0, -1).trim() : plain.trim();
           const words = beforeClose.split(/\s+/).filter(Boolean);
           if (words.length > 3) {
             const lastWord = (words[words.length - 1] || "")
@@ -1720,8 +1749,9 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
             } else if (TRUNCATED_PREFIXES.has(lastWord)) {
               truncado = true;
               reason = `known-trunc-prefix "${lastWord}"`;
-            } else if (lastWord.length > 0 && lastWord.length < 4
+            } else if (!tituloField && lastWord.length > 0 && lastWord.length < 4
                 && !VALID_SHORT_CLOSURES.has(lastWord)) {
+              // 🌒 v4.3: suspect-short NO aplica a títulos (CEO/hoy/Cat son válidos)
               truncado = true;
               reason = `suspect-short "${lastWord}"`;
             }
@@ -2111,8 +2141,12 @@ async function runSingle() {
 
   const unifiedMode = process.env.UNIFIED_MODE !== "false";
   if (unifiedMode) {
-    await mergeIntoContenidoJson(result.mapped, CFG.files.outBatch);
-    console.log(`✅ ${CFG.files.outBatch} (unificado, libro marcado _manual)`);
+    const merged = await mergeIntoContenidoJson(result.mapped, CFG.files.outBatch);
+    if (merged) {
+      console.log(`✅ ${CFG.files.outBatch} (unificado, libro marcado _manual)`);
+    } else {
+      console.error(`❌ ${CFG.files.outBatch} NO actualizado — merge abortó (ver causa arriba: C5 u otra defensa). El libro NO se commiteó; el contenido previo se conserva intacto.`);
+    }
   } else {
     console.log(`🔕 UNIFIED_MODE=false — ${CFG.files.outBatch} no se actualizó`);
   }
