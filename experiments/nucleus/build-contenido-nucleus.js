@@ -69,6 +69,7 @@ import {
   placeHighlightOnDensestSpan
 } from "./triggui-physics.js";
 import { synthesizePalette } from "./palette-synthesizer.js";
+import { placeHueInGap } from "./deterministic-hue.js";
 import { injectEmojis, calculateConfidence, compatMapper } from "./post-processors.js";
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -426,6 +427,16 @@ async function processBook(book, inputs, inputsSnapshot) {
   // El array global __TRIGGUI_BATCH_HUES__ se mantiene vivo entre libros del mismo batch
   if (typeof globalThis.__TRIGGUI_BATCH_HUES__ === "undefined") {
     globalThis.__TRIGGUI_BATCH_HUES__ = [];
+    // 🌈 CAPA 2: sembrar con los hues del catálogo ya publicado para que los
+    // libros nuevos no colisionen con NINGUNO de los existentes (garantía global).
+    try {
+      const _prev = JSON.parse(await fs.readFile(CFG.files.outBatch, "utf8"));
+      for (const _b of (_prev.libros || [])) {
+        const _h = _b && _b._visual && _b._visual.synthesis_inputs && _b._visual.synthesis_inputs.hue_primary;
+        if (typeof _h === "number") globalThis.__TRIGGUI_BATCH_HUES__.push(((_h % 360) + 360) % 360);
+      }
+      console.log(`   🌈 Capa 2: ${globalThis.__TRIGGUI_BATCH_HUES__.length} hues ocupados del catálogo (anti-colisión global)`);
+    } catch (_) { /* sin catálogo previo o ilegible → batch vacío, no rompe */ }
   }
   const __batchHues = globalThis.__TRIGGUI_BATCH_HUES__.slice();
 
@@ -452,9 +463,17 @@ async function processBook(book, inputs, inputsSnapshot) {
   console.log(`   ⚓ Anchors: ${anchorsData.book_grounding_anchors.concepts.slice(0, 2).map((c) => c.slice(0, 45)).join(" | ")}`);
   console.log(`   📘 Identity: "${anchorsData.book_identity.titulo_en}" | autor="${anchorsData.book_identity.autor_completo}"`);
   console.log(`   🎨 Visual: hue=${anchorsData.visual_intent.hue_primary}, sat=${anchorsData.visual_intent.saturation}, strategy=${anchorsData.visual_intent.palette_strategy}`);
-  // 🌒 FIRMA CUÁNTICA: registrar hue en el batch para anti-contaminación de siguientes libros
+  // 🌈 CAPA 2 — DISPERSIÓN DETERMINISTA DE HUE (garantía matemática de variedad)
+  // El LLM propone el hue (semántica); la matemática lo coloca en el hueco más grande
+  // entre los ya ocupados → único + repartido, sin colisión, determinista, costo cero.
+  // Si el hue del LLM cabe en ese hueco con margen, se respeta (matiz semántico).
+  // (Reemplaza el push del LLM: ahora registramos el hue YA colocado.)
   if (typeof anchorsData.visual_intent.hue_primary === "number") {
-    globalThis.__TRIGGUI_BATCH_HUES__.push(anchorsData.visual_intent.hue_primary);
+    const _hueLLM = anchorsData.visual_intent.hue_primary;
+    const _huePlaced = placeHueInGap(globalThis.__TRIGGUI_BATCH_HUES__, _hueLLM);
+    anchorsData.visual_intent.hue_primary = _huePlaced;
+    globalThis.__TRIGGUI_BATCH_HUES__.push(_huePlaced);
+    console.log(`   🌈 Hue Capa 2: LLM=${Math.round(_hueLLM)}° → colocado=${Math.round(_huePlaced)}° (ocupados=${globalThis.__TRIGGUI_BATCH_HUES__.length - 1})`);
   }
 
   // ═══ F2: PALETTE SYNTHESIS (determinista) ═══════════════════════════
