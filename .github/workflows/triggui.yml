@@ -64,6 +64,7 @@ on:
           - '🌍 Triggui busca el del mundo'
           - '🎲 Batch para la app'
           - '🧪 Batch shadow (no toca app)'
+          - '🔁 Reconstruir imágenes (sin LLM)'
 
       catalogo:
         description: '🌒 Catálogo'
@@ -83,7 +84,7 @@ on:
       # ── 2. CONDICIONALES ──────────────────────────────────
 
       libro_input:
-        description: '📘 Solo modo 📘. Formato: Título | Autor'
+        description: '📘/🔁 Libro. Formato: Título | Autor'
         required: false
         type: string
 
@@ -197,6 +198,8 @@ permissions:
 jobs:
   generar:
     runs-on: ubuntu-latest
+    # 🔁 El modo reconstruir NO usa este pipeline (no LLM); lo maneja el job `reconstruir`.
+    if: ${{ !contains(inputs.modo, '🔁') }}
     timeout-minutes: 180
 
     env:
@@ -1247,4 +1250,123 @@ jobs:
             echo "- 🌐 Edición viva: ${BASE_URL}/t/${SLUG}/" >> $GITHUB_STEP_SUMMARY
             echo "- 🖼️ Tarjeta: \`public/t/${SLUG}/tarjeta.png\`" >> $GITHUB_STEP_SUMMARY
             echo "- 🖼️ OG: \`public/t/${SLUG}/og.png\`" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  # ╔══════════════════════════════════════════════════════════════════════╗
+  # ║  JOB reconstruir — 🔁 Reconstrucción DETERMINISTA de imágenes (sin LLM)║
+  # ║  Re-renderiza index.html + tarjeta.png + og.png de una edición que YA  ║
+  # ║  existe en contenido.json, leyendo esos mismos datos.                  ║
+  # ║  Mismo código + mismos datos − LLM = idéntico. NO toca el contenido,   ║
+  # ║  NO llama al LLM, NO corre validate/nucleus/sanitizers. Autocontenido. ║
+  # ╚══════════════════════════════════════════════════════════════════════╝
+  reconstruir:
+    runs-on: ubuntu-latest
+    if: ${{ contains(inputs.modo, '🔁') }}
+    timeout-minutes: 30
+
+    env:
+      TZ: America/Mexico_City
+      BASE_URL: ${{ github.ref_name == 'main' && 'https://app.triggui.com' || 'https://beta.app.triggui.com' }}
+      CATALOG_MODE: ${{ inputs.catalogo || 'adulto' }}
+
+    steps:
+      - name: 📦 Checkout triggui-app
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 📦 Checkout triggui-content (producción)
+        uses: actions/checkout@v4
+        with:
+          repository: badirnakid/triggui-content
+          token: ${{ secrets.CONTENT_REPO_TOKEN }}
+          path: triggui-content
+          fetch-depth: 0
+
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: ⚙️ Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 🎭 Install Playwright (chromium para tarjeta/og)
+        run: |
+          if [ -f package.json ]; then
+            npm ci || npm install --no-audit --no-fund
+          else
+            npm install --no-save --no-audit --no-fund playwright@1.48.0
+          fi
+          npx playwright install chromium --with-deps
+
+      - name: 🔁 Reconstruir imágenes (determinista, sin LLM)
+        shell: bash
+        env:
+          # 🌒 Kids-aware: el catálogo source depende de CATALOG_MODE
+          RECONSTRUIR_SOURCE: ${{ inputs.catalogo == 'kids' && 'triggui-content/contenido_kids.json' || 'triggui-content/contenido.json' }}
+          RECONSTRUIR: ${{ inputs.libro_input }}
+          TRIGGUI_OUT_BASE: ${{ inputs.catalogo == 'kids' && 'public/kids/t' || 'public/t' }}
+        run: |
+          set -euo pipefail
+          if [ -z "${RECONSTRUIR}" ]; then
+            echo "❌ Modo 🔁 requiere el campo 'Título | Autor' (libro_input). Vacío — abortando."
+            exit 1
+          fi
+          echo "🔁 Reconstruyendo: ${RECONSTRUIR}"
+          echo "   source:  ${RECONSTRUIR_SOURCE}"
+          echo "   salida:  ${TRIGGUI_OUT_BASE}"
+          node scripts/reconstruir-edicion.mjs
+
+      - name: 💾 Commit imágenes reconstruidas (solo el slug)
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -f /tmp/triggui-slug.txt ]; then
+            echo "❌ No hay /tmp/triggui-slug.txt — el motor no resolvió el slug. Abortando commit."
+            exit 1
+          fi
+          SLUG="$(cat /tmp/triggui-slug.txt)"
+          BRANCH="${{ github.ref_name }}"
+          if [ "${{ inputs.catalogo }}" = "kids" ]; then OUT="public/kids/t"; else OUT="public/t"; fi
+
+          git config user.name "Triggui Bot"
+          git config user.email "bot@triggui.com"
+          git add "${OUT}/${SLUG}/" || true
+
+          if git diff --cached --quiet; then
+            echo "🟡 ${OUT}/${SLUG} sin cambios — ya era idéntico (nada que commitear)."
+          else
+            git commit -m "🔁 reconstruir — ${SLUG}"
+            for i in 1 2 3; do
+              if git pull --rebase --autostash origin "${BRANCH}" && git push origin "HEAD:${BRANCH}"; then
+                echo "✅ Push reconstruir exitoso (intento $i)"
+                break
+              fi
+              sleep 3
+            done
+          fi
+
+      - name: 📋 Summary
+        shell: bash
+        run: |
+          SLUG="$([ -f /tmp/triggui-slug.txt ] && cat /tmp/triggui-slug.txt || echo '?')"
+          {
+            echo "## 🔁 Triggui — Reconstrucción determinista (sin LLM)"
+            echo ""
+            echo "| Campo | Valor |"
+            echo "|---|---|"
+            echo "| Modo | 🔁 Reconstruir |"
+            echo "| Libro | ${{ inputs.libro_input }} |"
+            echo "| Slug | ${SLUG} |"
+            echo ""
+          } >> $GITHUB_STEP_SUMMARY
+          if [ -f /tmp/triggui-slug.txt ]; then
+            {
+              echo "- 🌐 Edición viva: ${BASE_URL}/t/${SLUG}/"
+              echo "- 🖼️ Tarjeta: \`public/t/${SLUG}/tarjeta.png\`"
+              echo "- 🖼️ OG: \`public/t/${SLUG}/og.png\`"
+            } >> $GITHUB_STEP_SUMMARY
           fi
