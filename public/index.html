@@ -3022,13 +3022,43 @@ function render(){
     if (b) { b.style.background = ''; b.style.color = ''; }
   });
   grid.innerHTML = "";
-  const palabrasI18n = TriggguiI18n.lang === 'en' && Array.isArray(libro.palabras_en) && libro.palabras_en.length === 4 ? libro.palabras_en : libro.palabras;
-  const frasesI18n = TriggguiI18n.lang === 'en' && Array.isArray(libro.frases_en) && libro.frases_en.length === 4 ? libro.frases_en : libro.frases;
+  // ═══════════════════════════════════════════════════════════════════
+  // 🛡️ INVARIANTE 4-BLOQUES (nivel dios) — la app pinta SIEMPRE 4 bloques.
+  // Si la data trae <4 frases válidas (p.ej. una frase removida aguas arriba
+  // dejó hueco), JAMÁS pintar un bloque vacío: rellenar con una frase FIEL del
+  // MISMO libro y MISMO idioma desde los pools de respaldo (og / edition_blocks
+  // / og_phrases). NUNCA mezclar idioma. Este guard es defensa-en-profundidad:
+  // protege a TODA edición pase lo que pase con la data del catálogo.
+  const __valid  = s => typeof s === 'string' && s.trim().length > 0;
+  const __asText = b => (typeof b === 'string') ? b : (b && typeof b.phrase === 'string' ? b.phrase : null);
+  const __n = libro._nucleus || {};
+  const __poolsES = [libro.frases, libro.frases_og,
+    Array.isArray(__n.edition_blocks_es) ? __n.edition_blocks_es.map(__asText) : null,
+    Array.isArray(__n.og_phrases_es)     ? __n.og_phrases_es.map(__asText)     : null];
+  const __poolsEN = [libro.frases_en, libro.frases_og_en,
+    Array.isArray(__n.edition_blocks_en) ? __n.edition_blocks_en.map(__asText) : null,
+    Array.isArray(__n.og_phrases_en)     ? __n.og_phrases_en.map(__asText)     : null];
+  const __ensure4 = (primary, pools) => {
+    const out = [], used = new Set();
+    for (let i = 0; i < 4; i++) {
+      let v = __valid(primary && primary[i]) ? primary[i] : null;
+      if (!v) for (const p of pools) { if (Array.isArray(p) && __valid(p[i]) && !used.has(p[i])) { v = p[i]; break; } }
+      if (!v) for (const p of pools) { if (Array.isArray(p)) { const c = p.find(x => __valid(x) && !used.has(x)); if (c) { v = c; break; } } }
+      if (!v) v = (Array.isArray(primary) && primary.find(__valid)) || '';
+      out[i] = v; if (__valid(v)) used.add(v);
+    }
+    return out;
+  };
+  const __useEN = TriggguiI18n.lang === 'en' && Array.isArray(libro.frases_en) && libro.frases_en.length === 4;
+  // palabras = LABELS (no caen a pools de frases; si falta uno, queda vacío, nunca un párrafo)
+  const palabrasI18n = (__useEN && Array.isArray(libro.palabras_en) && libro.palabras_en.length === 4 ? libro.palabras_en : libro.palabras) || [];
+  const frasesI18n   = __ensure4(__useEN ? libro.frases_en : libro.frases, __useEN ? __poolsEN : __poolsES);
+  // ═══════════════════════════════════════════════════════════════════
   for(let i=0;i<4;i++){
     const card=document.createElement("div"); card.className="block"; card.style.background=grad(i);
     const label=document.createElement("div"); label.className="label";
     const labelEmoji=getBlockEmoji(libro, i);
-    label.textContent=labelEmoji ? `${labelEmoji} ${palabrasI18n[i]}` : palabrasI18n[i];
+    label.textContent=labelEmoji ? `${labelEmoji} ${palabrasI18n[i]||''}`.trim() : (palabrasI18n[i]||'');
     label.style.color=libro.textColors?.[i]||"#fff";
     const frase=document.createElement("div"); frase.className="frase";
     frase.textContent=frasesI18n[i]; frase.style.color=libro.textColors?.[i]||"#fff";
