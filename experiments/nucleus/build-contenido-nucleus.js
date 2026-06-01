@@ -1721,7 +1721,16 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
           if (lastClose >= 0) repaired = repaired.substring(0, lastClose) + repaired.substring(lastClose + 4);
         }
 
-        if (reason !== "no-closure") {
+        // 🌒 v4.5 cirugia 13 — GUARD ANTI-AMPUTACIÓN (nivel dios)
+      // suspect-short, o recorte que deja <60% del original → devolver el ORIGINAL INTACTO:
+      // collectTruncations lo re-marca y C4.5 (LLM grounded) adjudica (completa si es real,
+      // confirma si es falso positivo). La deteccion NO cambia (red amplia = guarantee).
+      // plainCut+1 = largo plano del texto recortado (=== strip de [H], verificado).
+      const __keepRatio = plain.length > 0 ? (plainCut + 1) / plain.length : 1;
+      if (reason.startsWith("suspect-short") || __keepRatio < 0.60) {
+        return trimmed;
+      }
+      if (reason !== "no-closure") {
           console.log(`   🔬 ${label}: truncamiento camuflado detectado (${reason}) — reparando`);
         }
         return repaired;
