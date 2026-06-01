@@ -278,6 +278,8 @@ IDIOMA: ${f.lang === "en" ? "English" : "Español"}
 
 ═══════════════════════════════════════════════════════════════════
 Reescribe la frase como autor escribiendo dentro de tu obra.
+
+🌐 IDIOMA OBLIGATORIO (REGLA SUPREMA): tu respuesta DEBE estar 100% en ${f.lang === "en" ? "INGLÉS" : "ESPAÑOL"}. Todo lo de arriba (identidad, anchors, voz) puede venir en OTRO idioma — úsalo SOLO para las IDEAS, JAMÁS para el idioma. PROHIBIDO mezclar idiomas dentro de la frase.
 Devuelve SOLO la frase reescrita.`;
 
     try {
