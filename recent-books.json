@@ -81,6 +81,16 @@
       "timestamp": "2026-05-25T17:38:12.385Z",
       "trigger_input": "agradecimiento",
       "selected_via": "discover_trigger"
+    },
+    {
+      "titulo": "When: The Scientific Secrets of Perfect Timing",
+      "autor": "Daniel H. Pink",
+      "slug": "when-the-scientific-secrets-of-perfect-timing",
+      "titulo_normalizado": "when the scientific secrets of perfect timing",
+      "autor_normalizado": "daniel h pink",
+      "timestamp": "2026-06-04T13:20:37.209Z",
+      "trigger_input": "por qué los lunes y martes son mas pesados que el jueves",
+      "selected_via": "discover_trigger"
     }
   ],
   "_note": "FIFO ring de últimos 30 libros generados por selección automática (constrained o discover). Filtro pre-rerank en validate-book.js. Inicializa vacío y se rellena con cada run exitoso. Si se borra, el sistema arranca limpio sin daño."
