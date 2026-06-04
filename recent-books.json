@@ -91,6 +91,16 @@
       "timestamp": "2026-06-04T13:20:37.209Z",
       "trigger_input": "por qué los lunes y martes son mas pesados que el jueves",
       "selected_via": "discover_trigger"
+    },
+    {
+      "titulo": "The Gifts of Imperfection",
+      "autor": "Brené Brown",
+      "slug": "the-gifts-of-imperfection",
+      "titulo_normalizado": "the gifts of imperfection",
+      "autor_normalizado": "brene brown",
+      "timestamp": "2026-06-04T13:32:15.636Z",
+      "trigger_input": "siento pesadez en el cerebro y falta de ganas y motivacion",
+      "selected_via": "discover_trigger"
     }
   ],
   "_note": "FIFO ring de últimos 30 libros generados por selección automática (constrained o discover). Filtro pre-rerank en validate-book.js. Inicializa vacío y se rellena con cada run exitoso. Si se borra, el sistema arranca limpio sin daño."
