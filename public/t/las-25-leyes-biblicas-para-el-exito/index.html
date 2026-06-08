@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 
-<title>La honestidad como pilar del éxito · Las 25 leyes bíblicas para el éxito · Triggui</title>
-<meta name="description" content="🫁 La honestidad es la brújula que guía al éxito duradero" />
+<title>Las 25 leyes bíblicas para el éxito · Triggui</title>
+<meta name="description" content="🌊 El esfuerzo constante es el arte de transformar sueños en realidades" />
 <link rel="canonical" href="https://app.triggui.com/t/las-25-leyes-biblicas-para-el-exito/" />
 
-<meta property="og:title" content="integridad · confianza · sabiduría · responsabilidad" />
-<meta property="og:description" content="🫁 La honestidad es la brújula que guía al éxito duradero" />
+<meta property="og:title" content="determinación · honestidad · esfuerzo · dedicación" />
+<meta property="og:description" content="🌊 El esfuerzo constante es el arte de transformar sueños en realidades" />
 <meta property="og:image" content="https://app.triggui.com/t/las-25-leyes-biblicas-para-el-exito/og.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
@@ -19,8 +19,8 @@
 <meta property="og:locale" content="es_MX" />
 
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="integridad · confianza · sabiduría · responsabilidad" />
-<meta name="twitter:description" content="🫁 La honestidad es la brújula que guía al éxito duradero" />
+<meta name="twitter:title" content="determinación · honestidad · esfuerzo · dedicación" />
+<meta name="twitter:description" content="🌊 El esfuerzo constante es el arte de transformar sueños en realidades" />
 <meta name="twitter:image" content="https://app.triggui.com/t/las-25-leyes-biblicas-para-el-exito/og.png" />
 
 <link rel="preconnect" href="https://www.penguinlibros.com" crossorigin>
@@ -53,11 +53,11 @@ body::before {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse at 30% 20%, rgba(255,0,85,0.18), transparent 65%),
-    radial-gradient(ellipse at 70% 80%, rgba(255,94,0,0.08), transparent 65%);
+    radial-gradient(ellipse at 30% 20%, rgba(40, 100, 220, 0.14), transparent 65%),
+    radial-gradient(ellipse at 70% 80%, rgba(80, 230, 200, 0.06), transparent 65%);
   z-index: -1;
   pointer-events: none;
-  opacity: 0.85;
+  opacity: 0.9;
 }
 
 @keyframes fire-move {
@@ -140,8 +140,25 @@ body::before {
   z-index: 0;
 }
 .block:hover::after { opacity: 1; }
-.block:hover { transform: translateY(-2px) scale(1.005); }
-.block:active { transform: translateY(0) scale(0.995); transition: transform 0.1s; }
+.block:hover {
+  transform: translateY(-2px) scale(1.005);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.28),
+    inset 0 -1px 0 rgba(0,0,0,.16),
+    inset 0 0 0 1px rgba(255,255,255,.16),
+    0 3px 7px rgba(0,0,0,.14),
+    0 18px 46px rgba(0,0,0,.42);
+}
+.block:active {
+  transform: translateY(0) scale(0.995);
+  transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.20),
+    inset 0 -1px 0 rgba(0,0,0,.18),
+    inset 0 0 0 1px rgba(255,255,255,.10),
+    0 1px 3px rgba(0,0,0,.12),
+    0 8px 24px rgba(0,0,0,.30);
+}
 .block.dim { opacity: 0.6; transform: scale(0.98); }
 
 .label, .frase {
@@ -154,8 +171,11 @@ body::before {
   z-index: 2;
   text-align: center;
   transition: opacity 0.25s ease, transform 0.25s ease;
+  text-shadow: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
-.label { opacity: 1; transform: translateY(0); font-size: clamp(1.05rem, 3.2vw, 1.7rem); line-height: 1.35; }
+.label { opacity: 1; transform: translateY(0); font-size: clamp(1.05rem, 3.2vw, 1.7rem); font-weight: 700; line-height: 1.35; letter-spacing: 0.2px; }
 .frase { opacity: 0; transform: translateY(6px); font-size: clamp(1rem, 3vw, 1.5rem); font-weight: 600; line-height: 1.4; }
 .block.show .label { opacity: 0; transform: translateY(-6px); }
 .block.show .frase { opacity: 1; transform: translateY(0); }
@@ -269,6 +289,16 @@ body::before {
   border-radius: 12px;
   letter-spacing: 0.3px;
   margin: 0 0 12px 0;
+  /* 🌒 BUG 1 FIX (V10): permitir wrap natural cuando autor es largo */
+  /* Antes: chip inline-block + texto largo creaba hueco vertical bajo el título */
+  /* Ahora: el chip se rompe en líneas dentro de su contenedor sin afectar layout */
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  vertical-align: top;
+  line-height: 1.35;
+  /* TODO: refactor a CSS Grid en Phase futura para eliminar dependencia de float */
 }
 
 .ed-block .ed-para {
@@ -300,6 +330,48 @@ body::before {
   border-radius: 0.14em;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   🌒 NUMERACIÓN V12 NIVEL DIOS CUÁNTICO-QUARK — eyebrow ARRIBA del título
+   Posición: dentro del ed-block, inmediatamente antes del .ed-title
+   Filosofía: notable PREMIUM. Label sans + número Playfair italic con color accent
+   V12 cambios: tamaño aumentado para ser visible + color accent en #N para
+   coherencia cromática con el resto del diseño del libro
+   ════════════════════════════════════════════════════════════════════════════ */
+.edicion-eyebrow {
+  display: block;
+  /* 🌒 V15: aire arriba (separa del techo) + abajo (separa del título) */
+  margin: 6px 27px 14px 27px;
+  font-family: 'Archivo', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: rgba(26, 26, 26, 0.48);
+  line-height: 1;
+  user-select: none;
+}
+.edicion-eyebrow-sep {
+  display: inline-block;
+  margin: 0 0.55em;
+  opacity: 0.5;
+  font-weight: 400;
+}
+.edicion-eyebrow-num {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: 0;
+  font-size: 22px;
+  color: var(--accent, #1a1a1a);
+  text-transform: none;
+  vertical-align: baseline;
+  margin-left: 2px;
+}
+@media (max-width: 480px) {
+  .edicion-eyebrow { font-size: 12px; letter-spacing: 0.30em; margin: 6px 22px 8px 22px; }
+  .edicion-eyebrow-num { font-size: 20px; }
 }
 
 .ed-cover-wrap {
@@ -527,6 +599,87 @@ body::before {
 .silence-screen .sil-mark { opacity: 0.2; animation: silCallIn 1s ease 1s both; }
 .silence-screen .sil-mark img { height: 22px; width: auto; display: block; margin: 0 auto; filter: invert(1) brightness(1.5); }
 
+/* ════════════════════════════════════════════════════════════════════
+   🌒 BOCADO + ECO — Frase oracular antes/después
+   Pool: concepts del nucleus del libro (cap + punto en Python)
+   Timing: 1500ms appear + 2000ms hold + 1200ms fade = 4.7s total
+═══════════════════════════════════════════════════════════════════════ */
+.bocado-eco-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0 32px;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.bocado-eco-overlay.visible { display: flex; opacity: 1; }
+
+.bocado-eco-phrase {
+  font-family: 'Archivo', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 300;
+  font-size: clamp(22px, 6vw, 32px);
+  line-height: 1.32;
+  color: #fff;
+  text-align: center;
+  max-width: 640px;
+  letter-spacing: -0.5px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@keyframes triggui-word-appear {
+  0%   { opacity: 0; transform: translateY(8px); filter: blur(12px); }
+  100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+@keyframes triggui-underline-appear {
+  0%   { opacity: 0; transform: scaleX(0); }
+  60%  { opacity: 1; transform: scaleX(1); }
+  100% { opacity: 0.65; transform: scaleX(1); }
+}
+.bm-bocado-w, .bm-bocado-anchor {
+  display: inline-block;
+  opacity: 0;
+  animation: triggui-word-appear 1500ms cubic-bezier(0.19, 1, 0.22, 1) forwards;
+  will-change: opacity, transform, filter;
+}
+.bm-bocado-anchor {
+  font-weight: 400;
+  position: relative;
+}
+.bm-bocado-anchor::after {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: -6px;
+  height: 1px;
+  opacity: 0;
+  transform: scaleX(0);
+  background: linear-gradient(90deg, transparent, var(--bocado-anchor-color, #FF5E00), transparent);
+  animation: triggui-underline-appear 2100ms cubic-bezier(0.19, 1, 0.22, 1) forwards;
+  animation-delay: 900ms;
+}
+.bm-bocado-fading {
+  transition: opacity 1200ms cubic-bezier(0.55, 0, 0.55, 1), filter 1200ms cubic-bezier(0.55, 0, 0.55, 1) !important;
+  opacity: 0 !important;
+  filter: blur(10px) !important;
+}
+
+/* Cuando el bocado o eco están activos, los bloques quedan atenuados como contexto detrás del blur */
+.grid.bocado-active, .grid.eco-active {
+  opacity: 0.25;
+  pointer-events: none;
+  filter: saturate(0.7);
+  transition: opacity 0.5s ease, filter 0.5s ease;
+}
+
 @media (max-width: 640px) {
   .grid { gap: 1.2vw; }
   .label { font-size: clamp(0.95rem,4vw,1.4rem); }
@@ -548,9 +701,12 @@ body::before {
 }
 </style>
 </head>
-<body data-lab-v="live-edition-card-v3" style="--accent:#1F99D6;--marker:#1F99D630;--chip-bg:#1F99D614;--card-paper:#F7F7F5;--card-ink:#1A1A1A;--card-border:rgba(26,26,26,0.06);--ed-title-size:25.4px;--ed-title-size-mobile:22.8px;--ed-para-size:17.4px;--ed-para-size-mobile:17.0px;--ed-sub-size:17.2px;--ed-sub-size-mobile:16.8px;--ed-chip-size:14.3px;--ed-chip-size-mobile:13.6px;--ed-cover-width:110.0px;--ed-cover-width-mobile:98.0px;">
+<body data-lab-v="live-edition-card-v3" style="--accent:#1219E2;--marker:#1219E230;--chip-bg:#1219E214;--card-paper:#F7F7F5;--card-ink:#1A1A1A;--card-border:rgba(26,26,26,0.06);--ed-title-size:25.4px;--ed-title-size-mobile:22.8px;--ed-para-size:17.4px;--ed-para-size-mobile:17.0px;--ed-sub-size:17.2px;--ed-sub-size-mobile:16.8px;--ed-chip-size:14.3px;--ed-chip-size-mobile:13.6px;--ed-cover-width:110.0px;--ed-cover-width-mobile:98.0px;">
 
 <div id="pulseLine" class="pulse-line"></div>
+<div class="bocado-eco-overlay" id="bocadoEcoOverlay">
+  <div class="bocado-eco-phrase" id="bocadoEcoPhrase"></div>
+</div>
 <div class="grid" id="grid"></div>
 
 <div id="revealOverlay" class="reveal-overlay">
@@ -565,16 +721,18 @@ body::before {
             <img src="https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/f3/86/d2f386d5-0b77-6163-bcc9-4403c6f77889/9789584264930.jpg/3000x3000bb.jpg" alt="Las 25 leyes bíblicas para el éxito" />
             <span class="cover-hint">Toca el libro</span>
           </div>
-          <div class="ed-title" id="editorialTitle">La honestidad como pilar del éxito</div>
+          <div class="ed-title" id="editorialTitle">La dedicación como clave del éxito</div>
           <div class="ed-chip" id="editorialChip">William Douglas</div>
-          <div class="ed-para" id="editorialTopPara"><span class="tg-hl">El éxito profesional no se edifica sobre mentiras, sino sobre la honestidad.</span> Esta virtud, recomendada por la Biblia, es fundamental para establecer relaciones sólidas y confiables en cualquier ámbito. La transparencia en nuestras acciones y decisiones no solo eleva nuestra credibilidad, sino que también nos guía hacia</div>
+          <div class="ed-para" id="editorialTopPara"><span class="tg-hl">El esfuerzo y la dedicación son pilares fundamentales en la búsqueda del éxito.</span> La Biblia nos enseña que todo lo que hagamos debe ser hecho con excelencia, sin escatimar en esfuerzo. Esta actitud no solo nos acerca a nuestros objetivos, sino que también nos construye como personas.</div>
         </div>
       </div>
       <div class="ed-gap"></div>
       <div class="ed-block" id="editorialBlockBottom">
-        <div class="ed-sub" id="editorialSub">¿Cómo se construye una carrera sólida?</div>
-        <div class="ed-para" id="editorialBottomPara"><span class="tg-hl">una evolución personal auténtica.</span> La honestidad se convierte en un faro que ilumina el camino hacia el éxito, ayudando a superar los desafíos y a mantener la integridad en cada paso que damos.</div>
+        <div class="ed-sub" id="editorialSub">¿Cómo puede la dedicación transformar tu vida?</div>
+        <div class="ed-para" id="editorialBottomPara">La dedicación a nuestra labor es una forma de honrar el talento que se nos ha otorgado. Tal como se menciona en Proverbios, el trabajo arduo es recompensado y trae consigo la satisfacción de alcanzar metas y el respeto de los demás. La verdadera grandeza se encuentra en el compromiso diario. <span class="tg-hl">¡Actúa con entrega y verás!</span> Recuerda que el esfuerzo y la dedicación son fundamentales para alcanzar el éxito en cualquier ámbito de la vida.</div>
       </div>
+
+      <div class="edicion-eyebrow" aria-hidden="true">EDICIÓN<span class="edicion-eyebrow-sep">·</span><span class="edicion-eyebrow-num">#067</span></div>
 
       <div class="card-actions">
         <div class="btn-row btn-row-2">
@@ -595,11 +753,11 @@ body::before {
             <img class="btn-busca-logo" src="/buscalibre.png" alt="Buscalibre">
           </a>
 
-          <a class="btn-dark btn-crystal" id="btnCrystal" href="https://www.buscalibre.com.mx/libros/search/?q=integridad" target="_blank" rel="noopener noreferrer">
+          <a class="btn-dark btn-crystal" id="btnCrystal" href="https://www.buscalibre.com.mx/libros/search/?q=determinaci%C3%B3n" target="_blank" rel="noopener noreferrer">
             <span class="btn-emoji">🔮</span>
           </a>
 
-          <a class="btn-dark btn-penguin-icon" id="btnPenguin" href="https://www.penguinlibros.com/mx/?mot_q=integridad" target="_blank" rel="noopener noreferrer">
+          <a class="btn-dark btn-penguin-icon" id="btnPenguin" href="https://www.penguinlibros.com/mx/?mot_q=determinaci%C3%B3n" target="_blank" rel="noopener noreferrer">
             <img src="/logopenguin.png" alt="Penguin">
           </a>
         </div>
@@ -621,7 +779,7 @@ body::before {
 </div>
 
 <script>
-const state = {"id": "las-25-leyes-biblicas-para-el-exito", "titulo": "Las 25 leyes bíblicas para el éxito", "autor": "William Douglas", "palabra": "La honestidad como pilar del éxito", "descripcion": "El éxito profesional no se edifica sobre mentiras, sino sobre la honestidad. Esta virtud, recomendada por la Biblia, es fundamental para establecer relaciones sólidas y confiables en cualquier ámbito. La transparencia en nuestras acciones y decisiones no solo eleva nuestra credibilidad, sino que también nos guía hacia", "palabras": ["integridad", "confianza", "sabiduría", "responsabilidad"], "frases": ["🌊 Camina con la cabeza en alto y actúa siempre con honestidad.", "🌓 ¿Qué decisiones has tomado hoy que reflejan tus valores?", "👁 Imagina un camino iluminado por la honestidad y la dedicación.", "🫁 La honestidad es la brújula que guía al éxito duradero."], "colores": ["#90DFD2", "#4DC1CB", "#2C5896", "#192457"], "textColors": ["#000000", "#FFFFFF", "#FFFFFF", "#FFFFFF"], "ogImage": "https://app.triggui.com/t/las-25-leyes-biblicas-para-el-exito/og.png", "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/f3/86/d2f386d5-0b77-6163-bcc9-4403c6f77889/9789584264930.jpg/3000x3000bb.jpg", "tagline": "La Biblia es el mejor manual sobre el éxito que se haya escrito hasta hoy.Contrario a lo que se piensa no habla solamente sobre religión sino también sobre los valores fundamentales para construir una base sólida para la vida profesional.Los autores de este libro acuden a esa fuente milenaria de sabiduría para consolidar las 25 leyes que presentan en estas páginas. Son lecciones que hablan sobre la importancia del esfuerzo y la dedicación en el trabajo la búsqueda indispensable del conocimiento y la evolución personal el respeto a los otros y por encima de todo la honestidad.Sin importar su orientación espiritual o si usted es empleado trabajador independiente emprendedor o dueño de una empresa este libro puede transformar su vida.En estas páginas usted aprenderá:Los antídotos contra los siete pecados capitales en la búsqueda del éxito.Lo que enseña Salomón en el libro de los Proverbios sobre el éxito profesional.Los errores de la teologia de la prosperidad y la teologia de la miseria. Las virtudes recomendadas por la Biblia para alcanzar el éxito.Cómo tener una relación armoniosa con el dinero. 200 citas bíblicas para alcanzar la excelencia la credibilidad y el éxito"};
+const state = {"id": "las-25-leyes-biblicas-para-el-exito", "titulo": "Las 25 leyes bíblicas para el éxito", "autor": "William Douglas", "palabra": "La dedicación como clave del éxito", "descripcion": "El esfuerzo y la dedicación son pilares fundamentales en la búsqueda del éxito. La Biblia nos enseña que todo lo que hagamos debe ser hecho con excelencia, sin escatimar en esfuerzo. Esta actitud no solo nos acerca a nuestros objetivos, sino que también nos construye como personas.", "palabras": ["determinación", "honestidad", "esfuerzo", "dedicación"], "frases": ["🌊 Dedica un momento a reflexionar sobre tus logros. Siente la gratitud por el esfuerzo invertido.", "🌓 ¿Qué te impide dedicarte plenamente a tus objetivos?", "👁 Imagina un camino iluminado por tus esfuerzos, donde cada paso te acerca a tus metas.", "🌊 El esfuerzo constante es el arte de transformar sueños en realidades."], "colores": ["#7E82F1", "#E8E230", "#3513AE", "#51650B"], "textColors": ["#FFFFFF", "#000000", "#FFFFFF", "#FFFFFF"], "ogImage": "https://app.triggui.com/t/las-25-leyes-biblicas-para-el-exito/og.png", "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication126/v4/d2/f3/86/d2f386d5-0b77-6163-bcc9-4403c6f77889/9789584264930.jpg/3000x3000bb.jpg", "tagline": "", "bocadoEcoPool": [{"phrase": "🌊 Dedica un momento a reflexionar sobre tus logros. Siente la gratitud por el esfuerzo invertido.", "rol": "profundizar", "animo": 0.8, "origin": "edition_block_es"}, {"phrase": "🌓 ¿Qué te impide dedicarte plenamente a tus objetivos?", "rol": "abrir", "animo": 0.4, "origin": "edition_block_es"}, {"phrase": "👁 Imagina un camino iluminado por tus esfuerzos, donde cada paso te acerca a tus metas.", "rol": "resonar", "animo": 0.5, "origin": "edition_block_es"}, {"phrase": "🌊 El esfuerzo constante es el arte de transformar sueños en realidades.", "rol": "aterrizar", "animo": 0.6, "origin": "edition_block_es"}, {"phrase": "🔍 El esfuerzo sincero es el camino hacia la recompensa.", "rol": "aterrizar", "animo": 0.7, "origin": "og_phrase_es"}, {"phrase": "💠 ¿Cuántas oportunidades se pierden por falta de dedicación?", "rol": "abrir", "animo": 0.3, "origin": "og_phrase_es"}, {"phrase": "✨ El trabajo hecho con dedicación refleja nuestra verdadera esencia.", "rol": "profundizar", "animo": 0.5, "origin": "og_phrase_es"}, {"phrase": "⚓ Un corazón dedicado es un corazón que prospera.", "rol": "resonar", "animo": 0.6, "origin": "og_phrase_es"}]};
 const grid = document.getElementById('grid');
 const revealOverlay = document.getElementById('revealOverlay');
 const btnBack = document.getElementById('btnBack');
@@ -642,7 +800,7 @@ function grad(i) {
 let overlayView = 'blocks';
 let coverBusy = false;
 const revealIndex = Math.floor(Math.random() * 4);
-const emojis = ['🌊', '🛡️', '🧠', '✨'];
+const emojis = ['🌊', '🛡️', '🧠', '✨', '📘', '🔮', '❤️', '🪞'];
 
 function clearBlockStates() {
   Array.from(grid.children).forEach((block) => {
@@ -719,8 +877,20 @@ function openOverlayFromBlocks() {
 }
 
 function closeOverlayToBlocks() {
+  // 🌒 Si venimos de tarjeta o silence-screen, disparar eco antes de los bloques
+  const cameFromCardOrSilence = (overlayView === 'card' || overlayView === 'silence');
   setOverlayView('blocks');
-  setTimeout(() => showGrid(), 180);
+  setTimeout(() => {
+    showGrid();
+    if (cameFromCardOrSilence && state.bocadoEcoPool && state.bocadoEcoPool.length > 0) {
+      grid.classList.add('eco-active');
+      setTimeout(() => {
+        showEco(() => {
+          grid.classList.remove('eco-active');
+        });
+      }, 100);
+    }
+  }, 180);
 }
 
 function moveToSilence() {
@@ -911,6 +1081,166 @@ function fitRevealTypography() {
   }
 }
 
+/* ════════════════════════════════════════════════════════════════════
+   🌒 BOCADO + ECO — funciones cuánticas
+═══════════════════════════════════════════════════════════════════════ */
+const bocadoEcoState = {
+  used: new Set(),
+  active: false,
+};
+const BOCADO_TIMING = { appear: 1500, hold: 2000, fade: 1200, wordStagger: 60 };
+
+function pickFromPool(roleHints) {
+  // 🌒 V14 sinfónico: detecta auto si pool es de objetos o strings
+  const raw = state.bocadoEcoPool || [];
+  if (raw.length === 0) return null;
+
+  const firstItem = raw[0];
+  const isSinfonico = firstItem && typeof firstItem === 'object';
+
+  if (isSinfonico) {
+    // Pool V14: objetos {phrase, rol, animo, origin}
+    let candidates = raw.filter(o => o && o.phrase && o.phrase.length >= 8);
+    if (candidates.length === 0) return null;
+
+    if (roleHints && roleHints.length > 0) {
+      const filtered = candidates.filter(o => roleHints.indexOf(o.rol) !== -1);
+      if (filtered.length > 0) candidates = filtered;
+    }
+
+    let available = candidates.filter(o => !bocadoEcoState.used.has(o.phrase));
+    if (available.length === 0) {
+      bocadoEcoState.used.clear();
+      available = candidates.slice();
+    }
+
+    const chosen = available[Math.floor(Math.random() * available.length)];
+    bocadoEcoState.used.add(chosen.phrase);
+
+    return {
+      phrase: chosen.phrase,
+      rol_solicitado: (roleHints && roleHints.length > 0) ? roleHints.join(',') : '(cualquiera)',
+      rol_obtenido: chosen.rol,
+      eje_animo: chosen.animo,
+      origin: chosen.origin,
+    };
+  }
+
+  // Pool V13 legacy: strings (backward-compat para libros pre-v12)
+  const pool = raw.filter(p => typeof p === 'string' && p && p.length >= 8);
+  if (pool.length === 0) return null;
+  let available = pool.filter(p => !bocadoEcoState.used.has(p));
+  if (available.length === 0) {
+    bocadoEcoState.used.clear();
+    available = pool.slice();
+  }
+  const phrase = available[Math.floor(Math.random() * available.length)];
+  bocadoEcoState.used.add(phrase);
+
+  return {
+    phrase: phrase,
+    rol_solicitado: (roleHints && roleHints.length > 0) ? roleHints.join(',') : '(cualquiera)',
+    rol_obtenido: '(legacy_string)',
+    eje_animo: null,
+    origin: 'concept_legacy',
+  };
+}
+
+function segmentPhrase(text) {
+  const words = String(text || '').split(/\s+/).filter(w => w.length > 0);
+  const n = words.length;
+  if (n < 2) return { body: '', anchor: words.join(' ') };
+  const anchorCount = n <= 4 ? 1 : 2;
+  return {
+    body: words.slice(0, n - anchorCount).join(' '),
+    anchor: words.slice(n - anchorCount).join(' '),
+  };
+}
+
+function buildPhraseHTML(text, accentColor) {
+  const seg = segmentPhrase(text);
+  let html = '';
+  let delay = 0;
+  if (seg.body) {
+    const bodyWords = seg.body.split(/\s+/);
+    for (const w of bodyWords) {
+      html += '<span class="bm-bocado-w" style="animation-delay:' + delay + 'ms">' + w + '&nbsp;</span>';
+      delay += BOCADO_TIMING.wordStagger;
+    }
+  }
+  html += '<span class="bm-bocado-anchor" style="animation-delay:' + delay + 'ms;color:' + accentColor + ';">' + seg.anchor + '</span>';
+  return html;
+}
+
+function showBocadoEco(kind, onComplete, roleHints) {
+  if (bocadoEcoState.active) return false;
+  const picked = pickFromPool(roleHints);
+  if (!picked) {
+    if (typeof onComplete === 'function') onComplete();
+    return false;
+  }
+  const phrase = picked.phrase;
+  bocadoEcoState.active = true;
+
+  const overlay = document.getElementById('bocadoEcoOverlay');
+  const phraseEl = document.getElementById('bocadoEcoPhrase');
+  if (!overlay || !phraseEl) {
+    bocadoEcoState.active = false;
+    if (typeof onComplete === 'function') onComplete();
+    return false;
+  }
+
+  // Color del anchor: usar el accent del libro o color de bloque 1
+  let accentColor = '#FF5E00';
+  try {
+    if (state.colores && state.colores[1]) {
+      accentColor = state.colores[1];
+    }
+  } catch (_) {}
+  overlay.style.setProperty('--bocado-anchor-color', accentColor);
+
+  phraseEl.classList.remove('bm-bocado-fading');
+  phraseEl.innerHTML = buildPhraseHTML(phrase, accentColor);
+  overlay.classList.add('visible');
+
+  const totalWords = phrase.split(/\s+/).length;
+  const fullAppear = BOCADO_TIMING.appear + totalWords * BOCADO_TIMING.wordStagger + 300;
+  const holdEnd = fullAppear + BOCADO_TIMING.hold;
+
+  setTimeout(() => phraseEl.classList.add('bm-bocado-fading'), holdEnd);
+
+  setTimeout(() => {
+    overlay.classList.remove('visible');
+    phraseEl.innerHTML = '';
+    phraseEl.classList.remove('bm-bocado-fading');
+    bocadoEcoState.active = false;
+    if (typeof onComplete === 'function') onComplete();
+    if (typeof console !== 'undefined' && console.log) {
+      // 🌒 V14 SINFÓNICO: log con paridad matemática a la app webview
+      console.log('[Triggui ' + kind + ' v14]', {
+        role_solicitado: picked.rol_solicitado,
+        role_obtenido: picked.rol_obtenido,
+        eje_animo: picked.eje_animo,
+        source: state.titulo,
+        origin: picked.origin,
+        phrase: phrase,
+      });
+    }
+  }, holdEnd + BOCADO_TIMING.fade + 100);
+
+  return true;
+}
+
+function showBocado(onComplete) {
+  // 🌒 V14: opening → preferir abrir/profundizar (lleva al usuario adentro)
+  return showBocadoEco('Bocado', onComplete, ['abrir', 'profundizar']);
+}
+
+function showEco(onComplete) {
+  // 🌒 V14: closing → preferir resonar/aterrizar (deja resonancia al cerrar)
+  return showBocadoEco('Eco', onComplete, ['resonar', 'aterrizar']);
+}
+
 function renderBlocks() {
   grid.innerHTML = '';
 
@@ -1028,6 +1358,19 @@ window.addEventListener('resize', () => {
 renderBlocks();
 applyDynamicActionLinks();
 setOverlayView('blocks');
+
+// 🌒 Bocado al cargar — primero ocultamos bloques, mostramos bocado, y
+// cuando termina volvemos a mostrar bloques con su atmósfera intacta.
+(function triggerOpeningBocado() {
+  if (!state.bocadoEcoPool || state.bocadoEcoPool.length === 0) return;
+  grid.classList.add('bocado-active');
+  // Pequeño delay para que el browser pinte la página primero
+  setTimeout(() => {
+    showBocado(() => {
+      grid.classList.remove('bocado-active');
+    });
+  }, 200);
+})();
 
 (function() {
   const k = () => {
