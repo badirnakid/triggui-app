@@ -831,9 +831,12 @@ jobs:
           TRIGGUI_EDICION_JSON: ${{ inputs.catalogo == 'kids' && 'contenido_kids.json' || 'contenido.json' }}
           TRIGGUI_OUT_BASE: ${{ inputs.catalogo == 'kids' && 'public/kids/t' || 'public/t' }}
         run: |
-          # Guarda v3.2: si el libro nuevo fue a quarantine, libros[0] no existe → saltar sin tronar
-          if ! node -e "const d=JSON.parse(require('fs').readFileSync(process.env.TRIGGUI_EDICION_JSON,'utf8'));process.exit(d&&d.libros&&d.libros[0]?0:1)" 2>/dev/null; then
-            echo "⏭️  Sin libros[0] en ${TRIGGUI_EDICION_JSON} (¿quarantine del libro nuevo?) — skip edición HTML"; exit 0
+          # 🌒 Guarda nivel dios: este paso solo corre si el motor commiteó el libro de verdad
+          # (mergeIntoContenidoJson devolvió true → escribió /tmp/triggui-committed.flag). Antes se
+          # chequeaba libros[0], que con el catálogo poblado SIEMPRE existe y nunca protegía: si el
+          # libro nuevo no entraba (quarantine, etc.), build-editions reventaba con V14 ABORT.
+          if [ ! -f /tmp/triggui-committed.flag ]; then
+            echo "⏭️  Sin /tmp/triggui-committed.flag — el libro no se commiteó este run — skip edición HTML"; exit 0
           fi
           python3 scripts/build-editions.py
           find "${TRIGGUI_OUT_BASE}" -name "index.html" 2>/dev/null | head -5
@@ -844,9 +847,12 @@ jobs:
           TRIGGUI_EDICION_JSON: ${{ inputs.catalogo == 'kids' && 'contenido_kids.json' || 'contenido.json' }}
           TRIGGUI_OUT_BASE: ${{ inputs.catalogo == 'kids' && 'public/kids/t' || 'public/t' }}
         run: |
-          # Guarda v3.2: si el libro nuevo fue a quarantine, libros[0] no existe → saltar sin tronar
-          if ! node -e "const d=JSON.parse(require('fs').readFileSync(process.env.TRIGGUI_EDICION_JSON,'utf8'));process.exit(d&&d.libros&&d.libros[0]?0:1)" 2>/dev/null; then
-            echo "⏭️  Sin libros[0] en ${TRIGGUI_EDICION_JSON} (¿quarantine del libro nuevo?) — skip tarjeta PNG"; exit 0
+          # 🌒 Guarda nivel dios: este paso solo corre si el motor commiteó el libro de verdad
+          # (mergeIntoContenidoJson devolvió true → escribió /tmp/triggui-committed.flag). Antes se
+          # chequeaba libros[0], que con el catálogo poblado SIEMPRE existe y nunca protegía: si el
+          # libro nuevo no entraba (quarantine, etc.), build-editions reventaba con V14 ABORT.
+          if [ ! -f /tmp/triggui-committed.flag ]; then
+            echo "⏭️  Sin /tmp/triggui-committed.flag — el libro no se commiteó este run — skip tarjeta PNG"; exit 0
           fi
           node scripts/build-tarjeta-png.js
           find "${TRIGGUI_OUT_BASE}" -name "tarjeta.png" 2>/dev/null | head -5
@@ -857,9 +863,12 @@ jobs:
           TRIGGUI_EDICION_JSON: ${{ inputs.catalogo == 'kids' && 'contenido_kids.json' || 'contenido.json' }}
           TRIGGUI_OUT_BASE: ${{ inputs.catalogo == 'kids' && 'public/kids/t' || 'public/t' }}
         run: |
-          # Guarda v3.2: si el libro nuevo fue a quarantine, libros[0] no existe → saltar sin tronar
-          if ! node -e "const d=JSON.parse(require('fs').readFileSync(process.env.TRIGGUI_EDICION_JSON,'utf8'));process.exit(d&&d.libros&&d.libros[0]?0:1)" 2>/dev/null; then
-            echo "⏭️  Sin libros[0] en ${TRIGGUI_EDICION_JSON} (¿quarantine del libro nuevo?) — skip OG"; exit 0
+          # 🌒 Guarda nivel dios: este paso solo corre si el motor commiteó el libro de verdad
+          # (mergeIntoContenidoJson devolvió true → escribió /tmp/triggui-committed.flag). Antes se
+          # chequeaba libros[0], que con el catálogo poblado SIEMPRE existe y nunca protegía: si el
+          # libro nuevo no entraba (quarantine, etc.), build-editions reventaba con V14 ABORT.
+          if [ ! -f /tmp/triggui-committed.flag ]; then
+            echo "⏭️  Sin /tmp/triggui-committed.flag — el libro no se commiteó este run — skip OG"; exit 0
           fi
           node scripts/build-og-image.js
           find "${TRIGGUI_OUT_BASE}" -name "og.png" 2>/dev/null | head -5

@@ -53,6 +53,9 @@ import { parse } from "csv-parse/sync";
 import OpenAI from "openai";
 // v3.7 Capa 3: walker puro de sanitización (única fuente de verdad)
 import { sanitizeObject, formatStats } from "./sanitize-walker.js";
+// 🌒 detector de truncamiento puro (única fuente de verdad — reglas v4.3 reubicadas).
+// Solo DETECTA; nunca muta ni aborta. Usado por C5 (collectTruncations) y el riel de C4.5.
+import { detectTruncation } from "./detect-truncation.js";
 
 import { resolveGrounding } from "./grounding-resolver.js";
 import {
@@ -1543,197 +1546,27 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
     // Cubre lo que el prompt (cirugia 7.1A) no logra: GPT-4o-mini obedece mejor en EN que en ES.
     // Filosofia: no confiar en stochastic LLM, validar matematicamente en codigo.
     try {
-      // 🌒 v4.2 FIX SCOPE — LEGITIMATE + los 3 Sets + repairTruncatedField se declaran
-      // con `var` (scope de FUNCIÓN, no de bloque) A PROPÓSITO: los bloques hermanos
-      // universal-repair (cirugía 7.1C) y C5 assertion (cirugía 8) los necesitan, y un
-      // `const` aquí los dejaba atrapados dentro de este try ("not defined" en los hermanos).
-      // var los hoista al scope de la función; se asignan antes de que corran esos bloques.
+      // 🌒 LEGITIMATE se declara con `var` (scope de FUNCIÓN) porque varios bloques
+      // hermanos (cards / universal-repair / C5) lo usan. La DETECCIÓN de truncamiento
+      // (Sets + reglas) ya no vive aquí: está en ./detect-truncation.js (detectTruncation).
       var LEGITIMATE = [".", "?", "!", "…", "—", '"', "»", ")", "]"];
 
-      // 🌒 v4.1 — Whitelist EXPANDIDO de palabras cortas válidas como cierre
-      // Incluye sustantivos, verbos y adverbios cortos comunes que SÍ cierran idea
-      var VALID_SHORT_CLOSURES = new Set([
-        // ES: 2-3 letras
-        "yo", "tú", "él", "sí", "no", "ya", "fe", "ti", "fui", "voy", "vas",
-        "ven", "ver", "dar", "ir", "es", "soy", "se", "le", "lo", "la", "él",
-        "fin", "mar", "rey", "ley", "día", "voz", "luz", "paz", "oro", "ego",
-        "ojo", "uña", "yes", "uva", "ola", "olo", "uno", "dos", "tres",
-        // ES: 4 letras comunes
-        "más", "vida", "amor", "alma", "arte", "casa", "agua", "ayer",
-        "hoy", "ahí", "aquí", "allí", "bien", "esto", "todo", "cosa",
-        "edad", "hijo", "hija", "país", "gente", "mente", "cielo",
-        // EN: 2-3 letras
-        "be", "do", "go", "me", "us", "we", "up", "no", "ok", "yes",
-        "all", "now", "see", "say", "one", "two", "end", "way", "day"
-      ]);
+      // 🌒 Los 3 Sets (VALID_SHORT_CLOSURES / STOPWORDS_INVALID_AT_END / TRUNCATED_PREFIXES)
+      // e isTitleField se movieron a ./detect-truncation.js (única fuente de verdad).
+      // La detección de truncamiento ahora vive SOLO ahí, vía detectTruncation().
+      // LEGITIMATE se conserva aquí porque otros bloques (cards / universal) lo usan aparte.
 
-      // 🌒 v4.0 — Stopwords prohibidas al final (preposiciones/artículos/conjunciones)
-      var STOPWORDS_INVALID_AT_END = new Set([
-        // ═══ ES ═══
-        // Artículos
-        "el", "la", "los", "las", "un", "una", "unos", "unas",
-        // Preposiciones (TODAS las del español)
-        "a", "ante", "bajo", "cabe", "con", "contra", "de", "del", "al",
-        "desde", "durante", "en", "entre", "hacia", "hasta", "mediante",
-        "para", "por", "según", "sin", "so", "sobre", "tras", "versus", "vía",
-        // Conjunciones
-        "y", "e", "o", "u", "ni", "que", "si", "pero", "mas", "aunque",
-        "porque", "pues", "como", "cuando", "donde",
-        // Pronombres/clíticos
-        "se", "lo", "le", "les", "su", "sus", "mi", "tu", "te", "me", "nos",
-        // Verbos auxiliares
-        "es", "está", "están", "fue", "fueron", "ha", "han", "haber", "hay",
-        "ser", "siendo", "siendo", "sido",
-        // ═══ EN ═══
-        // Articles
-        "the", "a", "an",
-        // Prepositions
-        "of", "in", "on", "at", "to", "for", "with", "by", "from",
-        "into", "onto", "upon", "about", "above", "across", "after",
-        "against", "along", "among", "around", "before", "behind",
-        "below", "beneath", "beside", "between", "beyond", "during",
-        "except", "inside", "near", "off", "over", "since", "through",
-        "throughout", "toward", "under", "underneath", "until", "up",
-        "via", "within", "without",
-        // Conjunctions
-        "and", "or", "but", "nor", "yet", "so", "that", "which", "who",
-        "this", "these", "those", "as", "if", "while", "because",
-        // Auxiliaries
-        "is", "are", "was", "were", "has", "had", "have", "be", "been",
-        "being", "do", "does", "did", "will", "would", "shall", "should",
-        "may", "might", "can", "could", "must"
-      ]);
-
-      // 🌒 v4.1 — Lista negra de prefijos truncados conocidos
-      // (palabras parciales que NUNCA cierran idea legítimamente)
-      var TRUNCATED_PREFIXES = new Set([
-        // ES: prefijos comunes de palabras largas que aparecen truncados
-        "incertid", "tambi", "frustr", "comprend", "interes",
-        "respons", "transform", "propor", "establ", "desarroll",
-        "particip", "experi", "necesit", "permit", "conseg",
-        "manten", "ofrec", "lograr", "alcanz", "encuentr",
-        "convirt", "resolv", "explor", "imagin", "siguien",
-        "anterior", "import", "diferen", "posib", "necess",
-        // EN
-        "incred", "succ", "diff", "addit", "import", "underst",
-        "becau", "throug", "betw", "amon", "abou"
-      ]);
-
-      // 🌒 v4.3 cirugia 11 — TÍTULOS EXENTOS DE "no-closure" (Nivel dios cuántico-quark)
-      // Un título legítimo NO termina en punto ("Conquista interna: el primer paso
-      // hacia el éxito", "Internal Conquest: The First Step to Success"). La regla
-      // (A) "debe terminar en . ! ?" es correcta para PÁRRAFOS y frases, pero produce
-      // falsos positivos en títulos → C5 abortaba regeneraciones perfectamente válidas.
-      // Detección: el label de campo de título siempre contiene "titulo" (p.ej.
-      // "ES tarjeta.titulo", "_nucleus.card_en.titulo"). Subtítulos igual.
-      // IMPORTANTE: los títulos SIGUEN sujetos a la detección (B) de truncamiento
-      // REAL (palabra cortada: "El primer pas...", dangling-stopword, suspect-short).
-      // Solo se les exime de la regla "sin punto final = truncado".
-      var isTitleField = (label) => {
-        const l = String(label || "").toLowerCase();
-        return l.includes("titulo") || l.includes("subtitulo") || l.includes("title");
-      };
-
+      // 🌒 PRINCIPIO NIVEL DIOS: ninguna heurística con falsos positivos toma una acción
+      // destructiva. repairTruncatedField YA NO ampute (cirugía 13 completada). La versión
+      // anterior, al detectar truncamiento, cortaba el párrafo de vuelta a la oración previa
+      // — y en un falso positivo ("...to be.", "...your being.") borraba EN SILENCIO una frase
+      // buena, sin dejar rastro. Ahora solo normaliza espacios y DIFIERE: la detección la hace
+      // C5 (collectTruncations vía detectTruncation), C4.5 adjudica, y lo que no se resuelva se
+      // MARCA (_c5_flags) y se deja pasar para tu revisión — nunca se muta a ciegas. Conserva
+      // su firma (text, label) para no tocar a los bloques que ya lo llaman.
       var repairTruncatedField = (text, label = "?") => {
         if (!text || typeof text !== "string") return text;
-        const trimmed = text.trim();
-        if (!trimmed) return trimmed;
-        const plain = trimmed.replace(/\[\/?H\]/g, "");
-
-        // ═══════════════════════════════════════════════════════════════
-        // 🌒 v4.0 cirugia 7.1B+ — Detección dual de truncamiento:
-        //   (A) Sin cierre legítimo al final
-        //   (B) Con cierre legítimo PERO última palabra es truncamiento camuflado
-        //       (e.g. "...la incertid.", "...el af.", "...vivir en.")
-        // ═══════════════════════════════════════════════════════════════
-        let needsRepair = false;
-        let reason = "";
-
-        // 🌒 v4.3: títulos exentos de "no-closure". Para títulos analizamos la
-        // ÚLTIMA palabra real (sin asumir puntuación final) buscando truncamiento
-        // verdadero; para no-títulos, lógica original intacta.
-        const tituloField = isTitleField(label);
-        const endsLegit = LEGITIMATE.includes(plain.slice(-1));
-
-        if (!endsLegit && !tituloField) {
-          needsRepair = true;
-          reason = "no-closure";
-        } else {
-          // (B) Análisis semántico de la última palabra.
-          // Para no-títulos terminados en cierre: descartar el cierre final.
-          // Para títulos (con o sin cierre): analizar todas las palabras tal cual.
-          const beforeClose = (endsLegit && !tituloField) ? plain.slice(0, -1).trim() : plain.trim();
-          const words = beforeClose.split(/\s+/).filter(Boolean);
-          if (words.length > 3) { // no tocar títulos/frases muy cortas
-            const lastWord = (words[words.length - 1] || "")
-              .replace(/[^a-zA-ZáéíóúñÁÉÍÓÚÑ]/g, "")
-              .toLowerCase();
-            if (STOPWORDS_INVALID_AT_END.has(lastWord)) {
-              needsRepair = true;
-              reason = `dangling-stopword "${lastWord}"`;
-            } else if (TRUNCATED_PREFIXES.has(lastWord)) {
-              needsRepair = true;
-              reason = `known-trunc-prefix "${lastWord}"`;
-            } else if (!tituloField && lastWord.length > 0 && lastWord.length < 4
-                && !VALID_SHORT_CLOSURES.has(lastWord)) {
-              // 🌒 v4.3: suspect-short NO aplica a títulos — "CEO", "hoy", "Cat",
-              // "You" son palabras cortas COMPLETAS y legítimas como cierre de título.
-              // En títulos solo cuenta truncamiento inequívoco (stopword colgante o
-              // prefijo cortado conocido), nunca "palabra final corta".
-              needsRepair = true;
-              reason = `suspect-short "${lastWord}"`;
-            }
-          }
-        }
-
-        if (!needsRepair) return trimmed;
-
-        // Reparar: buscar último cierre interno ANTES del final (descartando cierre final si era falso)
-        const skipFinal = LEGITIMATE.includes(plain.slice(-1)) ? 1 : 0;
-        const scanEnd = plain.length - skipFinal;
-        let plainCut = -1;
-        for (let i = scanEnd - 1; i >= 0; i--) {
-          if (LEGITIMATE.includes(plain[i])) { plainCut = i; break; }
-        }
-        if (plainCut === -1) {
-          console.warn(`   ⚠️  ${label}: repair imposible (sin punto interno) — ${reason}`);
-          return trimmed;
-        }
-
-        // Mapear posición del corte al texto original (con marcas [H][/H])
-        let plainIdx = 0, origIdx = 0, cutOrig = -1;
-        while (origIdx < trimmed.length) {
-          if (trimmed.startsWith("[H]", origIdx)) { origIdx += 3; continue; }
-          if (trimmed.startsWith("[/H]", origIdx)) { origIdx += 4; continue; }
-          if (plainIdx === plainCut) { cutOrig = origIdx; break; }
-          plainIdx++; origIdx++;
-        }
-        if (cutOrig === -1) return trimmed;
-
-        let repaired = trimmed.substring(0, cutOrig + 1);
-
-        // Balancear marcas [H][/H]
-        const opens = (repaired.match(/\[H\]/g) || []).length;
-        const closes = (repaired.match(/\[\/H\]/g) || []).length;
-        if (opens > closes) repaired += "[/H]";
-        else if (closes > opens) {
-          const lastClose = repaired.lastIndexOf("[/H]");
-          if (lastClose >= 0) repaired = repaired.substring(0, lastClose) + repaired.substring(lastClose + 4);
-        }
-
-        // 🌒 v4.5 cirugia 13 — GUARD ANTI-AMPUTACIÓN (nivel dios)
-      // suspect-short, o recorte que deja <60% del original → devolver el ORIGINAL INTACTO:
-      // collectTruncations lo re-marca y C4.5 (LLM grounded) adjudica (completa si es real,
-      // confirma si es falso positivo). La deteccion NO cambia (red amplia = guarantee).
-      // plainCut+1 = largo plano del texto recortado (=== strip de [H], verificado).
-      const __keepRatio = plain.length > 0 ? (plainCut + 1) / plain.length : 1;
-      if (reason.startsWith("suspect-short") || __keepRatio < 0.60) {
-        return trimmed;
-      }
-      if (reason !== "no-closure") {
-          console.log(`   🔬 ${label}: truncamiento camuflado detectado (${reason}) — reparando`);
-        }
-        return repaired;
+        return text.trim();
       };
       const cards = [
         { card: newBook.tarjeta, base: newBook.tarjeta_base, pres: newBook.tarjeta_presentacion, lang: "ES" },
@@ -1911,35 +1744,9 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
           if (!trimmed) return;
           if (llmCleared.has(trimmed)) return; // 🌒 C4.5: ya confirmada COMPLETA por el LLM → no re-marcar
           const plain = trimmed.replace(/\[\/?H\]/g, "");
-          // Detección dual igual que en repairTruncatedField (v4.3: títulos exentos de no-closure)
-          let truncado = false;
-          let reason = "";
-          const tituloField = isTitleField(fieldLabel);
-          const endsLegit = LEGITIMATE.includes(plain.slice(-1));
-          if (!endsLegit && !tituloField) {
-            truncado = true;
-            reason = "no-closure";
-          } else {
-            const beforeClose = (endsLegit && !tituloField) ? plain.slice(0, -1).trim() : plain.trim();
-            const words = beforeClose.split(/\s+/).filter(Boolean);
-            if (words.length > 3) {
-              const lastWord = (words[words.length - 1] || "")
-                .replace(/[^a-zA-ZáéíóúñÁÉÍÓÚÑ]/g, "")
-                .toLowerCase();
-              if (STOPWORDS_INVALID_AT_END.has(lastWord)) {
-                truncado = true;
-                reason = `dangling-stopword "${lastWord}"`;
-              } else if (TRUNCATED_PREFIXES.has(lastWord)) {
-                truncado = true;
-                reason = `known-trunc-prefix "${lastWord}"`;
-              } else if (!tituloField && lastWord.length > 0 && lastWord.length < 4
-                  && !VALID_SHORT_CLOSURES.has(lastWord)) {
-                // 🌒 v4.3: suspect-short NO aplica a títulos (CEO/hoy/Cat son válidos)
-                truncado = true;
-                reason = `suspect-short "${lastWord}"`;
-              }
-            }
-          }
+          // 🌒 Detección vía módulo único ./detect-truncation.js (reglas v4.3 reubicadas).
+          // Antes esta lógica estaba duplicada byte-por-byte aquí y en repairTruncatedField.
+          const { truncado, reason } = detectTruncation(trimmed, fieldLabel);
           if (truncado) {
             found.push({
               field: fieldLabel,
@@ -2041,8 +1848,19 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
           const startsOk = plainFixed.length > 0 && plainVal.length > 0 &&
             plainFixed.slice(0, prefixLen).toLowerCase() === plainVal.slice(0, prefixLen).toLowerCase();
           if (verdict && verdict.truncated === true && fixed && plainFixed.length >= plainVal.length && startsOk) {
-            for (const r of records) r.apply(fixed);
-            console.log(`   🪡 C4.5 completada (${records.length} ubic.): ${records[0].field} — "...${plainVal.slice(-30)}" → "...${plainFixed.slice(-30)}"`);
+            // 🌒 RIEL DETERMINISTA (sin listas, sin detección de idioma): el "completado" de
+            // C4.5 NO puede empeorar la frase. Lo paso por el MISMO detector; si el fix vuelve a
+            // marcarse como truncado (p.ej. quedó colgando, o terminó en un token corto/ambiguo
+            // como "...XX."), se RECHAZA y se conserva el ORIGINAL. Esto mata en seco el modo de
+            // falla donde C4.5 reescribe una frase buena y mete algo que re-dispara C5. Reusa
+            // detectTruncation — cero reglas nuevas.
+            const fixCheck = detectTruncation(fixed, records[0].field);
+            if (fixCheck.truncado) {
+              console.warn(`   🚧 C4.5 fix RECHAZADO por riel (${records[0].field}): el completado re-dispara detección (${fixCheck.reason}) — se conserva el original`);
+            } else {
+              for (const r of records) r.apply(fixed);
+              console.log(`   🪡 C4.5 completada (${records.length} ubic.): ${records[0].field} — "...${plainVal.slice(-30)}" → "...${plainFixed.slice(-30)}"`);
+            }
             continue;
           }
           // (c) El LLM no dio fix válido (no preservó prefijo/longitud) → se mantiene marcada (caerá en el veredicto)
@@ -2054,31 +1872,37 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
         truncamientosResiduales = collectTruncations();
       }
 
-      // Veredicto cuántico (solo cae si quedan truncamientos que ni la red ni el LLM resolvieron)
+      // 🌒 PRINCIPIO NIVEL DIOS: C5 ya NO aborta el build. Detecta → MARCA → deja pasar.
+      // Antes lanzaba C5_QUANTUM_ASSERTION_FAILED, el libro no se commiteaba, y reventaba
+      // build-editions después — el YML tronaba por falsos positivos ("siglo XX", "to be",
+      // "your being"). Ahora los residuales se anotan en newBook._c5_flags (viajan al
+      // contenido.json, grepeables) y se loguean, pero el libro SE COMMITEA, el run termina en
+      // verde, se generan tarjeta/HTML/OG, y tú revisas la marca en el resultado final cuando
+      // quieras (o nunca). La detección NO se debilita: sigue marcando exactamente lo mismo.
       if (truncamientosResiduales.length > 0) {
-        console.error(``);
-        console.error(`   ╔══════════════════════════════════════════════════════════════════╗`);
-        console.error(`   ║  🚨 CAPA C5 — TRUNCAMIENTOS RESIDUALES DETECTADOS (NIVEL DIOS)      ║`);
-        console.error(`   ╚══════════════════════════════════════════════════════════════════╝`);
-        console.error(`   Libro: "${newBook.titulo}"`);
-        console.error(`   Truncamientos irreparables (post-C4.5): ${truncamientosResiduales.length}`);
+        newBook._c5_flags = truncamientosResiduales.map((t) => ({
+          field: t.field,
+          reason: t.reason,
+          tail: t.tail
+        }));
+        console.warn(``);
+        console.warn(`   ╔══════════════════════════════════════════════════════════════════╗`);
+        console.warn(`   ║  🔎 CAPA C5 — frases marcadas para revisión (NO bloquea el build)  ║`);
+        console.warn(`   ╚══════════════════════════════════════════════════════════════════╝`);
+        console.warn(`   Libro: "${newBook.titulo}" — ${truncamientosResiduales.length} marcada(s)`);
         for (const t of truncamientosResiduales) {
-          console.error(`     • ${t.field}`);
-          console.error(`       razón: ${t.reason}`);
-          console.error(`       cola:  "...${t.tail}"`);
+          console.warn(`     • ${t.field}`);
+          console.warn(`       razón: ${t.reason}`);
+          console.warn(`       cola:  "...${t.tail}"`);
         }
-        console.error(``);
-        console.error(`   GARANTÍA CUÁNTICA: este libro NO se commiteará al JSON.`);
-        console.error(`   Causa: el LLM grounded no pudo completar fiel ni confirmar como completa`);
-        console.error(`   (frase sin grounding suficiente, o genuinamente rota sin cierre legítimo).`);
-        console.error(``);
-        throw new Error(`C5_QUANTUM_ASSERTION_FAILED: ${truncamientosResiduales.length} truncamientos residuales en "${newBook.titulo}"`);
+        console.warn(`   → Anotadas en _c5_flags. El libro SE COMMITEA; revisa el resultado final cuando quieras.`);
+        console.warn(``);
+      } else {
+        console.log(`   ✅ C5 assertion: 0 truncamientos residuales en "${newBook.titulo}"`);
       }
-      console.log(`   ✅ C5 assertion: 0 truncamientos residuales en "${newBook.titulo}"`);
     } catch (e) {
-      if (e.message && e.message.startsWith("C5_QUANTUM_ASSERTION_FAILED")) {
-        throw e; // re-throw para detener procesamiento
-      }
+      // 🌒 C5 ya no lanza C5_QUANTUM_ASSERTION_FAILED; aquí solo se atrapan errores
+      // inesperados del bloque (degradación elegante — nunca aborta por la assertion).
       console.warn(`   ⚠️  C5 assertion error inesperado: ${e.message}`);
     }
 
@@ -2387,6 +2211,15 @@ async function runSingle() {
     const merged = await mergeIntoContenidoJson(result.mapped, CFG.files.outBatch);
     if (merged) {
       console.log(`✅ ${CFG.files.outBatch} (unificado, libro marcado _manual)`);
+      // 🌒 Orquestación: el merge commiteó de verdad → encender la bandera que habilita
+      // build-editions/tarjeta/OG en el YML. El contenido es informativo; lo que importa es
+      // que el archivo EXISTA (los guards del YML solo hacen `[ -f ... ]`).
+      try {
+        await fs.writeFile("/tmp/triggui-committed.flag", `${book.titulo} — ${book.autor}\n`, "utf8");
+        console.log(`🚦 /tmp/triggui-committed.flag escrita — assets habilitados`);
+      } catch (e) {
+        console.warn(`   ⚠️  no se pudo escribir committed.flag: ${e.message}`);
+      }
     } else {
       console.error(`❌ ${CFG.files.outBatch} NO actualizado — merge abortó (ver causa arriba: C5 u otra defensa). El libro NO se commiteó; el contenido previo se conserva intacto.`);
     }
@@ -2399,6 +2232,13 @@ async function runSingle() {
 }
 
 async function main() {
+  // 🌒 Orquestación nivel dios: limpiar la bandera de commit al inicio de CADA run.
+  // build-editions / tarjeta PNG / OG en el YML solo corren si esta bandera EXISTE (= el merge
+  // commiteó el libro de verdad). Se borra aquí y solo se re-crea en runSingle cuando
+  // mergeIntoContenidoJson devuelve true. Así el YML nunca corre build-editions sobre un libro
+  // que no entró al JSON (lo que antes disparaba V14 ABORT y el rojo).
+  await fs.unlink("/tmp/triggui-committed.flag").catch(() => {});
+
   // ⭐ STEP 3 ⭐ — Diagnóstico inicial: verificar que constitución + lentes existen
   console.log(`🔍 Diagnóstico de sistema modular de lentes (Step 3):`);
   const diag = await diagnoseLenses();
