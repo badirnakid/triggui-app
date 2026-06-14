@@ -101,6 +101,16 @@
       "timestamp": "2026-06-04T13:32:15.636Z",
       "trigger_input": "siento pesadez en el cerebro y falta de ganas y motivacion",
       "selected_via": "discover_trigger"
+    },
+    {
+      "titulo": "Sapiens: De animales a dioses",
+      "autor": "Yuval Noah Harari",
+      "slug": "sapiens-de-animales-a-dioses",
+      "titulo_normalizado": "sapiens de animales a dioses",
+      "autor_normalizado": "yuval noah harari",
+      "timestamp": "2026-06-14T18:41:23.327Z",
+      "trigger_input": "no sé nada",
+      "selected_via": "discover_trigger"
     }
   ],
   "_note": "FIFO ring de últimos 30 libros generados por selección automática (constrained o discover). Filtro pre-rerank en validate-book.js. Inicializa vacío y se rellena con cada run exitoso. Si se borra, el sistema arranca limpio sin daño."
