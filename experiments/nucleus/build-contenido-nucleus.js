@@ -2205,6 +2205,18 @@ async function runSingle() {
   result.mapped._manual = true;
   result.mapped._manual_generated_at = new Date().toISOString();
 
+  // 🌒 Persistir el slug YA calculado por validate-book.js (FASE 4 → /tmp/triggui-slug.txt).
+  // No se deriva ni recalcula: es EXACTAMENTE el mismo slug que build-editions consume y que
+  // nombra el directorio /t/{slug}/. Se guarda en el libro para que triggui.com/in construya
+  // las URLs (tarjeta.png, og.png, edición viva) sin re-derivar y sin drift. Viaja a
+  // contenido.json y de ahí a contenido_manual.json (que copia el objeto completo).
+  try {
+    const slug = (await fs.readFile("/tmp/triggui-slug.txt", "utf8")).trim();
+    if (slug) {
+      result.mapped._slug = slug;
+      console.log(`🔗 _slug persistido en el libro: "${slug}"`);
+    }
+  } catch { /* sin slug file (no debería pasar en single) — se omite */ }
 
   const unifiedMode = process.env.UNIFIED_MODE !== "false";
   if (unifiedMode) {
