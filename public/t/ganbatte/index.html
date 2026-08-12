@@ -702,12 +702,9 @@ body::before {
 </style>
 <style id="tg-juego">
 /* ══ TG JUEGO: capa gemela del organismo (calco verbatim) ══ */
-#tgCapa{position:fixed;inset:0;z-index:600;background:#000;overflow:hidden}
-.tg-aur{position:absolute;width:52vmax;height:52vmax;border-radius:50%;filter:blur(70px);opacity:.55;pointer-events:none;will-change:transform;animation:tgDrift 22s ease-in-out infinite alternate}
-.tg-aur-b{top:auto;left:auto;bottom:-14vmax;right:-14vmax;animation-duration:27s;animation-direction:alternate-reverse}
-.tg-aur-a{top:-14vmax;left:-14vmax}
-.tg-aur-c{top:30%;left:30%;width:44vmax;height:44vmax;animation-duration:31s}
-@keyframes tgDrift{0%{transform:translate(-4%,-2%) scale(1)}100%{transform:translate(6%,5%) scale(1.15)}}
+#tgCapa{position:fixed;inset:0;z-index:600;background:transparent;overflow:hidden}
+.grid{display:none !important}
+.tg-grid.tg-dim,.tg-cta.tg-dim{opacity:0.25;pointer-events:none;filter:saturate(0.7);transition:opacity 0.5s ease, filter 0.5s ease}
 body{overflow:hidden}
 body.tg-tarjeta .tg-cta{display:none !important}
 #revealOverlay{z-index:900}
@@ -1492,19 +1489,17 @@ var capa = document.getElementById('tgCapa');
 if (!st || !capa) { if (capa) capa.style.display = 'none'; return; }
 
 (function(){
-  function hexA(hex, a){
-    var m = /^#?([0-9a-f]{6})$/i.exec(hex || '');
-    if (!m) return 'rgba(40,100,220,' + a + ')';
-    var n = parseInt(m[1], 16);
-    return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
-  }
-  var cs = (st.colores || []);
-  var defs = [[cs[1] || cs[0], 0.45, 'a'], [cs[2] || cs[3], 0.32, 'b'], [cs[0] || cs[2], 0.24, 'c']];
-  for (var i = 0; i < 3; i++) {
-    var d = document.createElement('div');
-    d.className = 'tg-aur tg-aur-' + defs[i][2];
-    d.style.background = hexA(defs[i][0], defs[i][1]);
-    capa.insertBefore(d, capa.firstChild);
+  if (typeof showBocadoEco === 'function') {
+    var __cerNativa = showBocadoEco;
+    showBocadoEco = function(kind, onComplete, roleHints){
+      grid.classList.add('tg-dim');
+      cta.classList.add('tg-dim');
+      return __cerNativa(kind, function(){
+        grid.classList.remove('tg-dim');
+        cta.classList.remove('tg-dim');
+        if (typeof onComplete === 'function') onComplete();
+      }, roleHints);
+    };
   }
 })();
 
@@ -1669,10 +1664,7 @@ function render(){
       };
     } else {
       card.appendChild(label); card.appendChild(frase);
-      card.onclick = function(e){
-        if (revealed) { e.stopPropagation(); abrirTarjeta(); }
-        else card.classList.toggle('show');
-      };
+      card.onclick = function(){ card.classList.toggle('show'); };
     }
     grid.appendChild(card);
   })(i);
