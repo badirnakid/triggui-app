@@ -534,7 +534,7 @@ body::before {
   transition: transform .25s ease, opacity .25s ease;
   pointer-events: none;
 }
-#ptr .giro { font-size: 19px; line-height: 1; display: block; }
+#ptr .giro { font-size: 19px; line-height: 1; display: block; filter: grayscale(1) brightness(2.6); }
 #ptr.girando .giro { animation: ptrGira .9s linear infinite; }
 @keyframes ptrGira { to { transform: rotate(360deg); } }
 
@@ -626,7 +626,7 @@ body::before {
   z-index: 5;
 }
 .centro-msg.ver { display: flex; }
-.esp-glifo { font-size: 46px; line-height: 1; margin-bottom: 20px; }
+.esp-glifo { font-size: 46px; line-height: 1; margin-bottom: 20px; filter: grayscale(1) brightness(2.6); opacity: .92; }
 .centro-msg .t1 {
   font-family: 'Playfair Display', serif;
   font-style: italic;
