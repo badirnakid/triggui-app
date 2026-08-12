@@ -703,7 +703,11 @@ body::before {
 <style id="tg-juego">
 /* ══ TG JUEGO: capa gemela del organismo (calco verbatim) ══ */
 #tgCapa{position:fixed;inset:0;z-index:600;background:#000;overflow:hidden}
-#tgCapa::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 28% 18%, color-mix(in srgb, var(--accent, #4A90E2) 14%, transparent), transparent 62%)}
+.tg-aur{position:absolute;width:52vmax;height:52vmax;border-radius:50%;filter:blur(70px);opacity:.55;pointer-events:none;will-change:transform;animation:tgDrift 22s ease-in-out infinite alternate}
+.tg-aur-b{top:auto;left:auto;bottom:-14vmax;right:-14vmax;animation-duration:27s;animation-direction:alternate-reverse}
+.tg-aur-a{top:-14vmax;left:-14vmax}
+.tg-aur-c{top:30%;left:30%;width:44vmax;height:44vmax;animation-duration:31s}
+@keyframes tgDrift{0%{transform:translate(-4%,-2%) scale(1)}100%{transform:translate(6%,5%) scale(1.15)}}
 body{overflow:hidden}
 body.tg-tarjeta .tg-cta{display:none !important}
 #revealOverlay{z-index:900}
@@ -1487,8 +1491,22 @@ var st = (typeof state !== 'undefined' && state) ? state : null;
 var capa = document.getElementById('tgCapa');
 if (!st || !capa) { if (capa) capa.style.display = 'none'; return; }
 
-var __becerem = document.getElementById('bocadoEcoOverlay');
-if (__becerem) __becerem.remove();
+(function(){
+  function hexA(hex, a){
+    var m = /^#?([0-9a-f]{6})$/i.exec(hex || '');
+    if (!m) return 'rgba(40,100,220,' + a + ')';
+    var n = parseInt(m[1], 16);
+    return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+  }
+  var cs = (st.colores || []);
+  var defs = [[cs[1] || cs[0], 0.45, 'a'], [cs[2] || cs[3], 0.32, 'b'], [cs[0] || cs[2], 0.24, 'c']];
+  for (var i = 0; i < 3; i++) {
+    var d = document.createElement('div');
+    d.className = 'tg-aur tg-aur-' + defs[i][2];
+    d.style.background = hexA(defs[i][0], defs[i][1]);
+    capa.insertBefore(d, capa.firstChild);
+  }
+})();
 
 var EXEC = 'https://script.google.com/macros/s/AKfycbwWcUceg333PMcmSsLbEUAsx3os8AJ3Wdmjruv7zshHTqNmoxTastOsDU1h7V8qPk0nIQ/exec';
 var LS_PAR = 'triggui_espiral_v1';
@@ -1595,27 +1613,18 @@ function buildPort(){
   return d;
 }
 
-var tarjetaRO = document.getElementById('revealOverlay');
-function cerrarTarjetaUI(){
-  document.body.classList.remove('tg-tarjeta');
-  if (tarjetaRO) {
-    tarjetaRO.classList.remove('visible');
-    tarjetaRO.style.display = '';
-    tarjetaRO.style.opacity = '';
-  }
-}
 function abrirTarjeta(){
-  if (!tarjetaRO) return;
   document.body.classList.add('tg-tarjeta');
-  tarjetaRO.classList.add('visible');
-  tarjetaRO.style.display = 'flex';
-  tarjetaRO.style.opacity = '1';
-  var rc = tarjetaRO.querySelector('.reveal-card');
-  if (rc) { try { rc.scrollTop = 0; } catch(e){} }
+  if (typeof openOverlayFromBlocks === 'function') openOverlayFromBlocks();
 }
 (function(){
-  var bb = document.getElementById('btnBack');
-  if (bb) bb.addEventListener('click', cerrarTarjetaUI);
+  if (typeof closeOverlayToBlocks === 'function') {
+    var __cerrarNativo = closeOverlayToBlocks;
+    closeOverlayToBlocks = function(){
+      document.body.classList.remove('tg-tarjeta');
+      __cerrarNativo();
+    };
+  }
 })();
 bLibro.onclick = abrirTarjeta;
 bEsp.onclick = function(){ window.location.href = '/mi/'; };
