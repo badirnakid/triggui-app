@@ -100,7 +100,7 @@ body::before {
   pointer-events: none;
 }
 #barra.ver { display: flex; }
-#barra .marca { height: 21px; width: auto; opacity: .95; filter: invert(1) brightness(1.45) drop-shadow(0 1px 8px rgba(0,0,0,.85)); }
+#barra .marca { height: 21px; width: auto; opacity: .95; filter: invert(1) brightness(1.45); }
 #barra .lado {
   display: flex;
   align-items: baseline;
@@ -113,7 +113,6 @@ body::before {
   font-weight: 500;
   letter-spacing: .02em;
   color: rgba(255,255,255,.85);
-  text-shadow: 0 1px 10px rgba(0,0,0,.85);
 }
 
 
@@ -174,12 +173,16 @@ body::before {
 
 @media (min-width: 900px) {
   .lienzo {
+    --tw: 440px;
     display: grid;
-    grid-template-columns: minmax(0, 440px) 1fr;
+    grid-template-columns: var(--tw) 1fr;
     grid-template-rows: repeat(var(--filas, 4), minmax(0, 1fr));
+    height: calc(var(--tw) * 1.77778);
     align-items: stretch;
     gap: var(--gap);
   }
+  .pin-tarjeta { height: 100%; overflow: hidden; }
+  .pin-tarjeta img { height: 100%; width: auto; max-width: 100%; margin: 0 auto; }
   .f-tarjeta { grid-column: 1; grid-row: 1 / -1; }
   .lienzo > .pareja { grid-column: 2; min-height: 0; overflow: hidden; }
   .resto { display: contents; }
