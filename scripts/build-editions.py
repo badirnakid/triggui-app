@@ -2356,7 +2356,7 @@ var TgModal = {
 function corazon(x, y){
   var h = document.createElement('div');
   h.className = 'tg-heart';
-  h.textContent = ['\u2764\uFE0F', '\uD83D\uDE0D', '\uD83D\uDD25'][Math.floor(Math.random() * 3)];
+  h.textContent = ['❤️', '😍', '🔥'][Math.floor(Math.random() * 3)];
   document.body.appendChild(h);
   h.style.left = x + 'px';
   h.style.top = y + 'px';
@@ -2509,7 +2509,7 @@ bLike.onclick = function(){
   var k = claveMiembro();
   if (!k) {
     TgModal.show({
-      emoji: '\uD83C\uDF00',
+      emoji: '🌀',
       title: 'Tu espiral te espera',
       text: 'Los libros que te llegan pueden quedarse contigo. La Espiral es el espacio privado de los miembros Triggui.<span class="hl">Un lugar solo tuyo.</span>',
       btn: 'Conocer mi espiral',
@@ -2547,21 +2547,21 @@ bLike.onclick = function(){
     .then(function(res){
       if (res && res.ok && res.ya_existia) {
         TgModal.show({
-          emoji: '\uD83C\uDF00', title: 'Ya vive en tu espiral',
+          emoji: '🌀', title: 'Ya vive en tu espiral',
           text: '\u00AB' + L.titulo + '\u00BB ya est\u00E1 contigo desde antes.<span class="hl">Tu espiral lo recuerda.</span>',
           btn: 'Ver mi espiral', onBtn: function(){ window.location.href = '/mi/'; },
           btn2: 'Seguir aqu\u00ED'
         });
       } else if (res && res.ok) {
         TgModal.show({
-          emoji: '\uD83D\uDE0D', title: 'Vive en tu espiral',
+          emoji: '😍', title: 'Vive en tu espiral',
           text: '\u00AB' + L.titulo + '\u00BB se qued\u00F3 contigo: sus palabras, sus frases y su tarjeta.<span class="hl">Cuando lo necesites, ah\u00ED estar\u00E1.</span>',
           btn: 'Ver mi espiral', onBtn: function(){ window.location.href = '/mi/'; },
           btn2: 'Seguir aqu\u00ED'
         });
       } else {
         TgModal.show({
-          emoji: '\uD83C\uDF00', title: 'Guardado en camino',
+          emoji: '🌀', title: 'Guardado en camino',
           text: 'Tu espiral lo recibir\u00E1 en cuanto vuelva la se\u00F1al.',
           btn: 'Entendido'
         });
@@ -2569,7 +2569,7 @@ bLike.onclick = function(){
     })
     .catch(function(){
       TgModal.show({
-        emoji: '\uD83C\uDF00', title: 'Guardado en camino',
+        emoji: '🌀', title: 'Guardado en camino',
         text: 'Tu espiral lo recibir\u00E1 en cuanto vuelva la se\u00F1al.',
         btn: 'Entendido'
       });
