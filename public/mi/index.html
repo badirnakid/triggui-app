@@ -832,9 +832,16 @@ function _hashSlug(s){
 }
 var menuAbierto = null;
 
-/* ---------- Link magico #k= ---------- */
+/* ---------- Links magicos: #k= entra, #salir borra el llavero ---------- */
 (function magia(){
   var h = String(window.location.hash || '');
+  if (/[#&]salir(\b|=|$)/.test(h)) {
+    lsDel(LS_PAR);
+    lsDel(LS_CACHE);
+    lsDel(LS_TIP);
+    try { history.replaceState(null, '', window.location.pathname); } catch(e){}
+    return;
+  }
   var m = h.match(/[#&]k=([^&]+)/);
   if (m && m[1]) {
     lsSet(LS_PAR, JSON.stringify({ c: decodeURIComponent(m[1]).trim() }));
