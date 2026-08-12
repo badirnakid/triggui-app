@@ -2565,37 +2565,28 @@ bLike.onclick = function(){
   cuerpo.append('portada', isURL(L.portada) ? L.portada : '');
   cuerpo.append('payload', JSON.stringify(payload));
 
+  TgModal.show({
+    emoji: '😍', title: 'Vive en tu espiral',
+    text: '\u00AB' + L.titulo + '\u00BB se qued\u00F3 contigo: sus palabras, sus frases y su tarjeta.<span class="hl">Cuando lo necesites, ah\u00ED estar\u00E1.</span>',
+    btn: 'Ver mi espiral', onBtn: function(){ window.location.href = '/mi/'; },
+    btn2: 'Seguir aqu\u00ED'
+  });
+  function morf(t, cuerpoTxt){
+    if (!TgModal.el.classList.contains('visible')) return;
+    document.getElementById('tgMTitle').textContent = t;
+    document.getElementById('tgMText').innerHTML = cuerpoTxt;
+  }
   fetch(EXEC, { method: 'POST', body: cuerpo, keepalive: true })
     .then(function(res){ return res.json(); })
     .then(function(res){
       if (res && res.ok && res.ya_existia) {
-        TgModal.show({
-          emoji: '🌀', title: 'Ya vive en tu espiral',
-          text: '\u00AB' + L.titulo + '\u00BB ya est\u00E1 contigo desde antes.<span class="hl">Tu espiral lo recuerda.</span>',
-          btn: 'Ver mi espiral', onBtn: function(){ window.location.href = '/mi/'; },
-          btn2: 'Seguir aqu\u00ED'
-        });
-      } else if (res && res.ok) {
-        TgModal.show({
-          emoji: '😍', title: 'Vive en tu espiral',
-          text: '\u00AB' + L.titulo + '\u00BB se qued\u00F3 contigo: sus palabras, sus frases y su tarjeta.<span class="hl">Cuando lo necesites, ah\u00ED estar\u00E1.</span>',
-          btn: 'Ver mi espiral', onBtn: function(){ window.location.href = '/mi/'; },
-          btn2: 'Seguir aqu\u00ED'
-        });
-      } else {
-        TgModal.show({
-          emoji: '🌀', title: 'Guardado en camino',
-          text: 'Tu espiral lo recibir\u00E1 en cuanto vuelva la se\u00F1al.',
-          btn: 'Entendido'
-        });
+        morf('Ya vive en tu espiral', '\u00AB' + L.titulo + '\u00BB ya est\u00E1 contigo desde antes.<span class="hl">Tu espiral lo recuerda.</span>');
+      } else if (!(res && res.ok)) {
+        morf('Guardado en camino', 'Tu espiral lo recibir\u00E1 en cuanto vuelva la se\u00F1al.');
       }
     })
     .catch(function(){
-      TgModal.show({
-        emoji: '🌀', title: 'Guardado en camino',
-        text: 'Tu espiral lo recibir\u00E1 en cuanto vuelva la se\u00F1al.',
-        btn: 'Entendido'
-      });
+      morf('Guardado en camino', 'Tu espiral lo recibir\u00E1 en cuanto vuelva la se\u00F1al.');
     });
 };
 
