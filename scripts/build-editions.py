@@ -1574,6 +1574,8 @@ body.tg-tarjeta .tg-cta{display:none !important}
 #tgToast{position:fixed;top:90px;left:50%;transform:translateX(-50%) translateY(-20px);z-index:660;background:rgba(20,24,38,0.98);border:1px solid rgba(255,255,255,0.12);padding:12px 24px;border-radius:16px;font-size:15px;color:#fff;font-weight:600;opacity:0;pointer-events:none;transition:all .3s ease;box-shadow:0 8px 24px rgba(0,0,0,0.4);text-align:center;max-width:80%}
 #tgToast.visible{opacity:1;transform:translateX(-50%) translateY(0)}
 
+.tg-giro{display:inline-block;filter:grayscale(1) brightness(2.6);animation:tgGira .9s linear infinite}
+@keyframes tgGira{to{transform:rotate(360deg)}}
 .tg-heart{position:fixed;pointer-events:none;z-index:700;font-size:24px;opacity:0;animation:tgFloatUp 1.2s ease-out forwards;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.3))}
 @keyframes tgFloatUp{0%{transform:translate(0,0) scale(0.5) rotate(0deg);opacity:0}20%{opacity:1;transform:translate(var(--tx),-40px) scale(1.2) rotate(15deg)}100%{opacity:0;transform:translate(var(--tx),-150px) scale(1) rotate(30deg)}}
 </style>
@@ -2342,13 +2344,16 @@ var portIdx = Math.floor(Math.random() * 4);
 var TgModal = {
   el: document.getElementById('tgModal'),
   show: function(cfg){
-    document.getElementById('tgMEmoji').textContent = cfg.emoji || '\u2728';
+    document.getElementById('tgMEmoji').innerHTML = cfg.emoji || '\u2728';
     document.getElementById('tgMTitle').textContent = cfg.title || 'Triggui';
     document.getElementById('tgMText').innerHTML = cfg.text || '';
     var p = document.getElementById('tgMP');
     var s = document.getElementById('tgMS');
-    p.textContent = cfg.btn || 'Continuar';
-    p.onclick = function(){ TgModal.close(); if (cfg.onBtn) cfg.onBtn(); };
+    if (cfg.btn) {
+      p.style.display = '';
+      p.textContent = cfg.btn;
+      p.onclick = function(){ TgModal.close(); if (cfg.onBtn) cfg.onBtn(); };
+    } else { p.style.display = 'none'; }
     if (cfg.btn2) {
       s.style.display = '';
       s.textContent = cfg.btn2;
@@ -2565,28 +2570,34 @@ bLike.onclick = function(){
   cuerpo.append('portada', isURL(L.portada) ? L.portada : '');
   cuerpo.append('payload', JSON.stringify(payload));
 
-  TgModal.show({
-    emoji: '😍', title: 'Vive en tu espiral',
-    text: '\u00AB' + L.titulo + '\u00BB se qued\u00F3 contigo: sus palabras, sus frases y su tarjeta.<span class="hl">Cuando lo necesites, ah\u00ED estar\u00E1.</span>',
-    btn: 'Ver mi espiral', onBtn: function(){ window.location.href = '/mi/'; },
-    btn2: 'Seguir aqu\u00ED'
-  });
-  function morf(t, cuerpoTxt){
+  TgModal.show({ emoji: '<span class="tg-giro">🌀</span>', title: '', text: '' });
+  function completar(em, t, cuerpoTxt){
     if (!TgModal.el.classList.contains('visible')) return;
+    document.getElementById('tgMEmoji').innerHTML = em;
     document.getElementById('tgMTitle').textContent = t;
     document.getElementById('tgMText').innerHTML = cuerpoTxt;
+    var p = document.getElementById('tgMP');
+    var s = document.getElementById('tgMS');
+    p.style.display = '';
+    p.textContent = 'Ver mi espiral';
+    p.onclick = function(){ TgModal.close(); window.location.href = '/mi/'; };
+    s.style.display = '';
+    s.textContent = 'Seguir aqu\u00ED';
+    s.onclick = function(){ TgModal.close(); };
   }
   fetch(EXEC, { method: 'POST', body: cuerpo, keepalive: true })
     .then(function(res){ return res.json(); })
     .then(function(res){
       if (res && res.ok && res.ya_existia) {
-        morf('Ya vive en tu espiral', '\u00AB' + L.titulo + '\u00BB ya est\u00E1 contigo desde antes.<span class="hl">Tu espiral lo recuerda.</span>');
-      } else if (!(res && res.ok)) {
-        morf('Guardado en camino', 'Tu espiral lo recibir\u00E1 en cuanto vuelva la se\u00F1al.');
+        completar('🌀', 'Ya vive en tu espiral', '\u00AB' + L.titulo + '\u00BB ya est\u00E1 contigo desde antes.<span class="hl">Tu espiral lo recuerda.</span>');
+      } else if (res && res.ok) {
+        completar('😍', 'Vive en tu espiral', '\u00AB' + L.titulo + '\u00BB se qued\u00F3 contigo: sus palabras, sus frases y su tarjeta.<span class="hl">Cuando lo necesites, ah\u00ED estar\u00E1.</span>');
+      } else {
+        completar('🌀', 'Guardado en camino', 'Tu espiral lo recibir\u00E1 en cuanto vuelva la se\u00F1al.');
       }
     })
     .catch(function(){
-      morf('Guardado en camino', 'Tu espiral lo recibir\u00E1 en cuanto vuelva la se\u00F1al.');
+      completar('🌀', 'Guardado en camino', 'Tu espiral lo recibir\u00E1 en cuanto vuelva la se\u00F1al.');
     });
 };
 
