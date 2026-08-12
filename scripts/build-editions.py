@@ -2406,6 +2406,8 @@ function abrirTarjeta(){
     closeOverlayToBlocks = function(){
       document.body.classList.remove('tg-tarjeta');
       if ((overlayView === 'card' || overlayView === 'silence') && pool.length) {
+        var velo = document.getElementById('bocadoEcoOverlay');
+        if (velo) velo.classList.add('visible');
         grid.classList.add('tg-dim');
         cta.classList.add('tg-dim');
       }
