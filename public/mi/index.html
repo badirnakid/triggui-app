@@ -244,17 +244,6 @@ body::before {
   display: block;
   pointer-events: none;
 }
-.pin-og.s1 { padding: 0; }
-.pin-og.s1 img {
-  width: 100%;
-  height: 100%;
-  max-width: none;
-  max-height: none;
-  object-fit: cover;
-  object-position: left center;
-  border-radius: 24px;
-}
-
 /* Cabecera de combo: titulo + chip de autor (chip calcado del organismo) */
 .pin-head {
   display: flex;
@@ -545,8 +534,8 @@ body::before {
   transition: transform .25s ease, opacity .25s ease;
   pointer-events: none;
 }
-#ptr svg { width: 18px; height: 18px; }
-#ptr.girando svg { animation: ptrGira .9s linear infinite; }
+#ptr .giro { font-size: 19px; line-height: 1; display: block; }
+#ptr.girando .giro { animation: ptrGira .9s linear infinite; }
 @keyframes ptrGira { to { transform: rotate(360deg); } }
 
 /* ---------- El Santuario (ADN del bocado de la edicion) ---------- */
@@ -637,7 +626,7 @@ body::before {
   z-index: 5;
 }
 .centro-msg.ver { display: flex; }
-.esp-glifo { width: 54px; height: 54px; margin-bottom: 22px; opacity: .9; }
+.esp-glifo { font-size: 46px; line-height: 1; margin-bottom: 20px; }
 .centro-msg .t1 {
   font-family: 'Playfair Display', serif;
   font-style: italic;
@@ -759,12 +748,12 @@ body::before {
 </div>
 
 <div id="vacio" class="centro-msg">
-  <svg class="esp-glifo" viewBox="0 0 24 24" fill="none" stroke="#E35D30" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M12.6 12.2 a2.6 2.6 0 1 1 -2.6 2.6 a5.2 5.2 0 1 1 5.2 -5.2 a8.2 8.2 0 1 1 -8.4 8.3"/></svg>
+  <div class="esp-glifo">🌀</div>
   <p class="t1">Tu espiral está lista.</p>
   <p class="t2">Cuando marques un libro que te llegue, aquí nacerá su colección de piezas: palabras, frases y tarjetas creciendo contigo.</p>
 </div>
 
-<div id="ptr"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12.6 12.2 a2.6 2.6 0 1 1 -2.6 2.6 a5.2 5.2 0 1 1 5.2 -5.2 a8.2 8.2 0 1 1 -8.4 8.3"/></svg></div>
+<div id="ptr"><span class="giro">🌀</span></div>
 <div id="tablero"><div id="tableroInner"></div></div>
 
 <div id="santuario"><div class="cita" id="santuarioCita"></div></div>
