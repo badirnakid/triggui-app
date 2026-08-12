@@ -1134,6 +1134,12 @@ jobs:
           # v3.4: persistir ring de anti-duplicados
           [ -f recent-books.json ] && git add recent-books.json || true
 
+          # 🌀 Portal: destilar accents del catalogo fresco (color rotatorio /mi)
+          if [ "$CATALOG_MODE" != "kids" ] && [ -f "triggui-content/${CONTENIDO_FILE}" ]; then
+            python3 -c "import json,re;L=json.load(open('triggui-content/'+'${CONTENIDO_FILE}',encoding='utf-8'));L=L.get('libros') if isinstance(L,dict) else L;a=[];[a.append(x) for l in (L or []) for x in [((l.get('tarjeta') or {}).get('style') or {}).get('accent')] if isinstance(x,str) and re.match(r'^#[0-9a-fA-F]{6}$',x) and x not in a];json.dump(a,open('public/accents.json','w'),separators=(',',':'));print('🌀 accents del catalogo:',len(a))" || true
+          fi
+          [ -f public/accents.json ] && git add public/accents.json || true
+
           for dir in inputs-history metrics quality-reports grounding-cache evidence-cache validate-debug; do
             [ -d "$dir" ] && git add "$dir/" || true
           done
