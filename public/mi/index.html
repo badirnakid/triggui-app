@@ -646,7 +646,12 @@ body::before {
   margin: 0;
   max-width: 340px;
 }
-.loading-text { animation: breatheLoading 1.5s infinite ease-in-out; color: rgba(255,255,255,0.5); font-size: 15px; letter-spacing: 1.5px; font-family: 'Poppins', sans-serif; }
+.marca-aliento {
+  height: 26px;
+  width: auto;
+  filter: invert(1) brightness(1.45);
+  animation: breatheLoading 1.7s infinite ease-in-out;
+}
 @keyframes breatheLoading { 0%, 100% { opacity: 0.3; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1.02); } }
 
 /* ---------- Puerta (clave) ---------- */
@@ -734,7 +739,7 @@ body::before {
 </div>
 
 <div id="cargando" class="centro-msg ver">
-  <span class="loading-text">Abriendo tu espiral...</span>
+  <img class="marca-aliento" src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png" alt="Triggui">
 </div>
 
 <div id="puerta">
