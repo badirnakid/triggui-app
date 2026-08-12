@@ -1617,6 +1617,10 @@ function abrirTarjeta(){
     var __cerrarNativo = closeOverlayToBlocks;
     closeOverlayToBlocks = function(){
       document.body.classList.remove('tg-tarjeta');
+      if ((overlayView === 'card' || overlayView === 'silence') && pool.length) {
+        grid.classList.add('tg-dim');
+        cta.classList.add('tg-dim');
+      }
       __cerrarNativo();
     };
   }
@@ -1805,6 +1809,10 @@ bLike.onclick = function(){
     });
 };
 
+if (pool.length) {
+  grid.classList.add('tg-dim');
+  cta.classList.add('tg-dim');
+}
 render();
 })();
 </script>
