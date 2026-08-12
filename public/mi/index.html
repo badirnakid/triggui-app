@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <title>Tu espiral · Triggui</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,500;1,700&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
@@ -101,6 +103,15 @@ body::before {
 }
 #barra.ver { display: flex; }
 #barra .marca { height: 21px; width: auto; opacity: .95; filter: invert(1) brightness(1.45); }
+#barra .chipb {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 12px;
+  background: rgba(8, 10, 14, .28);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
 #barra .lado {
   display: flex;
   align-items: baseline;
@@ -214,6 +225,16 @@ body::before {
   display: block;
   pointer-events: none;
 }
+.pin-og.s1 { padding: 0; background: none; border: none; }
+.pin-og.s1 img {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  object-fit: cover;
+  object-position: left center;
+  border-radius: 24px;
+}
 
 /* Cabecera de combo: titulo + chip de autor (chip calcado del organismo) */
 .pin-head {
@@ -279,6 +300,16 @@ body::before {
   box-shadow: 0 12px 32px rgba(0,0,0,.4);
   display: block;
   pointer-events: none;
+}
+.pin-og.s1 { padding: 0; background: none; border: none; }
+.pin-og.s1 img {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  object-fit: cover;
+  object-position: left center;
+  border-radius: 24px;
 }
 
 /* ---------- Pin bloque: piel calcada célula a célula ---------- */
@@ -634,9 +665,9 @@ body::before {
 <div class="aurora-blob aurora-3"></div>
 
 <div id="barra">
-  <img class="marca" src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png" alt="Triggui">
+  <span class="chipb"><img class="marca" src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png" alt="Triggui"></span>
   <div class="lado">
-    <span class="quien" id="quien"></span>
+    <span class="quien chipb" id="quien"></span>
   </div>
 </div>
 
@@ -1122,7 +1153,13 @@ function pintar(){
     mini.className = 'mini';
     var restoBloques = bloques.slice();
     for (var m = 0; m < 2 && restoBloques.length; m++) mini.appendChild(marcar(restoBloques.shift(), 1));
-    if (mini.children.length === 1 && anchas.length) mini.appendChild(marcar(anchas.shift(), 1));
+    function tomarPareja(){
+      for (var t = 0; t < anchas.length; t++) {
+        if (anchas[t].classList.contains('pin-nota')) return anchas.splice(t, 1)[0];
+      }
+      return anchas.shift();
+    }
+    if (mini.children.length === 1 && anchas.length) mini.appendChild(marcar(tomarPareja(), 1));
 
     var rejilla = document.createElement('div');
     rejilla.className = 'rejilla';
@@ -1134,7 +1171,7 @@ function pintar(){
     }
     if (restoBloques.length === 1) {
       rejilla.appendChild(marcar(restoBloques.shift(), 1));
-      if (anchas.length) rejilla.appendChild(marcar(anchas.shift(), 1));
+      if (anchas.length) rejilla.appendChild(marcar(tomarPareja(), 1));
       filasR++;
     }
     while (anchas.length) { rejilla.appendChild(marcar(anchas.shift(), 2)); filasR++; }
