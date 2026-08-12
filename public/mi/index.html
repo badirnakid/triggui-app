@@ -63,250 +63,100 @@ body::before {
 }
 .pulse-line.visible { opacity: 1; transform: translateY(0); }
 
-/* ---------- Escenario de la espiral ---------- */
-#cielo {
+/* ---------- Muro de laminas ---------- */
+#muro {
   position: fixed;
   inset: 0;
   display: none;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 64px 16px 110px;
 }
-#cielo.ver { display: block; }
-
-.nodo {
-  position: absolute;
-  border-radius: 50%;
-  overflow: hidden;
-  cursor: pointer;
-  border: 1.5px solid rgba(255,255,255,.22);
-  box-shadow: 0 8px 24px rgba(0,0,0,.55);
-  transform: translate(-50%, -50%) scale(0);
-  transition: transform .7s cubic-bezier(0.19,1,0.22,1), border-color .4s ease, box-shadow .4s ease;
-  background: #14141c;
-  animation: nodoFloat 6s ease-in-out infinite;
+#muro::-webkit-scrollbar { display: none; }
+#muro.ver { display: block; }
+#muroInner {
+  max-width: 780px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 30px;
+  justify-items: center;
 }
-.nodo.nacer { transform: translate(-50%, -50%) scale(1); }
-.nodo img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
-.nodo:active { transform: translate(-50%, -50%) scale(0.94); }
-.nodo.dorada {
-  border-color: #f6c453;
-  box-shadow: 0 0 0 2px rgba(246,196,83,.35), 0 0 26px rgba(246,196,83,.35), 0 8px 24px rgba(0,0,0,.55);
+@media (min-width: 700px) {
+  #muroInner { grid-template-columns: 1fr 1fr; gap: 34px 26px; }
 }
-@keyframes nodoFloat {
-  0%, 100% { margin-top: 0; }
-  50% { margin-top: -5px; }
-}
-
-#centroGlow {
-  position: absolute;
-  width: 220px;
-  height: 220px;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(circle, rgba(227,93,48,0.22) 0%, transparent 70%);
-  filter: blur(30px);
-  pointer-events: none;
-  animation: glowPulse 5s ease-in-out infinite;
-}
-@keyframes glowPulse { 0%,100% { opacity:.55; } 50% { opacity:1; } }
-
-/* ---------- Vacío y carga ---------- */
-.centro-msg {
-  position: fixed;
-  inset: 0;
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 0 36px;
-  z-index: 5;
-}
-.centro-msg.ver { display: flex; }
-.esp-glifo { width: 54px; height: 54px; margin-bottom: 22px; opacity: .9; }
-.centro-msg .t1 {
-  font-family: 'Playfair Display', serif;
-  font-style: italic;
-  font-weight: 700;
-  font-size: clamp(20px, 5.4vw, 27px);
-  color: rgba(255,255,255,.92);
-  margin: 0 0 10px;
-}
-.centro-msg .t2 {
-  font-family: 'Poppins', sans-serif;
-  font-size: clamp(13px, 3.6vw, 15px);
-  font-weight: 500;
-  line-height: 1.55;
-  color: rgba(255,255,255,.5);
-  margin: 0;
-  max-width: 340px;
-}
-.loading-text { animation: breatheLoading 1.5s infinite ease-in-out; color: rgba(255,255,255,0.5); font-size: 15px; letter-spacing: 1.5px; font-family: 'Poppins', sans-serif; }
-@keyframes breatheLoading { 0%, 100% { opacity: 0.3; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1.02); } }
-
-/* ---------- Puerta (clave) ---------- */
-#puerta {
-  position: fixed;
-  inset: 0;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 28px;
-  z-index: 10;
-}
-#puerta.ver { display: flex; }
-.puerta-card {
-  width: 100%;
-  max-width: 340px;
-  background: rgba(12,12,18,.96);
-  border: 1px solid rgba(255,255,255,.14);
-  border-radius: 18px;
-  padding: 30px 24px 24px;
-  text-align: center;
-}
-.puerta-card img.marca { height: 20px; width: auto; opacity: .9; margin-bottom: 18px; filter: invert(1) brightness(1.4); }
-.puerta-card h1 {
-  font-family: 'Playfair Display', serif;
-  font-style: italic;
-  font-weight: 700;
-  font-size: 24px;
-  margin: 0 0 6px;
-  color: #fff;
-}
-.puerta-card p.sub {
-  font-family: 'Poppins', sans-serif;
-  font-size: 12.5px;
-  color: rgba(255,255,255,.55);
-  margin: 0 0 18px;
-  line-height: 1.5;
-}
-.puerta-card input {
-  width: 100%;
-  padding: 13px 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,.22);
-  background: rgba(255,255,255,.06);
-  color: #fff;
-  font-family: 'Archivo', sans-serif;
-  font-size: 16px;
-  text-align: center;
-  letter-spacing: .14em;
-  outline: none;
-}
-.puerta-card input:focus { border-color: rgba(227,93,48,.7); }
-.puerta-err { min-height: 18px; font-size: 12px; color: #ff9d9d; margin: 9px 0 3px; font-family: 'Poppins', sans-serif; }
-.puerta-card button {
-  width: 100%;
-  padding: 13px 0;
-  border-radius: 12px;
-  border: 1px solid rgba(227,93,48,.65);
-  background: rgba(227,93,48,.16);
-  color: #fff;
-  font-family: 'Poppins', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform .2s ease, background .2s ease;
-}
-.puerta-card button:active { transform: scale(.97); }
-.puerta-pie { margin-top: 16px; font-size: 11px; font-family: 'Poppins', sans-serif; }
-.puerta-pie a { color: rgba(255,255,255,.5); text-decoration: underline; }
-
-/* ---------- Hoja del libro ---------- */
-#velo {
-  position: fixed;
-  inset: 0;
-  z-index: 200;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0,0,0,.85);
-  opacity: 0;
-  transition: opacity .3s ease;
-  padding: max(16px, env(safe-area-inset-top,16px)) 16px max(16px, env(safe-area-inset-bottom,16px));
-}
-#velo.ver { display: flex; }
-#velo.on { opacity: 1; }
-.hoja {
-  width: 100%;
-  max-width: 380px;
-  background: #121219;
-  border: 1px solid rgba(255,255,255,.14);
-  border-radius: 20px;
-  padding: 26px 22px 22px;
-  text-align: center;
+.lamina {
   position: relative;
-  transform: scale(.94) translateY(14px);
+  width: min(84vw, 340px);
+  border-radius: 16px;
+  cursor: pointer;
   opacity: 0;
-  transition: transform .45s cubic-bezier(0.19,1,0.22,1), opacity .4s ease;
+  transform: translateY(22px) scale(.985) rotate(0deg);
+  transition: opacity .7s cubic-bezier(0.19,1,0.22,1), transform .7s cubic-bezier(0.19,1,0.22,1), box-shadow .4s ease;
+  box-shadow: 0 18px 44px rgba(0,0,0,.55);
 }
-#velo.on .hoja { transform: scale(1) translateY(0); opacity: 1; }
-.hoja .cerrar {
+.lamina.ver { opacity: 1; transform: translateY(0) scale(1) rotate(var(--giro, 0deg)); }
+.lamina:hover { transform: translateY(-4px) scale(1.012) rotate(0deg); box-shadow: 0 26px 60px rgba(0,0,0,.65); }
+.lamina:active { transform: scale(.985) rotate(0deg); }
+.lamina img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.14);
+  pointer-events: none;
+  background: #101017;
+}
+.lamina.dorada img { border-color: rgba(246,196,83,.8); }
+.lamina.dorada {
+  box-shadow: 0 0 0 2px rgba(246,196,83,.35), 0 0 34px rgba(246,196,83,.28), 0 18px 44px rgba(0,0,0,.55);
+}
+.lamina .sello {
   position: absolute;
   top: 10px;
-  left: 10px;
-  width: 32px;
-  height: 32px;
-  border: none;
-  border-radius: 50%;
-  background: rgba(255,255,255,.08);
-  color: #fff;
-  font-size: 18px;
-  cursor: pointer;
-}
-.hoja img.portada {
-  width: 128px;
-  height: auto;
-  border-radius: 6px;
-  border: 1px solid rgba(255,255,255,.15);
-  box-shadow: 0 22px 48px rgba(0,0,0,.8);
-  margin: 4px auto 14px;
-  display: block;
-}
-.hoja h2 {
-  font-family: 'Playfair Display', serif;
-  font-style: italic;
-  font-weight: 700;
-  font-size: clamp(19px, 5vw, 23px);
-  margin: 0 0 8px;
-  color: #fff;
-  line-height: 1.25;
-}
-.hoja .meta {
+  right: 10px;
   font-family: 'Poppins', sans-serif;
-  font-size: 11.5px;
-  color: rgba(255,255,255,.5);
-  margin: 0 0 6px;
-  letter-spacing: .04em;
-}
-.hoja .sello {
-  display: inline-block;
-  font-family: 'Poppins', sans-serif;
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 600;
   letter-spacing: .08em;
   color: #f6c453;
-  border: 1px solid rgba(246,196,83,.5);
-  border-radius: 10px;
-  padding: 4px 10px;
-  margin: 2px 0 14px;
+  background: rgba(10,10,14,.78);
+  border: 1px solid rgba(246,196,83,.55);
+  border-radius: 9px;
+  padding: 4px 9px;
+  pointer-events: none;
 }
-.hoja .btn {
+.marco {
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: #101017;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  padding: 13px 0;
-  border-radius: 12px;
-  font-family: 'Poppins', sans-serif;
-  font-size: 13.5px;
-  font-weight: 600;
-  text-decoration: none;
-  cursor: pointer;
-  margin-top: 9px;
-  transition: transform .2s ease;
+  gap: 14px;
+  padding: 18px;
+  pointer-events: none;
 }
-.hoja .btn:active { transform: scale(.97); }
-.hoja .btn.abrir { color: #fff; border: 1px solid rgba(227,93,48,.7); background: rgba(227,93,48,.16); }
-.hoja .btn.papel { color: rgba(255,255,255,.85); border: 1px solid rgba(255,255,255,.2); background: transparent; }
+.marco img.mini {
+  width: 58%;
+  height: auto;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,.15);
+  box-shadow: 0 20px 44px rgba(0,0,0,.7);
+}
+.marco .mt {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: 17px;
+  color: rgba(255,255,255,.92);
+  text-align: center;
+  line-height: 1.3;
+}
 
 /* ---------- Pie ---------- */
 #pie {
@@ -357,11 +207,7 @@ body::before {
   <p class="t2">Cuando marques un libro que te llegue, aquí nacerá su estrella. La primera vivirá en el centro, y todo lo demás crecerá alrededor.</p>
 </div>
 
-<div id="cielo"><div id="centroGlow"></div></div>
-
-<div id="velo">
-  <div class="hoja" id="hoja"></div>
-</div>
+<div id="muro"><div id="muroInner"></div></div>
 
 <div id="pie">
   <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png" alt="Triggui">
@@ -391,10 +237,8 @@ var el = {
   clave: document.getElementById('clave'),
   entrar: document.getElementById('entrar'),
   vacio: document.getElementById('vacio'),
-  cielo: document.getElementById('cielo'),
-  glow: document.getElementById('centroGlow'),
-  velo: document.getElementById('velo'),
-  hoja: document.getElementById('hoja'),
+  muro: document.getElementById('muro'),
+  muroInner: document.getElementById('muroInner'),
   pie: document.getElementById('pie'),
   cambiar: document.getElementById('cambiarClave')
 };
@@ -421,8 +265,8 @@ function ver(cual){
   el.cargando.classList.toggle('ver', cual === 'cargando');
   el.puerta.classList.toggle('ver', cual === 'puerta');
   el.vacio.classList.toggle('ver', cual === 'vacio');
-  el.cielo.classList.toggle('ver', cual === 'cielo');
-  el.pie.classList.toggle('ver', cual === 'cielo' || cual === 'vacio');
+  el.muro.classList.toggle('ver', cual === 'muro');
+  el.pie.classList.toggle('ver', cual === 'muro' || cual === 'vacio');
   if (cual === 'puerta') setTimeout(function(){ try{ el.clave.focus(); }catch(e){} }, 80);
 }
 
@@ -431,7 +275,10 @@ function linea(txt){
   el.linea.classList.add('visible');
 }
 
-/* ---------- Datos ---------- */
+/* ---------- Datos ----------
+   Regla v2: un libro existe SOLO si tiene al menos un evento
+   'estrella'. Releidas huerfanas (sin estrella madre) se ignoran:
+   asi los fantasmas de datos son matematicamente imposibles. */
 function agrupar(filas){
   var mapa = {};
   var orden = [];
@@ -440,11 +287,12 @@ function agrupar(filas){
     if (!f || !f.slug) continue;
     var llave = (f.catalogo || 'adulto') + ':' + f.slug;
     if (!mapa[llave]) {
-      mapa[llave] = { slug: f.slug, catalogo: f.catalogo || 'adulto', titulo: '', portada: '', ts: '', dorada: false };
+      mapa[llave] = { slug: f.slug, catalogo: f.catalogo || 'adulto', titulo: '', portada: '', ts: '', dorada: false, madre: false };
       orden.push(llave);
     }
     var n = mapa[llave];
     if (f.evento === 'estrella') {
+      n.madre = true;
       if (!n.ts) n.ts = f.ts;
       if (f.titulo) n.titulo = f.titulo;
       if (f.portada) n.portada = f.portada;
@@ -456,9 +304,9 @@ function agrupar(filas){
   var nodos = [];
   for (var j = 0; j < orden.length; j++) {
     var nd = mapa[orden[j]];
-    if (nd.ts || nd.titulo) nodos.push(nd);
+    if (nd.madre) nodos.push(nd);
   }
-  nodos.sort(function(a, b){ return String(a.ts).localeCompare(String(b.ts)); });
+  nodos.sort(function(a, b){ return String(b.ts).localeCompare(String(a.ts)); });
   return nodos;
 }
 
@@ -472,100 +320,80 @@ function pedirEspiral(clave, cb){
     .catch(function(e){ cb(e, null); });
 }
 
-/* ---------- Espiral aurea (filotaxis) ---------- */
+/* ---------- Muro de laminas ---------- */
+var observador = null;
+function vigilar(){
+  if (observador) return observador;
+  observador = new IntersectionObserver(function(entradas){
+    for (var i = 0; i < entradas.length; i++) {
+      if (entradas[i].isIntersecting) {
+        entradas[i].target.classList.add('ver');
+        observador.unobserve(entradas[i].target);
+      }
+    }
+  }, { rootMargin: '0px 0px 120px 0px' });
+  return observador;
+}
+
+function rutaBase(nd){
+  return (nd.catalogo === 'kids' ? '/kids/t/' : '/t/') + encodeURIComponent(nd.slug) + '/';
+}
+
+function armarLamina(nd, i){
+  var div = document.createElement('div');
+  div.className = 'lamina' + (nd.dorada ? ' dorada' : '');
+  div.style.setProperty('--giro', ((i % 2 === 0) ? -1.1 : 1.1) + 'deg');
+  div.setAttribute('role', 'button');
+  div.setAttribute('aria-label', nd.titulo || nd.slug);
+
+  var img = document.createElement('img');
+  img.alt = '';
+  img.loading = 'lazy';
+  img.decoding = 'async';
+  var base = rutaBase(nd);
+  var intento = 0;
+  img.src = base + 'tarjeta.png';
+  img.onerror = function(){
+    intento += 1;
+    if (intento === 1) { img.src = base + 'og.png'; return; }
+    var marco = document.createElement('div');
+    marco.className = 'marco';
+    marco.innerHTML = (nd.portada
+      ? '<img class="mini" alt="" src="' + nd.portada.replace(/"/g, '&quot;') + '">'
+      : '') + '<div class="mt"></div>';
+    marco.querySelector('.mt').textContent = nd.titulo || nd.slug;
+    div.replaceChild(marco, img);
+  };
+  div.appendChild(img);
+
+  if (nd.dorada) {
+    var sello = document.createElement('span');
+    sello.className = 'sello';
+    sello.textContent = '\u2726 RELE\u00cdDA';
+    div.appendChild(sello);
+  }
+
+  div.addEventListener('click', function(){ releerYNavegar(nd, rutaBase(nd)); });
+  return div;
+}
+
 function pintar(){
   var nodos = estado.nodos;
-  el.cielo.querySelectorAll('.nodo').forEach(function(n){ n.remove(); });
+  el.muroInner.innerHTML = '';
 
-  linea('Hola' + (estado.nombre ? ', ' + estado.nombre : '') + ' · ' +
+  linea('Hola' + (estado.nombre ? ', ' + estado.nombre : '') + ' \u00b7 ' +
         nodos.length + (nodos.length === 1 ? ' estrella' : ' estrellas'));
 
   if (nodos.length === 0) { ver('vacio'); return; }
-  ver('cielo');
+  ver('muro');
 
-  var W = window.innerWidth, H = window.innerHeight;
-  var cx = W / 2, cy = H * 0.485;
-  var d = nodos.length <= 8 ? 72 : nodos.length <= 20 ? 64 : nodos.length <= 45 ? 56 : 46;
-  var margen = d / 2 + 14;
-  var maxR = Math.min(W, H) / 2 - margen - 24;
-  var C = nodos.length > 1 ? (maxR / Math.sqrt(nodos.length - 1)) : 0;
-
-  el.glow.style.left = cx + 'px';
-  el.glow.style.top = cy + 'px';
-
+  var ob = vigilar();
   for (var i = 0; i < nodos.length; i++) {
-    (function(i){
-      var nd = nodos[i];
-      var ang = i * ORO;
-      var r = C * Math.sqrt(i);
-      var x = cx + r * Math.cos(ang);
-      var y = cy + r * Math.sin(ang);
-
-      var div = document.createElement('div');
-      div.className = 'nodo' + (nd.dorada ? ' dorada' : '');
-      div.style.width = d + 'px';
-      div.style.height = d + 'px';
-      div.style.left = x + 'px';
-      div.style.top = y + 'px';
-      div.style.animationDelay = (i * 0.35) + 's';
-      div.setAttribute('role', 'button');
-      div.setAttribute('aria-label', nd.titulo || nd.slug);
-
-      if (nd.portada) {
-        var img = document.createElement('img');
-        img.src = nd.portada;
-        img.alt = '';
-        img.loading = 'lazy';
-        div.appendChild(img);
-      }
-      div.addEventListener('click', function(){ abrirHoja(nd); });
-      el.cielo.appendChild(div);
-      setTimeout(function(){ div.classList.add('nacer'); }, 60 + i * 90);
-    })(i);
+    var lam = armarLamina(nodos[i], i);
+    el.muroInner.appendChild(lam);
+    ob.observe(lam);
   }
 }
-
-/* ---------- Hoja del libro ---------- */
-function fechaBonita(iso){
-  try {
-    var dt = new Date(iso);
-    return dt.toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' });
-  } catch(e){ return ''; }
-}
-
-function abrirHoja(nd){
-  var url = (nd.catalogo === 'kids' ? '/kids/t/' : '/t/') + encodeURIComponent(nd.slug) + '/';
-  var busca = 'https://www.buscalibre.com.mx/libros/search/?q=' + encodeURIComponent(nd.titulo || nd.slug);
-
-  el.hoja.innerHTML =
-    '<button class="cerrar" id="hojaCerrar" aria-label="Cerrar">&times;</button>' +
-    (nd.portada ? '<img class="portada" src="' + nd.portada.replace(/"/g, '&quot;') + '" alt="">' : '') +
-    '<h2></h2>' +
-    '<p class="meta" id="hojaMeta"></p>' +
-    (nd.dorada ? '<span class="sello">RELE\u00cdDA</span>' : '') +
-    '<a class="btn abrir" id="hojaAbrir">Abrir edici\u00f3n viva</a>' +
-    '<a class="btn papel" href="' + busca + '" target="_blank" rel="noopener">Este libro existe en papel</a>';
-
-  el.hoja.querySelector('h2').textContent = nd.titulo || nd.slug;
-  document.getElementById('hojaMeta').textContent =
-    'En tu espiral desde el ' + (fechaBonita(nd.ts) || 'primer d\u00eda');
-
-  document.getElementById('hojaCerrar').addEventListener('click', cerrarHoja);
-  document.getElementById('hojaAbrir').addEventListener('click', function(ev){
-    ev.preventDefault();
-    releerYNavegar(nd, url);
-  });
-
-  el.velo.classList.add('ver');
-  requestAnimationFrame(function(){ el.velo.classList.add('on'); });
-}
-
-function cerrarHoja(){
-  el.velo.classList.remove('on');
-  setTimeout(function(){ el.velo.classList.remove('ver'); }, 320);
-}
-
-el.velo.addEventListener('click', function(ev){ if (ev.target === el.velo) cerrarHoja(); });
 
 /* Registrar la relectura un instante antes de navegar.
    Si la red falla o tarda, leer SIEMPRE gana (tope 600 ms). */
@@ -637,10 +465,6 @@ el.cambiar.addEventListener('click', function(ev){
   lsDel(LS_PAR);
   el.clave.value = '';
   fallo('');
-});
-
-window.addEventListener('resize', function(){
-  if (el.cielo.classList.contains('ver')) pintar();
 });
 
 (function inicio(){
