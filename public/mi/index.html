@@ -108,7 +108,7 @@ body::before {
   align-items: center;
   padding: 6px 12px;
   border-radius: 12px;
-  background: rgba(8, 10, 14, .28);
+  background: var(--chipb, rgba(8, 10, 14, .28));
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
@@ -209,23 +209,18 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(10, 12, 17, .55);
-  border: 1px solid rgba(255,255,255,.1);
-  border-radius: 24px;
-  padding: 6px;
 }
 .pin-og img {
   max-width: 100%;
   max-height: 100%;
   width: auto;
   height: auto;
-  border-radius: 20px;
-  border: 1px solid rgba(255,255,255,.12);
-  box-shadow: 0 12px 32px rgba(0,0,0,.4);
+  border-radius: 22px;
+  box-shadow: 0 12px 32px rgba(0,0,0,.45);
   display: block;
   pointer-events: none;
 }
-.pin-og.s1 { padding: 0; background: none; border: none; }
+.pin-og.s1 { padding: 0; }
 .pin-og.s1 img {
   width: 100%;
   height: 100%;
@@ -269,13 +264,8 @@ body::before {
   width: 100%;
   height: auto;
   border-radius: 22px;
-  border: 1px solid rgba(255,255,255,.13);
   box-shadow: 0 10px 26px rgba(0,0,0,.45), 0 30px 70px rgba(0,0,0,.5);
   pointer-events: none;
-}
-.pin-tarjeta.dorada img {
-  border-color: rgba(246,196,83,.85);
-  box-shadow: 0 0 0 1.5px rgba(246,196,83,.38), 0 0 34px rgba(246,196,83,.22), 0 30px 70px rgba(0,0,0,.5);
 }
 .pin-tarjeta { cursor: pointer; }
 
@@ -285,23 +275,18 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(10, 12, 17, .55);
-  border: 1px solid rgba(255,255,255,.1);
-  border-radius: 24px;
-  padding: 6px;
 }
 .pin-og img {
   max-width: 100%;
   max-height: 100%;
   width: auto;
   height: auto;
-  border-radius: 20px;
-  border: 1px solid rgba(255,255,255,.12);
-  box-shadow: 0 12px 32px rgba(0,0,0,.4);
+  border-radius: 22px;
+  box-shadow: 0 12px 32px rgba(0,0,0,.45);
   display: block;
   pointer-events: none;
 }
-.pin-og.s1 { padding: 0; background: none; border: none; }
+.pin-og.s1 { padding: 0; }
 .pin-og.s1 img {
   width: 100%;
   height: 100%;
@@ -1102,6 +1087,8 @@ function tenirAurora(piezas){
     var v = c ? hexRgba(c, alfas[j]) : '';
     if (v) raiz.setProperty('--au' + (j + 1), v); else raiz.removeProperty('--au' + (j + 1));
   }
+  var chip = acentos[0] ? hexRgba(acentos[0], 0.20) : '';
+  if (chip) raiz.setProperty('--chipb', chip); else raiz.removeProperty('--chipb');
 }
 
 function pintar(){
