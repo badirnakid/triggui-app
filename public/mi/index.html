@@ -8,9 +8,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,500;1,700&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
-   TRIGGUI ESPIRAL · Portal /mi · v1.0.0
-   Habitación privada de miembros. Lenguaje calcado de las
-   ediciones vivas: fondo, resplandor, tipografías, pulse-line.
+   TRIGGUI ESPIRAL · Portal /mi · v4.0.0 "Tablero"
+   Masonry estilo Pinterest: cada componente del libro es un pin
+   con los colores exactos heredados de la generación original.
    ============================================================ */
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -63,114 +63,328 @@ body::before {
 }
 .pulse-line.visible { opacity: 1; transform: translateY(0); }
 
-/* ---------- Muro de laminas ---------- */
-#muro {
+/* ---------- Tablero masonry ---------- */
+#tablero {
   position: fixed;
   inset: 0;
   display: none;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  padding: 64px 16px 110px;
+  padding: 56px 12px 104px;
 }
-#muro::-webkit-scrollbar { display: none; }
-#muro.ver { display: block; }
-#muroInner {
-  max-width: 1560px;
+#tablero::-webkit-scrollbar { display: none; }
+#tablero.ver { display: block; }
+#tableroInner {
+  max-width: 1520px;
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 44px;
-  justify-items: center;
+  columns: 168px;
+  column-gap: 12px;
 }
-@media (min-width: 1000px) {
-  #muroInner { grid-template-columns: 1fr 1fr; gap: 48px 34px; }
-}
-@media (min-width: 1500px) {
-  #muroInner { grid-template-columns: 1fr 1fr 1fr; }
-}
-.lamina {
+@media (min-width: 760px)  { #tableroInner { columns: 208px; column-gap: 14px; } }
+@media (min-width: 1240px) { #tableroInner { columns: 232px; column-gap: 16px; } }
+
+.pin {
   position: relative;
-  width: min(94vw, 470px);
-  border-radius: 16px;
-  cursor: pointer;
+  break-inside: avoid;
+  margin: 0 0 12px;
+  border-radius: 18px;
+  overflow: hidden;
   opacity: 0;
-  transform: translateY(22px) scale(.985) rotate(0deg);
-  transition: opacity .7s cubic-bezier(0.19,1,0.22,1), transform .7s cubic-bezier(0.19,1,0.22,1), box-shadow .4s ease;
-  box-shadow: 0 18px 44px rgba(0,0,0,.55);
+  transform: translateY(16px) scale(.985);
+  transition: opacity .6s cubic-bezier(0.19,1,0.22,1), transform .6s cubic-bezier(0.19,1,0.22,1);
 }
-.lamina.ver { opacity: 1; transform: translateY(0) scale(1) rotate(var(--giro, 0deg)); }
-.lamina .placa {
+.pin.ver { opacity: 1; transform: translateY(0) scale(1); }
+
+/* Pins de imagen (tarjeta / og) */
+.pin-img { cursor: pointer; background: #101017; }
+.pin-img img {
   display: block;
   width: 100%;
   height: auto;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,.14);
-  margin-top: 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.13);
   pointer-events: none;
-  background: #101017;
 }
-.lamina.dorada .placa { border-color: rgba(246,196,83,.8); }
-.lamina:hover { transform: translateY(-4px) scale(1.012) rotate(0deg); box-shadow: 0 26px 60px rgba(0,0,0,.65); }
-.lamina:active { transform: scale(.985) rotate(0deg); }
-.lamina img {
-  display: block;
-  width: 100%;
-  height: auto;
-  border-radius: 16px;
-  border: 1px solid rgba(255,255,255,.14);
-  pointer-events: none;
-  background: #101017;
-}
-.lamina.dorada img { border-color: rgba(246,196,83,.8); }
-.lamina.dorada {
-  box-shadow: 0 0 0 2px rgba(246,196,83,.35), 0 0 34px rgba(246,196,83,.28), 0 18px 44px rgba(0,0,0,.55);
-}
-.lamina .sello {
+.pin-img.dorada img { border-color: rgba(246,196,83,.85); }
+.pin-img.dorada { box-shadow: 0 0 0 1.5px rgba(246,196,83,.4), 0 0 26px rgba(246,196,83,.22); }
+.sello {
   position: absolute;
   top: 10px;
-  right: 10px;
+  left: 10px;
   font-family: 'Poppins', sans-serif;
-  font-size: 10px;
+  font-size: 9.5px;
   font-weight: 600;
   letter-spacing: .08em;
   color: #f6c453;
   background: rgba(10,10,14,.78);
   border: 1px solid rgba(246,196,83,.55);
   border-radius: 9px;
-  padding: 4px 9px;
+  padding: 3px 8px;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Pins de bloque (palabra ↔ frase) */
+.pin-bloque {
+  aspect-ratio: 3 / 4;
+  cursor: pointer;
+  border-radius: 18px;
+}
+.pin-bloque .cara {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 16px 30px;
+  text-align: center;
+  border-radius: 18px;
+  transition: opacity .45s cubic-bezier(0.19,1,0.22,1), transform .45s cubic-bezier(0.19,1,0.22,1);
+}
+.pin-bloque .cara.palabra {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
+  font-size: clamp(19px, 5.2vw, 26px);
+  letter-spacing: .01em;
+  text-transform: lowercase;
+}
+.pin-bloque .cara.frase {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 500;
+  font-size: 14.5px;
+  line-height: 1.5;
+  opacity: 0;
+  transform: scale(.97);
+}
+.pin-bloque.volteada .cara.palabra { opacity: 0; transform: scale(.97); }
+.pin-bloque.volteada .cara.frase { opacity: 1; transform: scale(1); }
+.pin-bloque .puntos {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  display: flex;
+  gap: 6px;
+  justify-content: center;
   pointer-events: none;
 }
-.marco {
-  width: 100%;
-  aspect-ratio: 9 / 16;
-  border-radius: 16px;
-  border: 1px solid rgba(255,255,255,.14);
+.pin-bloque .puntos i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: .35;
+  transition: opacity .3s ease;
+}
+.pin-bloque .puntos i.on { opacity: .95; }
+
+/* Pins de nota (bocado / eco) */
+.pin-nota {
   background: #101017;
-  display: flex;
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 18px;
+  padding: 18px 16px 20px;
+  cursor: pointer;
+}
+.pin-nota .etiqueta {
+  font-family: 'Poppins', sans-serif;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  margin-bottom: 9px;
+}
+.pin-nota .texto {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.45;
+  color: rgba(255,255,255,.92);
+}
+
+/* Menú de tres puntos */
+.tres {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(10,10,14,.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: rgba(255,255,255,.9);
+  font-size: 15px;
+  line-height: 30px;
+  cursor: pointer;
+  z-index: 4;
+  padding: 0;
+}
+.menu {
+  position: absolute;
+  top: 42px;
+  right: 8px;
+  z-index: 5;
+  background: rgba(14,14,20,.98);
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 12px;
+  overflow: hidden;
+  min-width: 158px;
+  display: none;
+}
+.menu.ver { display: block; }
+.menu button, .menu a {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,.9);
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 11px 14px;
+  cursor: pointer;
+  text-decoration: none;
+}
+.menu button:active, .menu a:active { background: rgba(255,255,255,.08); }
+.menu .peligro { color: #ff9d9d; }
+
+/* Tooltip de primera vez */
+#tip {
+  position: fixed;
+  left: 50%;
+  bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  transform: translate(-50%, 14px);
+  z-index: 60;
+  background: rgba(14,14,20,.97);
+  border: 1px solid rgba(227,93,48,.6);
+  border-radius: 12px;
+  padding: 10px 34px 10px 14px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  color: #fff;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .5s ease, transform .5s ease;
+  max-width: 84vw;
+}
+#tip.ver { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+#tip .x {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,.6);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px;
+}
+
+/* ---------- Vacío y carga ---------- */
+.centro-msg {
+  position: fixed;
+  inset: 0;
+  display: none;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 14px;
-  padding: 18px;
-  pointer-events: none;
+  text-align: center;
+  padding: 0 36px;
+  z-index: 5;
 }
-.marco img.mini {
-  width: 58%;
-  height: auto;
-  border-radius: 6px;
-  border: 1px solid rgba(255,255,255,.15);
-  box-shadow: 0 20px 44px rgba(0,0,0,.7);
-}
-.marco .mt {
+.centro-msg.ver { display: flex; }
+.esp-glifo { width: 54px; height: 54px; margin-bottom: 22px; opacity: .9; }
+.centro-msg .t1 {
   font-family: 'Playfair Display', serif;
   font-style: italic;
   font-weight: 700;
-  font-size: 17px;
+  font-size: clamp(20px, 5.4vw, 27px);
   color: rgba(255,255,255,.92);
-  text-align: center;
-  line-height: 1.3;
+  margin: 0 0 10px;
 }
+.centro-msg .t2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(13px, 3.6vw, 15px);
+  font-weight: 500;
+  line-height: 1.55;
+  color: rgba(255,255,255,.5);
+  margin: 0;
+  max-width: 340px;
+}
+.loading-text { animation: breatheLoading 1.5s infinite ease-in-out; color: rgba(255,255,255,0.5); font-size: 15px; letter-spacing: 1.5px; font-family: 'Poppins', sans-serif; }
+@keyframes breatheLoading { 0%, 100% { opacity: 0.3; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1.02); } }
+
+/* ---------- Puerta (clave) ---------- */
+#puerta {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 28px;
+  z-index: 10;
+}
+#puerta.ver { display: flex; }
+.puerta-card {
+  width: 100%;
+  max-width: 340px;
+  background: rgba(12,12,18,.96);
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 18px;
+  padding: 30px 24px 24px;
+  text-align: center;
+}
+.puerta-card img.marca { height: 20px; width: auto; opacity: .9; margin-bottom: 18px; filter: invert(1) brightness(1.4); }
+.puerta-card h1 {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: 24px;
+  margin: 0 0 6px;
+  color: #fff;
+}
+.puerta-card p.sub {
+  font-family: 'Poppins', sans-serif;
+  font-size: 12.5px;
+  color: rgba(255,255,255,.55);
+  margin: 0 0 18px;
+  line-height: 1.5;
+}
+.puerta-card input {
+  width: 100%;
+  padding: 13px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.22);
+  background: rgba(255,255,255,.06);
+  color: #fff;
+  font-family: 'Archivo', sans-serif;
+  font-size: 16px;
+  text-align: center;
+  letter-spacing: .14em;
+  outline: none;
+}
+.puerta-card input:focus { border-color: rgba(227,93,48,.7); }
+.puerta-err { min-height: 18px; font-size: 12px; color: #ff9d9d; margin: 9px 0 3px; font-family: 'Poppins', sans-serif; }
+.puerta-card button {
+  width: 100%;
+  padding: 13px 0;
+  border-radius: 12px;
+  border: 1px solid rgba(227,93,48,.65);
+  background: rgba(227,93,48,.16);
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .2s ease, background .2s ease;
+}
+.puerta-card button:active { transform: scale(.97); }
+.puerta-pie { margin-top: 16px; font-size: 11px; font-family: 'Poppins', sans-serif; }
+.puerta-pie a { color: rgba(255,255,255,.5); text-decoration: underline; }
 
 /* ---------- Pie ---------- */
 #pie {
@@ -181,6 +395,7 @@ body::before {
   text-align: center;
   z-index: 40;
   display: none;
+  pointer-events: none;
 }
 #pie.ver { display: block; }
 #pie img { height: 18px; width: auto; opacity: .22; filter: invert(1) brightness(1.5); display: inline-block; }
@@ -192,6 +407,7 @@ body::before {
   color: rgba(255,255,255,.28);
   text-decoration: none;
   letter-spacing: .06em;
+  pointer-events: auto;
 }
 </style>
 </head>
@@ -218,10 +434,12 @@ body::before {
 <div id="vacio" class="centro-msg">
   <svg class="esp-glifo" viewBox="0 0 24 24" fill="none" stroke="#E35D30" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M12.6 12.2 a2.6 2.6 0 1 1 -2.6 2.6 a5.2 5.2 0 1 1 5.2 -5.2 a8.2 8.2 0 1 1 -8.4 8.3"/></svg>
   <p class="t1">Tu espiral está lista.</p>
-  <p class="t2">Cuando marques un libro que te llegue, aquí nacerá su estrella. La primera vivirá en el centro, y todo lo demás crecerá alrededor.</p>
+  <p class="t2">Cuando marques un libro que te llegue, aquí nacerá su colección de piezas: palabras, frases y tarjetas creciendo contigo.</p>
 </div>
 
-<div id="muro"><div id="muroInner"></div></div>
+<div id="tablero"><div id="tableroInner"></div></div>
+
+<div id="tip"><button class="x" id="tipX" aria-label="Cerrar">&times;</button><span id="tipTxt"></span></div>
 
 <div id="pie">
   <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png" alt="Triggui">
@@ -231,13 +449,10 @@ body::before {
 <script>
 'use strict';
 
-/* ============================================================
-   Constantes y llavero (compartido con el boton de las ediciones)
-   ============================================================ */
 var EXEC = 'https://script.google.com/macros/s/AKfycbwWcUceg333PMcmSsLbEUAsx3os8AJ3Wdmjruv7zshHTqNmoxTastOsDU1h7V8qPk0nIQ/exec';
 var LS_PAR = 'triggui_espiral_v1';
-var LS_CACHE = 'triggui_espiral_cache_v1';
-var ORO = 2.39996322972865332; /* angulo aureo en radianes: 137.507... grados */
+var LS_CACHE = 'triggui_espiral_cache_v2';
+var LS_TIP = 'triggui_tip_flip_v1';
 
 function lsGet(k){ try { return window.localStorage.getItem(k); } catch(e){ return null; } }
 function lsSet(k,v){ try { window.localStorage.setItem(k,v); } catch(e){} }
@@ -251,13 +466,17 @@ var el = {
   clave: document.getElementById('clave'),
   entrar: document.getElementById('entrar'),
   vacio: document.getElementById('vacio'),
-  muro: document.getElementById('muro'),
-  muroInner: document.getElementById('muroInner'),
+  tablero: document.getElementById('tablero'),
+  inner: document.getElementById('tableroInner'),
+  tip: document.getElementById('tip'),
+  tipTxt: document.getElementById('tipTxt'),
+  tipX: document.getElementById('tipX'),
   pie: document.getElementById('pie'),
   cambiar: document.getElementById('cambiarClave')
 };
 
-var estado = { nombre: '', nodos: [], clave: '' };
+var estado = { nombre: '', filas: [], clave: '' };
+var menuAbierto = null;
 
 /* ---------- Link magico #k= ---------- */
 (function magia(){
@@ -279,8 +498,8 @@ function ver(cual){
   el.cargando.classList.toggle('ver', cual === 'cargando');
   el.puerta.classList.toggle('ver', cual === 'puerta');
   el.vacio.classList.toggle('ver', cual === 'vacio');
-  el.muro.classList.toggle('ver', cual === 'muro');
-  el.pie.classList.toggle('ver', cual === 'muro' || cual === 'vacio');
+  el.tablero.classList.toggle('ver', cual === 'tablero');
+  el.pie.classList.toggle('ver', cual === 'tablero' || cual === 'vacio');
   if (cual === 'puerta') setTimeout(function(){ try{ el.clave.focus(); }catch(e){} }, 80);
 }
 
@@ -290,9 +509,10 @@ function linea(txt){
 }
 
 /* ---------- Datos ----------
-   Regla v2: un libro existe SOLO si tiene al menos un evento
-   'estrella'. Releidas huerfanas (sin estrella madre) se ignoran:
-   asi los fantasmas de datos son matematicamente imposibles. */
+   Piezas: un libro existe si tiene evento estrella o combo.
+   El payload del combo trae palabras/frases/colores/textColors/
+   bocado/eco copiados del origen. Los eventos quitar filtran
+   componentes; quitar "todo" retira la pieza completa. */
 function agrupar(filas){
   var mapa = {};
   var orden = [];
@@ -301,27 +521,32 @@ function agrupar(filas){
     if (!f || !f.slug) continue;
     var llave = (f.catalogo || 'adulto') + ':' + f.slug;
     if (!mapa[llave]) {
-      mapa[llave] = { slug: f.slug, catalogo: f.catalogo || 'adulto', titulo: '', portada: '', ts: '', dorada: false, madre: false };
+      mapa[llave] = { slug: f.slug, catalogo: f.catalogo || 'adulto', titulo: '', portada: '',
+                      ts: '', dorada: false, madre: false, payload: null, fuera: {} };
       orden.push(llave);
     }
     var n = mapa[llave];
-    if (f.evento === 'estrella') {
+    if (f.evento === 'estrella' || f.evento === 'combo') {
       n.madre = true;
       if (!n.ts) n.ts = f.ts;
       if (f.titulo) n.titulo = f.titulo;
       if (f.portada) n.portada = f.portada;
+      if (f.evento === 'combo' && f.payload) {
+        try { n.payload = JSON.parse(f.payload); } catch(e){}
+      }
     }
     if (f.evento === 'releida') n.dorada = true;
+    if (f.evento === 'quitar' && f.componente) n.fuera[f.componente] = true;
     if (!n.titulo && f.titulo) n.titulo = f.titulo;
     if (!n.portada && f.portada) n.portada = f.portada;
   }
-  var nodos = [];
+  var piezas = [];
   for (var j = 0; j < orden.length; j++) {
     var nd = mapa[orden[j]];
-    if (nd.madre) nodos.push(nd);
+    if (nd.madre && !nd.fuera['todo']) piezas.push(nd);
   }
-  nodos.sort(function(a, b){ return String(b.ts).localeCompare(String(a.ts)); });
-  return nodos;
+  piezas.sort(function(a, b){ return String(b.ts).localeCompare(String(a.ts)); });
+  return piezas;
 }
 
 function pedirEspiral(clave, cb){
@@ -334,7 +559,194 @@ function pedirEspiral(clave, cb){
     .catch(function(e){ cb(e, null); });
 }
 
-/* ---------- Muro de laminas ---------- */
+/* ---------- Navegar registrando la relectura (leer siempre gana) ---------- */
+function rutaBase(pz){
+  return (pz.catalogo === 'kids' ? '/kids/t/' : '/t/') + encodeURIComponent(pz.slug) + '/';
+}
+
+function releerYNavegar(pz){
+  var cuerpo = new URLSearchParams();
+  cuerpo.append('accion', 'marcar');
+  cuerpo.append('clave', estado.clave);
+  cuerpo.append('slug', pz.slug);
+  cuerpo.append('catalogo', pz.catalogo);
+  cuerpo.append('evento', 'releida');
+  cuerpo.append('titulo', pz.titulo || '');
+  cuerpo.append('portada', pz.portada || '');
+  var url = rutaBase(pz);
+  var listo = false;
+  function irse(){ if (!listo) { listo = true; window.location.href = url; } }
+  try {
+    fetch(EXEC, { method: 'POST', body: cuerpo, keepalive: true })
+      .then(irse)['catch'](irse);
+  } catch(e){ irse(); }
+  setTimeout(irse, 600);
+}
+
+/* ---------- Quitar (curaduria append-only) ---------- */
+function quitar(pz, componente, pinEl){
+  var cuerpo = new URLSearchParams();
+  cuerpo.append('accion', 'quitar');
+  cuerpo.append('clave', estado.clave);
+  cuerpo.append('slug', pz.slug);
+  cuerpo.append('catalogo', pz.catalogo);
+  cuerpo.append('componente', componente);
+  fetch(EXEC, { method: 'POST', body: cuerpo })
+    .then(function(r){ return r.json(); })
+    .then(function(r){
+      if (r && r.ok) {
+        estado.filas.push({ slug: pz.slug, catalogo: pz.catalogo, evento: 'quitar', componente: componente, ts: new Date().toISOString(), titulo:'', portada:'', payload:'' });
+        lsSet(LS_CACHE, JSON.stringify({ nombre: estado.nombre, filas: estado.filas, ts: Date.now() }));
+        if (componente === 'todo') { pintar(); return; }
+        if (pinEl) {
+          pinEl.style.transition = 'opacity .4s ease, transform .4s ease';
+          pinEl.style.opacity = '0';
+          pinEl.style.transform = 'scale(.94)';
+          setTimeout(function(){ pinEl.remove(); }, 420);
+        }
+      }
+    })
+    .catch(function(){});
+}
+
+/* ---------- Menu de tres puntos ---------- */
+function cerrarMenus(){
+  if (menuAbierto) { menuAbierto.classList.remove('ver'); menuAbierto = null; }
+}
+document.addEventListener('click', function(ev){
+  if (!ev.target.closest('.menu') && !ev.target.closest('.tres')) cerrarMenus();
+});
+
+function armarMenu(pz, componente, pinEl, descargaUrl){
+  var tres = document.createElement('button');
+  tres.className = 'tres';
+  tres.setAttribute('aria-label', 'Opciones');
+  tres.textContent = '\u22ef';
+
+  var menu = document.createElement('div');
+  menu.className = 'menu';
+
+  var abrir = document.createElement('button');
+  abrir.textContent = 'Abrir edici\u00f3n viva';
+  abrir.addEventListener('click', function(ev){ ev.stopPropagation(); cerrarMenus(); releerYNavegar(pz); });
+  menu.appendChild(abrir);
+
+  if (descargaUrl) {
+    var desc = document.createElement('a');
+    desc.textContent = 'Descargar PNG';
+    desc.href = descargaUrl;
+    desc.setAttribute('download', pz.slug + '-' + componente + '.png');
+    desc.addEventListener('click', function(ev){ ev.stopPropagation(); cerrarMenus(); });
+    menu.appendChild(desc);
+  }
+
+  var quit = document.createElement('button');
+  quit.className = 'peligro';
+  quit.textContent = 'Quitar de mi espiral';
+  var armado = false;
+  quit.addEventListener('click', function(ev){
+    ev.stopPropagation();
+    if (!armado) { armado = true; quit.textContent = '\u00bfSeguro? Quitar'; return; }
+    cerrarMenus();
+    quitar(pz, componente, pinEl);
+  });
+  menu.appendChild(quit);
+
+  tres.addEventListener('click', function(ev){
+    ev.stopPropagation();
+    var abierto = menu.classList.contains('ver');
+    cerrarMenus();
+    if (!abierto) { menu.classList.add('ver'); menuAbierto = menu; armado = false; quit.textContent = 'Quitar de mi espiral'; }
+  });
+
+  pinEl.appendChild(tres);
+  pinEl.appendChild(menu);
+}
+
+/* ---------- Fabrica de pins ---------- */
+function pinImagen(pz, componente){
+  var div = document.createElement('div');
+  div.className = 'pin pin-img' + (componente === 'tarjeta' && pz.dorada ? ' dorada' : '');
+  var img = document.createElement('img');
+  img.alt = pz.titulo || pz.slug;
+  img.loading = 'lazy';
+  img.decoding = 'async';
+  img.src = rutaBase(pz) + (componente === 'tarjeta' ? 'tarjeta.png' : 'og.png');
+  img.onerror = function(){ div.remove(); };
+  div.appendChild(img);
+  if (componente === 'tarjeta' && pz.dorada) {
+    var s = document.createElement('span');
+    s.className = 'sello';
+    s.textContent = '\u2726 RELE\u00cdDA';
+    div.appendChild(s);
+  }
+  div.addEventListener('click', function(){ releerYNavegar(pz); });
+  armarMenu(pz, componente, div, rutaBase(pz) + (componente === 'tarjeta' ? 'tarjeta.png' : 'og.png'));
+  return div;
+}
+
+function pinBloque(pz, i){
+  var pl = (pz.payload.palabras || [])[i] || '';
+  var fr = (pz.payload.frases || [])[i] || '';
+  var c0 = (pz.payload.colores || [])[i] || '#1a1a24';
+  var c1 = (pz.payload.colores || [])[(i + 1) % 4] || c0;
+  var tx = (pz.payload.textColors || [])[i] || '#ffffff';
+  if (!pl) return null;
+
+  var div = document.createElement('div');
+  div.className = 'pin pin-bloque';
+  div.style.background = 'linear-gradient(135deg, ' + c0 + ', ' + c1 + ')';
+  div.style.color = tx;
+
+  var caraP = document.createElement('div');
+  caraP.className = 'cara palabra';
+  caraP.textContent = pl;
+  var caraF = document.createElement('div');
+  caraF.className = 'cara frase';
+  caraF.textContent = fr || pl;
+  var puntos = document.createElement('div');
+  puntos.className = 'puntos';
+  puntos.innerHTML = '<i class="on"></i><i></i>';
+
+  div.appendChild(caraP);
+  div.appendChild(caraF);
+  div.appendChild(puntos);
+
+  div.addEventListener('click', function(){
+    div.classList.toggle('volteada');
+    var vs = puntos.children;
+    var volteada = div.classList.contains('volteada');
+    vs[0].classList.toggle('on', !volteada);
+    vs[1].classList.toggle('on', volteada);
+    marcarTipVisto();
+  });
+
+  armarMenu(pz, 'bloque' + i, div, null);
+  return div;
+}
+
+function pinNota(pz, tipo){
+  var texto = pz.payload[tipo];
+  if (!texto) return null;
+  var acc = (pz.payload.colores || [])[0] || '#E35D30';
+  var div = document.createElement('div');
+  div.className = 'pin pin-nota';
+  div.style.borderColor = acc + '66';
+  var et = document.createElement('div');
+  et.className = 'etiqueta';
+  et.style.color = acc;
+  et.textContent = tipo === 'bocado' ? 'BOCADO' : 'ECO';
+  var tx = document.createElement('div');
+  tx.className = 'texto';
+  tx.textContent = texto;
+  div.appendChild(et);
+  div.appendChild(tx);
+  div.addEventListener('click', function(){ releerYNavegar(pz); });
+  armarMenu(pz, tipo, div, null);
+  return div;
+}
+
+/* ---------- Pintar el tablero ---------- */
 var observador = null;
 function vigilar(){
   if (observador) return observador;
@@ -345,104 +757,57 @@ function vigilar(){
         observador.unobserve(entradas[i].target);
       }
     }
-  }, { rootMargin: '0px 0px 120px 0px' });
+  }, { rootMargin: '0px 0px 140px 0px' });
   return observador;
 }
 
-function rutaBase(nd){
-  return (nd.catalogo === 'kids' ? '/kids/t/' : '/t/') + encodeURIComponent(nd.slug) + '/';
-}
-
-function armarLamina(nd, i){
-  var div = document.createElement('div');
-  div.className = 'lamina' + (nd.dorada ? ' dorada' : '');
-  div.style.setProperty('--giro', ((i % 2 === 0) ? -0.7 : 0.7) + 'deg');
-  div.setAttribute('role', 'button');
-  div.setAttribute('aria-label', nd.titulo || nd.slug);
-
-  var base = rutaBase(nd);
-  var obraCayoAOg = false;
-
-  var img = document.createElement('img');
-  img.alt = '';
-  img.loading = 'lazy';
-  img.decoding = 'async';
-  var intento = 0;
-  img.src = base + 'tarjeta.png';
-  img.onerror = function(){
-    intento += 1;
-    if (intento === 1) { obraCayoAOg = true; img.src = base + 'og.png'; return; }
-    var marco = document.createElement('div');
-    marco.className = 'marco';
-    marco.innerHTML = (nd.portada
-      ? '<img class="mini" alt="" src="' + nd.portada.replace(/"/g, '&quot;') + '">'
-      : '') + '<div class="mt"></div>';
-    marco.querySelector('.mt').textContent = nd.titulo || nd.slug;
-    div.replaceChild(marco, img);
-  };
-  div.appendChild(img);
-
-  /* La placa del museo: su og.png bajo la obra. Si la obra ya
-     cayo a la og (fallback), la placa se omite para no duplicar. */
-  var placa = document.createElement('img');
-  placa.className = 'placa';
-  placa.alt = '';
-  placa.loading = 'lazy';
-  placa.decoding = 'async';
-  placa.src = base + 'og.png';
-  placa.onload = function(){ if (obraCayoAOg) placa.remove(); };
-  placa.onerror = function(){ placa.remove(); };
-  div.appendChild(placa);
-
-  if (nd.dorada) {
-    var sello = document.createElement('span');
-    sello.className = 'sello';
-    sello.textContent = '\u2726 RELE\u00cdDA';
-    div.appendChild(sello);
-  }
-
-  div.addEventListener('click', function(){ releerYNavegar(nd, rutaBase(nd)); });
-  return div;
-}
-
 function pintar(){
-  var nodos = estado.nodos;
-  el.muroInner.innerHTML = '';
+  var piezas = agrupar(estado.filas);
+  el.inner.innerHTML = '';
+  cerrarMenus();
 
   linea('Hola' + (estado.nombre ? ', ' + estado.nombre : '') + ' \u00b7 ' +
-        nodos.length + (nodos.length === 1 ? ' estrella' : ' estrellas'));
+        piezas.length + (piezas.length === 1 ? ' estrella' : ' estrellas'));
 
-  if (nodos.length === 0) { ver('vacio'); return; }
-  ver('muro');
+  if (piezas.length === 0) { ver('vacio'); return; }
+  ver('tablero');
 
   var ob = vigilar();
-  for (var i = 0; i < nodos.length; i++) {
-    var lam = armarLamina(nodos[i], i);
-    el.muroInner.appendChild(lam);
-    ob.observe(lam);
+  var hayBloques = false;
+
+  for (var p = 0; p < piezas.length; p++) {
+    var pz = piezas[p];
+    var pins = [];
+
+    if (!pz.fuera['tarjeta']) pins.push(pinImagen(pz, 'tarjeta'));
+    if (pz.payload) {
+      if (!pz.fuera['bloque0']) pins.push(pinBloque(pz, 0));
+      if (!pz.fuera['bloque1']) pins.push(pinBloque(pz, 1));
+      if (!pz.fuera['bocado']) pins.push(pinNota(pz, 'bocado'));
+      if (!pz.fuera['bloque2']) pins.push(pinBloque(pz, 2));
+      if (!pz.fuera['bloque3']) pins.push(pinBloque(pz, 3));
+      if (!pz.fuera['eco']) pins.push(pinNota(pz, 'eco'));
+    }
+    if (!pz.fuera['og']) pins.push(pinImagen(pz, 'og'));
+
+    for (var q = 0; q < pins.length; q++) {
+      if (!pins[q]) continue;
+      if (pins[q].classList.contains('pin-bloque')) hayBloques = true;
+      el.inner.appendChild(pins[q]);
+      ob.observe(pins[q]);
+    }
+  }
+
+  if (hayBloques && !lsGet(LS_TIP)) {
+    el.tipTxt.textContent = 'Toca una palabra para voltear su frase';
+    el.tip.classList.add('ver');
   }
 }
 
-/* Registrar la relectura un instante antes de navegar.
-   Si la red falla o tarda, leer SIEMPRE gana (tope 600 ms). */
-function releerYNavegar(nd, url){
-  var cuerpo = new URLSearchParams();
-  cuerpo.append('accion', 'marcar');
-  cuerpo.append('clave', estado.clave);
-  cuerpo.append('slug', nd.slug);
-  cuerpo.append('catalogo', nd.catalogo);
-  cuerpo.append('evento', 'releida');
-  cuerpo.append('titulo', nd.titulo || '');
-  cuerpo.append('portada', nd.portada || '');
-
-  var listo = false;
-  function irse(){ if (!listo) { listo = true; window.location.href = url; } }
-  try {
-    fetch(EXEC, { method: 'POST', body: cuerpo, keepalive: true })
-      .then(irse)['catch'](irse);
-  } catch(e){ irse(); }
-  setTimeout(irse, 600);
+function marcarTipVisto(){
+  if (!lsGet(LS_TIP)) { lsSet(LS_TIP, '1'); el.tip.classList.remove('ver'); }
 }
+el.tipX.addEventListener('click', marcarTipVisto);
 
 /* ---------- Arranque ---------- */
 function fallo(mensaje){
@@ -456,11 +821,11 @@ function cargarConClave(clave, esNueva){
     if (err) {
       var cache = null;
       try { cache = JSON.parse(lsGet(LS_CACHE) || 'null'); } catch(e){}
-      if (cache && cache.nodos) {
+      if (cache && cache.filas) {
         estado.nombre = cache.nombre || '';
-        estado.nodos = cache.nodos;
+        estado.filas = cache.filas;
         pintar();
-        linea('Sin conexi\u00f3n · mostrando tu \u00faltima espiral');
+        linea('Sin conexi\u00f3n \u00b7 mostrando tu \u00faltima espiral');
         return;
       }
       fallo('Sin conexi\u00f3n. Intenta de nuevo.');
@@ -473,8 +838,8 @@ function cargarConClave(clave, esNueva){
     }
     if (esNueva) lsSet(LS_PAR, JSON.stringify({ c: clave }));
     estado.nombre = r.nombre || '';
-    estado.nodos = agrupar(r.estrellas || []);
-    lsSet(LS_CACHE, JSON.stringify({ nombre: estado.nombre, nodos: estado.nodos, ts: Date.now() }));
+    estado.filas = r.estrellas || [];
+    lsSet(LS_CACHE, JSON.stringify({ nombre: estado.nombre, filas: estado.filas, ts: Date.now() }));
     pintar();
   });
 }
@@ -500,9 +865,9 @@ el.cambiar.addEventListener('click', function(ev){
   if (!c) { ver('puerta'); return; }
   var cache = null;
   try { cache = JSON.parse(lsGet(LS_CACHE) || 'null'); } catch(e){}
-  if (cache && cache.nodos && cache.nodos.length) {
+  if (cache && cache.filas && cache.filas.length) {
     estado.nombre = cache.nombre || '';
-    estado.nodos = cache.nodos;
+    estado.filas = cache.filas;
     pintar();
   } else {
     ver('cargando');
