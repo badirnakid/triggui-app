@@ -56,6 +56,7 @@ body::before {
   pointer-events: none;
   z-index: 0;
   will-change: transform;
+  transition: background 1.4s ease;
 }
 .aurora-1 {
   width: 52vmax; height: 52vmax;
@@ -1047,6 +1048,7 @@ function pinHead(pz){
     div.appendChild(ch);
   }
   div.addEventListener('click', function(){ releerYNavegar(pz); });
+  div.__pz = pz;
   return div;
 }
 
@@ -1191,25 +1193,54 @@ function hexRgba(hex, a){
   return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
 }
 
-// El cielo se tine con los acentos de tus ultimos libros.
-function tenirAurora(piezas){
-  var acentos = [];
-  for (var i = 0; i < piezas.length && acentos.length < 3; i++) {
-    var pl = piezas[i].payload;
-    var a = pl && (pl.accent || (pl.colores || [])[1]);
-    if (a) acentos.push(a);
-  }
+// El cielo se tine con el libro EN PANTALLA: paleta completa del activo.
+function paletaDe(pz){
+  var pl = pz && pz.payload;
+  if (!pl) return null;
+  var cs = pl.colores || [];
+  var arr = [pl.accent || cs[1], cs[2], cs[0]].filter(Boolean);
+  return arr.length ? arr : null;
+}
+
+var paletaActual = '';
+function tenirCon(acentos){
+  var llave = (acentos || []).join('|');
+  if (llave === paletaActual) return;
+  paletaActual = llave;
   var raiz = document.documentElement.style;
   var alfas = [0.42, 0.30, 0.22];
   for (var j = 0; j < 3; j++) {
-    var c = acentos[j] || acentos[0];
+    var c = (acentos && (acentos[j] || acentos[0])) || '';
     var v = c ? hexRgba(c, alfas[j]) : '';
     if (v) raiz.setProperty('--au' + (j + 1), v); else raiz.removeProperty('--au' + (j + 1));
   }
-  var chip = acentos[0] ? hexRgba(acentos[0], 0.20) : '';
+  var chip = acentos && acentos[0] ? hexRgba(acentos[0], 0.20) : '';
   if (chip) raiz.setProperty('--chipb', chip); else raiz.removeProperty('--chipb');
   var tema = document.getElementById('temaColor');
-  if (tema) tema.setAttribute('content', acentos[0] ? hexOscuro(acentos[0], 0.16) : '#000000');
+  if (tema) tema.setAttribute('content', acentos && acentos[0] ? hexOscuro(acentos[0], 0.16) : '#000000');
+}
+
+// Cabeceras vigiladas: la ultima que cruzo la franja de lectura manda.
+var cabezas = [];
+var ojo = null;
+function tenirActiva(){
+  var limite = window.innerHeight * 0.45;
+  var activa = null;
+  for (var i = 0; i < cabezas.length; i++) {
+    var r = cabezas[i].getBoundingClientRect();
+    if (r.top <= limite) activa = cabezas[i];
+  }
+  var pal = activa && paletaDe(activa.__pz);
+  if (!pal) {
+    for (var k = 0; k < cabezas.length && !pal; k++) pal = paletaDe(cabezas[k].__pz);
+  }
+  tenirCon(pal);
+}
+function vigilarCabezas(){
+  if (ojo) ojo.disconnect();
+  ojo = new IntersectionObserver(function(){ tenirActiva(); },
+    { root: el.tablero, rootMargin: '0px 0px -55% 0px', threshold: 0 });
+  for (var i = 0; i < cabezas.length; i++) ojo.observe(cabezas[i]);
 }
 
 function pintar(){
@@ -1217,7 +1248,7 @@ function pintar(){
   if (firma === ultimaFirma) return; // nada cambio: quietud absoluta
   ultimaFirma = firma;
   var piezas = agrupar(estado.filas);
-  tenirAurora(piezas);
+  cabezas = [];
   el.inner.innerHTML = '';
   cerrarMenus();
 
@@ -1287,7 +1318,9 @@ function pintar(){
         lienzo.appendChild(marcar(anchas.shift(), 2));
       }
       if (anchas.length === 1) lienzo.appendChild(marcar(anchas.shift(), 4));
-      var pins = [pinHead(pz), lienzo];
+      var cab0 = pinHead(pz);
+      cabezas.push(cab0);
+      var pins = [cab0, lienzo];
       hayBloques = hayBloques || bloques.length > 0;
       for (var q0 = 0; q0 < pins.length; q0++) {
         el.inner.appendChild(pins[q0]);
@@ -1343,7 +1376,9 @@ function pintar(){
     lienzo.style.setProperty('--filas', (hayMini ? 1 : 0) + Math.max(filasR, hayMini ? 0 : 1));
     lienzo.style.setProperty('--filasR', Math.max(filasR, 1));
 
-    var pins = [pinHead(pz), lienzo];
+    var cab = pinHead(pz);
+    cabezas.push(cab);
+    var pins = [cab, lienzo];
     if (banda) pins.push(banda);
 
     hayBloques = hayBloques || bloques.length > 0;
@@ -1360,6 +1395,8 @@ function pintar(){
     }
   }
 
+  vigilarCabezas();
+  tenirActiva();
   primeraPintura = false;
 
   if (hayBloques && !lsGet(LS_TIP)) {
