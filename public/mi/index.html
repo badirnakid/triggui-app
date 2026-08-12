@@ -38,8 +38,8 @@ body::before {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse at 30% 20%, rgba(40, 100, 220, 0.14), transparent 65%),
-    radial-gradient(ellipse at 70% 80%, rgba(80, 230, 200, 0.06), transparent 65%);
+    radial-gradient(ellipse at 30% 20%, rgba(40, 100, 220, 0.22), transparent 65%),
+    radial-gradient(ellipse at 70% 80%, rgba(80, 230, 200, 0.11), transparent 65%);
   z-index: -2;
   pointer-events: none;
   opacity: 0.9;
@@ -49,8 +49,8 @@ body::after {
   position: fixed;
   inset: -20%;
   background:
-    radial-gradient(ellipse at 24% 30%, rgba(60, 120, 235, 0.10), transparent 55%),
-    radial-gradient(ellipse at 78% 72%, rgba(80, 230, 200, 0.07), transparent 55%);
+    radial-gradient(ellipse at 24% 30%, rgba(60, 120, 235, 0.16), transparent 55%),
+    radial-gradient(ellipse at 78% 72%, rgba(80, 230, 200, 0.12), transparent 55%);
   z-index: -1;
   pointer-events: none;
   filter: blur(10px);
@@ -86,21 +86,12 @@ body::after {
 }
 #barra .quien {
   font-family: 'Poppins', sans-serif;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: .16em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,.78);
-}
-#barra .cambiar {
-  font-family: 'Poppins', sans-serif;
-  font-size: 10px;
+  font-size: 12.5px;
   font-weight: 500;
-  letter-spacing: .05em;
-  color: rgba(255,255,255,.34);
-  text-decoration: none;
+  letter-spacing: .02em;
+  color: rgba(255,255,255,.85);
 }
-#barra .cambiar:hover { color: rgba(255,255,255,.6); }
+
 
 /* ---------- Tablero: Tetris de grid denso ---------- */
 #tablero {
@@ -116,10 +107,10 @@ body::after {
 #tablero.ver { display: block; }
 
 #tableroInner {
-  --cols: 2;
-  --gap: 12px;
-  --u: calc((min(100vw, 1520px) - 24px - (var(--cols) - 1) * var(--gap)) / var(--cols));
-  max-width: 1520px;
+  --cols: 4;
+  --gap: 10px;
+  --u: calc((min(100vw, 1560px) - 24px - (var(--cols) - 1) * var(--gap)) / var(--cols));
+  max-width: 1560px;
   margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(var(--cols), 1fr);
@@ -127,8 +118,8 @@ body::after {
   grid-auto-flow: dense;
   gap: var(--gap);
 }
-@media (min-width: 900px)  { #tableroInner { --cols: 4; --gap: 14px; } }
-@media (min-width: 1400px) { #tableroInner { --cols: 6; --gap: 16px; } }
+@media (min-width: 900px)  { #tableroInner { --cols: 8; --gap: 12px; } }
+@media (min-width: 1440px) { #tableroInner { --cols: 12; --gap: 14px; } }
 
 .pin {
   position: relative;
@@ -139,13 +130,42 @@ body::after {
 }
 .pin.ver { opacity: 1; transform: translateY(0) scale(1); }
 
-/* Formas del Tetris */
-.f-1x1 { grid-column: span 1; grid-row: span 1; }
-.f-2x1 { grid-column: span 2; grid-row: span 1; }
-.f-2x4 { grid-column: span 2; grid-row: span 4; }
+/* Formas del Tetris (medias-unidades) */
+.f-head    { grid-column: 1 / -1; grid-row: span 1; }
+.f-bloque  { grid-column: span 2; grid-row: span 2; }
+.f-bloque.alta { grid-row: span 3; }
+.f-nota    { grid-column: span 4; grid-row: span 2; }
+.f-tarjeta { grid-column: span 4; grid-row: span 7; }
+
+/* Cabecera de combo: titulo + chip de autor (chip calcado del organismo) */
+.pin-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 0 4px;
+}
+.pin-head .titulo {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: clamp(17px, 4.4vw, 25px);
+  color: rgba(255,255,255,.95);
+  line-height: 1.15;
+}
+.pin-head .chip {
+  display: inline-block;
+  font-family: 'Archivo', sans-serif;
+  font-size: 13px;
+  line-height: 1;
+  font-weight: 700;
+  padding: 5px 11px;
+  border-radius: 12px;
+  letter-spacing: 0.3px;
+}
 
 /* ---------- Pin tarjeta (la obra, proporción intacta sobre el cielo) ---------- */
-.pin-tarjeta { display: flex; align-items: center; justify-content: center; }
+.pin-tarjeta { display: flex; align-items: flex-start; justify-content: center; }
 .pin-tarjeta img {
   max-width: 100%;
   max-height: 100%;
@@ -286,40 +306,39 @@ body::after {
 .pin-nota {
   container-type: size;
   border-radius: 24px;
-  padding: clamp(14px, 7cqw, 22px) clamp(16px, 8cqw, 26px);
+  padding: clamp(16px, 8cqh, 30px) clamp(18px, 6cqw, 34px);
   cursor: pointer;
-  background: rgba(12, 14, 19, .42);
-  backdrop-filter: blur(16px) saturate(1.25);
-  -webkit-backdrop-filter: blur(16px) saturate(1.25);
-  border: 1px solid rgba(255,255,255,.1);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.09), 0 12px 32px rgba(0,0,0,.35);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid rgba(255,255,255,.09);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 12px 32px rgba(0,0,0,.3);
   display: flex;
-  flex-direction: column;
+  align-items: center;
   justify-content: center;
+  text-align: center;
   overflow: hidden;
 }
-.pin-nota::before {
+.pin-nota .texto {
+  font-family: 'Archivo', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 300;
+  font-size: clamp(15px, 8.2cqh, 26px);
+  line-height: 1.32;
+  letter-spacing: -0.4px;
+  color: #fff;
+  max-width: 92%;
+  position: relative;
+  padding-bottom: 12px;
+}
+.pin-nota .texto::after {
   content: "";
   position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(145deg, rgba(255,255,255,.07) 0%, transparent 55%);
-  pointer-events: none;
-}
-.pin-nota .etiqueta {
-  font-family: 'Poppins', sans-serif;
-  font-size: clamp(8.5px, 4cqw, 10px);
-  font-weight: 700;
-  letter-spacing: .24em;
-  margin-bottom: clamp(6px, 3cqw, 10px);
-}
-.pin-nota .texto {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-style: italic;
-  font-weight: 500;
-  font-size: clamp(13px, 5.6cqw, 19px);
-  line-height: 1.42;
-  color: rgba(255,255,255,.94);
+  left: 22%;
+  right: 22%;
+  bottom: 0;
+  height: 1px;
+  opacity: .6;
+  background: linear-gradient(90deg, transparent, var(--linea, #E35D30), transparent);
 }
 
 /* ---------- Menú de tres puntos ---------- */
@@ -521,7 +540,6 @@ body::after {
   <img class="marca" src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png" alt="Triggui">
   <div class="lado">
     <span class="quien" id="quien"></span>
-    <a class="cambiar" href="#" id="cambiarClave">cambiar clave</a>
   </div>
 </div>
 
@@ -577,7 +595,6 @@ var el = {
   tip: document.getElementById('tip'),
   tipTxt: document.getElementById('tipTxt'),
   tipX: document.getElementById('tipX'),
-  cambiar: document.getElementById('cambiarClave')
 };
 
 var estado = { nombre: '', filas: [], clave: '' };
@@ -717,7 +734,7 @@ document.addEventListener('click', function(ev){
   if (!ev.target.closest('.menu') && !ev.target.closest('.tres')) cerrarMenus();
 });
 
-function armarMenu(pz, componente, pinEl, descargaUrl){
+function armarMenu(pz, componente, pinEl, descargaUrl, descargaOgUrl){
   var tres = document.createElement('button');
   tres.className = 'tres';
   tres.setAttribute('aria-label', 'Opciones');
@@ -738,6 +755,14 @@ function armarMenu(pz, componente, pinEl, descargaUrl){
     desc.setAttribute('download', pz.slug + '-' + componente + '.png');
     desc.addEventListener('click', function(ev){ ev.stopPropagation(); cerrarMenus(); });
     menu.appendChild(desc);
+  }
+  if (descargaOgUrl) {
+    var descOg = document.createElement('a');
+    descOg.textContent = 'Descargar OG';
+    descOg.href = descargaOgUrl;
+    descOg.setAttribute('download', pz.slug + '-og.png');
+    descOg.addEventListener('click', function(ev){ ev.stopPropagation(); cerrarMenus(); });
+    menu.appendChild(descOg);
   }
 
   var quit = document.createElement('button');
@@ -764,9 +789,44 @@ function armarMenu(pz, componente, pinEl, descargaUrl){
 }
 
 /* ---------- Fabrica de pins ---------- */
+function pinHead(pz){
+  var div = document.createElement('div');
+  div.className = 'pin pin-head f-head';
+  var t = document.createElement('span');
+  t.className = 'titulo';
+  t.textContent = pz.titulo || pz.slug;
+  div.appendChild(t);
+  var autor = pz.payload && pz.payload.autor;
+  if (autor) {
+    var acc = (pz.payload && (pz.payload.accent || (pz.payload.colores || [])[1])) || '#E35D30';
+    var ch = document.createElement('span');
+    ch.className = 'chip';
+    ch.style.color = acc;
+    ch.style.background = acc + '24';
+    ch.textContent = autor;
+    div.appendChild(ch);
+  }
+  div.addEventListener('click', function(){ releerYNavegar(pz); });
+  return div;
+}
+
+// Barajado por combo: azar fresco en cada visita, con una regla de
+// hospitalidad: la tarjeta jamas abre el combo (el tablero recibe primero).
+function barajar(arr){
+  for (var i = arr.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+  }
+  if (arr.length > 1 && arr[0] && arr[0].esTarjeta) {
+    for (var k = 1; k < arr.length; k++) {
+      if (arr[k] && !arr[k].esTarjeta) { var s = arr[0]; arr[0] = arr[k]; arr[k] = s; break; }
+    }
+  }
+  return arr;
+}
 function pinTarjeta(pz){
   var div = document.createElement('div');
-  div.className = 'pin pin-tarjeta f-2x4' + (pz.dorada ? ' dorada' : '');
+  div.className = 'pin pin-tarjeta f-tarjeta' + (pz.dorada ? ' dorada' : '');
   var img = document.createElement('img');
   img.alt = pz.titulo || pz.slug;
   img.loading = 'lazy';
@@ -775,22 +835,7 @@ function pinTarjeta(pz){
   img.onerror = function(){ div.remove(); };
   div.appendChild(img);
   div.addEventListener('click', function(){ releerYNavegar(pz); });
-  armarMenu(pz, 'tarjeta', div, rutaBase(pz) + 'tarjeta.png');
-  return div;
-}
-
-function pinOg(pz){
-  var div = document.createElement('div');
-  div.className = 'pin pin-og f-2x1';
-  var img = document.createElement('img');
-  img.alt = pz.titulo || pz.slug;
-  img.loading = 'lazy';
-  img.decoding = 'async';
-  img.src = rutaBase(pz) + 'og.png';
-  img.onerror = function(){ div.remove(); };
-  div.appendChild(img);
-  div.addEventListener('click', function(){ releerYNavegar(pz); });
-  armarMenu(pz, 'og', div, rutaBase(pz) + 'og.png');
+  armarMenu(pz, 'tarjeta', div, rutaBase(pz) + 'tarjeta.png', rutaBase(pz) + 'og.png');
   return div;
 }
 
@@ -803,7 +848,7 @@ function pinBloque(pz, i){
   if (!pl) return null;
 
   var div = document.createElement('div');
-  div.className = 'pin pin-bloque f-1x1';
+  div.className = 'pin pin-bloque f-bloque';
   div.style.background = 'linear-gradient(135deg, ' + c0 + ', ' + c1 + ')';
   div.style.backgroundSize = '320% 320%';
   div.style.backgroundPosition = 'center';
@@ -829,6 +874,13 @@ function pinBloque(pz, i){
     var volteada = div.classList.contains('volteada');
     vs[0].classList.toggle('on', !volteada);
     vs[1].classList.toggle('on', volteada);
+    if (volteada) {
+      requestAnimationFrame(function(){
+        if (caraF.scrollHeight > div.clientHeight - 6) div.classList.add('alta');
+      });
+    } else {
+      div.classList.remove('alta');
+    }
     marcarTipVisto();
   });
 
@@ -839,18 +891,13 @@ function pinBloque(pz, i){
 function pinNota(pz, tipo){
   var texto = pz.payload[tipo];
   if (!texto) return null;
-  var acc = (pz.payload.colores || [])[0] || '#E35D30';
+  var acc = (pz.payload.accent || (pz.payload.colores || [])[1]) || '#E35D30';
   var div = document.createElement('div');
-  div.className = 'pin pin-nota f-2x1';
-  div.style.borderColor = acc + '59';
-  var et = document.createElement('div');
-  et.className = 'etiqueta';
-  et.style.color = acc;
-  et.textContent = tipo === 'bocado' ? 'BOCADO' : 'ECO';
+  div.className = 'pin pin-nota f-nota';
   var tx = document.createElement('div');
   tx.className = 'texto';
+  tx.style.setProperty('--linea', acc);
   tx.textContent = texto;
-  div.appendChild(et);
   div.appendChild(tx);
   div.addEventListener('click', function(){ releerYNavegar(pz); });
   armarMenu(pz, tipo, div, null);
@@ -877,7 +924,7 @@ function pintar(){
   el.inner.innerHTML = '';
   cerrarMenus();
 
-  el.quien.textContent = estado.nombre || '';
+  el.quien.textContent = estado.nombre ? ('Hola, ' + estado.nombre) : '';
 
   if (piezas.length === 0) { ver('vacio'); return; }
   ver('tablero');
@@ -887,18 +934,19 @@ function pintar(){
 
   for (var p = 0; p < piezas.length; p++) {
     var pz = piezas[p];
-    var pins = [];
-
-    if (!pz.fuera['tarjeta']) pins.push(pinTarjeta(pz));
+    var candidatos = [];
+    if (!pz.fuera['tarjeta']) candidatos.push({ el: pinTarjeta(pz), esTarjeta: true });
     if (pz.payload) {
-      if (!pz.fuera['bloque0']) pins.push(pinBloque(pz, 0));
-      if (!pz.fuera['bloque1']) pins.push(pinBloque(pz, 1));
-      if (!pz.fuera['bocado']) pins.push(pinNota(pz, 'bocado'));
-      if (!pz.fuera['bloque2']) pins.push(pinBloque(pz, 2));
-      if (!pz.fuera['bloque3']) pins.push(pinBloque(pz, 3));
-      if (!pz.fuera['eco']) pins.push(pinNota(pz, 'eco'));
+      if (!pz.fuera['bloque0']) candidatos.push({ el: pinBloque(pz, 0) });
+      if (!pz.fuera['bloque1']) candidatos.push({ el: pinBloque(pz, 1) });
+      if (!pz.fuera['bloque2']) candidatos.push({ el: pinBloque(pz, 2) });
+      if (!pz.fuera['bloque3']) candidatos.push({ el: pinBloque(pz, 3) });
+      if (!pz.fuera['bocado']) candidatos.push({ el: pinNota(pz, 'bocado') });
+      if (!pz.fuera['eco']) candidatos.push({ el: pinNota(pz, 'eco') });
     }
-    if (!pz.fuera['og']) pins.push(pinOg(pz));
+    barajar(candidatos);
+    var pins = [pinHead(pz)];
+    for (var c = 0; c < candidatos.length; c++) if (candidatos[c].el) pins.push(candidatos[c].el);
 
     for (var q = 0; q < pins.length; q++) {
       if (!pins[q]) continue;
@@ -961,13 +1009,6 @@ el.entrar.addEventListener('click', function(){
   cargarConClave(c, true);
 });
 el.clave.addEventListener('keydown', function(ev){ if (ev.key === 'Enter') el.entrar.click(); });
-
-el.cambiar.addEventListener('click', function(ev){
-  ev.preventDefault();
-  lsDel(LS_PAR);
-  el.clave.value = '';
-  fallo('');
-});
 
 (function inicio(){
   var c = claveGuardada();
