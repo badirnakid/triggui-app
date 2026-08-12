@@ -746,7 +746,7 @@ body::before {
   <div class="puerta-card">
     <img class="marca" src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png" alt="Triggui">
     <h1>Tu espiral</h1>
-    <p class="sub">El lugar donde viven los libros que te han tocado.</p>
+    <p class="sub">El lugar donde viven los libros que han mejorado tu ánimo.</p>
     <input id="clave" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="tu clave de miembro">
     <div class="puerta-err" id="puertaErr"></div>
     <button id="entrar" type="button">Entrar</button>
@@ -861,7 +861,10 @@ function ver(cual){
   el.vacio.classList.toggle('ver', cual === 'vacio');
   el.tablero.classList.toggle('ver', cual === 'tablero');
   el.barra.classList.toggle('ver', cual === 'tablero' || cual === 'vacio');
-  if (cual === 'puerta') setTimeout(function(){ try{ el.clave.focus(); }catch(e){} }, 80);
+  if (cual === 'puerta') {
+    tenirCon(paletaDelMomento());
+    setTimeout(function(){ try{ el.clave.focus(); }catch(e){} }, 80);
+  }
 }
 
 /* ---------- Datos ----------
@@ -1214,6 +1217,106 @@ function paletaDe(pz){
   return arr.length ? arr : null;
 }
 
+// ══ COLOR ROTATORIO DE LA CASA (calcado del organismo v9) ══
+// Los colores nacen del CATALOGO (accents reales de los libros),
+// con semilla del DIA (mismo dia = mismos colores; dia siguiente =
+// sorpresa) y garantia de contraste: Δhue >= 50° en HSL.
+// Pools en orden: /accents.json (catalogo real) → tu coleccion →
+// fallback de la casa (azul espacial + teal).
+var FALLBACK_CASA = ['#2864DC', '#50E6C8'];
+var poolCatalogo = null;
+
+function hexToHsl(hex){
+  var m = /^#?([0-9a-f]{6})$/i.exec(String(hex || ''));
+  if (!m) return { h: 0, s: 0, l: 0 };
+  var n = parseInt(m[1], 16);
+  var r = ((n >> 16) & 255) / 255, g = ((n >> 8) & 255) / 255, b = (n & 255) / 255;
+  var mx = Math.max(r, g, b), mn = Math.min(r, g, b);
+  var h = 0, s = 0, l = (mx + mn) / 2, d = mx - mn;
+  if (d) {
+    s = l > 0.5 ? d / (2 - mx - mn) : d / (mx + mn);
+    if (mx === r) h = ((g - b) / d + (g < b ? 6 : 0));
+    else if (mx === g) h = (b - r) / d + 2;
+    else h = (r - g) / d + 4;
+    h *= 60;
+  }
+  return { h: h, s: s, l: l };
+}
+
+function diaHash(){
+  var today = new Date().toDateString();
+  var h = 5381;
+  for (var i = 0; i < today.length; i++) h = ((h * 33) ^ today.charCodeAt(i)) >>> 0;
+  return h;
+}
+
+// Devuelve [aurora1, aurora2, accentPrincipal] desde un pool de accents.
+function auroraDelDia(accents){
+  if (!accents || !accents.length) accents = FALLBACK_CASA;
+  var h = diaHash();
+  var principal = accents[h % accents.length];
+  var mainHue = hexToHsl(principal).h;
+  var cand = [];
+  for (var i = 0; i < accents.length; i++) {
+    var hu = hexToHsl(accents[i]).h;
+    if (Math.abs(((hu - mainHue + 180) % 360) - 180) >= 50) cand.push(accents[i]);
+  }
+  var s1 = (h ^ 0x9e3779b9) >>> 0;
+  var s2 = (h ^ 0x85ebca6b) >>> 0;
+  var c1, c2;
+  if (cand.length >= 2) {
+    c1 = cand[s1 % cand.length];
+    c2 = cand[s2 % cand.length];
+    if (c2 === c1) c2 = cand[(s2 + 1) % cand.length];
+  } else if (accents.length >= 2) {
+    var i1 = s1 % accents.length, i2 = s2 % accents.length;
+    if (i1 === i2) i2 = (i2 + 1) % accents.length;
+    c1 = accents[i1]; c2 = accents[i2];
+  } else {
+    c1 = FALLBACK_CASA[0]; c2 = FALLBACK_CASA[1];
+  }
+  return [c1, c2, principal];
+}
+
+function poolColeccion(){
+  var out = [];
+  try {
+    var piezas = agrupar(estado.filas || []);
+    for (var i = 0; i < piezas.length; i++) {
+      var pl = piezas[i].payload;
+      var a = pl && (pl.accent || (pl.colores || [])[1]);
+      if (a && out.indexOf(a) < 0) out.push(a);
+    }
+  } catch(e){}
+  return out;
+}
+
+function paletaDelMomento(){
+  var pool = (poolCatalogo && poolCatalogo.length) ? poolCatalogo : poolColeccion();
+  return auroraDelDia(pool);
+}
+
+// El catalogo real llega en ~1KB y re-tine suave (transicion 1.4s).
+(function cargarCatalogo(){
+  try {
+    var cc = JSON.parse(lsGet('triggui_accents_v1') || 'null');
+    if (cc && cc.list && (Date.now() - cc.ts) < 21600000) { poolCatalogo = cc.list; return; }
+  } catch(e){}
+  fetch('/accents.json')
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(list){
+      if (Array.isArray(list) && list.length) {
+        poolCatalogo = list;
+        lsSet('triggui_accents_v1', JSON.stringify({ ts: Date.now(), list: list }));
+        if (el.puerta.classList.contains('ver') || el.vacio.classList.contains('ver')) {
+          paletaActual = '';
+          tenirCon(paletaDelMomento());
+        }
+      }
+    })
+    .catch(function(){});
+})();
+
 var paletaActual = '';
 function tenirCon(acentos){
   var llave = (acentos || []).join('|');
@@ -1246,7 +1349,7 @@ function tenirActiva(){
   if (!pal) {
     for (var k = 0; k < cabezas.length && !pal; k++) pal = paletaDe(cabezas[k].__pz);
   }
-  tenirCon(pal);
+  tenirCon(pal || paletaDelMomento());
 }
 function vigilarCabezas(){
   if (ojo) ojo.disconnect();
@@ -1266,7 +1369,7 @@ function pintar(){
 
   el.quien.textContent = estado.nombre ? ('Hola, ' + estado.nombre) : '';
 
-  if (piezas.length === 0) { if (ojo) ojo.disconnect(); tenirCon(null); ver('vacio'); return; }
+  if (piezas.length === 0) { if (ojo) ojo.disconnect(); tenirCon(paletaDelMomento()); ver('vacio'); return; }
   ver('tablero');
 
   var ob = vigilar();
@@ -1518,6 +1621,7 @@ el.tablero.addEventListener('touchstart', function(ev){
 })();
 
 (function inicio(){
+  tenirCon(paletaDelMomento());
   var c = claveGuardada();
   if (!c) { ver('puerta'); return; }
   var cache = null;
