@@ -549,6 +549,47 @@ body::before {
 #ptr.girando svg { animation: ptrGira .9s linear infinite; }
 @keyframes ptrGira { to { transform: rotate(360deg); } }
 
+/* ---------- El Santuario (ADN del bocado de la edicion) ---------- */
+#santuario {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0 32px;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  cursor: pointer;
+}
+#santuario.ver { display: flex; }
+#santuario.on { opacity: 1; }
+#santuario .cita {
+  font-family: 'Archivo', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 300;
+  font-size: clamp(22px, 6vw, 32px);
+  line-height: 1.32;
+  color: #fff;
+  text-align: center;
+  max-width: 640px;
+  letter-spacing: -0.5px;
+  position: relative;
+  padding-bottom: 16px;
+}
+#santuario .cita::after {
+  content: "";
+  position: absolute;
+  left: 20%;
+  right: 20%;
+  bottom: 0;
+  height: 1px;
+  opacity: .65;
+  background: linear-gradient(90deg, transparent, var(--linea, #E35D30), transparent);
+}
+
 /* ---------- Tooltip de primera vez ---------- */
 #tip {
   position: fixed;
@@ -726,6 +767,8 @@ body::before {
 <div id="ptr"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12.6 12.2 a2.6 2.6 0 1 1 -2.6 2.6 a5.2 5.2 0 1 1 5.2 -5.2 a8.2 8.2 0 1 1 -8.4 8.3"/></svg></div>
 <div id="tablero"><div id="tableroInner"></div></div>
 
+<div id="santuario"><div class="cita" id="santuarioCita"></div></div>
+
 <div id="tip"><button class="x" id="tipX" aria-label="Cerrar">&times;</button><span id="tipTxt"></span></div>
 
 <script>
@@ -757,6 +800,21 @@ var el = {
 };
 
 var estado = { nombre: '', filas: [], clave: '' };
+
+var santuario = document.getElementById('santuario');
+var santuarioCita = document.getElementById('santuarioCita');
+function abrirSantuario(texto, acento){
+  santuarioCita.textContent = texto;
+  santuarioCita.style.setProperty('--linea', acento || '#E35D30');
+  santuario.classList.add('ver');
+  requestAnimationFrame(function(){ santuario.classList.add('on'); });
+}
+function cerrarSantuario(){
+  santuario.classList.remove('on');
+  setTimeout(function(){ santuario.classList.remove('ver'); }, 380);
+}
+santuario.addEventListener('click', cerrarSantuario);
+document.addEventListener('keydown', function(ev){ if (ev.key === 'Escape') cerrarSantuario(); });
 var ultimaFirma = '';
 var primeraPintura = true;
 // Semilla de la visita: el azar se decide UNA vez por carga.
@@ -1065,6 +1123,11 @@ function pinBloque(pz, i){
   div.appendChild(puntos);
 
   div.addEventListener('click', function(){
+    if (!div.classList.contains('volteada') && div.clientHeight < 150) {
+      abrirSantuario(fr || pl, (pz.payload && (pz.payload.accent || (pz.payload.colores || [])[1])) || '#E35D30');
+      marcarTipVisto();
+      return;
+    }
     div.classList.toggle('volteada');
     var vs = puntos.children;
     var volteada = div.classList.contains('volteada');
