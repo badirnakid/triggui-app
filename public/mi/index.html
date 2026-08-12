@@ -57,19 +57,19 @@ body::before {
 .aurora-1 {
   width: 52vmax; height: 52vmax;
   left: -14vmax; top: -16vmax;
-  background: rgba(40, 100, 220, 0.45);
+  background: var(--au1, rgba(40, 100, 220, 0.45));
   animation: aurora-drift-1 22s ease-in-out infinite;
 }
 .aurora-2 {
   width: 44vmax; height: 44vmax;
   right: -12vmax; bottom: -14vmax;
-  background: rgba(80, 230, 200, 0.32);
+  background: var(--au2, rgba(80, 230, 200, 0.32));
   animation: aurora-drift-2 27s ease-in-out infinite;
 }
 .aurora-3 {
   width: 38vmax; height: 38vmax;
   left: 30vw; top: 46vh;
-  background: rgba(140, 90, 235, 0.22);
+  background: var(--au3, rgba(140, 90, 235, 0.22));
   animation: aurora-drift-3 31s ease-in-out infinite;
 }
 @keyframes aurora-drift-1 {
@@ -194,15 +194,18 @@ body::before {
 
 .pin-og {
   cursor: pointer;
-  overflow: hidden;
-  border-radius: 24px;
-  border: 1px solid rgba(255,255,255,.12);
-  box-shadow: 0 12px 32px rgba(0,0,0,.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .pin-og img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,.12);
+  box-shadow: 0 12px 32px rgba(0,0,0,.4);
   display: block;
   pointer-events: none;
 }
@@ -250,15 +253,22 @@ body::before {
 }
 .pin-tarjeta { cursor: pointer; }
 
-/* ---------- Pin og (acostada) ---------- */
-.pin-og { overflow: hidden; cursor: pointer; border-radius: 24px; background: #0c0c12; }
+/* ---------- Pin og: proporcion exacta, cero recortes ---------- */
+.pin-og {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .pin-og img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  border-radius: 24px;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  border-radius: 20px;
   border: 1px solid rgba(255,255,255,.12);
+  box-shadow: 0 12px 32px rgba(0,0,0,.4);
+  display: block;
   pointer-events: none;
 }
 
@@ -1030,11 +1040,36 @@ function vigilar(){
   return observador;
 }
 
+function hexRgba(hex, a){
+  var m = /^#?([0-9a-f]{6})$/i.exec(String(hex || ''));
+  if (!m) return '';
+  var n = parseInt(m[1], 16);
+  return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+}
+
+// El cielo se tine con los acentos de tus ultimos libros.
+function tenirAurora(piezas){
+  var acentos = [];
+  for (var i = 0; i < piezas.length && acentos.length < 3; i++) {
+    var pl = piezas[i].payload;
+    var a = pl && (pl.accent || (pl.colores || [])[1]);
+    if (a) acentos.push(a);
+  }
+  var raiz = document.documentElement.style;
+  var alfas = [0.42, 0.30, 0.22];
+  for (var j = 0; j < 3; j++) {
+    var c = acentos[j] || acentos[0];
+    var v = c ? hexRgba(c, alfas[j]) : '';
+    if (v) raiz.setProperty('--au' + (j + 1), v); else raiz.removeProperty('--au' + (j + 1));
+  }
+}
+
 function pintar(){
   var firma = JSON.stringify([estado.nombre, estado.filas]);
   if (firma === ultimaFirma) return; // nada cambio: quietud absoluta
   ultimaFirma = firma;
   var piezas = agrupar(estado.filas);
+  tenirAurora(piezas);
   el.inner.innerHTML = '';
   cerrarMenus();
 
