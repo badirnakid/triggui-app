@@ -184,7 +184,7 @@ body::before {
 .f-tarjeta { width: 100%; }
 
 @media (min-width: 900px) {
-  .lienzo {
+  .lienzo:not(.plano) {
     --tw: 440px;
     display: grid;
     grid-template-columns: var(--tw) 1fr;
@@ -207,16 +207,24 @@ body::before {
     min-height: 0;
   }
   .s1, .s2 { aspect-ratio: auto; height: 100%; min-height: 0; overflow: hidden; }
-  .lienzo.sin-tarjeta {
-    display: flex;
-    flex-direction: column;
-    height: auto;
-  }
-  .lienzo.sin-tarjeta .mini, .lienzo.sin-tarjeta .rejilla {
-    grid-template-rows: none;
-  }
-  .lienzo.sin-tarjeta .s1 { aspect-ratio: 1 / 1; height: auto; }
-  .lienzo.sin-tarjeta .s2 { aspect-ratio: 2 / 1; height: auto; }
+}
+
+/* El plano: geometria propia del mundo sin tarjeta.
+   Vertical: 2 columnas. Ancho (telefono acostado, tablet,
+   desktop): 4 columnas finas; anchas de dos en dos; la
+   solitaria final se estira en franja esbelta. */
+.lienzo.plano {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gap);
+  height: auto;
+}
+.plano .s1 { grid-column: span 1; aspect-ratio: 1 / 1; height: auto; }
+.plano .s2 { grid-column: span 2; aspect-ratio: 2 / 1; height: auto; }
+.plano .s4 { grid-column: span 2; aspect-ratio: 2 / 1; height: auto; }
+@media (min-width: 640px) {
+  .lienzo.plano { grid-template-columns: repeat(4, 1fr); }
+  .plano .s4 { grid-column: span 4; aspect-ratio: 4 / 1; }
 }
 
 .pin-og {
@@ -1173,18 +1181,52 @@ function pintar(){
     // El empacador: 2 ranuras por fila. Bloques ocupan 1; og y notas
     // ocupan 2 pero se ENCOGEN a 1 cuando un bloque queda solitario:
     // paridad perfecta, cero huecos, en cualquier escenario.
-    function marcar(elx, ranuras){ elx.classList.add(ranuras === 1 ? 's1' : 's2'); return elx; }
+    function marcar(elx, ranuras){ elx.classList.add(ranuras === 1 ? 's1' : ranuras === 4 ? 's4' : 's2'); return elx; }
 
-    var mini = document.createElement('div');
-    mini.className = 'mini';
-    var restoBloques = bloques.slice();
-    for (var m = 0; m < 2 && restoBloques.length; m++) mini.appendChild(marcar(restoBloques.shift(), 1));
     function tomarPareja(){
       for (var t = 0; t < anchas.length; t++) {
         if (anchas[t].classList.contains('pin-nota')) return anchas.splice(t, 1)[0];
       }
       return anchas.shift();
     }
+
+    var conTarjeta = !pz.fuera['tarjeta'];
+    if (!conTarjeta) {
+      // EL PLANO: bloques 4 por fila; huecos de la fila sellados
+      // con anchas encogidas o a lo ancho; el resto de dos en dos;
+      // la solitaria final, en franja esbelta.
+      lienzo.classList.add('plano', 'sin-tarjeta');
+      var fila1 = [];
+      var restoB = bloques.slice();
+      while (restoB.length && fila1.length < 4) fila1.push(marcar(restoB.shift(), 1));
+      var libres = 4 - fila1.length;
+      while (libres > 0 && anchas.length) {
+        if (libres >= 2) { fila1.push(marcar(anchas.shift(), 2)); libres -= 2; }
+        else { fila1.push(marcar(tomarPareja(), 1)); libres -= 1; }
+      }
+      for (var f1 = 0; f1 < fila1.length; f1++) lienzo.appendChild(fila1[f1]);
+      while (anchas.length >= 2) {
+        lienzo.appendChild(marcar(anchas.shift(), 2));
+        lienzo.appendChild(marcar(anchas.shift(), 2));
+      }
+      if (anchas.length === 1) lienzo.appendChild(marcar(anchas.shift(), 4));
+      var pins = [pinHead(pz), lienzo];
+      hayBloques = hayBloques || bloques.length > 0;
+      for (var q0 = 0; q0 < pins.length; q0++) {
+        el.inner.appendChild(pins[q0]);
+        var anim0 = pins[q0].classList.contains('lienzo') ? pins[q0].querySelectorAll('.pin') : [pins[q0]];
+        for (var w0 = 0; w0 < anim0.length; w0++) {
+          if (primeraPintura) ob.observe(anim0[w0]);
+          else anim0[w0].classList.add('ver');
+        }
+      }
+      continue;
+    }
+
+    var mini = document.createElement('div');
+    mini.className = 'mini';
+    var restoBloques = bloques.slice();
+    for (var m = 0; m < 2 && restoBloques.length; m++) mini.appendChild(marcar(restoBloques.shift(), 1));
     if (mini.children.length === 1 && anchas.length) mini.appendChild(marcar(tomarPareja(), 1));
 
     var rejilla = document.createElement('div');
@@ -1202,13 +1244,11 @@ function pintar(){
     }
     while (anchas.length) { rejilla.appendChild(marcar(anchas.shift(), 2)); filasR++; }
 
-    var conTarjeta = !pz.fuera['tarjeta'];
     var hayMini = mini.children.length > 0;
     if (hayMini) lienzo.appendChild(mini);
     if (conTarjeta) lienzo.appendChild(pinTarjeta(pz));
     if (rejilla.children.length) lienzo.appendChild(rejilla);
     if (!hayMini) lienzo.classList.add('sin-mini');
-    if (!conTarjeta) lienzo.classList.add('sin-tarjeta');
 
     lienzo.style.setProperty('--filas', (hayMini ? 1 : 0) + Math.max(filasR, hayMini ? 0 : 1));
     lienzo.style.setProperty('--filasR', Math.max(filasR, 1));
