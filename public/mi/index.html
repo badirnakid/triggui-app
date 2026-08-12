@@ -8,9 +8,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,500;1,700&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
-   TRIGGUI ESPIRAL · Portal /mi · v4.0.0 "Tablero"
-   Masonry estilo Pinterest: cada componente del libro es un pin
-   con los colores exactos heredados de la generación original.
+   TRIGGUI ESPIRAL · Portal /mi · v5.0.0 "Tablero Elite"
+   Grid denso (Tetris real) + Container Queries (legibilidad por
+   proporción) + piel de bloque calcada célula a célula del
+   organismo original + aurora heredada que respira.
    ============================================================ */
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -20,7 +21,7 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  font-family: 'Archivo', sans-serif;
+  font-family: 'Archivo', -apple-system, BlinkMacSystemFont, sans-serif;
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -30,6 +31,8 @@ html, body {
 
 vercel-live-feedback,[data-vercel-toolbar],#__vercel_live_token,vercel-toolbar{display:none!important;height:0!important;overflow:hidden!important;}
 
+/* Aurora heredada del organismo (body::before del index),
+   con una respiración lentísima añadida encima. */
 body::before {
   content: "";
   position: fixed;
@@ -37,33 +40,69 @@ body::before {
   background:
     radial-gradient(ellipse at 30% 20%, rgba(40, 100, 220, 0.14), transparent 65%),
     radial-gradient(ellipse at 70% 80%, rgba(80, 230, 200, 0.06), transparent 65%);
-  z-index: -1;
+  z-index: -2;
   pointer-events: none;
   opacity: 0.9;
 }
-
-.pulse-line {
+body::after {
+  content: "";
   position: fixed;
-  top: 16px;
+  inset: -20%;
+  background:
+    radial-gradient(ellipse at 24% 30%, rgba(60, 120, 235, 0.10), transparent 55%),
+    radial-gradient(ellipse at 78% 72%, rgba(80, 230, 200, 0.07), transparent 55%);
+  z-index: -1;
+  pointer-events: none;
+  filter: blur(10px);
+  animation: auroraDrift 26s ease-in-out infinite alternate;
+}
+@keyframes auroraDrift {
+  0%   { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(3.5%, -2.5%) scale(1.06); }
+}
+
+/* ---------- Barra de marca ---------- */
+#barra {
+  position: fixed;
+  top: 0;
   left: 0;
   right: 0;
-  text-align: center;
+  height: 54px;
+  z-index: 55;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 18px 0 16px;
+  background: linear-gradient(180deg, rgba(0,0,0,.86) 0%, rgba(0,0,0,.55) 60%, transparent 100%);
+  pointer-events: none;
+}
+#barra.ver { display: flex; }
+#barra .marca { height: 21px; width: auto; opacity: .95; filter: invert(1) brightness(1.45); }
+#barra .lado {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  pointer-events: auto;
+}
+#barra .quien {
   font-family: 'Poppins', sans-serif;
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.5px;
-  color: rgba(255,255,255,.4);
-  z-index: 50;
-  opacity: 0;
-  transform: translateY(-8px);
-  transition: opacity .8s ease, transform .8s ease;
-  pointer-events: none;
-  user-select: none;
+  letter-spacing: .16em;
   text-transform: uppercase;
+  color: rgba(255,255,255,.78);
 }
-.pulse-line.visible { opacity: 1; transform: translateY(0); }
+#barra .cambiar {
+  font-family: 'Poppins', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .05em;
+  color: rgba(255,255,255,.34);
+  text-decoration: none;
+}
+#barra .cambiar:hover { color: rgba(255,255,255,.6); }
 
-/* ---------- Tablero masonry ---------- */
+/* ---------- Tablero: Tetris de grid denso ---------- */
 #tablero {
   position: fixed;
   inset: 0;
@@ -71,168 +110,253 @@ body::before {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  padding: 56px 12px 104px;
+  padding: 66px 12px calc(28px + env(safe-area-inset-bottom, 0px));
 }
 #tablero::-webkit-scrollbar { display: none; }
 #tablero.ver { display: block; }
+
 #tableroInner {
+  --cols: 2;
+  --gap: 12px;
+  --u: calc((min(100vw, 1520px) - 24px - (var(--cols) - 1) * var(--gap)) / var(--cols));
   max-width: 1520px;
   margin: 0 auto;
-  columns: 168px;
-  column-gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), 1fr);
+  grid-auto-rows: var(--u);
+  grid-auto-flow: dense;
+  gap: var(--gap);
 }
-@media (min-width: 760px)  { #tableroInner { columns: 208px; column-gap: 14px; } }
-@media (min-width: 1240px) { #tableroInner { columns: 232px; column-gap: 16px; } }
+@media (min-width: 900px)  { #tableroInner { --cols: 4; --gap: 14px; } }
+@media (min-width: 1400px) { #tableroInner { --cols: 6; --gap: 16px; } }
 
 .pin {
   position: relative;
-  break-inside: avoid;
-  margin: 0 0 12px;
-  border-radius: 18px;
-  overflow: hidden;
+  border-radius: 24px;
   opacity: 0;
-  transform: translateY(16px) scale(.985);
+  transform: translateY(14px) scale(.99);
   transition: opacity .6s cubic-bezier(0.19,1,0.22,1), transform .6s cubic-bezier(0.19,1,0.22,1);
 }
 .pin.ver { opacity: 1; transform: translateY(0) scale(1); }
 
-/* Pins de imagen (tarjeta / og) */
-.pin-img { cursor: pointer; background: #101017; }
-.pin-img img {
-  display: block;
-  width: 100%;
+/* Formas del Tetris */
+.f-1x1 { grid-column: span 1; grid-row: span 1; }
+.f-2x1 { grid-column: span 2; grid-row: span 1; }
+.f-2x4 { grid-column: span 2; grid-row: span 4; }
+
+/* ---------- Pin tarjeta (la obra, proporción intacta sobre el cielo) ---------- */
+.pin-tarjeta { display: flex; align-items: center; justify-content: center; }
+.pin-tarjeta img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
   height: auto;
-  border-radius: 18px;
+  border-radius: 22px;
   border: 1px solid rgba(255,255,255,.13);
+  box-shadow: 0 10px 26px rgba(0,0,0,.45), 0 30px 70px rgba(0,0,0,.5);
   pointer-events: none;
 }
-.pin-img.dorada img { border-color: rgba(246,196,83,.85); }
-.pin-img.dorada { box-shadow: 0 0 0 1.5px rgba(246,196,83,.4), 0 0 26px rgba(246,196,83,.22); }
-.sello {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  font-family: 'Poppins', sans-serif;
-  font-size: 9.5px;
-  font-weight: 600;
-  letter-spacing: .08em;
-  color: #f6c453;
-  background: rgba(10,10,14,.78);
-  border: 1px solid rgba(246,196,83,.55);
-  border-radius: 9px;
-  padding: 3px 8px;
+.pin-tarjeta.dorada img {
+  border-color: rgba(246,196,83,.85);
+  box-shadow: 0 0 0 1.5px rgba(246,196,83,.38), 0 0 34px rgba(246,196,83,.22), 0 30px 70px rgba(0,0,0,.5);
+}
+.pin-tarjeta { cursor: pointer; }
+
+/* ---------- Pin og (acostada) ---------- */
+.pin-og { overflow: hidden; cursor: pointer; border-radius: 24px; background: #0c0c12; }
+.pin-og img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,.12);
   pointer-events: none;
-  z-index: 3;
 }
 
-/* Pins de bloque (palabra ↔ frase) */
+/* ---------- Pin bloque: piel calcada célula a célula ---------- */
 .pin-bloque {
-  aspect-ratio: 3 / 4;
+  container-type: size;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  border-radius: 24px;
+  font-weight: 700;
   cursor: pointer;
-  border-radius: 18px;
+  background-size: 320% 320%;
+  background-position: center;
+  transition: transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity .6s cubic-bezier(0.19,1,0.22,1);
+  overflow: hidden;
+  isolation: isolate;
+  box-shadow:
+    inset 0 0 0 1.5px rgba(255,255,255,.15),
+    0 4px 6px rgba(0,0,0,.15),
+    0 12px 32px rgba(0,0,0,.35);
 }
+.pin-bloque::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(145deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,.08) 40%, transparent 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+.pin-bloque::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.12), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
+  pointer-events: none;
+}
+@media (hover: hover) {
+  .pin-bloque:hover::after { opacity: 1; }
+  .pin-bloque:hover {
+    transform: translateY(-2px) scale(1.005);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.28),
+      inset 0 -1px 0 rgba(0,0,0,.16),
+      inset 0 0 0 1px rgba(255,255,255,.16),
+      0 3px 7px rgba(0,0,0,.14),
+      0 18px 46px rgba(0,0,0,.42);
+  }
+}
+.pin-bloque:active {
+  transform: translateY(0) scale(0.995);
+  transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .pin-bloque .cara {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 18px 16px 30px;
+  padding: 1rem;
+  z-index: 2;
   text-align: center;
-  border-radius: 18px;
-  transition: opacity .45s cubic-bezier(0.19,1,0.22,1), transform .45s cubic-bezier(0.19,1,0.22,1);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  -webkit-font-smoothing: antialiased;
 }
 .pin-bloque .cara.palabra {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 800;
-  font-size: clamp(19px, 5.2vw, 26px);
-  letter-spacing: .01em;
-  text-transform: lowercase;
+  font-family: 'Archivo', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 700;
+  font-size: clamp(15px, 13cqw, 31px);
+  letter-spacing: .005em;
+  line-height: 1.12;
 }
 .pin-bloque .cara.frase {
   font-family: 'Archivo', sans-serif;
   font-weight: 500;
-  font-size: 14.5px;
-  line-height: 1.5;
+  font-size: clamp(11.5px, 6.4cqw, 16.5px);
+  line-height: 1.45;
   opacity: 0;
   transform: scale(.97);
+  padding: 1.1rem 1.15rem 1.6rem;
 }
 .pin-bloque.volteada .cara.palabra { opacity: 0; transform: scale(.97); }
 .pin-bloque.volteada .cara.frase { opacity: 1; transform: scale(1); }
 .pin-bloque .puntos {
   position: absolute;
-  bottom: 10px;
+  bottom: 11px;
   left: 0;
   right: 0;
   display: flex;
-  gap: 6px;
+  gap: 5px;
   justify-content: center;
   pointer-events: none;
+  z-index: 2;
 }
 .pin-bloque .puntos i {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: currentColor;
-  opacity: .35;
+  opacity: .3;
   transition: opacity .3s ease;
 }
-.pin-bloque .puntos i.on { opacity: .95; }
+.pin-bloque .puntos i.on { opacity: .9; }
 
-/* Pins de nota (bocado / eco) */
+/* ---------- Pin nota: vidrio sobre la aurora ---------- */
 .pin-nota {
-  background: #101017;
-  border: 1px solid rgba(255,255,255,.13);
-  border-radius: 18px;
-  padding: 18px 16px 20px;
+  container-type: size;
+  border-radius: 24px;
+  padding: clamp(14px, 7cqw, 22px) clamp(16px, 8cqw, 26px);
   cursor: pointer;
+  background: rgba(12, 14, 19, .42);
+  backdrop-filter: blur(16px) saturate(1.25);
+  -webkit-backdrop-filter: blur(16px) saturate(1.25);
+  border: 1px solid rgba(255,255,255,.1);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.09), 0 12px 32px rgba(0,0,0,.35);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+.pin-nota::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(145deg, rgba(255,255,255,.07) 0%, transparent 55%);
+  pointer-events: none;
 }
 .pin-nota .etiqueta {
   font-family: 'Poppins', sans-serif;
-  font-size: 9.5px;
+  font-size: clamp(8.5px, 4cqw, 10px);
   font-weight: 700;
-  letter-spacing: .18em;
-  margin-bottom: 9px;
+  letter-spacing: .24em;
+  margin-bottom: clamp(6px, 3cqw, 10px);
 }
 .pin-nota .texto {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Playfair Display', Georgia, serif;
   font-style: italic;
   font-weight: 500;
-  font-size: 16px;
-  line-height: 1.45;
-  color: rgba(255,255,255,.92);
+  font-size: clamp(13px, 5.6cqw, 19px);
+  line-height: 1.42;
+  color: rgba(255,255,255,.94);
 }
 
-/* Menú de tres puntos */
+/* ---------- Menú de tres puntos ---------- */
 .tres {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 30px;
-  height: 30px;
+  top: 9px;
+  right: 9px;
+  width: 28px;
+  height: 28px;
   border: none;
   border-radius: 50%;
-  background: rgba(10,10,14,.6);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  color: rgba(255,255,255,.9);
-  font-size: 15px;
-  line-height: 30px;
+  background: rgba(8,8,12,.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: rgba(255,255,255,.92);
+  font-size: 14px;
+  line-height: 28px;
   cursor: pointer;
-  z-index: 4;
+  z-index: 6;
   padding: 0;
+  opacity: 0;
+  transition: opacity .25s ease;
 }
+.pin:hover .tres, .menu.ver + .tres { opacity: 1; }
+@media (hover: none) { .tres { opacity: .85; } }
 .menu {
   position: absolute;
   top: 42px;
-  right: 8px;
-  z-index: 5;
-  background: rgba(14,14,20,.98);
-  border: 1px solid rgba(255,255,255,.16);
-  border-radius: 12px;
+  right: 9px;
+  z-index: 7;
+  background: rgba(13,13,19,.98);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 14px;
   overflow: hidden;
-  min-width: 158px;
+  min-width: 164px;
   display: none;
+  box-shadow: 0 18px 44px rgba(0,0,0,.6);
 }
 .menu.ver { display: block; }
 .menu button, .menu a {
@@ -243,26 +367,28 @@ body::before {
   border: none;
   color: rgba(255,255,255,.9);
   font-family: 'Poppins', sans-serif;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 500;
-  padding: 11px 14px;
+  padding: 11px 15px;
   cursor: pointer;
   text-decoration: none;
 }
 .menu button:active, .menu a:active { background: rgba(255,255,255,.08); }
 .menu .peligro { color: #ff9d9d; }
 
-/* Tooltip de primera vez */
+/* ---------- Tooltip de primera vez ---------- */
 #tip {
   position: fixed;
   left: 50%;
-  bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(26px + env(safe-area-inset-bottom, 0px));
   transform: translate(-50%, 14px);
   z-index: 60;
-  background: rgba(14,14,20,.97);
-  border: 1px solid rgba(227,93,48,.6);
-  border-radius: 12px;
-  padding: 10px 34px 10px 14px;
+  background: rgba(13,13,19,.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(227,93,48,.55);
+  border-radius: 14px;
+  padding: 10px 36px 10px 15px;
   font-family: 'Poppins', sans-serif;
   font-size: 12px;
   color: #fff;
@@ -332,13 +458,15 @@ body::before {
 .puerta-card {
   width: 100%;
   max-width: 340px;
-  background: rgba(12,12,18,.96);
+  background: rgba(12,12,18,.9);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border: 1px solid rgba(255,255,255,.14);
-  border-radius: 18px;
+  border-radius: 20px;
   padding: 30px 24px 24px;
   text-align: center;
 }
-.puerta-card img.marca { height: 20px; width: auto; opacity: .9; margin-bottom: 18px; filter: invert(1) brightness(1.4); }
+.puerta-card img.marca { height: 21px; width: auto; opacity: .95; margin-bottom: 18px; filter: invert(1) brightness(1.45); }
 .puerta-card h1 {
   font-family: 'Playfair Display', serif;
   font-style: italic;
@@ -385,35 +513,17 @@ body::before {
 .puerta-card button:active { transform: scale(.97); }
 .puerta-pie { margin-top: 16px; font-size: 11px; font-family: 'Poppins', sans-serif; }
 .puerta-pie a { color: rgba(255,255,255,.5); text-decoration: underline; }
-
-/* ---------- Pie ---------- */
-#pie {
-  position: fixed;
-  bottom: calc(14px + env(safe-area-inset-bottom, 0px));
-  left: 0;
-  right: 0;
-  text-align: center;
-  z-index: 40;
-  display: none;
-  pointer-events: none;
-}
-#pie.ver { display: block; }
-#pie img { height: 18px; width: auto; opacity: .22; filter: invert(1) brightness(1.5); display: inline-block; }
-#pie .cambiar {
-  display: block;
-  margin-top: 6px;
-  font-family: 'Poppins', sans-serif;
-  font-size: 10px;
-  color: rgba(255,255,255,.28);
-  text-decoration: none;
-  letter-spacing: .06em;
-  pointer-events: auto;
-}
 </style>
 </head>
 <body>
 
-<div id="pulseLine" class="pulse-line"></div>
+<div id="barra">
+  <img class="marca" src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png" alt="Triggui">
+  <div class="lado">
+    <span class="quien" id="quien"></span>
+    <a class="cambiar" href="#" id="cambiarClave">cambiar clave</a>
+  </div>
+</div>
 
 <div id="cargando" class="centro-msg ver">
   <span class="loading-text">Abriendo tu espiral...</span>
@@ -441,11 +551,6 @@ body::before {
 
 <div id="tip"><button class="x" id="tipX" aria-label="Cerrar">&times;</button><span id="tipTxt"></span></div>
 
-<div id="pie">
-  <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png" alt="Triggui">
-  <a class="cambiar" href="#" id="cambiarClave">cambiar clave</a>
-</div>
-
 <script>
 'use strict';
 
@@ -459,7 +564,8 @@ function lsSet(k,v){ try { window.localStorage.setItem(k,v); } catch(e){} }
 function lsDel(k){ try { window.localStorage.removeItem(k); } catch(e){} }
 
 var el = {
-  linea: document.getElementById('pulseLine'),
+  barra: document.getElementById('barra'),
+  quien: document.getElementById('quien'),
   cargando: document.getElementById('cargando'),
   puerta: document.getElementById('puerta'),
   puertaErr: document.getElementById('puertaErr'),
@@ -471,7 +577,6 @@ var el = {
   tip: document.getElementById('tip'),
   tipTxt: document.getElementById('tipTxt'),
   tipX: document.getElementById('tipX'),
-  pie: document.getElementById('pie'),
   cambiar: document.getElementById('cambiarClave')
 };
 
@@ -499,13 +604,8 @@ function ver(cual){
   el.puerta.classList.toggle('ver', cual === 'puerta');
   el.vacio.classList.toggle('ver', cual === 'vacio');
   el.tablero.classList.toggle('ver', cual === 'tablero');
-  el.pie.classList.toggle('ver', cual === 'tablero' || cual === 'vacio');
+  el.barra.classList.toggle('ver', cual === 'tablero' || cual === 'vacio');
   if (cual === 'puerta') setTimeout(function(){ try{ el.clave.focus(); }catch(e){} }, 80);
-}
-
-function linea(txt){
-  el.linea.textContent = txt;
-  el.linea.classList.add('visible');
 }
 
 /* ---------- Datos ----------
@@ -659,29 +759,38 @@ function armarMenu(pz, componente, pinEl, descargaUrl){
     if (!abierto) { menu.classList.add('ver'); menuAbierto = menu; armado = false; quit.textContent = 'Quitar de mi espiral'; }
   });
 
-  pinEl.appendChild(tres);
   pinEl.appendChild(menu);
+  pinEl.appendChild(tres);
 }
 
 /* ---------- Fabrica de pins ---------- */
-function pinImagen(pz, componente){
+function pinTarjeta(pz){
   var div = document.createElement('div');
-  div.className = 'pin pin-img' + (componente === 'tarjeta' && pz.dorada ? ' dorada' : '');
+  div.className = 'pin pin-tarjeta f-2x4' + (pz.dorada ? ' dorada' : '');
   var img = document.createElement('img');
   img.alt = pz.titulo || pz.slug;
   img.loading = 'lazy';
   img.decoding = 'async';
-  img.src = rutaBase(pz) + (componente === 'tarjeta' ? 'tarjeta.png' : 'og.png');
+  img.src = rutaBase(pz) + 'tarjeta.png';
   img.onerror = function(){ div.remove(); };
   div.appendChild(img);
-  if (componente === 'tarjeta' && pz.dorada) {
-    var s = document.createElement('span');
-    s.className = 'sello';
-    s.textContent = '\u2726 RELE\u00cdDA';
-    div.appendChild(s);
-  }
   div.addEventListener('click', function(){ releerYNavegar(pz); });
-  armarMenu(pz, componente, div, rutaBase(pz) + (componente === 'tarjeta' ? 'tarjeta.png' : 'og.png'));
+  armarMenu(pz, 'tarjeta', div, rutaBase(pz) + 'tarjeta.png');
+  return div;
+}
+
+function pinOg(pz){
+  var div = document.createElement('div');
+  div.className = 'pin pin-og f-2x1';
+  var img = document.createElement('img');
+  img.alt = pz.titulo || pz.slug;
+  img.loading = 'lazy';
+  img.decoding = 'async';
+  img.src = rutaBase(pz) + 'og.png';
+  img.onerror = function(){ div.remove(); };
+  div.appendChild(img);
+  div.addEventListener('click', function(){ releerYNavegar(pz); });
+  armarMenu(pz, 'og', div, rutaBase(pz) + 'og.png');
   return div;
 }
 
@@ -694,8 +803,10 @@ function pinBloque(pz, i){
   if (!pl) return null;
 
   var div = document.createElement('div');
-  div.className = 'pin pin-bloque';
+  div.className = 'pin pin-bloque f-1x1';
   div.style.background = 'linear-gradient(135deg, ' + c0 + ', ' + c1 + ')';
+  div.style.backgroundSize = '320% 320%';
+  div.style.backgroundPosition = 'center';
   div.style.color = tx;
 
   var caraP = document.createElement('div');
@@ -730,8 +841,8 @@ function pinNota(pz, tipo){
   if (!texto) return null;
   var acc = (pz.payload.colores || [])[0] || '#E35D30';
   var div = document.createElement('div');
-  div.className = 'pin pin-nota';
-  div.style.borderColor = acc + '66';
+  div.className = 'pin pin-nota f-2x1';
+  div.style.borderColor = acc + '59';
   var et = document.createElement('div');
   et.className = 'etiqueta';
   et.style.color = acc;
@@ -766,8 +877,7 @@ function pintar(){
   el.inner.innerHTML = '';
   cerrarMenus();
 
-  linea('Hola' + (estado.nombre ? ', ' + estado.nombre : '') + ' \u00b7 ' +
-        piezas.length + (piezas.length === 1 ? ' estrella' : ' estrellas'));
+  el.quien.textContent = estado.nombre || '';
 
   if (piezas.length === 0) { ver('vacio'); return; }
   ver('tablero');
@@ -779,7 +889,7 @@ function pintar(){
     var pz = piezas[p];
     var pins = [];
 
-    if (!pz.fuera['tarjeta']) pins.push(pinImagen(pz, 'tarjeta'));
+    if (!pz.fuera['tarjeta']) pins.push(pinTarjeta(pz));
     if (pz.payload) {
       if (!pz.fuera['bloque0']) pins.push(pinBloque(pz, 0));
       if (!pz.fuera['bloque1']) pins.push(pinBloque(pz, 1));
@@ -788,7 +898,7 @@ function pintar(){
       if (!pz.fuera['bloque3']) pins.push(pinBloque(pz, 3));
       if (!pz.fuera['eco']) pins.push(pinNota(pz, 'eco'));
     }
-    if (!pz.fuera['og']) pins.push(pinImagen(pz, 'og'));
+    if (!pz.fuera['og']) pins.push(pinOg(pz));
 
     for (var q = 0; q < pins.length; q++) {
       if (!pins[q]) continue;
@@ -825,7 +935,6 @@ function cargarConClave(clave, esNueva){
         estado.nombre = cache.nombre || '';
         estado.filas = cache.filas;
         pintar();
-        linea('Sin conexi\u00f3n \u00b7 mostrando tu \u00faltima espiral');
         return;
       }
       fallo('Sin conexi\u00f3n. Intenta de nuevo.');
