@@ -393,14 +393,14 @@ body::before {
 .pin-bloque .cara.palabra {
   font-family: 'Archivo', -apple-system, BlinkMacSystemFont, sans-serif;
   font-weight: 700;
-  font-size: clamp(15px, min(13cqw, 36cqh), 31px);
+  font-size: clamp(15px, min(13cqw, 40cqh), 32px);
   letter-spacing: .005em;
   line-height: 1.12;
 }
 .pin-bloque .cara.frase {
   font-family: 'Archivo', sans-serif;
   font-weight: 500;
-  font-size: clamp(11.5px, min(6.6cqw, 16cqh), 16.5px);
+  font-size: clamp(12px, min(7cqw, 20cqh), 18px);
   line-height: 1.45;
   opacity: 0;
   transform: scale(.97);
@@ -455,7 +455,7 @@ body::before {
 .pin-nota .texto {
   font-family: 'Archivo', -apple-system, BlinkMacSystemFont, sans-serif;
   font-weight: 300;
-  font-size: clamp(16px, 10.5cqh, 30px);
+  font-size: clamp(17px, 11.5cqh, 42px);
   line-height: 1.32;
   letter-spacing: -0.4px;
   color: #fff;
@@ -498,10 +498,8 @@ body::before {
 .pin:hover .tres, .menu.ver + .tres { opacity: 1; }
 @media (hover: none) { .tres { opacity: .85; } }
 .menu {
-  position: absolute;
-  top: 42px;
-  right: 9px;
-  z-index: 7;
+  position: fixed;
+  z-index: 220;
   background: rgba(13,13,19,.98);
   border: 1px solid rgba(255,255,255,.15);
   border-radius: 14px;
@@ -912,7 +910,7 @@ function quitar(pz, componente, pinEl){
 function cerrarMenus(){
   if (menuAbierto) {
     menuAbierto.m.classList.remove('ver');
-    menuAbierto.p.classList.remove('encima');
+    menuAbierto.m.remove();
     menuAbierto = null;
   }
 }
@@ -968,15 +966,17 @@ function armarMenu(pz, componente, pinEl, descargaUrl, descargaOgUrl){
     var abierto = menu.classList.contains('ver');
     cerrarMenus();
     if (!abierto) {
+      document.body.appendChild(menu);
+      var r = tres.getBoundingClientRect();
+      menu.style.top = (r.bottom + 6) + 'px';
+      menu.style.right = Math.max(8, window.innerWidth - r.right) + 'px';
       menu.classList.add('ver');
-      pinEl.classList.add('encima');
-      menuAbierto = { m: menu, p: pinEl };
+      menuAbierto = { m: menu };
       armado = false;
       quit.textContent = 'Quitar de mi espiral';
     }
   });
 
-  pinEl.appendChild(menu);
   pinEl.appendChild(tres);
 }
 
@@ -1185,6 +1185,9 @@ function pintar(){
     anchas = anchas.filter(Boolean);
     barajar(bloques, 'b:' + pz.slug);
     barajar(anchas, 'a:' + pz.slug);
+    for (var g = 0; g < anchas.length; g++) {
+      if (anchas[g].classList.contains('pin-og')) { anchas.unshift(anchas.splice(g, 1)[0]); break; }
+    }
 
     var lienzo = document.createElement('div');
     lienzo.className = 'lienzo';
@@ -1364,7 +1367,8 @@ el.clave.addEventListener('keydown', function(ev){ if (ev.key === 'Enter') el.en
     ind.style.transform = 'translate(-50%, -56px)';
     ind.classList.remove('girando');
   }
-  el.tablero.addEventListener('touchstart', function(ev){
+  el.tablero.addEventListener('scroll', cerrarMenus, { passive: true });
+el.tablero.addEventListener('touchstart', function(ev){
     if (girando) return;
     if (el.tablero.scrollTop <= 0 && ev.touches.length === 1) {
       y0 = ev.touches[0].clientY;
