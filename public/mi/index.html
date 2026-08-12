@@ -115,7 +115,6 @@ body::after {
   display: grid;
   grid-template-columns: repeat(var(--cols), 1fr);
   grid-auto-rows: var(--u);
-  grid-auto-flow: dense;
   gap: var(--gap);
 }
 @media (min-width: 900px)  { #tableroInner { --cols: 8; --gap: 12px; } }
@@ -133,7 +132,6 @@ body::after {
 /* Formas del Tetris (medias-unidades) */
 .f-head    { grid-column: 1 / -1; grid-row: span 1; }
 .f-bloque  { grid-column: span 2; grid-row: span 2; }
-.f-bloque.alta { grid-row: span 3; }
 .f-nota    { grid-column: span 4; grid-row: span 2; }
 .f-tarjeta { grid-column: span 4; grid-row: span 7; }
 .f-og      { grid-column: span 4; grid-row: span 2; }
@@ -292,12 +290,18 @@ body::after {
 .pin-bloque .cara.frase {
   font-family: 'Archivo', sans-serif;
   font-weight: 500;
-  font-size: clamp(11.5px, 6.4cqw, 16.5px);
+  font-size: clamp(12px, 6.6cqw, 16.5px);
   line-height: 1.45;
   opacity: 0;
   transform: scale(.97);
-  padding: 1.1rem 1.15rem 1.6rem;
+  padding: 1rem 1.05rem 1.5rem;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(180deg, #000 78%, transparent 98%);
+  mask-image: linear-gradient(180deg, #000 78%, transparent 98%);
 }
+.pin-bloque .cara.frase::-webkit-scrollbar { display: none; }
+.pin-bloque .cara.frase .fx { margin: auto; }
 .pin-bloque.volteada .cara.palabra { opacity: 0; transform: scale(.97); }
 .pin-bloque.volteada .cara.frase { opacity: 1; transform: scale(1); }
 .pin-bloque .puntos {
@@ -617,6 +621,8 @@ var el = {
 };
 
 var estado = { nombre: '', filas: [], clave: '' };
+var ultimaFirma = '';
+var primeraPintura = true;
 // Semilla de la visita: el azar se decide UNA vez por carga.
 // Cache y red pintan identico; entre visitas cambia.
 var SEMILLA = (Math.random() * 2147483647) | 0;
@@ -754,7 +760,7 @@ function quitar(pz, componente, pinEl){
   // Optimista: la pieza se va AL INSTANTE; el registro viaja en segundo plano.
   estado.filas.push({ slug: pz.slug, catalogo: pz.catalogo, evento: 'quitar', componente: componente, ts: new Date().toISOString(), titulo:'', portada:'', payload:'' });
   lsSet(LS_CACHE, JSON.stringify({ nombre: estado.nombre, filas: estado.filas, ts: Date.now() }));
-  if (componente === 'todo') { pintar(); }
+  if (componente === 'todo') { ultimaFirma = ''; pintar(); }
   else if (pinEl) {
     pinEl.style.transition = 'opacity .35s ease, transform .35s ease';
     pinEl.style.opacity = '0';
@@ -898,7 +904,10 @@ function pinBloque(pz, i){
   caraP.textContent = pl;
   var caraF = document.createElement('div');
   caraF.className = 'cara frase';
-  caraF.textContent = fr || pl;
+  var fx = document.createElement('span');
+  fx.className = 'fx';
+  fx.textContent = fr || pl;
+  caraF.appendChild(fx);
   var puntos = document.createElement('div');
   puntos.className = 'puntos';
   puntos.innerHTML = '<i class="on"></i><i></i>';
@@ -913,13 +922,6 @@ function pinBloque(pz, i){
     var volteada = div.classList.contains('volteada');
     vs[0].classList.toggle('on', !volteada);
     vs[1].classList.toggle('on', volteada);
-    if (volteada) {
-      requestAnimationFrame(function(){
-        if (caraF.scrollHeight > div.clientHeight - 6) div.classList.add('alta');
-      });
-    } else {
-      div.classList.remove('alta');
-    }
     marcarTipVisto();
   });
 
@@ -974,6 +976,9 @@ function vigilar(){
 }
 
 function pintar(){
+  var firma = JSON.stringify([estado.nombre, estado.filas]);
+  if (firma === ultimaFirma) return; // nada cambio: quietud absoluta
+  ultimaFirma = firma;
   var piezas = agrupar(estado.filas);
   el.inner.innerHTML = '';
   cerrarMenus();
@@ -988,28 +993,42 @@ function pintar(){
 
   for (var p = 0; p < piezas.length; p++) {
     var pz = piezas[p];
-    var candidatos = [];
-    if (!pz.fuera['tarjeta']) candidatos.push({ el: pinTarjeta(pz), esTarjeta: true });
+    // Azar domado: las palabras se barajan entre si, las piezas anchas
+    // entre si, dentro de una estructura de pares que jamas deja hoyos.
+    var bloques = [];
+    var anchas = [];
     if (pz.payload) {
-      if (!pz.fuera['bloque0']) candidatos.push({ el: pinBloque(pz, 0) });
-      if (!pz.fuera['bloque1']) candidatos.push({ el: pinBloque(pz, 1) });
-      if (!pz.fuera['bloque2']) candidatos.push({ el: pinBloque(pz, 2) });
-      if (!pz.fuera['bloque3']) candidatos.push({ el: pinBloque(pz, 3) });
-      if (!pz.fuera['bocado']) candidatos.push({ el: pinNota(pz, 'bocado') });
-      if (!pz.fuera['eco']) candidatos.push({ el: pinNota(pz, 'eco') });
+      if (!pz.fuera['bloque0']) bloques.push(pinBloque(pz, 0));
+      if (!pz.fuera['bloque1']) bloques.push(pinBloque(pz, 1));
+      if (!pz.fuera['bloque2']) bloques.push(pinBloque(pz, 2));
+      if (!pz.fuera['bloque3']) bloques.push(pinBloque(pz, 3));
+      if (!pz.fuera['bocado']) anchas.push(pinNota(pz, 'bocado'));
+      if (!pz.fuera['eco']) anchas.push(pinNota(pz, 'eco'));
     }
-    if (!pz.fuera['og']) candidatos.push({ el: pinOg(pz) });
-    barajar(candidatos, pz.catalogo + ":" + pz.slug);
+    if (!pz.fuera['og']) anchas.push(pinOg(pz));
+    if (!pz.fuera['tarjeta']) anchas.push(pinTarjeta(pz));
+    bloques = bloques.filter(Boolean);
+    anchas = anchas.filter(Boolean);
+    barajar(bloques, 'b:' + pz.slug);
+    barajar(anchas, 'a:' + pz.slug);
+
     var pins = [pinHead(pz)];
-    for (var c = 0; c < candidatos.length; c++) if (candidatos[c].el) pins.push(candidatos[c].el);
+    var bi = 0, ai = 0;
+    while (bi < bloques.length || ai < anchas.length) {
+      if (bi < bloques.length) { pins.push(bloques[bi++]); if (bi < bloques.length) pins.push(bloques[bi++]); }
+      if (ai < anchas.length) pins.push(anchas[ai++]);
+    }
 
     for (var q = 0; q < pins.length; q++) {
       if (!pins[q]) continue;
       if (pins[q].classList.contains('pin-bloque')) hayBloques = true;
       el.inner.appendChild(pins[q]);
-      ob.observe(pins[q]);
+      if (primeraPintura) ob.observe(pins[q]);
+      else pins[q].classList.add('ver');
     }
   }
+
+  primeraPintura = false;
 
   if (hayBloques && !lsGet(LS_TIP)) {
     el.tipTxt.textContent = 'Toca una palabra para voltear su frase';
