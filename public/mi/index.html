@@ -163,6 +163,7 @@ body::before {
   transition: opacity .6s cubic-bezier(0.19,1,0.22,1), transform .6s cubic-bezier(0.19,1,0.22,1);
 }
 .pin.ver { opacity: 1; transform: translateY(0) scale(1); }
+.pin.encima { z-index: 60; }
 
 /* Reparto exacto: la tarjeta define la altura del lienzo y la
    columna vecina reparte esa altura entre sus piezas (1fr cada
@@ -392,14 +393,14 @@ body::before {
 .pin-bloque .cara.palabra {
   font-family: 'Archivo', -apple-system, BlinkMacSystemFont, sans-serif;
   font-weight: 700;
-  font-size: clamp(15px, 13cqw, 31px);
+  font-size: clamp(15px, min(13cqw, 36cqh), 31px);
   letter-spacing: .005em;
   line-height: 1.12;
 }
 .pin-bloque .cara.frase {
   font-family: 'Archivo', sans-serif;
   font-weight: 500;
-  font-size: clamp(12px, 6.6cqw, 16.5px);
+  font-size: clamp(11.5px, min(6.6cqw, 16cqh), 16.5px);
   line-height: 1.45;
   opacity: 0;
   transform: scale(.97);
@@ -909,7 +910,11 @@ function quitar(pz, componente, pinEl){
 
 /* ---------- Menu de tres puntos ---------- */
 function cerrarMenus(){
-  if (menuAbierto) { menuAbierto.classList.remove('ver'); menuAbierto = null; }
+  if (menuAbierto) {
+    menuAbierto.m.classList.remove('ver');
+    menuAbierto.p.classList.remove('encima');
+    menuAbierto = null;
+  }
 }
 document.addEventListener('click', function(ev){
   if (!ev.target.closest('.menu') && !ev.target.closest('.tres')) cerrarMenus();
@@ -962,7 +967,13 @@ function armarMenu(pz, componente, pinEl, descargaUrl, descargaOgUrl){
     ev.stopPropagation();
     var abierto = menu.classList.contains('ver');
     cerrarMenus();
-    if (!abierto) { menu.classList.add('ver'); menuAbierto = menu; armado = false; quit.textContent = 'Quitar de mi espiral'; }
+    if (!abierto) {
+      menu.classList.add('ver');
+      pinEl.classList.add('encima');
+      menuAbierto = { m: menu, p: pinEl };
+      armado = false;
+      quit.textContent = 'Quitar de mi espiral';
+    }
   });
 
   pinEl.appendChild(menu);
@@ -1242,7 +1253,20 @@ function pintar(){
       if (anchas.length) rejilla.appendChild(marcar(tomarPareja(), 1));
       filasR++;
     }
-    while (anchas.length) { rejilla.appendChild(marcar(anchas.shift(), 2)); filasR++; }
+    var MAXR = 3;
+    while (anchas.length && filasR < MAXR) { rejilla.appendChild(marcar(anchas.shift(), 2)); filasR++; }
+
+    // Las que no caben con altura digna descienden a la banda inferior
+    var banda = null;
+    if (anchas.length) {
+      banda = document.createElement('div');
+      banda.className = 'lienzo plano banda';
+      while (anchas.length >= 2) {
+        banda.appendChild(marcar(anchas.shift(), 2));
+        banda.appendChild(marcar(anchas.shift(), 2));
+      }
+      if (anchas.length === 1) banda.appendChild(marcar(anchas.shift(), 4));
+    }
 
     var hayMini = mini.children.length > 0;
     if (hayMini) lienzo.appendChild(mini);
@@ -1254,6 +1278,7 @@ function pintar(){
     lienzo.style.setProperty('--filasR', Math.max(filasR, 1));
 
     var pins = [pinHead(pz), lienzo];
+    if (banda) pins.push(banda);
 
     hayBloques = hayBloques || bloques.length > 0;
     for (var q = 0; q < pins.length; q++) {
