@@ -1,5 +1,5 @@
 /* ============================================================
-   TRIGGUI ESPIRAL · Bóveda v1.0.0
+   TRIGGUI ESPIRAL · Bóveda v1.1.0
    Script standalone. Lee la pestaña de personas, escribe SOLO
    en la pestaña estrellas. Nunca toca el proyecto sagrado.
 
@@ -8,27 +8,39 @@
    2) Columnas localizadas por NOMBRE de encabezado, no índice.
    3) El ID del archivo vive en Script Properties: SPREADSHEET_ID.
    4) La clave del miembro jamás se registra en logs.
+   5) Bitácora append-only: quitar es un evento, no un borrado.
 
    PUERTAS:
    GET  →  ping: {ok, servicio, v}
-   POST →  accion=espiral  {clave}
-             → {ok, nombre, estrellas:[{ts,slug,catalogo,evento,titulo,portada}]}
-           accion=marcar   {clave, slug, catalogo, evento, titulo, portada}
-             evento: "estrella" (tap ✦, idempotente por slug)
-                     "releida"  (reapertura desde la espiral, bitácora)
-   Errores: {ok:false, error:"clave"|"accion"|"slug"|"ocupado"|"setup: ..."|"interno"}
+   POST →  accion=espiral {clave}
+             → {ok, nombre, estrellas:[{ts,slug,catalogo,evento,
+                titulo,portada,componente,payload}]}
+           accion=marcar  {clave, slug, catalogo, evento, titulo,
+                           portada, componente?, payload?}
+             evento: "estrella" (idempotente por slug)
+                     "combo"    (idempotente por slug; payload JSON
+                                 con palabras/frases/colores/textColors
+                                 /bocado/eco copiados del origen)
+                     "releida"  (bitácora de reapertura)
+           accion=quitar  {clave, slug, catalogo, componente}
+             componente: bloque0|bloque1|bloque2|bloque3|bocado|eco
+                         |tarjeta|og|todo
+   Errores: {ok:false, error:"clave"|"accion"|"slug"|"componente"
+             |"payload"|"ocupado"|"setup: ..."|"interno"}
    ============================================================ */
 
 'use strict';
 
-var VERSION = '1.0.0';
+var VERSION = '1.1.0';
 var TAB_PERSONAS = 'Triggui Emails Prueba';
 var TAB_ESTRELLAS = 'estrellas';
 var COL_NOMBRE = 'Nombre';
 var COL_EMAIL = 'Email';
 var COL_CLAVE = 'espiral_clave';
-var ENCABEZADOS_ESTRELLAS = ['ts', 'email', 'slug', 'catalogo', 'evento', 'titulo', 'portada_url'];
-var EVENTOS_VALIDOS = { estrella: true, releida: true };
+var ENCABEZADOS_ESTRELLAS = ['ts', 'email', 'slug', 'catalogo', 'evento', 'titulo', 'portada_url', 'componente', 'payload'];
+var EVENTOS_VALIDOS = { estrella: true, releida: true, combo: true };
+var COMPONENTES_VALIDOS = { bloque0: true, bloque1: true, bloque2: true, bloque3: true, bocado: true, eco: true, tarjeta: true, og: true, todo: true, combo: true };
+var PAYLOAD_MAX = 6000;
 
 /* ----------------- Utilidades puras ----------------- */
 
@@ -65,14 +77,36 @@ function _hojaPersonas(ss) {
   return h;
 }
 
-// La pestaña estrellas es territorio propio: si no existe, nace con encabezados.
+// La pestaña estrellas es territorio propio: si no existe, nace con
+// encabezados. Si existe de la v1.0, gana sus columnas nuevas al final
+// (componente, payload) sin tocar jamás lo ya escrito.
 function _hojaEstrellas(ss) {
   var h = ss.getSheetByName(TAB_ESTRELLAS);
   if (!h) {
     h = ss.insertSheet(TAB_ESTRELLAS);
     h.appendRow(ENCABEZADOS_ESTRELLAS);
+    return h;
+  }
+  var ultCol = h.getLastColumn();
+  var fila1 = ultCol > 0 ? h.getRange(1, 1, 1, ultCol).getValues()[0] : [];
+  var presentes = {};
+  for (var i = 0; i < fila1.length; i++) presentes[String(fila1[i]).trim()] = true;
+  var faltan = [];
+  for (var j = 0; j < ENCABEZADOS_ESTRELLAS.length; j++) {
+    if (!presentes[ENCABEZADOS_ESTRELLAS[j]]) faltan.push(ENCABEZADOS_ESTRELLAS[j]);
+  }
+  if (faltan.length) {
+    h.getRange(1, ultCol + 1, 1, faltan.length).setValues([faltan]);
   }
   return h;
+}
+
+// Mapa de columnas de estrellas por NOMBRE (regla de hierro 2).
+function _idxEstrellas(hoja) {
+  var enc = hoja.getRange(1, 1, 1, hoja.getLastColumn()).getValues()[0];
+  var idx = {};
+  for (var i = 0; i < enc.length; i++) idx[String(enc[i]).trim()] = i;
+  return idx;
 }
 
 /* ----------------- Personas (solo lectura) ----------------- */
@@ -114,27 +148,57 @@ function _personaPorClave(clave) {
 /* ----------------- Estrellas ----------------- */
 
 function _filasDe(hojaEstrellas, email) {
+  var idx = _idxEstrellas(hojaEstrellas);
   var datos = hojaEstrellas.getDataRange().getValues();
+  var iTs = idx['ts'], iEm = idx['email'], iSl = idx['slug'], iCa = idx['catalogo'];
+  var iEv = idx['evento'], iTi = idx['titulo'], iPo = idx['portada_url'];
+  var iCo = idx['componente'], iPa = idx['payload'];
   var out = [];
   for (var f = 1; f < datos.length; f++) {
-    if (String(datos[f][1] || '').trim().toLowerCase() === email) {
+    if (String(datos[f][iEm] || '').trim().toLowerCase() === email) {
       out.push({
-        ts: datos[f][0] instanceof Date ? datos[f][0].toISOString() : String(datos[f][0] || ''),
-        slug: String(datos[f][2] || ''),
-        catalogo: String(datos[f][3] || ''),
-        evento: String(datos[f][4] || ''),
-        titulo: String(datos[f][5] || ''),
-        portada: String(datos[f][6] || '')
+        ts: datos[f][iTs] instanceof Date ? datos[f][iTs].toISOString() : String(datos[f][iTs] || ''),
+        slug: String(datos[f][iSl] || ''),
+        catalogo: String(datos[f][iCa] || ''),
+        evento: String(datos[f][iEv] || ''),
+        titulo: String(datos[f][iTi] || ''),
+        portada: String(datos[f][iPo] || ''),
+        componente: iCo === undefined ? '' : String(datos[f][iCo] || ''),
+        payload: iPa === undefined ? '' : String(datos[f][iPa] || '')
       });
     }
   }
   return out;
 }
 
-function _totalEstrellas(filas) {
+function _totalPiezas(filas) {
+  var vistos = {};
   var n = 0;
-  for (var i = 0; i < filas.length; i++) if (filas[i].evento === 'estrella') n++;
+  for (var i = 0; i < filas.length; i++) {
+    var f = filas[i];
+    if ((f.evento === 'estrella' || f.evento === 'combo') && !vistos[f.slug]) {
+      vistos[f.slug] = true;
+      n++;
+    }
+  }
   return n;
+}
+
+function _appendFila(hoja, persona, slug, catalogo, evento, titulo, portada, componente, payload) {
+  var idx = _idxEstrellas(hoja);
+  var ancho = hoja.getLastColumn();
+  var fila = [];
+  for (var i = 0; i < ancho; i++) fila.push('');
+  fila[idx['ts']] = new Date();
+  fila[idx['email']] = persona.email;
+  fila[idx['slug']] = slug;
+  fila[idx['catalogo']] = catalogo;
+  fila[idx['evento']] = evento;
+  fila[idx['titulo']] = titulo;
+  fila[idx['portada_url']] = portada;
+  if (idx['componente'] !== undefined) fila[idx['componente']] = componente || '';
+  if (idx['payload'] !== undefined) fila[idx['payload']] = payload || '';
+  hoja.appendRow(fila);
 }
 
 function _registrar(persona, p) {
@@ -144,24 +208,52 @@ function _registrar(persona, p) {
   var catalogo = String(p.catalogo) === 'kids' ? 'kids' : 'adulto';
   var titulo = _limpia(p.titulo, 120);
   var portada = /^https:\/\//.test(String(p.portada || '')) ? _limpia(p.portada, 300) : '';
+  var componente = String(p.componente || '').trim().toLowerCase();
+  if (componente && !COMPONENTES_VALIDOS[componente]) return { ok: false, error: 'componente' };
 
-  // Candado: dos taps simultáneos jamás duplican una estrella.
+  var payload = '';
+  if (p.payload) {
+    var crudo = String(p.payload).trim();
+    if (crudo.length > PAYLOAD_MAX || crudo.charAt(0) !== '{') return { ok: false, error: 'payload' };
+    try { JSON.parse(crudo); } catch (e) { return { ok: false, error: 'payload' }; }
+    payload = crudo;
+  }
+
+  // Candado: dos taps simultáneos jamás duplican.
   var lock = LockService.getScriptLock();
   if (!lock.tryLock(8000)) return { ok: false, error: 'ocupado' };
   try {
     var hoja = _hojaEstrellas(persona._ss);
     var filas = _filasDe(hoja, persona.email);
-    if (evento === 'estrella') {
+    if (evento === 'estrella' || evento === 'combo') {
       for (var i = 0; i < filas.length; i++) {
-        if (filas[i].slug === slug && filas[i].evento === 'estrella') {
-          return { ok: true, evento: 'estrella', ya_existia: true, total: _totalEstrellas(filas) };
+        if (filas[i].slug === slug && filas[i].evento === evento) {
+          return { ok: true, evento: evento, ya_existia: true, total: _totalPiezas(filas) };
         }
       }
     }
     // Solo agrega renglones al final: nunca edita lo existente.
-    hoja.appendRow([new Date(), persona.email, slug, catalogo, evento, titulo, portada]);
-    var total = _totalEstrellas(filas) + (evento === 'estrella' ? 1 : 0);
-    return { ok: true, evento: evento, ya_existia: false, total: total };
+    _appendFila(hoja, persona, slug, catalogo, evento, titulo, portada, componente, payload);
+    filas.push({ slug: slug, evento: evento });
+    return { ok: true, evento: evento, ya_existia: false, total: _totalPiezas(filas) };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function _quitar(persona, p) {
+  var slug = _limpia(p.slug, 80).toLowerCase();
+  if (!slug) return { ok: false, error: 'slug' };
+  var catalogo = String(p.catalogo) === 'kids' ? 'kids' : 'adulto';
+  var componente = String(p.componente || '').trim().toLowerCase();
+  if (!componente || !COMPONENTES_VALIDOS[componente]) return { ok: false, error: 'componente' };
+
+  var lock = LockService.getScriptLock();
+  if (!lock.tryLock(8000)) return { ok: false, error: 'ocupado' };
+  try {
+    var hoja = _hojaEstrellas(persona._ss);
+    _appendFila(hoja, persona, slug, catalogo, 'quitar', '', '', componente, '');
+    return { ok: true, evento: 'quitar', componente: componente };
   } finally {
     lock.releaseLock();
   }
@@ -187,6 +279,9 @@ function doPost(e) {
     if (accion === 'marcar') {
       return _json(_registrar(persona, p));
     }
+    if (accion === 'quitar') {
+      return _json(_quitar(persona, p));
+    }
     return _json({ ok: false, error: 'accion' });
   } catch (err) {
     var msj = String((err && err.message) || err);
@@ -203,5 +298,6 @@ function sondaBoveda() {
   Logger.log('Archivo: ' + ss.getName());
   Logger.log('Personas: ' + (hoja.getLastRow() - 1) + ' filas');
   Logger.log('Email en idx ' + idx[COL_EMAIL] + ' · espiral_clave en idx ' + idx[COL_CLAVE]);
-  Logger.log('Pestaña estrellas: ' + (ss.getSheetByName(TAB_ESTRELLAS) ? 'existe' : 'nacerá en el primer uso'));
+  var est = ss.getSheetByName(TAB_ESTRELLAS);
+  Logger.log('Pestaña estrellas: ' + (est ? est.getLastColumn() + ' columnas' : 'nacerá en el primer uso'));
 }
