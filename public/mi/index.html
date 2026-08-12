@@ -40,7 +40,7 @@ body::before {
   background:
     radial-gradient(ellipse at 30% 20%, rgba(40, 100, 220, 0.22), transparent 65%),
     radial-gradient(ellipse at 70% 80%, rgba(80, 230, 200, 0.11), transparent 65%);
-  z-index: -2;
+  z-index: 0;
   pointer-events: none;
   opacity: 0.9;
 }
@@ -51,7 +51,7 @@ body::before {
   border-radius: 50%;
   filter: blur(70px);
   pointer-events: none;
-  z-index: -1;
+  z-index: 0;
   will-change: transform;
 }
 .aurora-1 {
@@ -120,6 +120,7 @@ body::before {
 /* ---------- Tablero: Tetris de grid denso ---------- */
 #tablero {
   position: fixed;
+  z-index: 1;
   inset: 0;
   display: none;
   overflow-y: auto;
@@ -131,18 +132,13 @@ body::before {
 #tablero.ver { display: block; }
 
 #tableroInner {
-  --cols: 2;
-  --gap: 10px;
-  max-width: 1560px;
+  --gap: 12px;
+  max-width: 1180px;
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(var(--cols), 1fr);
-  grid-auto-rows: auto;
-  align-items: start;
-  gap: var(--gap);
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
 }
-@media (min-width: 900px)  { #tableroInner { --cols: 4; --gap: 12px; } }
-@media (min-width: 1440px) { #tableroInner { --cols: 6; --gap: 14px; } }
 
 .pin {
   position: relative;
@@ -153,17 +149,44 @@ body::before {
 }
 .pin.ver { opacity: 1; transform: translateY(0) scale(1); }
 
-/* Geometria modular: cada pieza declara su proporcion.
-   Bloques 1:1, notas y og 2:1 (misma altura de fila, armonia
-   perfecta), tarjeta en fila propia con alto natural. */
-.f-head    { grid-column: 1 / -1; }
-.f-bloque  { grid-column: span 1; aspect-ratio: 1 / 1; }
-.f-nota    { grid-column: span 2; aspect-ratio: 2 / 1; }
-.f-og      { grid-column: span 2; aspect-ratio: 2 / 1; }
-.f-tarjeta {
-  grid-column: 1 / -1;
-  justify-self: center;
-  width: min(100%, 520px);
+/* Reparto exacto: la tarjeta define la altura del lienzo y la
+   columna vecina reparte esa altura entre sus piezas (1fr cada
+   una). Cero aproximaciones, cero huecos, en cualquier pantalla. */
+.lienzo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+.pareja {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gap);
+}
+.resto {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+.f-bloque { aspect-ratio: 1 / 1; }
+.f-nota   { aspect-ratio: 2 / 1; }
+.f-og     { aspect-ratio: 2 / 1; }
+.f-tarjeta { width: 100%; }
+
+@media (min-width: 900px) {
+  .lienzo {
+    display: grid;
+    grid-template-columns: minmax(0, 440px) 1fr;
+    grid-template-rows: repeat(var(--filas, 4), 1fr);
+    align-items: stretch;
+    gap: var(--gap);
+  }
+  .f-tarjeta { grid-column: 1; grid-row: 1 / -1; }
+  .lienzo > .pareja { grid-column: 2; min-height: 0; }
+  .resto { display: contents; }
+  .resto > * { grid-column: 2; min-height: 0; }
+  .f-bloque { aspect-ratio: auto; height: 100%; }
+  .f-nota   { aspect-ratio: auto; height: 100%; }
+  .f-og     { aspect-ratio: auto; height: 100%; }
 }
 
 .pin-og {
@@ -1022,8 +1045,8 @@ function pintar(){
 
   for (var p = 0; p < piezas.length; p++) {
     var pz = piezas[p];
-    // Azar domado: las palabras se barajan entre si, las piezas anchas
-    // entre si, dentro de una estructura de pares que jamas deja hoyos.
+    // Reparto exacto: palabras barajadas entre si, anchas entre si;
+    // la tarjeta ancla el lienzo y todo lo demas reparte su altura.
     var bloques = [];
     var anchas = [];
     if (pz.payload) {
@@ -1035,25 +1058,44 @@ function pintar(){
       if (!pz.fuera['eco']) anchas.push(pinNota(pz, 'eco'));
     }
     if (!pz.fuera['og']) anchas.push(pinOg(pz));
-    if (!pz.fuera['tarjeta']) anchas.push(pinTarjeta(pz));
     bloques = bloques.filter(Boolean);
     anchas = anchas.filter(Boolean);
     barajar(bloques, 'b:' + pz.slug);
     barajar(anchas, 'a:' + pz.slug);
 
-    var pins = [pinHead(pz)];
-    var bi = 0, ai = 0;
-    while (bi < bloques.length || ai < anchas.length) {
-      if (bi < bloques.length) { pins.push(bloques[bi++]); if (bi < bloques.length) pins.push(bloques[bi++]); }
-      if (ai < anchas.length) pins.push(anchas[ai++]);
-    }
+    var lienzo = document.createElement('div');
+    lienzo.className = 'lienzo';
 
+    var p1 = document.createElement('div'); p1.className = 'pareja';
+    var p2 = document.createElement('div'); p2.className = 'pareja';
+    for (var b = 0; b < bloques.length; b++) (b < 2 ? p1 : p2).appendChild(bloques[b]);
+
+    var resto = document.createElement('div');
+    resto.className = 'resto';
+    for (var a = 0; a < anchas.length; a++) resto.appendChild(anchas[a]);
+
+    if (p1.children.length) lienzo.appendChild(p1);
+    var conTarjeta = !pz.fuera['tarjeta'];
+    if (conTarjeta) lienzo.appendChild(pinTarjeta(pz));
+    if (p2.children.length) lienzo.appendChild(p2);
+    lienzo.appendChild(resto);
+
+    var filas = (p1.children.length ? 1 : 0) + (p2.children.length ? 1 : 0) + anchas.length;
+    lienzo.style.setProperty('--filas', Math.max(filas, 1));
+
+    var pins = [pinHead(pz), lienzo];
+
+    hayBloques = hayBloques || bloques.length > 0;
     for (var q = 0; q < pins.length; q++) {
       if (!pins[q]) continue;
-      if (pins[q].classList.contains('pin-bloque')) hayBloques = true;
       el.inner.appendChild(pins[q]);
-      if (primeraPintura) ob.observe(pins[q]);
-      else pins[q].classList.add('ver');
+      var animables = pins[q].classList.contains('lienzo')
+        ? pins[q].querySelectorAll('.pin')
+        : [pins[q]];
+      for (var w = 0; w < animables.length; w++) {
+        if (primeraPintura) ob.observe(animables[w]);
+        else animables[w].classList.add('ver');
+      }
     }
   }
 
