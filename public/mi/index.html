@@ -156,19 +156,15 @@ body::before {
   flex-direction: column;
   gap: var(--gap);
 }
-.pareja {
+/* Rejilla de ranuras: 2 por fila. Cada pieza ocupa 1 o 2 segun
+   el escenario; la paridad garantiza cero medias-filas huerfanas. */
+.mini, .rejilla {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--gap);
 }
-.resto {
-  display: flex;
-  flex-direction: column;
-  gap: var(--gap);
-}
-.f-bloque { aspect-ratio: 1 / 1; }
-.f-nota   { aspect-ratio: 2 / 1; }
-.f-og     { aspect-ratio: 2 / 1; }
+.s1 { grid-column: span 1; aspect-ratio: 1 / 1; }
+.s2 { grid-column: span 2; aspect-ratio: 2 / 1; }
 .f-tarjeta { width: 100%; }
 
 @media (min-width: 900px) {
@@ -184,12 +180,17 @@ body::before {
   .pin-tarjeta { height: 100%; overflow: hidden; }
   .pin-tarjeta img { height: 100%; width: auto; max-width: 100%; margin: 0 auto; }
   .f-tarjeta { grid-column: 1; grid-row: 1 / -1; }
-  .lienzo > .pareja { grid-column: 2; min-height: 0; overflow: hidden; }
-  .resto { display: contents; }
-  .resto > * { grid-column: 2; min-height: 0; }
-  .f-bloque { aspect-ratio: auto; height: 100%; min-height: 0; }
-  .f-nota   { aspect-ratio: auto; height: 100%; min-height: 0; overflow: hidden; }
-  .f-og     { aspect-ratio: auto; height: 100%; min-height: 0; }
+  .mini { grid-column: 2; grid-row: 1; min-height: 0; }
+  .rejilla {
+    grid-column: 2;
+    grid-row: 2 / -1;
+  }
+  .lienzo.sin-mini .rejilla {
+    grid-row: 1 / -1;
+    grid-template-rows: repeat(var(--filasR, 1), minmax(0, 1fr));
+    min-height: 0;
+  }
+  .s1, .s2 { aspect-ratio: auto; height: 100%; min-height: 0; overflow: hidden; }
 }
 
 .pin-og {
@@ -197,6 +198,10 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: center;
+  background: rgba(10, 12, 17, .55);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 24px;
+  padding: 6px;
 }
 .pin-og img {
   max-width: 100%;
@@ -259,6 +264,10 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: center;
+  background: rgba(10, 12, 17, .55);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 24px;
+  padding: 6px;
 }
 .pin-og img {
   max-width: 100%;
@@ -1104,22 +1113,41 @@ function pintar(){
     var lienzo = document.createElement('div');
     lienzo.className = 'lienzo';
 
-    var p1 = document.createElement('div'); p1.className = 'pareja';
-    var p2 = document.createElement('div'); p2.className = 'pareja';
-    for (var b = 0; b < bloques.length; b++) (b < 2 ? p1 : p2).appendChild(bloques[b]);
+    // El empacador: 2 ranuras por fila. Bloques ocupan 1; og y notas
+    // ocupan 2 pero se ENCOGEN a 1 cuando un bloque queda solitario:
+    // paridad perfecta, cero huecos, en cualquier escenario.
+    function marcar(elx, ranuras){ elx.classList.add(ranuras === 1 ? 's1' : 's2'); return elx; }
 
-    var resto = document.createElement('div');
-    resto.className = 'resto';
-    for (var a = 0; a < anchas.length; a++) resto.appendChild(anchas[a]);
+    var mini = document.createElement('div');
+    mini.className = 'mini';
+    var restoBloques = bloques.slice();
+    for (var m = 0; m < 2 && restoBloques.length; m++) mini.appendChild(marcar(restoBloques.shift(), 1));
+    if (mini.children.length === 1 && anchas.length) mini.appendChild(marcar(anchas.shift(), 1));
 
-    if (p1.children.length) lienzo.appendChild(p1);
+    var rejilla = document.createElement('div');
+    rejilla.className = 'rejilla';
+    var filasR = 0;
+    while (restoBloques.length >= 2) {
+      rejilla.appendChild(marcar(restoBloques.shift(), 1));
+      rejilla.appendChild(marcar(restoBloques.shift(), 1));
+      filasR++;
+    }
+    if (restoBloques.length === 1) {
+      rejilla.appendChild(marcar(restoBloques.shift(), 1));
+      if (anchas.length) rejilla.appendChild(marcar(anchas.shift(), 1));
+      filasR++;
+    }
+    while (anchas.length) { rejilla.appendChild(marcar(anchas.shift(), 2)); filasR++; }
+
     var conTarjeta = !pz.fuera['tarjeta'];
+    var hayMini = mini.children.length > 0;
+    if (hayMini) lienzo.appendChild(mini);
     if (conTarjeta) lienzo.appendChild(pinTarjeta(pz));
-    if (p2.children.length) lienzo.appendChild(p2);
-    lienzo.appendChild(resto);
+    if (rejilla.children.length) lienzo.appendChild(rejilla);
+    if (!hayMini) lienzo.classList.add('sin-mini');
 
-    var filas = (p1.children.length ? 1 : 0) + (p2.children.length ? 1 : 0) + anchas.length;
-    lienzo.style.setProperty('--filas', Math.max(filas, 1));
+    lienzo.style.setProperty('--filas', (hayMini ? 1 : 0) + Math.max(filasR, hayMini ? 0 : 1));
+    lienzo.style.setProperty('--filasR', Math.max(filasR, 1));
 
     var pins = [pinHead(pz), lienzo];
 
