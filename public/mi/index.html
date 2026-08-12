@@ -120,10 +120,14 @@ body::before {
 }
 #barra .quien {
   font-family: 'Poppins', sans-serif;
-  font-size: 12.5px;
+  font-size: 14.5px;
   font-weight: 500;
   letter-spacing: .02em;
-  color: rgba(255,255,255,.85);
+  color: rgba(255,255,255,.88);
+  max-width: min(46vw, 240px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 
@@ -131,6 +135,7 @@ body::before {
 #tablero {
   position: fixed;
   z-index: 1;
+  overscroll-behavior-y: contain;
   inset: 0;
   display: none;
   overflow-y: auto;
@@ -202,6 +207,16 @@ body::before {
     min-height: 0;
   }
   .s1, .s2 { aspect-ratio: auto; height: 100%; min-height: 0; overflow: hidden; }
+  .lienzo.sin-tarjeta {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+  }
+  .lienzo.sin-tarjeta .mini, .lienzo.sin-tarjeta .rejilla {
+    grid-template-rows: none;
+  }
+  .lienzo.sin-tarjeta .s1 { aspect-ratio: 1 / 1; height: auto; }
+  .lienzo.sin-tarjeta .s2 { aspect-ratio: 2 / 1; height: auto; }
 }
 
 .pin-og {
@@ -504,6 +519,29 @@ body::before {
 .menu button:active, .menu a:active { background: rgba(255,255,255,.08); }
 .menu .peligro { color: #ff9d9d; }
 
+#ptr {
+  position: fixed;
+  top: 58px;
+  left: 50%;
+  z-index: 56;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--chipb, rgba(8, 10, 14, .35));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translate(-50%, -56px);
+  opacity: 0;
+  transition: transform .25s ease, opacity .25s ease;
+  pointer-events: none;
+}
+#ptr svg { width: 18px; height: 18px; }
+#ptr.girando svg { animation: ptrGira .9s linear infinite; }
+@keyframes ptrGira { to { transform: rotate(360deg); } }
+
 /* ---------- Tooltip de primera vez ---------- */
 #tip {
   position: fixed;
@@ -678,6 +716,7 @@ body::before {
   <p class="t2">Cuando marques un libro que te llegue, aquí nacerá su colección de piezas: palabras, frases y tarjetas creciendo contigo.</p>
 </div>
 
+<div id="ptr"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12.6 12.2 a2.6 2.6 0 1 1 -2.6 2.6 a5.2 5.2 0 1 1 5.2 -5.2 a8.2 8.2 0 1 1 -8.4 8.3"/></svg></div>
 <div id="tablero"><div id="tableroInner"></div></div>
 
 <div id="tip"><button class="x" id="tipX" aria-label="Cerrar">&times;</button><span id="tipTxt"></span></div>
@@ -1169,6 +1208,7 @@ function pintar(){
     if (conTarjeta) lienzo.appendChild(pinTarjeta(pz));
     if (rejilla.children.length) lienzo.appendChild(rejilla);
     if (!hayMini) lienzo.classList.add('sin-mini');
+    if (!conTarjeta) lienzo.classList.add('sin-tarjeta');
 
     lienzo.style.setProperty('--filas', (hayMini ? 1 : 0) + Math.max(filasR, hayMini ? 0 : 1));
     lienzo.style.setProperty('--filasR', Math.max(filasR, 1));
@@ -1244,6 +1284,57 @@ el.entrar.addEventListener('click', function(){
   cargarConClave(c, true);
 });
 el.clave.addEventListener('keydown', function(ev){ if (ev.key === 'Enter') el.entrar.click(); });
+
+/* ---------- Refresh con swipe-down (solo tactil, a prueba de mundos) ---------- */
+(function ptrInit(){
+  var ind = document.getElementById('ptr');
+  var y0 = 0, activo = false, d = 0, girando = false;
+  function pinta(){
+    var t = Math.min(d, 90);
+    ind.style.opacity = t > 6 ? Math.min(t / 60, 1) : 0;
+    ind.style.transform = 'translate(-50%, ' + (-56 + t) + 'px) rotate(' + (t * 3) + 'deg)';
+  }
+  function reposo(){
+    ind.style.opacity = 0;
+    ind.style.transform = 'translate(-50%, -56px)';
+    ind.classList.remove('girando');
+  }
+  el.tablero.addEventListener('touchstart', function(ev){
+    if (girando) return;
+    if (el.tablero.scrollTop <= 0 && ev.touches.length === 1) {
+      y0 = ev.touches[0].clientY;
+      activo = true;
+      d = 0;
+    }
+  }, { passive: true });
+  el.tablero.addEventListener('touchmove', function(ev){
+    if (!activo || girando) return;
+    var dy = ev.touches[0].clientY - y0;
+    if (dy > 0 && el.tablero.scrollTop <= 0) {
+      ev.preventDefault();
+      d = dy * 0.5;
+      pinta();
+    } else {
+      activo = false;
+      reposo();
+    }
+  }, { passive: false });
+  el.tablero.addEventListener('touchend', function(){
+    if (!activo) return;
+    activo = false;
+    if (d > 58 && estado.clave) {
+      girando = true;
+      ind.classList.add('girando');
+      ind.style.opacity = 1;
+      ind.style.transform = 'translate(-50%, 12px)';
+      ultimaFirma = '';
+      cargarConClave(estado.clave, false);
+      setTimeout(function(){ girando = false; reposo(); }, 1000);
+    } else {
+      reposo();
+    }
+  }, { passive: true });
+})();
 
 (function inicio(){
   var c = claveGuardada();
