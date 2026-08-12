@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" id="temaColor" content="#000000">
 <title>Tu espiral · Triggui</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1175,6 +1176,14 @@ function vigilar(){
   return observador;
 }
 
+function hexOscuro(hex, f){
+  var m = /^#?([0-9a-f]{6})$/i.exec(String(hex || ''));
+  if (!m) return '#000000';
+  var n = parseInt(m[1], 16);
+  function c(v){ v = Math.round(v * f); return (v < 16 ? '0' : '') + v.toString(16); }
+  return '#' + c((n >> 16) & 255) + c((n >> 8) & 255) + c(n & 255);
+}
+
 function hexRgba(hex, a){
   var m = /^#?([0-9a-f]{6})$/i.exec(String(hex || ''));
   if (!m) return '';
@@ -1199,6 +1208,8 @@ function tenirAurora(piezas){
   }
   var chip = acentos[0] ? hexRgba(acentos[0], 0.20) : '';
   if (chip) raiz.setProperty('--chipb', chip); else raiz.removeProperty('--chipb');
+  var tema = document.getElementById('temaColor');
+  if (tema) tema.setAttribute('content', acentos[0] ? hexOscuro(acentos[0], 0.16) : '#000000');
 }
 
 function pintar(){
