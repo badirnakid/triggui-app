@@ -1517,8 +1517,9 @@ body::before {
 /* ══ TG JUEGO: capa gemela del organismo (calco verbatim) ══ */
 #tgCapa{position:fixed;inset:0;z-index:600;background:#000;overflow:hidden}
 #tgCapa::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 28% 18%, color-mix(in srgb, var(--accent, #4A90E2) 14%, transparent), transparent 62%)}
-body.tg-editorial #tgCapa{display:none}
-body:not(.tg-editorial){overflow:hidden}
+body{overflow:hidden}
+body.tg-tarjeta .tg-cta{display:none !important}
+#revealOverlay{z-index:900}
 
 .tg-grid{position:absolute;inset:5vh 1.5vw;display:grid;gap:1vw}
 @media(orientation:landscape){.tg-grid{grid-template-columns:repeat(4,1fr)}}
@@ -1555,9 +1556,6 @@ body:not(.tg-editorial){overflow:hidden}
 #tgLupa{background:linear-gradient(135deg,#b2f8c8,#42d97c);color:#000}
 #tgLibro{background:linear-gradient(135deg,#ff8a00,#ff3d3d);color:#fff}
 #tgLike{background:linear-gradient(135deg,#ff416c,#ff4b2b);color:#fff}
-
-#tgVolver{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:12px;z-index:650;width:40px;height:40px;border-radius:50%;border:none;background:rgba(18,20,28,.92);color:#fff;font-size:17px;display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 0 0 1px rgba(255,255,255,.14),0 8px 22px rgba(0,0,0,.45)}
-body.tg-editorial #tgVolver{display:flex}
 
 #tgModal{display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;background:rgba(0,0,0,0.92);opacity:0;transition:opacity .3s ease}
 #tgModal.visible{display:flex;opacity:1}
@@ -2268,7 +2266,6 @@ setOverlayView('blocks');
   <button id="tgLibro" aria-label="Abrir tarjeta"><span>&#128214;</span></button>
   <button id="tgLike" aria-label="Guardar en mi espiral"><span>&#128525;</span></button>
 </div>
-<button id="tgVolver" aria-label="Volver al juego">&#10005;</button>
 <div id="tgModal"><div class="tg-mglass"><div class="tg-memoji" id="tgMEmoji">&#10024;</div><div class="tg-mtitle" id="tgMTitle"></div><div class="tg-mtext" id="tgMText"></div><div class="tg-mbtns"><button class="tg-btn tg-bp" id="tgMP"></button><button class="tg-btn tg-bs" id="tgMS"></button></div></div></div>
 <div id="tgToast"></div>
 <script id="tg-juego-js">
@@ -2277,6 +2274,9 @@ setOverlayView('blocks');
 var st = (typeof state !== 'undefined' && state) ? state : null;
 var capa = document.getElementById('tgCapa');
 if (!st || !capa) { if (capa) capa.style.display = 'none'; return; }
+
+var __becerem = document.getElementById('bocadoEcoOverlay');
+if (__becerem) __becerem.remove();
 
 var EXEC = 'https://script.google.com/macros/s/AKfycbwWcUceg333PMcmSsLbEUAsx3os8AJ3Wdmjruv7zshHTqNmoxTastOsDU1h7V8qPk0nIQ/exec';
 var LS_PAR = 'triggui_espiral_v1';
@@ -2323,7 +2323,6 @@ var bEsp = document.getElementById('tgEsp');
 var bLupa = document.getElementById('tgLupa');
 var bLibro = document.getElementById('tgLibro');
 var bLike = document.getElementById('tgLike');
-var volver = document.getElementById('tgVolver');
 var revealed = false;
 var portIdx = Math.floor(Math.random() * 4);
 
@@ -2384,11 +2383,28 @@ function buildPort(){
   return d;
 }
 
-function abrirTarjeta(){
-  document.body.classList.add('tg-editorial');
-  window.scrollTo(0, 0);
+var tarjetaRO = document.getElementById('revealOverlay');
+function cerrarTarjetaUI(){
+  document.body.classList.remove('tg-tarjeta');
+  if (tarjetaRO) {
+    tarjetaRO.classList.remove('visible');
+    tarjetaRO.style.display = '';
+    tarjetaRO.style.opacity = '';
+  }
 }
-volver.onclick = function(){ document.body.classList.remove('tg-editorial'); };
+function abrirTarjeta(){
+  if (!tarjetaRO) return;
+  document.body.classList.add('tg-tarjeta');
+  tarjetaRO.classList.add('visible');
+  tarjetaRO.style.display = 'flex';
+  tarjetaRO.style.opacity = '1';
+  var rc = tarjetaRO.querySelector('.reveal-card');
+  if (rc) { try { rc.scrollTop = 0; } catch(e){} }
+}
+(function(){
+  var bb = document.getElementById('btnBack');
+  if (bb) bb.addEventListener('click', cerrarTarjetaUI);
+})();
 bLibro.onclick = abrirTarjeta;
 bEsp.onclick = function(){ window.location.href = '/mi/'; };
 bLupa.onclick = function(){ window.location.href = 'https://app.triggui.com'; };
