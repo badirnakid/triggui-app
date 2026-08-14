@@ -2530,6 +2530,39 @@ function claveMiembro(){
   catch(e){ return ''; }
 }
 
+var OUTBOX = 'triggui_outbox_v1';
+function tgOutboxLeer(){
+  try { var a = JSON.parse(window.localStorage.getItem(OUTBOX) || '[]'); return Array.isArray(a) ? a : []; }
+  catch(e){ return []; }
+}
+function tgOutboxEscribir(a){
+  try { window.localStorage.setItem(OUTBOX, JSON.stringify(a.slice(-20))); } catch(e){}
+}
+function tgOutboxGuardar(id, q){
+  var a = tgOutboxLeer(); a.push({ id: id, q: q, ts: Date.now() }); tgOutboxEscribir(a);
+}
+function tgOutboxQuitar(id){
+  tgOutboxEscribir(tgOutboxLeer().filter(function(x){ return x.id !== id; }));
+}
+function tgEnviar(q, ok, mal){
+  var ctrl = null, t = null;
+  try { ctrl = new AbortController(); t = setTimeout(function(){ ctrl.abort(); }, 8000); } catch(e){}
+  fetch(EXEC, { method: 'POST', body: q, keepalive: true, signal: ctrl ? ctrl.signal : undefined })
+    .then(function(r){ return r.json(); })
+    .then(function(r){ if (t) clearTimeout(t); if (r && r.ok) ok(r); else mal(); })
+    .catch(function(){ if (t) clearTimeout(t); mal(); });
+}
+function tgOutboxVaciar(){
+  var a = tgOutboxLeer();
+  if (!a.length) return;
+  var i = 0;
+  (function paso(){
+    if (i >= a.length) return;
+    var e = a[i++];
+    tgEnviar(e.q, function(){ tgOutboxQuitar(e.id); paso(); }, function(){ paso(); });
+  })();
+}
+
 var likeBusy = false;
 bLike.onclick = function(){
   var r = bLike.getBoundingClientRect();
@@ -2592,20 +2625,19 @@ bLike.onclick = function(){
     s.textContent = 'Seguir aqu\u00ED';
     s.onclick = function(){ TgModal.close(); };
   }
-  fetch(EXEC, { method: 'POST', body: cuerpo, keepalive: true })
-    .then(function(res){ return res.json(); })
-    .then(function(res){
-      if (res && res.ok && res.ya_existia) {
-        completar('🌀', 'Ya vive en tu espiral', '\u00AB' + L.titulo + '\u00BB ya est\u00E1 contigo desde antes.<span class="hl">Tu espiral lo recuerda.</span>');
-      } else if (res && res.ok) {
-        completar('😍', 'Vive en tu espiral', '\u00AB' + L.titulo + '\u00BB se qued\u00F3 contigo: sus palabras, sus frases y su tarjeta.<span class="hl">Cuando lo necesites, ah\u00ED estar\u00E1.</span>');
-      } else {
-        completar('🌀', 'Guardado en camino', 'Tu espiral lo recibir\u00E1 en cuanto vuelva la se\u00F1al.');
-      }
-    })
-    .catch(function(){
-      completar('🌀', 'Guardado en camino', 'Tu espiral lo recibir\u00E1 en cuanto vuelva la se\u00F1al.');
-    });
+  var idBuzon = String(Date.now()) + '-' + Math.floor(Math.random() * 100000);
+  var qBuzon = cuerpo.toString();
+  tgOutboxGuardar(idBuzon, qBuzon);
+  tgEnviar(qBuzon, function(res){
+    tgOutboxQuitar(idBuzon);
+    if (res.ya_existia) {
+      completar('🌀', 'Ya vive en tu espiral', '\u00AB' + L.titulo + '\u00BB ya est\u00E1 contigo desde antes.<span class="hl">Tu espiral lo recuerda.</span>');
+    } else {
+      completar('😍', 'Vive en tu espiral', '\u00AB' + L.titulo + '\u00BB se qued\u00F3 contigo: sus palabras, sus frases y su tarjeta.<span class="hl">Cuando lo necesites, ah\u00ED estar\u00E1.</span>');
+    }
+  }, function(){
+    completar('🌀', 'Guardado en camino', 'Se entregar\u00E1 solo en tu pr\u00F3xima visita.<span class="hl">Tu espiral lo est\u00E1 esperando.</span>');
+  });
 };
 
 if (pool.length) {
@@ -2613,6 +2645,7 @@ if (pool.length) {
   cta.classList.add('tg-dim');
 }
 render();
+tgOutboxVaciar();
 })();
 </script>
 </body>
