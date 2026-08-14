@@ -1620,8 +1620,33 @@ el.tablero.addEventListener('touchstart', function(ev){
   }, { passive: true });
 })();
 
+var OUTBOX_ESP = 'triggui_outbox_v1';
+function vaciarOutboxEspiral(){
+  var a = [];
+  try { a = JSON.parse(window.localStorage.getItem(OUTBOX_ESP) || '[]'); } catch(e){ a = []; }
+  if (!Array.isArray(a) || !a.length) return;
+  var i = 0;
+  (function paso(){
+    if (i >= a.length) return;
+    var e = a[i++];
+    fetch(EXEC, { method: 'POST', body: e.q })
+      .then(function(r){ return r.json(); })
+      .then(function(r){
+        if (r && r.ok) {
+          try {
+            var b = JSON.parse(window.localStorage.getItem(OUTBOX_ESP) || '[]');
+            window.localStorage.setItem(OUTBOX_ESP, JSON.stringify(b.filter(function(x){ return x.id !== e.id; })));
+          } catch(err){}
+        }
+        paso();
+      })
+      .catch(function(){ paso(); });
+  })();
+}
+
 (function inicio(){
   tenirCon(paletaDelMomento());
+  vaciarOutboxEspiral();
   var c = claveGuardada();
   if (!c) { ver('puerta'); return; }
   var cache = null;
