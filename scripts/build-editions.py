@@ -2658,8 +2658,8 @@ bLike.onclick = function(){
     tgPendGuardar(armarCuerpo().toString());
     TgModal.show({
       emoji: '🌀',
-      title: 'Tu coraz\u00f3n qued\u00f3 guardado',
-      text: 'Este libro te va a esperar.<span class="hl">Entra con tu clave de miembro y vivir\u00e1 en tu espiral.</span>',
+      title: 'Este libro qued\u00f3 guardado',
+      text: 'Para verlo en tu espiral,<span class="hl">entra con tu clave de miembro.</span>',
       btn: 'Conocer mi espiral',
       onBtn: function(){ window.location.href = '/mi/'; },
       btn2: 'Ahora no'
