@@ -2546,11 +2546,17 @@ function tgOutboxQuitar(id){
 }
 function tgEnviar(q, ok, mal){
   var ctrl = null, t = null;
-  try { ctrl = new AbortController(); t = setTimeout(function(){ ctrl.abort(); }, 8000); } catch(e){}
-  fetch(EXEC, { method: 'POST', body: q, keepalive: true, signal: ctrl ? ctrl.signal : undefined })
-    .then(function(r){ return r.json(); })
-    .then(function(r){ if (t) clearTimeout(t); if (r && r.ok) ok(r); else mal(); })
-    .catch(function(){ if (t) clearTimeout(t); mal(); });
+  try { ctrl = new AbortController(); } catch(e){}
+  var opts = { method: 'POST', body: q };
+  if (ctrl) {
+    opts.signal = ctrl.signal;
+    t = setTimeout(function(){ try { ctrl.abort(); } catch(e){} }, 8000);
+  }
+  var p = null;
+  try { p = fetch(EXEC, opts); } catch(e){ if (t) clearTimeout(t); mal(); return; }
+  p.then(function(r){ return r.json(); })
+   .then(function(r){ if (t) clearTimeout(t); if (r && r.ok) ok(r); else mal(); })
+   .catch(function(){ if (t) clearTimeout(t); mal(); });
 }
 function tgOutboxVaciar(){
   var a = tgOutboxLeer();
