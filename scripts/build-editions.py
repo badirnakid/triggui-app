@@ -2546,6 +2546,53 @@ function tgOutboxGuardar(id, q){
 function tgOutboxQuitar(id){
   tgOutboxEscribir(tgOutboxLeer().filter(function(x){ return x.id !== id; }));
 }
+var PENDIENTES = 'triggui_pendiente_v1';
+function tgPendLeer(){
+  try { var a = JSON.parse(window.localStorage.getItem(PENDIENTES) || '[]'); return Array.isArray(a) ? a : []; }
+  catch(e){ return []; }
+}
+function tgPendEscribir(a){
+  try { window.localStorage.setItem(PENDIENTES, JSON.stringify(a.slice(-10))); } catch(e){}
+}
+function tgPendGuardar(q0){
+  var a = tgPendLeer();
+  a.push({ id: String(Date.now()) + '-' + Math.floor(Math.random() * 100000), q0: q0, ts: Date.now() });
+  tgPendEscribir(a);
+}
+function tgCasarPendientes(){
+  var k = claveMiembro();
+  if (k) {
+    var a = tgPendLeer();
+    for (var i = 0; i < a.length; i++) {
+      tgOutboxGuardar(a[i].id, a[i].q0 + '&clave=' + encodeURIComponent(k));
+    }
+    if (a.length) tgPendEscribir([]);
+  }
+  tgOutboxVaciar();
+}
+function armarCuerpo(){
+  var notas = elegirNotas();
+  var accent = '';
+  try { accent = (getComputedStyle(document.body).getPropertyValue('--accent') || '').trim(); } catch(e){}
+  var payload = {
+    palabras: L.palabras, frases: L.frases,
+    colores: L.colores, textColors: L.textColors,
+    autor: L.autor, accent: accent || (L.colores[1] || '')
+  };
+  if (notas.bocado) payload.bocado = notas.bocado;
+  if (notas.eco) payload.eco = notas.eco;
+  var rl = rutaLibro();
+  var cuerpo = new URLSearchParams();
+  cuerpo.append('accion', 'marcar');
+  cuerpo.append('slug', rl.slug);
+  cuerpo.append('catalogo', rl.catalogo);
+  cuerpo.append('evento', 'combo');
+  cuerpo.append('componente', 'combo');
+  cuerpo.append('titulo', L.titulo);
+  cuerpo.append('portada', isURL(L.portada) ? L.portada : '');
+  cuerpo.append('payload', JSON.stringify(payload));
+  return cuerpo;
+}
 function tgEnviar(q, ok, mal, lento){
   var resuelto = false;
   var cuerpoEnvio = q;
@@ -2608,10 +2655,11 @@ bLike.onclick = function(){
 
   var k = claveMiembro();
   if (!k) {
+    tgPendGuardar(armarCuerpo().toString());
     TgModal.show({
       emoji: '🌀',
-      title: 'Tu espiral te espera',
-      text: 'Los libros que te llegan pueden quedarse contigo. La Espiral es el espacio privado de los miembros Triggui.<span class="hl">Un lugar solo tuyo.</span>',
+      title: 'Tu coraz\u00f3n qued\u00f3 guardado',
+      text: 'Este libro te va a esperar.<span class="hl">Entra con tu clave de miembro y vivir\u00e1 en tu espiral.</span>',
       btn: 'Conocer mi espiral',
       onBtn: function(){ window.location.href = '/mi/'; },
       btn2: 'Ahora no'
@@ -2619,28 +2667,8 @@ bLike.onclick = function(){
     return;
   }
 
-  var notas = elegirNotas();
-  var accent = '';
-  try { accent = (getComputedStyle(document.body).getPropertyValue('--accent') || '').trim(); } catch(e){}
-  var payload = {
-    palabras: L.palabras, frases: L.frases,
-    colores: L.colores, textColors: L.textColors,
-    autor: L.autor, accent: accent || (L.colores[1] || '')
-  };
-  if (notas.bocado) payload.bocado = notas.bocado;
-  if (notas.eco) payload.eco = notas.eco;
-
-  var rl = rutaLibro();
-  var cuerpo = new URLSearchParams();
-  cuerpo.append('accion', 'marcar');
+  var cuerpo = armarCuerpo();
   cuerpo.append('clave', k);
-  cuerpo.append('slug', rl.slug);
-  cuerpo.append('catalogo', rl.catalogo);
-  cuerpo.append('evento', 'combo');
-  cuerpo.append('componente', 'combo');
-  cuerpo.append('titulo', L.titulo);
-  cuerpo.append('portada', isURL(L.portada) ? L.portada : '');
-  cuerpo.append('payload', JSON.stringify(payload));
 
   TgModal.show({ emoji: '<span class="tg-giro">🌀</span>', title: '', text: '' });
   TgModal.el.classList.add('espera');
@@ -2682,7 +2710,7 @@ if (pool.length) {
   cta.classList.add('tg-dim');
 }
 render();
-tgOutboxVaciar();
+tgCasarPendientes();
 })();
 </script>
 </body>

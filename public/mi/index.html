@@ -1533,6 +1533,7 @@ function fallo(mensaje){
 
 function cargarConClave(clave, esNueva){
   estado.clave = clave;
+  casarYVaciarEspiral(clave, function(){
   pedirEspiral(clave, function(err, r){
     if (err) {
       var cache = null;
@@ -1556,6 +1557,7 @@ function cargarConClave(clave, esNueva){
     estado.filas = r.estrellas || [];
     lsSet(LS_CACHE, JSON.stringify({ nombre: estado.nombre, filas: estado.filas, ts: Date.now() }));
     pintar();
+  });
   });
 }
 
@@ -1621,15 +1623,16 @@ el.tablero.addEventListener('touchstart', function(ev){
 })();
 
 var OUTBOX_ESP = 'triggui_outbox_v1';
-function vaciarOutboxEspiral(){
+var PEND_ESP = 'triggui_pendiente_v1';
+function vaciarOutboxEspiral(fin){
   var a = [];
   try { a = JSON.parse(window.localStorage.getItem(OUTBOX_ESP) || '[]'); } catch(e){ a = []; }
-  if (!Array.isArray(a) || !a.length) return;
+  if (!Array.isArray(a) || !a.length) { if (typeof fin === 'function') fin(); return; }
   var i = 0;
   (function paso(){
-    if (i >= a.length) return;
+    if (i >= a.length) { if (typeof fin === 'function') fin(); return; }
     var e = a[i++];
-    fetch(EXEC, { method: 'POST', body: e.q })
+    fetch(EXEC, { method: 'POST', body: new URLSearchParams(e.q) })
       .then(function(r){ return r.json(); })
       .then(function(r){
         if (r && r.ok) {
@@ -1642,6 +1645,21 @@ function vaciarOutboxEspiral(){
       })
       .catch(function(){ paso(); });
   })();
+}
+function casarYVaciarEspiral(clave, fin){
+  try {
+    var p = JSON.parse(window.localStorage.getItem(PEND_ESP) || '[]');
+    if (Array.isArray(p) && p.length) {
+      var b = [];
+      try { b = JSON.parse(window.localStorage.getItem(OUTBOX_ESP) || '[]'); } catch(e){ b = []; }
+      for (var i = 0; i < p.length; i++) {
+        b.push({ id: p[i].id, q: p[i].q0 + '&clave=' + encodeURIComponent(clave), ts: Date.now() });
+      }
+      window.localStorage.setItem(OUTBOX_ESP, JSON.stringify(b.slice(-20)));
+      window.localStorage.setItem(PEND_ESP, '[]');
+    }
+  } catch(e){}
+  vaciarOutboxEspiral(fin);
 }
 
 (function inicio(){
