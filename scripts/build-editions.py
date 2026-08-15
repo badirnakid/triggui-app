@@ -1579,7 +1579,9 @@ body.tg-tarjeta .tg-cta{display:none !important}
 #tgModal.espera{background:rgba(0,0,0,0.5)}
 #tgModal.espera .tg-mglass{background:transparent;border:none;box-shadow:none;padding:0;width:auto;max-width:none}
 #tgModal.espera .tg-giro{font-size:30px}
-#tgModal.espera .tg-mtitle,#tgModal.espera .tg-mtext,#tgModal.espera .tg-mbtns{display:none}
+#tgModal.espera .tg-mtitle,#tgModal.espera .tg-mbtns{display:none}
+#tgModal.espera .tg-mtext{display:block;font-size:12px;letter-spacing:.02em;color:rgba(255,255,255,.75);margin:14px 0 0 0}
+#tgModal.espera .tg-mtext .hl{display:none}
 .tg-heart{position:fixed;pointer-events:none;z-index:700;font-size:24px;opacity:0;animation:tgFloatUp 1.2s ease-out forwards;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.3))}
 @keyframes tgFloatUp{0%{transform:translate(0,0) scale(0.5) rotate(0deg);opacity:0}20%{opacity:1;transform:translate(var(--tx),-40px) scale(1.2) rotate(15deg)}100%{opacity:0;transform:translate(var(--tx),-150px) scale(1) rotate(30deg)}}
 </style>
@@ -2544,20 +2546,25 @@ function tgOutboxGuardar(id, q){
 function tgOutboxQuitar(id){
   tgOutboxEscribir(tgOutboxLeer().filter(function(x){ return x.id !== id; }));
 }
-function tgEnviar(q, ok, mal){
+function tgEnviar(q, ok, mal, lento){
   var resuelto = false;
   var cuerpoEnvio = q;
   try { cuerpoEnvio = new URLSearchParams(q); } catch(e){}
+  var tSusurro = setTimeout(function(){
+    if (!resuelto && typeof lento === 'function') {
+      try { lento(); } catch(x){}
+    }
+  }, 2500);
   var t = setTimeout(function(){
     if (!resuelto) {
-      try { console.log('[Triggui buzon] red lenta: aviso temprano, la peticion sigue viva'); } catch(x){}
+      try { console.log('[Triggui buzon] paciencia agotada: aviso, la peticion sigue viva'); } catch(x){}
       mal();
     }
-  }, 8000);
+  }, 25000);
   var p = null;
   try { p = fetch(EXEC, { method: 'POST', body: cuerpoEnvio }); }
   catch(e){
-    resuelto = true; clearTimeout(t);
+    resuelto = true; clearTimeout(t); clearTimeout(tSusurro);
     try { console.log('[Triggui buzon] constructor:', e && e.message); } catch(x){}
     mal(); return;
   }
@@ -2566,7 +2573,7 @@ function tgEnviar(q, ok, mal){
      return r.json();
    })
    .then(function(r){
-     resuelto = true; clearTimeout(t);
+     resuelto = true; clearTimeout(t); clearTimeout(tSusurro);
      if (r && r.ok) { ok(r); }
      else {
        try { console.log('[Triggui buzon] respuesta no-ok:', JSON.stringify(r)); } catch(x){}
@@ -2574,7 +2581,7 @@ function tgEnviar(q, ok, mal){
      }
    })
    .catch(function(err){
-     resuelto = true; clearTimeout(t);
+     resuelto = true; clearTimeout(t); clearTimeout(tSusurro);
      try { console.log('[Triggui buzon] fallo:', (err && err.message) || String(err), '| status:', window.__tgStatus); } catch(x){}
      mal();
    });
@@ -2664,6 +2671,9 @@ bLike.onclick = function(){
     }
   }, function(){
     completar('🌀', 'Guardado en camino', 'Se entregar\u00E1 solo en tu pr\u00F3xima visita.<span class="hl">Tu espiral lo est\u00E1 esperando.</span>');
+  }, function(){
+    var mt = document.getElementById('tgMText');
+    if (mt && TgModal.el.classList.contains('espera')) mt.textContent = 'Guardando\u2026';
   });
 };
 
