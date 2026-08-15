@@ -1757,18 +1757,39 @@ function tgOutboxQuitar(id){
   tgOutboxEscribir(tgOutboxLeer().filter(function(x){ return x.id !== id; }));
 }
 function tgEnviar(q, ok, mal){
-  var ctrl = null, t = null;
-  try { ctrl = new AbortController(); } catch(e){}
-  var opts = { method: 'POST', body: q };
-  if (ctrl) {
-    opts.signal = ctrl.signal;
-    t = setTimeout(function(){ try { ctrl.abort(); } catch(e){} }, 8000);
-  }
+  var resuelto = false;
+  var cuerpoEnvio = q;
+  try { cuerpoEnvio = new URLSearchParams(q); } catch(e){}
+  var t = setTimeout(function(){
+    if (!resuelto) {
+      try { console.log('[Triggui buzon] red lenta: aviso temprano, la peticion sigue viva'); } catch(x){}
+      mal();
+    }
+  }, 8000);
   var p = null;
-  try { p = fetch(EXEC, opts); } catch(e){ if (t) clearTimeout(t); mal(); return; }
-  p.then(function(r){ return r.json(); })
-   .then(function(r){ if (t) clearTimeout(t); if (r && r.ok) ok(r); else mal(); })
-   .catch(function(){ if (t) clearTimeout(t); mal(); });
+  try { p = fetch(EXEC, { method: 'POST', body: cuerpoEnvio }); }
+  catch(e){
+    resuelto = true; clearTimeout(t);
+    try { console.log('[Triggui buzon] constructor:', e && e.message); } catch(x){}
+    mal(); return;
+  }
+  p.then(function(r){
+     try { window.__tgStatus = r.status; } catch(x){}
+     return r.json();
+   })
+   .then(function(r){
+     resuelto = true; clearTimeout(t);
+     if (r && r.ok) { ok(r); }
+     else {
+       try { console.log('[Triggui buzon] respuesta no-ok:', JSON.stringify(r)); } catch(x){}
+       mal();
+     }
+   })
+   .catch(function(err){
+     resuelto = true; clearTimeout(t);
+     try { console.log('[Triggui buzon] fallo:', (err && err.message) || String(err), '| status:', window.__tgStatus); } catch(x){}
+     mal();
+   });
 }
 function tgOutboxVaciar(){
   var a = tgOutboxLeer();
