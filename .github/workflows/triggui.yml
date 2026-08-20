@@ -39,8 +39,9 @@ on:
   # ───────────────────────────────────────────────────────────────────────
   # CRON SCHEDULES — descomenta UNA línea para activar automatización
   # ───────────────────────────────────────────────────────────────────────
-  # schedule:
-  #   - cron: '0 12 * * 1'        # LUNES 6 AM CDMX (recomendado)
+  schedule:
+    - cron: '0 12 * * 1'          # LUNES 6 AM CDMX — La Cola del Director
+  # (otras cadencias disponibles abajo, comentadas)
   #   - cron: '0 12 * * 1,4'      # LUNES y JUEVES 6 AM CDMX
   #   - cron: '0 12 * * *'        # DIARIO 6 AM CDMX
   #   - cron: '0 12 1,15 * *'     # QUINCENAL (días 1 y 15)
@@ -196,10 +197,45 @@ permissions:
   contents: write
 
 jobs:
+  # ╔════════════════════════════════════════════════════════════════════╗
+  # ║  JOB cola — 🎬 La Cola del Director (solo cron)                     ║
+  # ║  Lee la primera linea util de cola-lunes.txt (Titulo | Autor).      ║
+  # ║  Vacia → generar se salta en gris, cero costo.                      ║
+  # ╚════════════════════════════════════════════════════════════════════╝
+  cola:
+    runs-on: ubuntu-latest
+    outputs:
+      hay: ${{ steps.leer.outputs.hay }}
+      libro: ${{ steps.leer.outputs.libro }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: 🎬 Leer la cola
+        id: leer
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" != "schedule" ]; then
+            echo "hay=" >> $GITHUB_OUTPUT; echo "libro=" >> $GITHUB_OUTPUT
+            echo "ℹ️  Disparo manual — la cola no aplica"; exit 0
+          fi
+          LIBRO=""
+          if [ -f cola-lunes.txt ]; then
+            LIBRO=$(grep -v '^[[:space:]]*#' cola-lunes.txt | grep -v '^[[:space:]]*$' | head -1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' || true)
+          fi
+          if [ -n "$LIBRO" ]; then
+            echo "hay=true" >> $GITHUB_OUTPUT
+            echo "libro=$LIBRO" >> $GITHUB_OUTPUT
+            echo "🎬 Próximo del Director: $LIBRO"
+          else
+            echo "hay=" >> $GITHUB_OUTPUT; echo "libro=" >> $GITHUB_OUTPUT
+            echo "🟡 Cola vacía — el horno descansa este lunes"
+          fi
+
   generar:
     runs-on: ubuntu-latest
+    needs: [cola]
     # 🔁 El modo reconstruir NO usa este pipeline (no LLM); lo maneja el job `reconstruir`.
-    if: ${{ !contains(inputs.modo, '🔁') }}
+    if: ${{ !contains(inputs.modo, '🔁') && (github.event_name != 'schedule' || needs.cola.outputs.hay == 'true') }}
     timeout-minutes: 180
 
     env:
@@ -242,10 +278,12 @@ jobs:
           set -euo pipefail
           MODO_HUMANO="${{ inputs.modo }}"
 
-          # Default para triggers schedule (cron): batch producción
+          # 🎬 Cola del Director: el cron hornea la primera linea de cola-lunes.txt
+          LIBRO_FINAL="${{ inputs.libro_input }}"
           if [ "${{ github.event_name }}" = "schedule" ]; then
-            MODO_HUMANO="🎲 Generar 20 libros nuevos para la app"
-            echo "🕒 Ejecutado por cron → modo forzado: ${MODO_HUMANO}"
+            MODO_HUMANO="📘 Un libro específico"
+            LIBRO_FINAL="${{ needs.cola.outputs.libro }}"
+            echo "🎬 Cron + Cola del Director → ${LIBRO_FINAL}"
           fi
 
           case "${MODO_HUMANO}" in
@@ -265,6 +303,7 @@ jobs:
 
           echo "modo_tecnico=${MODO_TECNICO}" >> $GITHUB_OUTPUT
           echo "modo_humano=${MODO_HUMANO}" >> $GITHUB_OUTPUT
+          echo "libro=${LIBRO_FINAL}" >> $GITHUB_OUTPUT
 
           echo ""
           echo "═══════════════════════════════════════════"
@@ -555,12 +594,12 @@ jobs:
       # ╚══════════════════════════════════════════════════════════════════╝
 
       - name: 📖 Validate DIRECT (modo 📘)
-        if: ${{ steps.modo.outputs.modo_tecnico == 'single_book' && inputs.libro_input != '' }}
+        if: ${{ steps.modo.outputs.modo_tecnico == 'single_book' && steps.modo.outputs.libro != '' }}
         working-directory: experiments/nucleus
         env:
           INPUT_MODE: book
           SELECTOR_MODE: direct
-          LIBRO_INPUT: ${{ inputs.libro_input }}
+          LIBRO_INPUT: ${{ steps.modo.outputs.libro }}
         run: node validate-book.js
 
       - name: 📖 Validate CONSTRAINED (modo 💭)
@@ -1384,4 +1423,52 @@ jobs:
               echo "- 🖼️ Tarjeta: \`public/t/${SLUG}/tarjeta.png\`"
               echo "- 🖼️ OG: \`public/t/${SLUG}/og.png\`"
             } >> $GITHUB_STEP_SUMMARY
+          fi
+
+  # ╔════════════════════════════════════════════════════════════════════╗
+  # ║  JOB consumir — 🎬 avanza la cola y deja acta (solo cron exitoso)   ║
+  # ╚════════════════════════════════════════════════════════════════════╝
+  consumir:
+    runs-on: ubuntu-latest
+    needs: [cola, generar]
+    if: ${{ github.event_name == 'schedule' && needs.cola.outputs.hay == 'true' && needs.generar.result == 'success' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: 🎬 Consumir linea y dejar acta
+        shell: bash
+        env:
+          LIBRO: ${{ needs.cola.outputs.libro }}
+        run: |
+          set -euo pipefail
+          git pull --rebase origin main || true
+          python3 - <<'PY'
+          import os, datetime
+          libro = os.environ['LIBRO']
+          lineas = open('cola-lunes.txt', encoding='utf-8').read().splitlines(keepends=True) if os.path.exists('cola-lunes.txt') else []
+          out, consumida = [], False
+          for l in lineas:
+              if not consumida and l.strip() and not l.strip().startswith('#') and l.strip() == libro:
+                  consumida = True
+                  continue
+              out.append(l)
+          open('cola-lunes.txt','w',encoding='utf-8').writelines(out)
+          hoy = datetime.datetime.now().strftime('%Y-%m-%d %H:%M UTC')
+          acta = f"""🎬 ULTIMO HORNEADO — La Cola del Director
+          fecha:  {hoy}
+          libro:  {libro}
+          estado: pipeline completo OK (edicion viva + tarjeta + og + manual.json)
+          correo: sale automatico ~7:30am CDMX via Apps Script (trigger lunes)
+          """
+          open('ultimo-horneado.txt','w',encoding='utf-8').write(acta)
+          print('consumida:', consumida, '| restantes en cola:', sum(1 for l in out if l.strip() and not l.strip().startswith('#')))
+          PY
+          git config user.name "Triggui Bot"
+          git config user.email "bot@triggui.com"
+          git add cola-lunes.txt ultimo-horneado.txt
+          if git diff --cached --quiet; then echo "🟡 sin cambios"; else
+            git commit -m "🎬 cola: consumido — ${LIBRO}"
+            for i in 1 2 3; do
+              git pull --rebase --autostash origin main && git push origin HEAD:main && break
+              sleep 3
+            done
           fi
