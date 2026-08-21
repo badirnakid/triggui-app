@@ -409,6 +409,18 @@ function iniciarPortal() {
 
   /* ---------- Lector del nodo enfocado ---------- */
   var focoK = -1;
+  /* ---------- La casa respira con el libro en foco ---------- */
+  function respirarColor(it) {
+    var c1 = it.c1 || '#E8A838', c2 = it.c2 || '#FF6B4A';
+    var r = document.documentElement.style;
+    r.setProperty('--gold', c1);
+    r.setProperty('--gold-2', c2);
+    var s1 = document.querySelector('#gradOro stop:first-child');
+    var s2 = document.querySelector('#gradOro stop:last-child');
+    if (s1) s1.setAttribute('stop-color', c1);
+    if (s2) s2.setAttribute('stop-color', c2);
+  }
+
   function actualizarLector() {
     if (secuencia || lista.length === 0) { foco.classList.add('oculto'); cima.classList.add('oculto'); return; }
     foco.classList.remove('oculto'); cima.classList.remove('oculto');
@@ -479,6 +491,9 @@ function iniciarPortal() {
 
   /* ---------- Entrada ---------- */
   var pDown = null;
+  var zona = app;
+  zona.style.touchAction = 'none';
+  var overPx = 0;
 
   zona.addEventListener('pointerdown', function (e) {
     if (e.target && e.target.closest && e.target.closest('button, a, #hud-marca')) return;
@@ -492,9 +507,7 @@ function iniciarPortal() {
     ocultarHint();
   });
 
-  var zona = app;
-  zona.style.touchAction = 'none';
-  var overPx = 0;
+
   zona.addEventListener('pointermove', function (e) {
     if (!pDown) return;
     if (pDown.pres && (Math.abs(e.clientX - pDown.x) > 7 || Math.abs(e.clientY - pDown.y) > 7)) {
