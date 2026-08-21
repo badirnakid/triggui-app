@@ -193,9 +193,8 @@ function iniciarPortal() {
   var foco = document.createElement('div');
   foco.id = 'foco';
   foco.innerHTML = '<div class="f-in">' +
-    '<div class="f-frase"></div>' +
-    '<button id="f-hecho" class="f-hecho"></button>' +
-    '<div class="f-hint"></div>' +
+    '<div class="f-lienzo"><img class="f-portada" alt="" loading="lazy">' +
+    '<button id="f-check" class="f-check" aria-label="Marcar hecha"></button></div>' +
   '</div>';
   var flechas = div('hud', 'flechas');
   flechas.innerHTML = '<button id="fl-arriba" aria-label="Subir">\u25b2</button><button id="fl-abajo" aria-label="Bajar">\u25bc</button>';
@@ -207,7 +206,7 @@ function iniciarPortal() {
 
   // Hoja de detalle + velo + toast
   foco.addEventListener('click', function (ev) {
-    if (ev.target && ev.target.id === 'f-hecho') { ev.stopPropagation(); togglearHecha(Math.max(0, Math.min(lista.length - 1, Math.round(camK)))); return; }
+    if (ev.target && ev.target.id === 'f-check') { ev.stopPropagation(); togglearHecha(Math.max(0, Math.min(lista.length - 1, Math.round(camK)))); return; }
     if (secuencia || lista.length === 0) return;
     var k = Math.max(0, Math.min(lista.length - 1, Math.round(camK)));
     abrirHoja(k);
@@ -423,23 +422,16 @@ function iniciarPortal() {
   }
 
   function actualizarLector() {
-    if (secuencia || lista.length === 0) { foco.classList.add('oculto'); cima.classList.add('oculto'); libroFlot.style.opacity = 0; return; }
+    if (secuencia || lista.length === 0) { foco.classList.add('oculto'); cima.classList.add('oculto'); return; }
     foco.classList.remove('oculto'); cima.classList.remove('oculto');
     var k = Math.max(0, Math.min(lista.length - 1, Math.round(camK)));
     if (k === focoK) return;
     focoK = k;
     var it = lista[k];
     cima.querySelector('.c-senal').textContent = it.movimiento || it.hallazgo || '';
-    foco.querySelector('.f-frase').textContent = it.hallazgo || '';
-    if (it.portada) { libroFlot.src = it.portada; libroFlot.style.opacity = 0.96; }
-    else { libroFlot.style.opacity = 0; }
-    var f = new Date(it.semana + 'T12:00:00');
-    var MES = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
-    var fTx = isNaN(f) ? '' : (f.getDate() + ' ' + MES[f.getMonth()] + ' ' + f.getFullYear());
-    foco.querySelector('.f-hint').textContent = '#' + String(it.id).replace('ED-','') + ' \u00b7 ' + fTx + ' \u00b7 TOCA PARA VER LA EDICI\u00d3N';
-    var bt = foco.querySelector('#f-hecho');
-    if (it.estado === 'resuelto') { bt.textContent = '\u2713 Hecho'; bt.className = 'f-hecho ya'; }
-    else { bt.textContent = '\u2713 Lo hice'; bt.className = 'f-hecho'; }
+    var img = foco.querySelector('.f-portada');
+    if (it.portada) { img.src = it.portada; img.style.opacity = 1; } else { img.style.opacity = 0; }
+    foco.querySelector('#f-check').className = 'f-check' + (it.estado === 'resuelto' ? ' ya' : '');
     respirarColor(it);
     if (MOV_OK) foco.animate([{ opacity: 0.35 }, { opacity: 1 }], { duration: 180, easing: 'ease-out' });
   }
@@ -617,6 +609,7 @@ function iniciarPortal() {
       (it.portada ? '<img class="h-portada" src="' + esc(it.portada) + '" alt="" loading="lazy">' : '') +
       '<div class="h-libro">' + esc(it.titulo) + '</div>' +
       (it.voz ? '<p class="h-voz">' + esc(it.voz) + '</p>' : '') +
+      (it.hallazgo ? '<p class="h-frase">' + esc(it.hallazgo) + '</p>' : '') +
       (it.video ? '<div class="h-video"><iframe src="https://www.youtube-nocookie.com/embed/' + esc(it.video) + '?rel=0&modestbranding=1" title="Video" frameborder="0" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>' : '') +
       '<div class="h-fila">' +
         (it.slug ? '<a class="h-ver" href="/t/' + esc(it.slug) + '/">VER LA EDICI\u00d3N \u2192</a>' : '') +
@@ -665,7 +658,12 @@ function iniciarPortal() {
       it.estado = 'resuelto'; it.resuelto_el = hoy; m[it.id] = hoy;
       try { gtag('event', 'senal_hecha', { edicion: it.id }); } catch (e) {}
       var reg = nodosVivos[k];
-      if (reg && reg.el.getBoundingClientRect) { var bb = reg.el.getBoundingClientRect(); particulas(bb.left + bb.width / 2, bb.top + bb.height / 2); }
+      if (reg && reg.el.getBoundingClientRect) {
+        var bb = reg.el.getBoundingClientRect();
+        particulas(bb.left + bb.width / 2, bb.top + bb.height / 2);
+        reg.el.classList.add('celebra');
+        setTimeout(function () { try { reg.el.classList.remove('celebra'); } catch (e2) {} }, 950);
+      }
       vibrar([18, 40, 18]);
       avisar('Se\u00f1al hecha', String(it.titulo).split(' \u00b7 ')[0]);
     }

@@ -320,3 +320,24 @@ body{-webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale}
 #hud-prog .p-fill{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:linear-gradient(90deg,var(--gold),var(--gold-2));transition:width .5s cubic-bezier(.2,.8,.2,1)}
 #hud-prog .p-cara{position:absolute;top:50%;transform:translateY(-50%);width:22px;height:22px;transition:left .5s cubic-bezier(.2,.8,.2,1)}
 #hud-prog .p-cap{margin-top:6px;font-size:8.5px;letter-spacing:.18em;color:var(--faint);font-weight:800;text-align:right}
+
+/* ════ v8 · portada protagonista abajo, casilla, corona-pill ════ */
+#libroFlot{display:none}
+#hud-prog{margin-top:9px}
+#hud-prog .p-cap{margin-top:14px}
+#cima{top:calc(96px + env(safe-area-inset-top))}
+#cima .c-senal{display:inline-block;max-width:min(88vw,560px);font-size:20px;line-height:1.45;font-weight:800;color:var(--ink);background:rgba(11,15,26,.78);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(245,240,232,.09);border-radius:21px;padding:13px 21px;-webkit-line-clamp:unset;overflow:visible;box-shadow:0 13px 34px rgba(0,0,0,.35)}
+@media (min-width:900px){#cima .c-senal{font-size:24px}}
+#app svg{margin-top:7vh}
+#foco{padding:13px 18px calc(21px + env(safe-area-inset-bottom))}
+#foco .f-in{display:flex;justify-content:center}
+#foco .f-lienzo{position:relative;display:inline-block}
+#foco .f-portada{display:block;height:min(24vh,190px);width:auto;border-radius:10px;object-fit:cover;box-shadow:0 13px 34px rgba(0,0,0,.55);transition:opacity .3s}
+#foco .f-check{position:absolute;top:-9px;right:-9px;width:34px;height:34px;border-radius:50%;border:2.5px solid var(--gold);background:rgba(11,15,26,.92);cursor:pointer;transition:all .25s;animation:latido 2.2s ease-in-out infinite}
+#foco .f-check::after{content:'\2713';position:absolute;inset:0;display:grid;place-items:center;font:800 16px/1 'Manrope',sans-serif;color:var(--gold);opacity:.55}
+#foco .f-check.ya{border-color:var(--check);background:var(--check);animation:none}
+#foco .f-check.ya::after{color:#08130d;opacity:1}
+@keyframes latido{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(232,168,56,.0)}50%{transform:scale(1.07);box-shadow:0 0 0 7px rgba(232,168,56,.12)}}
+.nodo.celebra{animation:palomazo .9s cubic-bezier(.2,.9,.3,1.4)}
+@keyframes palomazo{0%{transform:scale(1)}35%{transform:scale(1.45);filter:drop-shadow(0 0 14px rgba(52,211,153,.9))}100%{transform:scale(1);filter:none}}
+#hoja .h-frase{font-size:15px;line-height:1.55;color:var(--ink);font-weight:600;text-align:center;margin:0 0 13px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
