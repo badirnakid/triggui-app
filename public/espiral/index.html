@@ -64,7 +64,7 @@ h1{font-size:22px;font-weight:800;margin:6px 0 2px}
         <stop offset="0" stop-color="#E8A838"/><stop offset=".55" stop-color="#FF6B4A"/><stop offset="1" stop-color="#FF3F6C"/>
       </linearGradient>
     </defs>
-    <g id="mundo"><path id="sendero" fill="none" stroke="url(#oro)" stroke-opacity=".22" stroke-width="1.2"/><g id="giro"></g></g>
+    <g id="mundo"><path id="sendero" fill="none" stroke="url(#oro)" stroke-opacity=".13" stroke-width="0.5"/><g id="giro"></g></g>
   </svg>
   <div id="coach">Desliza para viajar por tu espiral</div>
   <div id="fPrev" class="fle" aria-label="anterior">‹</div>
@@ -118,7 +118,7 @@ h1{font-size:22px;font-weight:800;margin:6px 0 2px}
     return 'LUNES '+lun.getDate()+' '+MESES[lun.getMonth()];
   }
   function pos(i){var r=ESC*Math.sqrt(i),th=i*PHI_ANG*Math.PI/180;return [r*Math.cos(th),r*Math.sin(th)];}
-  function rad(i){return Math.max(4.4, 9.6 - i*0.14);}
+  function rad(i){return Math.max(1.5, 2.9 - i*0.028);}
   function claro(hex){try{var h=hex.replace('#','');var r=parseInt(h.substr(0,2),16),g=parseInt(h.substr(2,2),16),b2=parseInt(h.substr(4,2),16);return .299*r+.587*g+.114*b2>150;}catch(e){return false}}
 
   var giro=document.getElementById('giro'), nodos=[], send='';
@@ -128,16 +128,16 @@ h1{font-size:22px;font-weight:800;margin:6px 0 2px}
     var g=document.createElementNS('http://www.w3.org/2000/svg','g');
     g.setAttribute('class','bol'); g.setAttribute('transform','translate('+p[0]+' '+p[1]+')');
     var tc=claro(col)?'#0B0F1A':'#F5F0E8';
-    g.innerHTML='<circle class="halo" r="'+(rad(i)*1.9)+'" fill="'+col+'" opacity="0"/>'
-      +'<circle class="c" r="'+rad(i)+'" fill="'+col+'" stroke="rgba(245,240,232,.28)" stroke-width="1"/>'
-      +'<text class="num" text-anchor="middle" dy="3" font-size="7.4" fill="'+tc+'" opacity="0">'+b._edicion_numero+'</text>';
+    g.innerHTML='<circle class="halo" r="'+(rad(i)*2.3)+'" fill="'+col+'" opacity="0"/>'
+      +'<circle class="c" r="'+rad(i)+'" fill="'+col+'" stroke="rgba(245,240,232,.22)" stroke-width="0.4"/>'
+      +'<text class="num" text-anchor="middle" dy="3" font-size="3.1" fill="'+tc+'" opacity="0">'+b._edicion_numero+'</text>';
     (function(idx){g.addEventListener('click',function(ev){ev.stopPropagation();viaja(idx,true);abreHoja(idx);});})(i);
     giro.appendChild(g); nodos.push(g);
   }
   document.getElementById('sendero').setAttribute('d',send);
 
   var svg=document.getElementById('lienzo');
-  var foco=0, focoV=0, meta=0, vw=120;
+  var foco=0, focoV=0, meta=0, vw=140;
   function render(){
     focoV += (meta-focoV)*0.16;
     if(Math.abs(meta-focoV)<0.002) focoV=meta;
@@ -146,17 +146,17 @@ h1{font-size:22px;font-weight:800;margin:6px 0 2px}
     var i0=Math.floor(f), i1=Math.min(N-1,i0+1), t=f-i0;
     var p0=pos(i0),p1=pos(i1);
     var cx=p0[0]+(p1[0]-p0[0])*t, cy=p0[1]+(p1[1]-p0[1])*t;
-    var zoomR=26+Math.sqrt(f)*ESC*0.9;
-    vw += ((zoomR*2.6)-vw)*0.14;
+    var objetivo=Math.min(300, Math.max(120, (ESC*Math.sqrt(f)+34)*2.4));
+    vw += (objetivo-vw)*0.12;
     var VH=vw*asp;
     svg.setAttribute('viewBox',(cx-vw/2).toFixed(2)+' '+(cy-VH*0.42).toFixed(2)+' '+vw.toFixed(2)+' '+VH.toFixed(2));
     for(var k=0;k<N;k++){
       var dgap=Math.abs(k-focoV), on=dgap<0.5;
-      var esc= on? (1.6-1.2*dgap):1;
+      var esc= on? (1.5-1.0*dgap):1;
       var pk=pos(k);
       nodos[k].setAttribute('transform','translate('+pk[0]+' '+pk[1]+') scale('+esc.toFixed(3)+')');
-      nodos[k].children[0].setAttribute('opacity', on? Math.max(0,0.32*(1-dgap*2)).toFixed(2):'0');
-      nodos[k].children[2].setAttribute('opacity', (rad(k)*esc>=6.2)?'1':'0');
+      nodos[k].children[0].setAttribute('opacity', on? Math.max(0,0.18*(1-dgap*2)).toFixed(2):'0');
+      nodos[k].children[2].setAttribute('opacity', (dgap<0.5)?'1':'0');
     }
     var iSnap=Math.round(f);
     if(iSnap!==foco){foco=iSnap;pintaMini(foco);profundidad(foco);}
