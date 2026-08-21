@@ -194,10 +194,10 @@ function iniciarPortal() {
   foco.id = 'foco';
   foco.innerHTML = '<div class="f-in">' +
     '<div class="f-kicker"></div>' +
-    '<div class="f-cuerpo"><img class="f-portada" alt="" loading="lazy">' +
-      '<div class="f-textos"><div class="f-tit"></div><div class="f-senal"></div>' +
-      '<div class="f-gesto"><span class="f-ancla"></span><span class="f-gtxt"></span></div></div></div>' +
-    '<div class="f-acciones"><button id="f-hecho" class="f-hecho"></button><div class="f-est"></div></div>' +
+    '<div class="f-senal"></div>' +
+    '<div class="f-gbloque"><span class="f-glabel">EL GESTO</span><div class="f-gtxt"></div></div>' +
+    '<button id="f-hecho" class="f-hecho"></button>' +
+    '<div class="f-pie"><img class="f-portada" alt="" loading="lazy"><span class="f-libro"></span></div>' +
     '<div class="f-hint">TOCA PARA VER LA EDICI\u00d3N</div>' +
   '</div>';
   var flechas = div('hud', 'flechas');
@@ -417,32 +417,16 @@ function iniciarPortal() {
     focoK = k;
     var it = lista[k];
     foco.querySelector('.f-kicker').textContent = '#' + String(it.id).replace('ED-','') + ' \u00b7 ' + fechaCorta(it.semana).toUpperCase();
+    foco.querySelector('.f-senal').textContent = it.hallazgo || '';
+    foco.querySelector('.f-gtxt').textContent = it.movimiento || '';
     var img = foco.querySelector('.f-portada');
     if (it.portada) { img.src = it.portada; img.style.display = ''; } else { img.style.display = 'none'; }
-    foco.querySelector('.f-tit').textContent = it.titulo;
-    foco.querySelector('.f-senal').textContent = it.hallazgo || '';
-    foco.querySelector('.f-ancla').textContent = it.impacto ? (String(it.impacto).toUpperCase() + ' \u00b7 ') : '';
-    foco.querySelector('.f-gtxt').textContent = it.movimiento || '';
+    foco.querySelector('.f-libro').textContent = it.titulo;
     var bt = foco.querySelector('#f-hecho');
     if (it.estado === 'resuelto') { bt.textContent = '\u2713 Hecha'; bt.className = 'f-hecho ya'; }
     else { bt.textContent = '\u2713 Ya lo hice'; bt.className = 'f-hecho'; }
-    var fe = foco.querySelector('.f-est');
-    fe.className = 'f-est e-' + it.estado;
-    fe.textContent = (it.estado === 'resuelto' && it.resuelto_el) ? fechaCorta(it.resuelto_el).toUpperCase() : '';
     respirarColor(it);
     if (MOV_OK) foco.animate([{ opacity: 0.35 }, { opacity: 1 }], { duration: 180, easing: 'ease-out' });
-  }
-
-  /* ---------- La casa respira con el libro en foco (Triggui) ---------- */
-  function respirarColor(it) {
-    var c1 = it.c1 || '#E8A838', c2 = it.c2 || '#FF6B4A';
-    var r = document.documentElement.style;
-    r.setProperty('--gold', c1);
-    r.setProperty('--gold-2', c2);
-    var s1 = document.querySelector('#gradOro stop:first-child');
-    var s2 = document.querySelector('#gradOro stop:last-child');
-    if (s1) s1.setAttribute('stop-color', c1);
-    if (s2) s2.setAttribute('stop-color', c2);
   }
 
   function esc(s) {
@@ -610,20 +594,16 @@ function iniciarPortal() {
     var it = lista[k];
     var html = '<div class="asa"></div>' +
       '<button class="h-cierra" aria-label="Cerrar">\u2715</button>' +
-      '<div class="h-sem">INSIGHT ' + (k + 1) + ' \u00b7 ' + esc(fechaLarga(it.semana).toUpperCase()) + '</div>' +
-      '<span class="h-chip c-' + esc(it.estado) + '">' + (it.estado === 'resuelto' ? SELLO_14 : '') + (ETIQ[it.estado] || esc(it.estado).toUpperCase()) + '</span>' +
-      '<h2 class="h-tit">' + esc(it.titulo) + '</h2>' +
+      '<div class="h-sem">#' + String(it.id).replace('ED-','') + ' \u00b7 ' + esc(fechaLarga(it.semana).toUpperCase()) + '</div>' +
       (it.portada ? '<img class="h-portada" src="' + esc(it.portada) + '" alt="" loading="lazy">' : '') +
-      '<div class="h-sec">LA SE\u00d1AL</div><p class="h-txt">' + esc(it.hallazgo || '') + '</p>' +
-      (it.riesgo ? '<div class="h-sec">DEL LIBRO</div><p class="h-txt">' + esc(it.riesgo) + '</p>' : '') +
-      (it.movimiento ? '<div class="h-sec">EL GESTO</div><p class="h-txt">' + esc(it.movimiento) + '</p>' : '') +
-      '<div class="h-meta">' + esc(it.id) +
-      (it.impacto ? ' \u00b7 ANCLA: ' + esc(String(it.impacto).toUpperCase()) : '') +
-      (it.estado === 'resuelto' && it.resuelto_el ? ' \u00b7 HECHA EL ' + esc(fechaLarga(it.resuelto_el).toUpperCase()) : '') +
-      '</div>' +
-      (it.slug ? '<a class="h-ver" href="/t/' + esc(it.slug) + '/">VER LA EDICI\u00d3N COMPLETA \u2192</a>' : '') +
-      '<button class="h-hecho ' + (it.estado === 'resuelto' ? 'ya' : '') + '" id="btn-hecho">' +
-        (it.estado === 'resuelto' ? '\u21ba Deshacer' : '\u2713 Ya lo hice') + '</button>';
+      '<div class="h-libro">' + esc(it.titulo) + '</div>' +
+      '<div class="h-sec">LA SE\u00d1AL</div><p class="h-senal">' + esc(it.hallazgo || '') + '</p>' +
+      '<div class="h-sec">EL GESTO</div><p class="h-gesto">' + esc(it.movimiento || '') + '</p>' +
+      '<div class="h-fila">' +
+        '<button class="h-hecho ' + (it.estado === 'resuelto' ? 'ya' : '') + '" id="btn-hecho">' +
+          (it.estado === 'resuelto' ? '\u2713 Hecha' : '\u2713 Ya lo hice') + '</button>' +
+        (it.slug ? '<a class="h-ver" href="/t/' + esc(it.slug) + '/">VER LA EDICI\u00d3N \u2192</a>' : '') +
+      '</div>';
     hoja.innerHTML = html;
     hoja.querySelector('#btn-hecho').addEventListener('click', function () { togglearHecha(k); });
     hoja.querySelector('.h-cierra').addEventListener('click', cerrarHoja);
