@@ -261,3 +261,10 @@ body{-webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale}
 
 /* ---------- Logo del cliente ---------- */
 #hud-marca .cliente-logo{height:20px; display:block; margin:3px 0 4px; filter:brightness(0) invert(1); opacity:.95}
+
+/* ════ AFINADO TRIGGUI: portada, palomear, carita ════ */
+.h-portada{display:block;height:150px;max-width:70%;margin:4px auto 16px;border-radius:12px;object-fit:cover;box-shadow:0 12px 32px rgba(0,0,0,.45)}
+.h-hecho{display:block;width:100%;margin-top:18px;padding:14px;border-radius:999px;border:2px solid var(--gold);background:transparent;color:var(--gold);font:800 13px/1 'Manrope',sans-serif;letter-spacing:.06em;cursor:pointer;transition:all .25s}
+.h-hecho:active{transform:scale(.98)}
+.h-hecho.ya{background:var(--check);border-color:var(--check);color:#08130d}
+#hud-carita{display:inline-flex;align-items:center;margin-left:10px;vertical-align:middle}

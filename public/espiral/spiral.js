@@ -150,7 +150,7 @@ function iniciarPortal() {
   var defs = document.createElementNS(SVGNS, 'defs');
   defs.innerHTML =
     '<linearGradient id="gradOro" x1="0" y1="0" x2="1" y2="1">' +
-    '<stop offset="0" stop-color="#806AD9"/><stop offset="1" stop-color="#00E5FF"/>' +
+    '<stop offset="0" stop-color="#E8A838"/><stop offset="1" stop-color="#FF6B4A"/>' +
     '</linearGradient>';
   svg.appendChild(defs);
 
@@ -417,8 +417,8 @@ function iniciarPortal() {
     var cTri = Math.floor(k / POR_VUELTA) + 1;
     var posT = (k % POR_VUELTA) + 1;
     foco.querySelector('.f-ciclo-tag').textContent = vueltaCompleta(lista, cTri)
-      ? 'TRIMESTRE ' + cTri + ' \u00b7 COMPLETO'
-      : 'TRIMESTRE ' + cTri + ' \u00b7 LUNES ' + posT + ' DE ' + POR_VUELTA;
+      ? 'VUELTA ' + cTri + ' \u00b7 COMPLETO'
+      : 'VUELTA ' + cTri + ' \u00b7 LUNES ' + posT + ' DE ' + POR_VUELTA;
     var segs = foco.querySelectorAll('.f-ciclo-bar span');
     for (var sj = 0; sj < POR_VUELTA; sj++) {
       var sidx = (cTri - 1) * POR_VUELTA + sj;
@@ -429,7 +429,7 @@ function iniciarPortal() {
       }
       segs[sj].className = scls;
     }
-    foco.querySelector('.f-kicker').textContent = 'INSIGHT ' + (k + 1) + ' \u00b7 ' + fechaCorta(it.semana).toUpperCase();
+    foco.querySelector('.f-kicker').textContent = 'SE\u00d1AL ' + (k + 1) + ' \u00b7 ' + fechaCorta(it.semana).toUpperCase();
     foco.querySelector('.f-tit').textContent = it.titulo;
     var fe = foco.querySelector('.f-est');
     fe.className = 'f-est e-' + it.estado;
@@ -508,9 +508,9 @@ function iniciarPortal() {
       pDown.pres.el.classList.remove('pres'); pDown.pres = null;
     }
     var ahora = performance.now();
-    camK = clampCam(pDown.k + (pDown.y - e.clientY) / dz);
+    camK = clampCam(pDown.k + (pDown.y - e.clientY) / dz * 0.45);
     var dt = ahora - pDown.lt;
-    if (dt > 0) vel = ((pDown.ly - e.clientY) / dz) * Math.min(1, 16 / dt);
+    if (dt > 0) vel = ((pDown.ly - e.clientY) / dz) * 0.45 * Math.min(1, 16 / dt);
     pDown.ly = e.clientY; pDown.lt = ahora;
     render();
   });
@@ -535,7 +535,7 @@ function iniciarPortal() {
     if (secuencia) return;
     e.preventDefault();
     ocultarHint();
-    camK = clampCam(camK - (e.deltaY / dz) * 0.55);
+    camK = clampCam(camK - (e.deltaY / dz) * 0.26);
     render();
     if (snapTimer) clearTimeout(snapTimer);
     snapTimer = setTimeout(function () { snap(260); }, 150);
@@ -590,7 +590,7 @@ function iniciarPortal() {
   var SELLO_14 = selloSVG(14);
   var SELLO_12 = selloSVG(12);
 
-  var ETIQ = { pendiente: 'PENDIENTE', en_curso: 'EN CURSO', resuelto: 'RESUELTO', pospuesto: 'EN PAUSA' };
+  var ETIQ = { pendiente: 'TE ESPERA', en_curso: 'EN CURSO', resuelto: 'HECHA', pospuesto: 'EN PAUSA' };
 
   function abrirHoja(k) {
     var it = lista[k];
@@ -599,14 +599,18 @@ function iniciarPortal() {
       '<div class="h-sem">INSIGHT ' + (k + 1) + ' \u00b7 ' + esc(fechaLarga(it.semana).toUpperCase()) + '</div>' +
       '<span class="h-chip c-' + esc(it.estado) + '">' + (it.estado === 'resuelto' ? SELLO_14 : '') + (ETIQ[it.estado] || esc(it.estado).toUpperCase()) + '</span>' +
       '<h2 class="h-tit">' + esc(it.titulo) + '</h2>' +
-      '<div class="h-sec">HALLAZGO</div><p class="h-txt">' + esc(it.hallazgo || '') + '</p>' +
-      (it.riesgo ? '<div class="h-sec">RIESGO</div><p class="h-txt">' + esc(it.riesgo) + '</p>' : '') +
-      (it.movimiento ? '<div class="h-sec">ACCI\u00d3N</div><p class="h-txt">' + esc(it.movimiento) + '</p>' : '') +
+      (it.portada ? '<img class="h-portada" src="' + esc(it.portada) + '" alt="" loading="lazy">' : '') +
+      '<div class="h-sec">LA SE\u00d1AL</div><p class="h-txt">' + esc(it.hallazgo || '') + '</p>' +
+      (it.riesgo ? '<div class="h-sec">DEL LIBRO</div><p class="h-txt">' + esc(it.riesgo) + '</p>' : '') +
+      (it.movimiento ? '<div class="h-sec">EL GESTO</div><p class="h-txt">' + esc(it.movimiento) + '</p>' : '') +
       '<div class="h-meta">' + esc(it.id) +
-      (it.impacto ? ' \u00b7 IMPACTO: ' + esc(String(it.impacto).toUpperCase()) : '') +
-      (it.estado === 'resuelto' && it.resuelto_el ? ' \u00b7 RESUELTO EL ' + esc(fechaLarga(it.resuelto_el).toUpperCase()) : '') +
-      '</div>';
+      (it.impacto ? ' \u00b7 ANCLA: ' + esc(String(it.impacto).toUpperCase()) : '') +
+      (it.estado === 'resuelto' && it.resuelto_el ? ' \u00b7 HECHA EL ' + esc(fechaLarga(it.resuelto_el).toUpperCase()) : '') +
+      '</div>' +
+      '<button class="h-hecho ' + (it.estado === 'resuelto' ? 'ya' : '') + '" id="btn-hecho">' +
+        (it.estado === 'resuelto' ? '\u21ba Deshacer' : '\u2713 Ya lo hice') + '</button>';
     hoja.innerHTML = html;
+    hoja.querySelector('#btn-hecho').addEventListener('click', function () { togglearHecha(k); });
     hoja.querySelector('.h-cierra').addEventListener('click', cerrarHoja);
     hojaAbierta = true;
     velo.classList.add('ver');
@@ -625,6 +629,66 @@ function iniciarPortal() {
   }
 
   velo.addEventListener('click', cerrarHoja);
+
+  /* ---------- Palomear del usuario (Triggui) ---------- */
+  function leerHechas() {
+    try { return JSON.parse(store.get('triggui_espiral_hechas') || '{}'); } catch (e) { return {}; }
+  }
+  function guardarHechas(m) { store.set('triggui_espiral_hechas', JSON.stringify(m)); }
+  window.__aplicarHechas = function (arr) {
+    var m = leerHechas();
+    for (var i = 0; i < arr.length; i++) {
+      var it = arr[i];
+      if (m[it.id]) { it.estado = 'resuelto'; it.resuelto_el = m[it.id]; }
+    }
+  };
+  function togglearHecha(k) {
+    var it = lista[k]; if (!it) return;
+    var m = leerHechas();
+    if (it.estado === 'resuelto') {
+      it.estado = 'pendiente'; delete it.resuelto_el; delete m[it.id];
+      try { gtag('event', 'senal_deshecha', { edicion: it.id }); } catch (e) {}
+      avisar('Se\u00f1al pendiente otra vez');
+    } else {
+      var hoy = new Date().toISOString().slice(0, 10);
+      it.estado = 'resuelto'; it.resuelto_el = hoy; m[it.id] = hoy;
+      try { gtag('event', 'senal_hecha', { edicion: it.id }); } catch (e) {}
+      var reg = nodosVivos[k];
+      if (reg && reg.el.getBoundingClientRect) { var bb = reg.el.getBoundingClientRect(); particulas(bb.left + bb.width / 2, bb.top + bb.height / 2); }
+      vibrar([18, 40, 18]);
+      avisar('Se\u00f1al hecha', String(it.titulo).split(' \u00b7 ')[0]);
+    }
+    guardarHechas(m);
+    racha = calcRacha(lista); cont = calcContadores(lista);
+    reconstruir(); pintarHud(); pintarCarita();
+    abrirHoja(k);
+  }
+
+  /* ---------- Carita de constancia (ultimas 5 pasadas) ---------- */
+  function pintarCarita() {
+    var host = document.getElementById('hud-datos'); if (!host) return;
+    var el = document.getElementById('hud-carita');
+    if (!el) { el = document.createElement('div'); el.id = 'hud-carita'; host.appendChild(el); }
+    var ult = lista.slice(Math.max(0, lista.length - 6), Math.max(0, lista.length - 1));
+    if (!ult.length) { el.innerHTML = ''; return; }
+    var h = ult.filter(function (x) { return x.estado === 'resuelto'; }).length;
+    var ratio = h / ult.length;
+    var caras = [
+      ['#6a6a76', 'M8 15 q4 -3 8 0'],
+      ['#9a9aa6', 'M8 15 q4 -2 8 0'],
+      ['#d9a83c', 'M8 14 h8'],
+      ['#b8d94a', 'M8 13 q4 3 8 0'],
+      ['#34D399', 'M8 12 q4 5 8 0']
+    ];
+    var idx = ratio >= 0.99 ? 4 : ratio >= 0.75 ? 3 : ratio >= 0.5 ? 2 : ratio >= 0.25 ? 1 : 0;
+    var c = caras[idx];
+    el.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none">' +
+      '<circle cx="12" cy="12" r="10" stroke="' + c[0] + '" stroke-width="2"/>' +
+      '<circle cx="8.6" cy="9.6" r="1.4" fill="' + c[0] + '"/><circle cx="15.4" cy="9.6" r="1.4" fill="' + c[0] + '"/>' +
+      '<path d="' + c[1] + '" stroke="' + c[0] + '" stroke-width="2" stroke-linecap="round"/></svg>';
+    el.title = h + ' de ' + ult.length + ' \u00faltimas hechas';
+  }
+  window.__pintarCarita = pintarCarita;
 
   // Deslizar hacia abajo para cerrar (movil)
   var hDown = null;
@@ -741,7 +805,7 @@ function iniciarPortal() {
                 particulas(reg.px, reg.py);
                 vibrar([18, 70, 26, 40, 14]);
               }
-              avisar('Insight resuelto', racha >= 2 ? 'RACHA: ' + racha + ' LUNES SEGUIDOS RESUELTOS' : lista[k].id, 3200);
+              avisar('Se\u00f1al hecha', racha >= 2 ? 'RACHA: ' + racha + ' LUNES SEGUIDOS RESUELTOS' : lista[k].id, 3200);
               setTimeout(function () {
                 encenderHilo(function () { setTimeout(listo, 420); });
               }, 650);
@@ -758,7 +822,7 @@ function iniciarPortal() {
           tweenCam(k, 700, easeInOutCubic, function () {
             var reg = nodosVivos[k];
             if (reg) { pop(reg, false); vibrar([12, 40, 10]); }
-            avisar('Nuevo insight del lunes', fechaLarga(lista[k].semana).toUpperCase(), 2600);
+            avisar('Nueva se\u00f1al del lunes', fechaLarga(lista[k].semana).toUpperCase(), 2600);
             setTimeout(listo, 500);
           });
         });
@@ -806,11 +870,11 @@ function iniciarPortal() {
     var c = document.getElementById('hud-cifras');
     var r = document.getElementById('hud-racha');
     if (cont.total === 0) { v.textContent = ''; c.textContent = ''; r.textContent = ''; return; }
-    v.textContent = cont.resueltos + ' DE ' + cont.total + ' RESUELTOS';
+    v.textContent = cont.resueltos + ' DE ' + cont.total + ' HECHAS';
     c.textContent = '';
     if (racha >= 2) {
       r.innerHTML = '<svg width="11" height="13" viewBox="0 0 11 13" fill="none">' +
-        '<defs><linearGradient id="gFla" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#806AD9"/><stop offset="1" stop-color="#00E5FF"/></linearGradient></defs>' +
+        '<defs><linearGradient id="gFla" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#E8A838"/><stop offset="1" stop-color="#FF6B4A"/></linearGradient></defs>' +
         '<path d="M5.5 0 C6.5 3 9.5 4.5 9.5 8 A4 4.4 0 0 1 1.5 8 C1.5 6 2.8 5.2 3.2 3.6 C4.2 4.8 4.8 5.2 5.5 5 C4.8 3.4 5 1.6 5.5 0 Z" fill="url(#gFla)"/></svg>' +
         racha + ' LUNES SEGUIDOS RESUELTOS';
     } else r.textContent = '';
@@ -823,6 +887,7 @@ function iniciarPortal() {
     cont = calcContadores(lista);
     racha = calcRacha(lista);
     pintarHud();
+    pintarCarita();
     layout();
 
     if (lista.length === 0) {
@@ -860,8 +925,8 @@ function iniciarPortal() {
       if (MOV_OK) setTimeout(function () { tweenCam(destino, 1500, easeOutCubic, null); }, 250);
       else {
         camK = destino; render();
-        if (prev && resueltosNuevos.length) avisar('Insight resuelto', racha >= 2 ? 'RACHA: ' + racha + ' LUNES SEGUIDOS RESUELTOS' : '', 2600);
-        else if (prev && llegadas.length) avisar('Nuevo insight del lunes', '', 2600);
+        if (prev && resueltosNuevos.length) avisar('Se\u00f1al hecha', racha >= 2 ? 'RACHA: ' + racha + ' LUNES SEGUIDOS RESUELTOS' : '', 2600);
+        else if (prev && llegadas.length) avisar('Nueva se\u00f1al del lunes', '', 2600);
       }
     }
   }
@@ -881,7 +946,7 @@ function iniciarPortal() {
   if (PREVIA) {
     var badge = document.createElement('div');
     badge.id = 'previa-badge';
-    badge.textContent = 'VISTA PREVIA';
+    badge.textContent = '';
     app.appendChild(badge);
     var rep = document.createElement('button');
     rep.id = 'previa-replay';

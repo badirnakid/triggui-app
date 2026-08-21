@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#050505">
+<meta name="theme-color" content="#0B0F1A">
 <title>Triggui &middot; La Espiral</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./spiral.css">
+<link rel="stylesheet" href="./spiral.triggui.css">
 <!-- GA4 base (AL) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-CLK554FCNM"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-CLK554FCNM');</script>
@@ -16,7 +16,7 @@
 <body>
 <div id="app"></div>
 <script>
-/* ── ADAPTADOR TRIGGUI → esquema del canon (unico codigo nuevo) ── */
+/* ── ADAPTADOR TRIGGUI → esquema del canon ── */
 (async function(){
   function lunesDe(iso){
     var d=new Date((iso||'').slice(0,10)); if(isNaN(d)) return null;
@@ -42,24 +42,28 @@
     libros=(d.libros||[]).filter(function(b){return b&&b._edicion_numero&&b.titulo});
   }catch(e){}
   libros.sort(function(a,b){return a._edicion_numero-b._edicion_numero});
-  var insights=libros.map(function(b,i){
+  var hechas={};
+  try{hechas=JSON.parse(localStorage.getItem('triggui_espiral_hechas')||'{}');}catch(e){}
+  var insights=libros.map(function(b){
     var sem=lunesDe(b._manual_generated_at||b._inputs_snapshot)||'2026-01-05';
-    var g=gesto(b), ultimo=(i===libros.length-1);
+    var g=gesto(b), id='ED-'+String(b._edicion_numero).padStart(3,'0');
+    var ya=hechas[id];
     return {
-      id:'ED-'+String(b._edicion_numero).padStart(3,'0'),
-      semana:sem,
+      id:id, semana:sem,
       titulo:b.titulo+(b.autor?(' \u00b7 '+b.autor):''),
+      portada:b.portada_url||b.portada||'',
       hallazgo:senal(b),
       movimiento:g?g.phrase:'',
       impacto:g&&g.sensory_anchor?String(g.sensory_anchor):'',
-      estado: ultimo?'pendiente':'resuelto',
-      resuelto_el: ultimo?undefined:sem
+      estado: ya?'resuelto':'pendiente',
+      resuelto_el: ya||undefined
     };
   });
   window.__PREVIEW_DATA__={
-    cliente:{slug:'espiral',nombre:'TRIGGUI',url:'triggui.com',inicio:(insights[0]&&insights[0].semana)||'2026-01-05',plan:'espiral'},
+    cliente:{slug:'espiral',nombre:'TRIGGUI',url:'triggui.com',logo:'./logo-triggui.png',inicio:(insights[0]&&insights[0].semana)||'2026-01-05',plan:''},
     insights:insights
   };
+  try{gtag('event','espiral_view',{ediciones:String(insights.length)});}catch(e){}
   var s=document.createElement('script'); s.src='./spiral.js'; document.body.appendChild(s);
 })();
 </script>
