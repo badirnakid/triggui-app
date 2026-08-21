@@ -586,7 +586,7 @@ function iniciarPortal() {
 
   function tocar(mx, my) {
     var r = nodoEn(mx, my);
-    if (r) { abrirHoja(r.k); return true; }
+    if (r) { tocarNodo(r.k); return true; }
     return false;
   }
 
@@ -646,6 +646,12 @@ function iniciarPortal() {
       if (m[it.id]) { it.estado = 'resuelto'; it.resuelto_el = m[it.id]; }
     }
   };
+  function tocarNodo(k) {
+    var centro = Math.max(0, Math.min(lista.length - 1, Math.round(camK)));
+    if (k === centro) { abrirHoja(k); }
+    else { tweenCam(k, 420); }
+  }
+
   function togglearHecha(k) {
     var it = lista[k]; if (!it) return;
     var m = leerHechas();
@@ -670,7 +676,6 @@ function iniciarPortal() {
     guardarHechas(m);
     racha = calcRacha(lista); cont = calcContadores(lista);
     repintarTodo(); pintarHud(); pintarCarita(); guardarMemoria();
-    abrirHoja(k);
   }
 
   function repintarTodo() {

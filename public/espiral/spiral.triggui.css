@@ -341,3 +341,10 @@ body{-webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale}
 .nodo.celebra{animation:palomazo .9s cubic-bezier(.2,.9,.3,1.4)}
 @keyframes palomazo{0%{transform:scale(1)}35%{transform:scale(1.45);filter:drop-shadow(0 0 14px rgba(52,211,153,.9))}100%{transform:scale(1);filter:none}}
 #hoja .h-frase{font-size:15px;line-height:1.55;color:var(--ink);font-weight:600;text-align:center;margin:0 0 13px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+
+/* ════ v9 · carita rescatada, viaje al centro, frase entronada ════ */
+#hud-datos,#hud-prog,#hud-prog .p-track{overflow:visible}
+#hud-prog .p-cara{z-index:2}
+#hud-prog .p-cap{margin-top:9px}
+#hoja .h-portada{height:min(30vh,250px)}
+#hoja .h-frase{display:block;font-size:17px;line-height:1.5;font-weight:800;color:var(--ink);background:rgba(0,0,0,.26);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);border:1px solid rgba(255,255,255,.10);border-radius:16px;padding:13px 18px;margin:0 0 13px;-webkit-line-clamp:unset;overflow:visible;text-align:center}
