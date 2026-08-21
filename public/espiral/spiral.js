@@ -615,6 +615,7 @@ function iniciarPortal() {
         (it.slug ? '<a class="h-ver" href="/t/' + esc(it.slug) + '/">VER LA EDICI\u00d3N \u2192</a>' : '') +
       '</div>';
     hoja.innerHTML = html;
+    hoja.classList.toggle('con-video', !!it.video);
     hoja.querySelector('.h-cierra').addEventListener('click', cerrarHoja);
     hojaAbierta = true;
     velo.classList.add('ver');
@@ -646,10 +647,22 @@ function iniciarPortal() {
       if (m[it.id]) { it.estado = 'resuelto'; it.resuelto_el = m[it.id]; }
     }
   };
+  function viajarA(k, dur) {
+    var d0 = camK, dK = k - d0, t0 = performance.now();
+    function paso(t) {
+      var p = Math.min(1, (t - t0) / (dur || 420));
+      var e = 1 - Math.pow(1 - p, 3);
+      camK = d0 + dK * e;
+      render();
+      if (p < 1) requestAnimationFrame(paso); else { camK = k; render(); }
+    }
+    requestAnimationFrame(paso);
+  }
+
   function tocarNodo(k) {
     var centro = Math.max(0, Math.min(lista.length - 1, Math.round(camK)));
     if (k === centro) { abrirHoja(k); }
-    else { tweenCam(k, 420); }
+    else { viajarA(k, 420); }
   }
 
   function togglearHecha(k) {
@@ -658,7 +671,6 @@ function iniciarPortal() {
     if (it.estado === 'resuelto') {
       it.estado = 'pendiente'; delete it.resuelto_el; delete m[it.id];
       try { gtag('event', 'senal_deshecha', { edicion: it.id }); } catch (e) {}
-      avisar('Se\u00f1al pendiente otra vez');
     } else {
       var hoy = new Date().toISOString().slice(0, 10);
       it.estado = 'resuelto'; it.resuelto_el = hoy; m[it.id] = hoy;
@@ -671,7 +683,6 @@ function iniciarPortal() {
         setTimeout(function () { try { reg.el.classList.remove('celebra'); } catch (e2) {} }, 950);
       }
       vibrar([18, 40, 18]);
-      avisar('Se\u00f1al hecha', String(it.titulo).split(' \u00b7 ')[0]);
     }
     guardarHechas(m);
     racha = calcRacha(lista); cont = calcContadores(lista);
@@ -704,8 +715,16 @@ function iniciarPortal() {
     var idx = ratio >= 0.99 ? 4 : ratio >= 0.75 ? 3 : ratio >= 0.5 ? 2 : ratio >= 0.25 ? 1 : 0;
     var c = caras[idx];
     prog.querySelector('.p-fill').style.width = (pct * 100).toFixed(1) + '%';
+    var lin = prog.querySelector('.p-linea');
+    lin.style.position = 'relative'; lin.style.height = '22px';
+    lin.style.display = 'flex'; lin.style.alignItems = 'center'; lin.style.overflow = 'visible';
+    var tr = prog.querySelector('.p-track'); tr.style.flex = '1';
     var cara = prog.querySelector('.p-cara');
+    cara.style.position = 'absolute'; cara.style.top = '50%';
+    cara.style.transform = 'translateY(-50%)';
+    cara.style.width = '22px'; cara.style.height = '22px'; cara.style.zIndex = '3';
     cara.style.left = 'calc(' + (pct * 100).toFixed(1) + '% - 11px)';
+    cara.style.transition = 'left .5s cubic-bezier(.2,.8,.2,1)';
     cara.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none">' +
       '<circle cx="12" cy="12" r="10" fill="#0B0F1A" stroke="' + c[0] + '" stroke-width="1.6"/>' +
       '<circle cx="8.6" cy="9.6" r="1.15" fill="' + c[0] + '"/><circle cx="15.4" cy="9.6" r="1.15" fill="' + c[0] + '"/>' +
@@ -882,7 +901,7 @@ function iniciarPortal() {
     document.getElementById('hud-cliente').innerHTML = logo || ('<div class="cliente-nombre">' + esc(cli.nombre || '') + '</div>');
     var hd = document.getElementById('hud-datos');
     if (!document.getElementById('hud-prog')) {
-      hd.innerHTML = '<div id="hud-prog"><div class="p-track"><div class="p-fill"></div><div class="p-cara"></div></div><div class="p-cap"></div></div>';
+      hd.innerHTML = '<div id="hud-prog"><div class="p-linea"><div class="p-track"><div class="p-fill"></div></div><div class="p-cara"></div></div><div class="p-cap"></div></div>';
     }
   }
 

@@ -348,3 +348,11 @@ body{-webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale}
 #hud-prog .p-cap{margin-top:9px}
 #hoja .h-portada{height:min(30vh,250px)}
 #hoja .h-frase{display:block;font-size:17px;line-height:1.5;font-weight:800;color:var(--ink);background:rgba(0,0,0,.26);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);border:1px solid rgba(255,255,255,.10);border-radius:16px;padding:13px 18px;margin:0 0 13px;-webkit-line-clamp:unset;overflow:visible;text-align:center}
+
+/* ════ v10 · linea de progreso fusionada + tarjeta con video compacta ════ */
+#hud-prog .p-linea{position:relative;height:22px;display:flex;align-items:center;overflow:visible}
+#hud-prog .p-track{position:relative;flex:1;height:5px;border-radius:999px;background:rgba(245,240,232,.14);overflow:visible}
+#hoja.con-video .h-portada{height:min(17vh,140px)}
+#hoja.con-video .h-voz{-webkit-line-clamp:2;font-size:13px}
+#hoja.con-video .h-frase{font-size:15px;padding:10px 14px}
+#hoja.con-video .h-sem{margin-bottom:8px}
