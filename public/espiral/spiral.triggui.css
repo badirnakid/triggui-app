@@ -302,3 +302,21 @@ body{-webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale}
 #hoja .h-hecho{flex:1.618;padding:14px;border-radius:999px;border:none;background:linear-gradient(135deg,var(--acc1),var(--acc2));color:#0B0F1A;font:800 13px/1 'Manrope',sans-serif;letter-spacing:.04em;cursor:pointer}
 #hoja .h-hecho.ya{background:var(--check);color:#08130d}
 #hoja .h-ver{flex:1;display:flex;align-items:center;justify-content:center;font:800 10.5px/1.2 'Manrope',sans-serif;letter-spacing:.06em;color:var(--acc1);text-decoration:none;padding:12px 8px;border-radius:999px;border:2px solid var(--line);text-align:center}
+
+/* ════ v7 · simplificacion aurea ════ */
+#cima{top:calc(76px + env(safe-area-inset-top))}
+#cima .c-senal{font-size:19px;line-height:1.42;font-weight:700;-webkit-line-clamp:3}
+@media (min-width:900px){#cima .c-senal{font-size:24px}}
+#libroFlot{position:absolute;z-index:1;left:50%;top:33%;transform:translateX(-50%);width:55px;height:89px;object-fit:cover;border-radius:7px;box-shadow:0 8px 26px rgba(0,0,0,.55);opacity:0;transition:opacity .3s;pointer-events:none}
+@media (min-width:900px){#libroFlot{width:68px;height:110px;top:35%}}
+#foco .f-frase{font-size:15px;line-height:1.5;color:var(--ink);font-weight:600;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:13px}
+#foco .f-hecho{background:linear-gradient(135deg,var(--gold),var(--gold-2))}
+#foco .f-hint{color:var(--gold);opacity:.9;font-size:9px;letter-spacing:.2em}
+#hoja .h-hecho{display:none}
+#hoja .h-ver{flex:1;border-color:var(--gold)}
+/* progreso acaritado */
+#hud-prog{width:144px}
+#hud-prog .p-track{position:relative;height:5px;border-radius:999px;background:rgba(245,240,232,.14)}
+#hud-prog .p-fill{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:linear-gradient(90deg,var(--gold),var(--gold-2));transition:width .5s cubic-bezier(.2,.8,.2,1)}
+#hud-prog .p-cara{position:absolute;top:50%;transform:translateY(-50%);width:22px;height:22px;transition:left .5s cubic-bezier(.2,.8,.2,1)}
+#hud-prog .p-cap{margin-top:6px;font-size:8.5px;letter-spacing:.18em;color:var(--faint);font-weight:800;text-align:right}

@@ -193,16 +193,17 @@ function iniciarPortal() {
   var foco = document.createElement('div');
   foco.id = 'foco';
   foco.innerHTML = '<div class="f-in">' +
-    '<div class="f-gtxt"></div>' +
+    '<div class="f-frase"></div>' +
     '<button id="f-hecho" class="f-hecho"></button>' +
-    '<div class="f-pie"><img class="f-portada" alt="" loading="lazy"><span class="f-libro"></span></div>' +
-    '<div class="f-hint">TOCA PARA VER LA EDICI\u00d3N</div>' +
+    '<div class="f-hint"></div>' +
   '</div>';
   var flechas = div('hud', 'flechas');
   flechas.innerHTML = '<button id="fl-arriba" aria-label="Subir">\u25b2</button><button id="fl-abajo" aria-label="Bajar">\u25bc</button>';
   var cima = document.createElement('div'); cima.id = 'cima';
-  cima.innerHTML = '<div class="c-kicker"></div><div class="c-senal"></div>';
-  [hudMarca, hudDatos, hudHint, cima, foco, flechas].forEach(function (el) { app.appendChild(el); });
+  cima.innerHTML = '<div class="c-senal"></div>';
+  var libroFlot = document.createElement('img');
+  libroFlot.id = 'libroFlot'; libroFlot.alt = ''; libroFlot.loading = 'lazy';
+  [hudMarca, hudDatos, hudHint, cima, libroFlot, foco, flechas].forEach(function (el) { app.appendChild(el); });
 
   // Hoja de detalle + velo + toast
   foco.addEventListener('click', function (ev) {
@@ -422,18 +423,20 @@ function iniciarPortal() {
   }
 
   function actualizarLector() {
-    if (secuencia || lista.length === 0) { foco.classList.add('oculto'); cima.classList.add('oculto'); return; }
+    if (secuencia || lista.length === 0) { foco.classList.add('oculto'); cima.classList.add('oculto'); libroFlot.style.opacity = 0; return; }
     foco.classList.remove('oculto'); cima.classList.remove('oculto');
     var k = Math.max(0, Math.min(lista.length - 1, Math.round(camK)));
     if (k === focoK) return;
     focoK = k;
     var it = lista[k];
-    cima.querySelector('.c-kicker').textContent = '#' + String(it.id).replace('ED-','') + ' \u00b7 ' + fechaCorta(it.semana).toUpperCase();
-    cima.querySelector('.c-senal').textContent = it.hallazgo || '';
-    foco.querySelector('.f-gtxt').textContent = it.movimiento || '';
-    var img = foco.querySelector('.f-portada');
-    if (it.portada) { img.src = it.portada; img.style.display = ''; } else { img.style.display = 'none'; }
-    foco.querySelector('.f-libro').textContent = it.titulo;
+    cima.querySelector('.c-senal').textContent = it.movimiento || it.hallazgo || '';
+    foco.querySelector('.f-frase').textContent = it.hallazgo || '';
+    if (it.portada) { libroFlot.src = it.portada; libroFlot.style.opacity = 0.96; }
+    else { libroFlot.style.opacity = 0; }
+    var f = new Date(it.semana + 'T12:00:00');
+    var MES = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+    var fTx = isNaN(f) ? '' : (f.getDate() + ' ' + MES[f.getMonth()] + ' ' + f.getFullYear());
+    foco.querySelector('.f-hint').textContent = '#' + String(it.id).replace('ED-','') + ' \u00b7 ' + fTx + ' \u00b7 TOCA PARA VER LA EDICI\u00d3N';
     var bt = foco.querySelector('#f-hecho');
     if (it.estado === 'resuelto') { bt.textContent = '\u2713 Hecho'; bt.className = 'f-hecho ya'; }
     else { bt.textContent = '\u2713 Lo hice'; bt.className = 'f-hecho'; }
@@ -515,14 +518,14 @@ function iniciarPortal() {
     }
     var ahora = performance.now();
     var maxK = Math.max(lista.length - 1, 0);
-    var raw = pDown.k + (pDown.y - e.clientY) / dz * 0.45;
+    var raw = pDown.k + (pDown.y - e.clientY) / dz * 0.32;
     if (raw > maxK) {
       overPx = (raw - maxK) * dz;
       camK = maxK;
       if (overPx > 46) avisar('Suelta para actualizar \u21bb', null, 500);
     } else { overPx = 0; camK = clampCam(raw); }
     var dt = ahora - pDown.lt;
-    if (dt > 0) vel = ((pDown.ly - e.clientY) / dz) * 0.45 * Math.min(1, 16 / dt);
+    if (dt > 0) vel = ((pDown.ly - e.clientY) / dz) * 0.32 * Math.min(1, 16 / dt);
     pDown.ly = e.clientY; pDown.lt = ahora;
     render();
   });
@@ -549,7 +552,7 @@ function iniciarPortal() {
     if (secuencia) return;
     e.preventDefault();
     ocultarHint();
-    camK = clampCam(camK - (e.deltaY / dz) * 0.26);
+    camK = clampCam(camK - (e.deltaY / dz) * 0.18);
     render();
     if (snapTimer) clearTimeout(snapTimer);
     snapTimer = setTimeout(function () { snap(260); }, 150);
@@ -616,12 +619,9 @@ function iniciarPortal() {
       (it.voz ? '<p class="h-voz">' + esc(it.voz) + '</p>' : '') +
       (it.video ? '<div class="h-video"><iframe src="https://www.youtube-nocookie.com/embed/' + esc(it.video) + '?rel=0&modestbranding=1" title="Video" frameborder="0" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>' : '') +
       '<div class="h-fila">' +
-        '<button class="h-hecho ' + (it.estado === 'resuelto' ? 'ya' : '') + '" id="btn-hecho">' +
-          (it.estado === 'resuelto' ? '\u2713 Hecho' : '\u2713 Lo hice') + '</button>' +
         (it.slug ? '<a class="h-ver" href="/t/' + esc(it.slug) + '/">VER LA EDICI\u00d3N \u2192</a>' : '') +
       '</div>';
     hoja.innerHTML = html;
-    hoja.querySelector('#btn-hecho').addEventListener('click', function () { togglearHecha(k); });
     hoja.querySelector('.h-cierra').addEventListener('click', cerrarHoja);
     hojaAbierta = true;
     velo.classList.add('ver');
@@ -682,15 +682,15 @@ function iniciarPortal() {
     render();
   }
 
-  /* ---------- Carita de constancia (ultimas 5 pasadas) ---------- */
+  /* ---------- Progreso acaritado (barra + carita en la punta) ---------- */
   function pintarCarita() {
-    var host = document.getElementById('hud-datos'); if (!host) return;
-    var el = document.getElementById('hud-carita');
-    if (!el) { el = document.createElement('div'); el.id = 'hud-carita'; host.appendChild(el); }
+    var prog = document.getElementById('hud-prog'); if (!prog) return;
+    var total = lista.length;
+    var hechas = lista.filter(function (x) { return x.estado === 'resuelto'; }).length;
+    var pct = total ? (hechas / total) : 0;
     var ult = lista.slice(Math.max(0, lista.length - 6), Math.max(0, lista.length - 1));
-    if (!ult.length) { el.innerHTML = ''; return; }
-    var h = ult.filter(function (x) { return x.estado === 'resuelto'; }).length;
-    var ratio = h / ult.length;
+    var h5 = ult.filter(function (x) { return x.estado === 'resuelto'; }).length;
+    var ratio = ult.length ? h5 / ult.length : 0;
     var caras = [
       ['#6a6a76', 'M8 15 q4 -3 8 0'],
       ['#9a9aa6', 'M8 15 q4 -2 8 0'],
@@ -700,11 +700,14 @@ function iniciarPortal() {
     ];
     var idx = ratio >= 0.99 ? 4 : ratio >= 0.75 ? 3 : ratio >= 0.5 ? 2 : ratio >= 0.25 ? 1 : 0;
     var c = caras[idx];
-    el.innerHTML = '<svg width="30" height="30" viewBox="0 0 24 24" fill="none">' +
-      '<circle cx="12" cy="12" r="10" stroke="' + c[0] + '" stroke-width="1.4"/>' +
+    prog.querySelector('.p-fill').style.width = (pct * 100).toFixed(1) + '%';
+    var cara = prog.querySelector('.p-cara');
+    cara.style.left = 'calc(' + (pct * 100).toFixed(1) + '% - 11px)';
+    cara.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none">' +
+      '<circle cx="12" cy="12" r="10" fill="#0B0F1A" stroke="' + c[0] + '" stroke-width="1.6"/>' +
       '<circle cx="8.6" cy="9.6" r="1.15" fill="' + c[0] + '"/><circle cx="15.4" cy="9.6" r="1.15" fill="' + c[0] + '"/>' +
-      '<path d="' + c[1] + '" stroke="' + c[0] + '" stroke-width="1.4" stroke-linecap="round"/></svg>';
-    el.title = h + ' de ' + ult.length + ' \u00faltimas hechas';
+      '<path d="' + c[1] + '" stroke="' + c[0] + '" stroke-width="1.6" stroke-linecap="round"/></svg>';
+    prog.querySelector('.p-cap').textContent = 'HAS HECHO ' + hechas + ' DE ' + total + (racha > 1 ? (' \u00b7 RACHA ' + racha) : '');
   }
   window.__pintarCarita = pintarCarita;
 
@@ -871,33 +874,15 @@ function iniciarPortal() {
 
   /* ---------- HUD ---------- */
   function pintarHud() {
-    var cli = datos.cliente || {};
-    var nombreTxt = esc(cli.nombre || slug.toUpperCase());
-    document.getElementById('hud-cliente').innerHTML = '<span id="hud-nombre">' + nombreTxt + '</span>' +
-      '';
-    if (cli.logo) {
-      var lg = new Image();
-      lg.onload = function () {
-        var n = document.getElementById('hud-nombre');
-        if (n) n.outerHTML = '<img class="cliente-logo" src="' + esc(cli.logo) + '" alt="' + nombreTxt + '">';
-      };
-      lg.src = cli.logo;
+    var cli = (datos && datos.cliente) || {};
+    var logo = cli.logo ? '<img class="cliente-logo" src="' + esc(cli.logo) + '" alt="">' : '';
+    document.getElementById('hud-cliente').innerHTML = logo || ('<div class="cliente-nombre">' + esc(cli.nombre || '') + '</div>');
+    var hd = document.getElementById('hud-datos');
+    if (!document.getElementById('hud-prog')) {
+      hd.innerHTML = '<div id="hud-prog"><div class="p-track"><div class="p-fill"></div><div class="p-cara"></div></div><div class="p-cap"></div></div>';
     }
-    var v = document.getElementById('hud-vuelta');
-    var c = document.getElementById('hud-cifras');
-    var r = document.getElementById('hud-racha');
-    if (cont.total === 0) { v.textContent = ''; c.textContent = ''; r.textContent = ''; return; }
-    v.textContent = cont.resueltos + ' DE ' + cont.total + ' HECHAS';
-    c.textContent = '';
-    if (racha >= 2) {
-      r.innerHTML = '<svg width="11" height="13" viewBox="0 0 11 13" fill="none">' +
-        '<defs><linearGradient id="gFla" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#E8A838"/><stop offset="1" stop-color="#FF6B4A"/></linearGradient></defs>' +
-        '<path d="M5.5 0 C6.5 3 9.5 4.5 9.5 8 A4 4.4 0 0 1 1.5 8 C1.5 6 2.8 5.2 3.2 3.6 C4.2 4.8 4.8 5.2 5.5 5 C4.8 3.4 5 1.6 5.5 0 Z" fill="url(#gFla)"/></svg>' +
-        racha + ' LUNES SEGUIDOS RESUELTOS';
-    } else r.textContent = '';
   }
 
-  /* ---------- Carga y arranque ---------- */
   function boot(json) {
     datos = json;
     lista = listaEspiral(datos.insights || []);
