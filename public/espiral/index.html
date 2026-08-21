@@ -54,6 +54,8 @@
       slug:b._slug||'',
       c1:(b.colores&&b.colores[0])||'',
       c2:(b.colores&&b.colores[1])||'',
+      voz:(b._nucleus&&b._nucleus.book_grounding_anchors&&b._nucleus.book_grounding_anchors.authorial_voice_notes)||'',
+      video:(function(v){if(!v||!v.candidatos||!v.candidatos.length)return '';var c=v.candidatos;return c[Math.floor(Math.random()*c.length)].id||'';})(b._video),
       portada:b.portada_url||b.portada||'',
       hallazgo:senal(b),
       movimiento:g?g.phrase:'',

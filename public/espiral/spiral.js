@@ -193,16 +193,16 @@ function iniciarPortal() {
   var foco = document.createElement('div');
   foco.id = 'foco';
   foco.innerHTML = '<div class="f-in">' +
-    '<div class="f-kicker"></div>' +
-    '<div class="f-senal"></div>' +
-    '<div class="f-gbloque"><span class="f-glabel">EL GESTO</span><div class="f-gtxt"></div></div>' +
+    '<div class="f-gtxt"></div>' +
     '<button id="f-hecho" class="f-hecho"></button>' +
     '<div class="f-pie"><img class="f-portada" alt="" loading="lazy"><span class="f-libro"></span></div>' +
     '<div class="f-hint">TOCA PARA VER LA EDICI\u00d3N</div>' +
   '</div>';
   var flechas = div('hud', 'flechas');
   flechas.innerHTML = '<button id="fl-arriba" aria-label="Subir">\u25b2</button><button id="fl-abajo" aria-label="Bajar">\u25bc</button>';
-  [hudMarca, hudDatos, hudHint, foco, flechas].forEach(function (el) { app.appendChild(el); });
+  var cima = document.createElement('div'); cima.id = 'cima';
+  cima.innerHTML = '<div class="c-kicker"></div><div class="c-senal"></div>';
+  [hudMarca, hudDatos, hudHint, cima, foco, flechas].forEach(function (el) { app.appendChild(el); });
 
   // Hoja de detalle + velo + toast
   foco.addEventListener('click', function (ev) {
@@ -410,21 +410,21 @@ function iniciarPortal() {
   /* ---------- Lector del nodo enfocado ---------- */
   var focoK = -1;
   function actualizarLector() {
-    if (secuencia || lista.length === 0) { foco.classList.add('oculto'); return; }
-    foco.classList.remove('oculto');
+    if (secuencia || lista.length === 0) { foco.classList.add('oculto'); cima.classList.add('oculto'); return; }
+    foco.classList.remove('oculto'); cima.classList.remove('oculto');
     var k = Math.max(0, Math.min(lista.length - 1, Math.round(camK)));
     if (k === focoK) return;
     focoK = k;
     var it = lista[k];
-    foco.querySelector('.f-kicker').textContent = '#' + String(it.id).replace('ED-','') + ' \u00b7 ' + fechaCorta(it.semana).toUpperCase();
-    foco.querySelector('.f-senal').textContent = it.hallazgo || '';
+    cima.querySelector('.c-kicker').textContent = '#' + String(it.id).replace('ED-','') + ' \u00b7 ' + fechaCorta(it.semana).toUpperCase();
+    cima.querySelector('.c-senal').textContent = it.hallazgo || '';
     foco.querySelector('.f-gtxt').textContent = it.movimiento || '';
     var img = foco.querySelector('.f-portada');
     if (it.portada) { img.src = it.portada; img.style.display = ''; } else { img.style.display = 'none'; }
     foco.querySelector('.f-libro').textContent = it.titulo;
     var bt = foco.querySelector('#f-hecho');
-    if (it.estado === 'resuelto') { bt.textContent = '\u2713 Hecha'; bt.className = 'f-hecho ya'; }
-    else { bt.textContent = '\u2713 Ya lo hice'; bt.className = 'f-hecho'; }
+    if (it.estado === 'resuelto') { bt.textContent = '\u2713 Hecho'; bt.className = 'f-hecho ya'; }
+    else { bt.textContent = '\u2713 Lo hice'; bt.className = 'f-hecho'; }
     respirarColor(it);
     if (MOV_OK) foco.animate([{ opacity: 0.35 }, { opacity: 1 }], { duration: 180, easing: 'ease-out' });
   }
@@ -480,9 +480,10 @@ function iniciarPortal() {
   /* ---------- Entrada ---------- */
   var pDown = null;
 
-  svg.addEventListener('pointerdown', function (e) {
+  zona.addEventListener('pointerdown', function (e) {
+    if (e.target && e.target.closest && e.target.closest('button, a, #hud-marca')) return;
     if (secuencia) return;
-    svg.setPointerCapture(e.pointerId);
+    try { zona.setPointerCapture(e.pointerId); } catch (er) {}
     pDown = { y: e.clientY, x: e.clientX, k: camK, t: performance.now(), ly: e.clientY, lt: performance.now() };
     var rp = nodoEn(e.clientX, e.clientY);
     if (rp) { rp.el.classList.add('pres'); pDown.pres = rp; }
@@ -491,8 +492,10 @@ function iniciarPortal() {
     ocultarHint();
   });
 
+  var zona = app;
+  zona.style.touchAction = 'none';
   var overPx = 0;
-  svg.addEventListener('pointermove', function (e) {
+  zona.addEventListener('pointermove', function (e) {
     if (!pDown) return;
     if (pDown.pres && (Math.abs(e.clientX - pDown.x) > 7 || Math.abs(e.clientY - pDown.y) > 7)) {
       pDown.pres.el.classList.remove('pres'); pDown.pres = null;
@@ -511,7 +514,7 @@ function iniciarPortal() {
     render();
   });
 
-  svg.addEventListener('pointerup', function (e) {
+  zona.addEventListener('pointerup', function (e) {
     if (overPx > 84) { avisar('Actualizando\u2026'); setTimeout(function(){ location.reload(); }, 220); return; }
     overPx = 0;
     if (!pDown) return;
@@ -524,12 +527,12 @@ function iniciarPortal() {
     else requestAnimationFrame(inercia);
   });
 
-  svg.addEventListener('pointercancel', function () {
+  zona.addEventListener('pointercancel', function () {
     if (pDown && pDown.pres) pDown.pres.el.classList.remove('pres');
     arrastrando = false; pDown = null; svg.classList.remove('arrastrando'); snap(260);
   });
 
-  svg.addEventListener('wheel', function (e) {
+  zona.addEventListener('wheel', function (e) {
     if (secuencia) return;
     e.preventDefault();
     ocultarHint();
@@ -597,11 +600,11 @@ function iniciarPortal() {
       '<div class="h-sem">#' + String(it.id).replace('ED-','') + ' \u00b7 ' + esc(fechaLarga(it.semana).toUpperCase()) + '</div>' +
       (it.portada ? '<img class="h-portada" src="' + esc(it.portada) + '" alt="" loading="lazy">' : '') +
       '<div class="h-libro">' + esc(it.titulo) + '</div>' +
-      '<div class="h-sec">LA SE\u00d1AL</div><p class="h-senal">' + esc(it.hallazgo || '') + '</p>' +
-      '<div class="h-sec">EL GESTO</div><p class="h-gesto">' + esc(it.movimiento || '') + '</p>' +
+      (it.voz ? '<p class="h-voz">' + esc(it.voz) + '</p>' : '') +
+      (it.video ? '<div class="h-video"><iframe src="https://www.youtube-nocookie.com/embed/' + esc(it.video) + '?rel=0&modestbranding=1" title="Video" frameborder="0" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>' : '') +
       '<div class="h-fila">' +
         '<button class="h-hecho ' + (it.estado === 'resuelto' ? 'ya' : '') + '" id="btn-hecho">' +
-          (it.estado === 'resuelto' ? '\u2713 Hecha' : '\u2713 Ya lo hice') + '</button>' +
+          (it.estado === 'resuelto' ? '\u2713 Hecho' : '\u2713 Lo hice') + '</button>' +
         (it.slug ? '<a class="h-ver" href="/t/' + esc(it.slug) + '/">VER LA EDICI\u00d3N \u2192</a>' : '') +
       '</div>';
     hoja.innerHTML = html;
@@ -684,10 +687,10 @@ function iniciarPortal() {
     ];
     var idx = ratio >= 0.99 ? 4 : ratio >= 0.75 ? 3 : ratio >= 0.5 ? 2 : ratio >= 0.25 ? 1 : 0;
     var c = caras[idx];
-    el.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none">' +
-      '<circle cx="12" cy="12" r="10" stroke="' + c[0] + '" stroke-width="2"/>' +
-      '<circle cx="8.6" cy="9.6" r="1.4" fill="' + c[0] + '"/><circle cx="15.4" cy="9.6" r="1.4" fill="' + c[0] + '"/>' +
-      '<path d="' + c[1] + '" stroke="' + c[0] + '" stroke-width="2" stroke-linecap="round"/></svg>';
+    el.innerHTML = '<svg width="30" height="30" viewBox="0 0 24 24" fill="none">' +
+      '<circle cx="12" cy="12" r="10" stroke="' + c[0] + '" stroke-width="1.4"/>' +
+      '<circle cx="8.6" cy="9.6" r="1.15" fill="' + c[0] + '"/><circle cx="15.4" cy="9.6" r="1.15" fill="' + c[0] + '"/>' +
+      '<path d="' + c[1] + '" stroke="' + c[0] + '" stroke-width="1.4" stroke-linecap="round"/></svg>';
     el.title = h + ' de ' + ult.length + ' \u00faltimas hechas';
   }
   window.__pintarCarita = pintarCarita;
@@ -889,6 +892,10 @@ function iniciarPortal() {
     racha = calcRacha(lista);
     pintarHud();
     pintarCarita();
+    var ultimoIt = lista[lista.length - 1] || {};
+    var rz = document.documentElement.style;
+    rz.setProperty('--acc1', ultimoIt.c1 || '#E8A838');
+    rz.setProperty('--acc2', ultimoIt.c2 || '#FF6B4A');
     layout();
 
     if (lista.length === 0) {
