@@ -3,238 +3,64 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Triggui · La Espiral</title>
-<meta name="description" content="Cuando el impulso te busque, aquí hay una señal esperándote.">
-<meta name="theme-color" content="#0B0F1A">
+<meta name="theme-color" content="#050505">
+<title>Triggui &middot; La Espiral</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./spiral.css">
 <!-- GA4 base (AL) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-CLK554FCNM"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-CLK554FCNM');</script>
-<style>
-:root{--void:#0B0F1A;--cream:#F5F0E8;--g1:#E8A838;--g2:#FF6B4A;--g3:#FF3F6C;--muted:rgba(245,240,232,.6)}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;overflow:hidden;background:var(--void);color:var(--cream);font-family:'Plus Jakarta Sans',system-ui,sans-serif}
-#escena{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;touch-action:none}
-header{padding:calc(14px + env(safe-area-inset-top)) 16px 4px;text-align:center;z-index:3}
-.kicker{font-size:11px;font-weight:800;letter-spacing:.34em;background:linear-gradient(135deg,var(--g1),var(--g2) 55%,var(--g3));-webkit-background-clip:text;background-clip:text;color:transparent}
-h1{font-size:22px;font-weight:800;margin:6px 0 2px}
-.pacto{font-size:10.5px;color:rgba(245,240,232,.38);letter-spacing:.03em;margin:0}
-#lienzo{flex:1;width:100%;display:block}
-.bol{cursor:pointer}
-.num{font-weight:800;pointer-events:none;user-select:none}
-#coach{position:fixed;left:50%;top:46%;transform:translateX(-50%);z-index:4;font-size:13px;font-weight:600;color:var(--muted);background:rgba(11,15,26,.72);border:1px solid rgba(245,240,232,.14);padding:10px 18px;border-radius:999px;backdrop-filter:blur(6px);transition:opacity .6s;pointer-events:none}
-#coach.fuera{opacity:0}
-#dock{position:fixed;left:0;right:0;bottom:0;z-index:3;padding:12px 14px calc(14px + env(safe-area-inset-bottom));display:flex;justify-content:center}
-#mini{width:min(94vw,440px);border-radius:22px;padding:16px 18px 14px;box-shadow:0 18px 50px rgba(0,0,0,.55);cursor:pointer;transition:background .35s,color .35s}
-#mSem{font-size:10px;font-weight:800;letter-spacing:.26em;opacity:.7}
-#mTit{font-size:17px;font-weight:800;line-height:1.2;margin:5px 0 2px}
-#mTip{font-size:11.5px;font-weight:600;opacity:.55}
-.fle{position:fixed;top:50%;transform:translateY(-50%);z-index:3;width:44px;height:44px;border-radius:50%;border:2px solid rgba(245,240,232,.3);background:rgba(11,15,26,.5);color:var(--cream);font-size:20px;font-weight:800;display:grid;place-items:center;cursor:pointer;user-select:none}
-#fPrev{left:10px}#fNext{right:10px}
-@media (max-width:520px){.fle{display:none}}
-#velo{position:fixed;inset:0;background:rgba(5,7,13,.62);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .35s;z-index:8}
-#velo.on{opacity:1;pointer-events:auto}
-#hoja{position:fixed;left:0;right:0;bottom:0;z-index:9;transform:translateY(105%);transition:transform .45s cubic-bezier(.2,.8,.2,1);display:flex;justify-content:center;pointer-events:none}
-#hoja.on{transform:none;pointer-events:auto}
-#hcard{position:relative;width:min(96vw,480px);border-radius:28px 28px 0 0;padding:24px 22px calc(22px + env(safe-area-inset-bottom));box-shadow:0 -20px 60px rgba(0,0,0,.6)}
-.h-cierra{position:absolute;right:18px;top:14px;width:36px;height:36px;border-radius:50%;border:none;background:rgba(0,0,0,.14);color:inherit;font-size:16px;font-weight:800;cursor:pointer}
-#hSem{font-size:10.5px;font-weight:800;letter-spacing:.26em;opacity:.72}
-#hTit{font-size:24px;font-weight:800;line-height:1.15;margin:10px 0 2px}
-#hAut{font-size:13px;font-weight:600;opacity:.68;margin:0 0 16px}
-#hAncla{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.22em;padding:5px 11px;border-radius:999px;border:1.5px solid currentColor;opacity:.75;margin-bottom:10px}
-#hFrase{font-size:17px;line-height:1.5;font-weight:600;margin:0 0 20px}
-.fila{display:flex;gap:10px}
-.btn{flex:1;text-align:center;border-radius:999px;padding:13px 10px;font-size:13px;font-weight:800;text-decoration:none}
-.btn.oro{background:linear-gradient(135deg,var(--g1),var(--g2) 55%,var(--g3));color:#0B0F1A}
-.btn.linea{border:2px solid currentColor;color:inherit}
-</style>
 </head>
 <body>
-<div id="escena">
-  <header>
-    <div class="kicker">LA ESPIRAL</div>
-    <h1>Una señal te espera</h1>
-    <p class="pacto">Nueva señal cada lunes · a veces, una sorpresa · nunca te llamamos</p>
-  </header>
-  <svg id="lienzo" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="oro" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="#E8A838"/><stop offset=".55" stop-color="#FF6B4A"/><stop offset="1" stop-color="#FF3F6C"/>
-      </linearGradient>
-    </defs>
-    <g id="mundo"><path id="sendero" fill="none" stroke="url(#oro)" stroke-opacity=".13" stroke-width="0.5"/><g id="giro"></g></g>
-  </svg>
-  <div id="coach">Desliza para viajar por tu espiral</div>
-  <div id="fPrev" class="fle" aria-label="anterior">‹</div>
-  <div id="fNext" class="fle" aria-label="siguiente">›</div>
-  <div id="dock"><div id="mini"><div id="mSem"></div><div id="mTit"></div><div id="mTip">Toca para abrir la señal</div></div></div>
-</div>
-
-<div id="velo"></div>
-<div id="hoja"><div id="hcard">
-  <button class="h-cierra" aria-label="cerrar">✕</button>
-  <div id="hSem"></div>
-  <h2 id="hTit"></h2>
-  <p id="hAut"></p>
-  <span id="hAncla"></span>
-  <p id="hFrase"></p>
-  <div class="fila">
-    <a id="hVer" class="btn linea" href="#">Ver la edición</a>
-    <a id="hGuardar" class="btn oro" href="https://triggui.com/?utm_source=espiral&utm_medium=app&utm_campaign=guardar#espiral">Guardar en mi espiral 🌀</a>
-  </div>
-</div></div>
-
+<div id="app"></div>
 <script>
+/* ── ADAPTADOR TRIGGUI → esquema del canon (unico codigo nuevo) ── */
 (async function(){
-  var FUENTE='https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido_manual.json';
-  var PHI_ANG=137.50776405003785, ESC=9.2;
-  var MESES=['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
-  var ANCLAS={vista:'VISTA',tiempo:'TIEMPO',espacio:'ESPACIO',movimiento:'MOVIMIENTO',tacto:'TACTO',oido:'OÍDO',respiracion:'RESPIRACIÓN',cuerpo:'CUERPO'};
-
-  var libros=[];
-  try{
-    var d=await fetch(FUENTE,{cache:'no-store'}).then(function(r){return r.json()});
-    libros=(d.libros||d||[]).filter(function(b){return b&&b._edicion_numero&&b.titulo});
-  }catch(e){}
-  var mTitEl=document.getElementById('mTit');
-  if(!libros.length){ mTitEl.textContent='La espiral descansa. Vuelve en un momento.'; return; }
-  libros.sort(function(a,b){return b._edicion_numero-a._edicion_numero});
-  var N=libros.length;
-
-  function accionable(b){
+  function lunesDe(iso){
+    var d=new Date((iso||'').slice(0,10)); if(isNaN(d)) return null;
+    d.setDate(d.getDate()-((d.getDay()+6)%7));
+    return d.toISOString().slice(0,10);
+  }
+  function gesto(b){
     var bl=(b._nucleus&&b._nucleus.edition_blocks_es)||[];
     var tipos=['instruccion_sensorial','pregunta_directa'];
-    for(var t=0;t<tipos.length;t++) for(var i=0;i<bl.length;i++)
-      if(bl[i].gesture_type===tipos[t]) return {f:bl[i].phrase, a:bl[i].sensory_anchor||'', g:tipos[t]};
+    for(var t=0;t<tipos.length;t++)for(var i=0;i<bl.length;i++)
+      if(bl[i].gesture_type===tipos[t])return bl[i];
+    return null;
+  }
+  function senal(b){
+    var og=(b._nucleus&&b._nucleus.og_phrases_es)||[];
+    for(var i=0;i<og.length;i++) if(og[i].rol_sinfonico==='aterrizar') return og[i].phrase;
     var fr=(b.frases||[]).filter(function(x){return x&&x.length>12});
-    return {f:fr[0]||'', a:'', g:'frase'};
+    return fr[0]||'';
   }
-  function semanaDe(b){
-    var iso=(b._manual_generated_at||b._inputs_snapshot||'').slice(0,10);
-    var dte=new Date(iso); if(isNaN(dte)) return '';
-    var lun=new Date(dte); lun.setDate(dte.getDate()-((dte.getDay()+6)%7));
-    return 'LUNES '+lun.getDate()+' '+MESES[lun.getMonth()];
-  }
-  function pos(i){var r=ESC*Math.sqrt(i),th=i*PHI_ANG*Math.PI/180;return [r*Math.cos(th),r*Math.sin(th)];}
-  function rad(i){return Math.max(1.5, 2.9 - i*0.028);}
-  function claro(hex){try{var h=hex.replace('#','');var r=parseInt(h.substr(0,2),16),g=parseInt(h.substr(2,2),16),b2=parseInt(h.substr(4,2),16);return .299*r+.587*g+.114*b2>150;}catch(e){return false}}
-
-  var giro=document.getElementById('giro'), nodos=[], send='';
-  for(var i=0;i<N;i++){
-    var p=pos(i); send+=(i?' L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1);
-    var b=libros[i], col=(b.colores&&b.colores[0])||'#E8A838';
-    var g=document.createElementNS('http://www.w3.org/2000/svg','g');
-    g.setAttribute('class','bol'); g.setAttribute('transform','translate('+p[0]+' '+p[1]+')');
-    var tc=claro(col)?'#0B0F1A':'#F5F0E8';
-    g.innerHTML='<circle class="halo" r="'+(rad(i)*2.3)+'" fill="'+col+'" opacity="0"/>'
-      +'<circle class="c" r="'+rad(i)+'" fill="'+col+'" stroke="rgba(245,240,232,.22)" stroke-width="0.4"/>'
-      +'<text class="num" text-anchor="middle" dy="3" font-size="3.1" fill="'+tc+'" opacity="0">'+b._edicion_numero+'</text>';
-    (function(idx){g.addEventListener('click',function(ev){ev.stopPropagation();viaja(idx,true);abreHoja(idx);});})(i);
-    giro.appendChild(g); nodos.push(g);
-  }
-  document.getElementById('sendero').setAttribute('d',send);
-
-  var svg=document.getElementById('lienzo');
-  var foco=0, focoV=0, meta=0, vw=140;
-  function render(){
-    focoV += (meta-focoV)*0.16;
-    if(Math.abs(meta-focoV)<0.002) focoV=meta;
-    var r=svg.getBoundingClientRect(), asp=r.height/Math.max(1,r.width);
-    var f=Math.max(0,Math.min(N-1,focoV));
-    var i0=Math.floor(f), i1=Math.min(N-1,i0+1), t=f-i0;
-    var p0=pos(i0),p1=pos(i1);
-    var cx=p0[0]+(p1[0]-p0[0])*t, cy=p0[1]+(p1[1]-p0[1])*t;
-    var objetivo=Math.min(300, Math.max(120, (ESC*Math.sqrt(f)+34)*2.4));
-    vw += (objetivo-vw)*0.12;
-    var VH=vw*asp;
-    svg.setAttribute('viewBox',(cx-vw/2).toFixed(2)+' '+(cy-VH*0.42).toFixed(2)+' '+vw.toFixed(2)+' '+VH.toFixed(2));
-    for(var k=0;k<N;k++){
-      var dgap=Math.abs(k-focoV), on=dgap<0.5;
-      var esc= on? (1.5-1.0*dgap):1;
-      var pk=pos(k);
-      nodos[k].setAttribute('transform','translate('+pk[0]+' '+pk[1]+') scale('+esc.toFixed(3)+')');
-      nodos[k].children[0].setAttribute('opacity', on? Math.max(0,0.18*(1-dgap*2)).toFixed(2):'0');
-      nodos[k].children[2].setAttribute('opacity', (dgap<0.5)?'1':'0');
-    }
-    var iSnap=Math.round(f);
-    if(iSnap!==foco){foco=iSnap;pintaMini(foco);profundidad(foco);}
-    requestAnimationFrame(render);
-  }
-
-  var mini=document.getElementById('mini'), mSem=document.getElementById('mSem'), mTip=document.getElementById('mTip');
-  function pintaMini(i){
-    var b=libros[i], fondo=b.fondo||'#141a2b', cl=claro(fondo);
-    mini.style.background=fondo; mini.style.color=cl?'#0B0F1A':'#F5F0E8';
-    mSem.textContent=(semanaDe(b)||'EDICIÓN')+' · #'+String(b._edicion_numero).padStart(3,'0');
-    mTitEl.textContent=b.titulo;
-  }
-  mini.addEventListener('click',function(){abreHoja(foco)});
-
-  var velo=document.getElementById('velo'), hoja=document.getElementById('hoja'), hcard=document.getElementById('hcard');
-  var hSem=document.getElementById('hSem'), hTit=document.getElementById('hTit'), hAut=document.getElementById('hAut'),
-      hAncla=document.getElementById('hAncla'), hFrase=document.getElementById('hFrase'),
-      hVer=document.getElementById('hVer'), hGuardar=document.getElementById('hGuardar');
-  function abreHoja(i){
-    var b=libros[i], acc=accionable(b);
-    var fondo=b.fondo||'#141a2b', cl=claro(fondo);
-    hcard.style.background=fondo; hcard.style.color=cl?'#0B0F1A':'#F5F0E8';
-    hSem.textContent=(semanaDe(b)||'')+' · EDICIÓN #'+String(b._edicion_numero).padStart(3,'0');
-    hTit.textContent=b.titulo; hAut.textContent=b.autor||'';
-    var et=ANCLAS[(acc.a||'').toLowerCase()]||'';
-    hAncla.textContent= et? (et+' · UN GESTO'):'UNA SEÑAL';
-    hFrase.textContent=acc.f;
-    hVer.href='/t/'+(b._slug||'')+'/';
-    velo.classList.add('on'); hoja.classList.add('on');
-    try{gtag('event','hoja_open',{edicion:String(b._edicion_numero),ancla:acc.a||acc.g});}catch(e){}
-  }
-  function cierra(){velo.classList.remove('on');hoja.classList.remove('on');}
-  velo.addEventListener('click',cierra);
-  hcard.querySelector('.h-cierra').addEventListener('click',cierra);
-  hGuardar.addEventListener('click',function(){try{gtag('event','guardar_click',{edicion:hSem.textContent});}catch(e){}});
-  hVer.addEventListener('click',function(){try{gtag('event','ver_click',{edicion:hSem.textContent});}catch(e){}});
-
-  var coach=document.getElementById('coach');
-  var vel=0, ultY=null, ultT=0, coachIdo=false;
-  function viaja(i,directo){meta=Math.max(0,Math.min(N-1,i)); if(directo){focoV=meta;} quitaCoach();}
-  function quitaCoach(){if(!coachIdo){coachIdo=true;coach.classList.add('fuera');try{localStorage.setItem('esp_coach','1');}catch(e){}}}
-  try{ if(localStorage.getItem('esp_coach')){coach.classList.add('fuera');coachIdo=true;} }catch(e){}
-
-  function onDown(y){ultY=y;ultT=performance.now();vel=0;}
-  function onMove(y){
-    if(ultY===null)return;
-    var dy=y-ultY, ahora=performance.now();
-    meta=Math.max(0,Math.min(N-1, meta - dy*0.014));
-    vel = -dy/Math.max(8, ahora-ultT)*14;
-    ultY=y;ultT=ahora;quitaCoach();
-  }
-  function onUp(){
-    if(ultY===null)return; ultY=null;
-    meta=Math.round(Math.max(0,Math.min(N-1, meta+vel))); vel=0;
-  }
-  window.addEventListener('touchstart',function(e){onDown(e.touches[0].clientY)},{passive:true});
-  window.addEventListener('touchmove',function(e){onMove(e.touches[0].clientY);e.preventDefault();},{passive:false});
-  window.addEventListener('touchend',onUp);
-  window.addEventListener('wheel',function(e){meta=Math.round(Math.max(0,Math.min(N-1,meta+Math.sign(e.deltaY))));quitaCoach();},{passive:true});
-  document.getElementById('fPrev').addEventListener('click',function(){viaja(foco+1)});
-  document.getElementById('fNext').addEventListener('click',function(){viaja(foco-1)});
-  window.addEventListener('keydown',function(e){
-    if(e.key==='ArrowLeft'||e.key==='ArrowUp')viaja(foco+1);
-    if(e.key==='ArrowRight'||e.key==='ArrowDown')viaja(foco-1);
-    if(e.key==='Escape')cierra();
+  var libros=[];
+  try{
+    var d=await fetch('https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido_manual.json',{cache:'no-store'}).then(function(r){return r.json()});
+    libros=(d.libros||[]).filter(function(b){return b&&b._edicion_numero&&b.titulo});
+  }catch(e){}
+  libros.sort(function(a,b){return a._edicion_numero-b._edicion_numero});
+  var insights=libros.map(function(b,i){
+    var sem=lunesDe(b._manual_generated_at||b._inputs_snapshot)||'2026-01-05';
+    var g=gesto(b), ultimo=(i===libros.length-1);
+    return {
+      id:'ED-'+String(b._edicion_numero).padStart(3,'0'),
+      semana:sem,
+      titulo:b.titulo+(b.autor?(' \u00b7 '+b.autor):''),
+      hallazgo:senal(b),
+      movimiento:g?g.phrase:'',
+      impacto:g&&g.sensory_anchor?String(g.sensory_anchor):'',
+      estado: ultimo?'pendiente':'resuelto',
+      resuelto_el: ultimo?undefined:sem
+    };
   });
-
-  var maxProf=0, hitos={5:0,10:0,20:0,40:0};
-  function profundidad(i){
-    if(i>maxProf){maxProf=i;
-      for(var h in hitos) if(!hitos[h]&&maxProf>=+h){hitos[h]=1;try{gtag('event','viaje_profundo',{hasta:String(h)});}catch(e){}}
-    }
-  }
-
-  pintaMini(0);
-  try{gtag('event','espiral_view',{ediciones:String(N)});}catch(e){}
-  requestAnimationFrame(render);
+  window.__PREVIEW_DATA__={
+    cliente:{slug:'espiral',nombre:'TRIGGUI',url:'triggui.com',inicio:(insights[0]&&insights[0].semana)||'2026-01-05',plan:'espiral'},
+    insights:insights
+  };
+  var s=document.createElement('script'); s.src='./spiral.js'; document.body.appendChild(s);
 })();
 </script>
 </body>
