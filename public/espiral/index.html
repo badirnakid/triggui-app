@@ -51,6 +51,9 @@
     return {
       id:id, semana:sem,
       titulo:b.titulo+(b.autor?(' \u00b7 '+b.autor):''),
+      slug:b._slug||'',
+      c1:(b.colores&&b.colores[0])||'',
+      c2:(b.colores&&b.colores[1])||'',
       portada:b.portada_url||b.portada||'',
       hallazgo:senal(b),
       movimiento:g?g.phrase:'',

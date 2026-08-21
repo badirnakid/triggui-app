@@ -185,26 +185,28 @@ function iniciarPortal() {
 
   // HUD
   var hudMarca = div('hud', 'hud-marca');
-  hudMarca.innerHTML = '<div class="casa-fila"><img class="casa-logo" src="' +
-    (PREVIA ? 'https://trestme.com/moonshot/logo_trestme.png' : '/marca/logo-trestme.png') +
-    '" alt="TRESTME" onerror="this.style.display=&quot;none&quot;"><span class="casa">INSIGHTS</span></div><div class="cliente" id="hud-cliente"></div>';
+  hudMarca.innerHTML = '<div class="cliente" id="hud-cliente"></div>';
   var hudDatos = div('hud', 'hud-datos');
   hudDatos.innerHTML = '<div class="vuelta" id="hud-vuelta"></div><div class="cifras" id="hud-cifras"></div><div class="racha" id="hud-racha"></div>';
   var hudHint = div('hud', 'hud-hint');
   hudHint.textContent = '';
   var foco = document.createElement('div');
   foco.id = 'foco';
-  foco.innerHTML = '<div class="f-in"><div class="f-ciclo"><div class="f-ciclo-tag"></div><div class="f-ciclo-bar"></div></div><div class="f-kicker"></div><div class="f-tit"></div><div class="f-est"></div><div class="f-hint">DESLIZA PARA RECORRER \u00b7 TOCA PARA ABRIR</div></div>';
-  (function () {
-    var b = foco.querySelector('.f-ciclo-bar');
-    for (var ci = 0; ci < POR_VUELTA; ci++) b.appendChild(document.createElement('span'));
-  })();
+  foco.innerHTML = '<div class="f-in">' +
+    '<div class="f-kicker"></div>' +
+    '<div class="f-cuerpo"><img class="f-portada" alt="" loading="lazy">' +
+      '<div class="f-textos"><div class="f-tit"></div><div class="f-senal"></div>' +
+      '<div class="f-gesto"><span class="f-ancla"></span><span class="f-gtxt"></span></div></div></div>' +
+    '<div class="f-acciones"><button id="f-hecho" class="f-hecho"></button><div class="f-est"></div></div>' +
+    '<div class="f-hint">TOCA PARA VER LA EDICI\u00d3N</div>' +
+  '</div>';
   var flechas = div('hud', 'flechas');
   flechas.innerHTML = '<button id="fl-arriba" aria-label="Subir">\u25b2</button><button id="fl-abajo" aria-label="Bajar">\u25bc</button>';
   [hudMarca, hudDatos, hudHint, foco, flechas].forEach(function (el) { app.appendChild(el); });
 
   // Hoja de detalle + velo + toast
-  foco.addEventListener('click', function () {
+  foco.addEventListener('click', function (ev) {
+    if (ev.target && ev.target.id === 'f-hecho') { ev.stopPropagation(); togglearHecha(Math.max(0, Math.min(lista.length - 1, Math.round(camK)))); return; }
     if (secuencia || lista.length === 0) return;
     var k = Math.max(0, Math.min(lista.length - 1, Math.round(camK)));
     abrirHoja(k);
@@ -414,30 +416,33 @@ function iniciarPortal() {
     if (k === focoK) return;
     focoK = k;
     var it = lista[k];
-    var cTri = Math.floor(k / POR_VUELTA) + 1;
-    var posT = (k % POR_VUELTA) + 1;
-    foco.querySelector('.f-ciclo-tag').textContent = vueltaCompleta(lista, cTri)
-      ? 'VUELTA ' + cTri + ' \u00b7 COMPLETO'
-      : 'VUELTA ' + cTri + ' \u00b7 LUNES ' + posT + ' DE ' + POR_VUELTA;
-    var segs = foco.querySelectorAll('.f-ciclo-bar span');
-    for (var sj = 0; sj < POR_VUELTA; sj++) {
-      var sidx = (cTri - 1) * POR_VUELTA + sj;
-      var scls = '';
-      if (sidx < lista.length) {
-        var sEst = lista[sidx].estado;
-        scls = sEst === 'resuelto' ? 's-res' : (sEst === 'pospuesto' ? 's-pau' : 's-env');
-      }
-      segs[sj].className = scls;
-    }
-    foco.querySelector('.f-kicker').textContent = 'SE\u00d1AL ' + (k + 1) + ' \u00b7 ' + fechaCorta(it.semana).toUpperCase();
+    foco.querySelector('.f-kicker').textContent = '#' + String(it.id).replace('ED-','') + ' \u00b7 ' + fechaCorta(it.semana).toUpperCase();
+    var img = foco.querySelector('.f-portada');
+    if (it.portada) { img.src = it.portada; img.style.display = ''; } else { img.style.display = 'none'; }
     foco.querySelector('.f-tit').textContent = it.titulo;
+    foco.querySelector('.f-senal').textContent = it.hallazgo || '';
+    foco.querySelector('.f-ancla').textContent = it.impacto ? (String(it.impacto).toUpperCase() + ' \u00b7 ') : '';
+    foco.querySelector('.f-gtxt').textContent = it.movimiento || '';
+    var bt = foco.querySelector('#f-hecho');
+    if (it.estado === 'resuelto') { bt.textContent = '\u2713 Hecha'; bt.className = 'f-hecho ya'; }
+    else { bt.textContent = '\u2713 Ya lo hice'; bt.className = 'f-hecho'; }
     var fe = foco.querySelector('.f-est');
     fe.className = 'f-est e-' + it.estado;
-    var estTxt = (ETIQ[it.estado] || String(it.estado).toUpperCase()) +
-      (it.estado === 'resuelto' && it.resuelto_el ? ' \u00b7 ' + fechaCorta(it.resuelto_el).toUpperCase() : '');
-    if (it.estado === 'resuelto') fe.innerHTML = SELLO_12 + esc(estTxt);
-    else fe.textContent = estTxt;
-    if (MOV_OK) foco.animate([{ opacity: 0.3 }, { opacity: 1 }], { duration: 190, easing: 'ease-out' });
+    fe.textContent = (it.estado === 'resuelto' && it.resuelto_el) ? fechaCorta(it.resuelto_el).toUpperCase() : '';
+    respirarColor(it);
+    if (MOV_OK) foco.animate([{ opacity: 0.35 }, { opacity: 1 }], { duration: 180, easing: 'ease-out' });
+  }
+
+  /* ---------- La casa respira con el libro en foco (Triggui) ---------- */
+  function respirarColor(it) {
+    var c1 = it.c1 || '#E8A838', c2 = it.c2 || '#FF6B4A';
+    var r = document.documentElement.style;
+    r.setProperty('--gold', c1);
+    r.setProperty('--gold-2', c2);
+    var s1 = document.querySelector('#gradOro stop:first-child');
+    var s2 = document.querySelector('#gradOro stop:last-child');
+    if (s1) s1.setAttribute('stop-color', c1);
+    if (s2) s2.setAttribute('stop-color', c2);
   }
 
   function esc(s) {
@@ -502,13 +507,20 @@ function iniciarPortal() {
     ocultarHint();
   });
 
+  var overPx = 0;
   svg.addEventListener('pointermove', function (e) {
     if (!pDown) return;
     if (pDown.pres && (Math.abs(e.clientX - pDown.x) > 7 || Math.abs(e.clientY - pDown.y) > 7)) {
       pDown.pres.el.classList.remove('pres'); pDown.pres = null;
     }
     var ahora = performance.now();
-    camK = clampCam(pDown.k + (pDown.y - e.clientY) / dz * 0.45);
+    var maxK = Math.max(lista.length - 1, 0);
+    var raw = pDown.k + (pDown.y - e.clientY) / dz * 0.45;
+    if (raw > maxK) {
+      overPx = (raw - maxK) * dz;
+      camK = maxK;
+      if (overPx > 46) avisar('Suelta para actualizar \u21bb', null, 500);
+    } else { overPx = 0; camK = clampCam(raw); }
     var dt = ahora - pDown.lt;
     if (dt > 0) vel = ((pDown.ly - e.clientY) / dz) * 0.45 * Math.min(1, 16 / dt);
     pDown.ly = e.clientY; pDown.lt = ahora;
@@ -516,6 +528,8 @@ function iniciarPortal() {
   });
 
   svg.addEventListener('pointerup', function (e) {
+    if (overPx > 84) { avisar('Actualizando\u2026'); setTimeout(function(){ location.reload(); }, 220); return; }
+    overPx = 0;
     if (!pDown) return;
     if (pDown.pres) { pDown.pres.el.classList.remove('pres'); }
     var fueTap = Math.abs(e.clientY - pDown.y) < 7 && Math.abs(e.clientX - pDown.x) < 7 &&
@@ -607,6 +621,7 @@ function iniciarPortal() {
       (it.impacto ? ' \u00b7 ANCLA: ' + esc(String(it.impacto).toUpperCase()) : '') +
       (it.estado === 'resuelto' && it.resuelto_el ? ' \u00b7 HECHA EL ' + esc(fechaLarga(it.resuelto_el).toUpperCase()) : '') +
       '</div>' +
+      (it.slug ? '<a class="h-ver" href="/t/' + esc(it.slug) + '/">VER LA EDICI\u00d3N COMPLETA \u2192</a>' : '') +
       '<button class="h-hecho ' + (it.estado === 'resuelto' ? 'ya' : '') + '" id="btn-hecho">' +
         (it.estado === 'resuelto' ? '\u21ba Deshacer' : '\u2713 Ya lo hice') + '</button>';
     hoja.innerHTML = html;
@@ -660,8 +675,15 @@ function iniciarPortal() {
     }
     guardarHechas(m);
     racha = calcRacha(lista); cont = calcContadores(lista);
-    reconstruir(); pintarHud(); pintarCarita();
+    repintarTodo(); pintarHud(); pintarCarita(); guardarMemoria();
     abrirHoja(k);
+  }
+
+  function repintarTodo() {
+    focoK = -1;
+    nodosVivos = {}; anillosVivos = {};
+    gNodos.innerHTML = ''; gAnillos.innerHTML = '';
+    render();
   }
 
   /* ---------- Carita de constancia (ultimas 5 pasadas) ---------- */
@@ -856,8 +878,7 @@ function iniciarPortal() {
     var cli = datos.cliente || {};
     var nombreTxt = esc(cli.nombre || slug.toUpperCase());
     document.getElementById('hud-cliente').innerHTML = '<span id="hud-nombre">' + nombreTxt + '</span>' +
-      (cli.url ? '<div class="cliente-url">' + esc(cli.url) + '</div>' : '') +
-      (cli.plan ? '<div class="cliente-plan">PLAN ' + esc(String(cli.plan).toUpperCase()) + '</div>' : '');
+      '';
     if (cli.logo) {
       var lg = new Image();
       lg.onload = function () {
@@ -899,7 +920,7 @@ function iniciarPortal() {
       return;
     }
 
-    var prev = PREVIA ? memoriaPrevia() : leerMemoria();
+    var prev = leerMemoria();
     var destino = indicePendienteNuevo();
     if (destino < 0) destino = lista.length - 1;
 
@@ -912,7 +933,7 @@ function iniciarPortal() {
       }
     }
 
-    if (!PREVIA) guardarMemoria();
+    guardarMemoria();
 
     if (prev && (resueltosNuevos.length || llegadas.length) && MOV_OK) {
       camK = clampCam((resueltosNuevos[0] !== undefined ? resueltosNuevos[0] : llegadas[0]) - 4);
@@ -944,27 +965,6 @@ function iniciarPortal() {
   window.addEventListener('resize', layout);
 
   if (PREVIA) {
-    var badge = document.createElement('div');
-    badge.id = 'previa-badge';
-    badge.textContent = '';
-    app.appendChild(badge);
-    var rep = document.createElement('button');
-    rep.id = 'previa-replay';
-    rep.textContent = '\u25b6 REVIVIR EL LUNES';
-    rep.addEventListener('click', function () {
-      if (secuencia) return;
-      var prev = memoriaPrevia();
-      var resueltosNuevos = [], llegadas = [];
-      for (var i = 0; i < lista.length; i++) {
-        var it = lista[i];
-        if (!(it.id in prev.est)) { llegadas.push(i); continue; }
-        if (it.estado === 'resuelto' && prev.est[it.id] !== 'resuelto') resueltosNuevos.push(i);
-      }
-      camK = clampCam((resueltosNuevos[0] !== undefined ? resueltosNuevos[0] : 0) - 4);
-      render();
-      setTimeout(function () { celebrar(resueltosNuevos, llegadas); }, 350);
-    });
-    app.appendChild(rep);
     slug = (window.__PREVIEW_DATA__.cliente && window.__PREVIEW_DATA__.cliente.slug) || 'demo';
     boot(window.__PREVIEW_DATA__);
   } else {
