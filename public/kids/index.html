@@ -1114,6 +1114,8 @@ html.keyboard-open #barraFooterLogo {
 #fisico{ background:linear-gradient(135deg,#b2f8c8,#42d97c); color:#000; }
 #share{ background:linear-gradient(135deg,#ff8a00,#ff3d3d); color:#fff; }
 #like{ background:linear-gradient(135deg, #ff416c, #ff4b2b); color:#fff; }
+#espiral{ background:linear-gradient(135deg, #7b61ff, #30ffe4); color:#fff; }   /* 🌀 v4: la puerta a la espiral (color fijo: no es una accion del libro) */
+html.kids-mode #espiral{ display:none; }   /* la espiral es del catalogo adulto */
 </style>
 
 <style id="tarjeta-overlay">
@@ -2659,6 +2661,7 @@ html.kids-mode #tarjetaCard {
   <button id="fisico" aria-label="Abrir barra mágica"><span class="icon" aria-hidden="true">🔍</span></button>
   <button id="share" aria-label="Abrir tarjeta del libro"><span class="icon">📖</span></button>
   <button id="like" aria-label="Me encantó"><span class="icon">😍</span></button>
+  <button id="espiral" aria-label="Tu espiral"><span class="icon">🌀</span></button>
 </div>
 
 <div id="tarjetaOverlay" onclick="closeCard()"><div id="tarjetaCard" onclick="handleCardClick(event)"></div></div>
@@ -2716,7 +2719,7 @@ const Modal = {
 // LOGICA APP
 // ========================================
 const grid=document.getElementById("grid"), cta=document.getElementById("cta"),
-      btnOtro=document.getElementById("otro"), btnLibro=document.getElementById("fisico"), btnShare=document.getElementById("share"), btnLike=document.getElementById("like"),
+      btnOtro=document.getElementById("otro"), btnLibro=document.getElementById("fisico"), btnShare=document.getElementById("share"), btnLike=document.getElementById("like"), btnEspiral=document.getElementById("espiral"),
       cele=document.getElementById("cele"), celeMsg=document.getElementById("celeMsg"),
       progressBadge=document.getElementById("progressBadge"), toast=document.getElementById("toast");
 
@@ -3146,6 +3149,14 @@ btnLike.onclick = (e) => {
     });
   }, 1500);
 };
+
+// 🌀 v4: quinto boton — a tu espiral (la puerta de miembro vive en /espiral/)
+if (btnEspiral) {
+  btnEspiral.onclick = () => {
+    try { track('espiral_clicked', { book: libro ? libro.titulo : '' }); } catch (err) {}
+    window.location.href = '/espiral/';
+  };
+}
 
 function createFloatingHeart(x, y) {
   const heart = document.createElement('div');

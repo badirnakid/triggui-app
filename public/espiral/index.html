@@ -9,15 +9,82 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./spiral.triggui.css">
+<style>
+/* v15.4 · Puerta de miembro (calca de /mi/, en la voz visual de la helice) */
+#puerta{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:28px;z-index:50;background:var(--bg,#0B0F1A)}
+#puerta.ver{display:flex}
+.puerta-card{width:100%;max-width:340px;background:rgba(12,12,18,.9);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:30px 24px 24px;text-align:center;font-family:'Manrope',sans-serif}
+.puerta-card .marca{width:96px;margin:0 auto 16px;display:block}
+.puerta-card h1{font:800 22px/1.15 'Manrope',sans-serif;letter-spacing:-.01em;margin:0 0 6px;color:var(--ink,#F5F0E8)}
+.puerta-card p.sub{font-size:12.5px;color:rgba(245,240,232,.55);margin:0 0 18px;line-height:1.5}
+.puerta-card input{width:100%;padding:13px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.06);color:#fff;font:500 16px/1.2 'Manrope',sans-serif;text-align:center;letter-spacing:.14em;outline:none;box-sizing:border-box}
+.puerta-card input:focus{border-color:var(--gold,#E8A838)}
+.puerta-err{min-height:18px;font-size:12px;color:#ff9d9d;margin:9px 0 3px}
+.puerta-card button{width:100%;padding:13px 0;border-radius:12px;border:1px solid var(--gold,#E8A838);background:rgba(232,168,56,.14);color:#fff;font:700 14px/1.2 'Manrope',sans-serif;cursor:pointer;transition:transform .2s ease,background .2s ease}
+.puerta-card button:active{transform:scale(.98)}
+.puerta-card button[disabled]{opacity:.6;cursor:default}
+.puerta-pie{margin-top:16px;font-size:11px}
+.puerta-pie a{color:rgba(245,240,232,.5);text-decoration:underline}
+</style>
 <!-- GA4 base (AL) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-CLK554FCNM"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-CLK554FCNM');</script>
 </head>
 <body>
 <div id="app"></div>
+<div id="puerta"><div class="puerta-card">
+  <img class="marca" src="./logo-triggui.png" alt="Triggui">
+  <h1>La Espiral</h1>
+  <p class="sub">El r&iacute;o semanal de ediciones vivas, con sus videos. Es para miembros.</p>
+  <input id="clave" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="tu clave de miembro">
+  <div class="puerta-err" id="puertaErr"></div>
+  <button id="entrar" type="button">Entrar</button>
+  <div class="puerta-pie"><a href="https://triggui.com" target="_blank" rel="noopener">&iquest;A&uacute;n no eres miembro?</a></div>
+</div></div>
+<script>
+/* ── PUERTA DE MIEMBRO (v15.4) · misma llave y mismo backend que /mi/ ── */
+var EXEC='https://script.google.com/macros/s/AKfycbwWcUceg333PMcmSsLbEUAsx3os8AJ3Wdmjruv7zshHTqNmoxTastOsDU1h7V8qPk0nIQ/exec';
+var LS_PAR='triggui_espiral_v1';
+function lsGet(k){try{return window.localStorage.getItem(k);}catch(e){return null;}}
+function lsSet(k,v){try{window.localStorage.setItem(k,v);}catch(e){}}
+function lsDel(k){try{window.localStorage.removeItem(k);}catch(e){}}
+(function(){
+  var h=String(window.location.hash||'');
+  if(/[#&]salir(\b|=|$)/.test(h)){lsDel(LS_PAR);try{history.replaceState(null,'',window.location.pathname);}catch(e){}return;}
+  var m=h.match(/[#&]k=([^&]+)/);
+  if(m&&m[1]){lsSet(LS_PAR,JSON.stringify({c:decodeURIComponent(m[1]).trim()}));try{history.replaceState(null,'',window.location.pathname);}catch(e){}}
+})();
+function claveMiembro(){try{var p=JSON.parse(lsGet(LS_PAR)||'null');return (p&&p.c)?String(p.c):'';}catch(e){return '';}}
+function validarClave(clave,cb){
+  var cuerpo=new URLSearchParams();cuerpo.append('accion','espiral');cuerpo.append('clave',clave);
+  fetch(EXEC,{method:'POST',body:cuerpo}).then(function(r){return r.json();}).then(function(r){cb(null,r);}).catch(function(e){cb(e,null);});
+}
+function puertaAbrir(arrancar){
+  var box=document.getElementById('puerta'),inp=document.getElementById('clave'),err=document.getElementById('puertaErr'),btn=document.getElementById('entrar');
+  box.classList.add('ver');
+  try{gtag('event','espiral_puerta',{paso:'mostrada'});}catch(e){}
+  function entrar(){
+    var c=(inp.value||'').trim();
+    if(c.length<6){err.textContent='Esa clave se ve corta.';return;}
+    err.textContent='';btn.disabled=true;btn.textContent='Un momento\u2026';
+    validarClave(c,function(e,r){
+      btn.disabled=false;btn.textContent='Entrar';
+      if(e){err.textContent='Sin conexi\u00f3n. Intenta de nuevo.';return;}
+      if(!r||r.ok!==true){err.textContent=(r&&r.error==='clave')?'Clave no reconocida.':'Algo fall\u00f3. Intenta de nuevo.';try{gtag('event','espiral_puerta',{paso:'clave_mal'});}catch(x){}return;}
+      lsSet(LS_PAR,JSON.stringify({c:c}));
+      try{gtag('event','espiral_puerta',{paso:'entro'});}catch(x){}
+      box.classList.remove('ver');
+      arrancar();
+    });
+  }
+  btn.onclick=entrar;
+  inp.addEventListener('keydown',function(ev){if(ev.key==='Enter')entrar();});
+  setTimeout(function(){try{inp.focus();}catch(e){}},50);
+}
+</script>
 <script>
 /* ── ADAPTADOR TRIGGUI → esquema del canon ── */
-(async function(){
+async function arrancarEspiral(){
   function lunesDe(iso){
     var d=new Date((iso||'').slice(0,10)); if(isNaN(d)) return null;
     d.setDate(d.getDate()-((d.getDay()+6)%7));
@@ -73,7 +140,8 @@
   };
   try{gtag('event','espiral_view',{ediciones:String(insights.length)});}catch(e){}
   var s=document.createElement('script'); s.src='./spiral.js'; document.body.appendChild(s);
-})();
+}
+if(claveMiembro()){arrancarEspiral();}else{puertaAbrir(arrancarEspiral);}
 </script>
 </body>
 </html>
