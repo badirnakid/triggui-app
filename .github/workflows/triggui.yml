@@ -245,6 +245,9 @@ jobs:
       # Repository Secret. Consumido por evidence-fetcher.js > fetchGoogle.
       # Si el secret no esta seteado, el fetcher degrada a anonimo sin romper.
       GOOGLE_BOOKS_API_KEY: ${{ secrets.GOOGLE_BOOKS_API_KEY }}
+      # 🎬 v3.9: YouTube Data API v3 (paso Resolver videos). Repository Secret.
+      # Si el secret no esta seteado, el paso 🎬 se salta solo (gate en su if).
+      YT_API_KEY: ${{ secrets.YT_API_KEY }}
       TRIGGUI_LENS: ${{ inputs.lente }}
       TRIGGUI_BOOK_CONTEXT: ${{ inputs.nota_libro }}
       TRIGGUI_CRONO_ENABLED: ${{ inputs.cronobiologia }}
@@ -957,6 +960,32 @@ jobs:
           OPENAI_API_KEY="$OPENAI_KEY" \
           BATCH_SIZE="${BATCH_SIZE:-1}" \
             node experiments/nucleus/audience-blocker.cjs
+
+      # ╔══════════════════════════════════════════════════════════════════╗
+      # ║  FASE 7.9 — 🎬 VIDEO: TOP-3 candidatos vetados por libro          ║
+      # ║  YouTube Data API v3: search 100u + videos.list 1u = 101u/libro  ║
+      # ║  Solo modos single-like (los que regeneran manual.json).         ║
+      # ║  Idempotente (solo ediciones sin candidatos). Escritura atómica  ║
+      # ║  Gate por secret YT_API_KEY + continue-on-error: el tren no cae  ║
+      # ║  Opera sobre contenido.json del WORKSPACE; FASE 8 lo sincroniza  ║
+      # ║  y FASE 8.5 deriva contenido_manual.json ya con _video           ║
+      # ╚══════════════════════════════════════════════════════════════════╝
+
+      - name: 🎬 Resolver videos (YouTube, TOP-3 vetado)
+        if: ${{ !inputs.modo_prueba && (steps.modo.outputs.modo_tecnico == 'single_book' || steps.modo.outputs.modo_tecnico == 'trigger_constrained' || steps.modo.outputs.modo_tecnico == 'trigger_discover') && env.YT_API_KEY != '' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$CATALOG_MODE" = "kids" ]; then
+            echo "🌒 CATALOG_MODE=kids — sin video (solo catálogo adulto)"
+            exit 0
+          fi
+          if [ ! -f contenido.json ]; then
+            echo "ℹ️  contenido.json no está en el workspace — sin video"
+            exit 0
+          fi
+          python3 scripts/resolve-videos.py --solo-ediciones --rutas=contenido.json
 
       # ╔══════════════════════════════════════════════════════════════════╗
       # ║  FASE 8 — Sincronizar contenido.json → triggui-content            ║
