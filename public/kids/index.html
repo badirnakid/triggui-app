@@ -3098,6 +3098,7 @@ function render(){
 
 // LOGICA ENGAGEMENT - NARRATIVA NIVEL DIOS
 function handleBookReveal() {
+  if (window.__trigguiRestaurando) { updateBadge(); return; }   // 🌀 v4.1: restaurar no cuenta como libro nuevo
   const booksCount = incrementBooks();
   addConcepts(4); 
   updateBadge();
@@ -3154,9 +3155,20 @@ btnLike.onclick = (e) => {
 if (btnEspiral) {
   btnEspiral.onclick = () => {
     try { track('espiral_clicked', { book: libro ? libro.titulo : '' }); } catch (err) {}
+    // 🌀 v4.1: recordar el libro revelado para restaurarlo al regresar.
+    // iOS suele conservar la pagina (cache de paginas); Android WebView no: ahi el boot lo restaura.
+    try {
+      const __libros = (window.__TRIGGUI_DATA__ && window.__TRIGGUI_DATA__.libros) || [];
+      const __idx = __libros.indexOf(libro);
+      if (revealed && __idx >= 0) sessionStorage.setItem('triggui_regreso', JSON.stringify({ idx: __idx, titulo: libro.titulo, t: Date.now() }));
+    } catch (err) {}
     window.location.href = '/espiral/';
   };
 }
+// 🌀 v4.1: si el navegador restauro la pagina por si mismo (cache de paginas), el recuerdo ya no hace falta.
+window.addEventListener('pageshow', (ev) => {
+  if (ev.persisted) { try { sessionStorage.removeItem('triggui_regreso'); } catch (err) {} }
+});
 
 function createFloatingHeart(x, y) {
   const heart = document.createElement('div');
@@ -6833,6 +6845,28 @@ async function bootTriggui() {
     updateBadge();
     refreshGlobalCounter();
     BarraMagica.applyStrings();
+
+    // 🌀 v4.1: REGRESO desde la espiral. Si el lector salio por 🌀 y el navegador no conservo
+    // la pagina, se restaura el mismo libro, revelado, por el mismo camino que un submit.
+    let __regreso = null;
+    try { __regreso = JSON.parse(sessionStorage.getItem('triggui_regreso') || 'null'); sessionStorage.removeItem('triggui_regreso'); } catch(_) {}
+    if (__regreso && typeof __regreso.idx === 'number' && data.libros[__regreso.idx] && data.libros[__regreso.idx].titulo === __regreso.titulo && (Date.now() - (__regreso.t || 0)) < 6 * 3600 * 1000) {
+      libro = data.libros[__regreso.idx];
+      try { sessionStorage.setItem('lastLibroIdx', String(__regreso.idx)); } catch(_) {}
+      try { render(); } catch(e) { console.error('[Triggui] render error:', e); }
+      finishBootOnce();
+      try { BarraMagica.closeOverlay(true, /*skipRender=*/ true); } catch(e) { console.error('[Triggui] regreso closeOverlay error:', e); }
+      try {
+        const __portada = document.querySelector('#grid .block .portada');
+        const __card = __portada ? __portada.parentElement : null;
+        window.__trigguiRestaurando = true;
+        if (__card) __card.click();
+        window.__trigguiRestaurando = false;
+      } catch(e) { window.__trigguiRestaurando = false; console.error('[Triggui] regreso reveal error:', e); }
+      track('espiral_regreso', { book: libro.titulo });
+      track('app_loaded', { streak: getLocal('streak',0), books: getLocal('books_opened',0), lang: TriggguiI18n.lang, regreso: true });
+      return;
+    }
 
     // 🌒 v19: render() ahora puede correr libre. Los .block están display:none
     // por html.mood-active. No hay forma de que sean candidatos a primer paint.
