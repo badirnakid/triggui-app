@@ -356,3 +356,7 @@ body{-webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale}
 #hoja.con-video .h-voz{-webkit-line-clamp:2;font-size:13px}
 #hoja.con-video .h-frase{font-size:15px;padding:10px 14px}
 #hoja.con-video .h-sem{margin-bottom:8px}
+
+/* ════ v11 · progreso-svg unico ════ */
+#hud-prog{margin-top:9px;display:inline-block}
+#hud-prog svg{overflow:visible}
