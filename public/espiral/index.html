@@ -27,6 +27,8 @@
 .puerta-pie a{color:rgba(245,240,232,.5);text-decoration:underline}
 .puerta-cierra{position:fixed;top:calc(14px + env(safe-area-inset-top));right:14px;width:34px;height:34px;border-radius:50%;border:1px solid var(--line,#232838);background:transparent;color:var(--dim,#b8b2a6);font:15px/1 'Manrope',sans-serif;cursor:pointer;z-index:51}
 .puerta-cierra:active{transform:scale(.96)}
+#hud-salir{position:fixed;right:18px;bottom:calc(14px + env(safe-area-inset-bottom));font:700 9px/1 'Manrope',sans-serif;letter-spacing:.22em;color:var(--faint,#77716a);text-decoration:none;opacity:.75;z-index:6;padding:8px}
+#hud-salir:active{opacity:1}
 </style>
 <!-- GA4 base (AL) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-CLK554FCNM"></script>
@@ -61,6 +63,20 @@ leerHash();
 /* en caliente: si ya estabas dentro y cambias el hash a #salir o #k=, se aplica y se recarga limpio */
 window.addEventListener('hashchange',function(){ if(leerHash()) window.location.reload(); });
 function claveMiembro(){try{var p=JSON.parse(lsGet(LS_PAR)||'null');return (p&&p.c)?String(p.c):'';}catch(e){return '';}}
+var ORIGEN='';
+try{
+  var navEntrada=(performance.getEntriesByType&&performance.getEntriesByType('navigation')[0])||null;
+  var esRecarga=navEntrada?(navEntrada.type==='reload'):!!(performance.navigation&&performance.navigation.type===1);
+  var origenGuardado=window.sessionStorage.getItem('triggui_espiral_origen');
+  var ref=String(document.referrer||'');
+  var refEsYo=(ref.split('#')[0].split('?')[0]===window.location.origin+window.location.pathname);   /* recarga o auto-navegacion (SALIR, #k=) */
+  if((esRecarga||refEsYo)&&origenGuardado!==null){ORIGEN=origenGuardado;}
+  else{ORIGEN=ref;window.sessionStorage.setItem('triggui_espiral_origen',ORIGEN);}
+}catch(e){ORIGEN=String(document.referrer||'');}
+function volverAlOrigen(){
+  var deTriggui=ORIGEN.indexOf(window.location.origin+'/')===0&&ORIGEN.indexOf('/espiral')<0;
+  window.location.replace(deTriggui?ORIGEN:'/');
+}
 function validarClave(clave,cb){
   var cuerpo=new URLSearchParams();cuerpo.append('accion','espiral');cuerpo.append('clave',clave);
   fetch(EXEC,{method:'POST',body:cuerpo}).then(function(r){return r.json();}).then(function(r){cb(null,r);}).catch(function(e){cb(e,null);});
@@ -87,7 +103,7 @@ function puertaAbrir(arrancar){
   inp.addEventListener('keydown',function(ev){if(ev.key==='Enter')entrar();});
   document.getElementById('puertaCierra').onclick=function(){
     try{gtag('event','espiral_puerta',{paso:'volver'});}catch(e){}
-    if(window.history.length>1){window.history.back();}else{window.location.href='/';}
+    volverAlOrigen();
   };
   setTimeout(function(){try{inp.focus();}catch(e){}},50);
 }
@@ -150,6 +166,9 @@ async function arrancarEspiral(){
   };
   try{gtag('event','espiral_view',{ediciones:String(insights.length)});}catch(e){}
   var s=document.createElement('script'); s.src='./spiral.js'; document.body.appendChild(s);
+  var salir=document.createElement('a'); salir.id='hud-salir'; salir.href='#salir'; salir.textContent='SALIR'; salir.setAttribute('aria-label','Cerrar sesi\u00f3n');
+  salir.onclick=function(ev){ev.preventDefault();lsDel(LS_PAR);try{gtag('event','espiral_puerta',{paso:'salir'});}catch(e){}window.location.replace(window.location.pathname);};
+  document.body.appendChild(salir);
 }
 if(claveMiembro()){arrancarEspiral();}else{puertaAbrir(arrancarEspiral);}
 </script>
