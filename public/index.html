@@ -2,6 +2,12 @@
 <html lang="es" class="mood-active" style="background:#000000;">
 <head>
 <meta charset="UTF-8">
+<script>
+/* 🌀 v4.1: REGRESO desde la espiral — decidido ANTES del primer paint. Si hay recuerdo valido,
+   html.regresando deja la barra magica fuera del render en esta carga (la app restaura el libro). */
+try{var __r=JSON.parse(sessionStorage.getItem('triggui_regreso')||'null');if(__r&&typeof __r.idx==='number'&&(Date.now()-(__r.t||0))<6*3600*1000)document.documentElement.classList.add('regresando');}catch(e){}
+</script>
+<style id="regreso-css">html.regresando.mood-active #barraMagicaOverlay,html.regresando #barraMagicaOverlay{display:none !important;opacity:0 !important;pointer-events:none !important}</style>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=overlays-content">
 <title>Triggui — Cuando el impulso llega, el libro ya te espera</title>
 
@@ -6855,7 +6861,11 @@ async function bootTriggui() {
       try { sessionStorage.setItem('lastLibroIdx', String(__regreso.idx)); } catch(_) {}
       try { render(); } catch(e) { console.error('[Triggui] render error:', e); }
       finishBootOnce();
-      try { BarraMagica.closeOverlay(true, /*skipRender=*/ true); } catch(e) { console.error('[Triggui] regreso closeOverlay error:', e); }
+      // La barra nunca existio en esta carga: sin fundido ni barra_closed. Solo se retira el estado mood-active.
+      document.documentElement.classList.remove('mood-active');
+      const __ov = document.getElementById('barraMagicaOverlay');
+      if (__ov) { __ov.classList.remove('visible'); __ov.style.display = 'none'; __ov.style.pointerEvents = ''; }
+      try { BarraMagica.markShownToday(); } catch(_) {}
       try {
         const __portada = document.querySelector('#grid .block .portada');
         const __card = __portada ? __portada.parentElement : null;
@@ -6863,10 +6873,12 @@ async function bootTriggui() {
         if (__card) __card.click();
         window.__trigguiRestaurando = false;
       } catch(e) { window.__trigguiRestaurando = false; console.error('[Triggui] regreso reveal error:', e); }
+      document.documentElement.classList.remove('regresando');
       track('espiral_regreso', { book: libro.titulo });
       track('app_loaded', { streak: getLocal('streak',0), books: getLocal('books_opened',0), lang: TriggguiI18n.lang, regreso: true });
       return;
     }
+    document.documentElement.classList.remove('regresando');   // sin recuerdo valido: arranque normal con barra
 
     // 🌒 v19: render() ahora puede correr libre. Los .block están display:none
     // por html.mood-active. No hay forma de que sean candidatos a primer paint.
