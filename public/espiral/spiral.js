@@ -732,10 +732,14 @@ function iniciarPortal() {
     var idx = ratio >= 0.99 ? 4 : ratio >= 0.75 ? 3 : ratio >= 0.5 ? 2 : ratio >= 0.25 ? 1 : 0;
     var c = caras[idx];
     var W = 144, H = 26, cy = H / 2, cx = 11 + pct * (W - 22);
+    var cs = getComputedStyle(document.documentElement);
+    var g1 = (cs.getPropertyValue('--gold') || '#E8A838').trim() || '#E8A838';
+    var g2 = (cs.getPropertyValue('--gold-2') || '#FF6B4A').trim() || '#FF6B4A';
     prog.innerHTML =
       '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" style="display:block;overflow:visible">' +
+        '<defs><linearGradient id="hudGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="' + g1 + '"/><stop offset="1" stop-color="' + g2 + '"/></linearGradient></defs>' +
         '<line x1="2" y1="' + cy + '" x2="' + (W - 2) + '" y2="' + cy + '" stroke="rgba(245,240,232,.16)" stroke-width="5" stroke-linecap="round"/>' +
-        '<line x1="2" y1="' + cy + '" x2="' + Math.max(2.01, 2 + pct * (W - 4)) + '" y2="' + cy + '" stroke="url(#gradOro)" stroke-width="5" stroke-linecap="round"/>' +
+        '<line x1="2" y1="' + cy + '" x2="' + Math.max(2.01, 2 + pct * (W - 4)) + '" y2="' + cy + '" stroke="url(#hudGrad)" stroke-width="5" stroke-linecap="round"/>' +
         '<g transform="translate(' + cx.toFixed(1) + ' ' + cy + ')">' +
           '<circle r="10" fill="#0B0F1A" stroke="' + c[0] + '" stroke-width="1.6"/>' +
           '<circle cx="-3.4" cy="-2.4" r="1.15" fill="' + c[0] + '"/><circle cx="3.4" cy="-2.4" r="1.15" fill="' + c[0] + '"/>' +
@@ -743,7 +747,7 @@ function iniciarPortal() {
         '</g>' +
       '</svg>';
     var cap = document.getElementById('hud-pcap');
-    if (cap) cap.textContent = 'HAS HECHO ' + hechas + ' DE ' + total + (racha > 1 ? (' \u00b7 RACHA ' + racha) : '');
+    if (cap) { cap.style.color = c[0]; cap.textContent = 'HAS HECHO ' + hechas + ' DE ' + total + (racha > 1 ? (' \u00b7 RACHA ' + racha) : ''); }
   }
   
 
@@ -912,7 +916,8 @@ function iniciarPortal() {
   function pintarHud() {
     var cli = (datos && datos.cliente) || {};
     var logo = cli.logo ? '<img class="cliente-logo" src="' + esc(cli.logo) + '" alt="">' : '';
-    document.getElementById('hud-cliente').innerHTML = logo || ('<div class="cliente-nombre">' + esc(cli.nombre || '') + '</div>');
+    var hc = document.getElementById('hud-cliente');
+    if (!hc.firstChild) hc.innerHTML = logo || ('<div class="cliente-nombre">' + esc(cli.nombre || '') + '</div>');
     var hd = document.getElementById('hud-datos');
     if (!document.getElementById('hud-prog')) {
       hd.innerHTML = '<div id="hud-prog"></div><div class="p-cap" id="hud-pcap"></div>';

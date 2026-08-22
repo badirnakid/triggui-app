@@ -360,3 +360,10 @@ body{-webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale}
 /* ════ v11 · progreso-svg unico ════ */
 #hud-prog{margin-top:9px;display:inline-block}
 #hud-prog svg{overflow:visible}
+
+/* ════ v12 · barra arriba alineada al logo, hover sereno ════ */
+#hud-prog{margin-top:0}
+#hud-prog .p-cap,#hud-pcap{margin-top:4px;font-size:8.5px;letter-spacing:.18em;font-weight:800;text-align:right}
+.nodo, .nodo *{transition:none !important}
+.nodo:hover .halo{opacity:0 !important}
+@media (hover:hover){.nodo:hover .inner{transform:none}}
