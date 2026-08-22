@@ -27,8 +27,11 @@
 .puerta-pie a{color:rgba(245,240,232,.5);text-decoration:underline}
 .puerta-cierra{position:fixed;top:calc(14px + env(safe-area-inset-top));right:14px;width:34px;height:34px;border-radius:50%;border:1px solid var(--line,#232838);background:transparent;color:var(--dim,#b8b2a6);font:15px/1 'Manrope',sans-serif;cursor:pointer;z-index:51}
 .puerta-cierra:active{transform:scale(.96)}
-#hud-salir{position:fixed;right:18px;bottom:calc(14px + env(safe-area-inset-bottom));font:700 9px/1 'Manrope',sans-serif;letter-spacing:.22em;color:var(--faint,#77716a);text-decoration:none;opacity:.75;z-index:6;padding:8px}
-#hud-salir:active{opacity:1}
+/* pie de la helice: ← REGRESAR a la izquierda, CERRAR SESION a la derecha; misma voz tipografica del HUD, zona del pulgar */
+#hud-volver,#hud-salir{position:fixed;bottom:calc(14px + env(safe-area-inset-bottom));font:700 9px/1 'Manrope',sans-serif;letter-spacing:.16em;color:var(--faint,#77716a);text-decoration:none;opacity:.8;z-index:6;padding:10px 4px;background:none;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap}
+#hud-volver{left:12px}
+#hud-salir{right:12px}
+#hud-volver:active,#hud-salir:active{opacity:1;color:var(--dim,#b8b2a6)}
 </style>
 <!-- GA4 base (AL) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-CLK554FCNM"></script>
@@ -166,7 +169,10 @@ async function arrancarEspiral(){
   };
   try{gtag('event','espiral_view',{ediciones:String(insights.length)});}catch(e){}
   var s=document.createElement('script'); s.src='./spiral.js'; document.body.appendChild(s);
-  var salir=document.createElement('a'); salir.id='hud-salir'; salir.href='#salir'; salir.textContent='SALIR'; salir.setAttribute('aria-label','Cerrar sesi\u00f3n');
+  var volver=document.createElement('button'); volver.id='hud-volver'; volver.type='button'; volver.setAttribute('aria-label','Regresar'); volver.innerHTML='&#8592;&nbsp; REGRESAR';
+  volver.onclick=function(){try{gtag('event','espiral_volver',{});}catch(e){}volverAlOrigen();};
+  document.body.appendChild(volver);
+  var salir=document.createElement('a'); salir.id='hud-salir'; salir.href='#salir'; salir.textContent='CERRAR SESI\u00d3N'; salir.setAttribute('aria-label','Cerrar sesi\u00f3n');
   salir.onclick=function(ev){ev.preventDefault();lsDel(LS_PAR);try{gtag('event','espiral_puerta',{paso:'salir'});}catch(e){}window.location.replace(window.location.pathname);};
   document.body.appendChild(salir);
 }
