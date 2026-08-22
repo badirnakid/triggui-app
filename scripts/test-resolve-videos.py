@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-test-resolve-videos.py — SHIM del resolver (sin red, sin llave).
+test-resolve-videos.py — SHIM de resolve-videos v2 (sin red, sin llaves).
 Uso: python3 scripts/test-resolve-videos.py   (desde la raíz de triggui-app)
 """
 import datetime
@@ -18,9 +18,11 @@ AQUI = os.path.dirname(os.path.abspath(__file__))
 SPEC = importlib.util.spec_from_file_location("rv", os.path.join(AQUI, "resolve-videos.py"))
 rv = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(rv)
-rv.time.sleep = lambda *_a, **_k: None  # sin esperas en pruebas
+rv.time.sleep = lambda *_a, **_k: None
 
-HOY = datetime.date(2026, 8, 21)
+HOY = datetime.date(2026, 8, 22)
+PROMPT = "# Selección de video · Armonía con la edición\n\nPrueba."
+ESQUEMA = {"name": "video_armonia", "strict": True, "schema": {"type": "object", "properties": {}}}
 
 
 def item(vid, titulo, desc="", canal="Canal"):
@@ -28,38 +30,37 @@ def item(vid, titulo, desc="", canal="Canal"):
             "snippet": {"title": titulo, "description": desc, "channelTitle": canal}}
 
 
-def det(vid, iso, vistas):
-    return {"id": vid, "contentDetails": {"duration": iso}, "statistics": {"viewCount": str(vistas)}}
+def det(vid, iso, vistas, desc=None, tags=None, lang="", caption=False, title=None):
+    return {"id": vid, "contentDetails": {"duration": iso, "caption": "true" if caption else "false"},
+            "statistics": {"viewCount": str(vistas)},
+            "snippet": {"title": title, "description": desc or "", "tags": tags or [], "defaultAudioLanguage": lang, "channelTitle": None}}
 
 
 # 8 resultados para "Ganbatte! Albert Liebermann entrevista"
 SEARCH = {"items": [
-    item("AAAAAAAAAA1", "Entrevista a Albert Liebermann sobre Ganbatte", "charla completa"),          # ape+ent+dur = 4+3+2 = 9 (sin "!" no cuenta título)
-    item("AAAAAAAAAA2", "Liebermann: conferencia en Madrid", ""),                                     # ape+conf+dur+vistas = 4+3+2+1 = 10
-    item("AAAAAAAAAA3", "Ganbatte! resumen animado", ""),                                             # tit+dur = 2+2 = 4 (pasa justo)
-    item("AAAAAAAAAA4", "Entrevista motivacional con alguien más", "larga"),                          # sin ancla: 3+2 = 5 → GATE lo saca
-    item("AAAAAAAAAA5", "Liebermann short", ""),                                                      # ape pero <3min: 4-3 = 1 → no pasa
-    item("AAAAAAAAAA6", "Liebermann explica Ganbatte en 1 minuto", ""),                               # ape pero short: 4-3 = 1 → no pasa
-    item("bad id", "Liebermann entrevista (id inválido)", ""),                                        # id inválido → se descarta antes de pedir detalles
-    item("AAAAAAAAAA8", "Albert Liebermann interview " + "x" * 200, "", "Canal " + "y" * 100),        # ape+int+dur = 9; trunca titulo[:90] canal[:60]
+    item("AAAAAAAAAA1", "Entrevista a Albert Liebermann sobre Ganbatte", "charla completa"),     # base 9
+    item("AAAAAAAAAA2", "Liebermann: conferencia en Madrid", ""),                                # base 10
+    item("AAAAAAAAAA3", "Ganbatte! resumen animado", ""),                                        # base 4
+    item("AAAAAAAAAA4", "Entrevista motivacional con alguien más", "larga"),                     # sin ancla
+    item("AAAAAAAAAA5", "Liebermann short", ""),                                                 # 1
+    item("AAAAAAAAAA6", "Liebermann explica Ganbatte en 1 minuto", ""),                          # 1
+    item("bad id", "Liebermann entrevista (id inválido)", ""),
+    item("AAAAAAAAAA8", "Albert Liebermann interview " + "x" * 200, "", "Canal " + "y" * 100),   # base 9
 ]}
 DETS = {"items": [
-    det("AAAAAAAAAA1", "PT45M10S", 1200),
-    det("AAAAAAAAAA2", "PT1H10M", 120000),
-    det("AAAAAAAAAA3", "PT8M", 10),
+    det("AAAAAAAAAA1", "PT45M10S", 1200, desc="Descripción &quot;completa&quot; de la charla " + "d" * 900, tags=["ganbatte", "liebermann"], lang="es"),
+    det("AAAAAAAAAA2", "PT1H10M", 120000, lang="es"),
+    det("AAAAAAAAAA3", "PT8M", 10, lang="es"),
     det("AAAAAAAAAA4", "PT30M", 999999),
     det("AAAAAAAAAA5", "PT1M", 5),
     det("AAAAAAAAAA6", "PT2M59S", 5),
-    det("AAAAAAAAAA8", "PT20M", 7000),
+    det("AAAAAAAAAA8", "PT20M", 7000, lang="pt", caption=False),
 ]}
 
 
 class ApiFalsa:
     def __init__(self, fatal_en=None, error_en=None):
-        self.calls = []
-        self.fatal_en = fatal_en    # nº de search (1-based) que lanza ApiFatal
-        self.error_en = error_en    # nº de search (1-based) que lanza Exception normal
-        self.searches = 0
+        self.calls = []; self.fatal_en = fatal_en; self.error_en = error_en; self.searches = 0
 
     def __call__(self, url):
         self.calls.append(url)
@@ -72,14 +73,42 @@ class ApiFalsa:
             assert "videoEmbeddable=true" in url and "type=video" in url and "maxResults=8" in url
             return json.loads(json.dumps(SEARCH))
         if "/videos?" in url:
-            assert "bad" not in url, "no se deben pedir detalles de ids inválidos"
+            assert "bad" not in url and "part=snippet,contentDetails,statistics" in url
             return json.loads(json.dumps(DETS))
         raise AssertionError("URL inesperada " + url)
 
 
+class JuezFalso:
+    """Devuelve veredictos por id. armonias: dict id→(armonia, rol, idioma, descartar, tipo)."""
+    def __init__(self, armonias=None, fatal=False, error=False, omitir=None):
+        self.llamadas = []; self.armonias = armonias or {}; self.fatal = fatal; self.error = error; self.omitir = omitir
+
+    def __call__(self, prompt, esquema, user_json, key):
+        self.llamadas.append(json.loads(user_json))
+        if self.fatal:
+            raise rv.LlmFatal("OpenAI HTTP 401 invalid_api_key")
+        if self.error:
+            raise Exception("OpenAI HTTP 500")
+        pedido = json.loads(user_json)
+        ver = []
+        for cnd in pedido["candidatos"]:
+            if cnd["id"] == self.omitir:
+                continue
+            a, rol, idioma, desc, tipo = self.armonias.get(cnd["id"], (7, "profundizar", "es", False, "tercero_habla"))
+            ver.append({"id": cnd["id"], "armonia": a, "rol": rol, "tipo": tipo, "relacion": "invita", "idioma": idioma,
+                        "frase_eco": pedido["edicion"]["frases"][0] if pedido["edicion"]["frases"] else "",
+                        "pie": "Pie de prueba para %s: eco con el libro. " % cnd["id"] + "palabra " * 40, "descartar": desc, "motivo_descarte": "ajeno" if desc else ""})
+        return {"veredictos": ver, "sinfonia": "Terna: abrir con la charla, profundizar con la conferencia, aterrizar con el resumen."}
+
+
 def libro(titulo, autor, ed=None, idioma="es", video=None, **extra):
-    b = {"titulo": titulo, "autor": autor, "titulo_es": titulo, "titulo_en": titulo,
-         "idioma_original": idioma, "frases": ["🔭 una", "🌓 dos"], "colores": ["#111111", "#222222"]}
+    b = {"titulo": titulo, "autor": autor, "titulo_es": titulo, "titulo_en": titulo, "idioma_original": idioma,
+         "frases": ["🔭 Observa tu entorno.", "📻 ¿Escuchas?"], "colores": ["#111111", "#222222"],
+         "_nucleus": {"og_phrases_es": [{"phrase": "🕊 Frase aterrizar.", "rol_sinfonico": "aterrizar", "eje_animo": 0.6, "pilar": "negocios"}],
+                      "edition_blocks_es": [{"gesture_type": "instruccion_sensorial", "sensory_anchor": "vista", "phrase": "🔭 Observa tu entorno.", "rol_sinfonico": "aterrizar", "eje_animo": 0.4}],
+                      "book_grounding_anchors": {"authorial_voice_notes": "Voz directa.", "concepts": ["c1"], "key_terms": ["k1"]},
+                      "card_es": {"titulo": "Título editorial"}, "emotional_words_es": ["calma"]},
+         "_animo_promedio": 0.5}
     if ed is not None:
         b["_edicion_numero"] = ed
     if video is not None:
@@ -94,197 +123,216 @@ def js_stringify_like(d):
 
 class Base(unittest.TestCase):
     def setUp(self):
-        self.dir = tempfile.mkdtemp(prefix="rv-")
-        self.cwd = os.getcwd()
-        os.chdir(self.dir)
-        self.api_real = rv.api
+        self.dir = tempfile.mkdtemp(prefix="rv2-"); self.cwd = os.getcwd(); os.chdir(self.dir)
+        self.api_real, self.llm_real, self.raw_real = rv.api, rv.llm, rv._leer_raw
+        rv._PROMPT_CACHE.clear()
+        # prompt local como en CI: ./triggui-content/prompts/...
+        os.makedirs("triggui-content/prompts/tasks"); os.makedirs("triggui-content/prompts/schemas")
+        open("triggui-content/" + rv.RUTA_PROMPT, "w", encoding="utf-8").write(PROMPT)
+        open("triggui-content/" + rv.RUTA_SCHEMA, "w", encoding="utf-8").write(json.dumps(ESQUEMA))
+        rv._leer_raw = lambda rel: (_ for _ in ()).throw(AssertionError("no debe ir a raw GitHub en pruebas"))
 
     def tearDown(self):
-        rv.api = self.api_real
-        os.chdir(self.cwd)
-        shutil.rmtree(self.dir, ignore_errors=True)
+        rv.api, rv.llm, rv._leer_raw = self.api_real, self.llm_real, self.raw_real
+        rv._PROMPT_CACHE.clear(); os.chdir(self.cwd); shutil.rmtree(self.dir, ignore_errors=True)
 
-    def escribe(self, nombre, libros, meta=None):
-        raw = js_stringify_like({"libros": libros, "meta": meta or {"next_edition_number": 94}})
-        with open(nombre, "wb") as f:
-            f.write(raw)
-        return raw
+    def escribe(self, nombre, libros):
+        raw = js_stringify_like({"libros": libros, "meta": {"next_edition_number": 94}})
+        open(nombre, "wb").write(raw); return raw
 
     def lee(self, nombre):
-        with open(nombre, "rb") as f:
-            return f.read()
+        return open(nombre, "rb").read()
 
-    def corre(self, argv, fake=None, key="K"):
-        rv.api = fake or ApiFalsa()
+    def corre(self, argv, fake=None, juez=None, key="K", openai="O"):
+        rv.api = fake or ApiFalsa(); rv.llm = juez or JuezFalso()
         os.environ["YT_API_KEY"] = key
-        # hoy fijo para reintentos
+        if openai:
+            os.environ["OPENAI_KEY"] = openai
+        else:
+            os.environ.pop("OPENAI_KEY", None); os.environ.pop("OPENAI_API_KEY", None)
         orig = rv.procesa
-        def procesa_fijo(ruta, c, cache, st, hoy=None):
-            return orig(ruta, c, cache, st, hoy=HOY)
-        rv.procesa = procesa_fijo
+        rv.procesa = lambda ruta, c, cache, st, hoy=None: orig(ruta, c, cache, st, hoy=HOY)
         try:
             return rv.main(argv)
         finally:
-            rv.procesa = orig
-            os.environ.pop("YT_API_KEY", None)
+            rv.procesa = orig; os.environ.pop("YT_API_KEY", None); os.environ.pop("OPENAI_KEY", None)
 
 
-class T01Dur(unittest.TestCase):
-    def test_dur(self):
-        self.assertEqual(rv.dur("PT1H2M3S"), 3723)
-        self.assertEqual(rv.dur("PT45S"), 45)
-        self.assertEqual(rv.dur("PT8M"), 480)
-        self.assertEqual(rv.dur(None), 0)
-        self.assertEqual(rv.dur("P0D"), 0)
+class T01Capa1(Base):
+    def test_dur_y_veto(self):
+        self.assertEqual(rv.dur("PT1H2M3S"), 3723); self.assertEqual(rv.dur(None), 0)
+        p, d, anc = rv.puntua(item("X", "Entrevista motivacional con alguien más"), det("X", "PT30M", 999999), "Albert Liebermann", "Ganbatte!")
+        self.assertEqual((p, anc), (6, False))
+
+    def test_candidatos_base(self):
+        rv.api = ApiFalsa()
+        base = rv.capa1(libro("Ganbatte!", "Albert Liebermann", 85), "K")
+        self.assertEqual([x["id"] for x in base], ["AAAAAAAAAA1", "AAAAAAAAAA2", "AAAAAAAAAA3", "AAAAAAAAAA8"])  # anclados y ≥4, orden YouTube
+        self.assertEqual([x["_base"] for x in base], [9, 10, 4, 9])
+        x = base[0]
+        self.assertIn('"completa"', x["_descripcion"]); self.assertEqual(len(x["_descripcion"]), 700)   # unescape + tope
+        self.assertEqual(x["_etiquetas"], ["ganbatte", "liebermann"]); self.assertEqual(x["_idioma_audio"], "es")
+        self.assertFalse(x["_subtitulos"]); self.assertEqual(x["_vistas"], 1200)
+        self.assertEqual(len(base[3]["titulo"]), 90); self.assertEqual(len(base[3]["canal"]), 60)
 
 
-class T02Veto(unittest.TestCase):
-    def test_gate_sin_ancla(self):
-        it = item("X", "Entrevista motivacional con alguien más", "larga")
-        p, d, anclado = rv.puntua(it, det("X", "PT30M", 999999), "Albert Liebermann", "Ganbatte!")
-        self.assertEqual(p, 3 + 2 + 1)       # entrevista + duración + vistas
-        self.assertFalse(anclado)            # … pero sin apellido ni título: no pasa
+class T02Armonia(Base):
+    def test_payload_edicion(self):
+        e = rv.edicion_payload(libro("Ganbatte!", "Albert Liebermann", 85))
+        self.assertEqual(e["hallazgo"], "🕊 Frase aterrizar."); self.assertEqual(e["movimiento"], "🔭 Observa tu entorno."); self.assertEqual(e["impacto"], "vista")
+        self.assertEqual(e["voz_del_autor"], "Voz directa."); self.assertEqual(e["frases_con_rol"][0]["rol"], "aterrizar"); self.assertEqual(e["animo_promedio"], 0.5)
 
-    def test_puntaje_canon(self):
-        it = item("X", "Entrevista a Albert Liebermann sobre Ganbatte")
-        p, d, anclado = rv.puntua(it, det("X", "PT45M10S", 1200), "Albert Liebermann", "Ganbatte!")
-        self.assertEqual((p, d, anclado), (9, 2710, True))   # 4 ape + 3 entrevista + 2 dur; "ganbatte!" (con !) no está en el título
-        it = item("X", "Liebermann short")
-        p, d, _ = rv.puntua(it, det("X", "PT1M", 5), "Albert Liebermann", "Ganbatte!")
-        self.assertEqual(p, 1)               # 4 - 3 (short)
+    def test_terna_roles_distintos_y_piso(self):
+        juez = JuezFalso({"AAAAAAAAAA1": (9, "abrir", "es", False, "autor_habla"), "AAAAAAAAAA2": (8, "abrir", "es", False, "autor_habla"),
+                          "AAAAAAAAAA3": (5, "aterrizar", "es", False, "resumen"), "AAAAAAAAAA8": (2, "profundizar", "es", False, "otro")})
+        self.escribe("contenido.json", [libro("Ganbatte!", "Albert Liebermann", 85)])
+        self.assertEqual(self.corre(["--solo-ediciones"], juez=juez), 0)
+        v = json.loads(self.lee("contenido.json"))["libros"][0]["_video"]
+        self.assertEqual(v["juez"], "gpt-4o-mini"); self.assertTrue(v["sinfonia"].startswith("Terna:"))
+        self.assertEqual([(x["id"], x["armonia"], x["rol"]) for x in v["candidatos"]],
+                         [("AAAAAAAAAA1", 9, "abrir"), ("AAAAAAAAAA3", 5, "aterrizar"), ("AAAAAAAAAA2", 8, "abrir")])  # rol distinto antes que armonía; 8 (♪2) fuera por piso
+        self.assertEqual(set(v["candidatos"][0].keys()), {"id", "titulo", "canal", "dur", "armonia", "rol", "tipo", "relacion", "idioma", "frase_eco", "pie"})
+        self.assertLessEqual(len(v["candidatos"][0]["pie"]), 141); self.assertTrue(v["candidatos"][0]["pie"].endswith("…"))
+        self.assertEqual(v["candidatos"][0]["frase_eco"], "🔭 Observa tu entorno.")
+        self.assertEqual(len(juez.llamadas), 1); self.assertEqual([c["id"] for c in juez.llamadas[0]["candidatos"]], ["AAAAAAAAAA1", "AAAAAAAAAA2", "AAAAAAAAAA3", "AAAAAAAAAA8"])
 
+    def test_descarte_e_idioma_sin_subtitulos(self):
+        juez = JuezFalso({"AAAAAAAAAA1": (9, "abrir", "es", True, "otro"),            # descartado por el juez
+                          "AAAAAAAAAA8": (9, "resonar", "otro", False, "otro")})      # idioma otro + sin subtítulos → fuera
+        self.escribe("contenido.json", [libro("Ganbatte!", "Albert Liebermann", 85)])
+        self.assertEqual(self.corre(["--solo-ediciones"], juez=juez), 0)
+        ids = [x["id"] for x in json.loads(self.lee("contenido.json"))["libros"][0]["_video"]["candidatos"]]
+        self.assertEqual(ids, ["AAAAAAAAAA2", "AAAAAAAAAA3"])
 
-class T03Resolver(Base):
-    def test_ranking_campos_y_top3(self):
+    def test_sin_llave_openai_capa1(self):
+        self.escribe("contenido.json", [libro("Ganbatte!", "Albert Liebermann", 85)])
+        juez = JuezFalso()
+        self.assertEqual(self.corre(["--solo-ediciones"], juez=juez, openai=""), 0)
+        v = json.loads(self.lee("contenido.json"))["libros"][0]["_video"]
+        self.assertEqual(v["juez"], "capa1"); self.assertEqual(juez.llamadas, [])
+        self.assertEqual([x["id"] for x in v["candidatos"]], ["AAAAAAAAAA1", "AAAAAAAAAA2", "AAAAAAAAAA3"])
+        self.assertEqual(set(v["candidatos"][0].keys()), {"id", "titulo", "canal", "dur"})
+
+    def test_juez_fatal_apaga_capa2_y_sigue(self):
+        self.escribe("contenido.json", [libro("Ganbatte!", "Albert Liebermann", 85), libro("Ikigai", "Albert Liebermann", 70)])
+        juez = JuezFalso(fatal=True)
+        self.assertEqual(self.corre(["--solo-ediciones"], juez=juez), 0)
+        L = json.loads(self.lee("contenido.json"))["libros"]
+        self.assertEqual([b["_video"]["juez"] for b in L], ["capa1", "capa1"]); self.assertEqual(len(juez.llamadas), 1)   # no insiste
+
+    def test_juez_omite_un_video_tolerante(self):
+        self.escribe("contenido.json", [libro("Ganbatte!", "Albert Liebermann", 85)])
+        juez = JuezFalso({"AAAAAAAAAA1": (9, "abrir", "es", False, "autor_habla"), "AAAAAAAAAA2": (8, "profundizar", "es", False, "autor_habla"), "AAAAAAAAAA8": (7, "resonar", "es", False, "otro")}, omitir="AAAAAAAAAA3")
+        self.assertEqual(self.corre(["--solo-ediciones"], juez=juez), 0)
+        v = json.loads(self.lee("contenido.json"))["libros"][0]["_video"]
+        self.assertEqual(v["juez"], "gpt-4o-mini"); self.assertEqual([x["id"] for x in v["candidatos"]], ["AAAAAAAAAA1", "AAAAAAAAAA2", "AAAAAAAAAA8"])  # el omitido queda fuera, el resto sigue
+
+    def test_juez_error_solo_ese_libro(self):
+        self.escribe("contenido.json", [libro("Ganbatte!", "Albert Liebermann", 85), libro("Ikigai", "Albert Liebermann", 70)])
+        class JuezRoto(JuezFalso):
+            n = 0
+            def __call__(self, *a):
+                self.n += 1
+                if self.n == 1:
+                    raise Exception("OpenAI HTTP 500")
+                return JuezFalso.__call__(self, *a)
+        juez = JuezRoto()
+        self.assertEqual(self.corre(["--solo-ediciones"], juez=juez), 0)
+        L = json.loads(self.lee("contenido.json"))["libros"]
+        self.assertEqual([b["_video"]["juez"] for b in L], ["capa1", "gpt-4o-mini"]); self.assertEqual(juez.n, 2)
+
+    def test_filtro_solo(self):
+        self.escribe("contenido.json", [libro("Ganbatte!", "Albert Liebermann", 85), libro("Ikigai", "Albert Liebermann", 70), libro("Grit", "Angela Duckworth", 60, video={"resuelto_el": "2026-08-22", "candidatos": [{"id": "AAAAAAAAAA1"}]})])
         fake = ApiFalsa()
-        rv.api = fake
-        top = rv.resolver(libro("Ganbatte!", "Albert Liebermann", 85), "K")
-        self.assertEqual([x["id"] for x in top], ["AAAAAAAAAA2", "AAAAAAAAAA1", "AAAAAAAAAA8"])  # 10, 9, 9 (empate: orden de relevancia)
-        self.assertEqual(len(fake.calls), 2)                      # 1 search + 1 videos.list
-        self.assertNotIn("bad", fake.calls[1])                    # id inválido nunca se pide
-        self.assertEqual(len(top[2]["titulo"]), 90)
-        self.assertEqual(len(top[2]["canal"]), 60)
-        self.assertEqual((top[0]["dur"], top[1]["dur"]), (4200, 2710))
-        self.assertEqual(set(top[0].keys()), {"id", "titulo", "canal", "dur"})
+        self.assertEqual(self.corre(["--solo-ediciones", "--rehacer", "--solo=IKIGAI, grit"], fake), 0)
+        L = json.loads(self.lee("contenido.json"))["libros"]
+        self.assertEqual(["_video" in b for b in L], [False, True, True]); self.assertEqual(fake.searches, 2)
+        self.assertEqual(rv.config(["--solo=El Gran Nervio, Élan"])["solo"], ["el gran nervio", "elan"])
 
-    def test_query_por_idioma(self):
-        q, lang = rv.query_de(libro("El obstáculo es el camino", "Ryan Holiday", idioma="en",
-                                    titulo_en="The Obstacle Is the Way"))
-        self.assertEqual((q, lang), ("The Obstacle Is the Way Ryan Holiday interview", "en"))
-        q, lang = rv.query_de(libro("Ganbatte!", "Albert Liebermann", idioma="es"))
-        self.assertEqual((q, lang), ("Ganbatte! Albert Liebermann entrevista", "es"))
+    def test_prompt_desde_cwd_content(self):
+        os.rename("triggui-content/prompts", "prompts"); shutil.rmtree("triggui-content")
+        self.assertEqual(rv.cargar_prompt()[2], ".")
 
-
-class T04Idempotencia(Base):
-    def test_reglas(self):
-        c = rv.config(["--solo-ediciones"])
-        ok = lambda b: rv.elegible(b, c, HOY)[0]
-        self.assertFalse(ok(libro("A", "B", 1, video={"resuelto_el": "2026-08-01", "candidatos": [{"id": "x"}]})))
-        self.assertFalse(ok(libro("A", "B", 1, video={"resuelto_el": "2026-08-21", "candidatos": []})))
-        self.assertFalse(ok(libro("A", "B", 1, video={"resuelto_el": "2026-07-23", "candidatos": []})))  # 29 días
-        self.assertTrue(ok(libro("A", "B", 1, video={"resuelto_el": "2026-07-22", "candidatos": []})))   # 30 días
-        self.assertTrue(ok(libro("A", "B", 1, video={"resuelto_el": "basura", "candidatos": []})))
-        self.assertTrue(ok(libro("A", "B", 1)))
-
-    def test_segunda_corrida_no_gasta(self):
+    def test_sin_prompt_apaga_capa2(self):
+        shutil.rmtree("triggui-content")
         self.escribe("contenido.json", [libro("Ganbatte!", "Albert Liebermann", 85)])
         self.assertEqual(self.corre(["--solo-ediciones"]), 0)
-        fake = ApiFalsa()
-        self.assertEqual(self.corre(["--solo-ediciones"], fake), 0)
-        self.assertEqual(fake.calls, [])
+        self.assertEqual(json.loads(self.lee("contenido.json"))["libros"][0]["_video"]["juez"], "capa1")
 
 
-class T05CacheEntreRutas(Base):
-    def test_un_gasto_dos_archivos(self):
-        self.escribe("contenido.json", [libro("Otro", "Autor X"), libro("Ganbatte!", "Albert Liebermann", 85)])
-        self.escribe("contenido_manual.json", [libro("Ganbatte!", "Albert Liebermann", 85)])
-        fake = ApiFalsa()
-        self.assertEqual(self.corre(["--solo-ediciones"], fake), 0)
-        self.assertEqual(fake.searches, 1)
-        a = json.loads(self.lee("contenido.json"))["libros"][1]["_video"]
-        b = json.loads(self.lee("contenido_manual.json"))["libros"][0]["_video"]
-        self.assertEqual(a, b)
-        self.assertEqual(a["resuelto_el"], "2026-08-21")
-        self.assertEqual(len(a["candidatos"]), 3)
-        self.assertNotIn("_video", json.loads(self.lee("contenido.json"))["libros"][0])  # sin edición: intacto
+class T03Idempotencia(Base):
+    def test_reglas_y_rehacer(self):
+        c = rv.config(["--solo-ediciones"]); ok = lambda b: rv.elegible(b, c, HOY)[0]
+        self.assertFalse(ok(libro("A", "B", 1, video={"resuelto_el": "2026-08-01", "candidatos": [{"id": "x"}]})))
+        self.assertFalse(ok(libro("A", "B", 1, video={"resuelto_el": "2026-08-22", "candidatos": []})))
+        self.assertTrue(ok(libro("A", "B", 1, video={"resuelto_el": "2026-07-22", "candidatos": []})))
+        self.assertTrue(ok(libro("A", "B", 1)))
+        c2 = rv.config(["--solo-ediciones", "--rehacer"])
+        self.assertTrue(rv.elegible(libro("A", "B", 1, video={"resuelto_el": "2026-08-22", "candidatos": [{"id": "x"}]}), c2, HOY)[0])
 
-
-class T06AtomicoYFormato(Base):
-    def test_formato_preservado_y_sin_tmp(self):
-        original = self.escribe("contenido_manual.json", [libro("Ganbatte!", "Albert Liebermann", 85, extra_unicode="ñ á 🌒 — “comillas”")])
+    def test_segunda_corrida_no_gasta_y_rehacer_si(self):
+        self.escribe("contenido.json", [libro("Ganbatte!", "Albert Liebermann", 85)])
         self.assertEqual(self.corre(["--solo-ediciones"]), 0)
-        escrito = self.lee("contenido_manual.json")
-        self.assertNotEqual(escrito, original)
-        d = json.loads(escrito)
-        for b in d["libros"]:
-            b.pop("_video", None)
-        self.assertEqual(js_stringify_like(d), original)           # quitar _video = bytes originales
+        fake = ApiFalsa(); self.assertEqual(self.corre(["--solo-ediciones"], fake), 0); self.assertEqual(fake.calls, [])
+        fake = ApiFalsa(); self.assertEqual(self.corre(["--solo-ediciones", "--rehacer"], fake), 0); self.assertEqual(fake.searches, 1)
+
+
+class T04CacheFormatoAtomico(Base):
+    def test_un_gasto_dos_archivos_y_formato(self):
+        o1 = self.escribe("contenido.json", [libro("Otro", "Autor X"), libro("Ganbatte!", "Albert Liebermann", 85, raro="ñ á 🌒 — “comillas”")])
+        o2 = self.escribe("contenido_manual.json", [libro("Ganbatte!", "Albert Liebermann", 85, raro="ñ á 🌒 — “comillas”")])
+        fake = ApiFalsa(); juez = JuezFalso()
+        self.assertEqual(self.corre(["--solo-ediciones"], fake, juez), 0)
+        self.assertEqual(fake.searches, 1); self.assertEqual(len(juez.llamadas), 1)
+        a = json.loads(self.lee("contenido.json")); b = json.loads(self.lee("contenido_manual.json"))
+        self.assertEqual(a["libros"][1]["_video"], b["libros"][0]["_video"]); self.assertNotIn("_video", a["libros"][0])
+        for d, o, f in ((a, o1, "contenido.json"), (b, o2, "contenido_manual.json")):
+            for x in d["libros"]:
+                x.pop("_video", None)
+            self.assertEqual(js_stringify_like(d), o)
+            self.assertFalse(self.lee(f).endswith(b"\n"))
         self.assertEqual([f for f in os.listdir(".") if ".tmp-" in f], [])
-        self.assertFalse(escrito.endswith(b"\n"))                  # igual que JSON.stringify
 
     def test_sin_cambios_no_reescribe(self):
-        self.escribe("contenido.json", [libro("Ganbatte!", "Albert Liebermann", 85, video={"resuelto_el": "2026-08-21", "candidatos": [{"id": "AAAAAAAAAA1"}]})])
-        md5_antes = hashlib.md5(self.lee("contenido.json")).hexdigest()
-        os.utime("contenido.json", (1000000000, 1000000000))
+        self.escribe("contenido.json", [libro("Ganbatte!", "Albert Liebermann", 85, video={"resuelto_el": "2026-08-22", "candidatos": [{"id": "AAAAAAAAAA1"}]})])
+        md5 = hashlib.md5(self.lee("contenido.json")).hexdigest(); os.utime("contenido.json", (1000000000, 1000000000))
         self.assertEqual(self.corre(["--solo-ediciones"]), 0)
-        self.assertEqual(hashlib.md5(self.lee("contenido.json")).hexdigest(), md5_antes)
-        self.assertEqual(int(os.stat("contenido.json").st_mtime), 1000000000)
+        self.assertEqual(hashlib.md5(self.lee("contenido.json")).hexdigest(), md5); self.assertEqual(int(os.stat("contenido.json").st_mtime), 1000000000)
 
 
-class T07DryRun(Base):
-    def test_cero_api_cero_escritura(self):
+class T05Filtros(Base):
+    def test_dry_run(self):
         o1 = self.escribe("contenido.json", [libro("Ganbatte!", "Albert Liebermann", 85)])
-        o2 = self.escribe("contenido_manual.json", [libro("Ganbatte!", "Albert Liebermann", 85)])
-        fake = ApiFalsa()
-        self.assertEqual(self.corre(["--solo-ediciones", "--dry-run"], fake, key=""), 0)
-        self.assertEqual(fake.calls, [])
-        self.assertEqual(self.lee("contenido.json"), o1)
-        self.assertEqual(self.lee("contenido_manual.json"), o2)
+        fake = ApiFalsa(); juez = JuezFalso()
+        self.assertEqual(self.corre(["--solo-ediciones", "--dry-run"], fake, juez, key=""), 0)
+        self.assertEqual(fake.calls, []); self.assertEqual(juez.llamadas, []); self.assertEqual(self.lee("contenido.json"), o1)
 
-
-class T08Fatal(Base):
-    def test_detiene_y_guarda_lo_resuelto(self):
+    def test_youtube_fatal_guarda_lo_resuelto(self):
         self.escribe("contenido.json", [libro("Ganbatte!", "Albert Liebermann", 85), libro("Grit", "Angela Duckworth", 70), libro("Ok", "X Y", 71)])
         fake = ApiFalsa(fatal_en=2)
-        self.assertEqual(self.corre(["--solo-ediciones"], fake), 0)   # nunca rompe el tren
-        libros = json.loads(self.lee("contenido.json"))["libros"]
-        self.assertIn("_video", libros[0])
-        self.assertNotIn("_video", libros[1])
-        self.assertNotIn("_video", libros[2])
-        self.assertEqual(fake.searches, 2)                              # no insiste tras el fatal
-
-    def test_error_normal_solo_salta_ese_libro(self):
-        self.escribe("contenido.json", [libro("Ganbatte!", "Albert Liebermann", 85), libro("Grit", "Angela Duckworth", 70)])
-        fake = ApiFalsa(error_en=1)
         self.assertEqual(self.corre(["--solo-ediciones"], fake), 0)
-        libros = json.loads(self.lee("contenido.json"))["libros"]
-        self.assertNotIn("_video", libros[0])                           # se reintenta la próxima corrida
-        self.assertIn("_video", libros[1])
+        L = json.loads(self.lee("contenido.json"))["libros"]
+        self.assertEqual(["_video" in b for b in L], [True, False, False]); self.assertEqual(fake.searches, 2)
 
-
-class T09Filtros(Base):
-    def test_solo_ediciones_y_max(self):
+    def test_solo_ediciones_max_sin_llave(self):
         self.escribe("contenido.json", [libro("Sin ed", "A"), libro("Bool", "B", True), libro("Float", "C", 2.0), libro("Ganbatte!", "Albert Liebermann", 85)])
-        fake = ApiFalsa()
-        self.assertEqual(self.corre(["--solo-ediciones", "--max=1"], fake), 0)
-        libros = json.loads(self.lee("contenido.json"))["libros"]
-        self.assertEqual([("_video" in b) for b in libros], [False, False, True, False])
-        self.assertEqual(fake.searches, 1)
-
-    def test_sin_llave(self):
-        self.escribe("contenido.json", [libro("Ganbatte!", "Albert Liebermann", 85)])
+        fake = ApiFalsa(); self.assertEqual(self.corre(["--solo-ediciones", "--max=1"], fake), 0)
+        self.assertEqual([("_video" in b) for b in json.loads(self.lee("contenido.json"))["libros"]], [False, False, True, False]); self.assertEqual(fake.searches, 1)
         self.assertEqual(self.corre(["--solo-ediciones"], key=""), 2)
-        self.assertNotIn("_video", json.loads(self.lee("contenido.json"))["libros"][0])
 
     def test_config(self):
-        c = rv.config(["--solo-ediciones", "--max=2", "--reintentar-dias=7", "--rutas=a.json,b.json", "--dry-run"])
-        self.assertEqual((c["solo_ed"], c["max"], c["reintentar"], c["rutas"], c["dry"]), (True, 2, 7, ["a.json", "b.json"], True))
+        c = rv.config(["--solo-ediciones", "--max=2", "--reintentar-dias=7", "--rutas=a.json,b.json", "--rehacer", "--sin-armonia", "--armonia-min=5", "--explicar", "--dry-run"])
+        self.assertEqual((c["solo_ed"], c["max"], c["reintentar"], c["rutas"], c["rehacer"], c["sin_armonia"], c["armonia_min"], c["explicar"], c["dry"]),
+                         (True, 2, 7, ["a.json", "b.json"], True, True, 5, True, True))
+
+    def test_pie(self):
+        self.assertEqual(rv._pie("  dos   espacios "), "dos espacios")
+        largo = rv._pie("palabra " * 40); self.assertLessEqual(len(largo), 141); self.assertTrue(largo.endswith("…"))
 
 
 if __name__ == "__main__":
     suite = unittest.defaultTestLoader.loadTestsFromModule(sys.modules[__name__])
     res = unittest.TextTestRunner(verbosity=1).run(suite)
-    total = res.testsRun
-    ok = total - len(res.failures) - len(res.errors)
-    print("══ resolve-videos SHIM: %d/%d pruebas OK" % (ok, total))
+    total = res.testsRun; ok = total - len(res.failures) - len(res.errors)
+    print("══ resolve-videos v2 SHIM: %d/%d pruebas OK" % (ok, total))
     sys.exit(0 if ok == total else 1)
