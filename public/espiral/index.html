@@ -58,6 +58,7 @@
       voz:(b._nucleus&&b._nucleus.book_grounding_anchors&&b._nucleus.book_grounding_anchors.authorial_voice_notes)||'',
       video:(vc&&vc.id)||'',
       pie:(vc&&vc.pie)||'',
+      videos:((b._video&&b._video.candidatos)||[]).map(function(c){return {id:String(c.id||''),pie:c.pie||'',rol:c.rol||'',idioma:c.idioma||'',titulo:c.titulo||''}}),
       portada:b.portada_url||b.portada||'',
       hallazgo:senal(b),
       movimiento:g?g.phrase:'',

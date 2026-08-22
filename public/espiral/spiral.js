@@ -629,34 +629,154 @@ function iniciarPortal() {
   var ETIQ = { pendiente: 'TE ESPERA', en_curso: 'EN CURSO', resuelto: 'HECHA', pospuesto: 'EN PAUSA' };
 
   /* v15.2 · Tarjeta sinfonica: cabecera en dos columnas (portada | titulo + voz completa),
-     pie bajo el video, y el video se pausa al cerrar; si reabres la MISMA edicion no se
-     reconstruye el iframe: sigue donde se pauso. */
+     pie bajo el video; el video se pausa al cerrar y si reabres la MISMA edicion no se
+     reconstruye el iframe (sigue donde se pauso).
+     v15.3 · Video sinfonico:
+       - rotacion por rol (abrir -> profundizar -> aterrizar -> resonar) segun visitas a la edicion;
+       - marcador de posicion persistente (localStorage, 30 dias): un video a medio ver gana a la
+         rotacion y el iframe nace en ese segundo (start=);
+       - video muerto (el player avisa onError) -> siguiente candidato, o sin video;
+       - subtitulos en espanol por default en videos que no son en espanol;
+       - metricas honestas: video_play (primer play) · video_fin · video_segundos (al cerrar).
+     El player solo reporta despues del saludo 'listening': se manda al cargar cada iframe. */
   var hojaK = -1;
+  var ROLES_ORDEN = ['abrir', 'profundizar', 'aterrizar', 'resonar'];
+  var VID_RE = /^[A-Za-z0-9_-]{11}$/;
+  var MEM_KEY = 'triggui_espiral_video';
+  var MARCA_MIN = 10;            /* segundos vistos para que el marcador gane a la rotacion */
+  var MARCA_DIAS = 30;
+  var yt = { video: '', t: 0, t0: 0, estado: -1, play: false, fin: false, muertos: {} };
 
-  function ytCmd(func) {
-    var f = hoja.querySelector('.h-video iframe');
-    if (!f || !f.contentWindow) return;
-    try {
-      f.contentWindow.postMessage(JSON.stringify({ event: 'listening', id: 'triggui', channel: 'widget' }), '*');
-      f.contentWindow.postMessage(JSON.stringify({ event: 'command', func: func, args: [] }), '*');
-    } catch (e) {}
+  function memLeer() {
+    var m = null;
+    try { m = JSON.parse(localStorage.getItem(MEM_KEY) || 'null'); } catch (e) {}
+    if (!m || typeof m !== 'object') m = {};
+    if (!m.visitas || typeof m.visitas !== 'object') m.visitas = {};
+    if (!m.marcas || typeof m.marcas !== 'object') m.marcas = {};
+    var lim = Date.now() - MARCA_DIAS * 864e5, id;
+    for (id in m.marcas) { if (!m.marcas[id] || !(m.marcas[id].at > lim)) delete m.marcas[id]; }
+    return m;
+  }
+  function memGuardar(m) { try { localStorage.setItem(MEM_KEY, JSON.stringify(m)); } catch (e) {} }
+
+  /* candidatos vivos de la edicion, ordenados por rol sinfonico (sin rol: al final, en su orden) */
+  function candidatos(it) {
+    var vs = (it.videos || []).filter(function (v) { return v && VID_RE.test(String(v.id)) && !yt.muertos[v.id]; });
+    if (!vs.length && it.video && VID_RE.test(String(it.video)) && !yt.muertos[it.video]) {
+      vs = [{ id: it.video, pie: it.pie || '', rol: '', idioma: '', titulo: '' }];
+    }
+    return vs.slice().sort(function (a, b) {
+      var ia = ROLES_ORDEN.indexOf(a.rol), ib = ROLES_ORDEN.indexOf(b.rol);
+      return (ia < 0 ? 9 : ia) - (ib < 0 ? 9 : ib);
+    });
   }
 
-  /* GA4: primer play del video por apertura de Tarjeta (el player avisa por postMessage) */
-  var videoPlayAvisado = false;
+  /* video de la apertura n: el marcador a medio ver gana; si no, rota por rol */
+  function elegirVideo(it, n) {
+    var vs = candidatos(it);
+    if (!vs.length) return null;
+    var m = memLeer().marcas[it.id];
+    if (m && !m.fin && m.t >= MARCA_MIN) {
+      for (var i = 0; i < vs.length; i++) { if (vs[i].id === m.video) return { v: vs[i], start: Math.floor(m.t) }; }
+    }
+    return { v: vs[n % vs.length], start: 0 };
+  }
+
+  function srcVideo(v, start) {
+    var u = 'https://www.youtube-nocookie.com/embed/' + v.id + '?rel=0&modestbranding=1&enablejsapi=1&origin=' + encodeURIComponent(location.origin);
+    if (start > 0) u += '&start=' + start;
+    if (v.idioma && v.idioma !== 'es') u += '&cc_lang_pref=es&cc_load_policy=1';
+    return u;
+  }
+
+  function htmlVideo(v, start) {
+    return '<div class="h-video"><iframe src="' + srcVideo(v, start) + '" title="' + esc(v.titulo || 'Video') + '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>' +
+      (v.pie ? '<p class="h-pie">' + esc(v.pie) + '</p>' : '');
+  }
+
+  function iframeActual() { return hoja.querySelector('.h-video iframe'); }
+
+  function ytPost(obj) {
+    var f = iframeActual();
+    if (!f || !f.contentWindow) return;
+    try { f.contentWindow.postMessage(JSON.stringify(obj), '*'); } catch (e) {}
+  }
+  function ytEscuchar() { ytPost({ event: 'listening', id: 'triggui', channel: 'widget' }); }
+  function ytCmd(func) { ytEscuchar(); ytPost({ event: 'command', func: func, args: [] }); }
+
+  /* un iframe recien puesto: estado limpio + saludo cuando cargue */
+  function montarVideo(v, start) {
+    yt.video = v.id; yt.t = start; yt.t0 = start; yt.estado = -1; yt.play = false; yt.fin = false;
+    var f = iframeActual();
+    if (f) f.addEventListener('load', ytEscuchar);
+  }
+
+  /* guarda la posicion del video actual para esta edicion (fin=true la cierra: vuelve la rotacion) */
+  function marcar(fin) {
+    var it = lista[hojaK]; if (!it || !yt.video) return;
+    if (!fin && yt.fin) return;          /* ya termino: la marca de fin se conserva (vuelve la rotacion) */
+    var m = memLeer();
+    m.marcas[it.id] = { video: yt.video, t: fin ? 0 : Math.floor(yt.t), fin: !!fin, at: Date.now() };
+    memGuardar(m);
+  }
+
+  function ga(nombre, extra) {
+    var it = lista[hojaK];
+    var p = { edicion: it ? it.id : '', video: yt.video };
+    if (extra) { for (var k in extra) { p[k] = extra[k]; } }
+    try { gtag('event', nombre, p); } catch (e) {}
+  }
+
+  /* el player avisa error (borrado, privado, sin incrustar): siguiente candidato, o sin video */
+  function videoMuerto() {
+    var it = lista[hojaK]; if (!it || !yt.video) return;
+    yt.muertos[yt.video] = true;
+    var cont = hoja.querySelector('.h-video'), pie = hoja.querySelector('.h-pie');
+    if (pie && pie.parentNode) pie.parentNode.removeChild(pie);
+    if (!cont || !cont.parentNode) return;
+    var vs = candidatos(it);
+    if (vs.length) {
+      var tmp = document.createElement('div');
+      tmp.innerHTML = htmlVideo(vs[0], 0);
+      while (tmp.firstChild) { cont.parentNode.insertBefore(tmp.firstChild, cont); }
+      cont.parentNode.removeChild(cont);
+      montarVideo(vs[0], 0);
+    } else {
+      cont.parentNode.removeChild(cont);
+      hoja.classList.remove('con-video');
+      yt.video = '';
+    }
+  }
+
+  function ytEstado(estado) {
+    if (typeof estado !== 'number' || estado === yt.estado) return;
+    yt.estado = estado;
+    if (estado === 1) { yt.fin = false; if (!yt.play) { yt.play = true; ga('video_play'); } }
+    if (estado === 2) marcar(false);
+    if (estado === 0) { yt.fin = true; marcar(true); ga('video_fin', { segundos: Math.round(yt.t) }); }
+  }
+
   window.addEventListener('message', function (e) {
     if (!/youtube/.test(String(e.origin))) return;
     var d = null;
     try { d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch (er) { return; }
-    if (!d || !d.info || d.info.playerState !== 1 || videoPlayAvisado) return;
-    videoPlayAvisado = true;
-    var it = lista[hojaK];
-    try { gtag('event', 'video_play', { edicion: it ? it.id : '', video: it ? it.video : '' }); } catch (er) {}
+    if (!d || !d.event) return;
+    if (d.event === 'onError') { videoMuerto(); return; }
+    if (d.event === 'onStateChange') { ytEstado(d.info); return; }
+    var info = d.info;
+    if (!info || typeof info !== 'object') return;
+    if (typeof info.currentTime === 'number') yt.t = info.currentTime;
+    ytEstado(info.playerState);
   });
+
+  window.addEventListener('pagehide', function () { if (hojaAbierta && yt.video) marcar(false); });
 
   function abrirHoja(k) {
     var it = lista[k];
-    if (!(k === hojaK && hoja.querySelector('.h-video iframe'))) {
+    if (!(k === hojaK && iframeActual())) {
+      var mem = memLeer(), visita = mem.visitas[it.id] || 0;
+      var sel = elegirVideo(it, visita);
+      mem.visitas[it.id] = visita + 1; memGuardar(mem);
       var html = '<div class="asa"></div>' +
         '<button class="h-cierra" aria-label="Cerrar">\u2715</button>' +
         '<div class="h-sem">#' + String(it.id).replace('ED-','') + ' \u00b7 ' + esc(fechaLarga(it.semana).toUpperCase()) + '</div>' +
@@ -668,16 +788,15 @@ function iniciarPortal() {
           '</div>' +
         '</div>' +
         (it.hallazgo ? '<p class="h-frase">' + esc(it.hallazgo) + '</p>' : '') +
-        (it.video ? '<div class="h-video"><iframe src="https://www.youtube-nocookie.com/embed/' + esc(it.video) + '?rel=0&modestbranding=1&enablejsapi=1&origin=' + encodeURIComponent(location.origin) + '" title="Video" frameborder="0" allow="accelerometer; autoplay; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>' +
-          (it.pie ? '<p class="h-pie">' + esc(it.pie) + '</p>' : '') : '') +
+        (sel ? htmlVideo(sel.v, sel.start) : '') +
         '<div class="h-fila">' +
           (it.slug ? '<a class="h-ver" href="/t/' + esc(it.slug) + '/">VER LA EDICI\u00d3N \u2192</a>' : '') +
         '</div>';
       hoja.innerHTML = html;
-      hoja.classList.toggle('con-video', !!it.video);
+      hoja.classList.toggle('con-video', !!sel);
       hoja.querySelector('.h-cierra').addEventListener('click', cerrarHoja);
       hojaK = k;
-      videoPlayAvisado = false;
+      if (sel) montarVideo(sel.v, sel.start); else { yt.video = ''; yt.play = false; }
     }
     hojaAbierta = true;
     velo.classList.add('ver');
@@ -688,7 +807,11 @@ function iniciarPortal() {
   }
 
   function cerrarHoja() {
-    ytCmd('pauseVideo');
+    if (yt.video) {
+      ytCmd('pauseVideo');
+      marcar(false);
+      if (yt.play) ga('video_segundos', { segundos: Math.round(yt.t), visto: Math.max(0, Math.round(yt.t - yt.t0)) });
+    }
     hojaAbierta = false;
     velo.classList.remove('ver');
     hoja.classList.remove('ver');
