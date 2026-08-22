@@ -50,12 +50,16 @@ var LS_PAR='triggui_espiral_v1';
 function lsGet(k){try{return window.localStorage.getItem(k);}catch(e){return null;}}
 function lsSet(k,v){try{window.localStorage.setItem(k,v);}catch(e){}}
 function lsDel(k){try{window.localStorage.removeItem(k);}catch(e){}}
-(function(){
+function leerHash(){
   var h=String(window.location.hash||'');
-  if(/[#&]salir(\b|=|$)/.test(h)){lsDel(LS_PAR);try{history.replaceState(null,'',window.location.pathname);}catch(e){}return;}
+  if(/[#&]salir(\b|=|$)/.test(h)){lsDel(LS_PAR);try{history.replaceState(null,'',window.location.pathname);}catch(e){}return 'salir';}
   var m=h.match(/[#&]k=([^&]+)/);
-  if(m&&m[1]){lsSet(LS_PAR,JSON.stringify({c:decodeURIComponent(m[1]).trim()}));try{history.replaceState(null,'',window.location.pathname);}catch(e){}}
-})();
+  if(m&&m[1]){lsSet(LS_PAR,JSON.stringify({c:decodeURIComponent(m[1]).trim()}));try{history.replaceState(null,'',window.location.pathname);}catch(e){}return 'clave';}
+  return '';
+}
+leerHash();
+/* en caliente: si ya estabas dentro y cambias el hash a #salir o #k=, se aplica y se recarga limpio */
+window.addEventListener('hashchange',function(){ if(leerHash()) window.location.reload(); });
 function claveMiembro(){try{var p=JSON.parse(lsGet(LS_PAR)||'null');return (p&&p.c)?String(p.c):'';}catch(e){return '';}}
 function validarClave(clave,cb){
   var cuerpo=new URLSearchParams();cuerpo.append('accion','espiral');cuerpo.append('clave',clave);
