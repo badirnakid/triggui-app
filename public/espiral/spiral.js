@@ -488,6 +488,7 @@ function iniciarPortal() {
   /* ---------- Entrada ---------- */
   var pDown = null;
   var zona = app;
+  var overPx2 = 0;
   zona.style.touchAction = 'none';
   var overPx = 0;
 
@@ -513,10 +514,14 @@ function iniciarPortal() {
     var maxK = Math.max(lista.length - 1, 0);
     var raw = pDown.k + (pDown.y - e.clientY) / dz * 0.32;
     if (raw > maxK) {
-      overPx = (raw - maxK) * dz;
+      overPx = (raw - maxK) * dz; overPx2 = 0;
       camK = maxK;
       if (overPx > 46) avisar('Suelta para actualizar \u21bb', null, 500);
-    } else { overPx = 0; camK = clampCam(raw); }
+    } else if (raw < 0) {
+      overPx2 = (0 - raw) * dz; overPx = 0;
+      camK = 0;
+      if (overPx2 > 46) avisar('Suelta para actualizar \u21bb', null, 500);
+    } else { overPx = 0; overPx2 = 0; camK = clampCam(raw); }
     var dt = ahora - pDown.lt;
     if (dt > 0) vel = ((pDown.ly - e.clientY) / dz) * 0.32 * Math.min(1, 16 / dt);
     pDown.ly = e.clientY; pDown.lt = ahora;
@@ -524,8 +529,8 @@ function iniciarPortal() {
   });
 
   zona.addEventListener('pointerup', function (e) {
-    if (overPx > 84) { avisar('Actualizando\u2026'); setTimeout(function(){ location.reload(); }, 220); return; }
-    overPx = 0;
+    if (overPx > 84 || overPx2 > 84) { avisar('Actualizando\u2026'); setTimeout(function(){ location.reload(); }, 220); return; }
+    overPx = 0; overPx2 = 0;
     if (!pDown) return;
     if (pDown.pres) { pDown.pres.el.classList.remove('pres'); }
     var fueTap = Math.abs(e.clientY - pDown.y) < 7 && Math.abs(e.clientX - pDown.x) < 7 &&
@@ -533,10 +538,13 @@ function iniciarPortal() {
     arrastrando = false; pDown = null;
     svg.classList.remove('arrastrando');
     if (fueTap) {
-      var enFoco = e.target && e.target.closest && e.target.closest('#foco');
-      var enCheck = e.target && e.target.closest && e.target.closest('#f-check');
-      if (enFoco && !enCheck) { abrirHoja(Math.max(0, Math.min(lista.length - 1, Math.round(camK)))); }
-      else if (!tocar(e.clientX, e.clientY)) snap(220);
+      var fr = foco.getBoundingClientRect();
+      var dentroFoco = e.clientX >= fr.left && e.clientX <= fr.right && e.clientY >= fr.top && e.clientY <= fr.bottom;
+      var chk = foco.querySelector('#f-check');
+      var cr = chk ? chk.getBoundingClientRect() : null;
+      var dentroCheck = cr && e.clientX >= cr.left - 6 && e.clientX <= cr.right + 6 && e.clientY >= cr.top - 6 && e.clientY <= cr.bottom + 6;
+      if (dentroFoco && !dentroCheck) { abrirHoja(Math.max(0, Math.min(lista.length - 1, Math.round(camK)))); }
+      else if (!dentroCheck && !tocar(e.clientX, e.clientY)) snap(220);
     }
     else requestAnimationFrame(inercia);
   });
@@ -947,7 +955,7 @@ function iniciarPortal() {
     }
 
     var prev = leerMemoria();
-    var destino = indicePendienteNuevo();
+    var destino = lista.length - 1;
     if (destino < 0) destino = lista.length - 1;
 
     var resueltosNuevos = [], llegadas = [];
