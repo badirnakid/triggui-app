@@ -493,6 +493,7 @@ function iniciarPortal() {
   var overPx = 0;
 
   zona.addEventListener('pointerdown', function (e) {
+    if (hoja.classList.contains('ver')) return;
     if (e.target && e.target.closest && e.target.closest('button, a, #hud-marca')) return;
     if (secuencia) return;
     try { zona.setPointerCapture(e.pointerId); } catch (er) {}
@@ -555,6 +556,7 @@ function iniciarPortal() {
   });
 
   zona.addEventListener('wheel', function (e) {
+    if (hoja.classList.contains('ver')) return;
     if (secuencia) return;
     e.preventDefault();
     ocultarHint();
