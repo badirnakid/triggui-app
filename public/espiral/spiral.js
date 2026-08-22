@@ -628,22 +628,57 @@ function iniciarPortal() {
 
   var ETIQ = { pendiente: 'TE ESPERA', en_curso: 'EN CURSO', resuelto: 'HECHA', pospuesto: 'EN PAUSA' };
 
+  /* v15.2 · Tarjeta sinfonica: cabecera en dos columnas (portada | titulo + voz completa),
+     pie bajo el video, y el video se pausa al cerrar; si reabres la MISMA edicion no se
+     reconstruye el iframe: sigue donde se pauso. */
+  var hojaK = -1;
+
+  function ytCmd(func) {
+    var f = hoja.querySelector('.h-video iframe');
+    if (!f || !f.contentWindow) return;
+    try {
+      f.contentWindow.postMessage(JSON.stringify({ event: 'listening', id: 'triggui', channel: 'widget' }), '*');
+      f.contentWindow.postMessage(JSON.stringify({ event: 'command', func: func, args: [] }), '*');
+    } catch (e) {}
+  }
+
+  /* GA4: primer play del video por apertura de Tarjeta (el player avisa por postMessage) */
+  var videoPlayAvisado = false;
+  window.addEventListener('message', function (e) {
+    if (!/youtube/.test(String(e.origin))) return;
+    var d = null;
+    try { d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch (er) { return; }
+    if (!d || !d.info || d.info.playerState !== 1 || videoPlayAvisado) return;
+    videoPlayAvisado = true;
+    var it = lista[hojaK];
+    try { gtag('event', 'video_play', { edicion: it ? it.id : '', video: it ? it.video : '' }); } catch (er) {}
+  });
+
   function abrirHoja(k) {
     var it = lista[k];
-    var html = '<div class="asa"></div>' +
-      '<button class="h-cierra" aria-label="Cerrar">\u2715</button>' +
-      '<div class="h-sem">#' + String(it.id).replace('ED-','') + ' \u00b7 ' + esc(fechaLarga(it.semana).toUpperCase()) + '</div>' +
-      (it.portada ? '<img class="h-portada" src="' + esc(it.portada) + '" alt="" loading="lazy">' : '') +
-      '<div class="h-libro">' + esc(it.titulo) + '</div>' +
-      (it.voz ? '<p class="h-voz">' + esc(it.voz) + '</p>' : '') +
-      (it.hallazgo ? '<p class="h-frase">' + esc(it.hallazgo) + '</p>' : '') +
-      (it.video ? '<div class="h-video"><iframe src="https://www.youtube-nocookie.com/embed/' + esc(it.video) + '?rel=0&modestbranding=1" title="Video" frameborder="0" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>' : '') +
-      '<div class="h-fila">' +
-        (it.slug ? '<a class="h-ver" href="/t/' + esc(it.slug) + '/">VER LA EDICI\u00d3N \u2192</a>' : '') +
-      '</div>';
-    hoja.innerHTML = html;
-    hoja.classList.toggle('con-video', !!it.video);
-    hoja.querySelector('.h-cierra').addEventListener('click', cerrarHoja);
+    if (!(k === hojaK && hoja.querySelector('.h-video iframe'))) {
+      var html = '<div class="asa"></div>' +
+        '<button class="h-cierra" aria-label="Cerrar">\u2715</button>' +
+        '<div class="h-sem">#' + String(it.id).replace('ED-','') + ' \u00b7 ' + esc(fechaLarga(it.semana).toUpperCase()) + '</div>' +
+        '<div class="h-cab">' +
+          (it.portada ? '<img class="h-portada" src="' + esc(it.portada) + '" alt="" loading="lazy">' : '') +
+          '<div class="h-txt">' +
+            '<div class="h-libro">' + esc(it.titulo) + '</div>' +
+            (it.voz ? '<p class="h-voz">' + esc(it.voz) + '</p>' : '') +
+          '</div>' +
+        '</div>' +
+        (it.hallazgo ? '<p class="h-frase">' + esc(it.hallazgo) + '</p>' : '') +
+        (it.video ? '<div class="h-video"><iframe src="https://www.youtube-nocookie.com/embed/' + esc(it.video) + '?rel=0&modestbranding=1&enablejsapi=1&origin=' + encodeURIComponent(location.origin) + '" title="Video" frameborder="0" allow="accelerometer; autoplay; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>' +
+          (it.pie ? '<p class="h-pie">' + esc(it.pie) + '</p>' : '') : '') +
+        '<div class="h-fila">' +
+          (it.slug ? '<a class="h-ver" href="/t/' + esc(it.slug) + '/">VER LA EDICI\u00d3N \u2192</a>' : '') +
+        '</div>';
+      hoja.innerHTML = html;
+      hoja.classList.toggle('con-video', !!it.video);
+      hoja.querySelector('.h-cierra').addEventListener('click', cerrarHoja);
+      hojaK = k;
+      videoPlayAvisado = false;
+    }
     hojaAbierta = true;
     velo.classList.add('ver');
     hoja.classList.add('ver');
@@ -653,6 +688,7 @@ function iniciarPortal() {
   }
 
   function cerrarHoja() {
+    ytCmd('pauseVideo');
     hojaAbierta = false;
     velo.classList.remove('ver');
     hoja.classList.remove('ver');
