@@ -25,6 +25,8 @@
 .puerta-card button[disabled]{opacity:.6;cursor:default}
 .puerta-pie{margin-top:16px;font-size:11px}
 .puerta-pie a{color:rgba(245,240,232,.5);text-decoration:underline}
+.puerta-cierra{position:fixed;top:calc(14px + env(safe-area-inset-top));right:14px;width:34px;height:34px;border-radius:50%;border:1px solid var(--line,#232838);background:transparent;color:var(--dim,#b8b2a6);font:15px/1 'Manrope',sans-serif;cursor:pointer;z-index:51}
+.puerta-cierra:active{transform:scale(.96)}
 </style>
 <!-- GA4 base (AL) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-CLK554FCNM"></script>
@@ -32,7 +34,7 @@
 </head>
 <body>
 <div id="app"></div>
-<div id="puerta"><div class="puerta-card">
+<div id="puerta"><button class="puerta-cierra" id="puertaCierra" type="button" aria-label="Volver">&#10005;</button><div class="puerta-card">
   <img class="marca" src="./logo-triggui.png" alt="Triggui">
   <h1>La Espiral</h1>
   <p class="sub">El r&iacute;o semanal de ediciones vivas, con sus videos. Es para miembros.</p>
@@ -79,6 +81,10 @@ function puertaAbrir(arrancar){
   }
   btn.onclick=entrar;
   inp.addEventListener('keydown',function(ev){if(ev.key==='Enter')entrar();});
+  document.getElementById('puertaCierra').onclick=function(){
+    try{gtag('event','espiral_puerta',{paso:'volver'});}catch(e){}
+    if(window.history.length>1){window.history.back();}else{window.location.href='/';}
+  };
   setTimeout(function(){try{inp.focus();}catch(e){}},50);
 }
 </script>
