@@ -76,9 +76,12 @@ try{
   if((esRecarga||refEsYo)&&origenGuardado!==null){ORIGEN=origenGuardado;}
   else{ORIGEN=ref;window.sessionStorage.setItem('triggui_espiral_origen',ORIGEN);}
 }catch(e){ORIGEN=String(document.referrer||'');}
+var CERRO=false;   /* la puerta aparecio porque el miembro cerro sesion: su ✕ va al centro, no "atras" */
+try{if(window.sessionStorage.getItem('triggui_espiral_cerro')==='1'){CERRO=true;window.sessionStorage.removeItem('triggui_espiral_cerro');}}catch(e){}
 function volverAlOrigen(){
   var deTriggui=ORIGEN.indexOf(window.location.origin+'/')===0&&ORIGEN.indexOf('/espiral')<0;
-  window.location.replace(deTriggui?ORIGEN:'/');
+  if(!CERRO&&deTriggui&&window.history.length>1){window.history.back();}   /* regreso real: la pantalla anterior como estaba */
+  else{window.location.replace('/');}
 }
 function validarClave(clave,cb){
   var cuerpo=new URLSearchParams();cuerpo.append('accion','espiral');cuerpo.append('clave',clave);
@@ -173,7 +176,7 @@ async function arrancarEspiral(){
   volver.onclick=function(){try{gtag('event','espiral_volver',{});}catch(e){}volverAlOrigen();};
   document.body.appendChild(volver);
   var salir=document.createElement('a'); salir.id='hud-salir'; salir.href='#salir'; salir.textContent='CERRAR SESI\u00d3N'; salir.setAttribute('aria-label','Cerrar sesi\u00f3n');
-  salir.onclick=function(ev){ev.preventDefault();lsDel(LS_PAR);try{gtag('event','espiral_puerta',{paso:'salir'});}catch(e){}window.location.replace(window.location.pathname);};
+  salir.onclick=function(ev){ev.preventDefault();lsDel(LS_PAR);try{window.sessionStorage.setItem('triggui_espiral_cerro','1');}catch(e){}try{gtag('event','espiral_puerta',{paso:'salir'});}catch(e){}window.location.replace(window.location.pathname);};
   document.body.appendChild(salir);
 }
 if(claveMiembro()){arrancarEspiral();}else{puertaAbrir(arrancarEspiral);}
