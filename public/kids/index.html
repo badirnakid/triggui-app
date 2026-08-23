@@ -3781,6 +3781,9 @@ btnShare.onclick = () => {
       return;
     }
     
+    // 🌒 v4.8: en la app (WebView) el enlace navega en la misma vista → foto para volver a ESTA pantalla con la Tarjeta abierta
+    try { if (document.body && document.body.classList.contains('webview') && target.tagName === 'A' && target.getAttribute('href')) window.__trigguiFotoTarjeta(); } catch(_) {}
+    
     // Feedback táctil instantáneo
     try { if(navigator.vibrate) navigator.vibrate(15); } catch(_) {}
     
@@ -3844,7 +3847,19 @@ window.handleCardClick = function(e) {
   window.closeCard();
 }
 
-window.__trigguiVersion = '4.7';
+// 🌒 v4.8: foto del regreso desde la Tarjeta (Buscalibre / 🔮 / Penguin). En la app movil el WebView navega en la misma
+// vista y al volver Android RECARGA la pagina: la foto devuelve la pantalla inmediata anterior, con la Tarjeta abierta.
+window.__trigguiFotoTarjeta = function () {
+  try {
+    if (!libro || !libro.titulo) return false;
+    const __libros = (window.__TRIGGUI_DATA__ && window.__TRIGGUI_DATA__.libros) || [];
+    let __dado = null;
+    try { if (window.__trigguiDado && __libros.length) __dado = window.__trigguiDado.snapshot(); } catch (e) {}
+    sessionStorage.setItem('triggui_regreso', JSON.stringify({ ruta: location.pathname, idx: __libros.indexOf(libro), titulo: libro.titulo, libro: libro, portIdx: (typeof portIdx === 'number') ? portIdx : null, dado: __dado, tarjeta: true, t: Date.now() }));
+    return true;
+  } catch (e) { return false; }
+};
+window.__trigguiVersion = '4.8';
 window.addEventListener('pointerdown', function () { window.__trigguiDownEn = performance.now(); }, true);   // 🌒 v4.5: instante del ultimo gesto
 // 🌒 v4.5: un bloque solo puede abrir la Tarjeta con un gesto NUEVO, iniciado despues del ultimo cierre y al menos 600ms despues
 window.__tarjetaPuedeAbrir = function () { var c = window.__tarjetaCerradaEn || 0; return !c || (performance.now() - c > 600 && (window.__trigguiDownEn || 0) > c); };
@@ -6907,7 +6922,7 @@ async function bootTriggui() {
       refreshGlobalCounter();
       BarraMagica.applyStrings();
       finishBootOnce();
-      track('espiral_regreso', { book: libro.titulo });
+      track(__rg.tarjeta ? 'tarjeta_regreso' : 'espiral_regreso', { book: libro.titulo });
       track('app_loaded', { streak: getLocal('streak',0), books: getLocal('books_opened',0), lang: TriggguiI18n.lang, regreso: true });
       return;
     }
@@ -7007,13 +7022,15 @@ window.__trigguiReponer = function () {
       try { if (__portada && __portada.parentElement) __portada.parentElement.click(); } finally { window.__trigguiRestaurando = false; }
       finishBootOnce();
       document.documentElement.classList.remove('regresando');
-      window.__trigguiRegreso = { idx: __m.idx, titulo: __m.titulo, dado: __m.dado || null };
+      window.__trigguiRegreso = { idx: __m.idx, titulo: __m.titulo, dado: __m.dado || null, tarjeta: !!__m.tarjeta };
       // 🌀 v4.3: un toque al dado antes de que llegue el catalogo no se pierde (se ejecuta al llegar).
       // En window y en captura: corre antes que el handler del dado en document, que detiene la propagacion.
       window.__trigguiDadoPendiente = false;
       window.addEventListener('click', function (ev) {
         if (!(window.__TRIGGUI_DATA__ && window.__TRIGGUI_DATA__.libros) && ev.target && ev.target.closest && ev.target.closest('#otro')) window.__trigguiDadoPendiente = true;
       }, true);
+      // 🌒 v4.8: la Tarjeta estaba abierta al salir (Buscalibre / 🔮 / Penguin): vuelve abierta, sin esperar el catalogo
+      if (__m.tarjeta) setTimeout(function () { try { const __b = document.getElementById('share'); if (__b && libro) __b.click(); } catch (e) {} }, 150);
     } else {
       document.documentElement.classList.remove('regresando');
     }
