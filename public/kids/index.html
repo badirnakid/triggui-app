@@ -7033,7 +7033,7 @@ async function bootTriggui() {
       BarraMagica.applyStrings();
       // v4.15: llegada directa a la barra magica con ?barra=1 (puentes externos), por encima de la foto repuesta; el parametro se limpia.
       if (window.location.search.indexOf('barra=1') >= 0) {
-        setTimeout(() => { try { BarraMagica.openOverlay(true); history.replaceState(null, '', window.location.pathname); } catch (e) {} }, 150);
+        setTimeout(() => { try { history.replaceState(null, '', window.location.pathname); } catch (e) {} try { BarraMagica.openOverlay(true); } catch (e) {} }, 150);
       }
       finishBootOnce();
       track(__rg.tarjeta ? 'tarjeta_regreso' : 'espiral_regreso', { book: libro.titulo });
