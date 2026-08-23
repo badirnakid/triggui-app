@@ -5,12 +5,14 @@
 <script>
 /* 🌀 v4.2: REGRESO desde la espiral — decidido ANTES del primer paint. Si hay foto valida,
    html.regresando deja la barra magica fuera del render en esta carga (la app repone la pantalla). */
-try{var __r=JSON.parse(sessionStorage.getItem('triggui_regreso')||'null');if(__r&&__r.libro&&__r.ruta===location.pathname&&(Date.now()-(__r.t||0))<6*3600*1000){document.documentElement.classList.add('regresando');if(__r.tarjeta){document.documentElement.classList.add('regresando-tarjeta');setTimeout(function(){document.documentElement.classList.remove('regresando-tarjeta');},4000);}}}catch(e){}
+try{var __r=JSON.parse(sessionStorage.getItem('triggui_regreso')||'null');if(__r&&__r.libro&&__r.ruta===location.pathname&&(Date.now()-(__r.t||0))<6*3600*1000){document.documentElement.classList.add('regresando');if(__r.tarjeta){document.documentElement.classList.add('regresando-tarjeta');document.documentElement.classList.add('regresando-fuentes');setTimeout(function(){document.documentElement.classList.remove('regresando-tarjeta');},4000);setTimeout(function(){document.documentElement.classList.remove('regresando-fuentes');},800);}}}catch(e){}
 </script>
 <style id="regreso-css">html.regresando.mood-active #barraMagicaOverlay,html.regresando #barraMagicaOverlay{display:none !important;opacity:0 !important;pointer-events:none !important}
 /* 🌒 v4.9: regreso con la Tarjeta abierta: primer cuadro pintado = la Tarjeta, sin fundidos ni flash de los bloques */
 html.regresando-tarjeta #tarjetaOverlay{opacity:1 !important;transition:none !important}
-html.regresando-tarjeta #tarjetaCard{opacity:1 !important;transform:none !important;transition:none !important}</style>
+html.regresando-tarjeta #tarjetaCard{opacity:1 !important;transform:none !important;transition:none !important}
+/* 🌒 v4.11: cortina de fuentes en el regreso: la tarjeta espera (invisible sobre el fondo negro) a que su tipografia este lista */
+html.regresando-fuentes #tarjetaCard{visibility:hidden !important}</style>
 <script src="/caja.js" defer></script><!-- 📦 caja negra: apagada por defecto; 5 toques en la esquina superior izquierda -->
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=overlays-content">
 <title>Triggui — Cuando el impulso llega, el libro ya te espera</title>
@@ -3864,7 +3866,7 @@ window.__trigguiFotoTarjeta = function () {
     return true;
   } catch (e) { return false; }
 };
-window.__trigguiVersion = '4.10';
+window.__trigguiVersion = '4.11';
 window.addEventListener('pointerdown', function () { window.__trigguiDownEn = performance.now(); }, true);   // 🌒 v4.5: instante del ultimo gesto
 // 🌒 v4.5: un bloque solo puede abrir la Tarjeta con un gesto NUEVO, iniciado despues del ultimo cierre y al menos 600ms despues
 window.__tarjetaPuedeAbrir = function () { var c = window.__tarjetaCerradaEn || 0; return !c || (performance.now() - c > 600 && (window.__trigguiDownEn || 0) > c); };
@@ -7038,6 +7040,25 @@ window.__trigguiReponer = function () {
       if (__m.tarjeta) {
         // 🌒 v4.9: abrir SINCRONO (antes del primer paint): el primer cuadro del regreso ya es la Tarjeta
         try { const __b = document.getElementById('share'); if (__b && libro) __b.click(); } catch (e) {}
+        // 🌒 v4.11: cortina de fuentes — soltar cuando las familias de ESTA tarjeta (son por libro) esten cargadas; tope 350 ms
+        try {
+          const __t0 = performance.now();
+          const __fam = function (sel) { try { const el = document.querySelector(sel); return el ? (getComputedStyle(el).fontFamily || '') : ''; } catch (e) { return ''; } };
+          const __gen = /^(serif|sans-serif|system-ui|monospace|cursive|fantasy|ui-serif|ui-sans-serif|ui-monospace|ui-rounded)$/i;
+          const __objetivo = (__fam('.card-title') + ',' + __fam('.card-body') + ',' + __fam('.card-author'))
+            .split(',').map(function (f) { return f.trim().replace(/^['"]|['"]$/g, ''); })
+            .filter(function (f, i, a) { return f && !__gen.test(f) && !/^-apple|^BlinkMacSystemFont$|^Segoe/i.test(f) && a.indexOf(f) === i; });
+          const __listas = function () {
+            if (!__objetivo.length || !document.fonts) return true;
+            const ok = {};
+            document.fonts.forEach(function (ff) { if (ff.status === 'loaded') ok[String(ff.family).replace(/^['"]|['"]$/g, '')] = true; });
+            for (let i = 0; i < __objetivo.length; i++) { if (!ok[__objetivo[i]]) return false; }
+            return true;
+          };
+          const __quitaF = function () { document.documentElement.classList.remove('regresando-fuentes'); };
+          const __esperaF = function () { if (__listas() || performance.now() - __t0 > 350) __quitaF(); else requestAnimationFrame(__esperaF); };
+          __esperaF();
+        } catch (e) { document.documentElement.classList.remove('regresando-fuentes'); }
         // 🌒 v4.10: misma posicion de lectura que al salir (el congelador que Android no trae): ahora, a los 250 ms y en load
         try {
           const __sc = __m.scroll || 0;
