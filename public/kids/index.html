@@ -3160,19 +3160,68 @@ btnLike.onclick = (e) => {
     track('like_clicked', { book: libro.titulo, streak: rachaActual });
   } catch (err) { console.log("Error enviando like:", err); }
 
-  setTimeout(() => {
-    Modal.show({
-      emoji: '📸', 
-      title: 'Este momento es tuyo', 
-      text: 'Guárdalo. Compártelo.<span class="m-highlight">Cuando el impulso llega, el libro ya te espera</span>',
-      btnText: 'Listo', 
-      onConfirm: () => {}, 
-      showCancel: false
-    });
-  }, 1500);
+  // 😍 v4.14: guardar el combo en la espiral del miembro — mismo sistema que la edición viva
+  try { window.__miGuardarCombo(); } catch (err) { console.log('Error guardando combo:', err); }
 };
 
-// 🌀 v4: quinto boton — a tu espiral (la puerta de miembro vive en /espiral/)
+// ═══════════════════════════════════════════════════════════════════════════
+// 😍 v4.14 — GUARDAR EN MI ESPIRAL (calca del sistema de la edición viva).
+// Mismas llaves (clave/buzón/pendientes) y mismo backend: /mi/ y las ediciones
+// vacían el buzón y casan pendientes solos. La app solo habla el mismo idioma.
+// ═══════════════════════════════════════════════════════════════════════════
+window.__miGuardarCombo = function () {
+  const EXEC_MI = 'https://script.google.com/macros/s/AKfycbwWcUceg333PMcmSsLbEUAsx3os8AJ3Wdmjruv7zshHTqNmoxTastOsDU1h7V8qPk0nIQ/exec';
+  const leer = (k) => { try { const a = JSON.parse(localStorage.getItem(k) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } };
+  const escribir = (k, a, n) => { try { localStorage.setItem(k, JSON.stringify(a.slice(-n))); } catch (e) {} };
+  const clave = (() => { try { const p = JSON.parse(localStorage.getItem('triggui_espiral_v1') || 'null'); return (p && p.c) ? String(p.c) : ''; } catch (e) { return ''; } })();
+  const slug = (libro && libro._slug) || ('app:' + String((libro && libro.titulo) || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''));
+  const payload = {
+    palabras: ((libro && libro.palabras) || []).slice(0, 4),
+    frases: ((libro && libro.frases) || []).slice(0, 4),
+    colores: ((libro && libro.colores) || []).slice(0, 4),
+    textColors: ((libro && libro.textColors) || []).slice(0, 4),
+    autor: (libro && libro.autor) || '',
+    accent: ((libro && libro.colores) || [])[1] || ''
+  };
+  const cuerpo = new URLSearchParams();
+  cuerpo.append('accion', 'marcar');
+  cuerpo.append('slug', slug);
+  cuerpo.append('catalogo', (window.TRIGGUI_MODE === 'kids') ? 'kids' : 'adulto');
+  cuerpo.append('evento', 'combo');
+  cuerpo.append('componente', 'combo');
+  cuerpo.append('titulo', (libro && libro.titulo) || '');
+  cuerpo.append('portada', (libro && libro.portada_url) || '');
+  cuerpo.append('payload', JSON.stringify(payload));
+
+  if (!clave) {
+    const a = leer('triggui_pendiente_v1');
+    a.push({ id: String(Date.now()) + '-' + Math.floor(Math.random() * 100000), q0: cuerpo.toString(), ts: Date.now() });
+    escribir('triggui_pendiente_v1', a, 10);
+    setTimeout(() => { Modal.show({ emoji: '🌀', title: 'Este libro quedó guardado', text: 'Para verlo en tu espiral,<span class="m-highlight">entra con tu clave de miembro.</span>', btnText: 'Conocer mi espiral', onConfirm: () => { window.location.href = '/mi/'; }, showCancel: true }); }, 900);
+    try { track('combo_pendiente', { book: libro.titulo }); } catch (e) {}
+    return;
+  }
+
+  cuerpo.append('clave', clave);
+  const idB = String(Date.now()) + '-' + Math.floor(Math.random() * 100000);
+  const q = cuerpo.toString();
+  const ob = leer('triggui_outbox_v1'); ob.push({ id: idB, q: q, ts: Date.now() }); escribir('triggui_outbox_v1', ob, 20);
+  let resuelto = false;
+  const enCamino = () => { if (resuelto) return; resuelto = true; setTimeout(() => { Modal.show({ emoji: '🌀', title: 'Guardado en camino', text: 'Se entregará solo en tu próxima visita.<span class="m-highlight">Tu espiral lo está esperando.</span>', btnText: 'Ver mi espiral', onConfirm: () => { window.location.href = '/mi/'; }, showCancel: true }); }, 200); };
+  const listo = (ya) => { if (resuelto) return; resuelto = true;
+    escribir('triggui_outbox_v1', leer('triggui_outbox_v1').filter(x => x.id !== idB), 20);
+    setTimeout(() => { Modal.show({ emoji: ya ? '🌀' : '😍', title: ya ? 'Ya vive en tu espiral' : 'Vive en tu espiral', text: '«' + ((libro && libro.titulo) || '') + '» ' + (ya ? 'ya está contigo desde antes.' : 'se quedó contigo: sus palabras, sus frases y su tarjeta.') + '<span class="m-highlight">' + (ya ? 'Tu espiral lo recuerda.' : 'Cuando lo necesites, ahí estará.') + '</span>', btnText: 'Ver mi espiral', onConfirm: () => { window.location.href = '/mi/'; }, showCancel: true }); }, 200);
+    try { track('combo_guardado', { book: libro.titulo, ya: !!ya }); } catch (e) {} };
+  setTimeout(enCamino, 2500);
+  try {
+    fetch(EXEC_MI, { method: 'POST', body: new URLSearchParams(q) })
+      .then(r => r.json())
+      .then(r => { if (r && r.ok) listo(!!r.ya_existia); else enCamino(); })
+      .catch(enCamino);
+  } catch (e) { enCamino(); }
+};
+
+// 🌀 v4.14: quinto boton — al portal del miembro /mi/ (igual que la edición viva); la hélice vive a un toque desde ahí
 if (btnEspiral) {
   btnEspiral.onclick = () => {
     try { track('espiral_clicked', { book: libro ? libro.titulo : '' }); } catch (err) {}
@@ -3189,7 +3238,7 @@ if (btnEspiral) {
         sessionStorage.setItem('triggui_regreso', JSON.stringify({ ruta: location.pathname, idx: __idx, titulo: libro.titulo, libro: libro, portIdx: (typeof portIdx === 'number') ? portIdx : null, dado: __dado, t: Date.now() }));
       }
     } catch (err) {}
-    window.location.href = '/espiral/';
+    window.location.href = '/mi/';
   };
 }
 // 🌀 v4.2: si el navegador restauro la pagina por si mismo (cache de paginas), la foto ya no hace falta.
@@ -3870,7 +3919,7 @@ window.__trigguiFotoTarjeta = function () {
     return true;
   } catch (e) { return false; }
 };
-window.__trigguiVersion = '4.13';
+window.__trigguiVersion = '4.14';
 window.addEventListener('pointerdown', function () { window.__trigguiDownEn = performance.now(); }, true);   // 🌒 v4.5: instante del ultimo gesto
 // 🌒 v4.5: un bloque solo puede abrir la Tarjeta con un gesto NUEVO, iniciado despues del ultimo cierre y al menos 600ms despues
 window.__tarjetaPuedeAbrir = function () { var c = window.__tarjetaCerradaEn || 0; return !c || (performance.now() - c > 600 && (window.__trigguiDownEn || 0) > c); };
