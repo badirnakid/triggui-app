@@ -6851,6 +6851,7 @@ async function bootTriggui() {
 
     // 🌀 v4.2: la pantalla ya fue repuesta antes del catalogo (regreso desde la espiral):
     // re-apuntar el libro al objeto del catalogo, reponer el dado y NO mostrar la barra.
+    try { if (window.__trigguiReponer) window.__trigguiReponer(); } catch(_) {}
     if (window.__trigguiRegreso) {
       const __rg = window.__trigguiRegreso; window.__trigguiRegreso = null;
       let __k = (data.libros[__rg.idx] && data.libros[__rg.idx].titulo === __rg.titulo) ? __rg.idx : data.libros.findIndex(b => b && b.titulo === __rg.titulo);
@@ -6935,34 +6936,41 @@ async function bootTriggui() {
   }
 }
 
-// 🌀 v4.2: REGRESO INMEDIATO — reponer la pantalla recordada ANTES de descargar el catalogo.
+// 🌀 v4.2: REGRESO INMEDIATO — reponer la pantalla recordada sin esperar el catalogo.
+// Corre cuando el documento esta listo (DESPUES del boot-gate, que pone body.booting en DOMContentLoaded)
+// o cuando llega el catalogo, lo que ocurra primero; es idempotente.
 window.__trigguiRegreso = null;
-try {
-  const __m = JSON.parse(sessionStorage.getItem('triggui_regreso') || 'null');
-  if (__m && __m.ruta === location.pathname) sessionStorage.removeItem('triggui_regreso');   // la foto la consume solo su propia ruta
-  if (__m && __m.libro && __m.ruta === location.pathname && typeof __m.idx === 'number' && __m.libro.titulo === __m.titulo && (Date.now() - (__m.t || 0)) < 6 * 3600 * 1000) {
-    libro = __m.libro;
-    render();
-    document.documentElement.classList.remove('mood-active');
-    document.documentElement.classList.remove('booting');
-    document.body.classList.remove('booting');
-    const __ov = document.getElementById('barraMagicaOverlay');
-    if (__ov) { __ov.classList.remove('visible'); __ov.style.display = 'none'; __ov.style.pointerEvents = ''; }
-    try { BarraMagica.markShownToday(); } catch(_) {}
-    const __portada = document.querySelector('#grid .block .portada');
-    window.__trigguiRestaurando = true;
-    try { if (__portada && __portada.parentElement) __portada.parentElement.click(); } finally { window.__trigguiRestaurando = false; }
-    finishBootOnce();
+window.__trigguiReponer = function () {
+  if (window.__trigguiReponer.hecho) return;
+  window.__trigguiReponer.hecho = true;
+  try {
+    const __m = JSON.parse(sessionStorage.getItem('triggui_regreso') || 'null');
+    if (__m && __m.ruta === location.pathname) sessionStorage.removeItem('triggui_regreso');   // la foto la consume solo su propia ruta
+    if (__m && __m.libro && __m.ruta === location.pathname && typeof __m.idx === 'number' && __m.libro.titulo === __m.titulo && (Date.now() - (__m.t || 0)) < 6 * 3600 * 1000) {
+      libro = __m.libro;
+      render();
+      document.documentElement.classList.remove('mood-active');
+      document.documentElement.classList.remove('booting');
+      document.body.classList.remove('booting');
+      const __ov = document.getElementById('barraMagicaOverlay');
+      if (__ov) { __ov.classList.remove('visible'); __ov.style.display = 'none'; __ov.style.pointerEvents = ''; }
+      try { BarraMagica.markShownToday(); } catch(_) {}
+      const __portada = document.querySelector('#grid .block .portada');
+      window.__trigguiRestaurando = true;
+      try { if (__portada && __portada.parentElement) __portada.parentElement.click(); } finally { window.__trigguiRestaurando = false; }
+      finishBootOnce();
+      document.documentElement.classList.remove('regresando');
+      window.__trigguiRegreso = { idx: __m.idx, titulo: __m.titulo, dado: __m.dado || null };
+    } else {
+      document.documentElement.classList.remove('regresando');
+    }
+  } catch (e) {
     document.documentElement.classList.remove('regresando');
-    window.__trigguiRegreso = { idx: __m.idx, titulo: __m.titulo, dado: __m.dado || null };
-  } else {
-    document.documentElement.classList.remove('regresando');
+    window.__trigguiRegreso = null;
+    console.error('[Triggui] regreso inmediato error:', e);
   }
-} catch (e) {
-  document.documentElement.classList.remove('regresando');
-  window.__trigguiRegreso = null;
-  console.error('[Triggui] regreso inmediato error:', e);
-}
+};
+if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', window.__trigguiReponer, { once: true }); } else { window.__trigguiReponer(); }
 bootTriggui();
 </script>
 
