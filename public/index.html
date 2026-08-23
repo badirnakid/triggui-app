@@ -3024,7 +3024,8 @@ function render(){
   // re-invocación desde la barra mágica sin residuos del render anterior.
   revealed = false;
   cardOpenedThisSession = false;
-  portIdx = Math.floor(Math.random() * 4);
+  portIdx = (typeof window.__trigguiPortIdx === 'number' && window.__trigguiPortIdx >= 0 && window.__trigguiPortIdx < 4) ? window.__trigguiPortIdx : Math.floor(Math.random() * 4);   // 🌀 v4.2: al reponer la pantalla, la portada vuelve al bloque donde estaba (valor de una sola vez)
+  window.__trigguiPortIdx = undefined;
   cta.style.display = "none";
   // Reset de estilos inline de botones CTA (los repinta el reveal si aplica)
   ['otro','fisico','share','like'].forEach(id => {
@@ -3168,7 +3169,7 @@ if (btnEspiral) {
       const __idx = __libros.indexOf(libro);
       if (revealed && __idx >= 0) {
         const __dado = (window.__trigguiDado && typeof window.__trigguiDado.snapshot === 'function') ? window.__trigguiDado.snapshot() : null;
-        sessionStorage.setItem('triggui_regreso', JSON.stringify({ ruta: location.pathname, idx: __idx, titulo: libro.titulo, libro: libro, dado: __dado, t: Date.now() }));
+        sessionStorage.setItem('triggui_regreso', JSON.stringify({ ruta: location.pathname, idx: __idx, titulo: libro.titulo, libro: libro, portIdx: (typeof portIdx === 'number') ? portIdx : null, dado: __dado, t: Date.now() }));
       }
     } catch (err) {}
     window.location.href = '/espiral/';
@@ -6948,6 +6949,7 @@ window.__trigguiReponer = function () {
     if (__m && __m.ruta === location.pathname) sessionStorage.removeItem('triggui_regreso');   // la foto la consume solo su propia ruta
     if (__m && __m.libro && __m.ruta === location.pathname && typeof __m.idx === 'number' && __m.libro.titulo === __m.titulo && (Date.now() - (__m.t || 0)) < 6 * 3600 * 1000) {
       libro = __m.libro;
+      if (typeof __m.portIdx === 'number') window.__trigguiPortIdx = __m.portIdx;
       render();
       document.documentElement.classList.remove('mood-active');
       document.documentElement.classList.remove('booting');
