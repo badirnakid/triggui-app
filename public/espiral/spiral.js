@@ -491,6 +491,7 @@ function iniciarPortal() {
   var overPx2 = 0;
   zona.style.touchAction = 'none';
   var overPx = 0;
+  var overDesde = 0;   /* v15.17: instante en que empezo el sobre-arrastre (recargar exige gesto deliberado, no un flick) */
 
   zona.addEventListener('pointerdown', function (e) {
     if (hoja.classList.contains('ver')) return;
@@ -517,12 +518,12 @@ function iniciarPortal() {
     if (raw > maxK) {
       overPx = (raw - maxK) * dz; overPx2 = 0;
       camK = maxK;
-      if (overPx > 46) avisar('Suelta para actualizar \u21bb', null, 500);
+      if (overPx > 46) { if (!overDesde) overDesde = performance.now(); avisar('Suelta para actualizar \u21bb', null, 500); } else overDesde = 0;
     } else if (raw < 0) {
       overPx2 = (0 - raw) * dz; overPx = 0;
       camK = 0;
-      if (overPx2 > 46) avisar('Suelta para actualizar \u21bb', null, 500);
-    } else { overPx = 0; overPx2 = 0; camK = clampCam(raw); }
+      if (overPx2 > 46) { if (!overDesde) overDesde = performance.now(); avisar('Suelta para actualizar \u21bb', null, 500); } else overDesde = 0;
+    } else { overPx = 0; overPx2 = 0; overDesde = 0; camK = clampCam(raw); }
     var dt = ahora - pDown.lt;
     if (dt > 0) vel = ((pDown.ly - e.clientY) / dz) * 0.32 * Math.min(1, 16 / dt);
     pDown.ly = e.clientY; pDown.lt = ahora;
@@ -530,7 +531,10 @@ function iniciarPortal() {
   });
 
   zona.addEventListener('pointerup', function (e) {
-    if (overPx > 84 || overPx2 > 84) { avisar('Actualizando\u2026'); setTimeout(function(){ location.reload(); }, 220); return; }
+    /* v15.17: recargar solo con gesto deliberado: mas de 140px de sobre-arrastre Y sostenido al menos 400ms (un flick no recarga) */
+    var deliberado = (overPx > 140 || overPx2 > 140) && overDesde && (performance.now() - overDesde) > 400;
+    overDesde = 0;
+    if (deliberado) { avisar('Actualizando\u2026'); setTimeout(function(){ location.reload(); }, 220); return; }
     overPx = 0; overPx2 = 0;
     if (!pDown) return;
     if (pDown.pres) { pDown.pres.el.classList.remove('pres'); }

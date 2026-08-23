@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   TRIGGUI · CAJA NEGRA v1 (caja.js)
+   TRIGGUI · CAJA NEGRA v1.1 (caja.js)
    Grabadora de vuelo de la experiencia: toques, estado, errores, red, analitica, navegacion.
    - Apagada por defecto: un lector normal solo tiene un detector de 5 toques en la esquina.
    - Se arma con 5 toques seguidos en la esquina superior izquierda (zona 56x56 px).
@@ -106,11 +106,14 @@
     var x = Math.round(p.clientX || 0), y = Math.round(p.clientY || 0), t = performance.now();
     if (e.type === 'pointerdown') { tDown = t; pDownXY = [x, y]; }
     var extra = '';
-    if (e.type === 'pointerup' || e.type === 'pointercancel') extra = ' dt=' + Math.round(t - tDown) + 'ms' + (pDownXY ? ' mov=' + Math.round(Math.hypot(x - pDownXY[0], y - pDownXY[1])) + 'px' : '');
+    if (e.type === 'pointercancel') { x = pDownXY ? pDownXY[0] : x; y = pDownXY ? pDownXY[1] : y; }   /* cancel llega sin coordenadas */
+    if (e.type === 'pointerup' || e.type === 'pointercancel') extra = ' dt=' + Math.round(t - tDown) + 'ms' + (pDownXY && e.type === 'pointerup' ? ' mov=' + Math.round(Math.hypot(x - pDownXY[0], y - pDownXY[1])) + 'px' : '');
+    if (e.isTrusted === false) extra += ' (js)';
     if (e.type === 'pointerup' || e.type === 'pointercancel' || e.type === 'click') extra += ' est=' + estado();
     anota('toque', e.type + ' ' + nom(e.target) + ' @' + x + ',' + y + (e.pointerType ? ' ' + e.pointerType : '') + extra);
   }
-  ['pointerdown', 'pointerup', 'pointercancel', 'touchstart', 'touchend', 'touchcancel', 'click'].forEach(function (k) { document.addEventListener(k, ev, true); });
+  /* en window y en captura: se ven incluso los clicks que un handler de document detiene con stopImmediatePropagation */
+  ['pointerdown', 'pointerup', 'pointercancel', 'touchstart', 'touchend', 'touchcancel', 'click'].forEach(function (k) { window.addEventListener(k, ev, true); });
 
   window.addEventListener('error', function (e) { anota('ERROR', (e.message || '') + ' @' + String(e.filename || '').split('/').pop() + ':' + e.lineno); });
   window.addEventListener('unhandledrejection', function (e) { anota('ERROR', 'promesa: ' + corto((e.reason && (e.reason.message || e.reason)) || '?', 160)); });
@@ -168,7 +171,11 @@
     envolverTrack(); observarClases();
     if (document.body) document.body.appendChild(catcher);
     if (st.on) { cabecera('PAGINA'); anota('nav', 'DOMContentLoaded +' + Math.round(performance.now()) + 'ms'); }
-    window.addEventListener('load', function () { anota('nav', 'load +' + Math.round(performance.now()) + 'ms'); setTimeout(envolverTrack, 0); });
+    window.addEventListener('load', function () {
+      anota('nav', 'load +' + Math.round(performance.now()) + 'ms'); setTimeout(envolverTrack, 0);
+      /* descargas del arranque (antes de que existiera este envoltorio): tiempos reales de los json */
+      try { (performance.getEntriesByType('resource') || []).forEach(function (r) { if (/\.json|script\.google|triggui-api/.test(r.name)) anota('red', 'arranque ' + corto(r.name.replace(/\?.*$/, ''), 90) + ' ' + Math.round(r.duration) + 'ms' + (r.transferSize ? ' ' + r.transferSize + 'B' : '')); }); } catch (e) {}
+    });
     /* primer pintado util: app = bloques visibles; espiral = foco presente */
     var ini = performance.now(), n = 0;
     (function mira() {

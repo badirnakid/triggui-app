@@ -3168,8 +3168,11 @@ if (btnEspiral) {
     try {
       const __libros = (window.__TRIGGUI_DATA__ && window.__TRIGGUI_DATA__.libros) || [];
       const __idx = __libros.indexOf(libro);
-      if (revealed && __idx >= 0) {
-        const __dado = (window.__trigguiDado && typeof window.__trigguiDado.snapshot === 'function') ? window.__trigguiDado.snapshot() : null;
+      if (revealed && libro && libro.titulo) {
+        // 🌀 v4.3: la foto NO depende del catalogo (puede no haber llegado aun): el titulo es la llave, el indice solo un atajo.
+        let __dado = null;
+        try { if (window.__trigguiDado && __libros.length) __dado = window.__trigguiDado.snapshot(); } catch (e) {}
+        if ((!__dado || !__dado.pool || !__dado.pool.length) && window.__trigguiRegreso && window.__trigguiRegreso.dado) __dado = window.__trigguiRegreso.dado;   // reposicion aun pendiente: conservar la lista del dado
         sessionStorage.setItem('triggui_regreso', JSON.stringify({ ruta: location.pathname, idx: __idx, titulo: libro.titulo, libro: libro, portIdx: (typeof portIdx === 'number') ? portIdx : null, dado: __dado, t: Date.now() }));
       }
     } catch (err) {}
@@ -6873,6 +6876,7 @@ async function bootTriggui() {
       let __k = (data.libros[__rg.idx] && data.libros[__rg.idx].titulo === __rg.titulo) ? __rg.idx : data.libros.findIndex(b => b && b.titulo === __rg.titulo);
       if (__k >= 0) { libro = data.libros[__k]; try { sessionStorage.setItem('lastLibroIdx', String(__k)); } catch(_) {} }
       try { if (window.__trigguiDado) window.__trigguiDado.restore(libro, __rg.dado); } catch(e) { console.error('[Triggui] regreso dado error:', e); }
+      if (window.__trigguiDadoPendiente) { window.__trigguiDadoPendiente = false; setTimeout(() => { try { document.getElementById('otro').click(); } catch (e) {} }, 60); }   // 🌀 v4.3: dado pedido antes del catalogo
       updateBadge();
       refreshGlobalCounter();
       BarraMagica.applyStrings();
@@ -6978,6 +6982,12 @@ window.__trigguiReponer = function () {
       finishBootOnce();
       document.documentElement.classList.remove('regresando');
       window.__trigguiRegreso = { idx: __m.idx, titulo: __m.titulo, dado: __m.dado || null };
+      // 🌀 v4.3: un toque al dado antes de que llegue el catalogo no se pierde (se ejecuta al llegar).
+      // En window y en captura: corre antes que el handler del dado en document, que detiene la propagacion.
+      window.__trigguiDadoPendiente = false;
+      window.addEventListener('click', function (ev) {
+        if (!(window.__TRIGGUI_DATA__ && window.__TRIGGUI_DATA__.libros) && ev.target && ev.target.closest && ev.target.closest('#otro')) window.__trigguiDadoPendiente = true;
+      }, true);
     } else {
       document.documentElement.classList.remove('regresando');
     }
