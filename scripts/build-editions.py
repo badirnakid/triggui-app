@@ -2434,6 +2434,7 @@ bLibro.onclick = abrirTarjeta;
 bEsp.onclick = function(){ window.location.href = '/mi/'; };
 // 🎲 otra edición viva al azar (congruente con el dado de la app). Lista estática /t/ediciones.json.
 bDado.onclick = function(){
+  try{gtag('event','edicion_dado',{});}catch(e){}
   fetch('/t/ediciones.json', { cache: 'no-store' }).then(function(r){ return r.json(); }).then(function(d){
     var kids = window.location.pathname.indexOf('/kids/') === 0;
     var rl = rutaLibro();
@@ -2450,7 +2451,7 @@ bDado.onclick = function(){
     if (n < 2) bDado.style.display = 'none';
   }).catch(function(){ bDado.style.display = 'none'; });
 })();
-bLupa.onclick = function(){ window.location.href = 'https://app.triggui.com'; };
+bLupa.onclick = function(){ try{gtag('event','edicion_lupa',{});}catch(e){} window.location.href = 'https://app.triggui.com/?barra=1'; };
 
 function render(){
   grid.innerHTML = '';
@@ -3008,6 +3009,20 @@ def build_single():
             print(f"🎲 ediciones.json: +{slug} ({_cat}, total {len(_lista[_cat])})")
         else:
             print(f"🎲 ediciones.json: {slug} ya registrado ({_cat})")
+        # 🗺️ sitemap.xml auto: raíz + todas las ediciones de la lista (adulto y kids), lastmod hoy
+        try:
+            import datetime as _dt
+            _urls = ["https://app.triggui.com/"]
+            _urls += [f"https://app.triggui.com/t/{x}/" for x in _lista.get("adulto", [])]
+            _urls += [f"https://app.triggui.com/kids/t/{x}/" for x in _lista.get("kids", [])]
+            _hoy = _dt.date.today().isoformat()
+            _sm = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n"
+            _sm += "".join(f"  <url><loc>{u}</loc><lastmod>{_hoy}</lastmod></url>\n" for u in _urls)
+            _sm += "</urlset>\n"
+            (Path("public") / "sitemap.xml").write_text(_sm, encoding="utf-8")
+            print(f"🗺️ sitemap.xml: {len(_urls)} URLs")
+        except Exception as _e2:
+            print(f"⚠️ sitemap no actualizado: {_e2}")
     except Exception as _e:
         print(f"⚠️ ediciones.json no actualizado: {_e}")
 
