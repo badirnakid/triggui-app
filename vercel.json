@@ -62,6 +62,22 @@
   ],
   "headers": [
     {
+      "source": "/",
+      "headers": [ { "key": "Link", "value": "<https://app.triggui.com/>; rel=\"canonical\"" } ]
+    },
+    {
+      "source": "/kids/",
+      "headers": [ { "key": "Link", "value": "<https://app.triggui.com/kids/>; rel=\"canonical\"" } ]
+    },
+    {
+      "source": "/mi/(.*)",
+      "headers": [ { "key": "X-Robots-Tag", "value": "noindex, nofollow" } ]
+    },
+    {
+      "source": "/espiral/(.*)",
+      "headers": [ { "key": "X-Robots-Tag", "value": "noindex, nofollow" } ]
+    },
+    {
       "source": "/t/:slug/og.png",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=3600, s-maxage=3600" },
