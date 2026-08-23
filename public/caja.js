@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   TRIGGUI · CAJA NEGRA v1.2 (caja.js)
+   TRIGGUI · CAJA NEGRA v1.3 (caja.js)
    Grabadora de vuelo de la experiencia: toques, estado, errores, red, analitica, navegacion.
    - Apagada por defecto: un lector normal solo tiene un detector de 5 toques en la esquina.
    - Se arma con 5 toques seguidos en la esquina superior izquierda (zona 56x56 px).
@@ -45,17 +45,16 @@
   }
 
   /* ---------- armado: 5 toques en la esquina ---------- */
-  var catcher = document.createElement('div');
-  catcher.id = 'caja-zona';
-  catcher.setAttribute('aria-hidden', 'true');
-  catcher.style.cssText = 'position:fixed;top:0;left:0;width:' + ZONA + 'px;height:calc(' + ZONA + 'px + env(safe-area-inset-top));z-index:2147483646;background:transparent;-webkit-tap-highlight-color:transparent;touch-action:manipulation;';
+  /* v1.3: SIN elemento interpuesto. La zona de 56px tapaba la ✕ de la Tarjeta en Android (x≤56, y hasta 56px+inset).
+     Ahora los 5 toques se detectan con el oído pasivo (captura en window) y el toque sigue su camino normal a la app. */
   var toques = [];
-  catcher.addEventListener('pointerdown', function (e) {
-    e.stopPropagation();
+  function toqueEnEsquina(e) {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    if (!(e.clientX <= ZONA && e.clientY <= ZONA + 40)) return;
     var now = Date.now(); toques = toques.filter(function (x) { return now - x < 2500; }); toques.push(now);
     if (toques.length >= 5) { toques = []; if (st.on) { if (panel && panel.style.display !== 'none') panel.style.display = 'none'; else mostrar(); } else armar(); }
-  }, true);
-  catcher.addEventListener('click', function (e) { e.stopPropagation(); e.preventDefault(); }, true);
+  }
+  window.addEventListener('pointerdown', toqueEnEsquina, true);
 
   function armar() {
     st = { on: true, t0: Date.now(), e: [] }; t0 = st.t0; guardar();
@@ -71,7 +70,8 @@
     anota('nav', motivo + ' ' + location.href + ' ref=' + (document.referrer || '-') + ' app=' + (window.__trigguiVersion || '?'));
     var nv = (performance.getEntriesByType && performance.getEntriesByType('navigation')[0]) || null;
     anota('nav', 'tipo=' + (nv ? nv.type : '?') + ' ua=' + navigator.userAgent);
-    anota('nav', 'vp ' + window.innerWidth + 'x' + window.innerHeight + ' dpr ' + window.devicePixelRatio + ' escala ' + (window.visualViewport ? Math.round(window.visualViewport.scale * 100) / 100 : '-') + ' online=' + navigator.onLine + ' html=' + corto(document.documentElement.className, 80) + ' body=' + corto(document.body ? document.body.className : '', 80));
+    var inset = '-'; try { var pr = document.createElement('div'); pr.style.cssText = 'position:fixed;top:0;left:0;padding-top:env(safe-area-inset-top);visibility:hidden;pointer-events:none;'; document.body.appendChild(pr); inset = getComputedStyle(pr).paddingTop; pr.remove(); } catch (e) {}
+    anota('nav', 'vp ' + window.innerWidth + 'x' + window.innerHeight + ' dpr ' + window.devicePixelRatio + ' escala ' + (window.visualViewport ? Math.round(window.visualViewport.scale * 100) / 100 : '-') + ' inset-top=' + inset + ' online=' + navigator.onLine + ' html=' + corto(document.documentElement.className, 80) + ' body=' + corto(document.body ? document.body.className : '', 80));
     anota('estado', estado());
   }
 
@@ -101,7 +101,7 @@
   var tDown = 0, pDownXY = null;
   function ev(e) {
     if (!st.on) return;
-    if (e.target && e.target.closest && (e.target.closest('#caja') || e.target.closest('#caja-zona'))) return;
+    if (e.target && e.target.closest && e.target.closest('#caja')) return;
     var p = (e.touches && e.touches[0]) || (e.changedTouches && e.changedTouches[0]) || e;
     var x = Math.round(p.clientX || 0), y = Math.round(p.clientY || 0), t = performance.now();
     if (e.type === 'pointerdown') { tDown = t; pDownXY = [x, y]; }
@@ -184,7 +184,6 @@
 
   function alListo() {
     envolverTrack(); observarClases();
-    if (document.body) document.body.appendChild(catcher);
     if (st.on) { cabecera('PAGINA'); anota('nav', 'DOMContentLoaded +' + Math.round(performance.now()) + 'ms'); }
     window.addEventListener('load', function () {
       anota('nav', 'load +' + Math.round(performance.now()) + 'ms'); setTimeout(envolverTrack, 0);
