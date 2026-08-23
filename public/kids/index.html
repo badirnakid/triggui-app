@@ -3866,7 +3866,7 @@ window.__trigguiFotoTarjeta = function () {
     return true;
   } catch (e) { return false; }
 };
-window.__trigguiVersion = '4.11';
+window.__trigguiVersion = '4.12';
 window.addEventListener('pointerdown', function () { window.__trigguiDownEn = performance.now(); }, true);   // 🌒 v4.5: instante del ultimo gesto
 // 🌒 v4.5: un bloque solo puede abrir la Tarjeta con un gesto NUEVO, iniciado despues del ultimo cierre y al menos 600ms despues
 window.__tarjetaPuedeAbrir = function () { var c = window.__tarjetaCerradaEn || 0; return !c || (performance.now() - c > 600 && (window.__trigguiDownEn || 0) > c); };
@@ -6694,10 +6694,46 @@ function __triggguiSanitizeAll(obj) {
 window.__TRIGGUI_SANITIZE__ = __triggguiSanitizeAll;
 // ════════════════════════════════════════════════════════════════════════════
 
-async function loadCatalogWithRetry(maxAttempts) {
-  maxAttempts = maxAttempts || 3;
-  // 🌒 v3.8.6 — catalog dinámico según TRIGGUI_MODE
-  const catalogFile = (window.TRIGGUI_MODE === 'kids') ? 'contenido_kids.json' : 'contenido.json';
+// ═══════════════════════════════════════════════════════════════════════════
+// 🗄️ v4.12 — CATALOGO INSTANTANEO (Cache API) con revalidacion silenciosa.
+// El catalogo guardado (menos de 7 dias) se sirve en ~50 ms; el fresco se baja
+// por detras y queda para la SIGUIENTE apertura (sin swaps a media sesion).
+// Compartimento propio ('triggui-catalogo-v1'): no toca racha, libros, contador
+// global ni ningun otro almacen. Si la Cache API falta o falla, el flujo de red
+// de siempre queda intacto (la cache es un atajo, nunca un requisito).
+// ═══════════════════════════════════════════════════════════════════════════
+const __CAT_CACHE = 'triggui-catalogo-v1';
+const __CAT_MAX_MS = 7 * 24 * 3600 * 1000;
+
+async function __catalogoGuardado(catalogFile) {
+  if (!('caches' in window)) return null;
+  const c = await caches.open(__CAT_CACHE);
+  const r = await c.match('/__catalogo/' + catalogFile);
+  if (!r) return null;
+  const t = +(r.headers.get('x-guardado') || 0);
+  if (!t || (Date.now() - t) > __CAT_MAX_MS) return null;
+  const clean = (await r.text()).trim();
+  if (!clean) return null;
+  const data = JSON.parse(clean);
+  if (!data || !Array.isArray(data.libros) || !data.libros.length) return null;
+  console.log('[Triggui] 🗄️ catalogo instantaneo (' + catalogFile + ', guardado hace ' + Math.round((Date.now() - t) / 60000) + ' min)');
+  return data;
+}
+
+function __catalogoGuarda(catalogFile, data) {
+  try {
+    if (!('caches' in window)) return;
+    caches.open(__CAT_CACHE).then(function (c) {
+      return c.put('/__catalogo/' + catalogFile, new Response(JSON.stringify(data), { headers: { 'content-type': 'application/json', 'x-guardado': String(Date.now()) } }));
+    }).catch(function () {});
+  } catch (e) {}
+}
+
+function __catalogoRevalida(catalogFile) {
+  try { __catalogoRed(catalogFile, 1).then(function (data) { __catalogoGuarda(catalogFile, data); }).catch(function () {}); } catch (e) {}
+}
+
+async function __catalogoRed(catalogFile, maxAttempts) {
   const url = "https://raw.githubusercontent.com/badirnakid/triggui-content/main/" + catalogFile + "?ts=" + Date.now();
   let lastErr;
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
@@ -6720,6 +6756,19 @@ async function loadCatalogWithRetry(maxAttempts) {
     }
   }
   throw lastErr || new Error('unknown');
+}
+
+async function loadCatalogWithRetry(maxAttempts) {
+  maxAttempts = maxAttempts || 3;
+  // 🌒 v3.8.6 — catalog dinámico según TRIGGUI_MODE
+  const catalogFile = (window.TRIGGUI_MODE === 'kids') ? 'contenido_kids.json' : 'contenido.json';
+  try {
+    const guardado = await __catalogoGuardado(catalogFile);
+    if (guardado) { __catalogoRevalida(catalogFile); return guardado; }
+  } catch (e) {}
+  const data = await __catalogoRed(catalogFile, maxAttempts);
+  __catalogoGuarda(catalogFile, data);
+  return data;
 }
 
 // ══════════════════════════════════════════════════════════════════════════
