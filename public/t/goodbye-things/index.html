@@ -700,10 +700,79 @@ body::before {
   .silence-screen .sil-pulse { min-height: 100px; }
 }
 </style>
-<script defer src="/_vercel/insights/script.js"></script>
-<!-- GA4 base (AL) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-CLK554FCNM"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-CLK554FCNM');</script>
+<style id="tg-juego">
+/* ══ TG JUEGO: capa gemela del organismo (calco verbatim) ══ */
+#tgCapa{position:fixed;inset:0;z-index:600;background:transparent;overflow:hidden}
+.grid{display:none !important}
+.tg-grid.tg-dim,.tg-cta.tg-dim{opacity:0.25;pointer-events:none;filter:saturate(0.7);transition:opacity 0.5s ease, filter 0.5s ease}
+body{overflow:hidden}
+body.tg-tarjeta .tg-cta{display:none !important}
+#revealOverlay{z-index:900}
+
+.tg-grid{position:absolute;inset:5vh 1.5vw;display:grid;gap:1vw}
+@media(orientation:landscape){.tg-grid{grid-template-columns:repeat(4,1fr)}}
+@media(orientation:portrait){.tg-grid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr)}}
+
+.tg-block{position:relative;display:flex;align-items:center;justify-content:center;padding:1rem;border-radius:24px;font-weight:700;cursor:pointer;background-size:320% 320%;transition:transform 0.25s cubic-bezier(0.25,0.46,0.45,0.94);overflow:hidden;isolation:isolate;touch-action:manipulation;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.15),0 4px 6px rgba(0,0,0,.15),0 12px 32px rgba(0,0,0,.35);animation:tgEnter .52s cubic-bezier(.19,1,.22,1) both}
+.tg-block::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(145deg,rgba(255,255,255,.18) 0%,rgba(255,255,255,.08) 40%,transparent 100%);pointer-events:none;z-index:1}
+.tg-block::after{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(ellipse at 50% 0%,rgba(255,255,255,.12),transparent 60%);pointer-events:none;opacity:0;transition:opacity .3s ease;z-index:0}
+.tg-block:hover::after{opacity:1}
+.tg-block:hover{transform:translateY(-2px) scale(1.005);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.22),0 6px 12px rgba(0,0,0,.2),0 16px 48px rgba(0,0,0,.45)}
+.tg-block:active{transform:translateY(0) scale(0.995);transition:transform .1s cubic-bezier(0.4,0,0.2,1)}
+@keyframes tgEnter{0%{opacity:0;transform:translateY(8px) scale(.992)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes tgHint{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-3px) scale(1.015)}}
+.tg-hint{animation:tgEnter .52s cubic-bezier(.19,1,.22,1) both, tgHint 1.8s ease-in-out 1 2s}
+
+.tg-label,.tg-frase{z-index:2;text-align:center;transition:opacity .25s ease,transform .25s ease;text-shadow:none;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+.tg-label{opacity:1;transform:translateY(0);font-size:clamp(1.05rem,3.2vw,1.7rem);font-weight:700;line-height:1.35;letter-spacing:.2px}
+.tg-frase{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;transform:translateY(6px);font-size:clamp(1rem,3vw,1.5rem);font-weight:600;line-height:1.4;pointer-events:none}
+.tg-block.show .tg-label{opacity:0;transform:translateY(-6px)}
+.tg-block.show .tg-frase{opacity:1;transform:translateY(0);pointer-events:auto}
+
+.tg-portada{position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;padding:1rem;animation:tgPop .6s cubic-bezier(0.34,1.56,0.64,1) forwards;max-height:90%}
+@keyframes tgPop{0%{transform:scale(.85);opacity:0}100%{transform:scale(1);opacity:1}}
+.tg-portada img{max-width:100%;max-height:100%;border-radius:10px;box-shadow:0 14px 40px rgba(0,0,0,.5);pointer-events:none;-webkit-touch-callout:none;-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
+.tg-porttext{text-align:center;color:#fff}
+.tg-porttext h2{font-family:'Playfair Display',serif;font-size:clamp(1.1rem,3.4vw,1.6rem);margin:0 0 6px}
+.tg-porttext p{font-size:.85rem;opacity:.8;margin:0}
+
+.tg-cta{position:fixed;bottom:max(3vh,env(safe-area-inset-bottom,3vh));left:50%;transform:translateX(-50%);z-index:640;display:none;gap:clamp(0.5rem,2vw,0.9rem);justify-content:center}
+.tg-cta button{width:clamp(3.5rem,min(8vw,8vh),4.5rem);height:clamp(3.5rem,min(8vw,8vh),4.5rem);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:clamp(1.5rem,3.5vw,2rem);cursor:pointer;background-size:200% 200%;box-shadow:0 0 0 1px rgba(255,255,255,.15),0 6px 18px rgba(0,0,0,.35);transition:transform .2s cubic-bezier(0.34,1.56,0.64,1);touch-action:manipulation}
+.tg-cta button:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 0 0 1px rgba(255,255,255,.25),0 8px 24px rgba(0,0,0,.45)}
+.tg-cta button:active{transform:translateY(0) scale(0.95);transition:transform .1s ease}
+#tgDado{background:linear-gradient(135deg,#c084fc,#7c3aed);color:#fff}
+#tgEsp{background:linear-gradient(135deg,#5fbfff,#1e90ff);color:#fff}
+#tgLupa{background:linear-gradient(135deg,#b2f8c8,#42d97c);color:#000}
+#tgLibro{background:linear-gradient(135deg,#ff8a00,#ff3d3d);color:#fff}
+#tgLike{background:linear-gradient(135deg,#ff416c,#ff4b2b);color:#fff}
+
+#tgModal{display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;background:rgba(0,0,0,0.92);opacity:0;transition:opacity .3s ease}
+#tgModal.visible{display:flex;opacity:1}
+.tg-mglass{background:linear-gradient(145deg,rgba(30,34,50,0.98),rgba(10,12,20,0.99));border:1px solid rgba(255,255,255,0.14);border-radius:28px;padding:32px;width:88%;max-width:400px;text-align:center;transform:scale(0.92);transition:transform .4s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 30px 80px rgba(0,0,0,0.8),0 0 0 1px rgba(255,255,255,0.08),inset 0 1px 0 rgba(255,255,255,0.15)}
+#tgModal.visible .tg-mglass{transform:scale(1)}
+.tg-memoji{font-size:44px;line-height:1}
+.tg-mtitle{font-family:'Poppins',sans-serif;font-weight:700;font-size:20px;margin:12px 0 6px;color:#fff}
+.tg-mtext{font-size:15px;line-height:1.55;color:rgba(255,255,255,.85)}
+.tg-mtext .hl{display:block;margin-top:10px;color:var(--accent,#42d97c);font-weight:600}
+.tg-mbtns{display:flex;gap:10px;margin-top:22px}
+.tg-btn{flex:1;padding:13px 0;border-radius:14px;border:none;font-family:'Poppins',sans-serif;font-weight:600;font-size:14px;cursor:pointer}
+.tg-bp{background:#fff;color:#111}
+.tg-bs{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.15)}
+
+#tgToast{position:fixed;top:90px;left:50%;transform:translateX(-50%) translateY(-20px);z-index:660;background:rgba(20,24,38,0.98);border:1px solid rgba(255,255,255,0.12);padding:12px 24px;border-radius:16px;font-size:15px;color:#fff;font-weight:600;opacity:0;pointer-events:none;transition:all .3s ease;box-shadow:0 8px 24px rgba(0,0,0,0.4);text-align:center;max-width:80%}
+#tgToast.visible{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.tg-giro{display:inline-block;filter:grayscale(1) brightness(2.6);animation:tgGira .9s linear infinite}
+@keyframes tgGira{to{transform:rotate(360deg)}}
+#tgModal.espera{background:rgba(0,0,0,0.5)}
+#tgModal.espera .tg-mglass{background:transparent;border:none;box-shadow:none;padding:0;width:auto;max-width:none}
+#tgModal.espera .tg-giro{font-size:30px}
+#tgModal.espera .tg-mtitle,#tgModal.espera .tg-mbtns{display:none}
+#tgModal.espera .tg-mtext{display:block;font-size:12px;letter-spacing:.02em;color:rgba(255,255,255,.75);margin:14px 0 0 0}
+#tgModal.espera .tg-mtext .hl{display:none}
+.tg-heart{position:fixed;pointer-events:none;z-index:700;font-size:24px;opacity:0;animation:tgFloatUp 1.2s ease-out forwards;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.3))}
+@keyframes tgFloatUp{0%{transform:translate(0,0) scale(0.5) rotate(0deg);opacity:0}20%{opacity:1;transform:translate(var(--tx),-40px) scale(1.2) rotate(15deg)}100%{opacity:0;transform:translate(var(--tx),-150px) scale(1) rotate(30deg)}}
+</style>
 </head>
 <body data-lab-v="live-edition-card-v3" style="--accent:#E212A1;--marker:#E212A130;--chip-bg:#E212A114;--card-paper:#F7F7F5;--card-ink:#1A1A1A;--card-border:rgba(26,26,26,0.06);--ed-title-size:25.4px;--ed-title-size-mobile:22.8px;--ed-para-size:17.4px;--ed-para-size-mobile:17.0px;--ed-sub-size:17.2px;--ed-sub-size-mobile:16.8px;--ed-chip-size:14.3px;--ed-chip-size-mobile:13.6px;--ed-cover-width:110.0px;--ed-cover-width-mobile:98.0px;">
 
@@ -1408,6 +1477,473 @@ setOverlayView('blocks');
   } catch (e) {
     console.warn('[pulse] preload error:', e && e.message ? e.message : e);
   }
+})();
+</script>
+<div id="tgCapa">
+  <div class="tg-grid" id="tgGrid"></div>
+</div>
+<div class="tg-cta" id="tgCta">
+  <button id="tgDado" aria-label="Otra edici&oacute;n al azar"><span>&#127922;</span></button>
+  <button id="tgLupa" aria-label="Ir a Triggui"><span>&#128269;</span></button>
+  <button id="tgLibro" aria-label="Abrir tarjeta"><span>&#128214;</span></button>
+  <button id="tgLike" aria-label="Guardar en mi espiral"><span>&#128525;</span></button>
+  <button id="tgEsp" aria-label="Tu espiral"><span>&#127744;</span></button>
+</div>
+<div id="tgModal"><div class="tg-mglass"><div class="tg-memoji" id="tgMEmoji">&#10024;</div><div class="tg-mtitle" id="tgMTitle"></div><div class="tg-mtext" id="tgMText"></div><div class="tg-mbtns"><button class="tg-btn tg-bp" id="tgMP"></button><button class="tg-btn tg-bs" id="tgMS"></button></div></div></div>
+<div id="tgToast"></div>
+<script id="tg-juego-js">
+(function(){
+'use strict';
+var st = (typeof state !== 'undefined' && state) ? state : null;
+var capa = document.getElementById('tgCapa');
+if (!st || !capa) { if (capa) capa.style.display = 'none'; return; }
+
+(function(){
+  if (typeof showBocadoEco === 'function') {
+    var __cerNativa = showBocadoEco;
+    showBocadoEco = function(kind, onComplete, roleHints){
+      grid.classList.add('tg-dim');
+      cta.classList.add('tg-dim');
+      return __cerNativa(kind, function(){
+        grid.classList.remove('tg-dim');
+        cta.classList.remove('tg-dim');
+        if (typeof onComplete === 'function') onComplete();
+      }, roleHints);
+    };
+  }
+})();
+
+var EXEC = 'https://script.google.com/macros/s/AKfycbwWcUceg333PMcmSsLbEUAsx3os8AJ3Wdmjruv7zshHTqNmoxTastOsDU1h7V8qPk0nIQ/exec';
+var LS_PAR = 'triggui_espiral_v1';
+
+function fraseTexto(o){
+  if (typeof o === 'string') return o;
+  if (o && typeof o.phrase === 'string') return o.phrase;
+  return '';
+}
+
+var pool = Array.isArray(st.bocadoEcoPool) ? st.bocadoEcoPool : [];
+var L = {
+  palabras: (st.palabras || []).slice(0, 4),
+  frases: (st.frases || []).slice(0, 4),
+  colores: (st.colores || []).slice(0, 4),
+  textColors: (st.textColors || []).slice(0, 4),
+  titulo: st.titulo || '',
+  autor: st.autor || '',
+  portada: st.portada || ''
+};
+// INVARIANTE 4: si falta una frase, rellenar fiel desde el pool (mismo libro)
+(function(){
+  var usadas = {};
+  for (var i = 0; i < 4; i++) if (L.frases[i]) usadas[L.frases[i]] = true;
+  for (var j = 0; j < 4; j++) {
+    if (L.frases[j]) continue;
+    for (var k = 0; k < pool.length; k++) {
+      var t = fraseTexto(pool[k]);
+      if (t && !usadas[t]) { L.frases[j] = t; usadas[t] = true; break; }
+    }
+    if (!L.frases[j]) L.frases[j] = L.frases[0] || '';
+  }
+})();
+
+var ANG = [115, 205, 35, 320];
+function grad(i){ return 'linear-gradient(' + ANG[i % 4] + 'deg,' + L.colores[i] + ',' + L.colores[(i + 1) % 4] + ')'; }
+function isURL(s){ return /^https?:\/\//i.test(s || ''); }
+function luminance(hex){ try { var c = hex.replace('#','').match(/.{1,2}/g).map(function(x){ return parseInt(x,16)/255; }); var f = function(v){ return v <= .03928 ? v/12.92 : Math.pow((v+.055)/1.055,2.4); }; return 0.2126*f(c[0]) + 0.7152*f(c[1]) + 0.0722*f(c[2]); } catch(e){ return 0; } }
+function pickText(bg){ try { return luminance(bg) > 0.35 ? '#000' : '#fff'; } catch(e){ return '#fff'; } }
+
+var grid = document.getElementById('tgGrid');
+var cta = document.getElementById('tgCta');
+var bEsp = document.getElementById('tgEsp');
+var bLupa = document.getElementById('tgLupa');
+var bLibro = document.getElementById('tgLibro');
+var bLike = document.getElementById('tgLike');
+var bDado = document.getElementById('tgDado');
+var revealed = false;
+var portIdx = Math.floor(Math.random() * 4);
+
+var TgModal = {
+  el: document.getElementById('tgModal'),
+  show: function(cfg){
+    document.getElementById('tgMEmoji').innerHTML = cfg.emoji || '✨';
+    document.getElementById('tgMTitle').textContent = cfg.title || 'Triggui';
+    document.getElementById('tgMText').innerHTML = cfg.text || '';
+    var p = document.getElementById('tgMP');
+    var s = document.getElementById('tgMS');
+    if (cfg.btn) {
+      p.style.display = '';
+      p.textContent = cfg.btn;
+      p.onclick = function(){ TgModal.close(); if (cfg.onBtn) cfg.onBtn(); };
+    } else { p.style.display = 'none'; }
+    if (cfg.btn2) {
+      s.style.display = '';
+      s.textContent = cfg.btn2;
+      s.onclick = function(){ TgModal.close(); if (cfg.onBtn2) cfg.onBtn2(); };
+    } else { s.style.display = 'none'; }
+    this.el.style.display = 'flex';
+    var self = this;
+    setTimeout(function(){ self.el.classList.add('visible'); }, 10);
+  },
+  close: function(){
+    var self = this;
+    this.el.classList.remove('visible');
+    this.el.classList.remove('espera');
+    setTimeout(function(){ self.el.style.display = 'none'; }, 300);
+  }
+};
+
+function corazon(x, y){
+  var h = document.createElement('div');
+  h.className = 'tg-heart';
+  h.textContent = ['❤️', '😍', '🔥'][Math.floor(Math.random() * 3)];
+  document.body.appendChild(h);
+  h.style.left = x + 'px';
+  h.style.top = y + 'px';
+  h.style.setProperty('--tx', ((Math.random() - 0.5) * 60) + 'px');
+  setTimeout(function(){ h.remove(); }, 1200);
+}
+
+function buildPort(){
+  var d = document.createElement('div');
+  d.className = 'tg-portada';
+  if (isURL(L.portada)) {
+    var img = new Image();
+    img.src = L.portada;
+    img.loading = 'lazy';
+    d.appendChild(img);
+  } else {
+    var w = document.createElement('div');
+    w.className = 'tg-porttext';
+    var h2 = document.createElement('h2'); h2.textContent = L.titulo;
+    var p = document.createElement('p'); p.textContent = L.autor;
+    w.appendChild(h2); w.appendChild(p);
+    d.appendChild(w);
+  }
+  d.addEventListener('click', function(e){ e.stopPropagation(); abrirTarjeta(); });
+  return d;
+}
+
+function abrirTarjeta(){
+  document.body.classList.add('tg-tarjeta');
+  if (typeof openOverlayFromBlocks === 'function') openOverlayFromBlocks();
+}
+(function(){
+  if (typeof closeOverlayToBlocks === 'function') {
+    var __cerrarNativo = closeOverlayToBlocks;
+    closeOverlayToBlocks = function(){
+      document.body.classList.remove('tg-tarjeta');
+      if ((overlayView === 'card' || overlayView === 'silence') && pool.length) {
+        var velo = document.getElementById('bocadoEcoOverlay');
+        if (velo) velo.classList.add('visible');
+        grid.classList.add('tg-dim');
+        cta.classList.add('tg-dim');
+      }
+      __cerrarNativo();
+    };
+  }
+})();
+bLibro.onclick = abrirTarjeta;
+bEsp.onclick = function(){ window.location.href = '/mi/'; };
+// 🎲 otra edición viva al azar (congruente con el dado de la app). Lista estática /t/ediciones.json.
+bDado.onclick = function(){
+  fetch('/t/ediciones.json', { cache: 'no-store' }).then(function(r){ return r.json(); }).then(function(d){
+    var kids = window.location.pathname.indexOf('/kids/') === 0;
+    var rl = rutaLibro();
+    var lista = ((d && d[kids ? 'kids' : 'adulto']) || []).filter(function(x){ return x && x !== rl.slug; });
+    if (!lista.length) return;
+    var s = lista[Math.floor(Math.random() * lista.length)];
+    window.location.href = (kids ? '/kids/t/' : '/t/') + s + '/';
+  }).catch(function(){});
+};
+(function(){
+  var kids = window.location.pathname.indexOf('/kids/') === 0;
+  fetch('/t/ediciones.json').then(function(r){ return r.json(); }).then(function(d){
+    var n = ((d && d[kids ? 'kids' : 'adulto']) || []).length;
+    if (n < 2) bDado.style.display = 'none';
+  }).catch(function(){ bDado.style.display = 'none'; });
+})();
+bLupa.onclick = function(){ window.location.href = 'https://app.triggui.com'; };
+
+function render(){
+  grid.innerHTML = '';
+  for (var i = 0; i < 4; i++) (function(i){
+    var card = document.createElement('div');
+    card.className = 'tg-block';
+    card.style.background = grad(i);
+    card.style.animationDelay = (40 + i * 50) + 'ms';
+    var label = document.createElement('div');
+    label.className = 'tg-label';
+    label.textContent = L.palabras[i] || '';
+    label.style.color = L.textColors[i] || '#fff';
+    var frase = document.createElement('div');
+    frase.className = 'tg-frase';
+    frase.textContent = L.frases[i] || '';
+    frase.style.color = L.textColors[i] || '#fff';
+    if (i === portIdx) {
+      var port = buildPort();
+      card.appendChild(port); card.appendChild(label); card.appendChild(frase);
+      card.classList.add('tg-hint');
+      card.onclick = function(e){
+        if (!revealed) {
+          label.style.display = 'none';
+          port.style.display = 'flex';
+          var hijos = grid.children;
+          for (var j = 0; j < hijos.length; j++) if (j !== portIdx) hijos[j].classList.add('show');
+          cta.style.display = 'flex';
+          revealed = true;
+          var c = L.colores;
+          bEsp.style.background = 'linear-gradient(135deg,' + c[0] + ',' + c[1] + ')';
+          bLupa.style.background = 'linear-gradient(135deg,' + c[1] + ',' + c[2] + ')';
+          bLibro.style.background = 'linear-gradient(135deg,' + c[2] + ',' + c[3] + ')';
+          bLike.style.background = 'linear-gradient(135deg,#ff416c,#ff4b2b)';
+          bEsp.style.color = pickText(c[0]);
+          bLupa.style.color = pickText(c[1]);
+          bLibro.style.color = pickText(c[2]);
+        } else { e.stopPropagation(); abrirTarjeta(); }
+      };
+    } else {
+      card.appendChild(label); card.appendChild(frase);
+      card.onclick = function(){ card.classList.toggle('show'); };
+    }
+    grid.appendChild(card);
+  })(i);
+}
+
+/* ══ EL COMBO (leyes v7): anti-frases + asiento og[1] + roles ══ */
+function norm(t){
+  return String(t || '').toLowerCase()
+    .replace(/[^0-9a-záéíóúüñ ]/g, '')
+    .replace(/\s+/g, ' ').trim();
+}
+function elegirNotas(){
+  var proh = [];
+  for (var i = 0; i < 4; i++) { var n = norm(L.frases[i]); if (n) proh.push(n); }
+  function choca(t){
+    var n = norm(t);
+    if (!n) return true;
+    for (var k = 0; k < proh.length; k++) {
+      var q = proh[k];
+      if (n === q || n.indexOf(q) >= 0 || q.indexOf(n) >= 0) return true;
+    }
+    return false;
+  }
+  var cand = [];
+  var ogIdx = -1;
+  for (var j = 0; j < pool.length; j++) {
+    var o = pool[j];
+    var esDict = o && typeof o === 'object';
+    var origin = esDict ? String(o.origin || '').toLowerCase() : '';
+    if (origin.indexOf('og') >= 0) {
+      ogIdx++;
+      if (ogIdx === 1) continue; /* asiento impreso */
+    }
+    var t = fraseTexto(o);
+    if (!t || choca(t)) continue;
+    cand.push({ t: t, rol: esDict ? String(o.rol || '').toLowerCase() : '' });
+  }
+  var boc = '', eco = '';
+  for (var a = 0; a < cand.length; a++) {
+    var r = cand[a].rol;
+    if (!boc && (r.indexOf('abrir') >= 0 || r.indexOf('entrada') >= 0 || r.indexOf('profundizar') >= 0)) boc = cand[a].t;
+  }
+  for (var b = cand.length - 1; b >= 0; b--) {
+    var r2 = cand[b].rol;
+    if (!eco && (r2.indexOf('resonar') >= 0 || r2.indexOf('aterrizar') >= 0 || r2.indexOf('salida') >= 0) && norm(cand[b].t) !== norm(boc)) eco = cand[b].t;
+  }
+  if (!boc && cand.length) boc = cand[0].t;
+  if (!eco) for (var d = cand.length - 1; d >= 0; d--) { if (norm(cand[d].t) !== norm(boc)) { eco = cand[d].t; break; } }
+  return { bocado: boc ? boc.slice(0, 220) : '', eco: eco ? eco.slice(0, 220) : '' };
+}
+
+function rutaLibro(){
+  var partes = window.location.pathname.split('/').filter(Boolean);
+  var kids = partes[0] === 'kids';
+  return { catalogo: kids ? 'kids' : 'adulto', slug: (kids ? partes[2] : partes[1]) || '' };
+}
+function claveMiembro(){
+  try { var p = JSON.parse(window.localStorage.getItem(LS_PAR) || 'null'); return (p && p.c) ? String(p.c) : ''; }
+  catch(e){ return ''; }
+}
+
+var OUTBOX = 'triggui_outbox_v1';
+function tgOutboxLeer(){
+  try { var a = JSON.parse(window.localStorage.getItem(OUTBOX) || '[]'); return Array.isArray(a) ? a : []; }
+  catch(e){ return []; }
+}
+function tgOutboxEscribir(a){
+  try { window.localStorage.setItem(OUTBOX, JSON.stringify(a.slice(-20))); } catch(e){}
+}
+function tgOutboxGuardar(id, q){
+  var a = tgOutboxLeer(); a.push({ id: id, q: q, ts: Date.now() }); tgOutboxEscribir(a);
+}
+function tgOutboxQuitar(id){
+  tgOutboxEscribir(tgOutboxLeer().filter(function(x){ return x.id !== id; }));
+}
+var PENDIENTES = 'triggui_pendiente_v1';
+function tgPendLeer(){
+  try { var a = JSON.parse(window.localStorage.getItem(PENDIENTES) || '[]'); return Array.isArray(a) ? a : []; }
+  catch(e){ return []; }
+}
+function tgPendEscribir(a){
+  try { window.localStorage.setItem(PENDIENTES, JSON.stringify(a.slice(-10))); } catch(e){}
+}
+function tgPendGuardar(q0){
+  var a = tgPendLeer();
+  a.push({ id: String(Date.now()) + '-' + Math.floor(Math.random() * 100000), q0: q0, ts: Date.now() });
+  tgPendEscribir(a);
+}
+function tgCasarPendientes(){
+  var k = claveMiembro();
+  if (k) {
+    var a = tgPendLeer();
+    for (var i = 0; i < a.length; i++) {
+      tgOutboxGuardar(a[i].id, a[i].q0 + '&clave=' + encodeURIComponent(k));
+    }
+    if (a.length) tgPendEscribir([]);
+  }
+  tgOutboxVaciar();
+}
+function armarCuerpo(){
+  var notas = elegirNotas();
+  var accent = '';
+  try { accent = (getComputedStyle(document.body).getPropertyValue('--accent') || '').trim(); } catch(e){}
+  var payload = {
+    palabras: L.palabras, frases: L.frases,
+    colores: L.colores, textColors: L.textColors,
+    autor: L.autor, accent: accent || (L.colores[1] || '')
+  };
+  if (notas.bocado) payload.bocado = notas.bocado;
+  if (notas.eco) payload.eco = notas.eco;
+  var rl = rutaLibro();
+  var cuerpo = new URLSearchParams();
+  cuerpo.append('accion', 'marcar');
+  cuerpo.append('slug', rl.slug);
+  cuerpo.append('catalogo', rl.catalogo);
+  cuerpo.append('evento', 'combo');
+  cuerpo.append('componente', 'combo');
+  cuerpo.append('titulo', L.titulo);
+  cuerpo.append('portada', isURL(L.portada) ? L.portada : '');
+  cuerpo.append('payload', JSON.stringify(payload));
+  return cuerpo;
+}
+function tgEnviar(q, ok, mal, lento){
+  var resuelto = false;
+  var cuerpoEnvio = q;
+  try { cuerpoEnvio = new URLSearchParams(q); } catch(e){}
+  var tSusurro = setTimeout(function(){
+    if (!resuelto && typeof lento === 'function') {
+      try { lento(); } catch(x){}
+    }
+  }, 2500);
+  var t = setTimeout(function(){
+    if (!resuelto) {
+      try { console.log('[Triggui buzon] paciencia agotada: aviso, la peticion sigue viva'); } catch(x){}
+      mal();
+    }
+  }, 25000);
+  var p = null;
+  try { p = fetch(EXEC, { method: 'POST', body: cuerpoEnvio }); }
+  catch(e){
+    resuelto = true; clearTimeout(t); clearTimeout(tSusurro);
+    try { console.log('[Triggui buzon] constructor:', e && e.message); } catch(x){}
+    mal(); return;
+  }
+  p.then(function(r){
+     try { window.__tgStatus = r.status; } catch(x){}
+     return r.json();
+   })
+   .then(function(r){
+     resuelto = true; clearTimeout(t); clearTimeout(tSusurro);
+     if (r && r.ok) { ok(r); }
+     else {
+       try { console.log('[Triggui buzon] respuesta no-ok:', JSON.stringify(r)); } catch(x){}
+       mal();
+     }
+   })
+   .catch(function(err){
+     resuelto = true; clearTimeout(t); clearTimeout(tSusurro);
+     try { console.log('[Triggui buzon] fallo:', (err && err.message) || String(err), '| status:', window.__tgStatus); } catch(x){}
+     mal();
+   });
+}
+function tgOutboxVaciar(){
+  var a = tgOutboxLeer();
+  if (!a.length) return;
+  var i = 0;
+  (function paso(){
+    if (i >= a.length) return;
+    var e = a[i++];
+    tgEnviar(e.q, function(){ tgOutboxQuitar(e.id); paso(); }, function(){ paso(); });
+  })();
+}
+
+var likeBusy = false;
+bLike.onclick = function(){
+  var r = bLike.getBoundingClientRect();
+  var cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+  for (var i = 0; i < 8; i++) corazon(cx, cy);
+  if (likeBusy) return;
+  likeBusy = true;
+  setTimeout(function(){ likeBusy = false; }, 1400);
+
+  var k = claveMiembro();
+  if (!k) {
+    tgPendGuardar(armarCuerpo().toString());
+    TgModal.show({
+      emoji: '🌀',
+      title: 'Este libro quedó guardado',
+      text: 'Para verlo en tu espiral,<span class="hl">entra con tu clave de miembro.</span>',
+      btn: 'Conocer mi espiral',
+      onBtn: function(){ window.location.href = '/mi/'; },
+      btn2: 'Ahora no'
+    });
+    return;
+  }
+
+  var cuerpo = armarCuerpo();
+  cuerpo.append('clave', k);
+
+  TgModal.show({ emoji: '<span class="tg-giro">🌀</span>', title: '', text: '' });
+  TgModal.el.classList.add('espera');
+  function completar(em, t, cuerpoTxt){
+    if (!TgModal.el.classList.contains('visible')) return;
+    TgModal.el.classList.remove('espera');
+    document.getElementById('tgMEmoji').innerHTML = em;
+    document.getElementById('tgMTitle').textContent = t;
+    document.getElementById('tgMText').innerHTML = cuerpoTxt;
+    var p = document.getElementById('tgMP');
+    var s = document.getElementById('tgMS');
+    p.style.display = '';
+    p.textContent = 'Ver mi espiral';
+    p.onclick = function(){ TgModal.close(); window.location.href = '/mi/'; };
+    s.style.display = '';
+    s.textContent = 'Seguir aquí';
+    s.onclick = function(){ TgModal.close(); };
+  }
+  var idBuzon = String(Date.now()) + '-' + Math.floor(Math.random() * 100000);
+  var qBuzon = cuerpo.toString();
+  tgOutboxGuardar(idBuzon, qBuzon);
+  tgEnviar(qBuzon, function(res){
+    tgOutboxQuitar(idBuzon);
+    if (res.ya_existia) {
+      completar('🌀', 'Ya vive en tu espiral', '«' + L.titulo + '» ya está contigo desde antes.<span class="hl">Tu espiral lo recuerda.</span>');
+    } else {
+      completar('😍', 'Vive en tu espiral', '«' + L.titulo + '» se quedó contigo: sus palabras, sus frases y su tarjeta.<span class="hl">Cuando lo necesites, ahí estará.</span>');
+    }
+  }, function(){
+    completar('🌀', 'Guardado en camino', 'Se entregará solo en tu próxima visita.<span class="hl">Tu espiral lo está esperando.</span>');
+  }, function(){
+    var mt = document.getElementById('tgMText');
+    if (mt && TgModal.el.classList.contains('espera')) mt.textContent = 'Guardando…';
+  });
+};
+
+if (pool.length) {
+  grid.classList.add('tg-dim');
+  cta.classList.add('tg-dim');
+}
+render();
+tgCasarPendientes();
 })();
 </script>
 </body>
