@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /mi/
+Disallow: /espiral/
+
+Sitemap: https://app.triggui.com/sitemap.xml
