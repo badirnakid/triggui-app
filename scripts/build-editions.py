@@ -1553,6 +1553,7 @@ body.tg-tarjeta .tg-cta{display:none !important}
 .tg-cta button{width:clamp(3.5rem,min(8vw,8vh),4.5rem);height:clamp(3.5rem,min(8vw,8vh),4.5rem);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:clamp(1.5rem,3.5vw,2rem);cursor:pointer;background-size:200% 200%;box-shadow:0 0 0 1px rgba(255,255,255,.15),0 6px 18px rgba(0,0,0,.35);transition:transform .2s cubic-bezier(0.34,1.56,0.64,1);touch-action:manipulation}
 .tg-cta button:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 0 0 1px rgba(255,255,255,.25),0 8px 24px rgba(0,0,0,.45)}
 .tg-cta button:active{transform:translateY(0) scale(0.95);transition:transform .1s ease}
+#tgDado{background:linear-gradient(135deg,#c084fc,#7c3aed);color:#fff}
 #tgEsp{background:linear-gradient(135deg,#5fbfff,#1e90ff);color:#fff}
 #tgLupa{background:linear-gradient(135deg,#b2f8c8,#42d97c);color:#000}
 #tgLibro{background:linear-gradient(135deg,#ff8a00,#ff3d3d);color:#fff}
@@ -2270,10 +2271,11 @@ setOverlayView('blocks');
   <div class="tg-grid" id="tgGrid"></div>
 </div>
 <div class="tg-cta" id="tgCta">
-  <button id="tgEsp" aria-label="Tu espiral"><span>&#127744;</span></button>
+  <button id="tgDado" aria-label="Otra edici&oacute;n al azar"><span>&#127922;</span></button>
   <button id="tgLupa" aria-label="Ir a Triggui"><span>&#128269;</span></button>
   <button id="tgLibro" aria-label="Abrir tarjeta"><span>&#128214;</span></button>
   <button id="tgLike" aria-label="Guardar en mi espiral"><span>&#128525;</span></button>
+  <button id="tgEsp" aria-label="Tu espiral"><span>&#127744;</span></button>
 </div>
 <div id="tgModal"><div class="tg-mglass"><div class="tg-memoji" id="tgMEmoji">&#10024;</div><div class="tg-mtitle" id="tgMTitle"></div><div class="tg-mtext" id="tgMText"></div><div class="tg-mbtns"><button class="tg-btn tg-bp" id="tgMP"></button><button class="tg-btn tg-bs" id="tgMS"></button></div></div></div>
 <div id="tgToast"></div>
@@ -2344,6 +2346,7 @@ var bEsp = document.getElementById('tgEsp');
 var bLupa = document.getElementById('tgLupa');
 var bLibro = document.getElementById('tgLibro');
 var bLike = document.getElementById('tgLike');
+var bDado = document.getElementById('tgDado');
 var revealed = false;
 var portIdx = Math.floor(Math.random() * 4);
 
@@ -2429,6 +2432,24 @@ function abrirTarjeta(){
 })();
 bLibro.onclick = abrirTarjeta;
 bEsp.onclick = function(){ window.location.href = '/mi/'; };
+// 🎲 otra edición viva al azar (congruente con el dado de la app). Lista estática /t/ediciones.json.
+bDado.onclick = function(){
+  fetch('/t/ediciones.json', { cache: 'no-store' }).then(function(r){ return r.json(); }).then(function(d){
+    var kids = window.location.pathname.indexOf('/kids/') === 0;
+    var rl = rutaLibro();
+    var lista = ((d && d[kids ? 'kids' : 'adulto']) || []).filter(function(x){ return x && x !== rl.slug; });
+    if (!lista.length) return;
+    var s = lista[Math.floor(Math.random() * lista.length)];
+    window.location.href = (kids ? '/kids/t/' : '/t/') + s + '/';
+  }).catch(function(){});
+};
+(function(){
+  var kids = window.location.pathname.indexOf('/kids/') === 0;
+  fetch('/t/ediciones.json').then(function(r){ return r.json(); }).then(function(d){
+    var n = ((d && d[kids ? 'kids' : 'adulto']) || []).length;
+    if (n < 2) bDado.style.display = 'none';
+  }).catch(function(){ bDado.style.display = 'none'; });
+})();
 bLupa.onclick = function(){ window.location.href = 'https://app.triggui.com'; };
 
 function render(){
