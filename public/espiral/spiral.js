@@ -771,7 +771,9 @@ function iniciarPortal() {
 
   window.addEventListener('pagehide', function () { if (hojaAbierta && yt.video) marcar(false); });
 
+  var hojaAbiertaEn = 0;   /* v15.15: instante en que abrio la hoja (el velo ignora la cola del mismo toque) */
   function abrirHoja(k) {
+    hojaAbiertaEn = performance.now();
     var it = lista[k];
     if (!(k === hojaK && iframeActual())) {
       var mem = memLeer(), visita = mem.visitas[it.id] || 0;
@@ -819,7 +821,12 @@ function iniciarPortal() {
     tweenCam(Math.round(camK), 300, easeOutCubic, null);
   }
 
-  velo.addEventListener('click', cerrarHoja);
+  velo.addEventListener('click', function () {
+    /* v15.15: la hoja abre en pointerup; Chrome Android dirige el click del MISMO toque al elemento que hay
+       bajo el dedo en ese instante (el velo recien aparecido). Ese click no es una orden de cerrar. */
+    if (performance.now() - hojaAbiertaEn < 450) return;
+    cerrarHoja();
+  });
 
   /* ---------- Palomear del usuario (Triggui) ---------- */
   function leerHechas() {
