@@ -3844,13 +3844,13 @@ window.handleCardClick = function(e) {
   window.closeCard();
 }
 
-window.__trigguiVersion = '4.6';
+window.__trigguiVersion = '4.7';
 window.addEventListener('pointerdown', function () { window.__trigguiDownEn = performance.now(); }, true);   // 🌒 v4.5: instante del ultimo gesto
 // 🌒 v4.5: un bloque solo puede abrir la Tarjeta con un gesto NUEVO, iniciado despues del ultimo cierre y al menos 600ms despues
 window.__tarjetaPuedeAbrir = function () { var c = window.__tarjetaCerradaEn || 0; return !c || (performance.now() - c > 600 && (window.__trigguiDownEn || 0) > c); };
 window.closeCard = function() {
   const overlay = document.getElementById("tarjetaOverlay");
-  window.__tarjetaCerradaEn = performance.now();   // 🌒 v4.4: la cola del mismo gesto no reabre la tarjeta
+  if (overlay.classList.contains('visible')) window.__tarjetaCerradaEn = performance.now();   // 🌒 v4.4/v4.7: reloj del enfriamiento solo en el PRIMER cierre del gesto (los ecos del click tardio no lo reinician)
   overlay.classList.remove('visible');
   try { clearTimeout(window.__tarjetaCierreTimer); } catch(_) {}   // 🌒 v4.5: varios cierres del mismo gesto = un solo apagado
   window.__tarjetaCierreTimer = setTimeout(() => { 
