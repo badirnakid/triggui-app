@@ -8,6 +8,7 @@
 try{var __r=JSON.parse(sessionStorage.getItem('triggui_regreso')||'null');if(__r&&__r.libro&&__r.ruta===location.pathname&&(Date.now()-(__r.t||0))<6*3600*1000)document.documentElement.classList.add('regresando');}catch(e){}
 </script>
 <style id="regreso-css">html.regresando.mood-active #barraMagicaOverlay,html.regresando #barraMagicaOverlay{display:none !important;opacity:0 !important;pointer-events:none !important}</style>
+<script src="/caja.js" defer></script><!-- 📦 caja negra: apagada por defecto; 5 toques en la esquina superior izquierda -->
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=overlays-content">
 <title>Triggui — Cuando el impulso llega, el libro ya te espera</title>
 
@@ -3179,6 +3180,20 @@ if (btnEspiral) {
 window.addEventListener('pageshow', (ev) => {
   if (ev.persisted) { try { sessionStorage.removeItem('triggui_regreso'); } catch (err) {} }
 });
+// 📦 caja negra: estado interno de la app para cada toque grabado (solo lectura)
+window.__cajaEstado = function () {
+  try {
+    const ov = document.getElementById('barraMagicaOverlay'); const cs = ov ? getComputedStyle(ov) : null;
+    const cta = document.getElementById('cta');
+    let dado = null; try { if (window.__trigguiDado) { const s = window.__trigguiDado.snapshot(); dado = { n: s.pool.length, cur: s.cur }; } } catch (e) {}
+    return { libro: libro ? String(libro.titulo).slice(0, 40) : null, rev: !!revealed, port: (typeof portIdx === 'number') ? portIdx : null,
+             mood: document.documentElement.classList.contains('mood-active'),
+             boot: document.documentElement.classList.contains('booting') || !!(document.body && document.body.classList.contains('booting')),
+             reg: document.documentElement.classList.contains('regresando'),
+             barra: cs ? (cs.display + '/' + cs.opacity) : null, datos: !!(window.__TRIGGUI_DATA__ && window.__TRIGGUI_DATA__.libros),
+             show: document.querySelectorAll('#grid .block.show').length, cta: cta ? getComputedStyle(cta).display : null, dado: dado };
+  } catch (e) { return { err: String(e && e.message || e) }; }
+};
 
 function createFloatingHeart(x, y) {
   const heart = document.createElement('div');
