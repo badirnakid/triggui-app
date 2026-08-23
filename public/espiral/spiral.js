@@ -1017,6 +1017,12 @@ function iniciarPortal() {
 
   function espera(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
 
+  /* v15.13 · sonda de estado para diagnostico (solo lectura) */
+  window.__espiralEstado = function () {
+    return { secuencia: secuencia, hoja: hoja.classList.contains('ver'), animando: animando, arrastrando: arrastrando, pDown: !!pDown,
+             camK: Math.round(camK * 100) / 100, n: lista.length, movOk: MOV_OK, ignitando: ignitando, tweenId: tweenId };
+  };
+
   function celebrar(resueltosNuevos, llegadas) {
     secuencia = true;
     foco.classList.add('oculto'); focoK = -1;
