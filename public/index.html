@@ -12,7 +12,11 @@ try{var __r=JSON.parse(sessionStorage.getItem('triggui_regreso')||'null');if(__r
 html.regresando-tarjeta #tarjetaOverlay{opacity:1 !important;transition:none !important}
 html.regresando-tarjeta #tarjetaCard{opacity:1 !important;transform:none !important;transition:none !important}
 /* 🌒 v4.11: cortina de fuentes en el regreso: la tarjeta espera (invisible sobre el fondo negro) a que su tipografia este lista */
-html.regresando-fuentes #tarjetaCard{visibility:hidden !important}</style>
+html.regresando-fuentes #tarjetaCard{visibility:hidden !important}
+/* 🌒 v4.13: la pregunta de la barra aparece UNA vez, ya real (sin placeholder que luego cambia en equipos lentos) */
+#barraQuestion{visibility:hidden}
+#barraQuestion.q-lista{visibility:visible}</style>
+<script>setTimeout(function(){var q=document.getElementById('barraQuestion');if(q)q.classList.add('q-lista');},2500);</script>
 <script src="/caja.js" defer></script><!-- 📦 caja negra: apagada por defecto; 5 toques en la esquina superior izquierda -->
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=overlays-content">
 <title>Triggui — Cuando el impulso llega, el libro ya te espera</title>
@@ -3866,7 +3870,7 @@ window.__trigguiFotoTarjeta = function () {
     return true;
   } catch (e) { return false; }
 };
-window.__trigguiVersion = '4.12';
+window.__trigguiVersion = '4.13';
 window.addEventListener('pointerdown', function () { window.__trigguiDownEn = performance.now(); }, true);   // 🌒 v4.5: instante del ultimo gesto
 // 🌒 v4.5: un bloque solo puede abrir la Tarjeta con un gesto NUEVO, iniciado despues del ultimo cierre y al menos 600ms despues
 window.__tarjetaPuedeAbrir = function () { var c = window.__tarjetaCerradaEn || 0; return !c || (performance.now() - c > 600 && (window.__trigguiDownEn || 0) > c); };
@@ -5890,6 +5894,7 @@ BarraMagica.applyStrings = function() {
   if (eyEl) eyEl.textContent = TriggguiI18n.get('barra.eyebrow');
   // 🌒 v10: pregunta rotatoria. Si pickQuestion falla, fallback al i18n original.
   const seg = BarraMagica.pickQuestion();
+  if (qEl) qEl.classList.add('q-lista');   // 🌒 v4.13: ya es la pregunta real de esta apertura: mostrarla (una vez, sin brincos)
   if (seg && Array.isArray(seg) && seg.length === 3) {
     if (w1El) w1El.textContent = seg[0];
     if (w2El) w2El.textContent = seg[1];
@@ -6362,7 +6367,7 @@ async function switchTrigguiMode(targetMode) {
   if (targetMode === window.TRIGGUI_MODE) return;
   window.__TRIGGUI_SWITCHING__ = true;
 
-  const targetUrl = targetMode === 'kids' ? '/kids/' : '/';
+  const targetUrl = (targetMode === 'kids' ? '/kids/' : '/') + '?v=' + (window.__trigguiVersion || '0');   // 🌒 v4.13: atraviesa el HTML congelado del build viejo de Android (cache por URL exacta)
   const prevMode = window.TRIGGUI_MODE;
   const prevUrl = prevMode === 'kids' ? '/kids/' : '/';
   const grid = document.getElementById('grid');
