@@ -55,16 +55,20 @@ body.hoja-abierta #hud-volver,body.hoja-abierta #hud-salir{display:none}   /* so
 <body>
 <div id="app"></div>
 <style id="puente-css">
-/* 🏠 puente a Guardados: vive en la FILA DEL PIE (entre ← REGRESAR y CERRAR SESIÓN), centro exacto,
-   zona del pulgar, blanco táctil 44px, ancho ≤156px ⇒ huecos ≥11px contra ambos rótulos en 390px.
-   Mismas reglas del pie: desaparece cuando la hoja está abierta (nunca sobre la Tarjeta). */
-#puenteGuardados{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom));z-index:8;display:inline-flex;align-items:center;gap:7px;height:44px;padding:0 16px;border-radius:22px;background:linear-gradient(180deg,rgba(30,34,52,.96),rgba(18,21,34,.96));border:1px solid rgba(255,255,255,.16);box-shadow:0 6px 18px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.08);color:#fff;font:600 12.5px/1 'Poppins',sans-serif;letter-spacing:.02em;text-decoration:none;white-space:nowrap;-webkit-tap-highlight-color:transparent;transition:transform .16s ease,border-color .16s ease}
-#puenteGuardados:active{transform:translateX(-50%) scale(.96)}
-#puenteGuardados:hover{border-color:rgba(255,255,255,.3)}
-#puenteGuardados .pg-e{font-size:16px;line-height:1}
-body.hoja-abierta #puenteGuardados{display:none}
+/* 🏠 puentes de la hélice: en las COLUMNAS LIBRES de las esquinas (garantizadas en todo dispositivo),
+   a 10px exactos sobre ← REGRESAR y CERRAR SESIÓN, alineados a sus mismos bordes (12px).
+   Restricción dura móvil 390px: portada ocupa [138,252] ⇒ cada botón ≤118px ⇒ etiquetas compactas.
+   Mismas reglas del pie: desaparecen cuando la hoja está abierta. Blanco táctil 44px, cápsula r22. */
+.puente-pie{position:fixed;bottom:calc(53px + env(safe-area-inset-bottom));z-index:8;display:inline-flex;align-items:center;gap:6px;box-sizing:border-box;height:44px;padding:0 12px;border-radius:22px;background:linear-gradient(180deg,rgba(30,34,52,.96),rgba(18,21,34,.96));border:1px solid rgba(255,255,255,.16);box-shadow:0 6px 18px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.08);color:#fff;font:600 12px/1 'Poppins',sans-serif;letter-spacing:.02em;text-decoration:none;white-space:nowrap;max-width:118px;-webkit-tap-highlight-color:transparent;transition:transform .16s ease,border-color .16s ease}
+.puente-pie:active{transform:scale(.96)}
+.puente-pie:hover{border-color:rgba(255,255,255,.3)}
+.puente-pie .pg-e{font-size:16px;line-height:1}
+#puenteGuardados{left:12px}
+#puenteBarra{right:12px}
+body.hoja-abierta .puente-pie{display:none}
 </style>
-<a id="puenteGuardados" href="/mi/"><span class="pg-e">&#128525;</span>Ir a guardados</a>
+<a id="puenteGuardados" class="puente-pie" href="/mi/"><span class="pg-e">&#128525;</span>Guardados</a>
+<a id="puenteBarra" class="puente-pie" href="https://app.triggui.com"><span class="pg-e">&#128269;</span>Barra</a>
 <div id="puerta"><div class="puerta-aurora a1"></div><div class="puerta-aurora a2"></div><button class="puerta-cierra" id="puertaCierra" type="button" aria-label="Volver">&#10005;</button><div class="puerta-card">
   <div class="glifo" aria-hidden="true"><span>&#127744;</span></div>
   <h1>Tu espiral</h1>
