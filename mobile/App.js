@@ -28,8 +28,10 @@ import * as SplashScreen from 'expo-splash-screen';
 //      edge-to-edge forzado de SDK 54). Determinístico, se auto-corrige.
 //   2. useWindowDimensions (reactivo) en vez de Dimensions.get (estático) → la
 //      geometría del splash responde a la orientación.
-//   3. Botón "Atrás" visual ELIMINADO. El back nativo de Android queda (BackHandler
-//      → webview.goBack). En iOS, swipe-back nativo (allowsBackForwardNavigationGestures).
+//   3. Botón de regreso ‹ (arriba-izquierda) en iOS Y Android, solo fuera de triggui.com
+//      (isExternal). Hace webview.goBack(); el back nativo de Android (BackHandler) queda.
+//      En Android goBack() RECARGA app.triggui.com: la web (v4.8+) repone la pantalla con
+//      la Tarjeta abierta (foto en sessionStorage), igual que el regreso desde la espiral.
 //   4. Zoom explícito (accesibilidad): setBuiltInZoomControls + scalesPageToFit.
 //   5. cacheMode LOAD_DEFAULT (antes LOAD_CACHE_ELSE_NETWORK) → respeta headers HTTP;
 //      los cambios del web propagan sin republicar la app.
@@ -501,10 +503,10 @@ function AppInner() {
       </View>
 
       {/* ═══════════════════════════════════════════════════════════════════════
-          BOTÓN DE REGRESO — SOLO iOS (Platform.OS === 'ios')
-          iOS no tiene barra de navegación nativa como Android, así que el back
-          visible vive aquí. Android NO lo renderiza (queda con su barra/gesto
-          nativo). Solo aparece cuando isExternal === true (fuera de triggui.com) (o sea, fuera de Triggui:
+          BOTÓN DE REGRESO — iOS Y ANDROID
+          En Android el gesto/botón nativo también funciona (BackHandler), pero el
+          botón visible da el mismo regreso explícito que en iOS.
+          Solo aparece cuando isExternal === true (fuera de triggui.com) (o sea, fuera de Triggui:
           en Buscalibre/Penguin/externos); en el home de Triggui no se ve nada.
           Diseño: círculo translúcido oscuro (contraste sobre cualquier fondo —
           Buscalibre blanco u otro), arriba-izquierda dentro de la safe area
@@ -512,7 +514,7 @@ function AppInner() {
           (allowsBackForwardNavigationGestures) sigue activo como respaldo.
           Va fuera del webviewArea (flota encima del WebView) y antes del splash
           (el splash lo tapa durante el arranque). */}
-      {Platform.OS === 'ios' && isExternal && (
+      {isExternal && (
         <TouchableOpacity
           onPress={() => {
             if (webViewRef.current) webViewRef.current.goBack();
@@ -627,6 +629,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 500,
+    elevation: 6,   // Android: flotar sobre el WebView
   },
   iosBackChevron: {
     color: '#ffffff',
