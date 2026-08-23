@@ -66,8 +66,8 @@ body.hoja-abierta #hud-volver,body.hoja-abierta #hud-salir{display:none}   /* so
 #puenteBarra{right:12px}
 body.hoja-abierta .puente-pie{display:none}
 </style>
-<a id="puenteGuardados" class="puente-pie" href="/mi/" aria-label="Ir a guardados">&#128525;</a>
-<a id="puenteBarra" class="puente-pie" href="https://app.triggui.com/?barra=1" aria-label="Abrir la barra m&aacute;gica">&#128269;</a>
+<a id="puenteGuardados" class="puente-pie" href="/mi/" aria-label="Ir a guardados" onclick="try{gtag('event','puente_guardados',{})}catch(e){}">&#128525;</a>
+<a id="puenteBarra" class="puente-pie" href="https://app.triggui.com/?barra=1" aria-label="Abrir la barra m&aacute;gica" onclick="try{gtag('event','puente_barra',{})}catch(e){}">&#128269;</a>
 <div id="puerta"><div class="puerta-aurora a1"></div><div class="puerta-aurora a2"></div><button class="puerta-cierra" id="puertaCierra" type="button" aria-label="Volver">&#10005;</button><div class="puerta-card">
   <div class="glifo" aria-hidden="true"><span>&#127744;</span></div>
   <h1>Tu espiral</h1>
@@ -75,7 +75,7 @@ body.hoja-abierta .puente-pie{display:none}
   <input id="clave" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="tu clave de miembro">
   <div class="puerta-err" id="puertaErr"></div>
   <button id="entrar" type="button">Entrar</button>
-  <div class="puerta-pie"><a href="https://triggui.com" target="_blank" rel="noopener">&iquest;A&uacute;n no eres miembro?</a></div>
+  <div class="puerta-pie"><a href="mailto:badir@triggui.com?subject=Quiero%20mi%20clave%20de%20Triggui" onclick="try{gtag('event','puerta_manija',{pagina:'espiral'})}catch(e){}">&iquest;Sin clave? Escr&iacute;beme &rarr;</a></div>
 </div><img class="puerta-marca" src="./logo-triggui.png" alt="Triggui"></div>
 <script>
 /* ── PUERTA DE MIEMBRO (v15.4) · misma llave y mismo backend que /mi/ ── */
