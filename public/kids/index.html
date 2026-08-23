@@ -3858,11 +3858,13 @@ window.__trigguiFotoTarjeta = function () {
     const __libros = (window.__TRIGGUI_DATA__ && window.__TRIGGUI_DATA__.libros) || [];
     let __dado = null;
     try { if (window.__trigguiDado && __libros.length) __dado = window.__trigguiDado.snapshot(); } catch (e) {}
-    sessionStorage.setItem('triggui_regreso', JSON.stringify({ ruta: location.pathname, idx: __libros.indexOf(libro), titulo: libro.titulo, libro: libro, portIdx: (typeof portIdx === 'number') ? portIdx : null, dado: __dado, tarjeta: true, t: Date.now() }));
+    let __scroll = 0;
+    try { const __w = document.querySelector('#tarjetaCard .card-content-wrap'); if (__w) __scroll = __w.scrollTop || 0; } catch (e) {}
+    sessionStorage.setItem('triggui_regreso', JSON.stringify({ ruta: location.pathname, idx: __libros.indexOf(libro), titulo: libro.titulo, libro: libro, portIdx: (typeof portIdx === 'number') ? portIdx : null, dado: __dado, tarjeta: true, scroll: __scroll, t: Date.now() }));
     return true;
   } catch (e) { return false; }
 };
-window.__trigguiVersion = '4.9';
+window.__trigguiVersion = '4.10';
 window.addEventListener('pointerdown', function () { window.__trigguiDownEn = performance.now(); }, true);   // 🌒 v4.5: instante del ultimo gesto
 // 🌒 v4.5: un bloque solo puede abrir la Tarjeta con un gesto NUEVO, iniciado despues del ultimo cierre y al menos 600ms despues
 window.__tarjetaPuedeAbrir = function () { var c = window.__tarjetaCerradaEn || 0; return !c || (performance.now() - c > 600 && (window.__trigguiDownEn || 0) > c); };
@@ -7036,6 +7038,14 @@ window.__trigguiReponer = function () {
       if (__m.tarjeta) {
         // 🌒 v4.9: abrir SINCRONO (antes del primer paint): el primer cuadro del regreso ya es la Tarjeta
         try { const __b = document.getElementById('share'); if (__b && libro) __b.click(); } catch (e) {}
+        // 🌒 v4.10: misma posicion de lectura que al salir (el congelador que Android no trae): ahora, a los 250 ms y en load
+        try {
+          const __sc = __m.scroll || 0;
+          if (__sc > 0) {
+            const __pon = function () { try { const __w = document.querySelector('#tarjetaCard .card-content-wrap'); if (__w) __w.scrollTop = __sc; } catch (e) {} };
+            __pon(); setTimeout(__pon, 250); window.addEventListener('load', __pon, { once: true });
+          }
+        } catch (e) {}
         requestAnimationFrame(function () { requestAnimationFrame(function () { document.documentElement.classList.remove('regresando-tarjeta'); }); });
       }
     } else {
