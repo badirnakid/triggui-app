@@ -2989,6 +2989,28 @@ def build_single():
     html_file.write_text(html_content, encoding="utf-8")
     print(f"✅ Edición viva generada: {html_file}")
 
+    # 🎲 auto-registro en la lista del dado (public/t/ediciones.json): la lista se mantiene sola.
+    # Idempotente (sin duplicados); si el archivo falta o está corrupto, arranca limpio; kids por ruta del out_dir.
+    try:
+        import json as _json
+        _lista_path = Path("public") / "t" / "ediciones.json"
+        try:
+            _lista = _json.loads(_lista_path.read_text(encoding="utf-8"))
+            if not isinstance(_lista, dict): raise ValueError
+        except Exception:
+            _lista = {}
+        _lista.setdefault("adulto", []); _lista.setdefault("kids", [])
+        _cat = "kids" if "kids" in str(out_dir) else "adulto"
+        if slug not in _lista[_cat]:
+            _lista[_cat].append(slug)
+            _lista_path.parent.mkdir(parents=True, exist_ok=True)
+            _lista_path.write_text(_json.dumps(_lista, ensure_ascii=False), encoding="utf-8")
+            print(f"🎲 ediciones.json: +{slug} ({_cat}, total {len(_lista[_cat])})")
+        else:
+            print(f"🎲 ediciones.json: {slug} ya registrado ({_cat})")
+    except Exception as _e:
+        print(f"⚠️ ediciones.json no actualizado: {_e}")
+
 
 def main():
     if TMP_BOOK_FILE.exists():
