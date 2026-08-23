@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <script>
-/* 🌀 v4.1: REGRESO desde la espiral — decidido ANTES del primer paint. Si hay recuerdo valido,
-   html.regresando deja la barra magica fuera del render en esta carga (la app restaura el libro). */
-try{var __r=JSON.parse(sessionStorage.getItem('triggui_regreso')||'null');if(__r&&typeof __r.idx==='number'&&(Date.now()-(__r.t||0))<6*3600*1000)document.documentElement.classList.add('regresando');}catch(e){}
+/* 🌀 v4.2: REGRESO desde la espiral — decidido ANTES del primer paint. Si hay foto valida,
+   html.regresando deja la barra magica fuera del render en esta carga (la app repone la pantalla). */
+try{var __r=JSON.parse(sessionStorage.getItem('triggui_regreso')||'null');if(__r&&__r.libro&&__r.ruta===location.pathname&&(Date.now()-(__r.t||0))<6*3600*1000)document.documentElement.classList.add('regresando');}catch(e){}
 </script>
 <style id="regreso-css">html.regresando.mood-active #barraMagicaOverlay,html.regresando #barraMagicaOverlay{display:none !important;opacity:0 !important;pointer-events:none !important}</style>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=overlays-content">
@@ -3104,7 +3104,7 @@ function render(){
 
 // LOGICA ENGAGEMENT - NARRATIVA NIVEL DIOS
 function handleBookReveal() {
-  if (window.__trigguiRestaurando) { updateBadge(); return; }   // 🌀 v4.1: restaurar no cuenta como libro nuevo
+  if (window.__trigguiRestaurando) { updateBadge(); return; }   // 🌀 v4.2: reponer la pantalla no cuenta como libro nuevo
   const booksCount = incrementBooks();
   addConcepts(4); 
   updateBadge();
@@ -3161,17 +3161,20 @@ btnLike.onclick = (e) => {
 if (btnEspiral) {
   btnEspiral.onclick = () => {
     try { track('espiral_clicked', { book: libro ? libro.titulo : '' }); } catch (err) {}
-    // 🌀 v4.1: recordar el libro revelado para restaurarlo al regresar.
-    // iOS suele conservar la pagina (cache de paginas); Android WebView no: ahi el boot lo restaura.
+    // 🌀 v4.2: FOTO del estado de la pantalla para reponerla al regresar (libro revelado + dado).
+    // iOS suele conservar la pagina (cache de paginas); Android WebView no: ahi el boot la repone.
     try {
       const __libros = (window.__TRIGGUI_DATA__ && window.__TRIGGUI_DATA__.libros) || [];
       const __idx = __libros.indexOf(libro);
-      if (revealed && __idx >= 0) sessionStorage.setItem('triggui_regreso', JSON.stringify({ idx: __idx, titulo: libro.titulo, t: Date.now() }));
+      if (revealed && __idx >= 0) {
+        const __dado = (window.__trigguiDado && typeof window.__trigguiDado.snapshot === 'function') ? window.__trigguiDado.snapshot() : null;
+        sessionStorage.setItem('triggui_regreso', JSON.stringify({ ruta: location.pathname, idx: __idx, titulo: libro.titulo, libro: libro, dado: __dado, t: Date.now() }));
+      }
     } catch (err) {}
     window.location.href = '/espiral/';
   };
 }
-// 🌀 v4.1: si el navegador restauro la pagina por si mismo (cache de paginas), el recuerdo ya no hace falta.
+// 🌀 v4.2: si el navegador restauro la pagina por si mismo (cache de paginas), la foto ya no hace falta.
 window.addEventListener('pageshow', (ev) => {
   if (ev.persisted) { try { sessionStorage.removeItem('triggui_regreso'); } catch (err) {} }
 });
@@ -6846,39 +6849,27 @@ async function bootTriggui() {
       return;
     }
 
+    // 🌀 v4.2: la pantalla ya fue repuesta antes del catalogo (regreso desde la espiral):
+    // re-apuntar el libro al objeto del catalogo, reponer el dado y NO mostrar la barra.
+    if (window.__trigguiRegreso) {
+      const __rg = window.__trigguiRegreso; window.__trigguiRegreso = null;
+      let __k = (data.libros[__rg.idx] && data.libros[__rg.idx].titulo === __rg.titulo) ? __rg.idx : data.libros.findIndex(b => b && b.titulo === __rg.titulo);
+      if (__k >= 0) { libro = data.libros[__k]; try { sessionStorage.setItem('lastLibroIdx', String(__k)); } catch(_) {} }
+      try { if (window.__trigguiDado) window.__trigguiDado.restore(libro, __rg.dado); } catch(e) { console.error('[Triggui] regreso dado error:', e); }
+      updateBadge();
+      refreshGlobalCounter();
+      BarraMagica.applyStrings();
+      finishBootOnce();
+      track('espiral_regreso', { book: libro.titulo });
+      track('app_loaded', { streak: getLocal('streak',0), books: getLocal('books_opened',0), lang: TriggguiI18n.lang, regreso: true });
+      return;
+    }
+
     // Elegir libro y aplicar strings al overlay
     libro = data.libros[pickLibroNoRepetido(data.libros)];
     updateBadge();
     refreshGlobalCounter();
     BarraMagica.applyStrings();
-
-    // 🌀 v4.1: REGRESO desde la espiral. Si el lector salio por 🌀 y el navegador no conservo
-    // la pagina, se restaura el mismo libro, revelado, por el mismo camino que un submit.
-    let __regreso = null;
-    try { __regreso = JSON.parse(sessionStorage.getItem('triggui_regreso') || 'null'); sessionStorage.removeItem('triggui_regreso'); } catch(_) {}
-    if (__regreso && typeof __regreso.idx === 'number' && data.libros[__regreso.idx] && data.libros[__regreso.idx].titulo === __regreso.titulo && (Date.now() - (__regreso.t || 0)) < 6 * 3600 * 1000) {
-      libro = data.libros[__regreso.idx];
-      try { sessionStorage.setItem('lastLibroIdx', String(__regreso.idx)); } catch(_) {}
-      try { render(); } catch(e) { console.error('[Triggui] render error:', e); }
-      finishBootOnce();
-      // La barra nunca existio en esta carga: sin fundido ni barra_closed. Solo se retira el estado mood-active.
-      document.documentElement.classList.remove('mood-active');
-      const __ov = document.getElementById('barraMagicaOverlay');
-      if (__ov) { __ov.classList.remove('visible'); __ov.style.display = 'none'; __ov.style.pointerEvents = ''; }
-      try { BarraMagica.markShownToday(); } catch(_) {}
-      try {
-        const __portada = document.querySelector('#grid .block .portada');
-        const __card = __portada ? __portada.parentElement : null;
-        window.__trigguiRestaurando = true;
-        if (__card) __card.click();
-        window.__trigguiRestaurando = false;
-      } catch(e) { window.__trigguiRestaurando = false; console.error('[Triggui] regreso reveal error:', e); }
-      document.documentElement.classList.remove('regresando');
-      track('espiral_regreso', { book: libro.titulo });
-      track('app_loaded', { streak: getLocal('streak',0), books: getLocal('books_opened',0), lang: TriggguiI18n.lang, regreso: true });
-      return;
-    }
-    document.documentElement.classList.remove('regresando');   // sin recuerdo valido: arranque normal con barra
 
     // 🌒 v19: render() ahora puede correr libre. Los .block están display:none
     // por html.mood-active. No hay forma de que sean candidatos a primer paint.
@@ -6944,6 +6935,34 @@ async function bootTriggui() {
   }
 }
 
+// 🌀 v4.2: REGRESO INMEDIATO — reponer la pantalla recordada ANTES de descargar el catalogo.
+window.__trigguiRegreso = null;
+try {
+  const __m = JSON.parse(sessionStorage.getItem('triggui_regreso') || 'null');
+  if (__m && __m.ruta === location.pathname) sessionStorage.removeItem('triggui_regreso');   // la foto la consume solo su propia ruta
+  if (__m && __m.libro && __m.ruta === location.pathname && typeof __m.idx === 'number' && __m.libro.titulo === __m.titulo && (Date.now() - (__m.t || 0)) < 6 * 3600 * 1000) {
+    libro = __m.libro;
+    render();
+    document.documentElement.classList.remove('mood-active');
+    document.documentElement.classList.remove('booting');
+    document.body.classList.remove('booting');
+    const __ov = document.getElementById('barraMagicaOverlay');
+    if (__ov) { __ov.classList.remove('visible'); __ov.style.display = 'none'; __ov.style.pointerEvents = ''; }
+    try { BarraMagica.markShownToday(); } catch(_) {}
+    const __portada = document.querySelector('#grid .block .portada');
+    window.__trigguiRestaurando = true;
+    try { if (__portada && __portada.parentElement) __portada.parentElement.click(); } finally { window.__trigguiRestaurando = false; }
+    finishBootOnce();
+    document.documentElement.classList.remove('regresando');
+    window.__trigguiRegreso = { idx: __m.idx, titulo: __m.titulo, dado: __m.dado || null };
+  } else {
+    document.documentElement.classList.remove('regresando');
+  }
+} catch (e) {
+  document.documentElement.classList.remove('regresando');
+  window.__trigguiRegreso = null;
+  console.error('[Triggui] regreso inmediato error:', e);
+}
 bootTriggui();
 </script>
 
@@ -9608,6 +9627,34 @@ bootTriggui();
   // 🔥 v9: setupRobustBtnOtroHandler corre INMEDIATAMENTE (no necesita DOM)
   // para garantizar que el handler captura clicks desde el primer momento
   setupRobustBtnOtroHandler();
+
+  // 🌀 v4.2: estado del dado para el regreso desde la espiral — foto al salir, reposicion al volver.
+  // Vive aqui porque queryCandidates/queryCurrentIdx/lastCandidatePool son privados de este modulo.
+  window.__trigguiDado = {
+    snapshot: function() {
+      var titulos = [];
+      for (var i = 0; i < queryCandidates.length; i++) { if (queryCandidates[i] && queryCandidates[i].titulo) titulos.push(queryCandidates[i].titulo); }
+      var q = (typeof TrigguiFiltro !== 'undefined' && Array.isArray(TrigguiFiltro._lastQueryTokens)) ? TrigguiFiltro._lastQueryTokens.join(' ') : '';
+      return { pool: titulos, cur: queryCurrentIdx, q: q };
+    },
+    restore: function(libroActual, st) {
+      var libros = (window.__TRIGGUI_DATA__ && window.__TRIGGUI_DATA__.libros) || [];
+      var q = (st && typeof st.q === 'string') ? st.q : '';
+      queryCandidates = []; queryCurrentIdx = 0; rotateActive = false;
+      var pool = (st && Array.isArray(st.pool)) ? st.pool : [];
+      for (var i = 0; i < pool.length; i++) {
+        var t = pool[i], b = null;
+        for (var j = 0; j < libros.length; j++) { if (libros[j] && libros[j].titulo === t) { b = libros[j]; break; } }
+        if (b && queryCandidates.indexOf(b) < 0) queryCandidates.push(b);
+      }
+      var pos = queryCandidates.indexOf(libroActual);
+      if (pos < 0) { queryCandidates.unshift(libroActual); pos = 0; }
+      queryCurrentIdx = pos;
+      try { if (typeof TrigguiFiltro !== 'undefined') TrigguiFiltro._lastQueryTokens = q ? q.split(' ').filter(Boolean) : []; } catch (e) {}
+      try { lastCandidatePool = buildPhrasePool([libroActual], q); } catch (e) { lastCandidatePool = []; }
+      usedInThisSession.clear();
+    }
+  };
 
   waitFor(
     function() {
