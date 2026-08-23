@@ -740,6 +740,7 @@ body.tg-tarjeta .tg-cta{display:none !important}
 .tg-cta button{width:clamp(3.5rem,min(8vw,8vh),4.5rem);height:clamp(3.5rem,min(8vw,8vh),4.5rem);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:clamp(1.5rem,3.5vw,2rem);cursor:pointer;background-size:200% 200%;box-shadow:0 0 0 1px rgba(255,255,255,.15),0 6px 18px rgba(0,0,0,.35);transition:transform .2s cubic-bezier(0.34,1.56,0.64,1);touch-action:manipulation}
 .tg-cta button:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 0 0 1px rgba(255,255,255,.25),0 8px 24px rgba(0,0,0,.45)}
 .tg-cta button:active{transform:translateY(0) scale(0.95);transition:transform .1s ease}
+#tgDado{background:linear-gradient(135deg,#c084fc,#7c3aed);color:#fff}
 #tgEsp{background:linear-gradient(135deg,#5fbfff,#1e90ff);color:#fff}
 #tgLupa{background:linear-gradient(135deg,#b2f8c8,#42d97c);color:#000}
 #tgLibro{background:linear-gradient(135deg,#ff8a00,#ff3d3d);color:#fff}
@@ -766,13 +767,12 @@ body.tg-tarjeta .tg-cta{display:none !important}
 #tgModal.espera{background:rgba(0,0,0,0.5)}
 #tgModal.espera .tg-mglass{background:transparent;border:none;box-shadow:none;padding:0;width:auto;max-width:none}
 #tgModal.espera .tg-giro{font-size:30px}
-#tgModal.espera .tg-mtitle,#tgModal.espera .tg-mtext,#tgModal.espera .tg-mbtns{display:none}
+#tgModal.espera .tg-mtitle,#tgModal.espera .tg-mbtns{display:none}
+#tgModal.espera .tg-mtext{display:block;font-size:12px;letter-spacing:.02em;color:rgba(255,255,255,.75);margin:14px 0 0 0}
+#tgModal.espera .tg-mtext .hl{display:none}
 .tg-heart{position:fixed;pointer-events:none;z-index:700;font-size:24px;opacity:0;animation:tgFloatUp 1.2s ease-out forwards;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.3))}
 @keyframes tgFloatUp{0%{transform:translate(0,0) scale(0.5) rotate(0deg);opacity:0}20%{opacity:1;transform:translate(var(--tx),-40px) scale(1.2) rotate(15deg)}100%{opacity:0;transform:translate(var(--tx),-150px) scale(1) rotate(30deg)}}
 </style>
-<!-- GA4 base (AL) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-CLK554FCNM"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-CLK554FCNM');</script>
 </head>
 <body data-lab-v="live-edition-card-v3" style="--accent:#20E212;--marker:#20E21230;--chip-bg:#20E21214;--card-paper:#F7F7F5;--card-ink:#1A1A1A;--card-border:rgba(26,26,26,0.06);--ed-title-size:25.4px;--ed-title-size-mobile:22.8px;--ed-para-size:17.4px;--ed-para-size-mobile:17.0px;--ed-sub-size:17.2px;--ed-sub-size-mobile:16.8px;--ed-chip-size:14.3px;--ed-chip-size-mobile:13.6px;--ed-cover-width:110.0px;--ed-cover-width-mobile:98.0px;">
 
@@ -1483,10 +1483,11 @@ setOverlayView('blocks');
   <div class="tg-grid" id="tgGrid"></div>
 </div>
 <div class="tg-cta" id="tgCta">
-  <button id="tgEsp" aria-label="Tu espiral"><span>&#127744;</span></button>
+  <button id="tgDado" aria-label="Otra edici&oacute;n al azar"><span>&#127922;</span></button>
   <button id="tgLupa" aria-label="Ir a Triggui"><span>&#128269;</span></button>
   <button id="tgLibro" aria-label="Abrir tarjeta"><span>&#128214;</span></button>
   <button id="tgLike" aria-label="Guardar en mi espiral"><span>&#128525;</span></button>
+  <button id="tgEsp" aria-label="Tu espiral"><span>&#127744;</span></button>
 </div>
 <div id="tgModal"><div class="tg-mglass"><div class="tg-memoji" id="tgMEmoji">&#10024;</div><div class="tg-mtitle" id="tgMTitle"></div><div class="tg-mtext" id="tgMText"></div><div class="tg-mbtns"><button class="tg-btn tg-bp" id="tgMP"></button><button class="tg-btn tg-bs" id="tgMS"></button></div></div></div>
 <div id="tgToast"></div>
@@ -1557,6 +1558,7 @@ var bEsp = document.getElementById('tgEsp');
 var bLupa = document.getElementById('tgLupa');
 var bLibro = document.getElementById('tgLibro');
 var bLike = document.getElementById('tgLike');
+var bDado = document.getElementById('tgDado');
 var revealed = false;
 var portIdx = Math.floor(Math.random() * 4);
 
@@ -1642,6 +1644,24 @@ function abrirTarjeta(){
 })();
 bLibro.onclick = abrirTarjeta;
 bEsp.onclick = function(){ window.location.href = '/mi/'; };
+// 🎲 otra edición viva al azar (congruente con el dado de la app). Lista estática /t/ediciones.json.
+bDado.onclick = function(){
+  fetch('/t/ediciones.json', { cache: 'no-store' }).then(function(r){ return r.json(); }).then(function(d){
+    var kids = window.location.pathname.indexOf('/kids/') === 0;
+    var rl = rutaLibro();
+    var lista = ((d && d[kids ? 'kids' : 'adulto']) || []).filter(function(x){ return x && x !== rl.slug; });
+    if (!lista.length) return;
+    var s = lista[Math.floor(Math.random() * lista.length)];
+    window.location.href = (kids ? '/kids/t/' : '/t/') + s + '/';
+  }).catch(function(){});
+};
+(function(){
+  var kids = window.location.pathname.indexOf('/kids/') === 0;
+  fetch('/t/ediciones.json').then(function(r){ return r.json(); }).then(function(d){
+    var n = ((d && d[kids ? 'kids' : 'adulto']) || []).length;
+    if (n < 2) bDado.style.display = 'none';
+  }).catch(function(){ bDado.style.display = 'none'; });
+})();
 bLupa.onclick = function(){ window.location.href = 'https://app.triggui.com'; };
 
 function render(){
@@ -1759,13 +1779,92 @@ function tgOutboxGuardar(id, q){
 function tgOutboxQuitar(id){
   tgOutboxEscribir(tgOutboxLeer().filter(function(x){ return x.id !== id; }));
 }
-function tgEnviar(q, ok, mal){
-  var ctrl = null, t = null;
-  try { ctrl = new AbortController(); t = setTimeout(function(){ ctrl.abort(); }, 8000); } catch(e){}
-  fetch(EXEC, { method: 'POST', body: q, keepalive: true, signal: ctrl ? ctrl.signal : undefined })
-    .then(function(r){ return r.json(); })
-    .then(function(r){ if (t) clearTimeout(t); if (r && r.ok) ok(r); else mal(); })
-    .catch(function(){ if (t) clearTimeout(t); mal(); });
+var PENDIENTES = 'triggui_pendiente_v1';
+function tgPendLeer(){
+  try { var a = JSON.parse(window.localStorage.getItem(PENDIENTES) || '[]'); return Array.isArray(a) ? a : []; }
+  catch(e){ return []; }
+}
+function tgPendEscribir(a){
+  try { window.localStorage.setItem(PENDIENTES, JSON.stringify(a.slice(-10))); } catch(e){}
+}
+function tgPendGuardar(q0){
+  var a = tgPendLeer();
+  a.push({ id: String(Date.now()) + '-' + Math.floor(Math.random() * 100000), q0: q0, ts: Date.now() });
+  tgPendEscribir(a);
+}
+function tgCasarPendientes(){
+  var k = claveMiembro();
+  if (k) {
+    var a = tgPendLeer();
+    for (var i = 0; i < a.length; i++) {
+      tgOutboxGuardar(a[i].id, a[i].q0 + '&clave=' + encodeURIComponent(k));
+    }
+    if (a.length) tgPendEscribir([]);
+  }
+  tgOutboxVaciar();
+}
+function armarCuerpo(){
+  var notas = elegirNotas();
+  var accent = '';
+  try { accent = (getComputedStyle(document.body).getPropertyValue('--accent') || '').trim(); } catch(e){}
+  var payload = {
+    palabras: L.palabras, frases: L.frases,
+    colores: L.colores, textColors: L.textColors,
+    autor: L.autor, accent: accent || (L.colores[1] || '')
+  };
+  if (notas.bocado) payload.bocado = notas.bocado;
+  if (notas.eco) payload.eco = notas.eco;
+  var rl = rutaLibro();
+  var cuerpo = new URLSearchParams();
+  cuerpo.append('accion', 'marcar');
+  cuerpo.append('slug', rl.slug);
+  cuerpo.append('catalogo', rl.catalogo);
+  cuerpo.append('evento', 'combo');
+  cuerpo.append('componente', 'combo');
+  cuerpo.append('titulo', L.titulo);
+  cuerpo.append('portada', isURL(L.portada) ? L.portada : '');
+  cuerpo.append('payload', JSON.stringify(payload));
+  return cuerpo;
+}
+function tgEnviar(q, ok, mal, lento){
+  var resuelto = false;
+  var cuerpoEnvio = q;
+  try { cuerpoEnvio = new URLSearchParams(q); } catch(e){}
+  var tSusurro = setTimeout(function(){
+    if (!resuelto && typeof lento === 'function') {
+      try { lento(); } catch(x){}
+    }
+  }, 2500);
+  var t = setTimeout(function(){
+    if (!resuelto) {
+      try { console.log('[Triggui buzon] paciencia agotada: aviso, la peticion sigue viva'); } catch(x){}
+      mal();
+    }
+  }, 25000);
+  var p = null;
+  try { p = fetch(EXEC, { method: 'POST', body: cuerpoEnvio }); }
+  catch(e){
+    resuelto = true; clearTimeout(t); clearTimeout(tSusurro);
+    try { console.log('[Triggui buzon] constructor:', e && e.message); } catch(x){}
+    mal(); return;
+  }
+  p.then(function(r){
+     try { window.__tgStatus = r.status; } catch(x){}
+     return r.json();
+   })
+   .then(function(r){
+     resuelto = true; clearTimeout(t); clearTimeout(tSusurro);
+     if (r && r.ok) { ok(r); }
+     else {
+       try { console.log('[Triggui buzon] respuesta no-ok:', JSON.stringify(r)); } catch(x){}
+       mal();
+     }
+   })
+   .catch(function(err){
+     resuelto = true; clearTimeout(t); clearTimeout(tSusurro);
+     try { console.log('[Triggui buzon] fallo:', (err && err.message) || String(err), '| status:', window.__tgStatus); } catch(x){}
+     mal();
+   });
 }
 function tgOutboxVaciar(){
   var a = tgOutboxLeer();
@@ -1789,10 +1888,11 @@ bLike.onclick = function(){
 
   var k = claveMiembro();
   if (!k) {
+    tgPendGuardar(armarCuerpo().toString());
     TgModal.show({
       emoji: '🌀',
-      title: 'Tu espiral te espera',
-      text: 'Los libros que te llegan pueden quedarse contigo. La Espiral es el espacio privado de los miembros Triggui.<span class="hl">Un lugar solo tuyo.</span>',
+      title: 'Este libro quedó guardado',
+      text: 'Para verlo en tu espiral,<span class="hl">entra con tu clave de miembro.</span>',
       btn: 'Conocer mi espiral',
       onBtn: function(){ window.location.href = '/mi/'; },
       btn2: 'Ahora no'
@@ -1800,28 +1900,8 @@ bLike.onclick = function(){
     return;
   }
 
-  var notas = elegirNotas();
-  var accent = '';
-  try { accent = (getComputedStyle(document.body).getPropertyValue('--accent') || '').trim(); } catch(e){}
-  var payload = {
-    palabras: L.palabras, frases: L.frases,
-    colores: L.colores, textColors: L.textColors,
-    autor: L.autor, accent: accent || (L.colores[1] || '')
-  };
-  if (notas.bocado) payload.bocado = notas.bocado;
-  if (notas.eco) payload.eco = notas.eco;
-
-  var rl = rutaLibro();
-  var cuerpo = new URLSearchParams();
-  cuerpo.append('accion', 'marcar');
+  var cuerpo = armarCuerpo();
   cuerpo.append('clave', k);
-  cuerpo.append('slug', rl.slug);
-  cuerpo.append('catalogo', rl.catalogo);
-  cuerpo.append('evento', 'combo');
-  cuerpo.append('componente', 'combo');
-  cuerpo.append('titulo', L.titulo);
-  cuerpo.append('portada', isURL(L.portada) ? L.portada : '');
-  cuerpo.append('payload', JSON.stringify(payload));
 
   TgModal.show({ emoji: '<span class="tg-giro">🌀</span>', title: '', text: '' });
   TgModal.el.classList.add('espera');
@@ -1852,6 +1932,9 @@ bLike.onclick = function(){
     }
   }, function(){
     completar('🌀', 'Guardado en camino', 'Se entregará solo en tu próxima visita.<span class="hl">Tu espiral lo está esperando.</span>');
+  }, function(){
+    var mt = document.getElementById('tgMText');
+    if (mt && TgModal.el.classList.contains('espera')) mt.textContent = 'Guardando…';
   });
 };
 
@@ -1860,7 +1943,7 @@ if (pool.length) {
   cta.classList.add('tg-dim');
 }
 render();
-tgOutboxVaciar();
+tgCasarPendientes();
 })();
 </script>
 </body>
