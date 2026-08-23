@@ -55,20 +55,19 @@ body.hoja-abierta #hud-volver,body.hoja-abierta #hud-salir{display:none}   /* so
 <body>
 <div id="app"></div>
 <style id="puente-css">
-/* 🏠 puentes de la hélice: en las COLUMNAS LIBRES de las esquinas (garantizadas en todo dispositivo),
-   a 10px exactos sobre ← REGRESAR y CERRAR SESIÓN, alineados a sus mismos bordes (12px).
-   Restricción dura móvil 390px: portada ocupa [138,252] ⇒ cada botón ≤118px ⇒ etiquetas compactas.
-   Mismas reglas del pie: desaparecen cuando la hoja está abierta. Blanco táctil 44px, cápsula r22. */
-.puente-pie{position:fixed;bottom:calc(53px + env(safe-area-inset-bottom));z-index:8;display:inline-flex;align-items:center;gap:6px;box-sizing:border-box;height:44px;padding:0 12px;border-radius:22px;background:linear-gradient(180deg,rgba(30,34,52,.96),rgba(18,21,34,.96));border:1px solid rgba(255,255,255,.16);box-shadow:0 6px 18px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.08);color:#fff;font:600 12px/1 'Poppins',sans-serif;letter-spacing:.02em;text-decoration:none;white-space:nowrap;max-width:118px;-webkit-tap-highlight-color:transparent;transition:transform .16s ease,border-color .16s ease}
-.puente-pie:active{transform:scale(.96)}
+/* 🏠 puentes de la hélice: CÍRCULOS GEMELOS solo-emoji (simetría por identidad), 44px táctiles,
+   en las columnas libres: bordes a 12px (mismos de ← REGRESAR / CERRAR SESIÓN), 10px sobre ellos.
+   Círculo de 44 ⇒ borde derecho izq en 56 y borde izq der en 334 @390px: la portada [138,252] queda
+   a ≥82px de cada uno — amenaza geométricamente imposible. Desaparecen con la hoja abierta. */
+.puente-pie{position:fixed;bottom:calc(53px + env(safe-area-inset-bottom));z-index:8;box-sizing:border-box;width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:linear-gradient(180deg,rgba(30,34,52,.96),rgba(18,21,34,.96));border:1px solid rgba(255,255,255,.16);box-shadow:0 6px 18px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.08);font-size:19px;line-height:1;text-decoration:none;-webkit-tap-highlight-color:transparent;transition:transform .16s ease,border-color .16s ease}
+.puente-pie:active{transform:scale(.94)}
 .puente-pie:hover{border-color:rgba(255,255,255,.3)}
-.puente-pie .pg-e{font-size:16px;line-height:1}
 #puenteGuardados{left:12px}
 #puenteBarra{right:12px}
 body.hoja-abierta .puente-pie{display:none}
 </style>
-<a id="puenteGuardados" class="puente-pie" href="/mi/"><span class="pg-e">&#128525;</span>Guardados</a>
-<a id="puenteBarra" class="puente-pie" href="https://app.triggui.com"><span class="pg-e">&#128269;</span>Barra</a>
+<a id="puenteGuardados" class="puente-pie" href="/mi/" aria-label="Ir a guardados">&#128525;</a>
+<a id="puenteBarra" class="puente-pie" href="https://app.triggui.com/?barra=1" aria-label="Abrir la barra m&aacute;gica">&#128269;</a>
 <div id="puerta"><div class="puerta-aurora a1"></div><div class="puerta-aurora a2"></div><button class="puerta-cierra" id="puertaCierra" type="button" aria-label="Volver">&#10005;</button><div class="puerta-card">
   <div class="glifo" aria-hidden="true"><span>&#127744;</span></div>
   <h1>Tu espiral</h1>
@@ -111,9 +110,10 @@ try{
 var CERRO=false;   /* la puerta aparecio porque el miembro cerro sesion: su ✕ va al centro, no "atras" */
 try{if(window.sessionStorage.getItem('triggui_espiral_cerro')==='1'){CERRO=true;window.sessionStorage.removeItem('triggui_espiral_cerro');}}catch(e){}
 function volverAlOrigen(){
-  var deTriggui=ORIGEN.indexOf(window.location.origin+'/')===0&&ORIGEN.indexOf('/espiral')<0;
-  if(!CERRO&&deTriggui&&window.history.length>1){window.history.back();}   /* regreso real: la pantalla anterior como estaba */
-  else{window.location.replace('/');}
+  // 🌀 v5: el viaje es bloques → guardados → hélice; REGRESAR devuelve a los 4 bloques abiertos
+  // (la raíz de la app repone la foto). Determinista: sin depender del historial.
+  try{gtag('event','espiral_volver_bloques',{});}catch(e){}
+  window.location.href='https://app.triggui.com/';
 }
 function validarClave(clave,cb){
   var cuerpo=new URLSearchParams();cuerpo.append('accion','espiral');cuerpo.append('clave',clave);
