@@ -3094,11 +3094,11 @@ function render(){
           document.getElementById("fisico").style.color = pickTextColor(c[1]);
           document.getElementById("share").style.color = pickTextColor(c[2]);
           handleBookReveal();
-        } else { e.stopPropagation(); btnShare.click(); }
+        } else { e.stopPropagation(); if (performance.now() - (window.__tarjetaCerradaEn || 0) > 600) btnShare.click(); }
       };
     } else {
       card.append(label, frase);
-      card.onclick = (e) => { if(revealed) { e.stopPropagation(); btnShare.click(); } else card.classList.toggle("show"); };
+      card.onclick = (e) => { if(revealed) { e.stopPropagation(); if (performance.now() - (window.__tarjetaCerradaEn || 0) > 600) btnShare.click(); } else card.classList.toggle("show"); };
     }
     grid.append(card);
   }
@@ -3239,6 +3239,7 @@ function requestNewBook() {
   document.documentElement.classList.remove('booting');
   document.body.classList.remove('booting');
 
+  BarraMagica.rotarPregunta();   // 🌒 v4.4: pregunta nueva en cada apertura nueva de la barra
   BarraMagica.applyStrings();
   overlay.classList.remove('visible');
   overlay.style.display = 'flex';
@@ -3679,7 +3680,7 @@ btnShare.onclick = () => {
     : "";
 
   card.innerHTML = `
-    <button class="card-close-btn" type="button" aria-label="Cerrar tarjeta" onclick="event.stopPropagation(); window.closeCard();">
+    <button class="card-close-btn" type="button" aria-label="Cerrar tarjeta" onpointerup="event.stopPropagation(); window.closeCard();" onclick="event.stopPropagation(); window.closeCard();">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M6 6l12 12"/>
         <path d="M18 6L6 18"/>
@@ -3839,6 +3840,7 @@ window.handleCardClick = function(e) {
 
 window.closeCard = function() {
   const overlay = document.getElementById("tarjetaOverlay");
+  window.__tarjetaCerradaEn = performance.now();   // 🌒 v4.4: la cola del mismo gesto no reabre la tarjeta
   overlay.classList.remove('visible');
   setTimeout(() => { 
     overlay.style.display="none";
@@ -5830,12 +5832,17 @@ BarraMagica.pickQuestion = function() {
     const lang = (TriggguiI18n && TriggguiI18n.lang) || 'es';
     const bank = BarraMagica.QUESTIONS[lang];
     if (!Array.isArray(bank) || bank.length === 0) return null;
+    // 🌒 v4.4: UNA sola pregunta por apertura de la barra (no cambia al llegar el catalogo); rotarPregunta() la renueva.
+    if (BarraMagica._preguntaActual && BarraMagica._preguntaLang === lang) return BarraMagica._preguntaActual;
     const phrase = bank[Math.floor(Math.random() * bank.length)];
-    return BarraMagica.segmentQuestion(phrase);
+    BarraMagica._preguntaActual = BarraMagica.segmentQuestion(phrase);
+    BarraMagica._preguntaLang = lang;
+    return BarraMagica._preguntaActual;
   } catch (_) {
     return null;
   }
 };
+BarraMagica.rotarPregunta = function() { BarraMagica._preguntaActual = null; };   // 🌒 v4.4
 
 BarraMagica.applyStrings = function() {
   const qEl = document.getElementById('barraQuestion');
@@ -5869,6 +5876,8 @@ BarraMagica.applyStrings = function() {
   let accentColor = '#4A90E2';        // Fallback azul espacial (más padre que naranja)
   let aurora1 = 'rgba(40, 100, 220, 0.48)';
   let aurora2 = 'rgba(80, 230, 200, 0.42)';
+  // 🌒 v4.4: mismos colores del dia desde antes del catalogo (cache local del dia) → nada cambia al llegar
+  try { const __c = getLocal('bm_colores_dia', null); if (__c && __c.d === new Date().toDateString() && __c.a) { accentColor = __c.a; aurora1 = __c.a1 || aurora1; aurora2 = __c.a2 || aurora2; } } catch(_) {}
   try {
     const data = window.__TRIGGUI_DATA__;
     if (data && Array.isArray(data.libros) && data.libros.length > 0) {
@@ -5917,6 +5926,7 @@ BarraMagica.applyStrings = function() {
   } catch(_) {}
   const overlay = document.getElementById('barraMagicaOverlay');
   if (overlay) {
+    try { if (window.__TRIGGUI_DATA__ && Array.isArray(window.__TRIGGUI_DATA__.libros) && window.__TRIGGUI_DATA__.libros.length) saveLocal('bm_colores_dia', { d: new Date().toDateString(), a: accentColor, a1: aurora1, a2: aurora2 }); } catch(_) {}   // 🌒 v4.4
     overlay.style.setProperty('--bm-accent', accentColor);
     overlay.style.setProperty('--bm-aurora-1', aurora1);
     overlay.style.setProperty('--bm-aurora-2', aurora2);
@@ -6357,6 +6367,7 @@ async function switchTrigguiMode(targetMode) {
     // FASE 6: Re-aplicar strings (cambia accent color "sientes?") + render
     try { BarraMagica.applyStrings(); } catch(_) {}
     try { render(); } catch(e) { console.error('[Triggui] render error tras switch:', e); }
+    try { if (window.__trigguiDado) window.__trigguiDado.reconstruir(libro, ''); } catch(_) {}   // 🎲 v4.4: lista del dado rehecha con el catalogo nuevo (nunca mezcla adultos en Kids)
     try { updateBadge(); } catch(_) {}
     try { refreshGlobalCounter(); } catch(_) {}
 
@@ -6843,6 +6854,8 @@ async function bootTriggui() {
     }
     return;
   }
+
+  try { BarraMagica.applyStrings(); } catch(_) {}   // 🌒 v4.4: pregunta y colores del dia fijos ANTES de descargar el catalogo
 
   try {
     const dataRaw = await loadCatalogWithRetry(3);
@@ -9243,6 +9256,7 @@ bootTriggui();
     }
 
     if (rotateActive) return;
+    try { if (!window.__trigguiDado.esDelCatalogo()) window.__trigguiDado.reconstruir(libro, ''); } catch (e) {}   // 🎲 v4.4: el dado nunca presenta un libro fuera del catalogo actual
 
     queryCurrentIdx++;
 
@@ -9671,6 +9685,24 @@ bootTriggui();
       for (var i = 0; i < queryCandidates.length; i++) { if (queryCandidates[i] && queryCandidates[i].titulo) titulos.push(queryCandidates[i].titulo); }
       var q = (typeof TrigguiFiltro !== 'undefined' && Array.isArray(TrigguiFiltro._lastQueryTokens)) ? TrigguiFiltro._lastQueryTokens.join(' ') : '';
       return { pool: titulos, cur: queryCurrentIdx, q: q };
+    },
+    // 🎲 v4.4: ¿la lista del dado pertenece al catalogo actual?
+    esDelCatalogo: function() {
+      var libros = (window.__TRIGGUI_DATA__ && window.__TRIGGUI_DATA__.libros) || [];
+      if (!queryCandidates.length) return true;   // sin lista: el flujo normal la arma
+      for (var i = 0; i < queryCandidates.length; i++) { if (libros.indexOf(queryCandidates[i]) < 0) return false; }
+      return true;
+    },
+    // 🎲 v4.4: rehacer la lista del dado con el catalogo actual, con el libro en pantalla como primero
+    reconstruir: function(libroActual, q) {
+      var libros = (window.__TRIGGUI_DATA__ && window.__TRIGGUI_DATA__.libros) || [];
+      q = (typeof q === 'string') ? q : '';
+      queryCandidates = []; queryCurrentIdx = 0; rotateActive = false;
+      if (libroActual && libros.indexOf(libroActual) >= 0) queryCandidates.push(libroActual);
+      try { var topK = getTopKCandidates(libros, q, TOP_K + 2); for (var i = 0; i < topK.length; i++) { if (queryCandidates.length >= TOP_K + 1) break; if (queryCandidates.indexOf(topK[i]) < 0) queryCandidates.push(topK[i]); } } catch (e) {}
+      try { if (typeof TrigguiFiltro !== 'undefined') TrigguiFiltro._lastQueryTokens = q ? q.split(' ').filter(Boolean) : []; } catch (e) {}
+      try { lastCandidatePool = queryCandidates[0] ? buildPhrasePool([queryCandidates[0]], q) : buildPhrasePool(libros, q); } catch (e) { lastCandidatePool = []; }
+      usedInThisSession.clear();
     },
     restore: function(libroActual, st) {
       var libros = (window.__TRIGGUI_DATA__ && window.__TRIGGUI_DATA__.libros) || [];
