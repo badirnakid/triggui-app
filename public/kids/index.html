@@ -3198,7 +3198,8 @@ window.__cajaEstado = function () {
              boot: document.documentElement.classList.contains('booting') || !!(document.body && document.body.classList.contains('booting')),
              reg: document.documentElement.classList.contains('regresando'),
              barra: cs ? (cs.display + '/' + cs.opacity) : null, datos: !!(window.__TRIGGUI_DATA__ && window.__TRIGGUI_DATA__.libros),
-             show: document.querySelectorAll('#grid .block.show').length, cta: cta ? getComputedStyle(cta).display : null, dado: dado };
+             show: document.querySelectorAll('#grid .block.show').length, cta: cta ? getComputedStyle(cta).display : null, dado: dado,
+             tarjeta: (function () { const t = document.getElementById('tarjetaOverlay'); if (!t) return null; const c = getComputedStyle(t); return (t.classList.contains('visible') ? 'VISIBLE' : 'cerrada') + '/' + c.display + '/' + (+c.opacity).toFixed(2); })() };
   } catch (e) { return { err: String(e && e.message || e) }; }
 };
 
@@ -3843,6 +3844,7 @@ window.handleCardClick = function(e) {
   window.closeCard();
 }
 
+window.__trigguiVersion = '4.6';
 window.addEventListener('pointerdown', function () { window.__trigguiDownEn = performance.now(); }, true);   // 🌒 v4.5: instante del ultimo gesto
 // 🌒 v4.5: un bloque solo puede abrir la Tarjeta con un gesto NUEVO, iniciado despues del ultimo cierre y al menos 600ms despues
 window.__tarjetaPuedeAbrir = function () { var c = window.__tarjetaCerradaEn || 0; return !c || (performance.now() - c > 600 && (window.__trigguiDownEn || 0) > c); };
@@ -3853,6 +3855,8 @@ window.closeCard = function() {
   try { clearTimeout(window.__tarjetaCierreTimer); } catch(_) {}   // 🌒 v4.5: varios cierres del mismo gesto = un solo apagado
   window.__tarjetaCierreTimer = setTimeout(() => { 
     overlay.style.display="none";
+    // 🌒 v4.6: obligar un cuadro nuevo al compositor (WebView Android a veces deja en pantalla el ultimo cuadro con la tarjeta)
+    try { const g = document.getElementById('grid'); if (g) { g.style.willChange = 'transform'; g.style.transform = 'translateZ(0)'; requestAnimationFrame(() => requestAnimationFrame(() => { g.style.transform = ''; g.style.willChange = ''; })); } } catch(_) {}
     // Limpiar listeners y timers al cerrar
     cleanupCardListeners();
   }, 300);

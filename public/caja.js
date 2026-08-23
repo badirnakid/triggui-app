@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   TRIGGUI · CAJA NEGRA v1.1 (caja.js)
+   TRIGGUI · CAJA NEGRA v1.2 (caja.js)
    Grabadora de vuelo de la experiencia: toques, estado, errores, red, analitica, navegacion.
    - Apagada por defecto: un lector normal solo tiene un detector de 5 toques en la esquina.
    - Se arma con 5 toques seguidos en la esquina superior izquierda (zona 56x56 px).
@@ -68,7 +68,7 @@
     if (panel) panel.style.display = 'none';
   }
   function cabecera(motivo) {
-    anota('nav', motivo + ' ' + location.href + ' ref=' + (document.referrer || '-'));
+    anota('nav', motivo + ' ' + location.href + ' ref=' + (document.referrer || '-') + ' app=' + (window.__trigguiVersion || '?'));
     var nv = (performance.getEntriesByType && performance.getEntriesByType('navigation')[0]) || null;
     anota('nav', 'tipo=' + (nv ? nv.type : '?') + ' ua=' + navigator.userAgent);
     anota('nav', 'vp ' + window.innerWidth + 'x' + window.innerHeight + ' dpr ' + window.devicePixelRatio + ' escala ' + (window.visualViewport ? Math.round(window.visualViewport.scale * 100) / 100 : '-') + ' online=' + navigator.onLine + ' html=' + corto(document.documentElement.className, 80) + ' body=' + corto(document.body ? document.body.className : '', 80));
@@ -113,7 +113,7 @@
     anota('toque', e.type + ' ' + nom(e.target) + ' @' + x + ',' + y + (e.pointerType ? ' ' + e.pointerType : '') + extra);
   }
   /* en window y en captura: se ven incluso los clicks que un handler de document detiene con stopImmediatePropagation */
-  ['pointerdown', 'pointerup', 'pointercancel', 'touchstart', 'touchend', 'touchcancel', 'click'].forEach(function (k) { window.addEventListener(k, ev, true); });
+  ['pointerdown', 'pointerup', 'pointercancel', 'touchstart', 'touchend', 'touchcancel', 'click', 'contextmenu'].forEach(function (k) { window.addEventListener(k, ev, true); });
 
   window.addEventListener('error', function (e) { anota('ERROR', (e.message || '') + ' @' + String(e.filename || '').split('/').pop() + ':' + e.lineno); });
   window.addEventListener('unhandledrejection', function (e) { anota('ERROR', 'promesa: ' + corto((e.reason && (e.reason.message || e.reason)) || '?', 160)); });
@@ -158,6 +158,21 @@
       if (hoja) new MutationObserver(function () { anota('hoja', hoja.classList.contains('ver') ? 'ABIERTA' : 'cerrada'); }).observe(hoja, { attributes: true, attributeFilter: ['class'] });
       var ov = document.getElementById('barraMagicaOverlay');
       if (ov) { var uo = ''; new MutationObserver(function () { var s = getComputedStyle(ov); var v = s.display + '/' + s.opacity; if (v !== uo) { anota('barra', v); uo = v; } }).observe(ov, { attributes: true, attributeFilter: ['style', 'class'] }); }
+      /* v1.2: la Tarjeta — apertura/cierre reales y cuadros pintados tras apagarla (si el WebView no repinta, cuadros=0) */
+      var tj = document.getElementById('tarjetaOverlay');
+      if (tj) { var ut = ''; new MutationObserver(function () {
+        var est = (tj.classList.contains('visible') ? 'VISIBLE' : 'cerrada') + ' display=' + getComputedStyle(tj).display;
+        if (est === ut) return; ut = est; anota('tarjeta', est);
+        if (getComputedStyle(tj).display === 'none') {
+          var cuadros = 0, tq = performance.now();
+          var tick = function () { cuadros++; if (performance.now() - tq < 600) requestAnimationFrame(tick); };
+          requestAnimationFrame(tick);
+          setTimeout(function () {
+            var bajo = '-'; try { var e = document.elementFromPoint(58, 77); bajo = e ? nom(e) : '-'; } catch (x) { bajo = '?'; }
+            anota('pinta', 'tarjeta-apagada cuadros=' + cuadros + '/600ms visibilidad=' + document.visibilityState + ' bajo-la-x=' + bajo);
+          }, 650);
+        }
+      }).observe(tj, { attributes: true, attributeFilter: ['class', 'style'] }); }
     } catch (e) {}
   }
 
