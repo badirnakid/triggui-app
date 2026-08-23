@@ -9914,5 +9914,19 @@ bootTriggui();
 })();
 
 </script>
+<script>
+/* v4.15c: guardián siempre-corre de ?barra=1 — independiente de ramas del boot (foto o no).
+   Limpia primero, abre después; espera a que BarraMagica exista (tope 4s). */
+(function(){
+  if (window.location.search.indexOf('barra=1') < 0) return;
+  try { history.replaceState(null, '', window.location.pathname); } catch (e) {}
+  var t0 = Date.now();
+  (function abre(){
+    if (window.BarraMagica && typeof BarraMagica.openOverlay === 'function') {
+      try { BarraMagica.openOverlay(true); } catch (e) {}
+    } else if (Date.now() - t0 < 4000) { setTimeout(abre, 120); }
+  })();
+})();
+</script>
 </body>
 </html>
