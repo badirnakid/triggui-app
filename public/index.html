@@ -3919,7 +3919,7 @@ window.__trigguiFotoTarjeta = function () {
     return true;
   } catch (e) { return false; }
 };
-window.__trigguiVersion = '4.14';
+window.__trigguiVersion = '4.15';
 window.addEventListener('pointerdown', function () { window.__trigguiDownEn = performance.now(); }, true);   // 🌒 v4.5: instante del ultimo gesto
 // 🌒 v4.5: un bloque solo puede abrir la Tarjeta con un gesto NUEVO, iniciado despues del ultimo cierre y al menos 600ms despues
 window.__tarjetaPuedeAbrir = function () { var c = window.__tarjetaCerradaEn || 0; return !c || (performance.now() - c > 600 && (window.__trigguiDownEn || 0) > c); };
@@ -7031,6 +7031,10 @@ async function bootTriggui() {
       updateBadge();
       refreshGlobalCounter();
       BarraMagica.applyStrings();
+      // v4.15: llegada directa a la barra magica con ?barra=1 (puentes externos), por encima de la foto repuesta; el parametro se limpia.
+      if (window.location.search.indexOf('barra=1') >= 0) {
+        setTimeout(() => { try { BarraMagica.openOverlay(true); history.replaceState(null, '', window.location.pathname); } catch (e) {} }, 150);
+      }
       finishBootOnce();
       track(__rg.tarjeta ? 'tarjeta_regreso' : 'espiral_regreso', { book: libro.titulo });
       track('app_loaded', { streak: getLocal('streak',0), books: getLocal('books_opened',0), lang: TriggguiI18n.lang, regreso: true });
