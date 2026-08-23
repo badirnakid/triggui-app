@@ -2519,6 +2519,10 @@ html.kids-mode #tarjetaCard {
 .card-lupa-btn:active, .card-close-btn:active {
   transform: scale(0.92);
 }
+/* 🌒 v4.5: la ✕ — el toque nunca se convierte en scroll (Android emitia pointercancel si el pulgar se mecia);
+   va DESPUES de la regla compartida (touch-action: manipulation) para ganar en la cascada. Area tactil 56px, dibujo intacto. */
+#tarjetaCard .card-close-btn { touch-action: none; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+#tarjetaCard .card-close-btn::before { content: ""; position: absolute; inset: -10px; border-radius: 50%; }
 
 .sr-only {
   position: absolute;
@@ -3016,7 +3020,7 @@ function buildPort(i){
   wrap.append(box,emoji);
   if(isURL(libro.portada)){ d.append(Object.assign(new Image(),{src:libro.portada,loading:"lazy"})); }
   else{ d.append(wrap); setTimeout(()=>adjustScale(wrap),0); }
-  d.addEventListener("click", e => { e.stopPropagation(); btnShare.click(); });
+  d.addEventListener("click", e => { e.stopPropagation(); if (window.__tarjetaPuedeAbrir()) btnShare.click(); });   // 🌒 v4.5: la portada tambien respeta el cierre
   return d;
 }
 
@@ -3094,11 +3098,11 @@ function render(){
           document.getElementById("fisico").style.color = pickTextColor(c[1]);
           document.getElementById("share").style.color = pickTextColor(c[2]);
           handleBookReveal();
-        } else { e.stopPropagation(); if (performance.now() - (window.__tarjetaCerradaEn || 0) > 600) btnShare.click(); }
+        } else { e.stopPropagation(); if (window.__tarjetaPuedeAbrir()) btnShare.click(); }
       };
     } else {
       card.append(label, frase);
-      card.onclick = (e) => { if(revealed) { e.stopPropagation(); if (performance.now() - (window.__tarjetaCerradaEn || 0) > 600) btnShare.click(); } else card.classList.toggle("show"); };
+      card.onclick = (e) => { if(revealed) { e.stopPropagation(); if (window.__tarjetaPuedeAbrir()) btnShare.click(); } else card.classList.toggle("show"); };
     }
     grid.append(card);
   }
@@ -3611,6 +3615,7 @@ btnShare.onclick = () => {
   }
 
   // Limpiar listeners previos si existen
+  try { clearTimeout(window.__tarjetaCierreTimer); } catch(_) {}   // 🌒 v4.5: abrir cancela un apagado pendiente
   cleanupCardListeners();
 
   // Estilos del JSON (siempre del style base para consistencia visual)
@@ -3680,7 +3685,7 @@ btnShare.onclick = () => {
     : "";
 
   card.innerHTML = `
-    <button class="card-close-btn" type="button" aria-label="Cerrar tarjeta" onpointerup="event.stopPropagation(); window.closeCard();" onclick="event.stopPropagation(); window.closeCard();">
+    <button class="card-close-btn" type="button" aria-label="Cerrar tarjeta" onpointerdown="window.closeCard();" onpointerup="event.stopPropagation(); window.closeCard();" onclick="event.stopPropagation(); window.closeCard();">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M6 6l12 12"/>
         <path d="M18 6L6 18"/>
@@ -3838,11 +3843,15 @@ window.handleCardClick = function(e) {
   window.closeCard();
 }
 
+window.addEventListener('pointerdown', function () { window.__trigguiDownEn = performance.now(); }, true);   // 🌒 v4.5: instante del ultimo gesto
+// 🌒 v4.5: un bloque solo puede abrir la Tarjeta con un gesto NUEVO, iniciado despues del ultimo cierre y al menos 600ms despues
+window.__tarjetaPuedeAbrir = function () { var c = window.__tarjetaCerradaEn || 0; return !c || (performance.now() - c > 600 && (window.__trigguiDownEn || 0) > c); };
 window.closeCard = function() {
   const overlay = document.getElementById("tarjetaOverlay");
   window.__tarjetaCerradaEn = performance.now();   // 🌒 v4.4: la cola del mismo gesto no reabre la tarjeta
   overlay.classList.remove('visible');
-  setTimeout(() => { 
+  try { clearTimeout(window.__tarjetaCierreTimer); } catch(_) {}   // 🌒 v4.5: varios cierres del mismo gesto = un solo apagado
+  window.__tarjetaCierreTimer = setTimeout(() => { 
     overlay.style.display="none";
     // Limpiar listeners y timers al cerrar
     cleanupCardListeners();
