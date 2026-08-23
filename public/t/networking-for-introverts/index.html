@@ -1646,6 +1646,7 @@ bLibro.onclick = abrirTarjeta;
 bEsp.onclick = function(){ window.location.href = '/mi/'; };
 // 🎲 otra edición viva al azar (congruente con el dado de la app). Lista estática /t/ediciones.json.
 bDado.onclick = function(){
+  try{gtag('event','edicion_dado',{});}catch(e){}
   fetch('/t/ediciones.json', { cache: 'no-store' }).then(function(r){ return r.json(); }).then(function(d){
     var kids = window.location.pathname.indexOf('/kids/') === 0;
     var rl = rutaLibro();
@@ -1662,7 +1663,7 @@ bDado.onclick = function(){
     if (n < 2) bDado.style.display = 'none';
   }).catch(function(){ bDado.style.display = 'none'; });
 })();
-bLupa.onclick = function(){ window.location.href = 'https://app.triggui.com'; };
+bLupa.onclick = function(){ try{gtag('event','edicion_lupa',{});}catch(e){} window.location.href = 'https://app.triggui.com/?barra=1'; };
 
 function render(){
   grid.innerHTML = '';
