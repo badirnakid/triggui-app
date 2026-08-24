@@ -36,6 +36,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { chromium } from "playwright";
+import { resolverPortadaPremium } from "./portada-premium.mjs";
 
 /* ═══════════════════════════════════════════════════════════════
    HELPERS
@@ -441,7 +442,11 @@ const accent = resolveAccent(libro);
 const accentSoft = withAlpha(accent, "24") || "#E35D3024";
 const accentGlow = withAlpha(accent, "42") || "#E35D3042";
 
-const portadaURL = resolvePortadaURL(bookMeta, libro);
+let portadaURL = resolvePortadaURL(bookMeta, libro);
+// Fábrica cortes 2-3: escalera A/B/C — SIEMPRE hay portada premium local (portada.jpg) y su data-URI alimenta la composición.
+let __premium = null;
+try { __premium = await resolverPortadaPremium({ titulo: bookMeta.titulo || libro.titulo, autor: bookMeta.autor || libro.autor, portadaURL, colores: libro?.colores }, outDir); } catch (e) { console.log("   ⚠️ resolver portada:", e.message); }
+if (__premium?.dataURI) portadaURL = __premium.dataURI;
 const portadaSource = resolvePortadaSource(bookMeta, libro, portadaURL);
 
 const headline = pickOgHeadline(bookMeta, libro);
@@ -631,7 +636,7 @@ await browser.close();
 
 const stats = await fs.stat(outPath);
 console.log(`   ✅ OG image: ${outPath} (${(stats.size / 1024).toFixed(0)} KB)`);
-console.log(`   🖼️  Portada: ${portadaURL ? portadaSource : "tipográfica"}`);
+console.log(`   🖼️  Portada: ${__premium ? "tier " + __premium.tier + " · " + String(__premium.source).slice(0, 60) : (portadaURL ? portadaSource : "tipográfica")}`);
 // Corte 1: migración limpia — el hermano PNG del formato anterior se retira al re-renderizar.
 try { await fs.rm(path.join(outDir, "og.png"), { force: true }); } catch {}
 console.log(`   ✨ Headline: ${headlineClean}`);
