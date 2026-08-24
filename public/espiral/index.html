@@ -145,7 +145,7 @@ function puertaAbrir(arrancar){
   try{gtag('event','espiral_puerta',{paso:'mostrada'});}catch(e){}
   function entrar(){
     var c=(inp.value||'').trim();
-    if(c.length<6){err.textContent='Esa clave se ve corta.';return;}
+    if(c.length<6){err.textContent=pvT('Esa clave se ve corta.','That key looks too short.');return;}
     err.textContent='';btn.disabled=true;btn.textContent='Un momento\u2026';
     validarClave(c,function(e,r){
       btn.disabled=false;btn.textContent='Entrar';
