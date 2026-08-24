@@ -619,10 +619,11 @@ await page.evaluate(() => {
 
 await page.waitForTimeout(180);
 
-const outPath = path.join(outDir, "og.png");
+const outPath = path.join(outDir, "og.jpg");
 await page.screenshot({
   path: outPath,
-  type: "png",
+  type: "jpeg",
+  quality: 85,
   clip: { x: 0, y: 0, width: 1200, height: 630 }
 });
 
@@ -631,4 +632,6 @@ await browser.close();
 const stats = await fs.stat(outPath);
 console.log(`   ✅ OG image: ${outPath} (${(stats.size / 1024).toFixed(0)} KB)`);
 console.log(`   🖼️  Portada: ${portadaURL ? portadaSource : "tipográfica"}`);
+// Corte 1: migración limpia — el hermano PNG del formato anterior se retira al re-renderizar.
+try { await fs.rm(path.join(outDir, "og.png"), { force: true }); } catch {}
 console.log(`   ✨ Headline: ${headlineClean}`);
