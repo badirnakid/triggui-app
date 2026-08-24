@@ -1607,7 +1607,7 @@ function cargarConClave(clave, esNueva){
 
 el.entrar.addEventListener('click', function(){
   var c = (el.clave.value || '').trim();
-  if (c.length < 6) { el.puertaErr.textContent = 'Esa clave se ve corta.'; return; }
+  if (c.length < 6) { el.puertaErr.textContent = pvT('Esa clave se ve corta.','That key looks too short.'); return; }
   el.puertaErr.textContent = '';
   ver('cargando');
   cargarConClave(c, true);
@@ -1777,6 +1777,7 @@ try{ if(document.getElementById('puerta')){ __pv_cargarLibros().then(__pv_puerta
   var e1=document.querySelector('#manijaClave'); if(e1) e1.textContent='No key? Text me \u2192';
   var e2=document.querySelector('#clave'); if(e2) e2.setAttribute('placeholder','your member key');
   var e3=document.querySelector('#entrar'); if(e3) e3.textContent='Enter';
+  var e4=document.querySelector('#tipX'); if(e4) e4.setAttribute('aria-label','Close');
   var P=[['#puerta h1','Your spiral'],['#puerta .sub','Every Monday we activate you with a living edition and its video. Whatever you love, save it with \ud83d\ude0d \u2014 for whenever you need it.'],['#vacio .t1','Your spiral is ready.'],['#vacio .t2','When you save a book that speaks to you, its collection of pieces will grow here: words, phrases and cards growing with you.']];
   P.forEach(function(par){ var e=document.querySelector(par[0]); if(e) e.textContent=par[1]; });
 })();
