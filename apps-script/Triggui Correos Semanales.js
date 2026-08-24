@@ -1745,7 +1745,7 @@ function generarLangBarTopHTML() {
 }
 function leerIdiomaFila(sheet, rowIdx) {
   try {
-    const v = String(sheet.getRange(rowIdx + 1, colIdioma(sheet)).getValue() || "").trim().toLowerCase();
+    const v = String(sheet.getRange(rowIdx, colIdioma(sheet)).getValue() || "").trim().toLowerCase();
     return (v === "en") ? "en" : "es";
   } catch (e) { return "es"; }
 }
@@ -1760,7 +1760,7 @@ function manejarCambioIdioma(email, token, l) {
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
     if (!sheet) return ContentService.createTextOutput("\u2014");
     const rowIdx = buscarFilaPorEmail(sheet, email);
-    if (rowIdx > 0) sheet.getRange(rowIdx + 1, colIdioma(sheet)).setValue(idioma);
+    if (rowIdx >= 2) sheet.getRange(rowIdx, colIdioma(sheet)).setValue(idioma);
     const msg = (idioma === "en") ? "Done \u2014 from now on I\u2019ll write to you in English." : "Listo \u2014 a partir de ahora te escribo en espa\u00f1ol.";
     const back = (idioma === "en") ? "Back to Triggui" : "Volver a Triggui";
     return HtmlService.createHtmlOutput(`<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><body style="margin:0;display:flex;min-height:100vh;align-items:center;justify-content:center;background:#0f0f14;color:#f2efe9;font:500 17px/1.5 -apple-system,Segoe UI,Roboto,sans-serif;text-align:center;padding:24px"><div><div style="font-size:34px;margin-bottom:14px">\ud83c\udf10</div>${msg}<div style="margin-top:18px"><a href="https://triggui.com" style="color:#c9c4ba">${back} \u2192</a></div></div></body>`);
