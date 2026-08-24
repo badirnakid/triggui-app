@@ -684,10 +684,10 @@ def render_edicion(edicion, mode="lab"):
     tagline = edicion.get("tagline", "")
 
     if mode == "single":
-        og_image = f"{BASE_URL}/t/{edicion_id}/og.png"
+        og_image = f"{BASE_URL}/t/{edicion_id}/og.jpg"
         og_url = f"{BASE_URL}/t/{edicion_id}/"
     else:
-        og_image = f"{BASE_URL}/lab/t/{edicion_id}/og.png"
+        og_image = f"{BASE_URL}/lab/t/{edicion_id}/og.jpg"
         og_url = f"{BASE_URL}/lab/t/{edicion_id}/"
 
     palabras = pad_list(edicion.get("palabras"), 4, "Señal")
