@@ -1028,6 +1028,7 @@ body::before {
 .block.show .frase { opacity: 1; transform: translateY(0); }
 
 #tgLangPill{position:fixed;top:max(54px, calc(env(safe-area-inset-top,0px) + 14px));right:16px;z-index:650;display:flex;background:rgba(255,255,255,.05);border:.5px solid rgba(255,255,255,.1);border-radius:99px;padding:3px;font:600 11px/1 'Poppins',sans-serif}
+@media(min-width:900px){#tgLangPill{top:18px}}
 #tgLangPill span{padding:5px 11px;border-radius:99px;transition:all .35s cubic-bezier(.19,1,.22,1);color:rgba(255,255,255,.45);cursor:pointer}
 #tgLangPill span.lang-active{color:#000;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.15)}
 .reveal-overlay {
@@ -1713,10 +1714,19 @@ function tgRepaintGrid(){ var blocks=document.querySelectorAll('.tg-block');
     var lb=blocks[i].querySelector('.tg-label'); if(lb) lb.textContent=state.palabras[i]||'';
     var fr=blocks[i].querySelector('.tg-frase'); if(fr) fr.textContent=state.frases[i]||'';
     var h2=blocks[i].querySelector('.tg-porttext h2'); if(h2) h2.textContent=state.titulo||''; } }
+function tgApplyMisc(){
+  var EN=(tgLang==='en');
+  var num=document.getElementById('pulseLineNum');
+  if(num){ var pl=num.parentNode; var n=num.textContent;
+    pl.innerHTML = EN ? ('Already <span id="pulseLineNum" style="font-weight:700;color:rgba(255,255,255,.75);">'+n+'</span> books opened together.') : ('Ya van <span id="pulseLineNum" style="font-weight:700;color:rgba(255,255,255,.75);">'+n+'</span> libros abiertos juntos.'); }
+  [['tgLibro','Abrir tarjeta','Open the card'],['tgLike','Guardar en mi espiral','Save to my spiral'],['tgEsp','Tu espiral','Your spiral']].forEach(function(p){ var e=document.getElementById(p[0]); if(e) e.setAttribute('aria-label', EN?p[2]:p[1]); });
+  var bb=document.getElementById('btnBack'); if(bb) bb.setAttribute('aria-label', EN?'Close':'Cerrar');
+  var ch=document.querySelector('.cover-hint'); if(ch) ch.textContent = EN?'Tap the book':'Toca el libro';
+}
 function tgPillPaint(){ const a=document.getElementById('tgLangEs'), b=document.getElementById('tgLangEn'); if(a&&b){ a.classList.toggle('lang-active', tgLang==='es'); b.classList.toggle('lang-active', tgLang==='en'); } }
-function tgSetLang(l){ if(l===tgLang){ tgPillPaint(); return; } tgLang=l; try{ localStorage.setItem('triggui_lang', JSON.stringify(l)); }catch(e){} tgApplyGrid(); tgRepaintGrid(); tgApplyCard(); tgApplySilence(); tgPillPaint(); }
+function tgSetLang(l){ if(l===tgLang){ tgPillPaint(); return; } tgLang=l; try{ localStorage.setItem('triggui_lang', JSON.stringify(l)); }catch(e){} tgApplyGrid(); tgRepaintGrid(); tgApplyCard(); tgApplySilence(); tgPillPaint(); tgApplyMisc(); }
 tgApplyGrid(); /* swap pre-pintado: el grid nace en el idioma correcto */
-document.addEventListener('DOMContentLoaded', function(){ tgApplyCard(); tgApplySilence(); tgPillPaint(); const a=document.getElementById('tgLangEs'), b=document.getElementById('tgLangEn'); if(a)a.addEventListener('click',function(){tgSetLang('es');}); if(b)b.addEventListener('click',function(){tgSetLang('en');}); const pl=document.getElementById('tgLangPill'); if(pl)pl.addEventListener('click',function(ev){ if(ev.target&&ev.target.closest&&ev.target.closest('#tgLangEs,#tgLangEn'))return; tgSetLang(tgLang==='en'?'es':'en'); }); const _ro=document.getElementById('revealOverlay'); if(_ro&&pl){ const _sync=function(){ const cs=getComputedStyle(_ro); const abierto=(cs.display!=='none'); pl.style.display=abierto?'none':'flex'; }; new MutationObserver(_sync).observe(_ro,{attributes:true,attributeFilter:['class','style']}); _sync(); } });
+document.addEventListener('DOMContentLoaded', function(){ tgApplyMisc(); tgApplyCard(); tgApplySilence(); tgPillPaint(); const a=document.getElementById('tgLangEs'), b=document.getElementById('tgLangEn'); if(a)a.addEventListener('click',function(){tgSetLang('es');}); if(b)b.addEventListener('click',function(){tgSetLang('en');}); const pl=document.getElementById('tgLangPill'); if(pl)pl.addEventListener('click',function(ev){ if(ev.target&&ev.target.closest&&ev.target.closest('#tgLangEs,#tgLangEn'))return; tgSetLang(tgLang==='en'?'es':'en'); }); const _ro=document.getElementById('revealOverlay'); if(_ro&&pl){ const _sync=function(){ const cs=getComputedStyle(_ro); const abierto=(cs.display!=='none'); pl.style.display=abierto?'none':'flex'; }; new MutationObserver(_sync).observe(_ro,{attributes:true,attributeFilter:['class','style']}); _sync(); } });
 const grid = document.getElementById('grid');
 const revealOverlay = document.getElementById('revealOverlay');
 const btnBack = document.getElementById('btnBack');
@@ -2764,10 +2774,10 @@ bLike.onclick = function(){
     var p = document.getElementById('tgMP');
     var s = document.getElementById('tgMS');
     p.style.display = '';
-    p.textContent = 'Ver mi espiral';
+    p.textContent = (tgLang==='en')?'See my spiral':'Ver mi espiral';
     p.onclick = function(){ TgModal.close(); window.location.href = '/mi/'; };
     s.style.display = '';
-    s.textContent = 'Seguir aqu\u00ED';
+    s.textContent = (tgLang==='en')?'Stay here':'Seguir aqu\u00ED';
     s.onclick = function(){ TgModal.close(); };
   }
   var idBuzon = String(Date.now()) + '-' + Math.floor(Math.random() * 100000);
@@ -2781,7 +2791,7 @@ bLike.onclick = function(){
       completar('😍', 'Vive en tu espiral', '\u00AB' + L.titulo + '\u00BB se qued\u00F3 contigo: sus palabras, sus frases y su tarjeta.<span class="hl">Cuando lo necesites, ah\u00ED estar\u00E1.</span>');
     }
   }, function(){
-    completar('🌀', 'Guardado en camino', 'Se entregar\u00E1 solo en tu pr\u00F3xima visita.<span class="hl">Tu espiral lo est\u00E1 esperando.</span>');
+    if(tgLang==='en'){ completar('🌀', 'Saved en camino', 'Se entregar\u00E1 solo en tu pr\u00F3xima visita.<span class="hl">Your spiral is waiting for it.</span>'); } else { completar('🌀', 'Guardado en camino', 'Se entregar\u00E1 solo en tu pr\u00F3xima visita.<span class="hl">Tu espiral lo est\u00E1 esperando.</span>'); }
   }, function(){
     var mt = document.getElementById('tgMText');
     if (mt && TgModal.el.classList.contains('espera')) mt.textContent = 'Guardando\u2026';
@@ -2816,7 +2826,7 @@ tgCasarPendientes();
     const el = document.getElementById('pulseLine');
     if (!el) return;
     if (total !== null && typeof total === 'number' && total > 0) {
-      el.innerHTML = 'Ya van <span id="pulseLineNum" style="font-weight:700;color:rgba(255,255,255,.75);">0</span> libros abiertos juntos.';
+      el.innerHTML = (tgLang==='en') ? 'Already <span id="pulseLineNum" style="font-weight:700;color:rgba(255,255,255,.75);">0</span> books opened together.'; : 'Ya van <span id="pulseLineNum" style="font-weight:700;color:rgba(255,255,255,.75);">0</span> libros abiertos juntos.';
       el.classList.add('visible');
       const numEl = document.getElementById('pulseLineNum');
       if (typeof animatePulseNumber === 'function') {
