@@ -6815,7 +6815,7 @@ async function __catalogoRed(catalogFile, maxAttempts) {
 async function loadCatalogWithRetry(maxAttempts) {
   maxAttempts = maxAttempts || 3;
   // 🌒 v3.8.6 — catalog dinámico según TRIGGUI_MODE
-  const catalogFile = (window.TRIGGUI_MODE === 'kids') ? 'contenido_kids.json' : 'contenido.json';
+  const catalogFile = (window.TRIGGUI_MODE === 'kids') ? 'contenido_kids.json' : 'contenido_publico.json';
   try {
     const guardado = await __catalogoGuardado(catalogFile);
     if (guardado) { __catalogoRevalida(catalogFile); return guardado; }
