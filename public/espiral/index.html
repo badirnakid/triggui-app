@@ -168,6 +168,8 @@ function puertaAbrir(arrancar){
 <script>
 /* PV — idioma del portal: misma llave que la app (triggui_lang), fallback navigator */
 window.PV_LANG=(function(){try{var s=JSON.parse(localStorage.getItem('triggui_lang')||'null');if(s==='en'||s==='es')return s;}catch(e){}return ((navigator.language||'es').slice(0,2)==='en')?'en':'es';})();
+window.pvT=window.pvT||function(es,en){return (window.PV_LANG==='en')?en:es;};
+if(window.PV_LANG==='en'){try{var _pg=document.getElementById('puenteGuardados'); if(_pg)_pg.setAttribute('aria-label','Go to saved'); var _pb=document.getElementById('puenteBarra'); if(_pb)_pb.setAttribute('aria-label','Open the magic bar');}catch(e){}}
 window.pvTitulo=function(b){return (PV_LANG==='en'&&b&&b.titulo_en)?b.titulo_en:((b&&b.titulo)||'');};
 window.pvBloques=function(b){var n=(b&&b._nucleus)||{};return (PV_LANG==='en'&&n.edition_blocks_en&&n.edition_blocks_en.length)?n.edition_blocks_en:(n.edition_blocks_es||[]);};
 window.pvOg=function(b){var n=(b&&b._nucleus)||{};return (PV_LANG==='en'&&n.og_phrases_en&&n.og_phrases_en.length)?n.og_phrases_en:(n.og_phrases_es||[]);};
@@ -241,10 +243,10 @@ async function arrancarEspiral(){
   var s=document.createElement('script'); s.src='./spiral.js';
   s.onload=function(){ try{ var hoja=document.getElementById('hoja'); if(hoja){ var mo=new MutationObserver(function(){ document.body.classList.toggle('hoja-abierta', hoja.classList.contains('ver')); }); mo.observe(hoja,{attributes:true,attributeFilter:['class']}); } }catch(e){} };
   document.body.appendChild(s);
-  var volver=document.createElement('button'); volver.id='hud-volver'; volver.type='button'; volver.setAttribute('aria-label','Regresar'); volver.innerHTML='&#8592;&nbsp; '+((window.PV_LANG==='en')?'BACK':'REGRESAR');
+  var volver=document.createElement('button'); volver.id='hud-volver'; volver.type='button'; volver.setAttribute('aria-label',(window.PV_LANG==='en')?'Back':'Regresar'); volver.innerHTML='&#8592;&nbsp; '+((window.PV_LANG==='en')?'BACK':'REGRESAR');
   volver.onclick=function(){try{gtag('event','espiral_volver',{});}catch(e){}volverAlOrigen();};
   document.body.appendChild(volver);
-  var salir=document.createElement('a'); salir.id='hud-salir'; salir.href='#salir'; salir.textContent=(window.PV_LANG==='en')?'CLOSE SESSION':'CERRAR SESI\u00d3N'; salir.setAttribute('aria-label','Cerrar sesi\u00f3n');
+  var salir=document.createElement('a'); salir.id='hud-salir'; salir.href='#salir'; salir.textContent=(window.PV_LANG==='en')?'LOG OUT':'CERRAR SESI\u00d3N'; salir.setAttribute('aria-label',(window.PV_LANG==='en')?'Log out':'Cerrar sesi\u00f3n');
   salir.onclick=function(ev){ev.preventDefault();lsDel(LS_PAR);try{window.sessionStorage.setItem('triggui_espiral_cerro','1');}catch(e){}try{gtag('event','espiral_puerta',{paso:'salir'});}catch(e){}window.location.replace(window.location.pathname);};
   document.body.appendChild(salir);
 }
