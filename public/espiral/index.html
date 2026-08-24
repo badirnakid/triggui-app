@@ -261,12 +261,15 @@ if(claveMiembro()){arrancarEspiral();}else{puertaAbrir(arrancarEspiral);cargarLi
 } catch (e) {} })();
 </script>
 <script>
-pvAplicaCascara([
- ['#puerta h1', 'Your spiral'],
- ['#puerta .sub', 'Every Monday we activate you with a living edition and its video. Whatever you love, save it with \ud83d\ude0d \u2014 for whenever you need it.'],
- ['#manijaClave', 'No key? Text me \u2192'],
- ['#clave', 'your key', 'ph'],
-]);
+(function(){ if(window.PV_LANG!=='en') return;
+  function T(sel,txt){ var e=document.querySelector(sel); if(e) e.textContent=txt; }
+  function PH(sel,txt){ var e=document.querySelector(sel); if(e) e.setAttribute('placeholder',txt); }
+  T('#puerta h1','Your spiral');
+  T('#puerta .sub','Every Monday we activate you with a living edition and its video. Whatever you love, save it with \ud83d\ude0d \u2014 for whenever you need it.');
+  T('#manijaClave','No key? Text me \u2192');
+  PH('#clave','your member key');
+  T('#entrar','Enter');
+})();
 </script>
 </body>
 </html>
