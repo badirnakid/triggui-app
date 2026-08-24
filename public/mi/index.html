@@ -654,21 +654,27 @@ body::before {
 }
 @keyframes breatheLoading { 0%, 100% { opacity: 0.3; transform: scale(0.98); } 50% { opacity: 1; transform: scale(1.02); } }
 
-/* ── Puerta v15.4 trasplantada de /espiral/ ── */
-@keyframes puerta-giro{to{transform:rotate(360deg)}}
-<!doctype html>
-<html lang="es">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0B0F1A">
-<title>Triggui &middot; La Espiral</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./spiral.triggui.css">
-<script src="/caja.js" defer></script><!-- 📦 caja negra compartida: 5 toques en la esquina superior izquierda -->
-<style>
+/* ── Puerta v15.4: capa0 (ecosistema) + órgano íntegro ── */
+#puerta{--bg:#0B0F1A;
+  --ink:#F5F0E8;
+  --dim:#b8b2a6;
+  --faint:#77716a;
+  --line:#232838;
+  --panel:rgba(10,10,14,.94);
+
+  --gold:#E8A838;        /* primario Trestme, el mismo --t-gold de la casa */
+  --gold-2:#f2c98a;      /* lila claro para texto brillante */
+  --gold-dim:rgba(128,106,217,.30);
+  --acqua:#FF6B4A;       /* el duo fuerte: primario + acqua, como el Inspiral */
+  --acqua-dim:rgba(0,229,255,.30);
+  --check:#34D399;       /* verde esmeralda del sello resuelto */
+  --check-txt:#7ee7c0;   /* texto esmeralda claro para estados resueltos */
+  --thread:rgba(177,166,238,.15);
+
+  --pend:#b9b9c6;        /* pendiente */
+  --curso:#FF6B4A;       /* en curso: energia acqua */
+  --pausa:#7a7a86;       /* pospuesto */;font:15px/1.6 'Manrope',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink)}
+
 /* v15.11 · Puerta de miembro: el lenguaje de la barra magica (auroras con los colores de la ultima edicion,
    vidrio, acento dinamico), el 🌀 que acaban de tocar, y el texto de para que sirve tu espiral */
 #puerta{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:28px;z-index:50;background:var(--bg,#0B0F1A);overflow:hidden;
@@ -682,11 +688,17 @@ body::before {
 
 .puerta-aurora.a2{bottom:-80px;right:-60px;background:var(--p2);animation:puerta-drift-2 26s ease-in-out infinite}
 
+@keyframes puerta-drift-1{0%,100%{transform:translate(0,0)}33%{transform:translate(40px,80px)}66%{transform:translate(-30px,50px)}}
+
+@keyframes puerta-drift-2{0%,100%{transform:translate(0,0)}50%{transform:translate(-40px,-80px)}}
+
 .puerta-card{position:relative;width:100%;max-width:340px;text-align:center;font-family:'Manrope',sans-serif}
 
 .puerta-card .glifo{font-size:52px;line-height:1;display:block;margin:0 auto 14px;filter:drop-shadow(0 4px 12px rgba(0,0,0,.3))}
 
 .puerta-card .glifo span{display:inline-block;animation:puerta-giro 14s linear infinite}
+
+@keyframes puerta-giro{to{transform:rotate(360deg)}}
 
 .puerta-card h1{font:800 26px/1.1 'Manrope',sans-serif;letter-spacing:-.02em;margin:0 0 12px;color:#fff}
 
@@ -719,14 +731,13 @@ body::before {
 .puerta-cierra{position:fixed;top:calc(14px + env(safe-area-inset-top));right:14px;width:34px;height:34px;border-radius:50%;border:1px solid var(--line,#232838);background:transparent;color:var(--dim,#b8b2a6);font:15px/1 'Manrope',sans-serif;cursor:pointer;z-index:51}
 
 .puerta-cierra:active{transform:scale(.96)}
-
-/* contrato /mi/: la puerta solo existe con .ver */
 #puerta{display:none}
 #puerta.ver{display:flex}
 </style>
 <!-- GA4 base (AL) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-CLK554FCNM"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-CLK554FCNM');</script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -1707,6 +1718,43 @@ function casarYVaciarEspiral(clave, fin){
   var esWebView = /\bwv\b/.test(ua) || (/iPhone|iPad|iPod/.test(ua) && !/Safari\//.test(ua));
   if (!esWebView) { var m = document.getElementById('manijaClave'); if (m) m.href = 'https://wa.me/525532394017?text=Quiero%20mi%20clave%20de%20Triggui'; }
 } catch (e) {} })();
+</script>
+<script>
+/* colores dinamicos de la puerta — hilo calcado de /espiral/, prefijado y autonomo */
+(function(){
+var LIBROS=null;
+function __pv_lum(h){try{var c=String(h||'').replace('#','');if(c.length===3)c=c.split('').map(function(x){return x+x;}).join('');var r=parseInt(c.slice(0,2),16)/255,g=parseInt(c.slice(2,4),16)/255,b=parseInt(c.slice(4,6),16)/255;var f=function(v){return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4);};return .2126*f(r)+.7152*f(g)+.0722*f(b);}catch(e){return 0;}}
+function __pv_hexRgba(h,a){try{var c=String(h||'').replace('#','').trim();if(c.length===3)c=c.split('').map(function(x){return x+x;}).join('');var r=parseInt(c.slice(0,2),16),g=parseInt(c.slice(2,4),16),b=parseInt(c.slice(4,6),16);if([r,g,b].some(isNaN))return '';return 'rgba('+r+','+g+','+b+','+a+')';}catch(e){return '';}}
+function __pv_clarito(h){ /* acento legible sobre fondo oscuro: luminosidad HSL entre 58% y 72%, como la barra magica */
+  try{var c=String(h||'').replace('#','');if(c.length===3)c=c.split('').map(function(x){return x+x;}).join('');var r=parseInt(c.slice(0,2),16)/255,g=parseInt(c.slice(2,4),16)/255,b=parseInt(c.slice(4,6),16)/255;
+  var mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,d=mx-mn,sat=d?d/(1-Math.abs(2*l-1)):0,hh=0;
+  if(d){hh=mx===r?((g-b)/d)%6:mx===g?(b-r)/d+2:(r-g)/d+4;hh=Math.round(hh*60);if(hh<0)hh+=360;}
+  return 'hsl('+hh+','+Math.round(sat*100)+'%,'+Math.min(72,Math.max(58,Math.round(l*100+18)))+'%)';}catch(e){return '#E8A838';}
+}
+function __pv_puertaColorear(libros){ /* la puerta toma los colores de la ultima edicion, como la barra magica toma los del libro */
+  try{
+    var ult=libros&&libros.length?libros[libros.length-1]:null; var col=(ult&&ult.colores)||[];
+    var c1=/^#[0-9a-fA-F]{6}$/.test(col[0]||'')?col[0]:'', c2=/^#[0-9a-fA-F]{6}$/.test(col[1]||'')?col[1]:'';
+    if(!c1||!c2) return;
+    var st=document.getElementById('puerta').style;
+    st.setProperty('--pc1',c1);st.setProperty('--pc2',c2);st.setProperty('--ptxt',(__pv_lum(c1)+__pv_lum(c2))/2>.35?'#000':'#fff');
+    st.setProperty('--p1',__pv_hexRgba(c1,.48));st.setProperty('--p2',__pv_hexRgba(c2,.42));
+    var pa=__pv_clarito(c1);st.setProperty('--pa',pa);
+    var pa40=__pv_hexRgba(c1,.40),pa18=__pv_hexRgba(c1,.18),pa10=__pv_hexRgba(c1,.10);if(pa40){st.setProperty('--pa-40',pa40);st.setProperty('--pa-18',pa18);st.setProperty('--pa-10',pa10);}
+  }catch(e){}
+}
+async function __pv_cargarLibros(){
+  if(LIBROS) return LIBROS;
+  var libros=[];
+  try{
+    var d=await fetch('https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido_manual.json',{cache:'no-store'}).then(function(r){return r.json()});
+    libros=(d.libros||[]).filter(function(b){return b&&b._edicion_numero&&b.titulo});
+  }catch(e){}
+  libros.sort(function(a,b){return a._edicion_numero-b._edicion_numero});
+  LIBROS=libros; return libros;
+}
+try{ if(document.getElementById('puerta')){ __pv_cargarLibros().then(__pv_puertaColorear); } }catch(e){}
+})();
 </script>
 </body>
 </html>
