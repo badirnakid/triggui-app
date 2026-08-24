@@ -1452,13 +1452,21 @@ jobs:
 
           git config user.name "Triggui Bot"
           git config user.email "bot@triggui.com"
-          git add "${OUT}/${SLUG}/"
+          if [ -f /tmp/triggui-slugs-ola.txt ]; then
+            N=$(grep -c . /tmp/triggui-slugs-ola.txt)
+            echo "🌊 Modo ola — añadiendo ${N} ediciones"
+            while IFS= read -r S; do [ -n "$S" ] && git add "${OUT}/${S}/"; done < /tmp/triggui-slugs-ola.txt
+            MSGSLUG="ola ${N} ediciones"
+          else
+            git add "${OUT}/${SLUG}/"
+            MSGSLUG="${SLUG}"
+          fi
           git add public/t/ediciones.json public/sitemap.xml 2>/dev/null || true || true
 
           if git diff --cached --quiet; then
             echo "🟡 ${OUT}/${SLUG} sin cambios — ya era idéntico (nada que commitear)."
           else
-            git commit -m "🔁 reconstruir — ${SLUG}"
+            git commit -m "🔁 reconstruir — ${MSGSLUG}"
             for i in 1 2 3; do
               if git pull --rebase --autostash origin "${BRANCH}" && git push origin "HEAD:${BRANCH}"; then
                 echo "✅ Push reconstruir exitoso (intento $i)"
