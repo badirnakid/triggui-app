@@ -2,6 +2,7 @@
 window.PV_LANG = window.PV_LANG || (function(){try{var v=JSON.parse(localStorage.getItem('triggui_lang')||'null');if(v==='en'||v==='es')return v;}catch(e){}return ((navigator.language||'es').slice(0,2)==='en')?'en':'es';})();
 window.pvT = window.pvT || function(es,en){ return (window.PV_LANG==='en')?en:es; };
 window.pvTitulo = window.pvTitulo || function(b){ return (window.PV_LANG==='en'&&b&&b.titulo_en)?b.titulo_en:((b&&b.titulo)||''); };
+window.pvF = window.pvF || function(o,c){ return (window.PV_LANG==='en'&&o&&o[c+'_en'])?o[c+'_en']:((o&&o[c])||''); };
 /* ============================================================
    TRESTME INSIGHTS · Motor de la espiral
    Helice cilindrica: 13 nodos = 1 vuelta = 1 trimestre.
