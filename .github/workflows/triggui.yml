@@ -868,7 +868,7 @@ jobs:
       # ╚══════════════════════════════════════════════════════════════════╝
 
       - name: 🌐 Generar edición viva HTML
-        if: ${{ inputs.generar_imagenes && (steps.modo.outputs.modo_tecnico == 'single_book' || steps.modo.outputs.modo_tecnico == 'trigger_constrained' || steps.modo.outputs.modo_tecnico == 'trigger_discover') }}
+        if: ${{ inputs.generar_imagenes && (steps.modo.outputs.modo_tecnico == 'single_book' || steps.modo.outputs.modo_tecnico == 'trigger_constrained' || steps.modo.outputs.modo_tecnico == 'trigger_discover' || steps.modo.outputs.modo_tecnico == 'production_batch') }}
         env:
           TRIGGUI_EDICION_JSON: ${{ inputs.catalogo == 'kids' && 'contenido_kids.json' || 'contenido.json' }}
           TRIGGUI_OUT_BASE: ${{ inputs.catalogo == 'kids' && 'public/kids/t' || 'public/t' }}
@@ -877,14 +877,24 @@ jobs:
           # (mergeIntoContenidoJson devolvió true → escribió /tmp/triggui-committed.flag). Antes se
           # chequeaba libros[0], que con el catálogo poblado SIEMPRE existe y nunca protegía: si el
           # libro nuevo no entraba (quarantine, etc.), build-editions reventaba con V14 ABORT.
-          if [ ! -f /tmp/triggui-committed.flag ]; then
-            echo "⏭️  Sin /tmp/triggui-committed.flag — el libro no se commiteó este run — skip edición HTML"; exit 0
+          # 🏭 Corte 4: manifiesto = camino universal (single es un lote de 1); el flag queda de red.
+          if [ -f /tmp/triggui-batch.jsonl ]; then
+            echo "📦 Lote: $(wc -l < /tmp/triggui-batch.jsonl) libro(s) para edición HTML"
+            while IFS= read -r __libro; do
+              [ -z "$__libro" ] && continue
+              printf '%s' "$__libro" > /tmp/triggui-book.json
+              python3 scripts/build-editions.py
+            done < /tmp/triggui-batch.jsonl
+          else
+            if [ ! -f /tmp/triggui-committed.flag ]; then
+              echo "⏭️  Sin flag ni manifiesto — nada que fabricar — skip edición HTML"; exit 0
+            fi
+            python3 scripts/build-editions.py
           fi
-          python3 scripts/build-editions.py
-          find "${TRIGGUI_OUT_BASE}" -name "index.html" 2>/dev/null | head -5
+          find "${TRIGGUI_OUT_BASE}" -name "index.html" 2>/dev/null | head -8
 
       - name: 🎨 Generar tarjeta PNG 1080×1920
-        if: ${{ inputs.generar_imagenes && (steps.modo.outputs.modo_tecnico == 'single_book' || steps.modo.outputs.modo_tecnico == 'trigger_constrained' || steps.modo.outputs.modo_tecnico == 'trigger_discover') }}
+        if: ${{ inputs.generar_imagenes && (steps.modo.outputs.modo_tecnico == 'single_book' || steps.modo.outputs.modo_tecnico == 'trigger_constrained' || steps.modo.outputs.modo_tecnico == 'trigger_discover' || steps.modo.outputs.modo_tecnico == 'production_batch') }}
         env:
           TRIGGUI_EDICION_JSON: ${{ inputs.catalogo == 'kids' && 'contenido_kids.json' || 'contenido.json' }}
           TRIGGUI_OUT_BASE: ${{ inputs.catalogo == 'kids' && 'public/kids/t' || 'public/t' }}
@@ -893,14 +903,24 @@ jobs:
           # (mergeIntoContenidoJson devolvió true → escribió /tmp/triggui-committed.flag). Antes se
           # chequeaba libros[0], que con el catálogo poblado SIEMPRE existe y nunca protegía: si el
           # libro nuevo no entraba (quarantine, etc.), build-editions reventaba con V14 ABORT.
-          if [ ! -f /tmp/triggui-committed.flag ]; then
-            echo "⏭️  Sin /tmp/triggui-committed.flag — el libro no se commiteó este run — skip tarjeta PNG"; exit 0
+          # 🏭 Corte 4: manifiesto = camino universal (single es un lote de 1); el flag queda de red.
+          if [ -f /tmp/triggui-batch.jsonl ]; then
+            echo "📦 Lote: $(wc -l < /tmp/triggui-batch.jsonl) libro(s) para tarjeta PNG"
+            while IFS= read -r __libro; do
+              [ -z "$__libro" ] && continue
+              printf '%s' "$__libro" > /tmp/triggui-book.json
+              node scripts/build-tarjeta-png.js
+            done < /tmp/triggui-batch.jsonl
+          else
+            if [ ! -f /tmp/triggui-committed.flag ]; then
+              echo "⏭️  Sin flag ni manifiesto — nada que fabricar — skip tarjeta PNG"; exit 0
+            fi
+            node scripts/build-tarjeta-png.js
           fi
-          node scripts/build-tarjeta-png.js
-          find "${TRIGGUI_OUT_BASE}" -name "tarjeta.png" 2>/dev/null | head -5
+          find "${TRIGGUI_OUT_BASE}" -name "tarjeta.png" 2>/dev/null | head -8
 
       - name: 🖼️ Generar OG image PNG 1200×630
-        if: ${{ inputs.generar_imagenes && (steps.modo.outputs.modo_tecnico == 'single_book' || steps.modo.outputs.modo_tecnico == 'trigger_constrained' || steps.modo.outputs.modo_tecnico == 'trigger_discover') }}
+        if: ${{ inputs.generar_imagenes && (steps.modo.outputs.modo_tecnico == 'single_book' || steps.modo.outputs.modo_tecnico == 'trigger_constrained' || steps.modo.outputs.modo_tecnico == 'trigger_discover' || steps.modo.outputs.modo_tecnico == 'production_batch') }}
         env:
           TRIGGUI_EDICION_JSON: ${{ inputs.catalogo == 'kids' && 'contenido_kids.json' || 'contenido.json' }}
           TRIGGUI_OUT_BASE: ${{ inputs.catalogo == 'kids' && 'public/kids/t' || 'public/t' }}
@@ -909,11 +929,21 @@ jobs:
           # (mergeIntoContenidoJson devolvió true → escribió /tmp/triggui-committed.flag). Antes se
           # chequeaba libros[0], que con el catálogo poblado SIEMPRE existe y nunca protegía: si el
           # libro nuevo no entraba (quarantine, etc.), build-editions reventaba con V14 ABORT.
-          if [ ! -f /tmp/triggui-committed.flag ]; then
-            echo "⏭️  Sin /tmp/triggui-committed.flag — el libro no se commiteó este run — skip OG"; exit 0
+          # 🏭 Corte 4: manifiesto = camino universal (single es un lote de 1); el flag queda de red.
+          if [ -f /tmp/triggui-batch.jsonl ]; then
+            echo "📦 Lote: $(wc -l < /tmp/triggui-batch.jsonl) libro(s) para OG"
+            while IFS= read -r __libro; do
+              [ -z "$__libro" ] && continue
+              printf '%s' "$__libro" > /tmp/triggui-book.json
+              node scripts/build-og-image.js
+            done < /tmp/triggui-batch.jsonl
+          else
+            if [ ! -f /tmp/triggui-committed.flag ]; then
+              echo "⏭️  Sin flag ni manifiesto — nada que fabricar — skip OG"; exit 0
+            fi
+            node scripts/build-og-image.js
           fi
-          node scripts/build-og-image.js
-          find "${TRIGGUI_OUT_BASE}" -name "og.png" 2>/dev/null | head -5
+          find "${TRIGGUI_OUT_BASE}" -name "og.png" 2>/dev/null | head -8
 
       # ╔══════════════════════════════════════════════════════════════════╗
       # ║  FASE 7.5 — 🛡️ Audience Blocker Pre-Commit (capa 4 nivel dios)    ║
@@ -972,7 +1002,7 @@ jobs:
       # ╚══════════════════════════════════════════════════════════════════╝
 
       - name: 🎬 Resolver videos (YouTube, TOP-3 vetado)
-        if: ${{ !inputs.modo_prueba && (steps.modo.outputs.modo_tecnico == 'single_book' || steps.modo.outputs.modo_tecnico == 'trigger_constrained' || steps.modo.outputs.modo_tecnico == 'trigger_discover') && env.YT_API_KEY != '' }}
+        if: ${{ !inputs.modo_prueba && (steps.modo.outputs.modo_tecnico == 'single_book' || steps.modo.outputs.modo_tecnico == 'trigger_constrained' || steps.modo.outputs.modo_tecnico == 'trigger_discover' || steps.modo.outputs.modo_tecnico == 'production_batch') && env.YT_API_KEY != '' }}
         continue-on-error: true
         shell: bash
         run: |
