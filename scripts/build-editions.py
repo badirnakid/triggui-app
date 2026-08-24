@@ -749,8 +749,12 @@ def render_edicion(edicion, mode="lab"):
     busca_explorar = urllib.parse.quote(primary_word_default) if primary_word_default else busca_comprar
     penguin_q = urllib.parse.quote(primary_word_default) if primary_word_default else urllib.parse.quote(titulo)
 
-    has_portada = portada.startswith("http")
-    cover_src = "./portada.jpg"  # Fábrica: la escalera A/B/C garantiza portada premium local en cada edición
+    # 🖼️ Cover verificado a nivel partícula: local premium si EXISTE; si no, remota del libro; jamás roto
+    _out_base_dir = SINGLE_OUT_DIR if mode == "single" else LAB_OUT_DIR
+    _local_ok = (_out_base_dir / edicion_id / "portada.jpg").exists()
+    _remote_ok = portada.startswith("http")
+    has_portada = _local_ok or _remote_ok
+    cover_src = "./portada.jpg" if _local_ok else (portada if _remote_ok else "")
     has_tarjeta = bool(t_parrafo_top)
     layout_metrics = compute_editorial_layout_metrics(
         t_titulo or titulo,
@@ -896,6 +900,7 @@ body::before {
 }
 
 .pulse-line {
+  pointer-events: none;
   position: fixed;
   top: 16px;
   left: 0;
@@ -1010,9 +1015,9 @@ body::before {
 .block.show .label { opacity: 0; transform: translateY(-6px); }
 .block.show .frase { opacity: 1; transform: translateY(0); }
 
-#tgLangPill{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:12px;z-index:150;display:flex;background:rgba(20,20,26,.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:3px;font:700 11px/1 -apple-system,system-ui,sans-serif;letter-spacing:.06em}
-#tgLangPill button{appearance:none;border:0;background:transparent;color:rgba(255,255,255,.55);padding:7px 10px;border-radius:999px;cursor:pointer;min-width:34px}
-#tgLangPill button.on{background:rgba(255,255,255,.92);color:#111}
+#tgLangPill{position:fixed;top:max(54px, calc(env(safe-area-inset-top,0px) + 14px));right:16px;z-index:180;display:flex;background:rgba(255,255,255,.05);border:.5px solid rgba(255,255,255,.1);border-radius:99px;padding:3px;font:600 11px/1 'Poppins',sans-serif}
+#tgLangPill span{padding:5px 11px;border-radius:99px;transition:all .35s cubic-bezier(.19,1,.22,1);color:rgba(255,255,255,.45);cursor:pointer}
+#tgLangPill span.lang-active{color:#000;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.15)}
 .reveal-overlay {
   position: fixed;
   inset: 0;
@@ -1609,7 +1614,7 @@ body.tg-tarjeta .tg-cta{display:none !important}
 </head>
 <body data-lab-v="live-edition-card-v3" style="__BODY_STYLE__">
 
-<div id="tgLangPill" role="group" aria-label="Language"><button id="tgLangEs" type="button">ES</button><button id="tgLangEn" type="button">EN</button></div>
+<button id="tgLangPill" type="button" aria-label="Toggle language"><span id="tgLangEs">Español</span><span id="tgLangEn">English</span></button>
 <div id="pulseLine" class="pulse-line"></div>
 <div class="bocado-eco-overlay" id="bocadoEcoOverlay">
   <div class="bocado-eco-phrase" id="bocadoEcoPhrase"></div>
@@ -1687,10 +1692,10 @@ function tgApplyCard(){ const en=state.i18nEn||{}; tgSnap(); const n=tgIds();
   else { if(n.t&&TG_ES_SNAP.t!==null)n.t.innerHTML=TG_ES_SNAP.t; if(n.p&&TG_ES_SNAP.p!==null)n.p.innerHTML=TG_ES_SNAP.p; if(n.su&&TG_ES_SNAP.su!==null)n.su.innerHTML=TG_ES_SNAP.su; if(n.b&&TG_ES_SNAP.b!==null)n.b.innerHTML=TG_ES_SNAP.b; } }
 function tgApplyGrid(){ if(tgLang==='en'&&Array.isArray(state.frases_en)&&state.frases_en.length===4){ state._fes=state._fes||state.frases; state._pes=state._pes||state.palabras; state.frases=state.frases_en; if(Array.isArray(state.palabras_en)&&state.palabras_en.length===4)state.palabras=state.palabras_en; } else if(state._fes){ state.frases=state._fes; state.palabras=state._pes||state.palabras; } }
 function tgRepaintGrid(){ document.querySelectorAll('#grid .label').forEach(function(el,i){ const em=(el.textContent||'').trim().split(' ')[0]; el.textContent=em+' '+(state.palabras[i]||''); }); document.querySelectorAll('#grid .frase').forEach(function(el,i){ el.textContent=state.frases[i]||''; }); }
-function tgPillPaint(){ const a=document.getElementById('tgLangEs'), b=document.getElementById('tgLangEn'); if(a&&b){ a.classList.toggle('on', tgLang==='es'); b.classList.toggle('on', tgLang==='en'); } }
+function tgPillPaint(){ const a=document.getElementById('tgLangEs'), b=document.getElementById('tgLangEn'); if(a&&b){ a.classList.toggle('lang-active', tgLang==='es'); b.classList.toggle('lang-active', tgLang==='en'); } }
 function tgSetLang(l){ if(l===tgLang){ tgPillPaint(); return; } tgLang=l; try{ localStorage.setItem('triggui_lang', JSON.stringify(l)); }catch(e){} tgApplyGrid(); tgRepaintGrid(); tgApplyCard(); tgPillPaint(); }
 tgApplyGrid(); /* swap pre-pintado: el grid nace en el idioma correcto */
-document.addEventListener('DOMContentLoaded', function(){ tgApplyCard(); tgPillPaint(); const a=document.getElementById('tgLangEs'), b=document.getElementById('tgLangEn'); if(a)a.addEventListener('click',function(){tgSetLang('es');}); if(b)b.addEventListener('click',function(){tgSetLang('en');}); });
+document.addEventListener('DOMContentLoaded', function(){ tgApplyCard(); tgPillPaint(); const a=document.getElementById('tgLangEs'), b=document.getElementById('tgLangEn'); if(a)a.addEventListener('click',function(){tgSetLang('es');}); if(b)b.addEventListener('click',function(){tgSetLang('en');}); const pl=document.getElementById('tgLangPill'); if(pl)pl.addEventListener('click',function(ev){ if(ev.target&&ev.target.closest&&ev.target.closest('#tgLangEs,#tgLangEn'))return; tgSetLang(tgLang==='en'?'es':'en'); }); });
 const grid = document.getElementById('grid');
 const revealOverlay = document.getElementById('revealOverlay');
 const btnBack = document.getElementById('btnBack');
