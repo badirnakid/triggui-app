@@ -1708,11 +1708,11 @@ function tgApplyGrid(){ const en=(tgLang==='en');
   } else if(state._fes){ state.frases=state._fes; state.palabras=state._pes||state.palabras; state.titulo=state._tes||state.titulo; state.bocadoEcoPool=state._bes||state.bocadoEcoPool; }
   var LL=window.__tgL; if(LL){ LL.palabras=(state.palabras||[]).slice(0,4); LL.frases=(state.frases||[]).slice(0,4); LL.titulo=state.titulo||LL.titulo; } }
 function tgApplySilence(){ const en=(tgLang==='en'); const t=document.querySelector('.sil-title'); if(t) t.textContent=state.titulo||''; const c=document.querySelector('.sil-call'); if(c) c.innerHTML= en?'We want you to feel like<br>opening a book.':'Queremos que te den ganas<br>de abrir un libro.'; const su=document.querySelector('.sil-sub'); if(su) su.textContent= en?"That's Triggui.":'Eso es Triggui.'; }
-function tgRepaintGrid(){ var g=document.getElementById('grid'); if(!g) return; var kids=g.children;
-  for(var i=0;i<kids.length&&i<4;i++){
-    var lb=kids[i].querySelector('.tg-label'); if(lb) lb.textContent=state.palabras[i]||'';
-    var fr=kids[i].querySelector('.tg-frase'); if(fr) fr.textContent=state.frases[i]||'';
-    var h2=kids[i].querySelector('.tg-porttext h2'); if(h2) h2.textContent=state.titulo||''; } }
+function tgRepaintGrid(){ var blocks=document.querySelectorAll('.tg-block');
+  for(var i=0;i<blocks.length&&i<4;i++){
+    var lb=blocks[i].querySelector('.tg-label'); if(lb) lb.textContent=state.palabras[i]||'';
+    var fr=blocks[i].querySelector('.tg-frase'); if(fr) fr.textContent=state.frases[i]||'';
+    var h2=blocks[i].querySelector('.tg-porttext h2'); if(h2) h2.textContent=state.titulo||''; } }
 function tgPillPaint(){ const a=document.getElementById('tgLangEs'), b=document.getElementById('tgLangEn'); if(a&&b){ a.classList.toggle('lang-active', tgLang==='es'); b.classList.toggle('lang-active', tgLang==='en'); } }
 function tgSetLang(l){ if(l===tgLang){ tgPillPaint(); return; } tgLang=l; try{ localStorage.setItem('triggui_lang', JSON.stringify(l)); }catch(e){} tgApplyGrid(); tgRepaintGrid(); tgApplyCard(); tgApplySilence(); tgPillPaint(); }
 tgApplyGrid(); /* swap pre-pintado: el grid nace en el idioma correcto */
