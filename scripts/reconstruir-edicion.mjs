@@ -132,6 +132,46 @@ function preferWithNum(arr) {
 /* ═══════════════════════════════════════════════════════════════
    MAIN
 ═══════════════════════════════════════════════════════════════ */
+// 🌊 MODO OLA — RECONSTRUIR multilínea: una edición por línea "Titulo | Autor"; solo index.html
+function runOla(data) {
+  const raw = String(process.env.RECONSTRUIR || "");
+  const lineas = raw.split("\n").map(l => l.trim()).filter(Boolean);
+  const outBase = process.env.TRIGGUI_OUT_BASE || "public/t";
+  const SINGLE_PATH = "/tmp/triggui-reconstruir.json";
+  const okSlugs = [];
+  const fallas = [];
+  console.log(`🌊 MODO OLA — ${lineas.length} ediciones · solo index.html · out: ${outBase}`);
+  for (const linea of lineas) {
+    const parts = linea.split("|");
+    const titulo = (parts[0] || "").trim();
+    const autor = (parts[1] || "").trim();
+    const res = findBook(data.libros, titulo, autor);
+    if (res.error) { fallas.push(`${linea} → ${res.error}`); console.error(`❌ ${linea} → ${res.error}`); continue; }
+    const book = res.book;
+    const slug = slugify(book.titulo);
+    if (!slug) { fallas.push(`${linea} → slug vacío`); continue; }
+    fs.writeFileSync(SINGLE_PATH, JSON.stringify({ libros: [book], meta: data.meta || {} }), "utf8");
+    const bookMeta = { titulo: book.titulo, autor: book.autor || "", slug };
+    const portada = book.portada_url || book.portada || "";
+    if (portada) bookMeta.portada = portada;
+    const portadaSource = book.portada_source || book.source || "";
+    if (portadaSource) bookMeta.portada_source = portadaSource;
+    fs.writeFileSync("/tmp/triggui-book.json", JSON.stringify(bookMeta), "utf8");
+    const childEnv = { ...process.env, TRIGGUI_EDICION_JSON: SINGLE_PATH, TRIGGUI_OUT_BASE: outBase };
+    console.log(`▸ ${slug} …`);
+    const r = spawnSync("python3", ["scripts/build-editions.py"], { cwd: process.cwd(), env: childEnv, stdio: "inherit" });
+    if (r.status !== 0) { fallas.push(`${linea} → build exit ${r.status}`); console.error(`❌ ${slug} build exit ${r.status}`); continue; }
+    okSlugs.push(slug);
+  }
+  if (okSlugs.length) {
+    fs.writeFileSync("/tmp/triggui-slugs-ola.txt", okSlugs.join("\n") + "\n", "utf8");
+    fs.writeFileSync("/tmp/triggui-slug.txt", okSlugs[0], "utf8");
+  }
+  console.log("");
+  console.log(`🌊 OLA — ✅ ${okSlugs.length} · ❌ ${fallas.length}`);
+  for (const f of fallas) console.log(`   ✗ ${f}`);
+}
+
 function main() {
   const { titulo, autor } = parseInput();
   if (!titulo) {
@@ -157,6 +197,9 @@ function main() {
     console.error(`❌ ${sourcePath} no tiene .libros[].`);
     process.exit(1);
   }
+
+  // 🌊 lista multilínea → modo ola (re-render SOLO index.html de cada edición)
+  if (/\n/.test(String(process.env.RECONSTRUIR || ""))) { runOla(data); return; }
 
   const res = findBook(data.libros, titulo, autor);
   if (res.error) {
