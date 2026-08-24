@@ -180,7 +180,7 @@ def resolve_palabra_dominante(libro_data):
     )
 
 
-def build_bocado_eco_pool(libro_data):
+def build_bocado_eco_pool(libro_data, lang="es"):
     """
     🌒 V14 SINFÓNICO NIVEL DIOS CUÁNTICO-QUARK MATEMÁTICAMENTE.
 
@@ -235,7 +235,7 @@ def build_bocado_eco_pool(libro_data):
     nucleus = libro_data.get("_nucleus", {}) or {}
 
     # 🌒 V14 PRIORIDAD 1: edition_blocks_es (sinfónico)
-    for block in (nucleus.get("edition_blocks_es", []) or []):
+    for block in (nucleus.get(f"edition_blocks_{lang}", []) or []):
         if isinstance(block, dict) and block.get("rol_sinfonico"):
             add_phrase(
                 block.get("phrase", ""),
@@ -245,7 +245,7 @@ def build_bocado_eco_pool(libro_data):
             )
 
     # 🌒 V14 PRIORIDAD 2: og_phrases_es (sinfónico)
-    for og in (nucleus.get("og_phrases_es", []) or []):
+    for og in (nucleus.get(f"og_phrases_{lang}", []) or []):
         if isinstance(og, dict) and og.get("rol_sinfonico"):
             add_phrase(
                 og.get("phrase", ""),
@@ -787,6 +787,8 @@ def render_edicion(edicion, mode="lab"):
             "bot": render_highlight_html(t_bot_en) if t_bot_en else "",
         },
         "bocadoEcoPool": edicion.get("bocadoEcoPool") or [],
+        "bocadoEcoPool_en": edicion.get("bocadoEcoPool_en") or [],
+        "titulo_en": str(edicion.get("titulo_en", "") or ""),
     }
 
     cover_cta_html = ""
@@ -1682,6 +1684,7 @@ body.tg-tarjeta .tg-cta{display:none !important}
 
 <script>
 const state = __STATE_JSON__;
+const TG_COVER_SRC = __TG_COVER_SRC__;
 /* 🌐 D2-A — idioma de la edición: misma llave del imperio (triggui_lang) */
 const TG_ES_SNAP = { t: null, p: null, su: null, b: null };
 let tgLang = (function(){ try { const v = JSON.parse(localStorage.getItem('triggui_lang')||'null'); if (v==='en'||v==='es') return v; } catch(e){} return ((navigator.language||'es').slice(0,2)==='en') ? 'en' : 'es'; })();
@@ -1690,12 +1693,20 @@ function tgSnap(){ const n=tgIds(); if(n.t&&TG_ES_SNAP.t===null)TG_ES_SNAP.t=n.t
 function tgApplyCard(){ const en=state.i18nEn||{}; tgSnap(); const n=tgIds();
   if(tgLang==='en'){ if(n.t&&en.cardTitle)n.t.textContent=en.cardTitle; if(n.p&&en.top)n.p.innerHTML=en.top; if(n.su&&en.sub)n.su.textContent=en.sub; if(n.b&&en.bot)n.b.innerHTML=en.bot; }
   else { if(n.t&&TG_ES_SNAP.t!==null)n.t.innerHTML=TG_ES_SNAP.t; if(n.p&&TG_ES_SNAP.p!==null)n.p.innerHTML=TG_ES_SNAP.p; if(n.su&&TG_ES_SNAP.su!==null)n.su.innerHTML=TG_ES_SNAP.su; if(n.b&&TG_ES_SNAP.b!==null)n.b.innerHTML=TG_ES_SNAP.b; } }
-function tgApplyGrid(){ if(tgLang==='en'&&Array.isArray(state.frases_en)&&state.frases_en.length===4){ state._fes=state._fes||state.frases; state._pes=state._pes||state.palabras; state.frases=state.frases_en; if(Array.isArray(state.palabras_en)&&state.palabras_en.length===4)state.palabras=state.palabras_en; } else if(state._fes){ state.frases=state._fes; state.palabras=state._pes||state.palabras; } }
-function tgRepaintGrid(){ document.querySelectorAll('#grid .label').forEach(function(el,i){ const em=(el.textContent||'').trim().split(' ')[0]; el.textContent=em+' '+(state.palabras[i]||''); }); document.querySelectorAll('#grid .frase').forEach(function(el,i){ el.textContent=state.frases[i]||''; }); }
+function tgApplyGrid(){ const en=(tgLang==='en');
+  if(en){ state._fes=state._fes||state.frases; state._pes=state._pes||state.palabras; state._tes=state._tes||state.titulo; state._bes=state._bes||state.bocadoEcoPool;
+    if(Array.isArray(state.frases_en)&&state.frases_en.length===4) state.frases=state.frases_en;
+    if(Array.isArray(state.palabras_en)&&state.palabras_en.length===4) state.palabras=state.palabras_en;
+    if(state.titulo_en) state.titulo=state.titulo_en;
+    if(Array.isArray(state.bocadoEcoPool_en)&&state.bocadoEcoPool_en.length) state.bocadoEcoPool=state.bocadoEcoPool_en;
+  } else if(state._fes){ state.frases=state._fes; state.palabras=state._pes||state.palabras; state.titulo=state._tes||state.titulo; state.bocadoEcoPool=state._bes||state.bocadoEcoPool; }
+  if(typeof L!=='undefined'&&L){ L.palabras=(state.palabras||[]).slice(0,4); L.frases=(state.frases||[]).slice(0,4); L.titulo=state.titulo||L.titulo; } }
+function tgApplySilence(){ const en=(tgLang==='en'); const t=document.querySelector('.sil-title'); if(t) t.textContent=state.titulo||''; const c=document.querySelector('.sil-call'); if(c) c.innerHTML= en?'We want you to feel like<br>opening a book.':'Queremos que te den ganas<br>de abrir un libro.'; const su=document.querySelector('.sil-sub'); if(su) su.textContent= en?"That's Triggui.":'Eso es Triggui.'; }
+function tgRepaintGrid(){ if(typeof render==='function'){ try{ render(); }catch(e){} } }
 function tgPillPaint(){ const a=document.getElementById('tgLangEs'), b=document.getElementById('tgLangEn'); if(a&&b){ a.classList.toggle('lang-active', tgLang==='es'); b.classList.toggle('lang-active', tgLang==='en'); } }
-function tgSetLang(l){ if(l===tgLang){ tgPillPaint(); return; } tgLang=l; try{ localStorage.setItem('triggui_lang', JSON.stringify(l)); }catch(e){} tgApplyGrid(); tgRepaintGrid(); tgApplyCard(); tgPillPaint(); }
+function tgSetLang(l){ if(l===tgLang){ tgPillPaint(); return; } tgLang=l; try{ localStorage.setItem('triggui_lang', JSON.stringify(l)); }catch(e){} tgApplyGrid(); tgRepaintGrid(); tgApplyCard(); tgApplySilence(); tgPillPaint(); }
 tgApplyGrid(); /* swap pre-pintado: el grid nace en el idioma correcto */
-document.addEventListener('DOMContentLoaded', function(){ tgApplyCard(); tgPillPaint(); const a=document.getElementById('tgLangEs'), b=document.getElementById('tgLangEn'); if(a)a.addEventListener('click',function(){tgSetLang('es');}); if(b)b.addEventListener('click',function(){tgSetLang('en');}); const pl=document.getElementById('tgLangPill'); if(pl)pl.addEventListener('click',function(ev){ if(ev.target&&ev.target.closest&&ev.target.closest('#tgLangEs,#tgLangEn'))return; tgSetLang(tgLang==='en'?'es':'en'); }); const _ro=document.getElementById('revealOverlay'); if(_ro&&pl){ const _sync=function(){ const cs=getComputedStyle(_ro); const abierto=(cs.display!=='none')&&(parseFloat(cs.opacity)>0.05); pl.style.display=abierto?'none':'flex'; }; new MutationObserver(_sync).observe(_ro,{attributes:true,attributeFilter:['class','style']}); _sync(); } });
+document.addEventListener('DOMContentLoaded', function(){ tgApplyCard(); tgApplySilence(); tgPillPaint(); const a=document.getElementById('tgLangEs'), b=document.getElementById('tgLangEn'); if(a)a.addEventListener('click',function(){tgSetLang('es');}); if(b)b.addEventListener('click',function(){tgSetLang('en');}); const pl=document.getElementById('tgLangPill'); if(pl)pl.addEventListener('click',function(ev){ if(ev.target&&ev.target.closest&&ev.target.closest('#tgLangEs,#tgLangEn'))return; tgSetLang(tgLang==='en'?'es':'en'); }); const _ro=document.getElementById('revealOverlay'); if(_ro&&pl){ const _sync=function(){ const cs=getComputedStyle(_ro); const abierto=(cs.display!=='none')&&(parseFloat(cs.opacity)>0.05); pl.style.display=abierto?'none':'flex'; }; new MutationObserver(_sync).observe(_ro,{attributes:true,attributeFilter:['class','style']}); _sync(); } });
 const grid = document.getElementById('grid');
 const revealOverlay = document.getElementById('revealOverlay');
 const btnBack = document.getElementById('btnBack');
@@ -2434,9 +2445,9 @@ function corazon(x, y){
 function buildPort(){
   var d = document.createElement('div');
   d.className = 'tg-portada';
-  if (isURL(L.portada)) {
+  if (TG_COVER_SRC) {
     var img = new Image();
-    img.src = './portada.jpg';
+    img.src = TG_COVER_SRC;
     img.loading = 'lazy';
     d.appendChild(img);
   } else {
@@ -2827,6 +2838,7 @@ tgCasarPendientes();
         "__OG_URL__": esc(og_url),
         "__BODY_STYLE__": esc(body_style),
         "__STATE_JSON__": js_string(state),
+        "__TG_COVER_SRC__": js_string(cover_src),
         "__COVER_CTA_HTML__": cover_cta_html,
         "__CARD_TITLE__": esc(t_titulo or titulo),
         "__CARD_AUTHOR__": esc(autor),
@@ -2987,6 +2999,8 @@ def build_single():
     tarjeta["parrafoBot"] = normalize_highlight_syntax(tarjeta.get("parrafoBot", ""))
 
     bocado_eco_pool = build_bocado_eco_pool(libro_data)
+    # 🌐 gemelo EN del pool — filtro dict mata el fallback legacy ES (anchors)
+    bocado_eco_pool_en = [p for p in build_bocado_eco_pool(libro_data, "en") if isinstance(p, dict)]
     # 🌒 V14: contar sinfónicas (dicts con metadata) vs legacy (strings)
     _sinfonico_count = sum(1 for p in bocado_eco_pool if isinstance(p, dict))
     _legacy_count = sum(1 for p in bocado_eco_pool if isinstance(p, str))
@@ -3023,6 +3037,8 @@ def build_single():
         "frases_en": libro_data.get("frases_en"),
         "palabras_en": libro_data.get("palabras_en"),
         "tarjeta_en": libro_data.get("tarjeta_en"),
+        "bocadoEcoPool_en": bocado_eco_pool_en,
+        "titulo_en": str(libro_data.get("titulo_en", "") or ""),
     }
 
     html_content = render_edicion(edicion_single, mode="single")
