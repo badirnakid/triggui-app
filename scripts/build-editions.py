@@ -2786,9 +2786,9 @@ bLike.onclick = function(){
   tgEnviar(qBuzon, function(res){
     tgOutboxQuitar(idBuzon);
     if (res.ya_existia) {
-      completar('🌀', 'Ya vive en tu espiral', '\u00AB' + L.titulo + '\u00BB ya est\u00E1 contigo desde antes.<span class="hl">Tu espiral lo recuerda.</span>');
+      if(tgLang==='en'){ completar('🌀', 'Already in your spiral', '\u00AB' + L.titulo + '\u00BB has been with you all along.<span class="hl">Your spiral remembers it.</span>'); } else { completar('🌀', 'Ya vive en tu espiral', '\u00AB' + L.titulo + '\u00BB ya est\u00E1 contigo desde antes.<span class="hl">Tu espiral lo recuerda.</span>'); }
     } else {
-      completar('😍', 'Vive en tu espiral', '\u00AB' + L.titulo + '\u00BB se qued\u00F3 contigo: sus palabras, sus frases y su tarjeta.<span class="hl">Cuando lo necesites, ah\u00ED estar\u00E1.</span>');
+      if(tgLang==='en'){ completar('😍', 'It lives in your spiral', '\u00AB' + L.titulo + '\u00BB stayed with you: its words, its phrases and its card.<span class="hl">Whenever you need it, it will be there.</span>'); } else { completar('😍', 'Vive en tu espiral', '\u00AB' + L.titulo + '\u00BB se qued\u00F3 contigo: sus palabras, sus frases y su tarjeta.<span class="hl">Cuando lo necesites, ah\u00ED estar\u00E1.</span>'); }
     }
   }, function(){
     if(tgLang==='en'){ completar('🌀', 'Saved en camino', 'Se entregar\u00E1 solo en tu pr\u00F3xima visita.<span class="hl">Your spiral is waiting for it.</span>'); } else { completar('🌀', 'Guardado en camino', 'Se entregar\u00E1 solo en tu pr\u00F3xima visita.<span class="hl">Tu espiral lo est\u00E1 esperando.</span>'); }
