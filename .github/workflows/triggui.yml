@@ -1035,6 +1035,8 @@ jobs:
           if [ -f "$OUT_FILE" ]; then
             cp "$OUT_FILE" "triggui-content/$OUT_FILE"
             echo "✅ $OUT_FILE sincronizado"
+            # 🥗 F1·S3: derivar catálogo PUBLICO (dieta selectiva; el maestro conserva TODO)
+            node scripts/derivar-publico.mjs "triggui-content/$OUT_FILE" || echo "⚠️ publico no derivado"
           fi
 
           # 🌒 v2.0 — Sincronizar catálogo de quarantine si existe
@@ -1263,6 +1265,8 @@ jobs:
             git config user.email "bot@triggui.com"
 
             [ -f "$CONTENIDO_FILE" ] && git add "$CONTENIDO_FILE" || true
+            PUBLICO_FILE="${CONTENIDO_FILE%.json}_publico.json"
+            [ -f "$PUBLICO_FILE" ] && git add "$PUBLICO_FILE" || true
             # 🌒 V18: vista filtrada para email del lunes (Apps Script)
             [ -f "$MANUAL_FILE" ] && git add "$MANUAL_FILE" || true
             # 🔬 FASE 8.7 audit: archivos modificados/creados por auto-fix
