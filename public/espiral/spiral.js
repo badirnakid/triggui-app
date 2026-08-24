@@ -697,7 +697,7 @@ function iniciarPortal() {
 
   function htmlVideo(v, start) {
     return '<div class="h-video"><iframe src="' + srcVideo(v, start) + '" title="' + esc(v.titulo || 'Video') + '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>' +
-      (v.pie ? '<p class="h-pie">' + esc(v.pie) + '</p>' : '');
+      (pvF(v,'pie') ? '<p class="h-pie">' + esc(pvF(v,'pie')) + '</p>' : '');
   }
 
   function iframeActual() { return hoja.querySelector('.h-video iframe'); }
@@ -785,20 +785,21 @@ function iniciarPortal() {
       var mem = memLeer(), visita = mem.visitas[it.id] || 0;
       var sel = elegirVideo(it, visita);
       mem.visitas[it.id] = visita + 1; memGuardar(mem);
-      var html = '<div class="asa"></div>' +
+      var pvF=function(o,c){ return (window.PV_LANG==='en'&&o&&o[c+'_en'])?o[c+'_en']:((o&&o[c])||''); };
+    var html = '<div class="asa"></div>' +
         '<button class="h-cierra" aria-label="'+pvT('Cerrar','Close')+'">\u2715</button>' +
         '<div class="h-sem">#' + String(it.id).replace('ED-','') + ' \u00b7 ' + esc(fechaLarga(it.semana).toUpperCase()) + '</div>' +
         '<div class="h-cab">' +
           (it.portada ? '<img class="h-portada" src="' + esc(it.portada) + '" alt="" loading="lazy">' : '') +
           '<div class="h-txt">' +
-            '<div class="h-libro">' + esc(it.titulo) + '</div>' +
-            (it.voz ? '<p class="h-voz">' + esc(it.voz) + '</p>' : '') +
+            '<div class="h-libro">' + esc(pvTitulo(it)) + '</div>' +
+            (pvF(it,'voz') ? '<p class="h-voz">' + esc(pvF(it,'voz')) + '</p>' : '') +
           '</div>' +
         '</div>' +
-        (it.hallazgo ? '<p class="h-frase">' + esc(it.hallazgo) + '</p>' : '') +
+        (pvF(it,'hallazgo') ? '<p class="h-frase">' + esc(pvF(it,'hallazgo')) + '</p>' : '') +
         (sel ? htmlVideo(sel.v, sel.start) : '') +
         '<div class="h-fila">' +
-          (it.slug ? '<a class="h-ver" href="/t/' + esc(it.slug) + '/">VER LA EDICI\u00d3N \u2192</a>' : '') +
+          (it.slug ? '<a class="h-ver" href="/t/' + esc(it.slug) + '/">'+((window.PV_LANG==='en')?'SEE THE EDITION \u2192':'VER LA EDICI\u00d3N \u2192')+'</a>' : '') +
         '</div>';
       hoja.innerHTML = html;
       hoja.classList.toggle('con-video', !!sel);
