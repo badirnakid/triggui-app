@@ -1,0 +1,32 @@
+name: 🌐 Gemelos EN (voz + pie)
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  gemelos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 📦 Checkout triggui-content
+        uses: actions/checkout@v4
+        with:
+          repository: badirnakid/triggui-content
+          token: ${{ secrets.CONTENT_REPO_TOKEN }}
+          path: triggui-content
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: 🌐 Sembrar gemelos
+        env:
+          OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
+        run: node scripts/gemelos-en.mjs
+      - name: 🚀 Commit a content
+        working-directory: triggui-content
+        run: |
+          git config user.name "triggui-bot"
+          git config user.email "bot@triggui.com"
+          git add contenido.json contenido_manual.json
+          git diff --cached --quiet && echo "sin cambios" || git commit -m "🌐 gemelos EN: authorial_voice_notes_en + pie_en (traduccion fiel mini)"
+          git push
