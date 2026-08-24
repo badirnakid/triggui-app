@@ -74,18 +74,20 @@ function romano(n) {
 
 var MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 var DIAS = ['Domingo','Lunes','Martes','Mi\u00e9rcoles','Jueves','Viernes','S\u00e1bado'];
+  var DIAS_EN = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var MESES_EN = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
 function fechaLarga(iso) {
   var p = String(iso).split('-');
   if (p.length !== 3) return iso;
   var d = new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
-  return DIAS[d.getDay()] + ' ' + d.getDate() + ' de ' + MESES[d.getMonth()];
+  return (window.PV_LANG==='en') ? (DIAS_EN[d.getDay()] + ', ' + MESES_EN[d.getMonth()] + ' ' + d.getDate()) : (DIAS[d.getDay()] + ' ' + d.getDate() + ' de ' + MESES[d.getMonth()]);
 }
 
 function fechaCorta(iso) {
   var p = String(iso).split('-');
   if (p.length !== 3) return iso;
-  return Number(p[2]) + ' de ' + MESES[Number(p[1]) - 1];
+  return (window.PV_LANG==='en') ? (MESES_EN[Number(p[1]) - 1] + ' ' + Number(p[2])) : (Number(p[2]) + ' de ' + MESES[Number(p[1]) - 1]);
 }
 
 /* Exportar nucleo para pruebas en Node */
@@ -194,10 +196,10 @@ function iniciarPortal() {
   foco.id = 'foco';
   foco.innerHTML = '<div class="f-in">' +
     '<div class="f-lienzo"><img class="f-portada" alt="" loading="lazy">' +
-    '<button id="f-check" class="f-check" aria-label="Marcar hecha"></button></div>' +
+    '<button id="f-check" class="f-check" aria-label="'+pvT('Marcar hecha','Mark done')+'"></button></div>' +
   '</div>';
   var flechas = div('hud', 'flechas');
-  flechas.innerHTML = '<button id="fl-arriba" aria-label="Subir">\u25b2</button><button id="fl-abajo" aria-label="Bajar">\u25bc</button>';
+  flechas.innerHTML = '<button id="fl-arriba" aria-label="'+pvT('Subir','Up')+'">\u25b2</button><button id="fl-abajo" aria-label="'+pvT('Bajar','Down')+'">\u25bc</button>';
   var cima = document.createElement('div'); cima.id = 'cima';
   cima.innerHTML = '<div class="c-senal"></div>';
   var libroFlot = document.createElement('img');
@@ -534,7 +536,7 @@ function iniciarPortal() {
     /* v15.17: recargar solo con gesto deliberado: mas de 140px de sobre-arrastre Y sostenido al menos 400ms (un flick no recarga) */
     var deliberado = (overPx > 140 || overPx2 > 140) && overDesde && (performance.now() - overDesde) > 400;
     overDesde = 0;
-    if (deliberado) { avisar('Actualizando\u2026'); setTimeout(function(){ location.reload(); }, 220); return; }
+    if (deliberado) { avisar(pvT('Actualizando\u2026','Updating\u2026')); setTimeout(function(){ location.reload(); }, 220); return; }
     overPx = 0; overPx2 = 0;
     if (!pDown) return;
     if (pDown.pres) { pDown.pres.el.classList.remove('pres'); }
@@ -630,7 +632,7 @@ function iniciarPortal() {
   var SELLO_14 = selloSVG(14);
   var SELLO_12 = selloSVG(12);
 
-  var ETIQ = { pendiente: 'TE ESPERA', en_curso: 'EN CURSO', resuelto: 'HECHA', pospuesto: 'EN PAUSA' };
+  var ETIQ = { pendiente: pvT('TE ESPERA','WAITING FOR YOU'), en_curso: pvT('EN CURSO','IN PROGRESS'), resuelto: pvT('HECHA','DONE'), pospuesto: pvT('EN PAUSA','ON HOLD') };
 
   /* v15.2 · Tarjeta sinfonica: cabecera en dos columnas (portada | titulo + voz completa),
      pie bajo el video; el video se pausa al cerrar y si reabres la MISMA edicion no se
@@ -784,7 +786,7 @@ function iniciarPortal() {
       var sel = elegirVideo(it, visita);
       mem.visitas[it.id] = visita + 1; memGuardar(mem);
       var html = '<div class="asa"></div>' +
-        '<button class="h-cierra" aria-label="Cerrar">\u2715</button>' +
+        '<button class="h-cierra" aria-label="'+pvT('Cerrar','Close')+'">\u2715</button>' +
         '<div class="h-sem">#' + String(it.id).replace('ED-','') + ' \u00b7 ' + esc(fechaLarga(it.semana).toUpperCase()) + '</div>' +
         '<div class="h-cab">' +
           (it.portada ? '<img class="h-portada" src="' + esc(it.portada) + '" alt="" loading="lazy">' : '') +
@@ -927,7 +929,7 @@ function iniciarPortal() {
         '</g>' +
       '</svg>';
     var cap = document.getElementById('hud-pcap');
-    if (cap) { cap.style.color = c[0]; cap.textContent = 'HAS HECHO ' + hechas + ' DE ' + total + (racha > 1 ? (' \u00b7 RACHA ' + racha) : ''); }
+    if (cap) { cap.style.color = c[0]; cap.textContent = (window.PV_LANG==='en') ? ("YOU'VE DONE " + hechas + ' OF ' + total + (racha > 1 ? (' \u00b7 STREAK ' + racha) : '')) : ('HAS HECHO ' + hechas + ' DE ' + total + (racha > 1 ? (' \u00b7 RACHA ' + racha) : '')); }
   }
   
 
@@ -1052,7 +1054,7 @@ function iniciarPortal() {
                 particulas(reg.px, reg.py);
                 vibrar([18, 70, 26, 40, 14]);
               }
-              avisar('Se\u00f1al hecha', racha >= 2 ? 'RACHA: ' + racha + ' LUNES SEGUIDOS RESUELTOS' : lista[k].id, 3200);
+              avisar(pvT('Se\u00f1al hecha','Signal done'), racha >= 2 ? ((window.PV_LANG==='en') ? ('STREAK: ' + racha + ' MONDAYS IN A ROW') : ('RACHA: ' + racha + ' LUNES SEGUIDOS RESUELTOS')) : lista[k].id, 3200);
               setTimeout(function () {
                 encenderHilo(function () { setTimeout(listo, 420); });
               }, 650);
@@ -1069,7 +1071,7 @@ function iniciarPortal() {
           tweenCam(k, 700, easeInOutCubic, function () {
             var reg = nodosVivos[k];
             if (reg) { pop(reg, false); vibrar([12, 40, 10]); }
-            avisar('Nueva se\u00f1al del lunes', fechaLarga(lista[k].semana).toUpperCase(), 2600);
+            avisar(pvT('Nueva se\u00f1al del lunes','New Monday signal'), fechaLarga(lista[k].semana).toUpperCase(), 2600);
             setTimeout(listo, 500);
           });
         });
@@ -1158,8 +1160,8 @@ function iniciarPortal() {
       if (MOV_OK) setTimeout(function () { tweenCam(destino, 1500, easeOutCubic, null); }, 250);
       else {
         camK = destino; render();
-        if (prev && resueltosNuevos.length) avisar('Se\u00f1al hecha', racha >= 2 ? 'RACHA: ' + racha + ' LUNES SEGUIDOS RESUELTOS' : '', 2600);
-        else if (prev && llegadas.length) avisar('Nueva se\u00f1al del lunes', '', 2600);
+        if (prev && resueltosNuevos.length) avisar(pvT('Se\u00f1al hecha','Signal done'), racha >= 2 ? ((window.PV_LANG==='en') ? ('STREAK: ' + racha + ' MONDAYS IN A ROW') : ('RACHA: ' + racha + ' LUNES SEGUIDOS RESUELTOS')) : '', 2600);
+        else if (prev && llegadas.length) avisar(pvT('Nueva se\u00f1al del lunes','New Monday signal'), '', 2600);
       }
     }
   }
