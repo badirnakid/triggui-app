@@ -518,11 +518,11 @@ function iniciarPortal() {
     if (raw > maxK) {
       overPx = (raw - maxK) * dz; overPx2 = 0;
       camK = maxK;
-      if (overPx > 46) { if (!overDesde) overDesde = performance.now(); avisar('Suelta para actualizar \u21bb', null, 500); } else overDesde = 0;
+      if (overPx > 46) { if (!overDesde) overDesde = performance.now(); avisar(''+(window.PV_LANG==='en'?'Release to refresh':'Suelta para actualizar')+' \u21bb', null, 500); } else overDesde = 0;
     } else if (raw < 0) {
       overPx2 = (0 - raw) * dz; overPx = 0;
       camK = 0;
-      if (overPx2 > 46) { if (!overDesde) overDesde = performance.now(); avisar('Suelta para actualizar \u21bb', null, 500); } else overDesde = 0;
+      if (overPx2 > 46) { if (!overDesde) overDesde = performance.now(); avisar(''+(window.PV_LANG==='en'?'Release to refresh':'Suelta para actualizar')+' \u21bb', null, 500); } else overDesde = 0;
     } else { overPx = 0; overPx2 = 0; overDesde = 0; camK = clampCam(raw); }
     var dt = ahora - pDown.lt;
     if (dt > 0) vel = ((pDown.ly - e.clientY) / dz) * 0.32 * Math.min(1, 16 / dt);
