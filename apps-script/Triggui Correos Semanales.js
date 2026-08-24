@@ -4001,7 +4001,12 @@ function testKidsBannerAMi() {
   Logger.log("");
 
   try {
-    enviarTrigguiAUno(MY_EMAIL, rowIdx, nombre);
+    const r = enviarTrigguiAUno(MY_EMAIL, rowIdx, nombre);
+    if (r && r.ok === false) {
+      Logger.log("");
+      Logger.log("❌ NO se envió — razón real: " + (r.reason || "desconocida"));
+      return;
+    }
     Logger.log("");
     Logger.log("✅ Email de test enviado");
     Logger.log("   Revisa tu inbox: " + MY_EMAIL);
