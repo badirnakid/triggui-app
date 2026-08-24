@@ -772,7 +772,7 @@ a.cuarto:active{transform:scale(.97)}
     <input id="clave" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="tu clave de miembro">
     <div class="puerta-err" id="puertaErr"></div>
     <button id="entrar" type="button">Entrar</button>
-    <div class="puerta-pie"><a href="https://wa.me/525532394017?text=Quiero%20mi%20clave%20de%20Triggui" target="_blank" rel="noopener" onclick="try{gtag('event','puerta_manija',{pagina:'mi'})}catch(e){}">¿Sin clave? Escríbeme →</a></div>
+    <div class="puerta-pie"><a id="manijaClave" href="https://triggui.com/#form" target="_blank" rel="noopener" onclick="try{gtag('event','puerta_manija',{pagina:'mi'})}catch(e){}">¿Sin clave? Escríbeme →</a></div>
   </div>
 </div>
 
@@ -1700,6 +1700,14 @@ function casarYVaciarEspiral(clave, fin){
   }
   cargarConClave(c, false);
 })();
+</script>
+<script>
+/* manija: #form universal; en navegadores reales asciende a WhatsApp de 1 toque (los WebView del wrapper no abren esquemas) */
+(function(){ try {
+  var ua = navigator.userAgent || '';
+  var esWebView = /\bwv\b/.test(ua) || (/iPhone|iPad|iPod/.test(ua) && !/Safari\//.test(ua));
+  if (!esWebView) { var m = document.getElementById('manijaClave'); if (m) m.href = 'https://wa.me/525532394017?text=Quiero%20mi%20clave%20de%20Triggui'; }
+} catch (e) {} })();
 </script>
 </body>
 </html>
