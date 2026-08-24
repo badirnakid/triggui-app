@@ -1040,7 +1040,7 @@ function armarMenu(pz, componente, pinEl, descargaUrl, descargaOgUrl){
     var descOg = document.createElement('a');
     descOg.textContent = 'Descargar OG';
     descOg.href = descargaOgUrl;
-    descOg.setAttribute('download', pz.slug + '-og.png');
+    descOg.setAttribute('download', pz.slug + '-og.' + String(descargaOgUrl).split('.').pop());
     descOg.addEventListener('click', function(ev){ ev.stopPropagation(); cerrarMenus(); });
     menu.appendChild(descOg);
   }
@@ -1125,7 +1125,10 @@ function pinTarjeta(pz){
   img.onerror = function(){ div.remove(); };
   div.appendChild(img);
   div.addEventListener('click', function(){ releerYNavegar(pz); });
-  armarMenu(pz, 'tarjeta', div, rutaBase(pz) + 'tarjeta.png', rutaBase(pz) + 'og.png');
+  (function(){ var base = rutaBase(pz), sonda = new Image();
+    sonda.onload = function(){ armarMenu(pz, 'tarjeta', div, base + 'tarjeta.png', base + 'og.jpg'); };
+    sonda.onerror = function(){ armarMenu(pz, 'tarjeta', div, base + 'tarjeta.png', base + 'og.png'); };
+    sonda.src = base + 'og.jpg'; })();
   return div;
 }
 
@@ -1202,11 +1205,16 @@ function pinOg(pz){
   img.alt = pz.titulo || pz.slug;
   img.loading = 'lazy';
   img.decoding = 'async';
-  img.src = rutaBase(pz) + 'og.png';
-  img.onerror = function(){ div.remove(); };
+  var base = rutaBase(pz);
+  img.src = base + 'og.jpg';
+  img.onload = function(){ armarMenu(pz, 'og', div, base + 'og.jpg'); };
+  img.onerror = function(){
+    img.onload = function(){ armarMenu(pz, 'og', div, base + 'og.png'); };
+    img.onerror = function(){ div.remove(); };
+    img.src = base + 'og.png';
+  };
   div.appendChild(img);
   div.addEventListener('click', function(){ releerYNavegar(pz); });
-  armarMenu(pz, 'og', div, rutaBase(pz) + 'og.png');
   return div;
 }
 
