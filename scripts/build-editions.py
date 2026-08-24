@@ -3014,6 +3014,10 @@ def build_single():
         # 🌒 V11 FIX CRÍTICO: propagar número de edición del libro al edicion dict
         # Sin esto, render_edicion() no podía detectar el número y el badge no aparecía
         "_edicion_numero": libro_data.get("_edicion_numero"),
+        # 🌐 D2-A fix: el single perdía el inglés en esta aduana — propagar gemelos EN
+        "frases_en": libro_data.get("frases_en"),
+        "palabras_en": libro_data.get("palabras_en"),
+        "tarjeta_en": libro_data.get("tarjeta_en"),
     }
 
     html_content = render_edicion(edicion_single, mode="single")
