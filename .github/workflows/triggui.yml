@@ -1227,6 +1227,7 @@ jobs:
             [ -d public/kids/t ] && git add public/kids/t/ || true
           else
             [ -d public/t ] && git add public/t/ || true
+            [ -f public/sitemap.xml ] && git add public/sitemap.xml || true
           fi
           [ -f "$SHADOW_FILE" ] && git add "$SHADOW_FILE" || true
           # v3.4: persistir ring de anti-duplicados
@@ -1447,7 +1448,8 @@ jobs:
 
           git config user.name "Triggui Bot"
           git config user.email "bot@triggui.com"
-          git add "${OUT}/${SLUG}/" || true
+          git add "${OUT}/${SLUG}/"
+          git add public/t/ediciones.json public/sitemap.xml 2>/dev/null || true || true
 
           if git diff --cached --quiet; then
             echo "🟡 ${OUT}/${SLUG} sin cambios — ya era idéntico (nada que commitear)."
