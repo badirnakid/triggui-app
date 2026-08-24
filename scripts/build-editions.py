@@ -741,7 +741,7 @@ def render_edicion(edicion, mode="lab"):
     penguin_q = urllib.parse.quote(primary_word_default) if primary_word_default else urllib.parse.quote(titulo)
 
     has_portada = portada.startswith("http")
-    cover_src = portada if has_portada else ""
+    cover_src = "./portada.jpg"  # Fábrica: la escalera A/B/C garantiza portada premium local en cada edición
     has_tarjeta = bool(t_parrafo_top)
     layout_metrics = compute_editorial_layout_metrics(
         t_titulo or titulo,
@@ -2396,7 +2396,7 @@ function buildPort(){
   d.className = 'tg-portada';
   if (isURL(L.portada)) {
     var img = new Image();
-    img.src = L.portada;
+    img.src = './portada.jpg';
     img.loading = 'lazy';
     d.appendChild(img);
   } else {
