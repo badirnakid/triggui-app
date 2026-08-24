@@ -2144,12 +2144,17 @@ async function runBatch() {
         preserveManual,
         isFromBatch: true
       });
-      // 🏭 Corte 4 (batch): al manifiesto va el libro CANÓNICO del catálogo (con _slug sellado por el merge)
+      // 🏭 Corte 4 v3: sellar _slug (derivación calcada de validate.slugify) en catálogo Y manifiesto
       try {
+        const __slugify = t => String(t || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").substring(0, 60);
         const __raw = JSON.parse(await fs.readFile(CFG.files.outBatch, "utf8"));
         const __sel = (__raw.libros || []).find(b => b && b.titulo === libro.titulo && b.autor === libro.autor) || libro;
+        if (!__sel._slug) {
+          __sel._slug = __slugify(__sel.titulo);
+          await fs.writeFile(CFG.files.outBatch, JSON.stringify(__raw, null, 2), "utf8");
+        }
         await fs.appendFile("/tmp/triggui-batch.jsonl", JSON.stringify(__sel) + "\n", "utf8");
-        console.log(`🏭 manifiesto: +1 (${__sel.titulo || "?"} · ${__sel._slug || "sin-slug"})`);
+        console.log(`🏭 manifiesto: +1 (${__sel.titulo || "?"} · ${__sel._slug})`);
       } catch (e) { console.log(`⚠️ manifiesto batch: ${e.message}`); }
     }
     try {
