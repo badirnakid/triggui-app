@@ -744,11 +744,12 @@ body.tg-tarjeta .tg-cta{display:none !important}
 .tg-cta button{width:clamp(3.5rem,min(8vw,8vh),4.5rem);height:clamp(3.5rem,min(8vw,8vh),4.5rem);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:clamp(1.5rem,3.5vw,2rem);cursor:pointer;background-size:200% 200%;box-shadow:0 0 0 1px rgba(255,255,255,.15),0 6px 18px rgba(0,0,0,.35);transition:transform .2s cubic-bezier(0.34,1.56,0.64,1);touch-action:manipulation}
 .tg-cta button:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 0 0 1px rgba(255,255,255,.25),0 8px 24px rgba(0,0,0,.45)}
 .tg-cta button:active{transform:translateY(0) scale(0.95);transition:transform .1s ease}
-#tgDado{background:linear-gradient(135deg,#c084fc,#7c3aed);color:#fff}
-#tgEsp{background:linear-gradient(135deg,#5fbfff,#1e90ff);color:#fff}
-#tgLupa{background:linear-gradient(135deg,#b2f8c8,#42d97c);color:#000}
-#tgLibro{background:linear-gradient(135deg,#ff8a00,#ff3d3d);color:#fff}
-#tgLike{background:linear-gradient(135deg,#ff416c,#ff4b2b);color:#fff}
+#tgDado{background:linear-gradient(135deg,#F17E91,#ad5a68);color:#FFFFFF}
+#tgEsp{background:linear-gradient(135deg,#30E8CA,#22a791);color:#000000}
+#tgLupa{background:linear-gradient(135deg,#AE2113,#7d170d);color:#FFFFFF}
+#tgLibro{background:linear-gradient(135deg,#0B5D65,#074248);color:#FFFFFF}
+#tgLike{background:linear-gradient(135deg,#F17E91,#ad5a68);color:#FFFFFF}
+
 
 #tgModal{display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;background:rgba(0,0,0,0.92);opacity:0;transition:opacity .3s ease}
 #tgModal.visible{display:flex;opacity:1}
@@ -876,7 +877,11 @@ function tgApplyGrid(){ const en=(tgLang==='en');
   } else if(state._fes){ state.frases=state._fes; state.palabras=state._pes||state.palabras; state.titulo=state._tes||state.titulo; state.bocadoEcoPool=state._bes||state.bocadoEcoPool; }
   var LL=window.__tgL; if(LL){ LL.palabras=(state.palabras||[]).slice(0,4); LL.frases=(state.frases||[]).slice(0,4); LL.titulo=state.titulo||LL.titulo; } }
 function tgApplySilence(){ const en=(tgLang==='en'); const t=document.querySelector('.sil-title'); if(t) t.textContent=state.titulo||''; const c=document.querySelector('.sil-call'); if(c) c.innerHTML= en?'We want you to feel like<br>opening a book.':'Queremos que te den ganas<br>de abrir un libro.'; const su=document.querySelector('.sil-sub'); if(su) su.textContent= en?"That's Triggui.":'Eso es Triggui.'; }
-function tgRepaintGrid(){ var R=window.__tgRender; if(typeof R==='function'){ try{ R(); }catch(e){} } }
+function tgRepaintGrid(){ var g=document.getElementById('grid'); if(!g) return; var kids=g.children;
+  for(var i=0;i<kids.length&&i<4;i++){
+    var lb=kids[i].querySelector('.tg-label'); if(lb) lb.textContent=state.palabras[i]||'';
+    var fr=kids[i].querySelector('.tg-frase'); if(fr) fr.textContent=state.frases[i]||'';
+    var h2=kids[i].querySelector('.tg-porttext h2'); if(h2) h2.textContent=state.titulo||''; } }
 function tgPillPaint(){ const a=document.getElementById('tgLangEs'), b=document.getElementById('tgLangEn'); if(a&&b){ a.classList.toggle('lang-active', tgLang==='es'); b.classList.toggle('lang-active', tgLang==='en'); } }
 function tgSetLang(l){ if(l===tgLang){ tgPillPaint(); return; } tgLang=l; try{ localStorage.setItem('triggui_lang', JSON.stringify(l)); }catch(e){} tgApplyGrid(); tgRepaintGrid(); tgApplyCard(); tgApplySilence(); tgPillPaint(); }
 tgApplyGrid(); /* swap pre-pintado: el grid nace en el idioma correcto */
@@ -1693,8 +1698,7 @@ bDado.onclick = function(){
 })();
 bLupa.onclick = function(){ try{gtag('event','edicion_lupa',{});}catch(e){} window.location.href = 'https://app.triggui.com/?barra=1'; };
 
-window.__tgRender = render;
-  function render(){
+function render(){
   grid.innerHTML = '';
   for (var i = 0; i < 4; i++) (function(i){
     var card = document.createElement('div');
