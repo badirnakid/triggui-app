@@ -75,7 +75,7 @@ body.hoja-abierta .puente-pie{display:none}
   <input id="clave" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="tu clave de miembro">
   <div class="puerta-err" id="puertaErr"></div>
   <button id="entrar" type="button">Entrar</button>
-  <div class="puerta-pie"><a href="https://wa.me/525532394017?text=Quiero%20mi%20clave%20de%20Triggui" target="_blank" rel="noopener" onclick="try{gtag('event','puerta_manija',{pagina:'espiral'})}catch(e){}">&iquest;Sin clave? Escr&iacute;beme &rarr;</a></div>
+  <div class="puerta-pie"><a id="manijaClave" href="https://triggui.com/#form" target="_blank" rel="noopener" onclick="try{gtag('event','puerta_manija',{pagina:'espiral'})}catch(e){}">&iquest;Sin clave? Escr&iacute;beme &rarr;</a></div>
 </div><img class="puerta-marca" src="./logo-triggui.png" alt="Triggui"></div>
 <script>
 /* ── PUERTA DE MIEMBRO (v15.4) · misma llave y mismo backend que /mi/ ── */
@@ -239,6 +239,14 @@ async function arrancarEspiral(){
   document.body.appendChild(salir);
 }
 if(claveMiembro()){arrancarEspiral();}else{puertaAbrir(arrancarEspiral);cargarLibros().then(puertaColorear);}
+</script>
+<script>
+/* manija: #form universal; en navegadores reales asciende a WhatsApp de 1 toque (los WebView del wrapper no abren esquemas) */
+(function(){ try {
+  var ua = navigator.userAgent || '';
+  var esWebView = /\bwv\b/.test(ua) || (/iPhone|iPad|iPod/.test(ua) && !/Safari\//.test(ua));
+  if (!esWebView) { var m = document.getElementById('manijaClave'); if (m) m.href = 'https://wa.me/525532394017?text=Quiero%20mi%20clave%20de%20Triggui'; }
+} catch (e) {} })();
 </script>
 </body>
 </html>
