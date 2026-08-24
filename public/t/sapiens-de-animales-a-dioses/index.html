@@ -181,11 +181,6 @@ body::before {
 .block.show .label { opacity: 0; transform: translateY(-6px); }
 .block.show .frase { opacity: 1; transform: translateY(0); }
 
-#tgStreak{position:fixed;top:max(54px, calc(env(safe-area-inset-top,0px) + 14px));left:16px;z-index:650;display:none;align-items:center;background:rgba(255,255,255,.05);border:.5px solid rgba(255,255,255,.1);border-radius:99px;padding:5px 11px;font:600 11px/1 'Poppins',sans-serif;color:#fff}
-#tgStreak.visible{display:flex}
-#tgStreak .bm-flame{font-size:13px;filter:drop-shadow(0 0 4px rgba(255,94,0,.6));margin-right:3px}
-#tgStreak #tgStreakNum{font-weight:700;color:#fff;margin-right:3px}
-#tgStreak #tgStreakUnit{font-weight:400;color:rgba(255,255,255,.55)}
 #tgLangPill{position:fixed;top:max(54px, calc(env(safe-area-inset-top,0px) + 14px));right:16px;z-index:650;display:flex;background:rgba(255,255,255,.05);border:.5px solid rgba(255,255,255,.1);border-radius:99px;padding:3px;font:600 11px/1 'Poppins',sans-serif}
 #tgLangPill span{padding:5px 11px;border-radius:99px;transition:all .35s cubic-bezier(.19,1,.22,1);color:rgba(255,255,255,.45);cursor:pointer}
 #tgLangPill span.lang-active{color:#000;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.15)}
@@ -786,7 +781,6 @@ body.tg-tarjeta .tg-cta{display:none !important}
 </head>
 <body data-lab-v="live-edition-card-v3" style="--accent:#DAE212;--marker:#DAE21230;--chip-bg:#DAE21214;--card-paper:#F7F7F5;--card-ink:#1A1A1A;--card-border:rgba(26,26,26,0.06);--ed-title-size:25.4px;--ed-title-size-mobile:22.8px;--ed-para-size:17.4px;--ed-para-size-mobile:17.0px;--ed-sub-size:17.2px;--ed-sub-size-mobile:16.8px;--ed-chip-size:14.3px;--ed-chip-size-mobile:13.6px;--ed-cover-width:110.0px;--ed-cover-width-mobile:98.0px;">
 
-<div id="tgStreak" aria-hidden="true"><span class="bm-flame">🔥</span><span id="tgStreakNum">0</span><span id="tgStreakUnit">días</span></div>
 <button id="tgLangPill" type="button" aria-label="Toggle language"><span id="tgLangEs">Español</span><span id="tgLangEn">English</span></button>
 <div id="pulseLine" class="pulse-line"></div>
 <div class="bocado-eco-overlay" id="bocadoEcoOverlay">
@@ -889,24 +883,9 @@ function tgRepaintGrid(){ var blocks=document.querySelectorAll('.tg-block');
     var fr=blocks[i].querySelector('.tg-frase'); if(fr) fr.textContent=state.frases[i]||'';
     var h2=blocks[i].querySelector('.tg-porttext h2'); if(h2) h2.textContent=state.titulo||''; } }
 function tgPillPaint(){ const a=document.getElementById('tgLangEs'), b=document.getElementById('tgLangEn'); if(a&&b){ a.classList.toggle('lang-active', tgLang==='es'); b.classList.toggle('lang-active', tgLang==='en'); } }
-function tgSetLang(l){ if(l===tgLang){ tgPillPaint(); return; } tgLang=l; try{ localStorage.setItem('triggui_lang', JSON.stringify(l)); }catch(e){} tgApplyGrid(); tgRepaintGrid(); tgApplyCard(); tgApplySilence(); tgPillPaint(); tgPaintStreak(); }
+function tgSetLang(l){ if(l===tgLang){ tgPillPaint(); return; } tgLang=l; try{ localStorage.setItem('triggui_lang', JSON.stringify(l)); }catch(e){} tgApplyGrid(); tgRepaintGrid(); tgApplyCard(); tgApplySilence(); tgPillPaint(); }
 tgApplyGrid(); /* swap pre-pintado: el grid nace en el idioma correcto */
-/* 🔥 racha homologada: MISMAS llaves que la app (triggui_streak / triggui_last_visit) — abrir una edición cuenta igual que abrir la app */
-function tgGetL(k,d){ try{ var v=localStorage.getItem('triggui_'+k); return v===null?d:JSON.parse(v);}catch(e){return d;} }
-function tgSetL(k,v){ try{ localStorage.setItem('triggui_'+k, JSON.stringify(v)); }catch(e){} }
-function tgUpdateStreak(){ var today=new Date().toDateString(); var last=tgGetL('last_visit',null); var st=tgGetL('streak',0);
-  if(st===0){ tgSetL('streak',1); tgSetL('last_visit',today); return 1; }
-  if(last===today) return st;
-  var y=new Date(); y.setDate(y.getDate()-1);
-  var ns=(last===y.toDateString())? st+1 : 1;
-  tgSetL('streak',ns); tgSetL('last_visit',today);
-  try{ gtag('event','streak_updated',{streak:ns}); }catch(e){}
-  return ns; }
-function tgPaintStreak(){ var el=document.getElementById('tgStreak'); if(!el) return; var n=tgUpdateStreak();
-  document.getElementById('tgStreakNum').textContent=n;
-  document.getElementById('tgStreakUnit').textContent=(tgLang==='en')?((n===1)?'day':'days'):((n===1)?'día':'días');
-  if(n>0) el.classList.add('visible'); }
-document.addEventListener('DOMContentLoaded', function(){ tgPaintStreak(); tgApplyCard(); tgApplySilence(); tgPillPaint(); const a=document.getElementById('tgLangEs'), b=document.getElementById('tgLangEn'); if(a)a.addEventListener('click',function(){tgSetLang('es');}); if(b)b.addEventListener('click',function(){tgSetLang('en');}); const pl=document.getElementById('tgLangPill'); if(pl)pl.addEventListener('click',function(ev){ if(ev.target&&ev.target.closest&&ev.target.closest('#tgLangEs,#tgLangEn'))return; tgSetLang(tgLang==='en'?'es':'en'); }); const _ro=document.getElementById('revealOverlay'); if(_ro&&pl){ const _sync=function(){ const cs=getComputedStyle(_ro); const abierto=(cs.display!=='none'); pl.style.display=abierto?'none':'flex'; var st=document.getElementById('tgStreak'); if(st) st.style.display=abierto?'none':(st.classList.contains('visible')?'flex':'none'); }; new MutationObserver(_sync).observe(_ro,{attributes:true,attributeFilter:['class','style']}); _sync(); } });
+document.addEventListener('DOMContentLoaded', function(){ tgApplyCard(); tgApplySilence(); tgPillPaint(); const a=document.getElementById('tgLangEs'), b=document.getElementById('tgLangEn'); if(a)a.addEventListener('click',function(){tgSetLang('es');}); if(b)b.addEventListener('click',function(){tgSetLang('en');}); const pl=document.getElementById('tgLangPill'); if(pl)pl.addEventListener('click',function(ev){ if(ev.target&&ev.target.closest&&ev.target.closest('#tgLangEs,#tgLangEn'))return; tgSetLang(tgLang==='en'?'es':'en'); }); const _ro=document.getElementById('revealOverlay'); if(_ro&&pl){ const _sync=function(){ const cs=getComputedStyle(_ro); const abierto=(cs.display!=='none'); pl.style.display=abierto?'none':'flex'; }; new MutationObserver(_sync).observe(_ro,{attributes:true,attributeFilter:['class','style']}); _sync(); } });
 const grid = document.getElementById('grid');
 const revealOverlay = document.getElementById('revealOverlay');
 const btnBack = document.getElementById('btnBack');
