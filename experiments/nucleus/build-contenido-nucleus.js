@@ -2144,6 +2144,11 @@ async function runBatch() {
         preserveManual,
         isFromBatch: true
       });
+      // 🏭 Corte 4 (batch): cada libro fusionado entra al manifiesto del lote → el YML fabrica su edición
+      try {
+        await fs.appendFile("/tmp/triggui-batch.jsonl", JSON.stringify(libro) + "\n", "utf8");
+        console.log(`🏭 manifiesto: +1 (${libro.titulo || "?"})`);
+      } catch (e) { console.log(`⚠️ manifiesto batch: ${e.message}`); }
     }
     try {
       const finalRead = await fs.readFile(CFG.files.outBatch, "utf8");
