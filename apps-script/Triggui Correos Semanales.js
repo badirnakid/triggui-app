@@ -59,14 +59,14 @@ const SHEET_NAME    = "Triggui Emails Prueba";
  *
  * REMITENTE_REPLY_TO:
  *   Email al que se responden los mensajes.
- *   FASE 1 (hoy): badirnakid@gmail.com (tu cuenta personal)
+ *   FASE 1 (hoy): badir@triggui.com (tu cuenta personal)
  *   FASE 2 (cuando tengas Workspace): hola@triggui.com
  *
  *   Tener un Reply-To real (no noreply) MEJORA significativamente la
  *   deliverability porque Gmail premia emails con canal de respuesta válido.
  * ══════════════════════════════════════════════════════════════════════════ */
 const REMITENTE_DISPLAY_NAME = "Triggui";
-const REMITENTE_REPLY_TO     = "badirnakid@gmail.com";  // FASE 2: cambiar a hola@triggui.com
+const REMITENTE_REPLY_TO     = "badir@triggui.com";  // FASE 2: cambiar a hola@triggui.com
 
 /* ════════════════════ V18i UNSUBSCRIBE CONFIG ═══════════════════════════
  *
@@ -113,8 +113,10 @@ const URL_PENGUIN_LOGO    = "https://raw.githubusercontent.com/badirnakid/triggu
  * KIDS_URL_TARGET:
  *   URL destino del CTA. No cambiar a menos que cambie el dominio.
  * ════════════════════════════════════════════════════════════════════════ */
+const ESPIRAL_PROMO_ENABLED = true;
+const ESPIRAL_URL_TARGET = "https://triggui.com/?utm_source=triggui&utm_medium=email&utm_campaign=lunes_espiral#espiral";
 const KIDS_PROMO_ENABLED = true;
-const KIDS_URL_TARGET = "https://app.triggui.com/kids";
+const KIDS_URL_TARGET = "https://app.triggui.com/kids?utm_source=triggui&utm_medium=email&utm_campaign=lunes_kids";
 
 /* ═══════════════════════ CONFIGURACIÓN DE ESTILO ═══════════════════════════
  *
@@ -270,19 +272,19 @@ const INTRO_MESSAGES = {
   texts: [
     {
       html: `<div style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;font-size:15px;line-height:1.6;color:#374151;text-align:center;padding:0 20px 20px 20px;margin:0;">
-  Te comparto estas tarjetas con mucho gusto. Si ya estás suscrito, qué bien! Si no, <a href="https://triggui.com" style="color:#2563EB;text-decoration:underline;">suscríbete aquí</a> para recibirlas por WhatsApp cada semana.
+  Te comparto estas tarjetas con mucho gusto. Si ya estás suscrito, qué bien! Si no, <a href="https://triggui.com/?utm_source=triggui&utm_medium=email&utm_campaign=suscripcion" style="color:#2563EB;text-decoration:underline;">suscríbete aquí</a> para recibirlas por WhatsApp cada semana.
 </div>`,
       plain: "Te comparto estas tarjetas con mucho gusto. Si ya estás suscrito, qué bien! Si no, suscríbete en https://triggui.com para recibirlas por WhatsApp cada semana.\n\n"
     },
     {
       html: `<div style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;font-size:15px;line-height:1.6;color:#374151;text-align:center;padding:0 20px 20px 20px;margin:0;">
-  Escríbenos al <strong style="color:#111827;">+52 155 3239 4017</strong> o <a href="https://triggui.com" style="color:#2563EB;text-decoration:underline;">suscríbete aquí</a> para recibir estas chispas de lectura por WhatsApp.
+  Escríbenos al <strong style="color:#111827;">+52 155 3239 4017</strong> o <a href="https://triggui.com/?utm_source=triggui&utm_medium=email&utm_campaign=suscripcion" style="color:#2563EB;text-decoration:underline;">suscríbete aquí</a> para recibir estas chispas de lectura por WhatsApp.
 </div>`,
       plain: "Escríbenos al +52 155 3239 4017 o suscríbete en https://triggui.com para recibir estas chispas de lectura por WhatsApp.\n\n"
     },
     {
       html: `<div style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;font-size:15px;line-height:1.6;color:#374151;text-align:center;padding:0 20px 20px 20px;margin:0;">
-  Hoy te comparto tarjetas que vale la pena guardar. Recíbelas directo en tu WhatsApp cada semana → <a href="https://triggui.com" style="color:#2563EB;text-decoration:underline;">suscríbete aquí</a>
+  Hoy te comparto tarjetas que vale la pena guardar. Recíbelas directo en tu WhatsApp cada semana → <a href="https://triggui.com/?utm_source=triggui&utm_medium=email&utm_campaign=suscripcion" style="color:#2563EB;text-decoration:underline;">suscríbete aquí</a>
 </div>`,
       plain: "Hoy te comparto tarjetas que vale la pena guardar. Recíbelas directo en tu WhatsApp cada semana → https://triggui.com\n\n"
     }
@@ -341,6 +343,62 @@ function generarWhatsAppPromoTopHTML(cardWidth) {
 
 const WHATSAPP_PROMO_TOP_PLAIN = "\n────────────────────────────\nRECIBE TAMBIÉN TRIGGUI EN TU WHATSAPP\n\nUna tarjeta como esta en el momento exacto que mejore un poco tu ánimo.\n────────────────────────────\n";
 
+// ═══════════════════════════════════════════════════════════════════════
+// V22 — ESPIRAL PROMO BANNER (gemela del patrón Kids, asiento de honor)
+// Toggleable global con ESPIRAL_PROMO_ENABLED.
+// ═══════════════════════════════════════════════════════════════════════
+function generarEspiralPromoTopHTML(cardWidth, accent) {
+  const A = accent || "#B8862A";
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr><td align="center" style="padding:8px 12px 10px 12px;">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:${cardWidth}px;">
+        <tr><td style="text-align:center;background:#FAFAFA;border:1px solid #F0E6D0;border-radius:8px;padding:12px 16px;">
+          <div style="
+            font-family:'Noto Serif Display',Georgia,'Times New Roman',serif;
+            font-size:14px;
+            line-height:1.45;
+            font-weight:400;
+            color:#1A1A1A;
+            letter-spacing:-0.1px;
+            margin:0 0 10px 0;
+            mso-line-height-rule:exactly;
+          "><strong style="font-weight:600;color:${A};">Tu Espiral</strong> — Los libros que mejoraron tu ánimo, se quedan contigo.</div>
+          <!--[if mso]>
+          <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${ESPIRAL_URL_TARGET}" style="height:32px;v-text-anchor:middle;width:130px;" arcsize="18%" stroke="f" fillcolor="${A}">
+            <w:anchorlock/>
+            <center style="color:#FFFFFF;font-family:Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.04em;">Conocer &rarr;</center>
+          </v:roundrect>
+          <![endif]-->
+          <!--[if !mso]><!-->
+          <a href="${ESPIRAL_URL_TARGET}" target="_blank" style="
+            display:inline-block;
+            background:${A};
+            color:#FFFFFF;
+            text-decoration:none;
+            padding:8px 18px;
+            border-radius:6px;
+            font-family:'Inter',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
+            font-size:12px;
+            font-weight:600;
+            letter-spacing:0.04em;
+            mso-line-height-rule:exactly;
+            line-height:1;
+          ">Conocer &rarr;</a>
+          <!--<![endif]-->
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>`;
+}
+
+const ESPIRAL_PROMO_TOP_PLAIN = "\n────────────────────────────\nNUEVO · TU ESPIRAL\n\nLos libros que mejoraron tu ánimo, se quedan contigo.\n" + ESPIRAL_URL_TARGET + "\n────────────────────────────\n";
+
+function testEspiralBanner() {
+  Logger.log(generarEspiralPromoTopHTML(560, "#2864DC"));
+  Logger.log(generarKidsPromoTopHTML(560, "#2864DC"));
+  Logger.log(ESPIRAL_PROMO_TOP_PLAIN);
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // V20 — KIDS PROMO BANNER (clonado del patrón WhatsApp promo)
 // Mismo formato visual (table-based, mismas fuentes, padding consistente).
@@ -348,52 +406,40 @@ const WHATSAPP_PROMO_TOP_PLAIN = "\n──────────────�
 // Compatible Gmail/Outlook/iOS Mail (VML fallback para Outlook button).
 // Toggleable global con KIDS_PROMO_ENABLED.
 // ═══════════════════════════════════════════════════════════════════════════
-function generarKidsPromoTopHTML(cardWidth) {
+function generarKidsPromoTopHTML(cardWidth, accent) {
+  const A = accent || "#E8A838";
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-    <tr><td align="center" style="padding:10px 12px 14px 12px;">
+    <tr><td align="center" style="padding:8px 12px 10px 12px;">
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:${cardWidth}px;">
-        <tr><td style="text-align:center;background:#FAFAFA;border:1px solid #F0E6D0;border-radius:8px;padding:18px 18px 20px 18px;">
-          <div style="
-            font-family:'Inter',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
-            font-size:11px;
-            line-height:1;
-            font-weight:600;
-            color:#B8862A;
-            letter-spacing:0.22em;
-            text-transform:uppercase;
-            margin:0 0 12px 0;
-            mso-line-height-rule:exactly;
-          ">Algo nuevo</div>
-
+        <tr><td style="text-align:center;background:#FAFAFA;border:1px solid #F0E6D0;border-radius:8px;padding:12px 16px;">
           <div style="
             font-family:'Noto Serif Display',Georgia,'Times New Roman',serif;
-            font-size:16px;
-            line-height:1.5;
+            font-size:14px;
+            line-height:1.45;
             font-weight:400;
             color:#1A1A1A;
             letter-spacing:-0.1px;
-            margin:0 0 16px 0;
+            margin:0 0 10px 0;
             mso-line-height-rule:exactly;
-          ">Conoce <strong style="font-weight:600;">Triggui Kids</strong>. Un valor en 30 segundos para los niños.</div>
-
+          "><strong style="font-weight:600;color:${A};">Triggui Kids</strong> — Un valor en 30 segundos para los niños.</div>
           <!--[if mso]>
-          <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${KIDS_URL_TARGET}" style="height:38px;v-text-anchor:middle;width:150px;" arcsize="16%" stroke="f" fillcolor="#E8A838">
+          <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${KIDS_URL_TARGET}" style="height:32px;v-text-anchor:middle;width:130px;" arcsize="18%" stroke="f" fillcolor="${A}">
             <w:anchorlock/>
-            <center style="color:#FFFFFF;font-family:Arial,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.05em;">Conocer &rarr;</center>
+            <center style="color:#FFFFFF;font-family:Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.04em;">Conocer &rarr;</center>
           </v:roundrect>
           <![endif]-->
           <!--[if !mso]><!-->
           <a href="${KIDS_URL_TARGET}" target="_blank" style="
             display:inline-block;
-            background:#E8A838;
+            background:${A};
             color:#FFFFFF;
             text-decoration:none;
-            padding:10px 22px;
+            padding:8px 18px;
             border-radius:6px;
             font-family:'Inter',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
-            font-size:13px;
+            font-size:12px;
             font-weight:600;
-            letter-spacing:0.05em;
+            letter-spacing:0.04em;
             mso-line-height-rule:exactly;
             line-height:1;
           ">Conocer &rarr;</a>
@@ -1362,6 +1408,8 @@ function renderTarjetaEditorial(libro, portadaRef) {
       ${tarjetaEN}
 
       ${ecoSinfonicoHTML}
+
+      {{KIDS_PROMO_BOTTOM}}
 
       <!-- Footer Triggui (compartido entre ambas versiones) -->
       <table role="presentation" cellpadding="0" cellspacing="0" border="0"
@@ -2471,7 +2519,7 @@ function prepararEmailParaEnvio(nombreDestinatario, emailDestinatario, rowIdx) {
   // El greeting es ALEATORIO (100 variantes) por envío para no cansar al lector.
   // El trial banner aparece al inicio (después del saludo) para captar atención antes del libro.
   // El bloque "Recibe Triggui en tu WhatsApp" alterna aleatoriamente entre top y bottom.
-  const placeholdersTop = `\n  {{GREETING_BLOCK}}\n  {{TRIAL_BANNER_TOP}}\n  {{KIDS_PROMO_TOP}}\n  {{WHATSAPP_PROMO_TOP}}\n`;
+  const placeholdersTop = `\n  {{GREETING_BLOCK}}\n  {{TRIAL_BANNER_TOP}}\n  {{ESPIRAL_PROMO_TOP}}\n  {{WHATSAPP_PROMO_TOP}}\n`;
   cuerpoHTML = cuerpoHTML.replace(
     /(<body[^>]*>)/i,
     `$1${placeholdersTop}`
@@ -2538,13 +2586,18 @@ function prepararEmailParaEnvio(nombreDestinatario, emailDestinatario, rowIdx) {
         const waTopHTML = mostrarWaArriba ? generarWhatsAppPromoTopHTML(c.cardWidth) : "";
         const waTopPlain = mostrarWaArriba ? WHATSAPP_PROMO_TOP_PLAIN : "";
 
+        // V23 — accent del libro para los banners
+        const _accCorreo = (typeof tarjeta !== "undefined" && tarjeta && tarjeta.style && tarjeta.style.accent) || "";
+        // V22 — ESPIRAL PROMO (asiento de honor)
+        const espiralTopHTML = ESPIRAL_PROMO_ENABLED ? generarEspiralPromoTopHTML(c.cardWidth, _accCorreo) : "";
         // V20 — KIDS PROMO siempre si KIDS_PROMO_ENABLED
-        const kidsTopHTML = KIDS_PROMO_ENABLED ? generarKidsPromoTopHTML(c.cardWidth) : "";
+        const kidsTopHTML = KIDS_PROMO_ENABLED ? generarKidsPromoTopHTML(c.cardWidth, _accCorreo) : "";
         const kidsTopPlain = KIDS_PROMO_ENABLED ? KIDS_PROMO_TOP_PLAIN : "";
 
         finalHTML  = finalHTML.replace(/\{\{GREETING_BLOCK\}\}/g, saludoHTML)
                               .replace(/\{\{TRIAL_BANNER_TOP\}\}/g, trialTopHTML)
-                              .replace(/\{\{KIDS_PROMO_TOP\}\}/g, kidsTopHTML)
+                              .replace(/\{\{ESPIRAL_PROMO_TOP\}\}/g, espiralTopHTML)
+                              .replace(/\{\{KIDS_PROMO_BOTTOM\}\}/g, kidsTopHTML)
                               .replace(/\{\{WHATSAPP_PROMO_TOP\}\}/g, waTopHTML);
         finalPlain = finalPlain.replace(/\{\{GREETING_PLAIN\}\}/g, saludoPlain)
                                .replace(/\{\{TRIAL_BANNER_TOP_PLAIN\}\}/g, trialTopPlain)
@@ -2743,6 +2796,18 @@ function doPost(e) {
     }
 
     // ─── RUTA 2: LEAD (Landing triggui.com) — V18g NIVEL DIOS ──────────────
+    // PORTON ANTIBOT V2: honeypot lleno, sin t0, o envio <3s = maquina.
+    // Senuelo identico al "new" real (nombre capitalizado incluido):
+    // el bot recibe exactamente lo que recibe un humano. Cero escritura.
+    const hpWeb = params.website || "";
+    const t0Bot = parseInt(params.t0 || "0", 10);
+    if (hpWeb || !t0Bot || (Date.now() - t0Bot) < 3000) {
+      Logger.log("🚪 PORTON: rechazo silencioso — hp:" + (hpWeb ? "1" : "0") + " t0:" + t0Bot);
+      return ContentService.createTextOutput(JSON.stringify({
+        result: "new",
+        first_name: sanitizarNombre(params.first_name) || ""
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     let sheetLeads = ss.getSheetByName(SHEET_NAME);
 
@@ -3420,15 +3485,20 @@ function enviarTrigguiLunes() {
     const waTopHTMLFila = mostrarWaArribaFila ? generarWhatsAppPromoTopHTML(cFila.cardWidth) : "";
     const waTopPlainFila = mostrarWaArribaFila ? WHATSAPP_PROMO_TOP_PLAIN : "";
 
+    // V23 — accent del libro para los banners (por fila)
+    const _accFila = (libro && libro.tarjeta && libro.tarjeta.style && libro.tarjeta.style.accent) || "";
+    // V22 — ESPIRAL PROMO por fila (asiento de honor)
+    const espiralTopHTMLFila = ESPIRAL_PROMO_ENABLED ? generarEspiralPromoTopHTML(cFila.cardWidth, _accFila) : "";
     // V20 — KIDS PROMO banner por fila (siempre si KIDS_PROMO_ENABLED)
-    const kidsTopHTMLFila = KIDS_PROMO_ENABLED ? generarKidsPromoTopHTML(cFila.cardWidth) : "";
+    const kidsTopHTMLFila = KIDS_PROMO_ENABLED ? generarKidsPromoTopHTML(cFila.cardWidth, _accFila) : "";
     const kidsTopPlainFila = KIDS_PROMO_ENABLED ? KIDS_PROMO_TOP_PLAIN : "";
 
     let htmlPersonalizado  = finalHTML
       .replace(/\{\{UNSUB_LINK\}\}/g, unsubLinkFila)
       .replace(/\{\{GREETING_BLOCK\}\}/g, saludoHTMLFila)
       .replace(/\{\{TRIAL_BANNER_TOP\}\}/g, trialTopHTMLFila)
-      .replace(/\{\{KIDS_PROMO_TOP\}\}/g, kidsTopHTMLFila)
+      .replace(/\{\{ESPIRAL_PROMO_TOP\}\}/g, espiralTopHTMLFila)
+      .replace(/\{\{KIDS_PROMO_BOTTOM\}\}/g, kidsTopHTMLFila)
       .replace(/\{\{WHATSAPP_PROMO_TOP\}\}/g, waTopHTMLFila);
     let plainPersonalizado = finalPlain
       .replace(/\{\{UNSUB_LINK\}\}/g, unsubLinkFila)
@@ -3567,6 +3637,15 @@ function enviarTrigguiLunes() {
   Logger.log("───────────────────────────────────────────────────────────────");
   Logger.log(`📊 Total filas en sheet:               ${data.length - 1}`);
   Logger.log(`📬 Quota Gmail restante después:       ${MailApp.getRemainingDailyQuota()}`);
+
+  // 📮 Marcador del cartero: memoria de la ultima edicion repartida
+  // (la col J ya garantiza cero repeticiones per-capita; esto es
+  //  observabilidad pura y ancla de futuras guardas)
+  if (filasProcesadas > 0) {
+    PropertiesService.getScriptProperties()
+      .setProperty('ULTIMA_EDICION_ENVIADA', String(libro._edicion_numero || ''));
+    Logger.log(`📮 Marcador: ULTIMA_EDICION_ENVIADA = #${formatEdicionNumero(libro._edicion_numero)}`);
+  }
 
   if (pendientesRestantes > 0) {
     Logger.log("");
@@ -3861,7 +3940,7 @@ function previewMasivo() {
  *   3. Dropdown de funciones → testKidsBannerAMi
  *   4. Click Run (boton ▶)
  *   5. Autorizar permisos si los pide (primera vez)
- *   6. Revisa tu Gmail: badirnakid@gmail.com
+ *   6. Revisa tu Gmail: badir@triggui.com
  *
  * Que hace:
  *   - Busca tu email en la sheet para obtener rowIdx valida
@@ -3875,7 +3954,7 @@ function previewMasivo() {
  * ⚠ NO incrementa contador del lunes
  * ════════════════════════════════════════════════════════════════════════ */
 function testKidsBannerAMi() {
-  const MY_EMAIL = "badirnakid@gmail.com";
+  const MY_EMAIL = "badir@triggui.com";
 
   Logger.log("══════════════════════════════════════════════════════════════");
   Logger.log("🧪 TEST KIDS BANNER → " + MY_EMAIL);
