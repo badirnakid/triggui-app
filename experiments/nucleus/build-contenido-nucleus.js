@@ -2153,8 +2153,9 @@ async function runBatch() {
           __sel._slug = __slugify(__sel.titulo);
           await fs.writeFile(CFG.files.outBatch, JSON.stringify(__raw, null, 2), "utf8");
         }
-        await fs.appendFile("/tmp/triggui-batch.jsonl", JSON.stringify(__sel) + "\n", "utf8");
-        console.log(`🏭 manifiesto: +1 (${__sel.titulo || "?"} · ${__sel._slug})`);
+        const __linea = { ...__sel, slug: __sel.slug || __sel._slug };
+        await fs.appendFile("/tmp/triggui-batch.jsonl", JSON.stringify(__linea) + "\n", "utf8");
+        console.log(`🏭 manifiesto: +1 (${__linea.titulo || "?"} · ${__linea.slug})`);
       } catch (e) { console.log(`⚠️ manifiesto batch: ${e.message}`); }
     }
     try {
