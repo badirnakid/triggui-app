@@ -1774,7 +1774,10 @@ try{ if(document.getElementById('puerta')){ __pv_cargarLibros().then(__pv_puerta
   var MS={'esta semana':'this week','tus combos':'your combos'};
   document.querySelectorAll('.cuarto-t').forEach(function(e){ if(MT[e.textContent]) e.textContent=MT[e.textContent]; });
   document.querySelectorAll('.cuarto-s').forEach(function(e){ if(MS[e.textContent]) e.textContent=MS[e.textContent]; });
-  var P=[['#puerta h1','Your spiral'],['#puerta .sub','Every Monday we activate one of your saved books. One book, one week, one action.'],['#vacio .t1','Your spiral is ready.'],['#vacio .t2','When you save a book that speaks to you, its collection of pieces will grow here: words, phrases and cards growing with you.']];
+  var e1=document.querySelector('#manijaClave'); if(e1) e1.textContent='No key? Text me \u2192';
+  var e2=document.querySelector('#clave'); if(e2) e2.setAttribute('placeholder','your member key');
+  var e3=document.querySelector('#entrar'); if(e3) e3.textContent='Enter';
+  var P=[['#puerta h1','Your spiral'],['#puerta .sub','Every Monday we activate you with a living edition and its video. Whatever you love, save it with \ud83d\ude0d \u2014 for whenever you need it.'],['#vacio .t1','Your spiral is ready.'],['#vacio .t2','When you save a book that speaks to you, its collection of pieces will grow here: words, phrases and cards growing with you.']];
   P.forEach(function(par){ var e=document.querySelector(par[0]); if(e) e.textContent=par[1]; });
 })();
 </script>
