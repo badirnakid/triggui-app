@@ -180,6 +180,9 @@ body::before {
 .block.show .label { opacity: 0; transform: translateY(-6px); }
 .block.show .frase { opacity: 1; transform: translateY(0); }
 
+#tgLangPill{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:12px;z-index:150;display:flex;background:rgba(20,20,26,.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:3px;font:700 11px/1 -apple-system,system-ui,sans-serif;letter-spacing:.06em}
+#tgLangPill button{appearance:none;border:0;background:transparent;color:rgba(255,255,255,.55);padding:7px 10px;border-radius:999px;cursor:pointer;min-width:34px}
+#tgLangPill button.on{background:rgba(255,255,255,.92);color:#111}
 .reveal-overlay {
   position: fixed;
   inset: 0;
@@ -776,6 +779,7 @@ body.tg-tarjeta .tg-cta{display:none !important}
 </head>
 <body data-lab-v="live-edition-card-v3" style="--accent:#E21293;--marker:#E2129330;--chip-bg:#E2129314;--card-paper:#F7F7F5;--card-ink:#1A1A1A;--card-border:rgba(26,26,26,0.06);--ed-title-size:25.4px;--ed-title-size-mobile:22.8px;--ed-para-size:17.4px;--ed-para-size-mobile:17.0px;--ed-sub-size:17.2px;--ed-sub-size-mobile:16.8px;--ed-chip-size:14.3px;--ed-chip-size-mobile:13.6px;--ed-cover-width:110.0px;--ed-cover-width-mobile:98.0px;">
 
+<div id="tgLangPill" role="group" aria-label="Language"><button id="tgLangEs" type="button">ES</button><button id="tgLangEn" type="button">EN</button></div>
 <div id="pulseLine" class="pulse-line"></div>
 <div class="bocado-eco-overlay" id="bocadoEcoOverlay">
   <div class="bocado-eco-phrase" id="bocadoEcoPhrase"></div>
@@ -791,7 +795,7 @@ body.tg-tarjeta .tg-cta{display:none !important}
         <div class="ed-flow" id="editorialFlowTop">
           
           <div class="ed-cover-wrap" id="coverCTA">
-            <img src="https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/9d/1a/42/9d1a420b-e644-5697-14e7-578c52025e6f/9789584297778.jpg/3000x3000bb.jpg" alt="Piénsalo Otra Vez" />
+            <img src="./portada.jpg" alt="Piénsalo Otra Vez" />
             <span class="cover-hint">Toca el libro</span>
           </div>
           <div class="ed-title" id="editorialTitle">La fuerza de desaprender</div>
@@ -840,7 +844,7 @@ body.tg-tarjeta .tg-cta{display:none !important}
   </div>
 
   <div class="silence-screen" id="silenceScreen">
-    <img class="sil-cover" id="silCover" src="https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/9d/1a/42/9d1a420b-e644-5697-14e7-578c52025e6f/9789584297778.jpg/3000x3000bb.jpg" alt="Piénsalo Otra Vez" />
+    <img class="sil-cover" id="silCover" src="./portada.jpg" alt="Piénsalo Otra Vez" />
     <div class="sil-title">Piénsalo Otra Vez</div>
     <div class="sil-call">Queremos que te den ganas<br>de abrir un libro.</div>
     <div class="sil-sub">Eso es Triggui.</div>
@@ -852,7 +856,21 @@ body.tg-tarjeta .tg-cta{display:none !important}
 </div>
 
 <script>
-const state = {"id": "piensalo-otra-vez", "titulo": "Piénsalo Otra Vez", "autor": "Adam Grant", "palabra": "La fuerza de desaprender", "descripcion": "En un entorno que cambia constantemente, la flexibilidad mental se convierte en una habilidad esencial. La rigidez en nuestras creencias limita nuestra capacidad para adaptarnos y aprender. Abrazar la incertidumbre y cuestionar nuestras convicciones cómodas no solo es valioso, sino fundamental. Desaprender es una forma de vivir en un estado de permanente aprendizaje y humildad intelectual.", "palabras": ["reflexión", "humildad", "aprendizaje", "flexibilidad"], "frases": ["🕰 Tómate un momento para reflexionar sobre tus creencias. ¿Cuáles son las que te limitan hoy?", "💫 ¿Qué ideas has evitado escuchar porque desafían tu perspectiva?", "👁 Imagina un mundo donde tus certezas son cuestionadas y el aprendizaje es constante.", "🫁 La ignorancia se alimenta de la certeza. Cuestionar es el primer paso hacia el conocimiento."], "colores": ["#F17EC5", "#30E877", "#AE134C", "#0B6544"], "textColors": ["#FFFFFF", "#000000", "#FFFFFF", "#FFFFFF"], "ogImage": "https://app.triggui.com/t/piensalo-otra-vez/og.jpg", "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/9d/1a/42/9d1a420b-e644-5697-14e7-578c52025e6f/9789584297778.jpg/3000x3000bb.jpg", "tagline": "", "bocadoEcoPool": [{"phrase": "🕰 Tómate un momento para reflexionar sobre tus creencias. ¿Cuáles son las que te limitan hoy?", "rol": "abrir", "animo": 0.4, "origin": "edition_block_es"}, {"phrase": "💫 ¿Qué ideas has evitado escuchar porque desafían tu perspectiva?", "rol": "profundizar", "animo": 0.3, "origin": "edition_block_es"}, {"phrase": "👁 Imagina un mundo donde tus certezas son cuestionadas y el aprendizaje es constante.", "rol": "resonar", "animo": 0.5, "origin": "edition_block_es"}, {"phrase": "🫁 La ignorancia se alimenta de la certeza. Cuestionar es el primer paso hacia el conocimiento.", "rol": "aterrizar", "animo": 0.6, "origin": "edition_block_es"}, {"phrase": "🔮 La rigidez obstaculiza el aprendizaje y la adaptación.", "rol": "aterrizar", "animo": 0.4, "origin": "og_phrase_es"}, {"phrase": "🕊 ¿Qué creencias te están limitando hoy?", "rol": "abrir", "animo": 0.3, "origin": "og_phrase_es"}, {"phrase": "📖 Desaprender es el primer paso para aprender de nuevo.", "rol": "resonar", "animo": 0.5, "origin": "og_phrase_es"}, {"phrase": "🌓 Cuestionar nuestras certezas es el inicio del verdadero crecimiento.", "rol": "profundizar", "animo": 0.6, "origin": "og_phrase_es"}]};
+const state = {"id": "piensalo-otra-vez", "titulo": "Piénsalo Otra Vez", "autor": "Adam Grant", "palabra": "La fuerza de desaprender", "descripcion": "En un entorno que cambia constantemente, la flexibilidad mental se convierte en una habilidad esencial. La rigidez en nuestras creencias limita nuestra capacidad para adaptarnos y aprender. Abrazar la incertidumbre y cuestionar nuestras convicciones cómodas no solo es valioso, sino fundamental. Desaprender es una forma de vivir en un estado de permanente aprendizaje y humildad intelectual.", "palabras": ["reflexión", "humildad", "aprendizaje", "flexibilidad"], "frases": ["🕰 Tómate un momento para reflexionar sobre tus creencias. ¿Cuáles son las que te limitan hoy?", "💫 ¿Qué ideas has evitado escuchar porque desafían tu perspectiva?", "👁 Imagina un mundo donde tus certezas son cuestionadas y el aprendizaje es constante.", "🫁 La ignorancia se alimenta de la certeza. Cuestionar es el primer paso hacia el conocimiento."], "colores": ["#F17EC5", "#30E877", "#AE134C", "#0B6544"], "textColors": ["#FFFFFF", "#000000", "#FFFFFF", "#FFFFFF"], "ogImage": "https://app.triggui.com/t/piensalo-otra-vez/og.jpg", "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication112/v4/9d/1a/42/9d1a420b-e644-5697-14e7-578c52025e6f/9789584297778.jpg/3000x3000bb.jpg", "tagline": "", "frases_en": ["🗺 Allow yourself to sit with discomfort. Let it challenge your beliefs and broaden your perspective.", "🌓 What uncomfortable truth are you avoiding?", "👁 Picture your mind as a garden. What weeds of rigid beliefs need uprooting to allow new growth?", "🫁 To unlearn is to breathe freely in a world full of constraints."], "palabras_en": ["liberation", "wisdom", "challenge", "opportunity"], "i18nEn": {"cardTitle": "The Power of Unlearning", "top": "<span class=\"tg-hl\">In a constantly changing environment, mental flexibility becomes an essential skill.</span> Rigidity in our beliefs limits our ability to adapt and learn. Embracing uncertainty and questioning our comfortable convictions is not just valuable; it is fundamental. Unlearning is a form of liberation.", "sub": "How is the comfort of your beliefs limiting you?", "bot": "<span class=\"tg-hl\">Intellectual humility is the first step toward wisdom.</span> Allowing challenging ideas to enter our mental space, rather than rejecting them, opens doors to new perspectives. The more certainties we cling to, the harder learning becomes."}, "bocadoEcoPool": [{"phrase": "🕰 Tómate un momento para reflexionar sobre tus creencias. ¿Cuáles son las que te limitan hoy?", "rol": "abrir", "animo": 0.4, "origin": "edition_block_es"}, {"phrase": "💫 ¿Qué ideas has evitado escuchar porque desafían tu perspectiva?", "rol": "profundizar", "animo": 0.3, "origin": "edition_block_es"}, {"phrase": "👁 Imagina un mundo donde tus certezas son cuestionadas y el aprendizaje es constante.", "rol": "resonar", "animo": 0.5, "origin": "edition_block_es"}, {"phrase": "🫁 La ignorancia se alimenta de la certeza. Cuestionar es el primer paso hacia el conocimiento.", "rol": "aterrizar", "animo": 0.6, "origin": "edition_block_es"}, {"phrase": "🔮 La rigidez obstaculiza el aprendizaje y la adaptación.", "rol": "aterrizar", "animo": 0.4, "origin": "og_phrase_es"}, {"phrase": "🕊 ¿Qué creencias te están limitando hoy?", "rol": "abrir", "animo": 0.3, "origin": "og_phrase_es"}, {"phrase": "📖 Desaprender es el primer paso para aprender de nuevo.", "rol": "resonar", "animo": 0.5, "origin": "og_phrase_es"}, {"phrase": "🌓 Cuestionar nuestras certezas es el inicio del verdadero crecimiento.", "rol": "profundizar", "animo": 0.6, "origin": "og_phrase_es"}]};
+/* 🌐 D2-A — idioma de la edición: misma llave del imperio (triggui_lang) */
+const TG_ES_SNAP = { t: null, p: null, su: null, b: null };
+let tgLang = (function(){ try { const v = JSON.parse(localStorage.getItem('triggui_lang')||'null'); if (v==='en'||v==='es') return v; } catch(e){} return ((navigator.language||'es').slice(0,2)==='en') ? 'en' : 'es'; })();
+function tgIds(){ return { t: document.getElementById('editorialTitle'), p: document.getElementById('editorialTopPara'), su: document.getElementById('editorialSub'), b: document.getElementById('editorialBottomPara') }; }
+function tgSnap(){ const n=tgIds(); if(n.t&&TG_ES_SNAP.t===null)TG_ES_SNAP.t=n.t.innerHTML; if(n.p&&TG_ES_SNAP.p===null)TG_ES_SNAP.p=n.p.innerHTML; if(n.su&&TG_ES_SNAP.su===null)TG_ES_SNAP.su=n.su.innerHTML; if(n.b&&TG_ES_SNAP.b===null)TG_ES_SNAP.b=n.b.innerHTML; }
+function tgApplyCard(){ const en=state.i18nEn||{}; tgSnap(); const n=tgIds();
+  if(tgLang==='en'){ if(n.t&&en.cardTitle)n.t.textContent=en.cardTitle; if(n.p&&en.top)n.p.innerHTML=en.top; if(n.su&&en.sub)n.su.textContent=en.sub; if(n.b&&en.bot)n.b.innerHTML=en.bot; }
+  else { if(n.t&&TG_ES_SNAP.t!==null)n.t.innerHTML=TG_ES_SNAP.t; if(n.p&&TG_ES_SNAP.p!==null)n.p.innerHTML=TG_ES_SNAP.p; if(n.su&&TG_ES_SNAP.su!==null)n.su.innerHTML=TG_ES_SNAP.su; if(n.b&&TG_ES_SNAP.b!==null)n.b.innerHTML=TG_ES_SNAP.b; } }
+function tgApplyGrid(){ if(tgLang==='en'&&Array.isArray(state.frases_en)&&state.frases_en.length===4){ state._fes=state._fes||state.frases; state._pes=state._pes||state.palabras; state.frases=state.frases_en; if(Array.isArray(state.palabras_en)&&state.palabras_en.length===4)state.palabras=state.palabras_en; } else if(state._fes){ state.frases=state._fes; state.palabras=state._pes||state.palabras; } }
+function tgRepaintGrid(){ document.querySelectorAll('#grid .label').forEach(function(el,i){ const em=(el.textContent||'').trim().split(' ')[0]; el.textContent=em+' '+(state.palabras[i]||''); }); document.querySelectorAll('#grid .frase').forEach(function(el,i){ el.textContent=state.frases[i]||''; }); }
+function tgPillPaint(){ const a=document.getElementById('tgLangEs'), b=document.getElementById('tgLangEn'); if(a&&b){ a.classList.toggle('on', tgLang==='es'); b.classList.toggle('on', tgLang==='en'); } }
+function tgSetLang(l){ if(l===tgLang){ tgPillPaint(); return; } tgLang=l; try{ localStorage.setItem('triggui_lang', JSON.stringify(l)); }catch(e){} tgApplyGrid(); tgRepaintGrid(); tgApplyCard(); tgPillPaint(); }
+tgApplyGrid(); /* swap pre-pintado: el grid nace en el idioma correcto */
+document.addEventListener('DOMContentLoaded', function(){ tgApplyCard(); tgPillPaint(); const a=document.getElementById('tgLangEs'), b=document.getElementById('tgLangEn'); if(a)a.addEventListener('click',function(){tgSetLang('es');}); if(b)b.addEventListener('click',function(){tgSetLang('en');}); });
 const grid = document.getElementById('grid');
 const revealOverlay = document.getElementById('revealOverlay');
 const btnBack = document.getElementById('btnBack');
@@ -1608,7 +1626,7 @@ function buildPort(){
   d.className = 'tg-portada';
   if (isURL(L.portada)) {
     var img = new Image();
-    img.src = L.portada;
+    img.src = './portada.jpg';
     img.loading = 'lazy';
     d.appendChild(img);
   } else {

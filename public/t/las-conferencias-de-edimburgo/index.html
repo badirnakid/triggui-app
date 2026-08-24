@@ -180,6 +180,9 @@ body::before {
 .block.show .label { opacity: 0; transform: translateY(-6px); }
 .block.show .frase { opacity: 1; transform: translateY(0); }
 
+#tgLangPill{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:12px;z-index:150;display:flex;background:rgba(20,20,26,.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:3px;font:700 11px/1 -apple-system,system-ui,sans-serif;letter-spacing:.06em}
+#tgLangPill button{appearance:none;border:0;background:transparent;color:rgba(255,255,255,.55);padding:7px 10px;border-radius:999px;cursor:pointer;min-width:34px}
+#tgLangPill button.on{background:rgba(255,255,255,.92);color:#111}
 .reveal-overlay {
   position: fixed;
   inset: 0;
@@ -776,6 +779,7 @@ body.tg-tarjeta .tg-cta{display:none !important}
 </head>
 <body data-lab-v="live-edition-card-v3" style="--accent:#E21256;--marker:#E2125630;--chip-bg:#E2125614;--card-paper:#F7F7F5;--card-ink:#1A1A1A;--card-border:rgba(26,26,26,0.06);--ed-title-size:25.4px;--ed-title-size-mobile:22.8px;--ed-para-size:17.4px;--ed-para-size-mobile:17.0px;--ed-sub-size:17.2px;--ed-sub-size-mobile:16.8px;--ed-chip-size:14.3px;--ed-chip-size-mobile:13.6px;--ed-cover-width:110.0px;--ed-cover-width-mobile:98.0px;">
 
+<div id="tgLangPill" role="group" aria-label="Language"><button id="tgLangEs" type="button">ES</button><button id="tgLangEn" type="button">EN</button></div>
 <div id="pulseLine" class="pulse-line"></div>
 <div class="bocado-eco-overlay" id="bocadoEcoOverlay">
   <div class="bocado-eco-phrase" id="bocadoEcoPhrase"></div>
@@ -791,7 +795,7 @@ body.tg-tarjeta .tg-cta{display:none !important}
         <div class="ed-flow" id="editorialFlowTop">
           
           <div class="ed-cover-wrap" id="coverCTA">
-            <img src="https://covers.openlibrary.org/b/id/12407471-L.jpg" alt="Las Conferencias De Edimburgo" />
+            <img src="./portada.jpg" alt="Las Conferencias De Edimburgo" />
             <span class="cover-hint">Toca el libro</span>
           </div>
           <div class="ed-title" id="editorialTitle">La Mente Como Fuente de Realidad</div>
@@ -840,7 +844,7 @@ body.tg-tarjeta .tg-cta{display:none !important}
   </div>
 
   <div class="silence-screen" id="silenceScreen">
-    <img class="sil-cover" id="silCover" src="https://covers.openlibrary.org/b/id/12407471-L.jpg" alt="Las Conferencias De Edimburgo" />
+    <img class="sil-cover" id="silCover" src="./portada.jpg" alt="Las Conferencias De Edimburgo" />
     <div class="sil-title">Las Conferencias De Edimburgo</div>
     <div class="sil-call">Queremos que te den ganas<br>de abrir un libro.</div>
     <div class="sil-sub">Eso es Triggui.</div>
@@ -852,7 +856,21 @@ body.tg-tarjeta .tg-cta{display:none !important}
 </div>
 
 <script>
-const state = {"id": "las-conferencias-de-edimburgo", "titulo": "Las Conferencias De Edimburgo", "autor": "Thomas Troward", "palabra": "La Mente Como Fuente de Realidad", "descripcion": "La conexión entre la Acción Mental y las Condiciones Materiales es innegable: lo que pensamos y creemos se manifiesta en nuestro mundo. Esta relación no es meramente teórica; es el fundamento sobre el cual se construye nuestra realidad. Al comprender estos Principios Naturales, podemos dirigir nuestra mente hacia la materialidad y crear la realidad que deseamos.", "palabras": ["claridad", "empoderamiento", "introspección", "transformación"], "frases": ["🕰 Dedica un momento a reflexionar sobre tus pensamientos diarios. ¿Qué predominan en tu Acción Mental y cómo influyen en tus Condiciones Materiales?", "🌌 Al considerar cómo los Principios Naturales se manifiestan en nuestra vida diaria, es fundamental reconocer su influencia en cada pensamiento y acción que emprendemos.", "👁 Imagina una semilla: en su interior, todo el potencial de un gran árbol espera ser cultivado.", "🌊 La mente es el arquitecto; la acción, el constructor de la realidad."], "colores": ["#F17EA3", "#30E8AD", "#AE131F", "#0B655E"], "textColors": ["#FFFFFF", "#000000", "#FFFFFF", "#FFFFFF"], "ogImage": "https://app.triggui.com/t/las-conferencias-de-edimburgo/og.jpg", "portada": "https://covers.openlibrary.org/b/id/12407471-L.jpg", "tagline": "", "bocadoEcoPool": [{"phrase": "🕰 Dedica un momento a reflexionar sobre tus pensamientos diarios. ¿Qué predominan en tu Acción Mental y cómo influyen en tus Condiciones Materiales?", "rol": "abrir", "animo": 0.5, "origin": "edition_block_es"}, {"phrase": "🌌 Al considerar cómo los Principios Naturales se manifiestan en nuestra vida diaria, es fundamental reconocer su influencia en cada pensamiento y acción que emprendemos.", "rol": "profundizar", "animo": 0.4, "origin": "edition_block_es"}, {"phrase": "👁 Imagina una semilla: en su interior, todo el potencial de un gran árbol espera ser cultivado.", "rol": "aterrizar", "animo": 0.6, "origin": "edition_block_es"}, {"phrase": "🌊 La mente es el arquitecto; la acción, el constructor de la realidad.", "rol": "resonar", "animo": 0.5, "origin": "edition_block_es"}, {"phrase": "🌓 ¿Qué realidad estás creando con tus pensamientos hoy?", "rol": "abrir", "animo": 0.4, "origin": "og_phrase_es"}, {"phrase": "🪞 La Acción Mental es el primer paso hacia la manifestación material.", "rol": "aterrizar", "animo": 0.5, "origin": "og_phrase_es"}, {"phrase": "⚡ ¿Cuántas oportunidades se pierden por no comprender nuestra mente?", "rol": "profundizar", "animo": 0.3, "origin": "og_phrase_es"}, {"phrase": "🌿 Pensar es crear; crear es vivir en armonía con la naturaleza.", "rol": "resonar", "animo": 0.6, "origin": "og_phrase_es"}]};
+const state = {"id": "las-conferencias-de-edimburgo", "titulo": "Las Conferencias De Edimburgo", "autor": "Thomas Troward", "palabra": "La Mente Como Fuente de Realidad", "descripcion": "La conexión entre la Acción Mental y las Condiciones Materiales es innegable: lo que pensamos y creemos se manifiesta en nuestro mundo. Esta relación no es meramente teórica; es el fundamento sobre el cual se construye nuestra realidad. Al comprender estos Principios Naturales, podemos dirigir nuestra mente hacia la materialidad y crear la realidad que deseamos.", "palabras": ["claridad", "empoderamiento", "introspección", "transformación"], "frases": ["🕰 Dedica un momento a reflexionar sobre tus pensamientos diarios. ¿Qué predominan en tu Acción Mental y cómo influyen en tus Condiciones Materiales?", "🌌 Al considerar cómo los Principios Naturales se manifiestan en nuestra vida diaria, es fundamental reconocer su influencia en cada pensamiento y acción que emprendemos.", "👁 Imagina una semilla: en su interior, todo el potencial de un gran árbol espera ser cultivado.", "🌊 La mente es el arquitecto; la acción, el constructor de la realidad."], "colores": ["#F17EA3", "#30E8AD", "#AE131F", "#0B655E"], "textColors": ["#FFFFFF", "#000000", "#FFFFFF", "#FFFFFF"], "ogImage": "https://app.triggui.com/t/las-conferencias-de-edimburgo/og.jpg", "portada": "https://covers.openlibrary.org/b/id/12407471-L.jpg", "tagline": "", "frases_en": ["🔭 Visualize your thoughts as the architects of your reality. Allow them to shape the world around you.", "🌌 Consider what you are manifesting right now. Are your thoughts aligned with your true desires?", "🚶 Imagine your thoughts as seeds planted in fertile soil, each one growing into the reality you wish.", "🕰 The mind is a powerful tool; what it nurtures, it will eventually harvest."], "palabras_en": ["clarity", "responsibility", "manifestation", "understanding"], "i18nEn": {"cardTitle": "The Mind as the Source of Reality", "top": "<span class=\"tg-hl\">The connection between Mental Action and Material Conditions is undeniable: what we think and believe manifests in our world</span>. This relationship is not merely theoretical; it is the foundation upon which our reality is built. By understanding these Natural Principles, we can direct our mind toward the creation of the conditions we desire in our lives.", "sub": "How to transform thought into material action?", "bot": "<span class=\"tg-hl\">The conscious practice of these principles gives us a clear starting point.</span> With each thought, we shape our existence, and it is our responsibility to learn how to direct that mental energy toward creating the conditions we wish to experience."}, "bocadoEcoPool": [{"phrase": "🕰 Dedica un momento a reflexionar sobre tus pensamientos diarios. ¿Qué predominan en tu Acción Mental y cómo influyen en tus Condiciones Materiales?", "rol": "abrir", "animo": 0.5, "origin": "edition_block_es"}, {"phrase": "🌌 Al considerar cómo los Principios Naturales se manifiestan en nuestra vida diaria, es fundamental reconocer su influencia en cada pensamiento y acción que emprendemos.", "rol": "profundizar", "animo": 0.4, "origin": "edition_block_es"}, {"phrase": "👁 Imagina una semilla: en su interior, todo el potencial de un gran árbol espera ser cultivado.", "rol": "aterrizar", "animo": 0.6, "origin": "edition_block_es"}, {"phrase": "🌊 La mente es el arquitecto; la acción, el constructor de la realidad.", "rol": "resonar", "animo": 0.5, "origin": "edition_block_es"}, {"phrase": "🌓 ¿Qué realidad estás creando con tus pensamientos hoy?", "rol": "abrir", "animo": 0.4, "origin": "og_phrase_es"}, {"phrase": "🪞 La Acción Mental es el primer paso hacia la manifestación material.", "rol": "aterrizar", "animo": 0.5, "origin": "og_phrase_es"}, {"phrase": "⚡ ¿Cuántas oportunidades se pierden por no comprender nuestra mente?", "rol": "profundizar", "animo": 0.3, "origin": "og_phrase_es"}, {"phrase": "🌿 Pensar es crear; crear es vivir en armonía con la naturaleza.", "rol": "resonar", "animo": 0.6, "origin": "og_phrase_es"}]};
+/* 🌐 D2-A — idioma de la edición: misma llave del imperio (triggui_lang) */
+const TG_ES_SNAP = { t: null, p: null, su: null, b: null };
+let tgLang = (function(){ try { const v = JSON.parse(localStorage.getItem('triggui_lang')||'null'); if (v==='en'||v==='es') return v; } catch(e){} return ((navigator.language||'es').slice(0,2)==='en') ? 'en' : 'es'; })();
+function tgIds(){ return { t: document.getElementById('editorialTitle'), p: document.getElementById('editorialTopPara'), su: document.getElementById('editorialSub'), b: document.getElementById('editorialBottomPara') }; }
+function tgSnap(){ const n=tgIds(); if(n.t&&TG_ES_SNAP.t===null)TG_ES_SNAP.t=n.t.innerHTML; if(n.p&&TG_ES_SNAP.p===null)TG_ES_SNAP.p=n.p.innerHTML; if(n.su&&TG_ES_SNAP.su===null)TG_ES_SNAP.su=n.su.innerHTML; if(n.b&&TG_ES_SNAP.b===null)TG_ES_SNAP.b=n.b.innerHTML; }
+function tgApplyCard(){ const en=state.i18nEn||{}; tgSnap(); const n=tgIds();
+  if(tgLang==='en'){ if(n.t&&en.cardTitle)n.t.textContent=en.cardTitle; if(n.p&&en.top)n.p.innerHTML=en.top; if(n.su&&en.sub)n.su.textContent=en.sub; if(n.b&&en.bot)n.b.innerHTML=en.bot; }
+  else { if(n.t&&TG_ES_SNAP.t!==null)n.t.innerHTML=TG_ES_SNAP.t; if(n.p&&TG_ES_SNAP.p!==null)n.p.innerHTML=TG_ES_SNAP.p; if(n.su&&TG_ES_SNAP.su!==null)n.su.innerHTML=TG_ES_SNAP.su; if(n.b&&TG_ES_SNAP.b!==null)n.b.innerHTML=TG_ES_SNAP.b; } }
+function tgApplyGrid(){ if(tgLang==='en'&&Array.isArray(state.frases_en)&&state.frases_en.length===4){ state._fes=state._fes||state.frases; state._pes=state._pes||state.palabras; state.frases=state.frases_en; if(Array.isArray(state.palabras_en)&&state.palabras_en.length===4)state.palabras=state.palabras_en; } else if(state._fes){ state.frases=state._fes; state.palabras=state._pes||state.palabras; } }
+function tgRepaintGrid(){ document.querySelectorAll('#grid .label').forEach(function(el,i){ const em=(el.textContent||'').trim().split(' ')[0]; el.textContent=em+' '+(state.palabras[i]||''); }); document.querySelectorAll('#grid .frase').forEach(function(el,i){ el.textContent=state.frases[i]||''; }); }
+function tgPillPaint(){ const a=document.getElementById('tgLangEs'), b=document.getElementById('tgLangEn'); if(a&&b){ a.classList.toggle('on', tgLang==='es'); b.classList.toggle('on', tgLang==='en'); } }
+function tgSetLang(l){ if(l===tgLang){ tgPillPaint(); return; } tgLang=l; try{ localStorage.setItem('triggui_lang', JSON.stringify(l)); }catch(e){} tgApplyGrid(); tgRepaintGrid(); tgApplyCard(); tgPillPaint(); }
+tgApplyGrid(); /* swap pre-pintado: el grid nace en el idioma correcto */
+document.addEventListener('DOMContentLoaded', function(){ tgApplyCard(); tgPillPaint(); const a=document.getElementById('tgLangEs'), b=document.getElementById('tgLangEn'); if(a)a.addEventListener('click',function(){tgSetLang('es');}); if(b)b.addEventListener('click',function(){tgSetLang('en');}); });
 const grid = document.getElementById('grid');
 const revealOverlay = document.getElementById('revealOverlay');
 const btnBack = document.getElementById('btnBack');
@@ -1608,7 +1626,7 @@ function buildPort(){
   d.className = 'tg-portada';
   if (isURL(L.portada)) {
     var img = new Image();
-    img.src = L.portada;
+    img.src = './portada.jpg';
     img.loading = 'lazy';
     d.appendChild(img);
   } else {

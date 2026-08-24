@@ -180,6 +180,9 @@ body::before {
 .block.show .label { opacity: 0; transform: translateY(-6px); }
 .block.show .frase { opacity: 1; transform: translateY(0); }
 
+#tgLangPill{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:12px;z-index:150;display:flex;background:rgba(20,20,26,.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:3px;font:700 11px/1 -apple-system,system-ui,sans-serif;letter-spacing:.06em}
+#tgLangPill button{appearance:none;border:0;background:transparent;color:rgba(255,255,255,.55);padding:7px 10px;border-radius:999px;cursor:pointer;min-width:34px}
+#tgLangPill button.on{background:rgba(255,255,255,.92);color:#111}
 .reveal-overlay {
   position: fixed;
   inset: 0;
@@ -776,6 +779,7 @@ body.tg-tarjeta .tg-cta{display:none !important}
 </head>
 <body data-lab-v="live-edition-card-v3" style="--accent:#4E12E2;--marker:#4E12E230;--chip-bg:#4E12E214;--card-paper:#F7F7F5;--card-ink:#1A1A1A;--card-border:rgba(26,26,26,0.06);--ed-title-size:25.4px;--ed-title-size-mobile:22.8px;--ed-para-size:17.4px;--ed-para-size-mobile:17.0px;--ed-sub-size:17.2px;--ed-sub-size-mobile:16.8px;--ed-chip-size:14.3px;--ed-chip-size-mobile:13.6px;--ed-cover-width:110.0px;--ed-cover-width-mobile:98.0px;">
 
+<div id="tgLangPill" role="group" aria-label="Language"><button id="tgLangEs" type="button">ES</button><button id="tgLangEn" type="button">EN</button></div>
 <div id="pulseLine" class="pulse-line"></div>
 <div class="bocado-eco-overlay" id="bocadoEcoOverlay">
   <div class="bocado-eco-phrase" id="bocadoEcoPhrase"></div>
@@ -791,7 +795,7 @@ body.tg-tarjeta .tg-cta{display:none !important}
         <div class="ed-flow" id="editorialFlowTop">
           
           <div class="ed-cover-wrap" id="coverCTA">
-            <img src="https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/e9/0b/68/e90b6837-2c26-8d3a-2200-d19868221be3/9798217177547.d.jpg/3000x3000bb.jpg" alt="The Algorithm" />
+            <img src="./portada.jpg" alt="The Algorithm" />
             <span class="cover-hint">Toca el libro</span>
           </div>
           <div class="ed-title" id="editorialTitle">Desafiando el Status Quo</div>
@@ -840,7 +844,7 @@ body.tg-tarjeta .tg-cta{display:none !important}
   </div>
 
   <div class="silence-screen" id="silenceScreen">
-    <img class="sil-cover" id="silCover" src="https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/e9/0b/68/e90b6837-2c26-8d3a-2200-d19868221be3/9798217177547.d.jpg/3000x3000bb.jpg" alt="The Algorithm" />
+    <img class="sil-cover" id="silCover" src="./portada.jpg" alt="The Algorithm" />
     <div class="sil-title">The Algorithm</div>
     <div class="sil-call">Queremos que te den ganas<br>de abrir un libro.</div>
     <div class="sil-sub">Eso es Triggui.</div>
@@ -852,7 +856,21 @@ body.tg-tarjeta .tg-cta{display:none !important}
 </div>
 
 <script>
-const state = {"id": "the-algorithm", "titulo": "The Algorithm", "autor": "Jon McNeill", "palabra": "Desafiando el Status Quo", "descripcion": "El paradigma de reestructuración radical es la clave para desbloquear el potencial oculto en cualquier organización. Si deseas que tu equipo sea innovador, debes estar dispuesto a desmantelar las viejas estructuras que limitan la creatividad. La eficiencia no se logra simplemente ajustando lo existente, sino que requiere un enfoque de optimización de procesos y una metodología de cinco pasos para lograr una aceleración del tiempo de ciclo y una automatización de operaciones.", "palabras": ["determinación", "claridad", "eficiencia", "transformación"], "frases": ["🌊 Al eliminar un paso redundante de tu proceso diario, notarás cómo la ligereza transforma tu ritmo y enfoque.", "🌓 ¿Cuánto tiempo podrías ahorrar si te atreves a cuestionar cada paso en tus reuniones?", "👁 Imagina un proceso donde cada paso tiene un propósito claro, sin ruido innecesario.", "🗺 En la búsqueda de la innovación sostenible, recuerda que menos es más; la simplicidad debe ser tu guía."], "colores": ["#9F7EF1", "#B3E830", "#6713AE", "#35650B"], "textColors": ["#FFFFFF", "#000000", "#FFFFFF", "#FFFFFF"], "ogImage": "https://app.triggui.com/t/the-algorithm/og.jpg", "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/e9/0b/68/e90b6837-2c26-8d3a-2200-d19868221be3/9798217177547.d.jpg/3000x3000bb.jpg", "tagline": "", "bocadoEcoPool": [{"phrase": "🌊 Al eliminar un paso redundante de tu proceso diario, notarás cómo la ligereza transforma tu ritmo y enfoque.", "rol": "abrir", "animo": 0.5, "origin": "edition_block_es"}, {"phrase": "🌓 ¿Cuánto tiempo podrías ahorrar si te atreves a cuestionar cada paso en tus reuniones?", "rol": "profundizar", "animo": 0.4, "origin": "edition_block_es"}, {"phrase": "👁 Imagina un proceso donde cada paso tiene un propósito claro, sin ruido innecesario.", "rol": "aterrizar", "animo": 0.6, "origin": "edition_block_es"}, {"phrase": "🗺 En la búsqueda de la innovación sostenible, recuerda que menos es más; la simplicidad debe ser tu guía.", "rol": "resonar", "animo": 0.5, "origin": "edition_block_es"}, {"phrase": "🌱 Una organización que no desafía su propio status quo, permanece estancada en la mediocridad y pierde oportunidades de optimización y crecimiento.", "rol": "abrir", "animo": 0.4, "origin": "og_phrase_es"}, {"phrase": "🔮 Identifica los procesos obsoletos que están frenando tu crecimiento.", "rol": "profundizar", "animo": 0.3, "origin": "og_phrase_es"}, {"phrase": "🕊 La innovación comienza cuando eliminamos lo innecesario.", "rol": "aterrizar", "animo": 0.6, "origin": "og_phrase_es"}, {"phrase": "📖 Al abordar cualquier proceso, recordar que la simplificación es el primer paso que nos conduce a la excelencia operativa.", "rol": "resonar", "animo": 0.5, "origin": "og_phrase_es"}]};
+const state = {"id": "the-algorithm", "titulo": "The Algorithm", "autor": "Jon McNeill", "palabra": "Desafiando el Status Quo", "descripcion": "El paradigma de reestructuración radical es la clave para desbloquear el potencial oculto en cualquier organización. Si deseas que tu equipo sea innovador, debes estar dispuesto a desmantelar las viejas estructuras que limitan la creatividad. La eficiencia no se logra simplemente ajustando lo existente, sino que requiere un enfoque de optimización de procesos y una metodología de cinco pasos para lograr una aceleración del tiempo de ciclo y una automatización de operaciones.", "palabras": ["determinación", "claridad", "eficiencia", "transformación"], "frases": ["🌊 Al eliminar un paso redundante de tu proceso diario, notarás cómo la ligereza transforma tu ritmo y enfoque.", "🌓 ¿Cuánto tiempo podrías ahorrar si te atreves a cuestionar cada paso en tus reuniones?", "👁 Imagina un proceso donde cada paso tiene un propósito claro, sin ruido innecesario.", "🗺 En la búsqueda de la innovación sostenible, recuerda que menos es más; la simplicidad debe ser tu guía."], "colores": ["#9F7EF1", "#B3E830", "#6713AE", "#35650B"], "textColors": ["#FFFFFF", "#000000", "#FFFFFF", "#FFFFFF"], "ogImage": "https://app.triggui.com/t/the-algorithm/og.jpg", "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4/e9/0b/68/e90b6837-2c26-8d3a-2200-d19868221be3/9798217177547.d.jpg/3000x3000bb.jpg", "tagline": "", "frases_en": ["🔭 Imagine a process so refined that it transforms your workflow and accelerates outcomes.", "🌓 Look at your daily operations and pinpoint one outdated process that you can cut out right now.", "🚶 Imagine a team that moves swiftly, unburdened by unnecessary tasks.", "🗺 In the realm of business transformation, embracing simplicity often reveals the true sophistication behind effective change."], "palabras_en": ["innovation", "transformation", "challenge", "optimization"], "i18nEn": {"cardTitle": "Challenging the Status Quo", "top": "The paradigm of radical restructuring is the key to unlocking hidden potential in any organization. <span class=\"tg-hl\">If you want your team to be innovative, you must be willing to dismantle the old structures that limit creativity</span>. Efficiency is not achieved by merely tweaking the existing, but by rethinking the very foundations.", "sub": "What are you willing to question today?", "bot": "The five-step methodology is more than just a model; it is a transformative approach. <span class=\"tg-hl\">Ask yourself: how many unnecessary processes have you accumulated on your path toward optimization?</span> Simplify, eliminate, and watch how accelerating cycle time can lead you to astonishing results."}, "bocadoEcoPool": [{"phrase": "🌊 Al eliminar un paso redundante de tu proceso diario, notarás cómo la ligereza transforma tu ritmo y enfoque.", "rol": "abrir", "animo": 0.5, "origin": "edition_block_es"}, {"phrase": "🌓 ¿Cuánto tiempo podrías ahorrar si te atreves a cuestionar cada paso en tus reuniones?", "rol": "profundizar", "animo": 0.4, "origin": "edition_block_es"}, {"phrase": "👁 Imagina un proceso donde cada paso tiene un propósito claro, sin ruido innecesario.", "rol": "aterrizar", "animo": 0.6, "origin": "edition_block_es"}, {"phrase": "🗺 En la búsqueda de la innovación sostenible, recuerda que menos es más; la simplicidad debe ser tu guía.", "rol": "resonar", "animo": 0.5, "origin": "edition_block_es"}, {"phrase": "🌱 Una organización que no desafía su propio status quo, permanece estancada en la mediocridad y pierde oportunidades de optimización y crecimiento.", "rol": "abrir", "animo": 0.4, "origin": "og_phrase_es"}, {"phrase": "🔮 Identifica los procesos obsoletos que están frenando tu crecimiento.", "rol": "profundizar", "animo": 0.3, "origin": "og_phrase_es"}, {"phrase": "🕊 La innovación comienza cuando eliminamos lo innecesario.", "rol": "aterrizar", "animo": 0.6, "origin": "og_phrase_es"}, {"phrase": "📖 Al abordar cualquier proceso, recordar que la simplificación es el primer paso que nos conduce a la excelencia operativa.", "rol": "resonar", "animo": 0.5, "origin": "og_phrase_es"}]};
+/* 🌐 D2-A — idioma de la edición: misma llave del imperio (triggui_lang) */
+const TG_ES_SNAP = { t: null, p: null, su: null, b: null };
+let tgLang = (function(){ try { const v = JSON.parse(localStorage.getItem('triggui_lang')||'null'); if (v==='en'||v==='es') return v; } catch(e){} return ((navigator.language||'es').slice(0,2)==='en') ? 'en' : 'es'; })();
+function tgIds(){ return { t: document.getElementById('editorialTitle'), p: document.getElementById('editorialTopPara'), su: document.getElementById('editorialSub'), b: document.getElementById('editorialBottomPara') }; }
+function tgSnap(){ const n=tgIds(); if(n.t&&TG_ES_SNAP.t===null)TG_ES_SNAP.t=n.t.innerHTML; if(n.p&&TG_ES_SNAP.p===null)TG_ES_SNAP.p=n.p.innerHTML; if(n.su&&TG_ES_SNAP.su===null)TG_ES_SNAP.su=n.su.innerHTML; if(n.b&&TG_ES_SNAP.b===null)TG_ES_SNAP.b=n.b.innerHTML; }
+function tgApplyCard(){ const en=state.i18nEn||{}; tgSnap(); const n=tgIds();
+  if(tgLang==='en'){ if(n.t&&en.cardTitle)n.t.textContent=en.cardTitle; if(n.p&&en.top)n.p.innerHTML=en.top; if(n.su&&en.sub)n.su.textContent=en.sub; if(n.b&&en.bot)n.b.innerHTML=en.bot; }
+  else { if(n.t&&TG_ES_SNAP.t!==null)n.t.innerHTML=TG_ES_SNAP.t; if(n.p&&TG_ES_SNAP.p!==null)n.p.innerHTML=TG_ES_SNAP.p; if(n.su&&TG_ES_SNAP.su!==null)n.su.innerHTML=TG_ES_SNAP.su; if(n.b&&TG_ES_SNAP.b!==null)n.b.innerHTML=TG_ES_SNAP.b; } }
+function tgApplyGrid(){ if(tgLang==='en'&&Array.isArray(state.frases_en)&&state.frases_en.length===4){ state._fes=state._fes||state.frases; state._pes=state._pes||state.palabras; state.frases=state.frases_en; if(Array.isArray(state.palabras_en)&&state.palabras_en.length===4)state.palabras=state.palabras_en; } else if(state._fes){ state.frases=state._fes; state.palabras=state._pes||state.palabras; } }
+function tgRepaintGrid(){ document.querySelectorAll('#grid .label').forEach(function(el,i){ const em=(el.textContent||'').trim().split(' ')[0]; el.textContent=em+' '+(state.palabras[i]||''); }); document.querySelectorAll('#grid .frase').forEach(function(el,i){ el.textContent=state.frases[i]||''; }); }
+function tgPillPaint(){ const a=document.getElementById('tgLangEs'), b=document.getElementById('tgLangEn'); if(a&&b){ a.classList.toggle('on', tgLang==='es'); b.classList.toggle('on', tgLang==='en'); } }
+function tgSetLang(l){ if(l===tgLang){ tgPillPaint(); return; } tgLang=l; try{ localStorage.setItem('triggui_lang', JSON.stringify(l)); }catch(e){} tgApplyGrid(); tgRepaintGrid(); tgApplyCard(); tgPillPaint(); }
+tgApplyGrid(); /* swap pre-pintado: el grid nace en el idioma correcto */
+document.addEventListener('DOMContentLoaded', function(){ tgApplyCard(); tgPillPaint(); const a=document.getElementById('tgLangEs'), b=document.getElementById('tgLangEn'); if(a)a.addEventListener('click',function(){tgSetLang('es');}); if(b)b.addEventListener('click',function(){tgSetLang('en');}); });
 const grid = document.getElementById('grid');
 const revealOverlay = document.getElementById('revealOverlay');
 const btnBack = document.getElementById('btnBack');
@@ -1608,7 +1626,7 @@ function buildPort(){
   d.className = 'tg-portada';
   if (isURL(L.portada)) {
     var img = new Image();
-    img.src = L.portada;
+    img.src = './portada.jpg';
     img.loading = 'lazy';
     d.appendChild(img);
   } else {
