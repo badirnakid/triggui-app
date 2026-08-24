@@ -2229,6 +2229,13 @@ async function runSingle() {
       try {
         await fs.writeFile("/tmp/triggui-committed.flag", `${book.titulo} — ${book.autor}\n`, "utf8");
         console.log(`🚦 /tmp/triggui-committed.flag escrita — assets habilitados`);
+        // 🏭 Corte 4: manifiesto del lote — cada libro ACEPTADO por el merge se registra (una línea JSON)
+        // para que los pasos de assets del YML fabriquen su edición. En single es un lote de 1.
+        try {
+          const __bk = JSON.parse(await fs.readFile("/tmp/triggui-book.json", "utf8"));
+          await fs.appendFile("/tmp/triggui-batch.jsonl", JSON.stringify(__bk) + "\n", "utf8");
+          console.log(`🏭 manifiesto del lote: +1 (${__bk.titulo || "?"})`);
+        } catch (e) { console.log(`⚠️ manifiesto: ${e.message}`); }
       } catch (e) {
         console.warn(`   ⚠️  no se pudo escribir committed.flag: ${e.message}`);
       }
