@@ -1033,13 +1033,13 @@ function armarMenu(pz, componente, pinEl, descargaUrl, descargaOgUrl){
   menu.className = 'menu';
 
   var abrir = document.createElement('button');
-  abrir.textContent = 'Abrir edici\u00f3n viva';
+  abrir.textContent = pvT('Abrir edici\u00f3n viva','Open live edition');
   abrir.addEventListener('click', function(ev){ ev.stopPropagation(); cerrarMenus(); releerYNavegar(pz); });
   menu.appendChild(abrir);
 
   if (descargaUrl) {
     var desc = document.createElement('a');
-    desc.textContent = 'Descargar PNG';
+    desc.textContent = pvT('Descargar PNG','Download PNG');
     desc.href = descargaUrl;
     desc.setAttribute('download', pz.slug + '-' + componente + '.png');
     desc.addEventListener('click', function(ev){ ev.stopPropagation(); cerrarMenus(); });
@@ -1047,7 +1047,7 @@ function armarMenu(pz, componente, pinEl, descargaUrl, descargaOgUrl){
   }
   if (descargaOgUrl) {
     var descOg = document.createElement('a');
-    descOg.textContent = 'Descargar OG';
+    descOg.textContent = pvT('Descargar OG','Download OG');
     descOg.href = descargaOgUrl;
     descOg.setAttribute('download', pz.slug + '-og.png');
     descOg.addEventListener('click', function(ev){ ev.stopPropagation(); cerrarMenus(); });
@@ -1056,11 +1056,11 @@ function armarMenu(pz, componente, pinEl, descargaUrl, descargaOgUrl){
 
   var quit = document.createElement('button');
   quit.className = 'peligro';
-  quit.textContent = 'Quitar de mi espiral';
+  quit.textContent = pvT('Quitar de mi espiral','Remove from my spiral');
   var armado = false;
   quit.addEventListener('click', function(ev){
     ev.stopPropagation();
-    if (!armado) { armado = true; quit.textContent = '\u00bfSeguro? Quitar'; return; }
+    if (!armado) { armado = true; quit.textContent = pvT('\u00bfSeguro? Quitar','Sure? Remove'); return; }
     cerrarMenus();
     quitar(pz, componente, pinEl);
   });
@@ -1078,7 +1078,7 @@ function armarMenu(pz, componente, pinEl, descargaUrl, descargaOgUrl){
       menu.classList.add('ver');
       menuAbierto = { m: menu };
       armado = false;
-      quit.textContent = 'Quitar de mi espiral';
+      quit.textContent = pvT('Quitar de mi espiral','Remove from my spiral');
     }
   });
 
@@ -1411,7 +1411,7 @@ function pintar(){
   el.inner.innerHTML = '';
   cerrarMenus();
 
-  el.quien.textContent = estado.nombre ? ('Hola, ' + estado.nombre) : '';
+  el.quien.textContent = estado.nombre ? (((window.PV_LANG==='en')?'Hi, ':'Hola, ') + estado.nombre) : '';
 
   if (piezas.length === 0) { if (ojo) ojo.disconnect(); tenirCon(paletaDelMomento()); ver('vacio'); return; }
   ver('tablero');
@@ -1559,7 +1559,7 @@ function pintar(){
   primeraPintura = false;
 
   if (hayBloques && !lsGet(LS_TIP)) {
-    el.tipTxt.textContent = 'Toca una palabra para voltear su frase';
+    el.tipTxt.textContent = pvT('Toca una palabra para voltear su frase','Tap a word to flip its phrase');
     el.tip.classList.add('ver');
   }
 }
@@ -1769,13 +1769,14 @@ try{ if(document.getElementById('puerta')){ __pv_cargarLibros().then(__pv_puerta
 })();
 </script>
 <script>
-pvAplicaCascara([
- ['#casa a[href=\"/espiral/\"]', 'Helix'],
- ['#puerta h1', 'Your spiral'],
- ['#puerta .sub', 'Every Monday we activate you with a living edition and its video. Whatever you love, save it with \ud83d\ude0d \u2014 for whenever you need it.'],
- ['#manijaClave', 'No key? Text me \u2192'],
- ['#clave', 'your key', 'ph']
-]);
+(function(){ if(window.PV_LANG!=='en') return;
+  var MT={'H\u00e9lice':'Helix','Guardados':'Saved'};
+  var MS={'esta semana':'this week','tus combos':'your combos'};
+  document.querySelectorAll('.cuarto-t').forEach(function(e){ if(MT[e.textContent]) e.textContent=MT[e.textContent]; });
+  document.querySelectorAll('.cuarto-s').forEach(function(e){ if(MS[e.textContent]) e.textContent=MS[e.textContent]; });
+  var P=[['#puerta h1','Your spiral'],['#puerta .sub','Every Monday we activate one of your saved books. One book, one week, one action.'],['#vacio .t1','Your spiral is ready.'],['#vacio .t2','When you save a book that speaks to you, its collection of pieces will grow here: words, phrases and cards growing with you.']];
+  P.forEach(function(par){ var e=document.querySelector(par[0]); if(e) e.textContent=par[1]; });
+})();
 </script>
 </body>
 </html>
