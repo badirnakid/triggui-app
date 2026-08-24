@@ -791,7 +791,7 @@ body.tg-tarjeta .tg-cta{display:none !important}
         <div class="ed-flow" id="editorialFlowTop">
           
           <div class="ed-cover-wrap" id="coverCTA">
-            <img src="https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/1a/3d/90/1a3d902f-41f9-5ec9-3139-5123b4f9fae1/9781462922703.jpg/3000x3000bb.jpg" alt="Ganbatte!" />
+            <img src="./portada.jpg" alt="Ganbatte!" />
             <span class="cover-hint">Toca el libro</span>
           </div>
           <div class="ed-title" id="editorialTitle">El poder del ganbatte</div>
@@ -840,7 +840,7 @@ body.tg-tarjeta .tg-cta{display:none !important}
   </div>
 
   <div class="silence-screen" id="silenceScreen">
-    <img class="sil-cover" id="silCover" src="https://is1-ssl.mzstatic.com/image/thumb/Publication115/v4/1a/3d/90/1a3d902f-41f9-5ec9-3139-5123b4f9fae1/9781462922703.jpg/3000x3000bb.jpg" alt="Ganbatte!" />
+    <img class="sil-cover" id="silCover" src="./portada.jpg" alt="Ganbatte!" />
     <div class="sil-title">Ganbatte!</div>
     <div class="sil-call">Queremos que te den ganas<br>de abrir un libro.</div>
     <div class="sil-sub">Eso es Triggui.</div>
@@ -1608,7 +1608,7 @@ function buildPort(){
   d.className = 'tg-portada';
   if (isURL(L.portada)) {
     var img = new Image();
-    img.src = L.portada;
+    img.src = './portada.jpg';
     img.loading = 'lazy';
     d.appendChild(img);
   } else {
