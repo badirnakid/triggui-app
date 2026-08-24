@@ -110,20 +110,16 @@ body{background:${campo};color:${ink};font-family:'Manrope',sans-serif;position:
 .banda{position:absolute;left:0;right:0;top:0;height:150px;background:${a1}}
 .filete{position:absolute;left:0;right:0;top:150px;height:12px;background:${a2}}
 .base{position:absolute;left:0;right:0;bottom:0;height:64px;background:${lum(a1) < lum(a2) ? a1 : a2}}
-.kick{position:absolute;left:64px;top:60px;font:700 16px 'Manrope';letter-spacing:.42em;color:${lum(a1) >= .5 ? "#161412" : "#F8F4EC"}}
 .bloque{position:absolute;left:64px;right:64px;bottom:200px}
 .regla{width:72px;height:4px;background:${ink};margin-bottom:26px}
 h1{font-family:'Fraunces';font-weight:760;font-variation-settings:'opsz' 144;font-size:76px;line-height:1.06;letter-spacing:-.01em}
 .autor{margin-top:18px;font:650 19px 'Manrope';letter-spacing:.28em;opacity:.86}
 .marco{position:absolute;inset:20px;border:2px solid ${ink}44;pointer-events:none}
 .marco2{position:absolute;inset:28px;border:1px solid ${ink}22}
-.colofon{position:absolute;left:64px;bottom:78px;display:flex;align-items:center;gap:14px;opacity:.9}
-.colofon span{font:700 15px 'Manrope';letter-spacing:.34em}
 </style></head><body>
 <div class="banda"></div><div class="filete"></div><div class="base"></div>
-<div class="kick">TRIGGUI · COLECCIÓN</div>
 <div class="bloque"><div class="regla"></div><h1 id="t">${t}</h1><div class="autor">${au}</div></div>
-<div class="colofon"><svg width="30" height="30" viewBox="-16 -16 32 32"><path d="${(() => { let p = "M 0 0"; for (let i = 1; i <= 140; i++) { const th = i / 140 * 2.4 * 2 * Math.PI, r = 14 * i / 140; p += ` L ${(r * Math.cos(th)).toFixed(2)} ${(r * Math.sin(th)).toFixed(2)}`; } return p; })()}" fill="none" stroke="${ink}" stroke-width="2.4" stroke-linecap="round"/></svg><span>EDICIONES TRIGGUI</span></div>
+
 <div class="marco"></div><div class="marco2"></div>
 <script>
 const t=document.getElementById('t'); let s=76;
