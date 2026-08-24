@@ -166,6 +166,16 @@ function puertaAbrir(arrancar){
 }
 </script>
 <script>
+/* PV — idioma del portal: misma llave que la app (triggui_lang), fallback navigator */
+window.PV_LANG=(function(){try{var s=JSON.parse(localStorage.getItem('triggui_lang')||'null');if(s==='en'||s==='es')return s;}catch(e){}return ((navigator.language||'es').slice(0,2)==='en')?'en':'es';})();
+window.pvTitulo=function(b){return (PV_LANG==='en'&&b&&b.titulo_en)?b.titulo_en:((b&&b.titulo)||'');};
+window.pvBloques=function(b){var n=(b&&b._nucleus)||{};return (PV_LANG==='en'&&n.edition_blocks_en&&n.edition_blocks_en.length)?n.edition_blocks_en:(n.edition_blocks_es||[]);};
+window.pvOg=function(b){var n=(b&&b._nucleus)||{};return (PV_LANG==='en'&&n.og_phrases_en&&n.og_phrases_en.length)?n.og_phrases_en:(n.og_phrases_es||[]);};
+window.pvT=function(es,en){return PV_LANG==='en'?en:es;};
+window.pvAplicaCascara=function(pares){ if(PV_LANG!=='en') return; try{ pares.forEach(function(p){ document.querySelectorAll(p[0]).forEach(function(el){ if(p[2]==='aria'){el.setAttribute('aria-label',p[1]);} else if(p[2]==='ph'){el.setAttribute('placeholder',p[1]);} else {el.textContent=p[1];} }); }); }catch(e){} };
+</script>
+
+<script>
 /* ── ADAPTADOR TRIGGUI → esquema del canon ── */
 var LIBROS=null;
 async function cargarLibros(){
@@ -185,14 +195,14 @@ async function arrancarEspiral(){
     return d.toISOString().slice(0,10);
   }
   function gesto(b){
-    var bl=(b._nucleus&&b._nucleus.edition_blocks_es)||[];
+    var bl=pvBloques(b);
     var tipos=['instruccion_sensorial','pregunta_directa'];
     for(var t=0;t<tipos.length;t++)for(var i=0;i<bl.length;i++)
       if(bl[i].gesture_type===tipos[t])return bl[i];
     return null;
   }
   function senal(b){
-    var og=(b._nucleus&&b._nucleus.og_phrases_es)||[];
+    var og=pvOg(b);
     for(var i=0;i<og.length;i++) if(og[i].rol_sinfonico==='aterrizar') return og[i].phrase;
     var fr=(b.frases||[]).filter(function(x){return x&&x.length>12});
     return fr[0]||'';
@@ -207,7 +217,7 @@ async function arrancarEspiral(){
     var vc=(function(v){if(!v||!v.candidatos||!v.candidatos.length)return null;var c=v.candidatos;return c[Math.floor(Math.random()*c.length)]||null;})(b._video);
     return {
       id:id, semana:sem,
-      titulo:b.titulo+(b.autor?(' \u00b7 '+b.autor):''),
+      titulo:pvTitulo(b)+(b.autor?(' \u00b7 '+b.autor):''),
       slug:b._slug||'',
       c1:(b.colores&&b.colores[0])||'',
       c2:(b.colores&&b.colores[1])||'',
@@ -231,10 +241,10 @@ async function arrancarEspiral(){
   var s=document.createElement('script'); s.src='./spiral.js';
   s.onload=function(){ try{ var hoja=document.getElementById('hoja'); if(hoja){ var mo=new MutationObserver(function(){ document.body.classList.toggle('hoja-abierta', hoja.classList.contains('ver')); }); mo.observe(hoja,{attributes:true,attributeFilter:['class']}); } }catch(e){} };
   document.body.appendChild(s);
-  var volver=document.createElement('button'); volver.id='hud-volver'; volver.type='button'; volver.setAttribute('aria-label','Regresar'); volver.innerHTML='&#8592;&nbsp; REGRESAR';
+  var volver=document.createElement('button'); volver.id='hud-volver'; volver.type='button'; volver.setAttribute('aria-label','Regresar'); volver.innerHTML='&#8592;&nbsp; '+((window.PV_LANG==='en')?'BACK':'REGRESAR');
   volver.onclick=function(){try{gtag('event','espiral_volver',{});}catch(e){}volverAlOrigen();};
   document.body.appendChild(volver);
-  var salir=document.createElement('a'); salir.id='hud-salir'; salir.href='#salir'; salir.textContent='CERRAR SESI\u00d3N'; salir.setAttribute('aria-label','Cerrar sesi\u00f3n');
+  var salir=document.createElement('a'); salir.id='hud-salir'; salir.href='#salir'; salir.textContent=(window.PV_LANG==='en')?'CLOSE SESSION':'CERRAR SESI\u00d3N'; salir.setAttribute('aria-label','Cerrar sesi\u00f3n');
   salir.onclick=function(ev){ev.preventDefault();lsDel(LS_PAR);try{window.sessionStorage.setItem('triggui_espiral_cerro','1');}catch(e){}try{gtag('event','espiral_puerta',{paso:'salir'});}catch(e){}window.location.replace(window.location.pathname);};
   document.body.appendChild(salir);
 }
@@ -247,6 +257,14 @@ if(claveMiembro()){arrancarEspiral();}else{puertaAbrir(arrancarEspiral);cargarLi
   var esWebView = /\bwv\b/.test(ua) || (/iPhone|iPad|iPod/.test(ua) && !/Safari\//.test(ua));
   if (!esWebView) { var m = document.getElementById('manijaClave'); if (m) m.href = 'https://wa.me/525532394017?text=Quiero%20mi%20clave%20de%20Triggui'; }
 } catch (e) {} })();
+</script>
+<script>
+pvAplicaCascara([
+ ['#puerta h1', 'Your spiral'],
+ ['#puerta .sub', 'Every Monday we activate you with a living edition and its video. Whatever you love, save it with \ud83d\ude0d \u2014 for whenever you need it.'],
+ ['#manijaClave', 'No key? Text me \u2192'],
+ ['#clave', 'your key', 'ph'],
+]);
 </script>
 </body>
 </html>
