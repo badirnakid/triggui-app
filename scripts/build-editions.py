@@ -714,6 +714,15 @@ def render_edicion(edicion, mode="lab"):
     t_parrafo_top = ensure_text_closure(t_parrafo_top)
     t_parrafo_bot = ensure_text_closure(t_parrafo_bot)
 
+    # 🌐 D2-A: gemelos EN — mismo pipeline editorial; datos ya existentes en el catálogo
+    tarjeta_en = edicion.get("tarjeta_en", {}) or {}
+    t_titulo_en = str(tarjeta_en.get("titulo", "") or "").strip() or t_titulo
+    t_top_en = ensure_text_closure(ensure_one_highlight(normalize_highlight_syntax(tarjeta_en.get("parrafoTop", "") or "")))
+    t_sub_en = str(tarjeta_en.get("subtitulo", "") or "").strip()
+    t_bot_en = ensure_text_closure(ensure_one_highlight(normalize_highlight_syntax(tarjeta_en.get("parrafoBot", "") or "")))
+    frases_en_ed = pad_list(edicion.get("frases_en"), 4, "Open a physical book you have nearby.")
+    palabras_en_ed = pad_list(edicion.get("palabras_en"), 4, "Signal")
+
     # 🌒 NUMERACIÓN NIVEL DIOS (V10): extraer número de edición si existe
     edicion_numero_raw = edicion.get("_edicion_numero")
     edicion_label = format_edicion_numero(edicion_numero_raw)
@@ -765,6 +774,14 @@ def render_edicion(edicion, mode="lab"):
         "ogImage": og_image,
         "portada": portada,
         "tagline": tagline,
+        "frases_en": frases_en_ed,
+        "palabras_en": palabras_en_ed,
+        "i18nEn": {
+            "cardTitle": t_titulo_en,
+            "top": render_highlight_html(t_top_en) if t_top_en else "",
+            "sub": t_sub_en,
+            "bot": render_highlight_html(t_bot_en) if t_bot_en else "",
+        },
         "bocadoEcoPool": edicion.get("bocadoEcoPool") or [],
     }
 
@@ -993,6 +1010,9 @@ body::before {
 .block.show .label { opacity: 0; transform: translateY(-6px); }
 .block.show .frase { opacity: 1; transform: translateY(0); }
 
+#tgLangPill{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:12px;z-index:150;display:flex;background:rgba(20,20,26,.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:3px;font:700 11px/1 -apple-system,system-ui,sans-serif;letter-spacing:.06em}
+#tgLangPill button{appearance:none;border:0;background:transparent;color:rgba(255,255,255,.55);padding:7px 10px;border-radius:999px;cursor:pointer;min-width:34px}
+#tgLangPill button.on{background:rgba(255,255,255,.92);color:#111}
 .reveal-overlay {
   position: fixed;
   inset: 0;
@@ -1589,6 +1609,7 @@ body.tg-tarjeta .tg-cta{display:none !important}
 </head>
 <body data-lab-v="live-edition-card-v3" style="__BODY_STYLE__">
 
+<div id="tgLangPill" role="group" aria-label="Language"><button id="tgLangEs" type="button">ES</button><button id="tgLangEn" type="button">EN</button></div>
 <div id="pulseLine" class="pulse-line"></div>
 <div class="bocado-eco-overlay" id="bocadoEcoOverlay">
   <div class="bocado-eco-phrase" id="bocadoEcoPhrase"></div>
@@ -1656,6 +1677,20 @@ body.tg-tarjeta .tg-cta{display:none !important}
 
 <script>
 const state = __STATE_JSON__;
+/* 🌐 D2-A — idioma de la edición: misma llave del imperio (triggui_lang) */
+const TG_ES_SNAP = { t: null, p: null, su: null, b: null };
+let tgLang = (function(){ try { const v = JSON.parse(localStorage.getItem('triggui_lang')||'null'); if (v==='en'||v==='es') return v; } catch(e){} return ((navigator.language||'es').slice(0,2)==='en') ? 'en' : 'es'; })();
+function tgIds(){ return { t: document.getElementById('editorialTitle'), p: document.getElementById('editorialTopPara'), su: document.getElementById('editorialSub'), b: document.getElementById('editorialBottomPara') }; }
+function tgSnap(){ const n=tgIds(); if(n.t&&TG_ES_SNAP.t===null)TG_ES_SNAP.t=n.t.innerHTML; if(n.p&&TG_ES_SNAP.p===null)TG_ES_SNAP.p=n.p.innerHTML; if(n.su&&TG_ES_SNAP.su===null)TG_ES_SNAP.su=n.su.innerHTML; if(n.b&&TG_ES_SNAP.b===null)TG_ES_SNAP.b=n.b.innerHTML; }
+function tgApplyCard(){ const en=state.i18nEn||{}; tgSnap(); const n=tgIds();
+  if(tgLang==='en'){ if(n.t&&en.cardTitle)n.t.textContent=en.cardTitle; if(n.p&&en.top)n.p.innerHTML=en.top; if(n.su&&en.sub)n.su.textContent=en.sub; if(n.b&&en.bot)n.b.innerHTML=en.bot; }
+  else { if(n.t&&TG_ES_SNAP.t!==null)n.t.innerHTML=TG_ES_SNAP.t; if(n.p&&TG_ES_SNAP.p!==null)n.p.innerHTML=TG_ES_SNAP.p; if(n.su&&TG_ES_SNAP.su!==null)n.su.innerHTML=TG_ES_SNAP.su; if(n.b&&TG_ES_SNAP.b!==null)n.b.innerHTML=TG_ES_SNAP.b; } }
+function tgApplyGrid(){ if(tgLang==='en'&&Array.isArray(state.frases_en)&&state.frases_en.length===4){ state._fes=state._fes||state.frases; state._pes=state._pes||state.palabras; state.frases=state.frases_en; if(Array.isArray(state.palabras_en)&&state.palabras_en.length===4)state.palabras=state.palabras_en; } else if(state._fes){ state.frases=state._fes; state.palabras=state._pes||state.palabras; } }
+function tgRepaintGrid(){ document.querySelectorAll('#grid .label').forEach(function(el,i){ const em=(el.textContent||'').trim().split(' ')[0]; el.textContent=em+' '+(state.palabras[i]||''); }); document.querySelectorAll('#grid .frase').forEach(function(el,i){ el.textContent=state.frases[i]||''; }); }
+function tgPillPaint(){ const a=document.getElementById('tgLangEs'), b=document.getElementById('tgLangEn'); if(a&&b){ a.classList.toggle('on', tgLang==='es'); b.classList.toggle('on', tgLang==='en'); } }
+function tgSetLang(l){ if(l===tgLang){ tgPillPaint(); return; } tgLang=l; try{ localStorage.setItem('triggui_lang', JSON.stringify(l)); }catch(e){} tgApplyGrid(); tgRepaintGrid(); tgApplyCard(); tgPillPaint(); }
+tgApplyGrid(); /* swap pre-pintado: el grid nace en el idioma correcto */
+document.addEventListener('DOMContentLoaded', function(){ tgApplyCard(); tgPillPaint(); const a=document.getElementById('tgLangEs'), b=document.getElementById('tgLangEn'); if(a)a.addEventListener('click',function(){tgSetLang('es');}); if(b)b.addEventListener('click',function(){tgSetLang('en');}); });
 const grid = document.getElementById('grid');
 const revealOverlay = document.getElementById('revealOverlay');
 const btnBack = document.getElementById('btnBack');
