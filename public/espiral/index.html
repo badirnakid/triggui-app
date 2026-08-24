@@ -198,15 +198,17 @@ async function arrancarEspiral(){
   }
   function gesto(b){
     var bl=pvBloques(b);
-    var tipos=['instruccion_sensorial','pregunta_directa'];
+    var tipos=['instruccion_sensorial','sensory_instruction','pregunta_directa','direct_question'];
     for(var t=0;t<tipos.length;t++)for(var i=0;i<bl.length;i++)
       if(bl[i].gesture_type===tipos[t])return bl[i];
     return null;
   }
   function senal(b){
     var og=pvOg(b);
-    for(var i=0;i<og.length;i++) if(og[i].rol_sinfonico==='aterrizar') return og[i].phrase;
-    var fr=(b.frases||[]).filter(function(x){return x&&x.length>12});
+    var ogEs=(b._nucleus&&b._nucleus.og_phrases_es)||[];
+    for(var i=0;i<og.length;i++){ var _rol=og[i].rol_sinfonico||(ogEs[i]&&ogEs[i].rol_sinfonico); if(_rol==='aterrizar'&&og[i].phrase) return og[i].phrase; }
+    var _frs=(window.PV_LANG==='en'&&b.frases_en&&b.frases_en.length)?b.frases_en:(b.frases||[]);
+    var fr=_frs.filter(function(x){return x&&x.length>12});
     return fr[0]||'';
   }
   var libros=await cargarLibros();
@@ -240,7 +242,7 @@ async function arrancarEspiral(){
     insights:insights
   };
   try{gtag('event','espiral_view',{ediciones:String(insights.length)});}catch(e){}
-  var s=document.createElement('script'); s.src='./spiral.js';
+  var s=document.createElement('script'); s.src='./spiral.js?v=i18n2';
   s.onload=function(){ try{ var hoja=document.getElementById('hoja'); if(hoja){ var mo=new MutationObserver(function(){ document.body.classList.toggle('hoja-abierta', hoja.classList.contains('ver')); }); mo.observe(hoja,{attributes:true,attributeFilter:['class']}); } }catch(e){} };
   document.body.appendChild(s);
   var volver=document.createElement('button'); volver.id='hud-volver'; volver.type='button'; volver.setAttribute('aria-label',(window.PV_LANG==='en')?'Back':'Regresar'); volver.innerHTML='&#8592;&nbsp; '+((window.PV_LANG==='en')?'BACK':'REGRESAR');
