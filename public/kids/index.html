@@ -410,6 +410,8 @@ const TriggguiI18n = {
       'badge.sparks': 'chispas juntas',
       'badge.globalSparks': 'global',
       'intro.default': 'Toca. Descubre. El libro te espera.',
+      'app.title': "Triggui — Cuando el impulso llega, el libro ya te espera",
+      'aria.abrirBarra': 'Abrir barra mágica',
     },
     en: {
       'barra.streak.days': 'days',
@@ -438,10 +440,17 @@ const TriggguiI18n = {
       'badge.sparks': 'sparks together',
       'badge.globalSparks': 'global',
       'intro.default': 'Tap. Discover. Your book awaits.',
+      'app.title': 'Triggui — When the impulse arrives, the book is already there.',
+      'aria.abrirBarra': 'Open the magic bar',
     }
   }
 };
 TriggguiI18n.lang = TriggguiI18n.detectLang();
+try { document.title = TriggguiI18n.get('app.title'); } catch (e) {}
+document.addEventListener('DOMContentLoaded', function(){ try {
+  document.title = TriggguiI18n.get('app.title');
+  document.querySelectorAll('[data-i18n-aria]').forEach(function(el){ el.setAttribute('aria-label', TriggguiI18n.get(el.getAttribute('data-i18n-aria'))); });
+} catch (e) {} });
 
 // 🌒 v3.8.6 — Detección de modo Kids vs Adultos (por URL)
 // app.triggui.com         → adulto (carga contenido.json)
@@ -1919,6 +1928,10 @@ body.webview #tarjetaCard {
      Fallback a teal sutil si aún no hay catálogo. */
   background: var(--bm-aurora-2, rgba(80, 230, 200, 0.40));
   animation: bm-aurora-drift-2 26s ease-in-out infinite;
+    try {
+      document.title = TriggguiI18n.get('app.title');
+      document.querySelectorAll('[data-i18n-aria]').forEach(function(el){ el.setAttribute('aria-label', TriggguiI18n.get(el.getAttribute('data-i18n-aria'))); });
+    } catch (e) {}
 }
 
 @keyframes bm-aurora-drift-1 {
@@ -2648,7 +2661,7 @@ html.kids-mode #tarjetaCard {
   </div>
 </div>
 
-<button id="barraLupaBtn" type="button" aria-label="Abrir barra mágica">
+<button id="barraLupaBtn" type="button" aria-label="Abrir barra mágica" data-i18n-aria="aria.abrirBarra">
   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <circle cx="11" cy="11" r="7"/>
     <path d="M20 20l-3.5-3.5"/>
@@ -2678,7 +2691,7 @@ html.kids-mode #tarjetaCard {
 
 <div class="cta" id="cta">
   <button id="otro" aria-label="Otro libro al azar"><span class="icon">🎲</span></button>
-  <button id="fisico" aria-label="Abrir barra mágica"><span class="icon" aria-hidden="true">🔍</span></button>
+  <button id="fisico" aria-label="Abrir barra mágica" data-i18n-aria="aria.abrirBarra"><span class="icon" aria-hidden="true">🔍</span></button>
   <button id="share" aria-label="Abrir tarjeta del libro"><span class="icon">📖</span></button>
   <button id="like" aria-label="Me encantó"><span class="icon">😍</span></button>
   <button id="espiral" aria-label="Tu espiral"><span class="icon">🌀</span></button>
@@ -3178,6 +3191,10 @@ window.__miGuardarCombo = function () {
   const payload = {
     palabras: ((libro && libro.palabras) || []).slice(0, 4),
     frases: ((libro && libro.frases) || []).slice(0, 4),
+      palabras_en: ((libro && libro.palabras_en) || []).slice(0, 4),
+      frases_en: ((libro && libro.frases_en) || []).slice(0, 4),
+      titulo_en: (libro && libro.titulo_en) || '',
+      idioma: (typeof TriggguiI18n !== 'undefined' && TriggguiI18n.lang) || 'es',
     colores: ((libro && libro.colores) || []).slice(0, 4),
     textColors: ((libro && libro.textColors) || []).slice(0, 4),
     autor: (libro && libro.autor) || '',
@@ -3750,7 +3767,7 @@ btnShare.onclick = () => {
         <path d="M18 6L6 18"/>
       </svg>
     </button>
-    <button class="card-lupa-btn" type="button" aria-label="Abrir barra mágica" onclick="event.stopPropagation(); window.closeCard(); setTimeout(function(){ BarraMagica.openOverlay(true); }, 350);">
+    <button class="card-lupa-btn" type="button" aria-label="Abrir barra mágica" data-i18n-aria="aria.abrirBarra" onclick="event.stopPropagation(); window.closeCard(); setTimeout(function(){ BarraMagica.openOverlay(true); }, 350);">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <circle cx="11" cy="11" r="7"/>
         <path d="M20 20l-3.5-3.5"/>
@@ -6815,7 +6832,7 @@ async function __catalogoRed(catalogFile, maxAttempts) {
 async function loadCatalogWithRetry(maxAttempts) {
   maxAttempts = maxAttempts || 3;
   // 🌒 v3.8.6 — catalog dinámico según TRIGGUI_MODE
-  const catalogFile = (window.TRIGGUI_MODE === 'kids') ? 'contenido_kids.json' : 'contenido_publico.json';
+  const catalogFile = (window.TRIGGUI_MODE === 'kids') ? 'contenido_kids.json' : 'contenido.json';
   try {
     const guardado = await __catalogoGuardado(catalogFile);
     if (guardado) { __catalogoRevalida(catalogFile); return guardado; }
