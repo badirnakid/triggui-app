@@ -1203,6 +1203,10 @@ jobs:
       # ║   generar los outputs — ver arriba)                                ║
       # ╚══════════════════════════════════════════════════════════════════╝
 
+      - name: 🌐 Gemelos EN (lo nuevo nace completo)
+        env:
+          OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
+        run: node scripts/gemelos-en.mjs
       - name: 💾 Commit y push
         run: |
           set -euo pipefail
