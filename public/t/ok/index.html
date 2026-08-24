@@ -1503,7 +1503,7 @@ setOverlayView('blocks');
     const el = document.getElementById('pulseLine');
     if (!el) return;
     if (total !== null && typeof total === 'number' && total > 0) {
-      el.innerHTML = (tgLang==='en') ? 'Already <span id="pulseLineNum" style="font-weight:700;color:rgba(255,255,255,.75);">0</span> books opened together.'; : 'Ya van <span id="pulseLineNum" style="font-weight:700;color:rgba(255,255,255,.75);">0</span> libros abiertos juntos.';
+      el.innerHTML = (window.tgLang==='en') ? 'Already <span id="pulseLineNum" style="font-weight:700;color:rgba(255,255,255,.75);">0</span> books opened together.'; : 'Ya van <span id="pulseLineNum" style="font-weight:700;color:rgba(255,255,255,.75);">0</span> libros abiertos juntos.';
       el.classList.add('visible');
       const numEl = document.getElementById('pulseLineNum');
       if (typeof animatePulseNumber === 'function') {
