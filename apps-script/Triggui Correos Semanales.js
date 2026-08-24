@@ -42,6 +42,12 @@
  */
 
 const CONTENIDO_URL = "https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido_manual.json";
+
+// 🌐 D4 — preferencia de idioma por suscriptor (columna DINÁMICA por encabezado: jamás índice fijo)
+const IDIOMA_HEADER = "IDIOMA";
+let _IDIOMA_COL_CACHE = 0;
+let IDIOMA_ENVIO_ACTUAL = "es";
+let EMAIL_ENVIO_ACTUAL = "";
 const SHEET_NAME    = "Triggui Emails Prueba";
 
 /* ════════════════════ V18h DELIVERABILITY CONFIG ════════════════════════
@@ -1205,7 +1211,7 @@ function renderTarjetaCard(libro, portadaRef, tarjetaKey, idioma, palabrasKey) {
  * Posición: antes de la tarjeta ES, después del greeting/trial banner top.
  * ══════════════════════════════════════════════════════════════════════════ */
 function renderBocadoSinfonico(libro, cardWidth) {
-  const sinfonica = pickSinfonicaPhrase(libro, ['abrir'], 'es');
+  const sinfonica = pickSinfonicaPhrase(libro, ['abrir'], IDIOMA_ENVIO_ACTUAL);
   if (!sinfonica || !sinfonica.phrase) return ""; // No sinfonía → no se renderiza
 
   const c = TRIGGUI_STYLE_CONFIG;
@@ -1277,6 +1283,14 @@ function renderEcoSinfonico(libro, cardWidth) {
 
 function renderTarjetaEditorial(libro, portadaRef) {
   const c = TRIGGUI_STYLE_CONFIG;
+
+  // 🌐 D4: UNA sola tarjeta según preferencia del suscriptor (nunca las dos apiladas)
+  {
+    const idiomaPref = (IDIOMA_ENVIO_ACTUAL === "en") ? "en" : "es";
+    const tieneEnPref = !!(libro && libro.tarjeta_en && libro.tarjeta_en.titulo && libro.tarjeta_en.parrafoTop);
+    if (idiomaPref === "en" && tieneEnPref) return renderTarjetaCard(libro, portadaRef, "tarjeta_en", "en", "palabras_en");
+    return renderTarjetaCard(libro, portadaRef, "tarjeta", "es", "palabras");
+  }
 
   // Renderizar AMBAS tarjetas (ES y EN si está disponible)
   const tarjetaES = renderTarjetaCard(libro, portadaRef, "tarjeta", "es", "palabras");
@@ -1652,6 +1666,59 @@ function validarTokenUnsub(email, token) {
  * con action=unsubscribe (sin format=json) y retorna HTML legacy. Esto
  * cubre emails viejos que pudieran tener links a la URL anterior.
  */
+// 🌐 D4 — selector de idioma (token calcado del unsub; columna dinámica por encabezado)
+function colIdioma(sheet) {
+  if (_IDIOMA_COL_CACHE > 0) return _IDIOMA_COL_CACHE;
+  const lastCol = Math.max(1, sheet.getLastColumn());
+  const headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+  for (let i = 0; i < headers.length; i++) {
+    if (String(headers[i] || "").trim().toUpperCase() === IDIOMA_HEADER) {
+      _IDIOMA_COL_CACHE = i + 1;
+      return _IDIOMA_COL_CACHE;
+    }
+  }
+  const nueva = lastCol + 1; // primera columna LIBRE tras la última usada — jamás pisa datos
+  sheet.getRange(1, nueva).setValue(IDIOMA_HEADER);
+  _IDIOMA_COL_CACHE = nueva;
+  return nueva;
+}
+function generarUrlLang(email, l) {
+  const token = generarTokenUnsub(email);
+  return ScriptApp.getService().getUrl() + "?action=lang&l=" + encodeURIComponent(l) +
+    "&email=" + encodeURIComponent(email) + "&token=" + token;
+}
+function generarLangBarTopHTML() {
+  const email = EMAIL_ENVIO_ACTUAL || "";
+  if (!email) return "";
+  const es = (IDIOMA_ENVIO_ACTUAL !== "en");
+  const label = es ? "Prefer English? \u2192" : "\u00bfPrefieres espa\u00f1ol? \u2192";
+  const url = generarUrlLang(email, es ? "en" : "es");
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="right" style="padding:6px 16px 10px;font:400 12px/1.2 -apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#8a8a92;"><a href="${url}" style="color:#8a8a92;text-decoration:underline;">${label}</a></td></tr></table>`;
+}
+function leerIdiomaFila(sheet, rowIdx) {
+  try {
+    const v = String(sheet.getRange(rowIdx + 1, colIdioma(sheet)).getValue() || "").trim().toLowerCase();
+    return (v === "en") ? "en" : "es";
+  } catch (e) { return "es"; }
+}
+function manejarCambioIdioma(email, token, l) {
+  const lock = LockService.getScriptLock();
+  try { lock.waitLock(5000); } catch (e) {}
+  try {
+    if (!email || !token || !validarTokenUnsub(email, token)) {
+      return ContentService.createTextOutput("Token inv\u00e1lido").setMimeType(ContentService.MimeType.TEXT);
+    }
+    const idioma = (String(l || "").toLowerCase() === "en") ? "en" : "es";
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+    if (!sheet) return ContentService.createTextOutput("\u2014");
+    const rowIdx = buscarFilaPorEmail(sheet, email);
+    if (rowIdx > 0) sheet.getRange(rowIdx + 1, colIdioma(sheet)).setValue(idioma);
+    const msg = (idioma === "en") ? "Done \u2014 from now on I\u2019ll write to you in English." : "Listo \u2014 a partir de ahora te escribo en espa\u00f1ol.";
+    const back = (idioma === "en") ? "Back to Triggui" : "Volver a Triggui";
+    return HtmlService.createHtmlOutput(`<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><body style="margin:0;display:flex;min-height:100vh;align-items:center;justify-content:center;background:#0f0f14;color:#f2efe9;font:500 17px/1.5 -apple-system,Segoe UI,Roboto,sans-serif;text-align:center;padding:24px"><div><div style="font-size:34px;margin-bottom:14px">\ud83c\udf10</div>${msg}<div style="margin-top:18px"><a href="https://triggui.com" style="color:#c9c4ba">${back} \u2192</a></div></div></body>`);
+  } finally { try { lock.releaseLock(); } catch (e) {} }
+}
+
 function generarUrlUnsub(email) {
   const token = generarTokenUnsub(email);
   return "https://triggui.com/entendido" +
@@ -2434,7 +2501,7 @@ function prepararEmailParaEnvio(nombreDestinatario, emailDestinatario, rowIdx) {
 
   let finalHTML = cuerpoHTML.replace(
     /(<body[^>]*>)/i,
-    `$1\n  ${previewTextHTML}`
+    `$1\n  ${previewTextHTML}\n  ${generarLangBarTopHTML()}`
   );
   let finalPlain = plainBody + FOOTER_CTA.plain;
 
@@ -2520,7 +2587,7 @@ function prepararEmailParaEnvio(nombreDestinatario, emailDestinatario, rowIdx) {
   // Fallback graceful: si el libro es pre-v12 (sin sinfonía), usa el formato
   // anterior con prefijo "Edición #NNN" (legacy).
   let subject;
-  const _sinfonicaAbrir = pickSinfonicaPhrase(libro, ['abrir'], 'es');
+  const _sinfonicaAbrir = pickSinfonicaPhrase(libro, ['abrir'], IDIOMA_ENVIO_ACTUAL);
   if (_sinfonicaAbrir && _sinfonicaAbrir.phrase) {
     // Subject puro sinfónico — el gancho de apertura
     subject = sanitizeParagraph(_sinfonicaAbrir.phrase)
@@ -2531,7 +2598,7 @@ function prepararEmailParaEnvio(nombreDestinatario, emailDestinatario, rowIdx) {
     // Fallback graceful V14: solo título de la tarjeta (sin "Edición #N")
     // Coherente con la decisión cuántico-quark: el display name "Triggui"
     // ya marca el remitente, "Edición #N" duplica info que verá adentro.
-    subject = sanitizeParagraph(tarjeta.titulo || libro.titulo || "Una idea de un gran libro")
+    subject = sanitizeParagraph(((IDIOMA_ENVIO_ACTUAL === "en" && libro.tarjeta_en && libro.tarjeta_en.titulo) ? libro.tarjeta_en.titulo : (tarjeta.titulo || libro.titulo)) || "Una idea de un gran libro")
       .replace(/\s+/g, " ").trim();
     Logger.log(`🟡 V14 fallback (libro pre-v12) subject: "${subject}"`);
   }
@@ -2565,6 +2632,12 @@ function prepararEmailParaEnvio(nombreDestinatario, emailDestinatario, rowIdx) {
  * Returns: { ok: bool, reason: string }
  * ══════════════════════════════════════════════════════════════════════════ */
 function enviarTrigguiAUno(email, rowIdx, nombreDestinatario) {
+  // 🌐 D4: el idioma del suscriptor gobierna todo el envío (tarjeta, subject, barra)
+  EMAIL_ENVIO_ACTUAL = email || "";
+  try {
+    const _sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+    IDIOMA_ENVIO_ACTUAL = _sh ? leerIdiomaFila(_sh, rowIdx) : "es";
+  } catch (e) { IDIOMA_ENVIO_ACTUAL = "es"; }
   // 1. Verificar quota Gmail
   const remainingQuota = MailApp.getRemainingDailyQuota();
   if (remainingQuota < 5) {
@@ -2852,6 +2925,9 @@ function doGet(e) {
   const format = params.format || "html";
 
   // ─── Ruta unsubscribe ────────────────────────────────────────────────
+  if (action === "lang") {
+    return manejarCambioIdioma(params.email || "", params.token || "", params.l || "");
+  }
   if (action === "unsubscribe") {
     return manejarUnsubscribe(params.email || "", params.token || "", format);
   }
