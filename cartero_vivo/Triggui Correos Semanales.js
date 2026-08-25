@@ -309,7 +309,7 @@ const INTRO_MESSAGES = {
 // NO incluye triggui.com ni número de WhatsApp (eso vive permanentemente en el footer).
 // Mismo tipo de letra que el footer para coherencia visual cuántico-quark.
 function generarWhatsAppPromoTopHTML(cardWidth) {
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+  return aInglesCascara(`<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
     <tr><td align="center" style="padding:10px 12px 14px 12px;">
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:${cardWidth}px;">
         <tr><td style="text-align:center;background:#FAFAFA;border-radius:8px;padding:16px 18px;">
@@ -338,7 +338,7 @@ function generarWhatsAppPromoTopHTML(cardWidth) {
         </td></tr>
       </table>
     </td></tr>
-  </table>`;
+  </table>`);
 }
 
 const WHATSAPP_PROMO_TOP_PLAIN = "\n────────────────────────────\nRECIBE TAMBIÉN TRIGGUI EN TU WHATSAPP\n\nUna tarjeta como esta en el momento exacto que mejore un poco tu ánimo.\n────────────────────────────\n";
@@ -349,7 +349,7 @@ const WHATSAPP_PROMO_TOP_PLAIN = "\n──────────────�
 // ═══════════════════════════════════════════════════════════════════════
 function generarEspiralPromoTopHTML(cardWidth, accent) {
   const A = accent || "#B8862A";
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+  return aInglesCascara(`<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
     <tr><td align="center" style="padding:8px 12px 10px 12px;">
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:${cardWidth}px;">
         <tr><td style="text-align:center;background:#FAFAFA;border:1px solid #F0E6D0;border-radius:8px;padding:12px 16px;">
@@ -388,7 +388,7 @@ function generarEspiralPromoTopHTML(cardWidth, accent) {
         </td></tr>
       </table>
     </td></tr>
-  </table>`;
+  </table>`);
 }
 
 const ESPIRAL_PROMO_TOP_PLAIN = "\n────────────────────────────\nNUEVO · TU ESPIRAL\n\nLos libros que mejoraron tu ánimo, se quedan contigo.\n" + ESPIRAL_URL_TARGET + "\n────────────────────────────\n";
@@ -408,7 +408,7 @@ function testEspiralBanner() {
 // ═══════════════════════════════════════════════════════════════════════════
 function generarKidsPromoTopHTML(cardWidth, accent) {
   const A = accent || "#E8A838";
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+  return aInglesCascara(`<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
     <tr><td align="center" style="padding:8px 12px 10px 12px;">
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:${cardWidth}px;">
         <tr><td style="text-align:center;background:#FAFAFA;border:1px solid #F0E6D0;border-radius:8px;padding:12px 16px;">
@@ -447,7 +447,7 @@ function generarKidsPromoTopHTML(cardWidth, accent) {
         </td></tr>
       </table>
     </td></tr>
-  </table>`;
+  </table>`);
 }
 
 const KIDS_PROMO_TOP_PLAIN = "\n────────────────────────────\nALGO NUEVO · CONOCE TRIGGUI KIDS\n\nUn valor en 30 segundos para los niños.\n" + KIDS_URL_TARGET + "\n────────────────────────────\n";
@@ -1372,7 +1372,7 @@ function renderTarjetaEditorial(libro, portadaRef) {
       <table role="presentation" cellpadding="0" cellspacing="0" border="0"
              style="width:100%;max-width:${c.cardWidth}px;margin-top:${c.espacioEntreVersiones};">
         ${renderLogoStrip()}
-        ${FOOTER_CTA.html}
+        ${aInglesCascara(FOOTER_CTA.html)}
       </table>
 
     </td></tr>
@@ -1947,13 +1947,62 @@ const SALUDOS_SIN_NOMBRE = [
   "Hola, ¿qué tal?"
 ];
 
+/* ════════════════════════════════════════════════════════════════════════
+ * 🌐 D4 v3 — SALUDOS EN INGLÉS INTERNACIONAL
+ * Criterio: neutro y legible para nativos y no nativos (Manila, Berlín,
+ * Lagos, Chicago). Sin modismos regionales, sin jerga, y SIN saludos por
+ * hora del día: el correo aterriza en husos donde sería medianoche.
+ * ════════════════════════════════════════════════════════════════════════ */
+const SALUDOS_CON_NOMBRE_EN = [
+  "Hi {NOMBRE},",
+  "Hello {NOMBRE},",
+  "Hi {NOMBRE}.",
+  "Hello, {NOMBRE}.",
+  "Hi again, {NOMBRE}.",
+  "Hello again, {NOMBRE}.",
+  "Hi there, {NOMBRE}.",
+  "{NOMBRE},",
+  "{NOMBRE} —",
+  "Good to see you, {NOMBRE}.",
+  "Good to have you here, {NOMBRE}.",
+  "Welcome back, {NOMBRE}.",
+  "Hope you are well, {NOMBRE}.",
+  "Hope all is well, {NOMBRE}.",
+  "Hi {NOMBRE}, hope you are well.",
+  "Hello {NOMBRE}, hope all is well.",
+  "{NOMBRE}, how are things?",
+  "{NOMBRE}, how is your week going?",
+  "Hi {NOMBRE}. How is everything?",
+  "Hello {NOMBRE}. How are you?",
+  "Here we are again, {NOMBRE}.",
+  "Back with you, {NOMBRE}.",
+  "Another week, {NOMBRE}.",
+  "One more week, {NOMBRE}.",
+  "{NOMBRE}, good to be back.",
+  "Hi {NOMBRE} — good to be back.",
+  "Hello {NOMBRE}, glad you are here.",
+  "{NOMBRE}, glad you are here.",
+  "Hi {NOMBRE}, thank you for being here.",
+  "{NOMBRE}, thank you for being here.",
+  "Hey {NOMBRE},",
+  "Hey there, {NOMBRE}."
+];
+const SALUDOS_SIN_NOMBRE_EN = [
+  "Hi,", "Hello,", "Hi there,", "Hello there,", "Hi again,", "Hello again,",
+  "Hope you are well.", "Hope all is well.", "How are things?",
+  "How is your week going?", "Welcome back.", "Good to see you.",
+  "Glad you are here.", "Here we are again.", "Another week."
+];
+
 /**
  * V19.2: genera un saludo aleatorio (rotativo cada envío).
  * Si hay nombre → usa array con nombre. Si no → usa fallback sin nombre.
  */
 function generarSaludoTexto(primerNombre) {
   const tieneNombre = primerNombre && primerNombre.length > 0;
-  const arr = tieneNombre ? SALUDOS_CON_NOMBRE : SALUDOS_SIN_NOMBRE;
+  const _en = (IDIOMA_ENVIO_ACTUAL === "en");
+  const arr = tieneNombre ? (_en ? SALUDOS_CON_NOMBRE_EN : SALUDOS_CON_NOMBRE)
+                          : (_en ? SALUDOS_SIN_NOMBRE_EN : SALUDOS_SIN_NOMBRE);
   const elegido = arr[Math.floor(Math.random() * arr.length)];
   return tieneNombre ? elegido.replace(/\{NOMBRE\}/g, primerNombre) : elegido;
 }
@@ -1995,13 +2044,13 @@ function generarTrialBannerTopHTML(rowData, configFont, configBg, cardWidth) {
   const L129 = STRIPE_LINK_BASICO_129;
   const apps = `<a href="${URL_APP_IOS}" style="color:#B8740F;text-decoration:underline;font-weight:700;">iPhone</a> &nbsp;·&nbsp; <a href="${URL_APP_ANDROID}" style="color:#B8740F;text-decoration:underline;font-weight:700;">Android</a>`;
 
-  const box = (inner, gold) => `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${configBg};">
+  const box = (inner, gold) => aInglesCascara(`<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${configBg};">
       <tr><td align="center" style="padding:8px 12px 16px 12px;">
         <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:${cardWidth}px;">
           <tr><td style="font-family:${configFont};font-size:13px;line-height:1.55;${gold ? "color:#7A4F0A;background:#FFF8E1;border:1px solid #E8A838;" : "color:#4A4A4A;background:#FFFFFF;border:1px solid #EBEBEB;"}border-radius:8px;padding:12px 14px;mso-line-height-rule:exactly;">${inner}</td></tr>
         </table>
       </td></tr>
-    </table>`;
+    </table>`);
 
   // EXPIRADO: captura a la app (gratis) + opcion $129
   if (esExpired) {
@@ -2508,7 +2557,7 @@ function prepararEmailParaEnvio(nombreDestinatario, emailDestinatario, rowIdx) {
     /(<body[^>]*>)/i,
     `$1\n  ${previewTextHTML}\n  ${generarLangBarTopHTML()}`
   );
-  let finalPlain = plainBody + FOOTER_CTA.plain;
+  let finalPlain = plainBody + aInglesCascara(FOOTER_CTA.plain);
 
   // V19.2.2 cuántico-quark: reemplazar TODOS los placeholders solo SI tenemos los datos completos.
   // Si no, dejar placeholders intactos para que sendToRow los reemplace por fila.
@@ -2541,7 +2590,7 @@ function prepararEmailParaEnvio(nombreDestinatario, emailDestinatario, rowIdx) {
         // El footer SIEMPRE tiene triggui.com + número, sin importar este flag
         const mostrarWaArriba = Math.random() < 0.5;
         const waTopHTML = mostrarWaArriba ? generarWhatsAppPromoTopHTML(c.cardWidth) : "";
-        const waTopPlain = mostrarWaArriba ? WHATSAPP_PROMO_TOP_PLAIN : "";
+        const waTopPlain = mostrarWaArriba ? aInglesCascara(WHATSAPP_PROMO_TOP_PLAIN) : "";
 
         // V23 — accent del libro para los banners
         const _accCorreo = (typeof tarjeta !== "undefined" && tarjeta && tarjeta.style && tarjeta.style.accent) || "";
@@ -2549,7 +2598,7 @@ function prepararEmailParaEnvio(nombreDestinatario, emailDestinatario, rowIdx) {
         const espiralTopHTML = ESPIRAL_PROMO_ENABLED ? generarEspiralPromoTopHTML(c.cardWidth, _accCorreo) : "";
         // V20 — KIDS PROMO siempre si KIDS_PROMO_ENABLED
         const kidsTopHTML = KIDS_PROMO_ENABLED ? generarKidsPromoTopHTML(c.cardWidth, _accCorreo) : "";
-        const kidsTopPlain = KIDS_PROMO_ENABLED ? KIDS_PROMO_TOP_PLAIN : "";
+        const kidsTopPlain = KIDS_PROMO_ENABLED ? aInglesCascara(KIDS_PROMO_TOP_PLAIN) : "";
 
         finalHTML  = finalHTML.replace(/\{\{GREETING_BLOCK\}\}/g, saludoHTML)
                               .replace(/\{\{TRIAL_BANNER_TOP\}\}/g, trialTopHTML)
@@ -2558,8 +2607,8 @@ function prepararEmailParaEnvio(nombreDestinatario, emailDestinatario, rowIdx) {
                               .replace(/\{\{WHATSAPP_PROMO_TOP\}\}/g, waTopHTML);
         finalPlain = finalPlain.replace(/\{\{GREETING_PLAIN\}\}/g, saludoPlain)
                                .replace(/\{\{TRIAL_BANNER_TOP_PLAIN\}\}/g, trialTopPlain)
-                               .replace(/\{\{KIDS_PROMO_TOP_PLAIN\}\}/g, kidsTopPlain)
-                               .replace(/\{\{WHATSAPP_PROMO_TOP_PLAIN\}\}/g, waTopPlain);
+                               .replace(/\{\{aInglesCascara(KIDS_PROMO_TOP_PLAIN)\}\}/g, kidsTopPlain)
+                               .replace(/\{\{aInglesCascara(WHATSAPP_PROMO_TOP_PLAIN)\}\}/g, waTopPlain);
 
         Logger.log(`✨ V19.2.2 + V20 fila ${rowIdx}: saludo + trial ${trialTopPlain ? 'SÍ' : 'NO'} + KIDS ${KIDS_PROMO_ENABLED ? 'SÍ' : 'NO'} + WA arriba ${mostrarWaArriba ? 'SÍ' : 'NO'}`);
       }
@@ -3445,7 +3494,7 @@ function enviarTrigguiLunes() {
 
     const mostrarWaArribaFila = Math.random() < 0.5;
     const waTopHTMLFila = mostrarWaArribaFila ? generarWhatsAppPromoTopHTML(cFila.cardWidth) : "";
-    const waTopPlainFila = mostrarWaArribaFila ? WHATSAPP_PROMO_TOP_PLAIN : "";
+    const waTopPlainFila = mostrarWaArribaFila ? aInglesCascara(WHATSAPP_PROMO_TOP_PLAIN) : "";
 
     // V23 — accent del libro para los banners (por fila)
     const _accFila = (libro && libro.tarjeta && libro.tarjeta.style && libro.tarjeta.style.accent) || "";
@@ -3453,7 +3502,7 @@ function enviarTrigguiLunes() {
     const espiralTopHTMLFila = ESPIRAL_PROMO_ENABLED ? generarEspiralPromoTopHTML(cFila.cardWidth, _accFila) : "";
     // V20 — KIDS PROMO banner por fila (siempre si KIDS_PROMO_ENABLED)
     const kidsTopHTMLFila = KIDS_PROMO_ENABLED ? generarKidsPromoTopHTML(cFila.cardWidth, _accFila) : "";
-    const kidsTopPlainFila = KIDS_PROMO_ENABLED ? KIDS_PROMO_TOP_PLAIN : "";
+    const kidsTopPlainFila = KIDS_PROMO_ENABLED ? aInglesCascara(KIDS_PROMO_TOP_PLAIN) : "";
 
     let htmlPersonalizado  = finalHTML
       .replace(/\{\{UNSUB_LINK\}\}/g, unsubLinkFila)
@@ -3466,8 +3515,8 @@ function enviarTrigguiLunes() {
       .replace(/\{\{UNSUB_LINK\}\}/g, unsubLinkFila)
       .replace(/\{\{GREETING_PLAIN\}\}/g, saludoPlainFila)
       .replace(/\{\{TRIAL_BANNER_TOP_PLAIN\}\}/g, trialTopPlainFila)
-      .replace(/\{\{KIDS_PROMO_TOP_PLAIN\}\}/g, kidsTopPlainFila)
-      .replace(/\{\{WHATSAPP_PROMO_TOP_PLAIN\}\}/g, waTopPlainFila);
+      .replace(/\{\{aInglesCascara(KIDS_PROMO_TOP_PLAIN)\}\}/g, kidsTopPlainFila)
+      .replace(/\{\{aInglesCascara(WHATSAPP_PROMO_TOP_PLAIN)\}\}/g, waTopPlainFila);
 
     try {
       // V18h: headers anti-spam nivel dios
@@ -3995,6 +4044,57 @@ function testKidsBannerAMi() {
  *   ?action=diag&t=TOKEN&send=1               → envía SOLO a DIAG_EMAIL
  * ══════════════════════════════════════════════════════════════════════════ */
 const DIAG_EMAIL = "badir@triggui.com";
+
+
+/* ════════════════════════════════════════════════════════════════════════
+ * 🌐 D4 v3 — CÁSCARA DEL CORREO EN INGLÉS INTERNACIONAL
+ * Capa ADITIVA: si el suscriptor no es "en", devuelve el texto intacto —
+ * el camino en español no cambia ni una partícula.
+ * Moneda explícita (MXN) para que nadie lea "$129" como dólares.
+ * ════════════════════════════════════════════════════════════════════════ */
+const DIC_CASCARA_EN = [
+  ["Tu periodo gratis terminó, pero la barra mágica sigue gratis.", "Your free period has ended. The magic bar is still free."],
+  ["¿Aún no quieres suscribirte? La barra mágica está en la app, gratis.", "Not ready to subscribe? The magic bar is in the app, free."],
+  ["La barra mágica está en la app, gratis.", "The magic bar is in the app, free."],
+  ["Descárgala:", "Download it:"],
+  ["o recibe tu libro cada semana — ", "or receive your book every week — "],
+  ["suscríbete desde $129/mes", "subscribe from MXN $129/month"],
+  ["Continúa por $149/mes", "Continue for MXN $149/month"],
+  ["o una versión más ligera, uno a la semana — ", "or a lighter version, one a week — "],
+  ["o una versión más ligera — ", "or a lighter version — "],
+  ["desde $129/mes", "from MXN $129/month"],
+  ["$149/mes", "MXN $149/month"],
+  ["$129/mes", "MXN $129/month"],
+  ["Recibe también Triggui en tu WhatsApp", "Get Triggui on WhatsApp too"],
+  ["RECIBE TAMBIÉN TRIGGUI EN TU WHATSAPP", "GET TRIGGUI ON WHATSAPP TOO"],
+  ["Una tarjeta como esta en el momento exacto que mejore un poco tu ánimo.", "A card like this one, at the exact moment it lifts your mood a little."],
+  ["ALGO NUEVO", "SOMETHING NEW"],
+  ["CONOCE TRIGGUI KIDS", "MEET TRIGGUI KIDS"],
+  ["— Un valor en 30 segundos para los niños.", "— One value in 30 seconds, for children."],
+  ["Un valor en 30 segundos para los niños.", "One value in 30 seconds, for children."],
+  ["— Los libros que mejoraron tu ánimo, se quedan contigo.", "— The books that lifted your mood stay with you."],
+  ["Los libros que mejoraron tu ánimo, se quedan contigo.", "The books that lifted your mood stay with you."],
+  ["Tu Espiral", "Your Spiral"],
+  ["TU ESPIRAL", "YOUR SPIRAL"],
+  ["Conocer &rarr;", "See it &rarr;"],
+  ["Conocer →", "See it →"],
+  ["o por WhatsApp al", "or on WhatsApp at"],
+  ["o WhatsApp", "or WhatsApp"],
+  ["Cancelar suscripción", "Unsubscribe"]
+];
+const DIC_CASCARA_EN_RX = [
+  [/Te quedan (\d+) días de tus dos libros a la semana\./g, "You have $1 days left of your two books a week."],
+  [/Quedan <strong([^>]*)>(\d+) días<\/strong> de tus dos libros a la semana\./g, "You have <strong$1>$2 days</strong> left of your two books a week."],
+  [/(\d+) días de tus dos libros a la semana/g, "$1 days left of your two books a week"],
+  [/\b1 days\b/g, "1 day"]
+];
+function aInglesCascara(txt) {
+  if (IDIOMA_ENVIO_ACTUAL !== "en" || !txt) return txt;
+  var out = String(txt);
+  for (var i = 0; i < DIC_CASCARA_EN.length; i++) out = out.split(DIC_CASCARA_EN[i][0]).join(DIC_CASCARA_EN[i][1]);
+  for (var j = 0; j < DIC_CASCARA_EN_RX.length; j++) out = out.replace(DIC_CASCARA_EN_RX[j][0], DIC_CASCARA_EN_RX[j][1]);
+  return out;
+}
 
 function rutaDiagnostico(params) {
   const json = function (o) {
