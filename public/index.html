@@ -9963,8 +9963,12 @@ bootTriggui();
     if(s){ var r=s.getBoundingClientRect();
       if(r.bottom>0) b.style.top=(Math.round(r.bottom)+8)+'px'; } }catch(e){} }
   pinta(); coloca();
-  window.addEventListener('load', function(){ pinta(); coloca(); setTimeout(coloca, 800); });
+  window.addEventListener('load', function(){ pinta(); coloca(); });
   window.addEventListener('resize', coloca);
+  var _ci=0; var _ct=setInterval(function(){ _ci++; coloca();
+    var s=document.getElementById('progressBadge');
+    if((_ci>30)||(s&&s.getBoundingClientRect().bottom>0&&b.style.top)) clearInterval(_ct);
+  }, 400);
   ['pointerdown','touchstart','mousedown','touchend','click'].forEach(function(ev){
     b.addEventListener(ev, function(e){ try{ e.stopPropagation(); e.preventDefault(); }catch(x){} }, {passive:false});
   });
