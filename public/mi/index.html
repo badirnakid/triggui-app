@@ -749,6 +749,13 @@ window.pvAplicaCascara=function(pares){ if(PV_LANG!=='en') return; try{ pares.fo
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
+<script id="origen-profundo">/* 🌀 v6.1: gemelo de /espiral/ — recuerda de que pantalla de bloques vino el viaje.
+   Solo siembra cuando el referrer NO es del par helice/guardados; asi el paseo interior no lo pisa. */
+try{ var __r=String(document.referrer||''); var __p=__r.split('#')[0].split('?')[0];
+  var __interior=/^https?:\/\/[^\/]+\/(espiral|mi)\/?$/.test(__p);
+  if(__r && !__interior && __p.indexOf(window.location.origin)===0){
+    window.sessionStorage.setItem('triggui_espiral_origen', __r); }
+}catch(e){}</script>
 
 <div class="aurora-blob aurora-1"></div>
 <div class="aurora-blob aurora-2"></div>
