@@ -2600,6 +2600,13 @@ html.kids-mode #tarjetaCard {
 
 <link rel="stylesheet" href="/css/triggui-kids-overlay.css?v=7">
 <script defer src="/_vercel/insights/script.js"></script>
+<style id="home-lang-pill">
+#homeLangToggle{position:fixed;top:max(54px, calc(env(safe-area-inset-top,0px) + 14px));right:16px;z-index:2147483000;display:flex;align-items:center;gap:2px;padding:3px;border-radius:99px;background:rgba(255,255,255,.09);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.14);font:600 11px/1 Inter,system-ui,sans-serif;letter-spacing:.02em;cursor:pointer;color:inherit}
+#homeLangToggle span{padding:5px 11px;border-radius:99px;transition:all .35s cubic-bezier(.19,1,.22,1);color:rgba(255,255,255,.45)}
+#homeLangToggle span.lang-sep{padding:0;color:rgba(255,255,255,.25)}
+#homeLangToggle span.hl-active{color:#000;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+#homeLangToggle:active{transform:scale(.96)}
+</style>
 </head>
 <body>
 
@@ -3379,7 +3386,7 @@ function requestNewBook() {
   });
 }
 
-btnOtro.onclick = () => { requestNewBook(); };
+btnOtro.onclick = () => { requestNewBook(); }; window.__tgRender=function(){ try{ render(); }catch(e){} };
 btnLibro.onclick = () => {
   track('lupa_reinvoke_clicked');
   BarraMagica.openOverlay(true);
@@ -9944,6 +9951,36 @@ bootTriggui();
     } else if (Date.now() - t0 < 4000) { setTimeout(abre, 120); }
   })();
 })();
+</script>
+<button id="homeLangToggle" type="button" aria-label="Toggle language"><span id="homeLangEs" class="hl-active">Español</span><span class="lang-sep">·</span><span id="homeLangEn">English</span></button>
+<script id="home-lang-wire">
+(function(){ try{
+  var b=document.getElementById('homeLangToggle'); if(!b) return;
+  function pinta(){ try{ var en=(window.TriggguiI18n&&TriggguiI18n.lang==='en');
+    document.getElementById('homeLangEs').className=en?'':'hl-active';
+    document.getElementById('homeLangEn').className=en?'hl-active':''; }catch(e){} }
+  function coloca(){ try{ if(window.innerWidth>=900){ b.style.top=''; return; }
+    var s=document.getElementById('progressBadge');
+    if(s){ var r=s.getBoundingClientRect(); if(r.bottom>0) b.style.top=(Math.round(r.bottom)+8)+'px'; } }catch(e){} }
+  pinta(); coloca();
+  window.addEventListener('load', function(){ pinta(); coloca(); });
+  window.addEventListener('resize', coloca);
+  try{ new MutationObserver(pinta).observe(document.documentElement,{attributes:true,attributeFilter:['lang']}); }catch(e){}
+  var _ci=0; var _ct=setInterval(function(){ _ci++; coloca();
+    if(_ci>30 || window.innerWidth>=900) clearInterval(_ct);
+    else { var s=document.getElementById('progressBadge'); if(s&&s.getBoundingClientRect().bottom>0&&b.style.top) clearInterval(_ct); }
+  }, 400);
+  ['pointerdown','touchstart','mousedown','touchend','click'].forEach(function(ev){
+    b.addEventListener(ev, function(e){ try{ e.stopPropagation(); e.preventDefault(); }catch(x){} }, {passive:false});
+  });
+  b.addEventListener('pointerup', function(e){ try{
+    e.stopPropagation(); e.preventDefault();
+    var n=(TriggguiI18n.lang==='es')?'en':'es';
+    TriggguiI18n.setLang(n);
+    if(window.__tgRender) window.__tgRender();
+    pinta();
+  }catch(x){} }, {passive:false});
+}catch(e){} })();
 </script>
 </body>
 </html>
