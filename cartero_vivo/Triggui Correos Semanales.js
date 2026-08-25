@@ -45,6 +45,25 @@ const CONTENIDO_URL = "https://raw.githubusercontent.com/badirnakid/triggui-cont
 
 // 🌐 D4 — preferencia de idioma por suscriptor (columna DINÁMICA por encabezado: jamás índice fijo)
 const IDIOMA_HEADER = "IDIOMA";
+/* 🔒 Sello del reenvío por cambio de idioma: columna propia, jamás la de envíos
+   semanales (si no, un cambio en lunes nunca reenviaría). Nace sola, como IDIOMA. */
+const IDIOMA_TS_HEADER = "IDIOMA_TS";
+let _IDIOMA_TS_COL_CACHE = 0;
+function colIdiomaTs(sheet) {
+  if (_IDIOMA_TS_COL_CACHE > 0) return _IDIOMA_TS_COL_CACHE;
+  const lastCol = Math.max(1, sheet.getLastColumn());
+  const headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+  for (let i = 0; i < headers.length; i++) {
+    if (String(headers[i] || "").trim().toUpperCase() === IDIOMA_TS_HEADER) {
+      _IDIOMA_TS_COL_CACHE = i + 1; return _IDIOMA_TS_COL_CACHE;
+    }
+  }
+  const nueva = lastCol + 1;
+  sheet.getRange(1, nueva).setValue(IDIOMA_TS_HEADER);
+  _IDIOMA_TS_COL_CACHE = nueva;
+  return nueva;
+}
+const REENVIO_IDIOMA_ENFRIAMIENTO_MS = 60 * 60 * 1000;   /* 60 min entre reenvíos */
 let _IDIOMA_COL_CACHE = 0;
 let IDIOMA_ENVIO_ACTUAL = "es";
 let EMAIL_ENVIO_ACTUAL = "";
@@ -1789,16 +1808,30 @@ function manejarCambioIdioma(email, token, l, format) {
     } catch (e) {}
     if (rowIdx >= 2) sheet.getRange(rowIdx, colIdioma(sheet)).setValue(idioma);
 
-    /* 📬 Reenvío en el nuevo idioma: SOLO si de verdad cambió (tocar dos veces no duplica). */
+    /* 📬 Reenvío en el nuevo idioma. Dos guardas independientes:
+       (a) que el idioma haya CAMBIADO de verdad — tocar dos veces no duplica;
+       (b) un sello de tiempo propio — el vaivén inglés/español/inglés cambia la
+           preferencia todas las veces, pero solo manda UN correo por hora. */
     var reenviado = false;
+    var enfriando = false;
     if (rowIdx >= 2 && _previo !== idioma) {
+      var _ahora = Date.now();
+      var _ultimo = 0;
       try {
-        var r = enviarTrigguiAUno(email, rowIdx, _nombreLang);
-        reenviado = !!(r && r.ok);
-      } catch (e) { reenviado = false; }
+        var _v = sheet.getRange(rowIdx, colIdiomaTs(sheet)).getValue();
+        if (_v) _ultimo = new Date(_v).getTime() || 0;
+      } catch (e) {}
+      enfriando = (_ahora - _ultimo) < REENVIO_IDIOMA_ENFRIAMIENTO_MS;
+      if (!enfriando) {
+        try {
+          var r = enviarTrigguiAUno(email, rowIdx, _nombreLang);
+          reenviado = !!(r && r.ok);
+          if (reenviado) sheet.getRange(rowIdx, colIdiomaTs(sheet)).setValue(new Date());
+        } catch (e) { reenviado = false; }
+      }
     }
     return esJson
-      ? json({ ok: true, first_name: _nombreLang, lang: idioma, resent: reenviado, changed: (_previo !== idioma) })
+      ? json({ ok: true, first_name: _nombreLang, lang: idioma, resent: reenviado, changed: (_previo !== idioma), cooldown: enfriando })
       : renderPaginaIdioma(idioma, _nombreLang);
   } finally {
     try { lock.releaseLock(); } catch (e) {}
@@ -4276,7 +4309,7 @@ function rutaDiagnostico(params) {
   try { tok = PropertiesService.getScriptProperties().getProperty("DIAG_TOKEN") || ""; } catch (e) {}
   if (!tok || String(params.t || "") !== tok) return json({ ok: false, error: "token" });
 
-  var out = { ok: true, diag: "v1", build: "2026-08-25-D4v6-landing+reenvio", hoja: SHEET_NAME };
+  var out = { ok: true, diag: "v1", build: "2026-08-25-D4v7-sello-reenvio", hoja: SHEET_NAME };
   try {
     var sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
     var data = sh.getDataRange().getValues();
