@@ -4077,17 +4077,22 @@ const DIAG_EMAIL = "badir@triggui.com";
  * el camino en español no cambia ni una partícula.
  * Moneda explícita (MXN) para que nadie lea "$129" como dólares.
  * ════════════════════════════════════════════════════════════════════════ */
+/* 🌐 Ancla de moneda: el precio real es MXN; la referencia en USD ayuda a que
+   cualquier lector del mundo sepa de qué tamaño es. Ajusta aquí si el tipo de
+   cambio se mueve — es el ÚNICO lugar donde vive. */
+const USD_APROX_129 = "8";
+const USD_APROX_149 = "9";
 const DIC_CASCARA_EN = [
   ["Tu periodo gratis terminó, pero la barra mágica sigue gratis.", "Your free period has ended. The magic bar is still free."],
   ["¿Aún no quieres suscribirte? La barra mágica está en la app, gratis.", "Not ready to subscribe? The magic bar is in the app, free."],
   ["La barra mágica está en la app, gratis.", "The magic bar is in the app, free."],
   ["Descárgala:", "Download it:"],
   ["o recibe tu libro cada semana — ", "or receive your book every week — "],
-  ["suscríbete desde $129/mes", "subscribe from MXN $129/month"],
-  ["Continúa por $149/mes", "Continue for MXN $149/month"],
+  ["suscríbete desde $129/mes", "subscribe from MXN $129/month (about USD $" + USD_APROX_129 + ")"],
+  ["Continúa por $149/mes", "Continue for MXN $149/month (about USD $" + USD_APROX_149 + ")"],
   ["o una versión más ligera, uno a la semana — ", "or a lighter version, one a week — "],
   ["o una versión más ligera — ", "or a lighter version — "],
-  ["desde $129/mes", "from MXN $129/month"],
+  ["desde $129/mes", "from MXN $129/month (about USD $" + USD_APROX_129 + ")"],
   ["$149/mes", "MXN $149/month"],
   ["$129/mes", "MXN $129/month"],
   ["Recibe también Triggui en tu WhatsApp", "Get Triggui on WhatsApp too"],
@@ -4130,7 +4135,7 @@ function rutaDiagnostico(params) {
   try { tok = PropertiesService.getScriptProperties().getProperty("DIAG_TOKEN") || ""; } catch (e) {}
   if (!tok || String(params.t || "") !== tok) return json({ ok: false, error: "token" });
 
-  var out = { ok: true, diag: "v1", build: "2026-08-25-olaB+intro", hoja: SHEET_NAME };
+  var out = { ok: true, diag: "v1", build: "2026-08-25-olaB+moneda+detector", hoja: SHEET_NAME };
   try {
     var sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
     var data = sh.getDataRange().getValues();
@@ -4170,11 +4175,44 @@ function rutaDiagnostico(params) {
       penguin: low.indexOf("penguin") >= 0
     };
     out.placeholdersSinReemplazar = (h.indexOf("{{") >= 0);
-    out.intro = { es: (h.indexOf("Te comparto estas tarjetas") >= 0 || h.indexOf("chispas de lectura") >= 0), en: (h.indexOf("reading sparks") >= 0 || h.indexOf("cards with you") >= 0 || h.indexOf("cards worth keeping") >= 0) };
-    out.saludoEs = /Hola|Buen d|¿C[oó]mo va|Qu[eé] tal/.test(h);
-    out.saludoEn = /\b(Hi|Hello|Hey|Welcome back|Glad you are here|Here we are again)\b/.test(h);
-    out.trialEs = (h.indexOf("periodo gratis") >= 0 || h.indexOf("barra m") >= 0);
-    out.trialEn = (h.indexOf("free period") >= 0 || h.indexOf("magic bar") >= 0);
+    /* 🔬 Detección EXACTA (nada de regex adivinando): se compara contra los
+       propios arreglos del script, sobre el texto plano (sin etiquetas). */
+    var plano = prep.finalPlain || "";
+    var enArr = function (arr) {
+      for (var q = 0; q < arr.length; q++) {
+        var t = String(arr[q]).replace(/\{NOMBRE\}/g, nombre);
+        if (t && plano.indexOf(t) >= 0) return true;
+      }
+      return false;
+    };
+    out.saludo = {
+      es: enArr(SALUDOS_CON_NOMBRE) || enArr(SALUDOS_SIN_NOMBRE),
+      en: enArr(SALUDOS_CON_NOMBRE_EN) || enArr(SALUDOS_SIN_NOMBRE_EN)
+    };
+    var planosIntro = function (arr) {
+      for (var q = 0; q < arr.length; q++) {
+        var t = String(arr[q].plain || "").trim();
+        if (t && plano.indexOf(t.slice(0, 40)) >= 0) return true;
+      }
+      return false;
+    };
+    out.intro = { es: planosIntro(INTRO_MESSAGES.texts), en: planosIntro(INTRO_MESSAGES_EN) };
+    out.trial = {
+      es: (h.indexOf("periodo gratis") >= 0 || h.indexOf("barra mágica") >= 0),
+      en: (h.indexOf("free period") >= 0 || h.indexOf("magic bar") >= 0)
+    };
+    /* 🕵️ Cazador de restos: en modo EN, ninguna de estas cadenas debe existir. */
+    if (IDIOMA_ENVIO_ACTUAL === "en") {
+      var marcasES = ["Descárgala:", "periodo gratis", "barra mágica", "Conocer &rarr;", "Conocer →",
+        "Cancelar suscripción", "Tu Espiral", "Recibe también", "Un valor en 30 segundos",
+        "o por WhatsApp al", "$129/mes", "$149/mes", "días de tus dos libros",
+        "Te comparto estas tarjetas", "chispas de lectura", "suscríbete", "ALGO NUEVO",
+        "Los libros que mejoraron tu ánimo"];
+      var restos = [];
+      for (var z = 0; z < marcasES.length; z++) if (h.indexOf(marcasES[z]) >= 0) restos.push(marcasES[z]);
+      out.restosEspanol = restos;
+      out.mezclaIdiomas = (out.saludo.es || out.trial.es || restos.length > 0);
+    }
     if (String(params.html || "") === "1") out.htmlMuestra = h.slice(0, 6000);
     if (String(params.send || "") === "1") {
       out.envio = enviarTrigguiAUno(DIAG_EMAIL, fila, nombre);
