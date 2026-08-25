@@ -183,22 +183,27 @@ function __syncMerge(estrellas){ try{
   });
   var m={};
   Object.keys(ev).forEach(function(id){ if(ev[id].on) m[id]=(ev[id].ts||'').slice(0,10)||'1'; });
+  var st=window.__sesionToggles||{};
+  Object.keys(st).forEach(function(id){ if(st[id]){ if(!m[id]) m[id]=new Date().toISOString().slice(0,10); } else { delete m[id]; } });
   localStorage.setItem('triggui_espiral_hechas', JSON.stringify(m));
 }catch(e){} }
-window.__syncHecha=function(id,on){ try{
+window.__syncHecha=function(id,on){ try{ (window.__sesionToggles=window.__sesionToggles||{})[String(id).toUpperCase()]=!!on;
   var q=new URLSearchParams(); q.append('accion','marcar'); q.append('clave', window.__CLAVE||'');
   q.append('slug', String(id).toLowerCase()); q.append('evento', on?'hecha':'deshecha'); q.append('titulo','');
   fetch(window.__EXEC, {method:'POST', body:q}).catch(function(){});
 }catch(e){} };
-function __bootSync(clave, listo){ var done=false; function go(){ if(done) return; done=true; try{listo();}catch(e){} }
-  setTimeout(go, 2500);
-  try{ window.__EXEC=EXEC; window.__CLAVE=clave;
+function __bootSync(clave, listo){
+  try{ window.__EXEC=EXEC; window.__CLAVE=clave; }catch(e){}
+  try{ listo(); }catch(e){}
+  try{
     var q=new URLSearchParams(); q.append('accion','espiral'); q.append('clave',clave);
     fetch(EXEC,{method:'POST',body:q}).then(function(r){return r.json();}).then(function(r){
-      if(r&&r.ok===true){ __syncMerge([].concat(r.senales||[], r.estrellas||[])); }
-      go();
-    }).catch(go);
-  }catch(e){ go(); } }
+      if(r&&r.ok===true){
+        __syncMerge([].concat(r.senales||[], r.estrellas||[]));
+        try{ if(window.__syncRefresh) window.__syncRefresh(); }catch(e){}
+      }
+    }).catch(function(){});
+  }catch(e){} }
 window.PV_LANG=(function(){try{var s=JSON.parse(localStorage.getItem('triggui_lang')||'null');if(s==='en'||s==='es')return s;}catch(e){}return ((navigator.language||'es').slice(0,2)==='en')?'en':'es';})();
 window.pvT=window.pvT||function(es,en){return (window.PV_LANG==='en')?en:es;};
 if(window.PV_LANG==='en'){try{var _pg=document.getElementById('puenteGuardados'); if(_pg)_pg.setAttribute('aria-label','Go to saved'); var _pb=document.getElementById('puenteBarra'); if(_pb)_pb.setAttribute('aria-label','Open the magic bar');}catch(e){}}
