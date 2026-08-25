@@ -895,6 +895,7 @@ function tgPillPlace(){ try{ var p=document.getElementById('tgLangPill'); if(!p)
   if(window.innerWidth>=900){ var blk=document.querySelector('.tg-block'); if(blk){ p.style.top=(Math.round(blk.getBoundingClientRect().top)+14)+'px'; return; } }
   p.style.top=''; }catch(e){} }
 window.addEventListener('resize', function(){ tgPillPlace(); });
+window.addEventListener('load', function(){ tgPillPlace(); setTimeout(tgPillPlace, 650); });
 function tgPillPaint(){ const a=document.getElementById('tgLangEs'), b=document.getElementById('tgLangEn'); if(a&&b){ a.classList.toggle('lang-active', tgLang==='es'); b.classList.toggle('lang-active', tgLang==='en'); } }
 function tgSetLang(l){ if(l===tgLang){ tgPillPaint(); return; } tgLang=l; window.tgLang=l; try{ localStorage.setItem('triggui_lang', JSON.stringify(l)); }catch(e){} tgApplyGrid(); tgRepaintGrid(); tgApplyCard(); tgApplySilence(); tgPillPaint(); tgApplyMisc(); }
 tgApplyGrid(); /* swap pre-pintado: el grid nace en el idioma correcto */
