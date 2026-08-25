@@ -1789,6 +1789,48 @@ try{ if(document.getElementById('puerta')){ __pv_cargarLibros().then(__pv_puerta
   P.forEach(function(par){ var e=document.querySelector(par[0]); if(e) e.textContent=par[1]; });
 })();
 </script>
+<style id="mi-volver-css">
+/* 🌀 pie de guardados: ← REGRESAR con la MISMA voz del pie de la hélice (calco verbatim).
+   Solo nace cuando el viaje tuvo origen; en entrada directa no promete lo que no puede cumplir. */
+#hud-volver{position:fixed;bottom:calc(14px + env(safe-area-inset-bottom));left:12px;font:700 9px/1 'Manrope',sans-serif;letter-spacing:.16em;color:var(--faint,#77716a);text-decoration:none;opacity:.8;z-index:6;padding:10px 4px;background:none;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap}
+#hud-volver:active{opacity:1;color:var(--dim,#b8b2a6)}
+body.hoja-abierta #hud-volver{display:none}
+</style>
+<script id="mi-volver-js">
+(function(){ try{
+  var ORIGEN='';
+  try{ var g=window.sessionStorage.getItem('triggui_espiral_origen')||'';
+    var p=g.split('#')[0].split('?')[0];
+    var interior=/^https?:\/\/[^\/]+\/(espiral|mi)\/?$/.test(p);
+    if(g && !interior && g.indexOf(window.location.origin)===0) ORIGEN=g;
+  }catch(e){}
+  if(!ORIGEN) return;                     /* sin origen: sin botón (dictado (a)) */
+  function volverAlOrigen(){
+    try{gtag('event','guardados_volver_bloques',{});}catch(e){}
+    try{
+      var ref=String(document.referrer||'');
+      if(ref && ref.split('#')[0]===ORIGEN.split('#')[0] && window.history.length>1){
+        var red=setTimeout(function(){ try{ window.location.href=ORIGEN; }catch(e){} }, 900);
+        window.addEventListener('pagehide', function(){ try{ clearTimeout(red); }catch(e){} }, {once:true});
+        window.history.back(); return;
+      }
+    }catch(e){}
+    window.location.href=ORIGEN;
+  }
+  function nace(){
+    if(document.getElementById('hud-volver')) return;
+    var b=document.createElement('button'); b.id='hud-volver'; b.type='button';
+    var en=(window.PV_LANG==='en');
+    b.setAttribute('aria-label', en?'Back':'Regresar');
+    b.innerHTML='&#8592;&nbsp; '+(en?'BACK':'REGRESAR');
+    b.onclick=volverAlOrigen;
+    document.body.appendChild(b);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', nace);
+  else nace();
+  setTimeout(nace, 600);
+}catch(e){} })();
+</script>
 </body>
 </html>
 
