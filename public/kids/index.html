@@ -3379,7 +3379,7 @@ function requestNewBook() {
   });
 }
 
-btnOtro.onclick = () => { requestNewBook(); }; window.__tgRender=function(){ try{ render(); }catch(e){} };
+btnOtro.onclick = () => { requestNewBook(); };
 btnLibro.onclick = () => {
   track('lupa_reinvoke_clicked');
   BarraMagica.openOverlay(true);
@@ -9944,34 +9944,6 @@ bootTriggui();
     } else if (Date.now() - t0 < 4000) { setTimeout(abre, 120); }
   })();
 })();
-</script>
-<script id="lang-toggle-migrante">
-(function(){ try{
-  var ov=document.getElementById('barraMagicaOverlay');
-  var bt=document.getElementById('barraLangToggle');
-  if(!ov||!bt) return;
-  var slot=document.createElement('span'); slot.style.display='none';
-  bt.parentNode.insertBefore(slot, bt);
-  function coloca(){ try{ var bs=document.querySelectorAll('#grid .block');
-    if(!bs.length) return; var r=bs[bs.length-1].getBoundingClientRect();
-    if(r.width>40){ bt.style.top=(Math.round(r.top)+14)+'px';
-      bt.style.right=(Math.round(window.innerWidth - r.right)+14)+'px'; } }catch(e){} }
-  function aHome(){ try{ if(bt.parentNode===document.body) return;
-    document.body.appendChild(bt);
-    bt.style.position='fixed'; bt.style.zIndex='940'; bt.style.left='auto'; bt.style.bottom='auto';
-    coloca(); setTimeout(coloca, 350); setTimeout(coloca, 900);
-  }catch(e){} }
-  function aBarra(){ try{ if(bt.previousSibling===slot) return;
-    slot.parentNode.insertBefore(bt, slot.nextSibling);
-    bt.style.position=''; bt.style.top=''; bt.style.right=''; bt.style.zIndex=''; bt.style.left=''; bt.style.bottom='';
-  }catch(e){} }
-  function decide(){ if(ov.classList.contains('visible')) aBarra(); else aHome(); }
-  new MutationObserver(decide).observe(ov,{attributes:true,attributeFilter:['class']});
-  window.addEventListener('resize', function(){ if(bt.parentNode===document.body) coloca(); });
-  bt.addEventListener('click', function(){ setTimeout(function(){
-    try{ if(!ov.classList.contains('visible') && window.__tgRender) window.__tgRender(); }catch(e){} }, 60); });
-  decide();
-}catch(e){} })();
 </script>
 </body>
 </html>
