@@ -151,7 +151,7 @@ function puertaAbrir(arrancar){
       btn.disabled=false;btn.textContent='Entrar';
       if(e){err.textContent='Sin conexi\u00f3n. Intenta de nuevo.';return;}
       if(!r||r.ok!==true){err.textContent=(r&&r.error==='clave')?'Clave no reconocida.':'Algo fall\u00f3. Intenta de nuevo.';try{gtag('event','espiral_puerta',{paso:'clave_mal'});}catch(x){}return;}
-      lsSet(LS_PAR,JSON.stringify({c:c}));
+      lsSet(LS_PAR,JSON.stringify({c:c})); try{ window.__EXEC=EXEC; window.__CLAVE=c; __syncMerge(r.estrellas); __drenarCola(); }catch(x){}
       try{gtag('event','espiral_puerta',{paso:'entro'});}catch(x){}
       box.classList.remove('ver');
       arrancar();
@@ -167,6 +167,31 @@ function puertaAbrir(arrancar){
 </script>
 <script>
 /* PV — idioma del portal: misma llave que la app (triggui_lang), fallback navigator */
+
+/* sync de hechas cross-dispositivo: filas sync-hecha-* en la boveda, last-write-wins por ts */
+function __syncMerge(estrellas){ try{
+  var m={}; try{ m=JSON.parse(localStorage.getItem('triggui_espiral_hechas')||'{}'); }catch(e){}
+  var ev={}; (estrellas||[]).forEach(function(f){ var s=String((f&&f.slug)||'');
+    var on=s.indexOf('sync-hecha-')===0, off=s.indexOf('sync-deshecha-')===0;
+    if(!on&&!off) return;
+    var id=s.replace('sync-hecha-','').replace('sync-deshecha-','').toUpperCase();
+    var ts=String(f.ts||'');
+    if(!ev[id]||ts>ev[id].ts) ev[id]={on:on,ts:ts}; });
+  var cola=[]; try{ cola=JSON.parse(localStorage.getItem('triggui_sync_cola')||'[]'); }catch(e){}
+  Object.keys(ev).forEach(function(id){ if(ev[id].on){ if(!m[id]) m[id]=(ev[id].ts||'').slice(0,10)||'1'; } else { delete m[id]; } });
+  Object.keys(m).forEach(function(id){ if(!ev[id]) cola.push({id:id,on:true}); });
+  localStorage.setItem('triggui_espiral_hechas', JSON.stringify(m));
+  localStorage.setItem('triggui_sync_cola', JSON.stringify(cola));
+}catch(e){} }
+window.__syncHecha=function(id,on){ try{
+  var q=new URLSearchParams(); q.append('accion','marcar'); q.append('clave', window.__CLAVE||'');
+  q.append('slug', (on?'sync-hecha-':'sync-deshecha-')+String(id).toLowerCase());
+  q.append('evento','estrella'); q.append('titulo','');
+  fetch(window.__EXEC, {method:'POST', body:q}).then(function(r){return r.json();}).then(function(j){ if(!j||!j.ok) throw 0; })
+  .catch(function(){ try{ var w=JSON.parse(localStorage.getItem('triggui_sync_cola')||'[]'); w.push({id:id,on:on}); localStorage.setItem('triggui_sync_cola', JSON.stringify(w)); }catch(e){} });
+}catch(e){} };
+function __drenarCola(){ try{ var w=JSON.parse(localStorage.getItem('triggui_sync_cola')||'[]'); localStorage.setItem('triggui_sync_cola','[]'); w.forEach(function(x){ window.__syncHecha(x.id, x.on); }); }catch(e){} }
+
 window.PV_LANG=(function(){try{var s=JSON.parse(localStorage.getItem('triggui_lang')||'null');if(s==='en'||s==='es')return s;}catch(e){}return ((navigator.language||'es').slice(0,2)==='en')?'en':'es';})();
 window.pvT=window.pvT||function(es,en){return (window.PV_LANG==='en')?en:es;};
 if(window.PV_LANG==='en'){try{var _pg=document.getElementById('puenteGuardados'); if(_pg)_pg.setAttribute('aria-label','Go to saved'); var _pb=document.getElementById('puenteBarra'); if(_pb)_pb.setAttribute('aria-label','Open the magic bar');}catch(e){}}
