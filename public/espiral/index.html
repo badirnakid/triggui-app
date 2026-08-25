@@ -190,6 +190,15 @@ window.__syncHecha=function(id,on){ try{
   fetch(window.__EXEC, {method:'POST', body:q}).then(function(r){return r.json();}).then(function(j){ if(!j||!j.ok) throw 0; })
   .catch(function(){ try{ var w=JSON.parse(localStorage.getItem('triggui_sync_cola')||'[]'); w.push({id:id,on:on}); localStorage.setItem('triggui_sync_cola', JSON.stringify(w)); }catch(e){} });
 }catch(e){} };
+function __bootSync(clave, listo){ var done=false; function go(){ if(done) return; done=true; try{listo();}catch(e){} }
+  setTimeout(go, 2500);
+  try{ window.__EXEC=EXEC; window.__CLAVE=clave;
+    var q=new URLSearchParams(); q.append('accion','espiral'); q.append('clave',clave);
+    fetch(EXEC,{method:'POST',body:q}).then(function(r){return r.json();}).then(function(r){
+      if(r&&r.ok===true){ __syncMerge(r.estrellas); __drenarCola(); }
+      go();
+    }).catch(go);
+  }catch(e){ go(); } }
 function __drenarCola(){ try{ var w=JSON.parse(localStorage.getItem('triggui_sync_cola')||'[]'); localStorage.setItem('triggui_sync_cola','[]'); w.forEach(function(x){ window.__syncHecha(x.id, x.on); }); }catch(e){} }
 
 window.PV_LANG=(function(){try{var s=JSON.parse(localStorage.getItem('triggui_lang')||'null');if(s==='en'||s==='es')return s;}catch(e){}return ((navigator.language||'es').slice(0,2)==='en')?'en':'es';})();
@@ -277,7 +286,7 @@ async function arrancarEspiral(){
   salir.onclick=function(ev){ev.preventDefault();lsDel(LS_PAR);try{window.sessionStorage.setItem('triggui_espiral_cerro','1');}catch(e){}try{gtag('event','espiral_puerta',{paso:'salir'});}catch(e){}window.location.replace(window.location.pathname);};
   document.body.appendChild(salir);
 }
-if(claveMiembro()){arrancarEspiral();}else{puertaAbrir(arrancarEspiral);cargarLibros().then(puertaColorear);}
+if(claveMiembro()){__bootSync(claveMiembro(), arrancarEspiral);}else{puertaAbrir(arrancarEspiral);cargarLibros().then(puertaColorear);}
 </script>
 <script>
 /* manija: #form universal; en navegadores reales asciende a WhatsApp de 1 toque (los WebView del wrapper no abren esquemas) */
