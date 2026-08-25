@@ -2485,7 +2485,7 @@ function prepararEmailParaEnvio(nombreDestinatario, emailDestinatario, rowIdx) {
   // 8. Preview text invisible (V14 SINFÓNICO con fallback)
   const tarjeta = libro.tarjeta || {};
   // Intentar phrase sinfónica rol=profundizar (invita a abrir el email)
-  const _sinfonicaProfundizar = pickSinfonicaPhrase(libro, ['profundizar'], 'es');
+  const _sinfonicaProfundizar = pickSinfonicaPhrase(libro, ['profundizar'], IDIOMA_ENVIO_ACTUAL);
   let subtituloParaPreview;
   if (_sinfonicaProfundizar && _sinfonicaProfundizar.phrase) {
     subtituloParaPreview = sanitizeParagraph(_sinfonicaProfundizar.phrase)
