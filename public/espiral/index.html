@@ -109,7 +109,7 @@ try{
      bloques (home o edicion) de la que vino el viaje, y REGRESAR siempre vuelve ahi. */
   var refEsPortal=(refPath===window.location.origin+window.location.pathname)||/^https?:\/\/[^\/]+\/(espiral|mi)\/?$/.test(refPath);
   if((esRecarga||refEsPortal)&&origenGuardado!==null){ORIGEN=origenGuardado;}
-  else{ORIGEN=ref;window.sessionStorage.setItem('triggui_espiral_origen',ORIGEN);}
+  else{ORIGEN=ref;window.sessionStorage.setItem('triggui_espiral_origen',ORIGEN);try{window.sessionStorage.setItem('triggui_espiral_origen_t',String(Date.now()));}catch(x){}}
 }catch(e){ORIGEN=String(document.referrer||'');}
 var CERRO=false;   /* la puerta aparecio porque el miembro cerro sesion: su ✕ va al centro, no "atras" */
 try{if(window.sessionStorage.getItem('triggui_espiral_cerro')==='1'){CERRO=true;window.sessionStorage.removeItem('triggui_espiral_cerro');}}catch(e){}
