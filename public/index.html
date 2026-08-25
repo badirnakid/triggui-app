@@ -3379,7 +3379,7 @@ function requestNewBook() {
   });
 }
 
-btnOtro.onclick = () => { requestNewBook(); }; window.__tgRender=function(){ try{ render(); }catch(e){} };
+btnOtro.onclick = () => { requestNewBook(); };
 btnLibro.onclick = () => {
   track('lupa_reinvoke_clicked');
   BarraMagica.openOverlay(true);
@@ -9944,53 +9944,6 @@ bootTriggui();
     } else if (Date.now() - t0 < 4000) { setTimeout(abre, 120); }
   })();
 })();
-</script>
-<script id="lang-toggle-migrante">
-(function(){ try{
-  var ov=document.getElementById('barraMagicaOverlay');
-  var bt=document.getElementById('barraLangToggle');
-  if(!ov||!bt) return;
-  var slot=document.createElement('span'); slot.style.display='none';
-  bt.parentNode.insertBefore(slot, bt);
-  function coloca(){ try{ var bs=document.querySelectorAll('#grid .block');
-    if(!bs.length) return; var r=bs[bs.length-1].getBoundingClientRect();
-    if(r.width>40){ bt.style.top=(Math.round(r.top)+14)+'px';
-      bt.style.right=(Math.round(window.innerWidth - r.right)+14)+'px'; } }catch(e){} }
-  function aHome(){ try{ if(bt.parentNode===document.body) return;
-    document.body.appendChild(bt);
-    bt.style.position='fixed'; bt.style.zIndex='940'; bt.style.left='auto'; bt.style.bottom='auto'; bt.style.opacity='1';
-    coloca(); setTimeout(coloca, 350); setTimeout(coloca, 900); setTimeout(coloca, 1600);
-  }catch(e){} }
-  function aBarra(){ try{ if(bt.parentNode!==document.body) return;
-    slot.parentNode.insertBefore(bt, slot.nextSibling);
-    bt.style.position=''; bt.style.top=''; bt.style.right=''; bt.style.zIndex=''; bt.style.left=''; bt.style.bottom=''; bt.style.opacity='';
-  }catch(e){} }
-  function decide(){ if(ov.classList.contains('visible')) aBarra(); else aHome(); }
-  new MutationObserver(decide).observe(ov,{attributes:true,attributeFilter:['class']});
-  window.addEventListener('resize', function(){ if(bt.parentNode===document.body) coloca(); });
-  var es=document.getElementById('langToggleEs'), en=document.getElementById('langToggleEn');
-  function pintaSpans(){ try{ var e=(TriggguiI18n.lang==='en');
-    es.className = e?'lang-inactive':'lang-active';
-    en.className = e?'lang-active':'lang-inactive'; }catch(x){} }
-  var _last=0;
-  function accionHome(ev){ if(bt.parentNode!==document.body) return;
-    try{ ev.stopPropagation(); ev.preventDefault(); }catch(x){}
-    var now=Date.now(); if(now-_last<380) return; _last=now;
-    try{
-      TriggguiI18n.setLang(TriggguiI18n.lang==='es'?'en':'es');
-      pintaSpans();
-      try{ if(window.BarraMagica&&BarraMagica.applyStrings) BarraMagica.applyStrings(); }catch(x){}
-      if(window.__tgRender) window.__tgRender();
-    }catch(x){} }
-  ['pointerup','touchend','click'].forEach(function(evn){ bt.addEventListener(evn, accionHome, {passive:false}); });
-  ['pointerup','click'].forEach(function(evn){
-    document.addEventListener(evn, function(e){
-      try{ if(e.target && e.target.closest && e.target.closest('#barraLangToggle') && bt.parentNode===document.body) accionHome(e); }catch(x){}
-    }, {capture:true, passive:false});
-  });
-  bt.addEventListener('click', function(){ setTimeout(pintaSpans, 80); });
-  decide();
-}catch(e){} })();
 </script>
 </body>
 </html>
