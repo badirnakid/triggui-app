@@ -3014,12 +3014,23 @@ function refreshGlobalCounter() {
 }
 
 // BUILDERS
-function adjustScale(wrap){
-  const parent=wrap.closest(".portada"); if(!parent)return;
-  const avail=parent.clientHeight-40; let scale=1;
+function adjustScale(wrap){ const parent=wrap.closest(".portada"); if(!parent) return;
+  const avail=parent.clientHeight-40; if(!(avail>0)) return;
   wrap.style.transform="scale(1)";
-  while(wrap.scrollHeight>avail&&scale>0.55){ scale-=.02; wrap.style.transform=`scale(${scale})`; }
+  const alto=wrap.scrollHeight; if(!(alto>0)) return;
+  const s = (alto>avail) ? Math.max(0.55, avail/alto) : 1;
+  wrap.style.transform="scale("+(Math.round(s*1000)/1000)+")";
 }
+function __tgFit(wrap){ try{
+  var p=wrap.closest(".portada"); if(!p) return;
+  var medir=function(){ try{ if(p.clientHeight>0) adjustScale(wrap); }catch(e){} };
+  medir();
+  try{ if(window.ResizeObserver){ var ro=new ResizeObserver(medir); ro.observe(p);
+    setTimeout(function(){ try{ ro.disconnect(); }catch(e){} }, 8000); } }catch(e){}
+  try{ if(document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ medir(); setTimeout(medir,80); }); }catch(e){}
+  setTimeout(medir,0); setTimeout(medir,320); setTimeout(medir,1000); setTimeout(medir,2400);
+  window.addEventListener("resize", medir);
+}catch(e){} }
 
 function buildPort(i){
   const d=document.createElement("div"); d.className="portada";
@@ -3041,7 +3052,7 @@ function buildPort(i){
   if(!emojiText) emoji.style.display="none"; // 🌒 Sin emoji → no reservar espacio
   wrap.append(box,emoji);
   if(isURL(libro.portada)){ d.append(Object.assign(new Image(),{src:libro.portada,loading:"lazy"})); }
-  else{ d.append(wrap); setTimeout(()=>adjustScale(wrap),0); }
+  else{ d.append(wrap); __tgFit(wrap); }
   d.addEventListener("click", e => { e.stopPropagation(); if (window.__tarjetaPuedeAbrir()) btnShare.click(); });   // 🌒 v4.5: la portada tambien respeta el cierre
   return d;
 }
@@ -3255,7 +3266,7 @@ if (btnEspiral) {
         sessionStorage.setItem('triggui_regreso', JSON.stringify({ ruta: location.pathname, idx: __idx, titulo: libro.titulo, libro: libro, portIdx: (typeof portIdx === 'number') ? portIdx : null, dado: __dado, t: Date.now() }));
       }
     } catch (err) {}
-    window.location.href = '/mi/';
+    window.location.href = '/espiral/';
   };
 }
 // 🌀 v4.2: si el navegador restauro la pagina por si mismo (cache de paginas), la foto ya no hace falta.
