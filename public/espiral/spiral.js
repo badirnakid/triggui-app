@@ -858,6 +858,18 @@ function iniciarPortal() {
     try { return JSON.parse(store.get('triggui_espiral_hechas') || '{}'); } catch (e) { return {}; }
   }
   function guardarHechas(m) { store.set('triggui_espiral_hechas', JSON.stringify(m)); }
+  window.__syncRefresh = function () {
+    try {
+      var m = leerHechas();
+      for (var k = 0; k < lista.length; k++) {
+        var it = lista[k];
+        if (m[it.id]) { if (it.estado !== 'resuelto') { it.estado = 'resuelto'; it.resuelto_el = m[it.id]; } }
+        else if (it.estado === 'resuelto') { it.estado = 'pendiente'; delete it.resuelto_el; }
+      }
+      racha = calcRacha(lista); cont = calcContadores(lista);
+      repintarTodo(); pintarHud(); pintarCarita();
+    } catch (e) {}
+  };
   window.__aplicarHechas = function (arr) {
     var m = leerHechas();
     for (var i = 0; i < arr.length; i++) {
