@@ -1792,7 +1792,7 @@ try{ if(document.getElementById('puerta')){ __pv_cargarLibros().then(__pv_puerta
 <style id="mi-volver-css">
 /* 🌀 pie de guardados: ← REGRESAR con la MISMA voz del pie de la hélice (calco verbatim).
    Solo nace cuando el viaje tuvo origen; en entrada directa no promete lo que no puede cumplir. */
-#hud-volver{position:fixed;bottom:calc(14px + env(safe-area-inset-bottom));left:12px;font:700 9px/1 'Manrope',sans-serif;letter-spacing:.16em;color:var(--faint,#77716a);text-decoration:none;opacity:.8;z-index:6;padding:10px 4px;background:none;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap}
+#hud-volver{position:fixed;bottom:calc(14px + env(safe-area-inset-bottom));left:12px;font:700 9px/1 'Manrope',sans-serif;letter-spacing:.16em;color:var(--faint,#77716a);text-decoration:none;opacity:.8;z-index:899;padding:10px 4px;background:none;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap}
 #hud-volver:active{opacity:1;color:var(--dim,#b8b2a6)}
 body.hoja-abierta #hud-volver{display:none}
 </style>
@@ -1828,7 +1828,22 @@ body.hoja-abierta #hud-volver{display:none}
     b.innerHTML='&#8592;&nbsp; '+(en?'BACK':'REGRESAR');
     b.onclick=volver;
     document.body.appendChild(b);
+    coloca(); setTimeout(coloca,120); setTimeout(coloca,500); setTimeout(coloca,1200);
+    window.addEventListener('resize', coloca);
+    try{ var casa=document.getElementById('casa');
+      if(casa) new MutationObserver(coloca).observe(casa,{attributes:true,attributeFilter:['class','style']}); }catch(e){}
+    var n=0; var t=setInterval(function(){ n++; coloca(); if(n>20) clearInterval(t); }, 400);
   }
+  /* la barra de cuartos (🌀/😍) vive abajo y manda: el pie se acomoda JUSTO encima de ella */
+  function coloca(){ try{
+    var b=document.getElementById('hud-volver'); if(!b) return;
+    var casa=document.getElementById('casa');
+    if(casa && getComputedStyle(casa).display!=='none'){
+      var r=casa.getBoundingClientRect();
+      if(r.height>4){ b.style.bottom=(Math.round(window.innerHeight - r.top) + 8)+'px'; return; }
+    }
+    b.style.bottom='calc(14px + env(safe-area-inset-bottom))';
+  }catch(e){} }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', nace);
   else nace();
   setTimeout(nace, 600);
