@@ -9952,22 +9952,32 @@ bootTriggui();
   if(!ov||!bt) return;
   var slot=document.createElement('span'); slot.style.display='none';
   bt.parentNode.insertBefore(slot, bt);
-  function coloca(){ try{ var bs=document.querySelectorAll('#grid .block');
-    if(!bs.length) return; var r=bs[bs.length-1].getBoundingClientRect();
+  var colocado=false;
+  function coloca(){ try{ if(bt.parentNode!==document.body) return;
+    var bs=document.querySelectorAll('#grid .block');
+    if(!bs.length){ colocado=false; return; }
+    var r=bs[bs.length-1].getBoundingClientRect();
     if(r.width>40){ bt.style.top=(Math.round(r.top)+14)+'px';
-      bt.style.right=(Math.round(window.innerWidth - r.right)+14)+'px'; } }catch(e){} }
-  function aHome(){ try{ if(bt.parentNode===document.body) return;
+      bt.style.right=(Math.round(window.innerWidth - r.right)+14)+'px'; colocado=true; }
+    else colocado=false;
+  }catch(e){} }
+  function aHome(){ try{ if(bt.parentNode===document.body){ coloca(); return; }
     document.body.appendChild(bt);
     bt.style.position='fixed'; bt.style.zIndex='940'; bt.style.left='auto'; bt.style.bottom='auto'; bt.style.opacity='1';
-    coloca(); setTimeout(coloca, 350); setTimeout(coloca, 900); setTimeout(coloca, 1600);
+    bt.style.top='calc(env(safe-area-inset-top, 0px) + 60px)'; bt.style.right='16px';
+    colocado=false; coloca();
   }catch(e){} }
   function aBarra(){ try{ if(bt.parentNode!==document.body) return;
     slot.parentNode.insertBefore(bt, slot.nextSibling);
     bt.style.position=''; bt.style.top=''; bt.style.right=''; bt.style.zIndex=''; bt.style.left=''; bt.style.bottom=''; bt.style.opacity='';
+    colocado=false;
   }catch(e){} }
   function decide(){ if(ov.classList.contains('visible')) aBarra(); else aHome(); }
   new MutationObserver(decide).observe(ov,{attributes:true,attributeFilter:['class']});
-  window.addEventListener('resize', function(){ if(bt.parentNode===document.body) coloca(); });
+  try{ new MutationObserver(function(){ if(!colocado) coloca(); }).observe(document.getElementById('grid'),{childList:true,subtree:true}); }catch(e){}
+  setInterval(function(){ if(bt.parentNode===document.body && !colocado) coloca(); }, 500);
+  window.addEventListener('resize', function(){ colocado=false; coloca(); });
+  window.addEventListener('load', decide);
   var es=document.getElementById('langToggleEs'), en=document.getElementById('langToggleEn');
   function pintaSpans(){ try{ var e=(TriggguiI18n.lang==='en');
     es.className = e?'lang-inactive':'lang-active';
