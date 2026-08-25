@@ -38,7 +38,7 @@ var COL_NOMBRE = 'Nombre';
 var COL_EMAIL = 'Email';
 var COL_CLAVE = 'espiral_clave';
 var ENCABEZADOS_ESTRELLAS = ['ts', 'email', 'slug', 'catalogo', 'evento', 'titulo', 'portada_url', 'componente', 'payload'];
-var EVENTOS_VALIDOS = { estrella: true, releida: true, combo: true };
+var EVENTOS_VALIDOS = { estrella: true, releida: true, combo: true, hecha: true, deshecha: true };
 var COMPONENTES_VALIDOS = { bloque0: true, bloque1: true, bloque2: true, bloque3: true, bocado: true, eco: true, tarjeta: true, og: true, todo: true, combo: true };
 var PAYLOAD_MAX = 6000;
 
