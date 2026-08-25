@@ -9964,6 +9964,7 @@ bootTriggui();
       if(r.bottom>0) b.style.top=(Math.round(r.bottom)+8)+'px'; } }catch(e){} }
   pinta(); coloca();
   window.addEventListener('load', function(){ pinta(); coloca(); });
+  try{ new MutationObserver(pinta).observe(document.documentElement,{attributes:true,attributeFilter:['lang']}); }catch(e){}
   window.addEventListener('resize', coloca);
   var _ci=0; var _ct=setInterval(function(){ _ci++; coloca();
     var s=document.getElementById('progressBadge');
