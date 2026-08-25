@@ -918,7 +918,7 @@ function agrupar(filas){
   var orden = [];
   for (var i = 0; i < filas.length; i++) {
     var f = filas[i];
-    if (!f || !f.slug) continue; if (String(f.slug).indexOf('sync-')===0) continue; if (f.evento==='hecha'||f.evento==='deshecha') continue;
+    if (!f || !f.slug) continue; if (String(f.slug).indexOf('sync-')===0) continue; if (f.evento==='hecha'||f.evento==='deshecha') continue; if (/^ed-\d{3}$/.test(String(f.slug))) continue;
     var llave = (f.catalogo || 'adulto') + ':' + f.slug;
     if (!mapa[llave]) {
       mapa[llave] = { slug: f.slug, catalogo: f.catalogo || 'adulto', titulo: '', portada: '',
