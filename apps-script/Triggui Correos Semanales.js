@@ -2946,6 +2946,11 @@ function doGet(e) {
   const action = params.action || "";
   const format = params.format || "html";
 
+  // ─── Ruta diagnóstico (protegida por DIAG_TOKEN en Propiedades) ──────
+  if (action === "diag") {
+    return rutaDiagnostico(params);
+  }
+
   // ─── Ruta unsubscribe ────────────────────────────────────────────────
   if (action === "lang") {
     return manejarCambioIdioma(params.email || "", params.token || "", params.l || "");
@@ -3978,4 +3983,74 @@ function testKidsBannerAMi() {
     Logger.log("❌ Error: " + e.message);
     Logger.log(e.stack);
   }
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * 🔬 RUTA DE DIAGNÓSTICO — arma el correo SIN enviarlo y reporta su anatomía.
+ * Protegida por la propiedad de script DIAG_TOKEN (jamás vive en el repo).
+ *   ?action=diag&t=TOKEN                      → anatomía del correo (no envía)
+ *   ?action=diag&t=TOKEN&lang=en              → fija idioma en la fila y mide
+ *   ?action=diag&t=TOKEN&html=1               → incluye muestra del HTML
+ *   ?action=diag&t=TOKEN&send=1               → envía SOLO a DIAG_EMAIL
+ * ══════════════════════════════════════════════════════════════════════════ */
+const DIAG_EMAIL = "badir@triggui.com";
+
+function rutaDiagnostico(params) {
+  const json = function (o) {
+    return ContentService.createTextOutput(JSON.stringify(o))
+      .setMimeType(ContentService.MimeType.JSON);
+  };
+  var tok = "";
+  try { tok = PropertiesService.getScriptProperties().getProperty("DIAG_TOKEN") || ""; } catch (e) {}
+  if (!tok || String(params.t || "") !== tok) return json({ ok: false, error: "token" });
+
+  var out = { ok: true, diag: "v1", hoja: SHEET_NAME };
+  try {
+    var sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+    var data = sh.getDataRange().getValues();
+    var fila = -1, nombre = "Badir";
+    for (var i = 1; i < data.length; i++) {
+      if (String(data[i][2] || "").toLowerCase().indexOf(DIAG_EMAIL.toLowerCase()) >= 0) {
+        fila = i + 1; nombre = String(data[i][0] || nombre); break;
+      }
+    }
+    out.fila = fila;
+    out.colIdioma = colIdioma(sh);
+    if (params.lang === "en" || params.lang === "es") {
+      sh.getRange(fila, colIdioma(sh)).setValue(params.lang);
+      out.idiomaForzado = params.lang;
+    }
+    out.idiomaFila = leerIdiomaFila(sh, fila);
+
+    EMAIL_ENVIO_ACTUAL = DIAG_EMAIL;
+    IDIOMA_ENVIO_ACTUAL = (out.idiomaFila === "en") ? "en" : "es";
+
+    var prep = prepararEmailParaEnvio(nombre, DIAG_EMAIL, fila);
+    if (!prep || !prep.ok) { out.ok = false; out.error = (prep && prep.reason) || "prep falló"; return json(out); }
+    var h = prep.finalHTML || "";
+    var low = h.toLowerCase();
+    out.htmlChars = h.length;
+    out.subject = prep.subject;
+    out.tieneDocumento = /<body[^>]*>/i.test(h);
+    var mm = h.match(/<html[^>]*lang="([^"]+)"/i);
+    out.htmlLang = mm ? mm[1] : null;
+    out.barraIdioma = (h.indexOf("Prefer English") >= 0 || h.indexOf("Prefieres espa") >= 0);
+    out.bannerKids = (h.indexOf("Kids") >= 0);
+    out.promoWhatsApp = (low.indexOf("whatsapp") >= 0 || h.indexOf("wa.me") >= 0);
+    out.footerCta = (h.indexOf("triggui.com") >= 0);
+    out.botones = {
+      buscalibre: low.indexOf("buscalibre") >= 0,
+      amazon: low.indexOf("amazon") >= 0,
+      penguin: low.indexOf("penguin") >= 0
+    };
+    out.placeholdersSinReemplazar = (h.indexOf("{{") >= 0);
+    if (String(params.html || "") === "1") out.htmlMuestra = h.slice(0, 6000);
+    if (String(params.send || "") === "1") {
+      out.envio = enviarTrigguiAUno(DIAG_EMAIL, fila, nombre);
+    }
+  } catch (err) {
+    out.ok = false; out.error = String((err && err.message) || err);
+  }
+  return json(out);
 }
