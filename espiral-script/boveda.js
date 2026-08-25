@@ -1,5 +1,5 @@
 /* ============================================================
-   TRIGGUI ESPIRAL · Bóveda v1.1.0
+   TRIGGUI ESPIRAL · Bóveda v1.2.0-helice
    Script standalone. Lee la pestaña de personas, escribe SOLO
    en la pestaña estrellas. Nunca toca el proyecto sagrado.
 
@@ -31,7 +31,7 @@
 
 'use strict';
 
-var VERSION = '1.1.0';
+var VERSION = '1.2.0-helice';
 var TAB_PERSONAS = 'Triggui Emails Prueba';
 var TAB_ESTRELLAS = 'estrellas';
 var TAB_HELICE = 'helice';
