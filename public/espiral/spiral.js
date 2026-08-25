@@ -528,7 +528,7 @@ function iniciarPortal() {
 
   zona.addEventListener('pointermove', function (e) {
     if (!pDown) return;
-    if (pDown.pres && (Math.abs(e.clientX - pDown.x) > 7 || Math.abs(e.clientY - pDown.y) > 7)) {
+    if (pDown.pres && (Math.abs(e.clientX - pDown.x) > 14 || Math.abs(e.clientY - pDown.y) > 14)) {
       pDown.pres.el.classList.remove('pres'); pDown.pres = null;
     }
     var ahora = performance.now();
@@ -557,8 +557,8 @@ function iniciarPortal() {
     overPx = 0; overPx2 = 0;
     if (!pDown) return;
     if (pDown.pres) { pDown.pres.el.classList.remove('pres'); }
-    var fueTap = Math.abs(e.clientY - pDown.y) < 7 && Math.abs(e.clientX - pDown.x) < 7 &&
-                 (performance.now() - pDown.t) < 380;
+    var fueTap = Math.abs(e.clientY - pDown.y) < 14 && Math.abs(e.clientX - pDown.x) < 14 &&
+                 (performance.now() - pDown.t) < 550;
     arrastrando = false; pDown = null;
     svg.classList.remove('arrastrando');
     if (fueTap) {
@@ -621,15 +621,16 @@ function iniciarPortal() {
         if (el.classList && el.classList.contains('nodo')) {
           for (var kk2 in nodosVivos) if (nodosVivos[kk2].el === el) return nodosVivos[kk2];
         }
-        el = el.parentElement;
+        el = el.parentNode;
       }
     }
-    var mejor = null, mejorD = 1e9;
+    var mejor = null, md = 27;
     for (var kk in nodosVivos) {
-      var r = nodosVivos[kk];
-      var d = Math.hypot(mx - r.px, my - r.py);
-      var radio = 13 * (r.ps || 1) + 5;
-      if (d < radio && r.depth > -0.2 && d < mejorD) { mejor = r; mejorD = d; }
+      var nv = nodosVivos[kk]; if (!nv || !nv.el || !nv.el.getBoundingClientRect) continue;
+      var r = nv.el.getBoundingClientRect();
+      var dx = mx - (r.left + r.width / 2), dy = my - (r.top + r.height / 2);
+      var dd = Math.sqrt(dx * dx + dy * dy);
+      if (dd < md) { md = dd; mejor = nv; }
     }
     return mejor;
   }
@@ -929,7 +930,7 @@ function iniciarPortal() {
       ['#b8d94a', 'M-4 1.4 q4 3 8 0'],
       ['#34D399', 'M-4 0.8 q4 5 8 0']
     ];
-    var idx = ratio >= 0.99 ? 4 : ratio >= 0.75 ? 3 : ratio >= 0.5 ? 2 : ratio >= 0.25 ? 1 : 0;
+    var idx = pct >= 0.99 ? 4 : pct >= 0.75 ? 3 : pct >= 0.5 ? 2 : pct >= 0.25 ? 1 : 0;
     var c = caras[idx];
     var W = 144, H = 26, cy = H / 2, cx = 11 + pct * (W - 22);
     var cs = getComputedStyle(document.documentElement);
@@ -937,7 +938,7 @@ function iniciarPortal() {
     var g2 = (cs.getPropertyValue('--gold-2') || '#FF6B4A').trim() || '#FF6B4A';
     prog.innerHTML =
       '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" style="display:block;overflow:visible">' +
-        '<defs><linearGradient id="hudGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="' + g1 + '"/><stop offset="1" stop-color="' + g2 + '"/></linearGradient></defs>' +
+        '<defs><linearGradient id="hudGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="' + c[0] + '"/><stop offset="1" stop-color="' + c[0] + '" stop-opacity="0.55"/></linearGradient></defs>' +
         '<line x1="2" y1="' + cy + '" x2="' + (W - 2) + '" y2="' + cy + '" stroke="rgba(245,240,232,.16)" stroke-width="5" stroke-linecap="round"/>' +
         '<line x1="2" y1="' + cy + '" x2="' + Math.max(2.01, 2 + pct * (W - 4)) + '" y2="' + cy + '" stroke="url(#hudGrad)" stroke-width="5" stroke-linecap="round"/>' +
         '<g transform="translate(' + cx.toFixed(1) + ' ' + cy + ')">' +
