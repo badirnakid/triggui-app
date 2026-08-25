@@ -902,7 +902,7 @@ function iniciarPortal() {
       }
       vibrar([18, 40, 18]);
     }
-    guardarHechas(m);
+    guardarHechas(m); try{ if(window.__syncHecha) window.__syncHecha(it.id, it.estado==='resuelto'); }catch(e){}
     racha = calcRacha(lista); cont = calcContadores(lista);
     repintarTodo(); pintarHud(); pintarCarita(); guardarMemoria();
   }
