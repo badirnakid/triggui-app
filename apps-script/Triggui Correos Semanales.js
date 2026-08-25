@@ -1717,13 +1717,46 @@ function generarUrlLang(email, l) {
   return ScriptApp.getService().getUrl() + "?action=lang&l=" + encodeURIComponent(l) +
     "&email=" + encodeURIComponent(email) + "&token=" + token;
 }
-function generarLangBarTopHTML() {
+function generarLangBarTopHTML(cardWidth, accent) {
   const email = EMAIL_ENVIO_ACTUAL || "";
   if (!email) return "";
+  const A = accent || "#B8862A";
+  const W = cardWidth || TRIGGUI_STYLE_CONFIG.cardWidth;
   const es = (IDIOMA_ENVIO_ACTUAL !== "en");
-  const label = es ? "Prefer English? \u2192" : "\u00bfPrefieres espa\u00f1ol? \u2192";
+  /* El ofrecimiento va SIEMPRE en el idioma de destino: quien lo necesita, lo entiende. */
+  const linea = es
+    ? `<strong style="font-weight:600;color:${A};">Prefer English?</strong> &mdash; Receive Triggui in English from now on.`
+    : `<strong style="font-weight:600;color:${A};">¿Prefieres español?</strong> &mdash; Recibe Triggui en español a partir de ahora.`;
+  const boton = es ? "Switch to English &rarr;" : "Cambiar a español &rarr;";
   const url = generarUrlLang(email, es ? "en" : "es");
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="right" style="padding:6px 16px 10px;font:400 12px/1.2 -apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#8a8a92;"><a href="${url}" style="color:#8a8a92;text-decoration:underline;">${label}</a></td></tr></table>`;
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr><td align="center" style="padding:8px 12px 10px 12px;">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:${W}px;">
+        <tr><td style="text-align:center;background:#FAFAFA;border:1px solid #F0E6D0;border-radius:8px;padding:12px 16px;">
+          <div style="
+            font-family:'Noto Serif Display',Georgia,'Times New Roman',serif;
+            font-size:14px; line-height:1.45; font-weight:400; color:#1A1A1A;
+            letter-spacing:-0.1px; margin:0 0 10px 0; mso-line-height-rule:exactly;
+          ">${linea}</div>
+          <!--[if mso]>
+          <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${url}" style="height:32px;v-text-anchor:middle;width:150px;" arcsize="18%" stroke="f" fillcolor="${A}">
+            <w:anchorlock/>
+            <center style="color:#FFFFFF;font-family:Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.04em;">${boton}</center>
+          </v:roundrect>
+          <![endif]-->
+          <!--[if !mso]><!-->
+          <a href="${url}" target="_blank" style="
+            display:inline-block; background:${A}; color:#FFFFFF; text-decoration:none;
+            padding:8px 18px; border-radius:6px;
+            font-family:'Inter',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
+            font-size:12px; font-weight:600; letter-spacing:0.04em;
+            mso-line-height-rule:exactly; line-height:1;
+          ">${boton}</a>
+          <!--<![endif]-->
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>`;
 }
 function leerIdiomaFila(sheet, rowIdx) {
   try {
@@ -1743,9 +1776,9 @@ function manejarCambioIdioma(email, token, l) {
     if (!sheet) return ContentService.createTextOutput("\u2014");
     const rowIdx = buscarFilaPorEmail(sheet, email);
     if (rowIdx >= 2) sheet.getRange(rowIdx, colIdioma(sheet)).setValue(idioma);
-    const msg = (idioma === "en") ? "Done \u2014 from now on I\u2019ll write to you in English." : "Listo \u2014 a partir de ahora te escribo en espa\u00f1ol.";
-    const back = (idioma === "en") ? "Back to Triggui" : "Volver a Triggui";
-    return HtmlService.createHtmlOutput(`<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><body style="margin:0;display:flex;min-height:100vh;align-items:center;justify-content:center;background:#0f0f14;color:#f2efe9;font:500 17px/1.5 -apple-system,Segoe UI,Roboto,sans-serif;text-align:center;padding:24px"><div><div style="font-size:34px;margin-bottom:14px">\ud83c\udf10</div>${msg}<div style="margin-top:18px"><a href="https://triggui.com" style="color:#c9c4ba">${back} \u2192</a></div></div></body>`);
+    var _nombreLang = "";
+    try { if (rowIdx >= 2) _nombreLang = sanitizarNombre(sheet.getRange(rowIdx, 1).getValue()); } catch (e) {}
+    return renderPaginaIdioma(idioma, _nombreLang);
   } finally { try { lock.releaseLock(); } catch (e) {} }
 }
 
@@ -2580,7 +2613,7 @@ function prepararEmailParaEnvio(nombreDestinatario, emailDestinatario, rowIdx) {
 
   let finalHTML = cuerpoHTML.replace(
     /(<body[^>]*>)/i,
-    `$1\n  ${previewTextHTML}\n  ${generarLangBarTopHTML()}`
+    `$1\n  ${previewTextHTML}\n  {{LANG_BAR}}`
   );
   let finalPlain = plainBody + aInglesCascara(FOOTER_CTA.plain);
 
@@ -2735,7 +2768,7 @@ function enviarTrigguiAUno(email, rowIdx, nombreDestinatario) {
   // 3. Enviar con headers nivel dios deliverability
   try {
     const sendOptions = {
-      htmlBody: prep.finalHTML,
+      htmlBody: prep.finalHTML.replace(/\{\{LANG_BAR\}\}/g, generarLangBarTopHTML(TRIGGUI_STYLE_CONFIG.cardWidth, (prep.libro && prep.libro.tarjeta && prep.libro.tarjeta.style && prep.libro.tarjeta.style.accent) || "")),
       inlineImages: prep.inlineImages,
       name: REMITENTE_DISPLAY_NAME,        // "Triggui" en lugar de "badirnakid"
       replyTo: REMITENTE_REPLY_TO          // hola@triggui.com (configurable)
@@ -3149,6 +3182,64 @@ function manejarUnsubscribe(email, token, format) {
  * Args:
  *   primerNombre: string opcional. Si presente, personaliza ("Entendido, Badir.")
  * ══════════════════════════════════════════════════════════════════════════ */
+
+/* ════════════════════════════════════════════════════════════════════════
+ * 🌐 Página de confirmación del cambio de idioma — misma voz que la de
+ * "Entendido" del unsubscribe. Nunca más una pantalla cruda de Google.
+ * ════════════════════════════════════════════════════════════════════════ */
+function renderPaginaIdioma(idioma, primerNombre) {
+  const en = (idioma === "en");
+  const titulo = primerNombre
+    ? (en ? `Done, ${_esc(primerNombre)}.` : `Listo, ${_esc(primerNombre)}.`)
+    : (en ? "Done." : "Listo.");
+  const sub = en
+    ? `From now on I will write to you in English. You can switch back anytime from the bar at the top of any email. See you at <a href="https://triggui.com">triggui.com</a>`
+    : `A partir de ahora te escribo en español. Puedes cambiarlo cuando quieras desde la barra al inicio de cualquier correo. Nos vemos en <a href="https://triggui.com">triggui.com</a>`;
+  const html = `<!doctype html>
+<html lang="${en ? "en" : "es"}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Triggui</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      background: #0B0F1A; color: #F5F0E8; min-height: 100vh;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+      -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+    }
+    body { display: flex; align-items: center; justify-content: center; padding: 24px; }
+    .container { text-align: center; max-width: 420px; animation: fadeIn .6s cubic-bezier(.22,1,.36,1) both; }
+    .globo {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: linear-gradient(135deg, #E8A838 0%, #FF6B4A 100%);
+      display: inline-flex; align-items: center; justify-content: center;
+      margin-bottom: 24px; animation: pop .6s cubic-bezier(.34,1.56,.64,1) .15s both;
+      font-size: 26px; line-height: 1;
+    }
+    h1 { font-size: clamp(26px, 6vw, 36px); font-weight: 700; line-height: 1.15;
+         letter-spacing: -0.03em; margin: 0 0 14px; color: #F5F0E8; }
+    .sub { font-size: 14px; line-height: 1.6; color: rgba(245, 240, 232, 0.45); margin: 0; }
+    .sub a { color: #E8A838; text-decoration: none; border-bottom: 1px solid rgba(232, 168, 56, 0.3); }
+    .par { margin-top: 26px; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: rgba(245,240,232,.28); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pop { 0% { transform: scale(0); opacity: 0; } 60% { transform: scale(1.08); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="globo" aria-hidden="true">&#127760;</div>
+    <h1>${titulo}</h1>
+    <p class="sub">${sub}</p>
+    <div class="par">${en ? "English" : "Español"}</div>
+  </div>
+</body>
+</html>`;
+  return HtmlService.createHtmlOutput(html)
+    .setTitle("Triggui")
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
 function renderPaginaEntendido(primerNombre) {
   const mensaje = primerNombre
     ? `Entendido, ${_esc(primerNombre)}.`
@@ -3493,7 +3584,25 @@ function enviarTrigguiLunes() {
   ];
 
   // Helper para enviar a una fila (puede tener múltiples emails)
-  function sendToRow(row, batchInfo) {
+  
+/* ════════════════════════════════════════════════════════════════════════
+ * 🌐 D4 v4 — el ENVÍO MASIVO también respeta el idioma de cada suscriptor.
+ * Antes: prepararEmailParaEnvio() se llamaba UNA vez y todos recibían español.
+ * Ahora: la versión inglesa se construye solo si alguna fila la necesita.
+ * ════════════════════════════════════════════════════════════════════════ */
+let _PREP_EN_CACHE = null;
+function baseSegunIdioma(prepES, idioma) {
+  if (idioma !== "en") return prepES;
+  if (!_PREP_EN_CACHE) {
+    var sv = IDIOMA_ENVIO_ACTUAL;
+    IDIOMA_ENVIO_ACTUAL = "en";
+    try { _PREP_EN_CACHE = prepararEmailParaEnvio(); } catch (e) { _PREP_EN_CACHE = null; }
+    IDIOMA_ENVIO_ACTUAL = sv;
+  }
+  return (_PREP_EN_CACHE && _PREP_EN_CACHE.ok) ? _PREP_EN_CACHE : prepES;
+}
+
+function sendToRow(row, batchInfo) {
     const i = row.rowIdx;
     let enviadosEnEstaFila = 0;
     const emailsToSend = row.emails.join(",");  // Gmail acepta múltiples en una llamada
@@ -3504,7 +3613,11 @@ function enviarTrigguiLunes() {
     // FORZAR saludo sin nombre. El nombre de col A solo aplica a uno de los destinatarios;
     // saludar a Victor con "Hola Jaqueline" sería incoherente. Multi-email → saludo genérico.
     const nombreFila = row.emails.length > 1 ? "" : sanitizarNombre(data[i][0]);
-    const subjectFila = prep.subject;  // ya viene como "Edición #043 · Tu paz tiene precio"
+    /* 🌐 D4 v4: el idioma de ESTA fila gobierna su correo */
+  EMAIL_ENVIO_ACTUAL = row.emails[0] || "";
+  try { IDIOMA_ENVIO_ACTUAL = leerIdiomaFila(sheet, i + 1); } catch (e) { IDIOMA_ENVIO_ACTUAL = "es"; }
+  const _base = baseSegunIdioma(prep, IDIOMA_ENVIO_ACTUAL);
+  const subjectFila = _base.subject;  // ya viene como "Edición #043 · Tu paz tiene precio"
 
     // V18i: link de unsubscribe personalizado por fila
     const primerEmailFila = row.emails[0] || "";
@@ -3529,14 +3642,15 @@ function enviarTrigguiLunes() {
     const kidsTopHTMLFila = KIDS_PROMO_ENABLED ? generarKidsPromoTopHTML(cFila.cardWidth, _accFila) : "";
     const kidsTopPlainFila = KIDS_PROMO_ENABLED ? aInglesCascara(KIDS_PROMO_TOP_PLAIN) : "";
 
-    let htmlPersonalizado  = finalHTML
+    let htmlPersonalizado  = _base.finalHTML
       .replace(/\{\{UNSUB_LINK\}\}/g, unsubLinkFila)
       .replace(/\{\{GREETING_BLOCK\}\}/g, saludoHTMLFila)
       .replace(/\{\{TRIAL_BANNER_TOP\}\}/g, trialTopHTMLFila)
       .replace(/\{\{ESPIRAL_PROMO_TOP\}\}/g, espiralTopHTMLFila)
       .replace(/\{\{KIDS_PROMO_BOTTOM\}\}/g, kidsTopHTMLFila)
-      .replace(/\{\{WHATSAPP_PROMO_TOP\}\}/g, waTopHTMLFila);
-    let plainPersonalizado = finalPlain
+      .replace(/\{\{WHATSAPP_PROMO_TOP\}\}/g, waTopHTMLFila)
+      .replace(/\{\{LANG_BAR\}\}/g, generarLangBarTopHTML(cFila.cardWidth, _accFila));
+    let plainPersonalizado = _base.finalPlain
       .replace(/\{\{UNSUB_LINK\}\}/g, unsubLinkFila)
       .replace(/\{\{GREETING_PLAIN\}\}/g, saludoPlainFila)
       .replace(/\{\{TRIAL_BANNER_TOP_PLAIN\}\}/g, trialTopPlainFila)
@@ -4135,7 +4249,7 @@ function rutaDiagnostico(params) {
   try { tok = PropertiesService.getScriptProperties().getProperty("DIAG_TOKEN") || ""; } catch (e) {}
   if (!tok || String(params.t || "") !== tok) return json({ ok: false, error: "token" });
 
-  var out = { ok: true, diag: "v1", build: "2026-08-25-olaB+moneda+detector", hoja: SHEET_NAME };
+  var out = { ok: true, diag: "v1", build: "2026-08-25-D4v4-masivo+barra+landing", hoja: SHEET_NAME };
   try {
     var sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
     var data = sh.getDataRange().getValues();
@@ -4158,7 +4272,7 @@ function rutaDiagnostico(params) {
 
     var prep = prepararEmailParaEnvio(nombre, DIAG_EMAIL, fila);
     if (!prep || !prep.ok) { out.ok = false; out.error = (prep && prep.reason) || "prep falló"; return json(out); }
-    var h = prep.finalHTML || "";
+    var h = (prep.finalHTML || "").replace(/\{\{LANG_BAR\}\}/g, generarLangBarTopHTML(TRIGGUI_STYLE_CONFIG.cardWidth, (prep.libro && prep.libro.tarjeta && prep.libro.tarjeta.style && prep.libro.tarjeta.style.accent) || ""));
     var low = h.toLowerCase();
     out.htmlChars = h.length;
     out.subject = prep.subject;
