@@ -1714,8 +1714,7 @@ function colIdioma(sheet) {
 }
 function generarUrlLang(email, l) {
   const token = generarTokenUnsub(email);
-  return ScriptApp.getService().getUrl() + "?action=lang&l=" + encodeURIComponent(l) +
-    "&email=" + encodeURIComponent(email) + "&token=" + token;
+  return "https://triggui.com/idioma?email=" + encodeURIComponent(email) + "&token=" + token + "&l=" + encodeURIComponent(l);
 }
 function generarLangBarTopHTML(cardWidth, accent) {
   const email = EMAIL_ENVIO_ACTUAL || "";
@@ -1764,22 +1763,46 @@ function leerIdiomaFila(sheet, rowIdx) {
     return (v === "en") ? "en" : "es";
   } catch (e) { return "es"; }
 }
-function manejarCambioIdioma(email, token, l) {
+function manejarCambioIdioma(email, token, l, format) {
+  const json = function (o) {
+    return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);
+  };
+  const esJson = (String(format || "").toLowerCase() === "json");
   const lock = LockService.getScriptLock();
   try { lock.waitLock(5000); } catch (e) {}
   try {
     if (!email || !token || !validarTokenUnsub(email, token)) {
-      return ContentService.createTextOutput("Token inv\u00e1lido").setMimeType(ContentService.MimeType.TEXT);
+      return esJson ? json({ ok: false, error: "token" })
+                    : ContentService.createTextOutput("Token inválido").setMimeType(ContentService.MimeType.TEXT);
     }
     const idioma = (String(l || "").toLowerCase() === "en") ? "en" : "es";
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
-    if (!sheet) return ContentService.createTextOutput("\u2014");
+    if (!sheet) return esJson ? json({ ok: false, error: "hoja" }) : ContentService.createTextOutput("—");
     const rowIdx = buscarFilaPorEmail(sheet, email);
-    if (rowIdx >= 2) sheet.getRange(rowIdx, colIdioma(sheet)).setValue(idioma);
     var _nombreLang = "";
-    try { if (rowIdx >= 2) _nombreLang = sanitizarNombre(sheet.getRange(rowIdx, 1).getValue()); } catch (e) {}
-    return renderPaginaIdioma(idioma, _nombreLang);
-  } finally { try { lock.releaseLock(); } catch (e) {} }
+    var _previo = "";
+    try {
+      if (rowIdx >= 2) {
+        _nombreLang = sanitizarNombre(sheet.getRange(rowIdx, 1).getValue());
+        _previo = leerIdiomaFila(sheet, rowIdx);
+      }
+    } catch (e) {}
+    if (rowIdx >= 2) sheet.getRange(rowIdx, colIdioma(sheet)).setValue(idioma);
+
+    /* 📬 Reenvío en el nuevo idioma: SOLO si de verdad cambió (tocar dos veces no duplica). */
+    var reenviado = false;
+    if (rowIdx >= 2 && _previo !== idioma) {
+      try {
+        var r = enviarTrigguiAUno(email, rowIdx, _nombreLang);
+        reenviado = !!(r && r.ok);
+      } catch (e) { reenviado = false; }
+    }
+    return esJson
+      ? json({ ok: true, first_name: _nombreLang, lang: idioma, resent: reenviado, changed: (_previo !== idioma) })
+      : renderPaginaIdioma(idioma, _nombreLang);
+  } finally {
+    try { lock.releaseLock(); } catch (e) {}
+  }
 }
 
 function generarUrlUnsub(email) {
@@ -3061,7 +3084,7 @@ function doGet(e) {
 
   // ─── Ruta unsubscribe ────────────────────────────────────────────────
   if (action === "lang") {
-    return manejarCambioIdioma(params.email || "", params.token || "", params.l || "");
+    return manejarCambioIdioma(params.email || "", params.token || "", params.l || "", format);
   }
   if (action === "unsubscribe") {
     return manejarUnsubscribe(params.email || "", params.token || "", format);
@@ -4253,7 +4276,7 @@ function rutaDiagnostico(params) {
   try { tok = PropertiesService.getScriptProperties().getProperty("DIAG_TOKEN") || ""; } catch (e) {}
   if (!tok || String(params.t || "") !== tok) return json({ ok: false, error: "token" });
 
-  var out = { ok: true, diag: "v1", build: "2026-08-25-D4v5-fix-regex+red+simulacro", hoja: SHEET_NAME };
+  var out = { ok: true, diag: "v1", build: "2026-08-25-D4v6-landing+reenvio", hoja: SHEET_NAME };
   try {
     var sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
     var data = sh.getDataRange().getValues();
