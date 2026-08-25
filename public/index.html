@@ -9952,34 +9952,39 @@ bootTriggui();
   })();
 })();
 </script>
-<button id="homeLangToggle" type="button" aria-label="Toggle language"><span id="homeLangEs" class="hl-active">Español</span><span class="lang-sep">·</span><span id="homeLangEn">English</span></button>
+<button id="homeLangToggle" data-v="7" type="button" aria-label="Toggle language"><span id="homeLangEs" class="hl-active">Español</span><span class="lang-sep">·</span><span id="homeLangEn">English</span></button>
 <script id="home-lang-wire">
 (function(){ try{
   var b=document.getElementById('homeLangToggle'); if(!b) return;
   function pinta(){ try{ var en=(window.TriggguiI18n&&TriggguiI18n.lang==='en');
     document.getElementById('homeLangEs').className=en?'':'hl-active';
     document.getElementById('homeLangEn').className=en?'hl-active':''; }catch(e){} }
-  function coloca(){ try{ if(window.innerWidth>=900){ b.style.top=''; return; }
-    var s=document.getElementById('progressBadge');
-    if(s){ var r=s.getBoundingClientRect(); if(r.bottom>0) b.style.top=(Math.round(r.bottom)+8)+'px'; } }catch(e){} }
+  function coloca(){ try{ var bs=document.querySelectorAll('#grid .block');
+    if(!bs.length) return; var r=bs[bs.length-1].getBoundingClientRect();
+    if(r.width>0){ b.style.top=(Math.round(r.top)+14)+'px';
+      b.style.right=(Math.round(window.innerWidth - r.right)+14)+'px'; } }catch(e){} }
   pinta(); coloca();
   window.addEventListener('load', function(){ pinta(); coloca(); });
   window.addEventListener('resize', coloca);
   try{ new MutationObserver(pinta).observe(document.documentElement,{attributes:true,attributeFilter:['lang']}); }catch(e){}
   var _ci=0; var _ct=setInterval(function(){ _ci++; coloca();
-    if(_ci>30 || window.innerWidth>=900) clearInterval(_ct);
-    else { var s=document.getElementById('progressBadge'); if(s&&s.getBoundingClientRect().bottom>0&&b.style.top) clearInterval(_ct); }
+    var bs=document.querySelectorAll('#grid .block');
+    if(_ci>30 || (bs.length && b.style.top)) clearInterval(_ct);
   }, 400);
-  ['pointerdown','touchstart','mousedown','touchend','click'].forEach(function(ev){
-    b.addEventListener(ev, function(e){ try{ e.stopPropagation(); e.preventDefault(); }catch(x){} }, {passive:false});
+  ['pointerdown','touchstart','mousedown'].forEach(function(ev){
+    b.addEventListener(ev, function(e){ try{ e.stopPropagation(); }catch(x){} }, {passive:true});
   });
-  b.addEventListener('pointerup', function(e){ try{
-    e.stopPropagation(); e.preventDefault();
-    var n=(TriggguiI18n.lang==='es')?'en':'es';
-    TriggguiI18n.setLang(n);
-    if(window.__tgRender) window.__tgRender();
-    pinta();
-  }catch(x){} }, {passive:false});
+  var _last=0;
+  function accion(e){ try{ e.stopPropagation(); e.preventDefault(); }catch(x){}
+    var now=Date.now(); if(now-_last<380) return; _last=now;
+    try{ var n=(TriggguiI18n.lang==='es')?'en':'es';
+      TriggguiI18n.setLang(n);
+      if(window.__tgRender) window.__tgRender();
+      pinta();
+    }catch(x){} }
+  ['pointerup','touchend','click'].forEach(function(ev){
+    b.addEventListener(ev, accion, {passive:false});
+  });
 }catch(e){} })();
 </script>
 </body>
