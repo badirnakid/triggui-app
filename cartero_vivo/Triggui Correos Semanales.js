@@ -291,6 +291,31 @@ const INTRO_MESSAGES = {
   ]
 };
 
+/* ════════════════════════════════════════════════════════════════════════
+ * 🌐 D4 v3 — INTRO EN INGLÉS INTERNACIONAL (gemelo de INTRO_MESSAGES.texts)
+ * Autorizado por Badir. El bloque en español queda intacto: esto es aditivo.
+ * ════════════════════════════════════════════════════════════════════════ */
+const INTRO_MESSAGES_EN = [
+  {
+    html: `<div style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;font-size:15px;line-height:1.6;color:#374151;text-align:center;padding:0 20px 20px 20px;margin:0;">
+  I am glad to share these cards with you. If you are already subscribed, wonderful. If not, <a href="https://triggui.com/?utm_source=triggui&utm_medium=email&utm_campaign=suscripcion" style="color:#2563EB;text-decoration:underline;">subscribe here</a> to receive them on WhatsApp every week.
+</div>`,
+    plain: "I am glad to share these cards with you. If you are already subscribed, wonderful. If not, subscribe at https://triggui.com to receive them on WhatsApp every week.\n\n"
+  },
+  {
+    html: `<div style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;font-size:15px;line-height:1.6;color:#374151;text-align:center;padding:0 20px 20px 20px;margin:0;">
+  Write to us at <strong style="color:#111827;">+52 155 3239 4017</strong> or <a href="https://triggui.com/?utm_source=triggui&utm_medium=email&utm_campaign=suscripcion" style="color:#2563EB;text-decoration:underline;">subscribe here</a> to receive these reading sparks on WhatsApp.
+</div>`,
+    plain: "Write to us at +52 155 3239 4017 or subscribe at https://triggui.com to receive these reading sparks on WhatsApp.\n\n"
+  },
+  {
+    html: `<div style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;font-size:15px;line-height:1.6;color:#374151;text-align:center;padding:0 20px 20px 20px;margin:0;">
+  Today I am sharing cards worth keeping. Receive them on your WhatsApp every week &rarr; <a href="https://triggui.com/?utm_source=triggui&utm_medium=email&utm_campaign=suscripcion" style="color:#2563EB;text-decoration:underline;">triggui.com</a>
+</div>`,
+    plain: "Today I am sharing cards worth keeping. Receive them on your WhatsApp every week: https://triggui.com\n\n"
+  }
+];
+
 /* ═══════════════════════ FOOTER CTA NIVEL DIOS V18e ═══════════════════════
  *
  * Texto que diferencia Triggui de TODO lo demás en el mercado.
@@ -500,7 +525,7 @@ function shouldShowIntro() {
 }
 
 function getRandomIntro() {
-  const messages = INTRO_MESSAGES.texts;
+  const messages = (IDIOMA_ENVIO_ACTUAL === "en") ? INTRO_MESSAGES_EN : INTRO_MESSAGES.texts;
   return messages[Math.floor(Math.random() * messages.length)];
 }
 
@@ -4105,7 +4130,7 @@ function rutaDiagnostico(params) {
   try { tok = PropertiesService.getScriptProperties().getProperty("DIAG_TOKEN") || ""; } catch (e) {}
   if (!tok || String(params.t || "") !== tok) return json({ ok: false, error: "token" });
 
-  var out = { ok: true, diag: "v1", hoja: SHEET_NAME };
+  var out = { ok: true, diag: "v1", build: "2026-08-25-olaB+intro", hoja: SHEET_NAME };
   try {
     var sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
     var data = sh.getDataRange().getValues();
@@ -4145,6 +4170,11 @@ function rutaDiagnostico(params) {
       penguin: low.indexOf("penguin") >= 0
     };
     out.placeholdersSinReemplazar = (h.indexOf("{{") >= 0);
+    out.intro = { es: (h.indexOf("Te comparto estas tarjetas") >= 0 || h.indexOf("chispas de lectura") >= 0), en: (h.indexOf("reading sparks") >= 0 || h.indexOf("cards with you") >= 0 || h.indexOf("cards worth keeping") >= 0) };
+    out.saludoEs = /Hola|Buen d|¿C[oó]mo va|Qu[eé] tal/.test(h);
+    out.saludoEn = /\b(Hi|Hello|Hey|Welcome back|Glad you are here|Here we are again)\b/.test(h);
+    out.trialEs = (h.indexOf("periodo gratis") >= 0 || h.indexOf("barra m") >= 0);
+    out.trialEn = (h.indexOf("free period") >= 0 || h.indexOf("magic bar") >= 0);
     if (String(params.html || "") === "1") out.htmlMuestra = h.slice(0, 6000);
     if (String(params.send || "") === "1") {
       out.envio = enviarTrigguiAUno(DIAG_EMAIL, fila, nombre);
