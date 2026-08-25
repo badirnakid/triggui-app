@@ -1,0 +1,42 @@
+name: "Video uno (faltantes)"
+on:
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: "slug a re-resolver"
+        required: true
+        default: "frida-para-apasionados"
+permissions:
+  contents: write
+jobs:
+  video:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout triggui-content
+        uses: actions/checkout@v4
+        with:
+          repository: badirnakid/triggui-content
+          token: ${{ secrets.CONTENT_REPO_TOKEN }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Borrar _video del slug
+        env:
+          SLUG: ${{ github.event.inputs.slug }}
+        run: |
+          python3 -c "import json,os; slug=os.environ['SLUG']; f1='contenido.json'; f2='contenido_manual.json'; d1=json.load(open(f1,encoding='utf-8')); d2=json.load(open(f2,encoding='utf-8')); n=sum(1 for d in (d1,d2) for b in d['libros'] if b.get('_slug')==slug and b.pop('_video',None) is not None); json.dump(d1, open(f1,'w',encoding='utf-8'), ensure_ascii=False, indent=2); json.dump(d2, open(f2,'w',encoding='utf-8'), ensure_ascii=False, indent=2); print('limpiado', slug, n)"
+      - name: Resolver faltantes
+        env:
+          YT_API_KEY: ${{ secrets.YT_API_KEY }}
+          OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
+        run: |
+          pip -q install requests || true
+          python3 scripts/resolve-videos.py --solo-ediciones
+      - name: Commit
+        run: |
+          git config user.name "triggui-bot"
+          git config user.email "bot@triggui.com"
+          git add contenido.json contenido_manual.json
+          git diff --cached --quiet && echo "sin cambios" || git commit -m "video re-resuelto ${{ github.event.inputs.slug }}"
+          git push
