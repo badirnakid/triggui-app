@@ -34,6 +34,7 @@
 var VERSION = '1.1.0';
 var TAB_PERSONAS = 'Triggui Emails Prueba';
 var TAB_ESTRELLAS = 'estrellas';
+var TAB_HELICE = 'helice';
 var COL_NOMBRE = 'Nombre';
 var COL_EMAIL = 'Email';
 var COL_CLAVE = 'espiral_clave';
@@ -80,6 +81,11 @@ function _hojaPersonas(ss) {
 // La pestaña estrellas es territorio propio: si no existe, nace con
 // encabezados. Si existe de la v1.0, gana sus columnas nuevas al final
 // (componente, payload) sin tocar jamás lo ya escrito.
+function _hojaHelice(ss) {
+  var h = ss.getSheetByName(TAB_HELICE);
+  if (!h) { h = ss.insertSheet(TAB_HELICE); h.appendRow(ENCABEZADOS_ESTRELLAS); return h; }
+  return h;
+}
 function _hojaEstrellas(ss) {
   var h = ss.getSheetByName(TAB_ESTRELLAS);
   if (!h) {
@@ -223,6 +229,11 @@ function _registrar(persona, p) {
   var lock = LockService.getScriptLock();
   if (!lock.tryLock(8000)) return { ok: false, error: 'ocupado' };
   try {
+    if (evento === 'hecha' || evento === 'deshecha') {
+      var hh = _hojaHelice(persona._ss);
+      _appendFila(hh, persona, slug, catalogo, evento, titulo, portada, componente, payload);
+      return { ok: true, evento: evento };
+    }
     var hoja = _hojaEstrellas(persona._ss);
     var filas = _filasDe(hoja, persona.email);
     if (evento === 'estrella' || evento === 'combo') {
@@ -274,7 +285,7 @@ function doPost(e) {
 
     if (accion === 'espiral') {
       var hoja = _hojaEstrellas(persona._ss);
-      return _json({ ok: true, nombre: persona.nombre, estrellas: _filasDe(hoja, persona.email) });
+      return _json({ ok: true, nombre: persona.nombre, estrellas: _filasDe(hoja, persona.email), senales: _filasDe(_hojaHelice(persona._ss), persona.email) });
     }
     if (accion === 'marcar') {
       return _json(_registrar(persona, p));
