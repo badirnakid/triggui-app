@@ -33,20 +33,32 @@ function listaEspiral(insights) {
 // La semana activa mas reciente (pendiente o en_curso) no rompe.
 // Un pospuesto congela (se salta). Un pendiente viejo rompe.
 function calcRacha(lista) {
-  var r = 0, primero = true;
-  for (var i = lista.length - 1; i >= 0; i--) {
-    var e = lista[i].estado;
-    if (e === 'descartado') continue;
-    if (primero) {
-      primero = false;
-      if (e === 'pendiente' || e === 'en_curso') continue;
+    /* Racha = LUNES seguidos resueltos (semanas, no items). Lunes doble cuenta 1.
+       Semana con algo pendiente rompe; la mas reciente pendiente no rompe (activa).
+       Semanas solo-pospuestas son neutras. */
+    var porSem = {};
+    for (var i = 0; i < lista.length; i++) {
+      var it = lista[i];
+      if (it.estado === 'descartado') continue;
+      (porSem[it.semana] = porSem[it.semana] || []).push(it.estado);
     }
-    if (e === 'resuelto') r++;
-    else if (e === 'pospuesto') continue;
-    else break;
+    var sems = Object.keys(porSem).sort();
+    var r = 0, primero = true;
+    for (var k = sems.length - 1; k >= 0; k--) {
+      var es = porSem[sems[k]];
+      var pend = false, res = false, todosPosp = true;
+      for (var j2 = 0; j2 < es.length; j2++) {
+        if (es[j2] === 'pendiente' || es[j2] === 'en_curso') pend = true;
+        if (es[j2] === 'resuelto') res = true;
+        if (es[j2] !== 'pospuesto') todosPosp = false;
+      }
+      if (todosPosp) continue;
+      if (primero) { primero = false; if (pend) continue; }
+      if (!pend && res) r++;
+      else if (pend) break;
+    }
+    return r;
   }
-  return r;
-}
 
 function calcContadores(lista) {
   var n = lista.length;
