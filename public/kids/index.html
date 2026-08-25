@@ -2601,7 +2601,7 @@ html.kids-mode #tarjetaCard {
 <link rel="stylesheet" href="/css/triggui-kids-overlay.css?v=7">
 <script defer src="/_vercel/insights/script.js"></script>
 <style id="home-lang-pill">
-#homeLangToggle{position:fixed;top:max(54px, calc(env(safe-area-inset-top,0px) + 14px));right:16px;z-index:640;display:flex;align-items:center;gap:2px;padding:3px;border-radius:99px;background:rgba(255,255,255,.09);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.14);font:600 11px/1 Inter,system-ui,sans-serif;letter-spacing:.02em;cursor:pointer;color:inherit}
+#homeLangToggle{position:fixed;top:max(54px, calc(env(safe-area-inset-top,0px) + 14px));right:16px;z-index:940;display:flex;align-items:center;gap:2px;padding:3px;border-radius:99px;background:rgba(255,255,255,.09);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.14);font:600 11px/1 Inter,system-ui,sans-serif;letter-spacing:.02em;cursor:pointer;color:inherit}
 #homeLangToggle span{padding:5px 11px;border-radius:99px;transition:all .35s cubic-bezier(.19,1,.22,1);color:rgba(255,255,255,.45)}
 #homeLangToggle span.lang-sep{padding:0;color:rgba(255,255,255,.25)}
 #homeLangToggle span.hl-active{color:#000;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.15)}
@@ -9959,13 +9959,22 @@ bootTriggui();
   function pinta(){ try{ var en=(window.TriggguiI18n&&TriggguiI18n.lang==='en');
     document.getElementById('homeLangEs').className=en?'':'hl-active';
     document.getElementById('homeLangEn').className=en?'hl-active':''; }catch(e){} }
-  pinta(); setTimeout(pinta, 400);
-  b.addEventListener('click', function(){ try{
+  function coloca(){ try{ var s=document.getElementById('progressBadge');
+    if(s){ var r=s.getBoundingClientRect();
+      if(r.bottom>0) b.style.top=(Math.round(r.bottom)+8)+'px'; } }catch(e){} }
+  pinta(); coloca();
+  window.addEventListener('load', function(){ pinta(); coloca(); setTimeout(coloca, 800); });
+  window.addEventListener('resize', coloca);
+  ['pointerdown','touchstart','mousedown','touchend','click'].forEach(function(ev){
+    b.addEventListener(ev, function(e){ try{ e.stopPropagation(); e.preventDefault(); }catch(x){} }, {passive:false});
+  });
+  b.addEventListener('pointerup', function(e){ try{
+    e.stopPropagation(); e.preventDefault();
     var n=(TriggguiI18n.lang==='es')?'en':'es';
     TriggguiI18n.setLang(n); pinta();
     document.body.style.transition='opacity .16s ease'; document.body.style.opacity='0';
     setTimeout(function(){ location.reload(); }, 170);
-  }catch(e){} });
+  }catch(x){} }, {passive:false});
 }catch(e){} })();
 </script>
 </body>
