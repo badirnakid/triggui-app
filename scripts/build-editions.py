@@ -684,6 +684,90 @@ def render_highlight_html(text):
     return "".join(parts)
 
 
+# ═══════════════════════════════════════════════════════════════════════════
+# 🌐 GEMELA EN INGLÉS — /t/<slug>/en/
+# Doctrina: la gemela es la MISMA página, byte por byte, salvo tres cosas:
+#   (1) el encabezado social en inglés, para que la previsualización de
+#       WhatsApp salga en inglés (el robot lee el HTML crudo: JavaScript
+#       no puede cambiarlo);
+#   (2) la imagen de previsualización apunta a og_en;
+#   (3) la semilla de idioma arranca en "en" — el toggle sigue mandando.
+# Nada estructural se toca: la paridad con la española es la ley.
+# ═══════════════════════════════════════════════════════════════════════════
+def _og_titulo_en(edicion):
+    palabras = unique_nonempty(edicion.get("palabras_en") or [])
+    if palabras:
+        return truncate_text(" · ".join([p.lower() for p in palabras[:4]]), 90)
+    return build_og_title(edicion)
+
+
+def _og_descripcion_en(edicion):
+    tarjeta_en = edicion.get("tarjeta_en") or {}
+    frases_en = [f for f in (edicion.get("frases_en") or []) if str(f or "").strip()]
+    candidatos = [
+        tarjeta_en.get("subtitulo", ""),
+        tarjeta_en.get("parrafoTop", ""),
+        tarjeta_en.get("parrafoBot", ""),
+        frases_en[0] if frases_en else "",
+    ]
+    for c in candidatos:
+        limpio = normalize_text(strip_highlight_markers(c) if "strip_highlight_markers" in globals() else c)
+        limpio = re.sub(r"\[/?H\]", "", str(limpio or "")).strip()
+        if limpio:
+            return truncate_text(limpio, 180)
+    return "Open this living edition of Triggui."
+
+
+def _titulo_pagina_en(edicion):
+    t = str(edicion.get("titulo_en") or "").strip() or str(edicion.get("titulo") or "").strip()
+    tarjeta_en = edicion.get("tarjeta_en") or {}
+    tc = str(tarjeta_en.get("titulo") or "").strip()
+    return f"{tc or t} · Triggui"
+
+
+def escribir_gemela_en(html_es, out_dir, edicion, base_url):
+    """Escribe /en/index.html a partir del HTML español ya generado."""
+    tarjeta_en = edicion.get("tarjeta_en") or {}
+    if not (tarjeta_en.get("titulo") and (tarjeta_en.get("parrafoTop") or tarjeta_en.get("parrafoBot"))):
+        print("   ⏭️  Sin tarjeta en inglés — se omite la gemela /en/")
+        return None
+
+    edicion_id = str(edicion.get("id") or "").strip()
+    og_img_es = f"{base_url}/t/{edicion_id}/og.jpg"
+    og_img_en = f"{base_url}/t/{edicion_id}/og_en.jpg"
+    url_es = f"{base_url}/t/{edicion_id}/"
+    url_en = f"{base_url}/t/{edicion_id}/en/"
+
+    h = html_es
+    # (1) encabezado social en inglés
+    h = h.replace(f'content="{esc(build_og_title(edicion))}"', f'content="{esc(_og_titulo_en(edicion))}"')
+    h = h.replace(f'content="{esc(build_og_description(edicion))}"', f'content="{esc(_og_descripcion_en(edicion))}"')
+    h = h.replace(f"<title>{esc(str(edicion.get('titulo') or ''))} · Triggui</title>",
+                  f"<title>{esc(_titulo_pagina_en(edicion))}</title>")
+    # (2) previsualización e identidad de la gemela
+    h = h.replace(og_img_es, og_img_en)
+    h = h.replace(f'content="{esc(url_es)}"', f'content="{esc(url_en)}"')
+    h = h.replace(f'<link rel="canonical" href="{esc(url_es)}" />',
+                  f'<link rel="canonical" href="{esc(url_en)}" />')
+    h = h.replace('content="es_MX"', 'content="en_US"')
+    h = h.replace('<html lang="es"', '<html lang="en"', 1)
+    # (3) semilla de idioma: arranca en inglés, el toggle sigue mandando
+    h = re.sub(r"let tgLang = \(function\(\)\{[\s\S]{0,400}?\}\)\(\);",
+               "let tgLang = 'en';", h, count=1)
+    # hermanas declaradas para los buscadores
+    h = h.replace("</head>",
+                  f'<link rel="alternate" hreflang="es" href="{esc(url_es)}" />'
+                  f'<link rel="alternate" hreflang="en" href="{esc(url_en)}" />'
+                  f'<link rel="alternate" hreflang="x-default" href="{esc(url_es)}" />\n</head>', 1)
+
+    en_dir = out_dir / "en"
+    en_dir.mkdir(parents=True, exist_ok=True)
+    destino = en_dir / "index.html"
+    destino.write_text(h, encoding="utf-8")
+    print(f"🌐 Gemela en inglés: {destino}")
+    return destino
+
+
 def render_edicion(edicion, mode="lab"):
     titulo = edicion.get("titulo", "")
     autor = edicion.get("autor", "")
@@ -3115,6 +3199,12 @@ def build_single():
     html_file = out_dir / "index.html"
     html_file.write_text(html_content, encoding="utf-8")
     print(f"✅ Edición viva generada: {html_file}")
+
+    # 🌐 la gemela en inglés nace junto a la española, siempre
+    try:
+        escribir_gemela_en(html_content, out_dir, edicion_single, BASE_URL)
+    except Exception as _e:
+        print(f"   ⚠️ gemela /en/ omitida: {_e}")
 
     # 🎲 auto-registro en la lista del dado (public/t/ediciones.json): la lista se mantiene sola.
     # Idempotente (sin duplicados); si el archivo falta o está corrupto, arranca limpio; kids por ruta del out_dir.
