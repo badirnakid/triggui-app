@@ -1498,7 +1498,18 @@ try{
       var q=document.querySelector('.tg-block .tg-portada');
       if(q && q.parentElement) q.parentElement.click(); }catch(e){} };
     __rep(); setTimeout(__rep,0); setTimeout(__rep,150);
+    /* el gemelo atenua el grid al cargar contando con que el bocado lo despierte;
+       en el regreso el bocado no corre, asi que despertamos nosotros la pantalla. */
+    var __despierta=function(){ try{
+      var g=document.getElementById('tgGrid'), k=document.getElementById('tgCta');
+      if(g) g.classList.remove('tg-dim','bocado-active','eco-active');
+      if(k) k.classList.remove('tg-dim');
+      var v=document.getElementById('bocadoEcoOverlay'); if(v) v.classList.remove('visible');
+    }catch(e){} };
+    __despierta(); setTimeout(__despierta,0); setTimeout(__despierta,150);
+    setTimeout(__despierta,450); setTimeout(__despierta,1000); setTimeout(__despierta,1800);
   }
+  try{ window.__tgRegresando=__tgRegresando; }catch(e){}
 }catch(e){}
 (function triggerOpeningBocado() {
   if (__tgRegresando) return;
@@ -2006,7 +2017,7 @@ bLike.onclick = function(){
   });
 };
 
-if (pool.length) {
+if (pool.length && !window.__tgRegresando) {
   grid.classList.add('tg-dim');
   cta.classList.add('tg-dim');
 }
