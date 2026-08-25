@@ -2324,6 +2324,7 @@ try{
   var __f=JSON.parse(sessionStorage.getItem('tg_ed_foto')||'null');
   if(__f && __f.ruta===location.pathname && (Date.now()-(__f.t||0))<6*3600*1000){
     __tgRegresando=true;
+    try{ if(typeof __f.port==='number') window.__tgFotoPort=__f.port; }catch(e){}
     sessionStorage.removeItem('tg_ed_foto');
     var __rep=function(){ try{ if(document.querySelector('.tg-block.show')) return;
       var q=document.querySelector('.tg-block .tg-portada');
@@ -2454,7 +2455,10 @@ var bLibro = document.getElementById('tgLibro');
 var bLike = document.getElementById('tgLike');
 var bDado = document.getElementById('tgDado');
 var revealed = false;
-var portIdx = Math.floor(Math.random() * 4);
+/* 🌀 v7.1: si venimos de regreso con foto, la portada vive en el MISMO bloque que se dejó
+   (sin esto el sorteo la mueve y el escenario deja de ser idéntico). */
+var portIdx = (function(){ try{ var f=window.__tgFotoPort;
+  if(typeof f==='number' && f>=0 && f<4) return f; }catch(e){} return Math.floor(Math.random() * 4); })();
 
 var TgModal = {
   el: document.getElementById('tgModal'),
@@ -2537,7 +2541,7 @@ function abrirTarjeta(){
   }
 })();
 bLibro.onclick = abrirTarjeta;
-bEsp.onclick = function(){ try{ if(document.querySelector('.tg-block.show')) sessionStorage.setItem('tg_ed_foto', JSON.stringify({ruta:location.pathname,t:Date.now()})); }catch(e){} window.location.href = '/espiral/'; };
+bEsp.onclick = function(){ try{ if(document.querySelector('.tg-block.show')) sessionStorage.setItem('tg_ed_foto', JSON.stringify({ruta:location.pathname,port:portIdx,t:Date.now()})); }catch(e){} window.location.href = '/espiral/'; };
 // 🎲 otra edición viva al azar (congruente con el dado de la app). Lista estática /t/ediciones.json.
 bDado.onclick = function(){
   try{gtag('event','edicion_dado',{});}catch(e){}
