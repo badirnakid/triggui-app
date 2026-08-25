@@ -12,12 +12,16 @@ jobs:
   video:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout triggui-content
+      - name: Checkout triggui-content (raiz)
         uses: actions/checkout@v4
         with:
           repository: badirnakid/triggui-content
           token: ${{ secrets.CONTENT_REPO_TOKEN }}
           fetch-depth: 0
+      - name: Checkout triggui-app (herramientas)
+        uses: actions/checkout@v4
+        with:
+          path: app
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -32,7 +36,7 @@ jobs:
           OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
         run: |
           pip -q install requests || true
-          python3 scripts/resolve-videos.py --solo-ediciones
+          python3 app/scripts/resolve-videos.py --solo-ediciones
       - name: Commit
         run: |
           git config user.name "triggui-bot"
