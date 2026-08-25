@@ -1299,7 +1299,7 @@ function renderBocadoSinfonico(libro, cardWidth) {
  * Posición: después de la tarjeta EN, antes del logo strip + footer CTA.
  * ══════════════════════════════════════════════════════════════════════════ */
 function renderEcoSinfonico(libro, cardWidth) {
-  const sinfonica = pickSinfonicaPhrase(libro, ['resonar', 'aterrizar'], 'es');
+  const sinfonica = pickSinfonicaPhrase(libro, ['resonar', 'aterrizar'], IDIOMA_ENVIO_ACTUAL);
   if (!sinfonica || !sinfonica.phrase) return "";
 
   const c = TRIGGUI_STYLE_CONFIG;
@@ -1330,64 +1330,23 @@ function renderEcoSinfonico(libro, cardWidth) {
 function renderTarjetaEditorial(libro, portadaRef) {
   const c = TRIGGUI_STYLE_CONFIG;
 
-  // 🌐 D4: UNA sola tarjeta según preferencia del suscriptor (nunca las dos apiladas)
-  {
-    const idiomaPref = (IDIOMA_ENVIO_ACTUAL === "en") ? "en" : "es";
-    const tieneEnPref = !!(libro && libro.tarjeta_en && libro.tarjeta_en.titulo && libro.tarjeta_en.parrafoTop);
-    if (idiomaPref === "en" && tieneEnPref) return renderTarjetaCard(libro, portadaRef, "tarjeta_en", "en", "palabras_en");
-    return renderTarjetaCard(libro, portadaRef, "tarjeta", "es", "palabras");
-  }
+  // 🌐 D4 v2 — UNA sola tarjeta según la preferencia del suscriptor, pero SIEMPRE dentro
+  // del documento completo. (v1 devolvía la tarjeta pelada: sin <body> las inyecciones
+  // superiores fallaban en silencio y se perdían saludo, trial, espiral, WhatsApp,
+  // preview, barra de idioma, bocado, eco, Kids, tira de logo y footer con CTAs.)
+  const idiomaPref = (IDIOMA_ENVIO_ACTUAL === "en") ? "en" : "es";
+  const tieneEnPref = !!(libro && libro.tarjeta_en && libro.tarjeta_en.titulo && libro.tarjeta_en.parrafoTop);
+  const tarjetaUnica = (idiomaPref === "en" && tieneEnPref)
+    ? renderTarjetaCard(libro, portadaRef, "tarjeta_en", "en", "palabras_en")
+    : renderTarjetaCard(libro, portadaRef, "tarjeta", "es", "palabras");
 
-  // Renderizar AMBAS tarjetas (ES y EN si está disponible)
-  const tarjetaES = renderTarjetaCard(libro, portadaRef, "tarjeta", "es", "palabras");
-
-  const tieneIngles = libro.tarjeta_en
-    && libro.tarjeta_en.titulo
-    && libro.tarjeta_en.parrafoTop;
-
-  let tarjetaEN = "";
-  if (tieneIngles) {
-    tarjetaEN = `
-      <!-- Espacio entre versiones -->
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr><td height="${c.espacioEntreVersiones}" style="height:${c.espacioEntreVersiones};line-height:${c.espacioEntreVersiones};font-size:0;">&nbsp;</td></tr>
-      </table>
-
-      <!-- Divisor: — English version — -->
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto;max-width:${c.cardWidth}px;">
-        <tr>
-          <td width="40%" style="border-bottom:1px solid #D1D5DB;line-height:1px;font-size:0;">&nbsp;</td>
-          <td align="center" style="
-            font-family:${c.sans};
-            font-size:11px;
-            font-weight:600;
-            color:#9CA3AF;
-            letter-spacing:0.2em;
-            text-transform:uppercase;
-            padding:0 14px;
-            white-space:nowrap;
-            mso-line-height-rule:exactly;
-          ">${c.divisorVersionesText}</td>
-          <td width="40%" style="border-bottom:1px solid #D1D5DB;line-height:1px;font-size:0;">&nbsp;</td>
-        </tr>
-      </table>
-
-      <!-- Espacio entre divisor y tarjeta EN -->
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr><td height="${c.espacioEntreVersiones}" style="height:${c.espacioEntreVersiones};line-height:${c.espacioEntreVersiones};font-size:0;">&nbsp;</td></tr>
-      </table>
-
-      ${renderTarjetaCard(libro, portadaRef, "tarjeta_en", "en", "palabras_en")}
-    `;
-  }
-
- // V14 SINFÓNICO: Bocado antes de la tarjeta, Eco después
+  // V14 SINFÓNICO: Bocado antes de la tarjeta, Eco después
   const bocadoSinfonicoHTML = renderBocadoSinfonico(libro, c.cardWidth);
   const ecoSinfonicoHTML = renderEcoSinfonico(libro, c.cardWidth);
 
   return `
 <!doctype html>
-<html lang="es">
+<html lang="${idiomaPref}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1403,15 +1362,13 @@ function renderTarjetaEditorial(libro, portadaRef) {
 
       ${bocadoSinfonicoHTML}
 
-      ${tarjetaES}
-
-      ${tarjetaEN}
+      ${tarjetaUnica}
 
       ${ecoSinfonicoHTML}
 
       {{KIDS_PROMO_BOTTOM}}
 
-      <!-- Footer Triggui (compartido entre ambas versiones) -->
+      <!-- Footer Triggui -->
       <table role="presentation" cellpadding="0" cellspacing="0" border="0"
              style="width:100%;max-width:${c.cardWidth}px;margin-top:${c.espacioEntreVersiones};">
         ${renderLogoStrip()}
@@ -2989,6 +2946,11 @@ function doGet(e) {
   const action = params.action || "";
   const format = params.format || "html";
 
+  // ─── Ruta diagnóstico (protegida por DIAG_TOKEN en Propiedades) ──────
+  if (action === "diag") {
+    return rutaDiagnostico(params);
+  }
+
   // ─── Ruta unsubscribe ────────────────────────────────────────────────
   if (action === "lang") {
     return manejarCambioIdioma(params.email || "", params.token || "", params.l || "");
@@ -4021,4 +3983,74 @@ function testKidsBannerAMi() {
     Logger.log("❌ Error: " + e.message);
     Logger.log(e.stack);
   }
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * 🔬 RUTA DE DIAGNÓSTICO — arma el correo SIN enviarlo y reporta su anatomía.
+ * Protegida por la propiedad de script DIAG_TOKEN (jamás vive en el repo).
+ *   ?action=diag&t=TOKEN                      → anatomía del correo (no envía)
+ *   ?action=diag&t=TOKEN&lang=en              → fija idioma en la fila y mide
+ *   ?action=diag&t=TOKEN&html=1               → incluye muestra del HTML
+ *   ?action=diag&t=TOKEN&send=1               → envía SOLO a DIAG_EMAIL
+ * ══════════════════════════════════════════════════════════════════════════ */
+const DIAG_EMAIL = "badir@triggui.com";
+
+function rutaDiagnostico(params) {
+  const json = function (o) {
+    return ContentService.createTextOutput(JSON.stringify(o))
+      .setMimeType(ContentService.MimeType.JSON);
+  };
+  var tok = "";
+  try { tok = PropertiesService.getScriptProperties().getProperty("DIAG_TOKEN") || ""; } catch (e) {}
+  if (!tok || String(params.t || "") !== tok) return json({ ok: false, error: "token" });
+
+  var out = { ok: true, diag: "v1", hoja: SHEET_NAME };
+  try {
+    var sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+    var data = sh.getDataRange().getValues();
+    var fila = -1, nombre = "Badir";
+    for (var i = 1; i < data.length; i++) {
+      if (String(data[i][2] || "").toLowerCase().indexOf(DIAG_EMAIL.toLowerCase()) >= 0) {
+        fila = i + 1; nombre = String(data[i][0] || nombre); break;
+      }
+    }
+    out.fila = fila;
+    out.colIdioma = colIdioma(sh);
+    if (params.lang === "en" || params.lang === "es") {
+      sh.getRange(fila, colIdioma(sh)).setValue(params.lang);
+      out.idiomaForzado = params.lang;
+    }
+    out.idiomaFila = leerIdiomaFila(sh, fila);
+
+    EMAIL_ENVIO_ACTUAL = DIAG_EMAIL;
+    IDIOMA_ENVIO_ACTUAL = (out.idiomaFila === "en") ? "en" : "es";
+
+    var prep = prepararEmailParaEnvio(nombre, DIAG_EMAIL, fila);
+    if (!prep || !prep.ok) { out.ok = false; out.error = (prep && prep.reason) || "prep falló"; return json(out); }
+    var h = prep.finalHTML || "";
+    var low = h.toLowerCase();
+    out.htmlChars = h.length;
+    out.subject = prep.subject;
+    out.tieneDocumento = /<body[^>]*>/i.test(h);
+    var mm = h.match(/<html[^>]*lang="([^"]+)"/i);
+    out.htmlLang = mm ? mm[1] : null;
+    out.barraIdioma = (h.indexOf("Prefer English") >= 0 || h.indexOf("Prefieres espa") >= 0);
+    out.bannerKids = (h.indexOf("Kids") >= 0);
+    out.promoWhatsApp = (low.indexOf("whatsapp") >= 0 || h.indexOf("wa.me") >= 0);
+    out.footerCta = (h.indexOf("triggui.com") >= 0);
+    out.botones = {
+      buscalibre: low.indexOf("buscalibre") >= 0,
+      amazon: low.indexOf("amazon") >= 0,
+      penguin: low.indexOf("penguin") >= 0
+    };
+    out.placeholdersSinReemplazar = (h.indexOf("{{") >= 0);
+    if (String(params.html || "") === "1") out.htmlMuestra = h.slice(0, 6000);
+    if (String(params.send || "") === "1") {
+      out.envio = enviarTrigguiAUno(DIAG_EMAIL, fila, nombre);
+    }
+  } catch (err) {
+    out.ok = false; out.error = String((err && err.message) || err);
+  }
+  return json(out);
 }
