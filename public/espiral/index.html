@@ -88,7 +88,7 @@ function leerHash(){
   var h=String(window.location.hash||'');
   if(/[#&]salir(\b|=|$)/.test(h)){lsDel(LS_PAR);try{history.replaceState(null,'',window.location.pathname);}catch(e){}return 'salir';}
   var m=h.match(/[#&]k=([^&]+)/);
-  if(m&&m[1]){lsSet(LS_PAR,JSON.stringify({c:decodeURIComponent(m[1]).trim()}));try{history.replaceState(null,'',window.location.pathname);}catch(e){}return 'clave';}
+  if(m&&m[1]){lsSet(LS_PAR,JSON.stringify({c:decodeURIComponent(m[1]).trim().replace(/[^A-Za-z0-9_-]/g,'')}));try{history.replaceState(null,'',window.location.pathname);}catch(e){}return 'clave';}
   return '';
 }
 leerHash();
