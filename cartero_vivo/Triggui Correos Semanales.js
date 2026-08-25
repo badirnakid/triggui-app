@@ -2665,8 +2665,8 @@ function prepararEmailParaEnvio(nombreDestinatario, emailDestinatario, rowIdx) {
                               .replace(/\{\{WHATSAPP_PROMO_TOP\}\}/g, waTopHTML);
         finalPlain = finalPlain.replace(/\{\{GREETING_PLAIN\}\}/g, saludoPlain)
                                .replace(/\{\{TRIAL_BANNER_TOP_PLAIN\}\}/g, trialTopPlain)
-                               .replace(/\{\{aInglesCascara(KIDS_PROMO_TOP_PLAIN)\}\}/g, kidsTopPlain)
-                               .replace(/\{\{aInglesCascara(WHATSAPP_PROMO_TOP_PLAIN)\}\}/g, waTopPlain);
+                               .replace(/\{\{KIDS_PROMO_TOP_PLAIN\}\}/g, kidsTopPlain)
+                               .replace(/\{\{WHATSAPP_PROMO_TOP_PLAIN\}\}/g, waTopPlain);
 
         Logger.log(`✨ V19.2.2 + V20 fila ${rowIdx}: saludo + trial ${trialTopPlain ? 'SÍ' : 'NO'} + KIDS ${KIDS_PROMO_ENABLED ? 'SÍ' : 'NO'} + WA arriba ${mostrarWaArriba ? 'SÍ' : 'NO'}`);
       }
@@ -2773,7 +2773,8 @@ function enviarTrigguiAUno(email, rowIdx, nombreDestinatario) {
       name: REMITENTE_DISPLAY_NAME,        // "Triggui" en lugar de "badirnakid"
       replyTo: REMITENTE_REPLY_TO          // hola@triggui.com (configurable)
     };
-    GmailApp.sendEmail(email, prep.subject, prep.finalPlain, sendOptions);
+    sendOptions.htmlBody = String(sendOptions.htmlBody || "").replace(/\{\{[A-Z_]+\}\}/g, "");
+      GmailApp.sendEmail(email, prep.subject, String(prep.finalPlain || "").replace(/\{\{[A-Z_]+\}\}/g, ""), sendOptions);
   } catch (e) {
     return { ok: false, reason: "Error sendEmail: " + e.message };
   }
@@ -3654,11 +3655,14 @@ function sendToRow(row, batchInfo) {
       .replace(/\{\{UNSUB_LINK\}\}/g, unsubLinkFila)
       .replace(/\{\{GREETING_PLAIN\}\}/g, saludoPlainFila)
       .replace(/\{\{TRIAL_BANNER_TOP_PLAIN\}\}/g, trialTopPlainFila)
-      .replace(/\{\{aInglesCascara(KIDS_PROMO_TOP_PLAIN)\}\}/g, kidsTopPlainFila)
-      .replace(/\{\{aInglesCascara(WHATSAPP_PROMO_TOP_PLAIN)\}\}/g, waTopPlainFila);
+      .replace(/\{\{KIDS_PROMO_TOP_PLAIN\}\}/g, kidsTopPlainFila)
+      .replace(/\{\{WHATSAPP_PROMO_TOP_PLAIN\}\}/g, waTopPlainFila);
 
     try {
       // V18h: headers anti-spam nivel dios
+      /* 🛡️ red de seguridad: ningún marcador puede llegar a una bandeja */
+      htmlPersonalizado = htmlPersonalizado.replace(/\{\{[A-Z_]+\}\}/g, "");
+      plainPersonalizado = plainPersonalizado.replace(/\{\{[A-Z_]+\}\}/g, "");
       GmailApp.sendEmail(emailsToSend, subjectFila, plainPersonalizado, {
         htmlBody: htmlPersonalizado,
         inlineImages: inlineImages,
@@ -4249,7 +4253,7 @@ function rutaDiagnostico(params) {
   try { tok = PropertiesService.getScriptProperties().getProperty("DIAG_TOKEN") || ""; } catch (e) {}
   if (!tok || String(params.t || "") !== tok) return json({ ok: false, error: "token" });
 
-  var out = { ok: true, diag: "v1", build: "2026-08-25-D4v4-masivo+barra+landing", hoja: SHEET_NAME };
+  var out = { ok: true, diag: "v1", build: "2026-08-25-D4v5-fix-regex+red+simulacro", hoja: SHEET_NAME };
   try {
     var sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
     var data = sh.getDataRange().getValues();
@@ -4328,6 +4332,41 @@ function rutaDiagnostico(params) {
       out.mezclaIdiomas = (out.saludo.es || out.trial.es || restos.length > 0);
     }
     if (String(params.html || "") === "1") out.htmlMuestra = h.slice(0, 6000);
+    /* 🔬 SIMULACRO DEL ENVÍO SEMANAL: arma lo que ESTA fila recibiría el lunes,
+       replicando la personalización por fila, SIN enviar nada. */
+    if (String(params.masivo || "") === "1") {
+      var pm = prepararEmailParaEnvio();
+      if (pm && pm.ok) {
+        var c2 = TRIGGUI_STYLE_CONFIG;
+        var acc2 = (pm.libro && pm.libro.tarjeta && pm.libro.tarjeta.style && pm.libro.tarjeta.style.accent) || "";
+        var hm = String(pm.finalHTML || "")
+          .replace(/\{\{UNSUB_LINK\}\}/g, generarUrlUnsub(DIAG_EMAIL))
+          .replace(/\{\{GREETING_BLOCK\}\}/g, generarSaludoHTML(nombre, c2.sans, c2.background, c2.cardWidth))
+          .replace(/\{\{TRIAL_BANNER_TOP\}\}/g, generarTrialBannerTopHTML(data[fila - 1], c2.sans, c2.background, c2.cardWidth))
+          .replace(/\{\{ESPIRAL_PROMO_TOP\}\}/g, ESPIRAL_PROMO_ENABLED ? generarEspiralPromoTopHTML(c2.cardWidth, acc2) : "")
+          .replace(/\{\{KIDS_PROMO_BOTTOM\}\}/g, KIDS_PROMO_ENABLED ? generarKidsPromoTopHTML(c2.cardWidth, acc2) : "")
+          .replace(/\{\{WHATSAPP_PROMO_TOP\}\}/g, generarWhatsAppPromoTopHTML(c2.cardWidth))
+          .replace(/\{\{LANG_BAR\}\}/g, generarLangBarTopHTML(c2.cardWidth, acc2));
+        var pmPlain = String(pm.finalPlain || "");
+        var restos2 = [];
+        if (IDIOMA_ENVIO_ACTUAL === "en") {
+          var mES = ["Descárgala:", "periodo gratis", "barra mágica", "Conocer →", "Cancelar suscripción",
+                     "Tu Espiral", "Recibe también", "Un valor en 30 segundos", "$129/mes", "suscríbete"];
+          for (var w = 0; w < mES.length; w++) if (hm.indexOf(mES[w]) >= 0) restos2.push(mES[w]);
+        }
+        out.masivo = {
+          idioma: IDIOMA_ENVIO_ACTUAL,
+          chars: hm.length,
+          marcadoresVivos: (hm.match(/\{\{[A-Z_]+\}\}/g) || []),
+          marcadoresVivosPlain: (pmPlain.match(/\{\{[A-Z_]+\}\}/g) || []),
+          barraIdioma: (hm.indexOf("Prefer English") >= 0 || hm.indexOf("Prefieres espa") >= 0),
+          barraConMiEmail: (hm.indexOf(encodeURIComponent(DIAG_EMAIL)) >= 0),
+          restosEspanol: restos2
+        };
+      } else {
+        out.masivo = { ok: false, error: (pm && pm.reason) || "prep masivo falló" };
+      }
+    }
     if (String(params.send || "") === "1") {
       out.envio = enviarTrigguiAUno(DIAG_EMAIL, fila, nombre);
     }
