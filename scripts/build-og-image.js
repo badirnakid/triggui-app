@@ -33,6 +33,9 @@
  * preservando "? ! ." como cierres válidos.
  */
 
+const __OGSUF = String(process.env.TRIGGUI_LANG || "es").toLowerCase() === "en" ? "og_en" : "og";
+
+
 import fs from "node:fs/promises";
 import path from "node:path";
 import { chromium } from "playwright";
@@ -331,14 +334,13 @@ function pickOgHeadline(bookMeta, libro) {
   // Pipeline nucleus: frases_og[] contiene frases cortas optimizadas para OG (40-70 chars).
   // Fallback: si el JSON no tiene frases_og (contenido legacy de v9.7.4), usa frases[].
   // Esto garantiza compatibilidad total con outputs anteriores.
-  const ogSource = [
-    ...toArrayOfStrings(libro?.frases_og),
-    ...toArrayOfStrings(bookMeta?.frases_og)
-  ];
-  const editionSource = [
-    ...toArrayOfStrings(libro?.frases),
-    ...toArrayOfStrings(bookMeta?.frases)
-  ];
+  const __OGLANG = String(process.env.TRIGGUI_LANG || "es").toLowerCase() === "en" ? "en" : "es";
+  const ogSource = (__OGLANG === "en")
+    ? [ ...toArrayOfStrings(libro?.frases_og_en), ...toArrayOfStrings(bookMeta?.frases_og_en) ]
+    : [ ...toArrayOfStrings(libro?.frases_og), ...toArrayOfStrings(bookMeta?.frases_og) ];
+  const editionSource = (__OGLANG === "en")
+    ? [ ...toArrayOfStrings(libro?.frases_en), ...toArrayOfStrings(bookMeta?.frases_en) ]
+    : [ ...toArrayOfStrings(libro?.frases), ...toArrayOfStrings(bookMeta?.frases) ];
 
   const frases = uniqueStrings(ogSource.length ? ogSource : editionSource)
     .map((item) => stripEmoji(stripExplicitBookRefs(item, titulo, autor)))
@@ -624,7 +626,7 @@ await page.evaluate(() => {
 
 await page.waitForTimeout(180);
 
-const outPath = path.join(outDir, "og.jpg");
+const outPath = path.join(outDir, __OGSUF + ".jpg");
 await page.screenshot({
   path: outPath,
   type: "jpeg",
@@ -638,5 +640,5 @@ const stats = await fs.stat(outPath);
 console.log(`   ✅ OG image: ${outPath} (${(stats.size / 1024).toFixed(0)} KB)`);
 console.log(`   🖼️  Portada: ${__premium ? "tier " + __premium.tier + " · " + String(__premium.source).slice(0, 60) : (portadaURL ? portadaSource : "tipográfica")}`);
 // Corte 1: migración limpia — el hermano PNG del formato anterior se retira al re-renderizar.
-try { await fs.rm(path.join(outDir, "og.png"), { force: true }); } catch {}
+try { await fs.rm(path.join(outDir, __OGSUF + ".png"), { force: true }); } catch {}
 console.log(`   ✨ Headline: ${headlineClean}`);

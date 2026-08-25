@@ -483,7 +483,10 @@ function resolvePortadaSource(bookMeta, libro, portadaURL) {
 }
 
 function buildPresentationCopy(libro, bookMeta) {
-  const source = libro.tarjeta_presentacion || libro.tarjeta || {};
+  const __LANG = String(process.env.TRIGGUI_LANG || "es").toLowerCase() === "en" ? "en" : "es";
+  const source = (__LANG === "en")
+    ? (libro.tarjeta_presentacion_en || libro.tarjeta_en || libro.tarjeta_presentacion || libro.tarjeta || {})
+    : (libro.tarjeta_presentacion || libro.tarjeta || {});
 
   const title = sanitizeShortText(source.titulo, sanitizeShortText(libro.tagline, "Una idea útil"));
   // v3.3 FIX: libro.autor tiene prioridad porque viene del grounding verificado
@@ -548,7 +551,7 @@ function buildHTML({
   // Una sola línea sutil, no desplaza significativamente el layout
   const edicionEyebrowSection = edicionLabel
     ? `
-        <div class="edicion-eyebrow" aria-hidden="true">EDICIÓN<span class="edicion-eyebrow-sep">·</span><span class="edicion-eyebrow-num">${escapeHTML(edicionLabel)}</span></div>`
+        <div class="edicion-eyebrow" aria-hidden="true">${String(process.env.TRIGGUI_LANG||"es").toLowerCase()==="en"?"EDITION":"EDICIÓN"}<span class="edicion-eyebrow-sep">·</span><span class="edicion-eyebrow-num">${escapeHTML(edicionLabel)}</span></div>`
     : "";
 
   const footerSection = logoDataURL
@@ -1088,7 +1091,7 @@ await page.evaluate((limits) => {
 
 await page.waitForTimeout(120);
 
-const outPath = path.join(outDir, "tarjeta.png");
+const outPath = path.join(outDir, String(process.env.TRIGGUI_LANG || "es").toLowerCase() === "en" ? "tarjeta_en.png" : "tarjeta.png");
 await page.screenshot({
   path: outPath,
   type: "png",

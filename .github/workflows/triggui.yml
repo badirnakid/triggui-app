@@ -910,12 +910,14 @@ jobs:
               [ -z "$__libro" ] && continue
               printf '%s' "$__libro" > /tmp/triggui-book.json
               node scripts/build-tarjeta-png.js
+              TRIGGUI_LANG=en node scripts/build-tarjeta-png.js || echo "  ⚠️ tarjeta EN omitida"
             done < /tmp/triggui-batch.jsonl
           else
             if [ ! -f /tmp/triggui-committed.flag ]; then
               echo "⏭️  Sin flag ni manifiesto — nada que fabricar — skip tarjeta PNG"; exit 0
             fi
             node scripts/build-tarjeta-png.js
+            TRIGGUI_LANG=en node scripts/build-tarjeta-png.js || echo "  ⚠️ tarjeta EN omitida"
           fi
           find "${TRIGGUI_OUT_BASE}" -name "tarjeta.png" 2>/dev/null | head -8
 
@@ -936,12 +938,14 @@ jobs:
               [ -z "$__libro" ] && continue
               printf '%s' "$__libro" > /tmp/triggui-book.json
               node scripts/build-og-image.js
+              TRIGGUI_LANG=en node scripts/build-og-image.js || echo "  ⚠️ OG EN omitida"
             done < /tmp/triggui-batch.jsonl
           else
             if [ ! -f /tmp/triggui-committed.flag ]; then
               echo "⏭️  Sin flag ni manifiesto — nada que fabricar — skip OG"; exit 0
             fi
             node scripts/build-og-image.js
+            TRIGGUI_LANG=en node scripts/build-og-image.js || echo "  ⚠️ OG EN omitida"
           fi
           find "${TRIGGUI_OUT_BASE}" -name "og.png" 2>/dev/null | head -8
 
