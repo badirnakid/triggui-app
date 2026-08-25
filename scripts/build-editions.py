@@ -1723,8 +1723,9 @@ function tgApplyMisc(){
   var ch=document.querySelector('.cover-hint'); if(ch) ch.textContent = EN?'Tap the book':'Toca el libro';
 }
 function tgPillPlace(){ try{ var p=document.getElementById('tgLangPill'); if(!p) return;
-  if(window.innerWidth>=900){ var bs=document.querySelectorAll('.tg-block'); var blk=bs[bs.length-1];
-    if(blk){ var r=blk.getBoundingClientRect();
+  var bs=document.querySelectorAll('.tg-block'); var blk=bs[bs.length-1];
+  if(blk){ var r=blk.getBoundingClientRect();
+    if(r.width>40 && r.height>40){
       p.style.top=(Math.round(r.top)+18)+'px';
       p.style.right=(Math.round(window.innerWidth - r.right)+18)+'px'; return; } }
   p.style.top=''; p.style.right=''; }catch(e){} }
@@ -2315,7 +2316,23 @@ setOverlayView('blocks');
 
 // 🌒 Bocado al cargar — primero ocultamos bloques, mostramos bocado, y
 // cuando termina volvemos a mostrar bloques con su atmósfera intacta.
+/* 🌀 v7: FOTO DE REGRESO de la edición — si el viaje a la espiral salió de ESTA edición con los
+   bloques abiertos, al volver se repone la pantalla tal cual: sin eco de apertura y ya revelada. */
+var __tgRegresando=false;
+try{
+  window.addEventListener('pageshow', function(ev){ if(ev && ev.persisted){ try{ sessionStorage.removeItem('tg_ed_foto'); }catch(e){} } });
+  var __f=JSON.parse(sessionStorage.getItem('tg_ed_foto')||'null');
+  if(__f && __f.ruta===location.pathname && (Date.now()-(__f.t||0))<6*3600*1000){
+    __tgRegresando=true;
+    sessionStorage.removeItem('tg_ed_foto');
+    var __rep=function(){ try{ if(document.querySelector('.tg-block.show')) return;
+      var q=document.querySelector('.tg-block .tg-portada');
+      if(q && q.parentElement) q.parentElement.click(); }catch(e){} };
+    __rep(); setTimeout(__rep,0); setTimeout(__rep,150);
+  }
+}catch(e){}
 (function triggerOpeningBocado() {
+  if (__tgRegresando) return;
   if (!state.bocadoEcoPool || state.bocadoEcoPool.length === 0) return;
   grid.classList.add('bocado-active');
   // Pequeño delay para que el browser pinte la página primero
@@ -2509,7 +2526,7 @@ function abrirTarjeta(){
   }
 })();
 bLibro.onclick = abrirTarjeta;
-bEsp.onclick = function(){ window.location.href = '/espiral/'; };
+bEsp.onclick = function(){ try{ if(document.querySelector('.tg-block.show')) sessionStorage.setItem('tg_ed_foto', JSON.stringify({ruta:location.pathname,t:Date.now()})); }catch(e){} window.location.href = '/espiral/'; };
 // 🎲 otra edición viva al azar (congruente con el dado de la app). Lista estática /t/ediciones.json.
 bDado.onclick = function(){
   try{gtag('event','edicion_dado',{});}catch(e){}
