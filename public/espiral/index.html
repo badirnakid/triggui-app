@@ -103,8 +103,12 @@ try{
   var esRecarga=navEntrada?(navEntrada.type==='reload'):!!(performance.navigation&&performance.navigation.type===1);
   var origenGuardado=window.sessionStorage.getItem('triggui_espiral_origen');
   var ref=String(document.referrer||'');
-  var refEsYo=(ref.split('#')[0].split('?')[0]===window.location.origin+window.location.pathname);   /* recarga o auto-navegacion (SALIR, #k=) */
-  if((esRecarga||refEsYo)&&origenGuardado!==null){ORIGEN=origenGuardado;}
+  var refPath=ref.split('#')[0].split('?')[0];
+  /* 🌀 v6.1: helice y guardados son el MISMO territorio interior. Viajar entre ellos (o recargar,
+     o auto-navegar con SALIR/#k=) NO pisa la memoria del origen: el origen es la pantalla de
+     bloques (home o edicion) de la que vino el viaje, y REGRESAR siempre vuelve ahi. */
+  var refEsPortal=(refPath===window.location.origin+window.location.pathname)||/^https?:\/\/[^\/]+\/(espiral|mi)\/?$/.test(refPath);
+  if((esRecarga||refEsPortal)&&origenGuardado!==null){ORIGEN=origenGuardado;}
   else{ORIGEN=ref;window.sessionStorage.setItem('triggui_espiral_origen',ORIGEN);}
 }catch(e){ORIGEN=String(document.referrer||'');}
 var CERRO=false;   /* la puerta aparecio porque el miembro cerro sesion: su ✕ va al centro, no "atras" */
