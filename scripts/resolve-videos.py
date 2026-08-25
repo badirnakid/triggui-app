@@ -426,9 +426,7 @@ def elegible(b, c, hoy):
     if not isinstance(b, dict):
         return False, "no es objeto"
     n = b.get("_edicion_numero")
-    # 🏭 Corte 4: "tiene edición" ya no es solo la corona — todo libro con _slug tiene edición viva fabricada
-    tiene_edicion = (isinstance(n, (int, float)) and not isinstance(n, bool) and n >= 1) or bool(b.get("_slug"))
-    if c["solo_ed"] and not tiene_edicion:
+    if c["solo_ed"] and not (isinstance(n, (int, float)) and not isinstance(n, bool) and n >= 1):
         return False, "sin _edicion_numero"
     if c.get("solo") and not any(t in _norm(b.get("titulo", "")) for t in c["solo"]):
         return False, "sin _edicion_numero"   # mismo trato silencioso: fuera del filtro --solo
