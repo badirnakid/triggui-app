@@ -151,7 +151,7 @@ function puertaAbrir(arrancar){
       btn.disabled=false;btn.textContent='Entrar';
       if(e){err.textContent='Sin conexi\u00f3n. Intenta de nuevo.';return;}
       if(!r||r.ok!==true){err.textContent=(r&&r.error==='clave')?'Clave no reconocida.':'Algo fall\u00f3. Intenta de nuevo.';try{gtag('event','espiral_puerta',{paso:'clave_mal'});}catch(x){}return;}
-      lsSet(LS_PAR,JSON.stringify({c:c})); try{ window.__EXEC=EXEC; window.__CLAVE=c; __syncMerge(r.estrellas); }catch(x){}
+      lsSet(LS_PAR,JSON.stringify({c:c})); try{ window.__EXEC=EXEC; window.__CLAVE=c; __syncMerge([].concat(r.senales||[], r.estrellas||[])); }catch(x){}
       try{gtag('event','espiral_puerta',{paso:'entro'});}catch(x){}
       box.classList.remove('ver');
       arrancar();
@@ -195,7 +195,7 @@ function __bootSync(clave, listo){ var done=false; function go(){ if(done) retur
   try{ window.__EXEC=EXEC; window.__CLAVE=clave;
     var q=new URLSearchParams(); q.append('accion','espiral'); q.append('clave',clave);
     fetch(EXEC,{method:'POST',body:q}).then(function(r){return r.json();}).then(function(r){
-      if(r&&r.ok===true){ __syncMerge(r.estrellas); }
+      if(r&&r.ok===true){ __syncMerge([].concat(r.senales||[], r.estrellas||[])); }
       go();
     }).catch(go);
   }catch(e){ go(); } }
