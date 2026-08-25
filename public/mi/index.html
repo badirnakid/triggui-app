@@ -754,7 +754,13 @@ window.pvAplicaCascara=function(pares){ if(PV_LANG!=='en') return; try{ pares.fo
 try{ var __r=String(document.referrer||''); var __p=__r.split('#')[0].split('?')[0];
   var __interior=/^https?:\/\/[^\/]+\/(espiral|mi)\/?$/.test(__p);
   if(__r && !__interior && __p.indexOf(window.location.origin)===0){
-    window.sessionStorage.setItem('triggui_espiral_origen', __r); }
+    window.sessionStorage.setItem('triggui_espiral_origen', __r);
+    window.sessionStorage.setItem('triggui_espiral_origen_t', String(Date.now()));
+  } else if(!__interior){
+    /* cadena rota: llegaste escribiendo la URL o desde fuera — el viaje anterior ya no aplica */
+    window.sessionStorage.removeItem('triggui_espiral_origen');
+    window.sessionStorage.removeItem('triggui_espiral_origen_t');
+  }
 }catch(e){}</script>
 
 <div class="aurora-blob aurora-1"></div>
@@ -1801,9 +1807,11 @@ body.hoja-abierta #hud-volver{display:none}
   var RAIZ='https://app.triggui.com/';
   var ORIGEN='';
   try{ var g=window.sessionStorage.getItem('triggui_espiral_origen')||'';
+    var ts=parseInt(window.sessionStorage.getItem('triggui_espiral_origen_t')||'0',10);
+    var fresco = ts>0 && (Date.now()-ts) < 60*60*1000;      /* el viaje caduca en 60 min */
     var p=g.split('#')[0].split('?')[0];
     var interior=/^https?:\/\/[^\/]+\/(espiral|mi)\/?$/.test(p);
-    if(g && !interior && g.indexOf(window.location.origin)===0) ORIGEN=g;
+    if(g && fresco && !interior && g.indexOf(window.location.origin)===0) ORIGEN=g;
   }catch(e){}
   function volver(){
     try{gtag('event','guardados_volver_bloques',{});}catch(e){}
