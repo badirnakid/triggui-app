@@ -2509,7 +2509,7 @@ function abrirTarjeta(){
   }
 })();
 bLibro.onclick = abrirTarjeta;
-bEsp.onclick = function(){ window.location.href = '/mi/'; };
+bEsp.onclick = function(){ window.location.href = '/espiral/'; };
 // 🎲 otra edición viva al azar (congruente con el dado de la app). Lista estática /t/ediciones.json.
 bDado.onclick = function(){
   try{gtag('event','edicion_dado',{});}catch(e){}
