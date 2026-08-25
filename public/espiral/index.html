@@ -110,10 +110,27 @@ try{
 var CERRO=false;   /* la puerta aparecio porque el miembro cerro sesion: su ✕ va al centro, no "atras" */
 try{if(window.sessionStorage.getItem('triggui_espiral_cerro')==='1'){CERRO=true;window.sessionStorage.removeItem('triggui_espiral_cerro');}}catch(e){}
 function volverAlOrigen(){
-  // 🌀 v5: el viaje es bloques → guardados → hélice; REGRESAR devuelve a los 4 bloques abiertos
-  // (la raíz de la app repone la foto). Determinista: sin depender del historial.
+  // 🌀 v6: REGRESAR devuelve al ORIGEN REAL (los 4 bloques del home O la edición de la que vino).
+  // Si el origen es la entrada anterior del historial, back() restaura la pantalla TAL CUAL
+  // (sin recargar ni regenerar); si no, navegación directa al origen; si no hay origen, la raíz.
   try{gtag('event','espiral_volver_bloques',{});}catch(e){}
-  window.location.href='https://app.triggui.com/';
+  var RAIZ='https://app.triggui.com/';
+  var destino='';
+  try{
+    var o=String(ORIGEN||'');
+    var yo=window.location.origin+window.location.pathname;
+    if(o && o.indexOf(window.location.origin)===0 && o.split('#')[0].split('?')[0]!==yo) destino=o;
+  }catch(e){}
+  try{
+    var ref=String(document.referrer||'');
+    if(destino && ref && ref.split('#')[0]===destino.split('#')[0] && window.history.length>1){
+      var red=setTimeout(function(){ try{ window.location.href=destino; }catch(e){} }, 900);
+      window.addEventListener('pagehide', function(){ try{ clearTimeout(red); }catch(e){} }, {once:true});
+      window.history.back();
+      return;
+    }
+  }catch(e){}
+  window.location.href = destino || RAIZ;
 }
 function validarClave(clave,cb){
   var cuerpo=new URLSearchParams();cuerpo.append('accion','espiral');cuerpo.append('clave',clave);
