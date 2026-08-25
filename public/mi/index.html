@@ -892,7 +892,7 @@ var menuAbierto = null;
   }
   var m = h.match(/[#&]k=([^&]+)/);
   if (m && m[1]) {
-    lsSet(LS_PAR, JSON.stringify({ c: decodeURIComponent(m[1]).trim().replace(/[^A-Za-z0-9_-]/g, '') }));
+    lsSet(LS_PAR, JSON.stringify({ c: decodeURIComponent(m[1]).trim() }));
     try { history.replaceState(null, '', window.location.pathname); } catch(e){}
   }
 })();
