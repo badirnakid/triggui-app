@@ -423,6 +423,8 @@ body.hoja-abierta #tgLangPill,body.puerta-abierta #tgLangPill{display:none}
   }
   function arranca() {
     nace();
+    /* el documento declara su idioma real: lo leen lectores de pantalla y buscadores */
+    try { document.documentElement.setAttribute("lang", actual()); } catch (e) {}
     setTimeout(coloca, 400); setTimeout(coloca, 1200); setTimeout(coloca, 2600);
     window.addEventListener("resize", coloca);
     try { new MutationObserver(coloca).observe(document.body, { childList: true, subtree: true }); } catch (e) {}
