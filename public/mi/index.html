@@ -1143,11 +1143,18 @@ function pinTarjeta(pz){
   img.alt = pz.titulo || pz.slug;
   img.loading = 'lazy';
   img.decoding = 'async';
-  img.src = rutaBase(pz) + 'tarjeta.png';
-  img.onerror = function(){ div.remove(); };
+  var __base = rutaBase(pz);
+  /* 🌐 la tarjeta se muestra en el idioma activo; si no existe su gemela, cae a la española */
+  img.src = __base + ((PV_LANG === 'en') ? 'tarjeta_en.png' : 'tarjeta.png');
+  img.dataset.caida = '0';
+  img.onerror = function(){
+    if (img.dataset.caida === '0' && PV_LANG === 'en') { img.dataset.caida = '1'; img.src = __base + 'tarjeta.png'; return; }
+    div.remove();
+  };
   div.appendChild(img);
   div.addEventListener('click', function(){ releerYNavegar(pz); });
-  armarMenu(pz, 'tarjeta', div, rutaBase(pz) + 'tarjeta.png', rutaBase(pz) + 'og.png');
+  armarMenu(pz, 'tarjeta', div, __base + ((PV_LANG === 'en') ? 'tarjeta_en.png' : 'tarjeta.png'),
+    __base + ((PV_LANG === 'en') ? 'og_en.jpg' : 'og.jpg'));
   return div;
 }
 
