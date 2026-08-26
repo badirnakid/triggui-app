@@ -1857,6 +1857,77 @@ body.hoja-abierta #hud-volver{display:none}
   setTimeout(nace, 600);
 }catch(e){} })();
 </script>
+<style id="tg-pill-css">
+/* Pill de idioma: se coloca MIDIENDO en vivo lo que ya vive arriba (la barra de
+   progreso con su carita en la hélice, el saludo en guardados) y queda debajo,
+   nunca encima. Si no cabe, no nace. */
+#tgLangPill{position:fixed;top:var(--tg-pill-top,72px);right:14px;z-index:60;display:flex;
+  background:rgba(12,14,22,.72);border:.5px solid rgba(255,255,255,.14);border-radius:99px;padding:3px;
+  font:700 10px/1 'Manrope',system-ui,sans-serif;letter-spacing:.06em;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  box-shadow:0 4px 14px rgba(0,0,0,.4)}
+#tgLangPill span{padding:5px 10px;border-radius:99px;transition:all .35s cubic-bezier(.19,1,.22,1);color:rgba(255,255,255,.48)}
+#tgLangPill span.lang-active{color:#0B0F1A;background:#F5F0E8}
+#tgLangPill:active{transform:scale(.96)}
+body.hoja-abierta #tgLangPill,body.puerta-abierta #tgLangPill{display:none}
+@media (max-height:620px){#tgLangPill{display:none}}
+</style>
+<script id="tg-pill-js">
+(function () {
+  var LS = "triggui_lang";
+  function actual() {
+    if (window.PV_LANG === "en" || window.PV_LANG === "es") return window.PV_LANG;
+    try { var v = JSON.parse(localStorage.getItem(LS) || "null"); if (v === "en" || v === "es") return v; } catch (e) {}
+    return ((navigator.language || "es").slice(0, 2) === "en") ? "en" : "es";
+  }
+  function coloca() {
+    try {
+      var tope = 16;
+      /* lo que ya ocupa la esquina superior derecha en esta pantalla */
+      var vecinos = ["hud-datos", "barra", "quien"];
+      for (var i = 0; i < vecinos.length; i++) {
+        var e = document.getElementById(vecinos[i]);
+        if (!e) continue;
+        var cs = getComputedStyle(e);
+        if (cs.display === "none" || cs.visibility === "hidden") continue;
+        var r = e.getBoundingClientRect();
+        if (r.height > 0 && r.top < 220) tope = Math.max(tope, Math.round(r.bottom));
+      }
+      document.documentElement.style.setProperty("--tg-pill-top", (tope + 14) + "px");
+    } catch (e) {}
+  }
+  function pinta() {
+    var p = document.getElementById("tgLangPill"); if (!p) return;
+    var en = (actual() === "en");
+    p.querySelector("#tgLangEs").className = en ? "" : "lang-active";
+    p.querySelector("#tgLangEn").className = en ? "lang-active" : "";
+  }
+  function nace() {
+    if (document.getElementById("tgLangPill")) return;
+    var b = document.createElement("button");
+    b.id = "tgLangPill"; b.type = "button"; b.setAttribute("aria-label", "Toggle language");
+    b.innerHTML = '<span id="tgLangEs">ES</span><span id="tgLangEn">EN</span>';
+    b.addEventListener("click", function (e) {
+      e.preventDefault(); e.stopPropagation();
+      var nuevo = (actual() === "en") ? "es" : "en";
+      try { localStorage.setItem(LS, JSON.stringify(nuevo)); } catch (x) {}
+      try { gtag("event", "portal_idioma", { idioma: nuevo }); } catch (x) {}
+      location.reload();
+    });
+    document.body.appendChild(b);
+    pinta(); coloca();
+  }
+  function arranca() {
+    nace();
+    setTimeout(coloca, 400); setTimeout(coloca, 1200); setTimeout(coloca, 2600);
+    window.addEventListener("resize", coloca);
+    try { new MutationObserver(coloca).observe(document.body, { childList: true, subtree: true }); } catch (e) {}
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", arranca);
+  else arranca();
+})();
+</script>
 </body>
+
 </html>
 
