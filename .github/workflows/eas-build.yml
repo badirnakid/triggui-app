@@ -30,7 +30,6 @@ jobs:
       - uses: actions/checkout@v4
       - name: Centinela — la app real vive aquí, no en main
         run: |
-          cd mobile
           VER=$(node -p "require('./app.json').expo.version")
           TSDK=$(node -p "require('./app.json').expo.plugins.find(p=>Array.isArray(p)&&p[0]==='expo-build-properties')[1].android.targetSdkVersion")
           echo "rama: ${{ github.ref_name }} · versión: $VER · targetSdk: $TSDK"
@@ -65,7 +64,6 @@ jobs:
       - uses: actions/checkout@v4
       - name: Centinela — la app real vive aquí, no en main
         run: |
-          cd mobile
           VER=$(node -p "require('./app.json').expo.version")
           TSDK=$(node -p "require('./app.json').expo.plugins.find(p=>Array.isArray(p)&&p[0]==='expo-build-properties')[1].android.targetSdkVersion")
           echo "rama: ${{ github.ref_name }} · versión: $VER · targetSdk: $TSDK"
