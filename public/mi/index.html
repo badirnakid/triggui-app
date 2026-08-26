@@ -1212,7 +1212,8 @@ function pinBloque(pz, i){
 }
 
 function pinNota(pz, tipo){
-  var texto = pz.payload[tipo];
+  /* 🌐 el gemelo inglés si existe y estamos en inglés; si no, el original */
+  var texto = ((PV_LANG === 'en' && pz.payload[tipo + '_en']) ? pz.payload[tipo + '_en'] : pz.payload[tipo]);
   if (!texto) return null;
   var acc = (pz.payload.accent || (pz.payload.colores || [])[1]) || '#E35D30';
   var div = document.createElement('div');
