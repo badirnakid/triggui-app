@@ -225,7 +225,11 @@ function iniciarPortal() {
 
   // Hoja de detalle + velo + toast
   foco.addEventListener('click', function (ev) {
-    try { if (ev.target && ev.target.closest && ev.target.closest('#tgLangPill')) return; } catch (_e) {}
+    try {
+      if (ev.target && ev.target.closest && ev.target.closest('#tgLangPill')) return;
+      var _p2 = document.elementFromPoint(ev.clientX, ev.clientY);
+      if (_p2 && _p2.closest && _p2.closest('#tgLangPill')) return;
+    } catch (_e) {}
     if (ev.target && ev.target.id === 'f-check') { ev.stopPropagation(); togglearHecha(Math.max(0, Math.min(lista.length - 1, Math.round(camK)))); return; }
     if (secuencia || lista.length === 0) return;
     var k = Math.max(0, Math.min(lista.length - 1, Math.round(camK)));
@@ -570,7 +574,12 @@ function iniciarPortal() {
       var dentroCheck = cr && e.clientX >= cr.left - 6 && e.clientX <= cr.right + 6 && e.clientY >= cr.top - 6 && e.clientY <= cr.bottom + 6;
       /* 🌐 La pill de idioma vive encima del lienzo: este manejador decide por
        COORDENADAS, así que hay que preguntarle explícitamente quién fue tocado. */
-    try { if (e.target && e.target.closest && e.target.closest('#tgLangPill')) return; } catch (_e) {}
+    /* Este manejador decide por COORDENADAS y su e.target ya no es la pill.
+       La pregunta correcta es qué hay VISUALMENTE en ese punto de la pantalla. */
+    try {
+      var _enPunto = document.elementFromPoint(e.clientX, e.clientY);
+      if (_enPunto && _enPunto.closest && _enPunto.closest('#tgLangPill')) return;
+    } catch (_e) {}
     if (dentroFoco && !dentroCheck) { abrirHoja(Math.max(0, Math.min(lista.length - 1, Math.round(camK)))); }
       else if (!dentroCheck && !tocar(e.clientX, e.clientY)) snap(220);
     }
