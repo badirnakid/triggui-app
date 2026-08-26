@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { Platform, BackHandler, View, Animated, StyleSheet, Easing, useWindowDimensions, TouchableOpacity, Text, Linking } from 'react-native';
+import { Platform, BackHandler, View, Animated, StyleSheet, Easing, useWindowDimensions, TouchableOpacity, Text } from 'react-native';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -137,21 +137,6 @@ function AppInner() {
     return () => { try { quitar(); } catch (e) {} };
   }, []);
 
-  // ── ENLACES EXTERNOS: lo que no es Triggui se abre en el navegador del sistema ──
-  // Antes quedaban atrapados dentro del WebView (Buscalibre, Amazon, YouTube).
-  const esNuestro = useCallback((url) => {
-    try {
-      const u = String(url || '');
-      if (!/^https?:/i.test(u)) return true;
-      return /^https?:\/\/([\w-]+\.)*triggui\.com(\/|$|:)/i.test(u);
-    } catch (e) { return true; }
-  }, []);
-  const filtrarNavegacion = useCallback((req) => {
-    const url = req && req.url;
-    if (esNuestro(url)) return true;
-    try { Linking.openURL(url); } catch (e) {}
-    return false;
-  }, [esNuestro]);
   const webViewRef = useRef(null);
 
   // Paleta de esta sesión (se elige UNA vez al montar, no cambia durante runtime)
@@ -536,7 +521,6 @@ function AppInner() {
           onLoadStart={handleLoadStart}
           onLoadEnd={handleLoadEnd}
           onNavigationStateChange={handleNavigationStateChange}
-          onShouldStartLoadWithRequest={filtrarNavegacion}
           onError={() => setSinRed(true)}
           injectedJavaScript={injectedJS}
           injectedJavaScriptBeforeContentLoaded={injectedBeforeLoad}
