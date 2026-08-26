@@ -448,7 +448,7 @@ function iniciarPortal() {
     if (k === focoK) return;
     focoK = k;
     var it = lista[k];
-    cima.querySelector('.c-senal').textContent = it.movimiento || it.hallazgo || '';
+    cima.querySelector('.c-senal').textContent = (window.pvF ? window.pvF(it, "movimiento") : it.movimiento) || (window.pvF ? window.pvF(it, "hallazgo") : it.hallazgo) || '';
     var img = foco.querySelector('.f-portada');
     if (it.portada) { img.src = it.portada; img.style.opacity = 1; } else { img.style.opacity = 0; }
     foco.querySelector('#f-check').className = 'f-check' + (it.estado === 'resuelto' ? ' ya' : '');
