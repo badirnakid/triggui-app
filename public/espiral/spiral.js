@@ -1096,13 +1096,12 @@ function iniciarPortal() {
        es si la hoja está viva AHORA. */
     var __hojaViva = false;
     try {
-      /* Tres testigos independientes: la clase del cuerpo, la bandera interna y
-         el elemento en pantalla. Basta uno para saber que la hoja está viva. */
-      var __hEl = document.getElementById('hoja');
-      var __hVis = !!(__hEl && getComputedStyle(__hEl).display !== 'none' &&
-                      __hEl.getBoundingClientRect().height > 40);
-      __hojaViva = (document.body && document.body.classList.contains('hoja-abierta')) ||
-                   (typeof hojaAbierta !== 'undefined' && !!hojaAbierta) || __hVis;
+      /* El juez autoritativo es el que usa la propia hélice en todas partes:
+         la clase 'ver' sobre #hoja. abrirHoja la pone, cerrarHoja la quita.
+         (Mis testigos inventados daban falsos positivos: la hoja sigue en el
+         DOM aunque esté cerrada, y por eso el toggle la reabría.) */
+      __hojaViva = !!(typeof hoja !== 'undefined' && hoja && hoja.classList &&
+                      hoja.classList.contains('ver'));
     } catch (e) {}
     var __hk = (__hojaViva && typeof hojaK === 'number') ? hojaK : -1;
     try {
