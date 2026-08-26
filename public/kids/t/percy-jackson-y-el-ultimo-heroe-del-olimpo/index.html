@@ -1856,7 +1856,12 @@ function armarCuerpo(){
   var accent = '';
   try { accent = (getComputedStyle(document.body).getPropertyValue('--accent') || '').trim(); } catch(e){}
   var payload = {
-    palabras: L.palabras, frases: L.frases,
+    palabras: ((typeof state !== 'undefined' && state._pes && state._pes.length) ? state._pes : L.palabras),
+    frases: ((typeof state !== 'undefined' && state._fes && state._fes.length) ? state._fes : L.frases),
+    palabras_en: ((typeof state !== 'undefined' && Array.isArray(state.palabras_en)) ? state.palabras_en.slice(0, 4) : []),
+    frases_en: ((typeof state !== 'undefined' && Array.isArray(state.frases_en)) ? state.frases_en.slice(0, 4) : []),
+    titulo: ((typeof state !== 'undefined' && state._tes) ? state._tes : L.titulo),
+    titulo_en: ((typeof state !== 'undefined' && state.titulo_en) ? state.titulo_en : ''),
     colores: L.colores, textColors: L.textColors,
     autor: L.autor, accent: accent || (L.colores[1] || '')
   };
