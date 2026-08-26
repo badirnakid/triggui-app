@@ -60,7 +60,7 @@ body.hoja-abierta #hud-volver,body.hoja-abierta #hud-salir{display:none}   /* so
    Círculo de 44 ⇒ borde derecho izq en 56 y borde izq der en 334 @390px: la portada [138,252] queda
    a ≥82px de cada uno — amenaza geométricamente imposible. Desaparecen con la hoja abierta. */
 .puente-pie{position:fixed;bottom:calc(66px + env(safe-area-inset-bottom));z-index:8;box-sizing:border-box;width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:linear-gradient(180deg,rgba(30,34,52,.96),rgba(18,21,34,.96));border:1px solid rgba(255,255,255,.16);box-shadow:0 6px 18px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.08);font-size:19px;line-height:1;text-decoration:none;-webkit-tap-highlight-color:transparent;transition:transform .16s ease,border-color .16s ease}
-.puente-pie::after{content:attr(data-nombre);position:absolute;top:calc(100% + 5px);left:50%;transform:translateX(-50%);font:700 8.5px/1 'Manrope',system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.62);white-space:nowrap;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,.8)}.puente-pie{position:fixed}@media (max-height:680px){.puente-pie::after{display:none}}.puente-pie:active{transform:scale(.94)}
+.puente-pie::after{content:attr(data-nombre);position:absolute;top:calc(100% + 5px);left:50%;transform:translateX(-50%);font:700 8.5px/1 'Manrope',system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.62);white-space:nowrap;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,.8)}.puente-pie{position:fixed}@media (max-height:520px){.puente-pie::after{display:none}}.puente-pie:active{transform:scale(.94)}
 .puente-pie:hover{border-color:rgba(255,255,255,.3)}
 #puenteGuardados{left:12px}
 #puenteBarra{right:12px}
@@ -351,7 +351,7 @@ if(claveMiembro()){__bootSync(claveMiembro(), arrancarEspiral);}else{puertaAbrir
 #tgLangPill span.lang-active{color:#0B0F1A;background:#F5F0E8}
 #tgLangPill:active{transform:scale(.96)}
 body.hoja-abierta #tgLangPill,body.puerta-abierta #tgLangPill{display:none}
-@media (max-height:620px){#tgLangPill{display:none}}
+@media (max-height:480px){#tgLangPill{display:none}}
 </style>
 <script id="tg-pill-js">
 (function () {
@@ -376,7 +376,24 @@ body.hoja-abierta #tgLangPill,body.puerta-abierta #tgLangPill{display:none}
       if (__p) __p.style.display = visible(document.getElementById("puerta")) ? "none" : "flex";
       var tope = 16;
       /* lo que ya ocupa la esquina superior derecha en esta pantalla */
-      var vecinos = ["hud-datos", "barra", "quien"];
+      var vecinos = ["hud-datos", "barra", "quien", "hud-marca", "previa-badge"];
+      /* además: cualquier cosa visible que ocupe la franja superior derecha */
+      try {
+        var anchoP = (__p ? __p.getBoundingClientRect().width : 130) || 130;
+        var x0 = innerWidth - 14 - anchoP, x1 = innerWidth - 14;
+        var todos = document.querySelectorAll("body *");
+        for (var k = 0; k < todos.length; k++) {
+          var el = todos[k];
+          if (el === __p || (__p && __p.contains(el)) || el.contains(__p)) continue;
+          var c2 = getComputedStyle(el);
+          if (c2.display === "none" || c2.visibility === "hidden" || c2.opacity === "0") continue;
+          if (c2.position !== "fixed" && c2.position !== "absolute") continue;
+          var q = el.getBoundingClientRect();
+          if (q.height < 8 || q.height > 320 || q.top > 200) continue;
+          if (q.right <= x0 || q.left >= x1) continue;
+          tope = Math.max(tope, Math.round(q.bottom));
+        }
+      } catch (e) {}
       for (var i = 0; i < vecinos.length; i++) {
         var e = document.getElementById(vecinos[i]);
         if (!e) continue;
@@ -404,25 +421,36 @@ body.hoja-abierta #tgLangPill,body.puerta-abierta #tgLangPill{display:none}
       var nuevo = (actual() === "en") ? "es" : "en";
       try { localStorage.setItem(LS, JSON.stringify(nuevo)); } catch (x) {}
       try { gtag("event", "portal_idioma", { idioma: nuevo }); } catch (x) {}
-      /* El portal traduce al arrancar (su maquinaria es de una sola dirección),
-         así que se recarga — pero con un velo suave para que se sienta un cambio
-         de idioma y no un parpadeo. */
-      try {
-        window.PV_LANG = nuevo;
-        pinta();
-        var velo = document.createElement("div");
-        velo.style.cssText = "position:fixed;inset:0;z-index:9998;background:#0B0F1A;opacity:0;" +
-          "transition:opacity .26s ease;pointer-events:none";
-        document.body.appendChild(velo);
-        requestAnimationFrame(function () { velo.style.opacity = "1"; });
-        setTimeout(function () { location.reload(); }, 260);
-      } catch (x) { location.reload(); }
+      /* Cambio EN VIVO: pvT/pvTitulo leen PV_LANG en cada llamada, así que basta
+         repintar. Solo se recarga si la página no expone su repintado. */
+      window.PV_LANG = nuevo;
+      try { document.documentElement.setAttribute("lang", nuevo); } catch (x) {}
+      pinta();
+      nombresPuentes();
+      if (typeof window.__pvRepinta === "function") {
+        try { window.__pvRepinta(); } catch (x) { location.reload(); }
+        setTimeout(coloca, 60); setTimeout(coloca, 600);
+      } else {
+        location.reload();
+      }
     });
     document.body.appendChild(b);
     pinta(); coloca();
   }
+  function nombresPuentes() {
+    try {
+      var t = (typeof window.pvT === "function")
+        ? window.pvT
+        : function (es, en) { return (window.PV_LANG === "en") ? en : es; };
+      var g = document.getElementById("puenteGuardados");
+      if (g) { g.setAttribute("data-nombre", t("Guardados", "Saved")); g.setAttribute("aria-label", t("Ir a guardados", "Go to saved")); }
+      var br = document.getElementById("puenteBarra");
+      if (br) { br.setAttribute("data-nombre", t("Barra", "Bar")); br.setAttribute("aria-label", t("Abrir la barra mágica", "Open the magic bar")); }
+    } catch (e) {}
+  }
   function arranca() {
     nace();
+    nombresPuentes();
     /* el documento declara su idioma real: lo leen lectores de pantalla y buscadores */
     try { document.documentElement.setAttribute("lang", actual()); } catch (e) {}
     setTimeout(coloca, 400); setTimeout(coloca, 1200); setTimeout(coloca, 2600);
