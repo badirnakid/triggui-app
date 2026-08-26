@@ -1234,11 +1234,11 @@ function pinOg(pz){
   img.alt = pz.titulo || pz.slug;
   img.loading = 'lazy';
   img.decoding = 'async';
-  img.src = rutaBase(pz) + 'og.png';
+  img.src = rutaBase(pz) + ((PV_LANG === 'en') ? 'og_en.jpg' : 'og.jpg');
   img.onerror = function(){ div.remove(); };
   div.appendChild(img);
   div.addEventListener('click', function(){ releerYNavegar(pz); });
-  armarMenu(pz, 'og', div, rutaBase(pz) + 'og.png');
+  armarMenu(pz, 'og', div, rutaBase(pz) + ((PV_LANG === 'en') ? 'og_en.jpg' : 'og.jpg'));
   return div;
 }
 
