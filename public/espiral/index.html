@@ -382,7 +382,11 @@ body.hoja-abierta #tgLangPill,body.puerta-abierta #tgLangPill{display:none}
       var __p = document.getElementById("tgLangPill");
       /* Con la puerta abierta la pill no existe: ese momento es de la clave, y
          además chocaría con la ✕ de cerrar, que vive en la misma esquina. */
-      if (__p) __p.style.display = visible(document.getElementById("puerta")) ? "none" : "flex";
+      /* Se esconde con la puerta O con la hoja abierta. El estilo en línea le gana
+         a la hoja de estilos, así que la decisión se toma aquí, no en el CSS. */
+      var __tapada = visible(document.getElementById("puerta")) ||
+                     (document.body && document.body.classList.contains("hoja-abierta"));
+      if (__p) __p.style.display = __tapada ? "none" : "flex";
       var tope = 16;
       /* lo que ya ocupa la esquina superior derecha en esta pantalla */
       var vecinos = ["hud-datos", "barra", "quien", "hud-marca", "previa-badge"];
@@ -427,6 +431,11 @@ body.hoja-abierta #tgLangPill,body.puerta-abierta #tgLangPill{display:none}
     var b = document.createElement("button");
     b.id = "tgLangPill"; b.type = "button"; b.setAttribute("aria-label", "Toggle language");
     b.innerHTML = '<span id="tgLangEs">Español</span><span id="tgLangEn">English</span>';
+    /* En móvil el toque atravesaba la pill y abría el widget de abajo: se detienen
+       también los eventos de toque y de puntero, no solo el clic. */
+    ["touchstart", "touchend", "pointerdown", "pointerup", "mousedown"].forEach(function (ev) {
+      b.addEventListener(ev, function (e) { e.stopPropagation(); }, { passive: false });
+    });
     b.addEventListener("click", function (e) {
       e.preventDefault(); e.stopPropagation();
       var nuevo = (actual() === "en") ? "es" : "en";
