@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./spiral.triggui.css?v=20260826-olvida-hoja">
+<link rel="stylesheet" href="./spiral.triggui.css?v=20260826-mantiene-nodo">
 <script src="/caja.js" defer></script><!-- 📦 caja negra compartida: 5 toques en la esquina superior izquierda -->
 <style>
 /* v15.11 · Puerta de miembro: el lenguaje de la barra magica (auroras con los colores de la ultima edicion,
@@ -316,7 +316,7 @@ async function arrancarEspiral(){
     insights:insights
   };
   try{gtag('event','espiral_view',{ediciones:String(insights.length)});}catch(e){}
-  var s=document.createElement('script'); s.src='./spiral.js?v=20260826-olvida-hoja';
+  var s=document.createElement('script'); s.src='./spiral.js?v=20260826-mantiene-nodo';
   s.onload=function(){ try{ var hoja=document.getElementById('hoja'); if(hoja){ var mo=new MutationObserver(function(){ document.body.classList.toggle('hoja-abierta', hoja.classList.contains('ver')); }); mo.observe(hoja,{attributes:true,attributeFilter:['class']}); } }catch(e){} };
   document.body.appendChild(s);
   var volver=document.createElement('button'); volver.id='hud-volver'; volver.type='button'; volver.setAttribute('aria-label',(window.PV_LANG==='en')?'Back':'Regresar'); volver.innerHTML='&#8592;&nbsp; '+((window.PV_LANG==='en')?'BACK':'REGRESAR');
