@@ -28,6 +28,35 @@
     }
   },
   "submit": {
-    "production": {}
+    "base": {
+      "android": {
+        "serviceAccountKeyPath": "./play.json"
+      }
+    },
+    "internal": {
+      "extends": "base",
+      "android": {
+        "track": "internal"
+      }
+    },
+    "alpha": {
+      "extends": "base",
+      "android": {
+        "track": "alpha"
+      }
+    },
+    "beta": {
+      "extends": "base",
+      "android": {
+        "track": "beta"
+      }
+    },
+    "production": {
+      "extends": "base",
+      "android": {
+        "track": "production",
+        "releaseStatus": "draft"
+      }
+    }
   }
 }
