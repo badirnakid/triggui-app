@@ -429,6 +429,7 @@ body.hoja-abierta #tgLangPill,body.puerta-abierta #tgLangPill{display:none}
       try { document.documentElement.setAttribute("lang", nuevo); } catch (x) {}
       pinta();
       nombresPuentes();
+      textosPie();
       if (typeof window.__pvRepinta === "function") {
         try { window.__pvRepinta(); } catch (x) { location.reload(); }
         setTimeout(coloca, 60); setTimeout(coloca, 600);
@@ -438,6 +439,17 @@ body.hoja-abierta #tgLangPill,body.puerta-abierta #tgLangPill{display:none}
     });
     document.body.appendChild(b);
     pinta(); coloca();
+  }
+  function textosPie() {
+    /* REGRESAR y CERRAR SESIÓN eran texto estático: nunca pasaban por pvT */
+    try {
+      var t = (typeof window.pvT === "function") ? window.pvT
+            : function (es, en) { return (window.PV_LANG === "en") ? en : es; };
+      var v = document.getElementById("hud-volver");
+      if (v) v.textContent = t("\u2190 REGRESAR", "\u2190 BACK");
+      var sa = document.getElementById("hud-salir");
+      if (sa) sa.textContent = t("CERRAR SESI\u00d3N", "LOG OUT");
+    } catch (e) {}
   }
   function nombresPuentes() {
     try {
@@ -453,6 +465,8 @@ body.hoja-abierta #tgLangPill,body.puerta-abierta #tgLangPill{display:none}
   function arranca() {
     nace();
     nombresPuentes();
+    textosPie();
+    setTimeout(textosPie, 900); setTimeout(textosPie, 2400);
     /* el documento declara su idioma real: lo leen lectores de pantalla y buscadores */
     try { document.documentElement.setAttribute("lang", actual()); } catch (e) {}
     setTimeout(coloca, 400); setTimeout(coloca, 1200); setTimeout(coloca, 2600);
