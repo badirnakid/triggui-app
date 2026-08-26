@@ -1110,6 +1110,7 @@ function iniciarPortal() {
     /* Dónde estaba mirando: reconstruir devuelve la cámara al último nodo y se
        perdía el que tenías enfrente. Se recuerda para volver ahí. */
     var __camPrev = (typeof camK === 'number' && isFinite(camK)) ? camK : null;
+    window.__camFijar = __camPrev;   /* boot lo respeta y se salta el ascenso */
     try {
       if (typeof window.__construyeInsights === 'function' && window.__PREVIEW_DATA__) {
         window.__PREVIEW_DATA__.insights = window.__construyeInsights();
@@ -1242,6 +1243,16 @@ function iniciarPortal() {
       return;
     }
 
+    /* 🌐 Si el arranque viene de un cambio de idioma, NO hay ascenso de presentación
+       ni celebración: se respeta el nodo que el lector tenía enfrente. */
+    if (window.__camFijar !== null && window.__camFijar !== undefined) {
+      camK = clampCam(window.__camFijar);
+      focoK = -1;
+      guardarMemoria();
+      render();
+      window.__camFijar = null;
+      return;
+    }
     var prev = leerMemoria();
     var destino = lista.length - 1;
     if (destino < 0) destino = lista.length - 1;
