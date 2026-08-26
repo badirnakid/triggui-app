@@ -1107,6 +1107,9 @@ function iniciarPortal() {
       __hojaViva = !!(__hEl && __hEl.classList && __hEl.classList.contains('ver'));
     } catch (e) {}
     var __hk = (__hojaViva && typeof hojaK === 'number') ? hojaK : -1;
+    /* Dónde estaba mirando: reconstruir devuelve la cámara al último nodo y se
+       perdía el que tenías enfrente. Se recuerda para volver ahí. */
+    var __camPrev = (typeof camK === 'number' && isFinite(camK)) ? camK : null;
     try {
       if (typeof window.__construyeInsights === 'function' && window.__PREVIEW_DATA__) {
         window.__PREVIEW_DATA__.insights = window.__construyeInsights();
@@ -1116,6 +1119,14 @@ function iniciarPortal() {
              su video montado: mostraría el HTML del idioma viejo. Se olvida cuál
              estaba abierta para que la próxima apertura la construya de cero. */
           try { hojaK = -1; } catch (e3) {}
+          /* volver al nodo que tenías enfrente */
+          try {
+            if (__camPrev !== null) {
+              camK = (typeof clampCam === 'function') ? clampCam(__camPrev) : __camPrev;
+              focoK = -1;
+              if (typeof render === 'function') render();
+            }
+          } catch (e4) {}
           if (__hk >= 0 && typeof abrirHoja === 'function') {
             try { hojaK = -1; abrirHoja(__hk); } catch (e2) {}
           }
