@@ -1076,10 +1076,19 @@ function iniciarPortal() {
   window.__pvRepinta = function () {
     try { __refrescaEtiq(); } catch (e) {}
     /* 🌐 Reconstruir los datos: el texto del accionable se congelaba al arrancar */
+    /* Se recuerda qué hoja estaba abierta ANTES de reconstruir, para volver a
+       pintarla en el idioma nuevo. (El return anterior la dejaba en el idioma viejo.) */
+    var __hk = (typeof hojaK === 'number') ? hojaK : -1;
     try {
       if (typeof window.__construyeInsights === 'function' && window.__PREVIEW_DATA__) {
         window.__PREVIEW_DATA__.insights = window.__construyeInsights();
-        if (typeof boot === 'function') { boot(window.__PREVIEW_DATA__); return; }
+        if (typeof boot === 'function') {
+          boot(window.__PREVIEW_DATA__);
+          if (__hk >= 0 && typeof abrirHoja === 'function') {
+            try { hojaK = -1; abrirHoja(__hk); } catch (e2) {}
+          }
+          return;
+        }
       }
     } catch (e) {}
     try { if (typeof hojaK === 'number' && hojaK >= 0 && typeof abrirHoja === 'function') abrirHoja(hojaK); } catch (e) {}
