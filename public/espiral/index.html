@@ -277,9 +277,16 @@ async function arrancarEspiral(){
     return fr[0]||'';
   }
   var libros=await cargarLibros();
+  window.__tgLibros = libros;   /* 🌐 para poder reconstruir al cambiar de idioma */
   var hechas={};
   try{hechas=JSON.parse(localStorage.getItem('triggui_espiral_hechas')||'{}');}catch(e){}
-  var insights=libros.map(function(b){
+  /* 🌐 Los insights se calculan con pvT/pvBloques/pvOg, que leen PV_LANG en cada
+     llamada — pero antes se congelaban al arrancar. Ahora se pueden reconstruir. */
+  window.__construyeInsights = function(){
+  var libros = window.__tgLibros || [];
+  var hechas = {};
+  try { hechas = JSON.parse(localStorage.getItem('triggui_espiral_hechas')||'{}'); } catch(e){}
+  return libros.map(function(b){
     var sem=lunesDe(b._manual_generated_at||b._inputs_snapshot)||'2026-01-05';
     var g=gesto(b), id='ED-'+String(b._edicion_numero).padStart(3,'0');
     var ya=hechas[id];
@@ -302,6 +309,8 @@ async function arrancarEspiral(){
       resuelto_el: ya||undefined
     };
   });
+  };
+  var insights = window.__construyeInsights();
   window.__PREVIEW_DATA__={
     cliente:{slug:'espiral',nombre:'TRIGGUI',url:'triggui.com',logo:'./logo-triggui.png',inicio:(insights[0]&&insights[0].semana)||'2026-01-05',plan:''},
     insights:insights
