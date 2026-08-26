@@ -650,7 +650,16 @@ function iniciarPortal() {
   var SELLO_14 = selloSVG(14);
   var SELLO_12 = selloSVG(12);
 
-  var ETIQ = { pendiente: pvT('TE ESPERA','WAITING FOR YOU'), en_curso: pvT('EN CURSO','IN PROGRESS'), resuelto: pvT('HECHA','DONE'), pospuesto: pvT('EN PAUSA','ON HOLD') };
+  /* 🌐 ETIQ se recalcula: antes era una constante congelada en el idioma del
+     arranque, así que repintar no cambiaba los sellos. */
+  var ETIQ = {};
+  function __refrescaEtiq(){
+    ETIQ.pendiente = pvT("TE ESPERA", "WAITING FOR YOU");
+    ETIQ.en_curso  = pvT("EN CURSO", "IN PROGRESS");
+    ETIQ.resuelto  = pvT("HECHA", "DONE");
+    ETIQ.pospuesto = pvT("EN PAUSA", "ON HOLD");
+  }
+  __refrescaEtiq();
 
   /* v15.2 · Tarjeta sinfonica: cabecera en dos columnas (portada | titulo + voz completa),
      pie bajo el video; el video se pausa al cerrar y si reabres la MISMA edicion no se
@@ -1065,6 +1074,8 @@ function iniciarPortal() {
   /* 🌐 Repintado por cambio de idioma: pvT/pvTitulo leen PV_LANG en cada llamada,
    así que basta volver a dibujar — sin recargar la página. */
   window.__pvRepinta = function () {
+    try { __refrescaEtiq(); } catch (e) {}
+    try { if (typeof hojaK === 'number' && hojaK >= 0 && typeof abrirHoja === 'function') abrirHoja(hojaK); } catch (e) {}
     try { repintarTodo(); } catch (e) {}
     try { pintarHud(); } catch (e) {}
     try { pintarCarita(); } catch (e) {}
