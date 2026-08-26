@@ -754,6 +754,11 @@ def escribir_gemela_en(html_es, out_dir, edicion, base_url):
     # (3) semilla de idioma: arranca en inglés, el toggle sigue mandando
     h = re.sub(r"let tgLang = \(function\(\)\{[\s\S]{0,400}?\}\)\(\);",
                "let tgLang = 'en';", h, count=1)
+    # (4) ⚠️ la gemela vive en una SUBCARPETA: toda ruta relativa se rompería
+    #     ("./portada.jpg" resolvería a /t/<slug>/en/portada.jpg → 404).
+    #     Se absolutizan contra la carpeta de la edición.
+    h = h.replace('"./', f'"{base_url}/t/{edicion_id}/')
+    h = h.replace("'./", f"'{base_url}/t/{edicion_id}/")
     # hermanas declaradas para los buscadores
     h = h.replace("</head>",
                   f'<link rel="alternate" hreflang="es" href="{esc(url_es)}" />'
