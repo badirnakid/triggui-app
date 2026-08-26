@@ -1062,6 +1062,13 @@ function iniciarPortal() {
   function espera(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
 
   /* v15.13 · sonda de estado para diagnostico (solo lectura) */
+  /* 🌐 Repintado por cambio de idioma: pvT/pvTitulo leen PV_LANG en cada llamada,
+   así que basta volver a dibujar — sin recargar la página. */
+  window.__pvRepinta = function () {
+    try { repintarTodo(); } catch (e) {}
+    try { pintarHud(); } catch (e) {}
+    try { pintarCarita(); } catch (e) {}
+  };
   window.__espiralEstado = function () {
     return { secuencia: secuencia, hoja: hoja.classList.contains('ver'), animando: animando, arrastrando: arrastrando, pDown: !!pDown,
              camK: Math.round(camK * 100) / 100, n: lista.length, movOk: MOV_OK, ignitando: ignitando, tweenId: tweenId };
