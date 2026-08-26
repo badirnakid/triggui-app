@@ -18,6 +18,11 @@ on:
         default: "internal"
         type: choice
         options: [ "internal", "alpha", "beta", "production" ]
+      solo_subir:
+        description: "Saltar compilación y subir el último build ya existente"
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   android:
@@ -46,11 +51,12 @@ jobs:
         env:
           ANDROID_SERVICE_ACCOUNT_JSON: ${{ secrets.ANDROID_SERVICE_ACCOUNT_JSON }}
       - name: Build (Android, cloud)
+        if: ${{ github.event.inputs.solo_subir != 'true' }}
         run: eas build --platform android --profile production --non-interactive
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
       - name: Submit to Google Play (Internal track)
-        run: eas submit -p android --latest --track ${{ github.event.inputs.canal }} --key play.json --non-interactive
+        run: eas submit -p android --latest --profile ${{ github.event.inputs.canal }} --non-interactive
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
@@ -76,10 +82,11 @@ jobs:
       - run: npm install -g eas-cli
       - run: npm install
       - name: Build (iOS, cloud)
+        if: ${{ github.event.inputs.solo_subir != 'true' }}
         run: eas build --platform ios --profile production --non-interactive
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
       - name: Submit to App Store Connect
-        run: eas submit -p ios --latest --non-interactive
+        run: eas submit -p ios --latest --profile production --non-interactive
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
