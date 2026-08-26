@@ -1075,6 +1075,13 @@ function iniciarPortal() {
    así que basta volver a dibujar — sin recargar la página. */
   window.__pvRepinta = function () {
     try { __refrescaEtiq(); } catch (e) {}
+    /* 🌐 Reconstruir los datos: el texto del accionable se congelaba al arrancar */
+    try {
+      if (typeof window.__construyeInsights === 'function' && window.__PREVIEW_DATA__) {
+        window.__PREVIEW_DATA__.insights = window.__construyeInsights();
+        if (typeof boot === 'function') { boot(window.__PREVIEW_DATA__); return; }
+      }
+    } catch (e) {}
     try { if (typeof hojaK === 'number' && hojaK >= 0 && typeof abrirHoja === 'function') abrirHoja(hojaK); } catch (e) {}
     try { repintarTodo(); } catch (e) {}
     try { pintarHud(); } catch (e) {}
