@@ -1100,8 +1100,11 @@ function iniciarPortal() {
          la clase 'ver' sobre #hoja. abrirHoja la pone, cerrarHoja la quita.
          (Mis testigos inventados daban falsos positivos: la hoja sigue en el
          DOM aunque esté cerrada, y por eso el toggle la reabría.) */
-      __hojaViva = !!(typeof hoja !== 'undefined' && hoja && hoja.classList &&
-                      hoja.classList.contains('ver'));
+      /* Se le pregunta al DOCUMENTO, no a una variable del ámbito: la clase 'ver'
+         sobre #hoja es la verdad que usa la propia hélice, y así funciona sin
+         depender de dónde viva esta función. */
+      var __hEl = document.getElementById('hoja');
+      __hojaViva = !!(__hEl && __hEl.classList && __hEl.classList.contains('ver'));
     } catch (e) {}
     var __hk = (__hojaViva && typeof hojaK === 'number') ? hojaK : -1;
     try {
