@@ -1880,8 +1880,19 @@ body.hoja-abierta #tgLangPill,body.puerta-abierta #tgLangPill{display:none}
     try { var v = JSON.parse(localStorage.getItem(LS) || "null"); if (v === "en" || v === "es") return v; } catch (e) {}
     return ((navigator.language || "es").slice(0, 2) === "en") ? "en" : "es";
   }
+  function visible(e) {
+    if (!e) return false;
+    var cs = getComputedStyle(e);
+    if (cs.display === "none" || cs.visibility === "hidden" || cs.opacity === "0") return false;
+    var r = e.getBoundingClientRect();
+    return r.width > 0 && r.height > 0;
+  }
   function coloca() {
     try {
+      var __p = document.getElementById("tgLangPill");
+      /* Con la puerta abierta la pill no existe: ese momento es de la clave, y
+         además chocaría con la ✕ de cerrar, que vive en la misma esquina. */
+      if (__p) __p.style.display = visible(document.getElementById("puerta")) ? "none" : "flex";
       var tope = 16;
       /* lo que ya ocupa la esquina superior derecha en esta pantalla */
       var vecinos = ["hud-datos", "barra", "quien"];
