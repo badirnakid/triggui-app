@@ -1112,6 +1112,10 @@ function iniciarPortal() {
         window.__PREVIEW_DATA__.insights = window.__construyeInsights();
         if (typeof boot === 'function') {
           boot(window.__PREVIEW_DATA__);
+          /* ⚠️ abrirHoja se salta la reconstrucción si reabres la MISMA edición con
+             su video montado: mostraría el HTML del idioma viejo. Se olvida cuál
+             estaba abierta para que la próxima apertura la construya de cero. */
+          try { hojaK = -1; } catch (e3) {}
           if (__hk >= 0 && typeof abrirHoja === 'function') {
             try { hojaK = -1; abrirHoja(__hk); } catch (e2) {}
           }
