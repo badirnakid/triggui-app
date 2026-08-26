@@ -344,10 +344,10 @@ if(claveMiembro()){__bootSync(claveMiembro(), arrancarEspiral);}else{puertaAbrir
    nunca encima. Si no cabe, no nace. */
 #tgLangPill{position:fixed;top:var(--tg-pill-top,72px);right:14px;z-index:60;display:flex;
   background:rgba(12,14,22,.72);border:.5px solid rgba(255,255,255,.14);border-radius:99px;padding:3px;
-  font:700 10px/1 'Manrope',system-ui,sans-serif;letter-spacing:.06em;cursor:pointer;
+  font:600 11px/1 'Manrope',system-ui,sans-serif;letter-spacing:.01em;cursor:pointer;
   -webkit-tap-highlight-color:transparent;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
   box-shadow:0 4px 14px rgba(0,0,0,.4)}
-#tgLangPill span{padding:5px 10px;border-radius:99px;transition:all .35s cubic-bezier(.19,1,.22,1);color:rgba(255,255,255,.48)}
+#tgLangPill span{padding:5px 11px;border-radius:99px;transition:all .35s cubic-bezier(.19,1,.22,1);color:rgba(255,255,255,.48)}
 #tgLangPill span.lang-active{color:#0B0F1A;background:#F5F0E8}
 #tgLangPill:active{transform:scale(.96)}
 body.hoja-abierta #tgLangPill,body.puerta-abierta #tgLangPill{display:none}
@@ -398,13 +398,25 @@ body.hoja-abierta #tgLangPill,body.puerta-abierta #tgLangPill{display:none}
     if (document.getElementById("tgLangPill")) return;
     var b = document.createElement("button");
     b.id = "tgLangPill"; b.type = "button"; b.setAttribute("aria-label", "Toggle language");
-    b.innerHTML = '<span id="tgLangEs">ES</span><span id="tgLangEn">EN</span>';
+    b.innerHTML = '<span id="tgLangEs">Español</span><span id="tgLangEn">English</span>';
     b.addEventListener("click", function (e) {
       e.preventDefault(); e.stopPropagation();
       var nuevo = (actual() === "en") ? "es" : "en";
       try { localStorage.setItem(LS, JSON.stringify(nuevo)); } catch (x) {}
       try { gtag("event", "portal_idioma", { idioma: nuevo }); } catch (x) {}
-      location.reload();
+      /* El portal traduce al arrancar (su maquinaria es de una sola dirección),
+         así que se recarga — pero con un velo suave para que se sienta un cambio
+         de idioma y no un parpadeo. */
+      try {
+        window.PV_LANG = nuevo;
+        pinta();
+        var velo = document.createElement("div");
+        velo.style.cssText = "position:fixed;inset:0;z-index:9998;background:#0B0F1A;opacity:0;" +
+          "transition:opacity .26s ease;pointer-events:none";
+        document.body.appendChild(velo);
+        requestAnimationFrame(function () { velo.style.opacity = "1"; });
+        setTimeout(function () { location.reload(); }, 260);
+      } catch (x) { location.reload(); }
     });
     document.body.appendChild(b);
     pinta(); coloca();
