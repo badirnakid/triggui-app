@@ -1091,7 +1091,15 @@ function iniciarPortal() {
     /* 🌐 Reconstruir los datos: el texto del accionable se congelaba al arrancar */
     /* Se recuerda qué hoja estaba abierta ANTES de reconstruir, para volver a
        pintarla en el idioma nuevo. (El return anterior la dejaba en el idioma viejo.) */
-    var __hk = (typeof hojaK === 'number') ? hojaK : -1;
+    /* ⚠️ hojaK NO se reinicia al cerrar la hoja: conserva el índice de la última
+       abierta. Preguntar por él hacía que el toggle REABRIERA el widget. La verdad
+       es si la hoja está viva AHORA. */
+    var __hojaViva = false;
+    try {
+      __hojaViva = (document.body && document.body.classList.contains('hoja-abierta')) ||
+                   (typeof hojaAbierta !== 'undefined' && !!hojaAbierta);
+    } catch (e) {}
+    var __hk = (__hojaViva && typeof hojaK === 'number') ? hojaK : -1;
     try {
       if (typeof window.__construyeInsights === 'function' && window.__PREVIEW_DATA__) {
         window.__PREVIEW_DATA__.insights = window.__construyeInsights();
@@ -1104,7 +1112,7 @@ function iniciarPortal() {
         }
       }
     } catch (e) {}
-    try { if (typeof hojaK === 'number' && hojaK >= 0 && typeof abrirHoja === 'function') abrirHoja(hojaK); } catch (e) {}
+    try { if (__hojaViva && typeof hojaK === 'number' && hojaK >= 0 && typeof abrirHoja === 'function') abrirHoja(hojaK); } catch (e) {}
     try { repintarTodo(); } catch (e) {}
     try { pintarHud(); } catch (e) {}
     try { pintarCarita(); } catch (e) {}
