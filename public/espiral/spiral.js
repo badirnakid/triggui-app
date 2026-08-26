@@ -225,6 +225,7 @@ function iniciarPortal() {
 
   // Hoja de detalle + velo + toast
   foco.addEventListener('click', function (ev) {
+    try { if (ev.target && ev.target.closest && ev.target.closest('#tgLangPill')) return; } catch (_e) {}
     if (ev.target && ev.target.id === 'f-check') { ev.stopPropagation(); togglearHecha(Math.max(0, Math.min(lista.length - 1, Math.round(camK)))); return; }
     if (secuencia || lista.length === 0) return;
     var k = Math.max(0, Math.min(lista.length - 1, Math.round(camK)));
@@ -567,7 +568,10 @@ function iniciarPortal() {
       var chk = foco.querySelector('#f-check');
       var cr = chk ? chk.getBoundingClientRect() : null;
       var dentroCheck = cr && e.clientX >= cr.left - 6 && e.clientX <= cr.right + 6 && e.clientY >= cr.top - 6 && e.clientY <= cr.bottom + 6;
-      if (dentroFoco && !dentroCheck) { abrirHoja(Math.max(0, Math.min(lista.length - 1, Math.round(camK)))); }
+      /* 🌐 La pill de idioma vive encima del lienzo: este manejador decide por
+       COORDENADAS, así que hay que preguntarle explícitamente quién fue tocado. */
+    try { if (e.target && e.target.closest && e.target.closest('#tgLangPill')) return; } catch (_e) {}
+    if (dentroFoco && !dentroCheck) { abrirHoja(Math.max(0, Math.min(lista.length - 1, Math.round(camK)))); }
       else if (!dentroCheck && !tocar(e.clientX, e.clientY)) snap(220);
     }
     else requestAnimationFrame(inercia);
