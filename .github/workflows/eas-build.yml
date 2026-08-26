@@ -1,18 +1,42 @@
 name: Build & Submit (Android; iOS manual)
 
+# ⚠️ La app real vive en la rama mobile-automation-v1. En main hay una copia
+# vieja (App.tsx v1.0.0) que NO debe publicarse jamás. Por eso NO hay disparador
+# automático: la compilación se lanza a mano desde la rama correcta.
 on:
-  push:
-    branches: [ "main" ]
   workflow_dispatch:
+    inputs:
+      plataforma:
+        description: "Plataforma a compilar"
+        required: true
+        default: "android"
+        type: choice
+        options: [ "android", "ios" ]
+      canal:
+        description: "Canal de Google Play"
+        required: true
+        default: "internal"
+        type: choice
+        options: [ "internal", "alpha", "beta", "production" ]
 
 jobs:
   android:
+    if: ${{ github.event.inputs.plataforma == 'android' }}
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: mobile
     steps:
       - uses: actions/checkout@v4
+      - name: Centinela — la app real vive aquí, no en main
+        run: |
+          cd mobile
+          VER=$(node -p "require('./app.json').expo.version")
+          TSDK=$(node -p "require('./app.json').expo.plugins.find(p=>Array.isArray(p)&&p[0]==='expo-build-properties')[1].android.targetSdkVersion")
+          echo "rama: ${{ github.ref_name }} · versión: $VER · targetSdk: $TSDK"
+          if [ "$TSDK" -lt 36 ]; then echo "✗ targetSdk $TSDK — Google Play exige 36 desde el 31 ago 2026"; exit 1; fi
+          if [ ! -f App.js ]; then echo "✗ falta App.js — ¿rama equivocada?"; exit 1; fi
+          echo "✓ centinela en verde"
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -27,18 +51,27 @@ jobs:
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
       - name: Submit to Google Play (Internal track)
-        run: eas submit -p android --latest --track internal --key play.json --non-interactive
+        run: eas submit -p android --latest --track ${{ github.event.inputs.canal }} --key play.json --non-interactive
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
   ios:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'workflow_dispatch' }} # actívalo manual cuando tengas llaves de Apple
+    if: ${{ github.event.inputs.plataforma == 'ios' }}
     defaults:
       run:
         working-directory: mobile
     steps:
       - uses: actions/checkout@v4
+      - name: Centinela — la app real vive aquí, no en main
+        run: |
+          cd mobile
+          VER=$(node -p "require('./app.json').expo.version")
+          TSDK=$(node -p "require('./app.json').expo.plugins.find(p=>Array.isArray(p)&&p[0]==='expo-build-properties')[1].android.targetSdkVersion")
+          echo "rama: ${{ github.ref_name }} · versión: $VER · targetSdk: $TSDK"
+          if [ "$TSDK" -lt 36 ]; then echo "✗ targetSdk $TSDK — Google Play exige 36 desde el 31 ago 2026"; exit 1; fi
+          if [ ! -f App.js ]; then echo "✗ falta App.js — ¿rama equivocada?"; exit 1; fi
+          echo "✓ centinela en verde"
       - uses: actions/setup-node@v4
         with:
           node-version: 20
