@@ -10031,5 +10031,28 @@ bootTriggui();
   decide();
 }catch(e){} })();
 </script>
+<script id="tg-eventos-vercel">
+/* ═══ EVENTOS DE VERCEL ═══ Se sirven desde el propio dominio: los bloqueadores
+   de rastreo casi nunca los detienen, a diferencia de GA4. Solo acciones con
+   intención real. Este bloque es IDÉNTICO en public/ y public/kids/ (doctrina
+   de paridad byte a byte). */
+(function () {
+  function ev(n, d) { try { if (window.va) window.va("event", { name: n, data: d || {} }); } catch (e) {} }
+  window.__tgEvento = ev;
+  document.addEventListener("click", function (e) {
+    var t = e.target && e.target.closest ? e.target : null;
+    if (!t || !t.closest) return;
+    if (t.closest("#tgLike")) ev("guardar_espiral", {});
+    else if (t.closest("#tgDado")) ev("dado_azar", {});
+    else if (t.closest("#tgEsp") || t.closest('a[href*="/espiral/"]')) ev("portal_click", {});
+    else if (t.closest("#tgLibro")) ev("tarjeta_abierta", {});
+    else if (t.closest('a[href*="wa.me"]')) ev("whatsapp_click", {});
+  }, true);
+  try {
+    var bm = document.getElementById("bmForm") || document.querySelector("form");
+    if (bm) bm.addEventListener("submit", function () { ev("barra_consulta", {}); });
+  } catch (e) {}
+})();
+</script>
 </body>
 </html>
