@@ -1,10 +1,11 @@
 import { StatusBar } from 'expo-status-bar';
-import { Platform, BackHandler, View, Animated, StyleSheet, Easing, useWindowDimensions, TouchableOpacity, Text } from 'react-native';
+import { Platform, BackHandler, View, Animated, StyleSheet, Easing, useWindowDimensions, TouchableOpacity, Text, Linking } from 'react-native';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
+import NetInfo from '@react-native-community/netinfo';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // TRIGGUI — DIVINE SIGNATURE SPLASH (final)
@@ -126,6 +127,31 @@ function AppInner() {
   const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = useWindowDimensions();
 
   const uri = 'https://app.triggui.com';
+
+  // ── RED: sin conexión, el lector merece una explicación, no una pantalla vacía ──
+  const [sinRed, setSinRed] = useState(false);
+  useEffect(() => {
+    const quitar = NetInfo.addEventListener((estado) => {
+      setSinRed(!(estado && estado.isConnected !== false));
+    });
+    return () => { try { quitar(); } catch (e) {} };
+  }, []);
+
+  // ── ENLACES EXTERNOS: lo que no es Triggui se abre en el navegador del sistema ──
+  // Antes quedaban atrapados dentro del WebView (Buscalibre, Amazon, YouTube).
+  const esNuestro = useCallback((url) => {
+    try {
+      const u = String(url || '');
+      if (!/^https?:/i.test(u)) return true;
+      return /^https?:\/\/([\w-]+\.)*triggui\.com(\/|$|:)/i.test(u);
+    } catch (e) { return true; }
+  }, []);
+  const filtrarNavegacion = useCallback((req) => {
+    const url = req && req.url;
+    if (esNuestro(url)) return true;
+    try { Linking.openURL(url); } catch (e) {}
+    return false;
+  }, [esNuestro]);
   const webViewRef = useRef(null);
 
   // Paleta de esta sesión (se elige UNA vez al montar, no cambia durante runtime)
@@ -458,6 +484,19 @@ function AppInner() {
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
+      {sinRed ? (
+        <View style={styles.sinRed}>
+          <Text style={styles.sinRedTitulo}>Sin conexión</Text>
+          <Text style={styles.sinRedTexto}>Triggui te espera. En cuanto vuelva el internet, aquí sigue.</Text>
+          <TouchableOpacity
+            style={styles.sinRedBoton}
+            accessibilityRole="button"
+            onPress={() => { setSinRed(false); try { webViewRef.current && webViewRef.current.reload(); } catch (e) {} }}
+          >
+            <Text style={styles.sinRedBotonTexto}>Reintentar</Text>
+          </TouchableOpacity>
+        </View>
+      ) : null}
 
       {/* CAPA 2: WebView anclado al área visible por insets reactivos.
           paddingTop = barra de estado, paddingBottom = barra de navegación.
@@ -497,6 +536,8 @@ function AppInner() {
           onLoadStart={handleLoadStart}
           onLoadEnd={handleLoadEnd}
           onNavigationStateChange={handleNavigationStateChange}
+          onShouldStartLoadWithRequest={filtrarNavegacion}
+          onError={() => setSinRed(true)}
           injectedJavaScript={injectedJS}
           injectedJavaScriptBeforeContentLoaded={injectedBeforeLoad}
         />
@@ -604,6 +645,15 @@ function AppInner() {
 }
 
 const styles = StyleSheet.create({
+  sinRed: {
+    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+    alignItems: 'center', justifyContent: 'center', paddingHorizontal: 34,
+    backgroundColor: 'rgba(11,15,26,0.97)', zIndex: 40,
+  },
+  sinRedTitulo: { color: '#F5F0E8', fontSize: 22, fontWeight: '800', letterSpacing: -0.4, marginBottom: 10 },
+  sinRedTexto: { color: 'rgba(245,240,232,0.62)', fontSize: 14.5, lineHeight: 21, textAlign: 'center', marginBottom: 22 },
+  sinRedBoton: { backgroundColor: '#F5F0E8', paddingHorizontal: 26, paddingVertical: 12, borderRadius: 999 },
+  sinRedBotonTexto: { color: '#0B0F1A', fontSize: 14, fontWeight: '700', letterSpacing: 0.2 },
   // Base negra persistente — flex:1, llena toda la pantalla (incl. detrás de barras).
   container: { flex: 1, backgroundColor: '#000000' },
 
