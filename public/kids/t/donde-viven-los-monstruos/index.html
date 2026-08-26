@@ -1868,8 +1868,23 @@ function armarCuerpo(){
     colores: L.colores, textColors: L.textColors,
     autor: L.autor, accent: accent || (L.colores[1] || '')
   };
-  if (notas.bocado) payload.bocado = notas.bocado;
-  if (notas.eco) payload.eco = notas.eco;
+  /* 🌐 El bocado y el eco viajan EN PAR: se busca el gemelo por posición en los
+     dos pools (español e inglés) para que el portal pueda voltearlos después. */
+  var __poolES = ((typeof state !== 'undefined' && state._bes && state._bes.length) ? state._bes
+                  : ((typeof state !== 'undefined' && state.bocadoEcoPool) || []));
+  var __poolEN = ((typeof state !== 'undefined' && state.bocadoEcoPool_en) || []);
+  function __txtP(o){ return (o && typeof o === 'object') ? String(o.phrase || '') : String(o || ''); }
+  function __gemelo(t){
+    var n = String(t || '');
+    var largo = Math.max(__poolES.length, __poolEN.length);
+    for (var gi = 0; gi < largo; gi++) {
+      var es = __txtP(__poolES[gi]), en = __txtP(__poolEN[gi]);
+      if (es === n || en === n) return { es: es || n, en: en || '' };
+    }
+    return { es: n, en: '' };
+  }
+  if (notas.bocado) { var __gb = __gemelo(notas.bocado); payload.bocado = __gb.es; payload.bocado_en = __gb.en; }
+  if (notas.eco) { var __ge = __gemelo(notas.eco); payload.eco = __ge.es; payload.eco_en = __ge.en; }
   var rl = rutaLibro();
   var cuerpo = new URLSearchParams();
   cuerpo.append('accion', 'marcar');
