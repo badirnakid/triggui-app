@@ -1872,13 +1872,19 @@ function armarCuerpo(){
   var __poolEN = ((typeof state !== 'undefined' && state.bocadoEcoPool_en) || []);
   function __txtP(o){ return (o && typeof o === 'object') ? String(o.phrase || '') : String(o || ''); }
   function __gemelo(t){
-    var n = String(t || '');
-    var largo = Math.max(__poolES.length, __poolEN.length);
-    for (var gi = 0; gi < largo; gi++) {
-      var es = __txtP(__poolES[gi]), en = __txtP(__poolEN[gi]);
-      if (es === n || en === n) return { es: es || n, en: en || '' };
-    }
-    return { es: n, en: '' };
+    /* Los pools ES y EN NO tienen la misma longitud (8 vs 4 es habitual), así que
+       emparejar por posición falla. Se localiza la frase en su propio pool y se
+       toma la inglesa por posición relativa: siempre del mismo libro, siempre
+       una frase válida, y determinista para que no cambie entre visitas. */
+    var n = String(t || ''), idx = -1;
+    for (var a = 0; a < __poolES.length; a++) if (__txtP(__poolES[a]) === n) { idx = a; break; }
+    if (idx < 0) for (var c = 0; c < __poolEN.length; c++) if (__txtP(__poolEN[c]) === n) { idx = c; break; }
+    if (idx < 0) idx = 0;
+    var es = __txtP(__poolES.length ? __poolES[idx % __poolES.length] : '') || n;
+    var en = __txtP(__poolEN.length ? __poolEN[idx % __poolEN.length] : '');
+    /* si la frase venía en inglés (toggle en EN), ella misma es la inglesa */
+    for (var d = 0; d < __poolEN.length; d++) if (__txtP(__poolEN[d]) === n) { en = n; break; }
+    return { es: es, en: en };
   }
   if (notas.bocado) { var __gb = __gemelo(notas.bocado); payload.bocado = __gb.es; payload.bocado_en = __gb.en; }
   if (notas.eco) { var __ge = __gemelo(notas.eco); payload.eco = __ge.es; payload.eco_en = __ge.en; }
