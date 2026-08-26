@@ -1415,6 +1415,7 @@ function vigilarCabezas(){
   for (var i = 0; i < cabezas.length; i++) ojo.observe(cabezas[i]);
 }
 
+window.__pvRepinta = function(){ ultimaFirma = null; try{ pintar(); }catch(e){} };
 function pintar(){
   var firma = JSON.stringify([estado.nombre, estado.filas]);
   if (firma === ultimaFirma) return; // nada cambio: quietud absoluta
