@@ -1870,7 +1870,7 @@ body.hoja-abierta #hud-volver{display:none}
 /* Pill de idioma: se coloca MIDIENDO en vivo lo que ya vive arriba (la barra de
    progreso con su carita en la hélice, el saludo en guardados) y queda debajo,
    nunca encima. Si no cabe, no nace. */
-#tgLangPill{position:fixed;top:var(--tg-pill-top,72px);right:14px;z-index:60;display:flex;
+#tgLangPill{position:fixed;top:calc(68px + env(safe-area-inset-top,0px));right:14px;z-index:60;display:flex;
   background:rgba(12,14,22,.72);border:.5px solid rgba(255,255,255,.14);border-radius:99px;padding:3px;
   font:600 11px/1 'Manrope',system-ui,sans-serif;letter-spacing:.01em;cursor:pointer;
   -webkit-tap-highlight-color:transparent;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
@@ -1929,7 +1929,9 @@ body.hoja-abierta #tgLangPill,body.puerta-abierta #tgLangPill{display:none}
         var r = e.getBoundingClientRect();
         if (r.height > 0 && r.top < 220) tope = Math.max(tope, Math.round(r.bottom));
       }
-      document.documentElement.style.setProperty("--tg-pill-top", (tope + 14) + "px");
+      /* posición fija: el cálculo dinámico mareaba. Se conserva la medición
+         solo por si algún día hace falta diagnosticar. */
+      void tope;
     } catch (e) {}
   }
   function pinta() {
