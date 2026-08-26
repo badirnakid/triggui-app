@@ -59,8 +59,8 @@ body.hoja-abierta #hud-volver,body.hoja-abierta #hud-salir{display:none}   /* so
    en las columnas libres: bordes a 12px (mismos de ← REGRESAR / CERRAR SESIÓN), 10px sobre ellos.
    Círculo de 44 ⇒ borde derecho izq en 56 y borde izq der en 334 @390px: la portada [138,252] queda
    a ≥82px de cada uno — amenaza geométricamente imposible. Desaparecen con la hoja abierta. */
-.puente-pie{position:fixed;bottom:calc(53px + env(safe-area-inset-bottom));z-index:8;box-sizing:border-box;width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:linear-gradient(180deg,rgba(30,34,52,.96),rgba(18,21,34,.96));border:1px solid rgba(255,255,255,.16);box-shadow:0 6px 18px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.08);font-size:19px;line-height:1;text-decoration:none;-webkit-tap-highlight-color:transparent;transition:transform .16s ease,border-color .16s ease}
-.puente-pie:active{transform:scale(.94)}
+.puente-pie{position:fixed;bottom:calc(66px + env(safe-area-inset-bottom));z-index:8;box-sizing:border-box;width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:linear-gradient(180deg,rgba(30,34,52,.96),rgba(18,21,34,.96));border:1px solid rgba(255,255,255,.16);box-shadow:0 6px 18px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.08);font-size:19px;line-height:1;text-decoration:none;-webkit-tap-highlight-color:transparent;transition:transform .16s ease,border-color .16s ease}
+.puente-pie::after{content:attr(data-nombre);position:absolute;top:calc(100% + 5px);left:50%;transform:translateX(-50%);font:700 8.5px/1 'Manrope',system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.62);white-space:nowrap;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,.8)}.puente-pie{position:fixed}@media (max-height:680px){.puente-pie::after{display:none}}.puente-pie:active{transform:scale(.94)}
 .puente-pie:hover{border-color:rgba(255,255,255,.3)}
 #puenteGuardados{left:12px}
 #puenteBarra{right:12px}
@@ -227,6 +227,13 @@ function __bootSync(clave, listo){
   }catch(e){} }
 window.PV_LANG=(function(){try{var s=JSON.parse(localStorage.getItem('triggui_lang')||'null');if(s==='en'||s==='es')return s;}catch(e){}return ((navigator.language||'es').slice(0,2)==='en')?'en':'es';})();
 window.pvT=window.pvT||function(es,en){return (window.PV_LANG==='en')?en:es;};
+try{
+  /* Nombre visible bajo cada puente: nadie tiene que adivinar a dónde lleva la carita. */
+  var __pg2=document.getElementById('puenteGuardados');
+  if(__pg2) __pg2.setAttribute('data-nombre', window.pvT('Guardados','Saved'));
+  var __pb2=document.getElementById('puenteBarra');
+  if(__pb2) __pb2.setAttribute('data-nombre', window.pvT('Barra','Bar'));
+}catch(e){}
 if(window.PV_LANG==='en'){try{var _pg=document.getElementById('puenteGuardados'); if(_pg)_pg.setAttribute('aria-label','Go to saved'); var _pb=document.getElementById('puenteBarra'); if(_pb)_pb.setAttribute('aria-label','Open the magic bar');}catch(e){}}
 window.pvTitulo=function(b){return (PV_LANG==='en'&&b&&b.titulo_en)?b.titulo_en:((b&&b.titulo)||'');};
 window.pvBloques=function(b){var n=(b&&b._nucleus)||{};return (PV_LANG==='en'&&n.edition_blocks_en&&n.edition_blocks_en.length)?n.edition_blocks_en:(n.edition_blocks_es||[]);};
