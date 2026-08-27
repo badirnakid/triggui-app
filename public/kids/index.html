@@ -5,7 +5,12 @@
 <script>
 /* 🌀 v4.2: REGRESO desde la espiral — decidido ANTES del primer paint. Si hay foto valida,
    html.regresando deja la barra magica fuera del render en esta carga (la app repone la pantalla). */
-try{var __r=JSON.parse(sessionStorage.getItem('triggui_regreso')||'null');if(__r&&__r.libro&&__r.ruta===location.pathname&&(Date.now()-(__r.t||0))<6*3600*1000){document.documentElement.classList.add('regresando');if(__r.tarjeta){document.documentElement.classList.add('regresando-tarjeta');document.documentElement.classList.add('regresando-fuentes');setTimeout(function(){document.documentElement.classList.remove('regresando-tarjeta');},4000);setTimeout(function(){document.documentElement.classList.remove('regresando-fuentes');},800);}}}catch(e){}
+/* 🔍 La lupa pide la barra con ?barra=1. Si el usuario la pidió EXPLÍCITAMENTE,
+   la reposición de pantalla NO debe ocurrir: la clase 'regresando' deja el
+   overlay en display:none !important y ningún openOverlay puede vencerlo.
+   Antes había que tocar la lupa dos veces: la primera reponía, la segunda abría. */
+try{if(location.search.indexOf('barra=1')>=0){sessionStorage.removeItem('triggui_regreso');}}catch(e){}
+try{var __r=JSON.parse(sessionStorage.getItem('triggui_regreso')||'null');if(__r&&__r.libro&&__r.ruta===location.pathname&&(Date.now()-(__r.t||0))<6*3600*1000&&location.search.indexOf('barra=1')<0){document.documentElement.classList.add('regresando');if(__r.tarjeta){document.documentElement.classList.add('regresando-tarjeta');document.documentElement.classList.add('regresando-fuentes');setTimeout(function(){document.documentElement.classList.remove('regresando-tarjeta');},4000);setTimeout(function(){document.documentElement.classList.remove('regresando-fuentes');},800);}}}catch(e){}
 </script>
 <style id="regreso-css">html.regresando.mood-active #barraMagicaOverlay,html.regresando #barraMagicaOverlay{display:none !important;opacity:0 !important;pointer-events:none !important}
 /* 🌒 v4.9: regreso con la Tarjeta abierta: primer cuadro pintado = la Tarjeta, sin fundidos ni flash de los bloques */
