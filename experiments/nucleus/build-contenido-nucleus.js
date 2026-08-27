@@ -116,7 +116,7 @@ import { judgeAllVoiceLayers, regeneratePhrasesByFeedback } from "./voice-judge-
 import { extractCSAL } from "./csal-extractor.js";
 import { validateFinalNucleus } from "./quality-validator.js";
 import { generateFallbackCover } from "./typographic-cover.js";
-import { selectBestCover, checkImageURL } from "./evidence-fetcher.js";
+import { selectBestCover, checkImageURL, fetchEvidence } from "./evidence-fetcher.js";
 
 // ⭐ STEP 3 ⭐ — imports del sistema modular de lentes
 import { composeLensSystemBlock, diagnose as diagnoseLenses } from "./prompt-composer.js";
@@ -543,6 +543,44 @@ async function processBook(book, inputs, inputsSnapshot) {
         console.log(`   ⚠ v3.6: rescate también devolvió URL inválida (${bestCover.url.slice(0, 60)}) — saltando a SVG`);
       }
     } else if (groundTruthMeta.evidence._status === "EXHAUSTED") {
+      // ⭐ v3.8 — SEGUNDA OPORTUNIDAD CON LA IDENTIDAD YA RESUELTA
+      // Las fuentes rechazan portadas comparando contra el título del CSV. Ejemplo real:
+      // "Kiki Entregas a Domicilio" vs "Kiki's Delivery Service Film Comic" → sim 0.38 → RECHAZO.
+      // Pero extractAnchors YA resolvió el título canónico unas líneas más arriba
+      // (📘 Identity). Aquí se reintenta la búsqueda con ese título antes de rendirse.
+      // Coste: cero llamadas al LLM (el dato ya está calculado) y solo ocurre en libros
+      // que de otro modo caerían al SVG — nunca en el camino feliz.
+      let __rescatadoPorIdentidad = false;
+      try {
+        const __idn = (anchorsData && anchorsData.book_identity) || {};
+        const __actual = String(book.titulo || "").trim().toLowerCase();
+        const __cands = [__idn.titulo_en, __idn.titulo_es]
+          .map((t) => String(t || "").trim())
+          .filter((t) => t && t.toLowerCase() !== __actual);
+        const __autorCanon = String(__idn.autor_completo || book.autor || "").trim();
+        const __vistos = new Set();
+        for (const __tc of __cands) {
+          if (__vistos.has(__tc.toLowerCase())) continue;
+          __vistos.add(__tc.toLowerCase());
+          console.log(`   🔁 v3.8 Segunda oportunidad con la identidad resuelta: "${__tc}"`);
+          const __ev2 = await fetchEvidence({ ...book, titulo: __tc, autor: __autorCanon, _evidence: null });
+          const __c2 = selectBestCover(__ev2);
+          if (__c2 && __c2.url && (await checkImageURL(__c2.url))) {
+            book.portada = __c2.url;
+            book.portada_url = __c2.url;
+            book.portada_source = `${__c2.source}_${__c2.size}`;
+            book.portada_rescued_from_evidence = true;
+            book.portada_rescued_by_identity = __tc;
+            console.log(`   🎯 v3.8 RESCATE POR IDENTIDAD: ${__c2.source}/${__c2.size} usando "${__tc}"`);
+            __rescatadoPorIdentidad = true;
+            break;
+          }
+          console.log(`   · v3.8 sin portada con "${__tc}"`);
+        }
+      } catch (__e) {
+        console.error(`   ⚠ v3.8 reintento por identidad falló: ${String((__e && __e.message) || __e).slice(0, 90)}`);
+      }
+      if (!__rescatadoPorIdentidad) {
       // v3.7: selectBestCover no devolvió URL y evidence está EXHAUSTED.
       // Diagnóstico ruidoso antes de caer al SVG typográfico — esto convierte
       // el fallback silencioso en auditable. Cada fuente reporta su reason.
@@ -556,6 +594,7 @@ async function processBook(book, inputs, inputsSnapshot) {
       console.error(`      isbn_discovered:     ${ev.isbn_discovered || "(ninguno)"}`);
       console.error(`      → cae a SVG typográfico — requiere intervención manual o cascade externo`);
       book.portada_evidence_exhausted = true;
+      }
     }
   }
 
