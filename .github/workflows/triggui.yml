@@ -867,6 +867,44 @@ jobs:
       # ║  FASE 7 — Generar assets (solo single/trigger)                    ║
       # ╚══════════════════════════════════════════════════════════════════╝
 
+      # ═══════════════════════════════════════════════════════════════════════
+      # 🧹 SINCRONIZAR MANIFIESTO CON EL CATÁLOGO (post-cuarentena)
+      # La auditoría en auto-fix RETIRA libros a cuarentena (p. ej. sin portada
+      # real). El manifiesto se escribió ANTES, así que sigue nombrándolos y
+      # build-editions revienta con V14 ABORT al no encontrarlos — tirando el
+      # lote entero, ya generado y aún sin commitear.
+      # ═══════════════════════════════════════════════════════════════════════
+      - name: 🧹 Sincronizar manifiesto con el catálogo (post-cuarentena)
+        env:
+          CATALOGO: ${{ inputs.catalogo == 'kids' && 'contenido_kids.json' || 'contenido.json' }}
+        run: |
+          set -euo pipefail
+          if [ ! -f /tmp/triggui-batch.jsonl ]; then
+            echo "ℹ️  Sin manifiesto — nada que sincronizar"; exit 0
+          fi
+          if [ ! -f "$CATALOGO" ]; then
+            echo "⚠️  $CATALOGO no está en el workspace — manifiesto intacto"; exit 0
+          fi
+          node -e "
+            const fs = require('fs');
+            const cat = JSON.parse(fs.readFileSync(process.env.CATALOGO, 'utf8').trim());
+            const vivos = new Set((cat.libros || []).map(function (l) {
+              return String((l && (l._slug || l.slug)) || '').toLowerCase();
+            }));
+            const lineas = fs.readFileSync('/tmp/triggui-batch.jsonl', 'utf8')
+              .split('\n').filter(function (x) { return x.trim(); });
+            const quedan = []; const fuera = [];
+            for (const ln of lineas) {
+              let s = '';
+              try { const o = JSON.parse(ln); s = String((o._slug || o.slug) || '').toLowerCase(); } catch (e) {}
+              if (s && vivos.has(s)) quedan.push(ln); else fuera.push(s || '(sin slug)');
+            }
+            fs.writeFileSync('/tmp/triggui-batch.jsonl', quedan.join('\n') + (quedan.length ? '\n' : ''));
+            console.log('🧹 manifiesto: ' + lineas.length + ' → ' + quedan.length + ' libro(s)');
+            if (fuera.length) console.log('   descartados (cuarentena o ausentes): ' + fuera.join(', '));
+            if (!quedan.length) console.log('   ⚠️ manifiesto vacío — sin ediciones HTML este run');
+          "
+
       - name: 🌐 Generar edición viva HTML
         if: ${{ inputs.generar_imagenes && (steps.modo.outputs.modo_tecnico == 'single_book' || steps.modo.outputs.modo_tecnico == 'trigger_constrained' || steps.modo.outputs.modo_tecnico == 'trigger_discover' || steps.modo.outputs.modo_tecnico == 'production_batch') }}
         env:
