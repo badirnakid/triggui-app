@@ -1729,7 +1729,7 @@ __BTN_CSS__
 @media (prefers-reduced-motion: reduce){#vinilo.on,#vinilo::after,#vinLuz,#vinNucleo,#vinSonar,#vinIcoPlay{animation:none !important}}
 #vinilo.fuera{display:none !important}
 #vinilo::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(145deg,rgba(255,255,255,.18) 0%,rgba(255,255,255,.08) 40%,transparent 100%);pointer-events:none;z-index:1}
-#vinilo.abierta{left:1.5vw;right:1.5vw;width:auto;transform:none;border-radius:24px;padding:0 12px 0 10px;overflow:hidden}
+#vinilo.abierta{left:1.5vw;right:1.5vw;width:auto;transform:none;border-radius:24px;height:auto;min-height:clamp(3.5rem,min(8vw,8vh),4.5rem);padding:9px 12px 9px 10px;overflow:hidden}
 #vinAro{position:absolute;inset:-3.5px;border-radius:50%;background:conic-gradient(var(--accent,#fff) var(--vin-p,0%),rgba(255,255,255,.14) 0);z-index:-1;opacity:0;transition:opacity .3s}
 #vinilo.sonando:not(.abierta) #vinAro{opacity:1;filter:drop-shadow(0 0 5px color-mix(in srgb,var(--accent,#fff) 70%,transparent))}
 #vinCometa{position:absolute;left:50%;top:50%;width:7px;height:7px;margin:-3.5px;border-radius:50%;background:radial-gradient(circle,#fff 0 35%,var(--accent,#fff) 70%,transparent);box-shadow:0 0 8px var(--accent,#fff),0 0 3px #fff;opacity:0;transform:rotate(var(--vin-a,0deg)) translateY(-29.5px);pointer-events:none;z-index:1}
@@ -1745,6 +1745,8 @@ __BTN_CSS__
 #viniloMeta{flex:1;min-width:0;text-align:left}
 #viniloTit{font:600 12.5px/1.3 'Poppins',sans-serif;color:rgba(255,255,255,.96);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,.35)}
 #viniloArt{font:500 11px/1.3 'Poppins',sans-serif;color:rgba(255,255,255,.62);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,.35)}
+#viniloPie{display:none;font:italic 500 10.5px/1.4 'Poppins',sans-serif;color:rgba(255,255,255,.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,.35);margin-top:2px}
+#vinilo.abierta #viniloPie:not(:empty){display:block}
 #viniloLink{flex:0 0 auto;display:flex;align-items:center;text-decoration:none;z-index:2}
 #viniloLink img{height:21px;display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}
 #vinBar{position:absolute;left:0;top:0;height:2px;width:var(--vin-p,0%);background:linear-gradient(90deg,var(--accent,#fff),#fff);box-shadow:0 0 9px var(--accent,#fff),0 0 2px #fff;opacity:0;transition:width .25s linear,opacity .2s;z-index:3}
@@ -1777,7 +1779,7 @@ __BTN_CSS__
   </button>
   <div class="vinExt">
     <img id="viniloCov" alt="" />
-    <div id="viniloMeta"><div id="viniloTit"></div><div id="viniloArt"></div></div>
+    <div id="viniloMeta"><div id="viniloTit"></div><div id="viniloArt"></div><div id="viniloPie"></div></div>
     <a id="viniloLink" href="#" target="_blank" rel="noopener noreferrer" aria-label="Apple Music"><img id="vinBadge" src="https://tools.applemediaservices.com/api/badges/listen-on-apple-music/badge/es-mx" alt="Apple Music" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'Apple Music ↗',style:'font:600 11px Poppins;color:rgba(255,255,255,.75)'}))" /></a>
   </div>
   <div id="vinBar"></div>
@@ -1861,7 +1863,7 @@ const TG_COVER_SRC = __TG_COVER_SRC__;
     if(pa<0&&pb<0) return 0; if(pa<0) return 1; if(pb<0) return -1;
     if(pa!==pb) return pa-pb; return (b.armonia||0)-(a.armonia||0); });
   var el=document.getElementById('vinilo'), nuc=document.getElementById('vinNucleo'),
-      tit=document.getElementById('viniloTit'), art=document.getElementById('viniloArt'),
+      tit=document.getElementById('viniloTit'), art=document.getElementById('viniloArt'), pie=document.getElementById('viniloPie'),
       lnk=document.getElementById('viniloLink'), cov=document.getElementById('viniloCov'),
       bdg=document.getElementById('vinBadge'),
       icoP=document.getElementById('vinIcoPlay'), icoS=document.getElementById('vinIcoPause');
@@ -1875,7 +1877,7 @@ const TG_COVER_SRC = __TG_COVER_SRC__;
       if(b){ var cs=getComputedStyle(b);
         if(cs.backgroundImage&&cs.backgroundImage!=='none'){ el.style.backgroundImage=cs.backgroundImage; el.style.backgroundSize='200% 200%'; return; } } }catch(e){}
     if(intento<30) setTimeout(function(){heredaMaterial(intento+1);},100); }
-  function pinta(){ var c=cola[i]; tit.textContent=c.cancion; art.textContent=c.artista;
+  function pinta(){ var c=cola[i]; tit.textContent=c.cancion; art.textContent=c.artista; pie.textContent=c.pie||'';
     if(c.link) lnk.href=c.link; if(c.art){ cov.src=c.art; cov.alt=c.album||c.cancion; }
     el.style.setProperty('--vin-p','0%'); badgeLang(); }
   function icon(p){ icoP.style.display=p?'none':'block'; icoS.style.display=p?'block':'none';
