@@ -1865,7 +1865,7 @@ const TG_COVER_SRC = __TG_COVER_SRC__;
       lnk=document.getElementById('viniloLink'), cov=document.getElementById('viniloCov'),
       bdg=document.getElementById('vinBadge'),
       icoP=document.getElementById('vinIcoPlay'), icoS=document.getElementById('vinIcoPause');
-  var i=0, au=new Audio(), fadeT=null, cierraT=null, played={};
+  var i=0, au=new Audio(), fadeT=null, cierraT=null, played={}, fallos=0;
   au.preload='none';
   function badgeLang(){ if(!bdg||!bdg.src) return;
     var l=(window.tgLang==='en')?'en-us':'es-mx';
@@ -1885,18 +1885,21 @@ const TG_COVER_SRC = __TG_COVER_SRC__;
   function reagenda(){ clearTimeout(cierraT); cierraT=setTimeout(cierra,4000); }
   function apaga(avanza){ if(fadeT){clearInterval(fadeT);fadeT=null;} try{au.pause();}catch(e){} icon(false);
     if(avanza){ i=(i+1)%cola.length; pinta(); el.style.setProperty('--vin-a','0deg'); } }
+  function sigue(){ if(fadeT){clearInterval(fadeT);fadeT=null;} au.volume=1;
+    i=(i+1)%cola.length; pinta(); play(); }
   function despedida(){ if(fadeT) return; var v=au.volume; fadeT=setInterval(function(){ v-=0.09;
-    if(v<=0){ apaga(true); au.volume=1; } else { try{au.volume=Math.max(0,v);}catch(e){} } },180); }
+    if(v<=0){ sigue(); } else { try{au.volume=Math.max(0,v);}catch(e){} } },180); }
   au.addEventListener('timeupdate',function(){ var t=au.currentTime;
     var pc=Math.min(100,(t/30)*100);
     el.style.setProperty('--vin-p',pc+'%');
     el.style.setProperty('--vin-a',(Math.round(pc*36)/10)+'deg');
     if(t>=28) despedida(); });
-  au.addEventListener('ended',function(){ apaga(true); au.volume=1; });
-  au.addEventListener('error',function(){ apaga(true); });
+  au.addEventListener('ended',function(){ sigue(); });
+  au.addEventListener('error',function(){ fallos++;
+    if(fallos>=cola.length){ fallos=0; apaga(false); } else { sigue(); } });
   function play(){ var c=cola[i]; if(fadeT){clearInterval(fadeT);fadeT=null;} au.volume=1;
     if(au.src!==c.preview){ au.src=c.preview; }
-    au.play().then(function(){ icon(true);
+    au.play().then(function(){ icon(true); fallos=0;
       if(!played[c.id]){ played[c.id]=1;
         try{gtag('event','musica_play',{slug:(state.id||''),cancion:c.cancion,artista:c.artista,rol:c.rol||'',franja:franja});}catch(e){} }
       try{ if('mediaSession' in navigator){
