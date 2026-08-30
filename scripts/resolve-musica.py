@@ -330,7 +330,10 @@ def mapa_queries(b):
 
 
 def _huella(x):
-    return _norm(x.get("cancion","")) + "|" + _norm((x.get("artista","").split(",")[0].split("&")[0]))
+    c = re.split(r"[\(\[]| - | – ", x.get("cancion",""))[0]
+    c = re.sub(r"\b(feat\.?|ft\.?|remix|live|edit|version|versión)\b.*$", "", c, flags=re.I)
+    a = re.split(r"[,&]|\bfeat", x.get("artista",""), flags=re.I)[0]
+    return _norm(c).strip() + "|" + _norm(a).strip()
 
 
 def componer_queries(b, c, st):
@@ -529,8 +532,11 @@ def procesa(ruta, c, cache, st, hoy=None):
     if not isinstance(libros, list):
         print("  ! %s: sin .libros — se omite" % ruta)
         return
+    for _b in libros:  # siembra: lo ya coronado en el catálogo es territorio ocupado
+        for _x in ((_b.get("_musica") or {}).get("candidatos") or []):
+            st.setdefault("usadas", set()).add(_huella(_x))
     cambios = 0
-    print("── %s: %d libros" % (ruta, len(libros)))
+    print("── %s: %d libros · memoria sembrada: %d huellas" % (ruta, len(libros), len(st.get("usadas") or ())))
     for b in libros:
         ok, motivo = elegible(b, c, hoy)
         nombre = (b.get("titulo", "?") if isinstance(b, dict) else "?")[:44]
