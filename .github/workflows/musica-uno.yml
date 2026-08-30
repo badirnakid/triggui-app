@@ -58,4 +58,8 @@ jobs:
           git config user.email "bot@triggui.com"
           git add contenido.json contenido_manual.json
           git diff --cached --quiet && echo "sin cambios" || git commit -m "musica re-resuelta (juez) ${{ github.event.inputs.titulo }}"
-          git push
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push && break
+            echo "push rebotado (intento $i) — main se movió; rebase y reintento"
+            sleep 4
+          done
