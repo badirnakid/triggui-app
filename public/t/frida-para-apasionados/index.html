@@ -775,22 +775,29 @@ body.tg-tarjeta .tg-cta{display:none !important}
 #tgModal.espera .tg-mtitle,#tgModal.espera .tg-mbtns{display:none}
 #tgModal.espera .tg-mtext{display:block;font-size:12px;letter-spacing:.02em;color:rgba(255,255,255,.75);margin:14px 0 0 0}
 #tgModal.espera .tg-mtext .hl{display:none}
-/* 🎵 vinilo v3 — barra anclada estilo now-playing (carátula + badge oficial; jamás isla-anuncio) */
-#vinilo{position:fixed;left:0;right:0;bottom:0;z-index:700;display:none;align-items:center;gap:12px;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));border-radius:16px 16px 0 0;background:rgba(12,12,14,.62);-webkit-backdrop-filter:blur(20px) saturate(1.3);backdrop-filter:blur(20px) saturate(1.3);border-top:1px solid rgba(255,255,255,.08);box-shadow:0 -8px 30px rgba(0,0,0,.35);overflow:hidden}
-#vinilo.on{display:flex;animation:vinSube .55s cubic-bezier(.19,1,.22,1)}
-@keyframes vinSube{from{transform:translateY(110%)}to{transform:none}}
+/* 🎵 vinilo v4 — morfosis: círculo hermano de los 5 botones ↔ barra bloque. Cota y material heredados. */
+#vinilo{position:fixed;bottom:max(3vh,env(safe-area-inset-bottom,3vh));left:50%;transform:translateX(-50%);z-index:700;display:none;align-items:center;gap:12px;width:clamp(3.5rem,min(8vw,8vh),4.5rem);height:clamp(3.5rem,min(8vw,8vh),4.5rem);padding:0;border-radius:50%;background-size:200% 200%;box-shadow:0 0 0 1px rgba(255,255,255,.15),0 6px 18px rgba(0,0,0,.35);overflow:visible;isolation:isolate;transition:width .5s cubic-bezier(.19,1,.22,1),left .5s cubic-bezier(.19,1,.22,1),right .5s cubic-bezier(.19,1,.22,1),border-radius .5s cubic-bezier(.19,1,.22,1),padding .5s cubic-bezier(.19,1,.22,1);cursor:pointer;touch-action:manipulation}
+#vinilo.on{display:flex}
 #vinilo.fuera{display:none !important}
-#viniloCov{flex:0 0 42px;width:42px;height:42px;border-radius:9px;object-fit:cover;background:rgba(255,255,255,.06);box-shadow:0 2px 10px rgba(0,0,0,.45)}
-#viniloBtn{flex:0 0 34px;width:34px;height:34px;border-radius:50%;border:0;background:var(--accent,#fff);color:#0b0b0d;display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
-#viniloBtn:active{transform:scale(.95)}
-#viniloBtn svg{width:14px;height:14px;display:block}
+#vinilo::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(145deg,rgba(255,255,255,.18) 0%,rgba(255,255,255,.08) 40%,transparent 100%);pointer-events:none;z-index:1}
+#vinilo.abierta{left:1.5vw;right:1.5vw;width:auto;transform:none;border-radius:24px;padding:0 12px 0 10px;overflow:hidden}
+#vinAro{position:absolute;inset:-3.5px;border-radius:50%;background:conic-gradient(var(--accent,#fff) var(--vin-p,0%),rgba(255,255,255,.14) 0);z-index:-1;opacity:0;transition:opacity .3s}
+#vinilo.sonando:not(.abierta) #vinAro{opacity:1}
+#vinNucleo{flex:0 0 auto;width:100%;height:100%;border:0;border-radius:50%;background:transparent;color:#fff;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;z-index:2}
+#vinilo.abierta #vinNucleo{width:38px;height:38px;flex:0 0 38px}
+#vinNucleo svg{width:17px;height:17px;display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))}
+#vinilo.respira #vinNucleo{animation:vinResp 1.7s ease-in-out 2}
+@keyframes vinResp{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.vinExt{opacity:0;width:0;overflow:hidden;display:flex;align-items:center;gap:10px;flex:1;min-width:0;transition:opacity .28s .18s;z-index:2}
+#vinilo.abierta .vinExt{opacity:1;width:auto}
+#viniloCov{flex:0 0 36px;width:36px;height:36px;border-radius:9px;object-fit:cover;background:rgba(255,255,255,.08);box-shadow:0 2px 8px rgba(0,0,0,.4)}
 #viniloMeta{flex:1;min-width:0;text-align:left}
-#viniloTit{font:600 13px/1.3 'Poppins',sans-serif;color:rgba(255,255,255,.94);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#viniloArt{font:500 11px/1.35 'Poppins',sans-serif;color:rgba(255,255,255,.55);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#viniloLink{flex:0 0 auto;display:flex;align-items:center;text-decoration:none}
-#viniloLink img{height:22px;display:block;opacity:.92}
-#viniloLink:active img{opacity:1}
-#vinBar{position:absolute;left:0;top:0;height:2px;width:0%;background:var(--accent,#fff);opacity:.95;transition:width .25s linear}
+#viniloTit{font:600 12.5px/1.3 'Poppins',sans-serif;color:rgba(255,255,255,.96);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,.35)}
+#viniloArt{font:500 11px/1.3 'Poppins',sans-serif;color:rgba(255,255,255,.62);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,.35)}
+#viniloLink{flex:0 0 auto;display:flex;align-items:center;text-decoration:none;z-index:2}
+#viniloLink img{height:21px;display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}
+#vinBar{position:absolute;left:0;top:0;height:2px;width:var(--vin-p,0%);background:var(--accent,#fff);opacity:0;transition:width .25s linear,opacity .2s;z-index:3}
+#vinilo.abierta #vinBar{opacity:.95}
 .tg-heart{position:fixed;pointer-events:none;z-index:700;font-size:24px;opacity:0;animation:tgFloatUp 1.2s ease-out forwards;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.3))}
 @keyframes tgFloatUp{0%{transform:translate(0,0) scale(0.5) rotate(0deg);opacity:0}20%{opacity:1;transform:translate(var(--tx),-40px) scale(1.2) rotate(15deg)}100%{opacity:0;transform:translate(var(--tx),-150px) scale(1) rotate(30deg)}}
 </style>
@@ -804,14 +811,17 @@ body.tg-tarjeta .tg-cta{display:none !important}
 </div>
 <div class="grid" id="grid"></div>
 
-<div id="vinilo" aria-hidden="true">
-  <img id="viniloCov" alt="" />
-  <button id="viniloBtn" type="button" aria-label="Reproducir 30 segundos">
+<div id="vinilo" aria-hidden="true" role="group" aria-label="Música de esta edición">
+  <div id="vinAro"></div>
+  <button id="vinNucleo" type="button" aria-label="Reproducir 30 segundos">
     <svg id="vinIcoPlay" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M8 5.5v13l11-6.5z"/></svg>
     <svg id="vinIcoPause" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="display:none"><path d="M7 5h3.4v14H7zM13.6 5H17v14h-3.6z"/></svg>
   </button>
-  <div id="viniloMeta"><div id="viniloTit"></div><div id="viniloArt"></div></div>
-  <a id="viniloLink" href="#" target="_blank" rel="noopener noreferrer" aria-label="Escúchala completa en Apple Music"><img src="https://tools.applemediaservices.com/api/badges/listen-on-apple-music/badge/es-mx" alt="Apple Music" onerror="this.parentNode.textContent='Apple Music ↗';this.parentNode.style.font='600 11px Poppins';this.parentNode.style.color='rgba(255,255,255,.6)'" /></a>
+  <div class="vinExt">
+    <img id="viniloCov" alt="" />
+    <div id="viniloMeta"><div id="viniloTit"></div><div id="viniloArt"></div></div>
+    <a id="viniloLink" href="#" target="_blank" rel="noopener noreferrer" aria-label="Apple Music"><img id="vinBadge" src="https://tools.applemediaservices.com/api/badges/listen-on-apple-music/badge/es-mx" alt="Apple Music" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'Apple Music ↗',style:'font:600 11px Poppins;color:rgba(255,255,255,.75)'}))" /></a>
+  </div>
   <div id="vinBar"></div>
 </div>
 
@@ -888,7 +898,9 @@ body.tg-tarjeta .tg-cta{display:none !important}
 const state = {"id": "frida-para-apasionados", "titulo": "Frida para apasionados", "autor": "Allan Percy", "palabra": "Vivir con el color de Frida", "descripcion": "La vida de Frida Kahlo es un estallido de colores y emociones. Sus pinceladas nos enseñan que la autenticidad no se encuentra en la perfección, sino en la valentía de mostrarse tal cual somos. Cada una de sus obras es un recordatorio de que conocer nuestra verdadera esencia es el primer paso para vivir con intensidad.", "palabras": ["valentía", "autenticidad", "creatividad", "intensidad"], "frases": ["👁 Pinta un cuadro de tu vida usando los colores que más resuenen contigo. Observa qué emociones surgen.", "🗺 ¿Qué sueños has dejado de lado por miedo a ser tú mismo?", "💫 Imagina cada paso que das como una pincelada en un lienzo; cada movimiento cuenta en tu obra maestra.", "⏳ Cada momento vivido con intensidad es un ladrillo más en la construcción de tu legado."], "colores": ["#F17EEB", "#30E83A", "#AE1380", "#0B6526"], "textColors": ["#FFFFFF", "#000000", "#FFFFFF", "#FFFFFF"], "ogImage": "https://app.triggui.com/t/frida-para-apasionados/og.jpg", "portada": "https://books.google.com/books/content?id=7BSiDwAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api", "tagline": "", "frases_en": ["👁 Dive into your experiences. Each moment is a brushstroke on your canvas.", "🗺 What would happen if you allowed yourself to feel fully?", "💫 Picture your life as a vibrant mural, each color telling your story.", "🌬 In the chaos of creation, serenity finds its voice."], "palabras_en": ["courage", "intensity", "authenticity", "creativity"], "i18nEn": {"cardTitle": "Live with the Colors of Frida", "top": "<span class=\"tg-hl\">Frida Kahlo&#x27;s life is an explosion of colors and emotions.</span> Her brushstrokes teach us that authenticity is not found in perfection, but in the courage to reveal ourselves as we truly are. Each of her works serves as a reminder that knowing our true essence is the first step to living with intensity.", "sub": "How can you unleash your creativity?", "bot": "<span class=\"tg-hl\">To unleash our inner creativity, we must dare to explore the unknown.</span> Frida teaches us that every experience, even the painful ones, can be transformed into an inexhaustible source of inspiration. Life is a blank canvas, and we are the ones who decide the colors with which we paint it."}, "bocadoEcoPool": [{"phrase": "👁 Pinta un cuadro de tu vida usando los colores que más resuenen contigo. Observa qué emociones surgen.", "rol": "profundizar", "animo": 0.6, "origin": "edition_block_es"}, {"phrase": "🗺 ¿Qué sueños has dejado de lado por miedo a ser tú mismo?", "rol": "abrir", "animo": 0.4, "origin": "edition_block_es"}, {"phrase": "💫 Imagina cada paso que das como una pincelada en un lienzo; cada movimiento cuenta en tu obra maestra.", "rol": "resonar", "animo": 0.5, "origin": "edition_block_es"}, {"phrase": "⏳ Cada momento vivido con intensidad es un ladrillo más en la construcción de tu legado.", "rol": "aterrizar", "animo": 0.7, "origin": "edition_block_es"}, {"phrase": "🌿 La autenticidad florece en el alma que se atreve a ser valiente.", "rol": "aterrizar", "animo": 0.6, "origin": "og_phrase_es"}, {"phrase": "🧭 ¿Qué colores estás eligiendo para tu propia vida?", "rol": "abrir", "animo": 0.5, "origin": "og_phrase_es"}, {"phrase": "🔍 Explora cada trazo de tu vida como lo haría Frida: con pasión.", "rol": "profundizar", "animo": 0.7, "origin": "og_phrase_es"}, {"phrase": "💠 El arte de vivir se encuentra en la autenticidad y la autoexpresión.", "rol": "resonar", "animo": 0.5, "origin": "og_phrase_es"}], "bocadoEcoPool_en": ["👁 Dive into your experiences. Each moment is a brushstroke on your canvas.", "🗺 What would happen if you allowed yourself to feel fully?", "💫 Picture your life as a vibrant mural, each color telling your story.", "🌬 In the chaos of creation, serenity finds its voice."], "musica": [{"id": "556475553", "cancion": "La Llorona", "artista": "Chavela Vargas", "album": "Las 30 grandes de Chavela Vargas", "genero": "Música mexicana", "dur": 511, "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/70/07/38/700738d9-0ee1-a042-566e-8da39abfd6ba/mzaf_8024037695567382638.plus.aac.p.m4a", "link": "https://music.apple.com/mx/album/la-llorona/556475551?i=556475553&uo=4", "art": "https://is1-ssl.mzstatic.com/image/thumb/Features124/v4/25/90/17/2590170b-c7a8-15cc-32db-4877385fee48/dj.nnpklwxp.jpg/600x600bb.jpg", "armonia": 10, "rol": "aterrizar", "pie": "Chavela canta la valentía de ser uno mismo, un eco perfecto para Frida.", "frase_eco": "La autenticidad florece en el alma que se atreve a ser valiente."}, {"id": "1440762319", "cancion": "Nuvole Bianche", "artista": "Ludovico Einaudi", "album": "Una Mattina", "genero": "Clásica", "dur": 357, "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/ff/fa/69/fffa69f5-e211-f07a-3cf5-00cb7da45ff5/mzaf_14287964916283003411.plus.aac.p.m4a", "link": "https://music.apple.com/mx/album/nuvole-bianche/1440762051?i=1440762319&uo=4", "art": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/ea/44/86/ea448600-257f-670f-7f06-332e02b42abc/06UMGIM59381.rgb.jpg/600x600bb.jpg", "armonia": 8, "rol": "profundizar", "pie": "La delicadeza de Einaudi acompaña la exploración de la vida con pasión.", "frase_eco": "Explora cada trazo de tu vida como lo haría Frida: con pasión."}], "titulo_en": "Frida for the Passionate"};
 const TG_COVER_SRC = "./portada.jpg";
 
-/* 🎵 vinilo v2 — pastilla. Candado de datos; crono ordena; fade 28s; barra; se retira al reveal. */
+/* 🎵 vinilo v4 — morfosis. Material clonado en runtime del primer botón cta (herencia literal).
+   Estados: reposo → (tap = play+abierta) → 4s → sonando colapsado con anillo → 28s despedida → rotación.
+   Badge bilingüe sigue a window.tgLang. Reveal (portada/cta visibles) => fuera; la música continúa. */
 (function(){
   var M = (state && state.musica) || [];
   if (!M.length) return;
@@ -900,27 +912,39 @@ const TG_COVER_SRC = "./portada.jpg";
     var pa=PREF.indexOf(a.rol), pb=PREF.indexOf(b.rol);
     if(pa<0&&pb<0) return 0; if(pa<0) return 1; if(pb<0) return -1;
     if(pa!==pb) return pa-pb; return (b.armonia||0)-(a.armonia||0); });
-  var el=document.getElementById('vinilo'), btn=document.getElementById('viniloBtn'),
+  var el=document.getElementById('vinilo'), nuc=document.getElementById('vinNucleo'),
       tit=document.getElementById('viniloTit'), art=document.getElementById('viniloArt'),
-      lnk=document.getElementById('viniloLink'), bar=document.getElementById('vinBar'), cov=document.getElementById('viniloCov'),
+      lnk=document.getElementById('viniloLink'), cov=document.getElementById('viniloCov'),
+      bdg=document.getElementById('vinBadge'),
       icoP=document.getElementById('vinIcoPlay'), icoS=document.getElementById('vinIcoPause');
-  var i=0, au=new Audio(), fadeT=null, played={};
+  var i=0, au=new Audio(), fadeT=null, cierraT=null, played={};
   au.preload='none';
+  function badgeLang(){ if(!bdg||!bdg.src) return;
+    var l=(window.tgLang==='en')?'en-us':'es-mx';
+    if(bdg.src.indexOf('/'+l)<0) bdg.src='https://tools.applemediaservices.com/api/badges/listen-on-apple-music/badge/'+l; }
+  function heredaMaterial(intento){ intento=intento||0;
+    try{ var b=document.querySelector('.tg-cta button');
+      if(b){ var cs=getComputedStyle(b);
+        if(cs.backgroundImage&&cs.backgroundImage!=='none'){ el.style.backgroundImage=cs.backgroundImage; el.style.backgroundSize='200% 200%'; return; } } }catch(e){}
+    if(intento<30) setTimeout(function(){heredaMaterial(intento+1);},100); }
   function pinta(){ var c=cola[i]; tit.textContent=c.cancion; art.textContent=c.artista;
-    if(c.link) lnk.href=c.link; if(c.art){ cov.src=c.art; cov.alt=c.album||c.cancion; } bar.style.width='0%'; }
-  function icon(p){ icoP.style.display=p?'none':'block'; icoS.style.display=p?'block':'none'; }
+    if(c.link) lnk.href=c.link; if(c.art){ cov.src=c.art; cov.alt=c.album||c.cancion; }
+    el.style.setProperty('--vin-p','0%'); badgeLang(); }
+  function icon(p){ icoP.style.display=p?'none':'block'; icoS.style.display=p?'block':'none';
+    el.classList.toggle('sonando',p); nuc.setAttribute('aria-label',p?'Pausa':'Reproducir 30 segundos'); }
+  function abre(){ el.classList.add('abierta'); reagenda(); }
+  function cierra(){ el.classList.remove('abierta'); }
+  function reagenda(){ clearTimeout(cierraT); cierraT=setTimeout(cierra,4000); }
   function apaga(avanza){ if(fadeT){clearInterval(fadeT);fadeT=null;} try{au.pause();}catch(e){} icon(false);
-    if(avanza){ i=(i+1)%cola.length; pinta(); } else { bar.style.width='0%'; } }
+    if(avanza){ i=(i+1)%cola.length; pinta(); } }
   function despedida(){ if(fadeT) return; var v=au.volume; fadeT=setInterval(function(){ v-=0.09;
     if(v<=0){ apaga(true); au.volume=1; } else { try{au.volume=Math.max(0,v);}catch(e){} } },180); }
   au.addEventListener('timeupdate',function(){ var t=au.currentTime;
-    bar.style.width=Math.min(100,(t/30)*100)+'%';
+    el.style.setProperty('--vin-p',Math.min(100,(t/30)*100)+'%');
     if(t>=28) despedida(); });
   au.addEventListener('ended',function(){ apaga(true); au.volume=1; });
   au.addEventListener('error',function(){ apaga(true); });
-  btn.addEventListener('click',function(){
-    if(!au.paused){ apaga(false); return; }
-    var c=cola[i]; if(fadeT){clearInterval(fadeT);fadeT=null;} au.volume=1;
+  function play(){ var c=cola[i]; if(fadeT){clearInterval(fadeT);fadeT=null;} au.volume=1;
     if(au.src!==c.preview){ au.src=c.preview; }
     au.play().then(function(){ icon(true);
       if(!played[c.id]){ played[c.id]=1;
@@ -929,11 +953,15 @@ const TG_COVER_SRC = "./portada.jpg";
         navigator.mediaSession.metadata=new MediaMetadata({title:c.cancion,artist:c.artista,album:c.album||'Triggui',
           artwork:c.art?[{src:c.art,sizes:'600x600',type:'image/jpeg'}]:[]});
         navigator.mediaSession.setActionHandler('pause',function(){apaga(false);});
-        navigator.mediaSession.setActionHandler('play',function(){btn.click();}); } }catch(e){}
-    }).catch(function(){ icon(false); });
-  });
+        navigator.mediaSession.setActionHandler('play',function(){play();}); } }catch(e){}
+    }).catch(function(){ icon(false); }); }
+  nuc.addEventListener('click',function(ev){ ev.stopPropagation();
+    if(!el.classList.contains('abierta')){ abre(); if(au.paused) play(); return; }
+    if(au.paused){ play(); } else { apaga(false); } reagenda(); });
+  el.addEventListener('click',function(){ if(!el.classList.contains('abierta')){ abre(); if(au.paused) play(); } else { reagenda(); } });
+  var pill=document.getElementById('tgLangPill');
+  if(pill) pill.addEventListener('click',function(){ setTimeout(badgeLang,60); });
   pinta();
-  /* Vigía: al revelarse portada o entrar los botones, la pastilla se retira (la música sigue; MediaSession queda). */
   function visible(e){ if(!e) return false; var cs=getComputedStyle(e); if(cs.display==='none'||cs.visibility==='hidden') return false;
     var r=e.getBoundingClientRect(); return r.width>2&&r.height>2; }
   function vigia(){ var mira=function(){
@@ -941,12 +969,17 @@ const TG_COVER_SRC = "./portada.jpg";
     if(mira()) return;
     new MutationObserver(function(_,o){ if(mira()) o.disconnect(); })
       .observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style']}); }
-  function entra(){ el.classList.add('on'); el.removeAttribute('aria-hidden'); vigia(); }
-  var ov=document.getElementById('bocadoEcoOverlay');
-  if(ov && ov.classList.contains('visible')){
-    new MutationObserver(function(_,o){ if(!ov.classList.contains('visible')){ o.disconnect(); setTimeout(entra,250); } })
+  function entra(){ heredaMaterial(); el.classList.add('on','respira');
+    setTimeout(function(){el.classList.remove('respira');},3600);
+    el.removeAttribute('aria-hidden'); vigia(); }
+  var ov=document.getElementById('bocadoEcoOverlay'), visto=false, entrado=false;
+  function intenta(){ if(entrado) return; entrado=true; entra(); }
+  if(ov){ if(ov.classList.contains('visible')) visto=true;
+    new MutationObserver(function(){ var v=ov.classList.contains('visible');
+      if(v){ visto=true; } else if(visto){ setTimeout(intenta,250); } })
       .observe(ov,{attributes:true,attributeFilter:['class']});
-  } else { entra(); }
+    setTimeout(function(){ if(!visto) intenta(); },9000);
+  } else { intenta(); }
 })();
 /* 🌐 D2-A — idioma de la edición: misma llave del imperio (triggui_lang) */
 const TG_ES_SNAP = { t: null, p: null, su: null, b: null };
