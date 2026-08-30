@@ -1706,19 +1706,19 @@ __BTN_CSS__
 #tgModal.espera .tg-mtitle,#tgModal.espera .tg-mbtns{display:none}
 #tgModal.espera .tg-mtext{display:block;font-size:12px;letter-spacing:.02em;color:rgba(255,255,255,.75);margin:14px 0 0 0}
 #tgModal.espera .tg-mtext .hl{display:none}
-/* 🎵 vinilo — bocado sonoro (monta solo si state.musica trae candidatas) */
-#vinilo{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:700;display:none;flex-direction:column;align-items:center;gap:8px;text-align:center;pointer-events:none;width:max-content;max-width:88vw}
-#viniloBtn,#viniloLink{pointer-events:auto}
+/* 🎵 vinilo v2 — pastilla footer (glass, estilo Spotify) */
+#vinilo{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:700;display:none;align-items:center;gap:12px;width:min(92vw,420px);padding:9px 12px;border-radius:16px;background:rgba(15,15,17,.55);-webkit-backdrop-filter:blur(18px) saturate(1.3);backdrop-filter:blur(18px) saturate(1.3);border:1px solid rgba(255,255,255,.09);box-shadow:0 10px 30px rgba(0,0,0,.45);overflow:hidden}
 #vinilo.on{display:flex}
-#viniloBtn{width:56px;height:56px;border-radius:50%;border:1.5px solid var(--accent,#fff);background:rgba(255,255,255,.04);color:var(--accent,#fff);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:box-shadow .35s;-webkit-tap-highlight-color:transparent}
-#viniloBtn:active{transform:scale(.94)}
-#viniloBtn svg{width:20px;height:20px;display:block}
-#vinilo.playing #viniloBtn{box-shadow:0 0 0 6px color-mix(in srgb, var(--accent,#fff) 18%, transparent)}
-#vinilo.playing #viniloBtn svg{animation:vinGira 3.2s linear infinite}
-@keyframes vinGira{to{transform:rotate(360deg)}}
-#viniloTxt{font:600 12px/1.45 'Poppins',sans-serif;color:rgba(255,255,255,.85);max-width:min(86vw,420px);text-shadow:0 1px 8px rgba(0,0,0,.65)}
-#viniloLink{font:500 10px/1 'Poppins',sans-serif;letter-spacing:.04em;color:rgba(255,255,255,.45);text-decoration:none}
+#vinilo.fuera{display:none !important}
+#viniloBtn{flex:0 0 38px;width:38px;height:38px;border-radius:50%;border:0;background:var(--accent,#fff);color:#0b0b0d;display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
+#viniloBtn:active{transform:scale(.95)}
+#viniloBtn svg{width:15px;height:15px;display:block}
+#viniloMeta{flex:1;min-width:0;text-align:left}
+#viniloTit{font:600 13px/1.3 'Poppins',sans-serif;color:rgba(255,255,255,.94);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#viniloArt{font:500 11px/1.35 'Poppins',sans-serif;color:rgba(255,255,255,.55);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#viniloLink{flex:0 0 auto;display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:10px;color:rgba(255,255,255,.6);text-decoration:none;font:700 15px/1 'Poppins',sans-serif}
 #viniloLink:active{color:var(--accent,#fff)}
+#vinBar{position:absolute;left:0;bottom:0;height:2px;width:0%;background:var(--accent,#fff);opacity:.9;transition:width .25s linear}
 .tg-heart{position:fixed;pointer-events:none;z-index:700;font-size:24px;opacity:0;animation:tgFloatUp 1.2s ease-out forwards;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.3))}
 @keyframes tgFloatUp{0%{transform:translate(0,0) scale(0.5) rotate(0deg);opacity:0}20%{opacity:1;transform:translate(var(--tx),-40px) scale(1.2) rotate(15deg)}100%{opacity:0;transform:translate(var(--tx),-150px) scale(1) rotate(30deg)}}
 </style>
@@ -1737,7 +1737,10 @@ __BTN_CSS__
     <svg id="vinIcoPlay" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M8 5.5v13l11-6.5z"/></svg>
     <svg id="vinIcoPause" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="display:none"><path d="M7 5h3.4v14H7zM13.6 5H17v14h-3.6z"/></svg>
   </button>
-  <div id="viniloTxt"></div>
+  <div id="viniloMeta"><div id="viniloTit"></div><div id="viniloArt"></div></div>
+  <a id="viniloLink" href="#" target="_blank" rel="noopener noreferrer" aria-label="Escúchala completa en Apple Music">↗</a>
+  <div id="vinBar"></div>
+</div>
   <a id="viniloLink" href="#" target="_blank" rel="noopener noreferrer">Escúchala completa en Apple Music ↗</a>
 </div>
 
@@ -1804,8 +1807,7 @@ __BTN_CSS__
 const state = __STATE_JSON__;
 const TG_COVER_SRC = __TG_COVER_SRC__;
 
-/* 🎵 vinilo — bocado sonoro. Candado de datos: sin state.musica no existe.
-   Rotación al terminar; la cronobiología ordena por rol; despedida (fade) a los 28 s. */
+/* 🎵 vinilo v2 — pastilla. Candado de datos; crono ordena; fade 28s; barra; se retira al reveal. */
 (function(){
   var M = (state && state.musica) || [];
   if (!M.length) return;
@@ -1818,17 +1820,20 @@ const TG_COVER_SRC = __TG_COVER_SRC__;
     if(pa<0&&pb<0) return 0; if(pa<0) return 1; if(pb<0) return -1;
     if(pa!==pb) return pa-pb; return (b.armonia||0)-(a.armonia||0); });
   var el=document.getElementById('vinilo'), btn=document.getElementById('viniloBtn'),
-      txt=document.getElementById('viniloTxt'), lnk=document.getElementById('viniloLink'),
+      tit=document.getElementById('viniloTit'), art=document.getElementById('viniloArt'),
+      lnk=document.getElementById('viniloLink'), bar=document.getElementById('vinBar'),
       icoP=document.getElementById('vinIcoPlay'), icoS=document.getElementById('vinIcoPause');
   var i=0, au=new Audio(), fadeT=null, played={};
   au.preload='none';
-  function pinta(){ var c=cola[i]; txt.textContent=c.cancion+' — '+c.artista; if(c.link) lnk.href=c.link; }
-  function icon(p){ icoP.style.display=p?'none':'block'; icoS.style.display=p?'block':'none'; el.classList.toggle('playing',p); }
+  function pinta(){ var c=cola[i]; tit.textContent=c.cancion; art.textContent=c.artista; if(c.link) lnk.href=c.link; bar.style.width='0%'; }
+  function icon(p){ icoP.style.display=p?'none':'block'; icoS.style.display=p?'block':'none'; }
   function apaga(avanza){ if(fadeT){clearInterval(fadeT);fadeT=null;} try{au.pause();}catch(e){} icon(false);
-    if(avanza){ i=(i+1)%cola.length; pinta(); } }
+    if(avanza){ i=(i+1)%cola.length; pinta(); } else { bar.style.width='0%'; } }
   function despedida(){ if(fadeT) return; var v=au.volume; fadeT=setInterval(function(){ v-=0.09;
     if(v<=0){ apaga(true); au.volume=1; } else { try{au.volume=Math.max(0,v);}catch(e){} } },180); }
-  au.addEventListener('timeupdate',function(){ if(au.currentTime>=28) despedida(); });
+  au.addEventListener('timeupdate',function(){ var t=au.currentTime;
+    bar.style.width=Math.min(100,(t/30)*100)+'%';
+    if(t>=28) despedida(); });
   au.addEventListener('ended',function(){ apaga(true); au.volume=1; });
   au.addEventListener('error',function(){ apaga(true); });
   btn.addEventListener('click',function(){
@@ -1846,8 +1851,15 @@ const TG_COVER_SRC = __TG_COVER_SRC__;
     }).catch(function(){ icon(false); });
   });
   pinta();
-  /* Entrada en escena: el vinilo aparece cuando el bocado suelta el escenario. */
-  function entra(){ el.classList.add('on'); el.removeAttribute('aria-hidden'); }
+  /* Vigía: al revelarse portada o entrar los botones, la pastilla se retira (la música sigue; MediaSession queda). */
+  function visible(e){ if(!e) return false; var cs=getComputedStyle(e); if(cs.display==='none'||cs.visibility==='hidden') return false;
+    var r=e.getBoundingClientRect(); return r.width>2&&r.height>2; }
+  function vigia(){ var mira=function(){
+      if(visible(document.querySelector('.tg-portada'))||visible(document.querySelector('.tg-cta'))){ el.classList.add('fuera'); return true; } return false; };
+    if(mira()) return;
+    new MutationObserver(function(_,o){ if(mira()) o.disconnect(); })
+      .observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style']}); }
+  function entra(){ el.classList.add('on'); el.removeAttribute('aria-hidden'); vigia(); }
   var ov=document.getElementById('bocadoEcoOverlay');
   if(ov && ov.classList.contains('visible')){
     new MutationObserver(function(_,o){ if(!ov.classList.contains('visible')){ o.disconnect(); setTimeout(entra,250); } })
