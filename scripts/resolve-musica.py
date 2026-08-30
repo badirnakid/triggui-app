@@ -481,7 +481,9 @@ def resolver_libro(b, c, st, nombre):
     queries, origen = componer_queries(b, c, st)
     if c["explicar"]:
         print("      queries [%s]: %s" % (origen, " | ".join(queries)))
-    base = capa1(queries, c, st.get("usadas"))
+    base = capa1(queries, c, set() if origen == "semilla" else st.get("usadas"))
+    if origen == "semilla" and c["explicar"]:
+        print("      (semilla del curador: la exclusión se inclina)")
     if c["explicar"]:
         for x in base:
             print("      · base %2d · %s — %s [%s]" % (x["_base"], x["cancion"][:34], x["artista"][:24], x["genero"]))
