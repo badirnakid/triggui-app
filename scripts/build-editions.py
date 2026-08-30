@@ -887,6 +887,7 @@ def render_edicion(edicion, mode="lab"):
         },
         "bocadoEcoPool": edicion.get("bocadoEcoPool") or [],
         "bocadoEcoPool_en": edicion.get("bocadoEcoPool_en") or [],
+        "musica": ((edicion.get("_musica") or {}).get("candidatos") or [])[:5],
         "titulo_en": str(edicion.get("titulo_en", "") or ""),
     }
 
@@ -1705,6 +1706,19 @@ __BTN_CSS__
 #tgModal.espera .tg-mtitle,#tgModal.espera .tg-mbtns{display:none}
 #tgModal.espera .tg-mtext{display:block;font-size:12px;letter-spacing:.02em;color:rgba(255,255,255,.75);margin:14px 0 0 0}
 #tgModal.espera .tg-mtext .hl{display:none}
+/* 🎵 vinilo — bocado sonoro (monta solo si state.musica trae candidatas) */
+#vinilo{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:700;display:none;flex-direction:column;align-items:center;gap:8px;text-align:center;pointer-events:none;width:max-content;max-width:88vw}
+#viniloBtn,#viniloLink{pointer-events:auto}
+#vinilo.on{display:flex}
+#viniloBtn{width:56px;height:56px;border-radius:50%;border:1.5px solid var(--accent,#fff);background:rgba(255,255,255,.04);color:var(--accent,#fff);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:box-shadow .35s;-webkit-tap-highlight-color:transparent}
+#viniloBtn:active{transform:scale(.94)}
+#viniloBtn svg{width:20px;height:20px;display:block}
+#vinilo.playing #viniloBtn{box-shadow:0 0 0 6px color-mix(in srgb, var(--accent,#fff) 18%, transparent)}
+#vinilo.playing #viniloBtn svg{animation:vinGira 3.2s linear infinite}
+@keyframes vinGira{to{transform:rotate(360deg)}}
+#viniloTxt{font:600 12px/1.45 'Poppins',sans-serif;color:rgba(255,255,255,.85);max-width:min(86vw,420px);text-shadow:0 1px 8px rgba(0,0,0,.65)}
+#viniloLink{font:500 10px/1 'Poppins',sans-serif;letter-spacing:.04em;color:rgba(255,255,255,.45);text-decoration:none}
+#viniloLink:active{color:var(--accent,#fff)}
 .tg-heart{position:fixed;pointer-events:none;z-index:700;font-size:24px;opacity:0;animation:tgFloatUp 1.2s ease-out forwards;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.3))}
 @keyframes tgFloatUp{0%{transform:translate(0,0) scale(0.5) rotate(0deg);opacity:0}20%{opacity:1;transform:translate(var(--tx),-40px) scale(1.2) rotate(15deg)}100%{opacity:0;transform:translate(var(--tx),-150px) scale(1) rotate(30deg)}}
 </style>
@@ -1717,6 +1731,15 @@ __BTN_CSS__
   <div class="bocado-eco-phrase" id="bocadoEcoPhrase"></div>
 </div>
 <div class="grid" id="grid"></div>
+
+<div id="vinilo" aria-hidden="true">
+  <button id="viniloBtn" type="button" aria-label="Reproducir 30 segundos">
+    <svg id="vinIcoPlay" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M8 5.5v13l11-6.5z"/></svg>
+    <svg id="vinIcoPause" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="display:none"><path d="M7 5h3.4v14H7zM13.6 5H17v14h-3.6z"/></svg>
+  </button>
+  <div id="viniloTxt"></div>
+  <a id="viniloLink" href="#" target="_blank" rel="noopener noreferrer">Escúchala completa en Apple Music ↗</a>
+</div>
 
 <div id="revealOverlay" class="reveal-overlay">
   <div class="reveal-card" onclick="event.stopPropagation()">
@@ -1780,6 +1803,57 @@ __BTN_CSS__
 <script>
 const state = __STATE_JSON__;
 const TG_COVER_SRC = __TG_COVER_SRC__;
+
+/* 🎵 vinilo — bocado sonoro. Candado de datos: sin state.musica no existe.
+   Rotación al terminar; la cronobiología ordena por rol; despedida (fade) a los 28 s. */
+(function(){
+  var M = (state && state.musica) || [];
+  if (!M.length) return;
+  var franja = (function(h){ return h<6?'noche':h<12?'manana':h<19?'tarde':'noche'; })(new Date().getHours());
+  var PREF = { manana:['abrir','profundizar','aterrizar','resonar'],
+               tarde:['profundizar','abrir','aterrizar','resonar'],
+               noche:['resonar','aterrizar','profundizar','abrir'] }[franja];
+  var cola = M.slice().sort(function(a,b){
+    var pa=PREF.indexOf(a.rol), pb=PREF.indexOf(b.rol);
+    if(pa<0&&pb<0) return 0; if(pa<0) return 1; if(pb<0) return -1;
+    if(pa!==pb) return pa-pb; return (b.armonia||0)-(a.armonia||0); });
+  var el=document.getElementById('vinilo'), btn=document.getElementById('viniloBtn'),
+      txt=document.getElementById('viniloTxt'), lnk=document.getElementById('viniloLink'),
+      icoP=document.getElementById('vinIcoPlay'), icoS=document.getElementById('vinIcoPause');
+  var i=0, au=new Audio(), fadeT=null, played={};
+  au.preload='none';
+  function pinta(){ var c=cola[i]; txt.textContent=c.cancion+' — '+c.artista; if(c.link) lnk.href=c.link; }
+  function icon(p){ icoP.style.display=p?'none':'block'; icoS.style.display=p?'block':'none'; el.classList.toggle('playing',p); }
+  function apaga(avanza){ if(fadeT){clearInterval(fadeT);fadeT=null;} try{au.pause();}catch(e){} icon(false);
+    if(avanza){ i=(i+1)%cola.length; pinta(); } }
+  function despedida(){ if(fadeT) return; var v=au.volume; fadeT=setInterval(function(){ v-=0.09;
+    if(v<=0){ apaga(true); au.volume=1; } else { try{au.volume=Math.max(0,v);}catch(e){} } },180); }
+  au.addEventListener('timeupdate',function(){ if(au.currentTime>=28) despedida(); });
+  au.addEventListener('ended',function(){ apaga(true); au.volume=1; });
+  au.addEventListener('error',function(){ apaga(true); });
+  btn.addEventListener('click',function(){
+    if(!au.paused){ apaga(false); return; }
+    var c=cola[i]; if(fadeT){clearInterval(fadeT);fadeT=null;} au.volume=1;
+    if(au.src!==c.preview){ au.src=c.preview; }
+    au.play().then(function(){ icon(true);
+      if(!played[c.id]){ played[c.id]=1;
+        try{gtag('event','musica_play',{slug:(state.id||''),cancion:c.cancion,artista:c.artista,rol:c.rol||'',franja:franja});}catch(e){} }
+      try{ if('mediaSession' in navigator){
+        navigator.mediaSession.metadata=new MediaMetadata({title:c.cancion,artist:c.artista,album:c.album||'Triggui',
+          artwork:c.art?[{src:c.art,sizes:'600x600',type:'image/jpeg'}]:[]});
+        navigator.mediaSession.setActionHandler('pause',function(){apaga(false);});
+        navigator.mediaSession.setActionHandler('play',function(){btn.click();}); } }catch(e){}
+    }).catch(function(){ icon(false); });
+  });
+  pinta();
+  /* Entrada en escena: el vinilo aparece cuando el bocado suelta el escenario. */
+  function entra(){ el.classList.add('on'); el.removeAttribute('aria-hidden'); }
+  var ov=document.getElementById('bocadoEcoOverlay');
+  if(ov && ov.classList.contains('visible')){
+    new MutationObserver(function(_,o){ if(!ov.classList.contains('visible')){ o.disconnect(); setTimeout(entra,250); } })
+      .observe(ov,{attributes:true,attributeFilter:['class']});
+  } else { entra(); }
+})();
 /* 🌐 D2-A — idioma de la edición: misma llave del imperio (triggui_lang) */
 const TG_ES_SNAP = { t: null, p: null, su: null, b: null };
 let tgLang = (function(){ try { const v = JSON.parse(localStorage.getItem('triggui_lang')||'null'); if (v==='en'||v==='es') return v; } catch(e){} return ((navigator.language||'es').slice(0,2)==='en') ? 'en' : 'es'; })();
@@ -3211,6 +3285,7 @@ def build_single():
         "fondo": libro_data.get("fondo", "#0a0a0a"),
         "tarjeta": tarjeta,
         "bocadoEcoPool": bocado_eco_pool,
+        "_musica": libro_data.get("_musica") or {},
         # 🌒 V11 FIX CRÍTICO: propagar número de edición del libro al edicion dict
         # Sin esto, render_edicion() no podía detectar el número y el badge no aparecía
         "_edicion_numero": libro_data.get("_edicion_numero"),
