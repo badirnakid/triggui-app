@@ -777,15 +777,28 @@ body.tg-tarjeta .tg-cta{display:none !important}
 #tgModal.espera .tg-mtext .hl{display:none}
 /* 🎵 vinilo v4 — morfosis: círculo hermano de los 5 botones ↔ barra bloque. Cota y material heredados. */
 #vinilo{position:fixed;bottom:max(3vh,env(safe-area-inset-bottom,3vh));left:50%;transform:translateX(-50%);z-index:700;display:none;align-items:center;gap:12px;width:clamp(3.5rem,min(8vw,8vh),4.5rem);height:clamp(3.5rem,min(8vw,8vh),4.5rem);padding:0;border-radius:50%;background-size:200% 200%;box-shadow:0 0 0 1px rgba(255,255,255,.15),0 6px 18px rgba(0,0,0,.35);overflow:visible;isolation:isolate;transition:width .5s cubic-bezier(.19,1,.22,1),left .5s cubic-bezier(.19,1,.22,1),right .5s cubic-bezier(.19,1,.22,1),border-radius .5s cubic-bezier(.19,1,.22,1),padding .5s cubic-bezier(.19,1,.22,1);cursor:pointer;touch-action:manipulation}
-#vinilo.on{display:flex}
+#vinilo.on{display:flex;animation:vinVivo 9s ease-in-out infinite}
+@keyframes vinVivo{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+#vinilo::after{content:"";position:absolute;inset:-12px;border-radius:inherit;background:radial-gradient(circle,color-mix(in srgb,var(--accent,#fff) 42%,transparent),transparent 70%);filter:blur(9px);z-index:-2;animation:vinAliento 4.2s ease-in-out infinite;pointer-events:none}
+@keyframes vinAliento{0%,100%{opacity:.32;transform:scale(.96)}50%{opacity:.6;transform:scale(1.04)}}
+#vinLuz{position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:1;background:linear-gradient(115deg,transparent 42%,rgba(255,255,255,.5) 50%,transparent 58%);background-size:280% 100%;background-position:160% 0;animation:vinBarrido 5.8s ease-in-out infinite}
+@keyframes vinBarrido{0%,72%{background-position:160% 0}88%{background-position:-60% 0}100%{background-position:-60% 0}}
+#vinilo.abierta #vinLuz{animation:vinDestello .8s cubic-bezier(.19,1,.22,1) both}
+@keyframes vinDestello{from{background-position:160% 0}to{background-position:-60% 0}}
+.vinOnda{position:absolute;inset:0;border-radius:50%;border:1.5px solid color-mix(in srgb,var(--accent,#fff) 80%,#fff);opacity:0;pointer-events:none;z-index:0}
+#vinilo.toco .vinOnda{animation:vinOnda .65s cubic-bezier(.19,1,.22,1)}
+@keyframes vinOnda{0%{opacity:.75;transform:scale(.7)}100%{opacity:0;transform:scale(2.3)}}
+@media (prefers-reduced-motion: reduce){#vinilo.on,#vinilo::after,#vinLuz{animation:none}}
 #vinilo.fuera{display:none !important}
 #vinilo::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(145deg,rgba(255,255,255,.18) 0%,rgba(255,255,255,.08) 40%,transparent 100%);pointer-events:none;z-index:1}
 #vinilo.abierta{left:1.5vw;right:1.5vw;width:auto;transform:none;border-radius:24px;padding:0 12px 0 10px;overflow:hidden}
 #vinAro{position:absolute;inset:-3.5px;border-radius:50%;background:conic-gradient(var(--accent,#fff) var(--vin-p,0%),rgba(255,255,255,.14) 0);z-index:-1;opacity:0;transition:opacity .3s}
-#vinilo.sonando:not(.abierta) #vinAro{opacity:1}
+#vinilo.sonando:not(.abierta) #vinAro{opacity:1;filter:drop-shadow(0 0 5px color-mix(in srgb,var(--accent,#fff) 70%,transparent))}
+#vinCometa{position:absolute;left:50%;top:50%;width:7px;height:7px;margin:-3.5px;border-radius:50%;background:radial-gradient(circle,#fff 0 35%,var(--accent,#fff) 70%,transparent);box-shadow:0 0 8px var(--accent,#fff),0 0 3px #fff;opacity:0;transform:rotate(var(--vin-a,0deg)) translateY(-29.5px);pointer-events:none;z-index:1}
+#vinilo.sonando:not(.abierta) #vinCometa{opacity:1}
 #vinNucleo{flex:0 0 auto;width:100%;height:100%;border:0;border-radius:50%;background:transparent;color:#fff;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;z-index:2}
 #vinilo.abierta #vinNucleo{width:38px;height:38px;flex:0 0 38px}
-#vinNucleo svg{width:17px;height:17px;display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))}
+#vinNucleo svg{width:17px;height:17px;display:block;filter:drop-shadow(0 0 7px rgba(255,255,255,.85)) drop-shadow(0 1px 2px rgba(0,0,0,.45))}
 #vinilo.respira #vinNucleo{animation:vinResp 1.7s ease-in-out 2}
 @keyframes vinResp{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
 .vinExt{opacity:0;width:0;overflow:hidden;display:flex;align-items:center;gap:10px;flex:1;min-width:0;transition:opacity .28s .18s;z-index:2}
@@ -796,7 +809,9 @@ body.tg-tarjeta .tg-cta{display:none !important}
 #viniloArt{font:500 11px/1.3 'Poppins',sans-serif;color:rgba(255,255,255,.62);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,.35)}
 #viniloLink{flex:0 0 auto;display:flex;align-items:center;text-decoration:none;z-index:2}
 #viniloLink img{height:21px;display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}
-#vinBar{position:absolute;left:0;top:0;height:2px;width:var(--vin-p,0%);background:var(--accent,#fff);opacity:0;transition:width .25s linear,opacity .2s;z-index:3}
+#vinBar{position:absolute;left:0;top:0;height:2px;width:var(--vin-p,0%);background:linear-gradient(90deg,var(--accent,#fff),#fff);box-shadow:0 0 9px var(--accent,#fff),0 0 2px #fff;opacity:0;transition:width .25s linear,opacity .2s;z-index:3}
+#vinBorde{position:absolute;inset:0;border-radius:inherit;padding:1.2px;background:linear-gradient(160deg,rgba(255,255,255,.6),rgba(255,255,255,.14) 32%,rgba(255,255,255,.05) 62%,color-mix(in srgb,var(--accent,#fff) 45%,transparent));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;opacity:0;transition:opacity .3s .12s;pointer-events:none;z-index:2}
+#vinilo.abierta #vinBorde{opacity:1}
 #vinilo.abierta #vinBar{opacity:.95}
 .tg-heart{position:fixed;pointer-events:none;z-index:700;font-size:24px;opacity:0;animation:tgFloatUp 1.2s ease-out forwards;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.3))}
 @keyframes tgFloatUp{0%{transform:translate(0,0) scale(0.5) rotate(0deg);opacity:0}20%{opacity:1;transform:translate(var(--tx),-40px) scale(1.2) rotate(15deg)}100%{opacity:0;transform:translate(var(--tx),-150px) scale(1) rotate(30deg)}}
@@ -813,6 +828,10 @@ body.tg-tarjeta .tg-cta{display:none !important}
 
 <div id="vinilo" aria-hidden="true" role="group" aria-label="Música de esta edición">
   <div id="vinAro"></div>
+  <div id="vinCometa"></div>
+  <span class="vinOnda"></span>
+  <span id="vinLuz"></span>
+  <div id="vinBorde"></div>
   <button id="vinNucleo" type="button" aria-label="Reproducir 30 segundos">
     <svg id="vinIcoPlay" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M8 5.5v13l11-6.5z"/></svg>
     <svg id="vinIcoPause" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="display:none"><path d="M7 5h3.4v14H7zM13.6 5H17v14h-3.6z"/></svg>
@@ -936,11 +955,13 @@ const TG_COVER_SRC = "./portada.jpg";
   function cierra(){ el.classList.remove('abierta'); }
   function reagenda(){ clearTimeout(cierraT); cierraT=setTimeout(cierra,4000); }
   function apaga(avanza){ if(fadeT){clearInterval(fadeT);fadeT=null;} try{au.pause();}catch(e){} icon(false);
-    if(avanza){ i=(i+1)%cola.length; pinta(); } }
+    if(avanza){ i=(i+1)%cola.length; pinta(); el.style.setProperty('--vin-a','0deg'); } }
   function despedida(){ if(fadeT) return; var v=au.volume; fadeT=setInterval(function(){ v-=0.09;
     if(v<=0){ apaga(true); au.volume=1; } else { try{au.volume=Math.max(0,v);}catch(e){} } },180); }
   au.addEventListener('timeupdate',function(){ var t=au.currentTime;
-    el.style.setProperty('--vin-p',Math.min(100,(t/30)*100)+'%');
+    var pc=Math.min(100,(t/30)*100);
+    el.style.setProperty('--vin-p',pc+'%');
+    el.style.setProperty('--vin-a',(Math.round(pc*36)/10)+'deg');
     if(t>=28) despedida(); });
   au.addEventListener('ended',function(){ apaga(true); au.volume=1; });
   au.addEventListener('error',function(){ apaga(true); });
@@ -955,7 +976,8 @@ const TG_COVER_SRC = "./portada.jpg";
         navigator.mediaSession.setActionHandler('pause',function(){apaga(false);});
         navigator.mediaSession.setActionHandler('play',function(){play();}); } }catch(e){}
     }).catch(function(){ icon(false); }); }
-  nuc.addEventListener('click',function(ev){ ev.stopPropagation();
+  function onda(){ el.classList.remove('toco'); void el.offsetWidth; el.classList.add('toco'); }
+  nuc.addEventListener('click',function(ev){ ev.stopPropagation(); onda();
     if(!el.classList.contains('abierta')){ abre(); if(au.paused) play(); return; }
     if(au.paused){ play(); } else { apaga(false); } reagenda(); });
   el.addEventListener('click',function(){ if(!el.classList.contains('abierta')){ abre(); if(au.paused) play(); } else { reagenda(); } });
