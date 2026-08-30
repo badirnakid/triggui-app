@@ -193,7 +193,8 @@ def puntua_pieza(r, query):
     }
 
 
-def capa1(queries, c):
+def capa1(queries, c, usadas=None):
+    c = dict(c); c["_usadas"] = usadas or set()
     """Busca cada query en iTunes (mx→us), veta, dedup (trackId y canción+artista) y
     conserva hasta 3 por query: la diversidad es alimento del juez, no adorno."""
     vistos, huellas, piezas = set(), set(), []
@@ -209,6 +210,9 @@ def capa1(queries, c):
                     continue
                 p, x = pz
                 huella = _norm(x["cancion"] + "|" + x["artista"])
+                hcorta = _huella(x)
+                if hcorta in (c.get("_usadas") or ()):  # clon de otro libro: castigo fuerte
+                    p -= 4
                 if p < 1 or x["id"] in vistos or huella in huellas:
                     continue
                 x["_base"], x["_q"] = p, q
@@ -320,6 +324,10 @@ def mapa_queries(b):
     return univ[:3]
 
 
+def _huella(x):
+    return _norm(x.get("cancion","")) + "|" + _norm((x.get("artista","").split(",")[0].split("&")[0]))
+
+
 def componer_queries(b, c, st):
     """Capa 0. Devuelve (queries, origen). Orden: _musica_queries → LLM compositor → mapa."""
     semb = b.get("_musica_queries")
@@ -328,7 +336,10 @@ def componer_queries(b, c, st):
     if c["openai"] and not st["llm_apagado"]:
         try:
             prompt, esquema = cargar_prompt(RUTA_PROMPT_COMP, RUTA_SCHEMA_COMP, "compositor")
-            out = llm(prompt, esquema, edicion_payload(b), c["openai"])
+            payload = edicion_payload(b)
+            if st.get("usadas"):
+                payload["ya_sonaron_en_otros_libros"] = sorted(st["usadas"])[:60]
+            out = llm(prompt, esquema, payload, c["openai"])
             qs = [q.strip() for q in (out.get("queries") or []) if isinstance(q, str) and q.strip()]
             if qs:
                 return qs[:3], MODELO
@@ -462,7 +473,7 @@ def resolver_libro(b, c, st, nombre):
     queries, origen = componer_queries(b, c, st)
     if c["explicar"]:
         print("      queries [%s]: %s" % (origen, " | ".join(queries)))
-    base = capa1(queries, c)
+    base = capa1(queries, c, st.get("usadas"))
     if c["explicar"]:
         for x in base:
             print("      · base %2d · %s — %s [%s]" % (x["_base"], x["cancion"][:34], x["artista"][:24], x["genero"]))
@@ -541,6 +552,8 @@ def procesa(ruta, c, cache, st, hoy=None):
             continue
         b["_musica"] = {"resuelto_el": hoy.strftime("%Y-%m-%d"), "juez": v["juez"],
                         "sinfonia": v["sinfonia"], "candidatos": v["candidatos"]}
+        for _x in v["candidatos"]:
+            st.setdefault("usadas", set()).add(_huella(_x))
         cache[k] = b["_musica"]
         cambios += 1
         top = v["candidatos"]
@@ -562,7 +575,7 @@ def procesa(ruta, c, cache, st, hoy=None):
 
 def main():
     c = config()
-    st = {"busquedas": 0, "con_musica": 0, "errores": 0, "cache": 0,
+    st = {"busquedas": 0, "con_musica": 0, "errores": 0, "cache": 0, "usadas": set(),
           "fatal": "", "llm_apagado": "", "llm_errores": 0}
     cache = {}
     for ruta in c["rutas"]:
