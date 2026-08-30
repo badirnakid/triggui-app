@@ -775,19 +775,22 @@ body.tg-tarjeta .tg-cta{display:none !important}
 #tgModal.espera .tg-mtitle,#tgModal.espera .tg-mbtns{display:none}
 #tgModal.espera .tg-mtext{display:block;font-size:12px;letter-spacing:.02em;color:rgba(255,255,255,.75);margin:14px 0 0 0}
 #tgModal.espera .tg-mtext .hl{display:none}
-/* 🎵 vinilo v2 — pastilla footer (glass, estilo Spotify) */
-#vinilo{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:700;display:none;align-items:center;gap:12px;width:min(92vw,420px);padding:9px 12px;border-radius:16px;background:rgba(15,15,17,.55);-webkit-backdrop-filter:blur(18px) saturate(1.3);backdrop-filter:blur(18px) saturate(1.3);border:1px solid rgba(255,255,255,.09);box-shadow:0 10px 30px rgba(0,0,0,.45);overflow:hidden}
-#vinilo.on{display:flex}
+/* 🎵 vinilo v3 — barra anclada estilo now-playing (carátula + badge oficial; jamás isla-anuncio) */
+#vinilo{position:fixed;left:0;right:0;bottom:0;z-index:700;display:none;align-items:center;gap:12px;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));border-radius:16px 16px 0 0;background:rgba(12,12,14,.62);-webkit-backdrop-filter:blur(20px) saturate(1.3);backdrop-filter:blur(20px) saturate(1.3);border-top:1px solid rgba(255,255,255,.08);box-shadow:0 -8px 30px rgba(0,0,0,.35);overflow:hidden}
+#vinilo.on{display:flex;animation:vinSube .55s cubic-bezier(.19,1,.22,1)}
+@keyframes vinSube{from{transform:translateY(110%)}to{transform:none}}
 #vinilo.fuera{display:none !important}
-#viniloBtn{flex:0 0 38px;width:38px;height:38px;border-radius:50%;border:0;background:var(--accent,#fff);color:#0b0b0d;display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
+#viniloCov{flex:0 0 42px;width:42px;height:42px;border-radius:9px;object-fit:cover;background:rgba(255,255,255,.06);box-shadow:0 2px 10px rgba(0,0,0,.45)}
+#viniloBtn{flex:0 0 34px;width:34px;height:34px;border-radius:50%;border:0;background:var(--accent,#fff);color:#0b0b0d;display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
 #viniloBtn:active{transform:scale(.95)}
-#viniloBtn svg{width:15px;height:15px;display:block}
+#viniloBtn svg{width:14px;height:14px;display:block}
 #viniloMeta{flex:1;min-width:0;text-align:left}
 #viniloTit{font:600 13px/1.3 'Poppins',sans-serif;color:rgba(255,255,255,.94);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #viniloArt{font:500 11px/1.35 'Poppins',sans-serif;color:rgba(255,255,255,.55);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#viniloLink{flex:0 0 auto;display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:10px;color:rgba(255,255,255,.6);text-decoration:none;font:700 15px/1 'Poppins',sans-serif}
-#viniloLink:active{color:var(--accent,#fff)}
-#vinBar{position:absolute;left:0;bottom:0;height:2px;width:0%;background:var(--accent,#fff);opacity:.9;transition:width .25s linear}
+#viniloLink{flex:0 0 auto;display:flex;align-items:center;text-decoration:none}
+#viniloLink img{height:22px;display:block;opacity:.92}
+#viniloLink:active img{opacity:1}
+#vinBar{position:absolute;left:0;top:0;height:2px;width:0%;background:var(--accent,#fff);opacity:.95;transition:width .25s linear}
 .tg-heart{position:fixed;pointer-events:none;z-index:700;font-size:24px;opacity:0;animation:tgFloatUp 1.2s ease-out forwards;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.3))}
 @keyframes tgFloatUp{0%{transform:translate(0,0) scale(0.5) rotate(0deg);opacity:0}20%{opacity:1;transform:translate(var(--tx),-40px) scale(1.2) rotate(15deg)}100%{opacity:0;transform:translate(var(--tx),-150px) scale(1) rotate(30deg)}}
 </style>
@@ -802,15 +805,14 @@ body.tg-tarjeta .tg-cta{display:none !important}
 <div class="grid" id="grid"></div>
 
 <div id="vinilo" aria-hidden="true">
+  <img id="viniloCov" alt="" />
   <button id="viniloBtn" type="button" aria-label="Reproducir 30 segundos">
     <svg id="vinIcoPlay" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M8 5.5v13l11-6.5z"/></svg>
     <svg id="vinIcoPause" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="display:none"><path d="M7 5h3.4v14H7zM13.6 5H17v14h-3.6z"/></svg>
   </button>
   <div id="viniloMeta"><div id="viniloTit"></div><div id="viniloArt"></div></div>
-  <a id="viniloLink" href="#" target="_blank" rel="noopener noreferrer" aria-label="Escúchala completa en Apple Music">↗</a>
+  <a id="viniloLink" href="#" target="_blank" rel="noopener noreferrer" aria-label="Escúchala completa en Apple Music"><img src="https://tools.applemediaservices.com/api/badges/listen-on-apple-music/badge/es-mx" alt="Apple Music" onerror="this.parentNode.textContent='Apple Music ↗';this.parentNode.style.font='600 11px Poppins';this.parentNode.style.color='rgba(255,255,255,.6)'" /></a>
   <div id="vinBar"></div>
-</div>
-  <a id="viniloLink" href="#" target="_blank" rel="noopener noreferrer">Escúchala completa en Apple Music ↗</a>
 </div>
 
 <div id="revealOverlay" class="reveal-overlay">
@@ -900,11 +902,12 @@ const TG_COVER_SRC = "./portada.jpg";
     if(pa!==pb) return pa-pb; return (b.armonia||0)-(a.armonia||0); });
   var el=document.getElementById('vinilo'), btn=document.getElementById('viniloBtn'),
       tit=document.getElementById('viniloTit'), art=document.getElementById('viniloArt'),
-      lnk=document.getElementById('viniloLink'), bar=document.getElementById('vinBar'),
+      lnk=document.getElementById('viniloLink'), bar=document.getElementById('vinBar'), cov=document.getElementById('viniloCov'),
       icoP=document.getElementById('vinIcoPlay'), icoS=document.getElementById('vinIcoPause');
   var i=0, au=new Audio(), fadeT=null, played={};
   au.preload='none';
-  function pinta(){ var c=cola[i]; tit.textContent=c.cancion; art.textContent=c.artista; if(c.link) lnk.href=c.link; bar.style.width='0%'; }
+  function pinta(){ var c=cola[i]; tit.textContent=c.cancion; art.textContent=c.artista;
+    if(c.link) lnk.href=c.link; if(c.art){ cov.src=c.art; cov.alt=c.album||c.cancion; } bar.style.width='0%'; }
   function icon(p){ icoP.style.display=p?'none':'block'; icoS.style.display=p?'block':'none'; }
   function apaga(avanza){ if(fadeT){clearInterval(fadeT);fadeT=null;} try{au.pause();}catch(e){} icon(false);
     if(avanza){ i=(i+1)%cola.length; pinta(); } else { bar.style.width='0%'; } }
