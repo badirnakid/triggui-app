@@ -193,7 +193,7 @@ def puntua_pieza(r, query):
     }
 
 
-def capa1(queries, c, usadas=None):
+def capa1(queries, c, usadas=None, umbral=1, rescate=False):
     c = dict(c); c["_usadas"] = usadas or set()
     """Busca cada query en iTunes (mx→us), veta, dedup (trackId y canción+artista) y
     conserva hasta 3 por query: la diversidad es alimento del juez, no adorno."""
@@ -211,9 +211,14 @@ def capa1(queries, c, usadas=None):
                 p, x = pz
                 huella = _norm(x["cancion"] + "|" + x["artista"])
                 hcorta = _huella(x)
-                if hcorta in (c.get("_usadas") or ()):  # clon de otro libro: castigo fuerte
-                    p -= 4
-                if p < 1 or x["id"] in vistos or huella in huellas:
+                if hcorta in (c.get("_usadas") or ()):  # coronada por otro libro: fuera del universo
+                    continue
+                if hcorta in huellas:
+                    continue
+                huellas.add(hcorta)
+                if rescate and (KARAOKE_RX.search((x["cancion"]+" "+x["album"])) or p <= -5):
+                    continue
+                if p < umbral or x["id"] in vistos or huella in huellas:
                     continue
                 x["_base"], x["_q"] = p, q
                 vistos.add(x["id"])
@@ -477,13 +482,31 @@ def resolver_libro(b, c, st, nombre):
     if c["explicar"]:
         for x in base:
             print("      · base %2d · %s — %s [%s]" % (x["_base"], x["cancion"][:34], x["artista"][:24], x["genero"]))
+    if not base:
+        base = capa1(mapa_queries(b), c, st.get("usadas"))
+        if base and c["explicar"]:
+            print("      (rescate-mapa: %d piezas)" % len(base))
+    if not base:
+        base = capa1(queries + mapa_queries(b), c, st.get("usadas"), umbral=-9, rescate=True)
+        if base:
+            print("      (rescate-piso: %d piezas)" % len(base))
     juez, sinfonia = ("mapa" if origen == "mapa" else "semilla" if origen == "semilla" else "capa1"), ""
     elegidos = base[:TOP_N]
     if base and c["openai"] and not c["sin_armonia"] and not st["llm_apagado"]:
         try:
             con_arm, sinfonia = armonizar(b, base, c, st)
+            frases_ed = set(_norm(f.get("frase","")) for f in edicion_payload(b)["frases_con_rol"])
+            for _y in con_arm:
+                if _y.get("armonia", 0) >= 8 and _norm(_y.get("frase_eco","")) not in frases_ed:
+                    _y["armonia"] = 6
             juez = MODELO
             elegidos = quinteto(con_arm, c["armonia_min"])
+            if not elegidos and con_arm:
+                vivos = sorted((x for x in con_arm if not x.get("_descartar")),
+                               key=lambda x: (-x.get("armonia",0), -x["_base"]))
+                elegidos = (vivos or sorted(con_arm, key=lambda x: -x["_base"]))[:2]
+                juez = MODELO + "+rescate"
+                print("      (rescate-juez: %d piezas, el silencio no está permitido)" % len(elegidos))
             if c["explicar"]:
                 for x in con_arm:
                     print("      ♪ %2d %-11s %s — %s%s" % (x["armonia"], x["rol"], x["cancion"][:30], x["artista"][:22],
