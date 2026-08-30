@@ -1707,7 +1707,7 @@ __BTN_CSS__
 #tgModal.espera .tg-mtext{display:block;font-size:12px;letter-spacing:.02em;color:rgba(255,255,255,.75);margin:14px 0 0 0}
 #tgModal.espera .tg-mtext .hl{display:none}
 /* 🎵 vinilo v4 — morfosis: círculo hermano de los 5 botones ↔ barra bloque. Cota y material heredados. */
-#vinilo{position:fixed;bottom:max(3vh,env(safe-area-inset-bottom,3vh));left:50%;transform:translateX(-50%);z-index:700;display:none;align-items:center;gap:12px;width:clamp(3.5rem,min(8vw,8vh),4.5rem);height:clamp(3.5rem,min(8vw,8vh),4.5rem);padding:0;border-radius:50%;background-size:200% 200%;box-shadow:0 0 0 1px rgba(255,255,255,.15),0 6px 18px rgba(0,0,0,.35);overflow:visible;isolation:isolate;transition:width .5s cubic-bezier(.19,1,.22,1),left .5s cubic-bezier(.19,1,.22,1),right .5s cubic-bezier(.19,1,.22,1),border-radius .5s cubic-bezier(.19,1,.22,1),padding .5s cubic-bezier(.19,1,.22,1);cursor:pointer;touch-action:manipulation}
+#vinilo{position:fixed;bottom:max(3vh,env(safe-area-inset-bottom,3vh));left:50%;transform:translateX(-50%);z-index:700;display:none;align-items:center;gap:12px;width:clamp(3.5rem,min(8vw,8vh),4.5rem);height:clamp(3.5rem,min(8vw,8vh),4.5rem);padding:0;border-radius:50%;background-size:200% 200%;box-shadow:0 0 0 1.5px rgba(255,255,255,.34),0 10px 26px rgba(0,0,0,.5);overflow:visible;isolation:isolate;transition:width .5s cubic-bezier(.19,1,.22,1),left .5s cubic-bezier(.19,1,.22,1),right .5s cubic-bezier(.19,1,.22,1),border-radius .5s cubic-bezier(.19,1,.22,1),padding .5s cubic-bezier(.19,1,.22,1);cursor:pointer;touch-action:manipulation}
 #vinilo.on{display:flex;animation:vinVivo 9s ease-in-out infinite}
 @keyframes vinVivo{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
 #vinilo::after{content:"";position:absolute;inset:-12px;border-radius:inherit;background:radial-gradient(circle,color-mix(in srgb,var(--accent,#fff) 42%,transparent),transparent 70%);filter:blur(9px);z-index:-2;animation:vinAliento 4.2s ease-in-out infinite;pointer-events:none}
@@ -1719,7 +1719,14 @@ __BTN_CSS__
 .vinOnda{position:absolute;inset:0;border-radius:50%;border:1.5px solid color-mix(in srgb,var(--accent,#fff) 80%,#fff);opacity:0;pointer-events:none;z-index:0}
 #vinilo.toco .vinOnda{animation:vinOnda .65s cubic-bezier(.19,1,.22,1)}
 @keyframes vinOnda{0%{opacity:.75;transform:scale(.7)}100%{opacity:0;transform:scale(2.3)}}
-@media (prefers-reduced-motion: reduce){#vinilo.on,#vinilo::after,#vinLuz{animation:none}}
+#vinilo.on:not(.sonando):not(.abierta) #vinNucleo{animation:vinLatido 3.2s ease-in-out .9s infinite}
+@keyframes vinLatido{0%,32%,100%{transform:scale(1)}8%{transform:scale(1.07)}16%{transform:scale(1)}24%{transform:scale(1.055)}}
+#vinSonar{position:absolute;inset:0;border-radius:50%;border:1.3px solid color-mix(in srgb,var(--accent,#fff) 55%,#fff);opacity:0;pointer-events:none;z-index:0}
+#vinilo.on:not(.sonando):not(.abierta) #vinSonar{animation:vinSonar 3.2s cubic-bezier(.19,1,.22,1) 1.15s infinite}
+@keyframes vinSonar{0%{opacity:.55;transform:scale(1)}62%,100%{opacity:0;transform:scale(2.05)}}
+#vinilo.on:not(.sonando):not(.abierta) #vinIcoPlay{animation:vinSenala 3.2s ease-in-out .9s infinite}
+@keyframes vinSenala{0%,32%,100%{transform:translateX(0)}8%{transform:translateX(1.6px)}24%{transform:translateX(1.1px)}}
+@media (prefers-reduced-motion: reduce){#vinilo.on,#vinilo::after,#vinLuz,#vinNucleo,#vinSonar,#vinIcoPlay{animation:none !important}}
 #vinilo.fuera{display:none !important}
 #vinilo::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(145deg,rgba(255,255,255,.18) 0%,rgba(255,255,255,.08) 40%,transparent 100%);pointer-events:none;z-index:1}
 #vinilo.abierta{left:1.5vw;right:1.5vw;width:auto;transform:none;border-radius:24px;padding:0 12px 0 10px;overflow:hidden}
@@ -1730,8 +1737,8 @@ __BTN_CSS__
 #vinNucleo{flex:0 0 auto;width:100%;height:100%;border:0;border-radius:50%;background:transparent;color:#fff;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;z-index:2}
 #vinilo.abierta #vinNucleo{width:38px;height:38px;flex:0 0 38px}
 #vinNucleo svg{width:17px;height:17px;display:block;filter:drop-shadow(0 0 7px rgba(255,255,255,.85)) drop-shadow(0 1px 2px rgba(0,0,0,.45))}
-#vinilo.respira #vinNucleo{animation:vinResp 1.7s ease-in-out 2}
-@keyframes vinResp{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+#vinilo.nace{animation:vinNace .7s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes vinNace{0%{transform:translateX(-50%) scale(.55);opacity:0}70%{transform:translateX(-50%) scale(1.07);opacity:1}100%{transform:translateX(-50%) scale(1);opacity:1}}
 .vinExt{opacity:0;width:0;overflow:hidden;display:flex;align-items:center;gap:10px;flex:1;min-width:0;transition:opacity .28s .18s;z-index:2}
 #vinilo.abierta .vinExt{opacity:1;width:auto}
 #viniloCov{flex:0 0 36px;width:36px;height:36px;border-radius:9px;object-fit:cover;background:rgba(255,255,255,.08);box-shadow:0 2px 8px rgba(0,0,0,.4)}
@@ -1761,6 +1768,7 @@ __BTN_CSS__
   <div id="vinAro"></div>
   <div id="vinCometa"></div>
   <span class="vinOnda"></span>
+  <span id="vinSonar"></span>
   <span id="vinLuz"></span>
   <div id="vinBorde"></div>
   <button id="vinNucleo" type="button" aria-label="Reproducir 30 segundos">
@@ -1912,8 +1920,9 @@ const TG_COVER_SRC = __TG_COVER_SRC__;
     if(mira()) return;
     new MutationObserver(function(_,o){ if(mira()) o.disconnect(); })
       .observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style']}); }
-  function entra(){ heredaMaterial(); el.classList.add('on','respira');
-    setTimeout(function(){el.classList.remove('respira');},3600);
+  function entra(){ heredaMaterial(); el.classList.add('on','nace');
+    setTimeout(function(){el.classList.remove('nace');},760);
+    setTimeout(onda,430);
     el.removeAttribute('aria-hidden'); vigia(); }
   var ov=document.getElementById('bocadoEcoOverlay'), visto=false, entrado=false;
   function intenta(){ if(entrado) return; entrado=true; entra(); }
