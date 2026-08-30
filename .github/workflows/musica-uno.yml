@@ -29,13 +29,19 @@ jobs:
         env:
           TITULO: ${{ github.event.inputs.titulo }}
         run: |
-          python3 -c "import json,os,unicodedata; t=os.environ['TITULO']; norm=lambda s: unicodedata.normalize('NFKD',s or '').encode('ascii','ignore').decode().lower(); n=0
+          python3 - <<'PY'
+          import json,os,unicodedata
+          t=os.environ['TITULO']
+          norm=lambda s: unicodedata.normalize('NFKD',s or '').encode('ascii','ignore').decode().lower()
+          n=0
           for f in ('contenido.json','contenido_manual.json'):
               d=json.load(open(f,encoding='utf-8'))
               for b in d['libros']:
-                  if norm(t) in norm(b.get('titulo','')) and b.pop('_musica_queries',None) is not None: n+=1
+                  if norm(t) in norm(b.get('titulo','')) and b.pop('_musica_queries',None) is not None:
+                      n+=1
               json.dump(d,open(f,'w',encoding='utf-8'),ensure_ascii=False,indent=2)
-          print('semillas retiradas:',n)"
+          print('semillas retiradas:',n)
+          PY
       - name: Resolver musica (compositor + veto iTunes + juez armonia)
         env:
           OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
