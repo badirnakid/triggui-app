@@ -253,8 +253,10 @@ def capa1(queries, c, usadas=None, umbral=1, rescate=False, canon=False, artista
                 if hcorta in huellas or obra in huellas or hdur in huellas:
                     continue
                 huellas.add(hcorta); huellas.add(obra); huellas.add(hdur)
-                if rescate and (KARAOKE_RX.search((x["cancion"]+" "+x["album"])) or p <= -5):
-                    continue
+                if rescate and (KARAOKE_RX.search((x["cancion"]+" "+x["album"])) or p <= -5
+                                or (not canon and COMODIN_RX.search(x["cancion"])) or VIVO_RX.search(nombre) or REMIX_RX.search(nombre)
+                                or LUTO_RX.search(nombre)):
+                    continue                            # el rescate hereda TODOS los vetos duros
                 if p < umbral or x["id"] in vistos or huella in huellas:
                     continue
                 x["_base"], x["_q"] = p, q
@@ -598,7 +600,8 @@ def resolver_libro(p, c, st):
             if not elegidos and con_arm:
                 vivos = sorted((x for x in con_arm if not x.get("_descartar")),
                                key=lambda x: (-x.get("armonia",0), -x["_base"]))
-                sin_voz = [x for x in sorted(con_arm, key=lambda x: -x["_base"]) if not x.get("_pelea") or x.get("canon")]
+                sin_voz = [x for x in sorted(con_arm, key=lambda x: (-x.get("armonia",0), -x["_base"]))
+                           if (not x.get("_pelea") or x.get("canon")) and x.get("armonia",0) >= 5 and not x.get("_descartar")]
                 elegidos = (vivos or sin_voz)[:2]
                 juez = MODELO + "+rescate"
                 if not elegidos:  # todo era cantado: instrumental de emergencia, jamás voz, jamás silencio
