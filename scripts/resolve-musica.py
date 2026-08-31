@@ -78,7 +78,7 @@ RUTA_SCHEMA_ARM = "prompts/schemas/musica-armonia.json"
 # 🧸 Kids: la ley de la caricatura — prompts propios, mismos esquemas
 RUTA_PROMPT_COMP_KIDS = "prompts/tasks/compose-musica-queries-kids.md"
 RUTA_PROMPT_ARM_KIDS = "prompts/tasks/select-musica-armonia-kids.md"
-INFANTIL_RX = re.compile(r"nursery|baby\b|beb[e\u00e9]s?\b|para dormir|lullab|cunero|kids? songs?|canciones? infantil|toddler|preschool|sing.?along", re.I)
+INFANTIL_RX = re.compile(r"nursery|for bab(y|ies)|baby (songs?|music|sleep|lullab|einstein)|\bbeb[e\u00e9]s?\b|para dormir|lullab|cunero|kids? songs?|canciones? infantil|toddler|preschool|sing.?along", re.I)
 INFANTIL_GEN = re.compile(r"infantil|children|kids|ni\u00f1os", re.I)
 
 # Semillas del mapa determinista (fallback sin LLM). Piezas con nombre propio, probadas
@@ -91,6 +91,15 @@ SEMILLAS_UNIV = [
     "nils frahm says",
     "philip glass metamorphosis",
 ]
+SEMILLAS_KIDS = [
+    "saint-saens carnival of the animals",
+    "prokofiev peter and the wolf",
+    "rossini william tell overture",
+    "vince guaraldi linus and lucy",
+    "henry mancini pink panther theme",
+    "grieg morning mood peer gynt",
+]
+CATALOGO = "adulto"
 SEMILLAS_ES = [
     "gustavo santaolalla de ushuaia a la quiaca",
     "rodrigo y gabriela tamacun",
@@ -381,6 +390,9 @@ def llm(prompt, esquema, user_json, key):
 def mapa_queries(b):
     """Fallback determinista: mismas entradas, mismas semillas. Hash elige, no el azar."""
     h = int(hashlib.md5(_norm(b.get("titulo", "")).encode()).hexdigest(), 16)
+    if CATALOGO == "kids":
+        k = SEMILLAS_KIDS[h % len(SEMILLAS_KIDS):] + SEMILLAS_KIDS[:h % len(SEMILLAS_KIDS)]
+        return k[:3]
     univ = SEMILLAS_UNIV[h % len(SEMILLAS_UNIV):] + SEMILLAS_UNIV[:h % len(SEMILLAS_UNIV)]
     if (b.get("idioma_original") or "").lower().startswith("es"):
         es = SEMILLAS_ES[h % len(SEMILLAS_ES)]
@@ -762,7 +774,8 @@ def procesa(ruta, c, cache, st, hoy=None):
 
 def main():
     c = config()
-    global RUTA_PROMPT_COMP, RUTA_PROMPT_ARM
+    global RUTA_PROMPT_COMP, RUTA_PROMPT_ARM, CATALOGO
+    CATALOGO = c["catalogo"]
     if c["catalogo"] == "kids":
         RUTA_PROMPT_COMP, RUTA_PROMPT_ARM = RUTA_PROMPT_COMP_KIDS, RUTA_PROMPT_ARM_KIDS
         print("🧸 catálogo KIDS — la ley de la caricatura")
