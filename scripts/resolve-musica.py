@@ -40,7 +40,7 @@ curaduría espera la Doctrina Kids (S2); la maquinaria le llegará gratis cuando
 Uso:
   OPENAI_KEY=… python3 scripts/resolve-musica.py [--solo-ediciones] [--max=N]
       [--rutas=a.json,b.json] [--reintentar-dias=30] [--rehacer] [--solo=a,b]
-      [--sin-armonia] [--armonia-min=3] [--explicar] [--dry-run]
+      [--solo-silencios] [--solo-pool] [--sin-armonia] [--armonia-min=3] [--explicar] [--dry-run]
 
   APPLE_AT=token   → añade &at= de afiliado a cada link (Performance Partners; opcional)
 """
@@ -152,6 +152,7 @@ def config(argv=None):
         "at": (os.environ.get("APPLE_AT") or "").strip(),
         "solo_ed": "--solo-ediciones" in flags,
         "solo_silencios": "--solo-silencios" in flags,
+        "solo_pool": "--solo-pool" in flags,
         "max": int(val("--max", "999")),
         "rutas": rutas,
         "reintentar": int(val("--reintentar-dias", "30")),
@@ -249,6 +250,47 @@ def puntua_pieza(r, query, canon=False, rank=None):
 
 def _artista(x):
     return _norm(re.split(r"[,&]|\bfeat", x.get("artista",""), flags=re.I)[0]).strip()
+
+
+# ─────────────────────────────────────────────── 🛟 POOL DE EMERGENCIA v2.10 ──
+_POOL_EMERGENCIA = ("no-cargado",)
+def _pool_emergencia():
+    global _POOL_EMERGENCIA
+    if _POOL_EMERGENCIA == ("no-cargado",):
+        try:
+            _POOL_EMERGENCIA = json.load(open("musica_emergencia.json", encoding="utf-8"))
+        except Exception:
+            _POOL_EMERGENCIA = None
+    return _POOL_EMERGENCIA
+
+def eje_de(b):
+    dim = str(b.get("dimension") or "").lower()
+    if "prosper" in dim: return "impulso"
+    if "conex" in dim: return "luz"
+    a = b.get("_animo_promedio")
+    return "enfoque" if isinstance(a, (int, float)) and a >= 0.55 else "calma"
+
+def pool_rescate(b, c, previo=None):
+    """El silencio no existe: 2 piezas curadas del cajón, elegidas por eje del libro,
+    deterministas por título. Vetos e instrumentalidad ya vienen curados de fábrica."""
+    doc = _pool_emergencia()
+    vacio = {"juez": (previo or {}).get("juez") or "capa1", "sinfonia": (previo or {}).get("sinfonia") or "", "candidatos": []}
+    if not doc:
+        print("      🛟 pool-emergencia AUSENTE (musica_emergencia.json) — se respeta el silencio")
+        return previo or vacio
+    eje = eje_de(b)
+    lst = (doc.get("kids") if c.get("catalogo") == "kids" else doc.get("ejes") or {}).get(eje) or []
+    if len(lst) < 2:
+        print("      🛟 pool-emergencia sin piezas para eje=%s — se respeta el silencio" % eje)
+        return previo or vacio
+    h = int(hashlib.md5(_norm(b.get("titulo", "")).encode()).hexdigest(), 16)
+    par = [json.loads(json.dumps(lst[h % len(lst)])), json.loads(json.dumps(lst[(h + 1) % len(lst)]))]
+    if par[0]["id"] == par[1]["id"]:
+        par[1] = json.loads(json.dumps(lst[(h + 2) % len(lst)]))
+    if c.get("explicar"):
+        print("      🛟 pool-emergencia · eje=%s · %s — %s | %s — %s" % (
+            eje, par[0]["cancion"][:26], par[0]["artista"][:18], par[1]["cancion"][:26], par[1]["artista"][:18]))
+    return {"juez": "pool-emergencia", "sinfonia": "pool:" + eje, "candidatos": par}
 
 
 def capa1(queries, c, usadas=None, umbral=1, rescate=False, canon=False, artistas=None):
@@ -716,10 +758,13 @@ def procesa(ruta, c, cache, st, hoy=None):
     for p in plan:
         if st["fatal"]:
             break
-        try:
-            can, afi, origen = componer_queries(p["b"], c, st)
-        except Exception:
-            can, afi, origen = [], mapa_queries(p["b"]), "mapa"
+        if c["solo_pool"]:
+            can, afi, origen = [], [], "pool"        # 🛟 v2.10: directo al cajón, sin LLM ni iTunes
+        else:
+            try:
+                can, afi, origen = componer_queries(p["b"], c, st)
+            except Exception:
+                can, afi, origen = [], mapa_queries(p["b"]), "mapa"
         p.update(can=can, afi=afi, origen=origen)
         if c["explicar"]:
             print("  %-44s [%s] 👑 %s | ♫ %s" % (p["nombre"], origen, " ; ".join(can) or "—", " ; ".join(afi) or "—"))
@@ -742,7 +787,7 @@ def procesa(ruta, c, cache, st, hoy=None):
             st["pendientes"] += 1; print("  ~ %-44s pendiente (corrida detenida)" % nombre)
             continue
         try:
-            v = resolver_libro(p, c, st)
+            v = pool_rescate(p["b"], c) if c["solo_pool"] else resolver_libro(p, c, st)
         except ApiFatal as e:
             st["fatal"] = str(e)
             print("  ✗ %-44s FATAL %s — se detiene la búsqueda, se guarda lo resuelto" % (nombre, e))
@@ -752,6 +797,8 @@ def procesa(ruta, c, cache, st, hoy=None):
             print("  ! %-44s %s (sin cambios, se reintenta en la próxima corrida)" % (nombre, str(e)[:90]))
             time.sleep(1)
             continue
+        if not v["candidatos"]:
+            v = pool_rescate(p["b"], c, v)           # 🛟 v2.10: jamás silencio — cajón de emergencia curado
         b["_musica"] = {"resuelto_el": hoy.strftime("%Y-%m-%d"), "juez": v["juez"],
                         "sinfonia": v["sinfonia"], "candidatos": v["candidatos"]}
         for _x in v["candidatos"]:
