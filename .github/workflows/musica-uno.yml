@@ -67,8 +67,10 @@ jobs:
           git config user.email "bot@triggui.com"
           git add contenido.json contenido_manual.json contenido_kids.json
           git diff --cached --quiet && echo "sin cambios" || git commit -m "musica re-resuelta (juez) ${{ github.event.inputs.titulo }}"
+          PUSH_OK=0
           for i in 1 2 3; do
-            git pull --rebase origin main && git push && break
+            git pull --rebase origin main && git push && { PUSH_OK=1; break; }
             echo "push rebotado (intento $i) — main se movió; rebase y reintento"
             sleep 4
           done
+          if [ "$PUSH_OK" != "1" ]; then echo "🔴 push falló 3 veces: el run NO guardó nada"; exit 1; fi

@@ -775,6 +775,53 @@ body.tg-tarjeta .tg-cta{display:none !important}
 #tgModal.espera .tg-mtitle,#tgModal.espera .tg-mbtns{display:none}
 #tgModal.espera .tg-mtext{display:block;font-size:12px;letter-spacing:.02em;color:rgba(255,255,255,.75);margin:14px 0 0 0}
 #tgModal.espera .tg-mtext .hl{display:none}
+/* 🎵 vinilo v4 — morfosis: círculo hermano de los 5 botones ↔ barra bloque. Cota y material heredados. */
+#vinilo{position:fixed;bottom:max(3vh,env(safe-area-inset-bottom,3vh));left:50%;transform:translateX(-50%);z-index:700;display:none;align-items:center;gap:12px;width:clamp(3.5rem,min(8vw,8vh),4.5rem);height:clamp(3.5rem,min(8vw,8vh),4.5rem);padding:0;border-radius:50%;background-size:200% 200%;box-shadow:0 0 0 1.5px rgba(255,255,255,.34),0 10px 26px rgba(0,0,0,.5);overflow:visible;isolation:isolate;transition:width .5s cubic-bezier(.19,1,.22,1),left .5s cubic-bezier(.19,1,.22,1),right .5s cubic-bezier(.19,1,.22,1),border-radius .5s cubic-bezier(.19,1,.22,1),padding .5s cubic-bezier(.19,1,.22,1);cursor:pointer;touch-action:manipulation}
+#vinilo.on{display:flex;animation:vinVivo 9s ease-in-out infinite}
+@keyframes vinVivo{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+#vinilo::after{content:"";position:absolute;inset:-12px;border-radius:inherit;background:radial-gradient(circle,color-mix(in srgb,var(--accent,#fff) 42%,transparent),transparent 70%);filter:blur(9px);z-index:-2;animation:vinAliento 4.2s ease-in-out infinite;pointer-events:none}
+@keyframes vinAliento{0%,100%{opacity:.32;transform:scale(.96)}50%{opacity:.6;transform:scale(1.04)}}
+#vinLuz{position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:1;background:linear-gradient(115deg,transparent 42%,rgba(255,255,255,.5) 50%,transparent 58%);background-size:280% 100%;background-position:160% 0;animation:vinBarrido 5.8s ease-in-out infinite}
+@keyframes vinBarrido{0%,72%{background-position:160% 0}88%{background-position:-60% 0}100%{background-position:-60% 0}}
+#vinilo.abierta #vinLuz{animation:vinDestello .8s cubic-bezier(.19,1,.22,1) both}
+@keyframes vinDestello{from{background-position:160% 0}to{background-position:-60% 0}}
+.vinOnda{position:absolute;inset:0;border-radius:50%;border:1.5px solid color-mix(in srgb,var(--accent,#fff) 80%,#fff);opacity:0;pointer-events:none;z-index:0}
+#vinilo.toco .vinOnda{animation:vinOnda .65s cubic-bezier(.19,1,.22,1)}
+@keyframes vinOnda{0%{opacity:.75;transform:scale(.7)}100%{opacity:0;transform:scale(2.3)}}
+#vinilo.on:not(.sonando):not(.abierta) #vinNucleo{animation:vinLatido 3.2s ease-in-out .9s infinite}
+@keyframes vinLatido{0%,32%,100%{transform:scale(1)}8%{transform:scale(1.07)}16%{transform:scale(1)}24%{transform:scale(1.055)}}
+#vinSonar{position:absolute;inset:0;border-radius:50%;border:1.3px solid color-mix(in srgb,var(--accent,#fff) 55%,#fff);opacity:0;pointer-events:none;z-index:0}
+#vinilo.on:not(.sonando):not(.abierta) #vinSonar{animation:vinSonar 3.2s cubic-bezier(.19,1,.22,1) 1.15s infinite}
+@keyframes vinSonar{0%{opacity:.55;transform:scale(1)}62%,100%{opacity:0;transform:scale(2.05)}}
+#vinilo.on:not(.sonando):not(.abierta) #vinIcoPlay{animation:vinSenala 3.2s ease-in-out .9s infinite}
+@keyframes vinSenala{0%,32%,100%{transform:translateX(0)}8%{transform:translateX(1.6px)}24%{transform:translateX(1.1px)}}
+@media (prefers-reduced-motion: reduce){#vinilo.on,#vinilo::after,#vinLuz,#vinNucleo,#vinSonar,#vinIcoPlay{animation:none !important}}
+#vinilo.fuera{display:none !important}
+#vinilo::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(145deg,rgba(255,255,255,.18) 0%,rgba(255,255,255,.08) 40%,transparent 100%);pointer-events:none;z-index:1}
+#vinilo.abierta{left:1.5vw;right:1.5vw;width:auto;transform:none;border-radius:24px;height:auto;min-height:clamp(3.5rem,min(8vw,8vh),4.5rem);padding:9px 12px 9px 10px;overflow:hidden}
+#vinAro{position:absolute;inset:-3.5px;border-radius:50%;background:conic-gradient(var(--accent,#fff) var(--vin-p,0%),rgba(255,255,255,.14) 0);z-index:-1;opacity:0;transition:opacity .3s}
+#vinilo.sonando:not(.abierta) #vinAro{opacity:1;filter:drop-shadow(0 0 5px color-mix(in srgb,var(--accent,#fff) 70%,transparent))}
+#vinCometa{position:absolute;left:50%;top:50%;width:7px;height:7px;margin:-3.5px;border-radius:50%;background:radial-gradient(circle,#fff 0 35%,var(--accent,#fff) 70%,transparent);box-shadow:0 0 8px var(--accent,#fff),0 0 3px #fff;opacity:0;transform:rotate(var(--vin-a,0deg)) translateY(-29.5px);pointer-events:none;z-index:1}
+#vinilo.sonando:not(.abierta) #vinCometa{opacity:1}
+#vinNucleo{flex:0 0 auto;width:100%;height:100%;border:0;border-radius:50%;background:transparent;color:#fff;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;z-index:2}
+#vinilo.abierta #vinNucleo{width:38px;height:38px;flex:0 0 38px}
+#vinNucleo svg{width:17px;height:17px;display:block;filter:drop-shadow(0 0 7px rgba(255,255,255,.85)) drop-shadow(0 1px 2px rgba(0,0,0,.45))}
+#vinilo.nace{animation:vinNace .7s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes vinNace{0%{transform:translateX(-50%) scale(.55);opacity:0}70%{transform:translateX(-50%) scale(1.07);opacity:1}100%{transform:translateX(-50%) scale(1);opacity:1}}
+.vinExt{opacity:0;width:0;overflow:hidden;display:flex;align-items:center;gap:10px;flex:1;min-width:0;transition:opacity .28s .18s;z-index:2}
+#vinilo.abierta .vinExt{opacity:1;width:auto}
+#viniloCov{flex:0 0 36px;width:36px;height:36px;border-radius:9px;object-fit:cover;background:rgba(255,255,255,.08);box-shadow:0 2px 8px rgba(0,0,0,.4)}
+#viniloMeta{flex:1;min-width:0;text-align:left}
+#viniloTit{font:600 12.5px/1.3 'Poppins',sans-serif;color:rgba(255,255,255,.96);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,.35)}
+#viniloArt{font:500 11px/1.3 'Poppins',sans-serif;color:rgba(255,255,255,.62);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,.35)}
+#viniloPie{display:none;font:italic 500 10.5px/1.4 'Poppins',sans-serif;color:rgba(255,255,255,.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,.35);margin-top:2px}
+#vinilo.abierta #viniloPie:not(:empty){display:block}
+#viniloLink{flex:0 0 auto;display:flex;align-items:center;text-decoration:none;z-index:2}
+#viniloLink img{height:21px;display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}
+#vinBar{position:absolute;left:0;top:0;height:2px;width:var(--vin-p,0%);background:linear-gradient(90deg,var(--accent,#fff),#fff);box-shadow:0 0 9px var(--accent,#fff),0 0 2px #fff;opacity:0;transition:width .25s linear,opacity .2s;z-index:3}
+#vinBorde{position:absolute;inset:0;border-radius:inherit;padding:1.2px;background:linear-gradient(160deg,rgba(255,255,255,.6),rgba(255,255,255,.14) 32%,rgba(255,255,255,.05) 62%,color-mix(in srgb,var(--accent,#fff) 45%,transparent));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;opacity:0;transition:opacity .3s .12s;pointer-events:none;z-index:2}
+#vinilo.abierta #vinBorde{opacity:1}
+#vinilo.abierta #vinBar{opacity:.95}
 .tg-heart{position:fixed;pointer-events:none;z-index:700;font-size:24px;opacity:0;animation:tgFloatUp 1.2s ease-out forwards;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.3))}
 @keyframes tgFloatUp{0%{transform:translate(0,0) scale(0.5) rotate(0deg);opacity:0}20%{opacity:1;transform:translate(var(--tx),-40px) scale(1.2) rotate(15deg)}100%{opacity:0;transform:translate(var(--tx),-150px) scale(1) rotate(30deg)}}
 </style>
@@ -788,6 +835,25 @@ body.tg-tarjeta .tg-cta{display:none !important}
 </div>
 <div class="grid" id="grid"></div>
 
+<div id="vinilo" aria-hidden="true" role="group" aria-label="Música de esta edición">
+  <div id="vinAro"></div>
+  <div id="vinCometa"></div>
+  <span class="vinOnda"></span>
+  <span id="vinSonar"></span>
+  <span id="vinLuz"></span>
+  <div id="vinBorde"></div>
+  <button id="vinNucleo" type="button" aria-label="Reproducir 30 segundos">
+    <svg id="vinIcoPlay" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M8 5.5v13l11-6.5z"/></svg>
+    <svg id="vinIcoPause" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="display:none"><path d="M7 5h3.4v14H7zM13.6 5H17v14h-3.6z"/></svg>
+  </button>
+  <div class="vinExt">
+    <img id="viniloCov" alt="" />
+    <div id="viniloMeta"><div id="viniloTit"></div><div id="viniloArt"></div><div id="viniloPie"></div></div>
+    <a id="viniloLink" href="#" target="_blank" rel="noopener noreferrer" aria-label="Apple Music"><img id="vinBadge" src="https://tools.applemediaservices.com/api/badges/listen-on-apple-music/badge/es-mx" alt="Apple Music" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'Apple Music ↗',style:'font:600 11px Poppins;color:rgba(255,255,255,.75)'}))" /></a>
+  </div>
+  <div id="vinBar"></div>
+</div>
+
 <div id="revealOverlay" class="reveal-overlay">
   <div class="reveal-card" onclick="event.stopPropagation()">
     <button class="btn-close" id="btnBack" aria-label="Cerrar">×</button>
@@ -797,7 +863,7 @@ body.tg-tarjeta .tg-cta{display:none !important}
         <div class="ed-flow" id="editorialFlowTop">
           
           <div class="ed-cover-wrap" id="coverCTA">
-            <img src="https://is1-ssl.mzstatic.com/image/thumb/Publication114/v4/1b/5d/3c/1b5d3ca6-a8eb-6f07-a1bc-90a53f54f6c6/3851_SK_B_Emil_z_Lonnebergy.jpg/3000x3000bb.jpg" alt="Emil de Lönneberga" />
+            <img src="./portada.jpg" alt="Emil de Lönneberga" />
             <span class="cover-hint">Toca el libro</span>
           </div>
           <div class="ed-title" id="editorialTitle">La travesura como exploración</div>
@@ -846,7 +912,7 @@ body.tg-tarjeta .tg-cta{display:none !important}
   </div>
 
   <div class="silence-screen" id="silenceScreen">
-    <img class="sil-cover" id="silCover" src="https://is1-ssl.mzstatic.com/image/thumb/Publication114/v4/1b/5d/3c/1b5d3ca6-a8eb-6f07-a1bc-90a53f54f6c6/3851_SK_B_Emil_z_Lonnebergy.jpg/3000x3000bb.jpg" alt="Emil de Lönneberga" />
+    <img class="sil-cover" id="silCover" src="./portada.jpg" alt="Emil de Lönneberga" />
     <div class="sil-title">Emil de Lönneberga</div>
     <div class="sil-call">Queremos que te den ganas<br>de abrir un libro.</div>
     <div class="sil-sub">Eso es Triggui.</div>
@@ -858,8 +924,99 @@ body.tg-tarjeta .tg-cta{display:none !important}
 </div>
 
 <script>
-const state = {"id": "emil-de-lonneberga", "titulo": "Emil de Lönneberga", "autor": "Astrid Lindgren", "palabra": "La travesura como exploración", "descripcion": "En Lönneberga, Emil es un pequeño torbellino de energía. Sus travesuras no son meras diabluras, sino una forma de explorar el mundo que lo rodea. En cada acto travieso, Emil encuentra una nueva perspectiva, un rincón oculto de su entorno que demanda ser descubierto. La curiosidad es su brújula.", "palabras": ["curiosidad", "ternura", "alegría", "reflexión"], "frases": ["👁 Observa cómo Emil convierte el campo en su patio de juegos.", "🕰 ¿Qué travesura de Emil recuerdas con más cariño?", "🌌 Emil corre libre por los campos de Katthult, descubriendo secretos.", "☀ La travesura es el primer paso hacia el descubrimiento."], "colores": ["#8F7EF1", "#CDE830", "#5113AE", "#41650B"], "textColors": ["#FFFFFF", "#000000", "#FFFFFF", "#FFFFFF"], "ogImage": "https://app.triggui.com/t/emil-de-lonneberga/og.jpg", "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication114/v4/1b/5d/3c/1b5d3ca6-a8eb-6f07-a1bc-90a53f54f6c6/3851_SK_B_Emil_z_Lonnebergy.jpg/3000x3000bb.jpg", "tagline": "", "frases_en": ["🚶 Emil runs through the fields, each sprint a new adventure waiting to unfold.", "🔭 Watch closely! What mischief might Emil conjure next?", "🌌 Picture Emil, cheeks flushed with excitement, plotting his next prank in the barn.", "⏳ In mischief lies the heartbeat of childhood, where every moment counts."], "palabras_en": ["curiosity", "mischief", "freedom", "responsibility"], "i18nEn": {"cardTitle": "The Mischief of Childhood", "top": "In Lönneberga, Emil is a whirlwind of energy. His mischief is not mere naughtiness, but a way to explore the world around him. Each prank leads him to a new perspective, revealing hidden corners of his environment that cry out to be discovered. <span class=\"tg-hl\">Curiosity is his compass, guiding him through every escapade with a sense</span>.", "sub": "How is freedom balanced with responsibility?", "bot": "<span class=\"tg-hl\">Life in Katthult teaches Emil that freedom comes with responsibility.</span> Each mischievous act has its consequences, and Emil learns to weigh them carefully. In the Swedish countryside, the balance between being oneself and respecting others becomes a daily lesson, reminding him that responsibility does not stifle his wild spirit, but enlivens his adventures and allows him to embrace his uniqueness while navigating the complexities of childhood."}, "bocadoEcoPool": [{"phrase": "👁 Observa cómo Emil convierte el campo en su patio de juegos.", "rol": "abrir", "animo": 0.7, "origin": "edition_block_es"}, {"phrase": "🕰 ¿Qué travesura de Emil recuerdas con más cariño?", "rol": "profundizar", "animo": 0.6, "origin": "edition_block_es"}, {"phrase": "🌌 Emil corre libre por los campos de Katthult, descubriendo secretos.", "rol": "aterrizar", "animo": 0.8, "origin": "edition_block_es"}, {"phrase": "☀ La travesura es el primer paso hacia el descubrimiento.", "rol": "resonar", "animo": 0.7, "origin": "edition_block_es"}, {"phrase": "⚓ Emil transforma cada travesura en aprendizaje.", "rol": "abrir", "animo": 0.6, "origin": "og_phrase_es"}, {"phrase": "🔁 En Lönneberga, ser diferente es algo maravilloso, lleno de travesuras y sorpresas inesperadas.", "rol": "profundizar", "animo": 0.7, "origin": "og_phrase_es"}, {"phrase": "🛡 Las travesuras de Emil siempre traen consigo enseñanzas inesperadas, aunque los adultos a menudo no las entiendan.", "rol": "aterrizar", "animo": 0.5, "origin": "og_phrase_es"}, {"phrase": "🎯 La libertad es como un pájaro que vuela alto, pero siempre lleva consigo el peso de la responsabilidad.", "rol": "resonar", "animo": 0.6, "origin": "og_phrase_es"}], "bocadoEcoPool_en": ["🚶 Emil runs through the fields, each sprint a new adventure waiting to unfold.", "🔭 Watch closely! What mischief might Emil conjure next?", "🌌 Picture Emil, cheeks flushed with excitement, plotting his next prank in the barn.", "⏳ In mischief lies the heartbeat of childhood, where every moment counts."], "titulo_en": "Emil i Lönneberga"};
-const TG_COVER_SRC = "https://is1-ssl.mzstatic.com/image/thumb/Publication114/v4/1b/5d/3c/1b5d3ca6-a8eb-6f07-a1bc-90a53f54f6c6/3851_SK_B_Emil_z_Lonnebergy.jpg/3000x3000bb.jpg";
+const state = {"id": "emil-de-lonneberga", "titulo": "Emil de Lönneberga", "autor": "Astrid Lindgren", "palabra": "La travesura como exploración", "descripcion": "En Lönneberga, Emil es un pequeño torbellino de energía. Sus travesuras no son meras diabluras, sino una forma de explorar el mundo que lo rodea. En cada acto travieso, Emil encuentra una nueva perspectiva, un rincón oculto de su entorno que demanda ser descubierto. La curiosidad es su brújula.", "palabras": ["curiosidad", "ternura", "alegría", "reflexión"], "frases": ["👁 Observa cómo Emil convierte el campo en su patio de juegos.", "🕰 ¿Qué travesura de Emil recuerdas con más cariño?", "🌌 Emil corre libre por los campos de Katthult, descubriendo secretos.", "☀ La travesura es el primer paso hacia el descubrimiento."], "colores": ["#8F7EF1", "#CDE830", "#5113AE", "#41650B"], "textColors": ["#FFFFFF", "#000000", "#FFFFFF", "#FFFFFF"], "ogImage": "https://app.triggui.com/t/emil-de-lonneberga/og.jpg", "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication114/v4/1b/5d/3c/1b5d3ca6-a8eb-6f07-a1bc-90a53f54f6c6/3851_SK_B_Emil_z_Lonnebergy.jpg/3000x3000bb.jpg", "tagline": "", "frases_en": ["🚶 Emil runs through the fields, each sprint a new adventure waiting to unfold.", "🔭 Watch closely! What mischief might Emil conjure next?", "🌌 Picture Emil, cheeks flushed with excitement, plotting his next prank in the barn.", "⏳ In mischief lies the heartbeat of childhood, where every moment counts."], "palabras_en": ["curiosity", "mischief", "freedom", "responsibility"], "i18nEn": {"cardTitle": "The Mischief of Childhood", "top": "In Lönneberga, Emil is a whirlwind of energy. His mischief is not mere naughtiness, but a way to explore the world around him. Each prank leads him to a new perspective, revealing hidden corners of his environment that cry out to be discovered. <span class=\"tg-hl\">Curiosity is his compass, guiding him through every escapade with a sense</span>.", "sub": "How is freedom balanced with responsibility?", "bot": "<span class=\"tg-hl\">Life in Katthult teaches Emil that freedom comes with responsibility.</span> Each mischievous act has its consequences, and Emil learns to weigh them carefully. In the Swedish countryside, the balance between being oneself and respecting others becomes a daily lesson, reminding him that responsibility does not stifle his wild spirit, but enlivens his adventures and allows him to embrace his uniqueness while navigating the complexities of childhood."}, "bocadoEcoPool": [{"phrase": "👁 Observa cómo Emil convierte el campo en su patio de juegos.", "rol": "abrir", "animo": 0.7, "origin": "edition_block_es"}, {"phrase": "🕰 ¿Qué travesura de Emil recuerdas con más cariño?", "rol": "profundizar", "animo": 0.6, "origin": "edition_block_es"}, {"phrase": "🌌 Emil corre libre por los campos de Katthult, descubriendo secretos.", "rol": "aterrizar", "animo": 0.8, "origin": "edition_block_es"}, {"phrase": "☀ La travesura es el primer paso hacia el descubrimiento.", "rol": "resonar", "animo": 0.7, "origin": "edition_block_es"}, {"phrase": "⚓ Emil transforma cada travesura en aprendizaje.", "rol": "abrir", "animo": 0.6, "origin": "og_phrase_es"}, {"phrase": "🔁 En Lönneberga, ser diferente es algo maravilloso, lleno de travesuras y sorpresas inesperadas.", "rol": "profundizar", "animo": 0.7, "origin": "og_phrase_es"}, {"phrase": "🛡 Las travesuras de Emil siempre traen consigo enseñanzas inesperadas, aunque los adultos a menudo no las entiendan.", "rol": "aterrizar", "animo": 0.5, "origin": "og_phrase_es"}, {"phrase": "🎯 La libertad es como un pájaro que vuela alto, pero siempre lleva consigo el peso de la responsabilidad.", "rol": "resonar", "animo": 0.6, "origin": "og_phrase_es"}], "bocadoEcoPool_en": ["🚶 Emil runs through the fields, each sprint a new adventure waiting to unfold.", "🔭 Watch closely! What mischief might Emil conjure next?", "🌌 Picture Emil, cheeks flushed with excitement, plotting his next prank in the barn.", "⏳ In mischief lies the heartbeat of childhood, where every moment counts."], "musica": [{"id": "1650319530", "cancion": "Linus And Lucy", "artista": "Vince Guaraldi Trio", "album": "A Charlie Brown Christmas (Original 1965 TV Soundtrack) [2022 Mix]", "genero": "Época festiva", "dur": 185, "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/d2/0f/27/d20f271c-0b0a-2f33-399a-517d7a00544c/mzaf_7482065445527904681.plus.aac.p.m4a", "link": "https://music.apple.com/mx/album/linus-and-lucy/1650319526?i=1650319530&uo=4", "art": "https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/69/09/b6/6909b604-c967-e6cf-6b9b-dba54e42a2f2/22CRGIM33543.rgb.jpg/600x600bb.jpg", "armonia": 7, "rol": "abrir", "pie": "La energía de 'Linus And Lucy' invita a la travesura y la alegría, reflejando el espíritu curioso de Emil.", "frase_eco": ""}, {"id": "306376324", "cancion": "El Barbero de Sevilla \"Obertura\" - Rossini", "artista": "Viena Orchestra", "album": "Musica Clasica - Gioacchino Rossini", "genero": "Clásica", "dur": 460, "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/26/b5/49/26b5492b-7624-7833-c62e-4b136bde8bb9/mzaf_3114044044002934750.plus.aac.p.m4a", "link": "https://music.apple.com/mx/album/el-barbero-de-sevilla-obertura-rossini/306376319?i=306376324&uo=4", "art": "https://is1-ssl.mzstatic.com/image/thumb/Music/4d/09/2f/mzi.owcsioua.tif/600x600bb.jpg", "armonia": 6, "rol": "aterrizar", "pie": "La 'Obertura' de Rossini tiene un aire juguetón que puede resonar con las travesuras de Emil, aunque no siempre acompaña la lectura.", "frase_eco": ""}, {"id": "1395817066", "cancion": "Danza del Hada de Azúcar", "artista": "Ensamble de Música Antigua", "album": "Las 30 Canciones Más Famosas de la Música Clásica", "genero": "Clásica", "dur": 92, "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/c0/50/06/c0500627-e1a2-8a49-f9ff-ccbc219026e3/mzaf_7743232785775200565.plus.aac.p.m4a", "link": "https://music.apple.com/mx/album/danza-del-hada-de-az%C3%BAcar/1395816969?i=1395817066&uo=4", "art": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/6f/db/74/6fdb7480-dc4c-8c93-0618-49771e532c40/cover_10138221.jpg/600x600bb.jpg", "armonia": 6, "rol": "aterrizar", "pie": "La Danza del Hada de Azúcar tiene un aire de ternura, pero no logra encender el ánimo.", "frase_eco": ""}, {"id": "1615424315", "cancion": "La Danza del Hada de Azúcar", "artista": "Agnese Sat", "album": "La Danza del Hada de Azúcar - Single", "genero": "Clásica", "dur": 106, "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/6c/57/30/6c5730f2-628b-5c8a-8ac2-d6fbd1f9f4f9/mzaf_8873697786746851350.plus.aac.p.m4a", "link": "https://music.apple.com/mx/album/la-danza-del-hada-de-az%C3%BAcar/1615424314?i=1615424315&uo=4", "art": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/9d/03/cd/9d03cdd2-9c3d-e8fc-64e8-70b40aae9d76/0.jpg/600x600bb.jpg", "armonia": 6, "rol": "profundizar", "pie": "La Danza del Hada de Azúcar sugiere magia, pero le falta chispa para el cuento.", "frase_eco": ""}], "titulo_en": "Emil i Lönneberga"};
+const TG_COVER_SRC = "./portada.jpg";
+
+/* 🎵 vinilo v4 — morfosis. Material clonado en runtime del primer botón cta (herencia literal).
+   Estados: reposo → (tap = play+abierta) → 4s → sonando colapsado con anillo → 28s despedida → rotación.
+   Badge bilingüe sigue a window.tgLang. Reveal (portada/cta visibles) => fuera; la música continúa. */
+(function(){
+  var M = (state && state.musica) || [];
+  if (!M.length) return;
+  var franja = (function(h){ return h<6?'noche':h<12?'manana':h<19?'tarde':'noche'; })(new Date().getHours());
+  var PREF = { manana:['abrir','profundizar','aterrizar','resonar'],
+               tarde:['profundizar','abrir','aterrizar','resonar'],
+               noche:['resonar','aterrizar','profundizar','abrir'] }[franja];
+  var cola = M.slice().sort(function(a,b){
+    var pa=PREF.indexOf(a.rol), pb=PREF.indexOf(b.rol);
+    if(pa<0&&pb<0) return 0; if(pa<0) return 1; if(pb<0) return -1;
+    if(pa!==pb) return pa-pb; return (b.armonia||0)-(a.armonia||0); });
+  var el=document.getElementById('vinilo'), nuc=document.getElementById('vinNucleo'),
+      tit=document.getElementById('viniloTit'), art=document.getElementById('viniloArt'), pie=document.getElementById('viniloPie'),
+      lnk=document.getElementById('viniloLink'), cov=document.getElementById('viniloCov'),
+      bdg=document.getElementById('vinBadge'),
+      icoP=document.getElementById('vinIcoPlay'), icoS=document.getElementById('vinIcoPause');
+  var i=0, au=new Audio(), fadeT=null, cierraT=null, played={}, fallos=0;
+  au.preload='none';
+  function badgeLang(){ if(!bdg||!bdg.src) return;
+    var l=(window.tgLang==='en')?'en-us':'es-mx';
+    if(bdg.src.indexOf('/'+l)<0) bdg.src='https://tools.applemediaservices.com/api/badges/listen-on-apple-music/badge/'+l; }
+  function heredaMaterial(intento){ intento=intento||0;
+    try{ var b=document.querySelector('.tg-cta button');
+      if(b){ var cs=getComputedStyle(b);
+        if(cs.backgroundImage&&cs.backgroundImage!=='none'){ el.style.backgroundImage=cs.backgroundImage; el.style.backgroundSize='200% 200%'; return; } } }catch(e){}
+    if(intento<30) setTimeout(function(){heredaMaterial(intento+1);},100); }
+  function pinta(){ var c=cola[i]; tit.textContent=c.cancion; art.textContent=c.artista; pie.textContent=c.pie||'';
+    if(c.link) lnk.href=c.link; if(c.art){ cov.src=c.art; cov.alt=c.album||c.cancion; }
+    el.style.setProperty('--vin-p','0%'); badgeLang(); }
+  function icon(p){ icoP.style.display=p?'none':'block'; icoS.style.display=p?'block':'none';
+    el.classList.toggle('sonando',p); nuc.setAttribute('aria-label',p?'Pausa':'Reproducir 30 segundos'); }
+  function abre(){ el.classList.add('abierta'); reagenda(); }
+  function cierra(){ el.classList.remove('abierta'); }
+  function reagenda(){ clearTimeout(cierraT); cierraT=setTimeout(cierra,4000); }
+  function apaga(avanza){ if(fadeT){clearInterval(fadeT);fadeT=null;} try{au.pause();}catch(e){} icon(false);
+    if(avanza){ i=(i+1)%cola.length; pinta(); el.style.setProperty('--vin-a','0deg'); } }
+  function sigue(){ if(fadeT){clearInterval(fadeT);fadeT=null;} au.volume=1;
+    i=(i+1)%cola.length; pinta(); play(); }
+  function despedida(){ if(fadeT) return; var v=au.volume; fadeT=setInterval(function(){ v-=0.09;
+    if(v<=0){ sigue(); } else { try{au.volume=Math.max(0,v);}catch(e){} } },180); }
+  au.addEventListener('timeupdate',function(){ var t=au.currentTime;
+    var pc=Math.min(100,(t/30)*100);
+    el.style.setProperty('--vin-p',pc+'%');
+    el.style.setProperty('--vin-a',(Math.round(pc*36)/10)+'deg');
+    if(t>=28) despedida(); });
+  au.addEventListener('ended',function(){ sigue(); });
+  au.addEventListener('error',function(){ fallos++;
+    if(fallos>=cola.length){ fallos=0; apaga(false); } else { sigue(); } });
+  function play(){ var c=cola[i]; if(fadeT){clearInterval(fadeT);fadeT=null;} au.volume=1;
+    if(au.src!==c.preview){ au.src=c.preview; }
+    au.play().then(function(){ icon(true); fallos=0;
+      if(!played[c.id]){ played[c.id]=1;
+        try{gtag('event','musica_play',{slug:(state.id||''),cancion:c.cancion,artista:c.artista,rol:c.rol||'',franja:franja});}catch(e){} }
+      try{ if('mediaSession' in navigator){
+        navigator.mediaSession.metadata=new MediaMetadata({title:c.cancion,artist:c.artista,album:c.album||'Triggui',
+          artwork:c.art?[{src:c.art,sizes:'600x600',type:'image/jpeg'}]:[]});
+        navigator.mediaSession.setActionHandler('pause',function(){apaga(false);});
+        navigator.mediaSession.setActionHandler('play',function(){play();}); } }catch(e){}
+    }).catch(function(){ icon(false); }); }
+  function onda(){ el.classList.remove('toco'); void el.offsetWidth; el.classList.add('toco'); }
+  nuc.addEventListener('click',function(ev){ ev.stopPropagation(); onda();
+    if(!el.classList.contains('abierta')){ abre(); if(au.paused) play(); return; }
+    if(au.paused){ play(); } else { apaga(false); } reagenda(); });
+  el.addEventListener('click',function(){ if(!el.classList.contains('abierta')){ abre(); if(au.paused) play(); } else { reagenda(); } });
+  var pill=document.getElementById('tgLangPill');
+  if(pill) pill.addEventListener('click',function(){ setTimeout(badgeLang,60); });
+  pinta();
+  function visible(e){ if(!e) return false; var cs=getComputedStyle(e); if(cs.display==='none'||cs.visibility==='hidden') return false;
+    var r=e.getBoundingClientRect(); return r.width>2&&r.height>2; }
+  function vigia(){ var mira=function(){
+      if(visible(document.querySelector('.tg-portada'))||visible(document.querySelector('.tg-cta'))){ el.classList.add('fuera'); return true; } return false; };
+    if(mira()) return;
+    new MutationObserver(function(_,o){ if(mira()) o.disconnect(); })
+      .observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style']}); }
+  function entra(){ heredaMaterial(); el.classList.add('on','nace');
+    setTimeout(function(){el.classList.remove('nace');},760);
+    setTimeout(onda,430);
+    el.removeAttribute('aria-hidden'); vigia(); }
+  var ov=document.getElementById('bocadoEcoOverlay'), visto=false, entrado=false;
+  function intenta(){ if(entrado) return; entrado=true; entra(); }
+  if(ov){ if(ov.classList.contains('visible')) visto=true;
+    new MutationObserver(function(){ var v=ov.classList.contains('visible');
+      if(v){ visto=true; } else if(visto){ setTimeout(intenta,250); } })
+      .observe(ov,{attributes:true,attributeFilter:['class']});
+    setTimeout(function(){ if(!visto) intenta(); },9000);
+  } else { intenta(); }
+})();
 /* 🌐 D2-A — idioma de la edición: misma llave del imperio (triggui_lang) */
 const TG_ES_SNAP = { t: null, p: null, su: null, b: null };
 let tgLang = (function(){ try { const v = JSON.parse(localStorage.getItem('triggui_lang')||'null'); if (v==='en'||v==='es') return v; } catch(e){} return ((navigator.language||'es').slice(0,2)==='en') ? 'en' : 'es'; })();

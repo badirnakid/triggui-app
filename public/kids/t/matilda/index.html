@@ -775,6 +775,53 @@ body.tg-tarjeta .tg-cta{display:none !important}
 #tgModal.espera .tg-mtitle,#tgModal.espera .tg-mbtns{display:none}
 #tgModal.espera .tg-mtext{display:block;font-size:12px;letter-spacing:.02em;color:rgba(255,255,255,.75);margin:14px 0 0 0}
 #tgModal.espera .tg-mtext .hl{display:none}
+/* 🎵 vinilo v4 — morfosis: círculo hermano de los 5 botones ↔ barra bloque. Cota y material heredados. */
+#vinilo{position:fixed;bottom:max(3vh,env(safe-area-inset-bottom,3vh));left:50%;transform:translateX(-50%);z-index:700;display:none;align-items:center;gap:12px;width:clamp(3.5rem,min(8vw,8vh),4.5rem);height:clamp(3.5rem,min(8vw,8vh),4.5rem);padding:0;border-radius:50%;background-size:200% 200%;box-shadow:0 0 0 1.5px rgba(255,255,255,.34),0 10px 26px rgba(0,0,0,.5);overflow:visible;isolation:isolate;transition:width .5s cubic-bezier(.19,1,.22,1),left .5s cubic-bezier(.19,1,.22,1),right .5s cubic-bezier(.19,1,.22,1),border-radius .5s cubic-bezier(.19,1,.22,1),padding .5s cubic-bezier(.19,1,.22,1);cursor:pointer;touch-action:manipulation}
+#vinilo.on{display:flex;animation:vinVivo 9s ease-in-out infinite}
+@keyframes vinVivo{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+#vinilo::after{content:"";position:absolute;inset:-12px;border-radius:inherit;background:radial-gradient(circle,color-mix(in srgb,var(--accent,#fff) 42%,transparent),transparent 70%);filter:blur(9px);z-index:-2;animation:vinAliento 4.2s ease-in-out infinite;pointer-events:none}
+@keyframes vinAliento{0%,100%{opacity:.32;transform:scale(.96)}50%{opacity:.6;transform:scale(1.04)}}
+#vinLuz{position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:1;background:linear-gradient(115deg,transparent 42%,rgba(255,255,255,.5) 50%,transparent 58%);background-size:280% 100%;background-position:160% 0;animation:vinBarrido 5.8s ease-in-out infinite}
+@keyframes vinBarrido{0%,72%{background-position:160% 0}88%{background-position:-60% 0}100%{background-position:-60% 0}}
+#vinilo.abierta #vinLuz{animation:vinDestello .8s cubic-bezier(.19,1,.22,1) both}
+@keyframes vinDestello{from{background-position:160% 0}to{background-position:-60% 0}}
+.vinOnda{position:absolute;inset:0;border-radius:50%;border:1.5px solid color-mix(in srgb,var(--accent,#fff) 80%,#fff);opacity:0;pointer-events:none;z-index:0}
+#vinilo.toco .vinOnda{animation:vinOnda .65s cubic-bezier(.19,1,.22,1)}
+@keyframes vinOnda{0%{opacity:.75;transform:scale(.7)}100%{opacity:0;transform:scale(2.3)}}
+#vinilo.on:not(.sonando):not(.abierta) #vinNucleo{animation:vinLatido 3.2s ease-in-out .9s infinite}
+@keyframes vinLatido{0%,32%,100%{transform:scale(1)}8%{transform:scale(1.07)}16%{transform:scale(1)}24%{transform:scale(1.055)}}
+#vinSonar{position:absolute;inset:0;border-radius:50%;border:1.3px solid color-mix(in srgb,var(--accent,#fff) 55%,#fff);opacity:0;pointer-events:none;z-index:0}
+#vinilo.on:not(.sonando):not(.abierta) #vinSonar{animation:vinSonar 3.2s cubic-bezier(.19,1,.22,1) 1.15s infinite}
+@keyframes vinSonar{0%{opacity:.55;transform:scale(1)}62%,100%{opacity:0;transform:scale(2.05)}}
+#vinilo.on:not(.sonando):not(.abierta) #vinIcoPlay{animation:vinSenala 3.2s ease-in-out .9s infinite}
+@keyframes vinSenala{0%,32%,100%{transform:translateX(0)}8%{transform:translateX(1.6px)}24%{transform:translateX(1.1px)}}
+@media (prefers-reduced-motion: reduce){#vinilo.on,#vinilo::after,#vinLuz,#vinNucleo,#vinSonar,#vinIcoPlay{animation:none !important}}
+#vinilo.fuera{display:none !important}
+#vinilo::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(145deg,rgba(255,255,255,.18) 0%,rgba(255,255,255,.08) 40%,transparent 100%);pointer-events:none;z-index:1}
+#vinilo.abierta{left:1.5vw;right:1.5vw;width:auto;transform:none;border-radius:24px;height:auto;min-height:clamp(3.5rem,min(8vw,8vh),4.5rem);padding:9px 12px 9px 10px;overflow:hidden}
+#vinAro{position:absolute;inset:-3.5px;border-radius:50%;background:conic-gradient(var(--accent,#fff) var(--vin-p,0%),rgba(255,255,255,.14) 0);z-index:-1;opacity:0;transition:opacity .3s}
+#vinilo.sonando:not(.abierta) #vinAro{opacity:1;filter:drop-shadow(0 0 5px color-mix(in srgb,var(--accent,#fff) 70%,transparent))}
+#vinCometa{position:absolute;left:50%;top:50%;width:7px;height:7px;margin:-3.5px;border-radius:50%;background:radial-gradient(circle,#fff 0 35%,var(--accent,#fff) 70%,transparent);box-shadow:0 0 8px var(--accent,#fff),0 0 3px #fff;opacity:0;transform:rotate(var(--vin-a,0deg)) translateY(-29.5px);pointer-events:none;z-index:1}
+#vinilo.sonando:not(.abierta) #vinCometa{opacity:1}
+#vinNucleo{flex:0 0 auto;width:100%;height:100%;border:0;border-radius:50%;background:transparent;color:#fff;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;z-index:2}
+#vinilo.abierta #vinNucleo{width:38px;height:38px;flex:0 0 38px}
+#vinNucleo svg{width:17px;height:17px;display:block;filter:drop-shadow(0 0 7px rgba(255,255,255,.85)) drop-shadow(0 1px 2px rgba(0,0,0,.45))}
+#vinilo.nace{animation:vinNace .7s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes vinNace{0%{transform:translateX(-50%) scale(.55);opacity:0}70%{transform:translateX(-50%) scale(1.07);opacity:1}100%{transform:translateX(-50%) scale(1);opacity:1}}
+.vinExt{opacity:0;width:0;overflow:hidden;display:flex;align-items:center;gap:10px;flex:1;min-width:0;transition:opacity .28s .18s;z-index:2}
+#vinilo.abierta .vinExt{opacity:1;width:auto}
+#viniloCov{flex:0 0 36px;width:36px;height:36px;border-radius:9px;object-fit:cover;background:rgba(255,255,255,.08);box-shadow:0 2px 8px rgba(0,0,0,.4)}
+#viniloMeta{flex:1;min-width:0;text-align:left}
+#viniloTit{font:600 12.5px/1.3 'Poppins',sans-serif;color:rgba(255,255,255,.96);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,.35)}
+#viniloArt{font:500 11px/1.3 'Poppins',sans-serif;color:rgba(255,255,255,.62);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,.35)}
+#viniloPie{display:none;font:italic 500 10.5px/1.4 'Poppins',sans-serif;color:rgba(255,255,255,.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,.35);margin-top:2px}
+#vinilo.abierta #viniloPie:not(:empty){display:block}
+#viniloLink{flex:0 0 auto;display:flex;align-items:center;text-decoration:none;z-index:2}
+#viniloLink img{height:21px;display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}
+#vinBar{position:absolute;left:0;top:0;height:2px;width:var(--vin-p,0%);background:linear-gradient(90deg,var(--accent,#fff),#fff);box-shadow:0 0 9px var(--accent,#fff),0 0 2px #fff;opacity:0;transition:width .25s linear,opacity .2s;z-index:3}
+#vinBorde{position:absolute;inset:0;border-radius:inherit;padding:1.2px;background:linear-gradient(160deg,rgba(255,255,255,.6),rgba(255,255,255,.14) 32%,rgba(255,255,255,.05) 62%,color-mix(in srgb,var(--accent,#fff) 45%,transparent));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;opacity:0;transition:opacity .3s .12s;pointer-events:none;z-index:2}
+#vinilo.abierta #vinBorde{opacity:1}
+#vinilo.abierta #vinBar{opacity:.95}
 .tg-heart{position:fixed;pointer-events:none;z-index:700;font-size:24px;opacity:0;animation:tgFloatUp 1.2s ease-out forwards;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.3))}
 @keyframes tgFloatUp{0%{transform:translate(0,0) scale(0.5) rotate(0deg);opacity:0}20%{opacity:1;transform:translate(var(--tx),-40px) scale(1.2) rotate(15deg)}100%{opacity:0;transform:translate(var(--tx),-150px) scale(1) rotate(30deg)}}
 </style>
@@ -787,6 +834,25 @@ body.tg-tarjeta .tg-cta{display:none !important}
   <div class="bocado-eco-phrase" id="bocadoEcoPhrase"></div>
 </div>
 <div class="grid" id="grid"></div>
+
+<div id="vinilo" aria-hidden="true" role="group" aria-label="Música de esta edición">
+  <div id="vinAro"></div>
+  <div id="vinCometa"></div>
+  <span class="vinOnda"></span>
+  <span id="vinSonar"></span>
+  <span id="vinLuz"></span>
+  <div id="vinBorde"></div>
+  <button id="vinNucleo" type="button" aria-label="Reproducir 30 segundos">
+    <svg id="vinIcoPlay" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M8 5.5v13l11-6.5z"/></svg>
+    <svg id="vinIcoPause" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="display:none"><path d="M7 5h3.4v14H7zM13.6 5H17v14h-3.6z"/></svg>
+  </button>
+  <div class="vinExt">
+    <img id="viniloCov" alt="" />
+    <div id="viniloMeta"><div id="viniloTit"></div><div id="viniloArt"></div><div id="viniloPie"></div></div>
+    <a id="viniloLink" href="#" target="_blank" rel="noopener noreferrer" aria-label="Apple Music"><img id="vinBadge" src="https://tools.applemediaservices.com/api/badges/listen-on-apple-music/badge/es-mx" alt="Apple Music" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'Apple Music ↗',style:'font:600 11px Poppins;color:rgba(255,255,255,.75)'}))" /></a>
+  </div>
+  <div id="vinBar"></div>
+</div>
 
 <div id="revealOverlay" class="reveal-overlay">
   <div class="reveal-card" onclick="event.stopPropagation()">
@@ -858,8 +924,99 @@ body.tg-tarjeta .tg-cta{display:none !important}
 </div>
 
 <script>
-const state = {"id": "matilda", "titulo": "Matilda", "autor": "Roald Dahl", "palabra": "La magia de Matilda", "descripcion": "Matilda no es una niña común. Mientras otros niños juegan y ríen, ella se sumerge en el universo de los libros, donde su imaginación vuela libre. Estos mundos literarios no son solo escapes, sino armas contra la opresión de los adultos que la rodean.", "palabras": ["valentía", "imaginación", "transformación", "esperanza"], "frases": ["👁 Al abrir las páginas de un libro, no solo te sumerges en una historia, sino que también encuentras la llave que puede abrir las puertas de tu propia realidad.", "🕰 ¿Qué pasaría si los adultos escucharan a los niños como Matilda?", "💫 Matilda se sienta en su habitación, rodeada de libros, lista para desafiar el mundo.", "🏛 La educación es la llave que abre puertas que otros intentan cerrar."], "colores": ["#F1957E", "#30C4E8", "#AE5913", "#0B3D65"], "textColors": ["#FFFFFF", "#000000", "#FFFFFF", "#FFFFFF"], "ogImage": "https://app.triggui.com/t/matilda/og.jpg", "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication125/v4/ed/ad/9d/edad9df5-3033-cddd-5767-42e2f5b6ba7e/9782075028677.jpg/3000x3000bb.jpg", "tagline": "", "frases_en": ["👁 Picture Matilda, small yet fiercely intelligent, her eyes sparkling with determination as she reads.", "🗺 Imagine standing up to those who belittle you. What would you say?", "💫 As books fly open, Matilda harnesses their magic — a force against the mundane.", "⏳ In every child lies the potential to transform the world — if only they can break free."], "palabras_en": ["wonder", "courage", "transformation", "imagination"], "i18nEn": {"cardTitle": "The Magic of Matilda", "top": "<span class=\"tg-hl\">Matilda is no ordinary girl.</span> While other children play and laugh, she immerses herself in the universe of books, where her imagination soars freely. These literary worlds are not mere escapes; they are weapons against the oppression of the adults surrounding her.", "sub": "What would you do if you could change your reality?", "bot": "<span class=\"tg-hl\">she unleashes a transformative power that challenges those who underestimate her</span>. Each page she reads, every story she devours, turns her into the heroine of her own life. Matilda shows that knowledge is a superpower capable of overturning injustice and shaking the foundations of tyranny."}, "bocadoEcoPool": [{"phrase": "👁 Al abrir las páginas de un libro, no solo te sumerges en una historia, sino que también encuentras la llave que puede abrir las puertas de tu propia realidad.", "rol": "abrir", "animo": 0.6, "origin": "edition_block_es"}, {"phrase": "🕰 ¿Qué pasaría si los adultos escucharan a los niños como Matilda?", "rol": "profundizar", "animo": 0.5, "origin": "edition_block_es"}, {"phrase": "💫 Matilda se sienta en su habitación, rodeada de libros, lista para desafiar el mundo.", "rol": "aterrizar", "animo": 0.7, "origin": "edition_block_es"}, {"phrase": "🏛 La educación es la llave que abre puertas que otros intentan cerrar.", "rol": "resonar", "animo": 0.8, "origin": "edition_block_es"}, {"phrase": "🌿 La imaginación de Matilda es su mayor aliada contra la opresión.", "rol": "aterrizar", "animo": 0.7, "origin": "og_phrase_es"}, {"phrase": "🧭 ¿Qué harías si tu mente pudiera crear realidades alternativas?", "rol": "abrir", "animo": 0.5, "origin": "og_phrase_es"}, {"phrase": "🔍 La lucha de Matilda contra los adultos revela su valentía innata.", "rol": "profundizar", "animo": 0.6, "origin": "og_phrase_es"}, {"phrase": "💠 Conocerse a uno mismo es el primer paso para transformar el mundo.", "rol": "resonar", "animo": 0.8, "origin": "og_phrase_es"}], "bocadoEcoPool_en": ["👁 Picture Matilda, small yet fiercely intelligent, her eyes sparkling with determination as she reads.", "🗺 Imagine standing up to those who belittle you. What would you say?", "💫 As books fly open, Matilda harnesses their magic — a force against the mundane.", "⏳ In every child lies the potential to transform the world — if only they can break free."], "titulo_en": "Matilda"};
+const state = {"id": "matilda", "titulo": "Matilda", "autor": "Roald Dahl", "palabra": "La magia de Matilda", "descripcion": "Matilda no es una niña común. Mientras otros niños juegan y ríen, ella se sumerge en el universo de los libros, donde su imaginación vuela libre. Estos mundos literarios no son solo escapes, sino armas contra la opresión de los adultos que la rodean.", "palabras": ["valentía", "imaginación", "transformación", "esperanza"], "frases": ["👁 Al abrir las páginas de un libro, no solo te sumerges en una historia, sino que también encuentras la llave que puede abrir las puertas de tu propia realidad.", "🕰 ¿Qué pasaría si los adultos escucharan a los niños como Matilda?", "💫 Matilda se sienta en su habitación, rodeada de libros, lista para desafiar el mundo.", "🏛 La educación es la llave que abre puertas que otros intentan cerrar."], "colores": ["#F1957E", "#30C4E8", "#AE5913", "#0B3D65"], "textColors": ["#FFFFFF", "#000000", "#FFFFFF", "#FFFFFF"], "ogImage": "https://app.triggui.com/t/matilda/og.jpg", "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication125/v4/ed/ad/9d/edad9df5-3033-cddd-5767-42e2f5b6ba7e/9782075028677.jpg/3000x3000bb.jpg", "tagline": "", "frases_en": ["👁 Picture Matilda, small yet fiercely intelligent, her eyes sparkling with determination as she reads.", "🗺 Imagine standing up to those who belittle you. What would you say?", "💫 As books fly open, Matilda harnesses their magic — a force against the mundane.", "⏳ In every child lies the potential to transform the world — if only they can break free."], "palabras_en": ["wonder", "courage", "transformation", "imagination"], "i18nEn": {"cardTitle": "The Magic of Matilda", "top": "<span class=\"tg-hl\">Matilda is no ordinary girl.</span> While other children play and laugh, she immerses herself in the universe of books, where her imagination soars freely. These literary worlds are not mere escapes; they are weapons against the oppression of the adults surrounding her.", "sub": "What would you do if you could change your reality?", "bot": "<span class=\"tg-hl\">she unleashes a transformative power that challenges those who underestimate her</span>. Each page she reads, every story she devours, turns her into the heroine of her own life. Matilda shows that knowledge is a superpower capable of overturning injustice and shaking the foundations of tyranny."}, "bocadoEcoPool": [{"phrase": "👁 Al abrir las páginas de un libro, no solo te sumerges en una historia, sino que también encuentras la llave que puede abrir las puertas de tu propia realidad.", "rol": "abrir", "animo": 0.6, "origin": "edition_block_es"}, {"phrase": "🕰 ¿Qué pasaría si los adultos escucharan a los niños como Matilda?", "rol": "profundizar", "animo": 0.5, "origin": "edition_block_es"}, {"phrase": "💫 Matilda se sienta en su habitación, rodeada de libros, lista para desafiar el mundo.", "rol": "aterrizar", "animo": 0.7, "origin": "edition_block_es"}, {"phrase": "🏛 La educación es la llave que abre puertas que otros intentan cerrar.", "rol": "resonar", "animo": 0.8, "origin": "edition_block_es"}, {"phrase": "🌿 La imaginación de Matilda es su mayor aliada contra la opresión.", "rol": "aterrizar", "animo": 0.7, "origin": "og_phrase_es"}, {"phrase": "🧭 ¿Qué harías si tu mente pudiera crear realidades alternativas?", "rol": "abrir", "animo": 0.5, "origin": "og_phrase_es"}, {"phrase": "🔍 La lucha de Matilda contra los adultos revela su valentía innata.", "rol": "profundizar", "animo": 0.6, "origin": "og_phrase_es"}, {"phrase": "💠 Conocerse a uno mismo es el primer paso para transformar el mundo.", "rol": "resonar", "animo": 0.8, "origin": "og_phrase_es"}], "bocadoEcoPool_en": ["👁 Picture Matilda, small yet fiercely intelligent, her eyes sparkling with determination as she reads.", "🗺 Imagine standing up to those who belittle you. What would you say?", "💫 As books fly open, Matilda harnesses their magic — a force against the mundane.", "⏳ In every child lies the potential to transform the world — if only they can break free."], "musica": [{"id": "471417256", "cancion": "Revolting Children", "artista": "Matilda the Musical Original Cast", "album": "Matilda the Musical (Original London Cast Recording)", "genero": "Bandas sonoras", "dur": 152, "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/33/51/69/33516985-56a0-f8a2-8637-51ea1ddd9391/mzaf_15510811048939816754.plus.aac.p.m4a", "link": "https://music.apple.com/mx/album/revolting-children/471417216?i=471417256&uo=4", "art": "https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/12/d3/4c/12d34c4a-c9a9-a10d-487d-2dbb0714ce87/859706817814_cover.jpg/600x600bb.jpg", "canon": true, "armonia": 10, "rol": "abrir", "pie": "La canción 'Revolting Children' refleja la valentía de Matilda y su lucha contra la opresión, energizando tanto al niño como al adulto.", "frase_eco": "🌿 La imaginación de Matilda es su mayor aliada contra la opresión."}, {"id": "471417250", "cancion": "When I Grow Up", "artista": "Matilda the Musical Original Cast", "album": "Matilda the Musical (Original London Cast Recording)", "genero": "Bandas sonoras", "dur": 216, "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/5b/f2/e3/5bf2e355-4fad-76eb-f2f2-64df80dc0db3/mzaf_745581915715723179.plus.aac.p.m4a", "link": "https://music.apple.com/mx/album/when-i-grow-up/471417216?i=471417250&uo=4", "art": "https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/12/d3/4c/12d34c4a-c9a9-a10d-487d-2dbb0714ce87/859706817814_cover.jpg/600x600bb.jpg", "canon": true, "armonia": 10, "rol": "profundizar", "pie": "'When I Grow Up' inspira a soñar y a luchar por un futuro mejor, resonando con la valentía de Matilda.", "frase_eco": "🔍 La lucha de Matilda contra los adultos revela su valentía innata."}, {"id": "1651697759", "cancion": "School Song", "artista": "Meesha Garbett, Sadie Victoria Lim & The Cast of Roald Dahl's Matilda ", "album": "Roald Dahl's Matilda The Musical (Soundtrack from the Netflix Film)", "genero": "Bandas sonoras", "dur": 201, "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/7e/27/e0/7e27e059-bd30-6526-0270-093bb70c3ca2/mzaf_4209593968714172539.plus.aac.p.m4a", "link": "https://music.apple.com/mx/album/school-song/1651697754?i=1651697759&uo=4", "art": "https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/be/3d/69/be3d6915-653d-c45c-0077-1c626e78b539/196589602411.jpg/600x600bb.jpg", "canon": true, "armonia": 9, "rol": "aterrizar", "pie": "La 'School Song' refuerza la idea de la identidad y la valentía en la lucha contra la opresión, apoyando el valor del cuento.", "frase_eco": "💠 Conocerse a uno mismo es el primer paso para transformar el mundo."}, {"id": "1442462503", "cancion": "Do You Hear the People Sing?", "artista": "Aaron Tveit, Eddie Redmayne, Students & Les Misérables Cast", "album": "Les Misérables (The Motion Picture Soundtrack Deluxe) [Deluxe Edition]", "genero": "Bandas sonoras", "dur": 122, "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/c3/05/e3/c305e3ab-5f0a-09bc-bced-42a54c97be31/mzaf_14296610062806839879.plus.aac.p.m4a", "link": "https://music.apple.com/mx/album/do-you-hear-the-people-sing/1442461358?i=1442462503&uo=4", "art": "https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/9f/a4/11/9fa411eb-ee1f-9a67-101c-3197a9637244/00602537250028.rgb.jpg/600x600bb.jpg", "canon": true, "armonia": 7, "rol": "abrir", "pie": "'Do You Hear the People Sing?' invita a la lucha y la resistencia, resonando con el espíritu de Matilda.", "frase_eco": ""}, {"id": "1594677758", "cancion": "Waiting On A Miracle", "artista": "Stephanie Beatriz", "album": "Encanto (Original Motion Picture Soundtrack)", "genero": "Musicales", "dur": 161, "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/fd/49/4b/fd494ba9-0b17-6c17-d714-7ee5beff46a9/mzaf_17907062781142189431.plus.aac.p.m4a", "link": "https://music.apple.com/mx/album/waiting-on-a-miracle/1594677532?i=1594677758&uo=4", "art": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/94/4d/9a/944d9a8d-0549-f537-5706-5b083bd84a7d/21UM1IM38949.rgb.jpg/600x600bb.jpg", "canon": true, "armonia": 6, "rol": "profundizar", "pie": "'Waiting On A Miracle' refleja esperanza, pero su tono es más suave y menos enérgico que el de Matilda.", "frase_eco": ""}], "titulo_en": "Matilda"};
 const TG_COVER_SRC = "https://is1-ssl.mzstatic.com/image/thumb/Publication125/v4/ed/ad/9d/edad9df5-3033-cddd-5767-42e2f5b6ba7e/9782075028677.jpg/3000x3000bb.jpg";
+
+/* 🎵 vinilo v4 — morfosis. Material clonado en runtime del primer botón cta (herencia literal).
+   Estados: reposo → (tap = play+abierta) → 4s → sonando colapsado con anillo → 28s despedida → rotación.
+   Badge bilingüe sigue a window.tgLang. Reveal (portada/cta visibles) => fuera; la música continúa. */
+(function(){
+  var M = (state && state.musica) || [];
+  if (!M.length) return;
+  var franja = (function(h){ return h<6?'noche':h<12?'manana':h<19?'tarde':'noche'; })(new Date().getHours());
+  var PREF = { manana:['abrir','profundizar','aterrizar','resonar'],
+               tarde:['profundizar','abrir','aterrizar','resonar'],
+               noche:['resonar','aterrizar','profundizar','abrir'] }[franja];
+  var cola = M.slice().sort(function(a,b){
+    var pa=PREF.indexOf(a.rol), pb=PREF.indexOf(b.rol);
+    if(pa<0&&pb<0) return 0; if(pa<0) return 1; if(pb<0) return -1;
+    if(pa!==pb) return pa-pb; return (b.armonia||0)-(a.armonia||0); });
+  var el=document.getElementById('vinilo'), nuc=document.getElementById('vinNucleo'),
+      tit=document.getElementById('viniloTit'), art=document.getElementById('viniloArt'), pie=document.getElementById('viniloPie'),
+      lnk=document.getElementById('viniloLink'), cov=document.getElementById('viniloCov'),
+      bdg=document.getElementById('vinBadge'),
+      icoP=document.getElementById('vinIcoPlay'), icoS=document.getElementById('vinIcoPause');
+  var i=0, au=new Audio(), fadeT=null, cierraT=null, played={}, fallos=0;
+  au.preload='none';
+  function badgeLang(){ if(!bdg||!bdg.src) return;
+    var l=(window.tgLang==='en')?'en-us':'es-mx';
+    if(bdg.src.indexOf('/'+l)<0) bdg.src='https://tools.applemediaservices.com/api/badges/listen-on-apple-music/badge/'+l; }
+  function heredaMaterial(intento){ intento=intento||0;
+    try{ var b=document.querySelector('.tg-cta button');
+      if(b){ var cs=getComputedStyle(b);
+        if(cs.backgroundImage&&cs.backgroundImage!=='none'){ el.style.backgroundImage=cs.backgroundImage; el.style.backgroundSize='200% 200%'; return; } } }catch(e){}
+    if(intento<30) setTimeout(function(){heredaMaterial(intento+1);},100); }
+  function pinta(){ var c=cola[i]; tit.textContent=c.cancion; art.textContent=c.artista; pie.textContent=c.pie||'';
+    if(c.link) lnk.href=c.link; if(c.art){ cov.src=c.art; cov.alt=c.album||c.cancion; }
+    el.style.setProperty('--vin-p','0%'); badgeLang(); }
+  function icon(p){ icoP.style.display=p?'none':'block'; icoS.style.display=p?'block':'none';
+    el.classList.toggle('sonando',p); nuc.setAttribute('aria-label',p?'Pausa':'Reproducir 30 segundos'); }
+  function abre(){ el.classList.add('abierta'); reagenda(); }
+  function cierra(){ el.classList.remove('abierta'); }
+  function reagenda(){ clearTimeout(cierraT); cierraT=setTimeout(cierra,4000); }
+  function apaga(avanza){ if(fadeT){clearInterval(fadeT);fadeT=null;} try{au.pause();}catch(e){} icon(false);
+    if(avanza){ i=(i+1)%cola.length; pinta(); el.style.setProperty('--vin-a','0deg'); } }
+  function sigue(){ if(fadeT){clearInterval(fadeT);fadeT=null;} au.volume=1;
+    i=(i+1)%cola.length; pinta(); play(); }
+  function despedida(){ if(fadeT) return; var v=au.volume; fadeT=setInterval(function(){ v-=0.09;
+    if(v<=0){ sigue(); } else { try{au.volume=Math.max(0,v);}catch(e){} } },180); }
+  au.addEventListener('timeupdate',function(){ var t=au.currentTime;
+    var pc=Math.min(100,(t/30)*100);
+    el.style.setProperty('--vin-p',pc+'%');
+    el.style.setProperty('--vin-a',(Math.round(pc*36)/10)+'deg');
+    if(t>=28) despedida(); });
+  au.addEventListener('ended',function(){ sigue(); });
+  au.addEventListener('error',function(){ fallos++;
+    if(fallos>=cola.length){ fallos=0; apaga(false); } else { sigue(); } });
+  function play(){ var c=cola[i]; if(fadeT){clearInterval(fadeT);fadeT=null;} au.volume=1;
+    if(au.src!==c.preview){ au.src=c.preview; }
+    au.play().then(function(){ icon(true); fallos=0;
+      if(!played[c.id]){ played[c.id]=1;
+        try{gtag('event','musica_play',{slug:(state.id||''),cancion:c.cancion,artista:c.artista,rol:c.rol||'',franja:franja});}catch(e){} }
+      try{ if('mediaSession' in navigator){
+        navigator.mediaSession.metadata=new MediaMetadata({title:c.cancion,artist:c.artista,album:c.album||'Triggui',
+          artwork:c.art?[{src:c.art,sizes:'600x600',type:'image/jpeg'}]:[]});
+        navigator.mediaSession.setActionHandler('pause',function(){apaga(false);});
+        navigator.mediaSession.setActionHandler('play',function(){play();}); } }catch(e){}
+    }).catch(function(){ icon(false); }); }
+  function onda(){ el.classList.remove('toco'); void el.offsetWidth; el.classList.add('toco'); }
+  nuc.addEventListener('click',function(ev){ ev.stopPropagation(); onda();
+    if(!el.classList.contains('abierta')){ abre(); if(au.paused) play(); return; }
+    if(au.paused){ play(); } else { apaga(false); } reagenda(); });
+  el.addEventListener('click',function(){ if(!el.classList.contains('abierta')){ abre(); if(au.paused) play(); } else { reagenda(); } });
+  var pill=document.getElementById('tgLangPill');
+  if(pill) pill.addEventListener('click',function(){ setTimeout(badgeLang,60); });
+  pinta();
+  function visible(e){ if(!e) return false; var cs=getComputedStyle(e); if(cs.display==='none'||cs.visibility==='hidden') return false;
+    var r=e.getBoundingClientRect(); return r.width>2&&r.height>2; }
+  function vigia(){ var mira=function(){
+      if(visible(document.querySelector('.tg-portada'))||visible(document.querySelector('.tg-cta'))){ el.classList.add('fuera'); return true; } return false; };
+    if(mira()) return;
+    new MutationObserver(function(_,o){ if(mira()) o.disconnect(); })
+      .observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style']}); }
+  function entra(){ heredaMaterial(); el.classList.add('on','nace');
+    setTimeout(function(){el.classList.remove('nace');},760);
+    setTimeout(onda,430);
+    el.removeAttribute('aria-hidden'); vigia(); }
+  var ov=document.getElementById('bocadoEcoOverlay'), visto=false, entrado=false;
+  function intenta(){ if(entrado) return; entrado=true; entra(); }
+  if(ov){ if(ov.classList.contains('visible')) visto=true;
+    new MutationObserver(function(){ var v=ov.classList.contains('visible');
+      if(v){ visto=true; } else if(visto){ setTimeout(intenta,250); } })
+      .observe(ov,{attributes:true,attributeFilter:['class']});
+    setTimeout(function(){ if(!visto) intenta(); },9000);
+  } else { intenta(); }
+})();
 /* 🌐 D2-A — idioma de la edición: misma llave del imperio (triggui_lang) */
 const TG_ES_SNAP = { t: null, p: null, su: null, b: null };
 let tgLang = (function(){ try { const v = JSON.parse(localStorage.getItem('triggui_lang')||'null'); if (v==='en'||v==='es') return v; } catch(e){} return ((navigator.language||'es').slice(0,2)==='en') ? 'en' : 'es'; })();
@@ -892,8 +1049,9 @@ function tgApplyMisc(){
   var ch=document.querySelector('.cover-hint'); if(ch) ch.textContent = EN?'Tap the book':'Toca el libro';
 }
 function tgPillPlace(){ try{ var p=document.getElementById('tgLangPill'); if(!p) return;
-  if(window.innerWidth>=900){ var bs=document.querySelectorAll('.tg-block'); var blk=bs[bs.length-1];
-    if(blk){ var r=blk.getBoundingClientRect();
+  var bs=document.querySelectorAll('.tg-block'); var blk=bs[bs.length-1];
+  if(blk){ var r=blk.getBoundingClientRect();
+    if(r.width>40 && r.height>40){
       p.style.top=(Math.round(r.top)+18)+'px';
       p.style.right=(Math.round(window.innerWidth - r.right)+18)+'px'; return; } }
   p.style.top=''; p.style.right=''; }catch(e){} }
@@ -1484,7 +1642,35 @@ setOverlayView('blocks');
 
 // 🌒 Bocado al cargar — primero ocultamos bloques, mostramos bocado, y
 // cuando termina volvemos a mostrar bloques con su atmósfera intacta.
+/* 🌀 v7: FOTO DE REGRESO de la edición — si el viaje a la espiral salió de ESTA edición con los
+   bloques abiertos, al volver se repone la pantalla tal cual: sin eco de apertura y ya revelada. */
+var __tgRegresando=false;
+try{
+  window.addEventListener('pageshow', function(ev){ if(ev && ev.persisted){ try{ sessionStorage.removeItem('tg_ed_foto'); }catch(e){} } });
+  var __f=JSON.parse(sessionStorage.getItem('tg_ed_foto')||'null');
+  if(__f && __f.ruta===location.pathname && (Date.now()-(__f.t||0))<6*3600*1000){
+    __tgRegresando=true;
+    try{ if(typeof __f.port==='number') window.__tgFotoPort=__f.port; }catch(e){}
+    sessionStorage.removeItem('tg_ed_foto');
+    var __rep=function(){ try{ if(document.querySelector('.tg-block.show')) return;
+      var q=document.querySelector('.tg-block .tg-portada');
+      if(q && q.parentElement) q.parentElement.click(); }catch(e){} };
+    __rep(); setTimeout(__rep,0); setTimeout(__rep,150);
+    /* el gemelo atenua el grid al cargar contando con que el bocado lo despierte;
+       en el regreso el bocado no corre, asi que despertamos nosotros la pantalla. */
+    var __despierta=function(){ try{
+      var g=document.getElementById('tgGrid'), k=document.getElementById('tgCta');
+      if(g) g.classList.remove('tg-dim','bocado-active','eco-active');
+      if(k) k.classList.remove('tg-dim');
+      var v=document.getElementById('bocadoEcoOverlay'); if(v) v.classList.remove('visible');
+    }catch(e){} };
+    __despierta(); setTimeout(__despierta,0); setTimeout(__despierta,150);
+    setTimeout(__despierta,450); setTimeout(__despierta,1000); setTimeout(__despierta,1800);
+  }
+  try{ window.__tgRegresando=__tgRegresando; }catch(e){}
+}catch(e){}
 (function triggerOpeningBocado() {
+  if (__tgRegresando) return;
   if (!state.bocadoEcoPool || state.bocadoEcoPool.length === 0) return;
   grid.classList.add('bocado-active');
   // Pequeño delay para que el browser pinte la página primero
@@ -1610,7 +1796,10 @@ var bLibro = document.getElementById('tgLibro');
 var bLike = document.getElementById('tgLike');
 var bDado = document.getElementById('tgDado');
 var revealed = false;
-var portIdx = Math.floor(Math.random() * 4);
+/* 🌀 v7.1: si venimos de regreso con foto, la portada vive en el MISMO bloque que se dejó
+   (sin esto el sorteo la mueve y el escenario deja de ser idéntico). */
+var portIdx = (function(){ try{ var f=window.__tgFotoPort;
+  if(typeof f==='number' && f>=0 && f<4) return f; }catch(e){} return Math.floor(Math.random() * 4); })();
 
 var TgModal = {
   el: document.getElementById('tgModal'),
@@ -1693,7 +1882,7 @@ function abrirTarjeta(){
   }
 })();
 bLibro.onclick = abrirTarjeta;
-bEsp.onclick = function(){ window.location.href = '/espiral/'; };
+bEsp.onclick = function(){ try{ if(document.querySelector('.tg-block.show')) sessionStorage.setItem('tg_ed_foto', JSON.stringify({ruta:location.pathname,port:portIdx,t:Date.now()})); }catch(e){} window.location.href = '/espiral/'; };
 // 🎲 otra edición viva al azar (congruente con el dado de la app). Lista estática /t/ediciones.json.
 bDado.onclick = function(){
   try{gtag('event','edicion_dado',{});}catch(e){}
@@ -2015,7 +2204,7 @@ bLike.onclick = function(){
   });
 };
 
-if (pool.length) {
+if (pool.length && !window.__tgRegresando) {
   grid.classList.add('tg-dim');
   cta.classList.add('tg-dim');
 }

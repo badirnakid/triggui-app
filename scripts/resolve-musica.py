@@ -689,10 +689,10 @@ def procesa(ruta, c, cache, st, hoy=None):
             print("  ? %-44s [%s] q=%s" % (nombre, origen, " | ".join(queries or [])[:70]))
             continue
         if st["fatal"]:
-            print("  ~ %-44s pendiente (corrida detenida)" % nombre)
+            st["pendientes"] += 1; print("  ~ %-44s pendiente (corrida detenida)" % nombre)
             continue
         if st["busquedas"] >= c["max"]:
-            print("  ~ %-44s pendiente (--max=%d alcanzado)" % (nombre, c["max"]))
+            st["pendientes"] += 1; print("  ~ %-44s pendiente (--max=%d alcanzado)" % (nombre, c["max"]))
             continue
         st["busquedas"] += 1
         cache[k] = None
@@ -734,7 +734,7 @@ def procesa(ruta, c, cache, st, hoy=None):
     for p in plan:
         b, nombre = p["b"], p["nombre"]
         if st["fatal"]:
-            print("  ~ %-44s pendiente (corrida detenida)" % nombre)
+            st["pendientes"] += 1; print("  ~ %-44s pendiente (corrida detenida)" % nombre)
             continue
         try:
             v = resolver_libro(p, c, st)
@@ -780,17 +780,20 @@ def main():
         RUTA_PROMPT_COMP, RUTA_PROMPT_ARM = RUTA_PROMPT_COMP_KIDS, RUTA_PROMPT_ARM_KIDS
         print("🧸 catálogo KIDS — la ley de la caricatura")
     st = {"busquedas": 0, "con_musica": 0, "errores": 0, "cache": 0, "usadas": set(), "artistas": {},
-          "fatal": "", "llm_apagado": "", "llm_errores": 0}
+          "fatal": "", "llm_apagado": "", "llm_errores": 0, "pendientes": 0}
     cache = {}
     for ruta in c["rutas"]:
         if not os.path.exists(ruta):
             print("  · %s no existe — se omite" % ruta)
             continue
         procesa(ruta, c, cache, st)
-    print("── búsquedas %d · con música %d · caché %d · errores %d%s%s" % (
-        st["busquedas"], st["con_musica"], st["cache"], st["errores"],
+    print("── búsquedas %d · con música %d · caché %d · errores %d · pendientes %d%s%s" % (
+        st["busquedas"], st["con_musica"], st["cache"], st["errores"], st["pendientes"],
         (" · FATAL: " + st["fatal"]) if st["fatal"] else "",
         (" · LLM apagado: " + st["llm_apagado"]) if st["llm_apagado"] else ""))
+    if st["fatal"] or st["pendientes"] > 0:
+        print("🔴 corrida INCOMPLETA — %d pendiente(s)%s; el run no reporta verde" % (st["pendientes"], (" · FATAL: "+st["fatal"]) if st["fatal"] else ""))
+        sys.exit(1)
     sys.exit(0)
 
 

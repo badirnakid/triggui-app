@@ -3277,6 +3277,13 @@ if (btnEspiral) {
 // 🌀 v4.2: si el navegador restauro la pagina por si mismo (cache de paginas), la foto ya no hace falta.
 window.addEventListener('pageshow', (ev) => {
   if (ev.persisted) { try { sessionStorage.removeItem('triggui_regreso'); } catch (err) {} }
+  // v4.16 D4: pagina resucitada por el navegador (bfcache) → el modo se re-sincroniza con la URL, misma ley que popstate
+  try {
+    if (ev.persisted) {
+      const __m = window.location.pathname.startsWith('/kids') ? 'kids' : 'adult';
+      if (__m !== window.TRIGGUI_MODE && typeof switchTrigguiMode === 'function') switchTrigguiMode(__m, true);
+    }
+  } catch (_) {}
 });
 // 📦 caja negra: estado interno de la app para cada toque grabado (solo lectura)
 window.__cajaEstado = function () {
@@ -6124,6 +6131,16 @@ BarraMagica.openOverlay = function(force) {
   document.body.classList.remove('booting');
 
   this.applyStrings();
+  // v4.16 D3: la animacion de las 3 palabras se reinicia en CADA apertura — la pregunta entra con su fade siempre, sin importar historia previa (fill-mode, bfcache o switch no la pueden dejar en blanco)
+  try {
+    const __q = document.getElementById('barraQuestion');
+    if (__q) {
+      const __ws = __q.querySelectorAll('.bm-w');
+      __ws.forEach(function(el){ el.style.animation = 'none'; });
+      void __q.offsetWidth;
+      __ws.forEach(function(el){ el.style.animation = ''; });
+    }
+  } catch(_) {}
 
   overlay.classList.remove('visible');
   overlay.style.display = 'flex';
@@ -6443,7 +6460,7 @@ function wireBarraMagicaEvents() {
 //   - Try/catch global con fallback graceful a window.location.href
 //   - sessionStorage.removeItem('lastLibroIdx') limpia state stale
 //   - Reverso de URL si catálogo nuevo está vacío
-async function switchTrigguiMode(targetMode) {
+async function switchTrigguiMode(targetMode, fromHistory) {
   if (window.__TRIGGUI_SWITCHING__) return;
   if (targetMode !== 'kids' && targetMode !== 'adult') return;
   if (targetMode === window.TRIGGUI_MODE) return;
@@ -6461,7 +6478,11 @@ async function switchTrigguiMode(targetMode) {
     document.documentElement.classList.toggle('adult-mode', targetMode !== 'kids');
     document.documentElement.setAttribute('data-mode', targetMode);
     try { applyKidsBtnStrings(); } catch(_) {}
-    try { history.pushState({ mode: targetMode, source: 'switch' }, '', targetUrl); } catch(_) {}
+    // v4.16 D1: el back/forward NUNCA re-empuja historial — la URL ya es la correcta; duplicarla pudria la pila y resucitaba snapshots viejos en el gesto de iOS
+    if (!fromHistory) { try { history.pushState({ mode: targetMode, source: 'switch' }, '', targetUrl); } catch(_) {} }
+    else { try { history.replaceState({ mode: targetMode, source: 'popstate' }, '', window.location.pathname + window.location.search); } catch(_) {} }
+    // v4.16 D3: si la barra estaba abierta (el pill vive dentro), se cierra limpio ANTES del fade — nunca mas una barra del modo viejo flotando sobre el catalogo nuevo
+    try { const __ov = document.getElementById('barraMagicaOverlay'); if (__ov && __ov.classList.contains('visible')) BarraMagica.closeOverlay(true, true); } catch(_) {}
 
     // FASE 2: Fade-out del grid (paralelo al fetch)
     if (grid) {
@@ -6487,6 +6508,7 @@ async function switchTrigguiMode(targetMode) {
     libro = data.libros[pickLibroNoRepetido(data.libros)];
 
     // FASE 6: Re-aplicar strings (cambia accent color "sientes?") + render
+    try { BarraMagica.rotarPregunta(); } catch(_) {}   // v4.16 D3: pregunta nueva por modo — jamas la del catalogo anterior
     try { BarraMagica.applyStrings(); } catch(_) {}
     try { render(); } catch(e) { console.error('[Triggui] render error tras switch:', e); }
     try { if (window.__trigguiDado) window.__trigguiDado.reconstruir(libro, ''); } catch(_) {}   // 🎲 v4.4: lista del dado rehecha con el catalogo nuevo (nunca mezcla adultos en Kids)
@@ -6519,6 +6541,12 @@ async function switchTrigguiMode(targetMode) {
     setTimeout(() => {
       window.__TRIGGUI_SWITCHING__ = false;
       if (grid) grid.style.transition = '';
+      // v4.16 D2: si un back llego en plena transicion, el sync encolado corre ahora — el pathname es la unica verdad
+      try {
+        window.__TRIGGUI_POP_PENDIENTE__ = null;
+        const __modoUrl = window.location.pathname.startsWith('/kids') ? 'kids' : 'adult';
+        if (__modoUrl !== window.TRIGGUI_MODE) switchTrigguiMode(__modoUrl, true);
+      } catch(_) {}
     }, 700);
   }
 }
@@ -6526,9 +6554,9 @@ async function switchTrigguiMode(targetMode) {
 // 🌒 v3.8.10 — Back/forward del browser sincronizado con el modo
 window.addEventListener('popstate', function(e) {
   const targetMode = window.location.pathname.startsWith('/kids') ? 'kids' : 'adult';
-  if (targetMode !== window.TRIGGUI_MODE && typeof switchTrigguiMode === 'function') {
-    switchTrigguiMode(targetMode);
-  }
+  if (targetMode === window.TRIGGUI_MODE) return;
+  if (window.__TRIGGUI_SWITCHING__) { window.__TRIGGUI_POP_PENDIENTE__ = targetMode; return; }   // v4.16 D2: un back en plena transicion no se pierde: se encola
+  if (typeof switchTrigguiMode === 'function') switchTrigguiMode(targetMode, true);              // v4.16 D1: true = viene del historial, sin pushState
 });
 
 // 🌒 v3.8.9 — Sincroniza segmented pill: texto + estado activo según TRIGGUI_MODE + idioma
