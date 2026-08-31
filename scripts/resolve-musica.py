@@ -97,7 +97,10 @@ COMODIN_RX = re.compile(r"nuvole bianche|on the nature of daylight|river flows i
 REMIX_RX = re.compile(r"remix|sped up|slowed|nightcore|8d audio|karaoke", re.I)
 # Criterio Triggui de lecturabilidad — capa determinista: las marcas de tempo codifican velocidad
 LENTO_RX = re.compile(r"adagio|andante|largo|lento|nocturn|gymnop|gnossien|berceuse|pavane|sarabande|aria\b|\bair\b|prelude|pr\u00e9lude|meditat|ambient|lullaby|cradle|elegy|elegie|requiem|kyrie|spiegel|arioso|cantabile|dolce|tranquil", re.I)
-RAPIDO_RX = re.compile(r"allegro|presto|vivace|scherzo|tarantell|toccata|galop|molto|furioso|agitato|rondo|fugue|fuga|march|marcha|polka|csardas|bourr", re.I)
+RAPIDO_RX = re.compile(r"furioso|agitato|presto\b|thrash|hardcore|death|metal", re.I)
+# El ánimo primero: la luz suma, el luto resta (cues en título/álbum)
+LUZ_RX = re.compile(r"spring|primavera|\bsun\b|sunny|sunshine|\bsol\b|\bluz\b|light|joy|alegr|feliz|happy|smile|sonr|bossa|samba|swing|morning|ma\u00f1ana|blue skies|lovely|wonderful|sweet|amor|love|dance|danza|celebra|fiesta|brandenburg|water music|spring", re.I)
+LUTO_RX = re.compile(r"requiem|kyrie|lacrim|elegy|elegie|funeral|funebre|f\u00fanebre|adagio for strings|lament|tristesse|sad\b|sorrow|grief|dolor|farewell|adi\u00f3s|goodbye|tears|l\u00e1grim|nocturne|nocturno|sleep\b", re.I)
 
 KARAOKE_RX = re.compile(
     r"karaoke|tribute|in the style|made famous|as popularized|lullab|8[\s-]?bit|"
@@ -166,7 +169,7 @@ def api_itunes(params):
             time.sleep(2)
 
 
-def puntua_pieza(r, query, canon=False):
+def puntua_pieza(r, query, canon=False, rank=None):
     """Veto música. previewUrl/trackViewUrl obligatorios; devuelve (puntaje, pieza) o None."""
     prev, link = r.get("previewUrl"), r.get("trackViewUrl")
     if not prev or not link:
@@ -180,7 +183,7 @@ def puntua_pieza(r, query, canon=False):
     if VIVO_RX.search(nombre):
         p -= 3                                          # aplausos y ruido rompen la lectura
     if not canon and POP_RX.search(r.get("primaryGenreName") or ""):
-        p -= 4                                          # pop cantado jamás es afín; el canon lo salta
+        p -= 1                                          # pop: el juez decide si pelea con la lectura
     if not canon and COMODIN_RX.search(r.get("trackName") or ""):
         p -= 6                                          # el charco de siempre, por título: fuera
     if REMIX_RX.search(nombre):
@@ -195,10 +198,16 @@ def puntua_pieza(r, query, canon=False):
         p -= 3                                          # un bocado necesita cuerpo: piezas-fragmento fuera
     elif dur >= 150:
         p += 1
-    if LENTO_RX.search(nombre):
-        p += 2                                          # el tempo escrito en el título: lecturable
+    if LUZ_RX.search(nombre):
+        p += 2                                          # la luz en el título: sube el ánimo
+    if LUTO_RX.search(nombre) and not canon:
+        p -= 3                                          # el luto no es bocado de ánimo
     if RAPIDO_RX.search(nombre) and not canon:
-        p -= 3                                          # allegro/presto: pelea con la lectura
+        p -= 4                                          # lo extremo no deja leer
+    if rank is not None and rank < 2:
+        p += 2                                          # la grabación canónica del artista sube primero (proxy de popularidad)
+    elif rank is not None and rank < 5:
+        p += 1
     return p, {
         "id": str(r.get("trackId") or ""),
         "cancion": (r.get("trackName") or "")[:90],
@@ -228,8 +237,8 @@ def capa1(queries, c, usadas=None, umbral=1, rescate=False, canon=False, artista
             d = api_itunes({"term": q, "media": "music", "entity": "song",
                             "limit": 8, "country": pais})
             time.sleep(PAUSA_ITUNES)
-            for r in d.get("results", []):
-                pz = puntua_pieza(r, q, canon)
+            for rank, r in enumerate(d.get("results", [])):
+                pz = puntua_pieza(r, q, canon, rank)
                 if not pz:
                     continue
                 p, x = pz
@@ -427,8 +436,9 @@ def armonizar(b, cands, c, st):
         y["frase_eco"] = _s(v.get("frase_eco"), 200)
         y["_descartar"] = bool(v.get("descartar"))
         y["_cantada"] = (v.get("cantada") is True)
-        if y["_cantada"] and not y.get("canon"):
-            y["_descartar"] = True; y["_motivo"] = "cantada: la letra pelea con la lectura"
+        y["_pelea"] = (v.get("pelea_lectura") is True)
+        if y["_pelea"] and not y.get("canon"):
+            y["_descartar"] = True; y["_motivo"] = "pelea con la lectura"
         y["_motivo"] = _s(v.get("motivo_descarte"), 90)
         con.append(y)
     if not con:
@@ -567,7 +577,7 @@ def resolver_libro(p, c, st):
             if not elegidos and con_arm:
                 vivos = sorted((x for x in con_arm if not x.get("_descartar")),
                                key=lambda x: (-x.get("armonia",0), -x["_base"]))
-                sin_voz = [x for x in sorted(con_arm, key=lambda x: -x["_base"]) if not x.get("_cantada") or x.get("canon")]
+                sin_voz = [x for x in sorted(con_arm, key=lambda x: -x["_base"]) if not x.get("_pelea") or x.get("canon")]
                 elegidos = (vivos or sin_voz)[:2]
                 juez = MODELO + "+rescate"
                 if not elegidos:  # todo era cantado: instrumental de emergencia, jamás voz, jamás silencio
