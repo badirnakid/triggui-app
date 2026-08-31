@@ -495,7 +495,7 @@ body.hoja-abierta #tgLangPill,body.puerta-abierta #tgLangPill{display:none}
   else arranca();
 })();
 </script>
-<!-- 🎵 M4 · El vinilo de la hélice — la radio de tus libros (candado de datos: sin _musica no existe) -->
+<!-- 🎵 La radio de tu espiral — motor compartido /radio.js (paridad por construcción) -->
 <style>
 #vinHelice{bottom:calc(124px + env(safe-area-inset-bottom));right:12px;display:none;color:#fff;font-size:0}
 #vinHelice.on{display:inline-flex}
@@ -519,7 +519,7 @@ body.hoja-abierta #vinBarra{display:none !important}
 #vinBarra .vhMeta{flex:1;min-width:0;text-align:left;cursor:pointer}
 #vinBarra .vhTit{font:600 12.5px/1.3 'Manrope',sans-serif;color:rgba(255,255,255,.95);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #vinBarra .vhArt{font:500 10.5px/1.35 'Manrope',sans-serif;color:rgba(255,255,255,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#vinBarra .vhPie{display:none;font:italic 500 10.5px/1.4 'Manrope',sans-serif;color:rgba(255,255,255,.72);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+#vinBarra .vhPie{display:none;font:italic 500 10.5px/1.45 'Manrope',sans-serif;color:rgba(255,255,255,.74);white-space:normal;overflow:visible;margin-top:3px}
 #vinBarra .vhPie:not(:empty){display:block}
 @media (min-width:600px){#vinBarra{left:auto;width:min(calc(100vw - 24px),520px)}}
 #vinBarra .vhLink img{height:20px;display:block;opacity:.9}
@@ -538,87 +538,7 @@ body.hoja-abierta #vinBarra{display:none !important}
   <a class="vhLink" href="#" target="_blank" rel="noopener noreferrer" aria-label="Apple Music"><img src="https://tools.applemediaservices.com/api/badges/listen-on-apple-music/badge/es-mx" alt="Apple Music" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'Apple Music ↗',style:'font:600 10px Manrope;color:rgba(255,255,255,.7)'}))" /></a>
   <div class="vhProg"></div>
 </div>
-<script>
-/* 🎵 M4 · La radio de la hélice: 30 s de cada libro coronado, ronda tras ronda. Candado de datos + puerta cerrada. */
-(function(){
-  var btn=document.getElementById('vinHelice'), bar=document.getElementById('vinBarra');
-  if(!btn||!bar||typeof cargarLibros!=='function') return;
-  var cov=bar.querySelector('.vhCov'), bbtn=bar.querySelector('.vhBtn'), tit=bar.querySelector('.vhTit'), art=bar.querySelector('.vhArt'),
-      lnk=bar.querySelector('.vhLink'), bdg=lnk.querySelector('img'), pie=bar.querySelector('.vhPie'), ipP=bar.querySelector('.vhIcoPlay'), ipS=bar.querySelector('.vhIcoPause'),
-      hP=btn.querySelector('.vhPlay'), hS=btn.querySelector('.vhPause');
-  var franja=(function(h){return h<6?'noche':h<12?'manana':h<19?'tarde':'noche';})(new Date().getHours());
-  var PREF={manana:['abrir','profundizar','aterrizar','resonar'],tarde:['profundizar','abrir','aterrizar','resonar'],noche:['resonar','aterrizar','profundizar','abrir']}[franja];
-  function slugDe(b){ if(b._slug) return b._slug; var s=(b.titulo||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,''); return s; }
-  var cola=[], i=0, au=new Audio(), fadeT=null, cierraT=null, fallos=0, played={};
-  au.preload='none';
-  function ordena(cs){ return cs.slice().sort(function(a,b){ var pa=PREF.indexOf(a.rol),pb=PREF.indexOf(b.rol); if(pa<0&&pb<0) return 0; if(pa<0) return 1; if(pb<0) return -1; if(pa!==pb) return pa-pb; return (b.armonia||0)-(a.armonia||0); }); }
-  function arma(libros){
-    var porLibro=libros.filter(function(b){return b&&b._musica&&Array.isArray(b._musica.candidatos)&&b._musica.candidatos.length;})
-      .sort(function(a,b){return (b._edicion_numero||0)-(a._edicion_numero||0);})
-      .map(function(b){return {b:b,cs:ordena(b._musica.candidatos)};});
-    var out=[], ronda=0, hay=true;
-    while(hay){ hay=false; for(var k=0;k<porLibro.length;k++){ var c=porLibro[k].cs[ronda]; if(c){ out.push({b:porLibro[k].b,c:c}); hay=true; } } ronda++; if(ronda>8) break; }
-    return out;
-  }
-  function badgeLang(){ if(!bdg||!bdg.src) return; var l=(window.PV_LANG==='en')?'en-us':'es-mx'; if(bdg.src.indexOf('/'+l)<0) bdg.src='https://tools.applemediaservices.com/api/badges/listen-on-apple-music/badge/'+l; }
-  function pinta(){ var p=cola[i]; if(!p) return; tit.textContent=p.c.cancion; art.textContent=p.c.artista+' · \uD83D\uDCD8 '+((window.pvTitulo&&window.pvTitulo(p.b))||p.b.titulo||''); pie.textContent=p.c.pie||''; if(p.c.link) lnk.href=p.c.link; if(p.c.art){cov.src=p.c.art;cov.alt=p.b.titulo||'';}
-    bar.style.setProperty('--vh-p','0%'); btn.style.setProperty('--vh-p','0%'); badgeLang(); }
-  function icon(p){ ipP.style.display=p?'none':'block'; ipS.style.display=p?'block':'none'; hP.style.display=p?'none':'block'; hS.style.display=p?'block':'none'; btn.classList.toggle('sonando',p); bbtn.setAttribute('aria-label',p?'Pausa':'Reproducir'); }
-  function abre(){ bar.classList.add('abierta'); btn.classList.add('morf'); reagenda(); }
-  function cierra(){ bar.classList.remove('abierta'); btn.classList.remove('morf'); }
-  function reagenda(){ clearTimeout(cierraT); cierraT=setTimeout(cierra,4000); }
-  function apaga(){ if(fadeT){clearInterval(fadeT);fadeT=null;} try{au.pause();}catch(e){} icon(false); }
-  function sigue(){ if(fadeT){clearInterval(fadeT);fadeT=null;} au.volume=1; i=(i+1)%cola.length; pinta(); play(); }
-  function despedida(){ if(fadeT) return; var v=au.volume; fadeT=setInterval(function(){ v-=0.09; if(v<=0){ sigue(); } else { try{au.volume=Math.max(0,v);}catch(e){} } },180); }
-  au.addEventListener('timeupdate',function(){ var t=au.currentTime, pc=Math.min(100,(t/30)*100)+'%'; bar.style.setProperty('--vh-p',pc); btn.style.setProperty('--vh-p',pc); if(t>=28) despedida(); });
-  au.addEventListener('ended',sigue);
-  au.addEventListener('error',function(){ fallos++; if(fallos>=cola.length){ fallos=0; apaga(); } else { sigue(); } });
-  function play(){ var p=cola[i]; if(!p) return; if(fadeT){clearInterval(fadeT);fadeT=null;} au.volume=1;
-    if(au.src!==p.c.preview) au.src=p.c.preview;
-    au.play().then(function(){ icon(true); fallos=0;
-      if(!played[p.c.id]){ played[p.c.id]=1; try{gtag('event','musica_play',{contexto:'helice',slug:slugDe(p.b),cancion:p.c.cancion,artista:p.c.artista,franja:franja});}catch(e){} }
-      try{ if('mediaSession' in navigator){ navigator.mediaSession.metadata=new MediaMetadata({title:p.c.cancion,artist:p.c.artista,album:(p.b.titulo||'Triggui'),artwork:p.c.art?[{src:p.c.art,sizes:'600x600',type:'image/jpeg'}]:[]});
-        navigator.mediaSession.setActionHandler('pause',function(){apaga();}); navigator.mediaSession.setActionHandler('play',function(){play();}); navigator.mediaSession.setActionHandler('nexttrack',function(){sigue();}); } }catch(e){}
-    }).catch(function(){ icon(false); }); }
-  btn.addEventListener('click',function(){ if(bar.classList.contains('abierta')){ reagenda(); return; } abre(); if(au.paused) play(); });
-  bbtn.addEventListener('click',function(ev){ ev.stopPropagation(); if(au.paused){ play(); } else { apaga(); } reagenda(); });
-  bar.querySelector('.vhMeta').addEventListener('click',function(){ var p=cola[i]; if(!p) return; var s=slugDe(p.b); if(s){ try{gtag('event','musica_helice_libro',{slug:s});}catch(e){} location.href=(p.b._catalogo==='kids'?'/kids/t/':'/t/')+encodeURIComponent(s)+'/'; } });
-  /* Idioma: se entera por la lupa (nombresPuentes cambia su data-nombre) — jamás toca su código */
-  function idioma(){ var en=(window.PV_LANG==='en');
-    btn.setAttribute('data-nombre', en?'Music':'Música'); btn.setAttribute('aria-label', en?'Listen to the radio of your helix':'Escuchar la radio de tu hélice');
-    bar.setAttribute('aria-label', en?'Radio of your helix':'Radio de tu hélice'); lnk.setAttribute('aria-label','Apple Music');
-    badgeLang(); if(cola.length) pinta(); }
-  new MutationObserver(idioma).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
-  /* Sintonía: al abrir la hoja de un libro, el canal cambia a SU música (solo si ya sonaba: la ley del consentimiento) */
-  var hoja=null;
-  function sintoniza(){ if(!hoja||!hoja.classList.contains('ver')||au.paused) return;
-    var sem=hoja.querySelector('.h-sem'); var m=sem&&/#\s*(\d+)/.exec(sem.textContent||''); if(!m) return;
-    var n=parseInt(m[1],10); var k=-1; for(var j=0;j<cola.length;j++){ if((cola[j].b._edicion_numero|0)===n){ k=j; break; } }
-    if(k<0||k===i) return;
-    var v=au.volume, t=setInterval(function(){ v-=0.15; if(v<=0){ clearInterval(t); i=k; pinta(); au.volume=1; play(); try{gtag('event','musica_helice_sintonia',{edicion:n});}catch(e){} } else { try{au.volume=Math.max(0,v);}catch(e){} } },90); }
-  (function engancha(n){ hoja=document.getElementById('hoja');
-    if(hoja){ new MutationObserver(function(){ setTimeout(sintoniza,120); }).observe(hoja,{attributes:true,attributeFilter:['class']}); return; }
-    if(n<80) setTimeout(function(){engancha(n+1);},400); })(0);            /* #hoja nace con spiral.js: esperar, no suponer */
-  /* Un solo sonido: si el video de la hoja arranca, la radio calla */
-  window.addEventListener('message',function(e){ try{ var d=(typeof e.data==='string')?e.data:''; if(d.indexOf('"playerState":1')>=0 && !au.paused){ apaga(); } }catch(x){} });
-  /* Continuidad entre Hélice y Guardados: el segundo exacto viaja por sessionStorage */
-  var KEY='triggui_radio_v1', pendiente=null;
-  function guarda(){ try{ if(!cola.length) return; sessionStorage.setItem(KEY, JSON.stringify({id:cola[i].c.id,t:(au.paused?0:au.currentTime)||0,playing:!au.paused,ts:Date.now()})); }catch(e){} }
-  window.addEventListener('pagehide',guarda); document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='hidden') guarda(); });
-  au.addEventListener('timeupdate',function(){ if(Math.floor(au.currentTime*2)%6===0) guarda(); });
-  function reanuda(){ var st=null; try{ st=JSON.parse(sessionStorage.getItem(KEY)||'null'); }catch(e){}
-    if(!st||!st.playing||(Date.now()-(st.ts||0))>180000) return;
-    var k=-1; for(var j=0;j<cola.length;j++){ if(cola[j].c.id===st.id){ k=j; break; } } if(k<0) return;
-    i=k; pinta(); var t=Math.max(0,Math.min(27,st.t||0));
-    var seek=function(){ try{ au.currentTime=t; }catch(e){} };
-    au.addEventListener('loadedmetadata',seek,{once:true});
-    au.src=cola[i].c.preview; seek();
-    au.play().then(function(){ icon(true); seek(); }).catch(function(){ pendiente=t; btn.classList.add('reanudar'); btn.setAttribute('aria-label',(window.PV_LANG==='en')?'Resume the radio':'Reanudar la radio'); }); }
-  btn.addEventListener('click',function(){ if(pendiente!==null){ var t=pendiente; pendiente=null; btn.classList.remove('reanudar'); au.addEventListener('loadedmetadata',function(){try{au.currentTime=t;}catch(e){}},{once:true}); play(); try{au.currentTime=t;}catch(e){} } });
-  cargarLibros().then(function(libros){ cola=arma(libros||[]); if(!cola.length) return; pinta(); idioma(); btn.classList.add('on'); reanuda(); }).catch(function(){});
-})();
-</script>
-
+<script src="/radio.js?v=20260831b" defer></script>
 </body>
 
 </html>
