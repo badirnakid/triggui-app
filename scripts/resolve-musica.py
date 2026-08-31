@@ -105,7 +105,7 @@ LUTO_RX = re.compile(r"requiem|kyrie|lacrim|elegy|elegie|funeral|funebre|f\u00fa
 KARAOKE_RX = re.compile(
     r"karaoke|tribute|in the style|made famous|as popularized|lullab|8[\s-]?bit|"
     r"music box|rendition|cover version|originally performed", re.I)
-VIVO_RX = re.compile(r"en vivo|\blive\b|unplugged|remix|sped up|slowed", re.I)
+VIVO_RX = re.compile(r"en vivo|ao vivo|\blive\b|unplugged|remix|sped up|slowed", re.I)
 
 _PROMPT_CACHE = {}
 
@@ -141,7 +141,7 @@ def config(argv=None):
         "rehacer": "--rehacer" in flags,
         "solo": solo,
         "sin_armonia": "--sin-armonia" in flags,
-        "armonia_min": int(val("--armonia-min", "3")),
+        "armonia_min": int(val("--armonia-min", "6")),
         "explicar": "--explicar" in flags,
         "dry": "--dry-run" in flags,
     }
@@ -370,6 +370,7 @@ def mapa_queries(b):
 
 def _huella(x):
     c = re.split(r"[\(\[]| - | – ", x.get("cancion",""))[0]
+    c = re.sub(r"\s+(19|20)\d\d\s*$", "", c)            # "Cielo 2002" es "Cielo"
     c = re.sub(r"\b(feat\.?|ft\.?|remix|live|edit|version|versión)\b.*$", "", c, flags=re.I)
     a = re.split(r"[,&]|\bfeat", x.get("artista",""), flags=re.I)[0]
     return _norm(c).strip() + "|" + _norm(a).strip()
@@ -535,11 +536,17 @@ def resolver_libro(p, c, st):
     b = p["b"]
     base = list(p["canon_base"])
     huellas = set(_huella(x) for x in base) | set(_huella(x).split("|")[0] for x in base)
+    por_artista = {}
+    for x in base:
+        por_artista[_artista(x)] = por_artista.get(_artista(x), 0) + 1
     if p["afi"]:
         for x in capa1(p["afi"], c, st.get("usadas"), artistas=st.get("artistas")):
             h = _huella(x)
+            if por_artista.get(_artista(x), 0) >= 2:
+                continue                                # cupo dentro del libro: variedad
             if h not in huellas and h.split("|")[0] not in huellas:
                 base.append(x); huellas.add(h); huellas.add(h.split("|")[0])
+                por_artista[_artista(x)] = por_artista.get(_artista(x), 0) + 1
     if not base:
         base = capa1(mapa_queries(b), c, st.get("usadas"), artistas=st.get("artistas"))
         if base and c["explicar"]:
@@ -574,6 +581,18 @@ def resolver_libro(p, c, st):
                     _y["armonia"] = 6
             juez = MODELO
             elegidos = quinteto(con_arm, c["armonia_min"])
+            if not elegidos and con_arm and origen_es_llm(p) and not st["llm_apagado"]:
+                can2, afi2, _o = componer_queries(b, c, st, emergencia=[x["cancion"] + " — " + x["artista"] for x in con_arm][:6])
+                base2 = capa1(afi2 + can2, c, st.get("usadas"), artistas=st.get("artistas"))
+                if base2:
+                    print("      (segunda vuelta por ánimo: %d piezas)" % len(base2))
+                    con2, sinf2 = armonizar(b, base2, c, st)
+                    for _y in con2:
+                        if _y.get("armonia", 0) >= 8 and not _y.get("canon") and _norm(_y.get("frase_eco","")) not in frases_ed:
+                            _y["armonia"] = 6
+                    el2 = quinteto(con2, c["armonia_min"])
+                    if el2:
+                        elegidos, sinfonia, con_arm = el2, sinf2, con2
             if not elegidos and con_arm:
                 vivos = sorted((x for x in con_arm if not x.get("_descartar")),
                                key=lambda x: (-x.get("armonia",0), -x["_base"]))
