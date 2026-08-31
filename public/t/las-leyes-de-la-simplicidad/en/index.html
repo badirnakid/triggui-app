@@ -775,6 +775,53 @@ body.tg-tarjeta .tg-cta{display:none !important}
 #tgModal.espera .tg-mtitle,#tgModal.espera .tg-mbtns{display:none}
 #tgModal.espera .tg-mtext{display:block;font-size:12px;letter-spacing:.02em;color:rgba(255,255,255,.75);margin:14px 0 0 0}
 #tgModal.espera .tg-mtext .hl{display:none}
+/* 🎵 vinilo v4 — morfosis: círculo hermano de los 5 botones ↔ barra bloque. Cota y material heredados. */
+#vinilo{position:fixed;bottom:max(3vh,env(safe-area-inset-bottom,3vh));left:50%;transform:translateX(-50%);z-index:700;display:none;align-items:center;gap:12px;width:clamp(3.5rem,min(8vw,8vh),4.5rem);height:clamp(3.5rem,min(8vw,8vh),4.5rem);padding:0;border-radius:50%;background-size:200% 200%;box-shadow:0 0 0 1.5px rgba(255,255,255,.34),0 10px 26px rgba(0,0,0,.5);overflow:visible;isolation:isolate;transition:width .5s cubic-bezier(.19,1,.22,1),left .5s cubic-bezier(.19,1,.22,1),right .5s cubic-bezier(.19,1,.22,1),border-radius .5s cubic-bezier(.19,1,.22,1),padding .5s cubic-bezier(.19,1,.22,1);cursor:pointer;touch-action:manipulation}
+#vinilo.on{display:flex;animation:vinVivo 9s ease-in-out infinite}
+@keyframes vinVivo{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+#vinilo::after{content:"";position:absolute;inset:-12px;border-radius:inherit;background:radial-gradient(circle,color-mix(in srgb,var(--accent,#fff) 42%,transparent),transparent 70%);filter:blur(9px);z-index:-2;animation:vinAliento 4.2s ease-in-out infinite;pointer-events:none}
+@keyframes vinAliento{0%,100%{opacity:.32;transform:scale(.96)}50%{opacity:.6;transform:scale(1.04)}}
+#vinLuz{position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:1;background:linear-gradient(115deg,transparent 42%,rgba(255,255,255,.5) 50%,transparent 58%);background-size:280% 100%;background-position:160% 0;animation:vinBarrido 5.8s ease-in-out infinite}
+@keyframes vinBarrido{0%,72%{background-position:160% 0}88%{background-position:-60% 0}100%{background-position:-60% 0}}
+#vinilo.abierta #vinLuz{animation:vinDestello .8s cubic-bezier(.19,1,.22,1) both}
+@keyframes vinDestello{from{background-position:160% 0}to{background-position:-60% 0}}
+.vinOnda{position:absolute;inset:0;border-radius:50%;border:1.5px solid color-mix(in srgb,var(--accent,#fff) 80%,#fff);opacity:0;pointer-events:none;z-index:0}
+#vinilo.toco .vinOnda{animation:vinOnda .65s cubic-bezier(.19,1,.22,1)}
+@keyframes vinOnda{0%{opacity:.75;transform:scale(.7)}100%{opacity:0;transform:scale(2.3)}}
+#vinilo.on:not(.sonando):not(.abierta) #vinNucleo{animation:vinLatido 3.2s ease-in-out .9s infinite}
+@keyframes vinLatido{0%,32%,100%{transform:scale(1)}8%{transform:scale(1.07)}16%{transform:scale(1)}24%{transform:scale(1.055)}}
+#vinSonar{position:absolute;inset:0;border-radius:50%;border:1.3px solid color-mix(in srgb,var(--accent,#fff) 55%,#fff);opacity:0;pointer-events:none;z-index:0}
+#vinilo.on:not(.sonando):not(.abierta) #vinSonar{animation:vinSonar 3.2s cubic-bezier(.19,1,.22,1) 1.15s infinite}
+@keyframes vinSonar{0%{opacity:.55;transform:scale(1)}62%,100%{opacity:0;transform:scale(2.05)}}
+#vinilo.on:not(.sonando):not(.abierta) #vinIcoPlay{animation:vinSenala 3.2s ease-in-out .9s infinite}
+@keyframes vinSenala{0%,32%,100%{transform:translateX(0)}8%{transform:translateX(1.6px)}24%{transform:translateX(1.1px)}}
+@media (prefers-reduced-motion: reduce){#vinilo.on,#vinilo::after,#vinLuz,#vinNucleo,#vinSonar,#vinIcoPlay{animation:none !important}}
+#vinilo.fuera{display:none !important}
+#vinilo::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(145deg,rgba(255,255,255,.18) 0%,rgba(255,255,255,.08) 40%,transparent 100%);pointer-events:none;z-index:1}
+#vinilo.abierta{left:1.5vw;right:1.5vw;width:auto;transform:none;border-radius:24px;height:auto;min-height:clamp(3.5rem,min(8vw,8vh),4.5rem);padding:9px 12px 9px 10px;overflow:hidden}
+#vinAro{position:absolute;inset:-3.5px;border-radius:50%;background:conic-gradient(var(--accent,#fff) var(--vin-p,0%),rgba(255,255,255,.14) 0);z-index:-1;opacity:0;transition:opacity .3s}
+#vinilo.sonando:not(.abierta) #vinAro{opacity:1;filter:drop-shadow(0 0 5px color-mix(in srgb,var(--accent,#fff) 70%,transparent))}
+#vinCometa{position:absolute;left:50%;top:50%;width:7px;height:7px;margin:-3.5px;border-radius:50%;background:radial-gradient(circle,#fff 0 35%,var(--accent,#fff) 70%,transparent);box-shadow:0 0 8px var(--accent,#fff),0 0 3px #fff;opacity:0;transform:rotate(var(--vin-a,0deg)) translateY(-29.5px);pointer-events:none;z-index:1}
+#vinilo.sonando:not(.abierta) #vinCometa{opacity:1}
+#vinNucleo{flex:0 0 auto;width:100%;height:100%;border:0;border-radius:50%;background:transparent;color:#fff;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;z-index:2}
+#vinilo.abierta #vinNucleo{width:38px;height:38px;flex:0 0 38px}
+#vinNucleo svg{width:17px;height:17px;display:block;filter:drop-shadow(0 0 7px rgba(255,255,255,.85)) drop-shadow(0 1px 2px rgba(0,0,0,.45))}
+#vinilo.nace{animation:vinNace .7s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes vinNace{0%{transform:translateX(-50%) scale(.55);opacity:0}70%{transform:translateX(-50%) scale(1.07);opacity:1}100%{transform:translateX(-50%) scale(1);opacity:1}}
+.vinExt{opacity:0;width:0;overflow:hidden;display:flex;align-items:center;gap:10px;flex:1;min-width:0;transition:opacity .28s .18s;z-index:2}
+#vinilo.abierta .vinExt{opacity:1;width:auto}
+#viniloCov{flex:0 0 36px;width:36px;height:36px;border-radius:9px;object-fit:cover;background:rgba(255,255,255,.08);box-shadow:0 2px 8px rgba(0,0,0,.4)}
+#viniloMeta{flex:1;min-width:0;text-align:left}
+#viniloTit{font:600 12.5px/1.3 'Poppins',sans-serif;color:rgba(255,255,255,.96);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,.35)}
+#viniloArt{font:500 11px/1.3 'Poppins',sans-serif;color:rgba(255,255,255,.62);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,.35)}
+#viniloPie{display:none;font:italic 500 10.5px/1.4 'Poppins',sans-serif;color:rgba(255,255,255,.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,.35);margin-top:2px}
+#vinilo.abierta #viniloPie:not(:empty){display:block}
+#viniloLink{flex:0 0 auto;display:flex;align-items:center;text-decoration:none;z-index:2}
+#viniloLink img{height:21px;display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}
+#vinBar{position:absolute;left:0;top:0;height:2px;width:var(--vin-p,0%);background:linear-gradient(90deg,var(--accent,#fff),#fff);box-shadow:0 0 9px var(--accent,#fff),0 0 2px #fff;opacity:0;transition:width .25s linear,opacity .2s;z-index:3}
+#vinBorde{position:absolute;inset:0;border-radius:inherit;padding:1.2px;background:linear-gradient(160deg,rgba(255,255,255,.6),rgba(255,255,255,.14) 32%,rgba(255,255,255,.05) 62%,color-mix(in srgb,var(--accent,#fff) 45%,transparent));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;opacity:0;transition:opacity .3s .12s;pointer-events:none;z-index:2}
+#vinilo.abierta #vinBorde{opacity:1}
+#vinilo.abierta #vinBar{opacity:.95}
 .tg-heart{position:fixed;pointer-events:none;z-index:700;font-size:24px;opacity:0;animation:tgFloatUp 1.2s ease-out forwards;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.3))}
 @keyframes tgFloatUp{0%{transform:translate(0,0) scale(0.5) rotate(0deg);opacity:0}20%{opacity:1;transform:translate(var(--tx),-40px) scale(1.2) rotate(15deg)}100%{opacity:0;transform:translate(var(--tx),-150px) scale(1) rotate(30deg)}}
 </style>
@@ -788,6 +835,25 @@ body.tg-tarjeta .tg-cta{display:none !important}
   <div class="bocado-eco-phrase" id="bocadoEcoPhrase"></div>
 </div>
 <div class="grid" id="grid"></div>
+
+<div id="vinilo" aria-hidden="true" role="group" aria-label="Música de esta edición">
+  <div id="vinAro"></div>
+  <div id="vinCometa"></div>
+  <span class="vinOnda"></span>
+  <span id="vinSonar"></span>
+  <span id="vinLuz"></span>
+  <div id="vinBorde"></div>
+  <button id="vinNucleo" type="button" aria-label="Reproducir 30 segundos">
+    <svg id="vinIcoPlay" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M8 5.5v13l11-6.5z"/></svg>
+    <svg id="vinIcoPause" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="display:none"><path d="M7 5h3.4v14H7zM13.6 5H17v14h-3.6z"/></svg>
+  </button>
+  <div class="vinExt">
+    <img id="viniloCov" alt="" />
+    <div id="viniloMeta"><div id="viniloTit"></div><div id="viniloArt"></div><div id="viniloPie"></div></div>
+    <a id="viniloLink" href="#" target="_blank" rel="noopener noreferrer" aria-label="Apple Music"><img id="vinBadge" src="https://tools.applemediaservices.com/api/badges/listen-on-apple-music/badge/es-mx" alt="Apple Music" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'Apple Music ↗',style:'font:600 11px Poppins;color:rgba(255,255,255,.75)'}))" /></a>
+  </div>
+  <div id="vinBar"></div>
+</div>
 
 <div id="revealOverlay" class="reveal-overlay">
   <div class="reveal-card" onclick="event.stopPropagation()">
@@ -859,8 +925,99 @@ body.tg-tarjeta .tg-cta{display:none !important}
 </div>
 
 <script>
-const state = {"id": "las-leyes-de-la-simplicidad", "titulo": "Las Leyes de la Simplicidad", "autor": "John Maeda", "palabra": "La paradoja de la simplicidad", "descripcion": "Buscar la simplicidad en un mundo saturado de complejidad es como intentar encontrar un equilibrio en un acto de malabarismo. La clave está en aceptar que no todo puede ser simplificado y que, a veces, el verdadero diseño radica en reconocer la complejidad que subyace. La esencia de lo esencial se revela en la aceptación de lo no simplificable y en la comprensión de que la simplicidad y la complejidad pueden coexistir en armonía, tal como se explora en las diez leyes de la simplicidad de John Maeda.", "palabras": ["claridad", "equilibrio", "aceptación", "esencialidad"], "frases": ["🔭 Observa lo que te rodea y pregúntate: ¿qué puede ser eliminado?", "📻 ¿Te has detenido a escuchar las complejidades que ignoras a diario?", "👁 Imagina un espacio despejado, donde cada elemento tiene un propósito claro y definido.", "🕰 Simplificar no es eliminar, es elegir lo que realmente importa."], "colores": ["#F17EE8", "#30E83F", "#AE137C", "#0B6529"], "textColors": ["#FFFFFF", "#000000", "#FFFFFF", "#FFFFFF"], "ogImage": "https://app.triggui.com/t/las-leyes-de-la-simplicidad/og_en.jpg", "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/f7/24/a4/f724a47e-f3b5-2699-acc3-27c491bb9322/1064435595.jpg/3000x3000bb.jpg", "tagline": "", "frases_en": ["🔭 Observe how simplicity can emerge from intricate designs, revealing a hidden order.", "💫 Challenge yourself to simplify one complex task today, buscando el equilibrio entre simplicidad y complejidad.", "⏳ Simplicity is not the absence of complexity, but its mastery.", "🗺 Imagine a world where each complex layer harmonizes to reveal clarity."], "palabras_en": ["clarity", "complexity", "functionality", "simplicity"], "i18nEn": {"cardTitle": "The Paradox of Simplicity", "top": "In a world overwhelmed by complexity, seeking simplicity is akin to balancing an act of juggling. It’s crucial to accept that not everything can be simplified; sometimes, true design lies in recognizing the underlying complexity. <span class=\"tg-hl\">The essence of what is essential reveals itself when we shift</span> our focus from mere function to the balance between simplicity and complexity in design.", "sub": "How do we navigate between simplicity and functionality?", "bot": "<span class=\"tg-hl\">Accepting the non-simplifiable is fundamental on this journey.</span> Rather than forcing simplicity, we must allow it to emerge organically, enabling complex systems to organize themselves into forms that are intuitive and useful. In doing so, we discover a new level of clarity and functionality."}, "bocadoEcoPool": [{"phrase": "🔭 Observa lo que te rodea y pregúntate: ¿qué puede ser eliminado?", "rol": "aterrizar", "animo": 0.4, "origin": "edition_block_es"}, {"phrase": "📻 ¿Te has detenido a escuchar las complejidades que ignoras a diario?", "rol": "abrir", "animo": 0.5, "origin": "edition_block_es"}, {"phrase": "👁 Imagina un espacio despejado, donde cada elemento tiene un propósito claro y definido.", "rol": "profundizar", "animo": 0.6, "origin": "edition_block_es"}, {"phrase": "🕰 Simplificar no es eliminar, es elegir lo que realmente importa.", "rol": "resonar", "animo": 0.5, "origin": "edition_block_es"}, {"phrase": "🕊 La simplicidad no es la ausencia de complejidad, sino su manejo hábil.", "rol": "aterrizar", "animo": 0.6, "origin": "og_phrase_es"}, {"phrase": "📖 ¿Qué aspectos de tu vida se beneficiarían de un enfoque más simple?", "rol": "abrir", "animo": 0.3, "origin": "og_phrase_es"}, {"phrase": "🌓 La esencia de lo esencial se revela en lo que elegimos dejar fuera.", "rol": "profundizar", "animo": 0.5, "origin": "og_phrase_es"}, {"phrase": "🪞 En el proceso de diseño, descubrimos que a menudo, menos es más; es el arte de eliminar lo innecesario para resaltar lo esencial.", "rol": "resonar", "animo": 0.7, "origin": "og_phrase_es"}], "bocadoEcoPool_en": ["🔭 Observe how simplicity can emerge from intricate designs, revealing a hidden order.", "💫 Challenge yourself to simplify one complex task today, buscando el equilibrio entre simplicidad y complejidad.", "⏳ Simplicity is not the absence of complexity, but its mastery.", "🗺 Imagine a world where each complex layer harmonizes to reveal clarity."], "titulo_en": "The Laws of Simplicity"};
+const state = {"id": "las-leyes-de-la-simplicidad", "titulo": "Las Leyes de la Simplicidad", "autor": "John Maeda", "palabra": "La paradoja de la simplicidad", "descripcion": "Buscar la simplicidad en un mundo saturado de complejidad es como intentar encontrar un equilibrio en un acto de malabarismo. La clave está en aceptar que no todo puede ser simplificado y que, a veces, el verdadero diseño radica en reconocer la complejidad que subyace. La esencia de lo esencial se revela en la aceptación de lo no simplificable y en la comprensión de que la simplicidad y la complejidad pueden coexistir en armonía, tal como se explora en las diez leyes de la simplicidad de John Maeda.", "palabras": ["claridad", "equilibrio", "aceptación", "esencialidad"], "frases": ["🔭 Observa lo que te rodea y pregúntate: ¿qué puede ser eliminado?", "📻 ¿Te has detenido a escuchar las complejidades que ignoras a diario?", "👁 Imagina un espacio despejado, donde cada elemento tiene un propósito claro y definido.", "🕰 Simplificar no es eliminar, es elegir lo que realmente importa."], "colores": ["#F17EE8", "#30E83F", "#AE137C", "#0B6529"], "textColors": ["#FFFFFF", "#000000", "#FFFFFF", "#FFFFFF"], "ogImage": "https://app.triggui.com/t/las-leyes-de-la-simplicidad/og_en.jpg", "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/f7/24/a4/f724a47e-f3b5-2699-acc3-27c491bb9322/1064435595.jpg/3000x3000bb.jpg", "tagline": "", "frases_en": ["🔭 Observe how simplicity can emerge from intricate designs, revealing a hidden order.", "💫 Challenge yourself to simplify one complex task today, buscando el equilibrio entre simplicidad y complejidad.", "⏳ Simplicity is not the absence of complexity, but its mastery.", "🗺 Imagine a world where each complex layer harmonizes to reveal clarity."], "palabras_en": ["clarity", "complexity", "functionality", "simplicity"], "i18nEn": {"cardTitle": "The Paradox of Simplicity", "top": "In a world overwhelmed by complexity, seeking simplicity is akin to balancing an act of juggling. It’s crucial to accept that not everything can be simplified; sometimes, true design lies in recognizing the underlying complexity. <span class=\"tg-hl\">The essence of what is essential reveals itself when we shift</span> our focus from mere function to the balance between simplicity and complexity in design.", "sub": "How do we navigate between simplicity and functionality?", "bot": "<span class=\"tg-hl\">Accepting the non-simplifiable is fundamental on this journey.</span> Rather than forcing simplicity, we must allow it to emerge organically, enabling complex systems to organize themselves into forms that are intuitive and useful. In doing so, we discover a new level of clarity and functionality."}, "bocadoEcoPool": [{"phrase": "🔭 Observa lo que te rodea y pregúntate: ¿qué puede ser eliminado?", "rol": "aterrizar", "animo": 0.4, "origin": "edition_block_es"}, {"phrase": "📻 ¿Te has detenido a escuchar las complejidades que ignoras a diario?", "rol": "abrir", "animo": 0.5, "origin": "edition_block_es"}, {"phrase": "👁 Imagina un espacio despejado, donde cada elemento tiene un propósito claro y definido.", "rol": "profundizar", "animo": 0.6, "origin": "edition_block_es"}, {"phrase": "🕰 Simplificar no es eliminar, es elegir lo que realmente importa.", "rol": "resonar", "animo": 0.5, "origin": "edition_block_es"}, {"phrase": "🕊 La simplicidad no es la ausencia de complejidad, sino su manejo hábil.", "rol": "aterrizar", "animo": 0.6, "origin": "og_phrase_es"}, {"phrase": "📖 ¿Qué aspectos de tu vida se beneficiarían de un enfoque más simple?", "rol": "abrir", "animo": 0.3, "origin": "og_phrase_es"}, {"phrase": "🌓 La esencia de lo esencial se revela en lo que elegimos dejar fuera.", "rol": "profundizar", "animo": 0.5, "origin": "og_phrase_es"}, {"phrase": "🪞 En el proceso de diseño, descubrimos que a menudo, menos es más; es el arte de eliminar lo innecesario para resaltar lo esencial.", "rol": "resonar", "animo": 0.7, "origin": "og_phrase_es"}], "bocadoEcoPool_en": ["🔭 Observe how simplicity can emerge from intricate designs, revealing a hidden order.", "💫 Challenge yourself to simplify one complex task today, buscando el equilibrio entre simplicidad y complejidad.", "⏳ Simplicity is not the absence of complexity, but its mastery.", "🗺 Imagine a world where each complex layer harmonizes to reveal clarity."], "musica": [{"id": "1675406511", "cancion": "SLEEP: Tranquility Base (Single Edit)", "artista": "Max Richter, Grace Davidson, Ben Russell, Yuki Numata Resnick, Caleb B", "album": "Richter: SLEEP: Tranquility Base (Single Edit) - Single", "genero": "Clásica", "dur": 295, "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/4d/35/3e/4d353e77-3310-24de-6095-a2da53213737/mzaf_8058142228160016871.plus.aac.p.m4a", "link": "https://music.apple.com/mx/album/sleep-tranquility-base-single-edit/1675406308?i=1675406511&uo=4", "art": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/c6/41/69/c641691e-fd24-9ecc-78e2-832b753eb5cd/23UMGIM04304.rgb.jpg/600x600bb.jpg", "armonia": 7, "rol": "aterrizar", "pie": "La calma de Richter acompaña la búsqueda de equilibrio en la complejidad.", "frase_eco": "La simplicidad no es la ausencia de complejidad, sino su manejo hábil."}, {"id": "1547494090", "cancion": "Experience", "artista": "Ludovico Einaudi, Daniel Hope & I Virtuosi Italiani", "album": "Winds of Change", "genero": "Clásica", "dur": 312, "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/51/00/a5/5100a547-1d09-20c8-e240-25458eac274b/mzaf_5971276557084334036.plus.aac.p.m4a", "link": "https://music.apple.com/mx/album/experience/1547494089?i=1547494090&uo=4", "art": "https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/ad/11/b0/ad11b0f3-3389-a2ab-3d66-41fca2226e98/21UMGIM96807.rgb.jpg/600x600bb.jpg", "armonia": 6, "rol": "profundizar", "pie": "Einaudi crea un paisaje sonoro que invita a reflexionar sobre la simplicidad en el diseño.", "frase_eco": "La esencia de lo esencial se revela en lo que elegimos dejar fuera."}, {"id": "1390704674", "cancion": "ypsilon", "artista": "Ólafur Arnalds", "album": "re:member", "genero": "Crossover clásica", "dur": 235, "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/84/bd/46/84bd46e5-0aa3-3a67-eaec-c034696ffa68/mzaf_12450721690417884940.plus.aac.p.m4a", "link": "https://music.apple.com/mx/album/ypsilon/1390704147?i=1390704674&uo=4", "art": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/9b/20/71/9b20711d-7ffe-2b59-4bae-6d6f614a1451/18UMGIM24750.rgb.jpg/600x600bb.jpg", "armonia": 6, "rol": "abrir", "pie": "Ólafur Arnalds invita a explorar nuevas perspectivas sobre la simplicidad.", "frase_eco": "¿Qué aspectos de tu vida se beneficiarían de un enfoque más simple?"}, {"id": "1812665376", "cancion": "Dream 11 / Moth-Like Stars (Pt. 2, Faded)", "artista": "Max Richter & Max Ruisi", "album": "Max Richter: Sleep Circle (Faded)", "genero": "Clásica", "dur": 192, "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/a9/e4/c0/a9e4c0dd-c62f-0ffe-fc2a-4694e92ca23a/mzaf_3956740925899554241.plus.aac.p.m4a", "link": "https://music.apple.com/mx/album/dream-11-moth-like-stars-pt-2-faded/1812665174?i=1812665376&uo=4", "art": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/19/a5/8e/19a58ed0-479b-0a8c-d22f-e140996a2a0a/25UMGIM48336.rgb.jpg/600x600bb.jpg", "armonia": 5, "rol": "resonar", "pie": "Esta pieza evoca la sensación de lo esencial, aunque suene algo genérica.", "frase_eco": "En el proceso de diseño, descubrimos que a menudo, menos es más."}, {"id": "1812666186", "cancion": "Non-Eternal (Pt. 3, Faded)", "artista": "Max Richter, Louisa Fuller & Max Ruisi", "album": "Max Richter: Sleep Circle (Faded)", "genero": "Clásica", "dur": 225, "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/e5/bf/ea/e5bfead2-4489-5ae1-1c75-3397b2c2bb5e/mzaf_4552235378670868877.plus.aac.p.m4a", "link": "https://music.apple.com/mx/album/non-eternal-pt-3-faded/1812665174?i=1812666186&uo=4", "art": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/19/a5/8e/19a58ed0-479b-0a8c-d22f-e140996a2a0a/25UMGIM48336.rgb.jpg/600x600bb.jpg", "armonia": 5, "rol": "profundizar", "pie": "Una melodía que sugiere la complejidad detrás de la simplicidad.", "frase_eco": "La esencia de lo esencial se revela en lo que elegimos dejar fuera."}], "titulo_en": "The Laws of Simplicity"};
 const TG_COVER_SRC = "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/f7/24/a4/f724a47e-f3b5-2699-acc3-27c491bb9322/1064435595.jpg/3000x3000bb.jpg";
+
+/* 🎵 vinilo v4 — morfosis. Material clonado en runtime del primer botón cta (herencia literal).
+   Estados: reposo → (tap = play+abierta) → 4s → sonando colapsado con anillo → 28s despedida → rotación.
+   Badge bilingüe sigue a window.tgLang. Reveal (portada/cta visibles) => fuera; la música continúa. */
+(function(){
+  var M = (state && state.musica) || [];
+  if (!M.length) return;
+  var franja = (function(h){ return h<6?'noche':h<12?'manana':h<19?'tarde':'noche'; })(new Date().getHours());
+  var PREF = { manana:['abrir','profundizar','aterrizar','resonar'],
+               tarde:['profundizar','abrir','aterrizar','resonar'],
+               noche:['resonar','aterrizar','profundizar','abrir'] }[franja];
+  var cola = M.slice().sort(function(a,b){
+    var pa=PREF.indexOf(a.rol), pb=PREF.indexOf(b.rol);
+    if(pa<0&&pb<0) return 0; if(pa<0) return 1; if(pb<0) return -1;
+    if(pa!==pb) return pa-pb; return (b.armonia||0)-(a.armonia||0); });
+  var el=document.getElementById('vinilo'), nuc=document.getElementById('vinNucleo'),
+      tit=document.getElementById('viniloTit'), art=document.getElementById('viniloArt'), pie=document.getElementById('viniloPie'),
+      lnk=document.getElementById('viniloLink'), cov=document.getElementById('viniloCov'),
+      bdg=document.getElementById('vinBadge'),
+      icoP=document.getElementById('vinIcoPlay'), icoS=document.getElementById('vinIcoPause');
+  var i=0, au=new Audio(), fadeT=null, cierraT=null, played={}, fallos=0;
+  au.preload='none';
+  function badgeLang(){ if(!bdg||!bdg.src) return;
+    var l=(window.tgLang==='en')?'en-us':'es-mx';
+    if(bdg.src.indexOf('/'+l)<0) bdg.src='https://tools.applemediaservices.com/api/badges/listen-on-apple-music/badge/'+l; }
+  function heredaMaterial(intento){ intento=intento||0;
+    try{ var b=document.querySelector('.tg-cta button');
+      if(b){ var cs=getComputedStyle(b);
+        if(cs.backgroundImage&&cs.backgroundImage!=='none'){ el.style.backgroundImage=cs.backgroundImage; el.style.backgroundSize='200% 200%'; return; } } }catch(e){}
+    if(intento<30) setTimeout(function(){heredaMaterial(intento+1);},100); }
+  function pinta(){ var c=cola[i]; tit.textContent=c.cancion; art.textContent=c.artista; pie.textContent=c.pie||'';
+    if(c.link) lnk.href=c.link; if(c.art){ cov.src=c.art; cov.alt=c.album||c.cancion; }
+    el.style.setProperty('--vin-p','0%'); badgeLang(); }
+  function icon(p){ icoP.style.display=p?'none':'block'; icoS.style.display=p?'block':'none';
+    el.classList.toggle('sonando',p); nuc.setAttribute('aria-label',p?'Pausa':'Reproducir 30 segundos'); }
+  function abre(){ el.classList.add('abierta'); reagenda(); }
+  function cierra(){ el.classList.remove('abierta'); }
+  function reagenda(){ clearTimeout(cierraT); cierraT=setTimeout(cierra,4000); }
+  function apaga(avanza){ if(fadeT){clearInterval(fadeT);fadeT=null;} try{au.pause();}catch(e){} icon(false);
+    if(avanza){ i=(i+1)%cola.length; pinta(); el.style.setProperty('--vin-a','0deg'); } }
+  function sigue(){ if(fadeT){clearInterval(fadeT);fadeT=null;} au.volume=1;
+    i=(i+1)%cola.length; pinta(); play(); }
+  function despedida(){ if(fadeT) return; var v=au.volume; fadeT=setInterval(function(){ v-=0.09;
+    if(v<=0){ sigue(); } else { try{au.volume=Math.max(0,v);}catch(e){} } },180); }
+  au.addEventListener('timeupdate',function(){ var t=au.currentTime;
+    var pc=Math.min(100,(t/30)*100);
+    el.style.setProperty('--vin-p',pc+'%');
+    el.style.setProperty('--vin-a',(Math.round(pc*36)/10)+'deg');
+    if(t>=28) despedida(); });
+  au.addEventListener('ended',function(){ sigue(); });
+  au.addEventListener('error',function(){ fallos++;
+    if(fallos>=cola.length){ fallos=0; apaga(false); } else { sigue(); } });
+  function play(){ var c=cola[i]; if(fadeT){clearInterval(fadeT);fadeT=null;} au.volume=1;
+    if(au.src!==c.preview){ au.src=c.preview; }
+    au.play().then(function(){ icon(true); fallos=0;
+      if(!played[c.id]){ played[c.id]=1;
+        try{gtag('event','musica_play',{slug:(state.id||''),cancion:c.cancion,artista:c.artista,rol:c.rol||'',franja:franja});}catch(e){} }
+      try{ if('mediaSession' in navigator){
+        navigator.mediaSession.metadata=new MediaMetadata({title:c.cancion,artist:c.artista,album:c.album||'Triggui',
+          artwork:c.art?[{src:c.art,sizes:'600x600',type:'image/jpeg'}]:[]});
+        navigator.mediaSession.setActionHandler('pause',function(){apaga(false);});
+        navigator.mediaSession.setActionHandler('play',function(){play();}); } }catch(e){}
+    }).catch(function(){ icon(false); }); }
+  function onda(){ el.classList.remove('toco'); void el.offsetWidth; el.classList.add('toco'); }
+  nuc.addEventListener('click',function(ev){ ev.stopPropagation(); onda();
+    if(!el.classList.contains('abierta')){ abre(); if(au.paused) play(); return; }
+    if(au.paused){ play(); } else { apaga(false); } reagenda(); });
+  el.addEventListener('click',function(){ if(!el.classList.contains('abierta')){ abre(); if(au.paused) play(); } else { reagenda(); } });
+  var pill=document.getElementById('tgLangPill');
+  if(pill) pill.addEventListener('click',function(){ setTimeout(badgeLang,60); });
+  pinta();
+  function visible(e){ if(!e) return false; var cs=getComputedStyle(e); if(cs.display==='none'||cs.visibility==='hidden') return false;
+    var r=e.getBoundingClientRect(); return r.width>2&&r.height>2; }
+  function vigia(){ var mira=function(){
+      if(visible(document.querySelector('.tg-portada'))||visible(document.querySelector('.tg-cta'))){ el.classList.add('fuera'); return true; } return false; };
+    if(mira()) return;
+    new MutationObserver(function(_,o){ if(mira()) o.disconnect(); })
+      .observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style']}); }
+  function entra(){ heredaMaterial(); el.classList.add('on','nace');
+    setTimeout(function(){el.classList.remove('nace');},760);
+    setTimeout(onda,430);
+    el.removeAttribute('aria-hidden'); vigia(); }
+  var ov=document.getElementById('bocadoEcoOverlay'), visto=false, entrado=false;
+  function intenta(){ if(entrado) return; entrado=true; entra(); }
+  if(ov){ if(ov.classList.contains('visible')) visto=true;
+    new MutationObserver(function(){ var v=ov.classList.contains('visible');
+      if(v){ visto=true; } else if(visto){ setTimeout(intenta,250); } })
+      .observe(ov,{attributes:true,attributeFilter:['class']});
+    setTimeout(function(){ if(!visto) intenta(); },9000);
+  } else { intenta(); }
+})();
 /* 🌐 D2-A — idioma de la edición: misma llave del imperio (triggui_lang) */
 const TG_ES_SNAP = { t: null, p: null, su: null, b: null };
 let tgLang = 'en';
