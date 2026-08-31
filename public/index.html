@@ -10059,5 +10059,133 @@ bootTriggui();
   } catch (e) {}
 })();
 </script>
+<!-- 🎵 M3 · El vinilo en los 4 bloques de la app — calco del de las ediciones. Candado de datos: sin _musica no existe. -->
+<style id="vinilo-css">
+#vinilo{position:fixed;bottom:max(3vh,env(safe-area-inset-bottom,3vh));left:50%;transform:translateX(-50%);z-index:105;display:none;align-items:center;gap:12px;width:clamp(3.5rem,min(8vw,8vh),4.5rem);height:clamp(3.5rem,min(8vw,8vh),4.5rem);padding:0;border-radius:50%;background-size:200% 200%;box-shadow:0 0 0 1.5px rgba(255,255,255,.34),0 10px 26px rgba(0,0,0,.5);overflow:visible;isolation:isolate;transition:width .5s cubic-bezier(.19,1,.22,1),left .5s cubic-bezier(.19,1,.22,1),right .5s cubic-bezier(.19,1,.22,1),border-radius .5s cubic-bezier(.19,1,.22,1),padding .5s cubic-bezier(.19,1,.22,1);cursor:pointer;touch-action:manipulation}
+#vinilo.on{display:flex;animation:vinVivo 9s ease-in-out infinite}
+@keyframes vinVivo{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+#vinilo.fuera,#vinilo.tapado{display:none !important}
+#vinilo::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(145deg,rgba(255,255,255,.18) 0%,rgba(255,255,255,.08) 40%,transparent 100%);pointer-events:none;z-index:1}
+#vinilo::after{content:"";position:absolute;inset:-12px;border-radius:inherit;background:radial-gradient(circle,color-mix(in srgb,var(--vin-accent,#fff) 42%,transparent),transparent 70%);filter:blur(9px);z-index:-2;animation:vinAliento 4.2s ease-in-out infinite;pointer-events:none}
+@keyframes vinAliento{0%,100%{opacity:.32;transform:scale(.96)}50%{opacity:.6;transform:scale(1.04)}}
+#vinilo.abierta{left:1.5vw;right:1.5vw;width:auto;transform:none;border-radius:24px;height:auto;min-height:clamp(3.5rem,min(8vw,8vh),4.5rem);padding:9px 12px 9px 10px;overflow:hidden}
+#vinilo.nace{animation:vinNace .7s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes vinNace{0%{transform:translateX(-50%) scale(.55);opacity:0}70%{transform:translateX(-50%) scale(1.07);opacity:1}100%{transform:translateX(-50%) scale(1);opacity:1}}
+#vinLuz{position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:1;background:linear-gradient(115deg,transparent 42%,rgba(255,255,255,.5) 50%,transparent 58%);background-size:280% 100%;background-position:160% 0;animation:vinBarrido 5.8s ease-in-out infinite}
+@keyframes vinBarrido{0%,72%{background-position:160% 0}88%{background-position:-60% 0}100%{background-position:-60% 0}}
+#vinilo.abierta #vinLuz{animation:vinDestello .8s cubic-bezier(.19,1,.22,1) both}
+@keyframes vinDestello{from{background-position:160% 0}to{background-position:-60% 0}}
+.vinOnda{position:absolute;inset:0;border-radius:50%;border:1.5px solid color-mix(in srgb,var(--vin-accent,#fff) 80%,#fff);opacity:0;pointer-events:none;z-index:0}
+#vinilo.toco .vinOnda{animation:vinOnda .65s cubic-bezier(.19,1,.22,1)}
+@keyframes vinOnda{0%{opacity:.75;transform:scale(.7)}100%{opacity:0;transform:scale(2.3)}}
+#vinSonar{position:absolute;inset:0;border-radius:50%;border:1.3px solid color-mix(in srgb,var(--vin-accent,#fff) 55%,#fff);opacity:0;pointer-events:none;z-index:0}
+#vinilo.on:not(.sonando):not(.abierta) #vinSonar{animation:vinSonar 3.2s cubic-bezier(.19,1,.22,1) 1.15s infinite}
+@keyframes vinSonar{0%{opacity:.55;transform:scale(1)}62%,100%{opacity:0;transform:scale(2.05)}}
+#vinAro{position:absolute;inset:-3.5px;border-radius:50%;background:conic-gradient(var(--vin-accent,#fff) var(--vin-p,0%),rgba(255,255,255,.14) 0);z-index:-1;opacity:0;transition:opacity .3s}
+#vinilo.sonando:not(.abierta) #vinAro{opacity:1;filter:drop-shadow(0 0 5px color-mix(in srgb,var(--vin-accent,#fff) 70%,transparent))}
+#vinCometa{position:absolute;left:50%;top:50%;width:7px;height:7px;margin:-3.5px;border-radius:50%;background:radial-gradient(circle,#fff 0 35%,var(--vin-accent,#fff) 70%,transparent);box-shadow:0 0 8px var(--vin-accent,#fff),0 0 3px #fff;opacity:0;transform:rotate(var(--vin-a,0deg)) translateY(-29.5px);pointer-events:none;z-index:1}
+#vinilo.sonando:not(.abierta) #vinCometa{opacity:1}
+#vinNucleo{flex:0 0 auto;width:100%;height:100%;border:0;border-radius:50%;background:transparent;color:#fff;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;z-index:2}
+#vinilo.abierta #vinNucleo{width:38px;height:38px;flex:0 0 38px}
+#vinNucleo svg{width:17px;height:17px;display:block;filter:drop-shadow(0 0 7px rgba(255,255,255,.85)) drop-shadow(0 1px 2px rgba(0,0,0,.45))}
+#vinilo.on:not(.sonando):not(.abierta) #vinNucleo{animation:vinLatido 3.2s ease-in-out .9s infinite}
+@keyframes vinLatido{0%,32%,100%{transform:scale(1)}8%{transform:scale(1.07)}16%{transform:scale(1)}24%{transform:scale(1.055)}}
+#vinilo.on:not(.sonando):not(.abierta) #vinIcoPlay{animation:vinSenala 3.2s ease-in-out .9s infinite}
+@keyframes vinSenala{0%,32%,100%{transform:translateX(0)}8%{transform:translateX(1.6px)}24%{transform:translateX(1.1px)}}
+.vinExt{opacity:0;width:0;overflow:hidden;display:flex;align-items:center;gap:10px;flex:1;min-width:0;transition:opacity .28s .18s;z-index:2}
+#vinilo.abierta .vinExt{opacity:1;width:auto}
+#viniloCov{flex:0 0 36px;width:36px;height:36px;border-radius:9px;object-fit:cover;background:rgba(255,255,255,.08);box-shadow:0 2px 8px rgba(0,0,0,.4)}
+#viniloMeta{flex:1;min-width:0;text-align:left}
+#viniloTit{font:600 12.5px/1.3 'Poppins',sans-serif;color:rgba(255,255,255,.96);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,.35)}
+#viniloArt{font:500 11px/1.3 'Poppins',sans-serif;color:rgba(255,255,255,.62);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,.35)}
+#viniloPie{display:none;font:italic 500 10.5px/1.45 'Poppins',sans-serif;color:rgba(255,255,255,.74);white-space:normal;margin-top:3px;text-shadow:0 1px 3px rgba(0,0,0,.35)}
+#vinilo.abierta #viniloPie:not(:empty){display:block}
+#viniloLink{flex:0 0 auto;display:flex;align-items:center;text-decoration:none;z-index:2}
+#viniloLink img{height:21px;display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}
+#vinBar{position:absolute;left:0;top:0;height:2px;width:var(--vin-p,0%);background:linear-gradient(90deg,var(--vin-accent,#fff),#fff);box-shadow:0 0 9px var(--vin-accent,#fff),0 0 2px #fff;opacity:0;transition:width .25s linear,opacity .2s;z-index:3}
+#vinilo.abierta #vinBar{opacity:.95}
+#vinBorde{position:absolute;inset:0;border-radius:inherit;padding:1.2px;background:linear-gradient(160deg,rgba(255,255,255,.6),rgba(255,255,255,.14) 32%,rgba(255,255,255,.05) 62%,color-mix(in srgb,var(--vin-accent,#fff) 45%,transparent));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;opacity:0;transition:opacity .3s .12s;pointer-events:none;z-index:2}
+#vinilo.abierta #vinBorde{opacity:1}
+@media (prefers-reduced-motion: reduce){#vinilo.on,#vinilo::after,#vinLuz,#vinNucleo,#vinSonar,#vinIcoPlay{animation:none !important}}
+</style>
+<div id="vinilo" aria-hidden="true" role="group" aria-label="Música de este libro">
+  <div id="vinAro"></div>
+  <div id="vinCometa"></div>
+  <span class="vinOnda"></span>
+  <span id="vinSonar"></span>
+  <span id="vinLuz"></span>
+  <div id="vinBorde"></div>
+  <button id="vinNucleo" type="button" aria-label="Reproducir 30 segundos">
+    <svg id="vinIcoPlay" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M8 5.5v13l11-6.5z"/></svg>
+    <svg id="vinIcoPause" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="display:none"><path d="M7 5h3.4v14H7zM13.6 5H17v14h-3.6z"/></svg>
+  </button>
+  <div class="vinExt">
+    <img id="viniloCov" alt="" />
+    <div id="viniloMeta"><div id="viniloTit"></div><div id="viniloArt"></div><div id="viniloPie"></div></div>
+    <a id="viniloLink" href="#" target="_blank" rel="noopener noreferrer" aria-label="Apple Music"><img id="vinBadge" src="https://tools.applemediaservices.com/api/badges/listen-on-apple-music/badge/es-mx" alt="Apple Music" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'Apple Music ↗',style:'font:600 11px Poppins;color:rgba(255,255,255,.75)'}))" /></a>
+  </div>
+  <div id="vinBar"></div>
+</div>
+<script id="vinilo-js">
+/* 🎵 M3 · vinilo de la app. La música es DEL libro en pantalla: cada render la rearma; al revelar (#cta) se retira; la música sigue. */
+(function(){
+  var el=document.getElementById('vinilo'), nuc=document.getElementById('vinNucleo'), grid=document.getElementById('grid'), cta=document.getElementById('cta'), ov=document.getElementById('barraMagicaOverlay');
+  if(!el||!nuc||!grid||!cta) return;
+  var tit=document.getElementById('viniloTit'), art=document.getElementById('viniloArt'), pie=document.getElementById('viniloPie'),
+      lnk=document.getElementById('viniloLink'), cov=document.getElementById('viniloCov'), bdg=document.getElementById('vinBadge'),
+      icoP=document.getElementById('vinIcoPlay'), icoS=document.getElementById('vinIcoPause');
+  var franja=(function(h){return h<6?'noche':h<12?'manana':h<19?'tarde':'noche';})(new Date().getHours());
+  var PREF={manana:['abrir','profundizar','aterrizar','resonar'],tarde:['profundizar','abrir','aterrizar','resonar'],noche:['resonar','aterrizar','profundizar','abrir']}[franja];
+  var cola=[], i=0, au=new Audio(), fadeT=null, cierraT=null, played={}, fallos=0, libroActual=null;
+  au.preload='none';
+  function libroDe(){ try{ return (typeof libro!=='undefined')?libro:null; }catch(e){ return null; } }
+  function ordena(M){ return M.slice().sort(function(a,b){ var pa=PREF.indexOf(a.rol),pb=PREF.indexOf(b.rol); if(pa<0&&pb<0) return 0; if(pa<0) return 1; if(pb<0) return -1; if(pa!==pb) return pa-pb; return (b.armonia||0)-(a.armonia||0); }); }
+  function lang(){ try{ return (window.TriggguiI18n&&TriggguiI18n.lang)||document.documentElement.lang||'es'; }catch(e){ return 'es'; } }
+  function badgeLang(){ if(!bdg||!bdg.src) return; var l=(lang()==='en')?'en-us':'es-mx'; if(bdg.src.indexOf('/'+l)<0) bdg.src='https://tools.applemediaservices.com/api/badges/listen-on-apple-music/badge/'+l; }
+  function material(L){ var c=(L&&L.colores)||[]; if(c.length>=2){ el.style.backgroundImage='linear-gradient(135deg,'+c[0]+','+c[1]+')'; el.style.backgroundSize='200% 200%'; el.style.setProperty('--vin-accent',c[0]); try{ nuc.style.color=(typeof pickTextColor==='function')?pickTextColor(c[0]):'#fff'; }catch(e){ nuc.style.color='#fff'; } } }
+  function pinta(){ var c=cola[i]; if(!c) return; tit.textContent=c.cancion; art.textContent=c.artista; pie.textContent=c.pie||'';
+    if(c.link) lnk.href=c.link; if(c.art){ cov.src=c.art; cov.alt=c.album||c.cancion; } el.style.setProperty('--vin-p','0%'); el.style.setProperty('--vin-a','0deg'); badgeLang(); }
+  function icon(p){ icoP.style.display=p?'none':'block'; icoS.style.display=p?'block':'none'; el.classList.toggle('sonando',p); nuc.setAttribute('aria-label',p?(lang()==='en'?'Pause':'Pausa'):(lang()==='en'?'Play 30 seconds':'Reproducir 30 segundos')); }
+  function abre(){ el.classList.add('abierta'); reagenda(); }
+  function cierra(){ el.classList.remove('abierta'); }
+  function reagenda(){ clearTimeout(cierraT); cierraT=setTimeout(cierra,4000); }
+  function apaga(avanza){ if(fadeT){clearInterval(fadeT);fadeT=null;} try{au.pause();}catch(e){} icon(false); if(avanza){ i=(i+1)%cola.length; pinta(); } }
+  function sigue(){ if(fadeT){clearInterval(fadeT);fadeT=null;} au.volume=1; i=(i+1)%cola.length; pinta(); play(); }
+  function despedida(){ if(fadeT) return; var v=au.volume; fadeT=setInterval(function(){ v-=0.09; if(v<=0){ sigue(); } else { try{au.volume=Math.max(0,v);}catch(e){} } },180); }
+  au.addEventListener('timeupdate',function(){ var t=au.currentTime, pc=Math.min(100,(t/30)*100); el.style.setProperty('--vin-p',pc+'%'); el.style.setProperty('--vin-a',(Math.round(pc*36)/10)+'deg'); if(t>=28) despedida(); });
+  au.addEventListener('ended',function(){ sigue(); });
+  au.addEventListener('error',function(){ fallos++; if(fallos>=cola.length){ fallos=0; apaga(false); } else { sigue(); } });
+  function play(){ var c=cola[i]; if(!c) return; if(fadeT){clearInterval(fadeT);fadeT=null;} au.volume=1;
+    if(au.src!==c.preview){ au.src=c.preview; }
+    au.play().then(function(){ icon(true); fallos=0;
+      if(!played[c.id]){ played[c.id]=1; var L=libroDe(); try{gtag('event','musica_play',{contexto:'app',slug:(L&&(L._slug||L.titulo))||'',cancion:c.cancion,artista:c.artista,rol:c.rol||'',franja:franja});}catch(e){} }
+      try{ if('mediaSession' in navigator){ var L2=libroDe();
+        navigator.mediaSession.metadata=new MediaMetadata({title:c.cancion,artist:c.artista,album:(L2&&L2.titulo)||'Triggui',artwork:c.art?[{src:c.art,sizes:'600x600',type:'image/jpeg'}]:[]});
+        navigator.mediaSession.setActionHandler('pause',function(){apaga(false);}); navigator.mediaSession.setActionHandler('play',function(){play();}); navigator.mediaSession.setActionHandler('nexttrack',function(){sigue();}); } }catch(e){}
+    }).catch(function(){ icon(false); }); }
+  function onda(){ el.classList.remove('toco'); void el.offsetWidth; el.classList.add('toco'); }
+  nuc.addEventListener('click',function(ev){ ev.stopPropagation(); onda();
+    if(!el.classList.contains('abierta')){ abre(); if(au.paused) play(); return; }
+    if(au.paused){ play(); } else { apaga(false); } reagenda(); });
+  el.addEventListener('click',function(){ if(!el.classList.contains('abierta')){ abre(); if(au.paused) play(); } else { reagenda(); } });
+  /* Cada render pinta 4 bloques: rearmar con el libro en pantalla. Si cambió de libro, su música se apaga (la música es DEL libro). */
+  function monta(){ var L=libroDe(); if(!L) return;
+    if(L!==libroActual){ libroActual=L; if(!au.paused) apaga(false); if(fadeT){clearInterval(fadeT);fadeT=null;}
+      var M=(L._musica&&Array.isArray(L._musica.candidatos))?L._musica.candidatos:[];
+      cola=ordena(M).slice(0,5); i=0; played={}; el.classList.remove('on','abierta','sonando','nace','fuera');
+      if(!cola.length){ el.setAttribute('aria-hidden','true'); return; }
+      material(L); pinta(); el.removeAttribute('aria-hidden'); }
+    el.classList.toggle('fuera', getComputedStyle(cta).display!=='none');
+    if(barraAbierta()){ el.classList.add('tapado'); return; }          /* la barra mágica manda: el vinilo entra cuando ella se va */
+    el.classList.remove('tapado');
+    if(cola.length && !el.classList.contains('on')){ el.classList.add('on','nace'); setTimeout(function(){el.classList.remove('nace');},760); setTimeout(onda,430); } }
+  function barraAbierta(){ return !!(ov && ov.classList.contains('visible')); }
+  if(ov){ new MutationObserver(function(){ if(barraAbierta()){ el.classList.add('tapado'); } else { setTimeout(monta,260); } }).observe(ov,{attributes:true,attributeFilter:['class']}); }
+  new MutationObserver(function(){ if(grid.querySelectorAll('.block').length>=4) setTimeout(monta,80); }).observe(grid,{childList:true});
+  new MutationObserver(function(){ el.classList.toggle('fuera', getComputedStyle(cta).display!=='none'); }).observe(cta,{attributes:true,attributeFilter:['style','class']});
+  new MutationObserver(function(){ badgeLang(); icon(!au.paused); }).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
+  if(grid.querySelectorAll('.block').length>=4) setTimeout(monta,80);
+})();
+</script>
 </body>
 </html>
