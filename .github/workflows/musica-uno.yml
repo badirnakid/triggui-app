@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       titulo:
-        description: "fragmento del título a re-resolver"
+        description: "fragmento de título · * ediciones · ** faltantes · *** todo · + rescate de silencios · prefijo kids:"
         required: true
         default: "frida"
 permissions:
@@ -52,7 +52,9 @@ jobs:
           TITULO="${TITULO#=}"
           CAT="adulto"; RUTAS="contenido.json,contenido_manual.json"
           case "$TITULO" in kids:*) CAT="kids"; RUTAS="contenido_kids.json"; TITULO="${TITULO#kids:}";; esac
-          if [ "$TITULO" = "***" ]; then
+          if [ "$TITULO" = "+" ]; then
+            python3 app/scripts/resolve-musica.py --catalogo="$CAT" --solo-silencios --rehacer --armonia-min=4 --explicar --rutas="$RUTAS"
+          elif [ "$TITULO" = "***" ]; then
             python3 app/scripts/resolve-musica.py --catalogo="$CAT" --rehacer --explicar --rutas="$RUTAS"
           elif [ "$TITULO" = "**" ]; then
             python3 app/scripts/resolve-musica.py --catalogo="$CAT" --explicar --rutas="$RUTAS"

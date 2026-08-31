@@ -151,6 +151,7 @@ def config(argv=None):
         "catalogo": catalogo,
         "at": (os.environ.get("APPLE_AT") or "").strip(),
         "solo_ed": "--solo-ediciones" in flags,
+        "solo_silencios": "--solo-silencios" in flags,
         "max": int(val("--max", "999")),
         "rutas": rutas,
         "reintentar": int(val("--reintentar-dias", "30")),
@@ -518,6 +519,10 @@ def elegible(b, c, hoy):
         return False, "sin _edicion_numero"
     if c.get("solo") and not any(t in _norm(b.get("titulo", "")) for t in c["solo"]):
         return False, "sin _edicion_numero"    # mismo trato silencioso del molde
+    if c.get("solo_silencios"):
+        v0 = b.get("_musica")
+        if isinstance(v0, dict) and v0.get("candidatos"):
+            return False, "ya con musica (intocable en rescate)"
     v = b.get("_musica")
     if isinstance(v, dict) and not c["rehacer"]:
         if v.get("candidatos"):
