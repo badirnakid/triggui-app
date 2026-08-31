@@ -66,6 +66,7 @@ OPENAI_URL = "https://api.openai.com/v1/chat/completions"
 MODELO = "gpt-4o-mini"
 TEMPERATURA = 0.1               # consistencia, no creatividad (igual que el juez de videos)
 TOP_N = 5                       # quinteto: previews sobran, que haya de dónde rotar
+CUPO_ARTISTA = 3                # asientos máximos por artista en afines, en todo el catálogo
 PAUSA_ITUNES = 3.05             # ~20 llamadas/min es el techo documentado de iTunes Search
 PAISES = ("mx", "us")           # búsqueda mx primero; us rescata catálogo faltante
 
@@ -212,8 +213,12 @@ def puntua_pieza(r, query, canon=False):
     }
 
 
-def capa1(queries, c, usadas=None, umbral=1, rescate=False, canon=False):
-    c = dict(c); c["_usadas"] = usadas or set()
+def _artista(x):
+    return _norm(re.split(r"[,&]|\bfeat", x.get("artista",""), flags=re.I)[0]).strip()
+
+
+def capa1(queries, c, usadas=None, umbral=1, rescate=False, canon=False, artistas=None):
+    c = dict(c); c["_usadas"] = usadas or set(); c["_artistas"] = artistas if artistas is not None else {}
     """Busca cada query en iTunes (mx→us), veta, dedup (trackId y canción+artista) y
     conserva hasta 3 por query: la diversidad es alimento del juez, no adorno."""
     vistos, huellas, piezas = set(), set(), []
@@ -232,6 +237,8 @@ def capa1(queries, c, usadas=None, umbral=1, rescate=False, canon=False):
                 hcorta = _huella(x)
                 if hcorta in (c.get("_usadas") or ()):  # coronada por otro libro: fuera del universo
                     continue
+                if not canon and c["_artistas"].get(_artista(x), 0) >= CUPO_ARTISTA:
+                    continue                            # cupo por artista: el océano, por construcción
                 obra = hcorta.split("|")[0]
                 if hcorta in huellas or obra in huellas:
                     continue
@@ -419,6 +426,8 @@ def armonizar(b, cands, c, st):
         y["pie"] = _pie(v.get("pie"))
         y["frase_eco"] = _s(v.get("frase_eco"), 200)
         y["_descartar"] = bool(v.get("descartar"))
+        if v.get("cantada") is True and not y.get("canon"):
+            y["_descartar"] = True; y["_motivo"] = "cantada: la letra pelea con la lectura"
         y["_motivo"] = _s(v.get("motivo_descarte"), 90)
         con.append(y)
     if not con:
@@ -516,19 +525,19 @@ def resolver_libro(p, c, st):
     base = list(p["canon_base"])
     huellas = set(_huella(x) for x in base) | set(_huella(x).split("|")[0] for x in base)
     if p["afi"]:
-        for x in capa1(p["afi"], c, st.get("usadas")):
+        for x in capa1(p["afi"], c, st.get("usadas"), artistas=st.get("artistas")):
             h = _huella(x)
             if h not in huellas and h.split("|")[0] not in huellas:
                 base.append(x); huellas.add(h); huellas.add(h.split("|")[0])
     if not base:
-        base = capa1(mapa_queries(b), c, st.get("usadas"))
+        base = capa1(mapa_queries(b), c, st.get("usadas"), artistas=st.get("artistas"))
         if base and c["explicar"]:
             print("      (rescate-mapa: %d piezas)" % len(base))
     if not base and c["openai"] and not st["llm_apagado"] and origen_es_llm(p):
         can2, afi2, _o = componer_queries(b, c, st, emergencia=p["can"] + p["afi"])
         if c["explicar"]:
             print("      (compositor de emergencia: %s)" % " ; ".join(afi2 + can2))
-        base = capa1(afi2 + can2, c, st.get("usadas"))
+        base = capa1(afi2 + can2, c, st.get("usadas"), artistas=st.get("artistas"))
         if base:
             print("      (rescate-compositor: %d piezas)" % len(base))
     if not base:
@@ -624,6 +633,8 @@ def procesa(ruta, c, cache, st, hoy=None):
             continue
         for _x in ((_b.get("_musica") or {}).get("candidatos") or []):
             st["usadas"].add(_huella(_x))
+            if not _x.get("canon"):
+                st["artistas"][_artista(_x)] = st["artistas"].get(_artista(_x), 0) + 1
     if plan:
         print("  ▸ PASO 1 · derecho de canon (%d libros, memoria sembrada: %d huellas)" % (len(plan), len(st["usadas"])))
     for p in plan:
@@ -669,6 +680,8 @@ def procesa(ruta, c, cache, st, hoy=None):
                         "sinfonia": v["sinfonia"], "candidatos": v["candidatos"]}
         for _x in v["candidatos"]:
             st["usadas"].add(_huella(_x))
+            if not _x.get("canon"):
+                st["artistas"][_artista(_x)] = st["artistas"].get(_artista(_x), 0) + 1
         cache[p["k"]] = b["_musica"]
         cambios += 1
         top = v["candidatos"]
@@ -690,7 +703,7 @@ def procesa(ruta, c, cache, st, hoy=None):
 
 def main():
     c = config()
-    st = {"busquedas": 0, "con_musica": 0, "errores": 0, "cache": 0, "usadas": set(),
+    st = {"busquedas": 0, "con_musica": 0, "errores": 0, "cache": 0, "usadas": set(), "artistas": {},
           "fatal": "", "llm_apagado": "", "llm_errores": 0}
     cache = {}
     for ruta in c["rutas"]:
