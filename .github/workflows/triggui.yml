@@ -905,6 +905,32 @@ jobs:
             if (!quedan.length) console.log('   ⚠️ manifiesto vacío — sin ediciones HTML este run');
           "
 
+      # ╔══════════════════════════════════════════════════════════════════╗
+      # ║  🎵 Resolver música — Apple previews, quinteto con derecho de     ║
+      # ║  canon y criterio Triggui de lecturabilidad. Corre ANTES del      ║
+      # ║  horneado porque la edición embebe state.musica. Memoria          ║
+      # ║  sembrada: cada libro nuevo nace con música virgen. --max=10.     ║
+      # ║  Kids: sin música hasta la Doctrina Kids (S2).                    ║
+      # ╚══════════════════════════════════════════════════════════════════╝
+
+      - name: 🎵 Resolver música (Apple previews, quinteto con canon)
+        if: ${{ !inputs.modo_prueba && (steps.modo.outputs.modo_tecnico == 'single_book' || steps.modo.outputs.modo_tecnico == 'trigger_constrained' || steps.modo.outputs.modo_tecnico == 'trigger_discover' || steps.modo.outputs.modo_tecnico == 'production_batch') }}
+        continue-on-error: true
+        shell: bash
+        env:
+          TRIGGUI_CONTENT_ROOT: triggui-content
+        run: |
+          set -euo pipefail
+          if [ "$CATALOG_MODE" = "kids" ]; then
+            echo "🌒 CATALOG_MODE=kids — sin música (Doctrina Kids pendiente)"
+            exit 0
+          fi
+          if [ ! -f contenido.json ]; then
+            echo "ℹ️  contenido.json no está en el workspace — sin música"
+            exit 0
+          fi
+          python3 scripts/resolve-musica.py --rutas=contenido.json --max=10 --explicar
+
       - name: 🌐 Generar edición viva HTML
         if: ${{ inputs.generar_imagenes && (steps.modo.outputs.modo_tecnico == 'single_book' || steps.modo.outputs.modo_tecnico == 'trigger_constrained' || steps.modo.outputs.modo_tecnico == 'trigger_discover' || steps.modo.outputs.modo_tecnico == 'production_batch') }}
         env:
