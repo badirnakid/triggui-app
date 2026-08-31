@@ -775,6 +775,53 @@ body.tg-tarjeta .tg-cta{display:none !important}
 #tgModal.espera .tg-mtitle,#tgModal.espera .tg-mbtns{display:none}
 #tgModal.espera .tg-mtext{display:block;font-size:12px;letter-spacing:.02em;color:rgba(255,255,255,.75);margin:14px 0 0 0}
 #tgModal.espera .tg-mtext .hl{display:none}
+/* 🎵 vinilo v4 — morfosis: círculo hermano de los 5 botones ↔ barra bloque. Cota y material heredados. */
+#vinilo{position:fixed;bottom:max(3vh,env(safe-area-inset-bottom,3vh));left:50%;transform:translateX(-50%);z-index:700;display:none;align-items:center;gap:12px;width:clamp(3.5rem,min(8vw,8vh),4.5rem);height:clamp(3.5rem,min(8vw,8vh),4.5rem);padding:0;border-radius:50%;background-size:200% 200%;box-shadow:0 0 0 1.5px rgba(255,255,255,.34),0 10px 26px rgba(0,0,0,.5);overflow:visible;isolation:isolate;transition:width .5s cubic-bezier(.19,1,.22,1),left .5s cubic-bezier(.19,1,.22,1),right .5s cubic-bezier(.19,1,.22,1),border-radius .5s cubic-bezier(.19,1,.22,1),padding .5s cubic-bezier(.19,1,.22,1);cursor:pointer;touch-action:manipulation}
+#vinilo.on{display:flex;animation:vinVivo 9s ease-in-out infinite}
+@keyframes vinVivo{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+#vinilo::after{content:"";position:absolute;inset:-12px;border-radius:inherit;background:radial-gradient(circle,color-mix(in srgb,var(--accent,#fff) 42%,transparent),transparent 70%);filter:blur(9px);z-index:-2;animation:vinAliento 4.2s ease-in-out infinite;pointer-events:none}
+@keyframes vinAliento{0%,100%{opacity:.32;transform:scale(.96)}50%{opacity:.6;transform:scale(1.04)}}
+#vinLuz{position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:1;background:linear-gradient(115deg,transparent 42%,rgba(255,255,255,.5) 50%,transparent 58%);background-size:280% 100%;background-position:160% 0;animation:vinBarrido 5.8s ease-in-out infinite}
+@keyframes vinBarrido{0%,72%{background-position:160% 0}88%{background-position:-60% 0}100%{background-position:-60% 0}}
+#vinilo.abierta #vinLuz{animation:vinDestello .8s cubic-bezier(.19,1,.22,1) both}
+@keyframes vinDestello{from{background-position:160% 0}to{background-position:-60% 0}}
+.vinOnda{position:absolute;inset:0;border-radius:50%;border:1.5px solid color-mix(in srgb,var(--accent,#fff) 80%,#fff);opacity:0;pointer-events:none;z-index:0}
+#vinilo.toco .vinOnda{animation:vinOnda .65s cubic-bezier(.19,1,.22,1)}
+@keyframes vinOnda{0%{opacity:.75;transform:scale(.7)}100%{opacity:0;transform:scale(2.3)}}
+#vinilo.on:not(.sonando):not(.abierta) #vinNucleo{animation:vinLatido 3.2s ease-in-out .9s infinite}
+@keyframes vinLatido{0%,32%,100%{transform:scale(1)}8%{transform:scale(1.07)}16%{transform:scale(1)}24%{transform:scale(1.055)}}
+#vinSonar{position:absolute;inset:0;border-radius:50%;border:1.3px solid color-mix(in srgb,var(--accent,#fff) 55%,#fff);opacity:0;pointer-events:none;z-index:0}
+#vinilo.on:not(.sonando):not(.abierta) #vinSonar{animation:vinSonar 3.2s cubic-bezier(.19,1,.22,1) 1.15s infinite}
+@keyframes vinSonar{0%{opacity:.55;transform:scale(1)}62%,100%{opacity:0;transform:scale(2.05)}}
+#vinilo.on:not(.sonando):not(.abierta) #vinIcoPlay{animation:vinSenala 3.2s ease-in-out .9s infinite}
+@keyframes vinSenala{0%,32%,100%{transform:translateX(0)}8%{transform:translateX(1.6px)}24%{transform:translateX(1.1px)}}
+@media (prefers-reduced-motion: reduce){#vinilo.on,#vinilo::after,#vinLuz,#vinNucleo,#vinSonar,#vinIcoPlay{animation:none !important}}
+#vinilo.fuera{display:none !important}
+#vinilo::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(145deg,rgba(255,255,255,.18) 0%,rgba(255,255,255,.08) 40%,transparent 100%);pointer-events:none;z-index:1}
+#vinilo.abierta{left:1.5vw;right:1.5vw;width:auto;transform:none;border-radius:24px;height:auto;min-height:clamp(3.5rem,min(8vw,8vh),4.5rem);padding:9px 12px 9px 10px;overflow:hidden}
+#vinAro{position:absolute;inset:-3.5px;border-radius:50%;background:conic-gradient(var(--accent,#fff) var(--vin-p,0%),rgba(255,255,255,.14) 0);z-index:-1;opacity:0;transition:opacity .3s}
+#vinilo.sonando:not(.abierta) #vinAro{opacity:1;filter:drop-shadow(0 0 5px color-mix(in srgb,var(--accent,#fff) 70%,transparent))}
+#vinCometa{position:absolute;left:50%;top:50%;width:7px;height:7px;margin:-3.5px;border-radius:50%;background:radial-gradient(circle,#fff 0 35%,var(--accent,#fff) 70%,transparent);box-shadow:0 0 8px var(--accent,#fff),0 0 3px #fff;opacity:0;transform:rotate(var(--vin-a,0deg)) translateY(-29.5px);pointer-events:none;z-index:1}
+#vinilo.sonando:not(.abierta) #vinCometa{opacity:1}
+#vinNucleo{flex:0 0 auto;width:100%;height:100%;border:0;border-radius:50%;background:transparent;color:#fff;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;z-index:2}
+#vinilo.abierta #vinNucleo{width:38px;height:38px;flex:0 0 38px}
+#vinNucleo svg{width:17px;height:17px;display:block;filter:drop-shadow(0 0 7px rgba(255,255,255,.85)) drop-shadow(0 1px 2px rgba(0,0,0,.45))}
+#vinilo.nace{animation:vinNace .7s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes vinNace{0%{transform:translateX(-50%) scale(.55);opacity:0}70%{transform:translateX(-50%) scale(1.07);opacity:1}100%{transform:translateX(-50%) scale(1);opacity:1}}
+.vinExt{opacity:0;width:0;overflow:hidden;display:flex;align-items:center;gap:10px;flex:1;min-width:0;transition:opacity .28s .18s;z-index:2}
+#vinilo.abierta .vinExt{opacity:1;width:auto}
+#viniloCov{flex:0 0 36px;width:36px;height:36px;border-radius:9px;object-fit:cover;background:rgba(255,255,255,.08);box-shadow:0 2px 8px rgba(0,0,0,.4)}
+#viniloMeta{flex:1;min-width:0;text-align:left}
+#viniloTit{font:600 12.5px/1.3 'Poppins',sans-serif;color:rgba(255,255,255,.96);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,.35)}
+#viniloArt{font:500 11px/1.3 'Poppins',sans-serif;color:rgba(255,255,255,.62);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,.35)}
+#viniloPie{display:none;font:italic 500 10.5px/1.4 'Poppins',sans-serif;color:rgba(255,255,255,.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,.35);margin-top:2px}
+#vinilo.abierta #viniloPie:not(:empty){display:block}
+#viniloLink{flex:0 0 auto;display:flex;align-items:center;text-decoration:none;z-index:2}
+#viniloLink img{height:21px;display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}
+#vinBar{position:absolute;left:0;top:0;height:2px;width:var(--vin-p,0%);background:linear-gradient(90deg,var(--accent,#fff),#fff);box-shadow:0 0 9px var(--accent,#fff),0 0 2px #fff;opacity:0;transition:width .25s linear,opacity .2s;z-index:3}
+#vinBorde{position:absolute;inset:0;border-radius:inherit;padding:1.2px;background:linear-gradient(160deg,rgba(255,255,255,.6),rgba(255,255,255,.14) 32%,rgba(255,255,255,.05) 62%,color-mix(in srgb,var(--accent,#fff) 45%,transparent));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;opacity:0;transition:opacity .3s .12s;pointer-events:none;z-index:2}
+#vinilo.abierta #vinBorde{opacity:1}
+#vinilo.abierta #vinBar{opacity:.95}
 .tg-heart{position:fixed;pointer-events:none;z-index:700;font-size:24px;opacity:0;animation:tgFloatUp 1.2s ease-out forwards;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.3))}
 @keyframes tgFloatUp{0%{transform:translate(0,0) scale(0.5) rotate(0deg);opacity:0}20%{opacity:1;transform:translate(var(--tx),-40px) scale(1.2) rotate(15deg)}100%{opacity:0;transform:translate(var(--tx),-150px) scale(1) rotate(30deg)}}
 </style>
@@ -787,6 +834,25 @@ body.tg-tarjeta .tg-cta{display:none !important}
   <div class="bocado-eco-phrase" id="bocadoEcoPhrase"></div>
 </div>
 <div class="grid" id="grid"></div>
+
+<div id="vinilo" aria-hidden="true" role="group" aria-label="Música de esta edición">
+  <div id="vinAro"></div>
+  <div id="vinCometa"></div>
+  <span class="vinOnda"></span>
+  <span id="vinSonar"></span>
+  <span id="vinLuz"></span>
+  <div id="vinBorde"></div>
+  <button id="vinNucleo" type="button" aria-label="Reproducir 30 segundos">
+    <svg id="vinIcoPlay" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M8 5.5v13l11-6.5z"/></svg>
+    <svg id="vinIcoPause" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="display:none"><path d="M7 5h3.4v14H7zM13.6 5H17v14h-3.6z"/></svg>
+  </button>
+  <div class="vinExt">
+    <img id="viniloCov" alt="" />
+    <div id="viniloMeta"><div id="viniloTit"></div><div id="viniloArt"></div><div id="viniloPie"></div></div>
+    <a id="viniloLink" href="#" target="_blank" rel="noopener noreferrer" aria-label="Apple Music"><img id="vinBadge" src="https://tools.applemediaservices.com/api/badges/listen-on-apple-music/badge/es-mx" alt="Apple Music" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'Apple Music ↗',style:'font:600 11px Poppins;color:rgba(255,255,255,.75)'}))" /></a>
+  </div>
+  <div id="vinBar"></div>
+</div>
 
 <div id="revealOverlay" class="reveal-overlay">
   <div class="reveal-card" onclick="event.stopPropagation()">
@@ -858,8 +924,99 @@ body.tg-tarjeta .tg-cta{display:none !important}
 </div>
 
 <script>
-const state = {"id": "el-libro-de-elon", "titulo": "El libro de Elon", "autor": "Eric Jorgenson", "palabra": "La mentalidad de misión colosal", "descripcion": "La mentalidad de misión colosal es el motor que impulsa a aquellos que buscan no solo el éxito, sino un legado. Es una forma de pensar que trasciende el día a día, que se centra en problemas grandes y complejos, y que exige la máxima creatividad, disciplina y obstinación. Esa combinación de elementos es lo que Elon ha utilizado para construir un legado a través de decisiones audaces, enfocándose en el trabajo significativo y aplicando su mentalidad de propósito.", "palabras": ["determinación", "inspiración", "enfoque", "legado"], "frases": ["🌓 Dedica un minuto a reflexionar sobre tu misión personal. ¿Qué te impulsa?", "🚶 ¿Qué acciones concretas puedes tomar hoy hacia tu misión colosal?", "🔭 Imagina tu vida dentro de diez años, habiendo logrado tu misión. ¿Cómo se siente?", "📻 El propósito es la brújula que guía cada paso hacia el legado."], "colores": ["#99F17E", "#BD30E8", "#13AE16", "#650B64"], "textColors": ["#000000", "#FFFFFF", "#FFFFFF", "#FFFFFF"], "ogImage": "https://app.triggui.com/t/el-libro-de-elon/og.jpg", "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/ce/2f/ea/ce2fea13-b793-2d08-9b22-3a67ed16fd1a/1066979673.jpg/3000x3000bb.jpg", "tagline": "", "frases_en": ["💫 Embrace the challenge. Each obstacle is an opportunity to innovate.", "☀ Consider how your unique skills can align with a mission that ignites your passion.", "🗺 Imagine the legacy that unfolds when your actions resonate through time, shaping the lives of others.", "🌓 Greatness is born from the audacity to think differently and act decisively."], "palabras_en": ["purpose", "creativity", "discipline", "legacy"], "i18nEn": {"cardTitle": "The Colossal Mission Mindset", "top": "The colossal mission mindset drives those who seek not only success but a lasting legacy. It is a way of thinking that transcends daily tasks, focusing on grand and complex problems, demanding maximum creativity, discipline, and tenacity. <span class=\"tg-hl\">This combination of elements is what has propelled Elon Musk to the forefront</span> of la construcción de un legado a través de decisiones audaces.", "sub": "Are you ready to commit to a greater purpose?", "bot": "The pursuit of purpose and intensity transforms ordinary work into something extraordinary. <span class=\"tg-hl\">When you align your passion with a colossal mission, every task takes on significance.</span> It is not merely about working hard, but about working with intention and clarity. This is how dreams turn into reality."}, "bocadoEcoPool": [{"phrase": "🌓 Dedica un minuto a reflexionar sobre tu misión personal. ¿Qué te impulsa?", "rol": "abrir", "animo": 0.5, "origin": "edition_block_es"}, {"phrase": "🚶 ¿Qué acciones concretas puedes tomar hoy hacia tu misión colosal?", "rol": "aterrizar", "animo": 0.7, "origin": "edition_block_es"}, {"phrase": "🔭 Imagina tu vida dentro de diez años, habiendo logrado tu misión. ¿Cómo se siente?", "rol": "profundizar", "animo": 0.6, "origin": "edition_block_es"}, {"phrase": "📻 El propósito es la brújula que guía cada paso hacia el legado.", "rol": "resonar", "animo": 0.4, "origin": "edition_block_es"}, {"phrase": "🔍 La misión colosal define la grandeza de un visionario.", "rol": "aterrizar", "animo": 0.6, "origin": "og_phrase_es"}, {"phrase": "💠 ¿Qué legado estás construyendo hoy con tu trabajo?", "rol": "abrir", "animo": 0.5, "origin": "og_phrase_es"}, {"phrase": "✨ La disciplina transforma la intención en acción efectiva.", "rol": "profundizar", "animo": 0.7, "origin": "og_phrase_es"}, {"phrase": "⚓ Cuando se elige una misión, cada paso cuenta.", "rol": "resonar", "animo": 0.4, "origin": "og_phrase_es"}], "bocadoEcoPool_en": ["💫 Embrace the challenge. Each obstacle is an opportunity to innovate.", "☀ Consider how your unique skills can align with a mission that ignites your passion.", "🗺 Imagine the legacy that unfolds when your actions resonate through time, shaping the lives of others.", "🌓 Greatness is born from the audacity to think differently and act decisively."], "titulo_en": "The Elon Musk Book"};
+const state = {"id": "el-libro-de-elon", "titulo": "El libro de Elon", "autor": "Eric Jorgenson", "palabra": "La mentalidad de misión colosal", "descripcion": "La mentalidad de misión colosal es el motor que impulsa a aquellos que buscan no solo el éxito, sino un legado. Es una forma de pensar que trasciende el día a día, que se centra en problemas grandes y complejos, y que exige la máxima creatividad, disciplina y obstinación. Esa combinación de elementos es lo que Elon ha utilizado para construir un legado a través de decisiones audaces, enfocándose en el trabajo significativo y aplicando su mentalidad de propósito.", "palabras": ["determinación", "inspiración", "enfoque", "legado"], "frases": ["🌓 Dedica un minuto a reflexionar sobre tu misión personal. ¿Qué te impulsa?", "🚶 ¿Qué acciones concretas puedes tomar hoy hacia tu misión colosal?", "🔭 Imagina tu vida dentro de diez años, habiendo logrado tu misión. ¿Cómo se siente?", "📻 El propósito es la brújula que guía cada paso hacia el legado."], "colores": ["#99F17E", "#BD30E8", "#13AE16", "#650B64"], "textColors": ["#000000", "#FFFFFF", "#FFFFFF", "#FFFFFF"], "ogImage": "https://app.triggui.com/t/el-libro-de-elon/og.jpg", "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/ce/2f/ea/ce2fea13-b793-2d08-9b22-3a67ed16fd1a/1066979673.jpg/3000x3000bb.jpg", "tagline": "", "frases_en": ["💫 Embrace the challenge. Each obstacle is an opportunity to innovate.", "☀ Consider how your unique skills can align with a mission that ignites your passion.", "🗺 Imagine the legacy that unfolds when your actions resonate through time, shaping the lives of others.", "🌓 Greatness is born from the audacity to think differently and act decisively."], "palabras_en": ["purpose", "creativity", "discipline", "legacy"], "i18nEn": {"cardTitle": "The Colossal Mission Mindset", "top": "The colossal mission mindset drives those who seek not only success but a lasting legacy. It is a way of thinking that transcends daily tasks, focusing on grand and complex problems, demanding maximum creativity, discipline, and tenacity. <span class=\"tg-hl\">This combination of elements is what has propelled Elon Musk to the forefront</span> of la construcción de un legado a través de decisiones audaces.", "sub": "Are you ready to commit to a greater purpose?", "bot": "The pursuit of purpose and intensity transforms ordinary work into something extraordinary. <span class=\"tg-hl\">When you align your passion with a colossal mission, every task takes on significance.</span> It is not merely about working hard, but about working with intention and clarity. This is how dreams turn into reality."}, "bocadoEcoPool": [{"phrase": "🌓 Dedica un minuto a reflexionar sobre tu misión personal. ¿Qué te impulsa?", "rol": "abrir", "animo": 0.5, "origin": "edition_block_es"}, {"phrase": "🚶 ¿Qué acciones concretas puedes tomar hoy hacia tu misión colosal?", "rol": "aterrizar", "animo": 0.7, "origin": "edition_block_es"}, {"phrase": "🔭 Imagina tu vida dentro de diez años, habiendo logrado tu misión. ¿Cómo se siente?", "rol": "profundizar", "animo": 0.6, "origin": "edition_block_es"}, {"phrase": "📻 El propósito es la brújula que guía cada paso hacia el legado.", "rol": "resonar", "animo": 0.4, "origin": "edition_block_es"}, {"phrase": "🔍 La misión colosal define la grandeza de un visionario.", "rol": "aterrizar", "animo": 0.6, "origin": "og_phrase_es"}, {"phrase": "💠 ¿Qué legado estás construyendo hoy con tu trabajo?", "rol": "abrir", "animo": 0.5, "origin": "og_phrase_es"}, {"phrase": "✨ La disciplina transforma la intención en acción efectiva.", "rol": "profundizar", "animo": 0.7, "origin": "og_phrase_es"}, {"phrase": "⚓ Cuando se elige una misión, cada paso cuenta.", "rol": "resonar", "animo": 0.4, "origin": "og_phrase_es"}], "bocadoEcoPool_en": ["💫 Embrace the challenge. Each obstacle is an opportunity to innovate.", "☀ Consider how your unique skills can align with a mission that ignites your passion.", "🗺 Imagine the legacy that unfolds when your actions resonate through time, shaping the lives of others.", "🌓 Greatness is born from the audacity to think differently and act decisively."], "musica": [{"id": "1440910931", "cancion": "Rocket Man (I Think It's Going to Be a Long Long Time)", "artista": "Elton John", "album": "Honky Château (Bonus Track Version)", "genero": "Pop", "dur": 281, "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/8c/09/6d/8c096da7-10b6-422b-51b6-f1f97a66380d/mzaf_5290536375751623365.plus.aac.p.m4a", "link": "https://music.apple.com/mx/album/rocket-man-i-think-its-going-to-be-a-long-long-time/1440910513?i=1440910931&uo=4", "art": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/75/b6/da/75b6da76-a3e0-6a77-cbe5-ad6c42cb0692/06UMGIM48050.rgb.jpg/600x600bb.jpg", "canon": true, "armonia": 9, "rol": "aterrizar", "pie": "El viaje de un hombre hacia las estrellas, resonando con la grandeza de la misión.", "frase_eco": "La misión colosal define la grandeza de un visionario."}, {"id": "6804021828", "cancion": "SEEIN’ STARS (ELTON JOHN VERSION)", "artista": "Turnstile & Elton John", "album": "NEVER ENOUGH: VERSIONS", "genero": "Pop", "dur": 253, "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/d7/60/17/d7601765-8f2e-730c-cb6d-041731fdf8f4/mzaf_6881263224853897637.plus.aac.p.m4a", "link": "https://music.apple.com/mx/album/seein-stars-elton-john-version/6804021807?i=6804021828&uo=4", "art": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/51/39/7a/51397ad5-74d6-f7a7-3500-049082840907/075679560636.jpg/600x600bb.jpg", "canon": true, "armonia": 8, "rol": "abrir", "pie": "Una colaboración que invita a reflexionar sobre el legado y la creatividad.", "frase_eco": "¿Qué legado estás construyendo hoy con tu trabajo?"}, {"id": "697195787", "cancion": "Harder Better Faster Stronger", "artista": "Daft Punk", "album": "Discovery", "genero": "Dance", "dur": 224, "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/8d/a4/4e/8da44e8f-9705-6182-686c-332714c54671/mzaf_17406318046701183138.plus.aac.p.m4a", "link": "https://music.apple.com/mx/album/harder-better-faster-stronger/697194953?i=697195787&uo=4", "art": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/fd/4a/77/fd4a77db-0ebc-d043-41a2-f32fa1bb0fb4/dj.qrikkdwj.jpg/600x600bb.jpg", "canon": true, "armonia": 7, "rol": "profundizar", "pie": "Un himno a la eficiencia y la transformación, ideal para la lectura.", "frase_eco": "La disciplina transforma la intención en acción efectiva."}, {"id": "1443123602", "cancion": "My Generation (Stereo Version)", "artista": "The Who", "album": "My Generation (Stereo Version) [Deluxe Version]", "genero": "Rock", "dur": 198, "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/78/96/81/7896814f-a5ce-2ab0-30fc-9dae4289072e/mzaf_651576286018849131.plus.aac.p.m4a", "link": "https://music.apple.com/mx/album/my-generation-stereo-version/1443123252?i=1443123602&uo=4", "art": "https://is1-ssl.mzstatic.com/image/thumb/Music128/v4/29/04/54/29045471-99d1-4b95-052e-412ef4cbb6d9/00602537945863.rgb.jpg/600x600bb.jpg", "canon": true, "armonia": 6, "rol": "resonar", "pie": "Un clásico que evoca la energía de una generación en busca de su misión.", "frase_eco": "Cuando se elige una misión, cada paso cuenta."}, {"id": "697379278", "cancion": "Harder, Better, Faster, Stronger", "artista": "Daft Punk", "album": "Harder, Better, Faster, Stronger - Single", "genero": "Electrónica", "dur": 226, "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/8a/93/29/8a93295a-7c67-e028-867e-c384f7e7df80/mzaf_8531053040746419470.plus.aac.p.m4a", "link": "https://music.apple.com/mx/album/harder-better-faster-stronger/697378846?i=697379278&uo=4", "art": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/04/6d/71/046d711d-47dc-5dae-9fe3-26b39c028815/724389799958.jpg/600x600bb.jpg", "canon": true, "armonia": 7, "rol": "profundizar", "pie": "Ritmos que impulsan la acción, perfectos para acompañar la lectura.", "frase_eco": "La disciplina transforma la intención en acción efectiva."}], "titulo_en": "The Elon Musk Book"};
 const TG_COVER_SRC = "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/ce/2f/ea/ce2fea13-b793-2d08-9b22-3a67ed16fd1a/1066979673.jpg/3000x3000bb.jpg";
+
+/* 🎵 vinilo v4 — morfosis. Material clonado en runtime del primer botón cta (herencia literal).
+   Estados: reposo → (tap = play+abierta) → 4s → sonando colapsado con anillo → 28s despedida → rotación.
+   Badge bilingüe sigue a window.tgLang. Reveal (portada/cta visibles) => fuera; la música continúa. */
+(function(){
+  var M = (state && state.musica) || [];
+  if (!M.length) return;
+  var franja = (function(h){ return h<6?'noche':h<12?'manana':h<19?'tarde':'noche'; })(new Date().getHours());
+  var PREF = { manana:['abrir','profundizar','aterrizar','resonar'],
+               tarde:['profundizar','abrir','aterrizar','resonar'],
+               noche:['resonar','aterrizar','profundizar','abrir'] }[franja];
+  var cola = M.slice().sort(function(a,b){
+    var pa=PREF.indexOf(a.rol), pb=PREF.indexOf(b.rol);
+    if(pa<0&&pb<0) return 0; if(pa<0) return 1; if(pb<0) return -1;
+    if(pa!==pb) return pa-pb; return (b.armonia||0)-(a.armonia||0); });
+  var el=document.getElementById('vinilo'), nuc=document.getElementById('vinNucleo'),
+      tit=document.getElementById('viniloTit'), art=document.getElementById('viniloArt'), pie=document.getElementById('viniloPie'),
+      lnk=document.getElementById('viniloLink'), cov=document.getElementById('viniloCov'),
+      bdg=document.getElementById('vinBadge'),
+      icoP=document.getElementById('vinIcoPlay'), icoS=document.getElementById('vinIcoPause');
+  var i=0, au=new Audio(), fadeT=null, cierraT=null, played={}, fallos=0;
+  au.preload='none';
+  function badgeLang(){ if(!bdg||!bdg.src) return;
+    var l=(window.tgLang==='en')?'en-us':'es-mx';
+    if(bdg.src.indexOf('/'+l)<0) bdg.src='https://tools.applemediaservices.com/api/badges/listen-on-apple-music/badge/'+l; }
+  function heredaMaterial(intento){ intento=intento||0;
+    try{ var b=document.querySelector('.tg-cta button');
+      if(b){ var cs=getComputedStyle(b);
+        if(cs.backgroundImage&&cs.backgroundImage!=='none'){ el.style.backgroundImage=cs.backgroundImage; el.style.backgroundSize='200% 200%'; return; } } }catch(e){}
+    if(intento<30) setTimeout(function(){heredaMaterial(intento+1);},100); }
+  function pinta(){ var c=cola[i]; tit.textContent=c.cancion; art.textContent=c.artista; pie.textContent=c.pie||'';
+    if(c.link) lnk.href=c.link; if(c.art){ cov.src=c.art; cov.alt=c.album||c.cancion; }
+    el.style.setProperty('--vin-p','0%'); badgeLang(); }
+  function icon(p){ icoP.style.display=p?'none':'block'; icoS.style.display=p?'block':'none';
+    el.classList.toggle('sonando',p); nuc.setAttribute('aria-label',p?'Pausa':'Reproducir 30 segundos'); }
+  function abre(){ el.classList.add('abierta'); reagenda(); }
+  function cierra(){ el.classList.remove('abierta'); }
+  function reagenda(){ clearTimeout(cierraT); cierraT=setTimeout(cierra,4000); }
+  function apaga(avanza){ if(fadeT){clearInterval(fadeT);fadeT=null;} try{au.pause();}catch(e){} icon(false);
+    if(avanza){ i=(i+1)%cola.length; pinta(); el.style.setProperty('--vin-a','0deg'); } }
+  function sigue(){ if(fadeT){clearInterval(fadeT);fadeT=null;} au.volume=1;
+    i=(i+1)%cola.length; pinta(); play(); }
+  function despedida(){ if(fadeT) return; var v=au.volume; fadeT=setInterval(function(){ v-=0.09;
+    if(v<=0){ sigue(); } else { try{au.volume=Math.max(0,v);}catch(e){} } },180); }
+  au.addEventListener('timeupdate',function(){ var t=au.currentTime;
+    var pc=Math.min(100,(t/30)*100);
+    el.style.setProperty('--vin-p',pc+'%');
+    el.style.setProperty('--vin-a',(Math.round(pc*36)/10)+'deg');
+    if(t>=28) despedida(); });
+  au.addEventListener('ended',function(){ sigue(); });
+  au.addEventListener('error',function(){ fallos++;
+    if(fallos>=cola.length){ fallos=0; apaga(false); } else { sigue(); } });
+  function play(){ var c=cola[i]; if(fadeT){clearInterval(fadeT);fadeT=null;} au.volume=1;
+    if(au.src!==c.preview){ au.src=c.preview; }
+    au.play().then(function(){ icon(true); fallos=0;
+      if(!played[c.id]){ played[c.id]=1;
+        try{gtag('event','musica_play',{slug:(state.id||''),cancion:c.cancion,artista:c.artista,rol:c.rol||'',franja:franja});}catch(e){} }
+      try{ if('mediaSession' in navigator){
+        navigator.mediaSession.metadata=new MediaMetadata({title:c.cancion,artist:c.artista,album:c.album||'Triggui',
+          artwork:c.art?[{src:c.art,sizes:'600x600',type:'image/jpeg'}]:[]});
+        navigator.mediaSession.setActionHandler('pause',function(){apaga(false);});
+        navigator.mediaSession.setActionHandler('play',function(){play();}); } }catch(e){}
+    }).catch(function(){ icon(false); }); }
+  function onda(){ el.classList.remove('toco'); void el.offsetWidth; el.classList.add('toco'); }
+  nuc.addEventListener('click',function(ev){ ev.stopPropagation(); onda();
+    if(!el.classList.contains('abierta')){ abre(); if(au.paused) play(); return; }
+    if(au.paused){ play(); } else { apaga(false); } reagenda(); });
+  el.addEventListener('click',function(){ if(!el.classList.contains('abierta')){ abre(); if(au.paused) play(); } else { reagenda(); } });
+  var pill=document.getElementById('tgLangPill');
+  if(pill) pill.addEventListener('click',function(){ setTimeout(badgeLang,60); });
+  pinta();
+  function visible(e){ if(!e) return false; var cs=getComputedStyle(e); if(cs.display==='none'||cs.visibility==='hidden') return false;
+    var r=e.getBoundingClientRect(); return r.width>2&&r.height>2; }
+  function vigia(){ var mira=function(){
+      if(visible(document.querySelector('.tg-portada'))||visible(document.querySelector('.tg-cta'))){ el.classList.add('fuera'); return true; } return false; };
+    if(mira()) return;
+    new MutationObserver(function(_,o){ if(mira()) o.disconnect(); })
+      .observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style']}); }
+  function entra(){ heredaMaterial(); el.classList.add('on','nace');
+    setTimeout(function(){el.classList.remove('nace');},760);
+    setTimeout(onda,430);
+    el.removeAttribute('aria-hidden'); vigia(); }
+  var ov=document.getElementById('bocadoEcoOverlay'), visto=false, entrado=false;
+  function intenta(){ if(entrado) return; entrado=true; entra(); }
+  if(ov){ if(ov.classList.contains('visible')) visto=true;
+    new MutationObserver(function(){ var v=ov.classList.contains('visible');
+      if(v){ visto=true; } else if(visto){ setTimeout(intenta,250); } })
+      .observe(ov,{attributes:true,attributeFilter:['class']});
+    setTimeout(function(){ if(!visto) intenta(); },9000);
+  } else { intenta(); }
+})();
 /* 🌐 D2-A — idioma de la edición: misma llave del imperio (triggui_lang) */
 const TG_ES_SNAP = { t: null, p: null, su: null, b: null };
 let tgLang = (function(){ try { const v = JSON.parse(localStorage.getItem('triggui_lang')||'null'); if (v==='en'||v==='es') return v; } catch(e){} return ((navigator.language||'es').slice(0,2)==='en') ? 'en' : 'es'; })();
