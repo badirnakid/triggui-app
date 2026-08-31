@@ -775,6 +775,53 @@ body.tg-tarjeta .tg-cta{display:none !important}
 #tgModal.espera .tg-mtitle,#tgModal.espera .tg-mbtns{display:none}
 #tgModal.espera .tg-mtext{display:block;font-size:12px;letter-spacing:.02em;color:rgba(255,255,255,.75);margin:14px 0 0 0}
 #tgModal.espera .tg-mtext .hl{display:none}
+/* 🎵 vinilo v4 — morfosis: círculo hermano de los 5 botones ↔ barra bloque. Cota y material heredados. */
+#vinilo{position:fixed;bottom:max(3vh,env(safe-area-inset-bottom,3vh));left:50%;transform:translateX(-50%);z-index:700;display:none;align-items:center;gap:12px;width:clamp(3.5rem,min(8vw,8vh),4.5rem);height:clamp(3.5rem,min(8vw,8vh),4.5rem);padding:0;border-radius:50%;background-size:200% 200%;box-shadow:0 0 0 1.5px rgba(255,255,255,.34),0 10px 26px rgba(0,0,0,.5);overflow:visible;isolation:isolate;transition:width .5s cubic-bezier(.19,1,.22,1),left .5s cubic-bezier(.19,1,.22,1),right .5s cubic-bezier(.19,1,.22,1),border-radius .5s cubic-bezier(.19,1,.22,1),padding .5s cubic-bezier(.19,1,.22,1);cursor:pointer;touch-action:manipulation}
+#vinilo.on{display:flex;animation:vinVivo 9s ease-in-out infinite}
+@keyframes vinVivo{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+#vinilo::after{content:"";position:absolute;inset:-12px;border-radius:inherit;background:radial-gradient(circle,color-mix(in srgb,var(--accent,#fff) 42%,transparent),transparent 70%);filter:blur(9px);z-index:-2;animation:vinAliento 4.2s ease-in-out infinite;pointer-events:none}
+@keyframes vinAliento{0%,100%{opacity:.32;transform:scale(.96)}50%{opacity:.6;transform:scale(1.04)}}
+#vinLuz{position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:1;background:linear-gradient(115deg,transparent 42%,rgba(255,255,255,.5) 50%,transparent 58%);background-size:280% 100%;background-position:160% 0;animation:vinBarrido 5.8s ease-in-out infinite}
+@keyframes vinBarrido{0%,72%{background-position:160% 0}88%{background-position:-60% 0}100%{background-position:-60% 0}}
+#vinilo.abierta #vinLuz{animation:vinDestello .8s cubic-bezier(.19,1,.22,1) both}
+@keyframes vinDestello{from{background-position:160% 0}to{background-position:-60% 0}}
+.vinOnda{position:absolute;inset:0;border-radius:50%;border:1.5px solid color-mix(in srgb,var(--accent,#fff) 80%,#fff);opacity:0;pointer-events:none;z-index:0}
+#vinilo.toco .vinOnda{animation:vinOnda .65s cubic-bezier(.19,1,.22,1)}
+@keyframes vinOnda{0%{opacity:.75;transform:scale(.7)}100%{opacity:0;transform:scale(2.3)}}
+#vinilo.on:not(.sonando):not(.abierta) #vinNucleo{animation:vinLatido 3.2s ease-in-out .9s infinite}
+@keyframes vinLatido{0%,32%,100%{transform:scale(1)}8%{transform:scale(1.07)}16%{transform:scale(1)}24%{transform:scale(1.055)}}
+#vinSonar{position:absolute;inset:0;border-radius:50%;border:1.3px solid color-mix(in srgb,var(--accent,#fff) 55%,#fff);opacity:0;pointer-events:none;z-index:0}
+#vinilo.on:not(.sonando):not(.abierta) #vinSonar{animation:vinSonar 3.2s cubic-bezier(.19,1,.22,1) 1.15s infinite}
+@keyframes vinSonar{0%{opacity:.55;transform:scale(1)}62%,100%{opacity:0;transform:scale(2.05)}}
+#vinilo.on:not(.sonando):not(.abierta) #vinIcoPlay{animation:vinSenala 3.2s ease-in-out .9s infinite}
+@keyframes vinSenala{0%,32%,100%{transform:translateX(0)}8%{transform:translateX(1.6px)}24%{transform:translateX(1.1px)}}
+@media (prefers-reduced-motion: reduce){#vinilo.on,#vinilo::after,#vinLuz,#vinNucleo,#vinSonar,#vinIcoPlay{animation:none !important}}
+#vinilo.fuera{display:none !important}
+#vinilo::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(145deg,rgba(255,255,255,.18) 0%,rgba(255,255,255,.08) 40%,transparent 100%);pointer-events:none;z-index:1}
+#vinilo.abierta{left:1.5vw;right:1.5vw;width:auto;transform:none;border-radius:24px;height:auto;min-height:clamp(3.5rem,min(8vw,8vh),4.5rem);padding:9px 12px 9px 10px;overflow:hidden}
+#vinAro{position:absolute;inset:-3.5px;border-radius:50%;background:conic-gradient(var(--accent,#fff) var(--vin-p,0%),rgba(255,255,255,.14) 0);z-index:-1;opacity:0;transition:opacity .3s}
+#vinilo.sonando:not(.abierta) #vinAro{opacity:1;filter:drop-shadow(0 0 5px color-mix(in srgb,var(--accent,#fff) 70%,transparent))}
+#vinCometa{position:absolute;left:50%;top:50%;width:7px;height:7px;margin:-3.5px;border-radius:50%;background:radial-gradient(circle,#fff 0 35%,var(--accent,#fff) 70%,transparent);box-shadow:0 0 8px var(--accent,#fff),0 0 3px #fff;opacity:0;transform:rotate(var(--vin-a,0deg)) translateY(-29.5px);pointer-events:none;z-index:1}
+#vinilo.sonando:not(.abierta) #vinCometa{opacity:1}
+#vinNucleo{flex:0 0 auto;width:100%;height:100%;border:0;border-radius:50%;background:transparent;color:#fff;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;z-index:2}
+#vinilo.abierta #vinNucleo{width:38px;height:38px;flex:0 0 38px}
+#vinNucleo svg{width:17px;height:17px;display:block;filter:drop-shadow(0 0 7px rgba(255,255,255,.85)) drop-shadow(0 1px 2px rgba(0,0,0,.45))}
+#vinilo.nace{animation:vinNace .7s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes vinNace{0%{transform:translateX(-50%) scale(.55);opacity:0}70%{transform:translateX(-50%) scale(1.07);opacity:1}100%{transform:translateX(-50%) scale(1);opacity:1}}
+.vinExt{opacity:0;width:0;overflow:hidden;display:flex;align-items:center;gap:10px;flex:1;min-width:0;transition:opacity .28s .18s;z-index:2}
+#vinilo.abierta .vinExt{opacity:1;width:auto}
+#viniloCov{flex:0 0 36px;width:36px;height:36px;border-radius:9px;object-fit:cover;background:rgba(255,255,255,.08);box-shadow:0 2px 8px rgba(0,0,0,.4)}
+#viniloMeta{flex:1;min-width:0;text-align:left}
+#viniloTit{font:600 12.5px/1.3 'Poppins',sans-serif;color:rgba(255,255,255,.96);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,.35)}
+#viniloArt{font:500 11px/1.3 'Poppins',sans-serif;color:rgba(255,255,255,.62);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,.35)}
+#viniloPie{display:none;font:italic 500 10.5px/1.4 'Poppins',sans-serif;color:rgba(255,255,255,.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,.35);margin-top:2px}
+#vinilo.abierta #viniloPie:not(:empty){display:block}
+#viniloLink{flex:0 0 auto;display:flex;align-items:center;text-decoration:none;z-index:2}
+#viniloLink img{height:21px;display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}
+#vinBar{position:absolute;left:0;top:0;height:2px;width:var(--vin-p,0%);background:linear-gradient(90deg,var(--accent,#fff),#fff);box-shadow:0 0 9px var(--accent,#fff),0 0 2px #fff;opacity:0;transition:width .25s linear,opacity .2s;z-index:3}
+#vinBorde{position:absolute;inset:0;border-radius:inherit;padding:1.2px;background:linear-gradient(160deg,rgba(255,255,255,.6),rgba(255,255,255,.14) 32%,rgba(255,255,255,.05) 62%,color-mix(in srgb,var(--accent,#fff) 45%,transparent));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;opacity:0;transition:opacity .3s .12s;pointer-events:none;z-index:2}
+#vinilo.abierta #vinBorde{opacity:1}
+#vinilo.abierta #vinBar{opacity:.95}
 .tg-heart{position:fixed;pointer-events:none;z-index:700;font-size:24px;opacity:0;animation:tgFloatUp 1.2s ease-out forwards;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.3))}
 @keyframes tgFloatUp{0%{transform:translate(0,0) scale(0.5) rotate(0deg);opacity:0}20%{opacity:1;transform:translate(var(--tx),-40px) scale(1.2) rotate(15deg)}100%{opacity:0;transform:translate(var(--tx),-150px) scale(1) rotate(30deg)}}
 </style>
@@ -788,6 +835,25 @@ body.tg-tarjeta .tg-cta{display:none !important}
   <div class="bocado-eco-phrase" id="bocadoEcoPhrase"></div>
 </div>
 <div class="grid" id="grid"></div>
+
+<div id="vinilo" aria-hidden="true" role="group" aria-label="Música de esta edición">
+  <div id="vinAro"></div>
+  <div id="vinCometa"></div>
+  <span class="vinOnda"></span>
+  <span id="vinSonar"></span>
+  <span id="vinLuz"></span>
+  <div id="vinBorde"></div>
+  <button id="vinNucleo" type="button" aria-label="Reproducir 30 segundos">
+    <svg id="vinIcoPlay" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M8 5.5v13l11-6.5z"/></svg>
+    <svg id="vinIcoPause" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="display:none"><path d="M7 5h3.4v14H7zM13.6 5H17v14h-3.6z"/></svg>
+  </button>
+  <div class="vinExt">
+    <img id="viniloCov" alt="" />
+    <div id="viniloMeta"><div id="viniloTit"></div><div id="viniloArt"></div><div id="viniloPie"></div></div>
+    <a id="viniloLink" href="#" target="_blank" rel="noopener noreferrer" aria-label="Apple Music"><img id="vinBadge" src="https://tools.applemediaservices.com/api/badges/listen-on-apple-music/badge/es-mx" alt="Apple Music" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'Apple Music ↗',style:'font:600 11px Poppins;color:rgba(255,255,255,.75)'}))" /></a>
+  </div>
+  <div id="vinBar"></div>
+</div>
 
 <div id="revealOverlay" class="reveal-overlay">
   <div class="reveal-card" onclick="event.stopPropagation()">
@@ -859,8 +925,99 @@ body.tg-tarjeta .tg-cta{display:none !important}
 </div>
 
 <script>
-const state = {"id": "nonzero", "titulo": "Nonzero", "autor": "Robert Wright", "palabra": "La cooperación como motor de la evolución", "descripcion": "Desde los albores de la vida, la cooperación ha sido la clave para la complejidad evolutiva. A medida que los organismos han aprendido a trabajar juntos, han creado estructuras sociales y culturales más sofisticadas, revelando un patrón que subyace a la historia humana. Esta narrativa de cooperación no solo destaca la importancia de la colaboración en la evolución cultural, sino que también ilustra cómo la moralidad ha mejorado a lo largo del tiempo, guiando el destino humano hacia un futuro más interconectado.", "palabras": ["asombro", "conexión", "revelación", "esperanza"], "frases": ["📻 ¿Cómo se han transformado nuestras nociones de cooperación a lo largo de la historia?", "👁 La moralidad se eleva cuando la cooperación es un destino común.", "🌊 Imagina una comunidad unida en torno a un objetivo común: ahí nace la complejidad.", "🌓 Reflexiona sobre cómo cada acción colectiva ha moldeado nuestro destino humano."], "colores": ["#F1887E", "#30D9E8", "#AE4713", "#0B4765"], "textColors": ["#FFFFFF", "#000000", "#FFFFFF", "#FFFFFF"], "ogImage": "https://app.triggui.com/t/nonzero/og_en.jpg", "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication/v4/9c/1e/a2/9c1ea27d-6c18-6991-2658-623c2b39856e/9780375727818.jpg/3000x3000bb.jpg", "tagline": "", "frases_en": ["🌓 Life's trajectory is defined by our capacity to work together, revealing hidden patterns in our past.", "🏛 Consider how our shared experiences shape moral frameworks across time.", "🔭 In the earliest days, tribes came together, their bonds not merely a means of survival but the very foundation upon which future societies would rise.", "💫 Reflect on the subtle shifts in our moral compass as we confront new challenges."], "palabras_en": ["complexity", "cooperation", "morality", "evolution"], "i18nEn": {"cardTitle": "Cooperation as the Engine of Evolution", "top": "Since the dawn of life, cooperation has been the key to evolutionary complexity. As organisms have learned to work together, they have created increasingly sophisticated social and cultural structures, revealing a pattern that underlies human history. <span class=\"tg-hl\">This narrative of cooperation highlights not only the mechanics of collaboration but also the profound impact it has had on the evolution of human morality and cultural complexity.</span>", "sub": "How has morality evolved over time?", "bot": "<span class=\"tg-hl\">Morality, far from being a static concept, has evolved alongside our societies.</span> What we consider ethical today has been shaped by the necessity of cooperation in ever more complex communities. As history progresses, so too does our capacity to understand and apply moral principles."}, "bocadoEcoPool": [{"phrase": "📻 ¿Cómo se han transformado nuestras nociones de cooperación a lo largo de la historia?", "rol": "abrir", "animo": 0.5, "origin": "edition_block_es"}, {"phrase": "👁 La moralidad se eleva cuando la cooperación es un destino común.", "rol": "aterrizar", "animo": 0.6, "origin": "edition_block_es"}, {"phrase": "🌊 Imagina una comunidad unida en torno a un objetivo común: ahí nace la complejidad.", "rol": "profundizar", "animo": 0.4, "origin": "edition_block_es"}, {"phrase": "🌓 Reflexiona sobre cómo cada acción colectiva ha moldeado nuestro destino humano.", "rol": "resonar", "animo": 0.3, "origin": "edition_block_es"}, {"phrase": "🛡 La cooperación es el hilo que teje nuestra historia evolutiva.", "rol": "aterrizar", "animo": 0.6, "origin": "og_phrase_es"}, {"phrase": "🎯 ¿Qué lecciones nos ofrece la historia sobre nuestra capacidad de unir en el contexto de la evolución cultural y la cooperación humana?", "rol": "abrir", "animo": 0.5, "origin": "og_phrase_es"}, {"phrase": "🌱 El progreso humano ha sido un juego de colaboración y complejidad.", "rol": "profundizar", "animo": 0.4, "origin": "og_phrase_es"}, {"phrase": "🔮 La historia es un espejo donde reflejamos nuestra moralidad en acción.", "rol": "resonar", "animo": 0.3, "origin": "og_phrase_es"}], "bocadoEcoPool_en": ["🌓 Life's trajectory is defined by our capacity to work together, revealing hidden patterns in our past.", "🏛 Consider how our shared experiences shape moral frameworks across time.", "🔭 In the earliest days, tribes came together, their bonds not merely a means of survival but the very foundation upon which future societies would rise.", "💫 Reflect on the subtle shifts in our moral compass as we confront new challenges."], "titulo_en": "Nonzero: The Logic of Human Destiny"};
+const state = {"id": "nonzero", "titulo": "Nonzero", "autor": "Robert Wright", "palabra": "La cooperación como motor de la evolución", "descripcion": "Desde los albores de la vida, la cooperación ha sido la clave para la complejidad evolutiva. A medida que los organismos han aprendido a trabajar juntos, han creado estructuras sociales y culturales más sofisticadas, revelando un patrón que subyace a la historia humana. Esta narrativa de cooperación no solo destaca la importancia de la colaboración en la evolución cultural, sino que también ilustra cómo la moralidad ha mejorado a lo largo del tiempo, guiando el destino humano hacia un futuro más interconectado.", "palabras": ["asombro", "conexión", "revelación", "esperanza"], "frases": ["📻 ¿Cómo se han transformado nuestras nociones de cooperación a lo largo de la historia?", "👁 La moralidad se eleva cuando la cooperación es un destino común.", "🌊 Imagina una comunidad unida en torno a un objetivo común: ahí nace la complejidad.", "🌓 Reflexiona sobre cómo cada acción colectiva ha moldeado nuestro destino humano."], "colores": ["#F1887E", "#30D9E8", "#AE4713", "#0B4765"], "textColors": ["#FFFFFF", "#000000", "#FFFFFF", "#FFFFFF"], "ogImage": "https://app.triggui.com/t/nonzero/og_en.jpg", "portada": "https://is1-ssl.mzstatic.com/image/thumb/Publication/v4/9c/1e/a2/9c1ea27d-6c18-6991-2658-623c2b39856e/9780375727818.jpg/3000x3000bb.jpg", "tagline": "", "frases_en": ["🌓 Life's trajectory is defined by our capacity to work together, revealing hidden patterns in our past.", "🏛 Consider how our shared experiences shape moral frameworks across time.", "🔭 In the earliest days, tribes came together, their bonds not merely a means of survival but the very foundation upon which future societies would rise.", "💫 Reflect on the subtle shifts in our moral compass as we confront new challenges."], "palabras_en": ["complexity", "cooperation", "morality", "evolution"], "i18nEn": {"cardTitle": "Cooperation as the Engine of Evolution", "top": "Since the dawn of life, cooperation has been the key to evolutionary complexity. As organisms have learned to work together, they have created increasingly sophisticated social and cultural structures, revealing a pattern that underlies human history. <span class=\"tg-hl\">This narrative of cooperation highlights not only the mechanics of collaboration but also the profound impact it has had on the evolution of human morality and cultural complexity.</span>", "sub": "How has morality evolved over time?", "bot": "<span class=\"tg-hl\">Morality, far from being a static concept, has evolved alongside our societies.</span> What we consider ethical today has been shaped by the necessity of cooperation in ever more complex communities. As history progresses, so too does our capacity to understand and apply moral principles."}, "bocadoEcoPool": [{"phrase": "📻 ¿Cómo se han transformado nuestras nociones de cooperación a lo largo de la historia?", "rol": "abrir", "animo": 0.5, "origin": "edition_block_es"}, {"phrase": "👁 La moralidad se eleva cuando la cooperación es un destino común.", "rol": "aterrizar", "animo": 0.6, "origin": "edition_block_es"}, {"phrase": "🌊 Imagina una comunidad unida en torno a un objetivo común: ahí nace la complejidad.", "rol": "profundizar", "animo": 0.4, "origin": "edition_block_es"}, {"phrase": "🌓 Reflexiona sobre cómo cada acción colectiva ha moldeado nuestro destino humano.", "rol": "resonar", "animo": 0.3, "origin": "edition_block_es"}, {"phrase": "🛡 La cooperación es el hilo que teje nuestra historia evolutiva.", "rol": "aterrizar", "animo": 0.6, "origin": "og_phrase_es"}, {"phrase": "🎯 ¿Qué lecciones nos ofrece la historia sobre nuestra capacidad de unir en el contexto de la evolución cultural y la cooperación humana?", "rol": "abrir", "animo": 0.5, "origin": "og_phrase_es"}, {"phrase": "🌱 El progreso humano ha sido un juego de colaboración y complejidad.", "rol": "profundizar", "animo": 0.4, "origin": "og_phrase_es"}, {"phrase": "🔮 La historia es un espejo donde reflejamos nuestra moralidad en acción.", "rol": "resonar", "animo": 0.3, "origin": "og_phrase_es"}], "bocadoEcoPool_en": ["🌓 Life's trajectory is defined by our capacity to work together, revealing hidden patterns in our past.", "🏛 Consider how our shared experiences shape moral frameworks across time.", "🔭 In the earliest days, tribes came together, their bonds not merely a means of survival but the very foundation upon which future societies would rise.", "💫 Reflect on the subtle shifts in our moral compass as we confront new challenges."], "musica": [{"id": "1440745587", "cancion": "Recomposed By Max Richter: Vivaldi, The Four Seasons: Spring 1 (2012)", "artista": "Max Richter, Daniel Hope, Konzerthaus Kammerorchester Berlin & André d", "album": "Recomposed By Max Richter: Vivaldi, The Four Seasons", "genero": "Clásica", "dur": 151, "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/54/b0/ed/54b0edbd-b637-6adb-7f62-029c6da9f6ea/mzaf_62851336988153149.plus.aac.p.m4a", "link": "https://music.apple.com/mx/album/recomposed-by-max-richter-vivaldi-the-four-seasons/1440744386?i=1440745587&uo=4", "art": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/95/8d/e6/958de6c5-34df-e0ce-5c9d-3a9d346618e5/14UMGIM06770.rgb.jpg/600x600bb.jpg", "armonia": 8, "rol": "resonar", "pie": "La reinterpretación de Vivaldi resuena con la reflexión sobre nuestra moralidad.", "frase_eco": "🔮 La historia es un espejo donde reflejamos nuestra moralidad en acción."}, {"id": "6805726190", "cancion": "Giorni dispari 1", "artista": "Ludovico Einaudi", "album": "Giorni dispari (Original Motion Picture Soundtrack)", "genero": "Bandas sonoras", "dur": 335, "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/0d/de/83/0dde8305-6fc5-ac42-a923-5c0787afffe7/mzaf_12484897180378563856.plus.aac.p.m4a", "link": "https://music.apple.com/mx/album/giorni-dispari-1/6805726187?i=6805726190&uo=4", "art": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/97/60/b1/9760b1a3-542a-91de-d1e7-55f272d3d9e7/8024709177629.png/600x600bb.jpg", "armonia": 7, "rol": "aterrizar", "pie": "El sonido de Einaudi acompaña la reflexión sobre la historia y la colaboración.", "frase_eco": ""}, {"id": "1440745585", "cancion": "Recomposed By Max Richter: Vivaldi, The Four Seasons: Winter 1 (2012)", "artista": "Max Richter, Daniel Hope, Raphael Alpermann, Konzerthaus Kammerorchest", "album": "Recomposed By Max Richter: Vivaldi, The Four Seasons", "genero": "Clásica", "dur": 180, "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/18/d6/16/18d616a5-cd08-0095-2c2e-73565fd0a648/mzaf_18194610663864521352.plus.aac.p.m4a", "link": "https://music.apple.com/mx/album/recomposed-by-max-richter-vivaldi-the-four-seasons/1440744386?i=1440745585&uo=4", "art": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/95/8d/e6/958de6c5-34df-e0ce-5c9d-3a9d346618e5/14UMGIM06770.rgb.jpg/600x600bb.jpg", "armonia": 7, "rol": "profundizar", "pie": "Una pieza que acompaña la exploración de la cooperación a lo largo de la historia.", "frase_eco": ""}, {"id": "6805726191", "cancion": "Verde 2", "artista": "Ludovico Einaudi", "album": "Giorni dispari (Original Motion Picture Soundtrack)", "genero": "Rock", "dur": 91, "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/8d/9f/40/8d9f40d2-ee01-2ce4-d2f9-c8342d7d9824/mzaf_11013568580421510882.plus.aac.p.m4a", "link": "https://music.apple.com/mx/album/verde-2/6805726187?i=6805726191&uo=4", "art": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/97/60/b1/9760b1a3-542a-91de-d1e7-55f272d3d9e7/8024709177629.png/600x600bb.jpg", "armonia": 5, "rol": "abrir", "pie": "Una melodía que invita a explorar la conexión entre la historia y la moralidad.", "frase_eco": ""}, {"id": "1844648262", "cancion": "See things that others don’t", "artista": "Max Richter", "album": "Hamnet (Original Motion Picture Soundtrack)", "genero": "Bandas sonoras", "dur": 106, "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/90/00/6a/90006a1f-94ad-1c72-5b9e-dc35fe4daa35/mzaf_7779812116143716094.plus.aac.p.m4a", "link": "https://music.apple.com/mx/album/see-things-that-others-dont/1844648258?i=1844648262&uo=4", "art": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/67/2c/e9/672ce9cc-151b-de66-89a6-4676155c1b66/25UM1IM52013.rgb.jpg/600x600bb.jpg", "armonia": 6, "rol": "profundizar", "pie": "Una melodía que evoca la conexión y la complejidad de la cooperación humana.", "frase_eco": ""}], "titulo_en": "Nonzero: The Logic of Human Destiny"};
 const TG_COVER_SRC = "https://is1-ssl.mzstatic.com/image/thumb/Publication/v4/9c/1e/a2/9c1ea27d-6c18-6991-2658-623c2b39856e/9780375727818.jpg/3000x3000bb.jpg";
+
+/* 🎵 vinilo v4 — morfosis. Material clonado en runtime del primer botón cta (herencia literal).
+   Estados: reposo → (tap = play+abierta) → 4s → sonando colapsado con anillo → 28s despedida → rotación.
+   Badge bilingüe sigue a window.tgLang. Reveal (portada/cta visibles) => fuera; la música continúa. */
+(function(){
+  var M = (state && state.musica) || [];
+  if (!M.length) return;
+  var franja = (function(h){ return h<6?'noche':h<12?'manana':h<19?'tarde':'noche'; })(new Date().getHours());
+  var PREF = { manana:['abrir','profundizar','aterrizar','resonar'],
+               tarde:['profundizar','abrir','aterrizar','resonar'],
+               noche:['resonar','aterrizar','profundizar','abrir'] }[franja];
+  var cola = M.slice().sort(function(a,b){
+    var pa=PREF.indexOf(a.rol), pb=PREF.indexOf(b.rol);
+    if(pa<0&&pb<0) return 0; if(pa<0) return 1; if(pb<0) return -1;
+    if(pa!==pb) return pa-pb; return (b.armonia||0)-(a.armonia||0); });
+  var el=document.getElementById('vinilo'), nuc=document.getElementById('vinNucleo'),
+      tit=document.getElementById('viniloTit'), art=document.getElementById('viniloArt'), pie=document.getElementById('viniloPie'),
+      lnk=document.getElementById('viniloLink'), cov=document.getElementById('viniloCov'),
+      bdg=document.getElementById('vinBadge'),
+      icoP=document.getElementById('vinIcoPlay'), icoS=document.getElementById('vinIcoPause');
+  var i=0, au=new Audio(), fadeT=null, cierraT=null, played={}, fallos=0;
+  au.preload='none';
+  function badgeLang(){ if(!bdg||!bdg.src) return;
+    var l=(window.tgLang==='en')?'en-us':'es-mx';
+    if(bdg.src.indexOf('/'+l)<0) bdg.src='https://tools.applemediaservices.com/api/badges/listen-on-apple-music/badge/'+l; }
+  function heredaMaterial(intento){ intento=intento||0;
+    try{ var b=document.querySelector('.tg-cta button');
+      if(b){ var cs=getComputedStyle(b);
+        if(cs.backgroundImage&&cs.backgroundImage!=='none'){ el.style.backgroundImage=cs.backgroundImage; el.style.backgroundSize='200% 200%'; return; } } }catch(e){}
+    if(intento<30) setTimeout(function(){heredaMaterial(intento+1);},100); }
+  function pinta(){ var c=cola[i]; tit.textContent=c.cancion; art.textContent=c.artista; pie.textContent=c.pie||'';
+    if(c.link) lnk.href=c.link; if(c.art){ cov.src=c.art; cov.alt=c.album||c.cancion; }
+    el.style.setProperty('--vin-p','0%'); badgeLang(); }
+  function icon(p){ icoP.style.display=p?'none':'block'; icoS.style.display=p?'block':'none';
+    el.classList.toggle('sonando',p); nuc.setAttribute('aria-label',p?'Pausa':'Reproducir 30 segundos'); }
+  function abre(){ el.classList.add('abierta'); reagenda(); }
+  function cierra(){ el.classList.remove('abierta'); }
+  function reagenda(){ clearTimeout(cierraT); cierraT=setTimeout(cierra,4000); }
+  function apaga(avanza){ if(fadeT){clearInterval(fadeT);fadeT=null;} try{au.pause();}catch(e){} icon(false);
+    if(avanza){ i=(i+1)%cola.length; pinta(); el.style.setProperty('--vin-a','0deg'); } }
+  function sigue(){ if(fadeT){clearInterval(fadeT);fadeT=null;} au.volume=1;
+    i=(i+1)%cola.length; pinta(); play(); }
+  function despedida(){ if(fadeT) return; var v=au.volume; fadeT=setInterval(function(){ v-=0.09;
+    if(v<=0){ sigue(); } else { try{au.volume=Math.max(0,v);}catch(e){} } },180); }
+  au.addEventListener('timeupdate',function(){ var t=au.currentTime;
+    var pc=Math.min(100,(t/30)*100);
+    el.style.setProperty('--vin-p',pc+'%');
+    el.style.setProperty('--vin-a',(Math.round(pc*36)/10)+'deg');
+    if(t>=28) despedida(); });
+  au.addEventListener('ended',function(){ sigue(); });
+  au.addEventListener('error',function(){ fallos++;
+    if(fallos>=cola.length){ fallos=0; apaga(false); } else { sigue(); } });
+  function play(){ var c=cola[i]; if(fadeT){clearInterval(fadeT);fadeT=null;} au.volume=1;
+    if(au.src!==c.preview){ au.src=c.preview; }
+    au.play().then(function(){ icon(true); fallos=0;
+      if(!played[c.id]){ played[c.id]=1;
+        try{gtag('event','musica_play',{slug:(state.id||''),cancion:c.cancion,artista:c.artista,rol:c.rol||'',franja:franja});}catch(e){} }
+      try{ if('mediaSession' in navigator){
+        navigator.mediaSession.metadata=new MediaMetadata({title:c.cancion,artist:c.artista,album:c.album||'Triggui',
+          artwork:c.art?[{src:c.art,sizes:'600x600',type:'image/jpeg'}]:[]});
+        navigator.mediaSession.setActionHandler('pause',function(){apaga(false);});
+        navigator.mediaSession.setActionHandler('play',function(){play();}); } }catch(e){}
+    }).catch(function(){ icon(false); }); }
+  function onda(){ el.classList.remove('toco'); void el.offsetWidth; el.classList.add('toco'); }
+  nuc.addEventListener('click',function(ev){ ev.stopPropagation(); onda();
+    if(!el.classList.contains('abierta')){ abre(); if(au.paused) play(); return; }
+    if(au.paused){ play(); } else { apaga(false); } reagenda(); });
+  el.addEventListener('click',function(){ if(!el.classList.contains('abierta')){ abre(); if(au.paused) play(); } else { reagenda(); } });
+  var pill=document.getElementById('tgLangPill');
+  if(pill) pill.addEventListener('click',function(){ setTimeout(badgeLang,60); });
+  pinta();
+  function visible(e){ if(!e) return false; var cs=getComputedStyle(e); if(cs.display==='none'||cs.visibility==='hidden') return false;
+    var r=e.getBoundingClientRect(); return r.width>2&&r.height>2; }
+  function vigia(){ var mira=function(){
+      if(visible(document.querySelector('.tg-portada'))||visible(document.querySelector('.tg-cta'))){ el.classList.add('fuera'); return true; } return false; };
+    if(mira()) return;
+    new MutationObserver(function(_,o){ if(mira()) o.disconnect(); })
+      .observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style']}); }
+  function entra(){ heredaMaterial(); el.classList.add('on','nace');
+    setTimeout(function(){el.classList.remove('nace');},760);
+    setTimeout(onda,430);
+    el.removeAttribute('aria-hidden'); vigia(); }
+  var ov=document.getElementById('bocadoEcoOverlay'), visto=false, entrado=false;
+  function intenta(){ if(entrado) return; entrado=true; entra(); }
+  if(ov){ if(ov.classList.contains('visible')) visto=true;
+    new MutationObserver(function(){ var v=ov.classList.contains('visible');
+      if(v){ visto=true; } else if(visto){ setTimeout(intenta,250); } })
+      .observe(ov,{attributes:true,attributeFilter:['class']});
+    setTimeout(function(){ if(!visto) intenta(); },9000);
+  } else { intenta(); }
+})();
 /* 🌐 D2-A — idioma de la edición: misma llave del imperio (triggui_lang) */
 const TG_ES_SNAP = { t: null, p: null, su: null, b: null };
 let tgLang = 'en';
