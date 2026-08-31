@@ -25,7 +25,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Estreno del compositor (borrar semilla del titulo)
+      - name: Estreno del compositor (borrar semilla del titulo — se omite si el titulo empieza con '=' : modo curador)
+        if: ${{ !startsWith(github.event.inputs.titulo, '=') }}
         env:
           TITULO: ${{ github.event.inputs.titulo }}
         run: |
@@ -47,6 +48,7 @@ jobs:
           OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
           TITULO: ${{ github.event.inputs.titulo }}
         run: |
+          TITULO="${TITULO#=}"
           if [ "$TITULO" = "*" ]; then
             python3 app/scripts/resolve-musica.py --solo-ediciones --rehacer --explicar --rutas=contenido.json,contenido_manual.json
           else
