@@ -75,6 +75,11 @@ RUTA_PROMPT_COMP = "prompts/tasks/compose-musica-queries.md"
 RUTA_SCHEMA_COMP = "prompts/schemas/musica-queries.json"
 RUTA_PROMPT_ARM = "prompts/tasks/select-musica-armonia.md"
 RUTA_SCHEMA_ARM = "prompts/schemas/musica-armonia.json"
+# 🧸 Kids: la ley de la caricatura — prompts propios, mismos esquemas
+RUTA_PROMPT_COMP_KIDS = "prompts/tasks/compose-musica-queries-kids.md"
+RUTA_PROMPT_ARM_KIDS = "prompts/tasks/select-musica-armonia-kids.md"
+INFANTIL_RX = re.compile(r"nursery|baby\b|beb[e\u00e9]s?\b|para dormir|lullab|cunero|kids? songs?|canciones? infantil|toddler|preschool|sing.?along", re.I)
+INFANTIL_GEN = re.compile(r"infantil|children|kids|ni\u00f1os", re.I)
 
 # Semillas del mapa determinista (fallback sin LLM). Piezas con nombre propio, probadas
 # buscables en iTunes. El hash del título elige, no el azar: misma entrada, misma música.
@@ -129,10 +134,12 @@ def config(argv=None):
             set(a.split("=")[0] for a in argv if "=" in a)
     def val(pref, default):
         return next((a.split("=", 1)[1] for a in argv if a.startswith(pref + "=")), default)
-    rutas = [r for r in val("--rutas", "contenido.json").split(",") if r]
+    catalogo = "kids" if val("--catalogo", "adulto").lower().startswith("k") else "adulto"
+    rutas = [r for r in val("--rutas", "contenido_kids.json" if catalogo == "kids" else "contenido.json").split(",") if r]
     solo = [_norm(t).strip() for t in val("--solo", "").split(",") if t.strip()]
     return {
         "openai": (os.environ.get("OPENAI_API_KEY") or os.environ.get("OPENAI_KEY") or "").strip(),
+        "catalogo": catalogo,
         "at": (os.environ.get("APPLE_AT") or "").strip(),
         "solo_ed": "--solo-ediciones" in flags,
         "max": int(val("--max", "999")),
@@ -179,6 +186,8 @@ def puntua_pieza(r, query, canon=False, rank=None):
         return None                                     # vivo/remix/karaoke: fuera del universo
     if not canon and COMODIN_RX.search(r.get("trackName") or ""):
         return None                                     # el charco, por título: fuera
+    if not canon and INFANTIL_RX.search(nombre):
+        return None                                     # cunero: aturde al adulto, fuera
     p = 0
     if (r.get("trackExplicitness") or "") == "explicit":
         p -= 5
@@ -188,6 +197,8 @@ def puntua_pieza(r, query, canon=False, rank=None):
         p -= 3                                          # aplausos y ruido rompen la lectura
     if not canon and POP_RX.search(r.get("primaryGenreName") or ""):
         p -= 1                                          # pop: el juez decide si pelea con la lectura
+    if not canon and INFANTIL_GEN.search(r.get("primaryGenreName") or ""):
+        p -= 4                                          # "música infantil" sin canon: el sensor aturde
     if not canon and COMODIN_RX.search(r.get("trackName") or ""):
         p -= 6                                          # el charco de siempre, por título: fuera
     if REMIX_RX.search(nombre):
@@ -337,6 +348,8 @@ def edicion_payload(b):
         "frases_con_rol": [{"frase": _s(p.get("phrase")), "rol": _s(p.get("rol_sinfonico"), 12),
                             "eje_animo": p.get("eje_animo")} for p in og][:4],
         "voz_tarjeta": _s(card.get("parrafoTop"), 240),
+        "kids": {"valor_predominante": _s(b.get("_valor_predominante"), 40), "animo_promedio": b.get("_animo_promedio"),
+                 "pilares": sorted(set(_s(p.get("pilar"), 30) for p in og if p.get("pilar")))[:4]} if b.get("_valor_predominante") is not None or b.get("_animo_promedio") is not None else None,
         "clima": {"dimension": _s(b.get("dimension"), 40), "punto": _s(b.get("punto"), 60),
                   "hawkins": b.get("_hawkins_range") or b.get("_hawkins") or None,
                   "temperatura": ((b.get("visual_intent") or {}).get("temperature") if isinstance(b.get("visual_intent"), dict) else None)},
@@ -749,6 +762,10 @@ def procesa(ruta, c, cache, st, hoy=None):
 
 def main():
     c = config()
+    global RUTA_PROMPT_COMP, RUTA_PROMPT_ARM
+    if c["catalogo"] == "kids":
+        RUTA_PROMPT_COMP, RUTA_PROMPT_ARM = RUTA_PROMPT_COMP_KIDS, RUTA_PROMPT_ARM_KIDS
+        print("🧸 catálogo KIDS — la ley de la caricatura")
     st = {"busquedas": 0, "con_musica": 0, "errores": 0, "cache": 0, "usadas": set(), "artistas": {},
           "fatal": "", "llm_apagado": "", "llm_errores": 0}
     cache = {}
