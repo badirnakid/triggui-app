@@ -337,10 +337,11 @@ def _huella(x):
 
 
 def componer_queries(b, c, st):
-    """Capa 0. Devuelve (queries, origen). Orden: _musica_queries → LLM compositor → mapa."""
+    """Capa 0. Devuelve (canonicas, afines, origen).
+    semilla del curador → canónicas (saltan la exclusión) · LLM → {canonicas, afines} · sin llave → mapa (afines)."""
     semb = b.get("_musica_queries")
     if isinstance(semb, list) and any(isinstance(q, str) and q.strip() for q in semb):
-        return [q.strip() for q in semb if isinstance(q, str) and q.strip()][:3], "semilla"
+        return [q.strip() for q in semb if isinstance(q, str) and q.strip()][:3], [], "semilla"
     if c["openai"] and not st["llm_apagado"]:
         try:
             prompt, esquema = cargar_prompt(RUTA_PROMPT_COMP, RUTA_SCHEMA_COMP, "compositor")
@@ -348,22 +349,24 @@ def componer_queries(b, c, st):
             if st.get("usadas"):
                 payload["ya_sonaron_en_otros_libros"] = sorted(st["usadas"])[:60]
             out = llm(prompt, esquema, payload, c["openai"])
-            qs = [q.strip() for q in (out.get("queries") or []) if isinstance(q, str) and q.strip()]
-            if qs:
-                return qs[:3], MODELO
+            can = [q.strip() for q in (out.get("canonicas") or []) if isinstance(q, str) and q.strip()][:3]
+            afi = [q.strip() for q in (out.get("afines") or []) if isinstance(q, str) and q.strip()][:3]
+            if can or afi:
+                return can, afi, MODELO
         except LlmFatal as e:
             st["llm_apagado"] = str(e)
             print("      (compositor apagado para el resto de la corrida: %s)" % e)
         except Exception as e:
             st["llm_errores"] += 1
             print("      (compositor falló: %s → mapa)" % str(e)[:80])
-    return mapa_queries(b), "mapa"
+    return [], mapa_queries(b), "mapa"
 
 
 # ─────────────────────────────────────────────────────────────── CAPA 2 ──
 def candidatos_payload(cands):
     return [{"id": x["id"], "cancion": x["cancion"], "artista": x["artista"],
-             "album": x["album"], "genero": x["genero"], "dur": x["dur"]} for x in cands]
+             "album": x["album"], "genero": x["genero"], "dur": x["dur"],
+             "canonica": bool(x.get("canon"))} for x in cands]
 
 
 def _pie(s):
@@ -477,24 +480,28 @@ def escribir_atomico(ruta, d):
 
 
 # ─────────────────────────────────────────────────────────────── PROCESO ──
-def resolver_libro(b, c, st, nombre):
-    queries, origen = componer_queries(b, c, st)
-    if c["explicar"]:
-        print("      queries [%s]: %s" % (origen, " | ".join(queries)))
-    base = capa1(queries, c, set() if origen == "semilla" else st.get("usadas"))
-    if origen == "semilla" and c["explicar"]:
-        print("      (semilla del curador: la exclusión se inclina)")
-    if c["explicar"]:
-        for x in base:
-            print("      · base %2d · %s — %s [%s]" % (x["_base"], x["cancion"][:34], x["artista"][:24], x["genero"]))
+def resolver_libro(p, c, st):
+    """PASO 2 de un libro: afines (con exclusión) + canónicas reclamadas en el PASO 1 → cascada → juez → quinteto."""
+    b = p["b"]
+    base = list(p["canon_base"])
+    huellas = set(_huella(x) for x in base)
+    if p["afi"]:
+        for x in capa1(p["afi"], c, st.get("usadas")):
+            if _huella(x) not in huellas:
+                base.append(x); huellas.add(_huella(x))
     if not base:
         base = capa1(mapa_queries(b), c, st.get("usadas"))
         if base and c["explicar"]:
             print("      (rescate-mapa: %d piezas)" % len(base))
     if not base:
-        base = capa1(queries + mapa_queries(b), c, st.get("usadas"), umbral=-9, rescate=True)
+        base = capa1(p["afi"] + mapa_queries(b), c, st.get("usadas"), umbral=-9, rescate=True)
         if base:
             print("      (rescate-piso: %d piezas)" % len(base))
+    base.sort(key=lambda x: (-(1 if x.get("canon") else 0), -x["_base"]))
+    if c["explicar"]:
+        for x in base:
+            print("      · %s base %2d · %s — %s [%s]" % ("👑" if x.get("canon") else "  ", x["_base"], x["cancion"][:34], x["artista"][:24], x["genero"]))
+    origen = p["origen"]
     juez, sinfonia = ("mapa" if origen == "mapa" else "semilla" if origen == "semilla" else "capa1"), ""
     elegidos = base[:TOP_N]
     if base and c["openai"] and not c["sin_armonia"] and not st["llm_apagado"]:
@@ -502,7 +509,7 @@ def resolver_libro(b, c, st, nombre):
             con_arm, sinfonia = armonizar(b, base, c, st)
             frases_ed = set(_norm(f.get("frase","")) for f in edicion_payload(b)["frases_con_rol"])
             for _y in con_arm:
-                if _y.get("armonia", 0) >= 8 and _norm(_y.get("frase_eco","")) not in frases_ed:
+                if _y.get("armonia", 0) >= 8 and not _y.get("canon") and _norm(_y.get("frase_eco","")) not in frases_ed:
                     _y["armonia"] = 6
             juez = MODELO
             elegidos = quinteto(con_arm, c["armonia_min"])
@@ -514,14 +521,14 @@ def resolver_libro(b, c, st, nombre):
                 print("      (rescate-juez: %d piezas, el silencio no está permitido)" % len(elegidos))
             if c["explicar"]:
                 for x in con_arm:
-                    print("      ♪ %2d %-11s %s — %s%s" % (x["armonia"], x["rol"], x["cancion"][:30], x["artista"][:22],
-                                                           (" · DESCARTADA: " + x["_motivo"]) if x["_descartar"] else ""))
+                    print("      ♪ %2d %-11s %s%s — %s%s" % (x["armonia"], x["rol"], "👑" if x.get("canon") else "", x["cancion"][:30], x["artista"][:22],
+                                                             (" · DESCARTADA: " + x["_motivo"]) if x["_descartar"] else ""))
         except LlmFatal as e:
             st["llm_apagado"] = str(e)
-            print("  ✗ %-44s capa 2 apagada para el resto de la corrida: %s" % (nombre, e))
+            print("  ✗ %-44s capa 2 apagada para el resto de la corrida: %s" % (p["nombre"], e))
         except Exception as e:
             st["llm_errores"] += 1
-            print("  ! %-44s capa 2 falló (%s) → quinteto por capa 1" % (nombre, str(e)[:90]))
+            print("  ! %-44s capa 2 falló (%s) → quinteto por capa 1" % (p["nombre"], str(e)[:90]))
     return {"juez": juez, "sinfonia": sinfonia, "candidatos": limpiar(elegidos)}
 
 
@@ -534,11 +541,8 @@ def procesa(ruta, c, cache, st, hoy=None):
     if not isinstance(libros, list):
         print("  ! %s: sin .libros — se omite" % ruta)
         return
-    for _b in libros:  # siembra: lo ya coronado en el catálogo es territorio ocupado
-        for _x in ((_b.get("_musica") or {}).get("candidatos") or []):
-            st.setdefault("usadas", set()).add(_huella(_x))
-    cambios = 0
-    print("── %s: %d libros · memoria sembrada: %d huellas" % (ruta, len(libros), len(st.get("usadas") or ())))
+    print("── %s: %d libros" % (ruta, len(libros)))
+    plan, cambios = [], 0
     for b in libros:
         ok, motivo = elegible(b, c, hoy)
         nombre = (b.get("titulo", "?") if isinstance(b, dict) else "?")[:44]
@@ -558,7 +562,7 @@ def procesa(ruta, c, cache, st, hoy=None):
             print("  = %-44s caché (%d candidatas)" % (nombre, len(cache[k]["candidatos"])))
             continue
         if c["dry"]:
-            queries, origen = (b.get("_musica_queries") or None, "semilla") if b.get("_musica_queries") else (mapa_queries(b), "mapa")
+            queries, origen = (b.get("_musica_queries"), "semilla") if b.get("_musica_queries") else (mapa_queries(b), "mapa")
             st["busquedas"] += 1
             cache[k] = None
             print("  ? %-44s [%s] q=%s" % (nombre, origen, " | ".join(queries or [])[:70]))
@@ -569,9 +573,48 @@ def procesa(ruta, c, cache, st, hoy=None):
         if st["busquedas"] >= c["max"]:
             print("  ~ %-44s pendiente (--max=%d alcanzado)" % (nombre, c["max"]))
             continue
+        st["busquedas"] += 1
+        cache[k] = None
+        plan.append({"b": b, "k": k, "nombre": nombre, "can": [], "afi": [], "origen": "mapa", "canon_base": []})
+    # siembra: territorio ocupado = lo coronado en libros que NO se rehacen en esta corrida
+    en_plan = set(id(p["b"]) for p in plan)
+    for _b in libros:
+        if id(_b) in en_plan:
+            continue
+        for _x in ((_b.get("_musica") or {}).get("candidatos") or []):
+            st["usadas"].add(_huella(_x))
+    if plan:
+        print("  ▸ PASO 1 · derecho de canon (%d libros, memoria sembrada: %d huellas)" % (len(plan), len(st["usadas"])))
+    for p in plan:
+        if st["fatal"]:
+            break
         try:
-            st["busquedas"] += 1
-            v = resolver_libro(b, c, st, nombre)
+            can, afi, origen = componer_queries(p["b"], c, st)
+        except Exception:
+            can, afi, origen = [], mapa_queries(p["b"]), "mapa"
+        p.update(can=can, afi=afi, origen=origen)
+        if c["explicar"]:
+            print("  %-44s [%s] 👑 %s | ♫ %s" % (p["nombre"], origen, " ; ".join(can) or "—", " ; ".join(afi) or "—"))
+        if can:
+            try:
+                base = capa1(can, c, set() if origen == "semilla" else st["usadas"])
+            except ApiFatal as e:
+                st["fatal"] = str(e)
+                print("  ✗ %-44s FATAL %s en el PASO 1" % (p["nombre"], e))
+                break
+            for x in base:
+                x["canon"] = True
+                st["usadas"].add(_huella(x))
+            p["canon_base"] = base
+    if plan:
+        print("  ▸ PASO 2 · afines + juez")
+    for p in plan:
+        b, nombre = p["b"], p["nombre"]
+        if st["fatal"]:
+            print("  ~ %-44s pendiente (corrida detenida)" % nombre)
+            continue
+        try:
+            v = resolver_libro(p, c, st)
         except ApiFatal as e:
             st["fatal"] = str(e)
             print("  ✗ %-44s FATAL %s — se detiene la búsqueda, se guarda lo resuelto" % (nombre, e))
@@ -584,14 +627,14 @@ def procesa(ruta, c, cache, st, hoy=None):
         b["_musica"] = {"resuelto_el": hoy.strftime("%Y-%m-%d"), "juez": v["juez"],
                         "sinfonia": v["sinfonia"], "candidatos": v["candidatos"]}
         for _x in v["candidatos"]:
-            st.setdefault("usadas", set()).add(_huella(_x))
-        cache[k] = b["_musica"]
+            st["usadas"].add(_huella(_x))
+        cache[p["k"]] = b["_musica"]
         cambios += 1
         top = v["candidatos"]
         if top:
             st["con_musica"] += 1
-            marca = " | ".join(("♪%d %s" % (x.get("armonia", 0), x.get("rol", ""))) if "armonia" in x
-                               else x["artista"][:16] for x in top)
+            marca = " | ".join((("👑" if x.get("canon") else "") + ("♪%d %s" % (x.get("armonia", 0), x.get("rol", "")) if "armonia" in x
+                               else x["artista"][:16])) for x in top)
             print("  M %-44s %d candidatas · %s" % (nombre, len(top), marca))
         else:
             print("  0 %-44s sin música digna (silencio; reintento en %d días)" % (nombre, c["reintentar"]))
