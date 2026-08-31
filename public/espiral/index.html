@@ -499,10 +499,11 @@ body.hoja-abierta #tgLangPill,body.puerta-abierta #tgLangPill{display:none}
 <style>
 #vinHelice{bottom:calc(124px + env(safe-area-inset-bottom));right:12px;display:none;color:#fff;font-size:0}
 #vinHelice.on{display:inline-flex}
-#vinHelice::after{top:auto;bottom:calc(100% + 5px)}
+#vinHelice::after{top:auto;bottom:calc(100% + 10px)}
 #vinHelice.morf{display:none !important}
 #vinHelice svg{width:15px;height:15px;display:block;filter:drop-shadow(0 0 6px rgba(255,255,255,.75))}
 #vinHelice.on:not(.sonando){animation:vhLatido 3.2s ease-in-out .9s infinite}
+#vinHelice.reanudar{animation:vhLatido 1.6s ease-in-out infinite !important;box-shadow:0 0 0 1px rgba(255,255,255,.34),0 0 18px rgba(255,255,255,.25)}
 @keyframes vhLatido{0%,32%,100%{transform:scale(1)}8%{transform:scale(1.07)}16%{transform:scale(1)}24%{transform:scale(1.055)}}
 #vinHelice .vhAro{position:absolute;inset:-3.5px;border-radius:50%;background:conic-gradient(var(--accent,#f0e6d8) var(--vh-p,0%),rgba(255,255,255,.14) 0);z-index:-1;opacity:0;transition:opacity .3s}
 #vinHelice.sonando .vhAro{opacity:1}
@@ -587,8 +588,7 @@ body.hoja-abierta #vinBarra{display:none !important}
     btn.setAttribute('data-nombre', en?'Music':'Música'); btn.setAttribute('aria-label', en?'Listen to the radio of your helix':'Escuchar la radio de tu hélice');
     bar.setAttribute('aria-label', en?'Radio of your helix':'Radio de tu hélice'); lnk.setAttribute('aria-label','Apple Music');
     badgeLang(); if(cola.length) pinta(); }
-  var lupa=document.getElementById('puenteBarra');
-  if(lupa){ new MutationObserver(idioma).observe(lupa,{attributes:true,attributeFilter:['data-nombre']}); }
+  new MutationObserver(idioma).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
   /* Sintonía: al abrir la hoja de un libro, el canal cambia a SU música (solo si ya sonaba: la ley del consentimiento) */
   var hoja=null;
   function sintoniza(){ if(!hoja||!hoja.classList.contains('ver')||au.paused) return;
@@ -601,7 +601,21 @@ body.hoja-abierta #vinBarra{display:none !important}
     if(n<80) setTimeout(function(){engancha(n+1);},400); })(0);            /* #hoja nace con spiral.js: esperar, no suponer */
   /* Un solo sonido: si el video de la hoja arranca, la radio calla */
   window.addEventListener('message',function(e){ try{ var d=(typeof e.data==='string')?e.data:''; if(d.indexOf('"playerState":1')>=0 && !au.paused){ apaga(); } }catch(x){} });
-  cargarLibros().then(function(libros){ cola=arma(libros||[]); if(!cola.length) return; pinta(); idioma(); btn.classList.add('on'); }).catch(function(){});
+  /* Continuidad entre Hélice y Guardados: el segundo exacto viaja por sessionStorage */
+  var KEY='triggui_radio_v1', pendiente=null;
+  function guarda(){ try{ if(!cola.length) return; sessionStorage.setItem(KEY, JSON.stringify({id:cola[i].c.id,t:(au.paused?0:au.currentTime)||0,playing:!au.paused,ts:Date.now()})); }catch(e){} }
+  window.addEventListener('pagehide',guarda); document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='hidden') guarda(); });
+  au.addEventListener('timeupdate',function(){ if(Math.floor(au.currentTime*2)%6===0) guarda(); });
+  function reanuda(){ var st=null; try{ st=JSON.parse(sessionStorage.getItem(KEY)||'null'); }catch(e){}
+    if(!st||!st.playing||(Date.now()-(st.ts||0))>180000) return;
+    var k=-1; for(var j=0;j<cola.length;j++){ if(cola[j].c.id===st.id){ k=j; break; } } if(k<0) return;
+    i=k; pinta(); var t=Math.max(0,Math.min(27,st.t||0));
+    var seek=function(){ try{ au.currentTime=t; }catch(e){} };
+    au.addEventListener('loadedmetadata',seek,{once:true});
+    au.src=cola[i].c.preview; seek();
+    au.play().then(function(){ icon(true); seek(); }).catch(function(){ pendiente=t; btn.classList.add('reanudar'); btn.setAttribute('aria-label',(window.PV_LANG==='en')?'Resume the radio':'Reanudar la radio'); }); }
+  btn.addEventListener('click',function(){ if(pendiente!==null){ var t=pendiente; pendiente=null; btn.classList.remove('reanudar'); au.addEventListener('loadedmetadata',function(){try{au.currentTime=t;}catch(e){}},{once:true}); play(); try{au.currentTime=t;}catch(e){} } });
+  cargarLibros().then(function(libros){ cola=arma(libros||[]); if(!cola.length) return; pinta(); idioma(); btn.classList.add('on'); reanuda(); }).catch(function(){});
 })();
 </script>
 
