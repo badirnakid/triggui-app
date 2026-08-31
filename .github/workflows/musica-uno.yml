@@ -32,10 +32,11 @@ jobs:
         run: |
           python3 - <<'PY'
           import json,os,unicodedata
-          t=os.environ['TITULO']
+          t=os.environ['TITULO'].lstrip('=')
+          t=t[5:] if t.startswith('kids:') else t
           norm=lambda s: unicodedata.normalize('NFKD',s or '').encode('ascii','ignore').decode().lower()
           n=0
-          for f in ('contenido.json','contenido_manual.json'):
+          for f in ('contenido.json','contenido_manual.json','contenido_kids.json'):
               d=json.load(open(f,encoding='utf-8'))
               for b in d['libros']:
                   if norm(t) in norm(b.get('titulo','')) and b.pop('_musica_queries',None) is not None:
@@ -49,20 +50,22 @@ jobs:
           TITULO: ${{ github.event.inputs.titulo }}
         run: |
           TITULO="${TITULO#=}"
+          CAT="adulto"; RUTAS="contenido.json,contenido_manual.json"
+          case "$TITULO" in kids:*) CAT="kids"; RUTAS="contenido_kids.json"; TITULO="${TITULO#kids:}";; esac
           if [ "$TITULO" = "***" ]; then
-            python3 app/scripts/resolve-musica.py --rehacer --explicar --rutas=contenido.json,contenido_manual.json
+            python3 app/scripts/resolve-musica.py --catalogo="$CAT" --rehacer --explicar --rutas="$RUTAS"
           elif [ "$TITULO" = "**" ]; then
-            python3 app/scripts/resolve-musica.py --explicar --rutas=contenido.json,contenido_manual.json
+            python3 app/scripts/resolve-musica.py --catalogo="$CAT" --explicar --rutas="$RUTAS"
           elif [ "$TITULO" = "*" ]; then
-            python3 app/scripts/resolve-musica.py --solo-ediciones --rehacer --explicar --rutas=contenido.json,contenido_manual.json
+            python3 app/scripts/resolve-musica.py --catalogo="$CAT" --solo-ediciones --rehacer --explicar --rutas="$RUTAS"
           else
-            python3 app/scripts/resolve-musica.py --solo="$TITULO" --rehacer --explicar --rutas=contenido.json,contenido_manual.json
+            python3 app/scripts/resolve-musica.py --catalogo="$CAT" --solo="$TITULO" --rehacer --explicar --rutas="$RUTAS"
           fi
       - name: Commit
         run: |
           git config user.name "triggui-bot"
           git config user.email "bot@triggui.com"
-          git add contenido.json contenido_manual.json
+          git add contenido.json contenido_manual.json contenido_kids.json
           git diff --cached --quiet && echo "sin cambios" || git commit -m "musica re-resuelta (juez) ${{ github.event.inputs.titulo }}"
           for i in 1 2 3; do
             git pull --rebase origin main && git push && break
