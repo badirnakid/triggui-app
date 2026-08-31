@@ -336,7 +336,7 @@ def _huella(x):
     return _norm(c).strip() + "|" + _norm(a).strip()
 
 
-def componer_queries(b, c, st):
+def componer_queries(b, c, st, emergencia=None):
     """Capa 0. Devuelve (canonicas, afines, origen).
     semilla del curador → canónicas (saltan la exclusión) · LLM → {canonicas, afines} · sin llave → mapa (afines)."""
     semb = b.get("_musica_queries")
@@ -348,6 +348,9 @@ def componer_queries(b, c, st):
             payload = edicion_payload(b)
             if st.get("usadas"):
                 payload["ya_sonaron_en_otros_libros"] = sorted(st["usadas"])[:60]
+            if emergencia:
+                payload["emergencia"] = {"intento": 2, "puertas_sin_fruto": emergencia,
+                    "instruccion": "Esas puertas no dieron piezas disponibles. Propón tres afines COMPLETAMENTE distintas, más concretas (compositor + pieza), instrumentales, de otra época o geografía del mismo universo."}
             out = llm(prompt, esquema, payload, c["openai"])
             can = [q.strip() for q in (out.get("canonicas") or []) if isinstance(q, str) and q.strip()][:3]
             afi = [q.strip() for q in (out.get("afines") or []) if isinstance(q, str) and q.strip()][:3]
@@ -480,6 +483,10 @@ def escribir_atomico(ruta, d):
 
 
 # ─────────────────────────────────────────────────────────────── PROCESO ──
+def origen_es_llm(p):
+    return p.get("origen") not in ("semilla",)
+
+
 def resolver_libro(p, c, st):
     """PASO 2 de un libro: afines (con exclusión) + canónicas reclamadas en el PASO 1 → cascada → juez → quinteto."""
     b = p["b"]
@@ -493,6 +500,13 @@ def resolver_libro(p, c, st):
         base = capa1(mapa_queries(b), c, st.get("usadas"))
         if base and c["explicar"]:
             print("      (rescate-mapa: %d piezas)" % len(base))
+    if not base and c["openai"] and not st["llm_apagado"] and origen_es_llm(p):
+        can2, afi2, _o = componer_queries(b, c, st, emergencia=p["can"] + p["afi"])
+        if c["explicar"]:
+            print("      (compositor de emergencia: %s)" % " ; ".join(afi2 + can2))
+        base = capa1(afi2 + can2, c, st.get("usadas"))
+        if base:
+            print("      (rescate-compositor: %d piezas)" % len(base))
     if not base:
         base = capa1(p["afi"] + mapa_queries(b), c, st.get("usadas"), umbral=-9, rescate=True)
         if base:
