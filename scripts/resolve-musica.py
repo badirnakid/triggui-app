@@ -91,6 +91,9 @@ SEMILLAS_ES = [
     "manuel m ponce estrellita guitarra",
 ]
 POP_RX = re.compile(r"\bpop\b|reggaet|urbano|hip.hop|\brap\b|balada|dance|electropop", re.I)
+# Criterio Triggui de lecturabilidad — capa determinista: las marcas de tempo codifican velocidad
+LENTO_RX = re.compile(r"adagio|andante|largo|lento|nocturn|gymnop|gnossien|berceuse|pavane|sarabande|aria\b|\bair\b|prelude|pr\u00e9lude|meditat|ambient|lullaby|cradle|elegy|elegie|requiem|kyrie|spiegel|arioso|cantabile|dolce|tranquil", re.I)
+RAPIDO_RX = re.compile(r"allegro|presto|vivace|scherzo|tarantell|toccata|galop|molto|furioso|agitato|rondo|fugue|fuga|march|marcha|polka|csardas|bourr", re.I)
 
 KARAOKE_RX = re.compile(
     r"karaoke|tribute|in the style|made famous|as popularized|lullab|8[\s-]?bit|"
@@ -180,8 +183,14 @@ def puntua_pieza(r, query, canon=False):
     if re.search(r"soundtrack|banda sonora|motion picture", nombre, re.I):
         p += 1
     dur = int(r.get("trackTimeMillis") or 0) // 1000
-    if 0 < dur < 45:
-        p -= 2
+    if 0 < dur < 90:
+        p -= 3                                          # un bocado necesita cuerpo: piezas-fragmento fuera
+    elif dur >= 150:
+        p += 1
+    if LENTO_RX.search(nombre):
+        p += 2                                          # el tempo escrito en el título: lecturable
+    if RAPIDO_RX.search(nombre) and not canon:
+        p -= 3                                          # allegro/presto: pelea con la lectura
     return p, {
         "id": str(r.get("trackId") or ""),
         "cancion": (r.get("trackName") or "")[:90],
