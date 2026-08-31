@@ -93,7 +93,7 @@ SEMILLAS_ES = [
 ]
 POP_RX = re.compile(r"\bpop\b|reggaet|urbano|hip.hop|\brap\b|balada|dance|electropop", re.I)
 # comodines gastados: vetados por TÍTULO, los toque quien los toque (el canon los salta)
-COMODIN_RX = re.compile(r"nuvole bianche|on the nature of daylight|river flows in you|re:member|\buna mattina\b|\bexperience\b|gymnop[eé]die no\.? ?1\b|comptine d.un autre|spiegel im spiegel|clair de lune", re.I)
+COMODIN_RX = re.compile(r"nuvole bianche|on the nature of daylight|river flows in you|re:member|\buna mattina\b|\bexperience\b|gymnop[eé]dies? no\.? ?1\b|comptine d.un autre|spiegel im spiegel|clair de lune", re.I)
 REMIX_RX = re.compile(r"remix|sped up|slowed|nightcore|8d audio|karaoke", re.I)
 # Criterio Triggui de lecturabilidad — capa determinista: las marcas de tempo codifican velocidad
 LENTO_RX = re.compile(r"adagio|andante|largo|lento|nocturn|gymnop|gnossien|berceuse|pavane|sarabande|aria\b|\bair\b|prelude|pr\u00e9lude|meditat|ambient|lullaby|cradle|elegy|elegie|requiem|kyrie|spiegel|arioso|cantabile|dolce|tranquil", re.I)
@@ -426,7 +426,8 @@ def armonizar(b, cands, c, st):
         y["pie"] = _pie(v.get("pie"))
         y["frase_eco"] = _s(v.get("frase_eco"), 200)
         y["_descartar"] = bool(v.get("descartar"))
-        if v.get("cantada") is True and not y.get("canon"):
+        y["_cantada"] = (v.get("cantada") is True)
+        if y["_cantada"] and not y.get("canon"):
             y["_descartar"] = True; y["_motivo"] = "cantada: la letra pelea con la lectura"
         y["_motivo"] = _s(v.get("motivo_descarte"), 90)
         con.append(y)
@@ -566,8 +567,12 @@ def resolver_libro(p, c, st):
             if not elegidos and con_arm:
                 vivos = sorted((x for x in con_arm if not x.get("_descartar")),
                                key=lambda x: (-x.get("armonia",0), -x["_base"]))
-                elegidos = (vivos or sorted(con_arm, key=lambda x: -x["_base"]))[:2]
+                sin_voz = [x for x in sorted(con_arm, key=lambda x: -x["_base"]) if not x.get("_cantada") or x.get("canon")]
+                elegidos = (vivos or sin_voz)[:2]
                 juez = MODELO + "+rescate"
+                if not elegidos:  # todo era cantado: instrumental de emergencia, jamás voz, jamás silencio
+                    elegidos = capa1(mapa_queries(b), c, st.get("usadas"), artistas=st.get("artistas"))[:TOP_N]
+                    juez = "rescate-instrumental"
                 print("      (rescate-juez: %d piezas, el silencio no está permitido)" % len(elegidos))
             if c["explicar"]:
                 for x in con_arm:
