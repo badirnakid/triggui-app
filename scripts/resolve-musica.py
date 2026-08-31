@@ -213,9 +213,10 @@ def capa1(queries, c, usadas=None, umbral=1, rescate=False):
                 hcorta = _huella(x)
                 if hcorta in (c.get("_usadas") or ()):  # coronada por otro libro: fuera del universo
                     continue
-                if hcorta in huellas:
+                obra = hcorta.split("|")[0]
+                if hcorta in huellas or obra in huellas:
                     continue
-                huellas.add(hcorta)
+                huellas.add(hcorta); huellas.add(obra)
                 if rescate and (KARAOKE_RX.search((x["cancion"]+" "+x["album"])) or p <= -5):
                     continue
                 if p < umbral or x["id"] in vistos or huella in huellas:
@@ -294,6 +295,9 @@ def edicion_payload(b):
         "frases_con_rol": [{"frase": _s(p.get("phrase")), "rol": _s(p.get("rol_sinfonico"), 12),
                             "eje_animo": p.get("eje_animo")} for p in og][:4],
         "voz_tarjeta": _s(card.get("parrafoTop"), 240),
+        "clima": {"dimension": _s(b.get("dimension"), 40), "punto": _s(b.get("punto"), 60),
+                  "hawkins": b.get("_hawkins_range") or b.get("_hawkins") or None,
+                  "temperatura": ((b.get("visual_intent") or {}).get("temperature") if isinstance(b.get("visual_intent"), dict) else None)},
     }
 
 
@@ -491,11 +495,12 @@ def resolver_libro(p, c, st):
     """PASO 2 de un libro: afines (con exclusión) + canónicas reclamadas en el PASO 1 → cascada → juez → quinteto."""
     b = p["b"]
     base = list(p["canon_base"])
-    huellas = set(_huella(x) for x in base)
+    huellas = set(_huella(x) for x in base) | set(_huella(x).split("|")[0] for x in base)
     if p["afi"]:
         for x in capa1(p["afi"], c, st.get("usadas")):
-            if _huella(x) not in huellas:
-                base.append(x); huellas.add(_huella(x))
+            h = _huella(x)
+            if h not in huellas and h.split("|")[0] not in huellas:
+                base.append(x); huellas.add(h); huellas.add(h.split("|")[0])
     if not base:
         base = capa1(mapa_queries(b), c, st.get("usadas"))
         if base and c["explicar"]:
