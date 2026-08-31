@@ -88,8 +88,9 @@ SEMILLAS_UNIV = [
 SEMILLAS_ES = [
     "gustavo santaolalla de ushuaia a la quiaca",
     "rodrigo y gabriela tamacun",
-    "natalia lafourcade instrumental",
+    "manuel m ponce estrellita guitarra",
 ]
+POP_RX = re.compile(r"\bpop\b|reggaet|urbano|hip.hop|\brap\b|balada|dance|electropop", re.I)
 
 KARAOKE_RX = re.compile(
     r"karaoke|tribute|in the style|made famous|as popularized|lullab|8[\s-]?bit|"
@@ -158,7 +159,7 @@ def api_itunes(params):
             time.sleep(2)
 
 
-def puntua_pieza(r, query):
+def puntua_pieza(r, query, canon=False):
     """Veto música. previewUrl/trackViewUrl obligatorios; devuelve (puntaje, pieza) o None."""
     prev, link = r.get("previewUrl"), r.get("trackViewUrl")
     if not prev or not link:
@@ -171,6 +172,8 @@ def puntua_pieza(r, query):
         p -= 5
     if VIVO_RX.search(nombre):
         p -= 3                                          # aplausos y ruido rompen la lectura
+    if not canon and POP_RX.search(r.get("primaryGenreName") or ""):
+        p -= 4                                          # pop cantado jamás es afín; el canon lo salta
     qt = set(_norm(query).split())
     at = set(_norm(r.get("artistName", "")).split())
     p += 2 * min(2, len(qt & at))                      # el artista pedido apareció
@@ -193,7 +196,7 @@ def puntua_pieza(r, query):
     }
 
 
-def capa1(queries, c, usadas=None, umbral=1, rescate=False):
+def capa1(queries, c, usadas=None, umbral=1, rescate=False, canon=False):
     c = dict(c); c["_usadas"] = usadas or set()
     """Busca cada query en iTunes (mx→us), veta, dedup (trackId y canción+artista) y
     conserva hasta 3 por query: la diversidad es alimento del juez, no adorno."""
@@ -205,7 +208,7 @@ def capa1(queries, c, usadas=None, umbral=1, rescate=False):
                             "limit": 8, "country": pais})
             time.sleep(PAUSA_ITUNES)
             for r in d.get("results", []):
-                pz = puntua_pieza(r, q)
+                pz = puntua_pieza(r, q, canon)
                 if not pz:
                     continue
                 p, x = pz
@@ -616,7 +619,7 @@ def procesa(ruta, c, cache, st, hoy=None):
             print("  %-44s [%s] 👑 %s | ♫ %s" % (p["nombre"], origen, " ; ".join(can) or "—", " ; ".join(afi) or "—"))
         if can:
             try:
-                base = capa1(can, c, set() if origen == "semilla" else st["usadas"])
+                base = capa1(can, c, set() if origen == "semilla" else st["usadas"], canon=True)
             except ApiFatal as e:
                 st["fatal"] = str(e)
                 print("  ✗ %-44s FATAL %s en el PASO 1" % (p["nombre"], e))
