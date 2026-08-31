@@ -91,6 +91,9 @@ SEMILLAS_ES = [
     "manuel m ponce estrellita guitarra",
 ]
 POP_RX = re.compile(r"\bpop\b|reggaet|urbano|hip.hop|\brap\b|balada|dance|electropop", re.I)
+# comodines gastados: vetados por TÍTULO, los toque quien los toque (el canon los salta)
+COMODIN_RX = re.compile(r"nuvole bianche|on the nature of daylight|river flows in you|re:member|\buna mattina\b|\bexperience\b|gymnop[eé]die no\.? ?1\b|comptine d.un autre|spiegel im spiegel|clair de lune", re.I)
+REMIX_RX = re.compile(r"remix|sped up|slowed|nightcore|8d audio|karaoke", re.I)
 # Criterio Triggui de lecturabilidad — capa determinista: las marcas de tempo codifican velocidad
 LENTO_RX = re.compile(r"adagio|andante|largo|lento|nocturn|gymnop|gnossien|berceuse|pavane|sarabande|aria\b|\bair\b|prelude|pr\u00e9lude|meditat|ambient|lullaby|cradle|elegy|elegie|requiem|kyrie|spiegel|arioso|cantabile|dolce|tranquil", re.I)
 RAPIDO_RX = re.compile(r"allegro|presto|vivace|scherzo|tarantell|toccata|galop|molto|furioso|agitato|rondo|fugue|fuga|march|marcha|polka|csardas|bourr", re.I)
@@ -177,6 +180,10 @@ def puntua_pieza(r, query, canon=False):
         p -= 3                                          # aplausos y ruido rompen la lectura
     if not canon and POP_RX.search(r.get("primaryGenreName") or ""):
         p -= 4                                          # pop cantado jamás es afín; el canon lo salta
+    if not canon and COMODIN_RX.search(r.get("trackName") or ""):
+        p -= 6                                          # el charco de siempre, por título: fuera
+    if REMIX_RX.search(nombre):
+        p -= 6                                          # remix/karaoke: veto duro
     qt = set(_norm(query).split())
     at = set(_norm(r.get("artistName", "")).split())
     p += 2 * min(2, len(qt & at))                      # el artista pedido apareció
@@ -538,6 +545,9 @@ def resolver_libro(p, c, st):
     if base and c["openai"] and not c["sin_armonia"] and not st["llm_apagado"]:
         try:
             con_arm, sinfonia = armonizar(b, base, c, st)
+            for _y in con_arm:
+                if _y.get("canon") and POP_RX.search(_y.get("genero","")) and _y.get("armonia",0) < 9:
+                    _y["canon"] = False; _y["_descartar"] = True; _y["_motivo"] = "canon dudoso: pop sin 9"
             frases_ed = set(_norm(f.get("frase","")) for f in edicion_payload(b)["frases_con_rol"])
             for _y in con_arm:
                 if _y.get("armonia", 0) >= 8 and not _y.get("canon") and _norm(_y.get("frase_eco","")) not in frases_ed:
