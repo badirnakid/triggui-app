@@ -495,6 +495,116 @@ body.hoja-abierta #tgLangPill,body.puerta-abierta #tgLangPill{display:none}
   else arranca();
 })();
 </script>
+<!-- 🎵 M4 · El vinilo de la hélice — la radio de tus libros (candado de datos: sin _musica no existe) -->
+<style>
+#vinHelice{bottom:calc(124px + env(safe-area-inset-bottom));right:12px;display:none;color:#fff;font-size:0}
+#vinHelice.on{display:inline-flex}
+#vinHelice::after{top:auto;bottom:calc(100% + 5px)}
+#vinHelice.morf{display:none !important}
+#vinHelice svg{width:15px;height:15px;display:block;filter:drop-shadow(0 0 6px rgba(255,255,255,.75))}
+#vinHelice.on:not(.sonando){animation:vhLatido 3.2s ease-in-out .9s infinite}
+@keyframes vhLatido{0%,32%,100%{transform:scale(1)}8%{transform:scale(1.07)}16%{transform:scale(1)}24%{transform:scale(1.055)}}
+#vinHelice .vhAro{position:absolute;inset:-3.5px;border-radius:50%;background:conic-gradient(var(--accent,#f0e6d8) var(--vh-p,0%),rgba(255,255,255,.14) 0);z-index:-1;opacity:0;transition:opacity .3s}
+#vinHelice.sonando .vhAro{opacity:1}
+body.puerta-abierta #vinHelice{display:none !important}
+body.hoja-abierta #vinHelice{display:none !important}
+#vinBarra{position:fixed;right:12px;left:12px;bottom:calc(124px + env(safe-area-inset-bottom));z-index:9;box-sizing:border-box;display:none;align-items:center;gap:12px;padding:9px 12px 9px 10px;border-radius:18px;background:linear-gradient(180deg,rgba(30,34,52,.96),rgba(18,21,34,.96));border:1px solid rgba(255,255,255,.16);box-shadow:0 6px 18px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.08);overflow:hidden;animation:vhSube .45s cubic-bezier(.19,1,.22,1)}
+#vinBarra.abierta{display:flex}
+@keyframes vhSube{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
+body.hoja-abierta #vinBarra{display:none !important}
+#vinBarra .vhCov{flex:0 0 36px;width:36px;height:36px;border-radius:9px;object-fit:cover;background:rgba(255,255,255,.08)}
+#vinBarra .vhBtn{flex:0 0 36px;width:36px;height:36px;border-radius:50%;border:0;background:var(--accent,#f0e6d8);color:#0b0b0d;display:flex;align-items:center;justify-content:center;cursor:pointer}
+#vinBarra .vhBtn svg{width:14px;height:14px;display:block}
+#vinBarra .vhMeta{flex:1;min-width:0;text-align:left;cursor:pointer}
+#vinBarra .vhTit{font:600 12.5px/1.3 'Manrope',sans-serif;color:rgba(255,255,255,.95);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#vinBarra .vhArt{font:500 10.5px/1.35 'Manrope',sans-serif;color:rgba(255,255,255,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#vinBarra .vhPie{display:none;font:italic 500 10.5px/1.4 'Manrope',sans-serif;color:rgba(255,255,255,.72);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+#vinBarra .vhPie:not(:empty){display:block}
+@media (min-width:600px){#vinBarra{left:auto;width:min(calc(100vw - 24px),520px)}}
+#vinBarra .vhLink img{height:20px;display:block;opacity:.9}
+#vinBarra .vhProg{position:absolute;left:0;top:0;height:2px;width:var(--vh-p,0%);background:linear-gradient(90deg,var(--accent,#f0e6d8),#fff);box-shadow:0 0 8px var(--accent,#f0e6d8);transition:width .25s linear}
+@media (prefers-reduced-motion: reduce){#vinHelice{animation:none !important}}
+</style>
+<button id="vinHelice" class="puente-pie" type="button" data-nombre="música" aria-label="Escuchar la radio de tu hélice">
+  <span class="vhAro"></span>
+  <svg class="vhPlay" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M8 5.5v13l11-6.5z"/></svg>
+  <svg class="vhPause" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="display:none"><path d="M7 5h3.4v14H7zM13.6 5H17v14h-3.6z"/></svg>
+</button>
+<div id="vinBarra" role="group" aria-label="Radio de tu hélice">
+  <img class="vhCov" alt="" />
+  <button class="vhBtn" type="button" aria-label="Pausa"><svg class="vhIcoPlay" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="display:none"><path d="M8 5.5v13l11-6.5z"/></svg><svg class="vhIcoPause" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M7 5h3.4v14H7zM13.6 5H17v14h-3.6z"/></svg></button>
+  <div class="vhMeta" role="link" tabindex="0"><div class="vhTit"></div><div class="vhArt"></div><div class="vhPie"></div></div>
+  <a class="vhLink" href="#" target="_blank" rel="noopener noreferrer" aria-label="Apple Music"><img src="https://tools.applemediaservices.com/api/badges/listen-on-apple-music/badge/es-mx" alt="Apple Music" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'Apple Music ↗',style:'font:600 10px Manrope;color:rgba(255,255,255,.7)'}))" /></a>
+  <div class="vhProg"></div>
+</div>
+<script>
+/* 🎵 M4 · La radio de la hélice: 30 s de cada libro coronado, ronda tras ronda. Candado de datos + puerta cerrada. */
+(function(){
+  var btn=document.getElementById('vinHelice'), bar=document.getElementById('vinBarra');
+  if(!btn||!bar||typeof cargarLibros!=='function') return;
+  var cov=bar.querySelector('.vhCov'), bbtn=bar.querySelector('.vhBtn'), tit=bar.querySelector('.vhTit'), art=bar.querySelector('.vhArt'),
+      lnk=bar.querySelector('.vhLink'), bdg=lnk.querySelector('img'), pie=bar.querySelector('.vhPie'), ipP=bar.querySelector('.vhIcoPlay'), ipS=bar.querySelector('.vhIcoPause'),
+      hP=btn.querySelector('.vhPlay'), hS=btn.querySelector('.vhPause');
+  var franja=(function(h){return h<6?'noche':h<12?'manana':h<19?'tarde':'noche';})(new Date().getHours());
+  var PREF={manana:['abrir','profundizar','aterrizar','resonar'],tarde:['profundizar','abrir','aterrizar','resonar'],noche:['resonar','aterrizar','profundizar','abrir']}[franja];
+  function slugDe(b){ if(b._slug) return b._slug; var s=(b.titulo||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,''); return s; }
+  var cola=[], i=0, au=new Audio(), fadeT=null, cierraT=null, fallos=0, played={};
+  au.preload='none';
+  function ordena(cs){ return cs.slice().sort(function(a,b){ var pa=PREF.indexOf(a.rol),pb=PREF.indexOf(b.rol); if(pa<0&&pb<0) return 0; if(pa<0) return 1; if(pb<0) return -1; if(pa!==pb) return pa-pb; return (b.armonia||0)-(a.armonia||0); }); }
+  function arma(libros){
+    var porLibro=libros.filter(function(b){return b&&b._musica&&Array.isArray(b._musica.candidatos)&&b._musica.candidatos.length;})
+      .sort(function(a,b){return (b._edicion_numero||0)-(a._edicion_numero||0);})
+      .map(function(b){return {b:b,cs:ordena(b._musica.candidatos)};});
+    var out=[], ronda=0, hay=true;
+    while(hay){ hay=false; for(var k=0;k<porLibro.length;k++){ var c=porLibro[k].cs[ronda]; if(c){ out.push({b:porLibro[k].b,c:c}); hay=true; } } ronda++; if(ronda>8) break; }
+    return out;
+  }
+  function badgeLang(){ if(!bdg||!bdg.src) return; var l=(window.PV_LANG==='en')?'en-us':'es-mx'; if(bdg.src.indexOf('/'+l)<0) bdg.src='https://tools.applemediaservices.com/api/badges/listen-on-apple-music/badge/'+l; }
+  function pinta(){ var p=cola[i]; if(!p) return; tit.textContent=p.c.cancion; art.textContent=p.c.artista+' · \uD83D\uDCD8 '+((window.pvTitulo&&window.pvTitulo(p.b))||p.b.titulo||''); pie.textContent=p.c.pie||''; if(p.c.link) lnk.href=p.c.link; if(p.c.art){cov.src=p.c.art;cov.alt=p.b.titulo||'';}
+    bar.style.setProperty('--vh-p','0%'); btn.style.setProperty('--vh-p','0%'); badgeLang(); }
+  function icon(p){ ipP.style.display=p?'none':'block'; ipS.style.display=p?'block':'none'; hP.style.display=p?'none':'block'; hS.style.display=p?'block':'none'; btn.classList.toggle('sonando',p); bbtn.setAttribute('aria-label',p?'Pausa':'Reproducir'); }
+  function abre(){ bar.classList.add('abierta'); btn.classList.add('morf'); reagenda(); }
+  function cierra(){ bar.classList.remove('abierta'); btn.classList.remove('morf'); }
+  function reagenda(){ clearTimeout(cierraT); cierraT=setTimeout(cierra,4000); }
+  function apaga(){ if(fadeT){clearInterval(fadeT);fadeT=null;} try{au.pause();}catch(e){} icon(false); }
+  function sigue(){ if(fadeT){clearInterval(fadeT);fadeT=null;} au.volume=1; i=(i+1)%cola.length; pinta(); play(); }
+  function despedida(){ if(fadeT) return; var v=au.volume; fadeT=setInterval(function(){ v-=0.09; if(v<=0){ sigue(); } else { try{au.volume=Math.max(0,v);}catch(e){} } },180); }
+  au.addEventListener('timeupdate',function(){ var t=au.currentTime, pc=Math.min(100,(t/30)*100)+'%'; bar.style.setProperty('--vh-p',pc); btn.style.setProperty('--vh-p',pc); if(t>=28) despedida(); });
+  au.addEventListener('ended',sigue);
+  au.addEventListener('error',function(){ fallos++; if(fallos>=cola.length){ fallos=0; apaga(); } else { sigue(); } });
+  function play(){ var p=cola[i]; if(!p) return; if(fadeT){clearInterval(fadeT);fadeT=null;} au.volume=1;
+    if(au.src!==p.c.preview) au.src=p.c.preview;
+    au.play().then(function(){ icon(true); fallos=0;
+      if(!played[p.c.id]){ played[p.c.id]=1; try{gtag('event','musica_play',{contexto:'helice',slug:slugDe(p.b),cancion:p.c.cancion,artista:p.c.artista,franja:franja});}catch(e){} }
+      try{ if('mediaSession' in navigator){ navigator.mediaSession.metadata=new MediaMetadata({title:p.c.cancion,artist:p.c.artista,album:(p.b.titulo||'Triggui'),artwork:p.c.art?[{src:p.c.art,sizes:'600x600',type:'image/jpeg'}]:[]});
+        navigator.mediaSession.setActionHandler('pause',function(){apaga();}); navigator.mediaSession.setActionHandler('play',function(){play();}); navigator.mediaSession.setActionHandler('nexttrack',function(){sigue();}); } }catch(e){}
+    }).catch(function(){ icon(false); }); }
+  btn.addEventListener('click',function(){ if(bar.classList.contains('abierta')){ reagenda(); return; } abre(); if(au.paused) play(); });
+  bbtn.addEventListener('click',function(ev){ ev.stopPropagation(); if(au.paused){ play(); } else { apaga(); } reagenda(); });
+  bar.querySelector('.vhMeta').addEventListener('click',function(){ var p=cola[i]; if(!p) return; var s=slugDe(p.b); if(s){ try{gtag('event','musica_helice_libro',{slug:s});}catch(e){} location.href=(p.b._catalogo==='kids'?'/kids/t/':'/t/')+encodeURIComponent(s)+'/'; } });
+  /* Idioma: se entera por la lupa (nombresPuentes cambia su data-nombre) — jamás toca su código */
+  function idioma(){ var en=(window.PV_LANG==='en');
+    btn.setAttribute('data-nombre', en?'Music':'Música'); btn.setAttribute('aria-label', en?'Listen to the radio of your helix':'Escuchar la radio de tu hélice');
+    bar.setAttribute('aria-label', en?'Radio of your helix':'Radio de tu hélice'); lnk.setAttribute('aria-label','Apple Music');
+    badgeLang(); if(cola.length) pinta(); }
+  var lupa=document.getElementById('puenteBarra');
+  if(lupa){ new MutationObserver(idioma).observe(lupa,{attributes:true,attributeFilter:['data-nombre']}); }
+  /* Sintonía: al abrir la hoja de un libro, el canal cambia a SU música (solo si ya sonaba: la ley del consentimiento) */
+  var hoja=null;
+  function sintoniza(){ if(!hoja||!hoja.classList.contains('ver')||au.paused) return;
+    var sem=hoja.querySelector('.h-sem'); var m=sem&&/#\s*(\d+)/.exec(sem.textContent||''); if(!m) return;
+    var n=parseInt(m[1],10); var k=-1; for(var j=0;j<cola.length;j++){ if((cola[j].b._edicion_numero|0)===n){ k=j; break; } }
+    if(k<0||k===i) return;
+    var v=au.volume, t=setInterval(function(){ v-=0.15; if(v<=0){ clearInterval(t); i=k; pinta(); au.volume=1; play(); try{gtag('event','musica_helice_sintonia',{edicion:n});}catch(e){} } else { try{au.volume=Math.max(0,v);}catch(e){} } },90); }
+  (function engancha(n){ hoja=document.getElementById('hoja');
+    if(hoja){ new MutationObserver(function(){ setTimeout(sintoniza,120); }).observe(hoja,{attributes:true,attributeFilter:['class']}); return; }
+    if(n<80) setTimeout(function(){engancha(n+1);},400); })(0);            /* #hoja nace con spiral.js: esperar, no suponer */
+  /* Un solo sonido: si el video de la hoja arranca, la radio calla */
+  window.addEventListener('message',function(e){ try{ var d=(typeof e.data==='string')?e.data:''; if(d.indexOf('"playerState":1')>=0 && !au.paused){ apaga(); } }catch(x){} });
+  cargarLibros().then(function(libros){ cola=arma(libros||[]); if(!cola.length) return; pinta(); idioma(); btn.classList.add('on'); }).catch(function(){});
+})();
+</script>
+
 </body>
 
 </html>
