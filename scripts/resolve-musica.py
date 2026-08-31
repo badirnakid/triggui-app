@@ -175,6 +175,10 @@ def puntua_pieza(r, query, canon=False, rank=None):
     if not prev or not link:
         return None
     nombre = "%s %s %s" % (r.get("trackName", ""), r.get("collectionName", ""), r.get("artistName", ""))
+    if VIVO_RX.search(nombre) or REMIX_RX.search(nombre):
+        return None                                     # vivo/remix/karaoke: fuera del universo
+    if not canon and COMODIN_RX.search(r.get("trackName") or ""):
+        return None                                     # el charco, por título: fuera
     p = 0
     if (r.get("trackExplicitness") or "") == "explicit":
         p -= 5
@@ -585,7 +589,7 @@ def resolver_libro(p, c, st):
                     _y["armonia"] = 6
             juez = MODELO
             elegidos = quinteto(con_arm, c["armonia_min"])
-            if not elegidos and con_arm and origen_es_llm(p) and not st["llm_apagado"]:
+            if len(elegidos) < 3 and con_arm and origen_es_llm(p) and not st["llm_apagado"]:
                 can2, afi2, _o = componer_queries(b, c, st, emergencia=[x["cancion"] + " — " + x["artista"] for x in con_arm][:6])
                 base2 = capa1(afi2 + can2, c, st.get("usadas"), artistas=st.get("artistas"))
                 if base2:
@@ -596,7 +600,10 @@ def resolver_libro(p, c, st):
                             _y["armonia"] = 6
                     el2 = quinteto(con2, c["armonia_min"])
                     if el2:
-                        elegidos, sinfonia, con_arm = el2, sinf2, con2
+                        vistos_h = set(_huella(x) for x in elegidos)
+                        elegidos = (elegidos + [x for x in el2 if _huella(x) not in vistos_h])[:TOP_N]
+                        sinfonia = sinf2 if not sinfonia else sinfonia
+                        con_arm = con_arm + con2
             if not elegidos and con_arm:
                 vivos = sorted((x for x in con_arm if not x.get("_descartar")),
                                key=lambda x: (-x.get("armonia",0), -x["_base"]))
