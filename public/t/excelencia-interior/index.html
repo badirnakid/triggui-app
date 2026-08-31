@@ -1431,7 +1431,7 @@ function pickFromPool(roleHints) {
 }
 
 function segmentPhrase(text) {
-  const words = String(text || '').split(/\\s+/).filter(w => w.length > 0);
+  const words = String(text || '').split(/\s+/).filter(w => w.length > 0);
   const n = words.length;
   if (n < 2) return { body: '', anchor: words.join(' ') };
   const anchorCount = n <= 4 ? 1 : 2;
@@ -1446,7 +1446,7 @@ function buildPhraseHTML(text, accentColor) {
   let html = '';
   let delay = 0;
   if (seg.body) {
-    const bodyWords = seg.body.split(/\\s+/);
+    const bodyWords = seg.body.split(/\s+/);
     for (const w of bodyWords) {
       html += '<span class="bm-bocado-w" style="animation-delay:' + delay + 'ms">' + w + '&nbsp;</span>';
       delay += BOCADO_TIMING.wordStagger;
@@ -1487,7 +1487,7 @@ function showBocadoEco(kind, onComplete, roleHints) {
   phraseEl.innerHTML = buildPhraseHTML(phrase, accentColor);
   overlay.classList.add('visible');
 
-  const totalWords = phrase.split(/\\s+/).length;
+  const totalWords = phrase.split(/\s+/).length;
   const fullAppear = BOCADO_TIMING.appear + totalWords * BOCADO_TIMING.wordStagger + 300;
   const holdEnd = fullAppear + BOCADO_TIMING.hold;
 
@@ -1787,7 +1787,7 @@ var L = window.__tgL = {
 
 var ANG = [115, 205, 35, 320];
 function grad(i){ return 'linear-gradient(' + ANG[i % 4] + 'deg,' + L.colores[i] + ',' + L.colores[(i + 1) % 4] + ')'; }
-function isURL(s){ return /^https?:\\/\\//i.test(s || ''); }
+function isURL(s){ return /^https?:\/\//i.test(s || ''); }
 function luminance(hex){ try { var c = hex.replace('#','').match(/.{1,2}/g).map(function(x){ return parseInt(x,16)/255; }); var f = function(v){ return v <= .03928 ? v/12.92 : Math.pow((v+.055)/1.055,2.4); }; return 0.2126*f(c[0]) + 0.7152*f(c[1]) + 0.0722*f(c[2]); } catch(e){ return 0; } }
 function pickText(bg){ try { return luminance(bg) > 0.35 ? '#000' : '#fff'; } catch(e){ return '#fff'; } }
 

@@ -116,7 +116,7 @@ def remove_pseudo_html_pairs(value):
     # name puede tener atributos opcionales (ej. [span class=foo])
     # X es el contenido (lazy match)
     pattern = re.compile(
-        r'\[(?!H\])([a-zA-Z][a-zA-Z0-9]*)(?:\\s[^\]]*)?\](.*?)\[/\1\]',
+        r'\[(?!H\])([a-zA-Z][a-zA-Z0-9]*)(?:\s[^\]]*)?\](.*?)\[/\1\]',
         re.DOTALL
     )
     prev = None
@@ -279,7 +279,7 @@ def strip_highlight_tags(text):
 
 
 def normalize_text(text):
-    return re.sub(r"\\s+", " ", str(text or "")).strip()
+    return re.sub(r"\s+", " ", str(text or "")).strip()
 
 
 def clamp(number, minimum, maximum):
@@ -352,8 +352,8 @@ def strip_explicit_book_refs(text, titulo="", autor=""):
             continue
         value = re.sub(re.escape(clean_term), "", value, flags=re.IGNORECASE)
 
-    value = re.sub(r"\(\\s*\)", "", value)
-    value = re.sub(r"\\s+([,.;:!?])", r"\1", value)
+    value = re.sub(r"\(\s*\)", "", value)
+    value = re.sub(r"\s+([,.;:!?])", r"\1", value)
     value = re.sub(r"[ \t]{2,}", " ", value)
     value = value.strip(" \t\n\r,.;:!?·-–—")
     value = re.sub(r"[ \t]{2,}", " ", value).strip()
@@ -543,9 +543,9 @@ def normalize_highlight_syntax(text):
         return ""
 
     value = re.sub(r"\{\{H\}\}", "[H]", value, flags=re.IGNORECASE)
-    value = re.sub(r"\{\{\\\/H\}\}", "[/H]", value, flags=re.IGNORECASE)
+    value = re.sub(r"\{\{\/H\}\}", "[/H]", value, flags=re.IGNORECASE)
     value = re.sub(r"\[h\]", "[H]", value)
-    value = re.sub(r"\[\\\/h\]", "[/H]", value)
+    value = re.sub(r"\[\/h\]", "[/H]", value)
 
     # 🌒 BUG 4 FIX (V10): eliminar toggle que rompía múltiples [H] legítimos
     # ANTES (bug): `[H]uno[/H] y [H]dos[/H]` → toggle convertía 2do [H] a [/H]
@@ -571,7 +571,7 @@ def normalize_highlight_syntax(text):
     # Aplicado DESPUÉS del balanceo de [H] para no romper highlights legítimos
     value = remove_pseudo_html_pairs(value)
 
-    value = re.sub(r"\[H\]\\s*\[/H\]", "", value)
+    value = re.sub(r"\[H\]\s*\[/H\]", "", value)
     value = re.sub(r"[ \t]{2,}", " ", value).strip()
     return value
 
@@ -638,8 +638,8 @@ def ensure_one_highlight(text):
         return normalized
 
     # Dividir por oraciones usando lookbehind: split después de . ! ?
-    # Equivalente exacto de /(?<=[.!?])\\s+/ en JS
-    segments = re.split(r"(?<=[.!?])\\s+", plain)
+    # Equivalente exacto de /(?<=[.!?])\s+/ en JS
+    segments = re.split(r"(?<=[.!?])\s+", plain)
     segments = [s.strip() for s in segments if len(s.strip()) >= 18]
 
     chosen = segments[0] if segments else plain.strip()
@@ -752,7 +752,7 @@ def escribir_gemela_en(html_es, out_dir, edicion, base_url):
     h = h.replace('content="es_MX"', 'content="en_US"')
     h = h.replace('<html lang="es"', '<html lang="en"', 1)
     # (3) semilla de idioma: arranca en inglés, el toggle sigue mandando
-    h = re.sub(r"let tgLang = \(function\(\)\{[\\s\S]{0,400}?\}\)\(\);",
+    h = re.sub(r"let tgLang = \(function\(\)\{[\s\S]{0,400}?\}\)\(\);",
                "let tgLang = 'en';", h, count=1)
     # (4) ⚠️ la gemela vive en una SUBCARPETA: toda ruta relativa se rompería
     #     ("./portada.jpg" resolvería a /t/<slug>/en/portada.jpg → 404).
@@ -2352,7 +2352,7 @@ function pickFromPool(roleHints) {
 }
 
 function segmentPhrase(text) {
-  const words = String(text || '').split(/\\\s+/).filter(w => w.length > 0);
+  const words = String(text || '').split(/\\s+/).filter(w => w.length > 0);
   const n = words.length;
   if (n < 2) return { body: '', anchor: words.join(' ') };
   const anchorCount = n <= 4 ? 1 : 2;
@@ -2367,7 +2367,7 @@ function buildPhraseHTML(text, accentColor) {
   let html = '';
   let delay = 0;
   if (seg.body) {
-    const bodyWords = seg.body.split(/\\\s+/);
+    const bodyWords = seg.body.split(/\\s+/);
     for (const w of bodyWords) {
       html += '<span class="bm-bocado-w" style="animation-delay:' + delay + 'ms">' + w + '&nbsp;</span>';
       delay += BOCADO_TIMING.wordStagger;
@@ -2408,7 +2408,7 @@ function showBocadoEco(kind, onComplete, roleHints) {
   phraseEl.innerHTML = buildPhraseHTML(phrase, accentColor);
   overlay.classList.add('visible');
 
-  const totalWords = phrase.split(/\\\s+/).length;
+  const totalWords = phrase.split(/\\s+/).length;
   const fullAppear = BOCADO_TIMING.appear + totalWords * BOCADO_TIMING.wordStagger + 300;
   const holdEnd = fullAppear + BOCADO_TIMING.hold;
 
@@ -2693,7 +2693,7 @@ var L = window.__tgL = {
 
 var ANG = [115, 205, 35, 320];
 function grad(i){ return 'linear-gradient(' + ANG[i % 4] + 'deg,' + L.colores[i] + ',' + L.colores[(i + 1) % 4] + ')'; }
-function isURL(s){ return /^https?:\\\/\\\//i.test(s || ''); }
+function isURL(s){ return /^https?:\/\//i.test(s || ''); }
 function luminance(hex){ try { var c = hex.replace('#','').match(/.{1,2}/g).map(function(x){ return parseInt(x,16)/255; }); var f = function(v){ return v <= .03928 ? v/12.92 : Math.pow((v+.055)/1.055,2.4); }; return 0.2126*f(c[0]) + 0.7152*f(c[1]) + 0.0722*f(c[2]); } catch(e){ return 0; } }
 function pickText(bg){ try { return luminance(bg) > 0.35 ? '#000' : '#fff'; } catch(e){ return '#fff'; } }
 
@@ -2862,7 +2862,7 @@ function render(){
 function norm(t){
   return String(t || '').toLowerCase()
     .replace(/[^0-9a-z\u00e1\u00e9\u00ed\u00f3\u00fa\u00fc\u00f1 ]/g, '')
-    .replace(/\\s+/g, ' ').trim();
+    .replace(/\s+/g, ' ').trim();
 }
 function elegirNotas(){
   var proh = [];
@@ -3224,7 +3224,7 @@ def find_libro_by_meta(libros, book_meta):
     con contenido del libro equivocado cuando el array estaba desordenado.
     """
     def normalize(s):
-        return re.sub(r"\\s+", " ", str(s or "")).strip().casefold()
+        return re.sub(r"\s+", " ", str(s or "")).strip().casefold()
 
     meta_slug = book_meta.get("slug", "").strip()
     meta_titulo = normalize(book_meta.get("titulo", ""))
