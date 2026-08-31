@@ -249,9 +249,10 @@ def capa1(queries, c, usadas=None, umbral=1, rescate=False, canon=False, artista
                 if not canon and c["_artistas"].get(_artista(x), 0) >= CUPO_ARTISTA:
                     continue                            # cupo por artista: el océano, por construcción
                 obra = hcorta.split("|")[0]
-                if hcorta in huellas or obra in huellas:
+                hdur = _artista(x) + "#" + str(int(x["dur"] // 4))
+                if hcorta in huellas or obra in huellas or hdur in huellas:
                     continue
-                huellas.add(hcorta); huellas.add(obra)
+                huellas.add(hcorta); huellas.add(obra); huellas.add(hdur)
                 if rescate and (KARAOKE_RX.search((x["cancion"]+" "+x["album"])) or p <= -5):
                     continue
                 if p < umbral or x["id"] in vistos or huella in huellas:
@@ -535,17 +536,18 @@ def resolver_libro(p, c, st):
     """PASO 2 de un libro: afines (con exclusión) + canónicas reclamadas en el PASO 1 → cascada → juez → quinteto."""
     b = p["b"]
     base = list(p["canon_base"])
-    huellas = set(_huella(x) for x in base) | set(_huella(x).split("|")[0] for x in base)
+    huellas = set(_huella(x) for x in base) | set(_huella(x).split("|")[0] for x in base) | set(_artista(x) + "#" + str(int(x["dur"] // 4)) for x in base)
     por_artista = {}
     for x in base:
         por_artista[_artista(x)] = por_artista.get(_artista(x), 0) + 1
     if p["afi"]:
         for x in capa1(p["afi"], c, st.get("usadas"), artistas=st.get("artistas")):
             h = _huella(x)
+            hdur = _artista(x) + "#" + str(int(x["dur"] // 4))
             if por_artista.get(_artista(x), 0) >= 2:
                 continue                                # cupo dentro del libro: variedad
-            if h not in huellas and h.split("|")[0] not in huellas:
-                base.append(x); huellas.add(h); huellas.add(h.split("|")[0])
+            if h not in huellas and h.split("|")[0] not in huellas and hdur not in huellas:
+                base.append(x); huellas.add(h); huellas.add(h.split("|")[0]); huellas.add(hdur)
                 por_artista[_artista(x)] = por_artista.get(_artista(x), 0) + 1
     if not base:
         base = capa1(mapa_queries(b), c, st.get("usadas"), artistas=st.get("artistas"))
