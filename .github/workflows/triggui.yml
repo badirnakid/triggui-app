@@ -922,7 +922,9 @@ jobs:
         run: |
           set -euo pipefail
           if [ "$CATALOG_MODE" = "kids" ]; then
-            echo "🌒 CATALOG_MODE=kids — sin música (Doctrina Kids pendiente)"
+            if [ ! -f contenido_kids.json ]; then echo "ℹ️  contenido_kids.json no está — sin música"; exit 0; fi
+            echo "🧸 Kids — la ley de la caricatura"
+            python3 scripts/resolve-musica.py --catalogo=kids --rutas=contenido_kids.json --max=10 --explicar
             exit 0
           fi
           if [ ! -f contenido.json ]; then
