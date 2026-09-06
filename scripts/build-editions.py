@@ -3337,11 +3337,11 @@ def escribir_pieza(libro_data, out_dir, slug, base_url):
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-CLK554FCNM"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments);}}gtag('js',new Date());gtag('config','G-CLK554FCNM');</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>🎧 {E(cancion)} — {E(artista)} · Triggui</title>
+<title>{E(cancion)} — {E(artista)} · 30 segundos · Triggui</title>
 <meta name="description" content="{E(pie)}">
 <link rel="canonical" href="{ruta}/pieza/">
-<meta property="og:type" content="music.song">
-<meta property="og:title" content="🎧 {E(cancion)} — {E(artista)}">
+<meta property="og:type" content="website">
+<meta property="og:title" content="{E(cancion)} — {E(artista)}">
 <meta property="og:description" content="{E(pie)}">
 <meta property="og:image" content="{ruta}/pieza_og.jpg">
 <meta property="og:image:secure_url" content="{ruta}/pieza_og.jpg">
