@@ -3115,6 +3115,12 @@ function doGet(e) {
     return rutaDiagnostico(params);
   }
 
+  // ─── Sala de envío (triggui.com/wa): lista de WhatsApp con la MISMA elegibilidad del lunes ──
+  if (action === "lista_wa") {
+    return ContentService.createTextOutput(JSON.stringify(listaWhatsApp_(params.clave || "")))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
   // ─── Ruta unsubscribe ────────────────────────────────────────────────
   if (action === "lang") {
     return manejarCambioIdioma(params.email || "", params.token || "", params.l || "", format);
@@ -4430,4 +4436,29 @@ function rutaDiagnostico(params) {
     out.ok = false; out.error = String((err && err.message) || err);
   }
   return json(out);
+}
+
+/* ══════════════════ SALA DE ENVÍO · action=lista_wa ══════════════════
+ * Devuelve los suscriptores con teléfono (col D) que hoy recibirían el correo del lunes:
+ *   teléfono presente · no UNSUBSCRIBED · no SUBSCRIBED_EXPIRED ni trial vencido · idioma por leerIdiomaFila.
+ * Auth: Propiedades del script → WA_ADMIN_CLAVE (la clave que usas para entrar a la sala).
+ * Solo lectura: no escribe en la hoja. */
+function listaWhatsApp_(clave) {
+  const admin = PropertiesService.getScriptProperties().getProperty("WA_ADMIN_CLAVE") || "";
+  if (!admin || !clave || String(clave).trim() !== String(admin).trim()) return { ok: false, error: "clave" };
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  if (!sheet) return { ok: false, error: "hoja" };
+  const data = sheet.getDataRange().getValues();
+  const filas = []; let sinTel = 0, unsub = 0, exp = 0;
+  for (let i = 1; i < data.length; i++) {
+    const tel = String(data[i][3] || "").replace(/\D/g, "");
+    if (!tel) { sinTel++; continue; }
+    if (isRowUnsubscribed(data[i])) { unsub++; continue; }
+    const status = String(data[i][UNSUBSCRIBE_COL - 1] || "").trim();
+    if (status.startsWith("SUBSCRIBED_EXPIRED") || debeMarcarseExpired(data[i])) { exp++; continue; }
+    const nombre = [data[i][0], data[i][1]].map(function (x) { return String(x || "").trim(); }).filter(Boolean).join(" ");
+    let lang = "es"; try { lang = leerIdiomaFila(sheet, i + 1) || "es"; } catch (e) {}
+    filas.push({ nombre: nombre || tel, tel: tel, lang: lang, status: status.split(" ")[0] || "SUBSCRIBED", ultimo: String(data[i][9] || "").trim() });
+  }
+  return { ok: true, filas: filas, resumen: { total: filas.length, sinTel: sinTel, unsub: unsub, expirados: exp }, generado: new Date().toISOString() };
 }
