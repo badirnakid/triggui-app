@@ -634,6 +634,31 @@ await page.screenshot({
   clip: { x: 0, y: 0, width: 1200, height: 630 }
 });
 
+// 🎧 OG de la pieza (pieza_og.jpg) — misma plantilla que scripts/build-pieza-og.py; nunca rompe el OG principal
+if (__OGSUF === "og") {
+  try {
+    const cand = ((libro?._musica || {}).candidatos || []).find(x => x && x.preview);
+    if (cand) {
+      const tpl = await fs.readFile("scripts/templates/og-pieza.html", "utf8");
+      const cols = Array.isArray(libro?.colores) ? libro.colores : [];
+      const A = cols[0] || accent || "#E8A838", B2 = cols[1] || cols[0] || "#FF6B4A";
+      const art = String(cand.art || "").replace("100x100bb", "600x600bb");
+      const artTag = art ? `<img class="art" src="${escapeHTML(art)}" alt="">` : `<div class="art-fallback">🎧</div>`;
+      const nombre = String(cand.cancion || "");
+      const htmlP = tpl.replace("{{ACCENT}}", escapeHTML(A)).replace("{{ACCENT2}}", escapeHTML(B2)).replace("{{ART_TAG}}", artTag)
+        .replace("{{CLASE}}", nombre.length > 40 ? " larga" : "").replace("{{CANCION}}", escapeHTML(nombre.slice(0, 110)))
+        .replace("{{ARTISTA}}", escapeHTML(String(cand.artista || "").slice(0, 80))).replace("{{PIE}}", escapeHTML(String(cand.pie || "").slice(0, 220)))
+        .replace("{{LOGO}}", "https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletrasblanco2.png")
+        .replace("{{LIBRO}}", escapeHTML(String(bookMeta.titulo || libro.titulo || "")));
+      const pg2 = await browser.newPage(); await pg2.setViewportSize({ width: 1200, height: 630 });
+      await pg2.setContent(htmlP, { waitUntil: "networkidle" }); await pg2.waitForTimeout(250);
+      const outP = path.join(outDir, "pieza_og.jpg");
+      await pg2.screenshot({ path: outP, type: "jpeg", quality: 86, clip: { x: 0, y: 0, width: 1200, height: 630 } });
+      await pg2.close(); console.log(`   🎧 OG pieza: ${outP}`);
+    }
+  } catch (e) { console.log(`   ⚠️ OG pieza omitido: ${e && e.message}`); }
+}
+
 await browser.close();
 
 const stats = await fs.stat(outPath);

@@ -2238,7 +2238,7 @@ a.addEventListener('click',function(){try{gtag('event','share_wa',{contexto:'edi
 </script>
 <script id="vin-auto-js">
 /* 🎧 ?p=1 (viene del mensaje de la pieza): al montar el vinilo, se abre la barra y se intenta tocar; si el navegador exige un toque, la barra queda abierta esperándolo. */
-(function(){try{if(new URLSearchParams(location.search).get('p')!=='1')return;var n=0,t=setInterval(function(){var v=document.getElementById('vinilo'),b=document.getElementById('vinNucleo');if(v&&v.classList.contains('on')&&b){clearInterval(t);setTimeout(function(){try{b.click();}catch(e){}},350);}else if(++n>60){clearInterval(t);}},150);}catch(e){}})();
+(function(){try{if(new URLSearchParams(location.search).get('p')!=='1')return;var hecho=false;function arranque(){if(hecho)return;var b=document.getElementById('vinNucleo'),v=document.getElementById('vinilo');if(!b||!v||!v.classList.contains('on'))return;hecho=true;document.removeEventListener('click',arranque,true);if(!v.classList.contains('abierta'))b.click();}document.addEventListener('click',arranque,true);}catch(e){}})();
 </script>
 </body>
 </html>
