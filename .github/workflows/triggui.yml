@@ -1095,9 +1095,22 @@ jobs:
         run: |
           set -euo pipefail
           if [ "$CATALOG_MODE" = "kids" ]; then echo "🌒 CATALOG_MODE=kids — sin página de video"; exit 0; fi
-          if [ ! -f contenido.json ] || [ ! -f /tmp/triggui-book.json ]; then echo "ℹ️  sin catálogo o sin libro — nada que hacer"; exit 0; fi
-          python3 scripts/build-video-page.py contenido.json
-          node scripts/build-video-og.js contenido.json || echo "⚠️ OG del video omitido"
+          if [ ! -f contenido.json ]; then echo "ℹ️  contenido.json no está — nada que hacer"; exit 0; fi
+          # 🏭 mismo patrón que edición/OG: el manifiesto del lote es el camino universal (single = lote de 1)
+          if [ -f /tmp/triggui-batch.jsonl ]; then
+            echo "📦 Lote: $(wc -l < /tmp/triggui-batch.jsonl) libro(s) para página y OG del video"
+            while IFS= read -r __libro; do
+              [ -z "$__libro" ] && continue
+              printf '%s' "$__libro" > /tmp/triggui-book.json
+              python3 scripts/build-video-page.py contenido.json || echo "  ⚠️ página del video omitida"
+              node scripts/build-video-og.js contenido.json || echo "  ⚠️ OG del video omitido"
+            done < /tmp/triggui-batch.jsonl
+          else
+            if [ ! -f /tmp/triggui-book.json ]; then echo "⏭️  Sin libro — skip página del video"; exit 0; fi
+            python3 scripts/build-video-page.py contenido.json || echo "  ⚠️ página del video omitida"
+            node scripts/build-video-og.js contenido.json || echo "  ⚠️ OG del video omitido"
+          fi
+          find public/t -path "*/video/index.html" -newer contenido.json 2>/dev/null | head -8
 
       # ╔══════════════════════════════════════════════════════════════════╗
       # ║  FASE 8 — Sincronizar contenido.json → triggui-content            ║
