@@ -2234,5 +2234,9 @@ a.title=en?'Share on WhatsApp':'Compartir por WhatsApp';a.setAttribute('aria-lab
 a.addEventListener('click',function(){try{gtag('event','share_wa',{contexto:'edicion',slug:state.id||'',idioma:en?'en':'es'});}catch(e){}});
 }catch(e){}})();
 </script>
+<script id="vin-auto-js">
+/* 🎧 ?p=1 (viene del mensaje de la pieza): al montar el vinilo, se abre la barra y se intenta tocar; si el navegador exige un toque, la barra queda abierta esperándolo. */
+(function(){try{if(new URLSearchParams(location.search).get('p')!=='1')return;var n=0,t=setInterval(function(){var v=document.getElementById('vinilo'),b=document.getElementById('vinNucleo');if(v&&v.classList.contains('on')&&b){clearInterval(t);setTimeout(function(){try{b.click();}catch(e){}},350);}else if(++n>60){clearInterval(t);}},150);}catch(e){}})();
+</script>
 </body>
 </html>
