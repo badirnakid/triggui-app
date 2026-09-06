@@ -2,6 +2,8 @@
 <html lang="en" style="background:#000;">
 <head>
 <meta charset="UTF-8">
+<!-- Link corto con rastreo intacto: ?w=s (sala) / ?w=c (compartir) se expande a utm_* ANTES de que GA mire -->
+<script>(function(){try{var q=new URLSearchParams(location.search),w=q.get('w');if(!w||q.get('utm_source'))return;var med={s:'sala',c:'compartir'}[w];if(!med)return;var p=location.pathname.split('/').filter(Boolean);var slug=p[p.length-1]==='en'?p[p.length-2]:p[p.length-1];q.delete('w');q.set('utm_source','whatsapp');q.set('utm_medium',med);q.set('utm_campaign',slug||'');history.replaceState(null,'',location.pathname+'?'+q.toString()+location.hash);}catch(e){}})();</script>
 <!-- GA4: el vinilo de las ediciones reporta a la misma casa que la app -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-CLK554FCNM"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-CLK554FCNM');</script>
@@ -2227,7 +2229,7 @@ tgCasarPendientes();
 (function(){try{var a=document.getElementById('btnWa');if(!a||typeof state==='undefined')return;
 var en=(typeof tgLang!=='undefined'&&tgLang==='en');
 var fr=((en&&state.frases_en&&state.frases_en[0])||(state.frases&&state.frases[0])||'').trim();
-var url=location.origin+location.pathname+'?utm_source=whatsapp&utm_medium=compartir&utm_campaign='+encodeURIComponent(state.id||'');
+var url=location.origin+location.pathname+'?w=c';
 a.href='https://wa.me/?text='+encodeURIComponent((fr?fr+'\n':'')+url);
 a.title=en?'Share on WhatsApp':'Compartir por WhatsApp';a.setAttribute('aria-label',a.title);
 a.addEventListener('click',function(){try{gtag('event','share_wa',{contexto:'edicion',slug:state.id||'',idioma:en?'en':'es'});}catch(e){}});
