@@ -1018,10 +1018,11 @@ const TG_COVER_SRC = "https://is1-ssl.mzstatic.com/image/thumb/Publication221/v4
   function entra(){ heredaMaterial(); el.classList.add('on','nace');
     setTimeout(function(){el.classList.remove('nace');},760);
     setTimeout(onda,430);
-    el.removeAttribute('aria-hidden'); vigia(); }
+    el.removeAttribute('aria-hidden'); if(!autoP) vigia(); }
+  var autoP=(function(){ try{ return new URLSearchParams(location.search).get('p')==='1'; }catch(e){ return false; } })();   // 🎧 llegó desde el mensaje de la pieza: el vinilo entra ya, sin esperar overlay ni esconderse
   var ov=document.getElementById('bocadoEcoOverlay'), visto=false, entrado=false;
   function intenta(){ if(entrado) return; entrado=true; entra(); }
-  if(ov){ if(ov.classList.contains('visible')) visto=true;
+  if(autoP){ intenta(); } else if(ov){ if(ov.classList.contains('visible')) visto=true;
     new MutationObserver(function(){ var v=ov.classList.contains('visible');
       if(v){ visto=true; } else if(visto){ setTimeout(intenta,250); } })
       .observe(ov,{attributes:true,attributeFilter:['class']});
