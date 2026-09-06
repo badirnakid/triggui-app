@@ -895,6 +895,12 @@ body.tg-tarjeta .tg-cta{display:none !important}
               <circle cx="17.5" cy="6.5" r="1.2" fill="white"/>
             </svg>
           </a>
+          <a class="btn-light btn-wa" id="btnWa" href="#" target="_blank" rel="noopener noreferrer" aria-label="Compartir por WhatsApp" title="Compartir por WhatsApp">
+            <svg class="btn-ig-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M4 12.5 20 4l-4.5 16-4.2-6.1L4 12.5z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/>
+              <path d="M11.3 13.9 20 4" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </a>
         </div>
 
         <div class="btn-row btn-row-3">
@@ -2215,6 +2221,18 @@ if (pool.length && !window.__tgRegresando) {
 render();
 tgCasarPendientes();
 })();
+</script>
+<script id="wa-share-js">
+/* 🟢 Compartir por WhatsApp: frase + link marcado (utm) en el idioma de la página. El lector elige a quién. */
+(function(){try{var a=document.getElementById('btnWa');if(!a||typeof state==='undefined')return;
+var en=(typeof tgLang!=='undefined'&&tgLang==='en');
+var fr=((en&&state.frases_en&&state.frases_en[0])||(state.frases&&state.frases[0])||'').trim();
+var url=location.origin+location.pathname+'?utm_source=whatsapp&utm_medium=compartir&utm_campaign='+encodeURIComponent(state.id||'');
+a.href='https://wa.me/?text='+encodeURIComponent((fr?fr+'
+':'')+url);
+a.title=en?'Share on WhatsApp':'Compartir por WhatsApp';a.setAttribute('aria-label',a.title);
+a.addEventListener('click',function(){try{gtag('event','share_wa',{contexto:'edicion',slug:state.id||'',idioma:en?'en':'es'});}catch(e){}});
+}catch(e){}})();
 </script>
 </body>
 </html>
