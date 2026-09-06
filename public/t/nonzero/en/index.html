@@ -2228,8 +2228,7 @@ tgCasarPendientes();
 var en=(typeof tgLang!=='undefined'&&tgLang==='en');
 var fr=((en&&state.frases_en&&state.frases_en[0])||(state.frases&&state.frases[0])||'').trim();
 var url=location.origin+location.pathname+'?utm_source=whatsapp&utm_medium=compartir&utm_campaign='+encodeURIComponent(state.id||'');
-a.href='https://wa.me/?text='+encodeURIComponent((fr?fr+'
-':'')+url);
+a.href='https://wa.me/?text='+encodeURIComponent((fr?fr+'\n':'')+url);
 a.title=en?'Share on WhatsApp':'Compartir por WhatsApp';a.setAttribute('aria-label',a.title);
 a.addEventListener('click',function(){try{gtag('event','share_wa',{contexto:'edicion',slug:state.id||'',idioma:en?'en':'es'});}catch(e){}});
 }catch(e){}})();
