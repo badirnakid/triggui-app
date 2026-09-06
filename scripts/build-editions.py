@@ -3312,113 +3312,11 @@ def build_lab():
         print(f"OK (Lab) -> {html_file}")
 
 
-# ═══════════════════════════════ 🎧 PÁGINA DE LA PIEZA ═══════════════════════════════
-# /t/<slug>/pieza/ (o /kids/t/<slug>/pieza/): la melodía del libro con su justificación. OG propio (pieza_og.jpg).
-# Un solo archivo bilingüe (tgLang en runtime). Primer toque del lector = play (política de autoplay de los navegadores).
-def escribir_pieza(libro_data, out_dir, slug, base_url):
-    m = (libro_data.get("_musica") or {}).get("candidatos") or []
-    c = next((x for x in m if x.get("preview")), None)
-    if not c:
-        return False
-    kids = "kids" in str(out_dir)
-    ruta = f"{base_url}/kids/t/{slug}" if kids else f"{base_url}/t/{slug}"
-    col = libro_data.get("colores") or []
-    a = col[0] if col else "#E8A838"; b = col[1] if len(col) > 1 else a
-    E = lambda v: html.escape(str(v or ""), quote=True)
-    titulo = libro_data.get("titulo", ""); autor = libro_data.get("autor", "")
-    pie = c.get("pie", ""); cancion = c.get("cancion", ""); artista = c.get("artista", "")
-    art = (c.get("art") or "").replace("100x100bb", "600x600bb")
-    tit_en = libro_data.get("titulo_en") or titulo
-    page = f"""<!doctype html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<script>(function(){{try{{var q=new URLSearchParams(location.search),w=q.get('w');if(!w||q.get('utm_source'))return;var med={{s:'sala',c:'compartir'}}[w];if(!med)return;q.delete('w');q.set('utm_source','whatsapp');q.set('utm_medium',med);q.set('utm_campaign','{E(slug)}');history.replaceState(null,'',location.pathname+'?'+q.toString()+location.hash);}}catch(e){{}}}})();</script>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-CLK554FCNM"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments);}}gtag('js',new Date());gtag('config','G-CLK554FCNM');</script>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>{E(cancion)} — {E(artista)} · 30 segundos · Triggui</title>
-<meta name="description" content="{E(pie)}">
-<link rel="canonical" href="{ruta}/pieza/">
-<meta property="og:type" content="website">
-<meta property="og:title" content="{E(cancion)} — {E(artista)}">
-<meta property="og:description" content="{E(pie)}">
-<meta property="og:image" content="{ruta}/pieza_og.jpg">
-<meta property="og:image:secure_url" content="{ruta}/pieza_og.jpg">
-<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
-<meta property="og:image:type" content="image/jpeg">
-<meta property="og:url" content="{ruta}/pieza/">
-<meta property="og:site_name" content="Triggui">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="{E(a)}">
-<link rel="icon" href="{base_url}/favicon.ico">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=Noto+Serif+Display:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
-<style>
-*{{box-sizing:border-box}}html,body{{margin:0;min-height:100%}}
-body{{font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:#F5F0E8;background:#0B0F1A;background-image:linear-gradient(135deg,{E(a)},{E(b)});position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 18px 40px}}
-body:before{{content:'';position:fixed;inset:0;background:radial-gradient(120% 90% at 20% 20%,rgba(255,255,255,.12),transparent 55%),linear-gradient(180deg,rgba(11,15,26,.18),rgba(11,15,26,.78));pointer-events:none}}
-.card{{position:relative;width:min(440px,100%);text-align:center}}
-.art{{width:min(300px,72vw);height:min(300px,72vw);border-radius:28px;object-fit:cover;margin:0 auto 22px;display:block;box-shadow:0 30px 80px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.18);transition:transform .6s}}
-.tocando .art{{transform:scale(1.03)}}
-.kicker{{font-size:12px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;opacity:.85;margin-bottom:10px}}
-h1{{font-family:'Noto Serif Display',Georgia,serif;font-weight:600;font-size:clamp(24px,6vw,34px);line-height:1.1;margin:0 0 6px;text-shadow:0 4px 24px rgba(0,0,0,.35)}}
-.artista{{font-size:16px;font-weight:700;opacity:.9;margin-bottom:18px}}
-.pie{{font-family:'Noto Serif Display',Georgia,serif;font-style:italic;font-size:17px;line-height:1.4;opacity:.95;margin:0 auto 26px;max-width:380px}}
-.play{{width:84px;height:84px;border-radius:50%;border:0;background:#F5F0E8;color:#0B0F1A;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 18px 44px rgba(0,0,0,.45);transition:transform .12s;margin-bottom:12px}}
-.play:active{{transform:scale(.95)}}.play svg{{width:34px;height:34px;fill:currentColor}}.play .pausa{{display:none}}
-.tocando .play .pausa{{display:block}}.tocando .play .ir{{display:none}}
-.hint{{font-size:13px;opacity:.85;min-height:18px;margin-bottom:16px}}
-.prog{{height:4px;background:rgba(255,255,255,.22);border-radius:99px;overflow:hidden;max-width:300px;margin:0 auto 26px}}.prog i{{display:block;height:100%;width:0;background:#F5F0E8;transition:width .25s linear}}
-.acciones{{display:flex;flex-direction:column;gap:10px;align-items:center}}
-.btn{{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:999px;font-weight:800;font-size:14px;text-decoration:none;color:#0B0F1A;background:#F5F0E8;box-shadow:0 10px 30px rgba(0,0,0,.35)}}
-.badge img{{height:38px;display:block;filter:drop-shadow(0 6px 14px rgba(0,0,0,.35))}}
-.foot{{margin-top:26px;font-size:12px;opacity:.75}}.foot b{{opacity:1}}
-</style>
-</head>
-<body>
-<main class="card" id="card">
-  {"<img class='art' id='art' src='"+E(art)+"' alt=''>" if art else "<div class='art' style='display:flex;align-items:center;justify-content:center;font-size:96px;background:rgba(0,0,0,.28)'>🎧</div>"}
-  <div class="kicker" id="kicker">🎧 30 segundos para leer</div>
-  <h1>{E(cancion)}</h1>
-  <div class="artista">{E(artista)}</div>
-  <p class="pie" id="pie">{E(pie)}</p>
-  <button class="play" id="play" type="button" aria-label="Reproducir">
-    <svg class="ir" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg>
-    <svg class="pausa" viewBox="0 0 24 24"><path d="M7 5h3.4v14H7zM13.6 5H17v14h-3.6z"/></svg>
-  </button>
-  <div class="hint" id="hint">Toca para escuchar · 30 segundos</div>
-  <div class="prog"><i id="bar"></i></div>
-  <div class="acciones">
-    <a class="btn" id="abrir" href="{ruta}/?w=s">Abrir la edición →</a>
-    <a class="badge" id="badge" href="{E(c.get('link',''))}" target="_blank" rel="noopener noreferrer" aria-label="Apple Music"><img id="badgeImg" src="https://tools.applemediaservices.com/api/badges/listen-on-apple-music/badge/es-mx" alt="Apple Music"></a>
-  </div>
-  <div class="foot" id="foot">Triggui · <b>{E(titulo)}</b></div>
-</main>
-<script>
-(function(){{
-  var en=(function(){{try{{var v=JSON.parse(localStorage.getItem('triggui_lang')||'null');if(v==='en'||v==='es')return v==='en';}}catch(e){{}}return ((navigator.language||'es').slice(0,2)==='en');}})();
-  if(en){{document.documentElement.lang='en';document.getElementById('kicker').textContent='🎧 30 seconds to read';document.getElementById('hint').textContent='Tap to listen · 30 seconds';document.getElementById('abrir').textContent='Open the edition →';document.getElementById('abrir').href='{ruta}/en/?w=s';document.getElementById('badgeImg').src='https://tools.applemediaservices.com/api/badges/listen-on-apple-music/badge/en-us';document.getElementById('foot').innerHTML='Triggui · <b>{E(tit_en)}</b>';}}
-  var au=new Audio({json.dumps(c.get("preview",""))});au.preload='auto';var card=document.getElementById('card'),bar=document.getElementById('bar'),hint=document.getElementById('hint'),btn=document.getElementById('play');
-  var sono=false,pausado=false,fade=null;
-  function ui(p){{card.classList.toggle('tocando',p);btn.setAttribute('aria-label',p?(en?'Pause':'Pausa'):(en?'Play':'Reproducir'));if(p)hint.textContent=en?'Playing · 30 seconds':'Sonando · 30 segundos';}}
-  function play(){{if(fade){{clearInterval(fade);fade=null;}}au.volume=1;return au.play().then(function(){{ui(true);if(!sono){{sono=true;try{{gtag('event','musica_play',{{contexto:'pieza',slug:'{E(slug)}',cancion:{json.dumps(cancion)},artista:{json.dumps(artista)}}});}}catch(e){{}}}}
-    try{{if('mediaSession' in navigator){{navigator.mediaSession.metadata=new MediaMetadata({{title:{json.dumps(cancion)},artist:{json.dumps(artista)},album:{json.dumps(titulo)},artwork:{json.dumps([{"src":art,"sizes":"600x600","type":"image/jpeg"}] if art else [])}}});}}}}catch(e){{}}}}).catch(function(){{ui(false);}});}}
-  btn.addEventListener('click',function(ev){{ev.stopPropagation();if(au.paused){{pausado=false;play();}}else{{pausado=true;au.pause();ui(false);hint.textContent=en?'Paused':'En pausa';}}}});
-  document.addEventListener('click',function arranque(){{if(au.paused&&!pausado&&!sono){{play();}}document.removeEventListener('click',arranque,true);}},true);
-  au.addEventListener('timeupdate',function(){{var t=au.currentTime;bar.style.width=Math.min(100,t/30*100)+'%';if(t>=28&&!fade){{var v=1;fade=setInterval(function(){{v-=.1;if(v<=0){{clearInterval(fade);fade=null;}}else au.volume=Math.max(0,v);}},180);}}}});
-  au.addEventListener('ended',function(){{ui(false);bar.style.width='100%';hint.textContent=en?'Again? Tap play':'¿Otra vez? Toca play';au.currentTime=0;au.volume=1;}});
-  au.addEventListener('error',function(){{hint.textContent=en?'This preview is not available right now':'Este preview no está disponible ahora';}});
-  play();   // intento silencioso: si el navegador lo permite, suena al llegar; si no, el primer toque lo arranca
-}})();
-</script>
-</body>
-</html>"""
-    d = Path(out_dir) / "pieza"
-    d.mkdir(parents=True, exist_ok=True)
-    (d / "index.html").write_text(page, encoding="utf-8")
-    print(f"   🎧 pieza: {d / 'index.html'}")
-    return True
+# ═══════════════════════════════ 🎧🎬 PÁGINAS DE MEDIOS (módulo compartido) ═══════════════════════════════
+# /t/<slug>/pieza/ y /t/<slug>/video/ viven en scripts/paginas_medios.py (calco de la hélice). El paso 🎬 del pipeline
+# vuelve a llamar a escribir_video cuando el video se resuelve después de la edición (idempotente).
+import sys as _sys; _sys.path.insert(0, str(Path(__file__).resolve().parent))
+from paginas_medios import escribir_pieza, escribir_video
 
 def build_single():
     contenido_file = resolve_single_json_file()
@@ -3531,11 +3429,12 @@ def build_single():
     except Exception as _e:
         print(f"   ⚠️ gemela /en/ omitida: {_e}")
 
-    # 🎧 la página de la pieza (30 segundos, primer toque = play) nace junto a la edición si hay música
+    # 🎧🎬 páginas de medios: la pieza nace con la edición (música ya resuelta); el video si ya está resuelto (o lo escribe el paso 🎬)
     try:
-        escribir_pieza(libro_data, out_dir, slug, BASE_URL)
+        if escribir_pieza(libro_data, out_dir, slug, BASE_URL): print(f"   🎧 pieza: {out_dir / 'pieza' / 'index.html'}")
+        if escribir_video(libro_data, out_dir, slug, BASE_URL): print(f"   🎬 video: {out_dir / 'video' / 'index.html'}")
     except Exception as _e:
-        print(f"   ⚠️ pieza omitida: {_e}")
+        print(f"   ⚠️ páginas de medios omitidas: {_e}")
 
     # 🎲 auto-registro en la lista del dado (public/t/ediciones.json): la lista se mantiene sola.
     # Idempotente (sin duplicados); si el archivo falta o está corrupto, arranca limpio; kids por ruta del out_dir.

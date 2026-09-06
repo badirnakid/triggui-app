@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..900;1,9..144,400..900&family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:1200px;height:630px;overflow:hidden}
+body{font-family:'Inter',system-ui,sans-serif;color:#F5F0E8;background:linear-gradient(135deg,{{ACCENT}} 0%,{{ACCENT2}} 100%);position:relative}
+.velo{position:absolute;inset:0;background:radial-gradient(120% 90% at 20% 30%,rgba(255,255,255,.12),transparent 55%),linear-gradient(180deg,rgba(11,15,26,.14),rgba(11,15,26,.66))}
+.th{position:absolute;left:64px;top:64px;width:672px;height:378px;border-radius:26px;object-fit:cover;box-shadow:0 34px 90px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.18)}
+.play{position:absolute;left:64px;top:64px;width:672px;height:378px;display:flex;align-items:center;justify-content:center}
+.play i{width:116px;height:116px;border-radius:50%;background:rgba(11,15,26,.74);display:flex;align-items:center;justify-content:center;box-shadow:0 0 40px rgba(0,0,0,.35)}
+.play svg{width:52px;fill:#F5F0E8;margin-left:8px}
+.txt{position:absolute;left:776px;top:78px;width:360px}
+.kicker{font-size:20px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;opacity:.9;margin-bottom:16px}
+.tit{font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:46px;line-height:1.08;margin:0 0 14px;text-shadow:0 4px 24px rgba(0,0,0,.35);display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.tit.larga{font-size:38px;-webkit-line-clamp:5}
+.canal{font-size:24px;font-weight:600;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.foot{position:absolute;left:64px;right:64px;bottom:34px;display:flex;align-items:center;justify-content:space-between}
+.foot img{height:34px}.foot span{font-size:22px;font-weight:600;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:760px}
+</style>
+</head>
+<body>
+<div class="velo"></div>
+<img class="th" src="{{THUMB}}" alt="">
+<div class="play"><i><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></i></div>
+<div class="txt">
+  <div class="kicker">🎬 El video de la edición</div>
+  <div class="tit{{CLASE}}">{{TITULO}}</div>
+  <div class="canal">{{CANAL}}</div>
+</div>
+<div class="foot"><img src="{{LOGO}}" alt="Triggui"><span>{{LIBRO}}</span></div>
+</body>
+</html>

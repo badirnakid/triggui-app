@@ -1087,6 +1087,18 @@ jobs:
           fi
           python3 scripts/resolve-videos.py --solo-ediciones --rutas=contenido.json
 
+      # 🎬 La página del video dentro de Triggui (+ su OG): nace aquí porque el video se resuelve después de la edición.
+      - name: 🎬 Página y OG del video (dentro de Triggui)
+        if: ${{ !inputs.modo_prueba && (steps.modo.outputs.modo_tecnico == 'single_book' || steps.modo.outputs.modo_tecnico == 'trigger_constrained' || steps.modo.outputs.modo_tecnico == 'trigger_discover' || steps.modo.outputs.modo_tecnico == 'production_batch') && env.YT_API_KEY != '' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$CATALOG_MODE" = "kids" ]; then echo "🌒 CATALOG_MODE=kids — sin página de video"; exit 0; fi
+          if [ ! -f contenido.json ] || [ ! -f /tmp/triggui-book.json ]; then echo "ℹ️  sin catálogo o sin libro — nada que hacer"; exit 0; fi
+          python3 scripts/build-video-page.py contenido.json
+          node scripts/build-video-og.js contenido.json || echo "⚠️ OG del video omitido"
+
       # ╔══════════════════════════════════════════════════════════════════╗
       # ║  FASE 8 — Sincronizar contenido.json → triggui-content            ║
       # ╚══════════════════════════════════════════════════════════════════╝
