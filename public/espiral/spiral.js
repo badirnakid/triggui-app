@@ -911,7 +911,13 @@ function iniciarPortal() {
     requestAnimationFrame(paso);
   }
 
+  // 🎧 aviso a la radio en el instante del toque: el nodo elegido define la pieza (funde si sonaba; queda lista si no)
+  function avisaRadio(k) {
+    try { var it = lista[k]; if (!it) return; var n = parseInt(String(it.id || '').replace(/\D/g, ''), 10);
+      window.dispatchEvent(new CustomEvent('tg:nodo', { detail: { numero: n, id: it.id, slug: it.slug || '' } })); } catch (e) {}
+  }
   function tocarNodo(k) {
+    avisaRadio(k);
     var centro = Math.max(0, Math.min(lista.length - 1, Math.round(camK)));
     if (k === centro) { abrirHoja(k); }
     else { viajarA(k, 420); }

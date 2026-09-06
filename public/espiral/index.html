@@ -316,7 +316,7 @@ async function arrancarEspiral(){
     insights:insights
   };
   try{gtag('event','espiral_view',{ediciones:String(insights.length)});}catch(e){}
-  var s=document.createElement('script'); s.src='./spiral.js?v=20260826-camara-fija';
+  var s=document.createElement('script'); s.src='./spiral.js?v=20260906b';
   s.onload=function(){ try{ var hoja=document.getElementById('hoja'); if(hoja){ var mo=new MutationObserver(function(){ document.body.classList.toggle('hoja-abierta', hoja.classList.contains('ver')); }); mo.observe(hoja,{attributes:true,attributeFilter:['class']}); } }catch(e){} };
   document.body.appendChild(s);
   var volver=document.createElement('button'); volver.id='hud-volver'; volver.type='button'; volver.setAttribute('aria-label',(window.PV_LANG==='en')?'Back':'Regresar'); volver.innerHTML='&#8592;&nbsp; '+((window.PV_LANG==='en')?'BACK':'REGRESAR');
@@ -538,7 +538,7 @@ body.hoja-abierta #vinBarra{display:none !important}
   <a class="vhLink" href="#" target="_blank" rel="noopener noreferrer" aria-label="Apple Music"><img src="https://tools.applemediaservices.com/api/badges/listen-on-apple-music/badge/es-mx" alt="Apple Music" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'Apple Music ↗',style:'font:600 10px Manrope;color:rgba(255,255,255,.7)'}))" /></a>
   <div class="vhProg"></div>
 </div>
-<script src="/radio.js?v=20260906" defer></script>
+<script src="/radio.js?v=20260906b" defer></script>
 </body>
 
 </html>

@@ -87,12 +87,14 @@
 
   /* ── hélice: sintonía al abrir la hoja de un libro (solo si ya sonaba) + un solo sonido con el video ── */
   if(pag==='helice'){
-    function sintoniza(){ if(!hoja||!hoja.classList.contains('ver')) return;
-      var sem=hoja.querySelector('.h-sem'); var m=sem&&/#\s*(\d+)/.exec(sem.textContent||''); if(!m) return;
-      var n=parseInt(m[1],10), k=-1; for(var j=0;j<cola.length;j++){ if((cola[j].b._edicion_numero|0)===n){ k=j; break; } }
+    function sintonizaA(n){ var k=-1; for(var j=0;j<cola.length;j++){ if((cola[j].b._edicion_numero|0)===n){ k=j; break; } }
       if(k<0||k===i) return;
       if(au.paused){ if(fadeT){clearInterval(fadeT);fadeT=null;} i=k; pinta(); guarda(); return; }   /* en pausa: la pieza del nodo queda lista para el play */
+      if(fadeT){clearInterval(fadeT);fadeT=null;}
       var v=au.volume, t=setInterval(function(){ v-=0.15; if(v<=0){ clearInterval(t); i=k; pinta(); au.volume=1; play(); try{gtag('event','musica_helice_sintonia',{edicion:n});}catch(e){} } else { try{au.volume=Math.max(0,v);}catch(e){} } },90); }
+    function sintoniza(){ if(!hoja||!hoja.classList.contains('ver')) return;
+      var sem=hoja.querySelector('.h-sem'); var m=sem&&/#\s*(\d+)/.exec(sem.textContent||''); if(!m) return; sintonizaA(parseInt(m[1],10)); }
+    window.addEventListener('tg:nodo',function(e){ try{ var n=e&&e.detail&&(e.detail.numero|0); if(n>0) sintonizaA(n); }catch(x){} });   /* el toque en la bolita manda */
     (function engancha(n){ hoja=document.getElementById('hoja');
       if(hoja){ var sT=null; new MutationObserver(function(){ clearTimeout(sT); sT=setTimeout(sintoniza,120); }).observe(hoja,{attributes:true,attributeFilter:['class'],childList:true}); return; }
       if(n<80) setTimeout(function(){engancha(n+1);},400); })(0);
