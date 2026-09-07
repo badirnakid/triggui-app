@@ -2616,7 +2616,7 @@ function prepararEmailParaEnvio(nombreDestinatario, emailDestinatario, rowIdx) {
   const tieneNombre = primerNombre.length > 0;
 
   // 5. Plain text body — V19.2 con placeholders para saludo + trial banner top
-  let plainBody = "{{GREETING_PLAIN}}{{TRIAL_BANNER_TOP_PLAIN}}" + buildPlainTextBody(libro);
+  let plainBody = "{{GREETING_PLAIN}}{{MEDIOS_PLAIN}}{{TRIAL_BANNER_TOP_PLAIN}}" + buildPlainTextBody(libro);
 
   // 6. Portada inline
   const portadaUrl = getPortadaURL(libro);
@@ -2639,7 +2639,7 @@ function prepararEmailParaEnvio(nombreDestinatario, emailDestinatario, rowIdx) {
   // El greeting es ALEATORIO (100 variantes) por envío para no cansar al lector.
   // El trial banner aparece al inicio (después del saludo) para captar atención antes del libro.
   // El bloque "Recibe Triggui en tu WhatsApp" alterna aleatoriamente entre top y bottom.
-  const placeholdersTop = `\n  {{GREETING_BLOCK}}\n  {{TRIAL_BANNER_TOP}}\n  {{ESPIRAL_PROMO_TOP}}\n  {{WHATSAPP_PROMO_TOP}}\n`;
+  const placeholdersTop = `\n  {{GREETING_BLOCK}}\n  {{MEDIOS_TOP}}\n  {{TRIAL_BANNER_TOP}}\n  {{ESPIRAL_PROMO_TOP}}\n  {{WHATSAPP_PROMO_TOP}}\n`;
   cuerpoHTML = cuerpoHTML.replace(
     /(<body[^>]*>)/i,
     `$1${placeholdersTop}`
@@ -3705,8 +3705,12 @@ function sendToRow(row, batchInfo) {
     const kidsTopHTMLFila = KIDS_PROMO_ENABLED ? generarKidsPromoTopHTML(cFila.cardWidth, _accFila) : "";
     const kidsTopPlainFila = KIDS_PROMO_ENABLED ? aInglesCascara(KIDS_PROMO_TOP_PLAIN) : "";
 
+    /* 🎧🎬 V24 — las cuatro puertas de la edición (edición · melodía · video · kids), en sus colores, con melodía/video repartidos por persona */
+    const mediosHTMLFila  = generarMediosTopHTML(libro, cFila.cardWidth, IDIOMA_ENVIO_ACTUAL, semillaMedios_(row.emails[0] || "", libro));
+    const mediosPlainFila = generarMediosTopPlain(libro, IDIOMA_ENVIO_ACTUAL, semillaMedios_(row.emails[0] || "", libro));
     let htmlPersonalizado  = _base.finalHTML
       .replace(/\{\{UNSUB_LINK\}\}/g, unsubLinkFila)
+      .replace(/\{\{MEDIOS_TOP\}\}/g, mediosHTMLFila)
       .replace(/\{\{GREETING_BLOCK\}\}/g, saludoHTMLFila)
       .replace(/\{\{TRIAL_BANNER_TOP\}\}/g, trialTopHTMLFila)
       .replace(/\{\{ESPIRAL_PROMO_TOP\}\}/g, espiralTopHTMLFila)
@@ -3715,6 +3719,7 @@ function sendToRow(row, batchInfo) {
       .replace(/\{\{LANG_BAR\}\}/g, generarLangBarTopHTML(cFila.cardWidth, _accFila));
     let plainPersonalizado = _base.finalPlain
       .replace(/\{\{UNSUB_LINK\}\}/g, unsubLinkFila)
+      .replace(/\{\{MEDIOS_PLAIN\}\}/g, mediosPlainFila)
       .replace(/\{\{GREETING_PLAIN\}\}/g, saludoPlainFila)
       .replace(/\{\{TRIAL_BANNER_TOP_PLAIN\}\}/g, trialTopPlainFila)
       .replace(/\{\{KIDS_PROMO_TOP_PLAIN\}\}/g, kidsTopPlainFila)
@@ -4461,4 +4466,56 @@ function listaWhatsApp_(clave) {
     filas.push({ nombre: nombre || tel, tel: tel, lang: lang, status: status.split(" ")[0] || "SUBSCRIBED", ultimo: String(data[i][9] || "").trim() });
   }
   return { ok: true, filas: filas, resumen: { total: filas.length, sinTel: sinTel, unsub: unsub, expirados: exp }, generado: new Date().toISOString() };
+}
+
+/* ══════════════════════════════ 🎧🎬 MEDIOS DEL LUNES (V24) ══════════════════════════════
+ * Cuatro puertas en los colores de la edición, debajo del saludo: edición · melodía · video · kids.
+ * Melodía y video se reparten por persona (semilla = email + número de edición): a cada quien le toca
+ * una candidata distinta de las curadas, y varía de una edición a otra. Solo lectura de `libro`.
+ * Compatibilidad: tablas + estilos inline; sin flex/grid; radios ignorados por Outlook sin romper nada. */
+function semillaMedios_(email, libro) {
+  var s = String(email || "").toLowerCase() + "|" + String((libro && libro._edicion_numero) || "");
+  var h = 0; for (var i = 0; i < s.length; i++) { h = ((h << 5) - h + s.charCodeAt(i)) | 0; }
+  return Math.abs(h);
+}
+function puertasMedios_(libro, idioma, semilla) {
+  if (!libro || !libro._slug) return null;
+  var en = (idioma === "en");
+  var base = "https://app.triggui.com/t/" + libro._slug;
+  var mus = ((libro._musica || {}).candidatos || []).filter(function (c) { return c && c.preview; }).slice(0, 3);
+  var vid = ((libro._video || {}).candidatos || []).filter(function (c) { return c && c.id; }).slice(0, 3);
+  var m = mus.length ? (semilla % mus.length) : 0;
+  var v = vid.length ? (Math.floor(semilla / 7) % vid.length) : 0;
+  var col = libro.colores || [], txt = libro.textColors || [];
+  function C(i, d) { return col[i] || d; } function T(i, d) { return txt[i] || d; }
+  var p = [];
+  p.push({ k: en ? "The edition" : "La edición", t: (en ? (libro.titulo_en || libro.titulo) : libro.titulo) + (libro.autor ? " — " + libro.autor : ""), u: base + (en ? "/en/" : "/") + "?w=e", bg: C(0, "#1A1A1A"), fg: T(0, "#FFFFFF") });
+  if (mus.length) p.push({ k: en ? "Its melody · 30 s" : "Su melodía · 30 s", t: mus[m].cancion + " — " + mus[m].artista, u: base + "/pieza/?w=e&m=" + m, bg: C(1, "#2A2A2A"), fg: T(1, "#FFFFFF") });
+  if (vid.length) p.push({ k: en ? "Its video" : "Su video", t: vid[v].titulo || "", u: base + "/video/?w=e&v=" + v, bg: C(2, "#3A3A3A"), fg: T(2, "#FFFFFF") });
+  p.push({ k: "Kids", t: en ? "A value in 30 seconds, for the little ones" : "Un valor en 30 segundos, para los peques", u: "https://app.triggui.com/kids/?utm_source=email&utm_medium=lunes&utm_campaign=" + encodeURIComponent(libro._slug), bg: C(3, "#0B6065"), fg: T(3, "#FFFFFF") });
+  return p.slice(0, 4);
+}
+function generarMediosTopHTML(libro, cardWidth, idioma, semilla) {
+  var p = puertasMedios_(libro, idioma, semilla);
+  if (!p) return "";
+  var esc = function (x) { return String(x || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); };
+  var corta = function (t, max) { t = String(t || ""); if (t.length <= max) return t; var c = t.slice(0, max); var i = c.lastIndexOf(" "); return (i > max * 0.6 ? c.slice(0, i) : c).replace(/[\s,;:\-–—]+$/, "") + "…"; };
+  var celda = function (q) {
+    if (!q) return '<td width="50%" style="padding:4px;"></td>';
+    return '<td width="50%" valign="top" style="padding:4px;">' +
+      '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="' + esc(q.bg) + '" style="background:' + esc(q.bg) + ';border-radius:12px;padding:12px 14px;">' +
+      '<a href="' + esc(q.u) + '" target="_blank" style="display:block;text-decoration:none;color:' + esc(q.fg) + ';">' +
+      '<div style="font-family:Inter,-apple-system,BlinkMacSystemFont,\'Helvetica Neue\',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;opacity:0.85;line-height:1.2;mso-line-height-rule:exactly;">' + esc(q.k) + '</div>' +
+      '<div style="font-family:Inter,-apple-system,BlinkMacSystemFont,\'Helvetica Neue\',Arial,sans-serif;font-size:13px;font-weight:600;line-height:1.3;margin-top:5px;mso-line-height-rule:exactly;">' + esc(corta(q.t, 58)) + ' &rarr;</div>' +
+      '</a></td></tr></table></td>';
+  };
+  var filas = "";
+  for (var i = 0; i < p.length; i += 2) filas += "<tr>" + celda(p[i]) + celda(p[i + 1]) + "</tr>";
+  return '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center" style="padding:2px 8px 8px 8px;">' +
+    '<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:' + (cardWidth || 560) + 'px;">' + filas + '</table></td></tr></table>';
+}
+function generarMediosTopPlain(libro, idioma, semilla) {
+  var p = puertasMedios_(libro, idioma, semilla);
+  if (!p) return "";
+  return "\n" + p.map(function (q) { return q.k + ": " + q.t + " → " + q.u; }).join("\n") + "\n\n";
 }
