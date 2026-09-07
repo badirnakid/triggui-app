@@ -502,7 +502,7 @@ function iniciarPortal() {
 
   function inercia() {
     if (arrastrando || secuencia) return;
-    vel *= 0.945;
+    vel *= 0.90;
     camK = clampCam(camK + vel);
     render();
     if (Math.abs(vel) > 0.004) requestAnimationFrame(inercia);
@@ -510,6 +510,7 @@ function iniciarPortal() {
   }
 
   /* ---------- Entrada ---------- */
+  var PXN = 110, VMAX = 0.30;   /* 🎚 sensibilidad de la hélice: px por nodo y velocidad tope (nodos/frame) */
   var pDown = null;
   var zona = app;
   var overPx2 = 0;
@@ -538,18 +539,18 @@ function iniciarPortal() {
     }
     var ahora = performance.now();
     var maxK = Math.max(lista.length - 1, 0);
-    var raw = pDown.k + (pDown.y - e.clientY) / dz * 0.32;
+    var raw = pDown.k + (pDown.y - e.clientY) / PXN;   /* un nodo cada PXN px de dedo, independiente del layout */
     if (raw > maxK) {
-      overPx = (raw - maxK) * dz; overPx2 = 0;
+      overPx = (raw - maxK) * PXN; overPx2 = 0;
       camK = maxK;
       if (overPx > 46) { if (!overDesde) overDesde = performance.now(); avisar(''+(window.PV_LANG==='en'?'Release to refresh':'Suelta para actualizar')+' \u21bb', null, 500); } else overDesde = 0;
     } else if (raw < 0) {
-      overPx2 = (0 - raw) * dz; overPx = 0;
+      overPx2 = (0 - raw) * PXN; overPx = 0;
       camK = 0;
       if (overPx2 > 46) { if (!overDesde) overDesde = performance.now(); avisar(''+(window.PV_LANG==='en'?'Release to refresh':'Suelta para actualizar')+' \u21bb', null, 500); } else overDesde = 0;
-    } else { overPx = 0; overPx2 = 0; overDesde = 0; camK = clampCam(raw); }
+    } else { overPx = 0; overPx2 = 0; overDesde = 0; camK = clampCam(camK + (raw - camK) * 0.62); }   /* suavizado: la cámara sigue al dedo sin temblar */
     var dt = ahora - pDown.lt;
-    if (dt > 0) vel = ((pDown.ly - e.clientY) / dz) * 0.32 * Math.min(1, 16 / dt);
+    if (dt > 0) vel = Math.max(-VMAX, Math.min(VMAX, ((pDown.ly - e.clientY) / PXN) * Math.min(1, 16 / dt)));   /* velocidad tope: un flick recorre pocos nodos */
     pDown.ly = e.clientY; pDown.lt = ahora;
     render();
   });
@@ -596,7 +597,8 @@ function iniciarPortal() {
     if (secuencia) return;
     e.preventDefault();
     ocultarHint();
-    camK = clampCam(camK - (e.deltaY / dz) * 0.18);
+    var dY = e.deltaY * (e.deltaMode === 1 ? 16 : (e.deltaMode === 2 ? window.innerHeight : 1));
+    camK = clampCam(camK - dY / PXN * 0.6);   /* rueda: ~media muesca por nodo; trackpad fluido */
     render();
     if (snapTimer) clearTimeout(snapTimer);
     snapTimer = setTimeout(function () { snap(260); }, 150);
