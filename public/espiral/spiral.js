@@ -510,7 +510,8 @@ function iniciarPortal() {
   }
 
   /* ---------- Entrada ---------- */
-  var PXN = 110, VMAX = 0.30;   /* 🎚 sensibilidad de la hélice: px por nodo y velocidad tope (nodos/frame) */
+  var PXN = 110, VMAX = 0.30, FRIC = 0.90;   /* 🎚 sensibilidad de la hélice: px por nodo, velocidad tope (nodos/frame) y fricción de la proyección */
+  var wheelAcc = 0, wheelDest = null;
   var pDown = null;
   var zona = app;
   var overPx2 = 0;
@@ -584,7 +585,14 @@ function iniciarPortal() {
     if (dentroFoco && !dentroCheck) { abrirHoja(Math.max(0, Math.min(lista.length - 1, Math.round(camK)))); }
       else if (!dentroCheck && !tocar(e.clientX, e.clientY)) snap(220);
     }
-    else requestAnimationFrame(inercia);
+    else {
+      /* 🛬 aterrizaje proyectado: en vez de deslizar y luego corregir, se calcula dónde frenaría la inercia y se va al nodo más cercano en UN solo movimiento que termina exactamente ahí */
+      var maxK2 = Math.max(lista.length - 1, 0);
+      var proy = camK + vel * (FRIC / (1 - FRIC));
+      var destino = Math.max(0, Math.min(maxK2, Math.round(proy)));
+      var dist = Math.abs(destino - camK);
+      tweenCam(destino, Math.min(920, 260 + 140 * dist), easeOutCubic, null);
+    }
   });
 
   zona.addEventListener('pointercancel', function () {
@@ -598,10 +606,19 @@ function iniciarPortal() {
     e.preventDefault();
     ocultarHint();
     var dY = e.deltaY * (e.deltaMode === 1 ? 16 : (e.deltaMode === 2 ? window.innerHeight : 1));
-    camK = clampCam(camK - dY / PXN * 0.6);   /* rueda: ~media muesca por nodo; trackpad fluido */
-    render();
+    /* 🎚 rueda por nodos: se acumula el desplazamiento y cada umbral mueve UN nodo con un solo ease-out; el trackpad acumula suave, el ratón salta limpio */
+    wheelAcc += dY;
+    var umbral = PXN * 0.45;
+    if (Math.abs(wheelAcc) >= umbral) {
+      var pasos = Math.max(-3, Math.min(3, Math.trunc(wheelAcc / umbral)));
+      wheelAcc = 0;
+      var maxKw = Math.max(lista.length - 1, 0);
+      var base = (wheelDest !== null) ? wheelDest : Math.round(camK);
+      wheelDest = Math.max(0, Math.min(maxKw, base - pasos));
+      tweenCam(wheelDest, 380, easeOutCubic, function () { wheelDest = null; });
+    }
     if (snapTimer) clearTimeout(snapTimer);
-    snapTimer = setTimeout(function () { snap(260); }, 150);
+    snapTimer = setTimeout(function () { wheelAcc = 0; if (!animando) snap(240); }, 220);
   }, { passive: false });
 
   window.addEventListener('keydown', function (e) {
