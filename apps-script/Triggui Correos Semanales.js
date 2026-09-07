@@ -4497,7 +4497,11 @@ function puertasMedios_(libro, idioma, semilla) {
   var m = mus.length ? (semilla % mus.length) : 0;
   var v = vid.length ? (Math.floor(semilla / 7) % vid.length) : 0;
   var col = libro.colores || [], txt = libro.textColors || [];
-  function C(i, d) { return col[i] || d; } function T(i, d) { return txt[i] || d; }
+  var hexOk = function (h) { return /^#[0-9a-fA-F]{6}$/.test(String(h || "").trim()); };
+  function C(i, d) { return hexOk(col[i]) ? String(col[i]).trim() : d; }
+  /* tinta con contraste AA garantizado sobre el color de la ficha (mismo motor WCAG del correo) */
+  function T(i, d) { var bg = C(i, d === "#FFFFFF" ? "#1A1A1A" : d); var pref = hexOk(txt[i]) ? String(txt[i]).trim() : d;
+    try { return (_contrast(pref, bg) >= 4.5) ? pref : _bestInkFor(bg, pref, 4.5); } catch (e) { return pref; } }
   var p = [];
   var tituloEd = en ? (libro.titulo_en || libro.titulo) : libro.titulo;
   var edTxt = (libro.autor && (tituloEd + " — " + libro.autor).length <= 26) ? (tituloEd + " — " + libro.autor) : tituloEd;
@@ -4520,7 +4524,7 @@ function generarMediosTopHTML(libro, cardWidth, idioma, semilla) {
     return '<td width="50%" valign="top" style="padding:3px;">' +
       '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>' +
       '<td bgcolor="' + esc(q.bg) + '" height="' + ALTO + '" valign="top" style="background:' + esc(q.bg) + ';height:' + ALTO + 'px;border-radius:10px;padding:11px 12px 10px 12px;">' +
-      '<a href="' + esc(q.u) + '" target="_blank" style="display:block;text-decoration:none;color:' + esc(q.fg) + ';">' +
+      '<a href="' + esc(q.u) + '" target="_blank" aria-label="' + esc(q.k + ": " + q.t) + '" style="display:block;text-decoration:none;color:' + esc(q.fg) + ';">' +
       '<div style="font-family:' + SANS + ';font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;opacity:0.82;line-height:1.2;white-space:nowrap;overflow:hidden;mso-line-height-rule:exactly;">' + esc(q.k) + '</div>' +
       '<div style="font-family:' + SANS + ';font-size:13px;font-weight:600;line-height:16px;height:32px;overflow:hidden;margin-top:4px;mso-line-height-rule:exactly;">' + esc(corta(q.t, 26)) + '</div>' +
       '<div style="margin-top:8px;white-space:nowrap;"><span style="display:inline-block;font-family:' + SANS + ';font-size:9px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;color:' + esc(q.fg) + ';border:1.5px solid ' + esc(q.fg) + ';border-radius:999px;padding:5px 9px;line-height:1;mso-line-height-rule:exactly;">' + esc(q.cta) + '</span></div>' +
@@ -4533,7 +4537,7 @@ function generarMediosTopHTML(libro, cardWidth, idioma, semilla) {
   var tit = String(tj.titulo || libro.titulo || "").replace(/\s+/g, " ").trim();
   var promesa = tit ? (en ? ("&darr;&nbsp; Keep scrolling &mdash; today&rsquo;s card: &ldquo;" + esc(corta(tit, 70)) + "&rdquo;")
                           : ("&darr;&nbsp; Sigue bajando &mdash; la tarjeta de hoy: &laquo;" + esc(corta(tit, 70)) + "&raquo;")) : "";
-  var filaPromesa = promesa ? '<tr><td colspan="2" align="center" style="padding:9px 8px 2px 8px;">' +
+  var filaPromesa = promesa ? '<tr><td colspan="2" align="center" style="padding:12px 8px 2px 8px;">' +
       '<div style="font-family:\'Noto Serif Display\',Georgia,\'Times New Roman\',serif;font-style:italic;font-size:13px;line-height:1.45;color:#4A4A4A;mso-line-height-rule:exactly;">' + promesa + '</div></td></tr>' : "";
   return '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center" style="padding:2px 8px 8px 8px;">' +
     '<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:' + (cardWidth || 560) + 'px;">' + filas + filaPromesa + '</table></td></tr></table>';
