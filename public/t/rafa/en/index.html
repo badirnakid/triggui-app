@@ -453,6 +453,8 @@ body::before {
 .btn-light .btn-ig-icon { width: 18px; height: 18px; opacity: 0.9; }
 .btn-ig-icon rect, .btn-ig-icon circle { stroke: #1A1A1A; }
 .btn-ig-icon circle[fill="white"] { fill: #1A1A1A; }
+.btn-ig-icon path { stroke: #1A1A1A; }
+.btn-row-marca { grid-template-columns: 1fr 48px 48px; }
 
 .btn-dark {
   height: 46px;
@@ -886,7 +888,7 @@ body.tg-tarjeta .tg-cta{display:none !important}
       <div class="edicion-eyebrow" aria-hidden="true">EDICIÓN<span class="edicion-eyebrow-sep">·</span><span class="edicion-eyebrow-num">#096</span></div>
 
       <div class="card-actions">
-        <div class="btn-row btn-row-2">
+        <div class="btn-row btn-row-2 btn-row-marca">
           <a class="btn-light" href="https://triggui.com" target="_blank" rel="noopener noreferrer">
             <img class="btn-triggui-logo" src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png" alt="Triggui">
           </a>
@@ -899,8 +901,9 @@ body.tg-tarjeta .tg-cta{display:none !important}
           </a>
           <a class="btn-light btn-wa" id="btnWa" href="#" target="_blank" rel="noopener noreferrer" aria-label="Compartir por WhatsApp" title="Compartir por WhatsApp">
             <svg class="btn-ig-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M4 12.5 20 4l-4.5 16-4.2-6.1L4 12.5z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/>
-              <path d="M11.3 13.9 20 4" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M12 3.5v11" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M8.2 7.2 12 3.4l3.8 3.8" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M6.5 10.5H6a2 2 0 0 0-2 2V18a2.5 2.5 0 0 0 2.5 2.5h11A2.5 2.5 0 0 0 20 18v-5.5a2 2 0 0 0-2-2h-.5" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
             </svg>
           </a>
         </div>
