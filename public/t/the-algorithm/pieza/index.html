@@ -29,7 +29,7 @@ body{font-family:'Manrope',system-ui,sans-serif;color:var(--ink);-webkit-font-sm
 .hud{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}.hud img{height:16px;display:block;opacity:.95}
 .sem{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--faint);font-weight:700}
 .sem.acc{color:var(--acc)}
-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:12px 0 6px}
+main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:12px 0 6px;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .tit{font-size:20px;line-height:1.35;letter-spacing:.01em;margin:14px 0 4px;color:var(--ink);font-weight:700}
 .sub{font-size:13px;color:var(--faint);font-weight:600;margin:0}
 .hoja{width:100%;max-width:440px;margin:22px auto 0;border-top:1px solid var(--line);padding-top:16px;text-align:left}
@@ -89,10 +89,17 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
   var au=new Audio("https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/5d/5d/e3/5d5de362-00c1-e763-8ab4-ec3e2510e2a1/mzaf_13939228268162843678.plus.aac.p.m4a");au.preload='auto';var card=$('card'),aro=$('aro'),cometa=$('cometa'),kick=$('kicker'),hint=$('hint');
   var sono=false,pausado=false,fade=null;
   function ui(p){card.classList.toggle('tocando',p);kick.textContent=p?T.s:T.k;kick.classList.toggle('acc',p);$('vin').setAttribute('aria-label',p?(en?'Pause':'Pausa'):(en?'Play':'Reproducir'));}
-  function play(){if(fade){clearInterval(fade);fade=null;}au.volume=1;return au.play().then(function(){ui(true);hint.textContent='';if(!sono){sono=true;try{gtag('event','musica_play',{contexto:'pieza',slug:"the-algorithm",cancion:"The Entertainer",artista:"Dick Hyman"});}catch(e){}}
-    try{if('mediaSession' in navigator){navigator.mediaSession.metadata=new MediaMetadata({title:"The Entertainer",artist:"Dick Hyman",album:"The Algorithm",artwork:[{"src": "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/40/47/3f/40473fc9-1bdd-678a-00aa-6777fb65beec/743219307927.jpg/600x600bb.jpg", "sizes": "600x600", "type": "image/jpeg"}]});}}catch(e){}}).catch(function(){ui(false);});}
-  $('vin').addEventListener('click',function(ev){ev.stopPropagation();if(au.paused){pausado=false;play();}else{pausado=true;au.pause();ui(false);hint.textContent=T.p;}});
-  document.addEventListener('click',function arranque(ev){if(ev.target&&ev.target.closest&&ev.target.closest('a'))return;if(au.paused&&!pausado&&!sono){play();}document.removeEventListener('click',arranque,true);},true);
+  var arrancando=false;
+  function play(){if(fade){clearInterval(fade);fade=null;}au.volume=1;arrancando=true;kick.textContent=en?'🎧 Loading…':'🎧 Cargando…';
+    return au.play().then(function(){arrancando=false;ui(true);hint.textContent='';if(!sono){sono=true;try{gtag('event','musica_play',{contexto:'pieza',slug:"the-algorithm",cancion:"The Entertainer",artista:"Dick Hyman"});}catch(e){}}
+    try{if('mediaSession' in navigator){navigator.mediaSession.metadata=new MediaMetadata({title:"The Entertainer",artist:"Dick Hyman",album:"The Algorithm",artwork:[{"src": "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/40/47/3f/40473fc9-1bdd-678a-00aa-6777fb65beec/743219307927.jpg/600x600bb.jpg", "sizes": "600x600", "type": "image/jpeg"}]});}}catch(e){}}).catch(function(){arrancando=false;ui(false);});}
+  au.addEventListener('playing',function(){arrancando=false;ui(true);});
+  function toggle(){if(arrancando)return;if(au.paused){pausado=false;play();}else{pausado=true;au.pause();ui(false);hint.textContent=T.p;}}
+  $('vin').addEventListener('click',function(ev){ev.stopPropagation();toggle();});
+  /* iOS entrega click solo en zonas con cursor:pointer/manejador: el escenario entero (main) es el manejador; el primer toque en cualquier parte arranca */
+  var arranque=function(ev){if(ev.target&&ev.target.closest&&ev.target.closest('a,#vin'))return;if(au.paused&&!pausado&&!arrancando){play();}};
+  card.addEventListener('click',arranque);
+  document.addEventListener('touchend',function primero(ev){if(ev.target&&ev.target.closest&&ev.target.closest('a,#vin'))return;if(au.paused&&!pausado&&!arrancando&&!sono){play();}document.removeEventListener('touchend',primero,true);},true);
   au.addEventListener('timeupdate',function(){var t=au.currentTime,p=Math.min(1,t/30);aro.style.setProperty('--vh-p',(p*100)+'%');cometa.style.setProperty('--ang',(p*360)+'deg');if(t>=28&&!fade){var v=1;fade=setInterval(function(){v-=.1;if(v<=0){clearInterval(fade);fade=null;}else au.volume=Math.max(0,v);},180);}});
   au.addEventListener('ended',function(){ui(false);aro.style.setProperty('--vh-p','100%');hint.textContent=T.a;au.currentTime=0;au.volume=1;});
   au.addEventListener('error',function(){card.classList.add('nada');hint.textContent=T.e;});
