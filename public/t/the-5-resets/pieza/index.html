@@ -49,9 +49,12 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 @keyframes giro{to{transform:rotate(360deg)}}
 .cometa{position:absolute;left:50%;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--ink);box-shadow:0 0 16px var(--acc),0 0 3px #fff;transform:rotate(var(--ang,0deg)) translateY(calc(min(240px,64vw) / -2 - 7px));opacity:0;transition:opacity .3s}
 .tocando .cometa{opacity:1}
-.nuc{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:66px;height:66px;border-radius:50%;background:rgba(11,15,26,.72);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(0,0,0,.45);transition:transform .12s}
+.nuc{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:38%;height:38%;border-radius:50%;background:rgba(11,15,26,.88);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px var(--acc),0 0 26px color-mix(in srgb,var(--acc) 60%,transparent),0 10px 28px rgba(0,0,0,.5);transition:transform .12s;animation:placa 3.2s ease-in-out .9s infinite}
+@keyframes placa{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.07)}}
+.tocando .nuc{animation:none}
 .vin:active .nuc{transform:translate(-50%,-50%) scale(.94)}
-.nuc svg{width:28px;height:28px;fill:var(--ink)}.nuc .pausa{display:none}
+.nuc svg{width:46%;height:46%;fill:#fff}.nuc .ir{transform:translateX(7%)}.nuc .pausa{display:none}
+.dots{display:flex;gap:8px;justify-content:center;margin-top:14px}.dots button{width:8px;height:8px;border-radius:50%;border:0;padding:0;background:rgba(255,255,255,.22);cursor:pointer}.dots button.on{background:var(--acc);box-shadow:0 0 10px var(--acc)}
 .tocando .nuc .pausa{display:block}.tocando .nuc .ir{display:none}
 .nada .art{filter:grayscale(.4) brightness(.8)}
 </style>
@@ -65,12 +68,13 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
     <div class="cometa" id="cometa"></div>
     <div class="nuc"><svg class="ir" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg><svg class="pausa" viewBox="0 0 24 24"><path d="M7 5h3.4v14H7zM13.6 5H17v14h-3.6z"/></svg></div>
   </div>
-  <div class="sem" id="kicker" style="margin-top:22px">🎧 Toca para escuchar · 30 segundos</div>
+  <div class="dots" id="dots" aria-label="Otras melodías de esta edición"></div>
+  <div class="sem" id="kicker" style="margin-top:16px">🎧 Toca para escuchar · 30 segundos</div>
   <h1 class="tit">Gabriel&#x27;s Oboe (From &quot;The Mission&quot;)</h1>
   <p class="sub">HAUSER, Czech Studio Orchestra &amp; Robert Ziegler</p>
   <div class="hint" id="hint"></div>
   <div class="hoja">
-    <div class="sem" id="porque">Por qué esta pieza</div>
+    <div class="sem" id="porque">Por qué esta melodía</div>
     <p id="pie">Una hermosa pieza que, aunque emotiva, no aporta la calidez necesaria para el ánimo.</p>
     <div class="acts">
       <a class="pill" id="abrir" href="https://app.triggui.com/t/the-5-resets/?w=s">Ver la edición →</a>
@@ -83,16 +87,22 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 <script>
 (function(){
   var en=(function(){try{var v=JSON.parse(localStorage.getItem('triggui_lang')||'null');if(v==='en'||v==='es')return v==='en';}catch(e){}return ((navigator.language||'es').slice(0,2)==='en');})();
-  var T=en?{k:'🎧 Tap to listen · 30 seconds',s:'🎧 Playing · 30 seconds to read',p:'Paused',a:'Again? Tap the vinyl',e:'This preview is not available right now',pq:'Why this piece',v:'Open the edition →',vd:'🎬 Its video',ed:'EDITION · #'}:{k:'🎧 Toca para escuchar · 30 segundos',s:'🎧 Sonando · 30 segundos para leer',p:'En pausa',a:'¿Otra vez? Toca el vinilo',e:'Este preview no está disponible ahora',pq:'Por qué esta pieza',v:'Ver la edición →',vd:'🎬 Su video',ed:'EDICIÓN · #'};
+  var T=en?{k:'🎧 Tap to listen · 30 seconds',s:'🎧 Playing · 30 seconds to read',p:'Paused',a:'Again? Tap the vinyl',e:'This preview is not available right now',pq:'Why this melody',v:'Open the edition →',vd:'🎬 Its video',ed:'EDITION · #'}:{k:'🎧 Toca para escuchar · 30 segundos',s:'🎧 Sonando · 30 segundos para leer',p:'En pausa',a:'¿Otra vez? Toca el vinilo',e:'Este preview no está disponible ahora',pq:'Por qué esta melodía',v:'Ver la edición →',vd:'🎬 Su video',ed:'EDICIÓN · #'};
+  /* 🔁 rotación: cada visita trae la siguiente melodía curada de la edición (3), y los puntos permiten cambiarla a mano */
+  var C=[{"cancion": "Gabriel's Oboe (From \"The Mission\")", "artista": "HAUSER, Czech Studio Orchestra & Robert Ziegler", "pie": "Una hermosa pieza que, aunque emotiva, no aporta la calidez necesaria para el ánimo.", "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/eb/64/dc/eb64dcee-fc6b-0764-3247-add2ecdd8a01/mzaf_5065829349593701112.plus.aac.p.m4a", "art": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/b4/b2/db/b4b2db1c-f17a-1b06-9de1-4ae4f1818c37/886448778134.jpg/600x600bb.jpg", "link": "https://music.apple.com/mx/album/gabriels-oboe-from-the-mission/1536479817?i=1536479859&uo=4"}, {"cancion": "Morning Mood (From Peer Gynt Suite No. 1, Op. 46)", "artista": "Alexander Gibson & London Festival Orchestra", "pie": "Una melodía que invita a reflexionar sobre el bienestar y la transformación personal.", "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/Music2/v4/43/ac/b6/43acb6a2-7012-a1e2-96ab-597d45c660a2/mzaf_149898457741345519.plus.aac.p.m4a", "art": "https://is1-ssl.mzstatic.com/image/thumb/Music/3f/35/a8/mzi.uyeobdbb.jpg/600x600bb.jpg", "link": "https://music.apple.com/mx/album/morning-mood-from-peer-gynt-suite-no-1-op-46/366687490?i=366688278&uo=4"}],idx=0;try{var kk='tg_rot_p_'+"the-5-resets";var v=parseInt(localStorage.getItem(kk)||'-1',10);idx=((isNaN(v)?-1:v)+1)%C.length;localStorage.setItem(kk,String(idx));}catch(e){idx=0;}
   var $=function(i){return document.getElementById(i);};
   if(en){document.documentElement.lang='en';$('kicker').textContent=T.k;$('porque').textContent=T.pq;$('abrir').textContent=T.v;$('abrir').href="https://app.triggui.com/t/the-5-resets/en/?w=s";if($('video')){$('video').textContent=T.vd;}$('badgeImg').src='https://tools.applemediaservices.com/api/badges/listen-on-apple-music/badge/en-us';$('footLibro').textContent="The 5 Resets";$('hudSem').textContent=T.ed+"79";}
-  var au=new Audio("https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/eb/64/dc/eb64dcee-fc6b-0764-3247-add2ecdd8a01/mzaf_5065829349593701112.plus.aac.p.m4a");au.preload='auto';var card=$('card'),aro=$('aro'),cometa=$('cometa'),kick=$('kicker'),hint=$('hint');
+  var cur=C[idx]||C[0];
+  function pintaCand(){var art=$('art');if(art&&cur.art)art.src=cur.art;document.querySelector('.tit').textContent=cur.cancion;document.querySelector('.sub').textContent=cur.artista;$('pie').textContent=cur.pie||'';$('badge').href=cur.link||'#';document.title=cur.cancion+' — '+cur.artista+' · Triggui';
+    var d=$('dots');d.innerHTML='';C.forEach(function(x,i){var b=document.createElement('button');b.className=i===idx?'on':'';b.setAttribute('aria-label',x.cancion);b.addEventListener('click',function(ev){ev.stopPropagation();if(i===idx)return;idx=i;cur=C[idx];try{localStorage.setItem('tg_rot_p_'+"the-5-resets",String(idx));}catch(e){}var estaba=!au.paused;au.pause();au.src=cur.preview;sono=false;pausado=false;aro.style.setProperty('--vh-p','0%');pintaCand();if(estaba)play();else ui(false);});d.appendChild(b);});}
+  var au=new Audio(cur.preview);au.preload='auto';var card=$('card'),aro=$('aro'),cometa=$('cometa'),kick=$('kicker'),hint=$('hint');
+  pintaCand();
   var sono=false,pausado=false,fade=null;
   function ui(p){card.classList.toggle('tocando',p);kick.textContent=p?T.s:T.k;kick.classList.toggle('acc',p);$('vin').setAttribute('aria-label',p?(en?'Pause':'Pausa'):(en?'Play':'Reproducir'));}
   var arrancando=false;
   function play(){if(fade){clearInterval(fade);fade=null;}au.volume=1;arrancando=true;kick.textContent=en?'🎧 Loading…':'🎧 Cargando…';
-    return au.play().then(function(){arrancando=false;ui(true);hint.textContent='';if(!sono){sono=true;try{gtag('event','musica_play',{contexto:'pieza',slug:"the-5-resets",cancion:"Gabriel's Oboe (From \"The Mission\")",artista:"HAUSER, Czech Studio Orchestra & Robert Ziegler"});}catch(e){}}
-    try{if('mediaSession' in navigator){navigator.mediaSession.metadata=new MediaMetadata({title:"Gabriel's Oboe (From \"The Mission\")",artist:"HAUSER, Czech Studio Orchestra & Robert Ziegler",album:"The 5 Resets",artwork:[{"src": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/b4/b2/db/b4b2db1c-f17a-1b06-9de1-4ae4f1818c37/886448778134.jpg/600x600bb.jpg", "sizes": "600x600", "type": "image/jpeg"}]});}}catch(e){}}).catch(function(){arrancando=false;ui(false);});}
+    return au.play().then(function(){arrancando=false;ui(true);hint.textContent='';if(!sono){sono=true;try{gtag('event','musica_play',{contexto:'pieza',slug:"the-5-resets",cancion:cur.cancion,artista:cur.artista,indice:idx});}catch(e){}}
+    try{if('mediaSession' in navigator){navigator.mediaSession.metadata=new MediaMetadata({title:cur.cancion,artist:cur.artista,album:"The 5 Resets",artwork:cur.art?[{src:cur.art,sizes:'600x600',type:'image/jpeg'}]:[]});}}catch(e){}}).catch(function(){arrancando=false;ui(false);});}
   au.addEventListener('playing',function(){arrancando=false;ui(true);});
   function toggle(){if(arrancando)return;if(au.paused){pausado=false;play();}else{pausado=true;au.pause();ui(false);hint.textContent=T.p;}}
   $('vin').addEventListener('click',function(ev){ev.stopPropagation();toggle();});

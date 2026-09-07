@@ -43,6 +43,7 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 
 .fac{position:relative;width:100%;max-width:520px;aspect-ratio:16/9;border-radius:18px;overflow:hidden;background:#000;box-shadow:0 0 0 2px var(--acc),0 26px 70px rgba(0,0,0,.6)}
 .fac iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.dots{display:flex;gap:8px;justify-content:center;margin-top:14px}.dots button{width:8px;height:8px;border-radius:50%;border:0;padding:0;background:rgba(255,255,255,.22);cursor:pointer}.dots button.on{background:var(--acc);box-shadow:0 0 10px var(--acc)}
 </style>
 </head>
 <body>
@@ -51,7 +52,8 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
   <div class="fac" id="fac">
     <iframe id="yt" src="https://www.youtube-nocookie.com/embed/jAxEjahplQA?playsinline=1&rel=0&modestbranding=1&enablejsapi=1" title="04 JUL 2026 Carolina Camus presenta libro “CEO H.U.M.A.N.”, una nueva mirada sobre el lide" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
   </div>
-  <div class="sem" id="kicker" style="margin-top:22px">🎬 El video de la edición · 19 min</div>
+  <div class="dots" id="dots" aria-label="Otros videos de esta edición"></div>
+  <div class="sem" id="kicker" style="margin-top:16px">🎬 El video de la edición · 19 min</div>
   <h1 class="tit">04 JUL 2026 Carolina Camus presenta libro “CEO H.U.M.A.N.”, una nueva mirada sobre el lide</h1>
   <p class="sub">CANAL 2 / CHILENA FM San Antonio, Chile</p>
   <div class="hint" id="hint">Toca ▶ para verlo aquí mismo</div>
@@ -60,7 +62,7 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
     <p id="pie">Camus presenta su libro y profundiza en un liderazgo basado en la humildad y autenticidad, alineado con el aprendizaje de desafíos.</p>
     <div class="acts">
       <a class="pill" id="abrir" href="https://app.triggui.com/t/ceo-human/?w=s">Ver la edición →</a>
-      <a class='pill g' id='pieza' href='https://app.triggui.com/t/ceo-human/pieza/?w=s'>🎧 Su pieza</a>
+      <a class='pill g' id='pieza' href='https://app.triggui.com/t/ceo-human/pieza/?w=s'>🎧 Su melodía</a>
     </div>
   </div>
   <div class="foot"><span class="sem">Triggui · <b id="footLibro">CEO Human</b></span></div>
@@ -69,10 +71,17 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 (function(){
   var en=(function(){try{var v=JSON.parse(localStorage.getItem('triggui_lang')||'null');if(v==='en'||v==='es')return v==='en';}catch(e){}return ((navigator.language||'es').slice(0,2)==='en');})();
   var $=function(i){return document.getElementById(i);};
-  if(en){document.documentElement.lang='en';$('kicker').textContent='🎬 The edition\'s video'+" · 19 min";$('hint').textContent='Tap ▶ to watch it right here';$('porque').textContent='Why this video';$('pie').textContent="Camus presents her book and delves into a leadership based on humility and authenticity, aligned with learning from challenges.";$('abrir').textContent='Open the edition →';$('abrir').href="https://app.triggui.com/t/ceo-human/en/?w=s";if($('pieza'))$('pieza').textContent='🎧 Its piece';$('footLibro').textContent="CEO Human";$('hudSem').textContent='EDITION · #'+"68";}
-  /* el reproductor real vive desde el inicio: un solo toque en su ▶ reproduce en iOS, Android y escritorio; video_play llega por la IFrame API */
+  if(en){document.documentElement.lang='en';$('kicker').textContent='🎬 The edition\'s video'+" · 19 min";$('hint').textContent='Tap ▶ to watch it right here';$('porque').textContent='Why this video';$('pie').textContent="Camus presents her book and delves into a leadership based on humility and authenticity, aligned with learning from challenges.";$('abrir').textContent='Open the edition →';$('abrir').href="https://app.triggui.com/t/ceo-human/en/?w=s";if($('pieza'))$('pieza').textContent='🎧 Its melody';$('footLibro').textContent="CEO Human";$('hudSem').textContent='EDITION · #'+"68";}
+  /* 🔁 rotación: cada visita trae el siguiente video curado (3); los puntos permiten cambiarlo a mano */
+  var V=[{"id": "jAxEjahplQA", "titulo": "04 JUL 2026 Carolina Camus presenta libro “CEO H.U.M.A.N.”, una nueva mirada sobre el lide", "canal": "CANAL 2 / CHILENA FM San Antonio, Chile", "dur": 1150, "pie": "Camus presenta su libro y profundiza en un liderazgo basado en la humildad y autenticidad, alineado con el aprendizaje de desafíos.", "pie_en": "Camus presents her book and delves into a leadership based on humility and authenticity, aligned with learning from challenges."}, {"id": "dGSy-xMKLWc", "titulo": "Conversamos con Carolina Camus, autora de \"CEO H.U.M.A.N.\", sobre como liderar con humanid", "canal": "Portavoz Noticias Oficial", "dur": 1699, "pie": "Camus habla sobre la autenticidad en el liderazgo, resonando con la vulnerabilidad como base del mismo.", "pie_en": "Camus discusses authenticity in leadership, resonating with vulnerability as its foundation."}, {"id": "f-dJJiQE9aY", "titulo": "Escritora Carolina Camus - Lunes 22 de junio 2026", "canal": "radio ancoa", "dur": 983, "pie": "Camus comparte su visión sobre el liderazgo, abriendo la puerta a reflexiones sobre autenticidad y vulnerabilidad.", "pie_en": "Camus shares her vision of leadership, opening the door to reflections on authenticity and vulnerability."}],vi=0;try{var vk='tg_rot_v_'+"ceo-human";var pv=parseInt(localStorage.getItem(vk)||'-1',10);vi=((isNaN(pv)?-1:pv)+1)%V.length;localStorage.setItem(vk,String(vi));}catch(e){vi=0;}
+  var vcur=V[vi]||V[0];
+  function pintaV(){var m=vcur.dur?Math.round(vcur.dur/60)+' min':'';$('kicker').textContent=(en?'🎬 The edition’s video':'🎬 El video de la edición')+(m?' · '+m:'');document.querySelector('.tit').textContent=vcur.titulo;document.querySelector('.sub').textContent=vcur.canal||'';$('pie').textContent=en?(vcur.pie_en||''):(vcur.pie||'');document.title=vcur.titulo+' · Triggui';
+    var f=$('yt');var src='https://www.youtube-nocookie.com/embed/'+vcur.id+'?playsinline=1&rel=0&modestbranding=1&enablejsapi=1';if(f.getAttribute('src')!==src){f.setAttribute('src',src);f.setAttribute('title',vcur.titulo);}
+    var d=$('dots');d.innerHTML='';V.forEach(function(x,i){var b=document.createElement('button');b.className=i===vi?'on':'';b.setAttribute('aria-label',x.titulo);b.addEventListener('click',function(){if(i===vi)return;vi=i;vcur=V[vi];visto=false;try{localStorage.setItem('tg_rot_v_'+"ceo-human",String(vi));}catch(e){}pintaV();engancha();});d.appendChild(b);});}
   var visto=false;
-  window.onYouTubeIframeAPIReady=function(){try{new YT.Player('yt',{events:{onStateChange:function(e){if(e.data===1&&!visto){visto=true;$('hint').textContent='';try{gtag('event','video_play',{contexto:'video',slug:"ceo-human",video:"jAxEjahplQA",titulo:"04 JUL 2026 Carolina Camus presenta libro “CEO H.U.M.A.N.”, una nueva mirada sobre el lide"});}catch(x){}}}}});}catch(e){}};
+  var player=null;function engancha(){try{if(!window.YT||!YT.Player)return;player=new YT.Player('yt',{events:{onStateChange:function(e){if(e.data===1&&!visto){visto=true;$('hint').textContent='';try{gtag('event','video_play',{contexto:'video',slug:"ceo-human",video:vcur.id,titulo:vcur.titulo,indice:vi});}catch(x){}}}}});}catch(e){}}
+  window.onYouTubeIframeAPIReady=engancha;
+  pintaV();
   var sc=document.createElement('script');sc.src='https://www.youtube.com/iframe_api';sc.async=true;document.head.appendChild(sc);
 })();
 </script>

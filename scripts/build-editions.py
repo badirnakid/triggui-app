@@ -1743,7 +1743,12 @@ __BTN_CSS__
 #vinilo.sonando:not(.abierta) #vinCometa{opacity:1}
 #vinNucleo{flex:0 0 auto;width:100%;height:100%;border:0;border-radius:50%;background:transparent;color:#fff;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;z-index:2}
 #vinilo.abierta #vinNucleo{width:38px;height:38px;flex:0 0 38px}
-#vinNucleo svg{width:17px;height:17px;display:block;filter:drop-shadow(0 0 7px rgba(255,255,255,.85)) drop-shadow(0 1px 2px rgba(0,0,0,.45))}
+#vinNucleo{position:relative}
+#vinNucleo::before{content:"";position:absolute;left:50%;top:50%;width:66%;height:66%;transform:translate(-50%,-50%);border-radius:50%;background:rgba(11,15,26,.86);box-shadow:0 0 0 2px var(--accent,#fff),0 0 18px color-mix(in srgb,var(--accent,#fff) 55%,transparent);pointer-events:none;animation:vinPlaca 3.2s ease-in-out .9s infinite}
+#vinilo.sonando #vinNucleo::before{animation:none}
+@keyframes vinPlaca{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.06)}}
+#vinNucleo svg{width:44%;height:44%;display:block;position:relative;z-index:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.45))}
+#vinIcoPlay{transform:translateX(7%)}
 #vinilo.nace{animation:vinNace .7s cubic-bezier(.34,1.56,.64,1) both}
 @keyframes vinNace{0%{transform:translateX(-50%) scale(.55);opacity:0}70%{transform:translateX(-50%) scale(1.07);opacity:1}100%{transform:translateX(-50%) scale(1);opacity:1}}
 .vinExt{opacity:0;width:0;overflow:hidden;display:flex;align-items:center;gap:10px;flex:1;min-width:0;transition:opacity .28s .18s;z-index:2}

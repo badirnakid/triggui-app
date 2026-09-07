@@ -50,9 +50,12 @@ main{{flex:1;display:flex;flex-direction:column;align-items:center;justify-conte
 def escribir_pieza(libro, out_dir, slug, base_url):
     """Escribe <out_dir>/pieza/index.html si el libro tiene música con preview. Devuelve True si la escribió."""
     m = (libro.get("_musica") or {}).get("candidatos") or []
-    c = next((x for x in m if x.get("preview")), None)
+    cands = [x for x in m if x.get("preview")][:3]
+    c = cands[0] if cands else None
     if not c:
         return False
+    CANDS = [{"cancion": x.get("cancion", ""), "artista": x.get("artista", ""), "pie": x.get("pie", ""), "preview": x.get("preview", ""),
+              "art": (x.get("art") or "").replace("100x100bb", "600x600bb"), "link": x.get("link", "")} for x in cands]
     kids = "kids" in str(out_dir)
     ruta = f"{base_url}/kids/t/{slug}" if kids else f"{base_url}/t/{slug}"
     col = libro.get("colores") or []
@@ -95,9 +98,12 @@ def escribir_pieza(libro, out_dir, slug, base_url):
 @keyframes giro{{to{{transform:rotate(360deg)}}}}
 .cometa{{position:absolute;left:50%;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--ink);box-shadow:0 0 16px var(--acc),0 0 3px #fff;transform:rotate(var(--ang,0deg)) translateY(calc(min(240px,64vw) / -2 - 7px));opacity:0;transition:opacity .3s}}
 .tocando .cometa{{opacity:1}}
-.nuc{{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:66px;height:66px;border-radius:50%;background:rgba(11,15,26,.72);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(0,0,0,.45);transition:transform .12s}}
+.nuc{{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:38%;height:38%;border-radius:50%;background:rgba(11,15,26,.88);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px var(--acc),0 0 26px color-mix(in srgb,var(--acc) 60%,transparent),0 10px 28px rgba(0,0,0,.5);transition:transform .12s;animation:placa 3.2s ease-in-out .9s infinite}}
+@keyframes placa{{0%,100%{{transform:translate(-50%,-50%) scale(1)}}50%{{transform:translate(-50%,-50%) scale(1.07)}}}}
+.tocando .nuc{{animation:none}}
 .vin:active .nuc{{transform:translate(-50%,-50%) scale(.94)}}
-.nuc svg{{width:28px;height:28px;fill:var(--ink)}}.nuc .pausa{{display:none}}
+.nuc svg{{width:46%;height:46%;fill:#fff}}.nuc .ir{{transform:translateX(7%)}}.nuc .pausa{{display:none}}
+.dots{{display:flex;gap:8px;justify-content:center;margin-top:14px}}.dots button{{width:8px;height:8px;border-radius:50%;border:0;padding:0;background:rgba(255,255,255,.22);cursor:pointer}}.dots button.on{{background:var(--acc);box-shadow:0 0 10px var(--acc)}}
 .tocando .nuc .pausa{{display:block}}.tocando .nuc .ir{{display:none}}
 .nada .art{{filter:grayscale(.4) brightness(.8)}}
 </style>
@@ -111,12 +117,13 @@ def escribir_pieza(libro, out_dir, slug, base_url):
     <div class="cometa" id="cometa"></div>
     <div class="nuc"><svg class="ir" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg><svg class="pausa" viewBox="0 0 24 24"><path d="M7 5h3.4v14H7zM13.6 5H17v14h-3.6z"/></svg></div>
   </div>
-  <div class="sem" id="kicker" style="margin-top:22px">🎧 Toca para escuchar · 30 segundos</div>
+  <div class="dots" id="dots" aria-label="Otras melodías de esta edición"></div>
+  <div class="sem" id="kicker" style="margin-top:16px">🎧 Toca para escuchar · 30 segundos</div>
   <h1 class="tit">{_E(cancion)}</h1>
   <p class="sub">{_E(artista)}</p>
   <div class="hint" id="hint"></div>
   <div class="hoja">
-    <div class="sem" id="porque">Por qué esta pieza</div>
+    <div class="sem" id="porque">Por qué esta melodía</div>
     <p id="pie">{_E(pie)}</p>
     <div class="acts">
       <a class="pill" id="abrir" href="{ruta}/?w=s">Ver la edición →</a>
@@ -129,16 +136,22 @@ def escribir_pieza(libro, out_dir, slug, base_url):
 <script>
 (function(){{
   var en=(function(){{try{{var v=JSON.parse(localStorage.getItem('triggui_lang')||'null');if(v==='en'||v==='es')return v==='en';}}catch(e){{}}return ((navigator.language||'es').slice(0,2)==='en');}})();
-  var T=en?{{k:'🎧 Tap to listen · 30 seconds',s:'🎧 Playing · 30 seconds to read',p:'Paused',a:'Again? Tap the vinyl',e:'This preview is not available right now',pq:'Why this piece',v:'Open the edition →',vd:'🎬 Its video',ed:'EDITION · #'}}:{{k:'🎧 Toca para escuchar · 30 segundos',s:'🎧 Sonando · 30 segundos para leer',p:'En pausa',a:'¿Otra vez? Toca el vinilo',e:'Este preview no está disponible ahora',pq:'Por qué esta pieza',v:'Ver la edición →',vd:'🎬 Su video',ed:'EDICIÓN · #'}};
+  var T=en?{{k:'🎧 Tap to listen · 30 seconds',s:'🎧 Playing · 30 seconds to read',p:'Paused',a:'Again? Tap the vinyl',e:'This preview is not available right now',pq:'Why this melody',v:'Open the edition →',vd:'🎬 Its video',ed:'EDITION · #'}}:{{k:'🎧 Toca para escuchar · 30 segundos',s:'🎧 Sonando · 30 segundos para leer',p:'En pausa',a:'¿Otra vez? Toca el vinilo',e:'Este preview no está disponible ahora',pq:'Por qué esta melodía',v:'Ver la edición →',vd:'🎬 Su video',ed:'EDICIÓN · #'}};
+  /* 🔁 rotación: cada visita trae la siguiente melodía curada de la edición (3), y los puntos permiten cambiarla a mano */
+  var C={_J(CANDS)},idx=0;try{{var kk='tg_rot_p_'+{_J(slug)};var v=parseInt(localStorage.getItem(kk)||'-1',10);idx=((isNaN(v)?-1:v)+1)%C.length;localStorage.setItem(kk,String(idx));}}catch(e){{idx=0;}}
   var $=function(i){{return document.getElementById(i);}};
   if(en){{document.documentElement.lang='en';$('kicker').textContent=T.k;$('porque').textContent=T.pq;$('abrir').textContent=T.v;$('abrir').href={_J(ruta + "/en/?w=s")};if($('video')){{$('video').textContent=T.vd;}}$('badgeImg').src='https://tools.applemediaservices.com/api/badges/listen-on-apple-music/badge/en-us';$('footLibro').textContent={_J(tit_en)};{("$('hudSem').textContent=T.ed+" + _J(str(numero)) + ";") if numero else ""}}}
-  var au=new Audio({_J(c.get("preview", ""))});au.preload='auto';var card=$('card'),aro=$('aro'),cometa=$('cometa'),kick=$('kicker'),hint=$('hint');
+  var cur=C[idx]||C[0];
+  function pintaCand(){{var art=$('art');if(art&&cur.art)art.src=cur.art;document.querySelector('.tit').textContent=cur.cancion;document.querySelector('.sub').textContent=cur.artista;$('pie').textContent=cur.pie||'';$('badge').href=cur.link||'#';document.title=cur.cancion+' — '+cur.artista+' · Triggui';
+    var d=$('dots');d.innerHTML='';C.forEach(function(x,i){{var b=document.createElement('button');b.className=i===idx?'on':'';b.setAttribute('aria-label',x.cancion);b.addEventListener('click',function(ev){{ev.stopPropagation();if(i===idx)return;idx=i;cur=C[idx];try{{localStorage.setItem('tg_rot_p_'+{_J(slug)},String(idx));}}catch(e){{}}var estaba=!au.paused;au.pause();au.src=cur.preview;sono=false;pausado=false;aro.style.setProperty('--vh-p','0%');pintaCand();if(estaba)play();else ui(false);}});d.appendChild(b);}});}}
+  var au=new Audio(cur.preview);au.preload='auto';var card=$('card'),aro=$('aro'),cometa=$('cometa'),kick=$('kicker'),hint=$('hint');
+  pintaCand();
   var sono=false,pausado=false,fade=null;
   function ui(p){{card.classList.toggle('tocando',p);kick.textContent=p?T.s:T.k;kick.classList.toggle('acc',p);$('vin').setAttribute('aria-label',p?(en?'Pause':'Pausa'):(en?'Play':'Reproducir'));}}
   var arrancando=false;
   function play(){{if(fade){{clearInterval(fade);fade=null;}}au.volume=1;arrancando=true;kick.textContent=en?'🎧 Loading…':'🎧 Cargando…';
-    return au.play().then(function(){{arrancando=false;ui(true);hint.textContent='';if(!sono){{sono=true;try{{gtag('event','musica_play',{{contexto:'pieza',slug:{_J(slug)},cancion:{_J(cancion)},artista:{_J(artista)}}});}}catch(e){{}}}}
-    try{{if('mediaSession' in navigator){{navigator.mediaSession.metadata=new MediaMetadata({{title:{_J(cancion)},artist:{_J(artista)},album:{_J(titulo)},artwork:{_J([{"src": art, "sizes": "600x600", "type": "image/jpeg"}] if art else [])}}});}}}}catch(e){{}}}}).catch(function(){{arrancando=false;ui(false);}});}}
+    return au.play().then(function(){{arrancando=false;ui(true);hint.textContent='';if(!sono){{sono=true;try{{gtag('event','musica_play',{{contexto:'pieza',slug:{_J(slug)},cancion:cur.cancion,artista:cur.artista,indice:idx}});}}catch(e){{}}}}
+    try{{if('mediaSession' in navigator){{navigator.mediaSession.metadata=new MediaMetadata({{title:cur.cancion,artist:cur.artista,album:{_J(titulo)},artwork:cur.art?[{{src:cur.art,sizes:'600x600',type:'image/jpeg'}}]:[]}});}}}}catch(e){{}}}}).catch(function(){{arrancando=false;ui(false);}});}}
   au.addEventListener('playing',function(){{arrancando=false;ui(true);}});
   function toggle(){{if(arrancando)return;if(au.paused){{pausado=false;play();}}else{{pausado=true;au.pause();ui(false);hint.textContent=T.p;}}}}
   $('vin').addEventListener('click',function(ev){{ev.stopPropagation();toggle();}});
@@ -165,9 +178,11 @@ def escribir_video(libro, out_dir, slug, base_url):
     if "kids" in str(out_dir):
         return False
     vs = (libro.get("_video") or {}).get("candidatos") or []
-    v = next((x for x in vs if x.get("id")), None)
+    vc = [x for x in vs if x.get("id")][:3]
+    v = vc[0] if vc else None
     if not v:
         return False
+    VCANDS = [{"id": x.get("id"), "titulo": x.get("titulo", ""), "canal": x.get("canal", ""), "dur": int(x.get("dur") or 0), "pie": x.get("pie") or "", "pie_en": x.get("pie_en") or (x.get("pie") or "")} for x in vc]
     ruta = f"{base_url}/t/{slug}"
     col = libro.get("colores") or []
     acc = col[0] if col else "#E8A838"
@@ -205,6 +220,7 @@ def escribir_video(libro, out_dir, slug, base_url):
 <style>{_base_css(acc)}
 .fac{{position:relative;width:100%;max-width:520px;aspect-ratio:16/9;border-radius:18px;overflow:hidden;background:#000;box-shadow:0 0 0 2px var(--acc),0 26px 70px rgba(0,0,0,.6)}}
 .fac iframe{{position:absolute;inset:0;width:100%;height:100%;border:0}}
+.dots{{display:flex;gap:8px;justify-content:center;margin-top:14px}}.dots button{{width:8px;height:8px;border-radius:50%;border:0;padding:0;background:rgba(255,255,255,.22);cursor:pointer}}.dots button.on{{background:var(--acc);box-shadow:0 0 10px var(--acc)}}
 </style>
 </head>
 <body>
@@ -213,7 +229,8 @@ def escribir_video(libro, out_dir, slug, base_url):
   <div class="fac" id="fac">
     <iframe id="yt" src="https://www.youtube-nocookie.com/embed/{_E(vid)}?playsinline=1&rel=0&modestbranding=1&enablejsapi=1" title="{_E(vtit)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
   </div>
-  <div class="sem" id="kicker" style="margin-top:22px">🎬 El video de la edición{(" · " + mins) if mins else ""}</div>
+  <div class="dots" id="dots" aria-label="Otros videos de esta edición"></div>
+  <div class="sem" id="kicker" style="margin-top:16px">🎬 El video de la edición{(" · " + mins) if mins else ""}</div>
   <h1 class="tit">{_E(vtit)}</h1>
   <p class="sub">{_E(canal)}</p>
   <div class="hint" id="hint">Toca ▶ para verlo aquí mismo</div>
@@ -222,7 +239,7 @@ def escribir_video(libro, out_dir, slug, base_url):
     <p id="pie">{_E(pie)}</p>
     <div class="acts">
       <a class="pill" id="abrir" href="{ruta}/?w=s">Ver la edición →</a>
-      {"<a class='pill g' id='pieza' href='" + ruta + "/pieza/?w=s'>🎧 Su pieza</a>" if hay_pieza else ""}
+      {"<a class='pill g' id='pieza' href='" + ruta + "/pieza/?w=s'>🎧 Su melodía</a>" if hay_pieza else ""}
     </div>
   </div>
   <div class="foot"><span class="sem">Triggui · <b id="footLibro">{_E(titulo)}</b></span></div>
@@ -231,10 +248,17 @@ def escribir_video(libro, out_dir, slug, base_url):
 (function(){{
   var en=(function(){{try{{var v=JSON.parse(localStorage.getItem('triggui_lang')||'null');if(v==='en'||v==='es')return v==='en';}}catch(e){{}}return ((navigator.language||'es').slice(0,2)==='en');}})();
   var $=function(i){{return document.getElementById(i);}};
-  if(en){{document.documentElement.lang='en';$('kicker').textContent='🎬 The edition\\'s video'+{_J((" · " + mins) if mins else "")};$('hint').textContent='Tap ▶ to watch it right here';$('porque').textContent='Why this video';$('pie').textContent={_J(pie_en)};$('abrir').textContent='Open the edition →';$('abrir').href={_J(ruta + "/en/?w=s")};if($('pieza'))$('pieza').textContent='🎧 Its piece';$('footLibro').textContent={_J(tit_en)};{("$('hudSem').textContent='EDITION · #'+" + _J(str(numero)) + ";") if numero else ""}}}
-  /* el reproductor real vive desde el inicio: un solo toque en su ▶ reproduce en iOS, Android y escritorio; video_play llega por la IFrame API */
+  if(en){{document.documentElement.lang='en';$('kicker').textContent='🎬 The edition\\'s video'+{_J((" · " + mins) if mins else "")};$('hint').textContent='Tap ▶ to watch it right here';$('porque').textContent='Why this video';$('pie').textContent={_J(pie_en)};$('abrir').textContent='Open the edition →';$('abrir').href={_J(ruta + "/en/?w=s")};if($('pieza'))$('pieza').textContent='🎧 Its melody';$('footLibro').textContent={_J(tit_en)};{("$('hudSem').textContent='EDITION · #'+" + _J(str(numero)) + ";") if numero else ""}}}
+  /* 🔁 rotación: cada visita trae el siguiente video curado (3); los puntos permiten cambiarlo a mano */
+  var V={_J(VCANDS)},vi=0;try{{var vk='tg_rot_v_'+{_J(slug)};var pv=parseInt(localStorage.getItem(vk)||'-1',10);vi=((isNaN(pv)?-1:pv)+1)%V.length;localStorage.setItem(vk,String(vi));}}catch(e){{vi=0;}}
+  var vcur=V[vi]||V[0];
+  function pintaV(){{var m=vcur.dur?Math.round(vcur.dur/60)+' min':'';$('kicker').textContent=(en?'🎬 The edition’s video':'🎬 El video de la edición')+(m?' · '+m:'');document.querySelector('.tit').textContent=vcur.titulo;document.querySelector('.sub').textContent=vcur.canal||'';$('pie').textContent=en?(vcur.pie_en||''):(vcur.pie||'');document.title=vcur.titulo+' · Triggui';
+    var f=$('yt');var src='https://www.youtube-nocookie.com/embed/'+vcur.id+'?playsinline=1&rel=0&modestbranding=1&enablejsapi=1';if(f.getAttribute('src')!==src){{f.setAttribute('src',src);f.setAttribute('title',vcur.titulo);}}
+    var d=$('dots');d.innerHTML='';V.forEach(function(x,i){{var b=document.createElement('button');b.className=i===vi?'on':'';b.setAttribute('aria-label',x.titulo);b.addEventListener('click',function(){{if(i===vi)return;vi=i;vcur=V[vi];visto=false;try{{localStorage.setItem('tg_rot_v_'+{_J(slug)},String(vi));}}catch(e){{}}pintaV();engancha();}});d.appendChild(b);}});}}
   var visto=false;
-  window.onYouTubeIframeAPIReady=function(){{try{{new YT.Player('yt',{{events:{{onStateChange:function(e){{if(e.data===1&&!visto){{visto=true;$('hint').textContent='';try{{gtag('event','video_play',{{contexto:'video',slug:{_J(slug)},video:{_J(vid)},titulo:{_J(vtit)}}});}}catch(x){{}}}}}}}}}});}}catch(e){{}}}};
+  var player=null;function engancha(){{try{{if(!window.YT||!YT.Player)return;player=new YT.Player('yt',{{events:{{onStateChange:function(e){{if(e.data===1&&!visto){{visto=true;$('hint').textContent='';try{{gtag('event','video_play',{{contexto:'video',slug:{_J(slug)},video:vcur.id,titulo:vcur.titulo,indice:vi}});}}catch(x){{}}}}}}}}}});}}catch(e){{}}}}
+  window.onYouTubeIframeAPIReady=engancha;
+  pintaV();
   var sc=document.createElement('script');sc.src='https://www.youtube.com/iframe_api';sc.async=true;document.head.appendChild(sc);
 }})();
 </script>

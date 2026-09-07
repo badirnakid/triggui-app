@@ -43,6 +43,7 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 
 .fac{position:relative;width:100%;max-width:520px;aspect-ratio:16/9;border-radius:18px;overflow:hidden;background:#000;box-shadow:0 0 0 2px var(--acc),0 26px 70px rgba(0,0,0,.6)}
 .fac iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.dots{display:flex;gap:8px;justify-content:center;margin-top:14px}.dots button{width:8px;height:8px;border-radius:50%;border:0;padding:0;background:rgba(255,255,255,.22);cursor:pointer}.dots button.on{background:var(--acc);box-shadow:0 0 10px var(--acc)}
 </style>
 </head>
 <body>
@@ -51,7 +52,8 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
   <div class="fac" id="fac">
     <iframe id="yt" src="https://www.youtube-nocookie.com/embed/DlDrDEZCuMw?playsinline=1&rel=0&modestbranding=1&enablejsapi=1" title="Simplify: How the Best Businesses in the World Succeed?" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
   </div>
-  <div class="sem" id="kicker" style="margin-top:22px">🎬 El video de la edición · 3 min</div>
+  <div class="dots" id="dots" aria-label="Otros videos de esta edición"></div>
+  <div class="sem" id="kicker" style="margin-top:16px">🎬 El video de la edición · 3 min</div>
   <h1 class="tit">Simplify: How the Best Businesses in the World Succeed?</h1>
   <p class="sub">Planet Perry</p>
   <div class="hint" id="hint">Toca ▶ para verlo aquí mismo</div>
@@ -60,7 +62,7 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
     <p id="pie">Koch comparte lecciones sobre cómo la simplicidad es clave en los negocios, invitando a reflexionar sobre procesos a simplificar.</p>
     <div class="acts">
       <a class="pill" id="abrir" href="https://app.triggui.com/t/simplify-how-the-best-businesses-in-the-world-succeed/?w=s">Ver la edición →</a>
-      <a class='pill g' id='pieza' href='https://app.triggui.com/t/simplify-how-the-best-businesses-in-the-world-succeed/pieza/?w=s'>🎧 Su pieza</a>
+      <a class='pill g' id='pieza' href='https://app.triggui.com/t/simplify-how-the-best-businesses-in-the-world-succeed/pieza/?w=s'>🎧 Su melodía</a>
     </div>
   </div>
   <div class="foot"><span class="sem">Triggui · <b id="footLibro">Simplify: How the Best Businesses in the World Succeed</b></span></div>
@@ -69,10 +71,17 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 (function(){
   var en=(function(){try{var v=JSON.parse(localStorage.getItem('triggui_lang')||'null');if(v==='en'||v==='es')return v==='en';}catch(e){}return ((navigator.language||'es').slice(0,2)==='en');})();
   var $=function(i){return document.getElementById(i);};
-  if(en){document.documentElement.lang='en';$('kicker').textContent='🎬 The edition\'s video'+" · 3 min";$('hint').textContent='Tap ▶ to watch it right here';$('porque').textContent='Why this video';$('pie').textContent="Koch shares lessons on how simplicity is key in business, inviting reflection on processes to simplify.";$('abrir').textContent='Open the edition →';$('abrir').href="https://app.triggui.com/t/simplify-how-the-best-businesses-in-the-world-succeed/en/?w=s";if($('pieza'))$('pieza').textContent='🎧 Its piece';$('footLibro').textContent="Simplify: How the Best Businesses in the World Succeed";$('hudSem').textContent='EDITION · #'+"65";}
-  /* el reproductor real vive desde el inicio: un solo toque en su ▶ reproduce en iOS, Android y escritorio; video_play llega por la IFrame API */
+  if(en){document.documentElement.lang='en';$('kicker').textContent='🎬 The edition\'s video'+" · 3 min";$('hint').textContent='Tap ▶ to watch it right here';$('porque').textContent='Why this video';$('pie').textContent="Koch shares lessons on how simplicity is key in business, inviting reflection on processes to simplify.";$('abrir').textContent='Open the edition →';$('abrir').href="https://app.triggui.com/t/simplify-how-the-best-businesses-in-the-world-succeed/en/?w=s";if($('pieza'))$('pieza').textContent='🎧 Its melody';$('footLibro').textContent="Simplify: How the Best Businesses in the World Succeed";$('hudSem').textContent='EDITION · #'+"65";}
+  /* 🔁 rotación: cada visita trae el siguiente video curado (3); los puntos permiten cambiarlo a mano */
+  var V=[{"id": "DlDrDEZCuMw", "titulo": "Simplify: How the Best Businesses in the World Succeed?", "canal": "Planet Perry", "dur": 190, "pie": "Koch comparte lecciones sobre cómo la simplicidad es clave en los negocios, invitando a reflexionar sobre procesos a simplificar.", "pie_en": "Koch shares lessons on how simplicity is key in business, inviting reflection on processes to simplify."}, {"id": "L5MQKEhRnqU", "titulo": "Star Principle in Business: McDonald's Burgers & IKEA Furniture", "canal": "Planet Perry", "dur": 437, "pie": "Koch explica su principio de estrella en negocios, tocando la importancia de la simplicidad en el éxito empresarial.", "pie_en": "Koch explains his star principle in business, touching on the importance of simplicity in business success."}, {"id": "RbBJczdJTA8", "titulo": "Millionaire Richard Koch Rules to Work 1 Hour A Day!", "canal": "Planet Perry", "dur": 356, "pie": "Koch comparte sus reglas de vida y trabajo, resonando con la idea de simplificar para alcanzar el éxito.", "pie_en": "Koch shares his life and work rules, resonating with the idea of simplifying to achieve success."}],vi=0;try{var vk='tg_rot_v_'+"simplify-how-the-best-businesses-in-the-world-succeed";var pv=parseInt(localStorage.getItem(vk)||'-1',10);vi=((isNaN(pv)?-1:pv)+1)%V.length;localStorage.setItem(vk,String(vi));}catch(e){vi=0;}
+  var vcur=V[vi]||V[0];
+  function pintaV(){var m=vcur.dur?Math.round(vcur.dur/60)+' min':'';$('kicker').textContent=(en?'🎬 The edition’s video':'🎬 El video de la edición')+(m?' · '+m:'');document.querySelector('.tit').textContent=vcur.titulo;document.querySelector('.sub').textContent=vcur.canal||'';$('pie').textContent=en?(vcur.pie_en||''):(vcur.pie||'');document.title=vcur.titulo+' · Triggui';
+    var f=$('yt');var src='https://www.youtube-nocookie.com/embed/'+vcur.id+'?playsinline=1&rel=0&modestbranding=1&enablejsapi=1';if(f.getAttribute('src')!==src){f.setAttribute('src',src);f.setAttribute('title',vcur.titulo);}
+    var d=$('dots');d.innerHTML='';V.forEach(function(x,i){var b=document.createElement('button');b.className=i===vi?'on':'';b.setAttribute('aria-label',x.titulo);b.addEventListener('click',function(){if(i===vi)return;vi=i;vcur=V[vi];visto=false;try{localStorage.setItem('tg_rot_v_'+"simplify-how-the-best-businesses-in-the-world-succeed",String(vi));}catch(e){}pintaV();engancha();});d.appendChild(b);});}
   var visto=false;
-  window.onYouTubeIframeAPIReady=function(){try{new YT.Player('yt',{events:{onStateChange:function(e){if(e.data===1&&!visto){visto=true;$('hint').textContent='';try{gtag('event','video_play',{contexto:'video',slug:"simplify-how-the-best-businesses-in-the-world-succeed",video:"DlDrDEZCuMw",titulo:"Simplify: How the Best Businesses in the World Succeed?"});}catch(x){}}}}});}catch(e){}};
+  var player=null;function engancha(){try{if(!window.YT||!YT.Player)return;player=new YT.Player('yt',{events:{onStateChange:function(e){if(e.data===1&&!visto){visto=true;$('hint').textContent='';try{gtag('event','video_play',{contexto:'video',slug:"simplify-how-the-best-businesses-in-the-world-succeed",video:vcur.id,titulo:vcur.titulo,indice:vi});}catch(x){}}}}});}catch(e){}}
+  window.onYouTubeIframeAPIReady=engancha;
+  pintaV();
   var sc=document.createElement('script');sc.src='https://www.youtube.com/iframe_api';sc.async=true;document.head.appendChild(sc);
 })();
 </script>
