@@ -48,12 +48,20 @@ main{{flex:1;display:flex;flex-direction:column;align-items:center;justify-conte
 
 # ─────────────────────────────── 🎧 PIEZA ───────────────────────────────
 def escribir_pieza(libro, out_dir, slug, base_url):
-    """Escribe <out_dir>/pieza/index.html si el libro tiene música con preview. Devuelve True si la escribió."""
+    """Escribe /pieza/ (candidata 0, con rotación) y /pieza/1/, /pieza/2/ (candidata fija) con su OG cada una. True si escribió."""
     m = (libro.get("_musica") or {}).get("candidatos") or []
     cands = [x for x in m if x.get("preview")][:3]
-    c = cands[0] if cands else None
-    if not c:
+    if not cands:
         return False
+    ok = False
+    for i in range(len(cands)):
+        ok = _escribir_pieza_i(libro, out_dir, slug, base_url, cands, i) or ok
+    return ok
+
+def _escribir_pieza_i(libro, out_dir, slug, base_url, cands, i):
+    c = cands[i]
+    sufijo = "" if i == 0 else f"{i}/"          # ruta relativa dentro de /pieza/
+    og_nombre = "pieza_og.jpg" if i == 0 else f"pieza_og_{i}.jpg"
     CANDS = [{"cancion": x.get("cancion", ""), "artista": x.get("artista", ""), "pie": x.get("pie", ""), "preview": x.get("preview", ""),
               "art": (x.get("art") or "").replace("100x100bb", "600x600bb"), "link": x.get("link", "")} for x in cands]
     kids = "kids" in str(out_dir)
@@ -65,6 +73,7 @@ def escribir_pieza(libro, out_dir, slug, base_url):
     cancion = c.get("cancion", ""); artista = c.get("artista", ""); pie = c.get("pie", "")
     art = (c.get("art") or "").replace("100x100bb", "600x600bb")
     hay_video = bool(not kids and ((libro.get("_video") or {}).get("candidatos") or []))
+    propia = f"{ruta}/pieza/{sufijo}"
     page = f"""<!doctype html>
 <html lang="es">
 <head>
@@ -74,16 +83,16 @@ def escribir_pieza(libro, out_dir, slug, base_url):
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>{_E(cancion)} — {_E(artista)} · 30 segundos · Triggui</title>
 <meta name="description" content="{_E(pie)}">
-<link rel="canonical" href="{ruta}/pieza/">
+<link rel="canonical" href="{propia}">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Triggui">
 <meta property="og:title" content="{_E(cancion)} — {_E(artista)}">
 <meta property="og:description" content="{_E(pie)}">
-<meta property="og:image" content="{ruta}/pieza_og.jpg">
-<meta property="og:image:secure_url" content="{ruta}/pieza_og.jpg">
+<meta property="og:image" content="{ruta}/{og_nombre}">
+<meta property="og:image:secure_url" content="{ruta}/{og_nombre}">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta property="og:image:type" content="image/jpeg">
-<meta property="og:url" content="{ruta}/pieza/">
+<meta property="og:url" content="{propia}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#0B0F1A">
 <link rel="icon" href="{base_url}/favicon.ico">
@@ -137,7 +146,7 @@ def escribir_pieza(libro, out_dir, slug, base_url):
   var en=(function(){{try{{var v=JSON.parse(localStorage.getItem('triggui_lang')||'null');if(v==='en'||v==='es')return v==='en';}}catch(e){{}}return ((navigator.language||'es').slice(0,2)==='en');}})();
   var T=en?{{k:'🎧 Tap to listen · 30 seconds',s:'🎧 Playing · 30 seconds to read',p:'Paused',a:'Again? Tap the vinyl',e:'This preview is not available right now',pq:'Why this melody',v:'Open the edition →',vd:'🎬 Its video',ed:'EDITION · #'}}:{{k:'🎧 Toca para escuchar · 30 segundos',s:'🎧 Sonando · 30 segundos para leer',p:'En pausa',a:'¿Otra vez? Toca el vinilo',e:'Este preview no está disponible ahora',pq:'Por qué esta melodía',v:'Ver la edición →',vd:'🎬 Su video',ed:'EDICIÓN · #'}};
   /* 🔁 rotación: cada visita trae la siguiente melodía curada de la edición (3), y los puntos permiten cambiarla a mano */
-  var C={_J(CANDS)},idx=0;try{{var qm=parseInt(new URLSearchParams(location.search).get('m')||'',10);var kk='tg_rot_p_'+{_J(slug)};if(!isNaN(qm)&&qm>=0&&qm<C.length){{idx=qm;}}else{{var v=parseInt(localStorage.getItem(kk)||'-1',10);idx=((isNaN(v)?-1:v)+1)%C.length;}}localStorage.setItem(kk,String(idx));}}catch(e){{idx=0;}}
+  var FIJA={_J(i)},C={_J(CANDS)},idx=FIJA;try{{var qm=parseInt(new URLSearchParams(location.search).get('m')||'',10);var kk='tg_rot_p_'+{_J(slug)};if(!isNaN(qm)&&qm>=0&&qm<C.length){{idx=qm;}}else if(FIJA>0){{idx=FIJA;}}else{{var v=parseInt(localStorage.getItem(kk)||'-1',10);idx=((isNaN(v)?-1:v)+1)%C.length;}}localStorage.setItem(kk,String(idx));}}catch(e){{idx=FIJA;}}
   var $=function(i){{return document.getElementById(i);}};
   if(en){{document.documentElement.lang='en';$('kicker').textContent=T.k;$('porque').textContent=T.pq;$('abrir').textContent=T.v;$('abrir').href={_J(ruta + "/en/?w=s")};if($('video')){{$('video').textContent=T.vd;}}$('badgeImg').src='https://tools.applemediaservices.com/api/badges/listen-on-apple-music/badge/en-us';$('footLibro').textContent={_J(tit_en)};{("$('hudSem').textContent=T.ed+" + _J(str(numero)) + ";") if numero else ""}}}
   var cur=C[idx]||C[0];
@@ -166,23 +175,32 @@ def escribir_pieza(libro, out_dir, slug, base_url):
 </script>
 </body>
 </html>"""
-    d = Path(out_dir) / "pieza"
+    d = Path(out_dir) / "pieza" / (str(i) if i > 0 else "")
     d.mkdir(parents=True, exist_ok=True)
     (d / "index.html").write_text(page, encoding="utf-8")
     return True
 
 # ─────────────────────────────── 🎬 VIDEO ───────────────────────────────
 def escribir_video(libro, out_dir, slug, base_url):
-    """Escribe <out_dir>/video/index.html si el libro (adulto) tiene video. Devuelve True si la escribió."""
+    """Escribe /video/ (candidato 0, con rotación) y /video/1/, /video/2/ (fijos) con su OG cada uno. True si escribió."""
     if "kids" in str(out_dir):
         return False
     vs = (libro.get("_video") or {}).get("candidatos") or []
     vc = [x for x in vs if x.get("id")][:3]
-    v = vc[0] if vc else None
-    if not v:
+    if not vc:
         return False
+    ok = False
+    for i in range(len(vc)):
+        ok = _escribir_video_i(libro, out_dir, slug, base_url, vc, i) or ok
+    return ok
+
+def _escribir_video_i(libro, out_dir, slug, base_url, vc, i):
+    v = vc[i]
+    sufijo = "" if i == 0 else f"{i}/"
+    og_nombre = "video_og.jpg" if i == 0 else f"video_og_{i}.jpg"
     VCANDS = [{"id": x.get("id"), "titulo": x.get("titulo", ""), "canal": x.get("canal", ""), "dur": int(x.get("dur") or 0), "pie": x.get("pie") or "", "pie_en": x.get("pie_en") or (x.get("pie") or "")} for x in vc]
     ruta = f"{base_url}/t/{slug}"
+    propia = f"{ruta}/video/{sufijo}"
     col = libro.get("colores") or []
     acc = col[0] if col else "#E8A838"
     titulo = libro.get("titulo", ""); tit_en = libro.get("titulo_en") or titulo
@@ -201,16 +219,16 @@ def escribir_video(libro, out_dir, slug, base_url):
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>{_E(vtit)} · Triggui</title>
 <meta name="description" content="{_E(pie or desc)}">
-<link rel="canonical" href="{ruta}/video/">
+<link rel="canonical" href="{propia}">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Triggui">
 <meta property="og:title" content="{_E(vtit)}">
 <meta property="og:description" content="{_E(desc)}">
-<meta property="og:image" content="{ruta}/video_og.jpg">
-<meta property="og:image:secure_url" content="{ruta}/video_og.jpg">
+<meta property="og:image" content="{ruta}/{og_nombre}">
+<meta property="og:image:secure_url" content="{ruta}/{og_nombre}">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta property="og:image:type" content="image/jpeg">
-<meta property="og:url" content="{ruta}/video/">
+<meta property="og:url" content="{propia}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#0B0F1A">
 <link rel="icon" href="{base_url}/favicon.ico">
@@ -249,7 +267,7 @@ def escribir_video(libro, out_dir, slug, base_url):
   var $=function(i){{return document.getElementById(i);}};
   if(en){{document.documentElement.lang='en';$('kicker').textContent='🎬 The edition\\'s video'+{_J((" · " + mins) if mins else "")};$('hint').textContent='Tap ▶ to watch it right here';$('porque').textContent='Why this video';$('pie').textContent={_J(pie_en)};$('abrir').textContent='Open the edition →';$('abrir').href={_J(ruta + "/en/?w=s")};if($('pieza'))$('pieza').textContent='🎧 Its melody';$('footLibro').textContent={_J(tit_en)};{("$('hudSem').textContent='EDITION · #'+" + _J(str(numero)) + ";") if numero else ""}}}
   /* 🔁 rotación: cada visita trae el siguiente video curado (3); los puntos permiten cambiarlo a mano */
-  var V={_J(VCANDS)},vi=0;try{{var qv=parseInt(new URLSearchParams(location.search).get('v')||'',10);var vk='tg_rot_v_'+{_J(slug)};if(!isNaN(qv)&&qv>=0&&qv<V.length){{vi=qv;}}else{{var pv=parseInt(localStorage.getItem(vk)||'-1',10);vi=((isNaN(pv)?-1:pv)+1)%V.length;}}localStorage.setItem(vk,String(vi));}}catch(e){{vi=0;}}
+  var FIJA={_J(i)},V={_J(VCANDS)},vi=FIJA;try{{var qv=parseInt(new URLSearchParams(location.search).get('v')||'',10);var vk='tg_rot_v_'+{_J(slug)};if(!isNaN(qv)&&qv>=0&&qv<V.length){{vi=qv;}}else if(FIJA>0){{vi=FIJA;}}else{{var pv=parseInt(localStorage.getItem(vk)||'-1',10);vi=((isNaN(pv)?-1:pv)+1)%V.length;}}localStorage.setItem(vk,String(vi));}}catch(e){{vi=FIJA;}}
   var vcur=V[vi]||V[0];
   function pintaV(){{var m=vcur.dur?Math.round(vcur.dur/60)+' min':'';$('kicker').textContent=(en?'🎬 The edition’s video':'🎬 El video de la edición')+(m?' · '+m:'');document.querySelector('.tit').textContent=vcur.titulo;document.querySelector('.sub').textContent=vcur.canal||'';$('pie').textContent=en?(vcur.pie_en||''):(vcur.pie||'');document.title=vcur.titulo+' · Triggui';
     var f=$('yt');var src='https://www.youtube-nocookie.com/embed/'+vcur.id+'?playsinline=1&rel=0&modestbranding=1&enablejsapi=1';if(f.getAttribute('src')!==src){{f.setAttribute('src',src);f.setAttribute('title',vcur.titulo);}}
@@ -263,7 +281,7 @@ def escribir_video(libro, out_dir, slug, base_url):
 </script>
 </body>
 </html>"""
-    d = Path(out_dir) / "video"
+    d = Path(out_dir) / "video" / (str(i) if i > 0 else "")
     d.mkdir(parents=True, exist_ok=True)
     (d / "index.html").write_text(page, encoding="utf-8")
     return True
