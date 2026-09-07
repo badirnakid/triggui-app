@@ -7,6 +7,8 @@
  * Autónomo: lanza su propio chromium (playwright | playwright-core + PORTADA_CHROMIUM).
  */
 import fs from "node:fs/promises";
+const PLACEHOLDER_GOOGLE = new Set(["931a64e6d5d364b57b53f03228c3d8a6", "a64fa89d7ebc97075c1d363fc5fea71f"]);
+import { createHash } from "node:crypto";
 import path from "node:path";
 
 async function lanzar() {
@@ -62,15 +64,25 @@ async function bajar(url) {
   } catch { return null; }
 }
 
+// 🔎 Solo acepta un resultado si es EL MISMO libro: título (≥70% de sus palabras) y autor (apellido) tienen que coincidir.
+const norm = (t) => String(t || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter((w) => w.length > 2);
+function mismoLibro(meta, it) {
+  const tw = norm(meta.titulo), rw = new Set(norm(it.trackName));
+  if (!tw.length) return false;
+  const hit = tw.filter((w) => rw.has(w)).length / tw.length;
+  const aw = norm(meta.autor), art = norm(it.artistName).join(" ");
+  const autorOk = !aw.length || aw.some((w) => art.includes(w));
+  return hit >= 0.7 && autorOk;
+}
 async function buscarITunes(meta) {
   try {
     for (const cc of ["mx", "us"]) {
       const q = encodeURIComponent(`${meta.titulo || ""} ${meta.autor || ""}`.trim());
-      const r = await fetch(`https://itunes.apple.com/search?term=${q}&media=ebook&limit=3&country=${cc}`);
+      const r = await fetch(`https://itunes.apple.com/search?term=${q}&media=ebook&limit=5&country=${cc}`);
       if (!r.ok) continue;
       const j = await r.json();
       for (const it of j.results || []) {
-        if (it.artworkUrl100) return it.artworkUrl100.replace(/\/[0-9]+x[0-9]+[a-z]*\.(jpg|png)/i, "/600x900bb.$1");
+        if (it.artworkUrl100 && mismoLibro(meta, it)) return it.artworkUrl100.replace(/\/[0-9]+x[0-9]+[a-z]*\.(jpg|png)/i, "/600x900bb.$1");
       }
     }
   } catch {}
@@ -133,12 +145,21 @@ export async function resolverPortadaPremium(meta, outDir) {
   try {
     const page = await browser.newPage({ viewport: { width: 600, height: 900 } });
     let mejor = null;
-    const urls = candidatas(meta);
-    const extra = await buscarITunes(meta);
-    if (extra) urls.push(extra);
+    let urls = candidatas(meta);
+    // 🚫 Google sin portada: su miniatura es un gráfico fijo ("image not available"); si la huella coincide, todas sus variantes se descartan
+    if (urls.some((u) => /books\.google/.test(u))) {
+      const g = urls.find((u) => /books\.google/.test(u));
+      const mini = await bajar(g.replace(/zoom=\d/, "zoom=1"));
+      if (mini && PLACEHOLDER_GOOGLE.has(createHash("md5").update(mini.buf).digest("hex"))) { urls = urls.filter((u) => !/books\.google/.test(u)); console.log("   🚫 Google: placeholder detectado, descartado"); }
+    }
     for (const u of urls) {
       const d = await bajar(u);
       if (d && aspectoOk(d) && d.bytes >= 12000 && (!mejor || d.w > mejor.w)) mejor = d;
+    }
+    // 🔎 La búsqueda en Apple solo entra si el catálogo no dio imagen usable (≥380 de ancho); y solo si es el mismo libro
+    if (!(mejor && mejor.w >= 380)) {
+      const extra = await buscarITunes(meta);
+      if (extra) { const d = await bajar(extra); if (d && aspectoOk(d) && d.bytes >= 12000 && (!mejor || d.w > mejor.w)) mejor = d; }
     }
     let buf, tier, source;
     if (mejor && mejor.w >= 600 && mejor.bytes >= 30000) {
