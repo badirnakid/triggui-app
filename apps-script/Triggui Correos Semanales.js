@@ -2714,12 +2714,19 @@ function prepararEmailParaEnvio(nombreDestinatario, emailDestinatario, rowIdx) {
         const kidsTopHTML = KIDS_PROMO_ENABLED ? generarKidsPromoTopHTML(c.cardWidth, _accCorreo) : "";
         const kidsTopPlain = KIDS_PROMO_ENABLED ? aInglesCascara(KIDS_PROMO_TOP_PLAIN) : "";
 
+        // V24 — las cuatro puertas también en la bienvenida (semilla = email del destinatario)
+        const _semMedios = semillaMedios_(emailDestinatario || "", libro);
+        const mediosHTML  = generarMediosTopHTML(libro, c.cardWidth, IDIOMA_ENVIO_ACTUAL, _semMedios);
+        const mediosPlain = generarMediosTopPlain(libro, IDIOMA_ENVIO_ACTUAL, _semMedios);
+
         finalHTML  = finalHTML.replace(/\{\{GREETING_BLOCK\}\}/g, saludoHTML)
+                              .replace(/\{\{MEDIOS_TOP\}\}/g, mediosHTML)
                               .replace(/\{\{TRIAL_BANNER_TOP\}\}/g, trialTopHTML)
                               .replace(/\{\{ESPIRAL_PROMO_TOP\}\}/g, espiralTopHTML)
                               .replace(/\{\{KIDS_PROMO_BOTTOM\}\}/g, kidsTopHTML)
                               .replace(/\{\{WHATSAPP_PROMO_TOP\}\}/g, waTopHTML);
         finalPlain = finalPlain.replace(/\{\{GREETING_PLAIN\}\}/g, saludoPlain)
+                               .replace(/\{\{MEDIOS_PLAIN\}\}/g, mediosPlain)
                                .replace(/\{\{TRIAL_BANNER_TOP_PLAIN\}\}/g, trialTopPlain)
                                .replace(/\{\{KIDS_PROMO_TOP_PLAIN\}\}/g, kidsTopPlain)
                                .replace(/\{\{WHATSAPP_PROMO_TOP_PLAIN\}\}/g, waTopPlain);
@@ -3131,7 +3138,7 @@ function doGet(e) {
 
   // ─── Default: diagnóstico Web App ────────────────────────────────────
   return ContentService.createTextOutput(
-    "🌒 Triggui Apps Script V19.2.4 — endpoint activo (trial 28d + pricing + 104 saludos + trial banner top + WhatsApp arriba aleatorio + footer fijo + multi-email sin nombre).\n" +
+    "🌒 Triggui Apps Script V24 — endpoint activo (trial 28d + pricing + 104 saludos + trial banner top + WhatsApp arriba aleatorio + footer fijo + multi-email sin nombre + cuatro puertas + lista_wa).\n" +
     "POST: captación + bienvenida automática.\n" +
     "GET ?action=unsubscribe&email=X&token=Y[&format=json]: dar de baja.\n" +
     "GET sin params: este mensaje."
@@ -4409,6 +4416,7 @@ function rutaDiagnostico(params) {
         var hm = String(pm.finalHTML || "")
           .replace(/\{\{UNSUB_LINK\}\}/g, generarUrlUnsub(DIAG_EMAIL))
           .replace(/\{\{GREETING_BLOCK\}\}/g, generarSaludoHTML(nombre, c2.sans, c2.background, c2.cardWidth))
+          .replace(/\{\{MEDIOS_TOP\}\}/g, generarMediosTopHTML(pm.libro, c2.cardWidth, IDIOMA_ENVIO_ACTUAL, semillaMedios_(DIAG_EMAIL, pm.libro)))
           .replace(/\{\{TRIAL_BANNER_TOP\}\}/g, generarTrialBannerTopHTML(data[fila - 1], c2.sans, c2.background, c2.cardWidth))
           .replace(/\{\{ESPIRAL_PROMO_TOP\}\}/g, ESPIRAL_PROMO_ENABLED ? generarEspiralPromoTopHTML(c2.cardWidth, acc2) : "")
           .replace(/\{\{KIDS_PROMO_BOTTOM\}\}/g, KIDS_PROMO_ENABLED ? generarKidsPromoTopHTML(c2.cardWidth, acc2) : "")
