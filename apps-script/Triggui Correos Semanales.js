@@ -4476,11 +4476,13 @@ function listaWhatsApp_(clave) {
   return { ok: true, filas: filas, resumen: { total: filas.length, sinTel: sinTel, unsub: unsub, expirados: exp }, generado: new Date().toISOString() };
 }
 
-/* ══════════════════════════════ 🎧🎬 MEDIOS DEL LUNES (V24) ══════════════════════════════
- * Cuatro puertas en los colores de la edición, debajo del saludo: edición · melodía · video · kids.
- * Melodía y video se reparten por persona (semilla = email + número de edición): a cada quien le toca
- * una candidata distinta de las curadas, y varía de una edición a otra. Solo lectura de `libro`.
- * Compatibilidad: tablas + estilos inline; sin flex/grid; radios ignorados por Outlook sin romper nada. */
+/* ══════════════════════════════ 🎧🎬 MEDIOS DEL LUNES (V24.1) ══════════════════════════════
+ * Cuatro puertas en los colores de la edición (libro.colores / libro.textColors = los bloques de la app),
+ * debajo del saludo: edición · melodía · video · kids. Mismo tamaño (alto fijo por celda), título a dos líneas,
+ * y una PÍLDORA con verbo dentro de cada ficha para que se lean como botones. Debajo, la promesa de lo que
+ * sigue (la tarjeta de hoy) para que el lector siga bajando.
+ * Melodía y video se reparten por persona (semilla = email + número de edición). Solo lectura de `libro`.
+ * Compatibilidad: tablas + estilos inline; bgcolor y height como atributos (Outlook); sin flex/grid. */
 function semillaMedios_(email, libro) {
   var s = String(email || "").toLowerCase() + "|" + String((libro && libro._edicion_numero) || "");
   var h = 0; for (var i = 0; i < s.length; i++) { h = ((h << 5) - h + s.charCodeAt(i)) | 0; }
@@ -4497,33 +4499,48 @@ function puertasMedios_(libro, idioma, semilla) {
   var col = libro.colores || [], txt = libro.textColors || [];
   function C(i, d) { return col[i] || d; } function T(i, d) { return txt[i] || d; }
   var p = [];
-  p.push({ k: en ? "The edition" : "La edición", t: (en ? (libro.titulo_en || libro.titulo) : libro.titulo) + (libro.autor ? " — " + libro.autor : ""), u: base + (en ? "/en/" : "/") + "?w=e", bg: C(0, "#1A1A1A"), fg: T(0, "#FFFFFF") });
-  if (mus.length) p.push({ k: en ? "Its melody · 30 s" : "Su melodía · 30 s", t: mus[m].cancion + " — " + mus[m].artista, u: base + "/pieza/?w=e&m=" + m, bg: C(1, "#2A2A2A"), fg: T(1, "#FFFFFF") });
-  if (vid.length) p.push({ k: en ? "Its video" : "Su video", t: vid[v].titulo || "", u: base + "/video/?w=e&v=" + v, bg: C(2, "#3A3A3A"), fg: T(2, "#FFFFFF") });
-  p.push({ k: "Kids", t: en ? "A value in 30 seconds, for the little ones" : "Un valor en 30 segundos, para los peques", u: "https://app.triggui.com/kids/?utm_source=email&utm_medium=lunes&utm_campaign=" + encodeURIComponent(libro._slug), bg: C(3, "#0B6065"), fg: T(3, "#FFFFFF") });
+  p.push({ k: en ? "The edition" : "La edición", t: (en ? (libro.titulo_en || libro.titulo) : libro.titulo) + (libro.autor ? " — " + libro.autor : ""), cta: en ? "Open edition" : "Ver edición", u: base + (en ? "/en/" : "/") + "?w=e", bg: C(0, "#1A1A1A"), fg: T(0, "#FFFFFF") });
+  if (mus.length) p.push({ k: en ? "Its melody" : "Su melodía", t: mus[m].cancion + " — " + mus[m].artista, cta: en ? "Listen 30 s" : "Escuchar 30 s", u: base + "/pieza/?w=e&m=" + m, bg: C(1, "#2A2A2A"), fg: T(1, "#FFFFFF") });
+  if (vid.length) p.push({ k: en ? "Its video" : "Su video", t: vid[v].titulo || "", cta: en ? "Watch" : "Ver video", u: base + "/video/?w=e&v=" + v, bg: C(2, "#3A3A3A"), fg: T(2, "#FFFFFF") });
+  p.push({ k: "Kids", t: en ? "A value in 30 seconds, for the little ones" : "Un valor en 30 segundos, para los peques", cta: en ? "Enter" : "Entrar", u: "https://app.triggui.com/kids/?utm_source=email&utm_medium=lunes&utm_campaign=" + encodeURIComponent(libro._slug), bg: C(3, "#0B6065"), fg: T(3, "#FFFFFF") });
   return p.slice(0, 4);
 }
 function generarMediosTopHTML(libro, cardWidth, idioma, semilla) {
   var p = puertasMedios_(libro, idioma, semilla);
   if (!p) return "";
+  var en = (idioma === "en");
   var esc = function (x) { return String(x || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); };
   var corta = function (t, max) { t = String(t || ""); if (t.length <= max) return t; var c = t.slice(0, max); var i = c.lastIndexOf(" "); return (i > max * 0.6 ? c.slice(0, i) : c).replace(/[\s,;:\-–—]+$/, "") + "…"; };
+  var SANS = "Inter,-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif";
+  var ALTO = 118;   /* alto fijo de cada ficha: etiqueta + dos líneas + píldora */
   var celda = function (q) {
     if (!q) return '<td width="50%" style="padding:4px;"></td>';
     return '<td width="50%" valign="top" style="padding:4px;">' +
-      '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="' + esc(q.bg) + '" style="background:' + esc(q.bg) + ';border-radius:12px;padding:12px 14px;">' +
+      '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>' +
+      '<td bgcolor="' + esc(q.bg) + '" height="' + ALTO + '" valign="top" style="background:' + esc(q.bg) + ';height:' + ALTO + 'px;border-radius:12px;padding:12px 14px;">' +
       '<a href="' + esc(q.u) + '" target="_blank" style="display:block;text-decoration:none;color:' + esc(q.fg) + ';">' +
-      '<div style="font-family:Inter,-apple-system,BlinkMacSystemFont,\'Helvetica Neue\',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;opacity:0.85;line-height:1.2;mso-line-height-rule:exactly;">' + esc(q.k) + '</div>' +
-      '<div style="font-family:Inter,-apple-system,BlinkMacSystemFont,\'Helvetica Neue\',Arial,sans-serif;font-size:13px;font-weight:600;line-height:1.3;margin-top:5px;mso-line-height-rule:exactly;">' + esc(corta(q.t, 58)) + ' &rarr;</div>' +
+      '<div style="font-family:' + SANS + ';font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;opacity:0.85;line-height:1.2;mso-line-height-rule:exactly;">' + esc(q.k) + '</div>' +
+      '<div style="font-family:' + SANS + ';font-size:13px;font-weight:600;line-height:17px;height:34px;overflow:hidden;margin-top:5px;mso-line-height-rule:exactly;">' + esc(corta(q.t, 34)) + '</div>' +
+      '<div style="margin-top:10px;"><span style="display:inline-block;font-family:' + SANS + ';font-size:10px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:' + esc(q.fg) + ';border:1.5px solid ' + esc(q.fg) + ';border-radius:999px;padding:6px 11px;line-height:1;mso-line-height-rule:exactly;">' + esc(q.cta) + '</span></div>' +
       '</a></td></tr></table></td>';
   };
   var filas = "";
   for (var i = 0; i < p.length; i += 2) filas += "<tr>" + celda(p[i]) + celda(p[i + 1]) + "</tr>";
+  /* 🪜 la promesa: lo que sigue más abajo, con el título real de la tarjeta de hoy */
+  var tj = (en && libro.tarjeta_en && libro.tarjeta_en.titulo) ? libro.tarjeta_en : (libro.tarjeta || {});
+  var tit = String(tj.titulo || libro.titulo || "").replace(/\s+/g, " ").trim();
+  var promesa = tit ? (en ? ("&darr;&nbsp; Keep scrolling &mdash; today&rsquo;s card: &ldquo;" + esc(corta(tit, 70)) + "&rdquo;")
+                          : ("&darr;&nbsp; Sigue bajando &mdash; la tarjeta de hoy: &laquo;" + esc(corta(tit, 70)) + "&raquo;")) : "";
+  var filaPromesa = promesa ? '<tr><td colspan="2" align="center" style="padding:10px 6px 2px 6px;">' +
+      '<div style="font-family:\'Noto Serif Display\',Georgia,\'Times New Roman\',serif;font-style:italic;font-size:14px;line-height:1.45;color:#4A4A4A;mso-line-height-rule:exactly;">' + promesa + '</div></td></tr>' : "";
   return '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center" style="padding:2px 8px 8px 8px;">' +
-    '<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:' + (cardWidth || 560) + 'px;">' + filas + '</table></td></tr></table>';
+    '<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:' + (cardWidth || 560) + 'px;">' + filas + filaPromesa + '</table></td></tr></table>';
 }
 function generarMediosTopPlain(libro, idioma, semilla) {
   var p = puertasMedios_(libro, idioma, semilla);
   if (!p) return "";
-  return "\n" + p.map(function (q) { return q.k + ": " + q.t + " → " + q.u; }).join("\n") + "\n\n";
+  var en = (idioma === "en");
+  var tj = (en && libro.tarjeta_en && libro.tarjeta_en.titulo) ? libro.tarjeta_en : (libro.tarjeta || {});
+  var cola = tj.titulo ? "\n" + (en ? "Below, today's card: " : "Más abajo, la tarjeta de hoy: ") + String(tj.titulo).trim() : "";
+  return "\n" + p.map(function (q) { return q.k + " — " + q.t + " · " + q.cta + ": " + q.u; }).join("\n") + cola + "\n\n";
 }
