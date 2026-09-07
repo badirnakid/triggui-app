@@ -4499,10 +4499,12 @@ function puertasMedios_(libro, idioma, semilla) {
   var col = libro.colores || [], txt = libro.textColors || [];
   function C(i, d) { return col[i] || d; } function T(i, d) { return txt[i] || d; }
   var p = [];
-  p.push({ k: en ? "The edition" : "La edición", t: (en ? (libro.titulo_en || libro.titulo) : libro.titulo) + (libro.autor ? " — " + libro.autor : ""), cta: en ? "Open edition" : "Ver edición", u: base + (en ? "/en/" : "/") + "?w=e", bg: C(0, "#1A1A1A"), fg: T(0, "#FFFFFF") });
-  if (mus.length) p.push({ k: en ? "Its melody" : "Su melodía", t: mus[m].cancion + " — " + mus[m].artista, cta: en ? "Listen 30 s" : "Escuchar 30 s", u: base + "/pieza/?w=e&m=" + m, bg: C(1, "#2A2A2A"), fg: T(1, "#FFFFFF") });
+  var tituloEd = en ? (libro.titulo_en || libro.titulo) : libro.titulo;
+  var edTxt = (libro.autor && (tituloEd + " — " + libro.autor).length <= 26) ? (tituloEd + " — " + libro.autor) : tituloEd;
+  p.push({ k: en ? "The edition" : "La edición", t: edTxt, cta: en ? "Open" : "Ver edición", u: base + (en ? "/en/" : "/") + "?w=e", bg: C(0, "#1A1A1A"), fg: T(0, "#FFFFFF") });
+  if (mus.length) p.push({ k: en ? "Its melody" : "Su melodía", t: mus[m].cancion, cta: en ? "Listen" : "Escuchar", u: base + "/pieza/?w=e&m=" + m, bg: C(1, "#2A2A2A"), fg: T(1, "#FFFFFF") });
   if (vid.length) p.push({ k: en ? "Its video" : "Su video", t: vid[v].titulo || "", cta: en ? "Watch" : "Ver video", u: base + "/video/?w=e&v=" + v, bg: C(2, "#3A3A3A"), fg: T(2, "#FFFFFF") });
-  p.push({ k: "Kids", t: en ? "A value in 30 seconds, for the little ones" : "Un valor en 30 segundos, para los peques", cta: en ? "Enter" : "Entrar", u: "https://app.triggui.com/kids/?utm_source=email&utm_medium=lunes&utm_campaign=" + encodeURIComponent(libro._slug), bg: C(3, "#0B6065"), fg: T(3, "#FFFFFF") });
+  p.push({ k: "Kids", t: en ? "A value in 30 seconds" : "Un valor en 30 segundos", cta: en ? "Enter" : "Entrar", u: "https://app.triggui.com/kids/?utm_source=email&utm_medium=lunes&utm_campaign=" + encodeURIComponent(libro._slug), bg: C(3, "#0B6065"), fg: T(3, "#FFFFFF") });
   return p.slice(0, 4);
 }
 function generarMediosTopHTML(libro, cardWidth, idioma, semilla) {
@@ -4512,16 +4514,16 @@ function generarMediosTopHTML(libro, cardWidth, idioma, semilla) {
   var esc = function (x) { return String(x || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); };
   var corta = function (t, max) { t = String(t || ""); if (t.length <= max) return t; var c = t.slice(0, max); var i = c.lastIndexOf(" "); return (i > max * 0.6 ? c.slice(0, i) : c).replace(/[\s,;:\-–—]+$/, "") + "…"; };
   var SANS = "Inter,-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif";
-  var ALTO = 118;   /* alto fijo de cada ficha: etiqueta + dos líneas + píldora */
+  var ALTO = 104;   /* alto fijo de cada ficha: etiqueta + dos líneas + píldora (calibrado para la letra agrandada de Outlook móvil) */
   var celda = function (q) {
-    if (!q) return '<td width="50%" style="padding:4px;"></td>';
-    return '<td width="50%" valign="top" style="padding:4px;">' +
+    if (!q) return '<td width="50%" style="padding:3px;"></td>';
+    return '<td width="50%" valign="top" style="padding:3px;">' +
       '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>' +
-      '<td bgcolor="' + esc(q.bg) + '" height="' + ALTO + '" valign="top" style="background:' + esc(q.bg) + ';height:' + ALTO + 'px;border-radius:12px;padding:12px 14px;">' +
+      '<td bgcolor="' + esc(q.bg) + '" height="' + ALTO + '" valign="top" style="background:' + esc(q.bg) + ';height:' + ALTO + 'px;border-radius:10px;padding:11px 12px 10px 12px;">' +
       '<a href="' + esc(q.u) + '" target="_blank" style="display:block;text-decoration:none;color:' + esc(q.fg) + ';">' +
-      '<div style="font-family:' + SANS + ';font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;opacity:0.85;line-height:1.2;mso-line-height-rule:exactly;">' + esc(q.k) + '</div>' +
-      '<div style="font-family:' + SANS + ';font-size:13px;font-weight:600;line-height:17px;height:34px;overflow:hidden;margin-top:5px;mso-line-height-rule:exactly;">' + esc(corta(q.t, 34)) + '</div>' +
-      '<div style="margin-top:10px;"><span style="display:inline-block;font-family:' + SANS + ';font-size:10px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:' + esc(q.fg) + ';border:1.5px solid ' + esc(q.fg) + ';border-radius:999px;padding:6px 11px;line-height:1;mso-line-height-rule:exactly;">' + esc(q.cta) + '</span></div>' +
+      '<div style="font-family:' + SANS + ';font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;opacity:0.82;line-height:1.2;white-space:nowrap;overflow:hidden;mso-line-height-rule:exactly;">' + esc(q.k) + '</div>' +
+      '<div style="font-family:' + SANS + ';font-size:13px;font-weight:600;line-height:16px;height:32px;overflow:hidden;margin-top:4px;mso-line-height-rule:exactly;">' + esc(corta(q.t, 26)) + '</div>' +
+      '<div style="margin-top:8px;white-space:nowrap;"><span style="display:inline-block;font-family:' + SANS + ';font-size:9px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;color:' + esc(q.fg) + ';border:1.5px solid ' + esc(q.fg) + ';border-radius:999px;padding:5px 9px;line-height:1;mso-line-height-rule:exactly;">' + esc(q.cta) + '</span></div>' +
       '</a></td></tr></table></td>';
   };
   var filas = "";
@@ -4531,8 +4533,8 @@ function generarMediosTopHTML(libro, cardWidth, idioma, semilla) {
   var tit = String(tj.titulo || libro.titulo || "").replace(/\s+/g, " ").trim();
   var promesa = tit ? (en ? ("&darr;&nbsp; Keep scrolling &mdash; today&rsquo;s card: &ldquo;" + esc(corta(tit, 70)) + "&rdquo;")
                           : ("&darr;&nbsp; Sigue bajando &mdash; la tarjeta de hoy: &laquo;" + esc(corta(tit, 70)) + "&raquo;")) : "";
-  var filaPromesa = promesa ? '<tr><td colspan="2" align="center" style="padding:10px 6px 2px 6px;">' +
-      '<div style="font-family:\'Noto Serif Display\',Georgia,\'Times New Roman\',serif;font-style:italic;font-size:14px;line-height:1.45;color:#4A4A4A;mso-line-height-rule:exactly;">' + promesa + '</div></td></tr>' : "";
+  var filaPromesa = promesa ? '<tr><td colspan="2" align="center" style="padding:9px 8px 2px 8px;">' +
+      '<div style="font-family:\'Noto Serif Display\',Georgia,\'Times New Roman\',serif;font-style:italic;font-size:13px;line-height:1.45;color:#4A4A4A;mso-line-height-rule:exactly;">' + promesa + '</div></td></tr>' : "";
   return '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center" style="padding:2px 8px 8px 8px;">' +
     '<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:' + (cardWidth || 560) + 'px;">' + filas + filaPromesa + '</table></td></tr></table>';
 }
