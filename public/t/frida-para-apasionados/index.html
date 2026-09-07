@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <!-- Link corto con rastreo intacto: ?w=s (sala) / ?w=c (compartir) se expande a utm_* ANTES de que GA mire -->
-<script>(function(){try{var q=new URLSearchParams(location.search),w=q.get('w');if(!w||q.get('utm_source'))return;var med={s:'sala',c:'compartir'}[w];if(!med)return;var p=location.pathname.split('/').filter(Boolean);var slug=p[p.length-1]==='en'?p[p.length-2]:p[p.length-1];q.delete('w');q.set('utm_source','whatsapp');q.set('utm_medium',med);q.set('utm_campaign',slug||'');history.replaceState(null,'',location.pathname+'?'+q.toString()+location.hash);}catch(e){}})();</script>
+<script>(function(){try{var q=new URLSearchParams(location.search),w=q.get('w');if(!w||q.get('utm_source'))return;var med={s:'sala',c:'compartir',e:'lunes'}[w];if(!med)return;var p=location.pathname.split('/').filter(Boolean);var slug=p[p.length-1]==='en'?p[p.length-2]:p[p.length-1];q.delete('w');q.set('utm_source',w==='e'?'email':'whatsapp');q.set('utm_medium',med);q.set('utm_campaign',slug||'');history.replaceState(null,'',location.pathname+'?'+q.toString()+location.hash);}catch(e){}})();</script>
 <!-- GA4: el vinilo de las ediciones reporta a la misma casa que la app -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-CLK554FCNM"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-CLK554FCNM');</script>

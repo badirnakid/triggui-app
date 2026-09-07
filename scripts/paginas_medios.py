@@ -17,7 +17,7 @@ def _J(v): return json.dumps(v if v is not None else "", ensure_ascii=False)
 
 def _expansor(slug):
     return ("<script>(function(){try{var q=new URLSearchParams(location.search),w=q.get('w');if(!w||q.get('utm_source'))return;"
-            "var med={s:'sala',c:'compartir'}[w];if(!med)return;q.delete('w');q.set('utm_source','whatsapp');q.set('utm_medium',med);"
+            "var med={s:'sala',c:'compartir',e:'lunes'}[w];if(!med)return;q.delete('w');q.set('utm_source',w==='e'?'email':'whatsapp');q.set('utm_medium',med);"
             "q.set('utm_campaign'," + _J(slug) + ");history.replaceState(null,'',location.pathname+'?'+q.toString()+location.hash);}catch(e){}})();</script>")
 
 def _ga():
@@ -98,10 +98,10 @@ def escribir_pieza(libro, out_dir, slug, base_url):
 @keyframes giro{{to{{transform:rotate(360deg)}}}}
 .cometa{{position:absolute;left:50%;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--ink);box-shadow:0 0 16px var(--acc),0 0 3px #fff;transform:rotate(var(--ang,0deg)) translateY(calc(min(240px,64vw) / -2 - 7px));opacity:0;transition:opacity .3s}}
 .tocando .cometa{{opacity:1}}
-.nuc{{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:44%;height:44%;display:flex;align-items:center;justify-content:center;pointer-events:none;animation:latido 3.2s ease-in-out .9s infinite}}
-@keyframes latido{{0%,100%{{transform:translate(-50%,-50%) scale(1)}}50%{{transform:translate(-50%,-50%) scale(1.07)}}}}
+.nuc{{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:34%;height:24%;border-radius:22%/34%;background:var(--acc);display:flex;align-items:center;justify-content:center;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.14);animation:latido 3.2s ease-in-out .9s infinite}}
+@keyframes latido{{0%,100%{{transform:translate(-50%,-50%) scale(1)}}50%{{transform:translate(-50%,-50%) scale(1.06)}}}}
 .tocando .nuc{{animation:none}}
-.nuc svg{{width:100%;height:100%;fill:#fff;stroke:var(--acc);stroke-width:1.1;paint-order:stroke;stroke-linejoin:round;filter:drop-shadow(0 2px 10px rgba(0,0,0,.65))}}.nuc .ir{{transform:translateX(7%)}}.nuc .pausa{{display:none;width:78%;height:78%}}
+.nuc svg{{width:46%;height:70%;fill:#fff;filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}}.nuc .ir{{transform:translateX(6%)}}.nuc .pausa{{display:none}}
 .dots{{display:flex;gap:8px;justify-content:center;margin-top:14px}}.dots button{{width:8px;height:8px;border-radius:50%;border:0;padding:0;background:rgba(255,255,255,.22);cursor:pointer}}.dots button.on{{background:var(--acc);box-shadow:0 0 10px var(--acc)}}
 .tocando .nuc .pausa{{display:block}}.tocando .nuc .ir{{display:none}}
 .nada .art{{filter:grayscale(.4) brightness(.8)}}
@@ -137,7 +137,7 @@ def escribir_pieza(libro, out_dir, slug, base_url):
   var en=(function(){{try{{var v=JSON.parse(localStorage.getItem('triggui_lang')||'null');if(v==='en'||v==='es')return v==='en';}}catch(e){{}}return ((navigator.language||'es').slice(0,2)==='en');}})();
   var T=en?{{k:'🎧 Tap to listen · 30 seconds',s:'🎧 Playing · 30 seconds to read',p:'Paused',a:'Again? Tap the vinyl',e:'This preview is not available right now',pq:'Why this melody',v:'Open the edition →',vd:'🎬 Its video',ed:'EDITION · #'}}:{{k:'🎧 Toca para escuchar · 30 segundos',s:'🎧 Sonando · 30 segundos para leer',p:'En pausa',a:'¿Otra vez? Toca el vinilo',e:'Este preview no está disponible ahora',pq:'Por qué esta melodía',v:'Ver la edición →',vd:'🎬 Su video',ed:'EDICIÓN · #'}};
   /* 🔁 rotación: cada visita trae la siguiente melodía curada de la edición (3), y los puntos permiten cambiarla a mano */
-  var C={_J(CANDS)},idx=0;try{{var kk='tg_rot_p_'+{_J(slug)};var v=parseInt(localStorage.getItem(kk)||'-1',10);idx=((isNaN(v)?-1:v)+1)%C.length;localStorage.setItem(kk,String(idx));}}catch(e){{idx=0;}}
+  var C={_J(CANDS)},idx=0;try{{var qm=parseInt(new URLSearchParams(location.search).get('m')||'',10);var kk='tg_rot_p_'+{_J(slug)};if(!isNaN(qm)&&qm>=0&&qm<C.length){{idx=qm;}}else{{var v=parseInt(localStorage.getItem(kk)||'-1',10);idx=((isNaN(v)?-1:v)+1)%C.length;}}localStorage.setItem(kk,String(idx));}}catch(e){{idx=0;}}
   var $=function(i){{return document.getElementById(i);}};
   if(en){{document.documentElement.lang='en';$('kicker').textContent=T.k;$('porque').textContent=T.pq;$('abrir').textContent=T.v;$('abrir').href={_J(ruta + "/en/?w=s")};if($('video')){{$('video').textContent=T.vd;}}$('badgeImg').src='https://tools.applemediaservices.com/api/badges/listen-on-apple-music/badge/en-us';$('footLibro').textContent={_J(tit_en)};{("$('hudSem').textContent=T.ed+" + _J(str(numero)) + ";") if numero else ""}}}
   var cur=C[idx]||C[0];
@@ -249,7 +249,7 @@ def escribir_video(libro, out_dir, slug, base_url):
   var $=function(i){{return document.getElementById(i);}};
   if(en){{document.documentElement.lang='en';$('kicker').textContent='🎬 The edition\\'s video'+{_J((" · " + mins) if mins else "")};$('hint').textContent='Tap ▶ to watch it right here';$('porque').textContent='Why this video';$('pie').textContent={_J(pie_en)};$('abrir').textContent='Open the edition →';$('abrir').href={_J(ruta + "/en/?w=s")};if($('pieza'))$('pieza').textContent='🎧 Its melody';$('footLibro').textContent={_J(tit_en)};{("$('hudSem').textContent='EDITION · #'+" + _J(str(numero)) + ";") if numero else ""}}}
   /* 🔁 rotación: cada visita trae el siguiente video curado (3); los puntos permiten cambiarlo a mano */
-  var V={_J(VCANDS)},vi=0;try{{var vk='tg_rot_v_'+{_J(slug)};var pv=parseInt(localStorage.getItem(vk)||'-1',10);vi=((isNaN(pv)?-1:pv)+1)%V.length;localStorage.setItem(vk,String(vi));}}catch(e){{vi=0;}}
+  var V={_J(VCANDS)},vi=0;try{{var qv=parseInt(new URLSearchParams(location.search).get('v')||'',10);var vk='tg_rot_v_'+{_J(slug)};if(!isNaN(qv)&&qv>=0&&qv<V.length){{vi=qv;}}else{{var pv=parseInt(localStorage.getItem(vk)||'-1',10);vi=((isNaN(pv)?-1:pv)+1)%V.length;}}localStorage.setItem(vk,String(vi));}}catch(e){{vi=0;}}
   var vcur=V[vi]||V[0];
   function pintaV(){{var m=vcur.dur?Math.round(vcur.dur/60)+' min':'';$('kicker').textContent=(en?'🎬 The edition’s video':'🎬 El video de la edición')+(m?' · '+m:'');document.querySelector('.tit').textContent=vcur.titulo;document.querySelector('.sub').textContent=vcur.canal||'';$('pie').textContent=en?(vcur.pie_en||''):(vcur.pie||'');document.title=vcur.titulo+' · Triggui';
     var f=$('yt');var src='https://www.youtube-nocookie.com/embed/'+vcur.id+'?playsinline=1&rel=0&modestbranding=1&enablejsapi=1';if(f.getAttribute('src')!==src){{f.setAttribute('src',src);f.setAttribute('title',vcur.titulo);}}
