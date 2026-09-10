@@ -157,7 +157,8 @@ def config(argv=None):
         "rutas": rutas,
         "reintentar": int(val("--reintentar-dias", "30")),
         "rehacer": "--rehacer" in flags,
-        "completar_min": int(val("--completar-min", "0")),   # 🎼 completar: suma candidatas a libros no curados con menos de N (0 = apagado)
+        "completar_min": int(val("--completar-min", "0")),
+        "forzar": "--forzar" in flags,   # completar sin esperar los 30 días (petición explícita del curador)   # 🎼 completar: suma candidatas a libros no curados con menos de N (0 = apagado)
         "solo": solo,
         "sin_armonia": "--sin-armonia" in flags,
         "armonia_min": int(val("--armonia-min", "6")),
@@ -574,7 +575,7 @@ def elegible(b, c, hoy):
             juez = str(v.get("juez") or "")
             # 🎼 completar: solo libros NO curados (juez != semilla, sin marca curado) con menos de N candidatas
             if cm > 0 and len(v["candidatos"]) < cm and juez != "semilla" and not v.get("curado"):
-                if "+completar" in juez:
+                if "+completar" in juez and not c.get("forzar") and not c.get("solo"):
                     try:
                         fecha = datetime.date.fromisoformat(str(v.get("resuelto_el", "")))
                         dias = (hoy - fecha).days

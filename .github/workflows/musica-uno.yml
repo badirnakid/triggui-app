@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       titulo:
-        description: "fragmento de título · * ediciones · ** faltantes · *** todo · + rescate de silencios · *+ completar ediciones a 3 · **+ completar todo · prefijo kids:"
+        description: "fragmento de título · * ediciones · ** faltantes · *** todo · + rescate de silencios · *+ completar ediciones a 3 · *++ completar ediciones con juez suave · **+ completar todo · fragmento+ completar ese libro · prefijo kids:"
         required: true
         default: "frida"
 permissions:
@@ -52,7 +52,10 @@ jobs:
           TITULO="${TITULO#=}"
           CAT="adulto"; RUTAS="contenido.json,contenido_manual.json"
           case "$TITULO" in kids:*) CAT="kids"; RUTAS="contenido_kids.json"; TITULO="${TITULO#kids:}";; esac
-          if [ "$TITULO" = "*+" ]; then
+          if [ "$TITULO" = "*++" ]; then
+            # 🎼 completar ediciones con juez SUAVE (≥4, el mismo del rescate) y sin espera de 30 días
+            python3 app/scripts/resolve-musica.py --catalogo="$CAT" --solo-ediciones --completar-min=3 --armonia-min=4 --forzar --explicar --rutas="$RUTAS"
+          elif [ "$TITULO" = "*+" ]; then
             # 🎼 completar ediciones: conserva lo existente y SUMA candidatas hasta 3 (solo libros no curados)
             python3 app/scripts/resolve-musica.py --catalogo="$CAT" --solo-ediciones --completar-min=3 --explicar --rutas="$RUTAS"
           elif [ "$TITULO" = "**+" ]; then
@@ -66,6 +69,9 @@ jobs:
             python3 app/scripts/resolve-musica.py --catalogo="$CAT" --explicar --rutas="$RUTAS"
           elif [ "$TITULO" = "*" ]; then
             python3 app/scripts/resolve-musica.py --catalogo="$CAT" --solo-ediciones --rehacer --explicar --rutas="$RUTAS"
+          elif [ "${TITULO%+}" != "$TITULO" ]; then
+            # 🎼 "<fragmento>+": completar ESE libro con juez suave, conservando lo que tiene (no destruye como el modo fragmento)
+            python3 app/scripts/resolve-musica.py --catalogo="$CAT" --solo="${TITULO%+}" --completar-min=3 --armonia-min=4 --forzar --explicar --rutas="$RUTAS"
           else
             python3 app/scripts/resolve-musica.py --catalogo="$CAT" --solo="$TITULO" --rehacer --explicar --rutas="$RUTAS"
           fi
