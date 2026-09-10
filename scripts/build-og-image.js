@@ -220,23 +220,15 @@ function uniqueStrings(values) {
 ───────────────────────────────────────────────────────────────── */
 
 function stripExplicitBookRefs(text, titulo = "", autor = "") {
-  let value = normalizeText(stripHighlightTags(text));
-  if (!value) return "";
+  // 🧭 JAMÁS se mutila la frase. Antes se borraba el título/autor a ciegas y rompía la gramática cuando el título es una
+  // persona ("El legado de Bruce Lee vive…" → "El legado de vive…") o cuando la mención era estructural ("según «Rafa»").
+  // La mención se PENALIZA en la puntuación (mentionsBookRefs): gana otra frase si la hay; si gana esta, sale entera.
+  return normalizeText(stripHighlightTags(text));
+}
 
-  for (const term of [titulo, autor]) {
-    const cleanTerm = normalizeText(term);
-    if (!cleanTerm) continue;
-    value = value.replace(new RegExp(cleanTerm.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"), "");
-  }
-
-  value = value
-    .replace(/\s+([,.;:!?])/g, "$1")
-    .replace(/[ \t]{2,}/g, " ")
-    .trim()
-    .replace(/^[,.;:·\-\s]+/, "")
-    .replace(/[,;:·\-\s]+$/, "");
-
-  return normalizeText(value);
+function mentionsBookRefs(text, titulo = "", autor = "") {
+  const value = normalizeText(text).toLowerCase();
+  return [titulo, autor].some((term) => { const t = normalizeText(term).toLowerCase(); return t.length >= 3 && value.includes(t); });
 }
 
 function stripEmoji(text) {
@@ -346,8 +338,9 @@ function pickOgHeadline(bookMeta, libro) {
     .map((item) => stripEmoji(stripExplicitBookRefs(item, titulo, autor)))
     .filter(Boolean);
 
+  // 🧭 la frase que menciona el título/autor pierde 14 puntos: gana otra si la hay; si gana, sale ENTERA (jamás mutilada)
   const ranked = frases
-    .map((phrase) => ({ phrase, score: scorePhrase(phrase) }))
+    .map((phrase) => ({ phrase, score: scorePhrase(phrase) - (mentionsBookRefs(phrase, titulo, autor) ? 14 : 0) }))
     .sort((a, b) => b.score - a.score);
 
   const best = clampText((ranked[0]?.phrase || "").trim(), 78);

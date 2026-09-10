@@ -157,6 +157,7 @@ def config(argv=None):
         "rutas": rutas,
         "reintentar": int(val("--reintentar-dias", "30")),
         "rehacer": "--rehacer" in flags,
+        "completar_min": int(val("--completar-min", "0")),   # 🎼 completar: suma candidatas a libros no curados con menos de N (0 = apagado)
         "solo": solo,
         "sin_armonia": "--sin-armonia" in flags,
         "armonia_min": int(val("--armonia-min", "6")),
@@ -568,6 +569,19 @@ def elegible(b, c, hoy):
     v = b.get("_musica")
     if isinstance(v, dict) and not c["rehacer"]:
         if v.get("candidatos"):
+            cm = c.get("completar_min") or 0
+            juez = str(v.get("juez") or "")
+            # 🎼 completar: solo libros NO curados (juez != semilla, sin marca curado) con menos de N candidatas
+            if cm > 0 and len(v["candidatos"]) < cm and juez != "semilla" and not v.get("curado"):
+                if "+completar" in juez:
+                    try:
+                        fecha = datetime.date.fromisoformat(str(v.get("resuelto_el", "")))
+                        dias = (hoy - fecha).days
+                        if dias < c["reintentar"]:
+                            return False, "completar: reintento en %d días" % (c["reintentar"] - dias)
+                    except ValueError:
+                        pass
+                return True, "completar"
             return False, "ya resuelto"
         try:
             fecha = datetime.date.fromisoformat(str(v.get("resuelto_el", "")))
@@ -711,7 +725,32 @@ def procesa(ruta, c, cache, st, hoy=None):
         return
     print("── %s: %d libros" % (ruta, len(libros)))
     plan, cambios = [], 0
-    for b in libros:
+    orden = libros
+    if c.get("completar_min"):
+        # 🎼 prioridad: 0 = sin música · 1 = libro(s) de este run (manifiesto del lote / libro único) · 2 = incompletos, más antiguos primero
+        del_run = set()
+        for ruta_run in ("/tmp/triggui-batch.jsonl", "/tmp/triggui-book.json"):
+            try:
+                with open(ruta_run, "r", encoding="utf-8") as fr:
+                    for linea in fr.read().splitlines():
+                        linea = linea.strip()
+                        if not linea:
+                            continue
+                        try:
+                            del_run.add(_norm(json.loads(linea).get("titulo", "")))
+                        except Exception:
+                            pass
+            except Exception:
+                pass
+        def _prio(b):
+            v0 = (b.get("_musica") or {}) if isinstance(b, dict) else {}
+            if not v0.get("candidatos"):
+                return (0, "")
+            if _norm(b.get("titulo", "")) in del_run:
+                return (1, "")
+            return (2, str(v0.get("resuelto_el", "")))
+        orden = sorted(libros, key=_prio)
+    for b in orden:
         ok, motivo = elegible(b, c, hoy)
         nombre = (b.get("titulo", "?") if isinstance(b, dict) else "?")[:44]
         if not ok:
@@ -743,7 +782,7 @@ def procesa(ruta, c, cache, st, hoy=None):
             continue
         st["busquedas"] += 1
         cache[k] = None
-        plan.append({"b": b, "k": k, "nombre": nombre, "can": [], "afi": [], "origen": "mapa", "canon_base": []})
+        plan.append({"b": b, "k": k, "nombre": nombre, "can": [], "afi": [], "origen": "mapa", "canon_base": [], "motivo": motivo})
     # siembra: territorio ocupado = lo coronado en libros que NO se rehacen en esta corrida
     en_plan = set(id(p["b"]) for p in plan)
     for _b in libros:
@@ -797,7 +836,17 @@ def procesa(ruta, c, cache, st, hoy=None):
             print("  ! %-44s %s (sin cambios, se reintenta en la próxima corrida)" % (nombre, str(e)[:90]))
             time.sleep(1)
             continue
-        if not v["candidatos"]:
+        if p.get("motivo") == "completar":
+            # 🎼 fusión: las candidatas existentes mandan (OG y página base intactos); se SUMAN las nuevas, deduplicadas, tope TOP_N
+            previo = b.get("_musica") or {}
+            prev_c = list(previo.get("candidatos") or [])
+            huellas = set(_huella(x) for x in prev_c)
+            nuevas = [x for x in v["candidatos"] if _huella(x) not in huellas]
+            v = {"juez": (str(previo.get("juez") or v["juez"]).replace("+completar", "") + "+completar"),
+                 "sinfonia": previo.get("sinfonia") or v["sinfonia"],
+                 "candidatos": (prev_c + nuevas)[:TOP_N]}
+            print("      🎼 completar: %d existentes + %d nuevas → %d" % (len(prev_c), len(nuevas), len(v["candidatos"])))
+        elif not v["candidatos"]:
             v = pool_rescate(p["b"], c, v)           # 🛟 v2.10: jamás silencio — cajón de emergencia curado
         b["_musica"] = {"resuelto_el": hoy.strftime("%Y-%m-%d"), "juez": v["juez"],
                         "sinfonia": v["sinfonia"], "candidatos": v["candidatos"]}

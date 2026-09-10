@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       titulo:
-        description: "fragmento de título · * ediciones · ** faltantes · *** todo · + rescate de silencios · prefijo kids:"
+        description: "fragmento de título · * ediciones · ** faltantes · *** todo · + rescate de silencios · *+ completar ediciones a 3 · **+ completar todo · prefijo kids:"
         required: true
         default: "frida"
 permissions:
@@ -52,7 +52,13 @@ jobs:
           TITULO="${TITULO#=}"
           CAT="adulto"; RUTAS="contenido.json,contenido_manual.json"
           case "$TITULO" in kids:*) CAT="kids"; RUTAS="contenido_kids.json"; TITULO="${TITULO#kids:}";; esac
-          if [ "$TITULO" = "+" ]; then
+          if [ "$TITULO" = "*+" ]; then
+            # 🎼 completar ediciones: conserva lo existente y SUMA candidatas hasta 3 (solo libros no curados)
+            python3 app/scripts/resolve-musica.py --catalogo="$CAT" --solo-ediciones --completar-min=3 --explicar --rutas="$RUTAS"
+          elif [ "$TITULO" = "**+" ]; then
+            # 🎼 completar todo el catálogo (conserva lo existente; sin límite de libros)
+            python3 app/scripts/resolve-musica.py --catalogo="$CAT" --completar-min=3 --explicar --rutas="$RUTAS"
+          elif [ "$TITULO" = "+" ]; then
             python3 app/scripts/resolve-musica.py --catalogo="$CAT" --solo-silencios --rehacer --armonia-min=4 --explicar --rutas="$RUTAS"
           elif [ "$TITULO" = "***" ]; then
             python3 app/scripts/resolve-musica.py --catalogo="$CAT" --rehacer --explicar --rutas="$RUTAS"
