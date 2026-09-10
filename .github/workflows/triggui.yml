@@ -33,7 +33,6 @@ name: 🌒 Triggui — Generar contenido
 run-name: >-
   ${{ inputs.modo }}
   ${{ inputs.libro_input != '' && format('· {0}', inputs.libro_input) || '' }}
-  ${{ inputs.sentimiento != '' && format('· {0}', inputs.sentimiento) || '' }}
 
 on:
   # ───────────────────────────────────────────────────────────────────────
@@ -352,6 +351,13 @@ jobs:
       - name: 📚 Install nucleus deps
         working-directory: experiments/nucleus
         run: npm ci || npm install --no-audit --no-fund
+
+      - name: 🎭 Caché de navegadores Playwright (E2 — evita descargar Chromium en cada run)
+        if: ${{ inputs.generar_imagenes }}
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-1.48.0-chromium-${{ runner.os }}
 
       - name: 🎭 Install Playwright (solo si genera imágenes)
         if: ${{ inputs.generar_imagenes }}
@@ -1348,13 +1354,16 @@ jobs:
             echo "🟡 triggui-app: sin cambios"
           else
             git commit -m "🌒 triggui ${{ steps.modo.outputs.modo_tecnico }} — ${SLUG}"
+            PUSH_OK=0
             for i in 1 2 3; do
               if git pull --rebase --autostash origin main && git push origin HEAD:main; then
-                echo "✅ Push triggui-app exitoso (intento $i)"
+                echo "✅ Push triggui-app exitoso (intento $i)"; PUSH_OK=1
                 break
               fi
               sleep 3
             done
+            # R2 (auditoría): un run que no guardó NO puede reportar éxito
+            if [ "$PUSH_OK" != "1" ]; then echo "🔴 Push triggui-app falló 3 veces: el run NO guardó la edición"; exit 1; fi
           fi
 
           # ─── triggui-content ───
@@ -1389,13 +1398,15 @@ jobs:
               echo "🟡 triggui-content: sin cambios"
             else
               git commit -m "📚 triggui ${{ steps.modo.outputs.modo_tecnico }} — ${SLUG}"
+              PUSH_OK=0
               for i in 1 2 3; do
                 if git fetch origin main && git rebase origin/main && git push origin HEAD:main; then
-                  echo "✅ Push triggui-content exitoso (intento $i)"
+                  echo "✅ Push triggui-content exitoso (intento $i)"; PUSH_OK=1
                   break
                 fi
                 sleep 3
               done
+              if [ "$PUSH_OK" != "1" ]; then echo "🔴 Push triggui-content falló 3 veces: el catálogo NO se guardó"; exit 1; fi
             fi
           fi
 
@@ -1510,6 +1521,12 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: 🎭 Caché de navegadores Playwright (E2)
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-1.48.0-chromium-${{ runner.os }}
+
       - name: 🎭 Install Playwright (chromium para tarjeta/og)
         run: |
           if [ -f package.json ]; then
@@ -1566,13 +1583,15 @@ jobs:
             echo "🟡 ${OUT}/${SLUG} sin cambios — ya era idéntico (nada que commitear)."
           else
             git commit -m "🔁 reconstruir — ${MSGSLUG}"
+            PUSH_OK=0
             for i in 1 2 3; do
               if git pull --rebase --autostash origin "${BRANCH}" && git push origin "HEAD:${BRANCH}"; then
-                echo "✅ Push reconstruir exitoso (intento $i)"
+                echo "✅ Push reconstruir exitoso (intento $i)"; PUSH_OK=1
                 break
               fi
               sleep 3
             done
+            if [ "$PUSH_OK" != "1" ]; then echo "🔴 Push reconstruir falló 3 veces: nada se guardó"; exit 1; fi
           fi
 
       - name: 📋 Summary
@@ -1639,8 +1658,10 @@ jobs:
           git add cola-lunes.txt ultimo-horneado.txt
           if git diff --cached --quiet; then echo "🟡 sin cambios"; else
             git commit -m "🎬 cola: consumido — ${LIBRO}"
+            PUSH_OK=0
             for i in 1 2 3; do
-              git pull --rebase --autostash origin main && git push origin HEAD:main && break
+              git pull --rebase --autostash origin main && git push origin HEAD:main && { PUSH_OK=1; break; }
               sleep 3
             done
+            if [ "$PUSH_OK" != "1" ]; then echo "🔴 Push de la cola falló 3 veces: la cola NO se consumió en el repo"; exit 1; fi
           fi
