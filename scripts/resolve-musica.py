@@ -321,6 +321,7 @@ def capa1(queries, c, usadas=None, umbral=1, rescate=False, canon=False, artista
                 if hcorta in huellas or obra in huellas or hdur in huellas:
                     continue
                 huellas.add(hcorta); huellas.add(obra); huellas.add(hdur)
+                nombre = "%s %s %s" % (x.get("cancion", ""), x.get("album", ""), x.get("artista", ""))   # 🐛 el rescate usaba `nombre` sin definirla
                 if rescate and (KARAOKE_RX.search((x["cancion"]+" "+x["album"])) or p <= -5
                                 or (not canon and COMODIN_RX.search(x["cancion"])) or VIVO_RX.search(nombre) or REMIX_RX.search(nombre)
                                 or LUTO_RX.search(nombre)):
