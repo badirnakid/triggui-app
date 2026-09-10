@@ -1,6 +1,6 @@
 # 🔬 AUDIT_REPORT — Agente revisor Triggui
 
-**Fecha:** 2026-09-10 · **Modo:** solo sugerencias (nada se implementa solo) · **Hallazgos:** 🔴 0 · 🟠 2 · 🟡 2 · 🟢 19
+**Fecha:** 2026-09-10 · **Modo:** solo sugerencias (nada se implementa solo) · **Hallazgos:** 🔴 0 · 🟠 2 · 🟡 1 · 🟢 19
 
 **Inventario:** 165 libros adultos (29 ediciones) · 133 libros kids (16 ediciones) · cartero V24
 
@@ -8,19 +8,14 @@
 ## Hallazgos
 
 ### 🟠 C1 · Consistencia semántica
-- **Dónde:** contenido.json · 17 ediciones
-- **Impacto:** la sala y el correo prometen elegir entre 3 melodías; estas tienen «Bruce Lee»=1, «Sex Code»=1, «Las Leyes de la Simplicidad»=2, «Too Soon Old To Late Smart»=1, «El obstáculo es el camino»=2, «The Next Conversation»=1, «Piénsalo Otra Vez»=1, «Goodbye Things»=1 …
+- **Dónde:** contenido.json · 2 ediciones
+- **Impacto:** la sala y el correo prometen elegir entre 3 melodías; estas tienen «Sex Code»=1, «The Algorithm»=2
 - **Propuesta:** disparar musica-uno con `*+` (completar ediciones a 3, conserva lo existente); el pipeline completa 10 por corrida
 
 ### 🟠 C2 · Consistencia semántica
 - **Dónde:** contenido.json · 2 ediciones
 - **Impacto:** ediciones adultas sin video: Reducir el efecto de las ond, Frida para apasionados
 - **Propuesta:** correr `video-uno.yml` / paso de videos del pipeline para esas ediciones
-
-### 🟡 C1k · Consistencia semántica
-- **Dónde:** contenido_kids.json · 5 ediciones
-- **Impacto:** kids con menos de 3 melodías: «El monstruo de colores»=2, «Pulgarcito»=2, «El Principito»=2, «La gran fábrica de las pal»=1, «Heidi»=2
-- **Propuesta:** musica-uno con `kids:*+`
 
 ### 🟡 C2b · Consistencia semántica
 - **Dónde:** contenido.json · 5 ediciones
