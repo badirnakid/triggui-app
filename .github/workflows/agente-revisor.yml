@@ -1,0 +1,76 @@
+name: "🔬 Agente revisor (solo sugiere)"
+run-name: "🔬 Agente revisor · ${{ github.event_name }}"
+
+on:
+  schedule:
+    - cron: '0 15 * * 4'          # JUEVES 9 AM CDMX — la hora sagrada; S7 ritual de mantenimiento
+  workflow_dispatch:
+    inputs:
+      sin_red:
+        description: "Sin sondas de producción (solo repos)"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: agente-revisor
+  cancel-in-progress: false
+
+jobs:
+  revisar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout triggui-app
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Checkout triggui-content (solo lectura)
+        uses: actions/checkout@v4
+        with:
+          repository: badirnakid/triggui-content
+          path: triggui-content
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 🔬 Barrido (catálogo · superficies · pipeline · producción)
+        shell: bash
+        run: |
+          set -euo pipefail
+          EXTRA=""
+          if [ "${{ inputs.sin_red }}" = "true" ]; then EXTRA="--sin-red"; fi
+          python3 scripts/agente-revisor.py --content=triggui-content --out=docs/AUDIT_REPORT.md $EXTRA
+          {
+            echo "## 🔬 Agente revisor — $(date -u +%F)"
+            echo
+            cat docs/AUDIT_REPORT.md
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 📝 Guardar informe (solo docs/)
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Triggui Revisor"
+          git config user.email "revisor@triggui.com"
+          git add docs/AUDIT_REPORT.md docs/AUDIT_HISTORY.md
+          if git diff --cached --quiet; then
+            echo "🟡 informe idéntico al anterior: sin commit"
+          else
+            git commit -m "🔬 revisor — informe $(date -u +%F)"
+            PUSH_OK=0
+            for i in 1 2 3; do
+              if git pull --rebase --autostash origin main && git push origin HEAD:main; then PUSH_OK=1; break; fi
+              sleep 3
+            done
+            if [ "$PUSH_OK" != "1" ]; then echo "🔴 el informe no se pudo guardar"; exit 1; fi
+          fi
