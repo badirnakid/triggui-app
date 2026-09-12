@@ -348,6 +348,9 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: 🐍 Pillow (detector de placeholders · puerta de calidad)
+        run: pip -q install pillow
+
       - name: 📚 Install nucleus deps
         working-directory: experiments/nucleus
         run: npm ci || npm install --no-audit --no-fund
@@ -931,6 +934,8 @@ jobs:
             if [ ! -f contenido_kids.json ]; then echo "ℹ️  contenido_kids.json no está — sin música"; exit 0; fi
             echo "🧸 Kids — la ley de la caricatura"
             python3 scripts/resolve-musica.py --catalogo=kids --rutas=contenido_kids.json --max=10 --completar-min=3 --explicar
+            # 🎼 completar del día: el libro de ESTE run llega a 3 en esta misma corrida (juez suave, sin espera)
+            python3 scripts/titulos-del-run.py | while IFS= read -r T; do [ -n "$T" ] && python3 scripts/resolve-musica.py --catalogo=kids --rutas=contenido_kids.json --solo="$T" --completar-min=3 --armonia-min=4 --forzar --explicar || true; done
             exit 0
           fi
           if [ ! -f contenido.json ]; then
@@ -938,6 +943,8 @@ jobs:
             exit 0
           fi
           python3 scripts/resolve-musica.py --rutas=contenido.json --max=10 --completar-min=3 --explicar
+          # 🎼 completar del día: el libro de ESTE run llega a 3 en esta misma corrida (juez suave, sin espera)
+          python3 scripts/titulos-del-run.py | while IFS= read -r T; do [ -n "$T" ] && python3 scripts/resolve-musica.py --rutas=contenido.json --solo="$T" --completar-min=3 --armonia-min=4 --forzar --explicar || true; done
 
       - name: 🌐 Generar edición viva HTML
         if: ${{ inputs.generar_imagenes && (steps.modo.outputs.modo_tecnico == 'single_book' || steps.modo.outputs.modo_tecnico == 'trigger_constrained' || steps.modo.outputs.modo_tecnico == 'trigger_discover' || steps.modo.outputs.modo_tecnico == 'production_batch') }}
@@ -1092,6 +1099,8 @@ jobs:
             exit 0
           fi
           python3 scripts/resolve-videos.py --solo-ediciones --rutas=contenido.json
+          # 🎬 completar del día: si el libro de ESTE run quedó con <3 (o con 0), segunda oportunidad ya (autor · tema), sin espera
+          python3 scripts/titulos-del-run.py | while IFS= read -r T; do [ -n "$T" ] && python3 scripts/resolve-videos.py --rutas=contenido.json --solo="$T" --completar-min=3 --forzar --explicar || true; done
 
       # 🎬 La página del video dentro de Triggui (+ su OG): nace aquí porque el video se resuelve después de la edición.
       - name: 🎬 Página y OG del video (dentro de Triggui)
@@ -1308,6 +1317,19 @@ jobs:
         env:
           OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
         run: node scripts/gemelos-en.mjs
+      # 🛡️ PUERTA DE CALIDAD — si una edición del run está coja (portada placeholder, sin melodía, sin video, sin gemelo EN…),
+      # el run FALLA aquí y NO se publica nada. Mejor tarde que rota.
+      - name: 🛡️ Puerta de calidad (nada cojo se publica)
+        if: ${{ !inputs.modo_prueba && (steps.modo.outputs.modo_tecnico == 'single_book' || steps.modo.outputs.modo_tecnico == 'trigger_constrained' || steps.modo.outputs.modo_tecnico == 'trigger_discover' || steps.modo.outputs.modo_tecnico == 'production_batch') && env.YT_API_KEY != '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$CATALOG_MODE" = "kids" ]; then
+            python3 scripts/puerta-calidad.py --kids --catalogo=contenido_kids.json --base=public/kids/t
+          else
+            python3 scripts/puerta-calidad.py --catalogo=contenido.json --base=public/t
+          fi
+
       - name: 💾 Commit y push
         run: |
           set -euo pipefail
@@ -1520,6 +1542,9 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+
+      - name: 🐍 Pillow (detector de placeholders · puerta de calidad)
+        run: pip -q install pillow
 
       - name: 🎭 Caché de navegadores Playwright (E2)
         uses: actions/cache@v4

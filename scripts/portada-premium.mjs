@@ -9,6 +9,16 @@
 import fs from "node:fs/promises";
 const PLACEHOLDER_GOOGLE = new Set(["931a64e6d5d364b57b53f03228c3d8a6", "a64fa89d7ebc97075c1d363fc5fea71f"]);
 import { createHash } from "node:crypto";
+import { spawnSync } from "node:child_process";
+
+// 🖼️ Veto por PÍXELES (scripts/es_placeholder.py): la huella MD5 resultó frágil (Google sirve placeholders distintos por libro
+// y hasta PNG en fife=w800). Un placeholder no tiene ni un pixel oscuro; una portada real siempre. Sin Python/Pillow → nunca bloquea.
+function esPlaceholder(buf) {
+  try {
+    const r = spawnSync("python3", ["scripts/es_placeholder.py", "-"], { input: buf, timeout: 20000 });
+    return r.status === 0 && String(r.stdout || "").trim() === "1";
+  } catch { return false; }
+}
 import path from "node:path";
 
 async function lanzar() {
@@ -154,12 +164,14 @@ export async function resolverPortadaPremium(meta, outDir) {
     }
     for (const u of urls) {
       const d = await bajar(u);
-      if (d && aspectoOk(d) && d.bytes >= 12000 && (!mejor || d.w > mejor.w)) mejor = d;
+      if (!d || !aspectoOk(d) || d.bytes < 12000) continue;
+      if (esPlaceholder(d.buf)) { console.log("   🚫 placeholder por píxeles, descartado: " + u.slice(0, 80)); continue; }
+      if (!mejor || d.w > mejor.w) mejor = d;
     }
     // 🔎 La búsqueda en Apple solo entra si el catálogo no dio imagen usable (≥380 de ancho); y solo si es el mismo libro
     if (!(mejor && mejor.w >= 380)) {
       const extra = await buscarITunes(meta);
-      if (extra) { const d = await bajar(extra); if (d && aspectoOk(d) && d.bytes >= 12000 && (!mejor || d.w > mejor.w)) mejor = d; }
+      if (extra) { const d = await bajar(extra); if (d && aspectoOk(d) && d.bytes >= 12000 && !esPlaceholder(d.buf) && (!mejor || d.w > mejor.w)) mejor = d; }
     }
     let buf, tier, source;
     if (mejor && mejor.w >= 600 && mejor.bytes >= 30000) {

@@ -107,6 +107,8 @@ def config(argv=None):
         "max": int(kv.get("max", "999")),
         "reintentar": int(kv.get("reintentar-dias", "30")),
         "armonia_min": int(kv.get("armonia-min", "3")),
+        "completar_min": int(kv.get("completar-min", "0")),   # 🎬 completar: suma candidatos a libros no curados con menos de N (0 = apagado)
+        "forzar": "--forzar" in flags,                         # sin esperar los 30 días (petición explícita)
         "solo": [_norm(x) for x in kv.get("solo", "").split(",") if x.strip()],
         "rutas": rutas,
     }
@@ -190,11 +192,30 @@ def query_de(b):
     return ("%s %s %s" % (tit, b.get("autor", ""), "entrevista" if lang == "es" else "interview")).strip(), lang
 
 
-def capa1(b, key):
-    """Candidatos anclados con puntaje ≥ UMBRAL, con ficha completa. Hasta 8, en orden de relevancia."""
+def query_autor(b):
+    tit, lang = titulo_y_lang(b)
+    return ("%s %s" % (b.get("autor", ""), "entrevista" if lang == "es" else "interview")).strip(), lang
+
+
+def query_tema(b):
+    """Consulta por TEMA de la edición (palabras del libro + subtítulo de la tarjeta): el eco, no el libro."""
+    tit, lang = titulo_y_lang(b)
+    pal = [str(x) for x in (b.get("palabras_en" if lang == "en" else "palabras") or b.get("palabras") or []) if str(x).strip()][:2]
+    sub = str(((b.get("tarjeta_en") if lang == "en" else b.get("tarjeta")) or {}).get("subtitulo") or "")[:60]
+    base = " ".join(pal) if pal else sub
+    if not base.strip():
+        return "", lang
+    return ("%s %s" % (base, "charla" if lang == "es" else "talk")).strip(), lang
+
+
+def capa1(b, key, modo="anclada"):
+    """Candidatos con ficha completa. modo=anclada exige mención de autor/título (puntaje ≥ UMBRAL);
+    modo=autor busca por el autor; modo=tema busca por el tema de la edición y NO exige anclaje (el juez decide)."""
     tit, _ = titulo_y_lang(b)
     autor = b.get("autor", "")
-    q, lang = query_de(b)
+    q, lang = (query_de(b) if modo == "anclada" else (query_autor(b) if modo == "autor" else query_tema(b)))
+    if not q:
+        return []
     su = (API + "search?part=snippet&type=video&maxResults=8&relevanceLanguage=" + lang
           + "&videoEmbeddable=true&safeSearch=strict&q=" + urllib.parse.quote(q) + "&key=" + key)
     items = [i for i in api(su).get("items", []) if ID_RE.match(((i.get("id") or {}).get("videoId") or ""))]
@@ -207,7 +228,10 @@ def capa1(b, key):
         vid = it["id"]["videoId"]
         det = dets.get(vid, {})
         p, d, anclado = puntua(it, det, autor, tit)
-        if not anclado or p < UMBRAL:
+        if modo == "tema":
+            if p < UMBRAL - 2 or d < 240:
+                continue                                    # por tema: sin anclaje, pero con duración y calidad mínimas
+        elif not anclado or p < UMBRAL:
             continue
         sn = it.get("snippet", {})
         dsn = det.get("snippet", {})
@@ -433,14 +457,26 @@ def elegible(b, c, hoy):
     v = b.get("_video")
     if isinstance(v, dict) and not c["rehacer"]:
         if v.get("candidatos"):
+            cm = c.get("completar_min") or 0
+            juez = str(v.get("juez") or "")
+            if cm > 0 and len(v["candidatos"]) < cm and juez != "semilla" and not v.get("curado"):
+                if "+completar" in juez and not c.get("forzar") and not c.get("solo"):
+                    try:
+                        fecha = datetime.date.fromisoformat(str(v.get("resuelto_el", "")))
+                        if (hoy - fecha).days < c["reintentar"]:
+                            return False, "completar: reintento en %d días" % (c["reintentar"] - (hoy - fecha).days)
+                    except ValueError:
+                        pass
+                return True, "completar"
             return False, "ya resuelto"
-        try:
-            fecha = datetime.date.fromisoformat(str(v.get("resuelto_el", "")))
-            dias = (hoy - fecha).days
-            if dias < c["reintentar"]:
-                return False, "sin video, reintento en %d días" % (c["reintentar"] - dias)
-        except ValueError:
-            pass
+        if not (c.get("forzar") or c.get("solo")):
+            try:
+                fecha = datetime.date.fromisoformat(str(v.get("resuelto_el", "")))
+                dias = (hoy - fecha).days
+                if dias < c["reintentar"]:
+                    return False, "sin video, reintento en %d días" % (c["reintentar"] - dias)
+            except ValueError:
+                pass
     return True, "buscar"
 
 
@@ -473,7 +509,14 @@ def escribir_atomico(ruta, d):
 # ─────────────────────────────────────────────────────────────── PROCESO ──
 def resolver_libro(b, c, st, nombre):
     """Capa 1 + capa 2 + terna. Devuelve el objeto _video (sin fecha). Lanza ApiFatal si YouTube cae."""
-    base = capa1(b, c["key"])
+    base = capa1(b, c["key"], "anclada")
+    if len(base) < TOP_N:                                   # 🎬 segunda pasada: la voz del autor
+        vistos = set(x["id"] for x in base)
+        base += [x for x in capa1(b, c["key"], "autor") if x["id"] not in vistos]
+    if len(base) < TOP_N:                                   # 🎬 tercera pasada: el TEMA de la edición (el juez decide la armonía)
+        vistos = set(x["id"] for x in base)
+        base += [x for x in capa1(b, c["key"], "tema") if x["id"] not in vistos]
+    base = base[:10]
     if c["explicar"]:
         for x in base:
             print("      · base %2d · %5.1f min · %s · %s" % (x["_base"], x["dur"] / 60, x["canal"][:24], x["titulo"][:56]))
@@ -528,6 +571,8 @@ def procesa(ruta, c, cache, st, hoy=None):
             continue
         if c["dry"]:
             q, lang = query_de(b)
+            if motivo == "completar":
+                q += "  (+completar)"
             st["busquedas"] += 1
             cache[k] = None
             print("  ? %-44s [%s] q=\"%s\"" % (nombre, lang, q))
@@ -550,6 +595,15 @@ def procesa(ruta, c, cache, st, hoy=None):
             print("  ! %-44s %s (sin cambios, se reintenta en la próxima corrida)" % (nombre, e))
             time.sleep(1)
             continue
+        if motivo == "completar":
+            # 🎬 fusión: los candidatos existentes mandan (OG y página base intactos); se SUMAN los nuevos, sin repetir id, tope TOP_N
+            previo = b.get("_video") or {}
+            prev_c = list(previo.get("candidatos") or [])
+            ids = set(x.get("id") for x in prev_c)
+            nuevos = [x for x in v["candidatos"] if x.get("id") not in ids]
+            v = {"juez": (str(previo.get("juez") or v["juez"]).replace("+completar", "") + "+completar"),
+                 "sinfonia": previo.get("sinfonia") or v["sinfonia"], "candidatos": (prev_c + nuevos)[:TOP_N]}
+            print("      🎬 completar: %d existentes + %d nuevos → %d" % (len(prev_c), len(nuevos), len(v["candidatos"])))
         b["_video"] = {"resuelto_el": hoy.strftime("%Y-%m-%d"), "juez": v["juez"], "sinfonia": v["sinfonia"], "candidatos": v["candidatos"]}
         cache[k] = b["_video"]
         cambios += 1

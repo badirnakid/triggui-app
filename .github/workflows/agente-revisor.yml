@@ -43,6 +43,9 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: 🐍 Pillow (detector de placeholders)
+        run: pip -q install pillow
+
       - name: 🔬 Barrido (catálogo · superficies · pipeline · producción)
         shell: bash
         run: |

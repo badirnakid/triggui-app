@@ -178,6 +178,17 @@ def auditar_superficies(eds, edk):
                 ok, err = nodeok(js)
                 if not ok:
                     js_mal.append(b["_slug"]); break
+    # portadas placeholder por PÍXELES (scripts/es_placeholder.py)
+    try:
+        sys.path.insert(0, os.path.join(APP, "scripts")); from es_placeholder import es_placeholder as _esph
+        ph = [b["_slug"] for base, lista in (("public/t", eds), ("public/kids/t", edk)) for b in lista
+              if os.path.exists(os.path.join(APP, base, b["_slug"], "portada.jpg")) and _esph(open(os.path.join(APP, base, b["_slug"], "portada.jpg"), "rb").read()) == 1]
+        if ph:
+            hallazgo("S0", "🔴", "Consistencia semántica", "public/ · %d portadas" % len(ph), "portada.jpg PLACEHOLDER (imagen 'not available'): %s" % ", ".join(ph[:8]), "fijar portada_url real (Apple/Google hi-res) y `🔁 Reconstruir`; la escalera ya veta placeholders por píxeles")
+        else:
+            bien("ninguna portada viva es placeholder (detector por píxeles)")
+    except Exception:
+        pass
     if faltan:
         hallazgo("S1", "🔴", "Robustez", "public/ · %d activos" % len(faltan), "activos faltantes de ediciones vivas: %s" % ", ".join(faltan[:8]), "`🔁 Reconstruir` (un libro por corrida) para cada edición afectada")
     else:

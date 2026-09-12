@@ -3,9 +3,13 @@ on:
   workflow_dispatch:
     inputs:
       slug:
-        description: "slug a re-resolver"
-        required: true
-        default: "frida-para-apasionados"
+        description: "slug a re-resolver (borra su _video y re-resuelve; modo antiguo)"
+        required: false
+        default: ""
+      titulo:
+        description: "completar sin destruir: *+ ediciones a 3 · fragmento+ ese libro (sin espera) · vacío = usar slug"
+        required: false
+        default: ""
 permissions:
   contents: write
 jobs:
@@ -25,7 +29,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Borrar _video del slug
+      - name: Borrar _video del slug (solo modo slug)
+        if: ${{ github.event.inputs.titulo == '' && github.event.inputs.slug != '' }}
         env:
           SLUG: ${{ github.event.inputs.slug }}
         run: |
@@ -36,11 +41,18 @@ jobs:
           OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
         run: |
           pip -q install requests || true
-          python3 app/scripts/resolve-videos.py --solo-ediciones
+          TITULO="${{ github.event.inputs.titulo }}"
+          if [ "$TITULO" = "*+" ]; then
+            python3 app/scripts/resolve-videos.py --solo-ediciones --completar-min=3 --explicar
+          elif [ -n "$TITULO" ] && [ "${TITULO%+}" != "$TITULO" ]; then
+            python3 app/scripts/resolve-videos.py --solo="${TITULO%+}" --completar-min=3 --forzar --explicar
+          else
+            python3 app/scripts/resolve-videos.py --solo-ediciones
+          fi
       - name: Commit
         run: |
           git config user.name "triggui-bot"
           git config user.email "bot@triggui.com"
           git add contenido.json contenido_manual.json
-          git diff --cached --quiet && echo "sin cambios" || git commit -m "video re-resuelto ${{ github.event.inputs.slug }}"
+          git diff --cached --quiet && echo "sin cambios" || git commit -m "video re-resuelto ${{ github.event.inputs.slug }}${{ github.event.inputs.titulo }}"
           git push
