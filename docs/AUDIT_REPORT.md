@@ -13,8 +13,8 @@
 - **Propuesta:** disparar musica-uno con `*+` (completar ediciones a 3, conserva lo existente); el pipeline completa 10 por corrida
 
 ### 🟡 C2b · Consistencia semántica
-- **Dónde:** contenido.json · 7 ediciones
-- **Impacto:** menos de 3 videos: «Take nothing personally»=1, «101 reflexiones que cambia»=1, «Too Soon Old To Late Smart»=1, «Frida para apasionados»=1, «Ganbatte!»=1, «El libro de Elon»=2, «Conciencia»=2
+- **Dónde:** contenido.json · 3 ediciones
+- **Impacto:** menos de 3 videos: «101 reflexiones que cambia»=1, «Frida para apasionados»=1, «Ganbatte!»=2
 - **Propuesta:** resolver videos con `--completar` (mismo patrón que música)
 
 
