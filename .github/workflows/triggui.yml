@@ -753,6 +753,11 @@ jobs:
           [ -f "$CONTENIDO_FILE" ] && cp -v "$CONTENIDO_FILE" "$GITHUB_WORKSPACE/$CONTENIDO_FILE"
           [ -f "$SHADOW_FILE" ] && cp -v "$SHADOW_FILE" "$GITHUB_WORKSPACE/$SHADOW_FILE"
 
+          # 🛟 cajones de emergencia (música y video) al cwd de los resolutores: sin esto, "jamás silencio" no aplicaba en este pipeline
+          for f in musica_emergencia.json video_emergencia.json; do
+            [ -f "$GITHUB_WORKSPACE/triggui-content/$f" ] && cp -v "$GITHUB_WORKSPACE/triggui-content/$f" "$GITHUB_WORKSPACE/$f" || echo "ℹ️  $f no está en triggui-content"
+          done
+
           for dir in inputs-history metrics quality-reports grounding-cache evidence-cache; do
             if [ -d "$dir" ]; then
               mkdir -p "$GITHUB_WORKSPACE/$dir"
@@ -1098,9 +1103,9 @@ jobs:
             echo "ℹ️  contenido.json no está en el workspace — sin video"
             exit 0
           fi
-          python3 scripts/resolve-videos.py --solo-ediciones --rutas=contenido.json
+          python3 scripts/resolve-videos.py --solo-ediciones --rutas=contenido.json --armonia-min=5
           # 🎬 completar del día: si el libro de ESTE run quedó con <3 (o con 0), segunda oportunidad ya (autor · tema), sin espera
-          python3 scripts/titulos-del-run.py | while IFS= read -r T; do [ -n "$T" ] && python3 scripts/resolve-videos.py --rutas=contenido.json --solo="$T" --completar-min=3 --forzar --explicar || true; done
+          python3 scripts/titulos-del-run.py | while IFS= read -r T; do [ -n "$T" ] && python3 scripts/resolve-videos.py --rutas=contenido.json --solo="$T" --completar-min=3 --armonia-min=5 --forzar --explicar || true; done
 
       # 🎬 La página del video dentro de Triggui (+ su OG): nace aquí porque el video se resuelve después de la edición.
       - name: 🎬 Página y OG del video (dentro de Triggui)

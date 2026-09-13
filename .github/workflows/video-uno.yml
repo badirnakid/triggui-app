@@ -43,11 +43,11 @@ jobs:
           pip -q install requests || true
           TITULO="${{ github.event.inputs.titulo }}"
           if [ "$TITULO" = "*+" ]; then
-            python3 app/scripts/resolve-videos.py --solo-ediciones --completar-min=3 --explicar
+            python3 app/scripts/resolve-videos.py --solo-ediciones --completar-min=3 --armonia-min=5 --explicar
           elif [ -n "$TITULO" ] && [ "${TITULO%+}" != "$TITULO" ]; then
-            python3 app/scripts/resolve-videos.py --solo="${TITULO%+}" --completar-min=3 --forzar --explicar
+            python3 app/scripts/resolve-videos.py --solo="${TITULO%+}" --completar-min=3 --armonia-min=5 --forzar --explicar
           else
-            python3 app/scripts/resolve-videos.py --solo-ediciones
+            python3 app/scripts/resolve-videos.py --solo-ediciones --armonia-min=5
           fi
       - name: Commit
         run: |

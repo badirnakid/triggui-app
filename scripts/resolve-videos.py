@@ -150,14 +150,34 @@ def dur(iso):
     return h * 3600 + mi * 60 + s
 
 
+APELLIDOS_COMUNES = {"singh", "kumar", "khan", "garcia", "lopez", "martinez", "gonzalez", "rodriguez", "perez", "sanchez", "hernandez",
+                     "smith", "jones", "brown", "lee", "kim", "chen", "wang", "li", "zhang", "liu", "yang", "nguyen", "silva", "santos", "ali", "shah", "das", "roy"}
+
+def ancla_autor(t, autor):
+    """Ancla por autor: nombre COMPLETO (normalizado) en título/descripción/canal; el apellido solo ancla si es raro y largo.
+    'Shubham Kumar Singh' ya no se ancla con cualquier 'Singh' (un examen de ingeniería no es el autor)."""
+    au = _norm(autor or "")
+    if not au:
+        return False
+    tt = _norm(t or "")
+    if au in tt:
+        return True
+    partes = [p for p in au.split() if len(p) > 2]
+    if not partes:
+        return False
+    ape = partes[-1]
+    if ape in APELLIDOS_COMUNES or len(ape) < 5:
+        return False
+    return ape in tt
+
+
 def puntua(it, det, autor, tit):
     """Puntaje canon v27. Devuelve (puntos, duracion_s, anclado)."""
     sn = it.get("snippet", {})
     dsn = det.get("snippet", {})
     t = ((sn.get("title") or "") + " " + (dsn.get("description") or sn.get("description") or "")).lower()
-    ape = autor.split()[-1].lower() if autor else ""
     p = 0
-    ape_hit = bool(ape and ape in t)
+    ape_hit = ancla_autor(t, autor)
     if ape_hit:
         p += 4
     if any(w in t for w in PALABRAS):
@@ -415,6 +435,36 @@ def armonizar(b, cands, c, st):
     return res, sinfonia
 
 
+_POOL_VIDEO = None
+def pool_video(b):
+    """🛟 jamás sin video: charla eterna del cajón (video_emergencia.json) por eje de ánimo, rotando por número de edición."""
+    global _POOL_VIDEO
+    if _POOL_VIDEO is None:
+        try:
+            _POOL_VIDEO = json.load(open("video_emergencia.json", encoding="utf-8")).get("ejes") or {}
+        except Exception:
+            _POOL_VIDEO = {}
+    if not _POOL_VIDEO:
+        print("      🛟 cajón de videos AUSENTE (video_emergencia.json) — queda sin video")
+        return {"juez": "capa1", "sinfonia": "", "candidatos": []}
+    ejes = {}
+    for k in ("og_phrases_es", "edition_blocks_es"):
+        for p in ((b.get("_nucleus") or {}).get(k) or []):
+            e = (p.get("eje_animo") if isinstance(p, dict) else None)
+            if e:
+                ejes[e] = ejes.get(e, 0) + 1
+    eje = max(ejes, key=ejes.get) if ejes else "luz"
+    if eje not in _POOL_VIDEO:
+        eje = "luz" if "luz" in _POOL_VIDEO else sorted(_POOL_VIDEO)[0]
+    L = _POOL_VIDEO[eje]
+    n = int(b.get("_edicion_numero") or 0)
+    orden = [L[(n + i) % len(L)] for i in range(len(L))][:TOP_N]
+    cands = [{"id": x["id"], "titulo": x.get("titulo", ""), "canal": x.get("canal", ""), "dur": int(x.get("dur") or 0), "pie": x.get("pie", ""), "pie_en": x.get("pie_en", ""),
+              "armonia": 5, "rol": "acompañar", "tipo": "charla", "relacion": "tema"} for x in orden]
+    print("      🛟 pool-video (%s): %s" % (eje, " · ".join(c["titulo"][:30] for c in cands)))
+    return {"juez": "pool-video", "sinfonia": "Del cajón de charlas eternas (eje %s): nada del libro armonizó; esta charla acompaña el ánimo de la edición." % eje, "candidatos": cands}
+
+
 def terna(cands, armonia_min):
     """El de mayor armonía; luego el mejor de un rol distinto; luego un tercer rol; completa por armonía."""
     vivos = [x for x in cands if not x.get("_descartar") and x.get("armonia", 0) >= armonia_min]
@@ -537,6 +587,8 @@ def resolver_libro(b, c, st, nombre):
         except Exception as e:
             st["llm_errores"] += 1
             print("  ! %-44s capa 2 falló (%s) → terna por capa 1" % (nombre, str(e)[:90]))
+    if not elegidos:
+        return pool_video(b)                                  # 🛟 jamás sin video
     return {"juez": juez, "sinfonia": sinfonia, "candidatos": limpiar(elegidos)}
 
 
