@@ -1,6 +1,6 @@
 # 🔬 AUDIT_REPORT — Agente revisor Triggui
 
-**Fecha:** 2026-09-13 · **Modo:** solo sugerencias (nada se implementa solo) · **Hallazgos:** 🔴 0 · 🟠 3 · 🟡 1 · 🟢 19
+**Fecha:** 2026-09-13 · **Modo:** solo sugerencias (nada se implementa solo) · **Hallazgos:** 🔴 0 · 🟠 1 · 🟡 1 · 🟢 20
 
 **Inventario:** 167 libros adultos (31 ediciones) · 133 libros kids (16 ediciones) · cartero V24
 
@@ -8,23 +8,13 @@
 ## Hallazgos
 
 ### 🟠 C1 · Consistencia semántica
-- **Dónde:** contenido.json · 2 ediciones
-- **Impacto:** la sala y el correo prometen elegir entre 3 melodías; estas tienen «Despertando al Gigante Inter»=2, «The Algorithm»=2
+- **Dónde:** contenido.json · 1 ediciones
+- **Impacto:** la sala y el correo prometen elegir entre 3 melodías; estas tienen «The Algorithm»=2
 - **Propuesta:** disparar musica-uno con `*+` (completar ediciones a 3, conserva lo existente); el pipeline completa 10 por corrida
 
-### 🟠 C2 · Consistencia semántica
-- **Dónde:** contenido.json · 2 ediciones
-- **Impacto:** ediciones adultas sin video: Reducir el efecto de las ond, Frida para apasionados
-- **Propuesta:** correr `video-uno.yml` / paso de videos del pipeline para esas ediciones
-
-### 🟠 S2 · Consistencia semántica
-- **Dónde:** public/ · 2 subpáginas
-- **Impacto:** melodías del catálogo sin su página/OG propio: sex-code/pieza/1, sex-code/pieza/2
-- **Propuesta:** re-hornear con build-editions.py + build-pieza-og.py (o `🔁 Reconstruir`)
-
 ### 🟡 C2b · Consistencia semántica
-- **Dónde:** contenido.json · 6 ediciones
-- **Impacto:** menos de 3 videos: «Take nothing personally»=1, «101 reflexiones que cambia»=1, «Too Soon Old To Late Smart»=1, «Ganbatte!»=1, «El libro de Elon»=2, «Conciencia»=2
+- **Dónde:** contenido.json · 7 ediciones
+- **Impacto:** menos de 3 videos: «Take nothing personally»=1, «101 reflexiones que cambia»=1, «Too Soon Old To Late Smart»=1, «Frida para apasionados»=1, «Ganbatte!»=1, «El libro de Elon»=2, «Conciencia»=2
 - **Propuesta:** resolver videos con `--completar` (mismo patrón que música)
 
 
@@ -38,6 +28,7 @@
 - slugs de edición únicos
 - ninguna portada viva es placeholder (detector por píxeles)
 - activos base completos (index, en, og, og_en, tarjeta, portada) en las 47 ediciones vivas
+- cada melodía del catálogo tiene su página y su OG (47 ediciones)
 - cada video del catálogo tiene su página y su OG
 - node --check limpio en todos los scripts inline de las ediciones vivas
 - paridad byte a byte public/index.html = public/kids/index.html
@@ -53,8 +44,6 @@
 ## Para el «va» de Badir
 
 - [ ] 🟠 **C1** → disparar musica-uno con `*+` (completar ediciones a 3, conserva lo existente); el pipeline completa 10 por corrida
-- [ ] 🟠 **C2** → correr `video-uno.yml` / paso de videos del pipeline para esas ediciones
-- [ ] 🟠 **S2** → re-hornear con build-editions.py + build-pieza-og.py (o `🔁 Reconstruir`)
 
 ---
 _Método: barrido determinista de catálogo (C), superficies (S), pipeline (P) y producción (D). Categorías: Eficiencia · Robustez · Idempotencia · Seguridad · Costo · Trazabilidad · UX del operador · Consistencia semántica._
