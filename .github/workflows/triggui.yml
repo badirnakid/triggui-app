@@ -1584,6 +1584,25 @@ jobs:
           echo "   salida:  ${TRIGGUI_OUT_BASE}"
           node scripts/reconstruir-edicion.mjs
 
+      # 🛡️ La misma puerta de calidad que en `generar`, aquí sobre el libro reconstruido: se presencia en CI sin LLM
+      # y sin edición nueva. Si el libro está cojo, el run falla y no se commitea nada.
+      - name: 🛡️ Puerta de calidad (libro reconstruido)
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -f /tmp/triggui-slug.txt ]; then echo "🔴 sin slug: nada que verificar"; exit 1; fi
+          SLUG="$(cat /tmp/triggui-slug.txt)"
+          TIT="$(printf '%s' "${{ inputs.libro_input }}" | cut -d'|' -f1 | sed 's/[[:space:]]*$//')"
+          python3 - "$SLUG" "$TIT" <<'PY'
+          import json, sys
+          json.dump({"titulo": sys.argv[2], "slug": sys.argv[1]}, open("/tmp/triggui-book.json", "w", encoding="utf-8"), ensure_ascii=False)
+          PY
+          if [ "${{ inputs.catalogo }}" = "kids" ]; then
+            python3 scripts/puerta-calidad.py --kids --catalogo=triggui-content/contenido_kids.json --base=public/kids/t
+          else
+            python3 scripts/puerta-calidad.py --catalogo=triggui-content/contenido.json --base=public/t
+          fi
+
       - name: 💾 Commit imágenes reconstruidas (solo el slug)
         shell: bash
         run: |
