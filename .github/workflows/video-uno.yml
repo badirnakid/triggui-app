@@ -54,5 +54,12 @@ jobs:
           git config user.name "triggui-bot"
           git config user.email "bot@triggui.com"
           git add contenido.json contenido_manual.json
-          git diff --cached --quiet && echo "sin cambios" || git commit -m "video re-resuelto ${{ github.event.inputs.slug }}${{ github.event.inputs.titulo }}"
-          git push
+          if git diff --cached --quiet; then echo "sin cambios"; exit 0; fi
+          git commit -m "video re-resuelto ${{ github.event.inputs.slug }}${{ github.event.inputs.titulo }}"
+          # R2: pull --rebase + reintentos; si las 3 fallan, el run falla (nunca un éxito mentiroso)
+          PUSH_OK=0
+          for i in 1 2 3; do
+            if git pull --rebase --autostash origin main && git push origin HEAD:main; then PUSH_OK=1; break; fi
+            sleep 5
+          done
+          if [ "$PUSH_OK" != "1" ]; then echo "🔴 push falló 3 veces"; exit 1; fi
