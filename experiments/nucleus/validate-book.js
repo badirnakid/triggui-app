@@ -40,7 +40,10 @@ import { fetchEvidence, selectBestCover, buildEnrichedBookData, checkImageURL as
 const INPUT_MODE = String(process.env.INPUT_MODE || "").trim().toLowerCase();
 const SELECTOR_MODE = String(process.env.SELECTOR_MODE || "").trim().toLowerCase();
 const ENTRADA_RAW = String(process.env.ENTRADA_RAW || "").trim();
-const LIBRO_INPUT = String(process.env.LIBRO_INPUT || "").trim();
+// 🪪 "!" al inicio = "confío en mí: el libro existe aunque ninguna fuente lo tenga indexado" (lanzamientos recientes)
+const LIBRO_INPUT_CRUDO = String(process.env.LIBRO_INPUT || "").trim();
+const FORZADO = LIBRO_INPUT_CRUDO.startsWith("!");
+const LIBRO_INPUT = LIBRO_INPUT_CRUDO.replace(/^!\s*/, "");
 const CATALOG_SCOPE = String(process.env.CATALOG_SCOPE || "none").trim().toLowerCase();
 const CATALOG_CSV_PATH_ENV = String(process.env.CATALOG_CSV_PATH || "").trim();
 const OPENAI_KEY = String(process.env.OPENAI_KEY || "").trim();
@@ -2108,28 +2111,36 @@ async function resolveBookData(recentBooks) {
         if (csvPath) catalogo = parse(await fs.readFile(csvPath, "utf8"), { columns: true, skip_empty_lines: true })
           .map((r) => ({ titulo: String(r.titulo || "").trim(), autor: String(r.autor || "").trim() })).filter((r) => r.titulo);
       } catch { /* sin CSV: las fuentes públicas deciden */ }
-      const id = await resolverIdentidad(parsed.titulo, parsed.autor, { existentes, catalogo });
       const linea = (t) => { console.log(t); try { if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, t + "\n"); } catch {} };
       const entrada = `«${parsed.titulo}»${parsed.autor ? " | «" + parsed.autor + "»" : ""}`;
-      if (id.estado === "no_encontrado") {
-        linea(`## 🪪 Puerta de identidad — el libro NO existe`);
-        linea(`- Entrada: ${entrada}`);
-        linea(`- No aparece en Apple Books (MX/US) ni en Open Library. Revisa el título o el autor y vuelve a correr.`);
-        linea(`- Nada se generó y no se gastó ningún token.`);
-        process.exit(1);
-      }
-      if (id.estado === "sin_red") {
-        linea(`⚠️  🪪 identidad: ninguna fuente respondió; se sigue con lo escrito (${entrada})`);
-        if (!parsed.titulo) { linea(`🔴 sin red no puedo elegir el libro de «${parsed.autor}»`); process.exit(1); }
+      if (FORZADO) {
+        linea(`## 🪪 Puerta de identidad — forzado con «!»`);
+        linea(`- Entrada: ${entrada}. Se confía en lo escrito: no se busca ni se corrige nada.`);
+        linea(`- ⚠️ Si el libro es muy reciente, el modelo puede no conocerlo: revisa que la edición hable de ESTE libro.`);
       } else {
-        const iconos = { exacto: "🟢", autor_corregido: "🟡", por_titulo: "🟢", otro_del_autor: "🟡", del_autor: "🟢" };
-        linea(`## 🪪 Puerta de identidad`);
-        linea(`- Entrada: ${entrada}`);
-        linea(`- ${iconos[id.estado] || "•"} ${id.estado}: «${id.titulo}» — ${id.autor} (fuentes: ${(id.fuentes || []).join(", ")})`);
-        if (id.nota) linea(`- ${id.nota}`);
-        if (id.sugerencias && id.sugerencias.length) linea(`- Otros libros del autor: ${id.sugerencias.join(" · ")}`);
-        parsed.titulo = id.titulo;
-        parsed.autor = id.autor;
+        const id = await resolverIdentidad(parsed.titulo, parsed.autor, { existentes, catalogo });
+        const para = (titulo, pasos) => { linea(`## 🪪 Puerta de identidad — ${titulo}`); linea(`- Entrada: ${entrada}`); for (const p of pasos) if (p) linea(`- ${p}`); linea(`- Nada se generó y no se gastó ningún token.`); process.exit(1); };
+        if (id.estado === "no_encontrado") {
+          para("el libro no aparece en ninguna fuente", ["No está en Apple Books (MX/US), Open Library, Google Books ni en tu catálogo.", "Revisa el título y el autor. Si sabes que existe (reciente o autopublicado), vuelve a correrlo con «!» al inicio."]);
+        }
+        if (id.estado === "no_indexado") {
+          para("ese título no aparece de ese autor", [id.nota, (id.sugerencias || []).length ? `Libros suyos que sí encuentro: ${id.sugerencias.join(" · ")}` : ""]);
+        }
+        if (id.estado === "confirmar") {
+          para("¿es este el libro?", [id.nota, `Si ese es el que querías: corre «${id.sugerencia.titulo} | ${id.sugerencia.autor}».`, `Si es otro libro de ${parsed.autor} (nuevo o de un homónimo): corre «!${parsed.titulo} | ${parsed.autor}».`]);
+        }
+        if (id.estado === "sin_red") {
+          linea(`⚠️  🪪 identidad: ninguna fuente respondió; se sigue con lo escrito (${entrada})`);
+          if (!parsed.titulo) { linea(`🔴 sin red no puedo elegir el libro de «${parsed.autor}»`); process.exit(1); }
+        } else {
+          linea(`## 🪪 Puerta de identidad`);
+          linea(`- Entrada: ${entrada}`);
+          linea(`- 🟢 ${id.estado}: «${id.titulo}» — ${id.autor} (fuentes: ${(id.fuentes || []).join(", ")})`);
+          if (id.nota) linea(`- ${id.nota}`);
+          if (id.estado === "del_autor" && (id.sugerencias || []).length) linea(`- Otros libros suyos: ${id.sugerencias.join(" · ")} · ⚠️ si hay homónimos, verifica que sea la persona correcta`);
+          parsed.titulo = id.titulo;
+          parsed.autor = id.autor;
+        }
       }
     }
 

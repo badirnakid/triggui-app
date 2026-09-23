@@ -87,17 +87,20 @@ export function simTitulo(entrada, candidato, modo = "soloTitulo") {
   // modo: "estricto"   → solo títulos completos (para desmentir el autor que escribiste)
   //       "conAutor"   → el autor ya coincide: el título principal vale aunque sea una palabra (≥3 letras)
   //       "soloTitulo" → sin autor que respalde: el principal solo vale si tiene ≥2 palabras
-  const A = tokens(entrada), Ap = tokens(tituloPrincipal(entrada));
+  // REGLA: las palabras que TÚ escribiste nunca se descartan. Solo el subtítulo del CANDIDATO puede
+  // ignorarse (los índices guardan "Título: subtítulo de mercadotecnia" aunque escribas "Título").
+  // Descartar el tuyo confundía volúmenes de una serie: «The Book of Questions: Courage» ≠ el original de 1987.
+  const A = tokens(entrada);
   if (!A.length) return 0;
   const B = tokens(candidato), Bp = tokens(tituloPrincipal(candidato));
   if (modo === "estricto") return dice(A, B);
   const vale = (P) => modo === "conAutor" ? (P.length >= 2 || (P[0] || "").length >= 3) : P.length >= 2;
-  const pa = vale(Ap) ? Ap : A, pb = vale(Bp) ? Bp : B;
-  const base = Math.max(dice(A, B), dice(A, pb), dice(pa, B), dice(pa, pb));
+  const pb = vale(Bp) ? Bp : B;
+  const base = Math.max(dice(A, B), dice(A, pb));
   if (modo !== "conAutor") return base;
-  // con el autor ya confirmado: si el título corto de uno es el INICIO del otro (subtítulo tras coma), es el mismo libro
-  const prefijo = (X, Y) => X.length >= 1 && X.length <= Y.length && (X.length >= 2 || X[0].length >= 4) && X.every((w, i) => tokIgual(w, Y[i]));
-  return (prefijo(pa, B) || prefijo(pb, A)) ? Math.max(base, 1) : base;
+  // con el autor confirmado: si lo que escribiste es el INICIO del título indexado (subtítulo tras coma), es el mismo libro
+  const prefijo = A.length <= B.length && (A.length >= 2 || A[0].length >= 4) && A.every((w, i) => tokIgual(w, B[i]));
+  return prefijo ? Math.max(base, 1) : base;
 }
 
 /** Ediciones resumen, guías de estudio y editoriales pirata: jamás son "el libro". */
@@ -238,15 +241,24 @@ export async function resolverIdentidad(tituloIn, autorIn, opts = {}) {
     const ok = consenso(cands).find((g) => !A || g.fuentes.size >= 2 || g.apple0);
     if (ok) {
       const mismo = A && autorCoincide(A, ok.autor);
-      return {
-        estado: !A ? "por_titulo" : (mismo ? "exacto" : "autor_corregido"),
-        titulo: ok.titulo, autor: ok.autor, fuentes: [...ok.fuentes],
-        nota: (A && !mismo) ? `«${T}» no es de ${A}; es de ${ok.autor}` : "",
-      };
+      if (A && !mismo) {
+        // puede ser el libro que conoces con otro autor… o un libro distinto, nuevo o de un homónimo: decides tú
+        return { estado: "confirmar", titulo: T, autor: A, fuentes: [...ok.fuentes],
+                 sugerencia: { titulo: ok.titulo, autor: ok.autor },
+                 nota: `Encontré «${ok.titulo}» de ${ok.autor}, no de ${A}.` };
+      }
+      return { estado: mismo ? "exacto" : "por_titulo", titulo: ok.titulo, autor: ok.autor, fuentes: [...ok.fuentes] };
     }
   }
 
-  // 3 · el autor (si escribiste solo un nombre sin "|", también se prueba como autor)
+  // 3 · el autor — SOLO elige por ti si no escribiste título. Si escribiste uno y no aparece,
+  //     sustituirlo sería inventar tu edición (nuevo lanzamiento sin indexar, homónimos, series).
+  if (T && A) {
+    let sug = [];
+    try { sug = consenso([...(await apple(A, "mx")), ...(await apple(A, "us"))].filter((c) => mismaPersona(A, c.autor))).slice(0, 8).map((c) => c.titulo); respondio = true; } catch {}
+    return { estado: "no_indexado", titulo: T, autor: A, sugerencias: sug,
+             nota: `No encuentro «${T}» de ${A} en ninguna fuente. Si es nuevo o poco conocido y sabes que existe, vuelve a correrlo con «!» al inicio.` };
+  }
   const comoAutor = A || (T && !A ? T : "");
   if (comoAutor) {
     const cands = [
@@ -261,10 +273,10 @@ export async function resolverIdentidad(tituloIn, autorIn, opts = {}) {
     if (ok) {
       const soloNombre = !A && T;                                  // escribió solo un nombre
       return {
-        estado: (A && T) ? "otro_del_autor" : "del_autor",
+        estado: "del_autor",
         titulo: ok.titulo, autor: ok.autor, fuentes: [...ok.fuentes],
         sugerencias: orden.slice(0, 8).map((c) => c.titulo),
-        nota: (A && T) ? `«${T}» no existe de ${A}; se usa su siguiente libro` : (soloNombre ? `«${T}» se interpretó como autor` : ""),
+        nota: soloNombre ? `«${T}» se interpretó como autor` : "",
       };
     }
   }
