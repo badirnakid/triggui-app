@@ -78,7 +78,13 @@ async function bajar(url) {
 const norm = (t) => String(t || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter((w) => w.length > 2);
 function mismoLibro(meta, it) {
   const tw = norm(meta.titulo), rw = new Set(norm(it.trackName));
-  if (!tw.length) return false;
+  if (!tw.length) {
+    // títulos cortos ("It", "Us", "Up"): todas sus palabras miden ≤2 letras y norm() las descarta;
+    // se exige entonces el título COMPLETO idéntico, jamás una subcadena
+    const plano = (t) => String(t || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+    const aw0 = norm(meta.autor), art0 = norm(it.artistName).join(" ");
+    return !!plano(meta.titulo) && plano(meta.titulo) === plano(String(it.trackName || "").split(":")[0]) && (!aw0.length || aw0.some((w) => art0.includes(w)));
+  }
   const hit = tw.filter((w) => rw.has(w)).length / tw.length;
   const aw = norm(meta.autor), art = norm(it.artistName).join(" ");
   const autorOk = !aw.length || aw.some((w) => art.includes(w));

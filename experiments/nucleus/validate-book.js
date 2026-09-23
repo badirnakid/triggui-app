@@ -33,6 +33,7 @@ import fs from "node:fs/promises";
 import { appendFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { parse } from "csv-parse/sync";
+import { resolverIdentidad, tokens as tokensId, tituloPrincipal as principalId, autorCoincide } from "./identidad-libro.mjs";
 
 import { fetchEvidence, selectBestCover, buildEnrichedBookData, checkImageURL as checkImageURLEF } from "./evidence-fetcher.js";
 
@@ -2009,7 +2010,8 @@ async function resolveDiscoverFromTrigger(triggerAnalysis, recentBooks) {
 function parseBookInput(raw) {
   const [tituloRaw, autorRaw] = String(raw || "").split("|").map(s => s.trim());
   const titulo = tituloRaw || "";
-  if (!titulo) throw new Error("Título vacío en LIBRO_INPUT");
+  // 🪪 se permite "| Autor" (solo autor): la puerta de identidad elige su libro
+  if (!titulo && !(autorRaw || "").trim()) throw new Error("LIBRO_INPUT vacío: escribe «Título | Autor», «Título» o «| Autor»");
   // 🌒 Nivel dios: si no hay autor en input, devolvemos vacío para que resolveBookData
   // intente lookup en CSV (kids o adulto) ANTES de rendirse con "Autor desconocido"
   const autor = autorRaw || "";
@@ -2019,7 +2021,7 @@ function parseBookInput(raw) {
 // 🌒 Lookup nivel dios en CSV (kids o adulto según CATALOG_MODE)
 // 2 niveles de match: exacto normalizado y parcial bidireccional
 // Devuelve null si no encuentra; el evidence fetcher hará fallback con Tier 3 GPT
-async function findInCatalog(titulo) {
+async function findInCatalog(titulo, autorEsperado = "") {
   try {
     const csvPath = await getMasterCsvPath();
     if (!csvPath) return null;
@@ -2032,13 +2034,23 @@ async function findInCatalog(titulo) {
     const tNorm = norm(titulo);
     if (!tNorm) return null;
 
-    // Nivel 1: match exacto normalizado
-    let match = rows.find(r => norm(r.titulo) === tNorm);
-    // Nivel 2: match parcial bidireccional (input ⊂ csv o csv ⊂ input)
+    // 🪪 v3.9 — PALABRAS COMPLETAS, jamás subcadenas de letras.
+    // El nivel 2 anterior (rT.includes / tNorm.includes) hizo que «The B-OO-K Of Questions»
+    // contuviera "ok" y se canonizara a un libro llamado «Ok» (22-sep-2026).
+    const toks = (x) => tokensId(x);
+    const principal = (x) => toks(principalId(x)).join(" ");
+    const tTok = toks(titulo), tPrin = principal(titulo);
+    const contiene = (largo, corto) => corto.length >= 2 && corto.every(w => largo.includes(w));
+    const autorOk = (r) => !autorEsperado || !r.autor || autorCoincide(autorEsperado, r.autor);
+    // Nivel 1: exacto normalizado
+    let match = rows.find(r => norm(r.titulo) === tNorm && autorOk(r));
+    // Nivel 2: mismo título principal (lo que va antes de ":"), ≥5 letras
+    if (!match && tPrin.length >= 5) match = rows.find(r => principal(r.titulo) === tPrin && autorOk(r));
+    // Nivel 3: el más corto (≥2 palabras) está completo, palabra por palabra, dentro del otro
     if (!match) {
       match = rows.find(r => {
-        const rT = norm(r.titulo);
-        return rT && (rT.includes(tNorm) || tNorm.includes(rT));
+        const rTok = toks(r.titulo);
+        return rTok.length && (contiene(rTok, tTok) || contiene(tTok, rTok)) && autorOk(r);
       });
     }
     if (!match) return null;
@@ -2082,6 +2094,45 @@ async function resolveBookData(recentBooks) {
     }
     const parsed = parseBookInput(LIBRO_INPUT);
 
+    // 🪪 PUERTA DE IDENTIDAD — antes de gastar un solo token: ¿existe este libro en el mundo?
+    {
+      let existentes = new Set();
+      try {
+        const cat = JSON.parse(await fs.readFile(process.env.CATALOGO || "contenido.json", "utf8"));
+        for (const b of (cat.libros || [])) if (b && b._slug && b.titulo) existentes.add(tokensId(principalId(b.titulo)).join(" "));
+      } catch { /* sin catálogo local: el "siguiente del autor" será su primer libro */ }
+      // fuente 0: el catálogo maestro curado (libros de nicho que Apple/Google no indexan)
+      let catalogo = [];
+      try {
+        const csvPath = await getMasterCsvPath();
+        if (csvPath) catalogo = parse(await fs.readFile(csvPath, "utf8"), { columns: true, skip_empty_lines: true })
+          .map((r) => ({ titulo: String(r.titulo || "").trim(), autor: String(r.autor || "").trim() })).filter((r) => r.titulo);
+      } catch { /* sin CSV: las fuentes públicas deciden */ }
+      const id = await resolverIdentidad(parsed.titulo, parsed.autor, { existentes, catalogo });
+      const linea = (t) => { console.log(t); try { if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, t + "\n"); } catch {} };
+      const entrada = `«${parsed.titulo}»${parsed.autor ? " | «" + parsed.autor + "»" : ""}`;
+      if (id.estado === "no_encontrado") {
+        linea(`## 🪪 Puerta de identidad — el libro NO existe`);
+        linea(`- Entrada: ${entrada}`);
+        linea(`- No aparece en Apple Books (MX/US) ni en Open Library. Revisa el título o el autor y vuelve a correr.`);
+        linea(`- Nada se generó y no se gastó ningún token.`);
+        process.exit(1);
+      }
+      if (id.estado === "sin_red") {
+        linea(`⚠️  🪪 identidad: ninguna fuente respondió; se sigue con lo escrito (${entrada})`);
+        if (!parsed.titulo) { linea(`🔴 sin red no puedo elegir el libro de «${parsed.autor}»`); process.exit(1); }
+      } else {
+        const iconos = { exacto: "🟢", autor_corregido: "🟡", por_titulo: "🟢", otro_del_autor: "🟡", del_autor: "🟢" };
+        linea(`## 🪪 Puerta de identidad`);
+        linea(`- Entrada: ${entrada}`);
+        linea(`- ${iconos[id.estado] || "•"} ${id.estado}: «${id.titulo}» — ${id.autor} (fuentes: ${(id.fuentes || []).join(", ")})`);
+        if (id.nota) linea(`- ${id.nota}`);
+        if (id.sugerencias && id.sugerencias.length) linea(`- Otros libros del autor: ${id.sugerencias.join(" · ")}`);
+        parsed.titulo = id.titulo;
+        parsed.autor = id.autor;
+      }
+    }
+
     // 🌒 v3.8.4 cirugia 8 — Title Canonicalization (Nivel dios cuantico-quark)
     // SIEMPRE busca en CSV (no solo cuando falta autor) para canonicalizar el titulo.
     // El CSV es SSOT del titulo limpio — elimina contaminacion del input del usuario:
@@ -2099,7 +2150,7 @@ async function resolveBookData(recentBooks) {
     let enrichedFrom = null;
 
     // Cirugia 8: SIEMPRE intentar canonicalizacion en CSV (no solo cuando falta autor)
-    const fromCsv = await findInCatalog(parsed.titulo);
+    const fromCsv = await findInCatalog(parsed.titulo, parsed.autor);
     if (fromCsv) {
       // Canonicalizar titulo desde CSV (override input crudo si difieren)
       if (fromCsv.titulo_exacto && fromCsv.titulo_exacto !== parsed.titulo) {

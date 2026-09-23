@@ -109,6 +109,13 @@ def auditar_catalogo():
         hallazgo("C3", "🔴", "Robustez", "catálogos · %d ediciones" % len(mudas), "ediciones MUDAS (jamás silencio violado): %s" % ", ".join(mudas[:6]), "musica-uno `+` (rescate) y verificar el pool de emergencia")
     else:
         bien("jamás silencio: 0 ediciones mudas (adulto + kids)")
+    svg = [f"#{b.get('_edicion_numero')} «{b['titulo']}» — {b.get('autor')}" for b in eds + edk if str(b.get("portada_url") or b.get("portada") or "").startswith("data:image/svg")]
+    if svg:
+        hallazgo("C0b", "🔴", "Consistencia semántica", "catálogos · %d ediciones" % len(svg),
+                 "portada SVG generada: ninguna fuente encontró el libro — puede no existir (así vivieron #77 y #102 «Ok»): %s" % "; ".join(svg[:6]),
+                 "verificar identidad (título/autor reales); retirar o regenerar con el título correcto")
+    else:
+        bien("ninguna edición viva con portada SVG generada (todas tienen libro verificable)")
     zoom1 = [b["titulo"] for b in eds if "zoom=1" in str(b.get("portada_url") or b.get("portada") or "")]
     if zoom1:
         hallazgo("C4", "🟡", "Consistencia semántica", "contenido.json", "portadas Google zoom=1 (doctrina: inaceptable): %s" % ", ".join(zoom1[:6]), "buscar hi-res (Apple/Google zoom=0&fife=w1200) y `reconstruir` un libro por corrida")
