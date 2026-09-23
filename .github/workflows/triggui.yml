@@ -938,7 +938,8 @@ jobs:
           if [ "$CATALOG_MODE" = "kids" ]; then
             if [ ! -f contenido_kids.json ]; then echo "ℹ️  contenido_kids.json no está — sin música"; exit 0; fi
             echo "🧸 Kids — la ley de la caricatura"
-            python3 scripts/resolve-musica.py --catalogo=kids --rutas=contenido_kids.json --max=10 --completar-min=3 --explicar
+            python3 scripts/resolve-musica.py --catalogo=kids --rutas=contenido_kids.json --max=10 --completar-min=3 --explicar \
+              || echo "ℹ️  quedan libros pendientes en el catálogo (normal: se completan en próximas corridas); se sigue con el libro de este run"
             # 🎼 completar del día: el libro de ESTE run llega a 3 en esta misma corrida (juez suave, sin espera)
             python3 scripts/titulos-del-run.py | while IFS= read -r T; do [ -n "$T" ] && python3 scripts/resolve-musica.py --catalogo=kids --rutas=contenido_kids.json --solo="$T" --completar-min=3 --armonia-min=4 --forzar --explicar || true; done
             exit 0
@@ -947,7 +948,8 @@ jobs:
             echo "ℹ️  contenido.json no está en el workspace — sin música"
             exit 0
           fi
-          python3 scripts/resolve-musica.py --rutas=contenido.json --max=10 --completar-min=3 --explicar
+          python3 scripts/resolve-musica.py --rutas=contenido.json --max=10 --completar-min=3 --explicar \
+            || echo "ℹ️  quedan libros pendientes en el catálogo (normal: se completan en próximas corridas); se sigue con el libro de este run"
           # 🎼 completar del día: el libro de ESTE run llega a 3 en esta misma corrida (juez suave, sin espera)
           python3 scripts/titulos-del-run.py | while IFS= read -r T; do [ -n "$T" ] && python3 scripts/resolve-musica.py --rutas=contenido.json --solo="$T" --completar-min=3 --armonia-min=4 --forzar --explicar || true; done
 

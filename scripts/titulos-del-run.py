@@ -16,5 +16,20 @@ for ruta in ("/tmp/triggui-batch.jsonl", "/tmp/triggui-book.json"):
             continue
         if t and t not in vistos:
             vistos.append(t)
+# 🪪 Antes del paso de edición el manifiesto aún no existe (se escribe después), pero validate-book ya dejó
+# /tmp/triggui-slug.txt: con él se identifica el libro de ESTE run en el catálogo del workspace.
+if not vistos and os.path.exists("/tmp/triggui-slug.txt"):
+    slug = open("/tmp/triggui-slug.txt", "r", encoding="utf-8").read().strip()
+    for cat in ("contenido_kids.json" if os.environ.get("CATALOG_MODE") == "kids" else "contenido.json", "contenido_manual.json"):
+        if not slug or not os.path.exists(cat):
+            continue
+        try:
+            libros = json.load(open(cat, "r", encoding="utf-8")).get("libros") or []
+        except Exception:
+            continue
+        hit = next((b for b in libros if isinstance(b, dict) and b.get("_slug") == slug and b.get("titulo")), None)
+        if hit:
+            vistos.append(hit["titulo"])
+            break
 for t in vistos:
     print(t)
