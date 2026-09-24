@@ -1,15 +1,20 @@
 # 🔬 AUDIT_REPORT — Agente revisor Triggui
 
-**Fecha:** 2026-09-17 · **Modo:** solo sugerencias (nada se implementa solo) · **Hallazgos:** 🔴 0 · 🟠 1 · 🟡 2 · 🟢 20
+**Fecha:** 2026-09-24 · **Modo:** solo sugerencias (nada se implementa solo) · **Hallazgos:** 🔴 1 · 🟠 1 · 🟡 2 · 🟢 20
 
-**Inventario:** 168 libros adultos (32 ediciones) · 133 libros kids (16 ediciones) · cartero V24
+**Inventario:** 170 libros adultos (34 ediciones) · 133 libros kids (16 ediciones) · cartero V24
 
 
 ## Hallazgos
 
+### 🔴 C0b · Consistencia semántica
+- **Dónde:** catálogos · 2 ediciones
+- **Impacto:** portada SVG generada: ninguna fuente encontró el libro — puede no existir (así vivieron #77 y #102 «Ok»): #98 «Take nothing personally» — Shubham Kumar Singh; #77 «Ok» — Eric Jorgenson
+- **Propuesta:** verificar identidad (título/autor reales); retirar o regenerar con el título correcto
+
 ### 🟠 C1 · Consistencia semántica
-- **Dónde:** contenido.json · 2 ediciones
-- **Impacto:** la sala y el correo prometen elegir entre 3 melodías; estas tienen «Words that work»=2, «The Algorithm»=2
+- **Dónde:** contenido.json · 3 ediciones
+- **Impacto:** la sala y el correo prometen elegir entre 3 melodías; estas tienen «A Random Walk Down Wall Stre»=2, «Words that work»=2, «The Algorithm»=2
 - **Propuesta:** disparar musica-uno con `*+` (completar ediciones a 3, conserva lo existente); el pipeline completa 10 por corrida
 
 ### 🟡 C2b · Consistencia semántica
@@ -19,7 +24,7 @@
 
 ### 🟡 C8 · Costo
 - **Dónde:** contenido.json
-- **Impacto:** ediciones que aún suenan con el cajón de emergencia (no con música propia): Words that work
+- **Impacto:** ediciones que aún suenan con el cajón de emergencia (no con música propia): A Random Walk Down Wall Street, Words that work
 - **Propuesta:** `*+` completar les buscará música propia manteniendo el cajón como respaldo
 
 
@@ -32,8 +37,8 @@
 - 0 marcadores de contaminación LLM en frases y tarjetas
 - slugs de edición únicos
 - ninguna portada viva es placeholder (detector por píxeles)
-- activos base completos (index, en, og, og_en, tarjeta, portada) en las 48 ediciones vivas
-- cada melodía del catálogo tiene su página y su OG (48 ediciones)
+- activos base completos (index, en, og, og_en, tarjeta, portada) en las 50 ediciones vivas
+- cada melodía del catálogo tiene su página y su OG (50 ediciones)
 - cada video del catálogo tiene su página y su OG
 - node --check limpio en todos los scripts inline de las ediciones vivas
 - paridad byte a byte public/index.html = public/kids/index.html
@@ -43,11 +48,12 @@
 - triggui.yml: caché de navegadores Playwright (E2 cerrado)
 - triggui.yml: run-name sin texto libre del usuario (S2 cerrado)
 - triggui.yml: el paso de música completa candidatas en cada corrida
-- producción responde 200 en app, kids, /mi, sitio, sala y la última edición (words-that-work)
+- producción responde 200 en app, kids, /mi, sitio, sala y la última edición (situated)
 - cartero vivo (V24)
 
 ## Para el «va» de Badir
 
+- [ ] 🔴 **C0b** → verificar identidad (título/autor reales); retirar o regenerar con el título correcto
 - [ ] 🟠 **C1** → disparar musica-uno con `*+` (completar ediciones a 3, conserva lo existente); el pipeline completa 10 por corrida
 
 ---
