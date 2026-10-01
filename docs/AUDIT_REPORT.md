@@ -1,8 +1,8 @@
 # 🔬 AUDIT_REPORT — Agente revisor Triggui
 
-**Fecha:** 2026-09-24 · **Modo:** solo sugerencias (nada se implementa solo) · **Hallazgos:** 🔴 1 · 🟠 1 · 🟡 2 · 🟢 20
+**Fecha:** 2026-10-01 · **Modo:** solo sugerencias (nada se implementa solo) · **Hallazgos:** 🔴 1 · 🟠 1 · 🟡 3 · 🟢 19
 
-**Inventario:** 170 libros adultos (34 ediciones) · 133 libros kids (16 ediciones) · cartero V24
+**Inventario:** 172 libros adultos (36 ediciones) · 133 libros kids (16 ediciones) · cartero V24
 
 
 ## Hallazgos
@@ -13,8 +13,8 @@
 - **Propuesta:** verificar identidad (título/autor reales); retirar o regenerar con el título correcto
 
 ### 🟠 C1 · Consistencia semántica
-- **Dónde:** contenido.json · 3 ediciones
-- **Impacto:** la sala y el correo prometen elegir entre 3 melodías; estas tienen «A Random Walk Down Wall Stre»=2, «Words that work»=2, «The Algorithm»=2
+- **Dónde:** contenido.json · 4 ediciones
+- **Impacto:** la sala y el correo prometen elegir entre 3 melodías; estas tienen «The Importance of Being Litt»=2, «A Random Walk Down Wall Stre»=2, «Words that work»=2, «The Algorithm»=2
 - **Propuesta:** disparar musica-uno con `*+` (completar ediciones a 3, conserva lo existente); el pipeline completa 10 por corrida
 
 ### 🟡 C2b · Consistencia semántica
@@ -22,23 +22,27 @@
 - **Impacto:** menos de 3 videos: «101 reflexiones que cambia»=1, «Frida para apasionados»=1, «Ganbatte!»=2
 - **Propuesta:** resolver videos con `--completar` (mismo patrón que música)
 
+### 🟡 C4 · Consistencia semántica
+- **Dónde:** contenido.json
+- **Impacto:** portadas Google zoom=1 (doctrina: inaceptable): Don't Believe Everything You Think
+- **Propuesta:** buscar hi-res (Apple/Google zoom=0&fife=w1200) y `reconstruir` un libro por corrida
+
 ### 🟡 C8 · Costo
 - **Dónde:** contenido.json
-- **Impacto:** ediciones que aún suenan con el cajón de emergencia (no con música propia): A Random Walk Down Wall Street, Words that work
+- **Impacto:** ediciones que aún suenan con el cajón de emergencia (no con música propia): Don't Believe Everything You Think, A Random Walk Down Wall Street, Words that work
 - **Propuesta:** `*+` completar les buscará música propia manteniendo el cajón como respaldo
 
 
 ## 🟢 Lo que está bien hecho (no perderlo)
 
 - jamás silencio: 0 ediciones mudas (adulto + kids)
-- ninguna edición viva con portada Google zoom=1
 - todas las ediciones traen 4 colores + 4 textColors
 - todas las ediciones adultas tienen tarjeta_en
 - 0 marcadores de contaminación LLM en frases y tarjetas
 - slugs de edición únicos
 - ninguna portada viva es placeholder (detector por píxeles)
-- activos base completos (index, en, og, og_en, tarjeta, portada) en las 50 ediciones vivas
-- cada melodía del catálogo tiene su página y su OG (50 ediciones)
+- activos base completos (index, en, og, og_en, tarjeta, portada) en las 52 ediciones vivas
+- cada melodía del catálogo tiene su página y su OG (52 ediciones)
 - cada video del catálogo tiene su página y su OG
 - node --check limpio en todos los scripts inline de las ediciones vivas
 - paridad byte a byte public/index.html = public/kids/index.html
@@ -48,7 +52,7 @@
 - triggui.yml: caché de navegadores Playwright (E2 cerrado)
 - triggui.yml: run-name sin texto libre del usuario (S2 cerrado)
 - triggui.yml: el paso de música completa candidatas en cada corrida
-- producción responde 200 en app, kids, /mi, sitio, sala y la última edición (situated)
+- producción responde 200 en app, kids, /mi, sitio, sala y la última edición (don-t-believe-everything-you-think)
 - cartero vivo (V24)
 
 ## Para el «va» de Badir
