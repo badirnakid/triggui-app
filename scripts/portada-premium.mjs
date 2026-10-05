@@ -1,7 +1,7 @@
 /**
  * portada-premium.mjs — Escalera A/B/C de portadas (Fábrica · Cortes 2-3)
  * A: real ≥600 de ancho, aspecto 0.55–0.85, ≥30KB → transcodificada JPEG q90
- * B: real 380–599 → reescalado canvas alta calidad a 600w → JPEG q88
+ * B: real 300–599 → reescalado canvas alta calidad a 600w → JPEG q88 (una portada real reconocible vale más que una generada)
  * C: Colección Triggui — HTML/CSS renderizado (Fraunces + espiral SVG + paleta del libro) → JPEG q90
  * Escribe {outDir}/portada.jpg y devuelve { tier, source, dataURI }.
  * Autónomo: lanza su propio chromium (playwright | playwright-core + PORTADA_CHROMIUM).
@@ -10,6 +10,7 @@ import fs from "node:fs/promises";
 const PLACEHOLDER_GOOGLE = new Set(["931a64e6d5d364b57b53f03228c3d8a6", "a64fa89d7ebc97075c1d363fc5fea71f"]);
 import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
+import { candidatasPorISBN, variantes } from "../experiments/nucleus/portada-real.mjs";
 
 // 🖼️ Veto por PÍXELES (scripts/es_placeholder.py): la huella MD5 resultó frágil (Google sirve placeholders distintos por libro
 // y hasta PNG en fife=w800). Un placeholder no tiene ni un pixel oscuro; una portada real siempre. Sin Python/Pillow → nunca bloquea.
@@ -161,7 +162,12 @@ export async function resolverPortadaPremium(meta, outDir) {
   try {
     const page = await browser.newPage({ viewport: { width: 600, height: 900 } });
     let mejor = null;
-    let urls = candidatas(meta);
+    // 🖼️ v4: además de la URL del catálogo, las candidatas reales que guardó el catálogo y las exactas por ISBN
+    let urls = [...new Set([
+      ...candidatas(meta),
+      ...((meta.portadaCandidatas || []).flatMap(variantes)),
+      ...(await candidatasPorISBN(meta.isbn).catch(() => [])),
+    ])];
     // 🚫 Google sin portada: su miniatura es un gráfico fijo ("image not available"); si la huella coincide, todas sus variantes se descartan
     if (urls.some((u) => /books\.google/.test(u))) {
       const g = urls.find((u) => /books\.google/.test(u));
@@ -175,14 +181,14 @@ export async function resolverPortadaPremium(meta, outDir) {
       if (!mejor || d.w > mejor.w) mejor = d;
     }
     // 🔎 La búsqueda en Apple solo entra si el catálogo no dio imagen usable (≥380 de ancho); y solo si es el mismo libro
-    if (!(mejor && mejor.w >= 380)) {
+    if (!(mejor && mejor.w >= 300)) {
       const extra = await buscarITunes(meta);
       if (extra) { const d = await bajar(extra); if (d && aspectoOk(d) && d.bytes >= 12000 && !esPlaceholder(d.buf) && (!mejor || d.w > mejor.w)) mejor = d; }
     }
     let buf, tier, source;
     if (mejor && mejor.w >= 600 && mejor.bytes >= 30000) {
       buf = await transcodificar(page, mejor.buf, mejor.fmt, 0, 0.9); tier = "A"; source = mejor.url;
-    } else if (mejor && mejor.w >= 380) {
+    } else if (mejor && mejor.w >= 300) {
       buf = await transcodificar(page, mejor.buf, mejor.fmt, 600, 0.88); tier = "B"; source = mejor.url;
     } else {
       await page.setContent(htmlColeccion(meta), { waitUntil: "networkidle" });

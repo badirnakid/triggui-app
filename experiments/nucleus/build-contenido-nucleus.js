@@ -72,6 +72,7 @@ import {
   placeHighlightOnDensestSpan
 } from "./triggui-physics.js";
 import { synthesizePalette } from "./palette-synthesizer.js";
+import { elegirPortadaReal } from "./portada-real.mjs";
 import { placeHueInGap, uniquePaletteHue } from "./deterministic-hue.js";
 import { injectEmojis, calculateConfidence, compatMapper } from "./post-processors.js";
 
@@ -595,6 +596,38 @@ async function processBook(book, inputs, inputsSnapshot) {
       console.error(`      → cae a SVG typográfico — requiere intervención manual o cascade externo`);
       book.portada_evidence_exhausted = true;
       }
+    }
+  }
+
+  // 🖼️ PORTADA REAL v4 — UNA decisión, por píxeles reales, sobre TODO lo disponible:
+  // lo elegido hasta aquí (CSV / precargada / rescate) + todas las portadas válidas de la evidencia
+  // + las candidatas exactas por ISBN. Gana la de más ancho real que no sea placeholder.
+  // (La #104 guardó un placeholder de Google teniendo una de Apple de 1600×2357 en la evidencia.)
+  if (!book.needs_fallback_cover) {
+    try {
+      const __ev = groundTruthMeta.evidence || {};
+      const __actual = String(book.portada_url || book.portada || "");
+      const __urls = [__actual, ...((__ev.valid_covers || []).map((c) => c && c.url))].filter((u) => /^https?:\/\//.test(String(u || "")));
+      const __isbn = book.isbn || __ev.isbn_discovered || "";
+      const { mejor, validas, descartadas } = await elegirPortadaReal(__urls, { isbn: __isbn });
+      if (mejor) {
+        if (mejor.url !== __actual) console.log(`   🖼️  v4 PORTADA REAL: ${mejor.fuente} ${mejor.w}×${mejor.h} (antes: ${__actual ? __actual.slice(0, 60) : "ninguna"})`);
+        else console.log(`   🖼️  v4 portada confirmada por píxeles: ${mejor.fuente} ${mejor.w}×${mejor.h}`);
+        book.portada = mejor.url;
+        book.portada_url = mejor.url;
+        book.portada_source = `${mejor.fuente}_real_${mejor.w}x${mejor.h}`;
+        book.portada_candidatas = validas.slice(0, 6).map((v) => v.url);   // la escalera las usa como respaldo
+      } else if (__actual) {
+        // lo que había no sirve (placeholder, miniatura o proporción falsa) y no hay nada mejor: fuera,
+        // para que el respaldo tipográfico y la escalera hagan su trabajo en vez de publicar basura
+        console.log(`   🚫 v4 portada descartada (${(descartadas.find((d) => d.url === __actual) || {}).motivo || "no pasa la regla"}): ${__actual.slice(0, 70)}`);
+        book.portada = "";
+        book.portada_url = "";
+        book.portada_was_invalid = true;
+      }
+      if (descartadas.length) console.log(`      descartadas: ${descartadas.map((d) => `${d.fuente}:${d.motivo}`).slice(0, 8).join(" · ")}`);
+    } catch (__e) {
+      console.error(`   ⚠ v4 selección de portada falló, se conserva lo previo: ${String((__e && __e.message) || __e).slice(0, 90)}`);
     }
   }
 

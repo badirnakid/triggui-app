@@ -440,7 +440,7 @@ const accentGlow = withAlpha(accent, "42") || "#E35D3042";
 let portadaURL = resolvePortadaURL(bookMeta, libro);
 // Fábrica cortes 2-3: escalera A/B/C — SIEMPRE hay portada premium local (portada.jpg) y su data-URI alimenta la composición.
 let __premium = null;
-try { __premium = await resolverPortadaPremium({ titulo: bookMeta.titulo || libro.titulo, autor: bookMeta.autor || libro.autor, portadaURL, colores: libro?.colores }, outDir); } catch (e) { console.log("   ⚠️ resolver portada:", e.message); }
+try { __premium = await resolverPortadaPremium({ titulo: bookMeta.titulo || libro.titulo, autor: bookMeta.autor || libro.autor, isbn: libro.isbn || bookMeta.isbn || "", portadaCandidatas: libro.portada_candidatas || [], portadaURL, colores: libro?.colores }, outDir); } catch (e) { console.log("   ⚠️ resolver portada:", e.message); }
 if (__premium?.dataURI) portadaURL = __premium.dataURI;
 const portadaSource = resolvePortadaSource(bookMeta, libro, portadaURL);
 

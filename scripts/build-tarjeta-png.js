@@ -912,7 +912,7 @@ let portadaURL = resolvePortadaURL(bookMeta, libro);
 // Fábrica cortes 2-3: escalera A/B/C — portada premium local + data-URI a la composición.
 let __premium = null;
 try { const { resolverPortadaPremium } = await import("./portada-premium.mjs");
-  __premium = await resolverPortadaPremium({ titulo: bookMeta.titulo || libro.titulo, autor: bookMeta.autor || libro.autor, portadaURL, colores: libro?.colores }, outDir);
+  __premium = await resolverPortadaPremium({ titulo: bookMeta.titulo || libro.titulo, autor: bookMeta.autor || libro.autor, isbn: libro.isbn || bookMeta.isbn || "", portadaCandidatas: libro.portada_candidatas || [], portadaURL, colores: libro?.colores }, outDir);
 } catch (e) { console.log("   ⚠️ resolver portada:", e.message); }
 if (__premium?.dataURI) portadaURL = __premium.dataURI;
 const portadaSource = resolvePortadaSource(bookMeta, libro, portadaURL);
