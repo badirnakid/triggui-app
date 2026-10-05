@@ -105,7 +105,7 @@ export function simTitulo(entrada, candidato, modo = "soloTitulo") {
 
 /** Ediciones resumen, guías de estudio y editoriales pirata: jamás son "el libro". */
 const RESUMEN_RX = /\b(summary|summaries|resumen|resumo|study guide|guia de estudio|analysis of|analisis de|workbook|key takeaways|sinopsis|condensed|companion to|cliffs? ?notes)\b/i;
-const PIRATA_RX = /summary|resumen|whizbooks|instant[- ]?summar|turbo[- ]?learning|readtrepreneur|book ?tigers|quick ?read|supersummary|bookrags|everest media|sapiens editorial|ant hive|bookhabits|lightning summar|golden ?(mind|books)|smart ?reads|minute ?help|lit ?(notes|charts)|dailybooks/i;
+const PIRATA_RX = /summary|resumen|whizbooks|instant[- ]?summar|turbo[- ]?learning|readtrepreneur|book ?tigers|quick ?read|supersummary|bookrags|everest media|sapiens editorial|ant hive|bookhabits|lightning summar|golden ?(mind|books)|smart ?reads|minute ?help|lit ?(notes|charts)|dailybooks|mentor press|turbo[- ]?fastread|fastread|slingshot books|key insights/i;
 export function esResumen(c) {
   const t = sinAcentos(c.titulo), a = sinAcentos(c.autor);
   return RESUMEN_RX.test(t) || PIRATA_RX.test(a);

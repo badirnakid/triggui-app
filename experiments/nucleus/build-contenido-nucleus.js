@@ -607,9 +607,22 @@ async function processBook(book, inputs, inputsSnapshot) {
     try {
       const __ev = groundTruthMeta.evidence || {};
       const __actual = String(book.portada_url || book.portada || "");
-      const __urls = [__actual, ...((__ev.valid_covers || []).map((c) => c && c.url))].filter((u) => /^https?:\/\//.test(String(u || "")));
+      // cada portada de la evidencia viaja con QUIÉN firma su listado: así un resumen o un homónimo jamás gana
+      const __clave = { apple_books: "apple", google_books: "google", openlibrary: "openlibrary", openlib_isbn: "openlib_isbn", amazon: "amazon" };
+      const __meta = (c) => {
+        const src = __ev[__clave[c.source] || c.source] || {};
+        const vi = src.verified_identity || {};
+        // autor_api / titulo_api = lo que FIRMA el listado real; autor_completo es el autor que buscamos (copiado del catálogo)
+        return { url: c.url, autorListado: vi.autor_api || "", tituloListado: vi.titulo_api || "",
+                 exacta: c.source === "openlib_isbn" || c.source === "amazon" };
+      };
+      const __cands = [...((__ev.valid_covers || []).filter((c) => c && c.url).map(__meta))];
+      const __deEvidencia = __cands.find((c) => c.url === __actual);
+      // la portada que ya estaba curada en el catálogo cuenta como confiable, salvo que la evidencia la desmienta
+      // (si su URL aparece en la evidencia, hereda quién firma ese listado: así cayó el resumen de la #104)
+      if (__actual && !__deEvidencia) __cands.push({ url: __actual, exacta: true });
       const __isbn = book.isbn || __ev.isbn_discovered || "";
-      const { mejor, validas, descartadas } = await elegirPortadaReal(__urls, { isbn: __isbn });
+      const { mejor, validas, descartadas } = await elegirPortadaReal(__cands, { isbn: __isbn, autor: book.autor || "", titulo: book.titulo || "" });
       if (mejor) {
         if (mejor.url !== __actual) console.log(`   🖼️  v4 PORTADA REAL: ${mejor.fuente} ${mejor.w}×${mejor.h} (antes: ${__actual ? __actual.slice(0, 60) : "ninguna"})`);
         else console.log(`   🖼️  v4 portada confirmada por píxeles: ${mejor.fuente} ${mejor.w}×${mejor.h}`);

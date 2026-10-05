@@ -17,6 +17,7 @@
 // de título ni de autor (Apple lista a veces la editorial como autor: "Mentor Press").
 // ════════════════════════════════════════════════════════════════════════
 import { spawnSync } from "node:child_process";
+import { autorCoincide, esResumen } from "./identidad-libro.mjs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -124,15 +125,39 @@ export async function candidatasPorISBN(isbn) {
 }
 
 /**
- * Elige la mejor portada real entre todas las candidatas (con sus variantes de más resolución).
- * Devuelve { mejor, validas, descartadas } — `mejor` es null si ninguna pasa.
+ * Elige la mejor portada real. IDENTIDAD ANTES QUE PÍXELES (#104, 5-oct-2026: se publicó la portada de un
+ * RESUMEN de Mentor Press —1600 px, mismo título exacto— en lugar de la del libro de Joseph Nguyen).
+ *
+ * Cada candidata es una URL o un objeto { url, autorListado, tituloListado, exacta }:
+ *   · CONFIABLE   = viene del ISBN exacto, o el autor firmado en su listado ES el autor del libro (y no es resumen)
+ *   · DESCONOCIDA = URL sin datos de su listado: solo se usa si no hay ninguna confiable
+ *   · DESCARTADA  = el listado lo firma otra persona/editorial, o es un resumen/guía: jamás se usa
+ * Dentro de cada grupo gana la de más píxeles reales.
+ * Devuelve { mejor, validas, descartadas } — `validas` contiene solo candidatas del grupo ganador.
  */
-export async function elegirPortadaReal(urls, { isbn = "" } = {}) {
-  const todas = [...new Set([
-    ...urls.filter((u) => /^https?:\/\//.test(String(u || ""))).flatMap(variantes),
-    ...(await candidatasPorISBN(isbn)),
-  ])];
-  const medidas = await Promise.all(todas.map(medirPortada));
-  const validas = medidas.filter((m) => m.ok).sort((a, b) => (b.w - a.w) || (PREFERENCIA[b.fuente] - PREFERENCIA[a.fuente]));
-  return { mejor: validas[0] || null, validas, descartadas: medidas.filter((m) => !m.ok) };
+export async function elegirPortadaReal(cands, { isbn = "", autor = "", titulo = "" } = {}) {
+  const porUrl = new Map();
+  const poner = (url, meta) => {
+    if (!/^https?:\/\//.test(String(url || ""))) return;
+    for (const v of variantes(url)) if (!porUrl.has(v) || meta.confianza > porUrl.get(v).confianza) porUrl.set(v, meta);
+  };
+  const rechazadas = [];
+  for (const c of cands) {
+    const o = typeof c === "string" ? { url: c } : (c || {});
+    let confianza = 1, motivo = "";                                     // 1 = desconocida
+    if (o.exacta) confianza = 2;
+    else if (o.autorListado || o.tituloListado) {
+      if (esResumen({ titulo: o.tituloListado || "", autor: o.autorListado || "" })) { confianza = 0; motivo = "es resumen/guía"; }
+      else if (autor && o.autorListado && !autorCoincide(autor, o.autorListado)) { confianza = 0; motivo = `firmado por «${o.autorListado}», no por ${autor}`; }
+      else if (autor && o.autorListado) confianza = 2;
+    }
+    if (confianza === 0) { rechazadas.push({ url: o.url, ok: false, fuente: fuenteDe(o.url), motivo }); continue; }
+    poner(o.url, { confianza });
+  }
+  for (const u of await candidatasPorISBN(isbn)) poner(u, { confianza: 2 });
+  const medidas = await Promise.all([...porUrl.keys()].map(async (u) => ({ ...(await medirPortada(u)), confianza: porUrl.get(u).confianza })));
+  const buenas = medidas.filter((m) => m.ok);
+  const top = buenas.some((m) => m.confianza === 2) ? 2 : 1;           // si hay verificadas, las desconocidas ni compiten
+  const validas = buenas.filter((m) => m.confianza === top).sort((a, b) => (b.w - a.w) || (PREFERENCIA[b.fuente] - PREFERENCIA[a.fuente]));
+  return { mejor: validas[0] || null, validas, descartadas: [...rechazadas, ...medidas.filter((m) => !m.ok)] };
 }
