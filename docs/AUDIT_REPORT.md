@@ -1,8 +1,8 @@
 # 🔬 AUDIT_REPORT — Agente revisor Triggui
 
-**Fecha:** 2026-10-22 · **Modo:** solo sugerencias (nada se implementa solo) · **Hallazgos:** 🔴 1 · 🟠 1 · 🟡 2 · 🟢 20
+**Fecha:** 2026-10-29 · **Modo:** solo sugerencias (nada se implementa solo) · **Hallazgos:** 🔴 1 · 🟠 2 · 🟡 2 · 🟢 19
 
-**Inventario:** 175 libros adultos (39 ediciones) · 133 libros kids (16 ediciones) · cartero V24
+**Inventario:** 177 libros adultos (41 ediciones) · 133 libros kids (16 ediciones) · cartero V24
 
 
 ## Hallazgos
@@ -13,9 +13,14 @@
 - **Propuesta:** verificar identidad (título/autor reales); retirar o regenerar con el título correcto
 
 ### 🟠 C1 · Consistencia semántica
-- **Dónde:** contenido.json · 6 ediciones
-- **Impacto:** la sala y el correo prometen elegir entre 3 melodías; estas tienen «Why We Sleep»=2, «What We Owe the Future»=2, «The Importance of Being Litt»=2, «A Random Walk Down Wall Stre»=2, «Words that work»=2, «The Algorithm»=2
+- **Dónde:** contenido.json · 4 ediciones
+- **Impacto:** la sala y el correo prometen elegir entre 3 melodías; estas tienen «Why We Sleep»=2, «What We Owe the Future»=2, «The Importance of Being Litt»=2, «The Algorithm»=2
 - **Propuesta:** disparar musica-uno con `*+` (completar ediciones a 3, conserva lo existente); el pipeline completa 10 por corrida
+
+### 🟠 S2 · Consistencia semántica
+- **Dónde:** public/ · 2 subpáginas
+- **Impacto:** melodías del catálogo sin su página/OG propio: a-random-walk-down-wall-street/pieza/2, words-that-work/pieza/2
+- **Propuesta:** re-hornear con build-editions.py + build-pieza-og.py (o `🔁 Reconstruir`)
 
 ### 🟡 C2b · Consistencia semántica
 - **Dónde:** contenido.json · 4 ediciones
@@ -37,8 +42,7 @@
 - 0 marcadores de contaminación LLM en frases y tarjetas
 - slugs de edición únicos
 - ninguna portada viva es placeholder (detector por píxeles)
-- activos base completos (index, en, og, og_en, tarjeta, portada) en las 55 ediciones vivas
-- cada melodía del catálogo tiene su página y su OG (55 ediciones)
+- activos base completos (index, en, og, og_en, tarjeta, portada) en las 57 ediciones vivas
 - cada video del catálogo tiene su página y su OG
 - node --check limpio en todos los scripts inline de las ediciones vivas
 - paridad byte a byte public/index.html = public/kids/index.html
@@ -48,13 +52,14 @@
 - triggui.yml: caché de navegadores Playwright (E2 cerrado)
 - triggui.yml: run-name sin texto libre del usuario (S2 cerrado)
 - triggui.yml: el paso de música completa candidatas en cada corrida
-- producción responde 200 en app, kids, /mi, sitio, sala y la última edición (why-we-sleep)
+- producción responde 200 en app, kids, /mi, sitio, sala y la última edición (carta-desde-japon)
 - cartero vivo (V24)
 
 ## Para el «va» de Badir
 
 - [ ] 🔴 **C0b** → verificar identidad (título/autor reales); retirar o regenerar con el título correcto
 - [ ] 🟠 **C1** → disparar musica-uno con `*+` (completar ediciones a 3, conserva lo existente); el pipeline completa 10 por corrida
+- [ ] 🟠 **S2** → re-hornear con build-editions.py + build-pieza-og.py (o `🔁 Reconstruir`)
 
 ---
 _Método: barrido determinista de catálogo (C), superficies (S), pipeline (P) y producción (D). Categorías: Eficiencia · Robustez · Idempotencia · Seguridad · Costo · Trazabilidad · UX del operador · Consistencia semántica._
