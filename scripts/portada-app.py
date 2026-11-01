@@ -12,8 +12,8 @@ Por cada libro del catálogo:
     WebP de 640 y 1280 px de ancho (nunca más anchas que el original; Lanczos, calidad 92, método 6, en sRGB).
     El nombre lleva el sello del contenido: un archivo jamás cambia, así que se guarda en caché para siempre.
   · `portada` vacía o `data:` (portada de texto) → {"estado": "sin_portada"}: la app no elige ese libro hasta que
-    su `portada` cambie. Placeholder, diminuta o sin proporción de libro → lo mismo, pero se vuelve a intentar cada
-    30 días (la fuente puede mejorar).
+    su `portada` cambie. Placeholder, diminuta, sin proporción de libro o una dirección que no da imagen → lo mismo,
+    pero se vuelve a intentar cada 30 días (la fuente puede mejorar).
   · Descarga fallida (se reintenta una vez al final) → no escribe nada (la app usa `portada` como antes), lo reporta y
     deja la lista en la marca (TRIGGUI_PORTADA_APP_MARCA, por omisión /tmp/triggui-portada-app.json) para que la
     puerta de calidad lo trate como aviso y no como falla: la siguiente corrida lo vuelve a intentar.
@@ -41,7 +41,7 @@ CALIDAD, METODO = 92, 6
 VERSION = b"portada-app-v1"   # cambia si cambian los anchos o la calidad: renombra todos los archivos
 MIN_ANCHO = 280
 HOY = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-REINTENTO_DIAS = 30           # un sin_portada automático (placeholder, diminuta, proporción) se reintenta pasado este plazo
+REINTENTO_DIAS = 30           # un sin_portada automático (placeholder, diminuta, proporción, no es imagen) se reintenta pasado este plazo
 MARCA = os.environ.get("TRIGGUI_PORTADA_APP_MARCA") or "/tmp/triggui-portada-app.json"
 UA = {"User-Agent": "Mozilla/5.0 (compatible; Triggui portada-app)"}
 
@@ -217,10 +217,14 @@ def procesar(b):
     if not datos:   # caída de la fuente (pasajera): una vieja jamás se queda; la app usa `portada` tal cual
         b.pop("portada_app", None)
         return "fallo"
+    from PIL import UnidentifiedImageError
     try:
         ref = abrir(datos)
-    except Exception:   # la dirección responde, pero no con una imagen (una página, un error): no es pasajero
+    except UnidentifiedImageError:   # la dirección responde, pero no con una imagen (una página, un error): no es pasajero
         return sin_portada(b, "la dirección no da una imagen", auto=True)
+    except Exception:   # una imagen cortada a medio bajar (read() no avisa del corte): pasajero, como la caída
+        b.pop("portada_app", None)
+        return "fallo"
     mejor = (ref.size[0], datos, por)
     h0 = dhash(ref)
     for u in candidatas(por):
