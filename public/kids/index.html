@@ -2790,7 +2790,8 @@ const isURL = s => /^https?:\/\//i.test(s || "");
 //   2. La portada baja en cuanto se elige el libro (jamás "lazy" dentro del bloque oculto).
 //   3. Si la propia falla, cae a la original verificada; si también falla, al título en texto.
 // PORTADA_SIZES ≥ el ancho máximo de `.portada img` (94% de la columna: 22.09vw apaisado, 45.12vw vertical):
-// el tamaño en pantalla queda idéntico y el navegador elige 640 en teléfonos y 1280 en pantallas grandes.
+// la portada ocupa la misma caja que hoy (si la original ya la llenaba; las que venían chicas ahora la llenan
+// en pantallas grandes) y el navegador elige 640 en teléfonos y 1280 en pantallas grandes.
 // ═══════════════════════════════════════════════════════════════════════
 const PORTADA_SIZES = "(orientation: landscape) 22.1vw, 45.2vw";
 function __portadaDe(l){
@@ -2819,9 +2820,23 @@ function __imgPortada(l, sizes, alFallar){
 }
 let __portadaPrecargada = null;   // referencia viva: el navegador no suelta la precarga antes de usarla
 function __precargaPortada(l){ try { __portadaPrecargada = __imgPortada(l, PORTADA_SIZES, null); } catch(_) {} }
-function __conPortada(data){
+async function __huellaTexto(s){   // = huella_texto() de scripts/portada-app.py: SHA-1 en UTF-8, 12 hex
+  const u = new Uint8Array(await crypto.subtle.digest("SHA-1", new TextEncoder().encode(s || "")));
+  let h = ""; for(let i = 0; i < 6; i++) h += u[i].toString(16).padStart(2, "0");
+  return h;
+}
+async function __conPortada(data, crudo){
   try {
     if(!data || !Array.isArray(data.libros)) return data;
+    // Una portada_app vale solo si salió de la `portada` actual: si alguien cambió la `portada` fuera del horno,
+    // manda la `portada` (y un sin_portada viejo deja de excluir). La huella se toma del catálogo crudo.
+    if(window.crypto && crypto.subtle && crudo && Array.isArray(crudo.libros) && crudo.libros.length === data.libros.length){
+      await Promise.all(data.libros.map(async (l, k) => {
+        const p = l && l.portada_app;
+        if(!p || typeof p !== "object") return;
+        if(p.de !== await __huellaTexto(String((crudo.libros[k] || {}).portada || ""))) delete l.portada_app;
+      }));
+    }
     const con = data.libros.filter(l => __portadaDe(l));
     // Defensa: si menos de la mitad trae portada, algo se rompió en el catálogo → se queda completo (como antes).
     if(con.length !== data.libros.length && con.length >= Math.max(4, Math.ceil(data.libros.length / 2))){
@@ -3169,7 +3184,7 @@ function render(){
     label.style.color=libro.textColors?.[i]||"#fff";
     const frase=document.createElement("div"); frase.className="frase";
     frase.textContent=frasesI18n[i]; frase.style.color=libro.textColors?.[i]||"#fff";
-    const port=buildPort(i);
+    const port = (i===portIdx) ? buildPort(i) : null;   // 🖼️ C292: solo el bloque de la portada la construye (y la baja)
 
     if(i===portIdx){
       card.append(port, label, frase);
@@ -5269,7 +5284,7 @@ function inferPuntoCiclo(date) {
   // rápido. Todo esto corre una sola vez cuando llega el contenido.json.
   buildIndex: function(libros) {
     const cacheKey = `${libros.length}_${TriggguiI18n.lang}`;
-    if (this._idxCache && this._idxCacheKey === cacheKey) return this._idxCache;
+    if (this._idxCache && this._idxCacheKey === cacheKey && this._idxCacheLibros === libros) return this._idxCache;   // 🖼️ C292: mismo catálogo, no solo mismo número de libros
 
     const N = libros.length;
     const docFreq = {};
@@ -5304,6 +5319,7 @@ function inferPuntoCiclo(date) {
     }
 
     this._idxCacheKey = cacheKey;
+    this._idxCacheLibros = libros;
     this._idxCache = { N, idf, bookVectors, docFreq };
     return this._idxCache;
   },
@@ -5372,7 +5388,7 @@ function inferPuntoCiclo(date) {
   // Pre-computa el índice CSAL del catálogo. Se cachea por (libros.length × lang).
   buildCSALIndex: function(libros, lang) {
     const cacheKey = `${libros.length}:${lang}:csal-v1`;
-    if (this._csalIdxCacheKey === cacheKey) return this._csalIdxCache;
+    if (this._csalIdxCacheKey === cacheKey && this._csalIdxCacheLibros === libros) return this._csalIdxCache;   // 🖼️ C292: mismo catálogo
 
     const perBook = [];
     let coverageCount = 0;
@@ -5431,6 +5447,7 @@ function inferPuntoCiclo(date) {
 
     this._csalIdxCache = { perBook, coverageCount, total: libros.length };
     this._csalIdxCacheKey = cacheKey;
+    this._csalIdxCacheLibros = libros;
     return this._csalIdxCache;
   },
 
@@ -6555,7 +6572,7 @@ async function switchTrigguiMode(targetMode, fromHistory) {
     if (!dataRaw || !Array.isArray(dataRaw.libros) || dataRaw.libros.length === 0) {
       throw new Error('empty_or_invalid_catalog');
     }
-    const data = __conPortada(window.__TRIGGUI_SANITIZE__(dataRaw));   // 🖼️ C292: solo libros con portada real
+    const data = await __conPortada(window.__TRIGGUI_SANITIZE__(dataRaw), dataRaw);   // 🖼️ C292: solo libros con portada real
 
     // FASE 5: Reset state stale + aplicar nuevo data
     try { sessionStorage.removeItem('lastLibroIdx'); } catch(_) {}
@@ -7117,7 +7134,7 @@ async function bootTriggui() {
     // Garantía matemática: ningún rectángulo roto puede aparecer en pantalla.
     // Repara emojis con bug "\u001f<hex>" del modelo (ej: \u001f440 → 👀) y
     // elimina cualquier control char residual antes de exponer los datos.
-    const data = __conPortada(window.__TRIGGUI_SANITIZE__(dataRaw));   // 🖼️ C292: solo libros con portada real
+    const data = await __conPortada(window.__TRIGGUI_SANITIZE__(dataRaw), dataRaw);   // 🖼️ C292: solo libros con portada real
     window.__TRIGGUI_DATA__ = data;
     wireBarraMagicaEvents();
 
@@ -8489,7 +8506,7 @@ bootTriggui();
       return s.slice(0, n);
     }
     if (!cleanQuery) return shuffleSlice(libros, k);
-    if (typeof TrigguiFiltro === 'undefined' || !TrigguiFiltro._idxCache) return shuffleSlice(libros, k);
+    if (typeof TrigguiFiltro === 'undefined' || !TrigguiFiltro._idxCache || TrigguiFiltro._idxCacheLibros !== libros) return shuffleSlice(libros, k);   // 🖼️ C292: índice de otro catálogo → al azar
     var idx = TrigguiFiltro._idxCache;
     var tokens = TrigguiFiltro.tokenize ? TrigguiFiltro.tokenize(cleanQuery) : cleanQuery.toLowerCase().split(/\s+/);
     if (!tokens || tokens.length === 0) return libros.slice(0, k);

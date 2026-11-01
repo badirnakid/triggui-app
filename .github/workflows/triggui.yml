@@ -1137,9 +1137,11 @@ jobs:
       # 🖼️ C292 — PORTADA DE LA APP: cada libro del catálogo con su portada verificada, propia y ligera
       # (public/portadas/, WebP 640/1280 con sello de contenido). Va ANTES de sincronizar: el catálogo viaja ya
       # con `portada_app`. Un libro sin portada real queda {estado: sin_portada} y la app no lo elige.
-      # Nunca rompe el run: una descarga fallida se reporta y la puerta de calidad decide.
+      # Una descarga fallida se reintenta y queda como aviso (la puerta la deja pasar: la app usa la original);
+      # el paso solo para el run si el registro de la verificación nombra archivos que faltan.
+      # Nunca en 🧪 shadow: ahí el contenido.json del espacio de trabajo es la muestra de un libro.
       - name: 🖼️ Portada de la app (verificada, propia y ligera)
-        if: ${{ !inputs.modo_prueba }}
+        if: ${{ !inputs.modo_prueba && steps.modo.outputs.modo_tecnico != 'shadow_batch' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -1415,6 +1417,17 @@ jobs:
             done
             # R2 (auditoría): un run que no guardó NO puede reportar éxito
             if [ "$PUSH_OK" != "1" ]; then echo "🔴 Push triggui-app falló 3 veces: el run NO guardó la edición"; exit 1; fi
+            # 🖼️ C292: si este commit trae portadas nuevas, el catálogo que las nombra sale hasta que ya respondan en
+            # app.triggui.com (Vercel tarda en publicar); así ninguna app pide una portada que aún no existe. Tope: 3 min.
+            NUEVA="$(git show --name-only --diff-filter=A --format= HEAD -- public/portadas/ 2>/dev/null | head -n 1 || true)"
+            if [ -n "$NUEVA" ]; then
+              U="https://app.triggui.com/portadas/$(basename "$NUEVA")"
+              for i in $(seq 1 36); do
+                if curl -sfI --max-time 10 "$U" >/dev/null 2>&1; then echo "🖼️ portadas nuevas ya publicadas: $U"; break; fi
+                [ "$i" = "36" ] && echo "⚠️ $U no responde tras 3 min: el catálogo sale igual (la app cae a la portada original)"
+                sleep 5
+              done
+            fi
           fi
 
           # ─── triggui-content ───
@@ -1622,9 +1635,9 @@ jobs:
           json.dump({"titulo": sys.argv[2], "slug": sys.argv[1]}, open("/tmp/triggui-book.json", "w", encoding="utf-8"), ensure_ascii=False)
           PY
           if [ "${{ inputs.catalogo }}" = "kids" ]; then
-            python3 scripts/puerta-calidad.py --kids --catalogo=triggui-content/contenido_kids.json --base=public/kids/t
+            python3 scripts/puerta-calidad.py --kids --reconstruir --catalogo=triggui-content/contenido_kids.json --base=public/kids/t
           else
-            python3 scripts/puerta-calidad.py --catalogo=triggui-content/contenido.json --base=public/t
+            python3 scripts/puerta-calidad.py --reconstruir --catalogo=triggui-content/contenido.json --base=public/t
           fi
 
       - name: 💾 Commit imágenes reconstruidas (solo el slug)

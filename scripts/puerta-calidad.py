@@ -7,7 +7,9 @@ el run FALLA y NO se publica nada (mejor una edición que llega tarde que una qu
 DURO (rompe el run): activos base faltantes · portada placeholder o < 380 px · sin melodía (o sin su página/OG)
                      · adulto sin video (o sin su página/OG) · adulto sin gemelo EN
                      · sin portada de la app (portada_app), vieja o con archivos faltantes en public/portadas/ (C292).
-SUAVE (solo avisa):  melodías < 3 · videos < 3 · portada < 600 px · libro sin portada real (no aparece en la app).
+SUAVE (solo avisa):  melodías < 3 · videos < 3 · portada < 600 px · libro sin portada real (no aparece en la app)
+                     · descarga de la portada fallida dos veces (marca del paso 🖼️) · todo lo de la portada de la app
+                       con --reconstruir (🔁 solo rehace imágenes; la portada de la app la hace el horno).
 
 Uso: python3 scripts/puerta-calidad.py [--catalogo=contenido.json] [--base=public/t] [--kids]
 Lee los libros del run de /tmp/triggui-batch.jsonl o /tmp/triggui-book.json.
@@ -15,6 +17,13 @@ Lee los libros del run de /tmp/triggui-batch.jsonl o /tmp/triggui-book.json.
 import os, sys, json, re, unicodedata, hashlib
 ARGS = {a.split("=")[0]: (a.split("=", 1)[1] if "=" in a else True) for a in sys.argv[1:]}
 KIDS = bool(ARGS.get("--kids"))
+# 🔁 Reconstruir solo rehace imágenes de la edición: la portada de la app la hace el horno, así que aquí solo se avisa.
+RECONSTRUIR = bool(ARGS.get("--reconstruir"))
+# Lo que el paso 🖼️ no pudo bajar (caída pasajera de la fuente): aviso, no falla; la siguiente corrida reintenta.
+try:
+    FALLOS_DESCARGA = set(json.load(open(os.environ.get("TRIGGUI_PORTADA_APP_MARCA") or "/tmp/triggui-portada-app.json", encoding="utf-8")).get("fallos") or [])
+except Exception:
+    FALLOS_DESCARGA = set()
 CAT = ARGS.get("--catalogo") or ("contenido_kids.json" if KIDS else "contenido.json")
 BASE = ARGS.get("--base") or ("public/kids/t" if KIDS else "public/t")
 sg = lambda t: re.sub(r'-+', '-', re.sub(r'[^a-z0-9]+', '-', unicodedata.normalize('NFKD', t).encode('ascii', 'ignore').decode().lower())).strip('-')
@@ -83,16 +92,20 @@ for o in libros:
         # 🖼️ C292: la portada de la app (scripts/portada-app.py) — verificada, vigente y con sus archivos
         pa = b.get("portada_app") if isinstance(b.get("portada_app"), dict) else None
         huella = hashlib.sha1(str(b.get("portada") or "").encode("utf-8")).hexdigest()[:12]
+        PA = S if RECONSTRUIR else D   # en 🔁 todo lo de la portada de la app es aviso
         if not pa:
-            D.append("sin portada de la app (portada_app): el paso 🖼️ no la pudo hacer; vuelve a correr")
+            if slug in FALLOS_DESCARGA or b.get("_slug") in FALLOS_DESCARGA:
+                S.append("sin portada de la app: la descarga falló dos veces; la app usa la portada original y la siguiente corrida reintenta")
+            else:
+                PA.append("sin portada de la app (portada_app): el paso 🖼️ no corrió o no la hizo")
         elif pa.get("de") != huella:
-            D.append("portada de la app vieja: no corresponde a la `portada` actual")
+            PA.append("portada de la app vieja: no corresponde a la `portada` actual (la app usa la `portada`)")
         elif pa.get("estado") == "sin_portada":
             S.append("sin portada real (%s): no aparece en la app hasta tener una" % (pa.get("motivo") or "sin_portada"))
         else:
             faltan = [n for n in nombres_portada_app(pa) if not os.path.exists(os.path.join("public", "portadas", n))]
             if faltan or not str(pa.get("src") or "").startswith("https://"):
-                D.append("portada de la app incompleta (faltan: %s)" % (", ".join(faltan) or "src"))
+                PA.append("portada de la app incompleta (faltan: %s)" % (", ".join(faltan) or "src"))
         nm = len([c for c in ((b.get("_musica") or {}).get("candidatos") or []) if c.get("preview")])
         if nm == 0:
             D.append("sin melodía (jamás silencio)")

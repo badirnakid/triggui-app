@@ -11,9 +11,17 @@ Por cada libro del catálogo:
     (abre, no es placeholder, ≥ 280 px de ancho, proporción de libro) y escribe en public/portadas/ sus versiones
     WebP de 640 y 1280 px de ancho (nunca más anchas que el original; Lanczos, calidad 92, método 6, en sRGB).
     El nombre lleva el sello del contenido: un archivo jamás cambia, así que se guarda en caché para siempre.
-  · `portada` vacía o `data:` (portada de texto), placeholder, diminuta o sin proporción de libro
-    → {"estado": "sin_portada"}: la app no elige ese libro hasta que su `portada` cambie.
-  · Descarga fallida → no escribe nada (la app usa `portada` como antes) y lo reporta; la puerta de calidad decide.
+  · `portada` vacía o `data:` (portada de texto) → {"estado": "sin_portada"}: la app no elige ese libro hasta que
+    su `portada` cambie. Placeholder, diminuta o sin proporción de libro → lo mismo, pero se vuelve a intentar cada
+    30 días (la fuente puede mejorar).
+  · Descarga fallida (se reintenta una vez al final) → no escribe nada (la app usa `portada` como antes), lo reporta y
+    deja la lista en la marca (TRIGGUI_PORTADA_APP_MARCA, por omisión /tmp/triggui-portada-app.json) para que la
+    puerta de calidad lo trate como aviso y no como falla: la siguiente corrida lo vuelve a intentar.
+
+La verificación hecha a mano (--decisiones) se aplica sola a cada libro que aún no tenga su `portada_app` vigente y cuya
+`portada` siga siendo la que se verificó (o la ya corregida). Para deshacer una decisión no basta con regresar la
+`portada`: hay que editar el archivo de decisiones. Los libros se reconocen por slug y título (únicos entre adultos y
+Kids el 1 nov 2026); si un día se repitieran, `de_antes` impide aplicar una decisión a un libro con otra portada.
 
 Uso:
   python3 scripts/portada-app.py --catalogo=contenido.json
@@ -33,6 +41,8 @@ CALIDAD, METODO = 92, 6
 VERSION = b"portada-app-v1"   # cambia si cambian los anchos o la calidad: renombra todos los archivos
 MIN_ANCHO = 280
 HOY = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+REINTENTO_DIAS = 30           # un sin_portada automático (placeholder, diminuta, proporción) se reintenta pasado este plazo
+MARCA = os.environ.get("TRIGGUI_PORTADA_APP_MARCA") or "/tmp/triggui-portada-app.json"
 UA = {"User-Agent": "Mozilla/5.0 (compatible; Triggui portada-app)"}
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -69,6 +79,12 @@ def vigente(b):
     if not isinstance(pa, dict) or pa.get("de") != huella_texto(b.get("portada")):
         return False
     if pa.get("estado") == "sin_portada":
+        if pa.get("auto"):
+            try:
+                dias = (datetime.now(timezone.utc).date() - datetime.strptime(str(pa.get("fecha")), "%Y-%m-%d").date()).days
+            except Exception:
+                dias = REINTENTO_DIAS
+            return dias < REINTENTO_DIAS
         return True
     if not str(pa.get("src") or "").startswith("http"):
         return False
@@ -111,9 +127,13 @@ def bajar(url, intentos=3):
 
 
 def abrir(datos):
-    from PIL import Image
+    from PIL import Image, ImageOps
     im = Image.open(io.BytesIO(datos))
     im.load()
+    try:
+        im = ImageOps.exif_transpose(im)
+    except Exception:
+        pass
     return im
 
 
@@ -182,8 +202,10 @@ def ficha(hechos, W, H, origen, de, fecha=None):
     return pa
 
 
-def sin_portada(b, motivo, fecha=None):
+def sin_portada(b, motivo, fecha=None, auto=False):
     b["portada_app"] = {"estado": "sin_portada", "motivo": motivo, "de": huella_texto(b.get("portada")), "fecha": fecha or HOY}
+    if auto:
+        b["portada_app"]["auto"] = True   # se reintenta cada REINTENTO_DIAS
     return "sin_portada"
 
 
@@ -213,13 +235,13 @@ def procesar(b):
             mejor = (im.size[0], d, u)
     w, datos, origen = mejor
     if es_placeholder(datos):
-        return sin_portada(b, "placeholder (imagen genérica de «sin portada»)")
+        return sin_portada(b, "placeholder (imagen genérica de «sin portada»)", auto=True)
     im = abrir(datos)
     W, H = im.size
     if W < MIN_ANCHO:
-        return sin_portada(b, "diminuta (%d px de ancho; mínimo %d)" % (W, MIN_ANCHO))
+        return sin_portada(b, "diminuta (%d px de ancho; mínimo %d)" % (W, MIN_ANCHO), auto=True)
     if not (0.4 <= W / H <= 2.2):
-        return sin_portada(b, "sin proporción de libro (%dx%d)" % (W, H))
+        return sin_portada(b, "sin proporción de libro (%dx%d)" % (W, H), auto=True)
     sello, W, H, hechos = escribir_variantes(datos, slug_de(b))
     b["portada_app"] = ficha(hechos, W, H, origen, huella_texto(por))
     return "nueva"
@@ -285,21 +307,39 @@ def main():
         if errores:
             print("🔴 portada-app: decisiones con archivos faltantes; no se escribe nada:\n   " + "\n   ".join(errores))
             sys.exit(1)
+    def intentar(b):
+        try:
+            return procesar(b)
+        except Exception as e:   # una imagen rara jamás tumba el run: ese libro queda como antes y se reporta
+            print("⚠️ portada-app: «%s»: %s" % (b.get("titulo", "?"), e))
+            b.pop("portada_app", None)
+            return "fallo"
+    pendientes = []
     for b in libros:
         if vigente(b):
             cuenta["vigente"] += 1
             continue
-        try:
-            r = procesar(b)
-        except Exception as e:   # una imagen rara jamás tumba el run: ese libro queda como antes y se reporta
-            print("⚠️ portada-app: «%s»: %s" % (b.get("titulo", "?"), e))
-            b.pop("portada_app", None)
-            r = "fallo"
-        cuenta[r] += 1
+        r = intentar(b)
         if r == "fallo":
-            fallos.append(b.get("titulo", "?"))
-        elif r == "sin_portada":
+            pendientes.append(b)
+            continue
+        cuenta[r] += 1
+        if r == "sin_portada":
             sinp.append("%s (%s)" % (b.get("titulo", "?"), b["portada_app"]["motivo"]))
+    if pendientes:   # una caída pasajera de la fuente: un segundo intento, al final y con calma
+        time.sleep(8)
+        for b in pendientes:
+            r = intentar(b)
+            cuenta[r] += 1
+            if r == "fallo":
+                fallos.append(b)
+            elif r == "sin_portada":
+                sinp.append("%s (%s)" % (b.get("titulo", "?"), b["portada_app"]["motivo"]))
+    try:   # la marca para la puerta de calidad: estos libros fallaron por la descarga, no por el guion
+        with open(MARCA, "w", encoding="utf-8") as f:
+            json.dump({"catalogo": CAT, "fallos": [slug_de(b) for b in fallos]}, f, ensure_ascii=False)
+    except Exception as e:
+        print("⚠️ portada-app: no pude escribir la marca %s: %s" % (MARCA, e))
 
     nuevo = json.dumps(d, ensure_ascii=False, indent=2) + ("\n" if raw.endswith("\n") else "")
     if nuevo != raw:
@@ -310,7 +350,7 @@ def main():
               "- vigentes: %d · nuevas: %d · sin portada real: %d · descarga fallida: %d"
               % (cuenta["vigente"], cuenta["nueva"], cuenta["sin_portada"], cuenta["fallo"])]
     lineas += ["- ⚪ sin portada real (no aparece en la app): " + x for x in sinp]
-    lineas += ["- 🔴 descarga fallida (la app usa `portada` tal cual): " + x for x in fallos]
+    lineas += ["- 🟡 descarga fallida dos veces (la app usa `portada` tal cual; la siguiente corrida reintenta): " + b.get("titulo", "?") for b in fallos]
     txt = "\n".join(lineas)
     print(txt)
     if os.environ.get("GITHUB_STEP_SUMMARY"):
