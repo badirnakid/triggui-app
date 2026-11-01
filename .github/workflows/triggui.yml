@@ -1160,8 +1160,10 @@ jobs:
       # ║  FASE 8 — Sincronizar contenido.json → triggui-content            ║
       # ╚══════════════════════════════════════════════════════════════════╝
 
+      # 🛡️ C295 · «🧪 Batch shadow» no toca la app: en ese modo no se trae el catálogo real y `experiments/nucleus/`
+      # trae una muestra de un libro; sincronizar aquí la pondría encima de contenido.json de producción.
       - name: 📤 Sincronizar a triggui-content
-        if: ${{ !inputs.modo_prueba }}
+        if: ${{ !inputs.modo_prueba && steps.modo.outputs.modo_tecnico != 'shadow_batch' }}
         run: |
           set -euo pipefail
           # 🌒 Triggui Kids: el output depende de CATALOG_MODE
