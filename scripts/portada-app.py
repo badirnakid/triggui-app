@@ -214,13 +214,13 @@ def procesar(b):
     if not re.match(r"^https?://", por, re.I):
         return sin_portada(b, "sin imagen real (vacía o portada de texto)")
     datos = bajar(por)
-    try:
-        ref = abrir(datos) if datos else None
-    except Exception:
-        ref = None
-    if ref is None:
-        b.pop("portada_app", None)   # una vieja (de otra `portada`) jamás se queda: la app usa `portada` tal cual
+    if not datos:   # caída de la fuente (pasajera): una vieja jamás se queda; la app usa `portada` tal cual
+        b.pop("portada_app", None)
         return "fallo"
+    try:
+        ref = abrir(datos)
+    except Exception:   # la dirección responde, pero no con una imagen (una página, un error): no es pasajero
+        return sin_portada(b, "la dirección no da una imagen", auto=True)
     mejor = (ref.size[0], datos, por)
     h0 = dhash(ref)
     for u in candidatas(por):

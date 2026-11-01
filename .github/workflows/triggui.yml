@@ -1424,11 +1424,12 @@ jobs:
             NUEVA="$(git show --name-only --diff-filter=A --format= HEAD -- public/portadas/ 2>/dev/null | head -n 1 || true)"
             if [ -n "$NUEVA" ]; then
               U="https://app.triggui.com/portadas/$(basename "$NUEVA")"
-              for i in $(seq 1 36); do
-                if curl -sfI --max-time 10 "$U" >/dev/null 2>&1; then echo "🖼️ portadas nuevas ya publicadas: $U"; break; fi
-                [ "$i" = "36" ] && echo "⚠️ $U no responde tras 3 min: el catálogo sale igual (la app cae a la portada original)"
+              FIN=$((SECONDS + 180)); LISTA=0
+              while [ "$SECONDS" -lt "$FIN" ]; do
+                if curl -sfI --max-time 10 "$U" >/dev/null 2>&1; then LISTA=1; echo "🖼️ portadas nuevas ya publicadas: $U"; break; fi
                 sleep 5
               done
+              [ "$LISTA" = "1" ] || echo "⚠️ $U no responde tras 3 min: el catálogo sale igual (la app cae a la portada original)"
             fi
           fi
 
