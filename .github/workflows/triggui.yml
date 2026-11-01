@@ -1134,6 +1134,26 @@ jobs:
           fi
           find public/t -path "*/video/index.html" -newer contenido.json 2>/dev/null | head -8
 
+      # 🖼️ C292 — PORTADA DE LA APP: cada libro del catálogo con su portada verificada, propia y ligera
+      # (public/portadas/, WebP 640/1280 con sello de contenido). Va ANTES de sincronizar: el catálogo viaja ya
+      # con `portada_app`. Un libro sin portada real queda {estado: sin_portada} y la app no lo elige.
+      # Nunca rompe el run: una descarga fallida se reporta y la puerta de calidad decide.
+      - name: 🖼️ Portada de la app (verificada, propia y ligera)
+        if: ${{ !inputs.modo_prueba }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$CATALOG_MODE" = "kids" ]; then OUT_FILE="contenido_kids.json"; else OUT_FILE="contenido.json"; fi
+          # La verificación hecha a mano (1 nov 2026) se aplica sola a lo que aún no la tenga; nunca pisa
+          # una `portada` que alguien cambió después.
+          DEC="docs/portadas-verificadas-2026-11-01.json"
+          if [ -f "$OUT_FILE" ]; then
+            if [ -f "$DEC" ]; then python3 scripts/portada-app.py --catalogo="$OUT_FILE" --decisiones="$DEC"
+            else python3 scripts/portada-app.py --catalogo="$OUT_FILE"; fi
+          else
+            echo "ℹ️ $OUT_FILE no existe en este modo: nada que hacer"
+          fi
+
       # ╔══════════════════════════════════════════════════════════════════╗
       # ║  FASE 8 — Sincronizar contenido.json → triggui-content            ║
       # ╚══════════════════════════════════════════════════════════════════╝
@@ -1365,6 +1385,8 @@ jobs:
             [ -d public/t ] && git add public/t/ || true
             [ -f public/sitemap.xml ] && git add public/sitemap.xml || true
           fi
+          # 🖼️ C292: portadas de la app (ambos catálogos comparten la carpeta; los nombres llevan sello)
+          [ -d public/portadas ] && git add public/portadas/ || true
           [ -f "$SHADOW_FILE" ] && git add "$SHADOW_FILE" || true
           # v3.4: persistir ring de anti-duplicados
           [ -f recent-books.json ] && git add recent-books.json || true

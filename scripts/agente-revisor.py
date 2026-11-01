@@ -121,7 +121,27 @@ def auditar_catalogo():
         hallazgo("C4", "🟡", "Consistencia semántica", "contenido.json", "portadas Google zoom=1 (doctrina: inaceptable): %s" % ", ".join(zoom1[:6]), "buscar hi-res (Apple/Google zoom=0&fife=w1200) y `reconstruir` un libro por corrida")
     else:
         bien("ninguna edición viva con portada Google zoom=1")
-    sin_col = [b["titulo"] for b in eds + edk if len(b.get("colores") or []) < 4 or len(b.get("textColors") or []) < 4]
+    # 🖼️ C292: portada de la app (scripts/portada-app.py) en TODOS los libros de ambos catálogos
+    def _pa_nombres(pa):
+        return [u.rsplit("/", 1)[-1] for u in [pa.get("src") or ""] + [x.strip().split(" ")[0] for x in (pa.get("srcset") or "").split(",") if x.strip()] if u]
+    sin_pa, rotas, fuera = [], [], []
+    for b in ad + ki:
+        pa = b.get("portada_app") if isinstance(b.get("portada_app"), dict) else None
+        if not pa or pa.get("de") != hashlib.sha1(str(b.get("portada") or "").encode("utf-8")).hexdigest()[:12]:
+            sin_pa.append(b.get("titulo", "?"))
+        elif pa.get("estado") == "sin_portada":
+            fuera.append(b.get("titulo", "?"))
+        elif any(not os.path.exists(os.path.join(APP, "public", "portadas", n)) for n in _pa_nombres(pa)):
+            rotas.append(b.get("titulo", "?"))
+    if rotas:
+        hallazgo("C6", "🔴", "Robustez", "public/portadas · %d libros" % len(rotas), "portada de la app con archivos faltantes (la app cae a la original): %s" % ", ".join(t[:28] for t in rotas[:8]), "correr `python3 scripts/portada-app.py --catalogo=…` (regenera lo que falte)")
+    if sin_pa:
+        hallazgo("C6b", "🟠", "Consistencia semántica", "catálogos · %d libros" % len(sin_pa), "sin portada de la app vigente (la app usa `portada` tal cual): %s" % ", ".join(t[:28] for t in sin_pa[:8]), "correr `python3 scripts/portada-app.py --catalogo=…` (el pipeline lo hace en cada run)")
+    if fuera:
+        hallazgo("C6c", "🟡", "UX del operador", "catálogos · %d libros" % len(fuera), "fuera de la app por no tener portada real: %s" % ", ".join(t[:28] for t in fuera[:10]) + (" …" if len(fuera) > 10 else ""), "conseguir su portada real (cambiar `portada`) o retirarlos")
+    if not (rotas or sin_pa):
+        bien("los %d libros de ambos catálogos tienen su portada de la app verificada" % (len(ad) + len(ki)))
+    sin_col =[b["titulo"] for b in eds + edk if len(b.get("colores") or []) < 4 or len(b.get("textColors") or []) < 4]
     if sin_col:
         hallazgo("C5", "🟠", "Robustez", "catálogos", "sin 4 colores/textColors (las cuatro puertas del correo y los bloques dependen de ellos): %s" % ", ".join(sin_col[:6]), "re-generar paleta (nucleus) para esas fichas")
     else:

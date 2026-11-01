@@ -5,13 +5,14 @@
 el run FALLA y NO se publica nada (mejor una edición que llega tarde que una que llega rota).
 
 DURO (rompe el run): activos base faltantes · portada placeholder o < 380 px · sin melodía (o sin su página/OG)
-                     · adulto sin video (o sin su página/OG) · adulto sin gemelo EN.
-SUAVE (solo avisa):  melodías < 3 · videos < 3 · portada < 600 px.
+                     · adulto sin video (o sin su página/OG) · adulto sin gemelo EN
+                     · sin portada de la app (portada_app), vieja o con archivos faltantes en public/portadas/ (C292).
+SUAVE (solo avisa):  melodías < 3 · videos < 3 · portada < 600 px · libro sin portada real (no aparece en la app).
 
 Uso: python3 scripts/puerta-calidad.py [--catalogo=contenido.json] [--base=public/t] [--kids]
 Lee los libros del run de /tmp/triggui-batch.jsonl o /tmp/triggui-book.json.
 """
-import os, sys, json, re, unicodedata
+import os, sys, json, re, unicodedata, hashlib
 ARGS = {a.split("=")[0]: (a.split("=", 1)[1] if "=" in a else True) for a in sys.argv[1:]}
 KIDS = bool(ARGS.get("--kids"))
 CAT = ARGS.get("--catalogo") or ("contenido_kids.json" if KIDS else "contenido.json")
@@ -32,6 +33,14 @@ def ancho(ruta):
         return Image.open(ruta).size[0]
     except Exception:
         return 0
+
+def nombres_portada_app(pa):
+    out = []
+    for u in [pa.get("src") or ""] + [x.strip().split(" ")[0] for x in (pa.get("srcset") or "").split(",") if x.strip()]:
+        n = u.rsplit("/", 1)[-1]
+        if n and n not in out:
+            out.append(n)
+    return out
 
 libros = []
 for ruta in ("/tmp/triggui-batch.jsonl", "/tmp/triggui-book.json"):
@@ -71,6 +80,19 @@ for o in libros:
         elif w and w < 600:
             S.append("portada de %d px (ideal ≥600)" % w)
     if b:
+        # 🖼️ C292: la portada de la app (scripts/portada-app.py) — verificada, vigente y con sus archivos
+        pa = b.get("portada_app") if isinstance(b.get("portada_app"), dict) else None
+        huella = hashlib.sha1(str(b.get("portada") or "").encode("utf-8")).hexdigest()[:12]
+        if not pa:
+            D.append("sin portada de la app (portada_app): el paso 🖼️ no la pudo hacer; vuelve a correr")
+        elif pa.get("de") != huella:
+            D.append("portada de la app vieja: no corresponde a la `portada` actual")
+        elif pa.get("estado") == "sin_portada":
+            S.append("sin portada real (%s): no aparece en la app hasta tener una" % (pa.get("motivo") or "sin_portada"))
+        else:
+            faltan = [n for n in nombres_portada_app(pa) if not os.path.exists(os.path.join("public", "portadas", n))]
+            if faltan or not str(pa.get("src") or "").startswith("https://"):
+                D.append("portada de la app incompleta (faltan: %s)" % (", ".join(faltan) or "src"))
         nm = len([c for c in ((b.get("_musica") or {}).get("candidatos") or []) if c.get("preview")])
         if nm == 0:
             D.append("sin melodía (jamás silencio)")
