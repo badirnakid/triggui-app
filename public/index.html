@@ -2781,6 +2781,57 @@ function getBlockEmoji(libro, blockIndex){
   return '';
 }
 const isURL = s => /^https?:\/\//i.test(s || "");
+// ═══════════════════════════════════════════════════════════════════════
+// 🖼️ v4.17 · C292 (1 nov 2026) — PORTADA DE LA APP: verificada, propia y ligera.
+// El catálogo trae `portada_app` (scripts/portada-app.py): WebP 640/1280 en app.triggui.com/portadas/,
+// hecho de la misma imagen verificada. Tres garantías:
+//   1. Un libro sin portada real ({estado:"sin_portada"}, o `portada` vacía o de texto) no entra a la
+//      selección: la barra elige siempre el mejor libro que SÍ tiene portada.
+//   2. La portada baja en cuanto se elige el libro (jamás "lazy" dentro del bloque oculto).
+//   3. Si la propia falla, cae a la original verificada; si también falla, al título en texto.
+// PORTADA_SIZES ≥ el ancho máximo de `.portada img` (94% de la columna: 22.09vw apaisado, 45.12vw vertical):
+// el tamaño en pantalla queda idéntico y el navegador elige 640 en teléfonos y 1280 en pantallas grandes.
+// ═══════════════════════════════════════════════════════════════════════
+const PORTADA_SIZES = "(orientation: landscape) 22.1vw, 45.2vw";
+function __portadaDe(l){
+  if(!l) return null;
+  const p = l.portada_app;
+  if(p && typeof p === "object") return isURL(p.src) ? p : null;
+  return isURL(l.portada) ? { src: l.portada } : null;
+}
+function __imgPortada(l, sizes, alFallar){
+  const p = __portadaDe(l); if(!p) return null;
+  const im = new Image();
+  im.decoding = "async";
+  try { im.fetchPriority = "high"; } catch(_) {}
+  im.setAttribute("fetchpriority", "high");
+  if(p.srcset){ im.sizes = sizes; im.srcset = p.srcset; }
+  im.src = p.src;
+  let fallos = 0;
+  im.onerror = function(){
+    fallos++;
+    const otra = (fallos === 1) ? (p.origen || l.portada) : "";
+    if(isURL(otra) && otra !== p.src){ im.removeAttribute("srcset"); im.removeAttribute("sizes"); im.src = otra; return; }
+    im.onerror = null;
+    if(alFallar) alFallar(im);
+  };
+  return im;
+}
+let __portadaPrecargada = null;   // referencia viva: el navegador no suelta la precarga antes de usarla
+function __precargaPortada(l){ try { __portadaPrecargada = __imgPortada(l, PORTADA_SIZES, null); } catch(_) {} }
+function __conPortada(data){
+  try {
+    if(!data || !Array.isArray(data.libros)) return data;
+    const con = data.libros.filter(l => __portadaDe(l));
+    // Defensa: si menos de la mitad trae portada, algo se rompió en el catálogo → se queda completo (como antes).
+    if(con.length !== data.libros.length && con.length >= Math.max(4, Math.ceil(data.libros.length / 2))){
+      console.log("[Triggui] 🖼️ " + (data.libros.length - con.length) + " libro(s) sin portada real fuera de la selección");
+      return Object.assign({}, data, { libros: con });
+    }
+  } catch(_) {}
+  return data;
+}
+const __attr = s => String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const ANG = [115,205,35,320];
 const grad = i => `linear-gradient(${ANG[i%4]}deg,${libro.colores[i]},${libro.colores[(i+1)%4]})`;
 
@@ -3056,7 +3107,9 @@ function buildPort(i){
   emoji.textContent=emojiText;
   if(!emojiText) emoji.style.display="none"; // 🌒 Sin emoji → no reservar espacio
   wrap.append(box,emoji);
-  if(isURL(libro.portada)){ d.append(Object.assign(new Image(),{src:libro.portada,loading:"lazy"})); }
+  // 🖼️ C292: portada propia, eager y con su plan B; si todo falla, el título en texto (como antes).
+  const portadaImg = __imgPortada(libro, PORTADA_SIZES, function(img){ try { img.remove(); } catch(_) {} d.append(wrap); __tgFit(wrap); });
+  if(portadaImg){ portadaImg.alt = tituloI18n; d.append(portadaImg); }
   else{ d.append(wrap); __tgFit(wrap); }
   d.addEventListener("click", e => { e.stopPropagation(); if (window.__tarjetaPuedeAbrir()) btnShare.click(); });   // 🌒 v4.5: la portada tambien respeta el cierre
   return d;
@@ -3779,8 +3832,9 @@ btnShare.onclick = () => {
   const buscarlibreURL = `https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(tituloCard + ' ' + libro.autor)}`;
   const explorarURL = `https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(p)}`;
   const penguinURL = `https://www.penguinlibros.com/mx/?mot_q=${encodeURIComponent(p)}`;
-  const portadaCardHTML = isURL(libro.portada)
-    ? `<img src="${libro.portada}" alt="${tituloCard}" class="card-cover-float" loading="lazy">`
+  const portadaCard = __portadaDe(libro);   // 🖼️ C292: la misma portada propia (640 ya en caché desde el bloque)
+  const portadaCardHTML = portadaCard
+    ? `<img src="${__attr(portadaCard.src)}"${portadaCard.srcset ? ` srcset="${__attr(portadaCard.srcset)}" sizes="132px"` : ""} alt="${__attr(tituloCard)}" class="card-cover-float" decoding="async" onerror="if(this.dataset.f){this.onerror=null;this.style.display='none';return}this.dataset.f=1;this.removeAttribute('srcset');this.src='${__attr(String(portadaCard.origen || libro.portada || '').replace(/'/g, '%27').replace(/\\/g, '%5C'))}'">`
     : "";
 
   card.innerHTML = `
@@ -6279,6 +6333,7 @@ BarraMagica.submit = function(query) {
   }
   if (result && result.libro) {
     libro = result.libro;
+    __precargaPortada(libro);   // 🖼️ C292: la portada empieza a bajar YA (render corre en 300 ms; el bloque se toca después)
     try { sessionStorage.setItem('lastLibroIdx', String(result.index)); } catch(_) {}
   }
 
@@ -6500,7 +6555,7 @@ async function switchTrigguiMode(targetMode, fromHistory) {
     if (!dataRaw || !Array.isArray(dataRaw.libros) || dataRaw.libros.length === 0) {
       throw new Error('empty_or_invalid_catalog');
     }
-    const data = window.__TRIGGUI_SANITIZE__(dataRaw);
+    const data = __conPortada(window.__TRIGGUI_SANITIZE__(dataRaw));   // 🖼️ C292: solo libros con portada real
 
     // FASE 5: Reset state stale + aplicar nuevo data
     try { sessionStorage.removeItem('lastLibroIdx'); } catch(_) {}
@@ -7062,7 +7117,7 @@ async function bootTriggui() {
     // Garantía matemática: ningún rectángulo roto puede aparecer en pantalla.
     // Repara emojis con bug "\u001f<hex>" del modelo (ej: \u001f440 → 👀) y
     // elimina cualquier control char residual antes de exponer los datos.
-    const data = window.__TRIGGUI_SANITIZE__(dataRaw);
+    const data = __conPortada(window.__TRIGGUI_SANITIZE__(dataRaw));   // 🖼️ C292: solo libros con portada real
     window.__TRIGGUI_DATA__ = data;
     wireBarraMagicaEvents();
 
