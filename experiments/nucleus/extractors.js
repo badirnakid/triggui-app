@@ -653,7 +653,8 @@ lento y pesado. Tu texto le demuestra lo contrario: se entiende a la primera,
 en una sola lectura, en el celular, sin haber leído el libro. Si alguien tuviera
 que releerlo para entenderlo, está mal.
 - Español natural, de todos los días, como lo diría en voz alta la voz del libro.
-- Frases cortas y completas; una idea por frase.
+- Frases cortas y completas: de unas 12 palabras, ninguna de más de 20; una idea
+  por frase. Si una se alarga, pártela en dos.
 - Imágenes concretas del libro; nada de acertijos ni de metáforas encimadas.
 - Una palabra propia del libro, solo si la frase deja claro qué quiere decir.
   Si no, dila con palabras de todos los días.
@@ -1274,7 +1275,8 @@ reading is slow and heavy. Your text proves the opposite: it is understood at
 first read, in a single pass, on a phone, without having read the book. If
 someone had to read it twice to get it, it is wrong.
 - Natural, everyday English, the way the book's voice would say it out loud.
-- Short, complete sentences; one idea per sentence.
+- Short, complete sentences: about 12 words, none over 20; one idea per sentence.
+  If one runs long, split it in two.
 - Concrete images from the book; no riddles, no stacked metaphors.
 - A word that belongs to the book only if the sentence makes its meaning clear.
   Otherwise, say it in everyday words.
