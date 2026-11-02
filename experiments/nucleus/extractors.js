@@ -622,6 +622,28 @@ Nada que el libro no tenga: ni escenas, ni datos, ni ideas ajenas, ni nada
 al revés de como es. Si dudas de un detalle de la historia, no lo uses.
 
 
+LA CLARIDAD MANDA, por encima de lentes, anclas y límites.
+Quien lee va con prisa, no tiene el libro enfrente y suele creer que leer es
+lento y pesado. Tu texto le demuestra lo contrario: se entiende a la primera,
+en una sola lectura, en el celular, sin haber leído el libro. Si alguien tuviera
+que releerlo para entenderlo, está mal.
+- Español natural, de todos los días, como lo diría en voz alta la voz del libro.
+- Frases cortas y completas; una idea por frase.
+- Imágenes concretas del libro; nada de acertijos ni de metáforas encimadas.
+- Una palabra propia del libro, solo si la frase deja claro qué quiere decir.
+  Si no, dila con palabras de todos los días.
+- Nada de otra época ni de otro mundo que el del libro: si el libro no habla
+  de bancos, celulares o redes, tú tampoco.
+- Concordancia y ortografía perfectas: «los tres volcanes», nunca «las tres volcanes».
+- Ligero y vivo, como alguien que te cuenta algo que engancha; nunca una
+  lección ni una tarea.
+Prueba final: léelo en voz alta. Si suena raro, forzado o no se entiende,
+reescríbelo.
+  × «Por eso, cuando alguien te pregunte por tu cuenta bancaria, responde con lo que de verdad domesticaste.»
+  ✓ «Las personas mayores lo cuentan todo. Lo que de verdad importa no se puede contar.»
+Son ejemplos de la forma: no copies sus frases.
+
+
 Estás DENTRO de la página. Nunca fuera.
 
 
@@ -637,7 +659,8 @@ INPUT QUE RECIBIRÁS EN ESTE TURNO (en el user prompt)
 
 
 Los ANCHORS son tu brújula obligatoria. Cada card, og_phrase y edition_block
-DEBE usar al menos un concepto de anchors.concepts o un key_term.
+nace de al menos un concepto de anchors.concepts o de un key_term, dicho de forma
+que se entienda a la primera: un key_term raro va solo si la frase lo explica sola.
 Si una frase que escribes podría aparecer en CUALQUIER libro de autoayuda
 genérica, la reescribes usando un anchor específico.
 
@@ -645,11 +668,11 @@ genérica, la reescribes usando un anchor específico.
 ═══════════════════════════════════════════════════════════════════
 CARD_ES
 ═══════════════════════════════════════════════════════════════════
-- titulo: 8-60 chars. Nombra lo que vive en esa página, con palabras del libro.
+- titulo: 8-60 chars. Nombra lo que vive en esa página, con palabras del libro, claro y natural: se entiende sin conocer el libro.
 - parrafoTop: 80-320 chars. Un fragmento de la página abierta al azar, tal como el lector lo leería: la voz del libro (el autor, el narrador o un personaje) en ese momento. Nunca "este libro", "el autor", "la obra", ni la lección del libro contada desde fuera.
   CIERRE OBLIGATORIO: DEBE terminar en frase completa con punto final (. ! ?). Si la última oración no cabe completa dentro de 320 chars, OMÍTELA — prefiere 240-280 chars cerrados que 320 chars truncados. PROHIBIDO truncar a mitad de palabra, conjunción suelta ("y", "que", "se"), preposición sin objeto ("en", "con"), o verbo sin completar. El cierre gramatical limpio prevalece SIEMPRE sobre el límite numérico.
 - subtitulo: 20-120 chars. Una pregunta o afirmación, en la misma voz, que abre el segundo párrafo.
-- parrafoBot: 80-320 chars. Otro fragmento, de la misma página o de otra, con la misma voz: sigue dentro del libro, no lo resume.
+- parrafoBot: 80-320 chars. Otro fragmento, de la misma página o de otra, con la misma voz: sigue dentro del libro, no lo resume ni le agrega consejos que el libro no da. La microacción que pide la constitución vive en los edition_blocks, no en la tarjeta.
   CIERRE OBLIGATORIO: mismas reglas que parrafoTop. SIEMPRE frase completa con punto final (. ! ?). Prefiere quedar corto antes que truncar.
 
 
@@ -738,9 +761,13 @@ ANTES de devolver el JSON, hazte UNA pregunta para CADA phrase generada
    o es alguien (un crítico, un editor, un marketer, o el autor mismo
    resumiendo) contando el libro, su historia o su lección desde fuera?"
 
+  "¿Lo entendería a la primera alguien que nunca leyó el libro, leyéndolo
+   una sola vez?"
 
-Si la respuesta es "desde fuera", REESCRIBE esa phrase desde dentro de
-la página. Solo entonces devuelve el JSON.
+
+Si la respuesta a la primera es "desde fuera", o a la segunda es "no",
+REESCRIBE esa phrase: desde dentro de la página y clara. Solo entonces
+devuelve el JSON.
 
 
 Aplica el principio (no busques palabras específicas): una phrase que
@@ -1016,11 +1043,11 @@ Conceptos:
 ${anchorsData.book_grounding_anchors.concepts.map((c) => `- ${c}`).join("\n")}
 
 
-Tu vocabulario propio (key terms): ${anchorsData.book_grounding_anchors.key_terms.join(", ")}`;
+Tu vocabulario propio (key terms; úsalos solo donde la frase se entienda sola): ${anchorsData.book_grounding_anchors.key_terms.join(", ")}`;
 
 
   if (lens && lens.trim()) {
-    p += `\n\n═══════════════════════════════════════════════════════════════════\nLENTE DEL CURADOR (perspectiva activa hoy):\n${lens}\n\nSi tu obra naturalmente toca esta perspectiva, déjala asomar en la página. Si no la toca, NO la fuerces — sería traición a tu propia escritura.`;
+    p += `\n\n═══════════════════════════════════════════════════════════════════\nLENTE DEL CURADOR (perspectiva activa hoy):\n${lens}\n\nSi tu obra naturalmente toca esta perspectiva, déjala asomar en la página. Si no la toca, NO la fuerces — sería traición a tu propia escritura. El lente solo elige qué parte del libro asoma: en la tarjeta no metas palabras del lente, cosas que el libro no tiene ni consejos que el libro no da.`;
   }
 
 
@@ -1157,6 +1184,27 @@ Nothing the book doesn't have: no scenes, facts or ideas that aren't its own,
 nothing reversed. If you are unsure of a story detail, leave it out.
 
 
+CLARITY RULES, above lenses, anchors and limits.
+The reader is in a hurry, doesn't have the book in hand and tends to think
+reading is slow and heavy. Your text proves the opposite: it is understood at
+first read, in a single pass, on a phone, without having read the book. If
+someone had to read it twice to get it, it is wrong.
+- Natural, everyday English, the way the book's voice would say it out loud.
+- Short, complete sentences; one idea per sentence.
+- Concrete images from the book; no riddles, no stacked metaphors.
+- A word that belongs to the book only if the sentence makes its meaning clear.
+  Otherwise, say it in everyday words.
+- Nothing from another era or world than the book's: if the book doesn't talk
+  about banks, phones or social media, neither do you.
+- Flawless grammar and spelling.
+- Light and alive, like someone telling you something gripping; never a lesson
+  or homework.
+Final test: read it out loud. If it sounds odd, forced or unclear, rewrite it.
+  × "So when someone asks about your bank account, answer with what you truly tamed."
+  ✓ "Grown-ups count everything. What really matters can't be counted."
+These show the form only: do not copy their sentences.
+
+
 You are INSIDE the page. Never outside.
 
 
@@ -1187,7 +1235,8 @@ NO Spanish words. NO "Elige", "Vivir", "Día", "Qué". If you find yourself writ
 STRUCTURE
 ═══════════════════════════════════════════════════════════════════
 card_en: titulo (8-60 chars), parrafoTop (80-320), subtitulo (20-120), parrafoBot (80-320)
-  parrafoTop and parrafoBot: fragments of the page opened at random, in the book's voice (the author, the narrator or a character), as it happens. Never the book's lesson retold from outside.
+  parrafoTop and parrafoBot: fragments of the page opened at random, in the book's voice (the author, the narrator or a character), as it happens. Never the book's lesson retold from outside, nor advice the book doesn't give: the micro-action the constitution asks for lives in the edition_blocks, not in the card.
+  titulo: clear and natural; it makes sense without knowing the book.
   🌒 MANDATORY CLOSURE — APLICA UNIVERSALMENTE A TODOS LOS CAMPOS TEXTUALES:
   Campos cubiertos: parrafoTop, parrafoBot, titulo, subtitulo, tagline, frases[*], frases_og[*], edition_blocks_es[*].phrase, og_phrases_es[*].phrase. 
   CADA campo de texto DEBE terminar en oración completa con cierre gramatical (. ! ?). Si la última oración no cabe en el límite numérico, OMÍTELA — siempre prefiere más corto+cerrado sobre más largo+truncado. Grammatical closure ALWAYS prevails over numeric limits.
@@ -1267,9 +1316,12 @@ BEFORE returning the JSON, ask ONE question for EACH phrase you wrote
    or is it someone (a critic, an editor, a marketer, or the author summing up)
    retelling the book, its story or its lesson from outside?"
 
+  "Would someone who never read the book get it at first read, reading it
+   only once?"
 
-If the answer is "from outside", REWRITE that phrase from inside the page.
-Only then return the JSON.
+
+If the answer to the first is "from outside", or to the second is "no",
+REWRITE that phrase: from inside the page, and clear. Only then return the JSON.
 
 
 Apply the principle (don't look for specific words): a phrase that quantifies
@@ -1448,7 +1500,7 @@ Concepts:
 ${anchorsData.book_grounding_anchors.concepts.map((c) => `- ${c}`).join("\n")}
 
 
-Your own vocabulary (key terms): ${anchorsData.book_grounding_anchors.key_terms.join(", ")}
+Your own vocabulary (key terms; use them only where the sentence makes sense on its own): ${anchorsData.book_grounding_anchors.key_terms.join(", ")}
 
 
 ═══════════════════════════════════════════════════════════════════
@@ -1460,12 +1512,12 @@ ParrafoBot: ${cardES.parrafoBot}`;
 
 
   if (lens && lens.trim()) {
-    p += `\n\n═══════════════════════════════════════════════════════════════════\nCURATORIAL LENS (perspective active today):\n${lens}\n\nIf your work naturally touches this perspective, let it show on the page. If it doesn't, do NOT force it — that would be a betrayal of your own writing.`;
+    p += `\n\n═══════════════════════════════════════════════════════════════════\nCURATORIAL LENS (perspective active today):\n${lens}\n\nIf your work naturally touches this perspective, let it show on the page. If it doesn't, do NOT force it — that would be a betrayal of your own writing. The lens only chooses which part of the book shows: in the card, no lens vocabulary, nothing the book doesn't have, and no advice the book doesn't give.`;
   }
 
 
   p += `\n\n═══════════════════════════════════════════════════════════════════
-Now, in your body as the author writing your own work:
+Now, as the voice of your book, write from inside its pages:
 Write card_en + emotional_words_en + og_phrases_en + edition_blocks_en.
 
 
