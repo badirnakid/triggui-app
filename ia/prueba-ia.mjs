@@ -24,7 +24,8 @@ const srv = http.createServer((req, res) => {
       res.writeHead(200, { 'content-type': 'application/json' });
       return res.end(JSON.stringify({ id: 'x', object: 'chat.completion', model: 'gpt-4o-mini', choices: [{ index: 0, message: { role: 'assistant', content: '{"ok":true}' }, finish_reason: 'stop' }], usage: { prompt_tokens: 10, completion_tokens: 2, total_tokens: 12 } }));
     }
-    const paso = guion.shift() || { status: 200, data: { id: 'm', model: 'claude-haiku-5-5', content: [{ type: 'text', text: '{"ok":true}' }], stop_reason: 'end_turn', usage: { input_tokens: 7, output_tokens: 3 } } };
+    let paso = guion.shift() || { status: 200, data: { id: 'm', model: 'claude-haiku-5-5', content: [{ type: 'text', text: '{"ok":true}' }], stop_reason: 'end_turn', usage: { input_tokens: 7, output_tokens: 3 } } };
+    if (typeof paso === 'function') paso = paso(cuerpo);   // respuesta que depende de la petición
     res.writeHead(paso.status, { 'content-type': 'application/json', ...(paso.headers || {}) });
     res.end(typeof paso.data === 'string' ? paso.data : JSON.stringify(paso.data));
   });
@@ -166,6 +167,107 @@ ok(c1.proveedor === 'claude' && c1.papel === 'mini' && c1.modelo === 'claude-hai
 ok(c2.papel === 'grande' && c2.modelo === 'claude-sonnet-5-5' && /^400/.test(c2.error || ''), 'registro Claude: el error queda anotado', JSON.stringify(c2));
 ok(o1.proveedor === 'openai' && o1.papel === 'mini' && o1.entrada === 10 && o1.salida === 2 && o1.fin === 'stop' && o1.modelo === 'gpt-4o-mini', 'registro OpenAI por fetch: tokens y fin', JSON.stringify(o1));
 ok(o2.proveedor === 'openai' && o2.papel === 'grande' && o2.modelo === 'gpt-4o' && o2.fin === 'stop', 'registro OpenAI por el SDK', JSON.stringify(o2));
+
+// ── 2c. Caché del system (Claude) ──
+console.log('Caché del system (Claude)');
+process.env.TRIGGUI_IA_PROVEEDOR = 'claude';
+// La API de mentira guarda lo marcado como la real: escribe la primera vez, lee después, y nada por debajo del mínimo.
+const escritos = new Set();
+const simula = (cuerpo) => {
+  const q = JSON.parse(cuerpo);
+  const marcado = Array.isArray(q.system);
+  const txt = marcado ? q.system[0].text : (q.system || '');
+  let u = {};
+  if (marcado && txt.length >= 1800) {
+    const k = q.model + '|' + JSON.stringify(q.output_config || null) + '|' + txt;
+    u = escritos.has(k) ? { cache_read_input_tokens: Math.round(txt.length / 4) } : { cache_creation_input_tokens: Math.round(txt.length / 4) };
+    escritos.add(k);
+  }
+  return { status: 200, data: { id: 'mc', model: q.model, content: [{ type: 'text', text: 'ok' }], stop_reason: 'end_turn', usage: { input_tokens: 20, output_tokens: 2, ...u } } };
+};
+const conGuion = (n) => Array.from({ length: n }, () => simula);
+const pide = (sis, extra = {}) => IA.chatCompat({ model: 'mini', messages: [{ role: 'system', content: sis }, { role: 'user', content: 'u' }], ...extra });
+const sisDe = (i) => JSON.parse(recibidas[i].body).system;
+const marcado = (x, txt) => Array.isArray(x) && x.length === 1 && x[0].type === 'text' && x[0].text === txt
+  && JSON.stringify(x[0].cache_control) === '{"type":"ephemeral"}' && Object.keys(x[0]).length === 3;
+const estado = (sis, extra = {}) => { const e = IA._interno._cache.get(IA._interno.claveCache(IA._interno.aClaude({ model: 'mini', messages: [{ role: 'system', content: sis }, { role: 'user', content: 'u' }], ...extra }).body)); return e ? e.estado : 'sin ver'; };
+const SIS = 'Sistema largo y constante, como el del saneador. ' + 'x'.repeat(4000);
+
+recibidas.length = 0;
+guion = conGuion(4);
+await pide(SIS);
+ok(sisDe(0) === SIS && estado(SIS) === 'visto', 'la primera vez el system va sin marca: una llamada suelta nunca paga escritura');
+await pide(SIS);
+ok(marcado(sisDe(1), SIS) && estado(SIS) === 'guardado', 'ya terminada una, la siguiente lo marca con cache_control ephemeral y lo escribe');
+await pide(SIS);
+ok(marcado(sisDe(2), SIS) && estado(SIS) === 'guardado', 'después, lo marca y lo lee');
+const crudo = IA._interno.aClaude({ model: 'mini', messages: [{ role: 'system', content: SIS }, { role: 'user', content: 'u' }] }).body;
+const marcadoCrudo = IA._interno.conCache(crudo, { marca: true });
+ok(crudo.system === SIS && Array.isArray(marcadoCrudo.system) && JSON.stringify(Object.keys(marcadoCrudo)) === JSON.stringify(Object.keys(crudo)), 'marcar no toca el cuerpo original y conserva el orden de las llaves');
+
+const SIS2 = 'Otro system, el de un juez que corre en paralelo. ' + 'y'.repeat(4000);
+recibidas.length = 0;
+guion = conGuion(3);
+await Promise.all([pide(SIS2), pide(SIS2), pide(SIS2)]);
+ok([0, 1, 2].every((i) => sisDe(i) === SIS2) && estado(SIS2) === 'visto', 'tres en paralelo la primera vez: ninguna marca');
+recibidas.length = 0;
+guion = conGuion(3);
+await Promise.all([pide(SIS2), pide(SIS2), pide(SIS2)]);
+let marcas = [0, 1, 2].filter((i) => marcado(sisDe(i), SIS2)).length;
+ok(marcas === 1 && estado(SIS2) === 'guardado', 'otra vez en paralelo: una sola escribe y las otras van sin marca (nunca dos escrituras a la vez)', `${marcas} marcadas`);
+recibidas.length = 0;
+guion = conGuion(3);
+await Promise.all([pide(SIS2), pide(SIS2), pide(SIS2)]);
+marcas = [0, 1, 2].filter((i) => marcado(sisDe(i), SIS2)).length;
+ok(marcas === 3, 'ya escrito, las tres en paralelo lo marcan y lo leen', `${marcas} marcadas`);
+
+const CORTO = 'System corto, por debajo del mínimo.';
+recibidas.length = 0;
+guion = conGuion(3);
+await pide(CORTO); await pide(CORTO); await pide(CORTO);
+ok(sisDe(0) === CORTO && marcado(sisDe(1), CORTO) && sisDe(2) === CORTO && estado(CORTO) === 'no', 'si la API no lo guardó (0 y 0), ese system ya no se marca');
+
+recibidas.length = 0;
+guion = conGuion(2);
+await IA.chatCompat({ model: 'grande', messages: [{ role: 'system', content: SIS }, { role: 'user', content: 'u' }] });
+await pide(SIS, { response_format: { type: 'json_schema', json_schema: { name: 'z', strict: true, schema: { type: 'object', properties: { a: { type: 'string' } }, required: ['a'], additionalProperties: false } } } });
+ok(sisDe(0) === SIS && sisDe(1) === SIS, 'otro modelo u otro formato de salida es otra entrada: la primera vez va sin marca');
+
+const reloj = Date.now;
+try {
+  Date.now = () => reloj() + IA._interno.CACHE_VIGENCIA_MS + 1000;
+  recibidas.length = 0;
+  guion = conGuion(2);
+  await Promise.all([pide(SIS), pide(SIS)]);
+  marcas = [0, 1].filter((i) => marcado(sisDe(i), SIS)).length;
+  ok(marcas === 1 && estado(SIS) === 'guardado', 'pasados 4 minutos y medio sin uso: una sola lo vuelve a escribir', `${marcas} marcadas`);
+} finally { Date.now = reloj; }
+
+const SIS3 = 'System cuya escritura falla. ' + 'z'.repeat(4000);
+recibidas.length = 0;
+guion = [simula, { status: 400, data: { type: 'error', error: { message: 'malo' } } }, simula];
+await pide(SIS3);
+r = await pide(SIS3);
+ok(!r.ok && marcado(sisDe(1), SIS3) && estado(SIS3) === 'visto', 'si la escritura falla, vuelve a «visto»');
+await pide(SIS3);
+ok(marcado(sisDe(2), SIS3) && estado(SIS3) === 'guardado', 'y la siguiente la intenta de nuevo');
+
+const SIS4 = 'System con la caché apagada en config.json. ' + 'w'.repeat(4000);
+IA.config().claude.cache_sistema = false;
+try {
+  recibidas.length = 0;
+  guion = conGuion(3);
+  await pide(SIS4); await pide(SIS4); await pide(SIS4);
+  ok([0, 1, 2].every((i) => sisDe(i) === SIS4), 'con claude.cache_sistema: false nunca se marca');
+} finally { IA.config().claude.cache_sistema = true; }
+
+process.env.TRIGGUI_IA_PROVEEDOR = 'openai';
+recibidas.length = 0;
+const conOpenAI = { model: 'gpt-4o-mini', temperature: 0, messages: [{ role: 'system', content: SIS }, { role: 'user', content: 'u' }] };
+await (await IA.chatCompat({ ...conOpenAI, model: 'mini' })).json();
+await (await IA.chatCompat({ ...conOpenAI, model: 'mini' })).json();
+ok(recibidas.length === 2 && recibidas.every((x) => x.body === JSON.stringify(conOpenAI)), 'con openai, el mismo system repetido sale con los mismos bytes de siempre');
+process.env.TRIGGUI_IA_PROVEEDOR = 'claude';
 
 // ── 3. Los esquemas reales del repositorio ──
 console.log('Esquemas reales');

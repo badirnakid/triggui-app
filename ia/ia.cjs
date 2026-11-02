@@ -21,7 +21,9 @@
  *   · usage: prompt_tokens = entrada + caché; completion_tokens = salida;
  *   · max_tokens nunca baja de claude.max_tokens_minimo (el tokenizador de Claude cuenta distinto y un tope pensado
  *     para GPT puede cortar; el tope no cuesta: solo se cobra lo que se genera y no cuenta para los límites);
- *   · un 429 por tope de gasto (enforced_spend_limit_reached) no se reintenta: se dice claro.
+ *   · un 429 por tope de gasto (enforced_spend_limit_reached) no se reintenta: se dice claro;
+ *   · caché del system: se marca solo cuando ese system se va a reusar y sin escrituras en paralelo (ver
+ *     «Claude: caché del system» más abajo). Con openai no cambia nada.
  *
  * Registro de uso: con TRIGGUI_IA_REGISTRO=<archivo>, cada llamada (de los dos proveedores) deja una línea JSON con
  * papel, modelo, tokens, fin, milisegundos, reintentos y de dónde vino (archivo:función). «entrada» es la entrada que
@@ -29,6 +31,7 @@
  */
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 const RUTA_CONFIG = process.env.TRIGGUI_IA_CONFIG || path.join(__dirname, 'config.json');
 let _cfg = null;
@@ -181,6 +184,55 @@ function aClaude(params) {
   return { body, jsonLibre };
 }
 
+// ─── Claude: caché del system ────────────────────────────────────────────────────────────────────────────
+// Documentación oficial leída el 2 de noviembre de 2026: la API guarda un prefijo solo donde se marca cache_control;
+// escribirlo cuesta 1.25 veces la entrada y leerlo 0.1 veces (0.05 en Sonnet 5.5); dura 5 minutos desde el inicio de
+// la última petición que lo usó; solo existe cuando ya empezó la primera respuesta, y por debajo de 512 tokens no se
+// guarda nada y no hay error. Por eso el system se marca solo cuando se va a reusar, y nunca dos escrituras a la vez:
+//   · la primera vez que se ve un system va sin marca: una llamada suelta nunca paga escritura;
+//   · ya terminada una llamada con ese system, la siguiente lo marca y lo escribe; las que corren en paralelo
+//     mientras tanto van sin marca;
+//   · ya escrito, todas lo marcan y lo leen mientras no pasen 4 minutos y medio desde su último uso;
+//   · si la API no lo guardó (no llega al mínimo), ese system ya no se marca en este proceso.
+// La clave es el modelo, su forma de pensar, el formato de salida y el texto del system. Se apaga con
+// claude.cache_sistema: false en config.json.
+const CACHE_VIGENCIA_MS = 270000;
+const _cache = new Map();   // clave → { estado: primera | visto | escribiendo | guardado | no, t }
+
+function claveCache(body) {
+  return crypto.createHash('sha256').update(JSON.stringify([body.model, body.thinking || null, body.output_config || null, body.system])).digest('hex');
+}
+/** Decide si esta petición marca su system: { clave, marca }, o null si no aplica. */
+function planCache(body) {
+  if (typeof body.system !== 'string' || !body.system || config().claude.cache_sistema !== true) return null;
+  const clave = claveCache(body);
+  const ahora = Date.now();
+  const e = _cache.get(clave);
+  if (!e) { _cache.set(clave, { estado: 'primera', t: ahora }); return { clave, marca: false }; }
+  if (e.estado === 'primera' || e.estado === 'escribiendo' || e.estado === 'no') return { clave, marca: false };
+  if (e.estado === 'guardado' && ahora - e.t < CACHE_VIGENCIA_MS) { e.t = ahora; return { clave, marca: true }; }
+  e.estado = 'escribiendo';   // visto, o guardado y vencido: esta petición escribe
+  e.t = ahora;
+  return { clave, marca: true };
+}
+/** Anota cómo terminó la petición: u = usage de la respuesta, o null si falló. */
+function cierraCache(plan, u) {
+  if (!plan) return;
+  const e = _cache.get(plan.clave);
+  if (!e) return;
+  if (!plan.marca) {
+    if (e.estado === 'primera') { if (u) e.estado = 'visto'; else _cache.delete(plan.clave); }
+    return;
+  }
+  if (!u) { if (e.estado === 'escribiendo') e.estado = 'visto'; return; }
+  if ((u.cache_creation_input_tokens || 0) > 0 || (u.cache_read_input_tokens || 0) > 0) { if (e.estado === 'escribiendo') e.estado = 'guardado'; return; }
+  e.estado = 'no';
+}
+/** El cuerpo con el system marcado, si toca; el original no se toca. */
+function conCache(body, plan) {
+  return plan && plan.marca ? Object.assign({}, body, { system: [{ type: 'text', text: body.system, cache_control: { type: 'ephemeral' } }] }) : body;
+}
+
 // ─── Claude: traducción de vuelta ────────────────────────────────────────────────────────────────────────
 function extraeJson(t) {
   let s = String(t || '').trim();
@@ -278,14 +330,17 @@ async function llamaClaude(params, opciones = {}) {
   const una = async (intento) => {
     const t0 = Date.now();
     const cuenta = { reintentos: 0 };
+    const plan = planCache(body);
     let data;
-    try { data = await postClaude(body, opciones, cuenta); } catch (e) {
+    try { data = await postClaude(conCache(body, plan), opciones, cuenta); } catch (e) {
+      cierraCache(plan, null);
       registra({ proveedor: 'claude', papel: papel(params.model), modelo: body.model, origen: de, intento, entrada: 0, salida: 0, cache_lectura: 0, cache_escritura: 0,
         fin: null, ms: Date.now() - t0, reintentos: cuenta.reintentos, error: `${e.status}: ${String(e.message).slice(0, 200)}` });
       throw e;
     }
     const r = deClaude(data, jsonLibre);
     const u = data.usage || {};
+    cierraCache(plan, u);
     registra({ proveedor: 'claude', papel: papel(params.model), modelo: data.model || body.model, origen: de, intento,
       entrada: u.input_tokens || 0, salida: u.output_tokens || 0, cache_lectura: u.cache_read_input_tokens || 0, cache_escritura: u.cache_creation_input_tokens || 0,
       fin: data.stop_reason || null, json_ok: jsonLibre ? r._claude.json_ok : null, ms: Date.now() - t0, reintentos: cuenta.reintentos, error: null });
@@ -356,5 +411,6 @@ module.exports = {
   config, proveedor, hayLlave, nombreLlave, nombreProveedor, papel, resolverModelo, etiqueta,
   crearCliente, chatCompat,
   // para pruebas
-  _interno: { limpiaEsquema, aClaude, deClaude, extraeJson, conModelo, origen, INSTRUCCION_JSON, _reset: () => { _cfg = null; } }
+  _interno: { limpiaEsquema, aClaude, deClaude, extraeJson, conModelo, origen, INSTRUCCION_JSON,
+    planCache, cierraCache, conCache, claveCache, _cache, CACHE_VIGENCIA_MS, _reset: () => { _cfg = null; _cache.clear(); } }
 };

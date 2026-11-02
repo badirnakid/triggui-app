@@ -6,16 +6,19 @@ Completions. Los errores HTTP salen como urllib.error.HTTPError, igual que antes
 siempre sigan valiendo.
 
   · con openai: la misma petición de antes (mismos bytes), solo con el modelo resuelto;
-  · con claude: la Messages API, traducida y de vuelta con la forma de siempre (ver ia.cjs).
+  · con claude: la Messages API, traducida y de vuelta con la forma de siempre (ver ia.cjs), con la misma caché
+    del system: se marca solo cuando se va a reusar y nunca dos escrituras a la vez.
 
 Registro de uso: con TRIGGUI_IA_REGISTRO=<archivo>, cada llamada deja una línea JSON (papel, modelo, tokens, fin,
 milisegundos, reintentos y de dónde vino). Sin la variable no se escribe nada.
 """
 import datetime
+import hashlib
 import inspect
 import io
 import json
 import os
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -235,6 +238,76 @@ def de_claude(data, json_libre):
             "_claude": {"stop_reason": sr, "usage": u, "json_ok": json_ok if json_libre else None}}
 
 
+# ─── Claude: caché del system (las mismas reglas que ia.cjs; ver allá el porqué) ───
+CACHE_VIGENCIA_S = 270
+_CACHE = {}   # clave → {"estado": primera | visto | escribiendo | guardado | no, "t": segundos}
+_CACHE_CANDADO = threading.Lock()
+
+
+def _ahora():
+    return time.time()
+
+
+def clave_cache(body):
+    return hashlib.sha256(json.dumps([body.get("model"), body.get("thinking"), body.get("output_config"), body.get("system")],
+                                     ensure_ascii=False).encode("utf-8")).hexdigest()
+
+
+def plan_cache(body):
+    """Decide si esta petición marca su system: {"clave", "marca"}, o None si no aplica."""
+    if not isinstance(body.get("system"), str) or not body["system"] or config()["claude"].get("cache_sistema") is not True:
+        return None
+    clave = clave_cache(body)
+    with _CACHE_CANDADO:
+        ahora = _ahora()
+        e = _CACHE.get(clave)
+        if e is None:
+            _CACHE[clave] = {"estado": "primera", "t": ahora}
+            return {"clave": clave, "marca": False}
+        if e["estado"] in ("primera", "escribiendo", "no"):
+            return {"clave": clave, "marca": False}
+        if e["estado"] == "guardado" and ahora - e["t"] < CACHE_VIGENCIA_S:
+            e["t"] = ahora
+            return {"clave": clave, "marca": True}
+        e["estado"], e["t"] = "escribiendo", ahora   # visto, o guardado y vencido: esta petición escribe
+        return {"clave": clave, "marca": True}
+
+
+def cierra_cache(plan, u):
+    """Anota cómo terminó la petición: u = usage de la respuesta, o None si falló."""
+    if not plan:
+        return
+    with _CACHE_CANDADO:
+        e = _CACHE.get(plan["clave"])
+        if e is None:
+            return
+        if not plan["marca"]:
+            if e["estado"] == "primera":
+                if u is not None:
+                    e["estado"] = "visto"
+                else:
+                    del _CACHE[plan["clave"]]
+            return
+        if u is None:
+            if e["estado"] == "escribiendo":
+                e["estado"] = "visto"
+            return
+        if (u.get("cache_creation_input_tokens") or 0) > 0 or (u.get("cache_read_input_tokens") or 0) > 0:
+            if e["estado"] == "escribiendo":
+                e["estado"] = "guardado"
+            return
+        e["estado"] = "no"
+
+
+def con_cache(body, plan):
+    """El cuerpo con el system marcado, si toca; el original no se toca."""
+    if not plan or not plan["marca"]:
+        return body
+    b = dict(body)
+    b["system"] = [{"type": "text", "text": body["system"], "cache_control": {"type": "ephemeral"}}]
+    return b
+
+
 def _post_claude(body, timeout, cuenta=None):
     cuenta = cuenta if cuenta is not None else {"reintentos": 0}
     c = config()["claude"]
@@ -311,15 +384,18 @@ def chat(payload, timeout=90):
 
     def una(intento):
         t0, cuenta = time.time(), {"reintentos": 0}
+        plan = plan_cache(body)
         try:
-            data = _post_claude(body, timeout, cuenta)
+            data = _post_claude(con_cache(body, plan), timeout, cuenta)
         except Exception as e:
+            cierra_cache(plan, None)
             _registra({"proveedor": "claude", "papel": rol, "modelo": body["model"], "origen": de, "intento": intento, "entrada": 0, "salida": 0,
                        "cache_lectura": 0, "cache_escritura": 0, "fin": None, "ms": int((time.time() - t0) * 1000),
                        "reintentos": cuenta["reintentos"], "error": "%s: %s" % (getattr(e, "code", ""), str(e)[:200])})
             raise
         r = de_claude(data, json_libre)
         u = data.get("usage") or {}
+        cierra_cache(plan, u)
         _registra({"proveedor": "claude", "papel": rol, "modelo": data.get("model") or body["model"], "origen": de, "intento": intento,
                    "entrada": u.get("input_tokens") or 0, "salida": u.get("output_tokens") or 0,
                    "cache_lectura": u.get("cache_read_input_tokens") or 0, "cache_escritura": u.get("cache_creation_input_tokens") or 0,

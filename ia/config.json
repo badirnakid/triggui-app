@@ -36,6 +36,7 @@
     "max_tokens_por_omision": 8192,
     "max_tokens_minimo": 1024,
     "timeout_ms": 600000,
-    "reintentos": 2
+    "reintentos": 2,
+    "cache_sistema": true
   }
 }

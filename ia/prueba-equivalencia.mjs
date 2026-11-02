@@ -20,6 +20,9 @@
  * Uso, desde la raíz de triggui-app (con experiments/nucleus/node_modules instalado):
  *   node ia/prueba-equivalencia.mjs [--base=f440d0b] [--nuevo=HEAD] [--contenido=../triggui-content]
  *        [--contenido-base=origin/main] [--contenido-nuevo=claude-en-el-horno] [--tmp=<carpeta temporal>]
+ *        [--base-python=f440d0b]
+ * La parte de Python compara siempre contra el código de antes de la migración (--base-python): sus pruebas leen la
+ * configuración vieja de OpenAI. Con --base en un commit posterior, Python usa su propia copia de --base-python.
  */
 import { spawn, execFileSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -32,6 +35,8 @@ const AQUI = path.dirname(fileURLToPath(import.meta.url));
 const RAIZ = path.resolve(AQUI, '..');
 const arg = (k, d) => { const a = process.argv.find((x) => x.startsWith('--' + k + '=')); return a ? a.slice(k.length + 3) : d; };
 const BASE = arg('base', 'f440d0b');
+const BASE_PY = arg('base-python', 'f440d0b');
+let copiaPy = null;   // copia de --base-python cuando no es la misma que --base
 const NUEVO = arg('nuevo', 'HEAD');
 const CONTENIDO = path.resolve(RAIZ, arg('contenido', '../triggui-content'));
 const C_BASE = arg('contenido-base', 'origin/main');
@@ -184,7 +189,20 @@ function validaClaude(p, h) {
     if (ms[ms.length - 1].role !== 'user') e.push('termina en assistant (prefill)');
     ms.forEach((m, i) => { if (i && m.role === ms[i - 1].role) e.push('dos turnos seguidos del mismo rol'); if (typeof m.content !== 'string' || !m.content.trim()) e.push('turno ' + i + ' vacío'); });
   }
-  if (p.system !== undefined && (typeof p.system !== 'string' || !p.system.trim())) e.push('system vacío o no texto');
+  if (p.system !== undefined) {
+    if (Array.isArray(p.system)) {   // bloques de texto, con cache_control opcional (caché del system)
+      if (!p.system.length) e.push('system: lista vacía');
+      for (const b of p.system) {
+        if (!b || b.type !== 'text' || typeof b.text !== 'string' || !b.text.trim()) e.push('system: bloque que no es texto');
+        for (const k of Object.keys(b || {})) if (!['type', 'text', 'cache_control'].includes(k)) e.push('system: llave no admitida ' + k);
+        if (b && b.cache_control !== undefined) {
+          const cc = b.cache_control;
+          if (!cc || cc.type !== 'ephemeral' || Object.keys(cc).some((k) => !['type', 'ttl'].includes(k)) || (cc.ttl !== undefined && !['5m', '1h'].includes(cc.ttl))) e.push('system: cache_control inválido ' + JSON.stringify(cc));
+        }
+      }
+      if (p.system.filter((b) => b && b.cache_control).length > 4) e.push('más de 4 puntos de caché');
+    } else if (typeof p.system !== 'string' || !p.system.trim()) e.push('system vacío o no texto');
+  }
   if (p.output_config) {
     for (const k of Object.keys(p.output_config)) if (!['format', 'effort'].includes(k)) e.push('output_config.' + k);
     const f = p.output_config.format;
@@ -194,6 +212,22 @@ function validaClaude(p, h) {
   return e;
 }
 let violaciones = [];
+// Caché simulada como la real: lo marcado se escribe la primera vez y se lee después; por debajo de ~512 tokens no se
+// guarda nada. Se anota cada escritura y cada lectura para revisar el patrón. La entrada total sigue siendo 10 tokens
+// (como la respuesta de OpenAI de mentira), para que los totales que imprime el pipeline se puedan comparar.
+let cacheEscritos = new Set();
+let cacheEventos = [];
+function usoClaude(pedido) {
+  const u = { input_tokens: 10, output_tokens: 5, cache_creation_input_tokens: 0, cache_read_input_tokens: 0 };
+  if (!Array.isArray(pedido.system)) return u;
+  const txt = pedido.system.map((b) => b.text).join('');
+  if (!pedido.system.some((b) => b.cache_control) || txt.length < 1800) { cacheEventos.push({ tipo: 'nada', largo: txt.length }); return u; }
+  const k = pedido.model + '|' + JSON.stringify(pedido.output_config || null) + '|' + JSON.stringify(pedido.thinking || null) + '|' + txt;
+  u.input_tokens = 2;
+  if (cacheEscritos.has(k)) { u.cache_read_input_tokens = 8; cacheEventos.push({ tipo: 'lee', k }); }
+  else { cacheEscritos.add(k); u.cache_creation_input_tokens = 8; cacheEventos.push({ tipo: 'escribe', k }); }
+  return u;
+}
 const srv = http.createServer((req, res) => {
   let cuerpo = '';
   req.setEncoding('utf8');
@@ -220,7 +254,7 @@ const srv = http.createServer((req, res) => {
     if (claude) {
       const b = JSON.stringify(r.status === 200
         ? { id: 'msg_prueba', type: 'message', role: 'assistant', model: pedido.model, content: [{ type: 'text', text: r.contenido }], stop_reason: 'end_turn', stop_sequence: null,
-            usage: { input_tokens: 10, output_tokens: 5, cache_creation_input_tokens: 0, cache_read_input_tokens: 0 } }
+            usage: usoClaude(pedido) }
         : { type: 'error', error: { type: 'api_error', message: 'error de prueba ' + r.status } });
       res.writeHead(r.status, { 'content-type': 'application/json', 'content-length': Buffer.byteLength(b) });
       return res.end(b);
@@ -434,8 +468,11 @@ try {
       if (opts.fixture) copiaFixture(dir, opts.fixture);
       alResponder = responder;
       violaciones = [];
+      cacheEscritos = new Set();
+      cacheEventos = [];
       r[v] = await corre(typeof args === 'function' ? args(dir) : args, { cwd: opts.cwd ? opts.cwd : dir, ms: opts.ms, env: { ...(opts.env ? opts.env(dir) : {}), ...extra } });
       r[v].violaciones = violaciones.slice();
+      r[v].cache = cacheEventos.slice();
       r[v].archivos = archivos ? modelos(normaliza(archivos(dir), dir ? [dir] : [])) : '';
     }
     const c = r.claude;
@@ -445,6 +482,23 @@ try {
     ok(c.pedidos.length === r.openai.pedidos.length, `${nombre}: el mismo número de llamadas que con openai (${r.openai.pedidos.length})`, `openai ${r.openai.pedidos.length}, claude ${c.pedidos.length}`);
     ok(c.code === r.openai.code, `${nombre}: termina igual que con openai (código ${r.openai.code})`, `openai ${r.openai.code}, claude ${c.code}\n      ${c.out.slice(-500)}`);
     if (archivos) ok(igualOGuarda(r.openai.archivos, c.archivos, 'claude ' + nombre), `${nombre}: deja los mismos archivos que con openai (fuera del nombre del modelo)`);
+    // Caché del system: cada entrada se escribe una sola vez (nunca dos escrituras del mismo system) y la primera
+    // petición con cada system va sin marca.
+    const porClave = c.cache.filter((x) => x.tipo === 'escribe').reduce((a, x) => { a[x.k] = (a[x.k] || 0) + 1; return a; }, {});
+    const dobles = Object.values(porClave).filter((n) => n > 1).length;
+    const vistos = new Set();
+    let primeraMarcada = 0;
+    for (const x of c.pedidos) {
+      let q; try { q = JSON.parse(x.cuerpo); } catch { continue; }
+      if (!q.system) continue;
+      const txt = Array.isArray(q.system) ? q.system.map((b) => b.text).join('') : q.system;
+      const k = q.model + '|' + JSON.stringify(q.output_config || null) + '|' + JSON.stringify(q.thinking || null) + '|' + txt;
+      if (!vistos.has(k) && Array.isArray(q.system)) primeraMarcada++;
+      vistos.add(k);
+    }
+    const cuenta = (t) => c.cache.filter((x) => x.tipo === t).length;
+    ok(dobles === 0 && primeraMarcada === 0, `${nombre}: caché del system sin escrituras dobles y sin marca la primera vez (${cuenta('escribe')} escrituras, ${cuenta('lee')} lecturas)`,
+      `dobles ${dobles}, primeras marcadas ${primeraMarcada}`);
     return r;
   }
   const decide = (p, c) => ({ status: 200, contenido: JSON.stringify(c.includes('Libro Tres')
@@ -468,9 +522,16 @@ try {
   await dos('gemelos-en', () => [path.join(raices.nuevo, 'scripts/gemelos-en.mjs')],
     { dir: (v) => path.join(T, 'c-gem-' + v), fixture: { 'triggui-content/contenido.json': { libros: [conGemelos('Uno'), conGemelos('Dos')] }, 'triggui-content/contenido_manual.json': { libros: [conGemelos('Tres')] } } },
     traduce, (dir) => ['contenido.json', 'contenido_manual.json'].map((f) => leeSiHay(path.join(dir, 'triggui-content', f))).join('\n---\n'));
-  await dos('saneador (con TRIGGUI_IA_LIB)', (dir) => [saneador.nuevo, `--catalog=${path.join(dir, 'contenido.json')}`, '--mode=fix', '--only-last=true', '--batch-size=1'],
-    { dir: (v) => path.join(T, 'c-san-' + v), fixture: { 'contenido.json': catSan }, env: () => ({ TRIGGUI_IA_LIB: path.join(raices.nuevo, 'ia/ia.cjs') }) },
-    juzga, (dir) => leeSiHay(path.join(dir, 'contenido.json')));
+  {
+    const r = await dos('saneador (con TRIGGUI_IA_LIB)', (dir) => [saneador.nuevo, `--catalog=${path.join(dir, 'contenido.json')}`, '--mode=fix', '--only-last=true', '--batch-size=1'],
+      { dir: (v) => path.join(T, 'c-san-' + v), fixture: { 'contenido.json': catSan }, env: () => ({ TRIGGUI_IA_LIB: path.join(raices.nuevo, 'ia/ia.cjs') }) },
+      juzga, (dir) => leeSiHay(path.join(dir, 'contenido.json')));
+    // El saneador llama en fila con el mismo system: la primera sin marca, la segunda escribe y las demás leen.
+    const formas = r.claude.pedidos.map((x) => (Array.isArray(JSON.parse(x.cuerpo).system) ? 'marca' : 'sin'));
+    const tipos = r.claude.cache.map((x) => x.tipo);
+    ok(formas.length >= 3 && formas[0] === 'sin' && formas.slice(1).every((f) => f === 'marca') && tipos[0] === 'escribe' && tipos.slice(1).every((t) => t === 'lee'),
+      `saneador: la primera sin marca, la segunda escribe y las otras ${Math.max(formas.length - 2, 0)} leen`, `${formas.join(',')} · ${tipos.join(',')}`);
+  }
   {
     const csv = 'titulo,autor,tagline,portada,isbn,editorial,tema,contexto\n'
       + '"El hombre en busca de sentido","Viktor E. Frankl","Sentido en medio del dolor","","","Herder","duelo","pérdida y propósito"\n'
@@ -495,8 +556,10 @@ try {
 
   // ── 6. Python: resolve-videos.py y resolve-musica.py ─────────────────────────────────────────────────────
   console.log('Python');
+  if (BASE_PY !== BASE) { copiaPy = path.join(T, 'base-python'); git(RAIZ, 'worktree', 'add', '-q', '--detach', copiaPy, BASE_PY); }
+  console.log(`  (contra ${BASE_PY}, el código de antes de la migración)`);
   const py = await new Promise((resolve) => {
-    const p = spawn('python3', ['-I', path.join(AQUI, 'prueba_equivalencia.py'), `--base=${raices.base}`, `--nuevo=${raices.nuevo}`, `--contenido=${CONTENIDO}`],
+    const p = spawn('python3', ['-I', path.join(AQUI, 'prueba_equivalencia.py'), `--base=${copiaPy || raices.base}`, `--nuevo=${raices.nuevo}`, `--contenido=${CONTENIDO}`],
       { env: { PATH: process.env.PATH, HOME: process.env.HOME, PYTHONDONTWRITEBYTECODE: '1' }, stdio: ['ignore', 'pipe', 'pipe'] });
     let out = ''; p.stdout.on('data', (d) => { out += d; }); p.stderr.on('data', (d) => { out += d; });
     p.on('close', (code) => resolve({ code, out }));
@@ -506,7 +569,7 @@ try {
 } finally {
   srv.close();
   limpiaTmp();
-  for (const r of Object.values(raices)) { try { git(RAIZ, 'worktree', 'remove', '--force', r); } catch { /* ya no está */ } }
+  for (const r of [...Object.values(raices), copiaPy].filter(Boolean)) { try { git(RAIZ, 'worktree', 'remove', '--force', r); } catch { /* ya no está */ } }
   fs.rmSync(T, { recursive: true, force: true });
 }
 console.log(`\n${total - fallas}/${total} comprobaciones de equivalencia`);
