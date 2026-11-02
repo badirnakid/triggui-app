@@ -8,25 +8,25 @@ junto al paso de videos, y a mano las corridas de laboratorio. Calco estructural
 resolve-videos.py v2.1: mismas garantías, mismas banderas, mismo juez — fuente distinta.
 
 Tres capas por libro:
-  Capa 0 · COMPOSITOR (gpt-4o-mini, temp 0.1, JSON estricto): recibe la edición como la ve el
+  Capa 0 · COMPOSITOR (papel "mini" de ia/config.json, temp 0.1, JSON estricto): recibe la edición como la ve el
            lector y propone hasta 3 búsquedas CONCRETAS para iTunes (artista y/o pieza con
            nombre propio). CONSTITUCIÓN: jamás el título del libro como query — iTunes es
            literal y "frida soundtrack" trae telenovela, no a Chavela (sonda 2026-08-30).
            Prioridad absoluta: si el libro trae `_musica_queries` (sembrado por nucleus o
-           curador), se usa tal cual y no se gasta LLM. Sin llave de OpenAI → mapa
+           curador), se usa tal cual y no se gasta LLM. Sin llave del proveedor de IA → mapa
            determinista de semillas por idioma (juez "mapa"): nunca rompe.
   Capa 1 · VETO canon (iTunes Search API, keyless, ~20 llamadas/min): por query, hasta 8
            canciones con previewUrl OBLIGATORIO (el bocado de 30 s ES el producto).
            Castiga karaoke/tribute/cover/lullaby/explicit; premia soundtrack y match de
            artista. Dedup por trackId entre queries.
-  Capa 2 · ARMONÍA (gpt-4o-mini): el juez recibe la edición y la ficha de cada pieza;
+  Capa 2 · ARMONÍA (papel "mini"): el juez recibe la edición y la ficha de cada pieza;
            devuelve armonía 0–10, rol sinfónico, pie y descarte. Prompt y esquema viven en
            triggui-content/prompts/ (el curador edita ahí; este script obedece).
   Quinteto · hasta 5, primero diversidad de roles, luego por armonía. La crono del front
            elige entre ellos al momento del tap.
 
 Esquema guardado en cada libro:
-  "_musica": { "resuelto_el": "YYYY-MM-DD", "juez": "gpt-4o-mini" | "mapa" | "semilla",
+  "_musica": { "resuelto_el": "YYYY-MM-DD", "juez": <modelo real del papel "mini"> | "mapa" | "semilla",
                "sinfonia": "…", "candidatos": [ { "id","cancion","artista","album","genero",
                "dur","preview","link","art","armonia","rol","pie","frase_eco" }, … ] }
   (el front solo necesita preview/cancion/artista/link/art; lo demás viste la Tarjeta y el log)
@@ -39,6 +39,7 @@ curaduría espera la Doctrina Kids (S2); la maquinaria le llegará gratis cuando
 
 Uso:
   OPENAI_KEY=… python3 scripts/resolve-musica.py [--solo-ediciones] [--max=N]
+  (con TRIGGUI_IA_PROVEEDOR=claude, la llave es ANTHROPIC_API_KEY)
       [--rutas=a.json,b.json] [--reintentar-dias=30] [--rehacer] [--solo=a,b]
       [--solo-silencios] [--solo-pool] [--sin-armonia] [--armonia-min=3] [--explicar] [--dry-run]
 
@@ -46,6 +47,7 @@ Uso:
 """
 import datetime
 import hashlib
+import importlib.util
 import json
 import os
 import re
@@ -61,9 +63,13 @@ try:
 except Exception:
     pass
 
+# 🧠 C278: un solo lugar para la IA (ia/config.json). Con openai, la misma petición de siempre; con claude, la Messages API.
+_spec_ia = importlib.util.spec_from_file_location("triggui_ia", os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "ia", "ia.py"))
+IA = importlib.util.module_from_spec(_spec_ia)
+_spec_ia.loader.exec_module(IA)
+
 ITUNES = "https://itunes.apple.com/search"
-OPENAI_URL = "https://api.openai.com/v1/chat/completions"
-MODELO = "gpt-4o-mini"
+MODELO = IA.etiqueta("mini")    # 🧠 C278: el papel "mini" de ia/config.json; es también la etiqueta del juez
 TEMPERATURA = 0.1               # consistencia, no creatividad (igual que el juez de videos)
 TOP_N = 5                       # quinteto: previews sobran, que haya de dónde rotar
 CUPO_ARTISTA = 3                # asientos máximos por artista en afines, en todo el catálogo
@@ -147,7 +153,7 @@ def config(argv=None):
     rutas = [r for r in val("--rutas", "contenido_kids.json" if catalogo == "kids" else "contenido.json").split(",") if r]
     solo = [_norm(t).strip() for t in val("--solo", "").split(",") if t.strip()]
     return {
-        "openai": (os.environ.get("OPENAI_API_KEY") or os.environ.get("OPENAI_KEY") or "").strip(),
+        "ia": IA.hay_llave(),   # 🧠 C278: hay llave del proveedor activo (antes: la de OpenAI)
         "catalogo": catalogo,
         "at": (os.environ.get("APPLE_AT") or "").strip(),
         "solo_ed": "--solo-ediciones" in flags,
@@ -411,22 +417,20 @@ def edicion_payload(b):
     }
 
 
-def llm(prompt, esquema, user_json, key):
-    body = json.dumps({
-        "model": MODELO, "temperature": TEMPERATURA,
+def llm(prompt, esquema, user_json, _hay_llave=None):
+    """Una llamada al papel "mini" con JSON estricto. La llave y el proveedor los pone ia/ (C278);
+    el cuarto argumento se conserva por compatibilidad. 401/403/429 → LlmFatal; resto → la excepción tal cual."""
+    payload = {
+        "model": "mini", "temperature": TEMPERATURA,
         "response_format": {"type": "json_schema", "json_schema": esquema},
         "messages": [{"role": "system", "content": prompt},
                      {"role": "user", "content": json.dumps(user_json, ensure_ascii=False)}],
-    }).encode("utf-8")
-    req = urllib.request.Request(OPENAI_URL, data=body, method="POST",
-                                 headers={"Content-Type": "application/json",
-                                          "Authorization": "Bearer " + key})
+    }
     try:
-        with urllib.request.urlopen(req, timeout=90) as r:
-            d = json.loads(r.read().decode("utf-8"))
+        d = IA.chat(payload, timeout=90)
     except urllib.error.HTTPError as e:
         if e.code in (401, 403, 429):
-            raise LlmFatal("OpenAI %d" % e.code)
+            raise LlmFatal("%s %d" % (IA.nombre_proveedor(), e.code))
         raise
     txt = (d.get("choices") or [{}])[0].get("message", {}).get("content", "")
     return json.loads(txt)
@@ -460,7 +464,7 @@ def componer_queries(b, c, st, emergencia=None):
     semb = b.get("_musica_queries")
     if isinstance(semb, list) and any(isinstance(q, str) and q.strip() for q in semb):
         return [q.strip() for q in semb if isinstance(q, str) and q.strip()][:3], [], "semilla"
-    if c["openai"] and not st["llm_apagado"]:
+    if c["ia"] and not st["llm_apagado"]:
         try:
             prompt, esquema = cargar_prompt(RUTA_PROMPT_COMP, RUTA_SCHEMA_COMP, "compositor")
             payload = edicion_payload(b)
@@ -469,7 +473,7 @@ def componer_queries(b, c, st, emergencia=None):
             if emergencia:
                 payload["emergencia"] = {"intento": 2, "puertas_sin_fruto": emergencia,
                     "instruccion": "Esas puertas no dieron piezas disponibles. Propón tres afines COMPLETAMENTE distintas, más concretas (compositor + pieza), instrumentales, de otra época o geografía del mismo universo."}
-            out = llm(prompt, esquema, payload, c["openai"])
+            out = llm(prompt, esquema, payload, c["ia"])
             can = [q.strip() for q in (out.get("canonicas") or []) if isinstance(q, str) and q.strip()][:3]
             afi = [q.strip() for q in (out.get("afines") or []) if isinstance(q, str) and q.strip()][:3]
             if can or afi:
@@ -498,7 +502,7 @@ def armonizar(b, cands, c, st):
     """Capa 2. Devuelve (candidatos_con_armonia, sinfonia)."""
     prompt, esquema = cargar_prompt(RUTA_PROMPT_ARM, RUTA_SCHEMA_ARM, "armonia")
     out = llm(prompt, esquema, {"edicion": edicion_payload(b),
-                                "piezas": candidatos_payload(cands)}, c["openai"])
+                                "piezas": candidatos_payload(cands)}, c["ia"])
     vered = {str(v.get("id")): v for v in (out.get("veredictos") or []) if isinstance(v, dict)}
     if not vered:
         raise Exception("respuesta del juez sin veredictos")
@@ -647,7 +651,7 @@ def resolver_libro(p, c, st):
         base = capa1(mapa_queries(b), c, st.get("usadas"), artistas=st.get("artistas"))
         if base and c["explicar"]:
             print("      (rescate-mapa: %d piezas)" % len(base))
-    if not base and c["openai"] and not st["llm_apagado"] and origen_es_llm(p):
+    if not base and c["ia"] and not st["llm_apagado"] and origen_es_llm(p):
         can2, afi2, _o = componer_queries(b, c, st, emergencia=p["can"] + p["afi"])
         if c["explicar"]:
             print("      (compositor de emergencia: %s)" % " ; ".join(afi2 + can2))
@@ -665,7 +669,7 @@ def resolver_libro(p, c, st):
     origen = p["origen"]
     juez, sinfonia = ("mapa" if origen == "mapa" else "semilla" if origen == "semilla" else "capa1"), ""
     elegidos = base[:TOP_N]
-    if base and c["openai"] and not c["sin_armonia"] and not st["llm_apagado"]:
+    if base and c["ia"] and not c["sin_armonia"] and not st["llm_apagado"]:
         try:
             con_arm, sinfonia = armonizar(b, base, c, st)
             for _y in con_arm:

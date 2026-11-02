@@ -68,7 +68,7 @@ En "reason" explica brevemente POR QUÉ es dentro o fuera, aplicando el principi
 
 export async function judgeOnePhraseVoice(openai, phrase, language, options = {}) {
   const schemas = await loadSchemas();
-  const model = options.model || "gpt-4o-mini";
+  const model = options.model || "mini";   // papel de ia/config.json (C278)
   const temperature = options.temperature ?? 0.1; // Consistencia, no creatividad
 
   const userPrompt = `Idioma de la frase: ${language === "en" ? "English" : "Español"}
@@ -106,7 +106,7 @@ Frase a evaluar:
 ────────────────────────────────────────────────────────────────────────────── */
 
 export async function judgeAllVoiceLayers(openai, contentES, contentEN, book, options = {}) {
-  const model = options.model || "gpt-4o-mini";
+  const model = options.model || "mini";   // papel de ia/config.json (C278)
 
   // Construcción de todos los jobs paralelos
   const jobs = [];
@@ -240,7 +240,7 @@ Mantén:
 Devuelve SOLO el texto de la frase reescrita, sin comillas, sin explicación, sin newlines.`;
 
 export async function regeneratePhrasesByFeedback(openai, anchorsData, failures, contentES, contentEN, options = {}) {
-  const model = options.model || "gpt-4o-mini";
+  const model = options.model || "mini";   // papel de ia/config.json (C278)
   const temperature = options.temperature ?? 0.7;
   let total_tokens = 0;
   let regenerated = 0;

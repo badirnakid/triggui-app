@@ -240,6 +240,8 @@ jobs:
     env:
       TZ: America/Mexico_City
       OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
+      # 🧠 C278: llave de Claude. El proveedor lo decide ia/config.json (hoy openai); con openai esta llave no se usa.
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       # v3.7: Google Books API key (quota 1M/dia vs anonimo 1k/dia)
       # Repository Secret. Consumido por evidence-fetcher.js > fetchGoogle.
       # Si el secret no esta seteado, el fetcher degrada a anonimo sin romper.
@@ -846,6 +848,8 @@ jobs:
         env:
           CATALOG_MODE: ${{ inputs.catalogo || 'adulto' }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
+          # 🧠 C278: el saneador de triggui-content llama por ia/ia.cjs (mismo proveedor y modelo que el resto)
+          TRIGGUI_IA_LIB: ${{ github.workspace }}/ia/ia.cjs
         run: |
           set -euo pipefail
 

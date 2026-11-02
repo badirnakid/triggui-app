@@ -7,11 +7,11 @@
  * principal, los rechazados van a contenido_rejected.json con metadata
  * forense. NADA se destruye — los rechazados son recuperables.
  *
- * Costo: ~$0.0002 por libro auditado. Sagrado: GPT-4o-mini.
+ * Costo: ~$0.0002 por libro auditado. Modelo: el papel "mini" de ia/config.json (C278; hoy GPT-4o-mini).
  *
  * Exit codes:
  *   0 → siempre (excepto error técnico). Workflow continúa.
- *   1 → error técnico (catálogo inválido, OpenAI key faltante, etc.)
+ *   1 → error técnico (catálogo inválido, llave de la IA faltante, etc.)
  *
  * Cambios v2.0 vs v1.2:
  *   - Audita BATCH_SIZE libros en vez de solo libros[0]
@@ -24,24 +24,24 @@
  *   TARGET_AUDIENCE=kids \
  *   CATALOG_PATH=triggui-content/contenido_kids.json \
  *   BATCH_SIZE=20 \
- *   OPENAI_API_KEY=sk-... \
+ *   OPENAI_API_KEY=… (o ANTHROPIC_API_KEY=… con TRIGGUI_IA_PROVEEDOR=claude) \
  *   node audience-blocker.cjs
  */
 "use strict";
 
 const fs = require("node:fs");
 const path = require("node:path");
+const IA = require("../../ia/ia.cjs");   // C278: un solo lugar para la IA (proveedor, papel y llave)
 
 const VERSION = "2.0";
 const TARGET = String(process.env.TARGET_AUDIENCE || "adult").trim().toLowerCase();
 const CATALOG_PATH = process.env.CATALOG_PATH;
-const OPENAI_KEY = process.env.OPENAI_API_KEY;
 const BATCH_SIZE = Math.max(1, parseInt(process.env.BATCH_SIZE || "1", 10));
 const CONFIDENCE_THRESHOLD = 0.6;
-const MODEL = "gpt-4o-mini";
+const MODEL = "mini";   // papel de ia/config.json (C278)
 
 if (!CATALOG_PATH) { console.error("❌ AUDIENCE_BLOCKER: falta CATALOG_PATH"); process.exit(1); }
-if (!OPENAI_KEY)   { console.error("❌ AUDIENCE_BLOCKER: falta OPENAI_API_KEY"); process.exit(1); }
+if (!IA.hayLlave()) { console.error(`❌ AUDIENCE_BLOCKER: falta ${IA.proveedor() === "claude" ? "ANTHROPIC_API_KEY" : "OPENAI_API_KEY"}`); process.exit(1); }
 if (!["kids","adult"].includes(TARGET)) {
   console.error(`❌ AUDIENCE_BLOCKER: TARGET_AUDIENCE inválido: ${TARGET}`);
   process.exit(1);
@@ -170,24 +170,20 @@ async function auditOne(libro) {
   const user = buildUserPrompt(titulo, autor, sinopsis, TARGET);
 
   try {
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${OPENAI_KEY}` },
-      body: JSON.stringify({
-        model: MODEL,
-        temperature: 0,
-        response_format: { type: "json_object" },
-        max_tokens: 150,
-        messages: [
-          { role: "system", content: SYSTEM },
-          { role: "user", content: user }
-        ]
-      })
+    const res = await IA.chatCompat({   // C278: misma petición con openai; con claude, la Messages API
+      model: MODEL,
+      temperature: 0,
+      response_format: { type: "json_object" },
+      max_tokens: 150,
+      messages: [
+        { role: "system", content: SYSTEM },
+        { role: "user", content: user }
+      ]
     });
     if (!res.ok) {
       const t = await res.text();
       return { titulo, autor, pass: true, degraded: true,
-        reason: `OpenAI ${res.status}: ${t.slice(0,100)}`, confidence: null, detected_audience: "unknown" };
+        reason: `${IA.nombreProveedor()} ${res.status}: ${t.slice(0,100)}`, confidence: null, detected_audience: "unknown" };
     }
     const data = await res.json();
     const raw = data.choices?.[0]?.message?.content || "{}";

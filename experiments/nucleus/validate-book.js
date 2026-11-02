@@ -36,6 +36,7 @@ import { parse } from "csv-parse/sync";
 import { resolverIdentidad, tokens as tokensId, tituloPrincipal as principalId, autorCoincide } from "./identidad-libro.mjs";
 
 import { fetchEvidence, selectBestCover, buildEnrichedBookData, checkImageURL as checkImageURLEF } from "./evidence-fetcher.js";
+import IA from "../../ia/ia.cjs";   // C278: un solo lugar para la IA (proveedor, papel y llave)
 
 const INPUT_MODE = String(process.env.INPUT_MODE || "").trim().toLowerCase();
 const SELECTOR_MODE = String(process.env.SELECTOR_MODE || "").trim().toLowerCase();
@@ -46,7 +47,6 @@ const FORZADO = LIBRO_INPUT_CRUDO.startsWith("!");
 const LIBRO_INPUT = LIBRO_INPUT_CRUDO.replace(/^!\s*/, "");
 const CATALOG_SCOPE = String(process.env.CATALOG_SCOPE || "none").trim().toLowerCase();
 const CATALOG_CSV_PATH_ENV = String(process.env.CATALOG_CSV_PATH || "").trim();
-const OPENAI_KEY = String(process.env.OPENAI_KEY || "").trim();
 
 // 🌒 Triggui Kids: detección de modo catálogo para fallback CSV en direct_book
 const CATALOG_MODE_VB = String(process.env.CATALOG_MODE || "adulto").trim().toLowerCase();
@@ -429,12 +429,12 @@ async function appendDebugEvent(stage, payload = {}) {
 }
 
 async function callOpenAIJson(system, user, temperature = 0.3, metadata = {}) {
-  if (!OPENAI_KEY) {
-    throw new Error("OPENAI_KEY no disponible para selección por trigger");
+  if (!IA.hayLlave()) {
+    throw new Error(`${IA.nombreLlave()} no disponible para selección por trigger`);
   }
 
   const payload = {
-    model: "gpt-4o-mini",
+    model: "mini",   // papel de ia/config.json (C278)
     temperature,
     top_p: 0.9,
     response_format: { type: "json_object" },
@@ -444,14 +444,7 @@ async function callOpenAIJson(system, user, temperature = 0.3, metadata = {}) {
     ]
   };
 
-  const res = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${OPENAI_KEY}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(payload)
-  });
+  const res = await IA.chatCompat(payload);   // C278: misma petición con openai; con claude, la Messages API
 
   if (!res.ok) {
     const text = await res.text().catch(() => "");
@@ -461,7 +454,7 @@ async function callOpenAIJson(system, user, temperature = 0.3, metadata = {}) {
       body_preview: text.slice(0, 1200),
       user_preview: user.slice(0, 1200)
     });
-    throw new Error(`OpenAI error ${res.status}: ${text.slice(0, 300)}`);
+    throw new Error(`${IA.nombreProveedor()} error ${res.status}: ${text.slice(0, 300)}`);
   }
 
   const data = await res.json();
@@ -474,7 +467,7 @@ async function callOpenAIJson(system, user, temperature = 0.3, metadata = {}) {
       raw_content: content,
       user_preview: user.slice(0, 1200)
     });
-    throw new Error("OpenAI devolvió contenido no parseable como JSON");
+    throw new Error(`${IA.nombreProveedor()} devolvió contenido no parseable como JSON`);
   }
 
   return {
@@ -1276,7 +1269,7 @@ function scoreFallbackCandidate(row, triggerAnalysis) {
 }
 
 async function rerankCandidatesWithAI(triggerAnalysis, candidates, stageLabel) {
-  if (!OPENAI_KEY || !candidates.length) return candidates;
+  if (!IA.hayLlave() || !candidates.length) return candidates;
 
   const system = `
 Eres el reranker semántico de Triggui.

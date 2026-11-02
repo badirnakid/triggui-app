@@ -9,16 +9,16 @@ cada lunes, y a mano las corridas de laboratorio.
 Dos capas por libro:
   Capa 1 · VETO canon (YouTube Data API v3): 1 search.list (8 resultados, 100 u) + 1 videos.list (1 u).
            Se quedan los anclados (apellido o título) con puntaje ≥ 4. Hasta 8.
-  Capa 2 · ARMONÍA (gpt-4o-mini, temperatura 0.1, JSON estricto): el juez recibe la edición tal como
+  Capa 2 · ARMONÍA (papel "mini" de ia/config.json, temperatura 0.1, JSON estricto): el juez recibe la edición tal como
            la ve el lector (frases con rol, hallazgo, gesto, voz del autor, ánimo) y la ficha completa
            de cada candidato; devuelve armonía 0–10, rol sinfónico, tipo, relación, idioma, frase_eco,
            pie de video y descarte. El prompt y el esquema viven en triggui-content/prompts/
            (el curador edita ahí; este script obedece).
   Terna  · el de mayor armonía, luego el mejor de un rol distinto, luego un tercer rol.
-           Sin llave de OpenAI (o con --sin-armonia) cae a capa 1 sin romper nada.
+           Sin llave del proveedor de IA (o con --sin-armonia) cae a capa 1 sin romper nada.
 
 Esquema guardado en cada libro:
-  "_video": { "resuelto_el": "YYYY-MM-DD", "juez": "gpt-4o-mini" | "capa1",
+  "_video": { "resuelto_el": "YYYY-MM-DD", "juez": <modelo real del papel "mini"> | "capa1",
               "sinfonia": "…", "candidatos": [ { "id","titulo","canal","dur",
               "armonia","rol","tipo","relacion","idioma","frase_eco","pie" }, … ] }
   (el front solo lee candidatos[].id; lo demás es para la Tarjeta v15.2 y para el log)
@@ -30,6 +30,7 @@ resuelto y sale 0.
 
 Uso:
   YT_API_KEY=… OPENAI_KEY=… python3 scripts/resolve-videos.py [--solo-ediciones] [--max=N]
+  (con TRIGGUI_IA_PROVEEDOR=claude, la llave es ANTHROPIC_API_KEY)
       [--rutas=a.json,b.json] [--reintentar-dias=30] [--rehacer] [--sin-armonia]
       [--armonia-min=3] [--explicar] [--dry-run]
 
@@ -42,6 +43,7 @@ Uso:
 """
 import datetime
 import html
+import importlib.util
 import json
 import os
 import re
@@ -57,9 +59,13 @@ try:
 except Exception:
     pass
 
+# 🧠 C278: un solo lugar para la IA (ia/config.json). Con openai, la misma petición de siempre; con claude, la Messages API.
+_spec_ia = importlib.util.spec_from_file_location("triggui_ia", os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "ia", "ia.py"))
+IA = importlib.util.module_from_spec(_spec_ia)
+_spec_ia.loader.exec_module(IA)
+
 API = "https://www.googleapis.com/youtube/v3/"
-OPENAI_URL = "https://api.openai.com/v1/chat/completions"
-MODELO = "gpt-4o-mini"          # sagrado: el mismo del pipeline
+MODELO = IA.etiqueta("mini")    # sagrado: el mismo papel del pipeline; es también la etiqueta del juez (C278)
 TEMPERATURA = 0.1               # consistencia, no creatividad (igual que el juez de voz)
 ID_RE = re.compile(r"^[A-Za-z0-9_-]{11}$")
 PALABRAS = ("entrevista", "interview", "talk", "charla", "conversat", "ted", "conferencia", "lecture")
@@ -98,7 +104,7 @@ def config(argv=None):
         rutas = [p for p in ("contenido.json", "contenido_manual.json") if os.path.exists(p)]
     return {
         "key": os.environ.get("YT_API_KEY", "").strip(),
-        "openai": (os.environ.get("OPENAI_API_KEY") or os.environ.get("OPENAI_KEY") or "").strip(),
+        "ia": IA.hay_llave(),   # 🧠 C278: hay llave del proveedor activo (antes: la de OpenAI)
         "solo_ed": "--solo-ediciones" in flags,
         "dry": "--dry-run" in flags,
         "rehacer": "--rehacer" in flags,
@@ -360,25 +366,23 @@ def candidatos_payload(cands):
              "subtitulos": c["_subtitulos"], "vistas": c["_vistas"], "puntaje_base": c["_base"]} for c in cands]
 
 
-def llm(prompt, esquema, user_json, key):
-    """Una llamada a gpt-4o-mini con JSON estricto. 401/402/403 → LlmFatal; resto → Exception."""
-    body = json.dumps({
-        "model": MODELO, "temperature": TEMPERATURA,
+def llm(prompt, esquema, user_json, _hay_llave=None):
+    """Una llamada al papel "mini" con JSON estricto. 401/402/403 → LlmFatal; resto → Exception.
+    La llave y el proveedor los pone ia/ (C278); el cuarto argumento se conserva por compatibilidad."""
+    payload = {
+        "model": "mini", "temperature": TEMPERATURA,
         "messages": [{"role": "system", "content": prompt}, {"role": "user", "content": user_json}],
         "response_format": {"type": "json_schema", "json_schema": esquema},
-    }).encode("utf-8")
-    req = urllib.request.Request(OPENAI_URL, data=body, method="POST",
-                                 headers={"Content-Type": "application/json", "Authorization": "Bearer " + key})
+    }
     try:
-        with urllib.request.urlopen(req, timeout=90) as r:
-            resp = json.load(r)
+        resp = IA.chat(payload, timeout=90)
     except urllib.error.HTTPError as e:
         cuerpo = ""
         try:
             cuerpo = e.read().decode("utf-8", "replace")[:200]
         except Exception:
             pass
-        msg = "OpenAI HTTP %d %s" % (e.code, cuerpo)
+        msg = "%s HTTP %d %s" % (IA.nombre_proveedor(), e.code, cuerpo)
         if e.code in (401, 402, 403):
             raise LlmFatal(msg)
         raise Exception(msg)
@@ -400,7 +404,7 @@ def armonizar(b, cands, c, st):
     pedido = {"edicion": edicion_payload(b), "candidatos": candidatos_payload(cands)}
     user_json = json.dumps(pedido, ensure_ascii=False)
     st["llm_llamadas"] += 1
-    out = llm(prompt, esquema, user_json, c["openai"])
+    out = llm(prompt, esquema, user_json, c["ia"])
     veredictos = out.get("veredictos") if isinstance(out, dict) else None
     if not isinstance(veredictos, list):
         raise Exception("respuesta del juez sin veredictos")
@@ -572,7 +576,7 @@ def resolver_libro(b, c, st, nombre):
             print("      · base %2d · %5.1f min · %s · %s" % (x["_base"], x["dur"] / 60, x["canal"][:24], x["titulo"][:56]))
     juez, sinfonia = "capa1", ""
     elegidos = base[:TOP_N]
-    if base and c["openai"] and not c["sin_armonia"] and not st["llm_apagado"]:
+    if base and c["ia"] and not c["sin_armonia"] and not st["llm_apagado"]:
         try:
             con_arm, sinfonia = armonizar(b, base, c, st)
             juez = MODELO
@@ -696,9 +700,9 @@ def main(argv=None):
     st = {"busquedas": 0, "con_video": 0, "sin_video": 0, "cache": 0, "errores": 0, "fatal": "", "escritos": [],
           "llm_llamadas": 0, "llm_errores": 0, "llm_omitidos": 0, "llm_apagado": ""}
     cache = {}
-    armonia = "capa1 (sin llave OpenAI)" if not c["openai"] else ("apagada (--sin-armonia)" if c["sin_armonia"] else MODELO)
+    armonia = ("capa1 (sin llave %s)" % IA.nombre_proveedor()) if not c["ia"] else ("apagada (--sin-armonia)" if c["sin_armonia"] else MODELO)
     origen = ""
-    if c["openai"] and not c["sin_armonia"] and not c["dry"]:
+    if c["ia"] and not c["sin_armonia"] and not c["dry"]:
         try:
             origen = " · prompt desde " + cargar_prompt()[2]
         except LlmFatal as e:

@@ -114,7 +114,7 @@ Autor: ${autor}${tagline ? `\nContexto editorial: "${tagline}"` : ""}
 
   try {
     const chat = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "mini",   // papel de ia/config.json (C278)
       temperature: 0.3,
       messages: [
         { role: "system", content: systemPrompt },

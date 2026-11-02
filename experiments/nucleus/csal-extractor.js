@@ -79,6 +79,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import fs from "node:fs/promises";
+import IA from "../../ia/ia.cjs";   // C278: para escribir el modelo real en los registros
 
 // ─── Carga de schemas (cache) ─────────────────────────────────────────────────
 const SCHEMA_URL = new URL("./edition-nucleus.schema.json", import.meta.url);
@@ -536,8 +537,8 @@ async function extractCSALWithModel(openai, book, groundTruth, anchorsData, cont
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export async function extractCSAL(openai, book, groundTruth, anchorsData, contentES, options = {}) {
-  const modelMini = options.model || options.modelMini || "gpt-4o-mini";
-  const modelMain = options.modelMain || "gpt-4o";
+  const modelMini = options.model || options.modelMini || "mini";   // papeles de ia/config.json (C278)
+  const modelMain = options.modelMain || "grande";
   const previousSituations = Array.isArray(options.previousSituations)
     ? options.previousSituations
     : [];
@@ -560,14 +561,14 @@ export async function extractCSAL(openai, book, groundTruth, anchorsData, conten
     }
 
     const validation = validateCSALShape(firstResult.cleaned);
-    attempts.push({ model: modelMini, valid: validation.valid, reason: validation.reason });
+    attempts.push({ model: IA.etiqueta(modelMini), valid: validation.valid, reason: validation.reason });
 
     if (validation.valid) {
       // ✅ Salió nivel dios con mini — caso ideal y económico
       return {
         data: firstResult.cleaned,
         usage: cumulativeUsage,
-        model: firstResult.model || modelMini,
+        model: firstResult.model || IA.etiqueta(modelMini),
         escalated: false,
         escalateReason: null,
         attempts
@@ -576,7 +577,7 @@ export async function extractCSAL(openai, book, groundTruth, anchorsData, conten
     // No es válido: caemos al escalate
   } catch (err) {
     firstError = err;
-    attempts.push({ model: modelMini, valid: false, reason: `exception: ${err.message}` });
+    attempts.push({ model: IA.etiqueta(modelMini), valid: false, reason: `exception: ${err.message}` });
   }
 
   // ── Intento 2: escalate a gpt-4o (modelo full) ───────────────────────────────
@@ -595,14 +596,14 @@ export async function extractCSAL(openai, book, groundTruth, anchorsData, conten
     }
 
     const validation2 = validateCSALShape(secondResult.cleaned);
-    attempts.push({ model: modelMain, valid: validation2.valid, reason: validation2.reason });
+    attempts.push({ model: IA.etiqueta(modelMain), valid: validation2.valid, reason: validation2.reason });
 
     if (validation2.valid) {
       // ✅ Salió nivel dios con escalate
       return {
         data: secondResult.cleaned,
         usage: cumulativeUsage,
-        model: secondResult.model || modelMain,
+        model: secondResult.model || IA.etiqueta(modelMain),
         escalated: true,
         escalateReason: attempts[0].reason,
         attempts
@@ -610,7 +611,7 @@ export async function extractCSAL(openai, book, groundTruth, anchorsData, conten
     }
   } catch (err) {
     secondError = err;
-    attempts.push({ model: modelMain, valid: false, reason: `exception: ${err.message}` });
+    attempts.push({ model: IA.etiqueta(modelMain), valid: false, reason: `exception: ${err.message}` });
   }
 
   // ── Ambos modelos fallaron — degradación elegante ────────────────────────────

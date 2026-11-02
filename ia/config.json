@@ -1,0 +1,33 @@
+{
+  "_nota": "Un solo lugar para la IA de Triggui (C278, 2 de noviembre de 2026). Cada llamada pide un papel (mini o grande) y aquí se decide qué modelo lo hace con cada proveedor. El proveedor se cambia aquí o con la variable TRIGGUI_IA_PROVEEDOR (openai | claude). Los nombres viejos de OpenAI se aceptan como alias del papel.",
+  "proveedor": "openai",
+  "papeles": {
+    "mini": {
+      "openai": "gpt-4o-mini",
+      "claude": "claude-haiku-5-5",
+      "claude_thinking": { "type": "disabled" }
+    },
+    "grande": {
+      "openai": "gpt-4o",
+      "claude": "claude-sonnet-5-5",
+      "claude_thinking": { "type": "between_tools" }
+    }
+  },
+  "alias": {
+    "gpt-4o-mini": "mini",
+    "gpt-4o-mini-2024-07-18": "mini",
+    "gpt-4o": "grande",
+    "gpt-4o-2024-08-06": "grande",
+    "gpt-4o-2024-11-20": "grande"
+  },
+  "openai": {
+    "url": "https://api.openai.com/v1/chat/completions"
+  },
+  "claude": {
+    "url": "https://api.anthropic.com/v1/messages",
+    "version": "2023-06-01",
+    "max_tokens_por_omision": 8192,
+    "timeout_ms": 600000,
+    "reintentos": 2
+  }
+}

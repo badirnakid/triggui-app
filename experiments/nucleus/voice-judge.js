@@ -70,7 +70,7 @@ async function judgeOne(openai, card, book, model) {
 }
 
 export async function judgeBothVoices(openai, cardES, cardEN, book, options = {}) {
-  const model = options.model || "gpt-4o-mini";
+  const model = options.model || "mini";   // papel de ia/config.json (C278)
   const [es, en] = await Promise.all([
     judgeOne(openai, cardES, book, model),
     judgeOne(openai, cardEN, book, model)

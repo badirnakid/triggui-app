@@ -51,6 +51,7 @@ import path from "node:path";
 import { randomInt, createHash } from "node:crypto";
 import { parse } from "csv-parse/sync";
 import OpenAI from "openai";
+import IA from "../../ia/ia.cjs";   // 🧠 C278: un solo lugar para la IA (ia/config.json)
 // v3.7 Capa 3: walker puro de sanitización (única fuente de verdad)
 import { sanitizeObject, formatStats } from "./sanitize-walker.js";
 // 🌒 detector de truncamiento puro (única fuente de verdad — reglas v4.3 reubicadas).
@@ -127,9 +128,10 @@ import {
   deriveChronobiologyOptimal
 } from "./lens-compatibility-scorer.js";
 
+// 🧠 C278: el proveedor y los modelos viven en ia/config.json. Con openai, el mismo SDK de siempre; con claude, la Messages API.
+if (!IA.hayLlave()) { console.log(`🔕 Sin ${IA.nombreLlave()} (proveedor ${IA.proveedor()})`); process.exit(0); }
 const KEY = process.env.OPENAI_KEY;
-if (!KEY) { console.log("🔕 Sin OPENAI_KEY"); process.exit(0); }
-const openai = new OpenAI({ apiKey: KEY });
+const openai = IA.crearCliente({ sdk: KEY ? new OpenAI({ apiKey: KEY }) : null });
 
 // ═══════════════════════════════════════════════════════════════════════
 // 🌒 CATALOG_MODE — soporte multi-catálogo Triggui Kids
@@ -145,8 +147,8 @@ console.log(IS_KIDS
   : "🌒 CATALOG_MODE=adulto — Triggui (default)");
 
 const CFG = {
-  modelMini: process.env.TRIGGUI_MODEL || "gpt-4o-mini",
-  modelBig: process.env.TRIGGUI_MODEL_BIG || "gpt-4o",
+  modelMini: process.env.TRIGGUI_MODEL || "mini",     // papel de ia/config.json (hoy gpt-4o-mini con openai)
+  modelBig: process.env.TRIGGUI_MODEL_BIG || "grande", // papel de ia/config.json (hoy gpt-4o con openai)
   temperature: Number(process.env.TRIGGUI_TEMP || 0.7),
   catalogMode: CATALOG_MODE,
   files: {
@@ -164,6 +166,7 @@ const CFG = {
   cronoEnabled: process.env.TRIGGUI_CRONO_ENABLED !== "false",
   groundingJudgeMinScore: Number(process.env.TRIGGUI_JUDGE_MIN || 0.55)
 };
+console.log(`🧠 IA: proveedor ${IA.proveedor()} · mini=${IA.etiqueta(CFG.modelMini)} · grande=${IA.etiqueta(CFG.modelBig)}`);
 
 // ⭐ STEP 3 ⭐ — INPUTS.lens ahora se rellena async en main() via composeLensSystemBlock
 const INPUTS = {
@@ -452,7 +455,7 @@ async function processBook(book, inputs, inputsSnapshot) {
   );
   elapsedByPhase.anchors = Date.now() - tF1;
   tokensByPhase.anchors = anchorsRes.usage?.total_tokens || 0;
-  modelsUsed.add(anchorsRes.model || CFG.modelMini);
+  modelsUsed.add(IA.etiqueta(anchorsRes.model || CFG.modelMini));
   llmCallsCount += 1;
   const anchorsData = anchorsRes.data;
   assertShape(anchorsData, [
@@ -687,7 +690,7 @@ async function processBook(book, inputs, inputsSnapshot) {
   );
   elapsedByPhase.content_es = Date.now() - tF3;
   tokensByPhase.content_es = contentESRes.usage?.total_tokens || 0;
-  modelsUsed.add(contentESRes.model || CFG.modelMini);
+  modelsUsed.add(IA.etiqueta(contentESRes.model || CFG.modelMini));
   llmCallsCount += 1;
   const contentES = contentESRes.data;
   assertShape(contentES, [
@@ -703,7 +706,7 @@ async function processBook(book, inputs, inputsSnapshot) {
   );
   elapsedByPhase.judge_es = Date.now() - tF4;
   tokensByPhase.judge_es = judgeESRes.usage?.total_tokens || 0;
-  modelsUsed.add(judgeESRes.model || CFG.modelMini);
+  modelsUsed.add(IA.etiqueta(judgeESRes.model || CFG.modelMini));
   llmCallsCount += (judgeESRes.attempts || 1);
   let judgeES = judgeESRes.data;
   assertShape(judgeES, ["grounded_score", "could_apply_to_any_book", "reason"], "judgeGroundingES");
@@ -736,13 +739,13 @@ async function processBook(book, inputs, inputsSnapshot) {
     console.log(`   👨‍⚖️ Judge ES retry: score=${fmt(judgeES.grounded_score)}`);
 
     if (judgeES.grounded_score < CFG.groundingJudgeMinScore) {
-      console.log(`   🚀 Escalar ES a ${CFG.modelBig}`);
+      console.log(`   🚀 Escalar ES a ${IA.etiqueta(CFG.modelBig)}`);
       contentESRes = await retryOnce(
         () => extractContentES(openai, book, groundTruthMeta.ground_truth, anchorsData, inputs.lens, { model: CFG.modelBig, temperature: 0.5, crono }),
         "extractContentES_escalate"
       );
       tokensByPhase.content_es_escalate = contentESRes.usage?.total_tokens || 0;
-      modelsUsed.add(CFG.modelBig);
+      modelsUsed.add(IA.etiqueta(CFG.modelBig));
       llmCallsCount += 1;
     }
   }
@@ -761,7 +764,7 @@ async function processBook(book, inputs, inputsSnapshot) {
   );
   elapsedByPhase.content_en = Date.now() - tF5;
   tokensByPhase.content_en = contentENRes.usage?.total_tokens || 0;
-  modelsUsed.add(contentENRes.model || CFG.modelMini);
+  modelsUsed.add(IA.etiqueta(contentENRes.model || CFG.modelMini));
   llmCallsCount += 1;
   const contentENFinalRaw = contentENRes.data;
   assertShape(contentENFinalRaw, [
@@ -1513,7 +1516,7 @@ Responde JSON:
     " chars con TODO el contexto previo preservado." + groundingBlock;
 
   const res = await openaiClient.chat.completions.create({
-    model: "gpt-4o-mini",
+    model: "mini",
     temperature: 0,
     max_tokens: 400,
     response_format: { type: "json_object" },

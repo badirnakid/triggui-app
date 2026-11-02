@@ -326,7 +326,7 @@ function anchorsUserPrompt(book, groundTruth, lens, previousHues = []) {
 
 export async function extractAnchors(openai, book, groundTruth, lens = "", options = {}) {
   const schemas = await loadSchemas();
-  const model = options.model || "gpt-4o-mini";
+  const model = options.model || "mini";   // papel de ia/config.json (C278)
   // 🌒 FASE C: temperature alta para creatividad cuántica (default 0.85, antes 0.5)
   const temperature = options.temperature ?? 0.85;
   const previousHues = Array.isArray(options.previousHues) ? options.previousHues : [];
@@ -1059,7 +1059,7 @@ async function createWithLengthRetry(openai, params, label, tokenLadder = [6000,
 export async function extractContentES(openai, book, groundTruth, anchorsData, lens = "", options = {}) {
   const schemas = await loadSchemas();
   const crono = options.crono || cronobioContext();
-  const model = options.model || "gpt-4o-mini";
+  const model = options.model || "mini";   // papel de ia/config.json (C278)
   const temperature = options.temperature ?? 0.7;
 
 
@@ -1440,7 +1440,7 @@ BEFORE returning, apply the SELF-VALIDATION PROTOCOL from the system prompt.`;
 
 export async function extractContentEN(openai, book, groundTruth, anchorsData, cardES, lens = "", options = {}) {
   const schemas = await loadSchemas();
-  const model = options.model || "gpt-4o-mini";
+  const model = options.model || "mini";   // papel de ia/config.json (C278)
   const temperature = options.temperature ?? 0.7;
 
 
@@ -1583,7 +1583,7 @@ async function callJudgeOnce(openai, schemas, model, groundTruth, snippets, lang
 
 export async function judgeGrounding(openai, groundTruth, content, options = {}) {
   const schemas = await loadSchemas();
-  const model = options.model || "gpt-4o-mini";
+  const model = options.model || "mini";   // papel de ia/config.json (C278)
   const language = options.language === "en" ? "en" : "es";
   const maxAttempts = Number(options.maxAttempts || 3);
   const backoffMs = Array.isArray(options.backoffMs) ? options.backoffMs : [0, 2000, 4000];
@@ -1763,7 +1763,7 @@ export async function judgeHighlightCoherence(openai, highlightSegments, options
         reason: "no_highlights_to_judge — pipeline did not produce highlight segments for evaluation."
       },
       usage: null,
-      model: options.model || "gpt-4o-mini",
+      model: options.model || "mini",
       degraded: false,
       attempts: 0,
       language: options.language || "es"
@@ -1772,7 +1772,7 @@ export async function judgeHighlightCoherence(openai, highlightSegments, options
 
 
   const schemas = await loadSchemas();
-  const model = options.model || "gpt-4o-mini";
+  const model = options.model || "mini";   // papel de ia/config.json (C278)
   const language = options.language === "en" ? "en" : "es";
   const maxAttempts = Number(options.maxAttempts || 3);
   const backoffMs = Array.isArray(options.backoffMs) ? options.backoffMs : [0, 2000, 4000];
