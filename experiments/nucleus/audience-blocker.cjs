@@ -10,13 +10,16 @@
  * Costo: ~$0.0002 por libro auditado. Modelo: el papel "mini" de ia/config.json (C278; hoy GPT-4o-mini).
  *
  * Exit codes:
- *   0 → siempre (excepto error técnico). Workflow continúa.
- *   1 → error técnico (catálogo inválido, llave de la IA faltante, etc.)
+ *   0 → el lote quedó auditado (o, con adultos, error técnico). Workflow continúa.
+ *   1 → error técnico (catálogo inválido, llave de la IA faltante, etc.) o, en Niños, algún libro sin veredicto.
  *
  * v2.1 (C278, 2 de noviembre de 2026) — en Niños, ningún libro pasa sin veredicto:
  *   - si el juez no responde, se niega (refusal o content_filter), se corta, devuelve JSON inválido o sin
- *     «matches» booleano, o una confianza fuera de 0 a 1, el libro va a cuarentena con la razón «juez no
- *     disponible». Con adultos queda como antes (pasa como degradado), porque ahí el riesgo es al revés.
+ *     «matches» booleano, o una confianza fuera de 0 a 1, la corrida se detiene con exit 1 SIN TOCAR el
+ *     catálogo: el libro nuevo no se publica y los ya publicados que revisa el lote quedan como estaban (el
+ *     lote es de 20 en las corridas a mano). Mandarlos a cuarentena despublicaría libros buenos por una caída
+ *     de la API (segunda pasada de C300). Un error inesperado en Niños también detiene la corrida.
+ *   - Con adultos queda como antes (pasa como degradado), porque ahí el riesgo es al revés.
  *   - los rechazos del modelo se cuentan aparte en el log.
  *   El rechazo es más probable justo con el contenido que este juez existe para frenar (revisión de C300).
  *
@@ -240,6 +243,7 @@ function getRejectedPath(catalogPath) {
     const pass = [];
     const fail = [];
     const degraded = [];
+    const sinVeredicto = [];
     let refusals = 0;
 
     console.log(``);
@@ -252,18 +256,10 @@ function getRejectedPath(catalogPath) {
       const r = await auditOne(libro);
       if (r.refusal) refusals++;
       if (r.degraded && TARGET === "kids") {
-        // C278: en Niños, sin veredicto no hay publicación. La cuarentena es recuperable.
-        console.log(`         🚫 JUEZ NO DISPONIBLE (${r.reason}) — a cuarentena: en Niños nada pasa sin veredicto`);
-        libro._rejected = {
-          timestamp: new Date().toISOString(),
-          target_audience: TARGET,
-          detected_audience: r.detected_audience,
-          reason: `juez no disponible: ${r.reason}`,
-          confidence: null,
-          blocker_version: VERSION
-        };
+        // C278: en Niños, sin veredicto no hay publicación, pero tampoco se mueve nada: la corrida se detiene abajo.
+        console.log(`         🚫 JUEZ NO DISPONIBLE (${r.reason})`);
+        sinVeredicto.push({ titulo, autor, reason: r.reason });
         degraded.push(libro);
-        fail.push(libro);
       } else if (r.degraded) {
         console.log(`         🟡 DEGRADED (${r.reason}) — pasando por seguridad`);
         degraded.push(libro);
@@ -292,10 +288,17 @@ function getRejectedPath(catalogPath) {
     console.log(`   ❌ QUARANTINE:  ${fail.length}/${N}`);
     if (degraded.length > 0) {
       console.log(TARGET === "kids"
-        ? `   🚫 SIN VEREDICTO: ${degraded.length} (a cuarentena; en Niños nada pasa sin veredicto)`
+        ? `   🚫 SIN VEREDICTO: ${degraded.length}`
         : `   🟡 DEGRADED:    ${degraded.length} (errores técnicos, pasaron por seguridad)`);
     }
     if (refusals > 0) console.log(`   🙅 RECHAZOS DEL MODELO: ${refusals}`);
+
+    if (TARGET === "kids" && sinVeredicto.length > 0) {
+      console.error(``);
+      console.error(`🚫 AUDIENCE_BLOCKER: en Niños, ${sinVeredicto.length} libro(s) sin veredicto del juez. La corrida se detiene (exit 1) sin tocar el catálogo: no se publica nada y lo ya publicado queda como estaba.`);
+      sinVeredicto.forEach((b, i) => console.error(`   ${i + 1}. "${b.titulo}" — ${b.autor}: ${b.reason}`));
+      process.exit(1);
+    }
 
     if (fail.length === 0) {
       console.log(``);
@@ -357,6 +360,11 @@ function getRejectedPath(catalogPath) {
   } catch (e) {
     console.error(`❌ AUDIENCE_BLOCKER error inesperado: ${e.message}`);
     console.error(e.stack);
+    if (TARGET === "kids") {
+      // C278: en Niños nada pasa sin veredicto; la corrida se detiene sin tocar el catálogo.
+      console.error(`🚫 En Niños la corrida se detiene (exit 1): nada pasa sin veredicto.`);
+      process.exit(1);
+    }
     console.log(`⚠️  Degradación elegante — dejando pasar.`);
     process.exit(0);
   }
