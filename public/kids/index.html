@@ -10249,7 +10249,8 @@ bootTriggui();
   var _vuelve=0, _trans=0, _quieto=0, _finT=0, _tocaT=0, _tocaDesde=0;
   // Solo se toca cuando se ve entero: los toques vuelven cuando su opacidad calculada llega a 1 (nunca a medio fundido).
   function devuelveToques(){ clearTimeout(_tocaT); _tocaT=0;
-    if(bt.parentNode!==document.body || bt.classList.contains('tg-apartado') || Date.now()<_tocaDesde) return;
+    if(bt.parentNode!==document.body || bt.classList.contains('tg-apartado')) return;
+    if(Date.now()<_tocaDesde){ _tocaT=setTimeout(devuelveToques, _tocaDesde-Date.now()+16); return; }
     if(+getComputedStyle(bt).opacity>=0.95) bt.style.pointerEvents=''; else _tocaT=setTimeout(devuelveToques, 80); }
   // El deslizamiento (tg-colocado) se arma con UN solo temporizador: nunca antes de 60 ms tras colocarse ni antes de que
   // pase 1 s sin giros ni cambios de tamaño, para que lo que se reacomoda tras girar nunca se deslice encima del contenido.
@@ -10300,7 +10301,8 @@ bootTriggui();
     bt.style.top='calc(env(safe-area-inset-top, 0px) + 60px)'; bt.style.right='16px';
     clearTimeout(_finT); _finT=0; clearTimeout(_tocaT); _tocaT=0; _tocaDesde=0;
     if(venia){ bt.style.transition='none'; bt.style.opacity='0'; bt.style.pointerEvents='none'; void bt.offsetWidth;   // mientras no se ve, tampoco se toca
-      bt.style.transition='opacity 500ms cubic-bezier(0.19, 1, 0.22, 1) 550ms'; bt.style.opacity='1'; _tocaDesde=Date.now()+1150;
+      bt.style.transition='opacity 500ms cubic-bezier(0.19, 1, 0.22, 1) 550ms'; bt.style.opacity='1'; _tocaDesde=Date.now()+600;
+      _tocaT=setTimeout(devuelveToques, 600);   // se toca en cuanto se ve entero (opacidad 0.95, hacia los 750 ms), no hasta los 1150
       _finT=setTimeout(function(){ _finT=0; if(bt.parentNode===document.body){ bt.style.transition=''; devuelveToques(); } }, 1150); }
     colocado=false; clearTimeout(_vuelve); _vuelve=0; sinTransicion(0); coloca(); pintaSpans(); repaintHome();
     setTimeout(pintaSpans, 300); setTimeout(pintaSpans, 900);
