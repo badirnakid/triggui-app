@@ -2364,7 +2364,8 @@ html[data-mode] #barraMagicaOverlay.bm-corte *:not(.bm-skip-indicator) {
   transition: opacity 90ms ease !important;
 }
 /* Ya colocado sobre el cuarto bloque: si cambia de esquina (14 o 6 px) se desliza, y al volver de apartado entra con un
-   fundido corto, cuando lo que se iba ya se fue. La primera colocación es directa (la clase llega dos cuadros después). */
+   fundido corto, cuando lo que se iba ya se fue. La primera colocación es directa (la clase llega 60 ms después) y tras
+   girar la pantalla o cambiar de tamaño vuelve a ser directa durante 1 s. */
 #barraLangToggle.tg-colocado {
   transition: top 180ms ease, right 180ms ease, opacity 200ms ease;
 }
@@ -10224,7 +10225,12 @@ bootTriggui();
   }catch(e){} return out; }
   function choca(a,cajas,m){ for(var i=0;i<cajas.length;i++){ var b=cajas[i];
     if(a.left<b.right+m && a.right>b.left-m && a.top<b.bottom+m && a.bottom>b.top-m) return true; } return false; }
-  var conTransicion=false, _vuelve=0;
+  var _vuelve=0, _trans=0, _quieto=0;
+  // El deslizamiento (tg-colocado) se arma con UN solo temporizador: nunca antes de 60 ms tras colocarse ni antes de que
+  // pase 1 s sin giros ni cambios de tamaño, para que lo que se reacomoda tras girar nunca se deslice encima del contenido.
+  function sinTransicion(ms){ clearTimeout(_trans); _trans=0; bt.classList.remove('tg-colocado'); _quieto=Date.now()+(ms||0); }
+  function armaTransicion(){ if(_trans || bt.classList.contains('tg-colocado')) return;
+    _trans=setTimeout(function(){ _trans=0; if(bt.parentNode===document.body && colocado) bt.classList.add('tg-colocado'); }, Math.max(60, _quieto-Date.now())); }
   function coloca(volver){ try{ if(bt.parentNode!==document.body) return;
     var bs=document.querySelectorAll('#grid .block');
     if(!bs.length){ colocado=false; return; }
@@ -10244,9 +10250,7 @@ bootTriggui();
       else { clearTimeout(_vuelve); _vuelve=0;
         bt.style.right=der+'px'; bt.style.top=arriba+'px';
         bt.classList.remove('tg-apartado', 'bm-first-appear'); }   // la entrada del primer arranque es de la barra, no de los bloques
-      colocado=true;
-      if(!conTransicion){ conTransicion=true;
-        requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(bt.parentNode===document.body && conTransicion) bt.classList.add('tg-colocado'); }); }); } }
+      colocado=true; armaTransicion(); }
     else colocado=false;
   }catch(e){} }
   var _raf=0, _t1=0, _t2=0;
@@ -10267,14 +10271,14 @@ bootTriggui();
     if(venia){ bt.style.transition='none'; bt.style.opacity='0'; bt.style.pointerEvents='none'; void bt.offsetWidth;   // mientras no se ve, tampoco se toca
       bt.style.transition='opacity 500ms cubic-bezier(0.19, 1, 0.22, 1) 550ms'; bt.style.opacity='1';
       setTimeout(function(){ if(bt.parentNode===document.body){ bt.style.transition=''; bt.style.pointerEvents=''; } }, 1150); }
-    colocado=false; conTransicion=false; clearTimeout(_vuelve); _vuelve=0; bt.classList.remove('tg-colocado'); coloca(); pintaSpans(); repaintHome();
+    colocado=false; clearTimeout(_vuelve); _vuelve=0; sinTransicion(0); coloca(); pintaSpans(); repaintHome();
     setTimeout(pintaSpans, 300); setTimeout(pintaSpans, 900);
   }catch(e){} }
   function aBarra(){ try{ if(bt.parentNode!==document.body) return;
     slot.parentNode.insertBefore(bt, slot.nextSibling);
     bt.style.position=''; bt.style.top=''; bt.style.right=''; bt.style.zIndex=''; bt.style.left=''; bt.style.bottom=''; bt.style.opacity=''; bt.style.transition=''; bt.style.pointerEvents='';
     bt.classList.remove('tg-apartado', 'tg-colocado');
-    colocado=false; conTransicion=false; clearTimeout(_vuelve); _vuelve=0;
+    colocado=false; clearTimeout(_vuelve); _vuelve=0; sinTransicion(0);
   }catch(e){} }
   function decide(){ if(ov.classList.contains('visible')) aBarra(); else aHome(); }
   new MutationObserver(decide).observe(ov,{attributes:true,attributeFilter:['class']});
@@ -10283,7 +10287,7 @@ bootTriggui();
   try{ var __g=document.getElementById('grid'); new MutationObserver(programaColoca).observe(__g,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['style','class']});
     __g.addEventListener('load', programaColoca, true); }catch(e){}
   setInterval(function(){ if(bt.parentNode===document.body && !colocado) coloca(); }, 500);
-  window.addEventListener('resize', function(){ colocado=false; conTransicion=false; bt.classList.remove('tg-colocado'); coloca(); });   // al girar, directo a su esquina nueva (sin deslizarse encima del contenido)
+  window.addEventListener('resize', function(){ colocado=false; sinTransicion(1000); coloca(); });   // al girar, directo a su esquina nueva; se vuelve a deslizar 1 s después del último cambio
   window.addEventListener('load', decide);
   var _last=0;
   function accionHome(ev){ if(bt.parentNode!==document.body) return;
