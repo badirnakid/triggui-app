@@ -870,6 +870,14 @@ jobs:
             exit 0
           fi
 
+          # 🧠 C278: con Claude, el saneador de triggui-content tiene que llamar por ia/ia.cjs. Si su main todavía no
+          # lo hace, aquí se detiene a la vista: si no, seguiría llamando directo a OpenAI sin que nadie lo note.
+          PROVEEDOR_IA="$(node -e 'process.stdout.write(require(process.argv[1]).proveedor())' "$TRIGGUI_IA_LIB")"
+          if [ "$PROVEEDOR_IA" = "claude" ] && ! grep -q "TRIGGUI_IA_LIB" "$SCRIPT"; then
+            echo "::error::LLM_SANITIZER: el proveedor es Claude, pero $SCRIPT no llama por ia/ia.cjs. Primero va a main el cambio de triggui-content (C278)."
+            exit 1
+          fi
+
           echo "🛡️ LLM Sanitizer v3.2 — grounding + jerarquía completar→recortar→remover"
           echo "   catalog:    $CATALOG_PATH (workspace)"
           echo "   batch_size: $BATCH_SIZE"
