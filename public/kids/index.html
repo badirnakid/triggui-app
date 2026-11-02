@@ -2306,6 +2306,24 @@ html[data-mode="kids"]  #barraSkip .bm-skip-seg-kids {
 #barraSkip .bm-skip-seg.active {
   color: #fff;
 }
+/* 🌒 v4.17: el pill escondido (bocado, eco o teclado abierto) tampoco responde: su interior tiene pointer-events:auto
+   propio y seguía tocándose aunque no se viera */
+#barraSkip.bm-content-fading .bm-skip-inner,
+html.keyboard-open #barraSkip .bm-skip-inner {
+  pointer-events: none;
+}
+/* 🌒 v4.17: sin el rectángulo gris/azul del toque del sistema sobre el pill redondo */
+#barraSkip,
+#barraSkip .bm-skip-inner {
+  -webkit-tap-highlight-color: transparent;
+}
+/* 🌒 v4.17: con la barra abierta, el cambio de versión (Todos ↔ Niños) es un corte limpio: en el cuadro siguiente al toque
+   ya está completa la otra versión (fondo, letras, input, figuras). Antes el fondo se fundía en 350 ms y, con el catálogo
+   cargando, se veían letras negras sobre negro. Solo el indicador del pill conserva su deslizamiento. La clase dura dos cuadros. */
+html[data-mode] #barraMagicaOverlay.bm-corte,
+html[data-mode] #barraMagicaOverlay.bm-corte *:not(.bm-skip-indicator) {
+  transition: none !important;
+}
 
 
 #barraLangToggle {
@@ -4028,7 +4046,7 @@ window.__trigguiFotoTarjeta = function () {
     return true;
   } catch (e) { return false; }
 };
-window.__trigguiVersion = '4.15';
+window.__trigguiVersion = '4.17';   // 🌒 v4.17: el cambio de modo deja la barra abierta
 window.addEventListener('pointerdown', function () { window.__trigguiDownEn = performance.now(); }, true);   // 🌒 v4.5: instante del ultimo gesto
 // 🌒 v4.5: un bloque solo puede abrir la Tarjeta con un gesto NUEVO, iniciado despues del ultimo cierre y al menos 600ms despues
 window.__tarjetaPuedeAbrir = function () { var c = window.__tarjetaCerradaEn || 0; return !c || (performance.now() - c > 600 && (window.__trigguiDownEn || 0) > c); };
@@ -6305,6 +6323,9 @@ BarraMagica._clearSubmitTimers = function() {
     clearTimeout(this._submitTimers.pop());
   }
 };
+// 🌒 v4.17: ¿la barra está entregando un libro? Va de submit() a closeOverlay(): la barra ya eligió y está por cerrarse.
+// Mientras tanto ningún cambio de modo empieza encima (el pill está apagado; un back/forward espera a que la barra cierre).
+BarraMagica.enviando = function() { return this._submitTimers.length > 0; };
 
 BarraMagica.submit = function(query) {
   // 🌒 v10: Nueva arquitectura del submit — simple, robusta, sin bugs.
@@ -6434,11 +6455,24 @@ function wireBarraMagicaEvents() {
     //     a BarraMagica.submit.
     // En vez de disabled, usamos un lock de 600ms sobre la función.
     let lastSubmitTime = 0;
+    let envioEnEspera = null;   // 🌒 v4.17
     const doSubmit = () => {
       const now = Date.now();
       if (now - lastSubmitTime < 600) return; // debounce
       lastSubmitTime = now;
       const q = input.value;
+      // 🌒 v4.17: si el catálogo del otro modo todavía está llegando, el envío espera y se hace con él (jamás con el anterior); gana el último
+      const espera = window.__TRIGGUI_CAMBIO_LISTO__;
+      if (espera) {
+        const primero = (envioEnEspera === null);
+        envioEnEspera = q;
+        if (primero) espera.then(function (ok) {
+          const qq = envioEnEspera; envioEnEspera = null;
+          if (!ok) return;   // el cambio falló y la página se recarga en el otro modo: no se envía nada
+          try { BarraMagica.submit(qq); } catch (err) { console.error('[Triggui] BarraMagica.submit error:', err); }
+        });
+        return;
+      }
       try {
         BarraMagica.submit(q);
       } catch (err) {
@@ -6532,11 +6566,21 @@ function wireBarraMagicaEvents() {
 //   - Try/catch global con fallback graceful a window.location.href
 //   - sessionStorage.removeItem('lastLibroIdx') limpia state stale
 //   - Reverso de URL si catálogo nuevo está vacío
+// 🌒 v4.17: si la barra mágica está abierta, SE QUEDA ABIERTA: el cambio ocurre en su sitio (el pill desliza, llega el
+//   catálogo del otro modo y los bloques se preparan ocultos debajo). La pregunta, los colores y lo que el usuario ya
+//   escribió no se tocan. Los bloques solo aparecen cuando el usuario envía, como siempre.
 async function switchTrigguiMode(targetMode, fromHistory) {
   if (window.__TRIGGUI_SWITCHING__) return;
   if (targetMode !== 'kids' && targetMode !== 'adult') return;
   if (targetMode === window.TRIGGUI_MODE) return;
+  // 🌒 v4.17: con un envío en curso ningún cambio empieza: el toque del pill no cuenta (está apagado) y un back/forward espera a que la barra cierre
+  try { if (BarraMagica.enviando()) { if (fromHistory) __modoTrasEnvio(0); return; } } catch(_) {}
+  // 🌒 v4.17: el pill vive en la barra: si la barra ya se está yendo (fundido de salida), su toque no cuenta (solo el historial cambia sin barra)
+  try { const __ovP = document.getElementById('barraMagicaOverlay'); if (!fromHistory && !(__ovP && __ovP.classList.contains('visible'))) return; } catch(_) {}
   window.__TRIGGUI_SWITCHING__ = true;
+  // 🌒 v4.17: un envío hecho mientras llega el catálogo nuevo espera esta promesa (true = catálogo nuevo listo; false = el cambio falló y se recarga)
+  let __cambioListo = function () {};
+  window.__TRIGGUI_CAMBIO_LISTO__ = new Promise(function (r) { __cambioListo = function (ok) { window.__TRIGGUI_CAMBIO_LISTO__ = null; r(ok); }; });
 
   const targetUrl = (targetMode === 'kids' ? '/kids/' : '/') + '?v=' + (window.__trigguiVersion || '0');   // 🌒 v4.13: atraviesa el HTML congelado del build viejo de Android (cache por URL exacta)
   const prevMode = window.TRIGGUI_MODE;
@@ -6545,16 +6589,18 @@ async function switchTrigguiMode(targetMode, fromHistory) {
 
   try {
     // FASE 1: Cambio inmediato del modo + URL (UI feedback instantáneo)
+    const __ovC = document.getElementById('barraMagicaOverlay');
+    try { if (__ovC) __ovC.classList.add('bm-corte'); } catch(_) {}   // 🌒 v4.17: la barra cambia de versión en un solo cuadro (ver .bm-corte en el CSS)
     window.TRIGGUI_MODE = targetMode;
     document.documentElement.classList.toggle('kids-mode', targetMode === 'kids');
     document.documentElement.classList.toggle('adult-mode', targetMode !== 'kids');
     document.documentElement.setAttribute('data-mode', targetMode);
     try { applyKidsBtnStrings(); } catch(_) {}
+    try { if (__ovC) { void __ovC.offsetWidth; requestAnimationFrame(function () { requestAnimationFrame(function () { __ovC.classList.remove('bm-corte'); }); }); } } catch(_) {}
     // v4.16 D1: el back/forward NUNCA re-empuja historial — la URL ya es la correcta; duplicarla pudria la pila y resucitaba snapshots viejos en el gesto de iOS
     if (!fromHistory) { try { history.pushState({ mode: targetMode, source: 'switch' }, '', targetUrl); } catch(_) {} }
     else { try { history.replaceState({ mode: targetMode, source: 'popstate' }, '', window.location.pathname + window.location.search); } catch(_) {} }
-    // v4.16 D3: si la barra estaba abierta (el pill vive dentro), se cierra limpio ANTES del fade — nunca mas una barra del modo viejo flotando sobre el catalogo nuevo
-    try { const __ov = document.getElementById('barraMagicaOverlay'); if (__ov && __ov.classList.contains('visible')) BarraMagica.closeOverlay(true, true); } catch(_) {}
+    // 🌒 v4.17: la barra ya NO se cierra aquí (v4.16 D3 la cerraba y dejaba al usuario en cuatro bloques con libro elegido, sin haber enviado nada)
 
     // FASE 2: Fade-out del grid (paralelo al fetch)
     if (grid) {
@@ -6563,8 +6609,10 @@ async function switchTrigguiMode(targetMode, fromHistory) {
     }
 
     // FASE 3: Fetch nuevo catálogo + esperar fade-out simultáneamente
+    // 🌒 v4.17: el catálogo (varios MB de JSON) empieza a leerse después de pintar el cambio: el toque se ve al instante y el pill arranca su deslizamiento antes del trabajo pesado
+    const __pintado = new Promise(function (r) { let ya = false; const fin = function () { if (!ya) { ya = true; r(); } }; requestAnimationFrame(function () { requestAnimationFrame(fin); }); setTimeout(fin, 60); });
     const [dataRaw] = await Promise.all([
-      loadCatalogWithRetry(3),
+      __pintado.then(function () { return loadCatalogWithRetry(3); }),
       new Promise(resolve => setTimeout(resolve, 250))
     ]);
 
@@ -6580,12 +6628,21 @@ async function switchTrigguiMode(targetMode, fromHistory) {
     libro = data.libros[pickLibroNoRepetido(data.libros)];
 
     // FASE 6: Re-aplicar strings (cambia accent color "sientes?") + render
-    try { BarraMagica.rotarPregunta(); } catch(_) {}   // v4.16 D3: pregunta nueva por modo — jamas la del catalogo anterior
-    try { BarraMagica.applyStrings(); } catch(_) {}
-    try { render(); } catch(e) { console.error('[Triggui] render error tras switch:', e); }
+    const __ovB = document.getElementById('barraMagicaOverlay');
+    const __barraAbierta = !!(__ovB && __ovB.classList.contains('visible'));
+    if (__barraAbierta) {
+      // 🌒 v4.17: la misma barra, ya en el otro modo: pregunta, colores y texto escrito se quedan; solo el micro sigue al catálogo
+      try { const __mi = document.getElementById('barraMicro'); if (__mi) __mi.innerHTML = TriggguiI18n.get(BarraMagica.getMicroCopyKey(data.libros.length)); } catch(_) {}
+    } else {
+      try { BarraMagica.rotarPregunta(); } catch(_) {}   // v4.16 D3: pregunta nueva por modo — jamas la del catalogo anterior
+      try { BarraMagica.applyStrings(); } catch(_) {}
+    }
+    try { render(); } catch(e) { console.error('[Triggui] render error tras switch:', e); }   // con la barra abierta, los bloques quedan ocultos debajo (mood-active)
     try { if (window.__trigguiDado) window.__trigguiDado.reconstruir(libro, ''); } catch(_) {}   // 🎲 v4.4: lista del dado rehecha con el catalogo nuevo (nunca mezcla adultos en Kids)
     try { updateBadge(); } catch(_) {}
     try { refreshGlobalCounter(); } catch(_) {}
+    __cambioListo(true);   // 🌒 v4.17: el catálogo nuevo ya manda: un envío en espera corre ahora
+    if (__barraAbierta) { try { activateInputVisual(); } catch(_) {} }   // 🌒 v4.17: lista para escribir (en escritorio, el clic al pill le quitó el foco al input)
 
     // FASE 7: Fade-in del grid (post-render pintado)
     requestAnimationFrame(() => {
@@ -6600,6 +6657,7 @@ async function switchTrigguiMode(targetMode, fromHistory) {
 
   } catch (err) {
     console.error('[Triggui] switchTrigguiMode error:', err);
+    __cambioListo(false);   // 🌒 v4.17: un envío en espera no corre: la página se recarga en el otro modo
     // Fallback graceful: revertir modo en memoria + page reload (comportamiento clásico)
     window.TRIGGUI_MODE = prevMode;
     document.documentElement.classList.toggle('kids-mode', prevMode === 'kids');
@@ -6621,6 +6679,22 @@ async function switchTrigguiMode(targetMode, fromHistory) {
       } catch(_) {}
     }, 700);
   }
+}
+
+// 🌒 v4.17: un back/forward que llegó mientras la barra entregaba un libro corre en cuanto la app queda quieta
+// (sin envío, sin otro cambio y sin la barra a medio cerrar). La URL es la única verdad. Tope: 30 s.
+function __modoTrasEnvio(intento) {
+  clearTimeout(__modoTrasEnvio._t);
+  if (intento > 150) return;
+  __modoTrasEnvio._t = setTimeout(function () {
+    try {
+      const ov = document.getElementById('barraMagicaOverlay');
+      const cerrando = !!(ov && !ov.classList.contains('visible') && getComputedStyle(ov).display !== 'none');
+      if (window.__TRIGGUI_SWITCHING__ || BarraMagica.enviando() || cerrando) { __modoTrasEnvio(intento + 1); return; }
+      const m = window.location.pathname.startsWith('/kids') ? 'kids' : 'adult';
+      if (m !== window.TRIGGUI_MODE) switchTrigguiMode(m, true);
+    } catch (_) {}
+  }, 200);
 }
 
 // 🌒 v3.8.10 — Back/forward del browser sincronizado con el modo
