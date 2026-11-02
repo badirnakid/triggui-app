@@ -153,12 +153,12 @@ jobs:
           cp "experiments/nucleus/$CAT" "$CAT"
           for f in musica_emergencia.json video_emergencia.json; do if [ -f "triggui-content/$f" ]; then cp "triggui-content/$f" "$f"; fi; done
 
-      - name: 🛡️ Saneador de frases (capa B, lote 1)
+      - name: 🛡️ Saneador de frases (capa B, lote 1, sin healing, como en producción desde C302)
         continue-on-error: true
         env:
           OPENAI_API_KEY: ${{ matrix.proveedor == 'openai' && secrets.OPENAI_KEY || '' }}
           TRIGGUI_IA_LIB: ${{ github.workspace }}/ia/ia.cjs
-        run: node triggui-content/auditoria-editorial/phrase-sanitizer-llm.cjs --catalog="$CAT" --mode=fix --only-last=true --batch-size=1
+        run: node triggui-content/auditoria-editorial/phrase-sanitizer-llm.cjs --catalog="$CAT" --mode=fix --only-last=true --batch-size=1 --healing=false
 
       - name: 🛡️ Juez de audiencia (lote 1)
         continue-on-error: true
