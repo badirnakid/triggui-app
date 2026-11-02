@@ -178,9 +178,12 @@ function validaClaude(p, h) {
   if (h['anthropic-version'] !== '2023-06-01') e.push('anthropic-version');
   if (h.authorization) e.push('manda Authorization (llave de OpenAI)');
   for (const k of Object.keys(p)) if (!LLAVES_CLAUDE.has(k)) e.push('llave no admitida: ' + k);
-  const papel = { 'claude-haiku-5-5': 'disabled', 'claude-sonnet-5-5': 'between_tools' }[p.model];
-  if (!papel) e.push('modelo ' + p.model);
-  else if (!p.thinking || p.thinking.type !== papel) e.push(`thinking de ${p.model}: ${JSON.stringify(p.thinking)}`);
+  // Haiku 5.5 va sin pensar («mini») o con pensamiento adaptativo («escritor»); Sonnet 5.5, entre herramientas.
+  const formas = { 'claude-haiku-5-5': ['disabled', 'adaptive'], 'claude-sonnet-5-5': ['between_tools'] }[p.model];
+  if (!formas) e.push('modelo ' + p.model);
+  else if (!p.thinking || !formas.includes(p.thinking.type)) e.push(`thinking de ${p.model}: ${JSON.stringify(p.thinking)}`);
+  if (p.thinking && Object.keys(p.thinking).some((k) => k !== 'type')) e.push(`thinking con llaves de más: ${JSON.stringify(p.thinking)}`);
+  if (p.output_config && p.output_config.effort !== undefined && !['low', 'medium', 'high', 'xhigh', 'max'].includes(p.output_config.effort)) e.push('effort ' + p.output_config.effort);
   if (!Number.isInteger(p.max_tokens) || p.max_tokens < 1) e.push('max_tokens');
   const ms = p.messages;
   if (!Array.isArray(ms) || !ms.length) e.push('messages vacío');

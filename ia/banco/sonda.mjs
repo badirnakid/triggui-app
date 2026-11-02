@@ -4,7 +4,8 @@
  *
  *   · Dice si están las llaves (presente o falta; nunca su valor ni su largo).
  *   · Con Claude: cada esquema grande del pipeline se manda una vez a Haiku 5.5, para saber si la API lo compila
- *     («Schema is too complex» sería un 400); Sonnet 5.5 una vez con su forma de pensar; y una llamada de JSON libre.
+ *     («Schema is too complex» sería un 400); Sonnet 5.5 una vez con su forma de pensar; el «escritor» (Haiku 5.5 con
+ *     pensamiento adaptativo) con el esquema de la tarjeta; y una llamada de JSON libre.
  *   · Con OpenAI: una llamada mínima, para saber que la llave sirve.
  *
  * Sale con 1 si algo de lo anterior falla, y el banco no corre. Uso (desde la raíz de triggui-app):
@@ -60,8 +61,16 @@ for (const e of esquemas) {
     messages: [{ role: 'system', content: 'Devuelve un ejemplo mínimo y válido de este esquema, con textos de pocas palabras.' }, { role: 'user', content: 'Ejemplo.' }]
   });
 }
-console.log('\nClaude: los dos papeles y el JSON libre');
+console.log('\nClaude: los papeles y el JSON libre');
 await prueba('claude', 'grande (Sonnet 5.5)', { model: 'grande', max_tokens: 1024, messages: [{ role: 'user', content: 'Responde solo: listo.' }] });
+const contentES = esquemas.find((e) => e.name === 'ContentES');
+if (contentES) {
+  await prueba('claude', 'escritor (Haiku 5.5 que piensa) con ContentES', {
+    model: 'escritor', max_tokens: 6000,
+    response_format: { type: 'json_schema', json_schema: { name: contentES.name, strict: true, schema: contentES.schema } },
+    messages: [{ role: 'system', content: 'Devuelve un ejemplo mínimo y válido de este esquema, con textos de pocas palabras.' }, { role: 'user', content: 'Ejemplo.' }]
+  });
+}
 const libre = await prueba('claude', 'JSON libre (json_object)', { model: 'mini', response_format: { type: 'json_object' }, messages: [{ role: 'user', content: 'Devuelve {"ok": true}.' }] });
 if (libre) linea(libre._claude.json_ok === true, `claude · el JSON libre llegó limpio (${libre.choices[0].message.content})`);
 

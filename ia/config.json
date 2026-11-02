@@ -11,6 +11,13 @@
       "openai": "gpt-4o",
       "claude": "claude-sonnet-5-5",
       "claude_thinking": { "type": "between_tools" }
+    },
+    "escritor": {
+      "_nota": "La tarjeta y sus frases (contenido en español y en inglés). Con openai es el mismo gpt-4o-mini de siempre. Con Claude, Haiku 5.5 puede pensar antes de escribir (pensamiento adaptativo, esfuerzo medio, el de omisión de Haiku 5.5): así la autorrevisión del prompt ocurre de verdad. Se cobra como salida.",
+      "openai": "gpt-4o-mini",
+      "claude": "claude-haiku-5-5",
+      "claude_thinking": { "type": "adaptive" },
+      "claude_esfuerzo": "medium"
     }
   },
   "alias": {

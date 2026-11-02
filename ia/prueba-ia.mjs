@@ -168,6 +168,26 @@ ok(c2.papel === 'grande' && c2.modelo === 'claude-sonnet-5-5' && /^400/.test(c2.
 ok(o1.proveedor === 'openai' && o1.papel === 'mini' && o1.entrada === 10 && o1.salida === 2 && o1.fin === 'stop' && o1.modelo === 'gpt-4o-mini', 'registro OpenAI por fetch: tokens y fin', JSON.stringify(o1));
 ok(o2.proveedor === 'openai' && o2.papel === 'grande' && o2.modelo === 'gpt-4o' && o2.fin === 'stop', 'registro OpenAI por el SDK', JSON.stringify(o2));
 
+// ── 2b2. El papel «escritor» ──
+console.log('El papel «escritor» (la tarjeta)');
+process.env.TRIGGUI_IA_PROVEEDOR = 'openai';
+recibidas.length = 0;
+const deEscritor = { model: 'escritor', temperature: 0.7, max_tokens: 6000, messages: [{ role: 'system', content: 's' }, { role: 'user', content: 'u' }] };
+await (await IA.chatCompat(deEscritor)).json();
+await (await IA.chatCompat({ ...deEscritor, model: 'mini' })).json();
+ok(recibidas.length === 2 && recibidas[0].body === recibidas[1].body && JSON.parse(recibidas[0].body).model === 'gpt-4o-mini',
+  'con openai, «escritor» manda exactamente lo mismo que «mini» (gpt-4o-mini)');
+ok(IA.etiqueta('escritor') === 'gpt-4o-mini', 'con openai, la etiqueta de «escritor» es gpt-4o-mini');
+process.env.TRIGGUI_IA_PROVEEDOR = 'claude';
+recibidas.length = 0;
+guion = [{ status: 200, data: { id: 'me', model: 'claude-haiku-5-5', content: [{ type: 'thinking', thinking: 'pienso' }, { type: 'text', text: '{"a":1}' }], stop_reason: 'end_turn', usage: { input_tokens: 9, output_tokens: 40 } } }];
+d = await (await IA.chatCompat({ ...deEscritor, response_format: { type: 'json_schema', json_schema: { name: 'z', strict: true, schema: { type: 'object', properties: { a: { type: 'number' } }, required: ['a'], additionalProperties: false } } } })).json();
+b = JSON.parse(recibidas[0].body);
+ok(b.model === 'claude-haiku-5-5' && JSON.stringify(b.thinking) === '{"type":"adaptive"}' && b.output_config.effort === 'medium' && b.output_config.format && !('temperature' in b),
+  'con Claude, «escritor» es Haiku 5.5 con pensamiento adaptativo y esfuerzo medio, junto al esquema');
+ok(d.choices[0].message.content === '{"a":1}', 'el pensamiento no entra al contenido');
+ok(IA.etiqueta('escritor') === 'claude-haiku-5-5', 'con Claude, la etiqueta de «escritor» es claude-haiku-5-5');
+
 // ── 2c. Caché del system (Claude) ──
 console.log('Caché del system (Claude)');
 process.env.TRIGGUI_IA_PROVEEDOR = 'claude';

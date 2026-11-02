@@ -149,6 +149,8 @@ console.log(IS_KIDS
 const CFG = {
   modelMini: process.env.TRIGGUI_MODEL || "mini",     // papel de ia/config.json (hoy gpt-4o-mini con openai)
   modelBig: process.env.TRIGGUI_MODEL_BIG || "grande", // papel de ia/config.json (hoy gpt-4o con openai)
+  // La tarjeta y sus frases (ES y EN): con openai, el mismo gpt-4o-mini; con Claude, Haiku que piensa antes de escribir.
+  modelEscritor: process.env.TRIGGUI_MODEL_ESCRITOR || process.env.TRIGGUI_MODEL || "escritor",
   temperature: Number(process.env.TRIGGUI_TEMP || 0.7),
   catalogMode: CATALOG_MODE,
   files: {
@@ -166,7 +168,7 @@ const CFG = {
   cronoEnabled: process.env.TRIGGUI_CRONO_ENABLED !== "false",
   groundingJudgeMinScore: Number(process.env.TRIGGUI_JUDGE_MIN || 0.55)
 };
-console.log(`🧠 IA: proveedor ${IA.proveedor()} · mini=${IA.etiqueta(CFG.modelMini)} · grande=${IA.etiqueta(CFG.modelBig)}`);
+console.log(`🧠 IA: proveedor ${IA.proveedor()} · mini=${IA.etiqueta(CFG.modelMini)} · grande=${IA.etiqueta(CFG.modelBig)} · escritor=${IA.etiqueta(CFG.modelEscritor)}`);
 
 // ⭐ STEP 3 ⭐ — INPUTS.lens ahora se rellena async en main() via composeLensSystemBlock
 const INPUTS = {
@@ -685,12 +687,12 @@ async function processBook(book, inputs, inputsSnapshot) {
   // ═══ F3: CONTENIDO ES ═══════════════════════════════════════════════
   const tF3 = Date.now();
   let contentESRes = await retryOnce(
-    () => extractContentES(openai, book, groundTruthMeta.ground_truth, anchorsData, inputs.lens, { model: CFG.modelMini, temperature: 0.7, crono }),
+    () => extractContentES(openai, book, groundTruthMeta.ground_truth, anchorsData, inputs.lens, { model: CFG.modelEscritor, temperature: 0.7, crono }),
     "extractContentES"
   );
   elapsedByPhase.content_es = Date.now() - tF3;
   tokensByPhase.content_es = contentESRes.usage?.total_tokens || 0;
-  modelsUsed.add(IA.etiqueta(contentESRes.model || CFG.modelMini));
+  modelsUsed.add(IA.etiqueta(contentESRes.model || CFG.modelEscritor));
   llmCallsCount += 1;
   const contentES = contentESRes.data;
   assertShape(contentES, [
@@ -721,7 +723,7 @@ async function processBook(book, inputs, inputsSnapshot) {
     console.log(`   🔁 Re-extract ES (score ${fmt(judgeES.grounded_score)} < ${CFG.groundingJudgeMinScore})`);
     const tR3 = Date.now();
     contentESRes = await retryOnce(
-      () => extractContentES(openai, book, groundTruthMeta.ground_truth, anchorsData, inputs.lens, { model: CFG.modelMini, temperature: 0.4, crono }),
+      () => extractContentES(openai, book, groundTruthMeta.ground_truth, anchorsData, inputs.lens, { model: CFG.modelEscritor, temperature: 0.4, crono }),
       "extractContentES_retry"
     );
     elapsedByPhase.content_es_retry = Date.now() - tR3;
@@ -759,12 +761,12 @@ async function processBook(book, inputs, inputsSnapshot) {
   // ═══ F5: CONTENIDO EN ═══════════════════════════════════════════════
   const tF5 = Date.now();
   let contentENRes = await retryOnce(
-    () => extractContentEN(openai, book, groundTruthMeta.ground_truth, anchorsData, contentESFinal.card_es, inputs.lens, { model: CFG.modelMini, temperature: 0.7 }),
+    () => extractContentEN(openai, book, groundTruthMeta.ground_truth, anchorsData, contentESFinal.card_es, inputs.lens, { model: CFG.modelEscritor, temperature: 0.7 }),
     "extractContentEN"
   );
   elapsedByPhase.content_en = Date.now() - tF5;
   tokensByPhase.content_en = contentENRes.usage?.total_tokens || 0;
-  modelsUsed.add(IA.etiqueta(contentENRes.model || CFG.modelMini));
+  modelsUsed.add(IA.etiqueta(contentENRes.model || CFG.modelEscritor));
   llmCallsCount += 1;
   const contentENFinalRaw = contentENRes.data;
   assertShape(contentENFinalRaw, [
