@@ -2306,10 +2306,10 @@ html[data-mode="kids"]  #barraSkip .bm-skip-seg-kids {
 #barraSkip .bm-skip-seg.active {
   color: #fff;
 }
-/* 🌒 v4.17: el pill escondido (bocado, eco o teclado abierto) tampoco responde: su interior tiene pointer-events:auto
-   propio y seguía tocándose aunque no se viera */
-#barraSkip.bm-content-fading .bm-skip-inner,
-html.keyboard-open #barraSkip .bm-skip-inner {
+/* 🌒 v4.17: el pill escondido por el bocado o el eco (bm-content-fading, opacidad 0 con !important) tampoco responde: su interior
+   tiene pointer-events:auto propio y seguía tocándose aunque no se viera. (Con el teclado abierto no se toca: ahí la animación de
+   entrada le gana a la regla que lo esconde y el pill sigue a la vista, así que debe seguir respondiendo.) */
+#barraSkip.bm-content-fading .bm-skip-inner {
   pointer-events: none;
 }
 /* 🌒 v4.17: sin el rectángulo gris/azul del toque del sistema sobre el pill redondo */
@@ -6675,14 +6675,12 @@ async function switchTrigguiMode(targetMode, fromHistory) {
     __cambioListo(false);   // 🌒 v4.17: un envío en espera no corre: la página se recarga en el otro modo
     // Fallback graceful: revertir modo en memoria + page reload (comportamiento clásico)
     window.TRIGGUI_MODE = prevMode;
-    // 🌒 v4.17: con la barra abierta, la barra se queda en la versión a la que se va (la página se recarga en ese modo): sin destello del modo anterior
-    let __barraSigue = false;
-    try { const __ovE = document.getElementById('barraMagicaOverlay'); __barraSigue = !!(__ovE && __ovE.classList.contains('visible')); } catch(_) {}
-    if (!__barraSigue) {
-      document.documentElement.classList.toggle('kids-mode', prevMode === 'kids');
-      document.documentElement.classList.toggle('adult-mode', prevMode !== 'kids');
-      document.documentElement.setAttribute('data-mode', prevMode);
-    }
+    // 🌒 v4.17: mientras llega la página recargada, todo vuelve COHERENTE al modo anterior (versión de la barra, pill, catálogo y modo):
+    //   nunca una barra de Niños que entregue libros de Todos. Si la recarga no llega, la app sigue funcionando en ese modo.
+    document.documentElement.classList.toggle('kids-mode', prevMode === 'kids');
+    document.documentElement.classList.toggle('adult-mode', prevMode !== 'kids');
+    document.documentElement.setAttribute('data-mode', prevMode);
+    try { applyKidsBtnStrings(); } catch(_) {}
     try { history.replaceState({ mode: prevMode }, '', prevUrl); } catch(_) {}
     window.__TRIGGUI_SWITCHING__ = false;
     window.location.href = targetUrl;
