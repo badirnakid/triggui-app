@@ -2361,7 +2361,12 @@ html[data-mode] #barraMagicaOverlay.bm-corte *:not(.bm-skip-indicator) {
 #barraLangToggle.tg-apartado {
   opacity: 0 !important;
   pointer-events: none !important;
-  transition: opacity 250ms ease !important;
+  transition: opacity 90ms ease !important;
+}
+/* Ya colocado sobre el cuarto bloque: si cambia de esquina (14 o 6 px) se desliza, y al volver de apartado entra con un
+   fundido corto, cuando lo que se iba ya se fue. La primera colocación es directa (la clase llega dos cuadros después). */
+#barraLangToggle.tg-colocado {
+  transition: top 180ms ease, right 180ms ease, opacity 200ms ease;
 }
 
 #barraLangToggle span {
@@ -10192,29 +10197,56 @@ bootTriggui();
   // Busca su esquina a 14 px del borde y, si ahí toca el contenido, a 6 px; si en ninguna cabe (pantalla chica, frase
   // larga, la portada en ese bloque), se aparta con un fundido y vuelve en cuanto cabe (otro libro, otro idioma, al
   // revelar o al girar la pantalla). Las cajas de texto son las de cada renglón, no la del párrafo entero.
-  function cajasDelBloque(blk){ var out=[]; try{
-    ['.label','.frase','.portada img','.port-text h2','.port-text p','.emoji-big'].forEach(function(s){
-      var els=blk.querySelectorAll(s);
-      for(var k=0;k<els.length;k++){ var el=els[k]; if(!el.getClientRects().length) continue;
-        var cs=getComputedStyle(el); if(cs.visibility==='hidden'||+cs.opacity<0.05) continue;
-        if(el.tagName==='IMG'){ out.push(el.getBoundingClientRect()); continue; }
-        var rg=document.createRange(); rg.selectNodeContents(el); var rs=rg.getClientRects();
-        for(var i=0;i<rs.length;i++){ if(rs[i].width>0&&rs[i].height>0) out.push(rs[i]); } } });
+  // Decide con lo FINAL, nunca con lo pasajero (revisión de C297): mide cajas de maquetación (offset*, que ignoran la
+  // entrada en cascada, :hover, :active, el pop y el pulso de la portada) y cuenta lo que quedará a la vista según las
+  // clases: la frase si el bloque tiene .show, la etiqueta si no, y la portada cuando está a la vista (si su imagen aún
+  // no llega, cuenta su lugar entero). Tampoco tapa la cinta de racha ni se sale del cuarto bloque.
+  function caja(el, hasta){ var x=0, y=0, e=el; while(e && e!==hasta){ x+=e.offsetLeft; y+=e.offsetTop; e=e.offsetParent; }
+    return { x:x, y:y, w:el.offsetWidth, h:el.offsetHeight }; }
+  function renglones(el, blk, B, out){ var L=caja(el, blk), bc=el.getBoundingClientRect(), dx=bc.left-(B.left+L.x), dy=bc.top-(B.top+L.y);
+    var rg=document.createRange(); rg.selectNodeContents(el); var rs=rg.getClientRects();
+    for(var i=0;i<rs.length;i++){ var q=rs[i]; if(q.width>0&&q.height>0) out.push({left:q.left-dx, right:q.right-dx, top:q.top-dy, bottom:q.bottom-dy}); } }
+  function cajasDelBloque(blk, B){ var out=[]; try{
+    var show=blk.classList.contains('show'), port=blk.querySelector('.portada');
+    if(port && getComputedStyle(port).display!=='none'){
+      var img=port.querySelector('img'), wr=port.querySelector('.port-text-wrap');
+      if(img && img.complete && img.naturalWidth>0 && img.offsetWidth>0){ var I=caja(img, blk), k=0.03;   // +3 %: el pulso llega a 1.025
+        out.push({left:B.left+I.x-I.w*k/2, right:B.left+I.x+I.w*(1+k/2), top:B.top+I.y-I.h*k/2, bottom:B.top+I.y+I.h*(1+k/2)}); }
+      else if(wr && wr.offsetWidth>0){ var W=caja(wr, blk), m=/scale\(([\d.]+)\)/.exec(wr.style.transform||''), s=m?+m[1]:1;
+        var cx=B.left+W.x+W.w/2, cy=B.top+W.y+W.h/2; out.push({left:cx-W.w*s/2, right:cx+W.w*s/2, top:cy-W.h*s/2, bottom:cy+W.h*s/2}); }
+      else { var P=caja(port, blk); out.push({left:B.left+P.x, right:B.left+P.x+P.w, top:B.top+P.y, bottom:B.top+P.y+P.h}); }
+    }
+    var lb=blk.querySelector('.label'), fr=blk.querySelector('.frase');
+    if(lb && !show && getComputedStyle(lb).display!=='none') renglones(lb, blk, B, out);
+    if(fr && show) renglones(fr, blk, B, out);
+    var pb=document.getElementById('progressBadge');
+    if(pb){ var cp=getComputedStyle(pb); if(cp.display!=='none' && cp.visibility!=='hidden'){ var rb=pb.getBoundingClientRect(); if(rb.width>0&&rb.height>0) out.push(rb); } }
   }catch(e){} return out; }
   function choca(a,cajas,m){ for(var i=0;i<cajas.length;i++){ var b=cajas[i];
     if(a.left<b.right+m && a.right>b.left-m && a.top<b.bottom+m && a.bottom>b.top-m) return true; } return false; }
-  function coloca(){ try{ if(bt.parentNode!==document.body) return;
+  var conTransicion=false, _vuelve=0;
+  function coloca(volver){ try{ if(bt.parentNode!==document.body) return;
     var bs=document.querySelectorAll('#grid .block');
     if(!bs.length){ colocado=false; return; }
-    var blk=bs[bs.length-1], r=blk.getBoundingClientRect();
-    if(r.width>40){
-      var der=Math.round(window.innerWidth - r.right)+14, w=bt.offsetWidth||128, h=bt.offsetHeight||30;
-      var cajas=cajasDelBloque(blk), arriba=null, dys=[14,6];
-      for(var j=0;j<dys.length;j++){ var t=Math.round(r.top)+dys[j];
-        if(!choca({left:window.innerWidth-der-w, right:window.innerWidth-der, top:t, bottom:t+h}, cajas, 6)){ arriba=t; break; } }
-      bt.style.right=der+'px'; bt.style.top=((arriba===null)?(Math.round(r.top)+14):arriba)+'px';
-      bt.classList.toggle('tg-apartado', arriba===null);
-      colocado=true; }
+    var blk=bs[bs.length-1];
+    if(blk.offsetWidth>40 && blk.offsetParent){
+      var G=blk.offsetParent.getBoundingClientRect();
+      var B={left:G.left+blk.offsetLeft, top:G.top+blk.offsetTop}; B.right=B.left+blk.offsetWidth;
+      var der=Math.round(window.innerWidth-B.right)+14, w=bt.offsetWidth||128, h=bt.offsetHeight||30, izq=window.innerWidth-der-w;
+      var cajas=cajasDelBloque(blk, B), arriba=null, dys=[14,6];
+      if(izq>=B.left+6){ for(var j=0;j<dys.length;j++){ var t=Math.round(B.top)+dys[j];
+        if(!choca({left:izq, right:izq+w, top:t, bottom:t+h}, cajas, 6)){ arriba=t; break; } } }
+      if(arriba===null){ clearTimeout(_vuelve); _vuelve=0;   // se aparta al instante y se desvanece donde estaba
+        if(!colocado){ bt.style.right=der+'px'; bt.style.top=(Math.round(B.top)+14)+'px'; }
+        bt.classList.add('tg-apartado'); }
+      else if(colocado && bt.classList.contains('tg-apartado') && volver!==true){   // vuelve cuando lo que se iba (la frase, 250 ms) ya se fue
+        if(!_vuelve) _vuelve=setTimeout(function(){ _vuelve=0; coloca(true); }, 260); }
+      else { clearTimeout(_vuelve); _vuelve=0;
+        bt.style.right=der+'px'; bt.style.top=arriba+'px';
+        bt.classList.remove('tg-apartado', 'bm-first-appear'); }   // la entrada del primer arranque es de la barra, no de los bloques
+      colocado=true;
+      if(!conTransicion){ conTransicion=true;
+        requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(bt.parentNode===document.body && conTransicion) bt.classList.add('tg-colocado'); }); }); } }
     else colocado=false;
   }catch(e){} }
   var _raf=0, _t1=0, _t2=0;
@@ -10232,17 +10264,17 @@ bootTriggui();
     document.body.appendChild(bt);
     bt.style.position='fixed'; bt.style.zIndex='940'; bt.style.left='auto'; bt.style.bottom='auto'; bt.style.opacity='1';
     bt.style.top='calc(env(safe-area-inset-top, 0px) + 60px)'; bt.style.right='16px';
-    if(venia){ bt.style.transition='none'; bt.style.opacity='0'; void bt.offsetWidth;
+    if(venia){ bt.style.transition='none'; bt.style.opacity='0'; bt.style.pointerEvents='none'; void bt.offsetWidth;   // mientras no se ve, tampoco se toca
       bt.style.transition='opacity 500ms cubic-bezier(0.19, 1, 0.22, 1) 550ms'; bt.style.opacity='1';
-      setTimeout(function(){ if(bt.parentNode===document.body) bt.style.transition=''; }, 1150); }
-    colocado=false; coloca(); pintaSpans(); repaintHome();
+      setTimeout(function(){ if(bt.parentNode===document.body){ bt.style.transition=''; bt.style.pointerEvents=''; } }, 1150); }
+    colocado=false; conTransicion=false; clearTimeout(_vuelve); _vuelve=0; bt.classList.remove('tg-colocado'); coloca(); pintaSpans(); repaintHome();
     setTimeout(pintaSpans, 300); setTimeout(pintaSpans, 900);
   }catch(e){} }
   function aBarra(){ try{ if(bt.parentNode!==document.body) return;
     slot.parentNode.insertBefore(bt, slot.nextSibling);
-    bt.style.position=''; bt.style.top=''; bt.style.right=''; bt.style.zIndex=''; bt.style.left=''; bt.style.bottom=''; bt.style.opacity=''; bt.style.transition='';
-    bt.classList.remove('tg-apartado');
-    colocado=false;
+    bt.style.position=''; bt.style.top=''; bt.style.right=''; bt.style.zIndex=''; bt.style.left=''; bt.style.bottom=''; bt.style.opacity=''; bt.style.transition=''; bt.style.pointerEvents='';
+    bt.classList.remove('tg-apartado', 'tg-colocado');
+    colocado=false; conTransicion=false; clearTimeout(_vuelve); _vuelve=0;
   }catch(e){} }
   function decide(){ if(ov.classList.contains('visible')) aBarra(); else aHome(); }
   new MutationObserver(decide).observe(ov,{attributes:true,attributeFilter:['class']});
@@ -10251,7 +10283,7 @@ bootTriggui();
   try{ var __g=document.getElementById('grid'); new MutationObserver(programaColoca).observe(__g,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['style','class']});
     __g.addEventListener('load', programaColoca, true); }catch(e){}
   setInterval(function(){ if(bt.parentNode===document.body && !colocado) coloca(); }, 500);
-  window.addEventListener('resize', function(){ colocado=false; coloca(); });
+  window.addEventListener('resize', function(){ colocado=false; conTransicion=false; bt.classList.remove('tg-colocado'); coloca(); });   // al girar, directo a su esquina nueva (sin deslizarse encima del contenido)
   window.addEventListener('load', decide);
   var _last=0;
   function accionHome(ev){ if(bt.parentNode!==document.body) return;
@@ -10262,6 +10294,7 @@ bootTriggui();
       pintaSpans();
       try{ if(window.BarraMagica&&BarraMagica.applyStrings) BarraMagica.applyStrings(); }catch(x){}
       repaintHome();
+      try{ if(typeof updateBadge==='function') updateBadge(); }catch(x){}   // la cinta de racha también cambia de idioma
     }catch(x){} }
   ['pointerup','touchend','click'].forEach(function(evn){ bt.addEventListener(evn, accionHome, {passive:false}); });
   ['pointerup','click'].forEach(function(evn){
