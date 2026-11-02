@@ -2361,7 +2361,8 @@ html[data-mode] #barraMagicaOverlay.bm-corte *:not(.bm-skip-indicator) {
 #barraLangToggle.tg-apartado {
   opacity: 0 !important;
   pointer-events: none !important;
-  transition: opacity 90ms ease !important;
+  visibility: hidden !important;   /* tampoco recibe el foco del teclado; se oculta al terminar su fundido */
+  transition: opacity 90ms ease, visibility 0s linear 90ms !important;
 }
 /* Ya colocado sobre el cuarto bloque: si cambia de esquina (14 o 6 px) se desliza, y al volver de apartado entra con un
    fundido corto, cuando lo que se iba ya se fue. La primera colocación es directa (la clase llega 60 ms después) y tras
@@ -10223,9 +10224,33 @@ bootTriggui();
     var pb=document.getElementById('progressBadge');
     if(pb){ var cp=getComputedStyle(pb); if(cp.display!=='none' && cp.visibility!=='hidden'){ var rb=pb.getBoundingClientRect(); if(rb.width>0&&rb.height>0) out.push(rb); } }
   }catch(e){} return out; }
+  // Y con el texto del OTRO idioma (segunda revisión): se mide en una copia invisible del cuarto bloque montada en body,
+  // fuera del #grid (no dispara su observador), con los textos que pondría repaintHome. Así el selector se ve en los dos
+  // idiomas o en ninguno, y tocarlo nunca lo hace desaparecer bajo el dedo. La portada no cambia con el idioma.
+  function cajasOtroIdioma(blk, B){ var out=[], c=null; try{
+    var L=window.__tgLibro && __tgLibro(); if(!L) return out;
+    var en=!esEN(), i=Array.prototype.indexOf.call(blk.parentNode.children, blk); if(i<0 || i>3) return out;
+    var pal=(en && Array.isArray(L.palabras_en) && L.palabras_en.length===4)? L.palabras_en : (L.palabras||[]);
+    var fra=(en && Array.isArray(L.frases_en) && L.frases_en.length===4)? L.frases_en : (L.frases||[]);
+    var show=blk.classList.contains('show'); c=blk.cloneNode(true);
+    c.className='block'+(show?' show':''); c.removeAttribute('id');
+    var cs=c.style, gb=getComputedStyle(blk); cs.position='fixed'; cs.left=B.left+'px'; cs.top=B.top+'px'; cs.width=gb.width; cs.height=gb.height; cs.boxSizing=gb.boxSizing;
+    cs.margin='0'; cs.visibility='hidden'; cs.animation='none'; cs.transition='none'; cs.transform='none'; cs.pointerEvents='none';
+    var lb=c.querySelector('.label'), fr=c.querySelector('.frase'), pt=c.querySelector('.portada'); if(pt) pt.parentNode.removeChild(pt);
+    if(lb && pal[i]!==undefined){ var m=(lb.textContent||'').match(/^(\S+)\s/); lb.textContent=m?(m[1]+' '+pal[i]):pal[i]; }
+    if(fr && fra[i]!==undefined) fr.textContent=fra[i];
+    document.body.appendChild(c);
+    var Bc={left:B.left, top:B.top};
+    if(lb && !show && getComputedStyle(lb).display!=='none') renglones(lb, c, Bc, out);
+    if(fr && show) renglones(fr, c, Bc, out);
+  }catch(e){} try{ if(c && c.parentNode) c.parentNode.removeChild(c); }catch(x){} return out; }
   function choca(a,cajas,m){ for(var i=0;i<cajas.length;i++){ var b=cajas[i];
     if(a.left<b.right+m && a.right>b.left-m && a.top<b.bottom+m && a.bottom>b.top-m) return true; } return false; }
-  var _vuelve=0, _trans=0, _quieto=0;
+  var _vuelve=0, _trans=0, _quieto=0, _finT=0, _tocaT=0, _tocaDesde=0;
+  // Solo se toca cuando se ve entero: los toques vuelven cuando su opacidad calculada llega a 1 (nunca a medio fundido).
+  function devuelveToques(){ clearTimeout(_tocaT); _tocaT=0;
+    if(bt.parentNode!==document.body || bt.classList.contains('tg-apartado') || Date.now()<_tocaDesde) return;
+    if(+getComputedStyle(bt).opacity>=0.95) bt.style.pointerEvents=''; else _tocaT=setTimeout(devuelveToques, 80); }
   // El deslizamiento (tg-colocado) se arma con UN solo temporizador: nunca antes de 60 ms tras colocarse ni antes de que
   // pase 1 s sin giros ni cambios de tamaño, para que lo que se reacomoda tras girar nunca se deslice encima del contenido.
   function sinTransicion(ms){ clearTimeout(_trans); _trans=0; bt.classList.remove('tg-colocado'); _quieto=Date.now()+(ms||0); }
@@ -10239,17 +10264,22 @@ bootTriggui();
       var G=blk.offsetParent.getBoundingClientRect();
       var B={left:G.left+blk.offsetLeft, top:G.top+blk.offsetTop}; B.right=B.left+blk.offsetWidth;
       var der=Math.round(window.innerWidth-B.right)+14, w=bt.offsetWidth||128, h=bt.offsetHeight||30, izq=window.innerWidth-der-w;
-      var cajas=cajasDelBloque(blk, B), arriba=null, dys=[14,6];
-      if(izq>=B.left+6){ for(var j=0;j<dys.length;j++){ var t=Math.round(B.top)+dys[j];
-        if(!choca({left:izq, right:izq+w, top:t, bottom:t+h}, cajas, 6)){ arriba=t; break; } } }
+      var cajas=cajasDelBloque(blk, B), otras=null, arriba=null, dys=[14,6];
+      if(izq>=B.left+6){ for(var j=0;j<dys.length;j++){ var t=Math.round(B.top)+dys[j], sel={left:izq, right:izq+w, top:t, bottom:t+h};
+        if(choca(sel, cajas, 6)) continue;
+        if(otras===null) otras=cajasOtroIdioma(blk, B);   // también tiene que caber en el otro idioma
+        if(!choca(sel, otras, 6)){ arriba=t; break; } } }
       if(arriba===null){ clearTimeout(_vuelve); _vuelve=0;   // se aparta al instante y se desvanece donde estaba
         if(!colocado){ bt.style.right=der+'px'; bt.style.top=(Math.round(B.top)+14)+'px'; }
+        bt.style.pointerEvents='none'; clearTimeout(_tocaT); _tocaT=0;
         bt.classList.add('tg-apartado'); }
       else if(colocado && bt.classList.contains('tg-apartado') && volver!==true){   // vuelve cuando lo que se iba (la frase, 250 ms) ya se fue
         if(!_vuelve) _vuelve=setTimeout(function(){ _vuelve=0; coloca(true); }, 260); }
       else { clearTimeout(_vuelve); _vuelve=0;
+        var volvia=bt.classList.contains('tg-apartado');
         bt.style.right=der+'px'; bt.style.top=arriba+'px';
-        bt.classList.remove('tg-apartado', 'bm-first-appear'); }   // la entrada del primer arranque es de la barra, no de los bloques
+        bt.classList.remove('tg-apartado', 'bm-first-appear');   // la entrada del primer arranque es de la barra, no de los bloques
+        if(volvia || bt.style.pointerEvents==='none'){ clearTimeout(_tocaT); _tocaT=setTimeout(devuelveToques, 60); } }
       colocado=true; armaTransicion(); }
     else colocado=false;
   }catch(e){} }
@@ -10268,9 +10298,10 @@ bootTriggui();
     document.body.appendChild(bt);
     bt.style.position='fixed'; bt.style.zIndex='940'; bt.style.left='auto'; bt.style.bottom='auto'; bt.style.opacity='1';
     bt.style.top='calc(env(safe-area-inset-top, 0px) + 60px)'; bt.style.right='16px';
+    clearTimeout(_finT); _finT=0; clearTimeout(_tocaT); _tocaT=0; _tocaDesde=0;
     if(venia){ bt.style.transition='none'; bt.style.opacity='0'; bt.style.pointerEvents='none'; void bt.offsetWidth;   // mientras no se ve, tampoco se toca
-      bt.style.transition='opacity 500ms cubic-bezier(0.19, 1, 0.22, 1) 550ms'; bt.style.opacity='1';
-      setTimeout(function(){ if(bt.parentNode===document.body){ bt.style.transition=''; bt.style.pointerEvents=''; } }, 1150); }
+      bt.style.transition='opacity 500ms cubic-bezier(0.19, 1, 0.22, 1) 550ms'; bt.style.opacity='1'; _tocaDesde=Date.now()+1150;
+      _finT=setTimeout(function(){ _finT=0; if(bt.parentNode===document.body){ bt.style.transition=''; devuelveToques(); } }, 1150); }
     colocado=false; clearTimeout(_vuelve); _vuelve=0; sinTransicion(0); coloca(); pintaSpans(); repaintHome();
     setTimeout(pintaSpans, 300); setTimeout(pintaSpans, 900);
   }catch(e){} }
@@ -10278,7 +10309,7 @@ bootTriggui();
     slot.parentNode.insertBefore(bt, slot.nextSibling);
     bt.style.position=''; bt.style.top=''; bt.style.right=''; bt.style.zIndex=''; bt.style.left=''; bt.style.bottom=''; bt.style.opacity=''; bt.style.transition=''; bt.style.pointerEvents='';
     bt.classList.remove('tg-apartado', 'tg-colocado');
-    colocado=false; clearTimeout(_vuelve); _vuelve=0; sinTransicion(0);
+    colocado=false; clearTimeout(_vuelve); _vuelve=0; sinTransicion(0); clearTimeout(_finT); _finT=0; clearTimeout(_tocaT); _tocaT=0; _tocaDesde=0;
   }catch(e){} }
   function decide(){ if(ov.classList.contains('visible')) aBarra(); else aHome(); }
   new MutationObserver(decide).observe(ov,{attributes:true,attributeFilter:['class']});
@@ -10286,6 +10317,7 @@ bootTriggui();
   // 🌒 v4.18: cualquier cambio en los bloques (libro nuevo, revelar, idioma, cascada) vuelve a buscarle esquina al selector
   try{ var __g=document.getElementById('grid'); new MutationObserver(programaColoca).observe(__g,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['style','class']});
     __g.addEventListener('load', programaColoca, true); }catch(e){}
+  try{ if(document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', programaColoca); }catch(e){}   // la tipografía que llega tarde reacomoda el texto sin mutación: también vuelve a decidir
   setInterval(function(){ if(bt.parentNode===document.body && !colocado) coloca(); }, 500);
   window.addEventListener('resize', function(){ colocado=false; sinTransicion(1000); coloca(); });   // al girar, directo a su esquina nueva; se vuelve a deslizar 1 s después del último cambio
   window.addEventListener('load', decide);
