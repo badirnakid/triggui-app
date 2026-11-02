@@ -2356,6 +2356,13 @@ html[data-mode] #barraMagicaOverlay.bm-corte *:not(.bm-skip-indicator) {
   opacity: 0;
   animation: bm-fade-up 1s cubic-bezier(0.19, 1, 0.22, 1) 1.7s forwards;
 }
+/* 🌒 v4.18 (C297): en los bloques, el selector se aparta con un fundido cuando su esquina del cuarto bloque no cabe sin
+   tapar el contenido (portada, título, palabra o frase); vuelve en cuanto cabe. Lo pone y lo quita lang-toggle-migrante. */
+#barraLangToggle.tg-apartado {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity 250ms ease !important;
+}
 
 #barraLangToggle span {
   padding: 5px 11px;
@@ -4046,7 +4053,7 @@ window.__trigguiFotoTarjeta = function () {
     return true;
   } catch (e) { return false; }
 };
-window.__trigguiVersion = '4.17';   // 🌒 v4.17: el cambio de modo deja la barra abierta
+window.__trigguiVersion = '4.18';   // 🌒 v4.18: el selector de idioma se ve en los bloques tras cualquier búsqueda (v4.17: el cambio de modo deja la barra abierta)
 window.addEventListener('pointerdown', function () { window.__trigguiDownEn = performance.now(); }, true);   // 🌒 v4.5: instante del ultimo gesto
 // 🌒 v4.5: un bloque solo puede abrir la Tarjeta con un gesto NUEVO, iniciado despues del ultimo cierre y al menos 600ms despues
 window.__tarjetaPuedeAbrir = function () { var c = window.__tarjetaCerradaEn || 0; return !c || (performance.now() - c > 600 && (window.__trigguiDownEn || 0) > c); };
@@ -10181,30 +10188,68 @@ bootTriggui();
     }
   }catch(x){ try{ if(window.__tgRender) __tgRender(); }catch(y){} } }
   var colocado=false;
+  // 🌒 v4.18 (C297): el selector nunca tapa lo que dice o muestra el cuarto bloque (portada, título, palabra o frase).
+  // Busca su esquina a 14 px del borde y, si ahí toca el contenido, a 6 px; si en ninguna cabe (pantalla chica, frase
+  // larga, la portada en ese bloque), se aparta con un fundido y vuelve en cuanto cabe (otro libro, otro idioma, al
+  // revelar o al girar la pantalla). Las cajas de texto son las de cada renglón, no la del párrafo entero.
+  function cajasDelBloque(blk){ var out=[]; try{
+    ['.label','.frase','.portada img','.port-text h2','.port-text p','.emoji-big'].forEach(function(s){
+      var els=blk.querySelectorAll(s);
+      for(var k=0;k<els.length;k++){ var el=els[k]; if(!el.getClientRects().length) continue;
+        var cs=getComputedStyle(el); if(cs.visibility==='hidden'||+cs.opacity<0.05) continue;
+        if(el.tagName==='IMG'){ out.push(el.getBoundingClientRect()); continue; }
+        var rg=document.createRange(); rg.selectNodeContents(el); var rs=rg.getClientRects();
+        for(var i=0;i<rs.length;i++){ if(rs[i].width>0&&rs[i].height>0) out.push(rs[i]); } } });
+  }catch(e){} return out; }
+  function choca(a,cajas,m){ for(var i=0;i<cajas.length;i++){ var b=cajas[i];
+    if(a.left<b.right+m && a.right>b.left-m && a.top<b.bottom+m && a.bottom>b.top-m) return true; } return false; }
   function coloca(){ try{ if(bt.parentNode!==document.body) return;
     var bs=document.querySelectorAll('#grid .block');
     if(!bs.length){ colocado=false; return; }
-    var r=bs[bs.length-1].getBoundingClientRect();
-    if(r.width>40){ bt.style.top=(Math.round(r.top)+14)+'px';
-      bt.style.right=(Math.round(window.innerWidth - r.right)+14)+'px'; colocado=true; }
+    var blk=bs[bs.length-1], r=blk.getBoundingClientRect();
+    if(r.width>40){
+      var der=Math.round(window.innerWidth - r.right)+14, w=bt.offsetWidth||128, h=bt.offsetHeight||30;
+      var cajas=cajasDelBloque(blk), arriba=null, dys=[14,6];
+      for(var j=0;j<dys.length;j++){ var t=Math.round(r.top)+dys[j];
+        if(!choca({left:window.innerWidth-der-w, right:window.innerWidth-der, top:t, bottom:t+h}, cajas, 6)){ arriba=t; break; } }
+      bt.style.right=der+'px'; bt.style.top=((arriba===null)?(Math.round(r.top)+14):arriba)+'px';
+      bt.classList.toggle('tg-apartado', arriba===null);
+      colocado=true; }
     else colocado=false;
   }catch(e){} }
-  function aHome(){ try{ if(bt.parentNode===document.body){ coloca(); return; }
+  var _raf=0, _t1=0, _t2=0;
+  function programaColoca(){ if(bt.parentNode!==document.body) return;
+    if(!_raf) _raf=requestAnimationFrame(function(){ _raf=0; coloca(); });
+    clearTimeout(_t1); _t1=setTimeout(coloca, 350); clearTimeout(_t2); _t2=setTimeout(coloca, 900); }   // y otra vez cuando terminan la cascada y la entrada de la portada
+  // 🌒 v4.18 (C297): en los bloques el selector SIEMPRE se ve. El bocado y el eco lo esconden con bm-content-fading
+  // (opacidad 0, desenfoque y sin toques, todo con !important) y nadie se la quitaba al mudarlo a los bloques: tras
+  // cualquier búsqueda quedaba invisible. Al llegar a los bloques se le quita, y si venía escondido entra con un fundido
+  // a destiempo para aparecer junto con el cuarto bloque (que entra en cascada), nunca antes que él.
+  function limpiaFundido(){ try{ var venia=bt.classList.contains('bm-content-fading');
+    bt.classList.remove('bm-content-fading','bm-content-restoring'); return venia; }catch(e){ return false; } }
+  function aHome(){ try{ if(bt.parentNode===document.body){ limpiaFundido(); coloca(); return; }
+    var venia=limpiaFundido();
     document.body.appendChild(bt);
     bt.style.position='fixed'; bt.style.zIndex='940'; bt.style.left='auto'; bt.style.bottom='auto'; bt.style.opacity='1';
     bt.style.top='calc(env(safe-area-inset-top, 0px) + 60px)'; bt.style.right='16px';
+    if(venia){ bt.style.transition='none'; bt.style.opacity='0'; void bt.offsetWidth;
+      bt.style.transition='opacity 500ms cubic-bezier(0.19, 1, 0.22, 1) 550ms'; bt.style.opacity='1';
+      setTimeout(function(){ if(bt.parentNode===document.body) bt.style.transition=''; }, 1150); }
     colocado=false; coloca(); pintaSpans(); repaintHome();
     setTimeout(pintaSpans, 300); setTimeout(pintaSpans, 900);
   }catch(e){} }
   function aBarra(){ try{ if(bt.parentNode!==document.body) return;
     slot.parentNode.insertBefore(bt, slot.nextSibling);
-    bt.style.position=''; bt.style.top=''; bt.style.right=''; bt.style.zIndex=''; bt.style.left=''; bt.style.bottom=''; bt.style.opacity='';
+    bt.style.position=''; bt.style.top=''; bt.style.right=''; bt.style.zIndex=''; bt.style.left=''; bt.style.bottom=''; bt.style.opacity=''; bt.style.transition='';
+    bt.classList.remove('tg-apartado');
     colocado=false;
   }catch(e){} }
   function decide(){ if(ov.classList.contains('visible')) aBarra(); else aHome(); }
   new MutationObserver(decide).observe(ov,{attributes:true,attributeFilter:['class']});
   try{ new MutationObserver(pintaSpans).observe(document.documentElement,{attributes:true,attributeFilter:['lang']}); }catch(e){}
-  try{ new MutationObserver(function(){ if(!colocado) coloca(); }).observe(document.getElementById('grid'),{childList:true,subtree:true}); }catch(e){}
+  // 🌒 v4.18: cualquier cambio en los bloques (libro nuevo, revelar, idioma, cascada) vuelve a buscarle esquina al selector
+  try{ var __g=document.getElementById('grid'); new MutationObserver(programaColoca).observe(__g,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['style','class']});
+    __g.addEventListener('load', programaColoca, true); }catch(e){}
   setInterval(function(){ if(bt.parentNode===document.body && !colocado) coloca(); }, 500);
   window.addEventListener('resize', function(){ colocado=false; coloca(); });
   window.addEventListener('load', decide);
