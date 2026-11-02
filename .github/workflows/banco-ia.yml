@@ -7,7 +7,8 @@ name: 🧪 Banco C278 · Claude (no publica nada)
 #
 # · Corre SOLO cuando se empuja la rama «banco-ia». Gasta API: se empuja con el go de Badir y nunca de otro modo.
 # · No escribe en ningún repositorio: permisos de solo lectura y ningún push. Lo que sale queda en el log y en
-#   los artefactos del run.
+#   los artefactos del run. Ningún checkout deja su token guardado en git (persist-credentials: false): el código
+#   que corre después no lo puede leer.
 # · Cada lado corre solo con su llave: si algo quedara llamando al otro proveedor, fallaría a la vista.
 # · El mismo azar (semilla por libro) y el mismo reloj para los dos lados: los mismos lentes y la misma franja.
 # · El saneador y el juez de audiencia van con lote 1 (el libro de la corrida), como quedará con C282.
@@ -37,6 +38,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: 📦 triggui-content (solo lectura)
         uses: actions/checkout@v4
         with:
@@ -44,6 +47,7 @@ jobs:
           token: ${{ secrets.CONTENT_REPO_TOKEN }}
           path: triggui-content
           ref: claude-en-el-horno
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -92,6 +96,8 @@ jobs:
       BANCO_SEMILLA: ${{ matrix.libro.semilla }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: 📦 triggui-content (solo lectura; la rama trae el gancho del saneador)
         uses: actions/checkout@v4
         with:
@@ -99,6 +105,7 @@ jobs:
           token: ${{ secrets.CONTENT_REPO_TOKEN }}
           path: triggui-content
           ref: claude-en-el-horno
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -207,6 +214,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '20'

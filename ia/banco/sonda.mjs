@@ -3,9 +3,10 @@
  * Sonda del banco de C278 (2 de noviembre de 2026): antes de hornear diez ediciones, unas pocas llamadas baratas.
  *
  *   · Dice si están las llaves (presente o falta; nunca su valor ni su largo).
- *   · Con Claude: cada esquema grande del pipeline se manda una vez a Haiku 5.5, para saber si la API lo compila
- *     («Schema is too complex» sería un 400); Sonnet 5.5 una vez con su forma de pensar; el «escritor» (Haiku 5.5 con
- *     pensamiento adaptativo) con el esquema de la tarjeta; y una llamada de JSON libre.
+ *   · Con Claude: cada esquema del pipeline se manda una vez a Haiku 5.5, para saber si la API lo compila
+ *     («Schema is too complex» sería un 400) y si el ejemplo llega completo y se lee como JSON; Sonnet 5.5 («grande»)
+ *     con su forma de pensar y con los dos esquemas que recibe cuando hay que escalar (ContentES y CSALExtraction);
+ *     el «escritor» (Haiku 5.5 con pensamiento adaptativo) con el esquema de la tarjeta; y una llamada de JSON libre.
  *   · Con OpenAI: una llamada mínima, para saber que la llave sirve.
  *
  * Sale con 1 si algo de lo anterior falla, y el banco no corre. Uso (desde la raíz de triggui-app):
@@ -37,6 +38,7 @@ for (const f of ['musica-queries.json', 'musica-armonia.json', 'video-armonia.js
   if (fs.existsSync(ruta)) esquemas.push(JSON.parse(fs.readFileSync(ruta, 'utf8')));
 }
 
+// Con un esquema, además de que no haya rechazo, el ejemplo tiene que llegar completo (sin corte) y leerse como JSON.
 async function prueba(proveedor, nombre, params) {
   process.env.TRIGGUI_IA_PROVEEDOR = proveedor;
   const t0 = Date.now();
@@ -44,8 +46,13 @@ async function prueba(proveedor, nombre, params) {
     const r = await IA.crearCliente().chat.completions.create(params, { timeout: 120000 });
     const fin = r.choices[0].finish_reason;
     const sr = (r._claude && r._claude.stop_reason) || fin;
-    const bien = !r.choices[0].message.refusal;
-    linea(bien, `${proveedor} · ${nombre}: ${sr} · ${r.usage.prompt_tokens} de entrada, ${r.usage.completion_tokens} de salida · ${Date.now() - t0} ms`);
+    let bien = !r.choices[0].message.refusal;
+    let nota = '';
+    if (bien && params.response_format && params.response_format.type === 'json_schema') {
+      if (fin !== 'stop') { bien = false; nota = ' · CORTADO'; }
+      else { try { JSON.parse(r.choices[0].message.content); nota = ' · JSON completo'; } catch { bien = false; nota = ' · NO SE LEE COMO JSON'; } }
+    }
+    linea(bien, `${proveedor} · ${nombre}: ${sr} · ${r.usage.prompt_tokens} de entrada, ${r.usage.completion_tokens} de salida · ${Date.now() - t0} ms${nota}`);
     return r;
   } catch (e) {
     linea(false, `${proveedor} · ${nombre}: ${e.status || ''} ${String(e.message).slice(0, 240)}`);
@@ -53,16 +60,25 @@ async function prueba(proveedor, nombre, params) {
   }
 }
 
-console.log(`\nClaude: ${esquemas.length} esquemas del pipeline (¿los compila la API?)`);
+console.log(`\nClaude: ${esquemas.length} esquemas del pipeline (¿los compila la API y llega el ejemplo completo?)`);
 for (const e of esquemas) {
   await prueba('claude', e.name, {
-    model: 'mini', max_tokens: 1024,
+    model: 'mini', max_tokens: 4096,
     response_format: { type: 'json_schema', json_schema: { name: e.name, strict: true, schema: e.schema } },
     messages: [{ role: 'system', content: 'Devuelve un ejemplo mínimo y válido de este esquema, con textos de pocas palabras.' }, { role: 'user', content: 'Ejemplo.' }]
   });
 }
 console.log('\nClaude: los papeles y el JSON libre');
 await prueba('claude', 'grande (Sonnet 5.5)', { model: 'grande', max_tokens: 1024, messages: [{ role: 'user', content: 'Responde solo: listo.' }] });
+for (const nombre of ['ContentES', 'CSALExtraction']) {
+  const e = esquemas.find((x) => x.name === nombre);
+  if (!e) { linea(false, `claude · falta el esquema ${nombre} para probar el papel grande`); continue; }
+  await prueba('claude', `grande (Sonnet 5.5) con ${nombre}, como cuando se escala`, {
+    model: 'grande', max_tokens: 6000,
+    response_format: { type: 'json_schema', json_schema: { name: e.name, strict: true, schema: e.schema } },
+    messages: [{ role: 'system', content: 'Devuelve un ejemplo mínimo y válido de este esquema, con textos de pocas palabras.' }, { role: 'user', content: 'Ejemplo.' }]
+  });
+}
 const contentES = esquemas.find((e) => e.name === 'ContentES');
 if (contentES) {
   await prueba('claude', 'escritor (Haiku 5.5 que piensa) con ContentES', {
