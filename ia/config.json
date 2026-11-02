@@ -20,6 +20,13 @@
     "gpt-4o-2024-08-06": "grande",
     "gpt-4o-2024-11-20": "grande"
   },
+  "precios_usd_por_millon": {
+    "_fuente": "Claude: página oficial de precios de la API, leída el 2 de noviembre de 2026. OpenAI: fichas de los modelos, leídas el 2 de noviembre de 2026; su precio de entrada en caché no consta y se cobra como entrada.",
+    "gpt-4o-mini": { "entrada": 0.15, "salida": 0.60 },
+    "gpt-4o": { "entrada": 2.50, "salida": 10.00 },
+    "claude-haiku-5-5": { "entrada": 0.10, "salida": 0.50, "cache_lectura": 0.01, "cache_escritura": 0.125 },
+    "claude-sonnet-5-5": { "entrada": 2.00, "salida": 10.00, "cache_lectura": 0.10, "cache_escritura": 2.50 }
+  },
   "openai": {
     "url": "https://api.openai.com/v1/chat/completions"
   },

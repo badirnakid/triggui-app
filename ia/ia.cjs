@@ -24,8 +24,8 @@
  *   · un 429 por tope de gasto (enforced_spend_limit_reached) no se reintenta: se dice claro.
  *
  * Registro de uso: con TRIGGUI_IA_REGISTRO=<archivo>, cada llamada (de los dos proveedores) deja una línea JSON con
- * papel, modelo, tokens, fin, milisegundos, reintentos y de dónde vino (archivo:función). Sin la variable no se
- * escribe nada y las peticiones son las mismas.
+ * papel, modelo, tokens, fin, milisegundos, reintentos y de dónde vino (archivo:función). «entrada» es la entrada que
+ * no salió de la caché, con los dos proveedores. Sin la variable no se escribe nada y las peticiones son las mismas.
  */
 const fs = require('fs');
 const path = require('path');
@@ -91,7 +91,8 @@ function anotaOpenAI(params, data, t0, de, error) {
   const u = (data && data.usage) || {};
   const ch = (data && data.choices && data.choices[0]) || {};
   registra({ proveedor: 'openai', papel: papel(params.model), modelo: (data && data.model) || resolverModelo(params.model, 'openai'), origen: de,
-    entrada: u.prompt_tokens || 0, salida: u.completion_tokens || 0, cache_lectura: (u.prompt_tokens_details && u.prompt_tokens_details.cached_tokens) || 0, cache_escritura: 0,
+    entrada: (u.prompt_tokens || 0) - ((u.prompt_tokens_details && u.prompt_tokens_details.cached_tokens) || 0), salida: u.completion_tokens || 0,
+    cache_lectura: (u.prompt_tokens_details && u.prompt_tokens_details.cached_tokens) || 0, cache_escritura: 0,
     fin: ch.finish_reason || null, ms: Date.now() - t0, reintentos: 0, error: error || null });
 }
 

@@ -302,7 +302,8 @@ def chat(payload, timeout=90):
             raise
         u = d.get("usage") or {}
         _registra({"proveedor": "openai", "papel": rol, "modelo": d.get("model") or p["model"], "origen": de,
-                   "entrada": u.get("prompt_tokens") or 0, "salida": u.get("completion_tokens") or 0,
+                   "entrada": (u.get("prompt_tokens") or 0) - ((u.get("prompt_tokens_details") or {}).get("cached_tokens") or 0),
+                   "salida": u.get("completion_tokens") or 0,
                    "cache_lectura": (u.get("prompt_tokens_details") or {}).get("cached_tokens") or 0, "cache_escritura": 0,
                    "fin": ((d.get("choices") or [{}])[0] or {}).get("finish_reason"), "ms": int((time.time() - t0) * 1000), "reintentos": 0, "error": None})
         return d
