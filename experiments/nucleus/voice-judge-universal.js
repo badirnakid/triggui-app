@@ -312,8 +312,8 @@ Devuelve SOLO la frase reescrita.`;
       if (!newPhrase) continue;
 
       // C278: una frase nueva fuera de su largo no entra (la anterior se queda y el juez la vuelve a ver).
-      // Bloque: 40 a 100. OG: 30 a 78, lo que cabe entero en la imagen que se comparte.
-      const [minLargo, maxLargo] = f.field.startsWith("edition_blocks") ? [40, 100] : [30, 78];
+      // Bloque: 40 a 100. OG: 30 a 70, el mismo máximo del esquema, del prompt y de largos.js.
+      const [minLargo, maxLargo] = f.field.startsWith("edition_blocks") ? [40, 100] : [30, 70];
       if (newPhrase.length < minLargo || newPhrase.length > maxLargo) {
         console.log(`   📏 regeneratePhrase ${f.field}[${f.index}]: la nueva mide ${newPhrase.length} (de ${minLargo} a ${maxLargo}); se queda la anterior`);
         continue;

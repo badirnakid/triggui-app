@@ -40,6 +40,18 @@ const numero = `${"A" + "a".repeat(140)} cuesta 3.5 pesos y p. ej. sigue ${"b".r
 const r7 = recortaParrafo(numero);
 prueba("no corta en 3.5 ni en p. ej.", !/3\.$|p\.$|ej\.$/.test(r7) && plano(r7).length <= 320, r7);
 
+// 7b. Iniciales y abreviaturas de tratamiento no cierran la oración (segunda pasada de C300).
+const relleno = (n) => "a".repeat(n);
+const mr = `${"T" + relleno(150)}. Then Mr. Darcy walked ${relleno(150)} and on ${relleno(40)}.`;
+const rMr = recortaParrafo(mr);
+prueba("no corta en «Mr.»", !/Mr\.$/.test(rMr) && rMr === `${"T" + relleno(150)}.`, rMr.slice(-40));
+const dr = `${"L" + relleno(150)}. Lo dijo el Dr. López con ${relleno(150)} y luego ${relleno(40)}.`;
+prueba("no corta en «Dr.»", recortaParrafo(dr) === `${"L" + relleno(150)}.`, recortaParrafo(dr).slice(-40));
+const jk = `${"E" + relleno(150)}. Lo escribió J. K. Rowling en ${relleno(150)} y ${relleno(40)}.`;
+prueba("no corta en «J. K.»", recortaParrafo(jk) === `${"E" + relleno(150)}.`, recortaParrafo(jk).slice(-40));
+const comillas = `${"U" + relleno(150)}. «A. Tal» dijo ${relleno(160)}. ${"F" + relleno(40)}.`;
+prueba("inicial tras comilla tampoco", !/«A\.$/.test(recortaParrafo(comillas)), recortaParrafo(comillas).slice(-30));
+
 // 8. ajustaLargos recorta en su lugar y avisa lo demás.
 const contenido = {
   card_es: { titulo: "x".repeat(70), parrafoTop: largo, subtitulo: "Una pregunta clara para abrir?", parrafoBot: corto },

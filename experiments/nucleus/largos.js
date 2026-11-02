@@ -3,8 +3,9 @@
  *
  * La tarjeta se comparte como imagen fija (scripts/build-tarjeta-png.js, 1066 × 1600). Su letra crece cuando el
  * texto es corto, pero no baja de su tamaño base, y lo que no cabe se corta sin aviso. Medido el 2 de noviembre
- * con las ediciones de los bancos de C278: con un título de unos 40 caracteres cabe hasta unos 780 de párrafos;
- * con los límites del esquema (320 + 320) siempre cabe. Ningún proveedor impone esos límites: Claude no admite
+ * con las ediciones de los bancos de C278 y textos de prueba: sin resaltados largos cabe hasta unos 880 caracteres
+ * de párrafos; una tarjeta de OpenAI de 792, con tres oraciones resaltadas, se salió. Con los límites del esquema
+ * (320 + 320) siempre cabe. Ningún proveedor impone esos límites: Claude no admite
  * maxLength en el esquema, y OpenAI no lo cumplió en el banco 1 (párrafos de hasta 417 y una tarjeta de 792 que
  * llegó a la letra mínima y se salió). Por eso aquí se cumplen en código:
  *   · parrafoTop o parrafoBot de más de 320: se quedan hasta la última oración completa que cabe, sin partir un
@@ -26,6 +27,15 @@ export const LARGOS = {
 /** El texto como lo ve el lector: sin las marcas del resaltado. */
 export const plano = (t) => String(t ?? "").replace(/\[\/?[Hh]\]/g, "");
 
+// Un punto después de una inicial («J. K. Rowling») o de una abreviatura de tratamiento («Mr. Darcy», «el Dr.
+// López») no cierra la oración (segunda pasada de C300).
+const ABREVIATURAS = new Set(["sr", "sra", "srta", "sres", "srs", "dr", "dra", "dres", "lic", "ing", "prof", "profa",
+  "ud", "uds", "vd", "vds", "gral", "sto", "sta", "fr", "mr", "mrs", "ms", "mx", "st", "jr", "sr", "ej", "p", "pág", "núm", "vol", "cap"]);
+function esAbreviatura(antes) {
+  const palabra = (plano(antes).match(/(\S+)$/) || ["", ""])[1].replace(/^[«"“‘'(¿¡\[]+/, "");
+  return /^\p{L}$/u.test(palabra) || ABREVIATURAS.has(palabra.toLowerCase());
+}
+
 // Un fin de oración (. ! ? …), con las comillas o el paréntesis que lo cierran y un [/H] pegados, seguido del final
 // del texto o de un espacio y el inicio de otra oración (mayúscula, número, comilla o signo de apertura).
 const FIN_DE_ORACION = /[.!?…]+["'»”’)\]]*(?:\[\/[Hh]\])?(?=\s*$|\s+(?:\[[Hh]\]\s*)?["'«“‘¿¡(—–-]*[A-ZÁÉÍÓÚÑÜ0-9])/g;
@@ -39,6 +49,7 @@ export function recortaParrafo(texto, max = LARGOS.parrafoTop[1], min = LARGOS.p
   if (plano(t).length <= max) return t;
   let mejor = null;
   for (const m of t.matchAll(FIN_DE_ORACION)) {
+    if (/^\.(?!\.)/.test(m[0]) && esAbreviatura(t.slice(0, m.index))) continue;
     const pre = t.slice(0, m.index + m[0].length);
     const n = plano(pre).length;
     if (n > max) break;
