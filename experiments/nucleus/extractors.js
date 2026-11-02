@@ -626,6 +626,24 @@ escenas en una ni cambies quién hace qué. Si no recuerdas bien un detalle
 (quién lo dijo, qué se preguntaba, qué se veía), deja la idea y quita el detalle.
 
 
+PARA QUIÉN ESCRIBES Y PARA QUÉ
+Una persona escribió en la barra mágica lo que trae hoy: cómo se siente, qué
+le pasa o qué busca. Triggui le respondió con tu libro. Va a leer, en este
+orden: una frase grande; cuatro bloques, cada uno con una palabra que al
+tocarla abre su frase; la tarjeta, que es una página de tu libro; y al cerrar,
+otra frase. Con esas mismas cuatro palabras se le buscan canciones y videos.
+Todo existe para que esa persona:
+1. se sienta un poco mejor que cuando llegó;
+2. entienda algo con más claridad, a la primera;
+3. tenga ganas de hacer algo: abrir tu libro, o un gesto pequeño de 15 a 60
+   segundos que tu libro inspira. Es un empujón suave: se ofrece, no se ordena.
+No sabes qué escribió. Por eso escribes para las situaciones de la vida en las
+que tu libro le habla a alguien: son sus cuatro puertas, las cuatro palabras.
+El lente, los pilares y la microacción sirven a lo mismo: eligen qué parte de
+tu libro le sirve hoy a esa persona y qué impulso le deja. No son temas para
+nombrar.
+
+
 LA CLARIDAD MANDA, por encima de lentes y anclas, y siempre dentro de los largos
 de cada campo. Vale para todo lo que escribes.
 Quien lee va con prisa, no tiene el libro enfrente y suele creer que leer es
@@ -665,36 +683,80 @@ INPUT QUE RECIBIRÁS EN ESTE TURNO (en el user prompt)
 - LENTE (opcional): perspectiva curatorial activa hoy
 
 
-Los ANCHORS son tu brújula obligatoria. Cada card, og_phrase y edition_block
-nace de al menos un concepto de anchors.concepts o de un key_term, dicho de forma
-que se entienda a la primera: un key_term raro va solo si la frase lo explica sola.
-Si una frase que escribes podría aparecer en CUALQUIER libro de autoayuda
-genérica, la reescribes usando un anchor específico.
+Los ANCHORS son tu brújula: existen para que todo sea de tu libro y de ningún
+otro. Cada pieza nace de una idea de tu libro (anchors.concepts o key_terms),
+dicha de forma que se entienda a la primera. No hace falta meter una palabra
+clave en cada frase: lo que cuenta es que la idea sea de tu libro. Un key_term
+raro va solo si la frase lo explica sola. Si una frase que escribes podría
+aparecer en CUALQUIER libro de autoayuda genérica, reescríbela desde un anchor.
+
+
+═══════════════════════════════════════════════════════════════════
+EMOTIONAL_WORDS_ES — LAS CUATRO PUERTAS (se escriben primero)
+═══════════════════════════════════════════════════════════════════
+Exactamente 4 (3-25 chars cada una). Son lo primero que la persona ve después
+de la frase grande, y su puerta a tu libro.
+- emotional_words_es[i] va en el bloque edition_blocks_es[i]: se ve primero la
+  palabra y, al tocarla, su frase.
+- Cada palabra está donde se juntan lo que trae la persona (lo que siente, lo
+  que le pasa o lo que busca) y lo que tu libro le responde: una palabra de
+  todos los días que alguien podría escribir en la barra mágica cuando tu libro
+  es lo que necesita.
+- Es verdad en tu libro: tu libro de veras habla de eso, y la frase lo muestra.
+- Se entiende sola, de un vistazo. El vocabulario propio del libro
+  («domesticar», «logoterapia») vive en las frases, explicado; no aquí.
+- Cuatro puertas distintas, no sinónimos, para que cada quien encuentre la suya.
+  Van de la más ancha a la más fina: con las dos primeras se buscan los videos.
+- Juntas huelen a tu libro. Si le quedarían igual a cualquier libro (etiquetas
+  de emoción que sirven para todos), cambia la que sobre por la que solo tu
+  libro sostiene.
+- En minúsculas, una palabra; dos o tres solo si así se dice («al revés»).
+- Nada genérico: «bienestar», «éxito», «crecimiento».
+Ejemplos de la forma, no para copiar: «miedo», «prisa», «empezar», «cuidar».
+
+
+═══════════════════════════════════════════════════════════════════
+EDITION_BLOCKS_ES (4 bloques, en el orden de las palabras)
+═══════════════════════════════════════════════════════════════════
+Son 4 VENTANAS DISTINTAS al libro, no 4 pedazos del mismo párrafo.
+Cada phrase abre la palabra de su bloque: quien vio «prisa» y toca el bloque,
+encuentra lo que tu libro dice de la prisa, sin que haga falta repetir la palabra.
+Aunque tu libro sea duro, que al menos una deje entrar la luz que tu libro sí
+tiene; nunca una luz inventada.
+
+
+Cada bloque = { gesture_type, sensory_anchor, phrase }
+- gesture_type: los 4 deben ser DIFERENTES
+  • instruccion_sensorial: el pequeño impulso. Algo que se puede hacer ya, en 15
+    a 60 segundos, con el cuerpo o los sentidos (mirar, tocar, respirar, escribir
+    una línea), que nace de tu libro. Se ofrece, no se ordena.
+  • pregunta_directa: pregunta del libro al lector (cierra con "?")
+  • imagen_concreta: imagen visual sin imperativo
+  • aforismo_autorial: sentencia corta cerrada con punto
+- sensory_anchor: el sentido o dimensión corporal evocado
+  • vista, oido, tacto, olfato, gusto, movimiento, espacio, luz, respiracion, tiempo
+- phrase: 40-100 chars (apunta a 50-85), UNA SOLA LÍNEA, SIN EMOJI, cerrada con ".", "?" o "!"
 
 
 ═══════════════════════════════════════════════════════════════════
 CARD_ES
 ═══════════════════════════════════════════════════════════════════
-- titulo: 8-60 chars. Nombra lo que vive en esa página, con palabras del libro, claro y natural: se entiende sin conocer el libro.
-- parrafoTop: 80-320 chars. Un fragmento de la página abierta al azar, tal como el lector lo leería: la voz del libro (el autor, el narrador o un personaje) en ese momento. Nunca "este libro", "el autor", "la obra", ni la lección del libro contada desde fuera. Sin «aprendí que», «me enseñó que» ni «descubrí que»: lo que el libro sabe se dice directo o se ve en la escena.
-  CIERRE OBLIGATORIO: DEBE terminar en frase completa con punto final (. ! ?). Si la última oración no cabe completa dentro de 320 chars, OMÍTELA — prefiere 240-280 chars cerrados que 320 chars truncados. PROHIBIDO truncar a mitad de palabra, conjunción suelta ("y", "que", "se"), preposición sin objeto ("en", "con"), o verbo sin completar. El cierre gramatical limpio prevalece SIEMPRE sobre el límite numérico.
-- subtitulo: 20-120 chars. Una pregunta o afirmación, en la misma voz, que abre el segundo párrafo.
-- parrafoBot: 80-320 chars. Otro fragmento, de la misma página o de otra, con la misma voz: sigue dentro del libro, no lo resume ni le agrega consejos de vida que el libro no da. Una invitación a abrir el libro o a leerlo sí cabe.
+De todas las páginas de tu libro, la tarjeta es la que más le habla a quien
+llegó por esas cuatro puertas: la que lo deja queriendo seguir leyendo o hacer
+algo. Se lee en el celular y se comparte como imagen: los largos son los que caben.
+- titulo: 8-60 chars (apunta a 25-45). Nombra lo que vive en esa página, con palabras del libro, claro y natural: se entiende sin conocer el libro.
+- parrafoTop: 80-320 chars (apunta a 180-260). Un fragmento de la página abierta al azar, tal como el lector lo leería: la voz del libro (el autor, el narrador o un personaje) en ese momento. Nunca "este libro", "el autor", "la obra", ni la lección del libro contada desde fuera. Sin «aprendí que», «me enseñó que» ni «descubrí que»: lo que el libro sabe se dice directo o se ve en la escena.
+  CIERRE OBLIGATORIO: DEBE terminar en frase completa con punto final (. ! ?). Si la última oración no cabe completa dentro de 320 chars, OMÍTELA — mejor corto y cerrado que 320 chars truncados. PROHIBIDO truncar a mitad de palabra, conjunción suelta ("y", "que", "se"), preposición sin objeto ("en", "con"), o verbo sin completar. El cierre gramatical limpio prevalece SIEMPRE sobre el límite numérico.
+- subtitulo: 20-120 chars (apunta a 40-90). Una pregunta o afirmación, en la misma voz, que abre el segundo párrafo.
+- parrafoBot: 80-320 chars (apunta a 150-240). Otro fragmento, de la misma página o de otra, con la misma voz: sigue dentro del libro, no lo resume ni le agrega consejos de vida que el libro no da. Una invitación a abrir el libro o a leerlo sí cabe.
   CIERRE OBLIGATORIO: mismas reglas que parrafoTop. SIEMPRE frase completa con punto final (. ! ?). Prefiere quedar corto antes que truncar.
-
-
-═══════════════════════════════════════════════════════════════════
-EMOTIONAL_WORDS_ES
-═══════════════════════════════════════════════════════════════════
-Exactamente 4 palabras (3-25 chars cada una) que capturen el estado emocional
-que tu obra evoca.
-Ejemplos correctos: "serenidad", "dominio", "claridad", "desapego".
-NO uses palabras genéricas: "bienestar", "éxito", "crecimiento".
 
 
 ═══════════════════════════════════════════════════════════════════
 OG_PHRASES_ES (4 frases, 30-68 chars cada una)
 ═══════════════════════════════════════════════════════════════════
+Son otras caras de las mismas cuatro puertas: por la que llegue la persona, hay
+una frase que le responde. Una de ellas se vuelve la imagen que se comparte.
 CRÍTICO:
 - CADA FRASE en UNA SOLA LÍNEA. Nunca incluyas "\\n" ni saltos de línea.
 - NUNCA escribas emojis. El sistema los inyectará después.
@@ -730,23 +792,6 @@ Ejemplos correctos (en voz del libro, los 4 tipos):
 
 
 ═══════════════════════════════════════════════════════════════════
-EDITION_BLOCKS_ES (4 bloques)
-═══════════════════════════════════════════════════════════════════
-Son 4 VENTANAS DISTINTAS al libro, no 4 pedazos del mismo párrafo.
-
-
-Cada bloque = { gesture_type, sensory_anchor, phrase }
-- gesture_type: los 4 deben ser DIFERENTES
-  • instruccion_sensorial: micro-acción física/perceptual (imperativo + sensorial)
-  • pregunta_directa: pregunta del libro al lector (cierra con "?")
-  • imagen_concreta: imagen visual sin imperativo
-  • aforismo_autorial: sentencia corta cerrada con punto
-- sensory_anchor: el sentido o dimensión corporal evocado
-  • vista, oido, tacto, olfato, gusto, movimiento, espacio, luz, respiracion, tiempo
-- phrase: 40-100 chars, UNA SOLA LÍNEA, SIN EMOJI, cerrada con ".", "?" o "!"
-
-
-═══════════════════════════════════════════════════════════════════
 PROHIBICIONES DURAS
 ═══════════════════════════════════════════════════════════════════
 - "este libro", "el autor", "la obra", "a través de"
@@ -772,10 +817,13 @@ ANTES de devolver el JSON, hazte UNA pregunta para CADA phrase generada
   "¿Lo entendería a la primera alguien que nunca leyó el libro, leyéndolo
    una sola vez?"
 
+  Y para cada bloque: "¿Su palabra es la puerta de su frase? ¿Quien llegó
+   por esa palabra encuentra en la frase lo que mi libro le dice de eso?"
 
-Si la respuesta a la primera es "desde fuera", o a la segunda es "no",
-REESCRIBE esa phrase: desde dentro de la página y clara. Solo entonces
-devuelve el JSON.
+
+Si la respuesta a la primera es "desde fuera", o a cualquiera de las otras
+es "no", REESCRIBE esa pieza: desde dentro de la página, clara y unida a su
+palabra. Solo entonces devuelve el JSON.
 
 
 Aplica el principio (no busques palabras específicas): una phrase que
@@ -1055,13 +1103,13 @@ Tu vocabulario propio (key terms; úsalos solo donde la frase se entienda sola):
 
 
   if (lens && lens.trim()) {
-    p += `\n\n═══════════════════════════════════════════════════════════════════\nLENTE DEL CURADOR (perspectiva activa hoy):\n${lens}\n\nSi tu obra naturalmente toca esta perspectiva, déjala asomar en la página. Si no la toca, NO la fuerces — sería traición a tu propia escritura. El lente solo elige qué parte del libro asoma: en la tarjeta no metas palabras del lente, cosas que el libro no tiene ni consejos de vida que el libro no da.`;
+    p += `\n\n═══════════════════════════════════════════════════════════════════\nLENTE DEL CURADOR (perspectiva activa hoy):\n${lens}\n\nSi tu obra naturalmente toca esta perspectiva, déjala asomar. Si no la toca, NO la fuerces — sería traición a tu propia escritura. El lente sirve para elegir qué parte de tu libro le sirve hoy a esa persona y qué pequeño impulso le deja; no es un tema para nombrar. En la tarjeta no metas palabras del lente, cosas que el libro no tiene ni consejos de vida que el libro no da.`;
   }
 
 
   p += `\n\n═══════════════════════════════════════════════════════════════════
 Ahora, como la voz de tu libro, escribe desde dentro de sus páginas:
-Genera card_es + emotional_words_es + og_phrases_es + edition_blocks_es.
+Genera, en este orden: emotional_words_es (las cuatro puertas), edition_blocks_es (una por puerta, en el mismo orden), card_es y og_phrases_es.
 
 
 SIN EMOJIS. SIN NEWLINES. Cada frase nace de un anchor, dicha de forma que se entienda a la primera.
@@ -1196,6 +1244,24 @@ scenes into one or change who does what. If you don't remember a detail well
 (who said it, what was asked, what was seen), keep the idea and drop the detail.
 
 
+WHO YOU WRITE FOR AND WHY
+Someone typed into the magic bar what they bring today: how they feel, what is
+happening to them or what they are looking for. Triggui answered with your book.
+They will read, in this order: one big phrase; four blocks, each with a word that
+opens its phrase when tapped; the card, which is a page of your book; and, when
+they close it, one more phrase. Songs and videos are found with those same four
+words. All of it exists so that this person:
+1. feels a little better than when they arrived;
+2. understands something more clearly, at first read;
+3. wants to do something: open your book, or a small 15-to-60-second gesture
+   your book inspires. A gentle nudge: offered, never ordered.
+You don't know what they typed. So you write for the situations in life where
+your book speaks to someone: those are its four doors, the four words. The lens,
+the pillars and the micro-action serve the same end: they choose which part of
+your book helps this person today and what nudge it leaves. They are not topics
+to name.
+
+
 CLARITY RULES, above lenses and anchors, and always within each field's length.
 They apply to everything you write.
 The reader is in a hurry, doesn't have the book in hand and tends to think
@@ -1250,7 +1316,33 @@ NO Spanish words. NO "Elige", "Vivir", "Día", "Qué". If you find yourself writ
 ═══════════════════════════════════════════════════════════════════
 STRUCTURE
 ═══════════════════════════════════════════════════════════════════
-card_en: titulo (8-60 chars), parrafoTop (80-320), subtitulo (20-120), parrafoBot (80-320)
+emotional_words_en — THE FOUR DOORS (write them first): exactly 4, 3-25 chars each.
+  The same four doors as emotional_words_es, in the same order, said the way an
+  English speaker would say them (not a word-for-word translation).
+  emotional_words_en[i] goes on block edition_blocks_en[i]: the reader sees the
+  word first and, on tapping it, its phrase.
+  Each word is where what the person brings (what they feel, what is happening
+  to them, what they are looking for) meets what your book answers: an everyday
+  word someone could type into the magic bar when your book is what they need.
+  True to your book; clear at a glance (the book's own jargon lives in the
+  phrases, explained); four different doors, not synonyms, widest first (the
+  first two are used to find videos). Together they smell of your book: if they
+  would fit any book (emotion labels that suit everything), swap the weakest for
+  one only your book holds. Lowercase; one word, two or three only if that is
+  how it is said. Nothing generic: "wellbeing", "success", "growth".
+edition_blocks_en: exactly 4 blocks, in the order of the words, with different gesture_types, each 40-100 chars (aim for 50-85), ONE LINE, NO emojis
+  Each phrase opens its block's word: whoever saw "hurry" and taps the block
+  finds what your book says about hurry, without repeating the word.
+  sensory_instruction is the small nudge: something to do right now, in 15 to 60
+  seconds, with the body or the senses (look, touch, breathe, write a line), born
+  from your book. Offered, never ordered.
+  Even if your book is hard, at least one lets in the light your book does have;
+  never an invented light.
+card_en: titulo (8-60 chars, aim 25-45), parrafoTop (80-320, aim 180-260), subtitulo (20-120, aim 40-90), parrafoBot (80-320, aim 150-240)
+  Of all the pages of your book, the card is the one that speaks most to whoever
+  came through those four doors: the one that leaves them wanting to keep reading
+  or to do something. It is read on a phone and shared as an image: the lengths
+  are what fits.
   parrafoTop and parrafoBot: fragments of the page opened at random, in the book's voice (the author, the narrator or a character), as it happens. Never the book's lesson retold from outside, nor life advice the book doesn't give. An invitation to open the book or read it is fine. No "I learned that", "taught me that" or "I discovered that": what the book knows is said directly or shown in the scene.
   titulo: clear and natural; it makes sense without knowing the book.
   🌒 MANDATORY CLOSURE — APLICA UNIVERSALMENTE A TODOS LOS CAMPOS TEXTUALES:
@@ -1280,12 +1372,12 @@ card_en: titulo (8-60 chars), parrafoTop (80-320), subtitulo (20-120), parrafoBo
     × "...actúa desde." (preposición colgante — REESCRIBIR)
   
   Esta regla tiene PRIORIDAD ABSOLUTA sobre cualquier otra instrucción de longitud/contenido.
-emotional_words_en: exactly 4 words, 3-25 chars each
 og_phrases_en: exactly 4 phrases, 30-68 chars each, ONE LINE, NO emojis, NO "\\n"
+  Other faces of the same four doors: whichever door the person comes through,
+  one phrase answers them. One of them becomes the image people share.
   In the book's voice: never the author's name or the book's title inside the phrase.
   Soft ceiling: aim for 55-65 chars. Hard max 70 — never flirt with the edge.
   Any phrase above 68 chars risks mid-word truncation in rendering. Rewrite shorter.
-edition_blocks_en: exactly 4 blocks with different gesture_types, each 40-100 chars, ONE LINE, NO emojis
 
 
 ═══════════════════════════════════════════════════════════════════
@@ -1336,9 +1428,13 @@ BEFORE returning the JSON, ask ONE question for EACH phrase you wrote
   "Would someone who never read the book get it at first read, reading it
    only once?"
 
+  And for each block: "Is its word the door to its phrase? Does someone who
+   came in through that word find in the phrase what my book says about it?"
 
-If the answer to the first is "from outside", or to the second is "no",
-REWRITE that phrase: from inside the page, and clear. Only then return the JSON.
+
+If the answer to the first is "from outside", or to any of the others is
+"no", REWRITE that piece: from inside the page, clear and tied to its word.
+Only then return the JSON.
 
 
 Apply the principle (don't look for specific words): a phrase that quantifies
@@ -1457,7 +1553,7 @@ Apply the same check to your 4 og_phrases_en.`;
 }
 
 
-function contentENUserPrompt(book, groundTruth, anchorsData, cardES, lens) {
+function contentENUserPrompt(book, groundTruth, anchorsData, cardES, lens, referenciaES = null) {
   // 🌒 SPRINT NIVEL DIOS — User prompt inyecta IDENTIDAD DINÁMICA por libro
   const identityLine = buildIdentityLine(anchorsData, "en");
 
@@ -1528,14 +1624,22 @@ Subtítulo: ${cardES.subtitulo}
 ParrafoBot: ${cardES.parrafoBot}`;
 
 
+  // C278: las cuatro puertas en español y sus frases, para que el inglés abra las mismas, en el mismo orden.
+  const palabrasES = (referenciaES && Array.isArray(referenciaES.palabras)) ? referenciaES.palabras : [];
+  const frasesES = (referenciaES && Array.isArray(referenciaES.frases)) ? referenciaES.frases : [];
+  if (palabrasES.length) {
+    p += `\n\n═══════════════════════════════════════════════════════════════════\nTHE FOUR DOORS IN SPANISH (emotional_words_es and their edition_blocks_es, same order; SEMANTIC reference, do not translate literally):\n${palabrasES.map((w, i) => `${i + 1}. ${w}${frasesES[i] ? ` → ${frasesES[i]}` : ""}`).join("\n")}`;
+  }
+
+
   if (lens && lens.trim()) {
-    p += `\n\n═══════════════════════════════════════════════════════════════════\nCURATORIAL LENS (perspective active today):\n${lens}\n\nIf your work naturally touches this perspective, let it show on the page. If it doesn't, do NOT force it — that would be a betrayal of your own writing. The lens only chooses which part of the book shows: in the card, no lens vocabulary, nothing the book doesn't have, and no life advice the book doesn't give.`;
+    p += `\n\n═══════════════════════════════════════════════════════════════════\nCURATORIAL LENS (perspective active today):\n${lens}\n\nIf your work naturally touches this perspective, let it show. If it doesn't, do NOT force it — that would be a betrayal of your own writing. The lens is there to choose which part of your book helps this person today and what small nudge it leaves; it is not a topic to name. In the card, no lens vocabulary, nothing the book doesn't have, and no life advice the book doesn't give.`;
   }
 
 
   p += `\n\n═══════════════════════════════════════════════════════════════════
 Now, as the voice of your book, write from inside its pages:
-Write card_en + emotional_words_en + og_phrases_en + edition_blocks_en.
+Write, in this order: emotional_words_en (the four doors), edition_blocks_en (one per door, same order), card_en and og_phrases_en.
 
 
 100% English. No emojis. No newlines. No Spanish.
@@ -1559,7 +1663,7 @@ export async function extractContentEN(openai, book, groundTruth, anchorsData, c
     temperature,
     messages: [
       { role: "system", content: contentENSystemPrompt() },
-      { role: "user", content: contentENUserPrompt(book, groundTruth, anchorsData, cardES, lens) }
+      { role: "user", content: contentENUserPrompt(book, groundTruth, anchorsData, cardES, lens, options.referenciaES || null) }
     ],
     response_format: {
       type: "json_schema",

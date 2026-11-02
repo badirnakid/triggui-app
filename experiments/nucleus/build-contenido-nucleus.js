@@ -778,7 +778,11 @@ async function processBook(book, inputs, inputsSnapshot) {
   // ═══ F5: CONTENIDO EN ═══════════════════════════════════════════════
   const tF5 = Date.now();
   let contentENRes = await retryOnce(
-    () => extractContentEN(openai, book, groundTruthMeta.ground_truth, anchorsData, contentESFinal.card_es, inputs.lens, { model: CFG.modelEscritor, temperature: 0.7 }),
+    () => extractContentEN(openai, book, groundTruthMeta.ground_truth, anchorsData, contentESFinal.card_es, inputs.lens, {
+      model: CFG.modelEscritor, temperature: 0.7,
+      // C278: las cuatro puertas en español y sus frases, para que el inglés abra las mismas, en el mismo orden
+      referenciaES: { palabras: contentESFinal.emotional_words_es, frases: (contentESFinal.edition_blocks_es || []).map((b) => b && b.phrase) }
+    }),
     "extractContentEN"
   );
   elapsedByPhase.content_en = Date.now() - tF5;
@@ -1085,7 +1089,8 @@ async function processBook(book, inputs, inputsSnapshot) {
         book,
         groundTruthMeta.ground_truth,
         anchorsData,
-        contentESFinal,
+        // C278: con las palabras de los bloques en inglés, para que el CSAL las tome como puertas en los dos idiomas
+        { ...contentESFinal, emotional_words_en: contentENFinal && contentENFinal.emotional_words_en },
         {
           model: CFG.modelMini,
           previousSituations: __batchSituationsSnapshot
