@@ -343,7 +343,9 @@ function pickOgHeadline(bookMeta, libro) {
     .map((phrase) => ({ phrase, score: scorePhrase(phrase) - (mentionsBookRefs(phrase, titulo, autor) ? 14 : 0) }))
     .sort((a, b) => b.score - a.score);
 
-  const best = clampText((ranked[0]?.phrase || "").trim(), 78);
+  // C278: gana la mejor frase que cabe ENTERA en la imagen (78); solo si ninguna cabe, se recorta la mejor.
+  const cabe = ranked.find((r) => normalizeText(r.phrase).length <= 78);
+  const best = clampText(((cabe || ranked[0])?.phrase || "").trim(), 78);
   if (best) return best;
 
   const tarjeta = libro?.tarjeta || {};

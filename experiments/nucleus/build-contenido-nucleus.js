@@ -57,6 +57,7 @@ import { sanitizeObject, formatStats } from "./sanitize-walker.js";
 // 🌒 detector de truncamiento puro (única fuente de verdad — reglas v4.3 reubicadas).
 // Solo DETECTA; nunca muta ni aborta. Usado por C5 (collectTruncations) y el riel de C4.5.
 import { detectTruncation } from "./detect-truncation.js";
+import { ajustaLargos } from "./largos.js";   // C278: que los párrafos quepan en la tarjeta que se comparte
 
 import { resolveGrounding } from "./grounding-resolver.js";
 import {
@@ -774,6 +775,9 @@ async function processBook(book, inputs, inputsSnapshot) {
     "card_es.titulo", "card_es.parrafoTop", "card_es.subtitulo", "card_es.parrafoBot",
     "emotional_words_es", "og_phrases_es", "edition_blocks_es"
   ], "extractContentES_final");
+  const largosES = ajustaLargos(contentESFinal, "es");
+  if (largosES.cambios.length) console.log(`   📏 Largos ES: ${largosES.cambios.join(", ")} (hasta la última oración que cabe)`);
+  if (largosES.avisos.length) console.warn(`   📏 Largos ES fuera de rango: ${largosES.avisos.join(", ")}`);
 
   // ═══ F5: CONTENIDO EN ═══════════════════════════════════════════════
   const tF5 = Date.now();
@@ -794,6 +798,9 @@ async function processBook(book, inputs, inputsSnapshot) {
     "card_en.titulo", "card_en.parrafoTop", "card_en.subtitulo", "card_en.parrafoBot",
     "emotional_words_en", "og_phrases_en", "edition_blocks_en"
   ], "extractContentEN");
+  const largosEN = ajustaLargos(contentENFinalRaw, "en");
+  if (largosEN.cambios.length) console.log(`   📏 Largos EN: ${largosEN.cambios.join(", ")} (hasta la última oración que cabe)`);
+  if (largosEN.avisos.length) console.warn(`   📏 Largos EN fuera de rango: ${largosEN.avisos.join(", ")}`);
 
   // ═══ F6: GROUNDING JUDGE EN ═════════════════════════════════════════
   const tF6 = Date.now();
