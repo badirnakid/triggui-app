@@ -76,9 +76,10 @@ export const PASSES = [
 ];
 
 // ¿Hay antes alguna comilla que pueda abrir? Cualquier comilla doble o angular, o una
-// simple en posición de apertura (al inicio o tras espacio o signo, seguida de texto).
+// simple en posición de apertura (al inicio, tras espacio o tras signo de apertura,
+// paréntesis, guion, barra, ¿, ¡, dos puntos o punto y coma, seguida de texto).
 function abreComilla(texto) {
-  return /["“”«»‘„‹›]/.test(texto) || /(^|[\s(\[{«“—–\-\/])['’](?=\S)/.test(texto);
+  return /["“”«»‘„‹›]/.test(texto) || /(^|[\s(\[{«“—–\-\/¿¡:;])['’](?=\S)/.test(texto);
 }
 
 /**
