@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 /*
- * Pruebas de sanitize-walker.js: los cuatro pases, con el foco en el cuarto (comilla suelta al final, C278).
- * El caso de origen es real: banco C278 del 2 de noviembre de 2026, tarjeta de «El Principito» con Claude,
- * párrafo de abajo terminado en «importa.'».
+ * Pruebas de sanitize-walker.js: los cinco pases, con el foco en los dos de C278 (cierre de JSON y comilla suelta
+ * al final). Los casos de origen son reales, de los bancos C278 del 2 de noviembre de 2026 con Claude: «El
+ * Principito» terminó en «importa.'» (banco 1) y «Las venas abiertas de América Latina» en «hace siglos."]}»
+ * (banco 2).
  *
  *   node test-sanitize-walker.mjs
  */
@@ -17,11 +18,24 @@ function caso(nombre, fn) {
 }
 const limpia = (s) => sanitizeString(s).clean;
 
-console.log('═══ sanitize-walker: cuatro pases ═══');
+console.log('═══ sanitize-walker: cinco pases ═══');
 
-caso('los pases van en su orden y el cuarto es comilla_suelta', () => {
-  assert.deepEqual(PASSES.map((p) => p.name), ['ansi_sequences', 'emoji_bug_repair', 'control_chars', 'comilla_suelta']);
+caso('los pases van en su orden: cierre_json antes que comilla_suelta', () => {
+  assert.deepEqual(PASSES.map((p) => p.name), ['ansi_sequences', 'emoji_bug_repair', 'control_chars', 'cierre_json', 'comilla_suelta']);
 });
+
+// ── Pase 4: cierre de JSON suelto ──
+caso('el caso real del banco 2: «hace siglos."]}» → «hace siglos.»', () => {
+  const s = 'Los dividendos del tráfico de esclavos y las ganancias de las grandes corporaciones forman una misma cadena. [H]Cada eslabón heredó del anterior la costumbre de llevarse lo que otros produjeron.[/H] El presente no nació de la nada: nació de lo que se decidió hace siglos."]}';
+  assert.equal(limpia(s), s.slice(0, -3));
+});
+caso('comilla y llave', () => assert.equal(limpia('importa."}'), 'importa.'));
+caso('apóstrofo y corchete', () => assert.equal(limpia('importa.\']'), 'importa.'));
+caso('después del cierre de un resaltado', () => assert.equal(limpia('[H]Firme.[/H]"]}'), '[H]Firme.[/H]'));
+caso('cita con comillas y cierre de JSON: se va el cierre, la cita se queda', () => assert.equal(limpia('Dijo "ven."]}'), 'Dijo "ven."'));
+caso('con un corchete que abre, no se toca', () => assert.equal(limpia('Ver [nota "uno."]'), 'Ver [nota "uno."]'));
+caso('un JSON guardado como texto no se toca', () => assert.equal(limpia('{"a":"b."}'), '{"a":"b."}'));
+caso('corchete sin comilla antes, no se toca', () => assert.equal(limpia('[sic.]'), '[sic.]'));
 
 // ── Pase 4: lo que se limpia ──
 caso('el caso real del banco: «importa.\'» → «importa.»', () => {
@@ -60,17 +74,18 @@ caso('pase 3: caracteres de control', () => assert.equal(limpia('a\u0000b\u0007c
 
 // ── Objeto completo, estadísticas e idempotencia ──
 caso('sanitizeObject cuenta las comillas sueltas y no muta el original', () => {
-  const original = { tarjeta: { parrafoTop: 'Uno.\'', parrafoBot: '«Dos.»' }, frases: ['Tres!"', 'Cuatro.'], n: 3, x: null };
+  const original = { tarjeta: { parrafoTop: 'Uno.\'', parrafoBot: '«Dos.»' }, frases: ['Tres!"', 'Cuatro.', 'Cinco."]}'], n: 3, x: null };
   const copia = JSON.parse(JSON.stringify(original));
   const { clean, stats, modified } = sanitizeObject(original);
   assert.equal(modified, true);
-  assert.equal(stats.comilla_suelta, 2);
+  assert.equal(stats.comilla_suelta, 3);
+  assert.equal(stats.cierre_json, 1);
   assert.equal(stats.control_chars, 0);
-  assert.deepEqual(clean, { tarjeta: { parrafoTop: 'Uno.', parrafoBot: '«Dos.»' }, frases: ['Tres!', 'Cuatro.'], n: 3, x: null });
+  assert.deepEqual(clean, { tarjeta: { parrafoTop: 'Uno.', parrafoBot: '«Dos.»' }, frases: ['Tres!', 'Cuatro.', 'Cinco.'], n: 3, x: null });
   assert.deepEqual(original, copia);
 });
 caso('idempotente: limpiar dos veces es lo mismo que una', () => {
-  const muestras = ['importa.\'"', 'Ven.»', '«Ven.»', 'It\'s over.\'', 'mira \u001f440.\'', 'a\u0000b.'];
+  const muestras = ['importa.\'"', 'Ven.»', '«Ven.»', 'It\'s over.\'', 'mira \u001f440.\'', 'a\u0000b.', 'siglos."]}', 'Dijo "ven."]}', '{"a":"b."}'];
   for (const s of muestras) assert.equal(limpia(limpia(s)), limpia(s));
 });
 caso('lo ya limpio sale idéntico y sin estadísticas', () => {
