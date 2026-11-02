@@ -122,6 +122,17 @@ try:
     ok(False, "429 sostenido: lanza tras los reintentos")
 except urllib.error.HTTPError as e:
     ok(e.code == 429 and len(recibidas) == 3 and b"rate" in e.read(), "429 sostenido: 2 reintentos y el cuerpo del error sigue legible")
+del recibidas[:]
+guion[:] = [{"status": 400, "data": {"type": "error", "error": {"type": "invalid_request_error", "message": "You have reached your specified workspace API usage limits."}}}]
+try:
+    IA.chat({"model": "mini", "messages": [{"role": "user", "content": "u"}]}, timeout=10)
+    ok(False, "tope del espacio de trabajo: lanza HTTPError 400")
+except urllib.error.HTTPError as e:
+    ok(e.code == 400 and len(recibidas) == 1 and "organización o al espacio de trabajo" in str(e.msg) and b"usage limits" in e.read(),
+       "tope que se pone al espacio de trabajo (400): un solo intento, dicho claro y con el cuerpo legible")
+guion[:] = [{"status": 200, "data": {"content": [{"type": "text", "text": "{\"a\":"}], "stop_reason": "model_context_window_exceeded", "usage": {}}}]
+r = IA.chat({"model": "mini", "messages": [{"role": "user", "content": "u"}]}, timeout=10)
+ok(r["choices"][0]["finish_reason"] == "length", "model_context_window_exceeded: finish_reason «length»")
 reg = os.path.join(tempfile.mkdtemp(), "uso.jsonl")
 os.environ["TRIGGUI_IA_REGISTRO"] = reg
 guion[:] = [{"status": 200, "data": {"model": "claude-haiku-5-5", "content": [{"type": "text", "text": "{\"a\": 1}"}], "stop_reason": "end_turn",
@@ -240,6 +251,15 @@ except urllib.error.HTTPError:
     ok(marcado(sis_de(1), SIS3) and estado(SIS3) == "visto", "si la escritura falla, vuelve a «visto»")
 pide(SIS3)
 ok(marcado(sis_de(2), SIS3) and estado(SIS3) == "guardado", "y la siguiente la intenta de nuevo")
+
+SIS5 = "System cuya escritura vuelve con un rechazo. " + "r" * 4000
+del recibidas[:]
+guion[:] = [simula, {"status": 200, "data": {"model": "claude-haiku-5-5", "content": [], "stop_reason": "refusal", "usage": {"input_tokens": 0, "output_tokens": 0}}}, simula]
+pide(SIS5)
+pide(SIS5)
+ok(marcado(sis_de(1), SIS5) and estado(SIS5) == "visto", "un rechazo no apaga la caché: la escritura vuelve a «visto»")
+pide(SIS5)
+ok(marcado(sis_de(2), SIS5) and estado(SIS5) == "guardado", "y la siguiente la escribe")
 
 SIS4 = "System con la caché apagada. " + "w" * 4000
 IA.config()["claude"]["cache_sistema"] = False

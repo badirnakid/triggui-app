@@ -146,6 +146,15 @@ guion = [{ status: 429, data: { type: 'error', error: { type: 'rate_limit_error'
 lanzo = null;
 try { await IA.crearCliente().chat.completions.create({ model: 'mini', messages: [{ role: 'user', content: 'u' }] }); } catch (e) { lanzo = e; }
 ok(lanzo && lanzo.status === 429 && lanzo.tope === true, 'tope de gasto: crearCliente lanza el error marcado');
+recibidas.length = 0;
+guion = [{ status: 400, data: { type: 'error', error: { type: 'invalid_request_error', message: 'You have reached your specified workspace API usage limits. You will regain access on 2026-12-01 at 00:00 UTC.' } } }];
+lanzo = null;
+try { await IA.crearCliente().chat.completions.create({ model: 'mini', messages: [{ role: 'user', content: 'u' }] }); } catch (e) { lanzo = e; }
+ok(recibidas.length === 1 && lanzo && lanzo.status === 400 && lanzo.tope === true && /organización o al espacio de trabajo/.test(lanzo.message),
+  'el tope que se pone al espacio de trabajo (400): un solo intento y dicho claro', lanzo && lanzo.message);
+guion = [{ status: 200, data: { id: 'mv', content: [{ type: 'text', text: '{"a":' }], stop_reason: 'model_context_window_exceeded', usage: {} } }];
+d = await (await IA.chatCompat({ model: 'mini', messages: [{ role: 'user', content: 'U' }] })).json();
+ok(d.choices[0].finish_reason === 'length', 'model_context_window_exceeded: finish_reason «length», como max_tokens');
 const reg = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'ia-reg-')), 'uso.jsonl');
 process.env.TRIGGUI_IA_REGISTRO = reg;
 guion = [{ status: 200, data: { id: 'm', model: 'claude-haiku-5-5', content: [{ type: 'text', text: '{"a":1}' }], stop_reason: 'end_turn', usage: { input_tokens: 100, output_tokens: 20, cache_read_input_tokens: 50, cache_creation_input_tokens: 10 } } }];
@@ -272,6 +281,18 @@ ok(!r.ok && marcado(sisDe(1), SIS3) && estado(SIS3) === 'visto', 'si la escritur
 await pide(SIS3);
 ok(marcado(sisDe(2), SIS3) && estado(SIS3) === 'guardado', 'y la siguiente la intenta de nuevo');
 
+const SIS5 = 'System cuya escritura vuelve con un rechazo. ' + 'r'.repeat(4000);
+recibidas.length = 0;
+guion = [simula, { status: 200, data: { id: 'mr', model: 'claude-haiku-5-5', content: [], stop_reason: 'refusal', usage: { input_tokens: 0, output_tokens: 0 } } }, simula];
+await pide(SIS5);
+await pide(SIS5);
+ok(marcado(sisDe(1), SIS5) && estado(SIS5) === 'visto', 'un rechazo no dice nada de la caché: la escritura vuelve a «visto», no la apaga');
+await pide(SIS5);
+ok(marcado(sisDe(2), SIS5) && estado(SIS5) === 'guardado', 'y la siguiente la escribe');
+recibidas.length = 0;
+guion = [{ status: 200, data: { id: 'ml', model: 'claude-haiku-5-5', content: [{ type: 'text', text: 'ok' }], stop_reason: 'end_turn', usage: { input_tokens: 20, output_tokens: 2 } } }];
+await pide(SIS5);
+ok(marcado(sisDe(0), SIS5) && estado(SIS5) === 'guardado', 'un lector que vuelve sin datos de caché no cambia el estado: solo la que escribe lo hace');
 const SIS4 = 'System con la caché apagada en config.json. ' + 'w'.repeat(4000);
 IA.config().claude.cache_sistema = false;
 try {

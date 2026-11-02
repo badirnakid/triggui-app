@@ -21,7 +21,9 @@
  *   · usage: prompt_tokens = entrada + caché; completion_tokens = salida;
  *   · max_tokens nunca baja de claude.max_tokens_minimo (el tokenizador de Claude cuenta distinto y un tope pensado
  *     para GPT puede cortar; el tope no cuesta: solo se cobra lo que se genera y no cuenta para los límites);
- *   · un 429 por tope de gasto (enforced_spend_limit_reached) no se reintenta: se dice claro;
+ *   · un tope de gasto no se reintenta y se dice claro: el 429 enforced_spend_limit_reached es el tope mensual del
+ *     nivel de uso; el 400 de «usage limits» es el tope que se pone a la organización o al espacio de trabajo;
+ *   · stop_reason model_context_window_exceeded → finish_reason "length", como max_tokens;
  *   · caché del system: se marca solo cuando ese system se va a reusar y sin escrituras en paralelo (ver
  *     «Claude: caché del system» más abajo). Con openai no cambia nada.
  *
@@ -208,25 +210,26 @@ function planCache(body) {
   const clave = claveCache(body);
   const ahora = Date.now();
   const e = _cache.get(clave);
-  if (!e) { _cache.set(clave, { estado: 'primera', t: ahora }); return { clave, marca: false }; }
-  if (e.estado === 'primera' || e.estado === 'escribiendo' || e.estado === 'no') return { clave, marca: false };
-  if (e.estado === 'guardado' && ahora - e.t < CACHE_VIGENCIA_MS) { e.t = ahora; return { clave, marca: true }; }
+  if (!e) { _cache.set(clave, { estado: 'primera', t: ahora }); return { clave, marca: false, escribe: false }; }
+  if (e.estado === 'primera' || e.estado === 'escribiendo' || e.estado === 'no') return { clave, marca: false, escribe: false };
+  if (e.estado === 'guardado' && ahora - e.t < CACHE_VIGENCIA_MS) { e.t = ahora; return { clave, marca: true, escribe: false }; }
   e.estado = 'escribiendo';   // visto, o guardado y vencido: esta petición escribe
   e.t = ahora;
-  return { clave, marca: true };
+  return { clave, marca: true, escribe: true };
 }
-/** Anota cómo terminó la petición: u = usage de la respuesta, o null si falló. */
-function cierraCache(plan, u) {
+/** Anota cómo terminó la petición: u = usage de la respuesta, o null si falló; sinDatos = un rechazo, que no
+ *  dice nada de la caché. Solo la petición que escribe cambia el estado; un lector solo refrescó la vigencia. */
+function cierraCache(plan, u, sinDatos) {
   if (!plan) return;
   const e = _cache.get(plan.clave);
   if (!e) return;
   if (!plan.marca) {
-    if (e.estado === 'primera') { if (u) e.estado = 'visto'; else _cache.delete(plan.clave); }
+    if (e.estado === 'primera') { if (u && !sinDatos) e.estado = 'visto'; else _cache.delete(plan.clave); }
     return;
   }
-  if (!u) { if (e.estado === 'escribiendo') e.estado = 'visto'; return; }
-  if ((u.cache_creation_input_tokens || 0) > 0 || (u.cache_read_input_tokens || 0) > 0) { if (e.estado === 'escribiendo') e.estado = 'guardado'; return; }
-  e.estado = 'no';
+  if (!plan.escribe || e.estado !== 'escribiendo') return;
+  if (!u || sinDatos) { e.estado = 'visto'; return; }
+  e.estado = ((u.cache_creation_input_tokens || 0) > 0 || (u.cache_read_input_tokens || 0) > 0) ? 'guardado' : 'no';
 }
 /** El cuerpo con el system marcado, si toca; el original no se toca. */
 function conCache(body, plan) {
@@ -253,7 +256,7 @@ function deClaude(data, jsonLibre) {
   const sr = data.stop_reason;
   let finish = 'stop';
   let refusal = null;
-  if (sr === 'max_tokens') finish = 'length';
+  if (sr === 'max_tokens' || sr === 'model_context_window_exceeded') finish = 'length';
   if (sr === 'refusal') { finish = 'content_filter'; refusal = 'Claude rechazó la petición (stop_reason: refusal)'; content = ''; }
   let jsonOk = true;
   if (jsonLibre && content) {
@@ -306,9 +309,19 @@ async function postClaude(body, opciones = {}, cuenta = { reintentos: 0 }) {
     if (opciones.signal) opciones.signal.removeEventListener('abort', alAbortar);
     if (res.ok) return res.json();
     const txt = await res.text().catch(() => '');
-    let tope = false;   // 429 por tope de gasto: reintentar no sirve hasta que se libere el acceso
-    try { tope = res.status === 429 && JSON.parse(txt).error.details.error_code === 'enforced_spend_limit_reached'; } catch (e) { /* otro 429 */ }
-    if (tope) { const err = new Error('IA Claude 429: se alcanzó el tope de gasto del espacio de trabajo (enforced_spend_limit_reached)'); err.status = 429; err.body = txt; err.tope = true; throw err; }
+    // Tope de gasto: reintentar no sirve hasta que se libere el acceso (documentación oficial de errores, 2 de noviembre).
+    let topeNivel = false, topePuesto = false;
+    try {
+      const j = JSON.parse(txt);
+      topeNivel = res.status === 429 && ((j.error || {}).details || {}).error_code === 'enforced_spend_limit_reached';
+      topePuesto = res.status === 400 && /usage limit|spend limit/i.test(String((j.error || {}).message || ''));
+    } catch (e) { /* otro error */ }
+    if (topeNivel || topePuesto) {
+      const err = new Error(topeNivel
+        ? 'IA Claude 429: se alcanzó el tope de gasto mensual del nivel de uso (enforced_spend_limit_reached)'
+        : 'IA Claude 400: se alcanzó el tope de gasto que se puso a la organización o al espacio de trabajo');
+      err.status = res.status; err.body = txt; err.tope = true; throw err;
+    }
     if ([408, 409, 429, 500, 502, 503, 504, 529].includes(res.status) && i < maxReintentos) {
       cuenta.reintentos++;
       const ra = Number(res.headers.get('retry-after'));
@@ -333,14 +346,14 @@ async function llamaClaude(params, opciones = {}) {
     const plan = planCache(body);
     let data;
     try { data = await postClaude(conCache(body, plan), opciones, cuenta); } catch (e) {
-      cierraCache(plan, null);
+      cierraCache(plan, null, false);
       registra({ proveedor: 'claude', papel: papel(params.model), modelo: body.model, origen: de, intento, entrada: 0, salida: 0, cache_lectura: 0, cache_escritura: 0,
         fin: null, ms: Date.now() - t0, reintentos: cuenta.reintentos, error: `${e.status}: ${String(e.message).slice(0, 200)}` });
       throw e;
     }
     const r = deClaude(data, jsonLibre);
     const u = data.usage || {};
-    cierraCache(plan, u);
+    cierraCache(plan, u, data.stop_reason === 'refusal');
     registra({ proveedor: 'claude', papel: papel(params.model), modelo: data.model || body.model, origen: de, intento,
       entrada: u.input_tokens || 0, salida: u.output_tokens || 0, cache_lectura: u.cache_read_input_tokens || 0, cache_escritura: u.cache_creation_input_tokens || 0,
       fin: data.stop_reason || null, json_ok: jsonLibre ? r._claude.json_ok : null, ms: Date.now() - t0, reintentos: cuenta.reintentos, error: null });

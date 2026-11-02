@@ -18,6 +18,7 @@ import inspect
 import io
 import json
 import os
+import re
 import threading
 import time
 import urllib.error
@@ -218,7 +219,7 @@ def de_claude(data, json_libre):
     content = "".join(textos)
     sr = data.get("stop_reason")
     finish, refusal = "stop", None
-    if sr == "max_tokens":
+    if sr in ("max_tokens", "model_context_window_exceeded"):
         finish = "length"
     if sr == "refusal":
         finish, refusal, content = "content_filter", "Claude rechazó la petición (stop_reason: refusal)", ""
@@ -263,18 +264,19 @@ def plan_cache(body):
         e = _CACHE.get(clave)
         if e is None:
             _CACHE[clave] = {"estado": "primera", "t": ahora}
-            return {"clave": clave, "marca": False}
+            return {"clave": clave, "marca": False, "escribe": False}
         if e["estado"] in ("primera", "escribiendo", "no"):
-            return {"clave": clave, "marca": False}
+            return {"clave": clave, "marca": False, "escribe": False}
         if e["estado"] == "guardado" and ahora - e["t"] < CACHE_VIGENCIA_S:
             e["t"] = ahora
-            return {"clave": clave, "marca": True}
+            return {"clave": clave, "marca": True, "escribe": False}
         e["estado"], e["t"] = "escribiendo", ahora   # visto, o guardado y vencido: esta petición escribe
-        return {"clave": clave, "marca": True}
+        return {"clave": clave, "marca": True, "escribe": True}
 
 
-def cierra_cache(plan, u):
-    """Anota cómo terminó la petición: u = usage de la respuesta, o None si falló."""
+def cierra_cache(plan, u, sin_datos=False):
+    """Anota cómo terminó la petición: u = usage de la respuesta, o None si falló; sin_datos = un rechazo, que no
+    dice nada de la caché. Solo la petición que escribe cambia el estado; un lector solo refrescó la vigencia."""
     if not plan:
         return
     with _CACHE_CANDADO:
@@ -283,20 +285,17 @@ def cierra_cache(plan, u):
             return
         if not plan["marca"]:
             if e["estado"] == "primera":
-                if u is not None:
+                if u is not None and not sin_datos:
                     e["estado"] = "visto"
                 else:
                     del _CACHE[plan["clave"]]
             return
-        if u is None:
-            if e["estado"] == "escribiendo":
-                e["estado"] = "visto"
+        if not plan.get("escribe") or e["estado"] != "escribiendo":
             return
-        if (u.get("cache_creation_input_tokens") or 0) > 0 or (u.get("cache_read_input_tokens") or 0) > 0:
-            if e["estado"] == "escribiendo":
-                e["estado"] = "guardado"
+        if u is None or sin_datos:
+            e["estado"] = "visto"
             return
-        e["estado"] = "no"
+        e["estado"] = "guardado" if ((u.get("cache_creation_input_tokens") or 0) > 0 or (u.get("cache_read_input_tokens") or 0) > 0) else "no"
 
 
 def con_cache(body, plan):
@@ -325,15 +324,20 @@ def _post_claude(body, timeout, cuenta=None):
                 return json.loads(r.read().decode("utf-8"))
         except urllib.error.HTTPError as e:
             err = e
-            if e.code == 429:   # tope de gasto: reintentar no sirve hasta que se libere el acceso
+            if e.code in (400, 429):   # tope de gasto: reintentar no sirve hasta que se libere el acceso
                 cuerpo = b""
+                tope_nivel = tope_puesto = False
                 try:
                     cuerpo = e.read()
-                    tope_gasto = json.loads(cuerpo.decode("utf-8"))["error"]["details"]["error_code"] == "enforced_spend_limit_reached"
+                    j = json.loads(cuerpo.decode("utf-8"))
+                    tope_nivel = e.code == 429 and ((j.get("error") or {}).get("details") or {}).get("error_code") == "enforced_spend_limit_reached"
+                    tope_puesto = e.code == 400 and bool(re.search(r"usage limit|spend limit", str((j.get("error") or {}).get("message") or ""), re.I))
                 except Exception:  # noqa: BLE001
-                    tope_gasto = False
-                if tope_gasto:
-                    raise urllib.error.HTTPError(c["url"], 429, "IA Claude: se alcanzó el tope de gasto del espacio de trabajo (enforced_spend_limit_reached)",
+                    pass
+                if tope_nivel or tope_puesto:
+                    raise urllib.error.HTTPError(c["url"], e.code,
+                                                 "IA Claude: se alcanzó el tope de gasto mensual del nivel de uso (enforced_spend_limit_reached)" if tope_nivel
+                                                 else "IA Claude: se alcanzó el tope de gasto que se puso a la organización o al espacio de trabajo",
                                                  e.headers, io.BytesIO(cuerpo))
                 err = urllib.error.HTTPError(e.url, e.code, e.msg, e.headers, io.BytesIO(cuerpo))   # el cuerpo ya se leyó: va de nuevo
             if err.code in (408, 409, 429, 500, 502, 503, 504, 529) and i < int(c.get("reintentos", 2)):
@@ -388,14 +392,14 @@ def chat(payload, timeout=90):
         try:
             data = _post_claude(con_cache(body, plan), timeout, cuenta)
         except Exception as e:
-            cierra_cache(plan, None)
+            cierra_cache(plan, None, False)
             _registra({"proveedor": "claude", "papel": rol, "modelo": body["model"], "origen": de, "intento": intento, "entrada": 0, "salida": 0,
                        "cache_lectura": 0, "cache_escritura": 0, "fin": None, "ms": int((time.time() - t0) * 1000),
                        "reintentos": cuenta["reintentos"], "error": "%s: %s" % (getattr(e, "code", ""), str(e)[:200])})
             raise
         r = de_claude(data, json_libre)
         u = data.get("usage") or {}
-        cierra_cache(plan, u)
+        cierra_cache(plan, u, data.get("stop_reason") == "refusal")
         _registra({"proveedor": "claude", "papel": rol, "modelo": data.get("model") or body["model"], "origen": de, "intento": intento,
                    "entrada": u.get("input_tokens") or 0, "salida": u.get("output_tokens") or 0,
                    "cache_lectura": u.get("cache_read_input_tokens") or 0, "cache_escritura": u.get("cache_creation_input_tokens") or 0,
