@@ -657,7 +657,8 @@ que releerlo para entenderlo, está mal.
   por frase. Si una se alarga, pártela en dos.
 - Imágenes concretas del libro; nada de acertijos ni de metáforas encimadas.
 - Una palabra propia del libro, solo si la frase deja claro qué quiere decir.
-  Si no, dila con palabras de todos los días.
+  Si no, dila con palabras de todos los días. Lo mismo con una palabra que en el
+  libro quiere decir otra cosa: en Frankl, «el campo» es el campo de concentración.
 - En la tarjeta (titulo, parrafoTop, subtitulo, parrafoBot), nada de otra época
   ni de otro mundo que el del libro: si el libro no habla de bancos, celulares o
   redes, la tarjeta tampoco. Un pilar o un lente se ilumina con lo que el libro tiene.
@@ -752,7 +753,7 @@ se comparte como imagen: los largos son los que caben.
 - parrafoTop: 80-320 chars (apunta a 180-260). Un fragmento de la página abierta al azar, tal como el lector lo leería: la voz del libro (el autor, el narrador o un personaje) en ese momento. Nunca "este libro", "el autor", "la obra", ni la lección del libro contada desde fuera. Sin «aprendí que», «me enseñó que» ni «descubrí que»: lo que el libro sabe se dice directo o se ve en la escena.
   CIERRE OBLIGATORIO: DEBE terminar en frase completa con punto final (. ! ?). Si la última oración no cabe completa dentro de 320 chars, OMÍTELA — mejor corto y cerrado que 320 chars truncados. PROHIBIDO truncar a mitad de palabra, conjunción suelta ("y", "que", "se"), preposición sin objeto ("en", "con"), o verbo sin completar. El cierre gramatical limpio prevalece SIEMPRE sobre el límite numérico.
 - subtitulo: 20-120 chars (apunta a 40-90). Una pregunta o afirmación, en la misma voz, que abre el segundo párrafo.
-- parrafoBot: 80-320 chars (apunta a 150-240). Otro fragmento, de la misma página o de otra, con la misma voz: sigue dentro del libro, no lo resume ni le agrega consejos de vida que el libro no da. Nada de «abre el libro», «lee» ni «pasa la página»: una página no habla de sí misma. Solo si en el lente viene la capa de Niños con su microacción de lectura, esa va al final, en una frase corta y suave.
+- parrafoBot: 80-320 chars (apunta a 150-240). Otro fragmento, de la misma página o de otra, con la misma voz: sigue dentro del libro, no lo resume ni le agrega consejos de vida que el libro no da. Nada de «abre el libro», «lee» ni «pasa la página»: una página no habla de sí misma. La única excepción es la de Niños: si el user prompt trae «CAPA DE NIÑOS: LA MICROACCIÓN DE LECTURA», esa frase cierra el párrafo 2.
   CIERRE OBLIGATORIO: mismas reglas que parrafoTop. SIEMPRE frase completa con punto final (. ! ?). Prefiere quedar corto antes que truncar.
 
 
@@ -801,7 +802,7 @@ PROHIBICIONES DURAS
 - "este libro", "el autor", "la obra", "a través de"
 - "nos invita a", "reflexiona sobre", "trata de", "propone", "muestra cómo"
 - Metáforas intercambiables: "danza de decisiones", "laberinto de la existencia", "horizonte de posibilidades"
-- Instrucciones de tiempo: "toma 30 segundos"
+- Instrucciones de tiempo: "toma 30 segundos" (salvo la microacción de lectura de Niños, que puede decir cuánto)
 - Mencionar Triggui, al curador, o al proceso de curaduría
 - Emojis en cualquier parte (el sistema los agrega después)
 - Newlines embebidos (\\n) dentro de cualquier frase
@@ -1078,7 +1079,7 @@ El libro sigue mandando. NO lo mencionas en el output.`;
 }
 
 
-function contentESUserPrompt(book, groundTruth, anchorsData, lens) {
+function contentESUserPrompt(book, groundTruth, anchorsData, lens, kids = false) {
   // 🌒 SPRINT NIVEL DIOS — User prompt inyecta IDENTIDAD DINÁMICA por libro
   const identityLine = buildIdentityLine(anchorsData, "es");
 
@@ -1110,6 +1111,11 @@ Tu vocabulario propio (key terms; úsalos solo donde la frase se entienda sola):
     p += `\n\n═══════════════════════════════════════════════════════════════════\nLENTE DEL CURADOR (perspectiva activa hoy):\n${lens}\n\nSi tu obra naturalmente toca esta perspectiva, déjala asomar. Si no la toca, NO la fuerces — sería traición a tu propia escritura. El lente sirve para elegir qué parte de tu libro le sirve hoy a esa persona y qué pequeño impulso le deja; no es un tema para nombrar. En la tarjeta no metas palabras del lente, cosas que el libro no tiene ni consejos de vida que el libro no da.`;
   }
 
+
+  if (kids) {
+    // C278: la capa de Niños pide una microacción de lectura en el párrafo 2; aquí se pide sin condición (segunda pasada de C300).
+    p += `\n\n═══════════════════════════════════════════════════════════════════\nCAPA DE NIÑOS: LA MICROACCIÓN DE LECTURA (obligatoria en esta tarjeta)\nEl párrafo 2 (parrafoBot) termina con una microacción de lectura de las que pide la capa de Niños: abrir el libro en cualquier página, ahora; leer en voz alta el primer párrafo; leer tres minutos antes de dormir; leer cinco páginas seguidas; buscar la primera línea del libro. Una sola frase, corta y suave, que sirva igual al niño que lee solo y al adulto que lee con él. Es la única frase de la tarjeta que habla del libro desde fuera, y en la autovalidación es la excepción.`;
+  }
 
   p += `\n\n═══════════════════════════════════════════════════════════════════
 Ahora, como la voz de tu libro, escribe desde dentro de sus páginas:
@@ -1175,7 +1181,7 @@ export async function extractContentES(openai, book, groundTruth, anchorsData, l
     temperature,
     messages: [
       { role: "system", content: contentESSystemPrompt(crono) },
-      { role: "user", content: contentESUserPrompt(book, groundTruth, anchorsData, lens) }
+      { role: "user", content: contentESUserPrompt(book, groundTruth, anchorsData, lens, Boolean(options.kids)) }
     ],
     response_format: {
       type: "json_schema",
@@ -1279,7 +1285,8 @@ someone had to read it twice to get it, it is wrong.
   If one runs long, split it in two.
 - Concrete images from the book; no riddles, no stacked metaphors.
 - A word that belongs to the book only if the sentence makes its meaning clear.
-  Otherwise, say it in everyday words.
+  Otherwise, say it in everyday words. The same with a word that means something
+  else in the book: in Frankl, "the camp" is the concentration camp.
 - In the card (titulo, parrafoTop, subtitulo, parrafoBot), nothing from another
   era or world than the book's: if the book doesn't talk about banks, phones or
   social media, neither does the card. A pillar or a lens shines through what the
@@ -1350,7 +1357,7 @@ card_en: titulo (8-60 chars, aim 25-45), parrafoTop (80-320, aim 180-260), subti
   came through those four doors: the one that leaves them wanting to keep reading.
   The page itself creates that wish, not a line asking for it. It is read on a
   phone and shared as an image: the lengths are what fits.
-  parrafoTop and parrafoBot: fragments of the page opened at random, in the book's voice (the author, the narrator or a character), as it happens. Never the book's lesson retold from outside, nor life advice the book doesn't give. No "open the book", "read" or "turn the page": a page does not talk about itself. Only if the lens brings the Kids layer with its reading micro-action, it goes at the end, in one short, gentle sentence. No "I learned that", "taught me that" or "I discovered that": what the book knows is said directly or shown in the scene.
+  parrafoTop and parrafoBot: fragments of the page opened at random, in the book's voice (the author, the narrator or a character), as it happens. Never the book's lesson retold from outside, nor life advice the book doesn't give. No "open the book", "read" or "turn the page": a page does not talk about itself. The only exception is Kids: if the user prompt brings "KIDS LAYER: THE READING MICRO-ACTION", that sentence closes paragraph 2. No "I learned that", "taught me that" or "I discovered that": what the book knows is said directly or shown in the scene.
   titulo: clear and natural; it makes sense without knowing the book.
   🌒 MANDATORY CLOSURE — APLICA UNIVERSALMENTE A TODOS LOS CAMPOS TEXTUALES:
   Campos cubiertos: parrafoTop, parrafoBot, titulo, subtitulo, tagline, frases[*], frases_og[*], edition_blocks_es[*].phrase, og_phrases_es[*].phrase. 
@@ -1560,7 +1567,7 @@ Apply the same check to your 4 og_phrases_en.`;
 }
 
 
-function contentENUserPrompt(book, groundTruth, anchorsData, cardES, lens, referenciaES = null) {
+function contentENUserPrompt(book, groundTruth, anchorsData, cardES, lens, referenciaES = null, kids = false) {
   // 🌒 SPRINT NIVEL DIOS — User prompt inyecta IDENTIDAD DINÁMICA por libro
   const identityLine = buildIdentityLine(anchorsData, "en");
 
@@ -1644,6 +1651,11 @@ ParrafoBot: ${cardES.parrafoBot}`;
   }
 
 
+  if (kids) {
+    // C278: the Kids layer asks for a reading micro-action in paragraph 2; here it is asked without conditions.
+    p += `\n\n═══════════════════════════════════════════════════════════════════\nKIDS LAYER: THE READING MICRO-ACTION (required in this card)\nParagraph 2 (parrafoBot) ends with one reading micro-action of the kind the Kids layer asks for: open the book at any page, now; read the first paragraph aloud; read for three minutes before bed; read five pages in a row; find the book's first line. One short, gentle sentence that works for a child reading alone and for the adult reading with them. It is the only sentence in the card that talks about the book from outside, and it is the exception in the self-validation.`;
+  }
+
   p += `\n\n═══════════════════════════════════════════════════════════════════
 Now, as the voice of your book, write from inside its pages:
 Write, in this order: emotional_words_en (the four doors), edition_blocks_en (one per door, same order), card_en and og_phrases_en.
@@ -1670,7 +1682,7 @@ export async function extractContentEN(openai, book, groundTruth, anchorsData, c
     temperature,
     messages: [
       { role: "system", content: contentENSystemPrompt() },
-      { role: "user", content: contentENUserPrompt(book, groundTruth, anchorsData, cardES, lens, options.referenciaES || null) }
+      { role: "user", content: contentENUserPrompt(book, groundTruth, anchorsData, cardES, lens, options.referenciaES || null, Boolean(options.kids)) }
     ],
     response_format: {
       type: "json_schema",

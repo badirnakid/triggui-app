@@ -284,12 +284,13 @@ async function retryOnce(fn, label) {
    Helpers observatorios: registran issues, no fuerzan retry al LLM.
 ═══════════════════════════════════════════════════════════════════════════════ */
 
-// C278: con Claude el esquema no impone «exactamente 4». Si llegan más de 4 y los 4 roles están, se queda el
-// primero de cada rol, en su orden. Si faltan roles, validateSinfonia lo reporta como siempre.
+// C278: con Claude el esquema no impone «exactamente 4». Si llegan más de 4 frases OG y los 4 roles están, se
+// queda la primera de cada rol, en su orden. Los bloques NO se recortan: cada uno va con la palabra de su misma
+// posición, así que si no son 4, validateSinfonia falla y no se publica (segunda pasada de C300).
 function ajustaSinfonia(contentXX, lang) {
   const rolKey = lang === 'en' ? 'role_symphonic' : 'rol_sinfonico';
   const recortados = [];
-  for (const k of ['edition_blocks_' + lang, 'og_phrases_' + lang]) {
+  for (const k of ['og_phrases_' + lang]) {
     const xs = contentXX && contentXX[k];
     if (!Array.isArray(xs) || xs.length <= 4 || !xs.every((b) => b && typeof b === 'object')) continue;
     const vistos = new Set();
@@ -297,6 +298,17 @@ function ajustaSinfonia(contentXX, lang) {
     if (quedan.length === 4) { recortados.push(`${k} ${xs.length}→4`); contentXX[k] = quedan; }
   }
   return recortados;
+}
+
+// C278: en Niños, la tarjeta cierra el párrafo 2 con una microacción de lectura (capa de Niños). Si no la trae, se avisa.
+function avisaLecturaNinos(contentXX, lang) {
+  const card = contentXX && contentXX['card_' + lang];
+  const bot = String((card && card.parrafoBot) || '').replace(/\[\/?[Hh]\]/g, '').trim();
+  const ultima = (bot.match(/[^.!?…]+[.!?…]*\s*$/) || [''])[0];
+  const re = lang === 'en' ? /\b(open|read|reading|aloud|page|pages|chapter|first line)\b/i
+    : /\b(abre|abrir|lee|leer|léelo|léela|leerlo|leerla|en voz alta|página|páginas|capítulo|primera línea)\b/i;
+  if (!re.test(ultima)) console.warn(`   📖 Niños ${lang.toUpperCase()}: el párrafo 2 no cierra con su microacción de lectura (${ultima.slice(0, 80)})`);
+  else console.log(`   📖 Niños ${lang.toUpperCase()}: microacción de lectura al final del párrafo 2`);
 }
 
 function validateSinfonia(contentXX, lang) {
@@ -315,6 +327,7 @@ function validateSinfonia(contentXX, lang) {
       issues.push(`${ebKey} cobertura ${unique.size}/4 (${[...unique].join(',')})`);
     }
     if (eb.length !== 4) issues.push(`${ebKey} trae ${eb.length} piezas y se piden 4`);
+    if (!eb.every(b => b && typeof b.phrase === 'string' && b.phrase.trim())) issues.push(`${ebKey} trae una frase vacía`);
     for (const b of eb) {
       const v = b && b[animoKey];
       if (typeof v !== 'number' || v < 0 || v > 1) {
@@ -346,6 +359,13 @@ function validateSinfonia(contentXX, lang) {
         issues.push(`${ogKey} mezcla strings y objetos — formato inconsistente`);
       }
     }
+  }
+
+  // ─── emotional_words_{lang}: las cuatro puertas, una por bloque y en su misma posición (C278) ───
+  const ws = contentXX && contentXX['emotional_words_' + lang];
+  const conTexto = Array.isArray(ws) ? ws.filter(w => typeof w === 'string' && w.trim()).length : 0;
+  if (!Array.isArray(ws) || ws.length !== 4 || conTexto !== 4) {
+    issues.push(`emotional_words_${lang}: se piden 4 palabras con texto y llegaron ${conTexto}${Array.isArray(ws) && ws.length !== conTexto ? ` de ${ws.length}` : ''}`);
   }
 
   return { ok: issues.length === 0, issues };
@@ -705,7 +725,7 @@ async function processBook(book, inputs, inputsSnapshot) {
   // ═══ F3: CONTENIDO ES ═══════════════════════════════════════════════
   const tF3 = Date.now();
   let contentESRes = await retryOnce(
-    () => extractContentES(openai, book, groundTruthMeta.ground_truth, anchorsData, inputs.lens, { model: CFG.modelEscritor, temperature: 0.7, crono }),
+    () => extractContentES(openai, book, groundTruthMeta.ground_truth, anchorsData, inputs.lens, { model: CFG.modelEscritor, temperature: 0.7, crono, kids: IS_KIDS }),
     "extractContentES"
   );
   elapsedByPhase.content_es = Date.now() - tF3;
@@ -741,7 +761,7 @@ async function processBook(book, inputs, inputsSnapshot) {
     console.log(`   🔁 Re-extract ES (score ${fmt(judgeES.grounded_score)} < ${CFG.groundingJudgeMinScore})`);
     const tR3 = Date.now();
     contentESRes = await retryOnce(
-      () => extractContentES(openai, book, groundTruthMeta.ground_truth, anchorsData, inputs.lens, { model: CFG.modelEscritor, temperature: 0.4, crono }),
+      () => extractContentES(openai, book, groundTruthMeta.ground_truth, anchorsData, inputs.lens, { model: CFG.modelEscritor, temperature: 0.4, crono, kids: IS_KIDS }),
       "extractContentES_retry"
     );
     elapsedByPhase.content_es_retry = Date.now() - tR3;
@@ -761,7 +781,7 @@ async function processBook(book, inputs, inputsSnapshot) {
     if (judgeES.grounded_score < CFG.groundingJudgeMinScore) {
       console.log(`   🚀 Escalar ES a ${IA.etiqueta(CFG.modelBig)}`);
       contentESRes = await retryOnce(
-        () => extractContentES(openai, book, groundTruthMeta.ground_truth, anchorsData, inputs.lens, { model: CFG.modelBig, temperature: 0.5, crono }),
+        () => extractContentES(openai, book, groundTruthMeta.ground_truth, anchorsData, inputs.lens, { model: CFG.modelBig, temperature: 0.5, crono, kids: IS_KIDS }),
         "extractContentES_escalate"
       );
       tokensByPhase.content_es_escalate = contentESRes.usage?.total_tokens || 0;
@@ -775,6 +795,7 @@ async function processBook(book, inputs, inputsSnapshot) {
     "card_es.titulo", "card_es.parrafoTop", "card_es.subtitulo", "card_es.parrafoBot",
     "emotional_words_es", "og_phrases_es", "edition_blocks_es"
   ], "extractContentES_final");
+  if (IS_KIDS) avisaLecturaNinos(contentESFinal, "es");
   const largosES = ajustaLargos(contentESFinal, "es");
   if (largosES.cambios.length) console.log(`   📏 Largos ES: ${largosES.cambios.join(", ")} (hasta la última oración que cabe)`);
   if (largosES.avisos.length) console.warn(`   📏 Largos ES fuera de rango: ${largosES.avisos.join(", ")}`);
@@ -783,7 +804,7 @@ async function processBook(book, inputs, inputsSnapshot) {
   const tF5 = Date.now();
   let contentENRes = await retryOnce(
     () => extractContentEN(openai, book, groundTruthMeta.ground_truth, anchorsData, contentESFinal.card_es, inputs.lens, {
-      model: CFG.modelEscritor, temperature: 0.7,
+      model: CFG.modelEscritor, temperature: 0.7, kids: IS_KIDS,
       // C278: las cuatro puertas en español y sus frases, para que el inglés abra las mismas, en el mismo orden
       referenciaES: { palabras: contentESFinal.emotional_words_es, frases: (contentESFinal.edition_blocks_es || []).map((b) => b && b.phrase) }
     }),
@@ -798,6 +819,7 @@ async function processBook(book, inputs, inputsSnapshot) {
     "card_en.titulo", "card_en.parrafoTop", "card_en.subtitulo", "card_en.parrafoBot",
     "emotional_words_en", "og_phrases_en", "edition_blocks_en"
   ], "extractContentEN");
+  if (IS_KIDS) avisaLecturaNinos(contentENFinalRaw, "en");
   const largosEN = ajustaLargos(contentENFinalRaw, "en");
   if (largosEN.cambios.length) console.log(`   📏 Largos EN: ${largosEN.cambios.join(", ")} (hasta la última oración que cabe)`);
   if (largosEN.avisos.length) console.warn(`   📏 Largos EN fuera de rango: ${largosEN.avisos.join(", ")}`);
@@ -919,7 +941,7 @@ async function processBook(book, inputs, inputsSnapshot) {
     if (!sinfoniaEN.ok) errores.push('EN: ' + sinfoniaEN.issues.join('; '));
     console.error(`   🚨 SINFONÍA INCOMPLETA — nivel dios requiere 4/4 EXACTO:`);
     errores.forEach(e => console.error('      ' + e));
-    throw new Error('Sinfonía incompleta — se piden 4 piezas con 4 roles: ' + errores.join(' | '));
+    throw new Error('Sinfonía incompleta — se piden 4 palabras y 4 piezas con 4 roles: ' + errores.join(' | '));
   }
   if (bracketsES.length > 0 || bracketsEN.length > 0) {
     console.warn(`   🛡️  Brackets espurios: ES=${bracketsES.length}, EN=${bracketsEN.length} (capa 5 frontend saneará)`);
