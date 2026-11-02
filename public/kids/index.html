@@ -6326,6 +6326,24 @@ BarraMagica._clearSubmitTimers = function() {
 // 🌒 v4.17: ¿la barra está entregando un libro? Va de submit() a closeOverlay(): la barra ya eligió y está por cerrarse.
 // Mientras tanto ningún cambio de modo empieza encima (el pill está apagado; un back/forward espera a que la barra cierre).
 BarraMagica.enviando = function() { return this._submitTimers.length > 0; };
+// 🎨 Breathing moment del envío (pill atenuado, «encontrando tu libro…», pregunta que respira). Lo usan submit() y,
+// 🌒 v4.17, el envío que espera al catálogo del otro modo: el toque se nota al instante aunque el catálogo tarde.
+BarraMagica.respiroEnvio = function() {
+  const skipEl = document.getElementById('barraSkip');
+  const microEl = document.getElementById('barraMicro');
+  const questionEl = document.getElementById('barraQuestion');
+  if (skipEl) skipEl.style.opacity = '0.3';
+  if (microEl) {
+    microEl.style.transition = 'opacity 0.4s ease';
+    microEl.style.opacity = '1';
+    microEl.textContent = TriggguiI18n.get('barra.loading');
+  }
+  if (questionEl) {
+    questionEl.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    questionEl.style.opacity = '0.35';
+    questionEl.style.transform = 'scale(0.96)';
+  }
+};
 
 BarraMagica.submit = function(query) {
   // 🌒 v10: Nueva arquitectura del submit — simple, robusta, sin bugs.
@@ -6377,20 +6395,7 @@ BarraMagica.submit = function(query) {
 
   // 🎨 Breathing moment elegante antes del reveal
   // Solo visual — NO blur() del input (puede cortar eventos táctiles)
-  const skipEl = document.getElementById('barraSkip');
-  const microEl = document.getElementById('barraMicro');
-  const questionEl = document.getElementById('barraQuestion');
-  if (skipEl) skipEl.style.opacity = '0.3';
-  if (microEl) {
-    microEl.style.transition = 'opacity 0.4s ease';
-    microEl.style.opacity = '1';
-    microEl.textContent = TriggguiI18n.get('barra.loading');
-  }
-  if (questionEl) {
-    questionEl.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-    questionEl.style.opacity = '0.35';
-    questionEl.style.transform = 'scale(0.96)';
-  }
+  this.respiroEnvio();
 
   const self = this;
 
@@ -6466,11 +6471,14 @@ function wireBarraMagicaEvents() {
       if (espera) {
         const primero = (envioEnEspera === null);
         envioEnEspera = q;
-        if (primero) espera.then(function (ok) {
-          const qq = envioEnEspera; envioEnEspera = null;
-          if (!ok) return;   // el cambio falló y la página se recarga en el otro modo: no se envía nada
-          try { BarraMagica.submit(qq); } catch (err) { console.error('[Triggui] BarraMagica.submit error:', err); }
-        });
+        if (primero) {
+          try { BarraMagica.respiroEnvio(); } catch (_) {}   // la misma señal que da el envío: el toque nunca queda mudo
+          espera.then(function (ok) {
+            const qq = envioEnEspera; envioEnEspera = null;
+            if (!ok) return;   // el cambio falló y la página se recarga en el otro modo: no se envía nada
+            try { BarraMagica.submit(qq); } catch (err) { console.error('[Triggui] BarraMagica.submit error:', err); }
+          });
+        }
         return;
       }
       try {
@@ -6575,8 +6583,15 @@ async function switchTrigguiMode(targetMode, fromHistory) {
   if (targetMode === window.TRIGGUI_MODE) return;
   // 🌒 v4.17: con un envío en curso ningún cambio empieza: el toque del pill no cuenta (está apagado) y un back/forward espera a que la barra cierre
   try { if (BarraMagica.enviando()) { if (fromHistory) __modoTrasEnvio(0); return; } } catch(_) {}
-  // 🌒 v4.17: el pill vive en la barra: si la barra ya se está yendo (fundido de salida), su toque no cuenta (solo el historial cambia sin barra)
-  try { const __ovP = document.getElementById('barraMagicaOverlay'); if (!fromHistory && !(__ovP && __ovP.classList.contains('visible'))) return; } catch(_) {}
+  // 🌒 v4.17: el pill vive en la barra y su toque solo cuenta si la barra está abierta y el pill se ve: no mientras la barra
+  //   se va (fundido de salida) ni mientras el pill entra a opacidad 0 (su primer segundo y medio en cada apertura). El historial sí cambia sin barra.
+  try {
+    if (!fromHistory) {
+      const __ovP = document.getElementById('barraMagicaOverlay'), __pl = document.getElementById('barraSkip');
+      if (!(__ovP && __ovP.classList.contains('visible'))) return;
+      if (__pl && parseFloat(getComputedStyle(__pl).opacity) < 0.1) return;
+    }
+  } catch(_) {}
   window.__TRIGGUI_SWITCHING__ = true;
   // 🌒 v4.17: un envío hecho mientras llega el catálogo nuevo espera esta promesa (true = catálogo nuevo listo; false = el cambio falló y se recarga)
   let __cambioListo = function () {};
@@ -6660,9 +6675,14 @@ async function switchTrigguiMode(targetMode, fromHistory) {
     __cambioListo(false);   // 🌒 v4.17: un envío en espera no corre: la página se recarga en el otro modo
     // Fallback graceful: revertir modo en memoria + page reload (comportamiento clásico)
     window.TRIGGUI_MODE = prevMode;
-    document.documentElement.classList.toggle('kids-mode', prevMode === 'kids');
-    document.documentElement.classList.toggle('adult-mode', prevMode !== 'kids');
-    document.documentElement.setAttribute('data-mode', prevMode);
+    // 🌒 v4.17: con la barra abierta, la barra se queda en la versión a la que se va (la página se recarga en ese modo): sin destello del modo anterior
+    let __barraSigue = false;
+    try { const __ovE = document.getElementById('barraMagicaOverlay'); __barraSigue = !!(__ovE && __ovE.classList.contains('visible')); } catch(_) {}
+    if (!__barraSigue) {
+      document.documentElement.classList.toggle('kids-mode', prevMode === 'kids');
+      document.documentElement.classList.toggle('adult-mode', prevMode !== 'kids');
+      document.documentElement.setAttribute('data-mode', prevMode);
+    }
     try { history.replaceState({ mode: prevMode }, '', prevUrl); } catch(_) {}
     window.__TRIGGUI_SWITCHING__ = false;
     window.location.href = targetUrl;
