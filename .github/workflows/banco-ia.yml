@@ -1,4 +1,4 @@
-name: 🧪 Banco C278 · OpenAI contra Claude (no publica nada)
+name: 🧪 Banco C278 · Claude (no publica nada)
 
 # ─────────────────────────────────────────────────────────────────────────────────────────────────────────
 # El banco de prueba de C278 (plan del 2 de noviembre de 2026, paso 3).
@@ -11,6 +11,9 @@ name: 🧪 Banco C278 · OpenAI contra Claude (no publica nada)
 # · Cada lado corre solo con su llave: si algo quedara llamando al otro proveedor, fallaría a la vista.
 # · El mismo azar (semilla por libro) y el mismo reloj para los dos lados: los mismos lentes y la misma franja.
 # · El saneador y el juez de audiencia van con lote 1 (el libro de la corrida), como quedará con C282.
+# · Banco 2 (go de Badir del 2 de noviembre a las 13:42): solo Claude, con la tarjeta como página abierta al azar, la
+#   regla de la comilla suelta y la caché del system. OpenAI ya quedó medido en el banco 1 (corrida 41502203590) y es
+#   la referencia; para volver a correr los dos, la matriz vuelve a [openai, claude].
 # ─────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 on:
@@ -59,7 +62,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        proveedor: [openai, claude]
+        proveedor: [claude]
         libro:
           - { id: cisne, catalogo: adulto, entrada: 'El cisne negro | Nassim Nicholas Taleb', semilla: 101 }
           - { id: frankl, catalogo: adulto, entrada: 'El hombre en busca de sentido | Viktor E. Frankl', semilla: 202 }
@@ -211,7 +214,7 @@ jobs:
         with:
           pattern: banco-*
           path: banco
-      - name: 📊 OpenAI contra Claude
+      - name: 📊 Resumen por libro
         run: node ia/banco/compara.mjs --dir=banco
       - uses: actions/upload-artifact@v4
         with:

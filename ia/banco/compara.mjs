@@ -17,12 +17,12 @@ const corridas = archivos.map((f) => { try { return JSON.parse(fs.readFileSync(f
 
 const usd = (x) => (x == null ? 'no consta' : x.toFixed(4) + ' USD');
 const ids = [...new Set(corridas.map((c) => c.id))];
-const prov = ['openai', 'claude'];
+const prov = ['openai', 'claude'].filter((p) => corridas.some((c) => c.proveedor === p));   // solo los que corrieron
 const de = (id, p) => corridas.find((c) => c.id === id && c.proveedor === p) || null;
 const out = [];
 const w = (s = '') => out.push(s);
 
-w('# Banco C278: OpenAI contra Claude, libro por libro');
+w(`# Banco C278: ${prov.map((x) => (x === 'openai' ? 'OpenAI' : 'Claude')).join(' contra ')}, libro por libro`);
 w('');
 w('| Libro | Proveedor | Llamadas | Costo | Entrada (con caché) | Salida | Tiempo en el modelo | Problemas |');
 w('|---|---|---|---|---|---|---|---|');
@@ -44,7 +44,7 @@ for (const id of ids) {
   const a = de(id, 'openai'), b = de(id, 'claude');
   const L = (a && a.edicion) || (b && b.edicion);
   w(`## ${L ? `${L.titulo} — ${L.autor}` : id}`);
-  for (const [p, c] of [['OpenAI', a], ['Claude', b]]) {
+  for (const [p, c] of [['OpenAI', a], ['Claude', b]].filter(([n]) => prov.includes(n.toLowerCase()))) {
     w('');
     w(`**${p}**`);
     const e = c && c.edicion;
