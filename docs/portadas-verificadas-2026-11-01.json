@@ -203,9 +203,18 @@
   "i": 11,
   "slug": "take-nothing-personally",
   "titulo": "Take nothing personally",
-  "estado": "sin_portada",
+  "estado": "ok",
   "de_antes": "7cb2e72675f3",
-  "motivo": "verificada a mano el 2026-11-01: portada de texto y no se encontró la real",
+  "portada_nueva": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/ff/6e/b1/ff6eb1ed-ed24-d380-9fd9-fdea96df2bec/ef26b698-2abc-4644-afb3-9842ce79898d_cover_image.png/3000x3000bb.jpg",
+  "origen": "https://is1-ssl.mzstatic.com/image/thumb/Publication211/v4/ff/6e/b1/ff6eb1ed-ed24-d380-9fd9-fdea96df2bec/ef26b698-2abc-4644-afb3-9842ce79898d_cover_image.png/3000x3000bb.jpg",
+  "fuente": "apple-eb-us (en Apple el autor aparece como «Shubham Khumar Sinha»)",
+  "sello": "a190443d32",
+  "w": 1400,
+  "h": 1873,
+  "anchos": [
+   640,
+   1280
+  ],
   "fecha": "2026-11-01"
  },
  {
