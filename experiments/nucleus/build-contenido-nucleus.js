@@ -820,7 +820,7 @@ async function processBook(book, inputs, inputsSnapshot) {
   //   - 4 og_phrases_es + 4 og_phrases_en
   //   - 4 edition_blocks_es + 4 edition_blocks_en
   // Si alguna sale "fuera" (suena a contraportada), regeneramos in-place
-  // como autor encarnado y re-validamos.
+  // desde dentro de la página y re-validamos.
   // Costo: ~$0.0036 + ~$0.0008 si hay 1-2 retries = ~$0.004 por libro.
   // Latencia: ~1 segundo (Promise.all paralelo).
   let voiceJudgeExtendedDegraded = false;

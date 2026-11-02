@@ -57,6 +57,7 @@ Quien la lee siente que está leyendo metadata, no contenido.
 
 PRINCIPIO ÚNICO QUE APLICAS:
 ¿Esta frase está EN el libro o HABLA SOBRE el libro?
+Contar la lección del libro como moraleja, aunque sea en primera persona, también es hablar sobre el libro.
 
 NO uses listas de palabras prohibidas.
 NO te bases en patrones léxicos específicos.
@@ -211,19 +212,20 @@ export async function judgeAllVoiceLayers(openai, contentES, contentEN, book, op
 
 /* ─────────────────────────────────────────────────────────────────────────────
    regeneratePhrasesByFeedback
-   Para cada failure, pedir al LLM (encarnado como autor) que reescriba la phrase
+   Para cada failure, pedir al LLM (como la voz del libro) que reescriba la phrase
    con feedback específico del judge. Mutación IN-PLACE de contentES/contentEN.
 
    Después llamar judgeAllVoiceLayers de nuevo para confirmar que ahora pasen.
    Devuelve { regenerated: int, still_failing: int, total_tokens }.
 ────────────────────────────────────────────────────────────────────────────── */
 
-const SYSTEM_PROMPT_REGENERATE = `🌒 ROLE INVERSION (Sprint Nivel Dios)
+const SYSTEM_PROMPT_REGENERATE = `🌒 LA PÁGINA ABIERTA AL AZAR (Sprint Nivel Dios)
 
-Eres el autor del libro asignado. La frase que escribiste sonó a voz FUERA del libro
-(contraportada, sinopsis, anuncio, descripción) en lugar de voz DENTRO del libro.
+Eres la voz del libro asignado: su autor y, cuando el libro lo pide, su narrador o uno de
+sus personajes. La frase que escribiste sonó a voz FUERA del libro (contraportada, sinopsis,
+anuncio, descripción, o la lección del libro contada como moraleja) en lugar de la página misma.
 
-Tu trabajo: reescribir esa frase como autor escribiendo dentro de tu obra.
+Tu trabajo: reescribir esa frase como la leería quien abre el libro en una página al azar.
 
 NO describas tu libro. NO lo cuantifiques ("X píldoras"). NO lo vendas. NO uses voz
 de crítico ni de editor.
@@ -259,7 +261,8 @@ export async function regeneratePhrasesByFeedback(openai, anchorsData, failures,
       : (id.titulo_es || id.titulo_en || "");
 
     const userPrompt = `IDENTIDAD DE ESTA SESIÓN:
-Eres ${author}, el autor que escribió "${titleForLang}".
+Libro: "${titleForLang}" · Autor: ${author}
+Eres la voz de ese libro: su autor y, cuando el libro lo pide, su narrador o uno de sus personajes.
 
 GROUND TRUTH centrales (anchors):
 ${(anchorsData?.book_grounding_anchors?.concepts || []).map(c => `- ${c}`).join("\n")}
@@ -277,7 +280,7 @@ CAMPO: ${f.field}${f.field.startsWith("edition_blocks") ? " (bloque " + f.index 
 IDIOMA: ${f.lang === "en" ? "English" : "Español"}
 
 ═══════════════════════════════════════════════════════════════════
-Reescribe la frase como autor escribiendo dentro de tu obra.
+Reescribe la frase como la leería quien abre el libro en una página al azar.
 
 🌐 IDIOMA OBLIGATORIO (REGLA SUPREMA): tu respuesta DEBE estar 100% en ${f.lang === "en" ? "INGLÉS" : "ESPAÑOL"}. Todo lo de arriba (identidad, anchors, voz) puede venir en OTRO idioma — úsalo SOLO para las IDEAS, JAMÁS para el idioma. PROHIBIDO mezclar idiomas dentro de la frase.
 Devuelve SOLO la frase reescrita.`;

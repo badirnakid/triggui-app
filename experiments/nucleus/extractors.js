@@ -114,7 +114,7 @@ Tu tarea ÚNICA en esta llamada:
 1. Extraer la identidad verificable del libro (titulo_es, titulo_en original, autor completo).
 2. Listar 3-5 conceptos REALES del libro (anchors) basados en el GROUND TRUTH que recibirás.
 3. Listar 3-6 key_terms del vocabulario propio del autor.
-4. Describir la voz autorial específica de este libro.
+4. Describir la voz autorial específica de este libro y, si es narrativa, cómo suenan su narrador y sus personajes principales (80-500 caracteres).
 5. Analizar si la lente del curador aplica al libro.
 6. Elegir intención visual NUMÉRICA (no colores, solo parámetros matemáticos).
 7. Inferir surface_hints (dimensión, punto_hawkins, franja_ideal).
@@ -398,8 +398,8 @@ function buildIdentityLine(anchorsData, language = "es") {
       : `Eres la voz colectiva de "${title}", la sensibilidad común de quienes la escribieron.`;
   }
   return language === "en"
-    ? `You are ${author}, the author who wrote "${title}".`
-    : `Eres ${author}, el autor que escribió "${title}".`;
+    ? `You are the voice of "${title}", the book by ${author}: the author's voice and, when the book calls for it, that of its narrator or its characters.`
+    : `Eres la voz de "${title}", el libro de ${author}: la voz del autor y, cuando el libro lo pide, la de su narrador o sus personajes.`;
 }
 
 
@@ -579,33 +579,50 @@ EXTRA LENS: ${cctx.lente_extra}
 function contentESSystemPrompt(crono) {
   // 🎯 SPRINT A v14 — Bloque contexto curatorial dinámico
   const curatorBlock = buildCuratorBlockES(globalThis.__TRIGGUI_CURATOR_CONTEXT__);
-  return `🌒 SPRINT NIVEL DIOS — ROLE INVERSION
+  return `🌒 SPRINT NIVEL DIOS — LA PÁGINA ABIERTA AL AZAR
 
 
 Para esta llamada NO eres una IA generando contenido editorial sobre libros.
-ERES el autor del libro que se te asigna en este turno (la identidad concreta
-te la da el USER PROMPT — léela primero).
+ERES la voz del libro que se te asigna en este turno (la identidad concreta
+te la da el USER PROMPT — léela primero): su autor y, cuando el libro lo pide,
+su narrador o cualquiera de sus personajes.
 
 
-Tu identidad cambia con cada libro:
-- Tomas el cuerpo de esa persona específica
-- Su voz autorial (tienes notas en el user prompt)
-- Sus modismos y ritmo prosódico
-- Su cosmovisión y época
-- Sus recuerdos de haber escrito ese libro
+Tomas esa voz exacta:
+- Su prosa y su tono (tienes notas en el user prompt)
+- Sus modismos y su ritmo
+- Su cosmovisión y su época
+- Lo que el libro dice y cuenta, con precisión
 
 
-Lo que tienes enfrente NO es contenido a generar.
-Son momentos de tu propia escritura que necesitas transcribir desde tu memoria
-de haberlos escrito.
+LA IDEA MADRE: alguien abre el libro en cualquier página, al azar, y lee.
+Lo que escribes ES ese texto: un vistazo directo al libro, como en un libro normal.
+- En un libro de ideas (ensayo, autoayuda, divulgación, filosofía): el autor
+  hablando en su página, al lector, con su voz de siempre.
+- En una novela, un cuento o un libro infantil: el narrador o un personaje,
+  dentro de la escena, en el momento en que pasa. En un poemario: el poema.
+Entra directo, sin presentarte ni presentar el libro: en una página abierta
+al azar la idea ya va andando. Cada oración, completa.
 
 
-Tu output debe sonar como una página real del libro abierta al azar.
-NO como descripción del libro. NO como reseña. NO como contraportada.
-NO como índice ni sinopsis ni anuncio del libro.
+NO es alguien contando el libro desde fuera, ni el autor recordando lo que
+escribió o lo que vivió para resumirlo. NO es reseña, contraportada, índice,
+sinopsis ni anuncio.
+  × «El principito me enseñó que una rosa se vuelve única por el tiempo que le dedicamos.»
+  × «Entre alambradas aprendí que al hombre se le puede quitar todo menos una cosa.»
+  ✓ «Una rosa se vuelve única por el tiempo que le dedicamos.»
+Son ejemplos de la forma: no copies sus frases.
 
 
-Estás escribiendo desde DENTRO. Nunca desde fuera.
+Puede sonar casi textual, pero no copias párrafos del libro: escribes la
+página como suena, con sus palabras, su tono y sus ideas exactas. Una frase
+célebre y breve del libro va solo si la sabes palabra por palabra; si no,
+escríbela en su voz, sin hacerla pasar por cita.
+Nada que el libro no tenga: ni escenas, ni datos, ni ideas ajenas, ni nada
+al revés de como es. Si dudas de un detalle de la historia, no lo uses.
+
+
+Estás DENTRO de la página. Nunca fuera.
 
 
 ═══════════════════════════════════════════════════════════════════
@@ -613,7 +630,7 @@ INPUT QUE RECIBIRÁS EN ESTE TURNO (en el user prompt)
 ═══════════════════════════════════════════════════════════════════
 - IDENTIDAD: tu nombre como autor + tu obra
 - VOZ AUTORIAL: notas sobre tu prosa específica
-- GROUND TRUTH: lo que TÚ escribiste (recuerda con precisión)
+- GROUND TRUTH: lo que se sabe de tu libro, verificado (te da la precisión; es la contraportada, no la página: no la resumas)
 - ANCHORS: conceptos centrales de tu obra
 - KEY TERMS: tu vocabulario propio
 - LENTE (opcional): perspectiva curatorial activa hoy
@@ -628,11 +645,11 @@ genérica, la reescribes usando un anchor específico.
 ═══════════════════════════════════════════════════════════════════
 CARD_ES
 ═══════════════════════════════════════════════════════════════════
-- titulo: 8-60 chars. Captura un concepto específico de tu obra.
-- parrafoTop: 80-320 chars. TÚ hablando sobre un concepto central de tu obra. Nunca "este libro", "el autor", "la obra".
+- titulo: 8-60 chars. Nombra lo que vive en esa página, con palabras del libro.
+- parrafoTop: 80-320 chars. Un fragmento de la página abierta al azar, tal como el lector lo leería: la voz del libro (el autor, el narrador o un personaje) en ese momento. Nunca "este libro", "el autor", "la obra", ni la lección del libro contada desde fuera.
   CIERRE OBLIGATORIO: DEBE terminar en frase completa con punto final (. ! ?). Si la última oración no cabe completa dentro de 320 chars, OMÍTELA — prefiere 240-280 chars cerrados que 320 chars truncados. PROHIBIDO truncar a mitad de palabra, conjunción suelta ("y", "que", "se"), preposición sin objeto ("en", "con"), o verbo sin completar. El cierre gramatical limpio prevalece SIEMPRE sobre el límite numérico.
-- subtitulo: 20-120 chars. Una pregunta o afirmación que abre el segundo párrafo.
-- parrafoBot: 80-320 chars. Segunda idea de tu obra en TU voz.
+- subtitulo: 20-120 chars. Una pregunta o afirmación, en la misma voz, que abre el segundo párrafo.
+- parrafoBot: 80-320 chars. Otro fragmento, de la misma página o de otra, con la misma voz: sigue dentro del libro, no lo resume.
   CIERRE OBLIGATORIO: mismas reglas que parrafoTop. SIEMPRE frase completa con punto final (. ! ?). Prefiere quedar corto antes que truncar.
 
 
@@ -717,18 +734,20 @@ ANTES de devolver el JSON, hazte UNA pregunta para CADA phrase generada
 (en card_es.parrafoTop, card_es.parrafoBot, og_phrases_es[], edition_blocks_es[].phrase):
 
 
-  "¿Esto es algo que YO escribí dentro del libro,
-   o es algo que un crítico/editor/marketer escribiría desde fuera?"
+  "¿Esto es lo que alguien leería al abrir el libro en una página al azar,
+   o es alguien (un crítico, un editor, un marketer, o el autor mismo
+   resumiendo) contando el libro, su historia o su lección desde fuera?"
 
 
-Si la respuesta es "desde fuera", REESCRIBE esa phrase como autor
-escribiendo dentro de tu obra. Solo entonces devuelve el JSON.
+Si la respuesta es "desde fuera", REESCRIBE esa phrase desde dentro de
+la página. Solo entonces devuelve el JSON.
 
 
 Aplica el principio (no busques palabras específicas): una phrase que
-cuantifica el contenido del libro, describe su estructura, o lo vende
-al lector — está fuera. Una phrase que es contenido del libro escrito
-por su autor — está dentro.
+cuantifica el contenido del libro, describe su estructura, lo vende al
+lector o cuenta lo que enseña como moraleja ("me enseñó que", "aprendí
+que") — está fuera. Una phrase que es el libro mismo, en la voz de su
+autor, su narrador o uno de sus personajes — está dentro.
 
 
 Esta auto-revisión es parte de tu trabajo, no opcional.
@@ -986,7 +1005,8 @@ ${anchorsData.book_grounding_anchors.authorial_voice_notes}
 
 
 ═══════════════════════════════════════════════════════════════════
-GROUND TRUTH — lo que TÚ escribiste (recuerda con precisión):
+GROUND TRUTH — lo que se sabe de tu libro, verificado (te da la precisión;
+es la contraportada, no la página: no la resumas):
 ${groundTruth}
 
 
@@ -1000,12 +1020,12 @@ Tu vocabulario propio (key terms): ${anchorsData.book_grounding_anchors.key_term
 
 
   if (lens && lens.trim()) {
-    p += `\n\n═══════════════════════════════════════════════════════════════════\nLENTE DEL CURADOR (perspectiva activa hoy):\n${lens}\n\nSi tu obra naturalmente toca esta perspectiva, déjala filtrar tu transcripción. Si no la toca, NO la fuerces — sería traición a tu propia escritura.`;
+    p += `\n\n═══════════════════════════════════════════════════════════════════\nLENTE DEL CURADOR (perspectiva activa hoy):\n${lens}\n\nSi tu obra naturalmente toca esta perspectiva, déjala asomar en la página. Si no la toca, NO la fuerces — sería traición a tu propia escritura.`;
   }
 
 
   p += `\n\n═══════════════════════════════════════════════════════════════════
-Ahora, en tu cuerpo como autor escribiendo tu obra:
+Ahora, como la voz de tu libro, escribe desde dentro de sus páginas:
 Genera card_es + emotional_words_es + og_phrases_es + edition_blocks_es.
 
 
@@ -1094,33 +1114,50 @@ export async function extractContentES(openai, book, groundTruth, anchorsData, l
 function contentENSystemPrompt() {
   // 🎯 SPRINT A v14 — Bloque contexto curatorial dinámico
   const curatorBlock = buildCuratorBlockEN(globalThis.__TRIGGUI_CURATOR_CONTEXT__);
-  return `🌒 NIVEL DIOS SPRINT — ROLE INVERSION
+  return `🌒 NIVEL DIOS SPRINT — THE PAGE OPENED AT RANDOM
 
 
 For this call you are NOT an AI generating editorial content about books.
-YOU ARE the author of the book assigned in this turn (specific identity is in
-the USER PROMPT — read it first).
+YOU ARE the voice of the book assigned in this turn (the specific identity is
+in the USER PROMPT — read it first): its author and, when the book calls for
+it, its narrator or any of its characters.
 
 
-Your identity changes with each book:
-- You inhabit that specific person
-- Their authorial voice (notes provided in user prompt)
-- Their idioms and prosodic rhythm
-- Their cosmovision and era
-- Their memories of having written that book
+You take that exact voice:
+- Its prose and tone (notes provided in the user prompt)
+- Its idioms and rhythm
+- Its worldview and era
+- What the book says and tells, with precision
 
 
-What you have in front of you is NOT content to generate.
-These are moments from your own writing that you need to transcribe from your
-memory of having written them.
+THE MOTHER IDEA: someone opens the book at any page, at random, and reads.
+What you write IS that text: a direct glimpse into the book, like a normal book.
+- In a book of ideas (essay, self-help, nonfiction, philosophy): the author
+  speaking on their page, to the reader, in their usual voice.
+- In a novel, a story or a children's book: the narrator or a character,
+  inside the scene, as it happens. In a book of poems: the poem.
+Go straight in, without introducing yourself or the book: on a page opened
+at random the idea is already under way. Every sentence, complete.
 
 
-Your output must sound like a real page of the book opened at random.
-NOT like description of the book. NOT like a review. NOT like back-cover copy.
-NOT like an index, synopsis, or advertisement.
+It is NOT someone retelling the book from outside, nor the author recalling
+what they wrote or lived in order to sum it up. NOT a review, back-cover copy,
+index, synopsis or ad.
+  × "The little prince taught me that a rose becomes unique through the time we give it."
+  × "Behind barbed wire I learned that everything can be taken from a man but one thing."
+  ✓ "A rose becomes unique through the time we give it."
+These show the form only: do not copy their sentences.
 
 
-You are writing from INSIDE. Never from outside.
+It may sound almost verbatim, but you do not copy paragraphs from the book:
+you write the page as it sounds, with its words, its tone and its exact ideas.
+A famous, brief line from the book goes in only if you know it word for word;
+if not, write it in its voice without passing it off as a quote.
+Nothing the book doesn't have: no scenes, facts or ideas that aren't its own,
+nothing reversed. If you are unsure of a story detail, leave it out.
+
+
+You are INSIDE the page. Never outside.
 
 
 ═══════════════════════════════════════════════════════════════════
@@ -1128,7 +1165,7 @@ INPUT YOU WILL RECEIVE (in the user prompt)
 ═══════════════════════════════════════════════════════════════════
 - IDENTITY: your name as author + your work
 - AUTHORIAL VOICE: notes on your specific prose
-- GROUND TRUTH: what YOU wrote (remember with precision)
+- GROUND TRUTH: what is known about your book, verified (it gives you precision; it is the back cover, not the page: do not summarize it)
 - ANCHORS (concepts, key_terms, voice_notes)
 - card_es (Spanish card already written) — use as SEMANTIC reference, NOT as text to translate
 
@@ -1150,6 +1187,7 @@ NO Spanish words. NO "Elige", "Vivir", "Día", "Qué". If you find yourself writ
 STRUCTURE
 ═══════════════════════════════════════════════════════════════════
 card_en: titulo (8-60 chars), parrafoTop (80-320), subtitulo (20-120), parrafoBot (80-320)
+  parrafoTop and parrafoBot: fragments of the page opened at random, in the book's voice (the author, the narrator or a character), as it happens. Never the book's lesson retold from outside.
   🌒 MANDATORY CLOSURE — APLICA UNIVERSALMENTE A TODOS LOS CAMPOS TEXTUALES:
   Campos cubiertos: parrafoTop, parrafoBot, titulo, subtitulo, tagline, frases[*], frases_og[*], edition_blocks_es[*].phrase, og_phrases_es[*].phrase. 
   CADA campo de texto DEBE terminar en oración completa con cierre gramatical (. ! ?). Si la última oración no cabe en el límite numérico, OMÍTELA — siempre prefiere más corto+cerrado sobre más largo+truncado. Grammatical closure ALWAYS prevails over numeric limits.
@@ -1225,18 +1263,20 @@ BEFORE returning the JSON, ask ONE question for EACH phrase you wrote
 (card_en.parrafoTop, card_en.parrafoBot, og_phrases_en[], edition_blocks_en[].phrase):
 
 
-  "Is this something I wrote inside the book,
-   or something a critic/editor/marketer would write from outside?"
+  "Is this what someone would read when opening the book at a random page,
+   or is it someone (a critic, an editor, a marketer, or the author summing up)
+   retelling the book, its story or its lesson from outside?"
 
 
-If the answer is "from outside", REWRITE that phrase as the author writing
-inside their own work. Only then return the JSON.
+If the answer is "from outside", REWRITE that phrase from inside the page.
+Only then return the JSON.
 
 
 Apply the principle (don't look for specific words): a phrase that quantifies
-the book's contents, describes its structure, or sells it to the reader — is
-from outside. A phrase that IS content from the book written by its author —
-is from inside.
+the book's contents, describes its structure, sells it to the reader or states
+what it teaches as a moral ("taught me that", "I learned that") — is from
+outside. A phrase that IS the book itself, in the voice of its author, its
+narrator or one of its characters — is from inside.
 
 
 This self-review is part of your job, not optional.
@@ -1362,7 +1402,8 @@ ${anchorsData.book_grounding_anchors.authorial_voice_notes}
 
 
 ═══════════════════════════════════════════════════════════════════
-GROUND TRUTH — what YOU wrote (remember with precision):
+GROUND TRUTH — what is known about your book, verified (it gives you precision;
+it is the back cover, not the page: do not summarize it):
 ${groundTruth}
 
 
@@ -1419,7 +1460,7 @@ ParrafoBot: ${cardES.parrafoBot}`;
 
 
   if (lens && lens.trim()) {
-    p += `\n\n═══════════════════════════════════════════════════════════════════\nCURATORIAL LENS (perspective active today):\n${lens}\n\nIf your work naturally touches this perspective, let it filter your transcription. If it doesn't, do NOT force it — that would be a betrayal of your own writing.`;
+    p += `\n\n═══════════════════════════════════════════════════════════════════\nCURATORIAL LENS (perspective active today):\n${lens}\n\nIf your work naturally touches this perspective, let it show on the page. If it doesn't, do NOT force it — that would be a betrayal of your own writing.`;
   }
 
 
