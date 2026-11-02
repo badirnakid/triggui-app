@@ -132,6 +132,41 @@ process.env.ANTHROPIC_API_KEY = 'sk-ant-de-mentira';
 ok(IA.nombreProveedor() === 'Claude' && IA.etiqueta('mini') === 'claude-haiku-5-5' && IA.etiqueta('grande') === 'claude-sonnet-5-5' && IA.etiqueta('claude-haiku-5-5-x') === 'claude-haiku-5-5-x',
   'etiquetas con Claude: el modelo real');
 
+// ── 2b. Tope mínimo, tope de gasto y registro de uso ──
+console.log('Tope mínimo, tope de gasto y registro de uso');
+recibidas.length = 0;
+await (await IA.chatCompat({ model: 'mini', max_tokens: 150, messages: [{ role: 'user', content: 'u' }] })).json();
+ok(JSON.parse(recibidas[0].body).max_tokens === real.claude.max_tokens_minimo, `max_tokens 150 sube al mínimo (${real.claude.max_tokens_minimo})`);
+recibidas.length = 0;
+guion = [{ status: 429, data: { type: 'error', error: { type: 'rate_limit_error', message: 'spend', details: { error_code: 'enforced_spend_limit_reached' } } } }];
+r = await IA.chatCompat({ model: 'mini', messages: [{ role: 'user', content: 'u' }] });
+ok(recibidas.length === 1 && r.status === 429 && /tope de gasto/.test(await r.text()), 'tope de gasto: un solo intento y el error lo dice claro');
+guion = [{ status: 429, data: { type: 'error', error: { type: 'rate_limit_error', message: 'spend', details: { error_code: 'enforced_spend_limit_reached' } } } }];
+lanzo = null;
+try { await IA.crearCliente().chat.completions.create({ model: 'mini', messages: [{ role: 'user', content: 'u' }] }); } catch (e) { lanzo = e; }
+ok(lanzo && lanzo.status === 429 && lanzo.tope === true, 'tope de gasto: crearCliente lanza el error marcado');
+const reg = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'ia-reg-')), 'uso.jsonl');
+process.env.TRIGGUI_IA_REGISTRO = reg;
+guion = [{ status: 200, data: { id: 'm', model: 'claude-haiku-5-5', content: [{ type: 'text', text: '{"a":1}' }], stop_reason: 'end_turn', usage: { input_tokens: 100, output_tokens: 20, cache_read_input_tokens: 50, cache_creation_input_tokens: 10 } } }];
+await IA.chatCompat({ model: 'mini', response_format: { type: 'json_object' }, messages: [{ role: 'user', content: 'u' }] });
+guion = [{ status: 400, data: { type: 'error', error: { message: 'malo' } } }];
+await IA.chatCompat({ model: 'grande', messages: [{ role: 'user', content: 'u' }] });
+process.env.TRIGGUI_IA_PROVEEDOR = 'openai';
+await (await IA.chatCompat({ model: 'mini', messages: [{ role: 'user', content: 'u' }] })).json();
+await IA.crearCliente({ sdk }).chat.completions.create({ model: 'grande', messages: [{ role: 'user', content: 'x' }] });
+process.env.TRIGGUI_IA_PROVEEDOR = 'claude';
+delete process.env.TRIGGUI_IA_REGISTRO;
+await IA.chatCompat({ model: 'mini', messages: [{ role: 'user', content: 'u' }] });
+const lineas = fs.readFileSync(reg, 'utf8').trim().split('\n').map((l) => JSON.parse(l));
+ok(lineas.length === 4, `registro: una línea por llamada, y nada sin la variable (${lineas.length} de 4)`);
+const [c1, c2, o1, o2] = lineas;
+ok(c1.proveedor === 'claude' && c1.papel === 'mini' && c1.modelo === 'claude-haiku-5-5' && c1.entrada === 100 && c1.salida === 20 && c1.cache_lectura === 50
+  && c1.cache_escritura === 10 && c1.fin === 'end_turn' && c1.json_ok === true && /prueba-ia\.mjs/.test(c1.origen || ''),
+  'registro Claude: papel, modelo, tokens con caché, fin, JSON y de dónde vino', JSON.stringify(c1));
+ok(c2.papel === 'grande' && c2.modelo === 'claude-sonnet-5-5' && /^400/.test(c2.error || ''), 'registro Claude: el error queda anotado', JSON.stringify(c2));
+ok(o1.proveedor === 'openai' && o1.papel === 'mini' && o1.entrada === 10 && o1.salida === 2 && o1.fin === 'stop' && o1.modelo === 'gpt-4o-mini', 'registro OpenAI por fetch: tokens y fin', JSON.stringify(o1));
+ok(o2.proveedor === 'openai' && o2.papel === 'grande' && o2.modelo === 'gpt-4o' && o2.fin === 'stop', 'registro OpenAI por el SDK', JSON.stringify(o2));
+
 // ── 3. Los esquemas reales del repositorio ──
 console.log('Esquemas reales');
 const archivos = [path.join(AQUI, '..', 'experiments/nucleus/edition-nucleus.schema.json')];

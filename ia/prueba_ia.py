@@ -49,10 +49,10 @@ import ia as IA  # noqa: E402
 fallas = total = 0
 
 
-def ok(c, nombre):
+def ok(c, nombre, detalle=""):
     global fallas, total
     total += 1
-    print(("  ✔ " if c else "  ✘ ") + nombre)
+    print(("  ✔ " if c else "  ✘ ") + nombre + ("" if c or not detalle else " · " + detalle))
     if not c:
         fallas += 1
 
@@ -102,6 +102,39 @@ try:
     ok(False, "403 lanza urllib.error.HTTPError")
 except urllib.error.HTTPError as e:
     ok(e.code == 403, "403 lanza urllib.error.HTTPError, como antes")
+del recibidas[:]
+IA.chat({"model": "mini", "max_tokens": 150, "messages": [{"role": "user", "content": "u"}]}, timeout=10)
+ok(json.loads(recibidas[0]["body"])["max_tokens"] == real["claude"]["max_tokens_minimo"], "max_tokens 150 sube al mínimo")
+del recibidas[:]
+guion[:] = [{"status": 429, "data": {"type": "error", "error": {"type": "rate_limit_error", "message": "spend", "details": {"error_code": "enforced_spend_limit_reached"}}}}]
+try:
+    IA.chat({"model": "mini", "messages": [{"role": "user", "content": "u"}]}, timeout=10)
+    ok(False, "tope de gasto: lanza HTTPError 429 sin reintentar")
+except urllib.error.HTTPError as e:
+    ok(e.code == 429 and len(recibidas) == 1 and "tope de gasto" in str(e.msg) and b"enforced_spend_limit_reached" in e.read(),
+       "tope de gasto: un solo intento, 429 dicho claro y con el cuerpo legible")
+del recibidas[:]
+guion[:] = [{"status": 429, "data": {"error": "rate"}}] * 3
+try:
+    IA.chat({"model": "mini", "messages": [{"role": "user", "content": "u"}]}, timeout=10)
+    ok(False, "429 sostenido: lanza tras los reintentos")
+except urllib.error.HTTPError as e:
+    ok(e.code == 429 and len(recibidas) == 3 and b"rate" in e.read(), "429 sostenido: 2 reintentos y el cuerpo del error sigue legible")
+reg = os.path.join(tempfile.mkdtemp(), "uso.jsonl")
+os.environ["TRIGGUI_IA_REGISTRO"] = reg
+guion[:] = [{"status": 200, "data": {"model": "claude-haiku-5-5", "content": [{"type": "text", "text": "{\"a\": 1}"}], "stop_reason": "end_turn",
+                                     "usage": {"input_tokens": 100, "output_tokens": 20, "cache_read_input_tokens": 50}}}]
+IA.chat({"model": "mini", "response_format": {"type": "json_object"}, "messages": [{"role": "user", "content": "u"}]}, timeout=10)
+os.environ["TRIGGUI_IA_PROVEEDOR"] = "openai"
+IA.chat({"model": "mini", "messages": [{"role": "user", "content": "u"}]}, timeout=10)
+os.environ["TRIGGUI_IA_PROVEEDOR"] = "claude"
+del os.environ["TRIGGUI_IA_REGISTRO"]
+IA.chat({"model": "mini", "messages": [{"role": "user", "content": "u"}]}, timeout=10)
+lineas = [json.loads(x) for x in open(reg, encoding="utf-8")]
+ok(len(lineas) == 2 and lineas[0]["proveedor"] == "claude" and lineas[0]["papel"] == "mini" and lineas[0]["entrada"] == 100
+   and lineas[0]["cache_lectura"] == 50 and lineas[0]["json_ok"] is True and "prueba_ia.py" in (lineas[0]["origen"] or "")
+   and lineas[1]["proveedor"] == "openai" and lineas[1]["fin"] == "stop" and lineas[1]["modelo"] == "gpt-4o-mini",
+   "registro de uso: una línea por llamada (tokens, caché, JSON y origen), y nada sin la variable", repr(lineas))
 del os.environ["ANTHROPIC_API_KEY"]
 ok(not IA.hay_llave(), "sin la llave de Claude, hay_llave es falso")
 srv.shutdown()

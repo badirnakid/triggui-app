@@ -18,7 +18,14 @@
  *     máximos, cantidades) y con additionalProperties:false en todo objeto; lo quitado queda en la descripción;
  *   · response_format json_object → instrucción de responder solo JSON, extracción y un reintento;
  *   · stop_reason: max_tokens → finish_reason "length"; refusal → message.refusal (nunca un aprobado);
- *   · usage: prompt_tokens = entrada + caché; completion_tokens = salida.
+ *   · usage: prompt_tokens = entrada + caché; completion_tokens = salida;
+ *   · max_tokens nunca baja de claude.max_tokens_minimo (el tokenizador de Claude cuenta distinto y un tope pensado
+ *     para GPT puede cortar; el tope no cuesta: solo se cobra lo que se genera y no cuenta para los límites);
+ *   · un 429 por tope de gasto (enforced_spend_limit_reached) no se reintenta: se dice claro.
+ *
+ * Registro de uso: con TRIGGUI_IA_REGISTRO=<archivo>, cada llamada (de los dos proveedores) deja una línea JSON con
+ * papel, modelo, tokens, fin, milisegundos, reintentos y de dónde vino (archivo:función). Sin la variable no se
+ * escribe nada y las peticiones son las mismas.
  */
 const fs = require('fs');
 const path = require('path');
@@ -62,6 +69,31 @@ function etiqueta(modelo) { return modelo && config().papeles[modelo] ? resolver
 function conModelo(obj, modelo) { return Object.assign({}, obj, { model: modelo }); }
 
 const dormir = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// ─── Registro de uso (opcional) ──────────────────────────────────────────────────────────────────────────
+/** archivo:función de quien llamó (el primer marco de la pila fuera de este archivo, de node y de node_modules). */
+function origen() {
+  for (const l of String(new Error().stack || '').split('\n').slice(1)) {
+    const m = l.trim().match(/^at (?:async )?(?:(.*?) \()?(.*?):(\d+):(\d+)\)?$/);
+    if (!m) continue;
+    const lugar = m[2].replace(/^file:\/\//, '');
+    if (lugar === __filename || lugar.startsWith('node:') || lugar.includes('node_modules')) continue;
+    return `${path.basename(lugar)}:${m[1] || '(anónima)'}`;
+  }
+  return null;
+}
+function registra(dato) {
+  const ruta = process.env.TRIGGUI_IA_REGISTRO;
+  if (!ruta) return;
+  try { fs.appendFileSync(ruta, JSON.stringify({ t: new Date().toISOString(), ...dato }) + '\n'); } catch (e) { /* el registro nunca rompe la llamada */ }
+}
+function anotaOpenAI(params, data, t0, de, error) {
+  const u = (data && data.usage) || {};
+  const ch = (data && data.choices && data.choices[0]) || {};
+  registra({ proveedor: 'openai', papel: papel(params.model), modelo: (data && data.model) || resolverModelo(params.model, 'openai'), origen: de,
+    entrada: u.prompt_tokens || 0, salida: u.completion_tokens || 0, cache_lectura: (u.prompt_tokens_details && u.prompt_tokens_details.cached_tokens) || 0, cache_escritura: 0,
+    fin: ch.finish_reason || null, ms: Date.now() - t0, reintentos: 0, error: error || null });
+}
 
 // ─── OpenAI: la misma petición de siempre ────────────────────────────────────────────────────────────────
 function fetchOpenAI(payload, opciones = {}) {
@@ -128,7 +160,7 @@ function aClaude(params) {
   if (!mensajes.length || mensajes[0].role !== 'user') mensajes.unshift({ role: 'user', content: '.' });
   const body = {
     model: modelo,
-    max_tokens: params.max_tokens || params.max_completion_tokens || c.claude.max_tokens_por_omision,
+    max_tokens: Math.max(params.max_tokens || params.max_completion_tokens || c.claude.max_tokens_por_omision, c.claude.max_tokens_minimo || 1),
     messages: mensajes
   };
   let jsonLibre = false;
@@ -188,7 +220,7 @@ function deClaude(data, jsonLibre) {
   };
 }
 
-async function postClaude(body, opciones = {}) {
+async function postClaude(body, opciones = {}, cuenta = { reintentos: 0 }) {
   const c = config().claude;
   const llave = llaveClaude();
   if (!llave) { const e = new Error('IA: falta ANTHROPIC_API_KEY'); e.status = 401; throw e; }
@@ -212,7 +244,7 @@ async function postClaude(body, opciones = {}) {
       clearTimeout(reloj);
       if (opciones.signal) opciones.signal.removeEventListener('abort', alAbortar);
       const abortoAjeno = opciones.signal && opciones.signal.aborted;
-      if (!abortoAjeno && i < maxReintentos) { await dormir(espera); espera *= 2; continue; }
+      if (!abortoAjeno && i < maxReintentos) { cuenta.reintentos++; await dormir(espera); espera *= 2; continue; }
       const err = new Error(`IA Claude: ${e && e.name === 'AbortError' ? 'tiempo agotado' : (e && e.message) || e}`);
       err.status = 0;
       throw err;
@@ -221,7 +253,11 @@ async function postClaude(body, opciones = {}) {
     if (opciones.signal) opciones.signal.removeEventListener('abort', alAbortar);
     if (res.ok) return res.json();
     const txt = await res.text().catch(() => '');
+    let tope = false;   // 429 por tope de gasto: reintentar no sirve hasta que se libere el acceso
+    try { tope = res.status === 429 && JSON.parse(txt).error.details.error_code === 'enforced_spend_limit_reached'; } catch (e) { /* otro 429 */ }
+    if (tope) { const err = new Error('IA Claude 429: se alcanzó el tope de gasto del espacio de trabajo (enforced_spend_limit_reached)'); err.status = 429; err.body = txt; err.tope = true; throw err; }
     if ([408, 409, 429, 500, 502, 503, 504, 529].includes(res.status) && i < maxReintentos) {
+      cuenta.reintentos++;
       const ra = Number(res.headers.get('retry-after'));
       await dormir(ra > 0 ? Math.min(ra * 1000, 60000) : espera);
       espera *= 2;
@@ -237,10 +273,25 @@ async function postClaude(body, opciones = {}) {
 /** Una petición de Chat Completions resuelta con Claude; devuelve la forma de Chat Completions. */
 async function llamaClaude(params, opciones = {}) {
   const { body, jsonLibre } = aClaude(params);
-  let r = deClaude(await postClaude(body, opciones), jsonLibre);
-  if (jsonLibre && r._claude.json_ok === false && r.choices[0].finish_reason === 'stop') {
-    r = deClaude(await postClaude(body, opciones), jsonLibre);   // un reintento si no llegó JSON
-  }
+  const de = process.env.TRIGGUI_IA_REGISTRO ? origen() : null;
+  const una = async (intento) => {
+    const t0 = Date.now();
+    const cuenta = { reintentos: 0 };
+    let data;
+    try { data = await postClaude(body, opciones, cuenta); } catch (e) {
+      registra({ proveedor: 'claude', papel: papel(params.model), modelo: body.model, origen: de, intento, entrada: 0, salida: 0, cache_lectura: 0, cache_escritura: 0,
+        fin: null, ms: Date.now() - t0, reintentos: cuenta.reintentos, error: `${e.status}: ${String(e.message).slice(0, 200)}` });
+      throw e;
+    }
+    const r = deClaude(data, jsonLibre);
+    const u = data.usage || {};
+    registra({ proveedor: 'claude', papel: papel(params.model), modelo: data.model || body.model, origen: de, intento,
+      entrada: u.input_tokens || 0, salida: u.output_tokens || 0, cache_lectura: u.cache_read_input_tokens || 0, cache_escritura: u.cache_creation_input_tokens || 0,
+      fin: data.stop_reason || null, json_ok: jsonLibre ? r._claude.json_ok : null, ms: Date.now() - t0, reintentos: cuenta.reintentos, error: null });
+    return r;
+  };
+  let r = await una(1);
+  if (jsonLibre && r._claude.json_ok === false && r.choices[0].finish_reason === 'stop') r = await una(2);   // un reintento si no llegó JSON
   return r;
 }
 
@@ -253,10 +304,24 @@ function crearCliente({ sdk } = {}) {
         create: async (params, opciones = {}) => {
           if (proveedor() === 'openai') {
             const p = conModelo(params, resolverModelo(params.model, 'openai'));
-            if (sdk) return sdk.chat.completions.create(p, opciones);
-            const res = await fetchOpenAI(p, opciones);
-            if (!res.ok) { const t = await res.text().catch(() => ''); const e = new Error(`OpenAI ${res.status}: ${t.slice(0, 300)}`); e.status = res.status; throw e; }
-            return res.json();
+            if (!process.env.TRIGGUI_IA_REGISTRO) {
+              if (sdk) return sdk.chat.completions.create(p, opciones);
+              const res = await fetchOpenAI(p, opciones);
+              if (!res.ok) { const t = await res.text().catch(() => ''); const e = new Error(`OpenAI ${res.status}: ${t.slice(0, 300)}`); e.status = res.status; throw e; }
+              return res.json();
+            }
+            const t0 = Date.now(), de = origen();
+            try {
+              let data;
+              if (sdk) data = await sdk.chat.completions.create(p, opciones);
+              else {
+                const res = await fetchOpenAI(p, opciones);
+                if (!res.ok) { const t = await res.text().catch(() => ''); const e = new Error(`OpenAI ${res.status}: ${t.slice(0, 300)}`); e.status = res.status; throw e; }
+                data = await res.json();
+              }
+              anotaOpenAI(params, data, t0, de);
+              return data;
+            } catch (e) { anotaOpenAI(params, null, t0, de, `${e.status}: ${String(e.message).slice(0, 200)}`); throw e; }
           }
           return llamaClaude(params, opciones);
         }
@@ -272,7 +337,13 @@ function respuestaHecha(status, data) {
 
 /** Reemplazo de fetch("https://api.openai.com/v1/chat/completions", …) con el payload de siempre. */
 async function chatCompat(payload, opciones = {}) {
-  if (proveedor() === 'openai') return fetchOpenAI(conModelo(payload, resolverModelo(payload.model, 'openai')), opciones);
+  if (proveedor() === 'openai') {
+    if (!process.env.TRIGGUI_IA_REGISTRO) return fetchOpenAI(conModelo(payload, resolverModelo(payload.model, 'openai')), opciones);
+    const t0 = Date.now(), de = origen();
+    const res = await fetchOpenAI(conModelo(payload, resolverModelo(payload.model, 'openai')), opciones);
+    try { const d = await res.clone().json(); anotaOpenAI(payload, res.ok ? d : null, t0, de, res.ok ? null : `${res.status}`); } catch (e) { anotaOpenAI(payload, null, t0, de, `${res.status}`); }
+    return res;
+  }
   try {
     return respuestaHecha(200, await llamaClaude(payload, opciones));
   } catch (e) {
@@ -284,5 +355,5 @@ module.exports = {
   config, proveedor, hayLlave, nombreLlave, nombreProveedor, papel, resolverModelo, etiqueta,
   crearCliente, chatCompat,
   // para pruebas
-  _interno: { limpiaEsquema, aClaude, deClaude, extraeJson, conModelo, INSTRUCCION_JSON, _reset: () => { _cfg = null; } }
+  _interno: { limpiaEsquema, aClaude, deClaude, extraeJson, conModelo, origen, INSTRUCCION_JSON, _reset: () => { _cfg = null; } }
 };

@@ -7,7 +7,12 @@ siempre sigan valiendo.
 
   · con openai: la misma petición de antes (mismos bytes), solo con el modelo resuelto;
   · con claude: la Messages API, traducida y de vuelta con la forma de siempre (ver ia.cjs).
+
+Registro de uso: con TRIGGUI_IA_REGISTRO=<archivo>, cada llamada deja una línea JSON (papel, modelo, tokens, fin,
+milisegundos, reintentos y de dónde vino). Sin la variable no se escribe nada.
 """
+import datetime
+import inspect
 import io
 import json
 import os
@@ -114,6 +119,25 @@ def limpia_esquema(s):
 _INSTRUCCION_JSON = "Responde únicamente con un objeto JSON válido: sin texto antes ni después y sin bloques de código."
 
 
+def _origen():
+    """archivo:función de quien llamó (el primer marco fuera de este archivo)."""
+    for f in inspect.stack()[1:]:
+        if os.path.abspath(f.filename) != os.path.abspath(__file__):
+            return "%s:%s" % (os.path.basename(f.filename), f.function)
+    return None
+
+
+def _registra(dato):
+    ruta = os.environ.get("TRIGGUI_IA_REGISTRO")
+    if not ruta:
+        return
+    try:
+        with open(ruta, "a", encoding="utf-8") as f:
+            f.write(json.dumps(dict({"t": datetime.datetime.now(datetime.timezone.utc).isoformat()}, **dato), ensure_ascii=False) + "\n")
+    except Exception:  # noqa: BLE001  el registro nunca rompe la llamada
+        pass
+
+
 def _texto(c):
     if isinstance(c, str):
         return c
@@ -139,8 +163,9 @@ def a_claude(params):
             mensajes.append({"role": role, "content": t})
     if not mensajes or mensajes[0]["role"] != "user":
         mensajes.insert(0, {"role": "user", "content": "."})
+    tope = params.get("max_tokens") or params.get("max_completion_tokens") or c["claude"]["max_tokens_por_omision"]
     body = {"model": modelo,
-            "max_tokens": params.get("max_tokens") or params.get("max_completion_tokens") or c["claude"]["max_tokens_por_omision"],
+            "max_tokens": max(tope, c["claude"].get("max_tokens_minimo") or 1),
             "messages": mensajes}
     json_libre = False
     salida = {}
@@ -210,7 +235,8 @@ def de_claude(data, json_libre):
             "_claude": {"stop_reason": sr, "usage": u, "json_ok": json_ok if json_libre else None}}
 
 
-def _post_claude(body, timeout):
+def _post_claude(body, timeout, cuenta=None):
+    cuenta = cuenta if cuenta is not None else {"reintentos": 0}
     c = config()["claude"]
     llave = llave_claude()
     if not llave:
@@ -225,8 +251,21 @@ def _post_claude(body, timeout):
             with urllib.request.urlopen(req, timeout=timeout) as r:
                 return json.loads(r.read().decode("utf-8"))
         except urllib.error.HTTPError as e:
-            if e.code in (408, 409, 429, 500, 502, 503, 504, 529) and i < int(c.get("reintentos", 2)):
-                ra = e.headers.get("retry-after") if e.headers else None
+            err = e
+            if e.code == 429:   # tope de gasto: reintentar no sirve hasta que se libere el acceso
+                cuerpo = b""
+                try:
+                    cuerpo = e.read()
+                    tope_gasto = json.loads(cuerpo.decode("utf-8"))["error"]["details"]["error_code"] == "enforced_spend_limit_reached"
+                except Exception:  # noqa: BLE001
+                    tope_gasto = False
+                if tope_gasto:
+                    raise urllib.error.HTTPError(c["url"], 429, "IA Claude: se alcanzó el tope de gasto del espacio de trabajo (enforced_spend_limit_reached)",
+                                                 e.headers, io.BytesIO(cuerpo))
+                err = urllib.error.HTTPError(e.url, e.code, e.msg, e.headers, io.BytesIO(cuerpo))   # el cuerpo ya se leyó: va de nuevo
+            if err.code in (408, 409, 429, 500, 502, 503, 504, 529) and i < int(c.get("reintentos", 2)):
+                cuenta["reintentos"] += 1
+                ra = err.headers.get("retry-after") if err.headers else None
                 try:
                     pausa = min(float(ra), 60.0) if ra else espera
                 except ValueError:
@@ -234,9 +273,10 @@ def _post_claude(body, timeout):
                 time.sleep(pausa)
                 espera *= 2
                 continue
-            raise
+            raise err
         except (urllib.error.URLError, TimeoutError, OSError):
             if i < int(c.get("reintentos", 2)):
+                cuenta["reintentos"] += 1
                 time.sleep(espera)
                 espera *= 2
                 continue
@@ -245,15 +285,48 @@ def _post_claude(body, timeout):
 
 def chat(payload, timeout=90):
     """Una llamada de Chat Completions. Devuelve el dict de respuesta; los errores HTTP son urllib.error.HTTPError."""
+    de = _origen() if os.environ.get("TRIGGUI_IA_REGISTRO") else None
+    rol = papel(payload.get("model"))
     if proveedor() == "openai":
         p = dict(payload)
         p["model"] = resolver_modelo(payload.get("model"), "openai")
         req = urllib.request.Request(config()["openai"]["url"], data=json.dumps(p).encode("utf-8"), method="POST",
                                      headers={"Content-Type": "application/json", "Authorization": "Bearer " + llave_openai()})
-        with urllib.request.urlopen(req, timeout=timeout) as r:
-            return json.loads(r.read().decode("utf-8"))
+        t0 = time.time()
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as r:
+                d = json.loads(r.read().decode("utf-8"))
+        except urllib.error.HTTPError as e:
+            _registra({"proveedor": "openai", "papel": rol, "modelo": p["model"], "origen": de, "entrada": 0, "salida": 0, "cache_lectura": 0,
+                       "cache_escritura": 0, "fin": None, "ms": int((time.time() - t0) * 1000), "reintentos": 0, "error": str(e.code)})
+            raise
+        u = d.get("usage") or {}
+        _registra({"proveedor": "openai", "papel": rol, "modelo": d.get("model") or p["model"], "origen": de,
+                   "entrada": u.get("prompt_tokens") or 0, "salida": u.get("completion_tokens") or 0,
+                   "cache_lectura": (u.get("prompt_tokens_details") or {}).get("cached_tokens") or 0, "cache_escritura": 0,
+                   "fin": ((d.get("choices") or [{}])[0] or {}).get("finish_reason"), "ms": int((time.time() - t0) * 1000), "reintentos": 0, "error": None})
+        return d
     body, json_libre = a_claude(payload)
-    r = de_claude(_post_claude(body, timeout), json_libre)
+
+    def una(intento):
+        t0, cuenta = time.time(), {"reintentos": 0}
+        try:
+            data = _post_claude(body, timeout, cuenta)
+        except Exception as e:
+            _registra({"proveedor": "claude", "papel": rol, "modelo": body["model"], "origen": de, "intento": intento, "entrada": 0, "salida": 0,
+                       "cache_lectura": 0, "cache_escritura": 0, "fin": None, "ms": int((time.time() - t0) * 1000),
+                       "reintentos": cuenta["reintentos"], "error": "%s: %s" % (getattr(e, "code", ""), str(e)[:200])})
+            raise
+        r = de_claude(data, json_libre)
+        u = data.get("usage") or {}
+        _registra({"proveedor": "claude", "papel": rol, "modelo": data.get("model") or body["model"], "origen": de, "intento": intento,
+                   "entrada": u.get("input_tokens") or 0, "salida": u.get("output_tokens") or 0,
+                   "cache_lectura": u.get("cache_read_input_tokens") or 0, "cache_escritura": u.get("cache_creation_input_tokens") or 0,
+                   "fin": data.get("stop_reason"), "json_ok": r["_claude"]["json_ok"] if json_libre else None,
+                   "ms": int((time.time() - t0) * 1000), "reintentos": cuenta["reintentos"], "error": None})
+        return r
+
+    r = una(1)
     if json_libre and r["_claude"]["json_ok"] is False and r["choices"][0]["finish_reason"] == "stop":
-        r = de_claude(_post_claude(body, timeout), json_libre)
+        r = una(2)
     return r
