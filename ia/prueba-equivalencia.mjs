@@ -23,6 +23,10 @@
  *        [--base-python=f440d0b]
  * La parte de Python compara siempre contra el código de antes de la migración (--base-python): sus pruebas leen la
  * configuración vieja de OpenAI. Con --base en un commit posterior, Python usa su propia copia de --base-python.
+ *
+ * Una sola corrida a la vez: el pipeline escribe en /tmp/triggui-* y esta prueba borra esos archivos antes de cada
+ * paso, así que dos corridas juntas se pisan. Un candado (/tmp/prueba-equivalencia-c278.lock, con el PID de la que
+ * corre) detiene la segunda; si la que lo dejó ya no vive, se toma.
  */
 import { spawn, execFileSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -45,6 +49,26 @@ const T = fs.mkdtempSync(path.join(arg('tmp', os.tmpdir()), 'equivalencia-c278-'
 const GUARDA = arg('guarda', '');   // carpeta donde dejar los dos lados de cada comparación que falle
 const NM = path.join(RAIZ, 'experiments/nucleus/node_modules');
 if (!fs.existsSync(NM)) { console.error('Falta experiments/nucleus/node_modules: corre «npm ci» ahí primero.'); process.exit(2); }
+
+// El candado vive en /tmp, junto a lo que protege, y su nombre no empieza con «triggui-» para que limpiaTmp no lo borre.
+const CANDADO = '/tmp/prueba-equivalencia-c278.lock';
+function tomaCandado() {
+  for (let i = 0; i < 2; i++) {
+    try { fs.writeFileSync(CANDADO, String(process.pid), { flag: 'wx' }); return true; }
+    catch (e) {
+      if (e.code !== 'EEXIST') throw e;
+      let pid = 0;
+      try { pid = Number(fs.readFileSync(CANDADO, 'utf8')) || 0; } catch { /* se acaba de soltar */ }
+      let vive = false;
+      if (pid > 0) { try { process.kill(pid, 0); vive = true; } catch (k) { vive = k.code === 'EPERM'; } }
+      if (vive) return false;
+      fs.rmSync(CANDADO, { force: true });   // la corrida que lo dejó ya no vive
+    }
+  }
+  return false;
+}
+if (!tomaCandado()) { fs.rmSync(T, { recursive: true, force: true }); console.error(`Ya corre otra prueba de equivalencia (${CANDADO}): dos a la vez se pisan en /tmp/triggui-*. Espera a que termine.`); process.exit(2); }
+process.on('exit', () => { try { if (fs.readFileSync(CANDADO, 'utf8') === String(process.pid)) fs.rmSync(CANDADO, { force: true }); } catch { /* ya no está */ } });
 
 let fallas = 0, total = 0;
 const ok = (c, nombre, detalle) => { total++; if (c) console.log('  ✔ ' + nombre); else { fallas++; console.log('  ✘ ' + nombre + (detalle ? '\n      ' + detalle : '')); } };
