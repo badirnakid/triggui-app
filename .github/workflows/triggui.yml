@@ -880,17 +880,20 @@ jobs:
 
           # 🧠 C278: solo los libros de esta corrida (uno en 📘/💭/🌍; el lote en 🎲). Con 20 por omisión en las corridas a
           # mano, el saneador volvía a reescribir libros ya publicados, y con otro modelo eso cambia lo publicado (C300; C282).
+          # Sin healing (C302): su puntero avanza uno por corrida y el libro nuevo empuja a todos uno, así que caía siempre en
+          # el mismo libro publicado, y lo reescribía sin rehacer su página (C282). Vuelve cuando eso esté arreglado.
           N_RUN=1
           if [ "${{ steps.modo.outputs.modo_tecnico }}" = "production_batch" ]; then N_RUN="${BATCH_SIZE:-20}"; fi
 
           echo "🛡️ LLM Sanitizer v3.2 — grounding + jerarquía completar→recortar→remover"
           echo "   catalog:    $CATALOG_PATH (workspace)"
-          echo "   batch_size: $N_RUN (libros de esta corrida; con healing se suma un libro ya publicado)"
+          echo "   batch_size: $N_RUN (solo los libros de esta corrida; sin healing, C302)"
           node "$SCRIPT" \
             --catalog="$CATALOG_PATH" \
             --mode=fix \
             --only-last=true \
-            --batch-size="$N_RUN"
+            --batch-size="$N_RUN" \
+            --healing=false
 
           echo "✅ Reparación pre-outputs completada (sobre workspace, antes de assets/manual.json)"
 
