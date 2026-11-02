@@ -234,10 +234,14 @@ Escribe contenido del libro, no metadata sobre el libro.
 
 Mantén:
 - Mismo idioma que la frase original
-- Misma longitud aproximada (±20%)
+- Misma longitud aproximada (±20%), y siempre dentro de su largo: de 40 a 100 caracteres
+  en un bloque, de 30 a 70 en una frase OG
 - Mismo terminador (.,?,!) si aplica
 - Mismo gesture_type si la frase pertenece a edition_blocks (instruccion_sensorial,
   pregunta_directa, imagen_concreta, aforismo_autorial)
+- Si es un bloque, su palabra: la frase abre la palabra que se ve antes de tocar el bloque
+- Que se entienda a la primera: palabras de todos los días y frases cortas (unas 12
+  palabras, ninguna de más de 20)
 
 Devuelve SOLO el texto de la frase reescrita, sin comillas, sin explicación, sin newlines.`;
 
@@ -260,6 +264,9 @@ export async function regeneratePhrasesByFeedback(openai, anchorsData, failures,
       ? (id.titulo_en || id.titulo_es || "")
       : (id.titulo_es || id.titulo_en || "");
 
+    // C278: la palabra del bloque (lo que se ve antes de tocarlo); la frase nueva tiene que abrirla
+    const palabra = f.field === "edition_blocks_es" ? contentES?.emotional_words_es?.[f.index]
+      : f.field === "edition_blocks_en" ? contentEN?.emotional_words_en?.[f.index] : null;
     const userPrompt = `IDENTIDAD DE ESTA SESIÓN:
 Libro: "${titleForLang}" · Autor: ${author}
 Eres la voz de ese libro: su autor y, cuando el libro lo pide, su narrador o uno de sus personajes.
@@ -277,7 +284,8 @@ RAZÓN del reviewer:
 ${f.reason}
 
 CAMPO: ${f.field}${f.field.startsWith("edition_blocks") ? " (bloque " + f.index + ")" : ""}
-IDIOMA: ${f.lang === "en" ? "English" : "Español"}
+IDIOMA: ${f.lang === "en" ? "English" : "Español"}${palabra ? `
+PALABRA DE ESTE BLOQUE (lo que se ve antes de tocarlo): «${palabra}». La frase nueva abre esa palabra; no hace falta repetirla.` : ""}
 
 ═══════════════════════════════════════════════════════════════════
 Reescribe la frase como la leería quien abre el libro en una página al azar.
@@ -302,6 +310,14 @@ Devuelve SOLO la frase reescrita.`;
         .trim();
 
       if (!newPhrase) continue;
+
+      // C278: una frase nueva fuera de su largo no entra (la anterior se queda y el juez la vuelve a ver).
+      // Bloque: 40 a 100. OG: 30 a 78, lo que cabe entero en la imagen que se comparte.
+      const [minLargo, maxLargo] = f.field.startsWith("edition_blocks") ? [40, 100] : [30, 78];
+      if (newPhrase.length < minLargo || newPhrase.length > maxLargo) {
+        console.log(`   📏 regeneratePhrase ${f.field}[${f.index}]: la nueva mide ${newPhrase.length} (de ${minLargo} a ${maxLargo}); se queda la anterior`);
+        continue;
+      }
 
       // Mutación IN-PLACE
       if (f.field === "og_phrases_es" && Array.isArray(contentES.og_phrases_es)) {
