@@ -13,6 +13,13 @@
  *   0 → siempre (excepto error técnico). Workflow continúa.
  *   1 → error técnico (catálogo inválido, llave de la IA faltante, etc.)
  *
+ * v2.1 (C278, 2 de noviembre de 2026) — en Niños, ningún libro pasa sin veredicto:
+ *   - si el juez no responde, se niega (refusal o content_filter), se corta, devuelve JSON inválido o sin
+ *     «matches» booleano, o una confianza fuera de 0 a 1, el libro va a cuarentena con la razón «juez no
+ *     disponible». Con adultos queda como antes (pasa como degradado), porque ahí el riesgo es al revés.
+ *   - los rechazos del modelo se cuentan aparte en el log.
+ *   El rechazo es más probable justo con el contenido que este juez existe para frenar (revisión de C300).
+ *
  * Cambios v2.0 vs v1.2:
  *   - Audita BATCH_SIZE libros en vez de solo libros[0]
  *   - Particiona pass[] / fail[] en vez de abortar
@@ -33,7 +40,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const IA = require("../../ia/ia.cjs");   // C278: un solo lugar para la IA (proveedor, papel y llave)
 
-const VERSION = "2.0";
+const VERSION = "2.1";
 const TARGET = String(process.env.TARGET_AUDIENCE || "adult").trim().toLowerCase();
 const CATALOG_PATH = process.env.CATALOG_PATH;
 const BATCH_SIZE = Math.max(1, parseInt(process.env.BATCH_SIZE || "1", 10));
@@ -186,11 +193,23 @@ async function auditOne(libro) {
         reason: `${IA.nombreProveedor()} ${res.status}: ${t.slice(0,100)}`, confidence: null, detected_audience: "unknown" };
     }
     const data = await res.json();
-    const raw = data.choices?.[0]?.message?.content || "{}";
+    const eleccion = data.choices?.[0] || {};
+    if (eleccion.finish_reason === "content_filter" || eleccion.message?.refusal) {
+      return { titulo, autor, pass: true, degraded: true, refusal: true,
+        reason: "el modelo se negó a clasificar el libro", confidence: null, detected_audience: "unknown" };
+    }
+    const raw = eleccion.message?.content || "{}";
     let parsed;
     try { parsed = JSON.parse(raw); } catch {
       return { titulo, autor, pass: true, degraded: true,
-        reason: "JSON inválido del classifier", confidence: null, detected_audience: "unknown" };
+        reason: eleccion.finish_reason === "length" ? "respuesta cortada del classifier" : "JSON inválido del classifier", confidence: null, detected_audience: "unknown" };
+    }
+    // C278: con Claude, el esquema no impone rangos; lo que llegue fuera de forma no cuenta como veredicto.
+    const confValida = parsed.confidence === undefined || parsed.confidence === null
+      || (typeof parsed.confidence === "number" && parsed.confidence >= 0 && parsed.confidence <= 1);
+    if (TARGET === "kids" && (typeof parsed.matches !== "boolean" || !confValida)) {
+      return { titulo, autor, pass: true, degraded: true,
+        reason: "respuesta del classifier fuera de forma", confidence: null, detected_audience: "unknown" };
     }
     const conf = parsed.confidence ?? 1;
     const matches = parsed.matches !== false;
@@ -221,6 +240,7 @@ function getRejectedPath(catalogPath) {
     const pass = [];
     const fail = [];
     const degraded = [];
+    let refusals = 0;
 
     console.log(``);
     console.log(`📋 Auditando ${N} libros del batch:`);
@@ -230,7 +250,21 @@ function getRejectedPath(catalogPath) {
       const autor  = libro.autor || "?";
       console.log(`   [${i+1}/${N}] "${titulo}" — ${autor}`);
       const r = await auditOne(libro);
-      if (r.degraded) {
+      if (r.refusal) refusals++;
+      if (r.degraded && TARGET === "kids") {
+        // C278: en Niños, sin veredicto no hay publicación. La cuarentena es recuperable.
+        console.log(`         🚫 JUEZ NO DISPONIBLE (${r.reason}) — a cuarentena: en Niños nada pasa sin veredicto`);
+        libro._rejected = {
+          timestamp: new Date().toISOString(),
+          target_audience: TARGET,
+          detected_audience: r.detected_audience,
+          reason: `juez no disponible: ${r.reason}`,
+          confidence: null,
+          blocker_version: VERSION
+        };
+        degraded.push(libro);
+        fail.push(libro);
+      } else if (r.degraded) {
         console.log(`         🟡 DEGRADED (${r.reason}) — pasando por seguridad`);
         degraded.push(libro);
         pass.push(libro);
@@ -257,8 +291,11 @@ function getRejectedPath(catalogPath) {
     console.log(`   ✅ PASS:        ${pass.length}/${N}`);
     console.log(`   ❌ QUARANTINE:  ${fail.length}/${N}`);
     if (degraded.length > 0) {
-      console.log(`   🟡 DEGRADED:    ${degraded.length} (errores técnicos, pasaron por seguridad)`);
+      console.log(TARGET === "kids"
+        ? `   🚫 SIN VEREDICTO: ${degraded.length} (a cuarentena; en Niños nada pasa sin veredicto)`
+        : `   🟡 DEGRADED:    ${degraded.length} (errores técnicos, pasaron por seguridad)`);
     }
+    if (refusals > 0) console.log(`   🙅 RECHAZOS DEL MODELO: ${refusals}`);
 
     if (fail.length === 0) {
       console.log(``);
