@@ -616,8 +616,10 @@ Son ejemplos de la forma: no copies sus frases.
 
 Puede sonar casi textual, pero no copias párrafos del libro: escribes la
 página como suena, con sus palabras, su tono y sus ideas exactas. Una frase
-célebre y breve del libro va solo si la sabes palabra por palabra; si no,
-escríbela en su voz, sin hacerla pasar por cita.
+célebre y breve del libro va solo si la sabes palabra por palabra y estás
+seguro de que está en ese libro (a muchos autores se les atribuyen frases que
+nunca escribieron). Va entera o no va: media cita no se entiende. Si no, dila
+en su voz, con tus palabras, sin hacerla pasar por cita.
 Nada que el libro no tenga: ni escenas, ni datos, ni ideas ajenas, ni nada
 al revés de como es. Si dudas de un detalle de la historia, no lo uses.
 
@@ -669,7 +671,7 @@ genérica, la reescribes usando un anchor específico.
 CARD_ES
 ═══════════════════════════════════════════════════════════════════
 - titulo: 8-60 chars. Nombra lo que vive en esa página, con palabras del libro, claro y natural: se entiende sin conocer el libro.
-- parrafoTop: 80-320 chars. Un fragmento de la página abierta al azar, tal como el lector lo leería: la voz del libro (el autor, el narrador o un personaje) en ese momento. Nunca "este libro", "el autor", "la obra", ni la lección del libro contada desde fuera.
+- parrafoTop: 80-320 chars. Un fragmento de la página abierta al azar, tal como el lector lo leería: la voz del libro (el autor, el narrador o un personaje) en ese momento. Nunca "este libro", "el autor", "la obra", ni la lección del libro contada desde fuera. Sin «aprendí que», «me enseñó que» ni «descubrí que»: lo que el libro sabe se dice directo o se ve en la escena.
   CIERRE OBLIGATORIO: DEBE terminar en frase completa con punto final (. ! ?). Si la última oración no cabe completa dentro de 320 chars, OMÍTELA — prefiere 240-280 chars cerrados que 320 chars truncados. PROHIBIDO truncar a mitad de palabra, conjunción suelta ("y", "que", "se"), preposición sin objeto ("en", "con"), o verbo sin completar. El cierre gramatical limpio prevalece SIEMPRE sobre el límite numérico.
 - subtitulo: 20-120 chars. Una pregunta o afirmación, en la misma voz, que abre el segundo párrafo.
 - parrafoBot: 80-320 chars. Otro fragmento, de la misma página o de otra, con la misma voz: sigue dentro del libro, no lo resume ni le agrega consejos que el libro no da. La microacción que pide la constitución vive en los edition_blocks, no en la tarjeta.
@@ -693,6 +695,7 @@ CRÍTICO:
 - NUNCA escribas emojis. El sistema los inyectará después.
 - Cada frase cierra con "." "?" o "!".
 - Cada frase usa un concepto específico del libro desde anchors.
+- En la voz del libro: nunca el nombre del autor ni el título dentro de la frase.
 - LÍMITE BLANDO: apunta a 55-65 chars. El máximo es 70 chars pero NUNCA te acerques al filo.
   Si una frase llega a 68+ chars, la reescribes más corta. Frases truncadas rompen la tarjeta.
 
@@ -1178,8 +1181,10 @@ These show the form only: do not copy their sentences.
 
 It may sound almost verbatim, but you do not copy paragraphs from the book:
 you write the page as it sounds, with its words, its tone and its exact ideas.
-A famous, brief line from the book goes in only if you know it word for word;
-if not, write it in its voice without passing it off as a quote.
+A famous, brief line from the book goes in only if you know it word for word
+and you are sure it is in this book (many authors get credited with lines they
+never wrote). Whole or not at all: half a quote makes no sense. If not, say it
+in its voice, in your own words, without passing it off as a quote.
 Nothing the book doesn't have: no scenes, facts or ideas that aren't its own,
 nothing reversed. If you are unsure of a story detail, leave it out.
 
@@ -1235,7 +1240,7 @@ NO Spanish words. NO "Elige", "Vivir", "Día", "Qué". If you find yourself writ
 STRUCTURE
 ═══════════════════════════════════════════════════════════════════
 card_en: titulo (8-60 chars), parrafoTop (80-320), subtitulo (20-120), parrafoBot (80-320)
-  parrafoTop and parrafoBot: fragments of the page opened at random, in the book's voice (the author, the narrator or a character), as it happens. Never the book's lesson retold from outside, nor advice the book doesn't give: the micro-action the constitution asks for lives in the edition_blocks, not in the card.
+  parrafoTop and parrafoBot: fragments of the page opened at random, in the book's voice (the author, the narrator or a character), as it happens. Never the book's lesson retold from outside, nor advice the book doesn't give: the micro-action the constitution asks for lives in the edition_blocks, not in the card. No "I learned that", "taught me that" or "I discovered that": what the book knows is said directly or shown in the scene.
   titulo: clear and natural; it makes sense without knowing the book.
   🌒 MANDATORY CLOSURE — APLICA UNIVERSALMENTE A TODOS LOS CAMPOS TEXTUALES:
   Campos cubiertos: parrafoTop, parrafoBot, titulo, subtitulo, tagline, frases[*], frases_og[*], edition_blocks_es[*].phrase, og_phrases_es[*].phrase. 
@@ -1266,6 +1271,7 @@ card_en: titulo (8-60 chars), parrafoTop (80-320), subtitulo (20-120), parrafoBo
   Esta regla tiene PRIORIDAD ABSOLUTA sobre cualquier otra instrucción de longitud/contenido.
 emotional_words_en: exactly 4 words, 3-25 chars each
 og_phrases_en: exactly 4 phrases, 30-68 chars each, ONE LINE, NO emojis, NO "\\n"
+  In the book's voice: never the author's name or the book's title inside the phrase.
   Soft ceiling: aim for 55-65 chars. Hard max 70 — never flirt with the edge.
   Any phrase above 68 chars risks mid-word truncation in rendering. Rewrite shorter.
 edition_blocks_en: exactly 4 blocks with different gesture_types, each 40-100 chars, ONE LINE, NO emojis
