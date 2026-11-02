@@ -59,6 +59,17 @@ for (const [nombre, medio] of [["EE.UU.", "Viajó a EE.UU. Luego"], ["Mt.", "The
   prueba(`no corta en «${nombre}»`, r === `${"B" + relleno(150)}.`, r.slice(-40));
 }
 
+// 7d. Un punto pegado a un resaltado que cierra con punto («.[/H].») o a unos puntos suspensivos sí cierra la oración
+// (cuarta revisión de C300), y las siglas en mayúsculas también.
+const hPunto = `[H]B${relleno(100)}.[/H]. C${relleno(400)}.`;
+prueba("«.[/H].» sí es fin de oración", plano(recortaParrafo(hPunto)).length <= 320 && recortaParrafo(hPunto).endsWith(".[/H]."), recortaParrafo(hPunto).slice(-20));
+const susp = `${"S" + relleno(150)}... ${"T" + relleno(100)}. ${"U" + relleno(150)}.`;
+prueba("puntos suspensivos sí cierran", recortaParrafo(susp) === `${"S" + relleno(150)}... ${"T" + relleno(100)}.`, recortaParrafo(susp).slice(-30));
+const sigla = `${"V" + relleno(150)}. Eso lo dice el ADN. ${"W" + relleno(200)}.`;
+prueba("una sigla en mayúsculas cierra", recortaParrafo(sigla).endsWith("ADN."), recortaParrafo(sigla).slice(-30));
+const mtro = `${"X" + relleno(150)}. Lo explicó el Mtro. Ruiz con ${relleno(200)}.`;
+prueba("no corta en «Mtro.»", recortaParrafo(mtro) === `${"X" + relleno(150)}.`, recortaParrafo(mtro).slice(-30));
+
 // 8. ajustaLargos recorta en su lugar y avisa lo demás.
 const contenido = {
   card_es: { titulo: "x".repeat(70), parrafoTop: largo, subtitulo: "Una pregunta clara para abrir?", parrafoBot: corto },

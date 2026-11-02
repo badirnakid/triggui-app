@@ -29,15 +29,17 @@ export const plano = (t) => String(t ?? "").replace(/\[\/?[Hh]\]/g, "");
 
 // Un punto después de una inicial («J. K. Rowling») o de una abreviatura de tratamiento («Mr. Darcy», «el Dr.
 // López») no cierra la oración (segunda pasada de C300).
-// También cuenta como abreviatura una palabra con un punto dentro («EE.UU.») y una de una a tres letras que empieza
-// con mayúscula («Mt.», «Col.», «Av.»): así se corta antes, que es lo seguro (tercera pasada de C300).
+// También cuenta como abreviatura una palabra con un punto entre dos letras («EE.UU.», «p.m.»; la misma regla 2 de
+// triggui-physics.js) y una de una a tres letras con mayúscula seguida de minúsculas («Mt.», «Col.», «Av.»); las siglas
+// en mayúsculas («ADN.», «ONU.») sí cierran oración. Así se corta antes, que es lo seguro (revisiones de C300).
 const ABREVIATURAS = new Set(["sr", "sra", "srta", "sres", "srs", "dr", "dra", "dres", "lic", "ing", "prof", "profa",
   "ud", "uds", "vd", "vds", "gral", "sto", "sta", "fr", "mr", "mrs", "ms", "mx", "st", "jr", "ej", "p", "pág", "núm", "vol",
   "cap", "capt", "gen", "col", "mt", "rev", "av", "avda", "sgto", "sgt", "tte", "cnel", "mons", "excmo", "ilmo", "dña",
-  "mme", "mlle", "lt", "gov", "pres", "sen", "rep", "hon", "ee", "uu"]);
+  "mme", "mlle", "lt", "gov", "pres", "sen", "rep", "hon", "ee", "uu", "mtro", "mtra", "lcdo", "lcda", "pbro", "hnos",
+  "cmdr", "corp", "bros", "univ", "dept", "sept", "blvd", "vs", "aprox", "ca", "art", "pp", "ed", "tel", "fig", "arq", "inc"]);
 function esAbreviatura(antes) {
   const palabra = (plano(antes).match(/(\S+)$/) || ["", ""])[1].replace(/^[«"“‘'(¿¡\[]+/, "");
-  return /^\p{L}$/u.test(palabra) || /\./.test(palabra) || /^\p{Lu}\p{L}{0,2}$/u.test(palabra) || ABREVIATURAS.has(palabra.toLowerCase());
+  return /^\p{L}$/u.test(palabra) || /\p{L}\.\p{L}/u.test(palabra) || /^\p{Lu}\p{Ll}{0,2}$/u.test(palabra) || ABREVIATURAS.has(palabra.toLowerCase());
 }
 
 // Un fin de oración (. ! ? …), con las comillas o el paréntesis que lo cierran y un [/H] pegados, seguido del final
