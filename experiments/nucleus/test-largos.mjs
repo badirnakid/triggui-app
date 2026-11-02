@@ -64,11 +64,26 @@ for (const [nombre, medio] of [["EE.UU.", "Viajó a EE.UU. Luego"], ["Mt.", "The
 const hPunto = `[H]B${relleno(100)}.[/H]. C${relleno(400)}.`;
 prueba("«.[/H].» sí es fin de oración", plano(recortaParrafo(hPunto)).length <= 320 && recortaParrafo(hPunto).endsWith(".[/H]."), recortaParrafo(hPunto).slice(-20));
 const susp = `${"S" + relleno(150)}... ${"T" + relleno(100)}. ${"U" + relleno(150)}.`;
-prueba("puntos suspensivos sí cierran", recortaParrafo(susp) === `${"S" + relleno(150)}... ${"T" + relleno(100)}.`, recortaParrafo(susp).slice(-30));
+prueba("puntos suspensivos sueltos cierran", recortaParrafo(susp) === `${"S" + relleno(150)}... ${"T" + relleno(100)}.`, recortaParrafo(susp).slice(-30));
+const pegados = `${"B" + relleno(150)}. ...perspective. Then ${relleno(300)}.`;
+prueba("puntos suspensivos pegados a la palabra («...perspective.») sí cierran", recortaParrafo(pegados) === `${"B" + relleno(150)}. ...perspective.`, recortaParrafo(pegados).slice(-30));
 const sigla = `${"V" + relleno(150)}. Eso lo dice el ADN. ${"W" + relleno(200)}.`;
 prueba("una sigla en mayúsculas cierra", recortaParrafo(sigla).endsWith("ADN."), recortaParrafo(sigla).slice(-30));
 const mtro = `${"X" + relleno(150)}. Lo explicó el Mtro. Ruiz con ${relleno(200)}.`;
 prueba("no corta en «Mtro.»", recortaParrafo(mtro) === `${"X" + relleno(150)}.`, recortaParrafo(mtro).slice(-30));
+
+// 7e. Lo que dejó la cuarta revisión de C300: una oración no empieza con número, un número de una o dos cifras antes
+// del punto es una numeración, y más abreviaturas. Los años sí cierran.
+for (const [nombre, medio] of [["No. 5", "Nota: No. 5 de la serie"], ["NO. 5", "Nota: NO. 5 de la serie"], ["no. 5", "Chapter no. 5 follows"],
+  ["approx. 300", "It costs approx. 300 dollars"], ["Pasos: 1.", "Pasos: 1. Respira hondo"], ["Capítulo 3.", "Capítulo 3. El inicio"],
+  ["sig.", "Ver sig. Luego"], ["Ltda.", "Lo publicó Ltda. Nueva"], ["Dpto.", "Lo firmó el Dpto. Legal"], ["Depto.", "Vive en el Depto. Norte"],
+  ["Msgr.", "Then Msgr. Quinn spoke"], ["LTD.", "Made by ACME LTD. Then"], ["CO.", "Made by ACME CO. Then"]]) {
+  const t = `${"B" + relleno(150)}. ${medio} ${relleno(150)} y ${relleno(40)}.`;
+  const r = recortaParrafo(t);
+  prueba(`no corta en «${nombre}»`, r === `${"B" + relleno(150)}.`, r.slice(-40));
+}
+const anio = `${"B" + relleno(150)}. Todo cambió en 1984. Luego ${relleno(150)} y ${relleno(40)}.`;
+prueba("un año sí cierra («en 1984.»)", recortaParrafo(anio).endsWith("en 1984."), recortaParrafo(anio).slice(-30));
 
 // 8. ajustaLargos recorta en su lugar y avisa lo demás.
 const contenido = {

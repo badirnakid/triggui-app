@@ -16,8 +16,8 @@
  * v2.1 (C278, 2 de noviembre de 2026) — en Niños, ningún libro pasa sin veredicto:
  *   - si el juez no responde, se niega (refusal o content_filter), se corta, devuelve JSON inválido o sin
  *     «matches» booleano, o una confianza fuera de 0 a 1, la corrida se detiene con exit 1 SIN TOCAR el
- *     catálogo: el libro nuevo no se publica y los ya publicados que revisa el lote quedan como estaban (hasta
- *     a39f145 el lote era de 20 en las corridas a mano). Mandarlos a cuarentena despublicaría libros buenos por una caída
+ *     catálogo: el libro nuevo no se publica y los ya publicados que revisa el lote quedan como estaban (en 🎲
+ *     el lote es el de la corrida, 20 si no se dice; en los demás modos, un libro). Mandarlos a cuarentena despublicaría libros buenos por una caída
  *     de la API (segunda pasada de C300). Un error inesperado en Niños también detiene la corrida.
  *   - Con adultos queda como antes (pasa como degradado), porque ahí el riesgo es al revés.
  *   - los rechazos del modelo se cuentan aparte en el log.

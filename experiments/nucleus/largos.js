@@ -30,21 +30,24 @@ export const plano = (t) => String(t ?? "").replace(/\[\/?[Hh]\]/g, "");
 // Un punto después de una inicial («J. K. Rowling») o de una abreviatura de tratamiento («Mr. Darcy», «el Dr.
 // López») no cierra la oración (segunda pasada de C300).
 // También cuenta como abreviatura una palabra con un punto entre dos letras («EE.UU.», «p.m.»; la misma regla 2 de
-// triggui-physics.js) y una de una a tres letras con mayúscula seguida de minúsculas («Mt.», «Col.», «Av.»); las siglas
-// en mayúsculas («ADN.», «ONU.») sí cierran oración. Así se corta antes, que es lo seguro (revisiones de C300).
+// triggui-physics.js), una de una a tres letras con mayúscula seguida de minúsculas («Mt.», «Col.», «Av.») y un número
+// de una o dos cifras, que es una numeración («Pasos: 1. Respira», «Capítulo 3. El inicio»); los años («en 1984.») y
+// las siglas en mayúsculas («ADN.», «ONU.») sí cierran oración. Así se corta antes, que es lo seguro (revisiones de C300).
 const ABREVIATURAS = new Set(["sr", "sra", "srta", "sres", "srs", "dr", "dra", "dres", "lic", "ing", "prof", "profa",
   "ud", "uds", "vd", "vds", "gral", "sto", "sta", "fr", "mr", "mrs", "ms", "mx", "st", "jr", "ej", "p", "pág", "núm", "vol",
   "cap", "capt", "gen", "col", "mt", "rev", "av", "avda", "sgto", "sgt", "tte", "cnel", "mons", "excmo", "ilmo", "dña",
   "mme", "mlle", "lt", "gov", "pres", "sen", "rep", "hon", "ee", "uu", "mtro", "mtra", "lcdo", "lcda", "pbro", "hnos",
-  "cmdr", "corp", "bros", "univ", "dept", "sept", "blvd", "vs", "aprox", "ca", "art", "pp", "ed", "tel", "fig", "arq", "inc"]);
+  "cmdr", "corp", "bros", "univ", "dept", "sept", "blvd", "vs", "aprox", "approx", "ca", "art", "pp", "ed", "tel", "fig", "arq",
+  "inc", "sig", "sigs", "ltd", "ltda", "co", "dpto", "depto", "msgr"]);
 function esAbreviatura(antes) {
   const palabra = (plano(antes).match(/(\S+)$/) || ["", ""])[1].replace(/^[«"“‘'(¿¡\[]+/, "");
-  return /^\p{L}$/u.test(palabra) || /\p{L}\.\p{L}/u.test(palabra) || /^\p{Lu}\p{Ll}{0,2}$/u.test(palabra) || ABREVIATURAS.has(palabra.toLowerCase());
+  return /^\p{L}$/u.test(palabra) || /^\d{1,2}$/.test(palabra) || /\p{L}\.\p{L}/u.test(palabra) || /^\p{Lu}\p{Ll}{0,2}$/u.test(palabra) || ABREVIATURAS.has(palabra.toLowerCase());
 }
 
 // Un fin de oración (. ! ? …), con las comillas o el paréntesis que lo cierran y un [/H] pegados, seguido del final
-// del texto o de un espacio y el inicio de otra oración (mayúscula, número, comilla o signo de apertura).
-const FIN_DE_ORACION = /[.!?…]+["'»”’)\]]*(?:\[\/[Hh]\])?(?=\s*$|\s+(?:\[[Hh]\]\s*)?["'«“‘¿¡(—–-]*[A-ZÁÉÍÓÚÑÜ0-9])/g;
+// del texto o de un espacio y el inicio de otra oración (mayúscula, comilla o signo de apertura). Una oración no
+// empieza con número: así «No. 5», «approx. 300», «art. 5» o «pp. 12» nunca son un corte (cuarta revisión de C300).
+const FIN_DE_ORACION = /[.!?…]+["'»”’)\]]*(?:\[\/[Hh]\])?(?=\s*$|\s+(?:\[[Hh]\]\s*)?["'«“‘¿¡(—–-]*[A-ZÁÉÍÓÚÑÜ])/g;
 
 /**
  * Deja el párrafo en la última oración completa que cabe en `max` caracteres visibles, con sus resaltados

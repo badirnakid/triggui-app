@@ -301,13 +301,16 @@ function ajustaSinfonia(contentXX, lang) {
 }
 
 // C278: en Niños, la tarjeta cierra el párrafo 2 con una microacción de lectura (capa de Niños). Si no la trae, se avisa.
+// Cuenta leer en cualquier forma («Léele», «léelos», «Léeselo», «lean»), en voz alta, o el libro, el cuento y sus partes. «Abre» y
+// «open» solos no cuentan, porque «Abre tu corazón» no es leer: cuentan con el libro o con «lo» («Ábrelo», «open it»).
 function avisaLecturaNinos(contentXX, lang) {
   const card = contentXX && contentXX['card_' + lang];
   const bot = String((card && card.parrafoBot) || '').replace(/\[\/?[Hh]\]/g, '').trim();
   const ultima = (bot.match(/[^.!?…]+[.!?…]*\s*$/) || [''])[0];
   const llano = ultima.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
-  const re = lang === 'en' ? /\b(open|opens|opening|read|reads|reading|aloud|pages?|chapters?|first line)\b/
-    : /\b(abre|abrelo|abrela|abrir|abrirlo|abrirla|lee|leelo|leela|leer|leerlo|leerla|lea|leamos|leyendo|leido|en voz alta|paginas?|capitulos?|primera linea)\b/;
+  const re = lang === 'en'
+    ? /\b(?:read|reads|reading|aloud|books?|pages?|chapters?|paragraphs?|first line|open(?:s|ing)? (?:it|them))\b/
+    : /\b(?:le(?:e|es|a|as|an|en|ed|er|amos|emos|yendo|ido|ida|idos|idas)(?:se)?(?:lo|la|los|las|le|les)?|abr(?:e|a|an|id|ir|amos|iendo)(?:se)?(?:lo|la|los|las)|en voz alta|libros?|cuentos?|paginas?|capitulos?|parrafos?|primera linea)\b/;
   if (!re.test(llano)) console.warn(`   📖 Niños ${lang.toUpperCase()}: el párrafo 2 no cierra con su microacción de lectura (${ultima.slice(0, 80)})`);
   else console.log(`   📖 Niños ${lang.toUpperCase()}: microacción de lectura al final del párrafo 2`);
 }
