@@ -305,9 +305,10 @@ function avisaLecturaNinos(contentXX, lang) {
   const card = contentXX && contentXX['card_' + lang];
   const bot = String((card && card.parrafoBot) || '').replace(/\[\/?[Hh]\]/g, '').trim();
   const ultima = (bot.match(/[^.!?…]+[.!?…]*\s*$/) || [''])[0];
-  const re = lang === 'en' ? /\b(open|read|reading|aloud|page|pages|chapter|first line)\b/i
-    : /\b(abre|abrir|lee|leer|léelo|léela|leerlo|leerla|en voz alta|página|páginas|capítulo|primera línea)\b/i;
-  if (!re.test(ultima)) console.warn(`   📖 Niños ${lang.toUpperCase()}: el párrafo 2 no cierra con su microacción de lectura (${ultima.slice(0, 80)})`);
+  const llano = ultima.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
+  const re = lang === 'en' ? /\b(open\w*|read\w*|aloud|pages?|chapters?|first line)\b/
+    : /\b(abr[eai]\w*|le[eia]\w*|en voz alta|paginas?|capitulos?|primera linea)\b/;
+  if (!re.test(llano)) console.warn(`   📖 Niños ${lang.toUpperCase()}: el párrafo 2 no cierra con su microacción de lectura (${ultima.slice(0, 80)})`);
   else console.log(`   📖 Niños ${lang.toUpperCase()}: microacción de lectura al final del párrafo 2`);
 }
 

@@ -52,6 +52,13 @@ prueba("no corta en «J. K.»", recortaParrafo(jk) === `${"E" + relleno(150)}.`,
 const comillas = `${"U" + relleno(150)}. «A. Tal» dijo ${relleno(160)}. ${"F" + relleno(40)}.`;
 prueba("inicial tras comilla tampoco", !/«A\.$/.test(recortaParrafo(comillas)), recortaParrafo(comillas).slice(-30));
 
+// 7c. Más abreviaturas: con punto dentro, cortas con mayúscula y de la lista (tercera pasada de C300).
+for (const [nombre, medio] of [["EE.UU.", "Viajó a EE.UU. Luego"], ["Mt.", "They climbed Mt. Everest"], ["Col.", "The old Col. Brandon"], ["Capt.", "Then Capt. Hook came"]]) {
+  const t = `${"B" + relleno(150)}. ${medio} ${relleno(150)} y ${relleno(40)}.`;
+  const r = recortaParrafo(t);
+  prueba(`no corta en «${nombre}»`, r === `${"B" + relleno(150)}.`, r.slice(-40));
+}
+
 // 8. ajustaLargos recorta en su lugar y avisa lo demás.
 const contenido = {
   card_es: { titulo: "x".repeat(70), parrafoTop: largo, subtitulo: "Una pregunta clara para abrir?", parrafoBot: corto },

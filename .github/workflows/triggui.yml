@@ -878,14 +878,19 @@ jobs:
             exit 1
           fi
 
+          # 🧠 C278: solo los libros de esta corrida (uno en 📘/💭/🌍; el lote en 🎲). Con 20 por omisión en las corridas a
+          # mano, el saneador volvía a reescribir libros ya publicados, y con otro modelo eso cambia lo publicado (C300; C282).
+          N_RUN=1
+          if [ "${{ steps.modo.outputs.modo_tecnico }}" = "production_batch" ]; then N_RUN="${BATCH_SIZE:-1}"; fi
+
           echo "🛡️ LLM Sanitizer v3.2 — grounding + jerarquía completar→recortar→remover"
           echo "   catalog:    $CATALOG_PATH (workspace)"
-          echo "   batch_size: $BATCH_SIZE"
+          echo "   batch_size: $N_RUN (libros de esta corrida)"
           node "$SCRIPT" \
             --catalog="$CATALOG_PATH" \
             --mode=fix \
             --only-last=true \
-            --batch-size="$BATCH_SIZE"
+            --batch-size="$N_RUN"
 
           echo "✅ Reparación pre-outputs completada (sobre workspace, antes de assets/manual.json)"
 
@@ -1087,10 +1092,15 @@ jobs:
           echo "   TARGET_AUDIENCE:  $TARGET_AUDIENCE"
           echo "   CATALOG_PATH:     $CATALOG_PATH"
 
+          # 🧠 C278: el juez solo mira los libros de esta corrida (uno en 📘/💭/🌍; el lote en 🎲). Con 20 por omisión,
+          # un juez nuevo volvía a juzgar libros ya publicados y un «no» los sacaba del catálogo (revisión de C300; C282).
+          N_RUN=1
+          if [ "${{ steps.modo.outputs.modo_tecnico }}" = "production_batch" ]; then N_RUN="${BATCH_SIZE:-1}"; fi
+
           CATALOG_PATH="$CATALOG_PATH" \
           TARGET_AUDIENCE="$TARGET_AUDIENCE" \
           OPENAI_API_KEY="$OPENAI_KEY" \
-          BATCH_SIZE="${BATCH_SIZE:-1}" \
+          BATCH_SIZE="$N_RUN" \
             node experiments/nucleus/audience-blocker.cjs
 
       # ╔══════════════════════════════════════════════════════════════════╗
