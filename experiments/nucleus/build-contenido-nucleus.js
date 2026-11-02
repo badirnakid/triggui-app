@@ -283,6 +283,21 @@ async function retryOnce(fn, label) {
    Helpers observatorios: registran issues, no fuerzan retry al LLM.
 ═══════════════════════════════════════════════════════════════════════════════ */
 
+// C278: con Claude el esquema no impone «exactamente 4». Si llegan más de 4 y los 4 roles están, se queda el
+// primero de cada rol, en su orden. Si faltan roles, validateSinfonia lo reporta como siempre.
+function ajustaSinfonia(contentXX, lang) {
+  const rolKey = lang === 'en' ? 'role_symphonic' : 'rol_sinfonico';
+  const recortados = [];
+  for (const k of ['edition_blocks_' + lang, 'og_phrases_' + lang]) {
+    const xs = contentXX && contentXX[k];
+    if (!Array.isArray(xs) || xs.length <= 4 || !xs.every((b) => b && typeof b === 'object')) continue;
+    const vistos = new Set();
+    const quedan = xs.filter((b) => b[rolKey] && !vistos.has(b[rolKey]) && vistos.add(b[rolKey]));
+    if (quedan.length === 4) { recortados.push(`${k} ${xs.length}→4`); contentXX[k] = quedan; }
+  }
+  return recortados;
+}
+
 function validateSinfonia(contentXX, lang) {
   const issues = [];
   const ebKey = 'edition_blocks_' + lang;
@@ -298,6 +313,7 @@ function validateSinfonia(contentXX, lang) {
     if (unique.size < 4) {
       issues.push(`${ebKey} cobertura ${unique.size}/4 (${[...unique].join(',')})`);
     }
+    if (eb.length !== 4) issues.push(`${ebKey} trae ${eb.length} piezas y se piden 4`);
     for (const b of eb) {
       const v = b && b[animoKey];
       if (typeof v !== 'number' || v < 0 || v > 1) {
@@ -324,6 +340,7 @@ function validateSinfonia(contentXX, lang) {
         if (unique.size < 4) {
           issues.push(`${ogKey} cobertura ${unique.size}/4 (${[...unique].join(',') || 'sin roles'})`);
         }
+        if (og.length !== 4) issues.push(`${ogKey} trae ${og.length} piezas y se piden 4`);
       } else {
         issues.push(`${ogKey} mezcla strings y objetos — formato inconsistente`);
       }
@@ -876,6 +893,8 @@ async function processBook(book, inputs, inputsSnapshot) {
   // ═══ F8: POST-PROCESADORES DETERMINISTAS ════════════════════════════
   const tF8 = Date.now();
   // ═══ C3: VALIDACIÓN SINFÓNICA + ANTI-BRACKET (v12) ════════════════════════
+  const recorteSinfonia = [...ajustaSinfonia(contentESFinal, 'es'), ...ajustaSinfonia(contentENFinal, 'en')];
+  if (recorteSinfonia.length) console.log(`   🎼 Sinfonía: más de 4 piezas, se queda una por rol (${recorteSinfonia.join(', ')})`);
   const sinfoniaES = validateSinfonia(contentESFinal, 'es');
   const sinfoniaEN = validateSinfonia(contentENFinal, 'en');
   const bracketsES = detectSpuriousBrackets(contentESFinal, 'es');
@@ -889,7 +908,7 @@ async function processBook(book, inputs, inputsSnapshot) {
     if (!sinfoniaEN.ok) errores.push('EN: ' + sinfoniaEN.issues.join('; '));
     console.error(`   🚨 SINFONÍA INCOMPLETA — nivel dios requiere 4/4 EXACTO:`);
     errores.forEach(e => console.error('      ' + e));
-    throw new Error('Sinfonía incompleta — cobertura <4/4 roles: ' + errores.join(' | '));
+    throw new Error('Sinfonía incompleta — se piden 4 piezas con 4 roles: ' + errores.join(' | '));
   }
   if (bracketsES.length > 0 || bracketsEN.length > 0) {
     console.warn(`   🛡️  Brackets espurios: ES=${bracketsES.length}, EN=${bracketsEN.length} (capa 5 frontend saneará)`);

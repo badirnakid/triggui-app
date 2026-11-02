@@ -626,7 +626,8 @@ escenas en una ni cambies quién hace qué. Si no recuerdas bien un detalle
 (quién lo dijo, qué se preguntaba, qué se veía), deja la idea y quita el detalle.
 
 
-LA CLARIDAD MANDA, por encima de lentes, anclas y límites.
+LA CLARIDAD MANDA, por encima de lentes y anclas, y siempre dentro de los largos
+de cada campo. Vale para todo lo que escribes.
 Quien lee va con prisa, no tiene el libro enfrente y suele creer que leer es
 lento y pesado. Tu texto le demuestra lo contrario: se entiende a la primera,
 en una sola lectura, en el celular, sin haber leído el libro. Si alguien tuviera
@@ -636,11 +637,13 @@ que releerlo para entenderlo, está mal.
 - Imágenes concretas del libro; nada de acertijos ni de metáforas encimadas.
 - Una palabra propia del libro, solo si la frase deja claro qué quiere decir.
   Si no, dila con palabras de todos los días.
-- Nada de otra época ni de otro mundo que el del libro: si el libro no habla
-  de bancos, celulares o redes, tú tampoco.
+- En la tarjeta (titulo, parrafoTop, subtitulo, parrafoBot), nada de otra época
+  ni de otro mundo que el del libro: si el libro no habla de bancos, celulares o
+  redes, la tarjeta tampoco. Un pilar o un lente se ilumina con lo que el libro tiene.
 - Concordancia y ortografía perfectas: «los tres volcanes», nunca «las tres volcanes».
-- Ligero y vivo, como alguien que te cuenta algo que engancha; nunca una
-  lección ni una tarea.
+- Ligero y vivo, como alguien que te cuenta algo que engancha; nunca un sermón.
+  Si la constitución o la capa de Niños piden un valor, que se vea en lo que
+  pasa, no que se predique.
 Prueba final: léelo en voz alta. Si suena raro, forzado o no se entiende,
 reescríbelo.
   × «Por eso, cuando alguien te pregunte por tu cuenta bancaria, responde con lo que de verdad domesticaste.»
@@ -676,7 +679,7 @@ CARD_ES
 - parrafoTop: 80-320 chars. Un fragmento de la página abierta al azar, tal como el lector lo leería: la voz del libro (el autor, el narrador o un personaje) en ese momento. Nunca "este libro", "el autor", "la obra", ni la lección del libro contada desde fuera. Sin «aprendí que», «me enseñó que» ni «descubrí que»: lo que el libro sabe se dice directo o se ve en la escena.
   CIERRE OBLIGATORIO: DEBE terminar en frase completa con punto final (. ! ?). Si la última oración no cabe completa dentro de 320 chars, OMÍTELA — prefiere 240-280 chars cerrados que 320 chars truncados. PROHIBIDO truncar a mitad de palabra, conjunción suelta ("y", "que", "se"), preposición sin objeto ("en", "con"), o verbo sin completar. El cierre gramatical limpio prevalece SIEMPRE sobre el límite numérico.
 - subtitulo: 20-120 chars. Una pregunta o afirmación, en la misma voz, que abre el segundo párrafo.
-- parrafoBot: 80-320 chars. Otro fragmento, de la misma página o de otra, con la misma voz: sigue dentro del libro, no lo resume ni le agrega consejos que el libro no da. La microacción que pide la constitución vive en los edition_blocks, no en la tarjeta.
+- parrafoBot: 80-320 chars. Otro fragmento, de la misma página o de otra, con la misma voz: sigue dentro del libro, no lo resume ni le agrega consejos de vida que el libro no da. Una invitación a abrir el libro o a leerlo sí cabe.
   CIERRE OBLIGATORIO: mismas reglas que parrafoTop. SIEMPRE frase completa con punto final (. ! ?). Prefiere quedar corto antes que truncar.
 
 
@@ -1052,7 +1055,7 @@ Tu vocabulario propio (key terms; úsalos solo donde la frase se entienda sola):
 
 
   if (lens && lens.trim()) {
-    p += `\n\n═══════════════════════════════════════════════════════════════════\nLENTE DEL CURADOR (perspectiva activa hoy):\n${lens}\n\nSi tu obra naturalmente toca esta perspectiva, déjala asomar en la página. Si no la toca, NO la fuerces — sería traición a tu propia escritura. El lente solo elige qué parte del libro asoma: en la tarjeta no metas palabras del lente, cosas que el libro no tiene ni consejos que el libro no da.`;
+    p += `\n\n═══════════════════════════════════════════════════════════════════\nLENTE DEL CURADOR (perspectiva activa hoy):\n${lens}\n\nSi tu obra naturalmente toca esta perspectiva, déjala asomar en la página. Si no la toca, NO la fuerces — sería traición a tu propia escritura. El lente solo elige qué parte del libro asoma: en la tarjeta no metas palabras del lente, cosas que el libro no tiene ni consejos de vida que el libro no da.`;
   }
 
 
@@ -1061,7 +1064,7 @@ Ahora, como la voz de tu libro, escribe desde dentro de sus páginas:
 Genera card_es + emotional_words_es + og_phrases_es + edition_blocks_es.
 
 
-SIN EMOJIS. SIN NEWLINES. Cada frase usa al menos un anchor.
+SIN EMOJIS. SIN NEWLINES. Cada frase nace de un anchor, dicha de forma que se entienda a la primera.
 
 
 ANTES de devolver, aplica el PROTOCOLO DE AUTO-VALIDACIÓN del system prompt.`;
@@ -1193,7 +1196,8 @@ scenes into one or change who does what. If you don't remember a detail well
 (who said it, what was asked, what was seen), keep the idea and drop the detail.
 
 
-CLARITY RULES, above lenses, anchors and limits.
+CLARITY RULES, above lenses and anchors, and always within each field's length.
+They apply to everything you write.
 The reader is in a hurry, doesn't have the book in hand and tends to think
 reading is slow and heavy. Your text proves the opposite: it is understood at
 first read, in a single pass, on a phone, without having read the book. If
@@ -1203,11 +1207,14 @@ someone had to read it twice to get it, it is wrong.
 - Concrete images from the book; no riddles, no stacked metaphors.
 - A word that belongs to the book only if the sentence makes its meaning clear.
   Otherwise, say it in everyday words.
-- Nothing from another era or world than the book's: if the book doesn't talk
-  about banks, phones or social media, neither do you.
+- In the card (titulo, parrafoTop, subtitulo, parrafoBot), nothing from another
+  era or world than the book's: if the book doesn't talk about banks, phones or
+  social media, neither does the card. A pillar or a lens shines through what the
+  book already has.
 - Flawless grammar and spelling.
-- Light and alive, like someone telling you something gripping; never a lesson
-  or homework.
+- Light and alive, like someone telling you something gripping; never a sermon.
+  If the constitution or the Kids layer asks for a value, let it show in what
+  happens, not be preached.
 Final test: read it out loud. If it sounds odd, forced or unclear, rewrite it.
   × "So when someone asks about your bank account, answer with what you truly tamed."
   ✓ "Grown-ups count everything. What really matters can't be counted."
@@ -1244,7 +1251,7 @@ NO Spanish words. NO "Elige", "Vivir", "Día", "Qué". If you find yourself writ
 STRUCTURE
 ═══════════════════════════════════════════════════════════════════
 card_en: titulo (8-60 chars), parrafoTop (80-320), subtitulo (20-120), parrafoBot (80-320)
-  parrafoTop and parrafoBot: fragments of the page opened at random, in the book's voice (the author, the narrator or a character), as it happens. Never the book's lesson retold from outside, nor advice the book doesn't give: the micro-action the constitution asks for lives in the edition_blocks, not in the card. No "I learned that", "taught me that" or "I discovered that": what the book knows is said directly or shown in the scene.
+  parrafoTop and parrafoBot: fragments of the page opened at random, in the book's voice (the author, the narrator or a character), as it happens. Never the book's lesson retold from outside, nor life advice the book doesn't give. An invitation to open the book or read it is fine. No "I learned that", "taught me that" or "I discovered that": what the book knows is said directly or shown in the scene.
   titulo: clear and natural; it makes sense without knowing the book.
   🌒 MANDATORY CLOSURE — APLICA UNIVERSALMENTE A TODOS LOS CAMPOS TEXTUALES:
   Campos cubiertos: parrafoTop, parrafoBot, titulo, subtitulo, tagline, frases[*], frases_og[*], edition_blocks_es[*].phrase, og_phrases_es[*].phrase. 
@@ -1522,7 +1529,7 @@ ParrafoBot: ${cardES.parrafoBot}`;
 
 
   if (lens && lens.trim()) {
-    p += `\n\n═══════════════════════════════════════════════════════════════════\nCURATORIAL LENS (perspective active today):\n${lens}\n\nIf your work naturally touches this perspective, let it show on the page. If it doesn't, do NOT force it — that would be a betrayal of your own writing. The lens only chooses which part of the book shows: in the card, no lens vocabulary, nothing the book doesn't have, and no advice the book doesn't give.`;
+    p += `\n\n═══════════════════════════════════════════════════════════════════\nCURATORIAL LENS (perspective active today):\n${lens}\n\nIf your work naturally touches this perspective, let it show on the page. If it doesn't, do NOT force it — that would be a betrayal of your own writing. The lens only chooses which part of the book shows: in the card, no lens vocabulary, nothing the book doesn't have, and no life advice the book doesn't give.`;
   }
 
 
@@ -1670,8 +1677,11 @@ async function callJudgeOnce(openai, schemas, model, groundTruth, snippets, lang
 
   const raw = response.choices?.[0]?.message?.content;
   const parsed = safeParseJSON(raw);
+  // C278: con Claude el esquema no impone el rango 0-1; un puntaje fuera de rango no cuenta como veredicto.
+  const fueraDeRango = !!parsed && typeof parsed === "object" && parsed.grounded_score !== undefined && parsed.grounded_score !== null &&
+                  !(typeof parsed.grounded_score === "number" && parsed.grounded_score >= 0 && parsed.grounded_score <= 1);
   const isEmpty = !parsed || typeof parsed !== "object" ||
-                  parsed.grounded_score === undefined || parsed.grounded_score === null;
+                  parsed.grounded_score === undefined || parsed.grounded_score === null || fueraDeRango;
 
 
   return {
@@ -1679,7 +1689,8 @@ async function callJudgeOnce(openai, schemas, model, groundTruth, snippets, lang
     isEmpty,
     usage: response.usage,
     model: response.model,
-    refusal: response.choices?.[0]?.message?.refusal || null
+    refusal: response.choices?.[0]?.message?.refusal || null,
+    fueraDeRango
   };
 }
 
@@ -1729,7 +1740,7 @@ export async function judgeGrounding(openai, groundTruth, content, options = {})
       // respuesta vacía o sin grounded_score: registra y reintenta
       lastError = result.refusal
         ? `refusal: ${String(result.refusal).slice(0, 120)}`
-        : "empty_or_missing_grounded_score";
+        : (result.fueraDeRango ? `grounded_score fuera de rango: ${String(result.parsed.grounded_score).slice(0, 20)}` : "empty_or_missing_grounded_score");
       console.log(`   ⚠ Judge ${language.toUpperCase()} intento ${attempt}/${maxAttempts}: ${lastError}`);
     } catch (err) {
       lastError = err?.message ? String(err.message).slice(0, 200) : String(err);
