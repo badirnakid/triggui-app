@@ -116,7 +116,7 @@ async function assignEditionFromCounter(targetPath, newBook) {
 import { judgeBothVoices } from "./voice-judge.js";
 // 🌒 SPRINT NIVEL DIOS — Capa A Pilar 2 (Voice-Judge Universal) + Capa B (CSAL)
 import { judgeAllVoiceLayers, regeneratePhrasesByFeedback } from "./voice-judge-universal.js";
-import { extractCSAL } from "./csal-extractor.js";
+import { extractCSAL, agregaPuertasCSAL } from "./csal-extractor.js";
 import { validateFinalNucleus } from "./quality-validator.js";
 import { generateFallbackCover } from "./typographic-cover.js";
 import { selectBestCover, checkImageURL, fetchEvidence } from "./evidence-fetcher.js";
@@ -1107,6 +1107,9 @@ async function processBook(book, inputs, inputsSnapshot) {
     );
 
     mapped._csal = csalRes.data;
+    // C278: las cuatro palabras de los bloques, siempre dentro de las palabras clave del CSAL (en los dos idiomas)
+    const puertasSumadas = agregaPuertasCSAL(mapped._csal, [...(contentESFinal.emotional_words_es || []), ...((contentENFinal && contentENFinal.emotional_words_en) || [])]);
+    if (puertasSumadas.length) console.log(`   🚪 CSAL: ${puertasSumadas.length} palabra(s) de los bloques sumadas a sus palabras clave (${puertasSumadas.join(", ")})`);
     elapsedByPhase.csal = Date.now() - tF11;
     tokensByPhase.csal = csalRes.usage?.total_tokens || 0;
     llmCallsCount += 1;

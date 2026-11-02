@@ -327,6 +327,28 @@ function validateCSALShape(cleaned) {
 // PROMPTS — SAGRADOS (idénticos a v1, no se tocan)
 // ═══════════════════════════════════════════════════════════════════════════════
 
+// C278: las cuatro palabras de los bloques (en español y en inglés) siempre entran a las palabras clave del CSAL, para que
+// quien escriba una de ellas en la barra mágica llegue a este libro y la encuentre en su bloque. El app junta las cuatro
+// categorías al buscar (public/index.html, índice del CSAL); las que falten se suman a «emociones», donde viven los
+// estados de quien llega. Devuelve las que sumó.
+export function agregaPuertasCSAL(csal, palabras) {
+  if (!csal || typeof csal !== "object" || !Array.isArray(palabras)) return [];
+  if (!csal.trigger_keywords || typeof csal.trigger_keywords !== "object") csal.trigger_keywords = {};
+  const kw = csal.trigger_keywords;
+  const norma = (x) => String(x ?? "").trim().toLowerCase();
+  const ya = new Set(["emociones", "objetos", "contextos", "verbos"].flatMap((k) => (Array.isArray(kw[k]) ? kw[k] : []).map(norma)));
+  const sumadas = [];
+  for (const p of palabras) {
+    const w = String(p ?? "").trim();
+    if (!w || ya.has(norma(w))) continue;
+    if (!Array.isArray(kw.emociones)) kw.emociones = [];
+    kw.emociones.push(w);
+    ya.add(norma(w));
+    sumadas.push(w);
+  }
+  return sumadas;
+}
+
 function csalSystemPrompt() {
   return `Para esta llamada NO eres una IA describiendo contenido editorial.
 ERES el autor del libro que se te asignará en este turno.

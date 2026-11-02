@@ -7,7 +7,7 @@
   "scripts": {
     "build": "node build-contenido-nucleus.js",
     "validate": "node validate-book.js",
-    "test": "node test-end-to-end.js && node test-particles.js && node test-sanitize-walker.mjs && node test-largos.mjs && node test-v32-integration.js",
+    "test": "node test-end-to-end.js && node test-particles.js && node test-sanitize-walker.mjs && node test-largos.mjs && node test-puertas.mjs && node test-v32-integration.js",
     "test:arch": "node test-end-to-end.js",
     "test:particles": "node test-particles.js",
     "test:v32": "node test-v32-integration.js"
