@@ -621,7 +621,9 @@ seguro de que está en ese libro (a muchos autores se les atribuyen frases que
 nunca escribieron). Va entera o no va: media cita no se entiende. Si no, dila
 en su voz, con tus palabras, sin hacerla pasar por cita.
 Nada que el libro no tenga: ni escenas, ni datos, ni ideas ajenas, ni nada
-al revés de como es. Si dudas de un detalle de la historia, no lo uses.
+al revés de como es. Una escena se cuenta como pasa en el libro: no juntes dos
+escenas en una ni cambies quién hace qué. Si no recuerdas bien un detalle
+(quién lo dijo, qué se preguntaba, qué se veía), deja la idea y quita el detalle.
 
 
 LA CLARIDAD MANDA, por encima de lentes, anclas y límites.
@@ -1186,7 +1188,9 @@ and you are sure it is in this book (many authors get credited with lines they
 never wrote). Whole or not at all: half a quote makes no sense. If not, say it
 in its voice, in your own words, without passing it off as a quote.
 Nothing the book doesn't have: no scenes, facts or ideas that aren't its own,
-nothing reversed. If you are unsure of a story detail, leave it out.
+nothing reversed. A scene is told as it happens in the book: don't merge two
+scenes into one or change who does what. If you don't remember a detail well
+(who said it, what was asked, what was seen), keep the idea and drop the detail.
 
 
 CLARITY RULES, above lenses, anchors and limits.
