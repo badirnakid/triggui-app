@@ -304,12 +304,13 @@ try {
     ['JSON roto', () => ({ status: 200, contenido: 'no es json' })]
   ]) {
     const r = {};
-    for (const v of ['base', 'nuevo']) {
+    const usoAud = path.join(T, `uso-aud-${nombre.replace(/\W+/g, '-')}.jsonl`);
+    for (const v of ['base', 'nuevo', 'registro']) {   // «registro»: la de ahora con TRIGGUI_IA_REGISTRO (el banco lo usa)
       const dir = path.join(T, `aud-${nombre.replace(/\W+/g, '-')}-${v}`);
       copiaFixture(dir, { 'contenido.json': catAud });
       alResponder = responder;
-      r[v] = await corre([path.join(raices[v], 'experiments/nucleus/audience-blocker.cjs')],
-        { cwd: dir, env: { CATALOG_PATH: path.join(dir, 'contenido.json'), TARGET_AUDIENCE: 'adult', BATCH_SIZE: '3' } });
+      r[v] = await corre([path.join(raices[v === 'base' ? 'base' : 'nuevo'], 'experiments/nucleus/audience-blocker.cjs')],
+        { cwd: dir, env: { CATALOG_PATH: path.join(dir, 'contenido.json'), TARGET_AUDIENCE: 'adult', BATCH_SIZE: '3', ...(v === 'registro' ? { TRIGGUI_IA_REGISTRO: usoAud } : {}) } });
       r[v].archivos = fs.readdirSync(dir).sort().map((f) => f + '\n' + normaliza(leeSiHay(path.join(dir, f)), [dir])).join('\n---\n');
       r[v].dir = dir;
     }
@@ -317,6 +318,10 @@ try {
     ok(r.base.code === r.nuevo.code, `${nombre}: mismo código de salida (${r.nuevo.code})`, `antes ${r.base.code}, ahora ${r.nuevo.code}`);
     ok(normaliza(r.base.out, [r.base.dir]) === normaliza(r.nuevo.out, [r.nuevo.dir]), `${nombre}: misma salida en pantalla`, normaliza(r.nuevo.out, [r.nuevo.dir]).slice(0, 300));
     ok(r.base.archivos === r.nuevo.archivos, `${nombre}: mismos archivos escritos (catálogo y rechazados)`);
+    const lineasAud = leeSiHay(usoAud).trim().split('\n').filter((x) => x.startsWith('{')).length;
+    ok(JSON.stringify(r.base.pedidos) === JSON.stringify(r.registro.pedidos) && r.base.archivos === r.registro.archivos
+      && normaliza(r.base.out, [r.base.dir]) === normaliza(r.registro.out, [r.registro.dir]) && lineasAud === r.registro.pedidos.length,
+      `${nombre}: con el registro de uso encendido, lo mismo (y ${lineasAud} líneas, una por llamada)`);
   }
 
   // ── 2. gemelos-en.mjs ────────────────────────────────────────────────────────────────────────────────────
@@ -397,6 +402,20 @@ try {
     // orden de cuerpo (mismo conjunto exacto de peticiones); las respuestas dependen solo del cuerpo, no del orden.
     const enOrden = (xs) => xs.slice().sort((x, y) => (x.cuerpo < y.cuerpo ? -1 : x.cuerpo > y.cuerpo ? 1 : 0));
     comparaPedidos('todas las fases (mismo conjunto exacto)', enOrden(r.base.pedidos), enOrden(r.nuevo.pedidos));
+    {   // la de ahora con el registro de uso encendido (el SDK con registro): las mismas peticiones, una línea por llamada
+      const uso = path.join(T, 'uso-build.jsonl');
+      alResponder = null;
+      const rr = await corre(['build-contenido-nucleus.js'], { cwd: path.join(raices.nuevo, 'experiments/nucleus'), ms: 600000,
+        env: { SINGLE_MODE: 'true', UNIFIED_MODE: 'false', SINGLE_BOOK: libroUno, CATALOG_MODE: 'adulto', TRIGGUI_CRONO_ENABLED: 'true', TRIGGUI_IA_REGISTRO: uso } });
+      const lineas = leeSiHay(uso).trim().split('\n').filter((x) => x.startsWith('{')).map((x) => JSON.parse(x));
+      const iguales = JSON.stringify(enOrden(r.base.pedidos).map((x) => x.cuerpo)) === JSON.stringify(enOrden(rr.pedidos).map((x) => x.cuerpo));
+      const conOrigen = lineas.filter((x) => x.origen && !/ia\.cjs/.test(x.origen)).length;
+      ok(iguales && rr.code === r.base.code && lineas.length === rr.pedidos.length && conOrigen === lineas.length,
+        `con el registro de uso encendido: las mismas ${rr.pedidos.length} peticiones y ${lineas.length} líneas, todas con su origen`,
+        `iguales ${iguales}, código ${rr.code}, líneas ${lineas.length}, con origen ${conOrigen}`);
+      const origenes = [...new Set(lineas.map((x) => x.origen))];
+      console.log(`      orígenes: ${origenes.join(', ')}`);
+    }
     ok(r.base.code === r.nuevo.code, `mismo código de salida (${r.nuevo.code})`, `antes ${r.base.code}, ahora ${r.nuevo.code}\n      ${r.nuevo.out.slice(-400)}`);
     const sinIA = (t) => normaliza(t).split('\n').filter((l) => !l.startsWith('🧠 IA: proveedor')).join('\n');
     ok(igualOGuarda(sinIA(r.base.out), sinIA(r.nuevo.out), 'build salida'), 'misma salida en pantalla (fuera de la línea nueva «🧠 IA: proveedor…»)');
