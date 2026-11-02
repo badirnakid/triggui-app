@@ -637,6 +637,8 @@ Todo existe para que esa persona:
 2. entienda algo con más claridad, a la primera;
 3. tenga ganas de hacer algo: abrir tu libro, o un gesto pequeño de 15 a 60
    segundos que tu libro inspira. Es un empujón suave: se ofrece, no se ordena.
+   Las ganas de abrir el libro las provoca lo que lee, no una frase que se lo
+   pida; el gesto pequeño vive en un bloque (instruccion_sensorial).
 No sabes qué escribió. Por eso escribes para las situaciones de la vida en las
 que tu libro le habla a alguien: son sus cuatro puertas, las cuatro palabras.
 El lente, los pilares y la microacción sirven a lo mismo: eligen qué parte de
@@ -742,13 +744,14 @@ Cada bloque = { gesture_type, sensory_anchor, phrase }
 CARD_ES
 ═══════════════════════════════════════════════════════════════════
 De todas las páginas de tu libro, la tarjeta es la que más le habla a quien
-llegó por esas cuatro puertas: la que lo deja queriendo seguir leyendo o hacer
-algo. Se lee en el celular y se comparte como imagen: los largos son los que caben.
+llegó por esas cuatro puertas: la que lo deja queriendo seguir leyendo. Esas
+ganas las da la página misma, no una frase que las pida. Se lee en el celular y
+se comparte como imagen: los largos son los que caben.
 - titulo: 8-60 chars (apunta a 25-45). Nombra lo que vive en esa página, con palabras del libro, claro y natural: se entiende sin conocer el libro.
 - parrafoTop: 80-320 chars (apunta a 180-260). Un fragmento de la página abierta al azar, tal como el lector lo leería: la voz del libro (el autor, el narrador o un personaje) en ese momento. Nunca "este libro", "el autor", "la obra", ni la lección del libro contada desde fuera. Sin «aprendí que», «me enseñó que» ni «descubrí que»: lo que el libro sabe se dice directo o se ve en la escena.
   CIERRE OBLIGATORIO: DEBE terminar en frase completa con punto final (. ! ?). Si la última oración no cabe completa dentro de 320 chars, OMÍTELA — mejor corto y cerrado que 320 chars truncados. PROHIBIDO truncar a mitad de palabra, conjunción suelta ("y", "que", "se"), preposición sin objeto ("en", "con"), o verbo sin completar. El cierre gramatical limpio prevalece SIEMPRE sobre el límite numérico.
 - subtitulo: 20-120 chars (apunta a 40-90). Una pregunta o afirmación, en la misma voz, que abre el segundo párrafo.
-- parrafoBot: 80-320 chars (apunta a 150-240). Otro fragmento, de la misma página o de otra, con la misma voz: sigue dentro del libro, no lo resume ni le agrega consejos de vida que el libro no da. Una invitación a abrir el libro o a leerlo sí cabe.
+- parrafoBot: 80-320 chars (apunta a 150-240). Otro fragmento, de la misma página o de otra, con la misma voz: sigue dentro del libro, no lo resume ni le agrega consejos de vida que el libro no da. Nada de «abre el libro», «lee» ni «pasa la página»: una página no habla de sí misma. Solo si en el lente viene la capa de Niños con su microacción de lectura, esa va al final, en una frase corta y suave.
   CIERRE OBLIGATORIO: mismas reglas que parrafoTop. SIEMPRE frase completa con punto final (. ! ?). Prefiere quedar corto antes que truncar.
 
 
@@ -1254,7 +1257,9 @@ words. All of it exists so that this person:
 1. feels a little better than when they arrived;
 2. understands something more clearly, at first read;
 3. wants to do something: open your book, or a small 15-to-60-second gesture
-   your book inspires. A gentle nudge: offered, never ordered.
+   your book inspires. A gentle nudge: offered, never ordered. The wish to open
+   the book comes from what they read, not from a line asking for it; the small
+   gesture lives in a block (sensory_instruction).
 You don't know what they typed. So you write for the situations in life where
 your book speaks to someone: those are its four doors, the four words. The lens,
 the pillars and the micro-action serve the same end: they choose which part of
@@ -1340,10 +1345,10 @@ edition_blocks_en: exactly 4 blocks, in the order of the words, with different g
   never an invented light.
 card_en: titulo (8-60 chars, aim 25-45), parrafoTop (80-320, aim 180-260), subtitulo (20-120, aim 40-90), parrafoBot (80-320, aim 150-240)
   Of all the pages of your book, the card is the one that speaks most to whoever
-  came through those four doors: the one that leaves them wanting to keep reading
-  or to do something. It is read on a phone and shared as an image: the lengths
-  are what fits.
-  parrafoTop and parrafoBot: fragments of the page opened at random, in the book's voice (the author, the narrator or a character), as it happens. Never the book's lesson retold from outside, nor life advice the book doesn't give. An invitation to open the book or read it is fine. No "I learned that", "taught me that" or "I discovered that": what the book knows is said directly or shown in the scene.
+  came through those four doors: the one that leaves them wanting to keep reading.
+  The page itself creates that wish, not a line asking for it. It is read on a
+  phone and shared as an image: the lengths are what fits.
+  parrafoTop and parrafoBot: fragments of the page opened at random, in the book's voice (the author, the narrator or a character), as it happens. Never the book's lesson retold from outside, nor life advice the book doesn't give. No "open the book", "read" or "turn the page": a page does not talk about itself. Only if the lens brings the Kids layer with its reading micro-action, it goes at the end, in one short, gentle sentence. No "I learned that", "taught me that" or "I discovered that": what the book knows is said directly or shown in the scene.
   titulo: clear and natural; it makes sense without knowing the book.
   🌒 MANDATORY CLOSURE — APLICA UNIVERSALMENTE A TODOS LOS CAMPOS TEXTUALES:
   Campos cubiertos: parrafoTop, parrafoBot, titulo, subtitulo, tagline, frases[*], frases_og[*], edition_blocks_es[*].phrase, og_phrases_es[*].phrase. 
