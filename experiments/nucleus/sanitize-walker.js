@@ -5,12 +5,12 @@
  *   - Capa 2: extractors.js → safeJSONParse al recibir LLM response
  *   - Capa 3: build-contenido-nucleus.js → pre-writeFile del catálogo final
  *   - Capa 4: sanitize-catalog.mjs (CLI wrapper) → workflow auto-clean + manual
- *   - Capa 5: frontend lo replica en JS inline (__triggguiSanitizeAll)
+ *   - Capa 5: frontend lo replica en JS inline (__triggguiSanitizeAll; pases 1 a 3)
  *
  * FILOSOFÍA SELF-HEALING:
  *   Detectar + limpiar + reportar. NUNCA abortar pipeline.
  *
- * TRES PASES EN ORDEN QUIRÚRGICO (orden importa):
+ * CINCO PASES EN ORDEN QUIRÚRGICO (orden importa):
  *   1. ANSI escape sequences COMPLETAS (\u001b[...m) — preservar contexto
  *      antes de eliminar el \u001b suelto en pase 3.
  *   2. Bug \u001f<3 hex chars> → reparar a emoji.
@@ -18,6 +18,15 @@
  *      JSON.parse interpreta como U+001F + texto "440".
  *      Reparación matemática: parseInt("1f" + NNN, 16) = codepoint intentado.
  *   3. Otros control chars C0 (\u0000-\u001f) excepto \t \n \r — eliminar.
+ *   4. Cierre de JSON suelto al final (C278, banco 2 del 2 de noviembre de 2026): tras el
+ *      punto final, una comilla seguida de ] o } — «…hace siglos."]}» → «…hace siglos."».
+ *      El modelo cerró el JSON dentro del texto. Conservador: si la cadena trae cualquier
+ *      [ o { (fuera de las marcas [H] y [/H]), no se toca. La comilla la decide el pase 5.
+ *   5. Comilla suelta al final (C278, 2 de noviembre de 2026): un apóstrofo o una
+ *      comilla de cierre DESPUÉS del punto final, sin ninguna comilla que abra antes
+ *      en la misma cadena — «…importa.'» → «…importa.». Conservador: si la cadena
+ *      trae cualquier comilla que pueda abrir, no se toca. El apóstrofo dentro de
+ *      una palabra («it's») no abre nada.
  *
  * IDEMPOTENCIA GARANTIZADA: si el input ya está limpio, output === input
  * y stats están en 0. Re-ejecutar el mismo objeto no produce cambios.
@@ -51,8 +60,27 @@ export const PASSES = [
     name: 'control_chars',
     re: /[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g,
     repl: () => ''
+  },
+  {
+    name: 'cierre_json',
+    re: /([.!?…](?:\[\/H\])?['’"”»]+)([\]}]+)(\s*)$/g,
+    repl: (match, antes, _cierres, espacio, offset, cadena) =>
+      (/[[{]/.test(cadena.replace(/\[\/?H\]/g, '')) ? match : antes + espacio)
+  },
+  {
+    name: 'comilla_suelta',
+    re: /([.!?…](?:\[\/H\])?)(['’"”»]+)(\s*)$/g,
+    repl: (match, cierre, _comillas, espacio, offset, cadena) =>
+      (abreComilla(cadena.slice(0, offset)) ? match : cierre + espacio)
   }
 ];
+
+// ¿Hay antes alguna comilla que pueda abrir? Cualquier comilla doble o angular, o una
+// simple en posición de apertura (al inicio, tras espacio o tras signo de apertura,
+// paréntesis, guion, barra, ¿, ¡, dos puntos o punto y coma, seguida de texto).
+function abreComilla(texto) {
+  return /["“”«»‘„‹›]/.test(texto) || /(^|[\s(\[{«“—–\-\/¿¡:;])['’](?=\S)/.test(texto);
+}
 
 /**
  * Walker recursivo inmutable.
@@ -72,7 +100,7 @@ export function walk(obj, fn) {
 }
 
 /**
- * Sanitiza un string aplicando los 3 pases en orden.
+ * Sanitiza un string aplicando los 5 pases en orden.
  * @returns {{ clean: string, stats: object }} clean = string sanitizado,
  *   stats = { passName: count } solo con keys de pases que hicieron cambio.
  */
@@ -93,11 +121,11 @@ export function sanitizeString(s) {
  * Sanitiza un objeto/árbol JSON completo recursivamente.
  * @returns {{ clean: any, stats: object, modified: boolean }}
  *   clean = objeto nuevo sanitizado (sin mutar original)
- *   stats = totales agregados por pase: { ansi_sequences, emoji_bug_repair, control_chars }
+ *   stats = totales agregados por pase: { ansi_sequences, emoji_bug_repair, control_chars, cierre_json, comilla_suelta }
  *   modified = true si AL MENOS UN string fue modificado
  */
 export function sanitizeObject(obj) {
-  const agg = { ansi_sequences: 0, emoji_bug_repair: 0, control_chars: 0 };
+  const agg = { ansi_sequences: 0, emoji_bug_repair: 0, control_chars: 0, cierre_json: 0, comilla_suelta: 0 };
   let modified = false;
 
   const clean = walk(obj, (s) => {

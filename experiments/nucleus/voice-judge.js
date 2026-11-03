@@ -24,8 +24,8 @@ const JUDGE_PROMPT = `Eres el juez de voz de Triggui.
 
 Tu única pregunta: ¿este texto suena como RESEÑA o como PÁGINA DEL LIBRO?
 
-- PÁGINA: podría estar en el libro mismo, escrito por el autor en su voz
-- RESEÑA: alguien habla DEL libro, del autor, o de la obra desde afuera
+- PÁGINA: podría estar en el libro mismo, en la página que el lector abre al azar: el autor, el narrador o un personaje, en su voz
+- RESEÑA: alguien habla DEL libro, del autor, o de la obra desde afuera; o cuenta la historia o la lección del libro como resumen, aunque sea en primera persona («X me enseñó que…», «aprendí que…» como moraleja)
 
 Señales típicas de reseña: "este libro", "el autor propone", "a través de esta obra", "nos invita a", "reflexiona sobre", "trata de", "muestra cómo", menciones meta del título o autor dentro del texto.
 
@@ -70,7 +70,7 @@ async function judgeOne(openai, card, book, model) {
 }
 
 export async function judgeBothVoices(openai, cardES, cardEN, book, options = {}) {
-  const model = options.model || "gpt-4o-mini";
+  const model = options.model || "mini";   // papel de ia/config.json (C278)
   const [es, en] = await Promise.all([
     judgeOne(openai, cardES, book, model),
     judgeOne(openai, cardEN, book, model)

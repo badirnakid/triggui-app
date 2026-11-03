@@ -57,6 +57,7 @@ Quien la lee siente que está leyendo metadata, no contenido.
 
 PRINCIPIO ÚNICO QUE APLICAS:
 ¿Esta frase está EN el libro o HABLA SOBRE el libro?
+Contar la lección del libro como moraleja, aunque sea en primera persona, también es hablar sobre el libro.
 
 NO uses listas de palabras prohibidas.
 NO te bases en patrones léxicos específicos.
@@ -68,7 +69,7 @@ En "reason" explica brevemente POR QUÉ es dentro o fuera, aplicando el principi
 
 export async function judgeOnePhraseVoice(openai, phrase, language, options = {}) {
   const schemas = await loadSchemas();
-  const model = options.model || "gpt-4o-mini";
+  const model = options.model || "mini";   // papel de ia/config.json (C278)
   const temperature = options.temperature ?? 0.1; // Consistencia, no creatividad
 
   const userPrompt = `Idioma de la frase: ${language === "en" ? "English" : "Español"}
@@ -106,7 +107,7 @@ Frase a evaluar:
 ────────────────────────────────────────────────────────────────────────────── */
 
 export async function judgeAllVoiceLayers(openai, contentES, contentEN, book, options = {}) {
-  const model = options.model || "gpt-4o-mini";
+  const model = options.model || "mini";   // papel de ia/config.json (C278)
 
   // Construcción de todos los jobs paralelos
   const jobs = [];
@@ -211,19 +212,20 @@ export async function judgeAllVoiceLayers(openai, contentES, contentEN, book, op
 
 /* ─────────────────────────────────────────────────────────────────────────────
    regeneratePhrasesByFeedback
-   Para cada failure, pedir al LLM (encarnado como autor) que reescriba la phrase
+   Para cada failure, pedir al LLM (como la voz del libro) que reescriba la phrase
    con feedback específico del judge. Mutación IN-PLACE de contentES/contentEN.
 
    Después llamar judgeAllVoiceLayers de nuevo para confirmar que ahora pasen.
    Devuelve { regenerated: int, still_failing: int, total_tokens }.
 ────────────────────────────────────────────────────────────────────────────── */
 
-const SYSTEM_PROMPT_REGENERATE = `🌒 ROLE INVERSION (Sprint Nivel Dios)
+const SYSTEM_PROMPT_REGENERATE = `🌒 LA PÁGINA ABIERTA AL AZAR (Sprint Nivel Dios)
 
-Eres el autor del libro asignado. La frase que escribiste sonó a voz FUERA del libro
-(contraportada, sinopsis, anuncio, descripción) en lugar de voz DENTRO del libro.
+Eres la voz del libro asignado: su autor y, cuando el libro lo pide, su narrador o uno de
+sus personajes. La frase que escribiste sonó a voz FUERA del libro (contraportada, sinopsis,
+anuncio, descripción, o la lección del libro contada como moraleja) en lugar de la página misma.
 
-Tu trabajo: reescribir esa frase como autor escribiendo dentro de tu obra.
+Tu trabajo: reescribir esa frase como la leería quien abre el libro en una página al azar.
 
 NO describas tu libro. NO lo cuantifiques ("X píldoras"). NO lo vendas. NO uses voz
 de crítico ni de editor.
@@ -232,15 +234,19 @@ Escribe contenido del libro, no metadata sobre el libro.
 
 Mantén:
 - Mismo idioma que la frase original
-- Misma longitud aproximada (±20%)
+- Misma longitud aproximada (±20%), y siempre dentro de su largo: de 40 a 100 caracteres
+  en un bloque, de 30 a 70 en una frase OG
 - Mismo terminador (.,?,!) si aplica
 - Mismo gesture_type si la frase pertenece a edition_blocks (instruccion_sensorial,
   pregunta_directa, imagen_concreta, aforismo_autorial)
+- Si es un bloque, su palabra: la frase abre la palabra que se ve antes de tocar el bloque
+- Que se entienda a la primera: palabras de todos los días y frases cortas (unas 12
+  palabras, ninguna de más de 20)
 
 Devuelve SOLO el texto de la frase reescrita, sin comillas, sin explicación, sin newlines.`;
 
 export async function regeneratePhrasesByFeedback(openai, anchorsData, failures, contentES, contentEN, options = {}) {
-  const model = options.model || "gpt-4o-mini";
+  const model = options.model || "mini";   // papel de ia/config.json (C278)
   const temperature = options.temperature ?? 0.7;
   let total_tokens = 0;
   let regenerated = 0;
@@ -258,8 +264,12 @@ export async function regeneratePhrasesByFeedback(openai, anchorsData, failures,
       ? (id.titulo_en || id.titulo_es || "")
       : (id.titulo_es || id.titulo_en || "");
 
+    // C278: la palabra del bloque (lo que se ve antes de tocarlo); la frase nueva tiene que abrirla
+    const palabra = f.field === "edition_blocks_es" ? contentES?.emotional_words_es?.[f.index]
+      : f.field === "edition_blocks_en" ? contentEN?.emotional_words_en?.[f.index] : null;
     const userPrompt = `IDENTIDAD DE ESTA SESIÓN:
-Eres ${author}, el autor que escribió "${titleForLang}".
+Libro: "${titleForLang}" · Autor: ${author}
+Eres la voz de ese libro: su autor y, cuando el libro lo pide, su narrador o uno de sus personajes.
 
 GROUND TRUTH centrales (anchors):
 ${(anchorsData?.book_grounding_anchors?.concepts || []).map(c => `- ${c}`).join("\n")}
@@ -274,10 +284,11 @@ RAZÓN del reviewer:
 ${f.reason}
 
 CAMPO: ${f.field}${f.field.startsWith("edition_blocks") ? " (bloque " + f.index + ")" : ""}
-IDIOMA: ${f.lang === "en" ? "English" : "Español"}
+IDIOMA: ${f.lang === "en" ? "English" : "Español"}${palabra ? `
+PALABRA DE ESTE BLOQUE (lo que se ve antes de tocarlo): «${palabra}». La frase nueva abre esa palabra; no hace falta repetirla.` : ""}
 
 ═══════════════════════════════════════════════════════════════════
-Reescribe la frase como autor escribiendo dentro de tu obra.
+Reescribe la frase como la leería quien abre el libro en una página al azar.
 
 🌐 IDIOMA OBLIGATORIO (REGLA SUPREMA): tu respuesta DEBE estar 100% en ${f.lang === "en" ? "INGLÉS" : "ESPAÑOL"}. Todo lo de arriba (identidad, anchors, voz) puede venir en OTRO idioma — úsalo SOLO para las IDEAS, JAMÁS para el idioma. PROHIBIDO mezclar idiomas dentro de la frase.
 Devuelve SOLO la frase reescrita.`;
@@ -299,6 +310,14 @@ Devuelve SOLO la frase reescrita.`;
         .trim();
 
       if (!newPhrase) continue;
+
+      // C278: una frase nueva fuera de su largo no entra (la anterior se queda y el juez la vuelve a ver).
+      // Bloque: 40 a 100. OG: 30 a 70, el mismo máximo del esquema, del prompt y de largos.js.
+      const [minLargo, maxLargo] = f.field.startsWith("edition_blocks") ? [40, 100] : [30, 70];
+      if (newPhrase.length < minLargo || newPhrase.length > maxLargo) {
+        console.log(`   📏 regeneratePhrase ${f.field}[${f.index}]: la nueva mide ${newPhrase.length} (de ${minLargo} a ${maxLargo}); se queda la anterior`);
+        continue;
+      }
 
       // Mutación IN-PLACE
       if (f.field === "og_phrases_es" && Array.isArray(contentES.og_phrases_es)) {

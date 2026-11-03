@@ -51,11 +51,13 @@ import path from "node:path";
 import { randomInt, createHash } from "node:crypto";
 import { parse } from "csv-parse/sync";
 import OpenAI from "openai";
+import IA from "../../ia/ia.cjs";   // 🧠 C278: un solo lugar para la IA (ia/config.json)
 // v3.7 Capa 3: walker puro de sanitización (única fuente de verdad)
 import { sanitizeObject, formatStats } from "./sanitize-walker.js";
 // 🌒 detector de truncamiento puro (única fuente de verdad — reglas v4.3 reubicadas).
 // Solo DETECTA; nunca muta ni aborta. Usado por C5 (collectTruncations) y el riel de C4.5.
 import { detectTruncation } from "./detect-truncation.js";
+import { ajustaLargos } from "./largos.js";   // C278: que los párrafos quepan en la tarjeta que se comparte
 
 import { resolveGrounding } from "./grounding-resolver.js";
 import {
@@ -114,7 +116,7 @@ async function assignEditionFromCounter(targetPath, newBook) {
 import { judgeBothVoices } from "./voice-judge.js";
 // 🌒 SPRINT NIVEL DIOS — Capa A Pilar 2 (Voice-Judge Universal) + Capa B (CSAL)
 import { judgeAllVoiceLayers, regeneratePhrasesByFeedback } from "./voice-judge-universal.js";
-import { extractCSAL } from "./csal-extractor.js";
+import { extractCSAL, agregaPuertasCSAL } from "./csal-extractor.js";
 import { validateFinalNucleus } from "./quality-validator.js";
 import { generateFallbackCover } from "./typographic-cover.js";
 import { selectBestCover, checkImageURL, fetchEvidence } from "./evidence-fetcher.js";
@@ -127,9 +129,10 @@ import {
   deriveChronobiologyOptimal
 } from "./lens-compatibility-scorer.js";
 
+// 🧠 C278: el proveedor y los modelos viven en ia/config.json. Con openai, el mismo SDK de siempre; con claude, la Messages API.
+if (!IA.hayLlave()) { console.log(`🔕 Sin ${IA.nombreLlave()} (proveedor ${IA.proveedor()})`); process.exit(0); }
 const KEY = process.env.OPENAI_KEY;
-if (!KEY) { console.log("🔕 Sin OPENAI_KEY"); process.exit(0); }
-const openai = new OpenAI({ apiKey: KEY });
+const openai = IA.crearCliente({ sdk: KEY ? new OpenAI({ apiKey: KEY }) : null });
 
 // ═══════════════════════════════════════════════════════════════════════
 // 🌒 CATALOG_MODE — soporte multi-catálogo Triggui Kids
@@ -145,8 +148,10 @@ console.log(IS_KIDS
   : "🌒 CATALOG_MODE=adulto — Triggui (default)");
 
 const CFG = {
-  modelMini: process.env.TRIGGUI_MODEL || "gpt-4o-mini",
-  modelBig: process.env.TRIGGUI_MODEL_BIG || "gpt-4o",
+  modelMini: process.env.TRIGGUI_MODEL || "mini",     // papel de ia/config.json (hoy gpt-4o-mini con openai)
+  modelBig: process.env.TRIGGUI_MODEL_BIG || "grande", // papel de ia/config.json (hoy gpt-4o con openai)
+  // La tarjeta y sus frases (ES y EN): con openai, el mismo gpt-4o-mini; con Claude, Haiku que piensa antes de escribir.
+  modelEscritor: process.env.TRIGGUI_MODEL_ESCRITOR || process.env.TRIGGUI_MODEL || "escritor",
   temperature: Number(process.env.TRIGGUI_TEMP || 0.7),
   catalogMode: CATALOG_MODE,
   files: {
@@ -164,6 +169,7 @@ const CFG = {
   cronoEnabled: process.env.TRIGGUI_CRONO_ENABLED !== "false",
   groundingJudgeMinScore: Number(process.env.TRIGGUI_JUDGE_MIN || 0.55)
 };
+console.log(`🧠 IA: proveedor ${IA.proveedor()} · mini=${IA.etiqueta(CFG.modelMini)} · grande=${IA.etiqueta(CFG.modelBig)} · escritor=${IA.etiqueta(CFG.modelEscritor)}`);
 
 // ⭐ STEP 3 ⭐ — INPUTS.lens ahora se rellena async en main() via composeLensSystemBlock
 const INPUTS = {
@@ -278,6 +284,37 @@ async function retryOnce(fn, label) {
    Helpers observatorios: registran issues, no fuerzan retry al LLM.
 ═══════════════════════════════════════════════════════════════════════════════ */
 
+// C278: con Claude el esquema no impone «exactamente 4». Si llegan más de 4 frases OG y los 4 roles están, se
+// queda la primera de cada rol, en su orden. Los bloques NO se recortan: cada uno va con la palabra de su misma
+// posición, así que si no son 4, validateSinfonia falla y no se publica (segunda pasada de C300).
+function ajustaSinfonia(contentXX, lang) {
+  const rolKey = lang === 'en' ? 'role_symphonic' : 'rol_sinfonico';
+  const recortados = [];
+  for (const k of ['og_phrases_' + lang]) {
+    const xs = contentXX && contentXX[k];
+    if (!Array.isArray(xs) || xs.length <= 4 || !xs.every((b) => b && typeof b === 'object')) continue;
+    const vistos = new Set();
+    const quedan = xs.filter((b) => b[rolKey] && !vistos.has(b[rolKey]) && vistos.add(b[rolKey]));
+    if (quedan.length === 4) { recortados.push(`${k} ${xs.length}→4`); contentXX[k] = quedan; }
+  }
+  return recortados;
+}
+
+// C278: en Niños, la tarjeta cierra el párrafo 2 con una microacción de lectura (capa de Niños). Si no la trae, se avisa.
+// Cuenta leer en cualquier forma («Léele», «léelos», «Léeselo», «lean»), en voz alta, o el libro, el cuento y sus partes. «Abre» y
+// «open» solos no cuentan, porque «Abre tu corazón» no es leer: cuentan con el libro o con «lo» («Ábrelo», «open it»).
+function avisaLecturaNinos(contentXX, lang) {
+  const card = contentXX && contentXX['card_' + lang];
+  const bot = String((card && card.parrafoBot) || '').replace(/\[\/?[Hh]\]/g, '').trim();
+  const ultima = (bot.match(/[^.!?…]+[.!?…]*\s*$/) || [''])[0];
+  const llano = ultima.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
+  const re = lang === 'en'
+    ? /\b(?:read|reads|reading|aloud|books?|pages?|chapters?|paragraphs?|first line|open(?:s|ing)? (?:it|them))\b/
+    : /\b(?:le(?:e|es|a|as|an|en|ed|er|amos|emos|yendo|ido|ida|idos|idas)(?:se)?(?:lo|la|los|las|le|les)?|abr(?:e|a|an|id|ir|amos|iendo)(?:se)?(?:lo|la|los|las)|en voz alta|libros?|cuentos?|paginas?|capitulos?|parrafos?|primera linea)\b/;
+  if (!re.test(llano)) console.warn(`   📖 Niños ${lang.toUpperCase()}: el párrafo 2 no cierra con su microacción de lectura (${ultima.slice(0, 80)})`);
+  else console.log(`   📖 Niños ${lang.toUpperCase()}: microacción de lectura al final del párrafo 2`);
+}
+
 function validateSinfonia(contentXX, lang) {
   const issues = [];
   const ebKey = 'edition_blocks_' + lang;
@@ -293,6 +330,8 @@ function validateSinfonia(contentXX, lang) {
     if (unique.size < 4) {
       issues.push(`${ebKey} cobertura ${unique.size}/4 (${[...unique].join(',')})`);
     }
+    if (eb.length !== 4) issues.push(`${ebKey} trae ${eb.length} piezas y se piden 4`);
+    if (!eb.every(b => b && typeof b.phrase === 'string' && b.phrase.trim())) issues.push(`${ebKey} trae una frase vacía`);
     for (const b of eb) {
       const v = b && b[animoKey];
       if (typeof v !== 'number' || v < 0 || v > 1) {
@@ -319,10 +358,18 @@ function validateSinfonia(contentXX, lang) {
         if (unique.size < 4) {
           issues.push(`${ogKey} cobertura ${unique.size}/4 (${[...unique].join(',') || 'sin roles'})`);
         }
+        if (og.length !== 4) issues.push(`${ogKey} trae ${og.length} piezas y se piden 4`);
       } else {
         issues.push(`${ogKey} mezcla strings y objetos — formato inconsistente`);
       }
     }
+  }
+
+  // ─── emotional_words_{lang}: las cuatro puertas, una por bloque y en su misma posición (C278) ───
+  const ws = contentXX && contentXX['emotional_words_' + lang];
+  const conTexto = Array.isArray(ws) ? ws.filter(w => typeof w === 'string' && w.trim()).length : 0;
+  if (!Array.isArray(ws) || ws.length !== 4 || conTexto !== 4) {
+    issues.push(`emotional_words_${lang}: se piden 4 palabras con texto y llegaron ${conTexto}${Array.isArray(ws) && ws.length !== conTexto ? ` de ${ws.length}` : ''}`);
   }
 
   return { ok: issues.length === 0, issues };
@@ -452,7 +499,7 @@ async function processBook(book, inputs, inputsSnapshot) {
   );
   elapsedByPhase.anchors = Date.now() - tF1;
   tokensByPhase.anchors = anchorsRes.usage?.total_tokens || 0;
-  modelsUsed.add(anchorsRes.model || CFG.modelMini);
+  modelsUsed.add(IA.etiqueta(anchorsRes.model || CFG.modelMini));
   llmCallsCount += 1;
   const anchorsData = anchorsRes.data;
   assertShape(anchorsData, [
@@ -682,12 +729,12 @@ async function processBook(book, inputs, inputsSnapshot) {
   // ═══ F3: CONTENIDO ES ═══════════════════════════════════════════════
   const tF3 = Date.now();
   let contentESRes = await retryOnce(
-    () => extractContentES(openai, book, groundTruthMeta.ground_truth, anchorsData, inputs.lens, { model: CFG.modelMini, temperature: 0.7, crono }),
+    () => extractContentES(openai, book, groundTruthMeta.ground_truth, anchorsData, inputs.lens, { model: CFG.modelEscritor, temperature: 0.7, crono, kids: IS_KIDS }),
     "extractContentES"
   );
   elapsedByPhase.content_es = Date.now() - tF3;
   tokensByPhase.content_es = contentESRes.usage?.total_tokens || 0;
-  modelsUsed.add(contentESRes.model || CFG.modelMini);
+  modelsUsed.add(IA.etiqueta(contentESRes.model || CFG.modelEscritor));
   llmCallsCount += 1;
   const contentES = contentESRes.data;
   assertShape(contentES, [
@@ -703,7 +750,7 @@ async function processBook(book, inputs, inputsSnapshot) {
   );
   elapsedByPhase.judge_es = Date.now() - tF4;
   tokensByPhase.judge_es = judgeESRes.usage?.total_tokens || 0;
-  modelsUsed.add(judgeESRes.model || CFG.modelMini);
+  modelsUsed.add(IA.etiqueta(judgeESRes.model || CFG.modelMini));
   llmCallsCount += (judgeESRes.attempts || 1);
   let judgeES = judgeESRes.data;
   assertShape(judgeES, ["grounded_score", "could_apply_to_any_book", "reason"], "judgeGroundingES");
@@ -718,7 +765,7 @@ async function processBook(book, inputs, inputsSnapshot) {
     console.log(`   🔁 Re-extract ES (score ${fmt(judgeES.grounded_score)} < ${CFG.groundingJudgeMinScore})`);
     const tR3 = Date.now();
     contentESRes = await retryOnce(
-      () => extractContentES(openai, book, groundTruthMeta.ground_truth, anchorsData, inputs.lens, { model: CFG.modelMini, temperature: 0.4, crono }),
+      () => extractContentES(openai, book, groundTruthMeta.ground_truth, anchorsData, inputs.lens, { model: CFG.modelEscritor, temperature: 0.4, crono, kids: IS_KIDS }),
       "extractContentES_retry"
     );
     elapsedByPhase.content_es_retry = Date.now() - tR3;
@@ -736,13 +783,13 @@ async function processBook(book, inputs, inputsSnapshot) {
     console.log(`   👨‍⚖️ Judge ES retry: score=${fmt(judgeES.grounded_score)}`);
 
     if (judgeES.grounded_score < CFG.groundingJudgeMinScore) {
-      console.log(`   🚀 Escalar ES a ${CFG.modelBig}`);
+      console.log(`   🚀 Escalar ES a ${IA.etiqueta(CFG.modelBig)}`);
       contentESRes = await retryOnce(
-        () => extractContentES(openai, book, groundTruthMeta.ground_truth, anchorsData, inputs.lens, { model: CFG.modelBig, temperature: 0.5, crono }),
+        () => extractContentES(openai, book, groundTruthMeta.ground_truth, anchorsData, inputs.lens, { model: CFG.modelBig, temperature: 0.5, crono, kids: IS_KIDS }),
         "extractContentES_escalate"
       );
       tokensByPhase.content_es_escalate = contentESRes.usage?.total_tokens || 0;
-      modelsUsed.add(CFG.modelBig);
+      modelsUsed.add(IA.etiqueta(CFG.modelBig));
       llmCallsCount += 1;
     }
   }
@@ -752,22 +799,34 @@ async function processBook(book, inputs, inputsSnapshot) {
     "card_es.titulo", "card_es.parrafoTop", "card_es.subtitulo", "card_es.parrafoBot",
     "emotional_words_es", "og_phrases_es", "edition_blocks_es"
   ], "extractContentES_final");
+  if (IS_KIDS) avisaLecturaNinos(contentESFinal, "es");
+  const largosES = ajustaLargos(contentESFinal, "es");
+  if (largosES.cambios.length) console.log(`   📏 Largos ES: ${largosES.cambios.join(", ")} (hasta la última oración que cabe)`);
+  if (largosES.avisos.length) console.warn(`   📏 Largos ES fuera de rango: ${largosES.avisos.join(", ")}`);
 
   // ═══ F5: CONTENIDO EN ═══════════════════════════════════════════════
   const tF5 = Date.now();
   let contentENRes = await retryOnce(
-    () => extractContentEN(openai, book, groundTruthMeta.ground_truth, anchorsData, contentESFinal.card_es, inputs.lens, { model: CFG.modelMini, temperature: 0.7 }),
+    () => extractContentEN(openai, book, groundTruthMeta.ground_truth, anchorsData, contentESFinal.card_es, inputs.lens, {
+      model: CFG.modelEscritor, temperature: 0.7, kids: IS_KIDS,
+      // C278: las cuatro puertas en español y sus frases, para que el inglés abra las mismas, en el mismo orden
+      referenciaES: { palabras: contentESFinal.emotional_words_es, frases: (contentESFinal.edition_blocks_es || []).map((b) => b && b.phrase) }
+    }),
     "extractContentEN"
   );
   elapsedByPhase.content_en = Date.now() - tF5;
   tokensByPhase.content_en = contentENRes.usage?.total_tokens || 0;
-  modelsUsed.add(contentENRes.model || CFG.modelMini);
+  modelsUsed.add(IA.etiqueta(contentENRes.model || CFG.modelEscritor));
   llmCallsCount += 1;
   const contentENFinalRaw = contentENRes.data;
   assertShape(contentENFinalRaw, [
     "card_en.titulo", "card_en.parrafoTop", "card_en.subtitulo", "card_en.parrafoBot",
     "emotional_words_en", "og_phrases_en", "edition_blocks_en"
   ], "extractContentEN");
+  if (IS_KIDS) avisaLecturaNinos(contentENFinalRaw, "en");
+  const largosEN = ajustaLargos(contentENFinalRaw, "en");
+  if (largosEN.cambios.length) console.log(`   📏 Largos EN: ${largosEN.cambios.join(", ")} (hasta la última oración que cabe)`);
+  if (largosEN.avisos.length) console.warn(`   📏 Largos EN fuera de rango: ${largosEN.avisos.join(", ")}`);
 
   // ═══ F6: GROUNDING JUDGE EN ═════════════════════════════════════════
   const tF6 = Date.now();
@@ -817,7 +876,7 @@ async function processBook(book, inputs, inputsSnapshot) {
   //   - 4 og_phrases_es + 4 og_phrases_en
   //   - 4 edition_blocks_es + 4 edition_blocks_en
   // Si alguna sale "fuera" (suena a contraportada), regeneramos in-place
-  // como autor encarnado y re-validamos.
+  // desde dentro de la página y re-validamos.
   // Costo: ~$0.0036 + ~$0.0008 si hay 1-2 retries = ~$0.004 por libro.
   // Latencia: ~1 segundo (Promise.all paralelo).
   let voiceJudgeExtendedDegraded = false;
@@ -871,6 +930,8 @@ async function processBook(book, inputs, inputsSnapshot) {
   // ═══ F8: POST-PROCESADORES DETERMINISTAS ════════════════════════════
   const tF8 = Date.now();
   // ═══ C3: VALIDACIÓN SINFÓNICA + ANTI-BRACKET (v12) ════════════════════════
+  const recorteSinfonia = [...ajustaSinfonia(contentESFinal, 'es'), ...ajustaSinfonia(contentENFinal, 'en')];
+  if (recorteSinfonia.length) console.log(`   🎼 Sinfonía: más de 4 piezas, se queda una por rol (${recorteSinfonia.join(', ')})`);
   const sinfoniaES = validateSinfonia(contentESFinal, 'es');
   const sinfoniaEN = validateSinfonia(contentENFinal, 'en');
   const bracketsES = detectSpuriousBrackets(contentESFinal, 'es');
@@ -884,7 +945,7 @@ async function processBook(book, inputs, inputsSnapshot) {
     if (!sinfoniaEN.ok) errores.push('EN: ' + sinfoniaEN.issues.join('; '));
     console.error(`   🚨 SINFONÍA INCOMPLETA — nivel dios requiere 4/4 EXACTO:`);
     errores.forEach(e => console.error('      ' + e));
-    throw new Error('Sinfonía incompleta — cobertura <4/4 roles: ' + errores.join(' | '));
+    throw new Error('Sinfonía incompleta — se piden 4 palabras y 4 piezas con 4 roles: ' + errores.join(' | '));
   }
   if (bracketsES.length > 0 || bracketsEN.length > 0) {
     console.warn(`   🛡️  Brackets espurios: ES=${bracketsES.length}, EN=${bracketsEN.length} (capa 5 frontend saneará)`);
@@ -1061,7 +1122,8 @@ async function processBook(book, inputs, inputsSnapshot) {
         book,
         groundTruthMeta.ground_truth,
         anchorsData,
-        contentESFinal,
+        // C278: con las palabras de los bloques en inglés, para que el CSAL las tome como puertas en los dos idiomas
+        { ...contentESFinal, emotional_words_en: contentENFinal && contentENFinal.emotional_words_en },
         {
           model: CFG.modelMini,
           previousSituations: __batchSituationsSnapshot
@@ -1071,6 +1133,9 @@ async function processBook(book, inputs, inputsSnapshot) {
     );
 
     mapped._csal = csalRes.data;
+    // C278: las cuatro palabras de los bloques, siempre dentro de las palabras clave del CSAL (en los dos idiomas)
+    const puertasSumadas = agregaPuertasCSAL(mapped._csal, [...(contentESFinal.emotional_words_es || []), ...((contentENFinal && contentENFinal.emotional_words_en) || [])]);
+    if (puertasSumadas.length) console.log(`   🚪 CSAL: ${puertasSumadas.length} palabra(s) de los bloques sumadas a sus palabras clave (${puertasSumadas.join(", ")})`);
     elapsedByPhase.csal = Date.now() - tF11;
     tokensByPhase.csal = csalRes.usage?.total_tokens || 0;
     llmCallsCount += 1;
@@ -1513,7 +1578,7 @@ Responde JSON:
     " chars con TODO el contexto previo preservado." + groundingBlock;
 
   const res = await openaiClient.chat.completions.create({
-    model: "gpt-4o-mini",
+    model: "mini",
     temperature: 0,
     max_tokens: 400,
     response_format: { type: "json_object" },

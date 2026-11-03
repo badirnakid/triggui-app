@@ -1,19 +1,17 @@
 // gemelos-en.mjs — siembra authorial_voice_notes_en y pie_en (video) en contenido+manual
 // Todo-o-nada por archivo: si una traducción falla tras reintento, NO se escribe nada.
 import fs from "node:fs/promises";
-const KEY = process.env.OPENAI_KEY;
-if (!KEY) { console.error("Sin OPENAI_KEY"); process.exit(1); }
+import IA from "../ia/ia.cjs";   // C278: un solo lugar para la IA (proveedor, papel y llave)
+if (!IA.hayLlave()) { console.error(IA.proveedor() === "claude" ? "Sin ANTHROPIC_API_KEY" : "Sin OPENAI_KEY"); process.exit(1); }
 async function traducirLote(textos) {
-  const body = { model: "gpt-4o-mini", temperature: 0.2, response_format: { type: "json_object" },
+  const body = { model: "mini", temperature: 0.2, response_format: { type: "json_object" },
     messages: [
       { role: "system", content: "Traduce fielmente al ingles cada texto (son notas editoriales internas y pies de video). Conserva tono y sentido exactos. Responde SOLO JSON: {\"t\":[...traducciones en el mismo orden...]}" },
       { role: "user", content: JSON.stringify({ textos }) }
     ] };
   for (let intento = 0; intento < 2; intento++) {
     try {
-      const r = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST", headers: { "Authorization": "Bearer " + KEY, "Content-Type": "application/json" },
-        body: JSON.stringify(body) });
+      const r = await IA.chatCompat(body);   // C278: misma petición con openai; con claude, la Messages API
       const j = await r.json();
       const out = JSON.parse(j.choices[0].message.content).t;
       if (Array.isArray(out) && out.length === textos.length && out.every(x => typeof x === "string" && x.trim())) return out;

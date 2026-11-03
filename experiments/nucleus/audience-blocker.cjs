@@ -7,11 +7,21 @@
  * principal, los rechazados van a contenido_rejected.json con metadata
  * forense. NADA se destruye — los rechazados son recuperables.
  *
- * Costo: ~$0.0002 por libro auditado. Sagrado: GPT-4o-mini.
+ * Costo: ~$0.0002 por libro auditado. Modelo: el papel "mini" de ia/config.json (C278; hoy GPT-4o-mini).
  *
  * Exit codes:
- *   0 → siempre (excepto error técnico). Workflow continúa.
- *   1 → error técnico (catálogo inválido, OpenAI key faltante, etc.)
+ *   0 → el lote quedó auditado (o, con adultos, error técnico). Workflow continúa.
+ *   1 → error técnico (catálogo inválido, llave de la IA faltante, etc.) o, en Niños, algún libro sin veredicto.
+ *
+ * v2.1 (C278, 2 de noviembre de 2026) — en Niños, ningún libro pasa sin veredicto:
+ *   - si el juez no responde, se niega (refusal o content_filter), se corta, devuelve JSON inválido o sin
+ *     «matches» booleano, o una confianza fuera de 0 a 1, la corrida se detiene con exit 1 SIN TOCAR el
+ *     catálogo: el libro nuevo no se publica y los ya publicados que revisa el lote quedan como estaban (en 🎲
+ *     el lote es el de la corrida, 20 si no se dice; en los demás modos, un libro). Mandarlos a cuarentena despublicaría libros buenos por una caída
+ *     de la API (segunda pasada de C300). Un error inesperado en Niños también detiene la corrida.
+ *   - Con adultos queda como antes (pasa como degradado), porque ahí el riesgo es al revés.
+ *   - los rechazos del modelo se cuentan aparte en el log.
+ *   El rechazo es más probable justo con el contenido que este juez existe para frenar (revisión de C300).
  *
  * Cambios v2.0 vs v1.2:
  *   - Audita BATCH_SIZE libros en vez de solo libros[0]
@@ -24,24 +34,24 @@
  *   TARGET_AUDIENCE=kids \
  *   CATALOG_PATH=triggui-content/contenido_kids.json \
  *   BATCH_SIZE=20 \
- *   OPENAI_API_KEY=sk-... \
+ *   OPENAI_API_KEY=… (o ANTHROPIC_API_KEY=… con TRIGGUI_IA_PROVEEDOR=claude) \
  *   node audience-blocker.cjs
  */
 "use strict";
 
 const fs = require("node:fs");
 const path = require("node:path");
+const IA = require("../../ia/ia.cjs");   // C278: un solo lugar para la IA (proveedor, papel y llave)
 
-const VERSION = "2.0";
+const VERSION = "2.1";
 const TARGET = String(process.env.TARGET_AUDIENCE || "adult").trim().toLowerCase();
 const CATALOG_PATH = process.env.CATALOG_PATH;
-const OPENAI_KEY = process.env.OPENAI_API_KEY;
 const BATCH_SIZE = Math.max(1, parseInt(process.env.BATCH_SIZE || "1", 10));
 const CONFIDENCE_THRESHOLD = 0.6;
-const MODEL = "gpt-4o-mini";
+const MODEL = "mini";   // papel de ia/config.json (C278)
 
 if (!CATALOG_PATH) { console.error("❌ AUDIENCE_BLOCKER: falta CATALOG_PATH"); process.exit(1); }
-if (!OPENAI_KEY)   { console.error("❌ AUDIENCE_BLOCKER: falta OPENAI_API_KEY"); process.exit(1); }
+if (!IA.hayLlave()) { console.error(`❌ AUDIENCE_BLOCKER: falta ${IA.proveedor() === "claude" ? "ANTHROPIC_API_KEY" : "OPENAI_API_KEY"}`); process.exit(1); }
 if (!["kids","adult"].includes(TARGET)) {
   console.error(`❌ AUDIENCE_BLOCKER: TARGET_AUDIENCE inválido: ${TARGET}`);
   process.exit(1);
@@ -170,31 +180,39 @@ async function auditOne(libro) {
   const user = buildUserPrompt(titulo, autor, sinopsis, TARGET);
 
   try {
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${OPENAI_KEY}` },
-      body: JSON.stringify({
-        model: MODEL,
-        temperature: 0,
-        response_format: { type: "json_object" },
-        max_tokens: 150,
-        messages: [
-          { role: "system", content: SYSTEM },
-          { role: "user", content: user }
-        ]
-      })
+    const res = await IA.chatCompat({   // C278: misma petición con openai; con claude, la Messages API
+      model: MODEL,
+      temperature: 0,
+      response_format: { type: "json_object" },
+      max_tokens: 150,
+      messages: [
+        { role: "system", content: SYSTEM },
+        { role: "user", content: user }
+      ]
     });
     if (!res.ok) {
       const t = await res.text();
       return { titulo, autor, pass: true, degraded: true,
-        reason: `OpenAI ${res.status}: ${t.slice(0,100)}`, confidence: null, detected_audience: "unknown" };
+        reason: `${IA.nombreProveedor()} ${res.status}: ${t.slice(0,100)}`, confidence: null, detected_audience: "unknown" };
     }
     const data = await res.json();
-    const raw = data.choices?.[0]?.message?.content || "{}";
+    const eleccion = data.choices?.[0] || {};
+    if (eleccion.finish_reason === "content_filter" || eleccion.message?.refusal) {
+      return { titulo, autor, pass: true, degraded: true, refusal: true,
+        reason: "el modelo se negó a clasificar el libro", confidence: null, detected_audience: "unknown" };
+    }
+    const raw = eleccion.message?.content || "{}";
     let parsed;
     try { parsed = JSON.parse(raw); } catch {
       return { titulo, autor, pass: true, degraded: true,
-        reason: "JSON inválido del classifier", confidence: null, detected_audience: "unknown" };
+        reason: eleccion.finish_reason === "length" ? "respuesta cortada del classifier" : "JSON inválido del classifier", confidence: null, detected_audience: "unknown" };
+    }
+    // C278: con Claude, el esquema no impone rangos; lo que llegue fuera de forma no cuenta como veredicto.
+    const confValida = parsed.confidence === undefined || parsed.confidence === null
+      || (typeof parsed.confidence === "number" && parsed.confidence >= 0 && parsed.confidence <= 1);
+    if (TARGET === "kids" && (typeof parsed.matches !== "boolean" || !confValida)) {
+      return { titulo, autor, pass: true, degraded: true,
+        reason: "respuesta del classifier fuera de forma", confidence: null, detected_audience: "unknown" };
     }
     const conf = parsed.confidence ?? 1;
     const matches = parsed.matches !== false;
@@ -225,6 +243,8 @@ function getRejectedPath(catalogPath) {
     const pass = [];
     const fail = [];
     const degraded = [];
+    const sinVeredicto = [];
+    let refusals = 0;
 
     console.log(``);
     console.log(`📋 Auditando ${N} libros del batch:`);
@@ -234,7 +254,13 @@ function getRejectedPath(catalogPath) {
       const autor  = libro.autor || "?";
       console.log(`   [${i+1}/${N}] "${titulo}" — ${autor}`);
       const r = await auditOne(libro);
-      if (r.degraded) {
+      if (r.refusal) refusals++;
+      if (r.degraded && TARGET === "kids") {
+        // C278: en Niños, sin veredicto no hay publicación, pero tampoco se mueve nada: la corrida se detiene abajo.
+        console.log(`         🚫 JUEZ NO DISPONIBLE (${r.reason})`);
+        sinVeredicto.push({ titulo, autor, reason: r.reason });
+        degraded.push(libro);
+      } else if (r.degraded) {
         console.log(`         🟡 DEGRADED (${r.reason}) — pasando por seguridad`);
         degraded.push(libro);
         pass.push(libro);
@@ -261,7 +287,17 @@ function getRejectedPath(catalogPath) {
     console.log(`   ✅ PASS:        ${pass.length}/${N}`);
     console.log(`   ❌ QUARANTINE:  ${fail.length}/${N}`);
     if (degraded.length > 0) {
-      console.log(`   🟡 DEGRADED:    ${degraded.length} (errores técnicos, pasaron por seguridad)`);
+      console.log(TARGET === "kids"
+        ? `   🚫 SIN VEREDICTO: ${degraded.length}`
+        : `   🟡 DEGRADED:    ${degraded.length} (errores técnicos, pasaron por seguridad)`);
+    }
+    if (refusals > 0) console.log(`   🙅 RECHAZOS DEL MODELO: ${refusals}`);
+
+    if (TARGET === "kids" && sinVeredicto.length > 0) {
+      console.error(``);
+      console.error(`🚫 AUDIENCE_BLOCKER: en Niños, ${sinVeredicto.length} libro(s) sin veredicto del juez. La corrida se detiene (exit 1) sin tocar el catálogo: no se publica nada y lo ya publicado queda como estaba.`);
+      sinVeredicto.forEach((b, i) => console.error(`   ${i + 1}. "${b.titulo}" — ${b.autor}: ${b.reason}`));
+      process.exit(1);
     }
 
     if (fail.length === 0) {
@@ -324,6 +360,11 @@ function getRejectedPath(catalogPath) {
   } catch (e) {
     console.error(`❌ AUDIENCE_BLOCKER error inesperado: ${e.message}`);
     console.error(e.stack);
+    if (TARGET === "kids") {
+      // C278: en Niños nada pasa sin veredicto; la corrida se detiene sin tocar el catálogo.
+      console.error(`🚫 En Niños la corrida se detiene (exit 1): nada pasa sin veredicto.`);
+      process.exit(1);
+    }
     console.log(`⚠️  Degradación elegante — dejando pasar.`);
     process.exit(0);
   }

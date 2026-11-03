@@ -79,6 +79,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import fs from "node:fs/promises";
+import IA from "../../ia/ia.cjs";   // C278: para escribir el modelo real en los registros
 
 // ─── Carga de schemas (cache) ─────────────────────────────────────────────────
 const SCHEMA_URL = new URL("./edition-nucleus.schema.json", import.meta.url);
@@ -326,6 +327,28 @@ function validateCSALShape(cleaned) {
 // PROMPTS — SAGRADOS (idénticos a v1, no se tocan)
 // ═══════════════════════════════════════════════════════════════════════════════
 
+// C278: las cuatro palabras de los bloques (en español y en inglés) siempre entran a las palabras clave del CSAL, para que
+// quien escriba una de ellas en la barra mágica llegue a este libro y la encuentre en su bloque. El app junta las cuatro
+// categorías al buscar (public/index.html, índice del CSAL); las que falten se suman a «emociones», donde viven los
+// estados de quien llega. Devuelve las que sumó.
+export function agregaPuertasCSAL(csal, palabras) {
+  if (!csal || typeof csal !== "object" || !Array.isArray(palabras)) return [];
+  if (!csal.trigger_keywords || typeof csal.trigger_keywords !== "object") csal.trigger_keywords = {};
+  const kw = csal.trigger_keywords;
+  const norma = (x) => String(x ?? "").trim().toLowerCase();
+  const ya = new Set(["emociones", "objetos", "contextos", "verbos"].flatMap((k) => (Array.isArray(kw[k]) ? kw[k] : []).map(norma)));
+  const sumadas = [];
+  for (const p of palabras) {
+    const w = String(p ?? "").trim();
+    if (!w || ya.has(norma(w))) continue;
+    if (!Array.isArray(kw.emociones)) kw.emociones = [];
+    kw.emociones.push(w);
+    ya.add(norma(w));
+    sumadas.push(w);
+  }
+  return sumadas;
+}
+
 function csalSystemPrompt() {
   return `Para esta llamada NO eres una IA describiendo contenido editorial.
 ERES el autor del libro que se te asignará en este turno.
@@ -362,6 +385,10 @@ DEVOLVERÁS 5 SECCIONES
    - contextos (5-25): lugares, momentos, escenas
    - verbos (5-25): acciones que vive la persona
 
+   Las palabras de tus cuatro bloques son las puertas que ya eligió tu libro:
+   inclúyelas donde correspondan, en español y en inglés, para que quien las
+   escriba en la barra mágica llegue a tu libro y las encuentre ahí.
+
 3. CONCEPT_TAGS (10-25)
    Conceptos ESPECÍFICOS a tu obra. Si lees solo estos tags, sin saber
    el título, deberías reconocer tu obra.
@@ -370,8 +397,9 @@ DEVOLVERÁS 5 SECCIONES
    Situaciones para las que tu obra NO sirve. Honestidad.
 
 5. BLOQUES (exactamente 4)
-   Para cada uno de los 4 edition_blocks que ya generaste, un emoji_specific
-   que conecte con la phrase y la obra. Formato: { index, emoji_specific }.
+   Para cada uno de los 4 bloques que ya generaste, un emoji_specific. Va junto
+   a la palabra del bloque, en su cara, antes de que se abra la frase: une esa
+   palabra con su frase y con tu obra. Formato: { index, emoji_specific }.
 
 ═══════════════════════════════════════════════════════════════════
 PROTOCOLO DE AUTO-VALIDACIÓN antes de devolver
@@ -388,9 +416,9 @@ Antes de devolver el JSON, hazte 4 preguntas:
    Si los pegaras en otro libro del mismo género, ¿se notaría que no
    pertenecen?
 
-3. ¿Mis emojis tienen sentido SOLO para mi libro, no para otros?
-   Si pegaras los emojis en otro libro de género similar, ¿se notaría
-   que no pertenecen?
+3. ¿Mis emojis tienen sentido SOLO para mi libro, no para otros, y cada uno
+   va con la palabra de su bloque? Si pegaras los emojis en otro libro de
+   género similar, ¿se notaría que no pertenecen?
 
 4. ¿Mis trigger_keywords incluyen variantes coloquiales y regionales?
 
@@ -413,8 +441,11 @@ function csalUserPrompt(book, groundTruth, anchorsData, contentES, previousSitua
   const title = book.titulo;
   const voiceNotes = anchorsData?.book_grounding_anchors?.authorial_voice_notes || "";
   const concepts = (anchorsData?.book_grounding_anchors?.concepts || []).join("\n- ");
+  // C278: cada bloque muestra primero su palabra (con este emoji) y al tocarlo abre su frase.
+  const palabras = Array.isArray(contentES?.emotional_words_es) ? contentES.emotional_words_es : [];
+  const palabrasEN = Array.isArray(contentES?.emotional_words_en) ? contentES.emotional_words_en : [];
   const blockPhrases = (contentES?.edition_blocks_es || []).map((b, i) =>
-    `Bloque ${i} (${b.gesture_type}, sensory: ${b.sensory_anchor}): "${b.phrase}"`
+    `Bloque ${i}${palabras[i] ? ` · «${palabras[i]}»` : ""} (${b.gesture_type}, sensory: ${b.sensory_anchor}): "${b.phrase}"`
   ).join("\n");
 
   let prompt = `IDENTIDAD DE ESTA SESIÓN:
@@ -428,10 +459,11 @@ ${groundTruth}
 CONCEPTOS CENTRALES de tu obra:
 - ${concepts}
 
-TUS 4 EDITION_BLOCKS ya generados (para que los emoji_specific de cada uno
-conecten con SU phrase, no con tu libro en general):
+TUS 4 BLOQUES ya generados: la palabra que se ve primero y la frase que se abre
+al tocarla (el emoji_specific de cada uno va junto a SU palabra y conecta con SU
+frase, no con tu libro en general):
 ${blockPhrases}
-`;
+${palabrasEN.length ? `Las mismas cuatro palabras en inglés: ${palabrasEN.join(", ")}\n` : ""}`;
 
   if (previousSituations.length > 0) {
     prompt += `
@@ -536,8 +568,8 @@ async function extractCSALWithModel(openai, book, groundTruth, anchorsData, cont
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export async function extractCSAL(openai, book, groundTruth, anchorsData, contentES, options = {}) {
-  const modelMini = options.model || options.modelMini || "gpt-4o-mini";
-  const modelMain = options.modelMain || "gpt-4o";
+  const modelMini = options.model || options.modelMini || "mini";   // papeles de ia/config.json (C278)
+  const modelMain = options.modelMain || "grande";
   const previousSituations = Array.isArray(options.previousSituations)
     ? options.previousSituations
     : [];
@@ -560,14 +592,14 @@ export async function extractCSAL(openai, book, groundTruth, anchorsData, conten
     }
 
     const validation = validateCSALShape(firstResult.cleaned);
-    attempts.push({ model: modelMini, valid: validation.valid, reason: validation.reason });
+    attempts.push({ model: IA.etiqueta(modelMini), valid: validation.valid, reason: validation.reason });
 
     if (validation.valid) {
       // ✅ Salió nivel dios con mini — caso ideal y económico
       return {
         data: firstResult.cleaned,
         usage: cumulativeUsage,
-        model: firstResult.model || modelMini,
+        model: firstResult.model || IA.etiqueta(modelMini),
         escalated: false,
         escalateReason: null,
         attempts
@@ -576,7 +608,7 @@ export async function extractCSAL(openai, book, groundTruth, anchorsData, conten
     // No es válido: caemos al escalate
   } catch (err) {
     firstError = err;
-    attempts.push({ model: modelMini, valid: false, reason: `exception: ${err.message}` });
+    attempts.push({ model: IA.etiqueta(modelMini), valid: false, reason: `exception: ${err.message}` });
   }
 
   // ── Intento 2: escalate a gpt-4o (modelo full) ───────────────────────────────
@@ -595,14 +627,14 @@ export async function extractCSAL(openai, book, groundTruth, anchorsData, conten
     }
 
     const validation2 = validateCSALShape(secondResult.cleaned);
-    attempts.push({ model: modelMain, valid: validation2.valid, reason: validation2.reason });
+    attempts.push({ model: IA.etiqueta(modelMain), valid: validation2.valid, reason: validation2.reason });
 
     if (validation2.valid) {
       // ✅ Salió nivel dios con escalate
       return {
         data: secondResult.cleaned,
         usage: cumulativeUsage,
-        model: secondResult.model || modelMain,
+        model: secondResult.model || IA.etiqueta(modelMain),
         escalated: true,
         escalateReason: attempts[0].reason,
         attempts
@@ -610,7 +642,7 @@ export async function extractCSAL(openai, book, groundTruth, anchorsData, conten
     }
   } catch (err) {
     secondError = err;
-    attempts.push({ model: modelMain, valid: false, reason: `exception: ${err.message}` });
+    attempts.push({ model: IA.etiqueta(modelMain), valid: false, reason: `exception: ${err.message}` });
   }
 
   // ── Ambos modelos fallaron — degradación elegante ────────────────────────────

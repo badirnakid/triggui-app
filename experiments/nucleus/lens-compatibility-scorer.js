@@ -244,13 +244,13 @@ async function sanitizeCompatibility(parsed) {
  *   - anchors: output de extractAnchors
  *   - contentES: output de extractContentES (con card_es, etc)
  * @param {Object} opts - Opciones:
- *   - model: modelo a usar (default: "gpt-4o-mini")
+ *   - model: papel o modelo a usar (default: "mini", de ia/config.json; C278)
  *   - temperature: temperatura (default: 0.2 — queremos consistencia)
  * @returns {Promise<Object>} - Vector de compatibilidad listo para guardar
  *                              en _lens_compatibility del libro
  */
 export async function scoreLensCompatibility(openai, input, opts = {}) {
-  const model = opts.model || "gpt-4o-mini";
+  const model = opts.model || "mini";
   const temperature = opts.temperature ?? 0.2; // baja para consistencia
 
   const activeLenses = await getActiveLenses();

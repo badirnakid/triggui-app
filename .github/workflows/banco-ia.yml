@@ -1,0 +1,232 @@
+name: 🧪 Banco C278 · Claude (no publica nada)
+
+# ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+# El banco de prueba de C278 (plan del 2 de noviembre de 2026, paso 3).
+# Cinco libros (tres de adultos y dos de Niños), cada uno con los dos proveedores, por el mismo camino que una
+# corrida 📘 de producción: validar, nucleus, saneador, juez de audiencia, videos, música y gemelos EN.
+#
+# · Corre SOLO cuando se empuja la rama «banco-ia». Gasta API: se empuja con el go de Badir y nunca de otro modo.
+# · No escribe en ningún repositorio: permisos de solo lectura y ningún push. Lo que sale queda en el log y en
+#   los artefactos del run. Ningún checkout deja su token guardado en git (persist-credentials: false): el código
+#   que corre después no lo puede leer.
+# · Cada lado corre solo con su llave: si algo quedara llamando al otro proveedor, fallaría a la vista.
+# · El mismo azar (semilla por libro) y el mismo reloj para los dos lados: los mismos lentes y la misma franja.
+# · El saneador y el juez de audiencia van con lote 1 (el libro de la corrida), como quedará con C282.
+# · Banco 2 (go de Badir del 2 de noviembre a las 13:42): solo Claude, con la tarjeta como página abierta al azar, la
+#   regla de la comilla suelta y la caché del system. OpenAI ya quedó medido en el banco 1 (corrida 41502203590) y es
+#   la referencia; para volver a correr los dos, la matriz vuelve a [openai, claude].
+# ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+on:
+  push:
+    branches: [banco-ia]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: banco-ia
+  cancel-in-progress: false
+
+env:
+  TZ: America/Mexico_City
+  BANCO_RELOJ: '2026-11-03T15:00:00Z'
+
+jobs:
+  sonda:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: 📦 triggui-content (solo lectura)
+        uses: actions/checkout@v4
+        with:
+          repository: badirnakid/triggui-content
+          token: ${{ secrets.CONTENT_REPO_TOKEN }}
+          path: triggui-content
+          ref: claude-en-el-horno
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: 🔎 Sonda (llaves, esquemas y papeles; unas pocas llamadas baratas)
+        env:
+          OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TRIGGUI_CONTENT_ROOT: triggui-content
+          TRIGGUI_IA_REGISTRO: ${{ github.workspace }}/sonda-uso.jsonl
+        run: node ia/banco/sonda.mjs
+
+  banco:
+    needs: sonda
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      matrix:
+        proveedor: [claude]
+        libro:
+          - { id: cisne, catalogo: adulto, entrada: 'El cisne negro | Nassim Nicholas Taleb', semilla: 101 }
+          - { id: frankl, catalogo: adulto, entrada: 'El hombre en busca de sentido | Viktor E. Frankl', semilla: 202 }
+          - { id: galeano, catalogo: adulto, entrada: 'Las venas abiertas de América Latina | Eduardo Galeano', semilla: 303 }
+          - { id: principito, catalogo: kids, entrada: 'El Principito | Antoine de Saint-Exupéry', semilla: 404 }
+          - { id: espejo, catalogo: kids, entrada: 'A través del espejo | Lewis Carroll', semilla: 505 }
+    env:
+      CATALOG_MODE: ${{ matrix.libro.catalogo }}
+      TRIGGUI_IA_PROVEEDOR: ${{ matrix.proveedor }}
+      TRIGGUI_IA_REGISTRO: ${{ github.workspace }}/banco-uso.jsonl
+      OPENAI_KEY: ${{ matrix.proveedor == 'openai' && secrets.OPENAI_KEY || '' }}
+      ANTHROPIC_API_KEY: ${{ matrix.proveedor == 'claude' && secrets.ANTHROPIC_API_KEY || '' }}
+      GOOGLE_BOOKS_API_KEY: ${{ secrets.GOOGLE_BOOKS_API_KEY }}
+      YT_API_KEY: ${{ secrets.YT_API_KEY }}
+      RECENT_BOOKS_PATH: ${{ github.workspace }}/recent-books.json
+      BASE_URL: https://beta.app.triggui.com
+      TRIGGUI_CRONO_ENABLED: 'true'
+      TRIGGUI_LENS_CHRONOBIOLOGY: 'true'
+      TRIGGUI_LENS_HAWKINS: 'true'
+      TRIGGUI_LENS_PILARES: 'true'
+      TRIGGUI_LENS_GAME_THEORY: 'true'
+      TRIGGUI_LENS_SELF_KNOWLEDGE: 'true'
+      TRIGGUI_PUNTO_CICLO: auto
+      TRIGGUI_PILAR: auto
+      TRIGGUI_HAWKINS_TARGET: auto
+      BATCH_SIZE: '1'
+      BANCO_SEMILLA: ${{ matrix.libro.semilla }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: 📦 triggui-content (solo lectura; la rama trae el gancho del saneador)
+        uses: actions/checkout@v4
+        with:
+          repository: badirnakid/triggui-content
+          token: ${{ secrets.CONTENT_REPO_TOKEN }}
+          path: triggui-content
+          ref: claude-en-el-horno
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: 📚 Dependencias del nucleus
+        working-directory: experiments/nucleus
+        run: npm ci || npm install --no-audit --no-fund
+
+      - name: 🔗 CSV maestro y catálogo histórico (como en producción)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p experiments/nucleus/data
+          if [ "$CATALOG_MODE" = "kids" ]; then CSV=libros_master_kids.csv; CAT=contenido_kids.json; else CSV=libros_master.csv; CAT=contenido.json; fi
+          ln -sf "$GITHUB_WORKSPACE/triggui-content/data/$CSV" "experiments/nucleus/data/$CSV"
+          cp "triggui-content/$CAT" "experiments/nucleus/$CAT"
+          if [ -f triggui-content/edition-counter.json ]; then cp triggui-content/edition-counter.json experiments/nucleus/edition-counter.json; fi
+          echo "CAT=$CAT" >> "$GITHUB_ENV"
+          echo "🧠 proveedor ${TRIGGUI_IA_PROVEEDOR} · catálogo ${CATALOG_MODE} · ${CAT}"
+
+      - name: 📖 Validar el libro (📘)
+        working-directory: experiments/nucleus
+        env:
+          INPUT_MODE: book
+          SELECTOR_MODE: direct
+          LIBRO_INPUT: ${{ matrix.libro.entrada }}
+          NODE_OPTIONS: --require ${{ github.workspace }}/ia/banco/semilla.cjs
+        run: node validate-book.js
+
+      - name: 🧬 Nucleus
+        working-directory: experiments/nucleus
+        env:
+          SINGLE_MODE: 'true'
+          UNIFIED_MODE: 'true'
+          PRESERVE_MANUAL: 'false'
+          NODE_OPTIONS: --require ${{ github.workspace }}/ia/banco/semilla.cjs
+        run: node build-contenido-nucleus.js
+
+      - name: 🌒 Capa 4 y al workspace (como en producción)
+        shell: bash
+        run: |
+          (cd experiments/nucleus && SANITIZE_NO_BACKUP=1 node ./sanitize-catalog.mjs "$CAT") || echo "⚠️ Capa 4 reportó un aviso; se sigue, como en producción"
+          cp "experiments/nucleus/$CAT" "$CAT"
+          for f in musica_emergencia.json video_emergencia.json; do if [ -f "triggui-content/$f" ]; then cp "triggui-content/$f" "$f"; fi; done
+
+      - name: 🛡️ Saneador de frases (capa B, lote 1, sin healing, como en producción desde C302)
+        continue-on-error: true
+        env:
+          OPENAI_API_KEY: ${{ matrix.proveedor == 'openai' && secrets.OPENAI_KEY || '' }}
+          TRIGGUI_IA_LIB: ${{ github.workspace }}/ia/ia.cjs
+        run: node triggui-content/auditoria-editorial/phrase-sanitizer-llm.cjs --catalog="$CAT" --mode=fix --only-last=true --batch-size=1 --healing=false
+
+      - name: 🛡️ Juez de audiencia (lote 1)
+        continue-on-error: true
+        env:
+          OPENAI_API_KEY: ${{ matrix.proveedor == 'openai' && secrets.OPENAI_KEY || '' }}
+          TARGET_AUDIENCE: ${{ matrix.libro.catalogo == 'kids' && 'kids' || 'adult' }}
+        run: CATALOG_PATH="$CAT" BATCH_SIZE=1 node experiments/nucleus/audience-blocker.cjs
+
+      - name: 🎬 Videos (solo adultos; el libro de esta corrida)
+        if: ${{ matrix.libro.catalogo == 'adulto' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          python3 scripts/titulos-del-run.py | while IFS= read -r T; do [ -n "$T" ] && python3 scripts/resolve-videos.py --rutas="$CAT" --solo="$T" --completar-min=3 --armonia-min=5 --forzar --explicar || true; done
+
+      - name: 🎵 Música (el libro de esta corrida)
+        continue-on-error: true
+        shell: bash
+        env:
+          TRIGGUI_CONTENT_ROOT: triggui-content
+        run: |
+          K=""; if [ "$CATALOG_MODE" = "kids" ]; then K="--catalogo=kids"; fi
+          python3 scripts/titulos-del-run.py | while IFS= read -r T; do [ -n "$T" ] && python3 scripts/resolve-musica.py $K --rutas="$CAT" --solo="$T" --completar-min=3 --armonia-min=4 --forzar --explicar || true; done
+
+      - name: 🌐 Gemelos EN (solo adultos)
+        if: ${{ matrix.libro.catalogo == 'adulto' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          cp "$CAT" triggui-content/contenido.json
+          node scripts/gemelos-en.mjs
+          cp triggui-content/contenido.json "$CAT"
+
+      - name: 📋 Resumen de la corrida
+        if: always()
+        run: node ia/banco/resumen.mjs --proveedor=${{ matrix.proveedor }} --id=${{ matrix.libro.id }} --catalogo="$CAT" --registro=banco-uso.jsonl --salida=banco-${{ matrix.libro.id }}-${{ matrix.proveedor }}.json
+
+      - name: 📦 Guardar lo de esta corrida
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: banco-${{ matrix.libro.id }}-${{ matrix.proveedor }}
+          path: |
+            banco-${{ matrix.libro.id }}-${{ matrix.proveedor }}.json
+            banco-uso.jsonl
+          if-no-files-found: warn
+          retention-days: 30
+
+  resumen:
+    needs: banco
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: banco-*
+          path: banco
+      - name: 📊 Resumen por libro
+        run: node ia/banco/compara.mjs --dir=banco
+      - uses: actions/upload-artifact@v4
+        with:
+          name: banco-comparacion
+          path: banco-comparacion.md
+          retention-days: 30
