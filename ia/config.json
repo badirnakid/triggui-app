@@ -1,6 +1,6 @@
 {
   "_nota": "Un solo lugar para la IA de Triggui (C278, 2 de noviembre de 2026). Cada llamada pide un papel (mini o grande) y aquí se decide qué modelo lo hace con cada proveedor. El proveedor se cambia aquí o con la variable TRIGGUI_IA_PROVEEDOR (openai | claude). Los nombres viejos de OpenAI se aceptan como alias del papel.",
-  "proveedor": "openai",
+  "proveedor": "claude",
   "papeles": {
     "mini": {
       "openai": "gpt-4o-mini",
