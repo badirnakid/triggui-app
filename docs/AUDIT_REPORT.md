@@ -1,15 +1,15 @@
 # 🔬 AUDIT_REPORT — Agente revisor Triggui
 
-**Fecha:** 2026-10-29 · **Modo:** solo sugerencias (nada se implementa solo) · **Hallazgos:** 🔴 1 · 🟠 2 · 🟡 2 · 🟢 19
+**Fecha:** 2026-11-05 · **Modo:** solo sugerencias (nada se implementa solo) · **Hallazgos:** 🔴 1 · 🟠 2 · 🟡 3 · 🟢 20
 
-**Inventario:** 177 libros adultos (41 ediciones) · 133 libros kids (16 ediciones) · cartero V24
+**Inventario:** 178 libros adultos (42 ediciones) · 133 libros kids (16 ediciones) · cartero V24
 
 
 ## Hallazgos
 
 ### 🔴 C0b · Consistencia semántica
-- **Dónde:** catálogos · 2 ediciones
-- **Impacto:** portada SVG generada: ninguna fuente encontró el libro — puede no existir (así vivieron #77 y #102 «Ok»): #98 «Take nothing personally» — Shubham Kumar Singh; #77 «Ok» — Eric Jorgenson
+- **Dónde:** catálogos · 1 ediciones
+- **Impacto:** portada SVG generada: ninguna fuente encontró el libro — puede no existir (así vivieron #77 y #102 «Ok»): #77 «Ok» — Eric Jorgenson
 - **Propuesta:** verificar identidad (título/autor reales); retirar o regenerar con el título correcto
 
 ### 🟠 C1 · Consistencia semántica
@@ -27,6 +27,11 @@
 - **Impacto:** menos de 3 videos: «Natural questions»=2, «101 reflexiones que cambia»=1, «Frida para apasionados»=1, «Ganbatte!»=2
 - **Propuesta:** resolver videos con `--completar` (mismo patrón que música)
 
+### 🟡 C6c · UX del operador
+- **Dónde:** catálogos · 17 libros
+- **Impacto:** fuera de la app por no tener portada real: Evolución de la conciencia, Wu Wei. La vía del no actuar, Que Te Sobre El Dinero, Pinceladas de 100 lideres em, Max Your Brain: The complete, Ok, Awakening the Warrior Within, Superaprendizaje Transperson, el arte de la indiferencia, CEO Human …
+- **Propuesta:** conseguir su portada real (cambiar `portada`) o retirarlos
+
 ### 🟡 C8 · Costo
 - **Dónde:** contenido.json
 - **Impacto:** ediciones que aún suenan con el cajón de emergencia (no con música propia): Don't Believe Everything You Think, A Random Walk Down Wall Street, Words that work
@@ -37,12 +42,13 @@
 
 - jamás silencio: 0 ediciones mudas (adulto + kids)
 - ninguna edición viva con portada Google zoom=1
+- los 311 libros de ambos catálogos tienen su portada de la app verificada
 - todas las ediciones traen 4 colores + 4 textColors
 - todas las ediciones adultas tienen tarjeta_en
 - 0 marcadores de contaminación LLM en frases y tarjetas
 - slugs de edición únicos
 - ninguna portada viva es placeholder (detector por píxeles)
-- activos base completos (index, en, og, og_en, tarjeta, portada) en las 57 ediciones vivas
+- activos base completos (index, en, og, og_en, tarjeta, portada) en las 58 ediciones vivas
 - cada video del catálogo tiene su página y su OG
 - node --check limpio en todos los scripts inline de las ediciones vivas
 - paridad byte a byte public/index.html = public/kids/index.html
@@ -52,7 +58,7 @@
 - triggui.yml: caché de navegadores Playwright (E2 cerrado)
 - triggui.yml: run-name sin texto libre del usuario (S2 cerrado)
 - triggui.yml: el paso de música completa candidatas en cada corrida
-- producción responde 200 en app, kids, /mi, sitio, sala y la última edición (carta-desde-japon)
+- producción responde 200 en app, kids, /mi, sitio, sala y la última edición (a-thousand-brains)
 - cartero vivo (V24)
 
 ## Para el «va» de Badir
