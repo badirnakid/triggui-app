@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Triggui</title>
+<!--
+  🛒 /ir/ · la liga de los botones del correo (B417, 14 de noviembre de 2026)
+
+  Un correo no corre JavaScript: no sabe en qué país se abre. Sus botones llegan aquí, y esta página manda a la
+  tienda con la misma regla que la app y las ediciones (/tiendas.js):
+    México → Casa del Libro o Gandhi (la tienda que tiene el libro, como la marcó el horno);
+    fuera  → Amazon del país del lector, con el título en el idioma del correo.
+
+  Parámetros (todos opcionales, salvo «a»):
+    a   comprar | explorar | gandhi
+    t   título · te título en inglés · au autor           (comprar)
+    tn  tienda que marcó el horno · u liga de esa tienda   (comprar; solo se usa si es de casadelibro.com.mx o
+                                                            www.gandhi.com.mx: nunca se manda a otro sitio)
+    p   palabra                                            (explorar y gandhi)
+    i   es | en (idioma del correo) · s slug de la edición · o origen (correo)
+-->
+<style>
+  :root { color-scheme: dark; }
+  html, body { margin: 0; height: 100%; background: #000; color: rgba(255,255,255,.82); }
+  body { display: flex; align-items: center; justify-content: center; font: 500 15px/1.4 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; text-align: center; padding: 0 16px; }
+  a { color: #fff; }
+</style>
+<script src="/tiendas.js"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CLK554FCNM"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-CLK554FCNM',{send_page_view:false});</script>
+</head>
+<body>
+<p id="msg">Abriendo la tienda… <a id="ir" href="https://app.triggui.com/">Continuar</a></p>
+<noscript><p>Para abrir la tienda hace falta JavaScript. <a href="https://app.triggui.com/">Ir a Triggui</a></p></noscript>
+<script>
+(function () {
+  'use strict';
+  var q;
+  try { q = new URLSearchParams(location.search); } catch (e) { q = { get: function () { return null; } }; }
+  var v = function (k) { var x = q.get(k); return x == null ? '' : String(x); };
+  var accion = v('a');
+  var idioma = v('i') === 'en' ? 'en' : 'es';
+  var T = window.TrigguiTiendas || null;
+  var destino = { url: 'https://app.triggui.com/', tienda: '' };
+
+  if (T) {
+    var mx = T.enMexico();
+    if (accion === 'comprar' && (v('t') || /^https:\/\/(casadelibro\.com\.mx|www\.gandhi\.com\.mx)\//.test(v('u')))) {
+      destino = T.comprar({ titulo: v('t'), titulo_en: v('te'), autor: v('au'), tienda_compra: { tienda: v('tn'), url: v('u') } }, idioma, mx);
+    } else if (accion === 'explorar' && v('p')) {
+      destino = T.explorar(v('p'), mx);
+    } else if (accion === 'gandhi' && v('p')) {
+      destino = T.explorarGandhi(v('p'), mx) || T.explorar(v('p'), mx);
+    }
+  }
+
+  if (idioma === 'en') {
+    document.documentElement.lang = 'en';
+    var m = document.getElementById('msg');
+    if (m) m.firstChild.nodeValue = 'Opening the store… ';
+    var c = document.getElementById('ir');
+    if (c) c.textContent = 'Continue';
+  }
+  var enlace = document.getElementById('ir');
+  if (enlace) enlace.href = destino.url;
+
+  var listo = false;
+  var ir = function () { if (listo) return; listo = true; location.replace(destino.url); };
+  try {
+    gtag('event', (accion === 'gandhi' ? 'explorar_gandhi' : (accion || 'ir')) + '_clicked', {
+      tienda: destino.tienda || '', contexto: v('o') || 'correo', slug: v('s'), book: v('t'), idioma: idioma,
+      transport_type: 'beacon', event_callback: ir
+    });
+  } catch (e) {}
+  // La medición nunca detiene al lector: si Google tarda, a los 800 ms se va de todos modos.
+  setTimeout(ir, 800);
+})();
+</script>
+</body>
+</html>

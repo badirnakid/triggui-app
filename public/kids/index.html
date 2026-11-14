@@ -26,15 +26,17 @@ html.regresando-fuentes #tarjetaCard{visibility:hidden !important}
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=overlays-content">
 <title>Triggui — Cuando el impulso llega, el libro ya te espera</title>
 
-<link rel="preconnect" href="https://www.penguinlibros.com" crossorigin>
-<link rel="preconnect" href="https://www.buscalibre.com.mx" crossorigin>
-<link rel="dns-prefetch" href="https://www.penguinlibros.com">
-<link rel="dns-prefetch" href="https://www.buscalibre.com.mx">
+<link rel="preconnect" href="https://casadelibro.com.mx" crossorigin>
+<link rel="preconnect" href="https://www.gandhi.com.mx" crossorigin>
+<link rel="dns-prefetch" href="https://casadelibro.com.mx">
+<link rel="dns-prefetch" href="https://www.gandhi.com.mx">
 
 <link rel="preload" as="image" href="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletras2.png">
 <link rel="preload" as="image" href="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/trigguiletrasblanco2.png">
-<link rel="preload" as="image" href="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/buscalibre.png">
-<link rel="preload" as="image" href="logopenguin.png">
+<link rel="preload" as="image" href="/tiendas/casadellibro-blanco.png">
+<link rel="preload" as="image" href="/tiendas/gandhi-blanco.png">
+<!-- 🛒 B417: la regla de tiendas (México: Casa del Libro o Gandhi; fuera: Amazon), la misma de las ediciones y del correo -->
+<script src="/tiendas.js" async></script>
 
 <style id="base-styles">
   html, body { 
@@ -417,6 +419,10 @@ const TriggguiI18n = {
       'intro.default': 'Toca. Descubre. El libro te espera.',
       'app.title': "Triggui — Cuando el impulso llega, el libro ya te espera",
       'aria.abrirBarra': 'Abrir barra mágica',
+      'tienda.comprar': 'Comprar',
+      'tienda.comprarAmazon': 'Comprar en Amazon',
+      'tienda.explorar': 'Explorar',
+      'tienda.abriendo': 'Abriendo…',
     },
     en: {
       'barra.streak.days': 'days',
@@ -447,6 +453,10 @@ const TriggguiI18n = {
       'intro.default': 'Tap. Discover. Your book awaits.',
       'app.title': 'Triggui — When the impulse arrives, the book is already there.',
       'aria.abrirBarra': 'Open the magic bar',
+      'tienda.comprar': 'Buy',
+      'tienda.comprarAmazon': 'Buy on Amazon',
+      'tienda.explorar': 'Explore',
+      'tienda.abriendo': 'Opening…',
     }
   }
 };
@@ -1352,10 +1362,10 @@ body.webview #tarjetaCard {
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  🎯 BLOQUE BUSCALIBRE - COMPRAR (ANCHO) + EXPLORAR (CUADRITO)
+  🎯 BLOQUE TIENDAS (B417) - COMPRAR (ANCHO) + EXPLORAR (CUADRITO)
   Ajuste de precisión para alineación perfecta con botón inferior
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-.buscalibre-row {
+.tiendas-row {
   display: grid;
   grid-template-columns: 1fr 48px;
   gap: 10px;
@@ -1384,7 +1394,7 @@ body.webview #tarjetaCard {
 
 .btn-action:active { transform: scale(0.97); }
 
-/* Botón Comprar - Negro con logo Buscalibre dentro */
+/* Botón Comprar - Negro con el logo de la tienda (Casa del Libro o Gandhi) dentro; fuera de México, solo texto */
 .btn-comprar {
   background: #080808;
   color: white;
@@ -1405,8 +1415,11 @@ body.webview #tarjetaCard {
   width: auto;
   display: block;
 }
+/* El logo apilado de Casa del Libro necesita más alto para que se lea «CASA DEL LIBRO» */
+.btn-action img.logo-casadelibro { height: 30px; }
+.btn-action img.logo-gandhi { height: 20px; }
 
-/* 🎯 ESTADO DE CARGA BUSCALIBRE (NIVEL DIOS) */
+/* 🎯 ESTADO DE CARGA DE COMPRAR (NIVEL DIOS) */
 .btn-comprar.is-opening {
   opacity: 0.7;
   transform: scale(0.96);
@@ -1497,9 +1510,9 @@ body.webview #tarjetaCard {
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  🌺 BLOQUE PENGUIN - LOGO DENTRO DEL BOTÓN
+  🌺 BLOQUE GANDHI (B417) - EXPLORAR, CON EL LOGO DENTRO DEL BOTÓN (solo en México)
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-.btn-penguin {
+.btn-gandhi {
   width: 100%;
   background: #101010;
   color: white;
@@ -1509,21 +1522,20 @@ body.webview #tarjetaCard {
     0 0 0 1px rgba(255,255,255, 0.1);
 }
 
-.btn-penguin:hover {
+.btn-gandhi:hover {
   box-shadow: 
     0 8px 24px -6px rgba(0, 0, 0, 0.5), 
     0 0 0 1px rgba(255,255,255, 0.15);
 }
 
 /* FEEDBACK NIVEL DIOS */
-.btn-penguin.is-opening {
+.btn-gandhi.is-opening {
   opacity: 0.7;
   transform: scale(0.96);
   pointer-events: none;
 }
 
-.btn-penguin img {
-  height: 44px;
+.btn-gandhi img {
   width: auto;
   display: block;
 }
@@ -3767,10 +3779,9 @@ const resetAllButtons = () => {
     const action = btn.dataset.action;
     
     if (span && action) {
-      // Botones con texto (Comprar, Penguin)
-      if (action === 'penguin') span.textContent = 'Explorar en Penguin';
-      else if (action === 'buscalibre-comprar') span.textContent = 'Comprar';
-    } else if (emojiSpan && action === 'buscalibre-explorar') {
+      // Botones con texto (Comprar, Explorar): vuelven a su etiqueta (B417)
+      if (btn.dataset.etiqueta) span.textContent = btn.dataset.etiqueta;
+    } else if (emojiSpan && action === 'explorar') {
       // Botón explorar (solo emoji)
       emojiSpan.textContent = '🔮';
     }
@@ -3875,10 +3886,24 @@ btnShare.onclick = () => {
   if (isDark) { card.classList.add('card-dark-mode'); } 
   else { card.classList.remove('card-dark-mode'); }
 
-  // URLs precalculadas
-  const buscarlibreURL = `https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(tituloCard + ' ' + libro.autor)}`;
-  const explorarURL = `https://www.buscalibre.com.mx/libros/search/?q=${encodeURIComponent(p)}`;
-  const penguinURL = `https://www.penguinlibros.com/mx/?mot_q=${encodeURIComponent(p)}`;
+  // 🛒 B417: tiendas con la misma regla que las ediciones y el correo (public/tiendas.js). En México, «Comprar»
+  // va a Casa del Libro o Gandhi según «tienda_compra»; fuera, a Amazon del país. Si el archivo no cargó
+  // (sin red), quedan las ligas de México: la tienda del libro, o la búsqueda en Gandhi y Casa del Libro.
+  const __idiomaCard = (TriggguiI18n && TriggguiI18n.lang === 'en') ? 'en' : 'es';
+  const __T = window.TrigguiTiendas || null;
+  const __mx = __T ? __T.enMexico() : true;
+  const __tc = libro.tienda_compra || null;
+  const __comprar = __T ? __T.comprar(libro, __idiomaCard, __mx)
+    : ((__tc && ((__tc.tienda === 'casadelibro' && /^https:\/\/casadelibro\.com\.mx\//.test(String(__tc.url || ''))) || (__tc.tienda === 'gandhi' && /^https:\/\/www\.gandhi\.com\.mx\//.test(String(__tc.url || '')))))
+        ? { url: String(__tc.url), tienda: __tc.tienda }
+        : { url: `https://www.gandhi.com.mx/?query=${encodeURIComponent(libro.titulo || tituloCard)}`, tienda: 'gandhi' });
+  const __explorar = __T ? __T.explorar(p, __mx) : { url: `https://casadelibro.com.mx/search/?q=${encodeURIComponent(p)}`, tienda: 'casadelibro' };
+  const __gandhi = __T ? __T.explorarGandhi(p, __mx) : { url: `https://www.gandhi.com.mx/?query=${encodeURIComponent(p)}`, tienda: 'gandhi' };
+  const __logoComprar = __comprar.tienda === 'casadelibro'
+    ? { src: '/tiendas/casadellibro-blanco.png', alt: 'Casa del Libro', cls: 'logo-casadelibro' }
+    : (__comprar.tienda === 'gandhi' ? { src: '/tiendas/gandhi-blanco.png', alt: 'Gandhi', cls: 'logo-gandhi' } : null);
+  const __txtComprar = TriggguiI18n.get(__logoComprar ? 'tienda.comprar' : 'tienda.comprarAmazon');
+  const __txtExplorar = TriggguiI18n.get('tienda.explorar');
   const portadaCard = __portadaDe(libro);   // 🖼️ C292: la misma portada propia (640 ya en caché desde el bloque)
   const portadaCardHTML = portadaCard
     ? `<img src="${__attr(portadaCard.src)}"${portadaCard.srcset ? ` srcset="${__attr(portadaCard.srcset)}" sizes="132px"` : ""} alt="${__attr(tituloCard)}" class="card-cover-float" decoding="async" onerror="if(this.dataset.f){this.onerror=null;this.style.display='none';return}this.dataset.f=1;this.removeAttribute('srcset');this.src='${__attr(String(portadaCard.origen || libro.portada || '').replace(/'/g, '%27').replace(/\\/g, '%5C'))}'">`
@@ -3919,35 +3944,38 @@ btnShare.onclick = () => {
 
       <div class="card-actions">
         
-        <div class="buscalibre-row">
-          <a href="${buscarlibreURL}" 
+        <div class="tiendas-row">
+          <a href="${__attr(__comprar.url)}" 
              target="_blank" 
              rel="noopener noreferrer"
              class="btn-action btn-comprar"
-             data-action="buscalibre-comprar">
-             <img src="https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/buscalibre.png" 
-                  alt="Buscalibre">
-             <span>Comprar</span>
+             data-action="comprar"
+             data-tienda="${__comprar.tienda}"
+             data-etiqueta="${__attr(__txtComprar)}">
+             ${__logoComprar ? `<img src="${__logoComprar.src}" class="${__logoComprar.cls}" alt="${__logoComprar.alt}">` : ''}
+             <span>${__txtComprar}</span>
           </a>
           
-          <a href="${explorarURL}" 
+          <a href="${__attr(__explorar.url)}" 
              target="_blank" 
              rel="noopener noreferrer"
              class="btn-action btn-explorar"
-             data-action="buscalibre-explorar">
+             data-action="explorar"
+             data-tienda="${__explorar.tienda}">
              <span class="btn-emoji">🔮</span>
           </a>
         </div>
-        
-        <a href="${penguinURL}" 
+        ${__gandhi ? `
+        <a href="${__attr(__gandhi.url)}" 
            target="_blank" 
            rel="noopener noreferrer"
-           class="btn-action btn-penguin"
-           data-action="penguin">
-           <img src="logopenguin.png" 
-                alt="Penguin Random House">
-           <span>Explorar en Penguin</span>
-        </a>
+           class="btn-action btn-gandhi"
+           data-action="explorar_gandhi"
+           data-tienda="gandhi"
+           data-etiqueta="${__attr(__txtExplorar)}">
+           <img src="/tiendas/gandhi-blanco.png" class="logo-gandhi" alt="Gandhi">
+           <span>${__txtExplorar}</span>
+        </a>` : ''}
         </div>
     </div>
   `;
@@ -3996,22 +4024,23 @@ btnShare.onclick = () => {
     let originalText = '';
     
     if (span) {
-      // Botones con texto (Comprar, Penguin)
+      // Botones con texto (Comprar, Explorar)
       originalText = span.textContent;
-      span.textContent = 'Abriendo...';
-    } else if (emojiSpan && action === 'buscalibre-explorar') {
+      span.textContent = TriggguiI18n.get('tienda.abriendo');
+    } else if (emojiSpan && action === 'explorar') {
       // Botón explorar (solo emoji): 🔮 → ⏳
       originalText = emojiSpan.textContent;
       emojiSpan.textContent = '⏳';
     }
     
-    // Tracking asíncrono
+    // Tracking asíncrono. B417: comprar_clicked, explorar_clicked y explorar_gandhi_clicked (GA4 solo acepta letras,
+    // números y guion bajo en el nombre; los de antes llevaban guion medio), con la tienda en su propio parámetro.
     try { 
-      track(`${action}_clicked`, { book: libro.titulo }); 
+      track(`${action}_clicked`, { book: libro.titulo, tienda: target.dataset.tienda || '' }); 
     } catch(_) {}
     
-    // 🎯 TIMEOUT DINÁMICO: Penguin (antes enviaflores) puede necesitar más tiempo
-    const timeoutDuration = action === 'penguin' ? 8000 : 4000;
+    // 🎯 TIMEOUT DINÁMICO: el sitio de Gandhi tarda más en abrir
+    const timeoutDuration = target.dataset.tienda === 'gandhi' ? 8000 : 4000;
     
     const timerId = setTimeout(() => {
       target.classList.remove('is-opening');
@@ -4046,7 +4075,7 @@ window.handleCardClick = function(e) {
   window.closeCard();
 }
 
-// 🌒 v4.8: foto del regreso desde la Tarjeta (Buscalibre / 🔮 / Penguin). En la app movil el WebView navega en la misma
+// 🌒 v4.8: foto del regreso desde la Tarjeta (Comprar / 🔮 / Explorar). En la app movil el WebView navega en la misma
 // vista y al volver Android RECARGA la pagina: la foto devuelve la pantalla inmediata anterior, con la Tarjeta abierta.
 window.__trigguiFotoTarjeta = function () {
   try {
@@ -7382,7 +7411,7 @@ window.__trigguiReponer = function () {
       window.addEventListener('click', function (ev) {
         if (!(window.__TRIGGUI_DATA__ && window.__TRIGGUI_DATA__.libros) && ev.target && ev.target.closest && ev.target.closest('#otro')) window.__trigguiDadoPendiente = true;
       }, true);
-      // 🌒 v4.8: la Tarjeta estaba abierta al salir (Buscalibre / 🔮 / Penguin): vuelve abierta, sin esperar el catalogo
+      // 🌒 v4.8: la Tarjeta estaba abierta al salir (Comprar / 🔮 / Explorar): vuelve abierta, sin esperar el catalogo
       if (__m.tarjeta) {
         // 🌒 v4.9: abrir SINCRONO (antes del primer paint): el primer cuadro del regreso ya es la Tarjeta
         try { const __b = document.getElementById('share'); if (__b && libro) __b.click(); } catch (e) {}
