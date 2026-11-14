@@ -21,12 +21,12 @@ export const TIENDAS = {
   casadelibro: {
     nombre: 'Casa del Libro',
     dominio: 'casadelibro.com.mx',
-    busqueda: (q) => `https://casadelibro.com.mx/search/?q=${encodeURIComponent(String(q || '').trim())}`,
+    busqueda: (q) => `https://casadelibro.com.mx/search/?q=${encodeURIComponent(String(q || '').replace(/\s+/g, ' ').trim())}`,
   },
   gandhi: {
     nombre: 'Gandhi',
     dominio: 'www.gandhi.com.mx',
-    busqueda: (q) => `https://www.gandhi.com.mx/?query=${encodeURIComponent(String(q || '').trim())}`,
+    busqueda: (q) => `https://www.gandhi.com.mx/?query=${encodeURIComponent(String(q || '').replace(/\s+/g, ' ').trim())}`,
   },
 };
 
