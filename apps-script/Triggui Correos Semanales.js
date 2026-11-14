@@ -10,7 +10,7 @@
  *    - Usa libro.tarjeta directamente (sin llamadas a OpenAI)
  *    - Pinta TODO con accent del libro (tarjeta.style.accent)
  *    - Eyebrow "EDICIÓN · #NNN" idéntico a la viva
- *    - Botones inferiores: Buscalibre + Bola Mágica + Penguin Random House
+ *    - Botones inferiores (B417): Comprar (Casa del Libro o Gandhi; fuera de México, Amazon) + Descubre + Explorar
  *
  * 2. CERO LLAMADAS A OPENAI
  *    - Eliminado construirPromptContenido + generarContenidoDesdeOpenAI
@@ -119,8 +119,12 @@ const TOKEN_OPEN  = "{{H}}";
 const TOKEN_CLOSE = "{{/H}}";
 
 /* ═══════════════════════════ URLS PÚBLICAS ══════════════════════════════ */
-const URL_BUSCALIBRE_LOGO = "https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/buscalibre.png";
-const URL_PENGUIN_LOGO    = "https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/logopenguin.png";
+// 🛒 B417 (14 de noviembre de 2026): los logos blancos de las tiendas, los mismos de la app y de las ediciones.
+const URL_LOGO_CASADELIBRO = "https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/tiendas/casadellibro-blanco.png";
+const URL_LOGO_GANDHI      = "https://raw.githubusercontent.com/badirnakid/triggui-app/main/public/tiendas/gandhi-blanco.png";
+// 🛒 B417: la liga de los botones. Un correo no sabe en qué país se abre: /ir/ manda a la tienda con la misma regla
+// de la app y las ediciones (México: Casa del Libro o Gandhi; fuera: Amazon del país del lector).
+const URL_IR = "https://app.triggui.com/ir/";
 
 /* ════════════════════ V20 KIDS PROMO BANNER ═══════════════════════════════
  * Banner promocional al inicio del email anunciando Triggui Kids.
@@ -147,7 +151,7 @@ const KIDS_URL_TARGET = "https://app.triggui.com/kids?utm_source=triggui&utm_med
  * 3. Layout título+portada con TABLA 2 columnas (no align="right")
  *    → resuelve espacio en blanco entre título y chip en iOS Mail
  * 4. parrafoTop/Bot full width (sin wrap problemático por la portada)
- * 5. Logos proporcionales: buscalibre 20px, penguin 36px
+ * 5. Logos proporcionales de las tiendas (B417: Casa del Libro 34px, Gandhi 22px)
  * 6. font-size:0 en <a> para alineación vertical de logos en iOS
  *
  * Espacio matemático para título (iPhone 390px viewport):
@@ -237,14 +241,15 @@ const TRIGGUI_STYLE_CONFIG = {
   buttonHeight: 54,
   buttonRadius: 14,
   buttonGap: 10,
-  buttonLogoBuscalibre: 18,             // 20 → 18 (más pequeño como pediste)
-  buttonLogoPenguin: 40,                // 36 → 40 (más grande como pediste)
-  buscalibreBg: "#000000",
-  buscalibreInk: "#FFFFFF",
+  // 🛒 B417: la proporción de la app (30:20 en botones de 48 px → 34:22 en estos de 54 px)
+  buttonLogoCasaDelLibro: 34,
+  buttonLogoGandhi: 22,
+  comprarBg:    "#000000",
+  comprarInk:   "#FFFFFF",
   descubreBg:   "#1F1F1F",
   descubreInk:  "#FFFFFF",
-  penguinBg:    "#101010",
-  penguinInk:   "#FFFFFF",
+  gandhiBg:     "#101010",
+  gandhiInk:    "#FFFFFF",
 
   /* Espacio entre tarjeta ES y tarjeta EN */
   espacioEntreVersiones: "24px",
@@ -265,23 +270,23 @@ const TRIGGUI_STYLE_CONFIG = {
   minContrastAAA: 7.0
 };
 
-/* ═══════════════════════ URLS BOTONES ESPAÑOL/INGLÉS ════════════════════ */
+/* ═══════════════════════ BOTONES ESPAÑOL/INGLÉS (B417) ══════════════════
+ * Las tres ligas pasan por /ir/ (URL_IR), que elige la tienda cuando el lector abre el botón.
+ * ═══════════════════════════════════════════════════════════════════════ */
 const URLS_BOTONES = {
-  es: {
-    buscalibre:  (query) => "https://www.buscalibre.com.mx/libros/search/?q=" + encodeURIComponent(query),
-    descubre:    (palabra) => "https://www.buscalibre.com.mx/libros/search/?q=" + encodeURIComponent(palabra),
-    penguin:     (palabra) => "https://www.penguinlibros.com/mx/?mot_q=" + encodeURIComponent(palabra),
-    descubreLabel: "Descubre"
-  },
-  en: {
-    // V18d: librería en inglés (bookdelivery.com como pediste)
-    buscalibre:  (query) => "https://www.bookdelivery.com/books/search/?q=" + encodeURIComponent(query),
-    descubre:    (palabra) => "https://www.bookdelivery.com/books/search/?q=" + encodeURIComponent(palabra),
-    // V18d: penguin US con query param ?q (formato pedido por Badir)
-    penguin:     (palabra) => "https://www.penguinrandomhouse.com/search/" + encodeURIComponent(palabra) + "?q=" + encodeURIComponent(palabra),
-    descubreLabel: "Discover"
-  }
+  es: { comprarLabel: "Comprar", descubreLabel: "Descubre", explorarLabel: "Explorar" },
+  en: { comprarLabel: "Buy the book", descubreLabel: "Discover", explorarLabel: "Explore" }
 };
+
+// La liga /ir/ con sus parámetros (los vacíos no van).
+function ligaIr(params) {
+  const partes = [];
+  Object.keys(params).forEach(function (k) {
+    const v = params[k];
+    if (v !== undefined && v !== null && String(v) !== "") partes.push(k + "=" + encodeURIComponent(String(v)));
+  });
+  return URL_IR + "?" + partes.join("&");
+}
 
 /* ═════════════════════════ MENSAJES INTRO/CTA ══════════════════════════
  * SAGRADO: no se toca. frequency=1 (sale en cada envío como pidió Badir).
@@ -776,9 +781,9 @@ function pickSinfonicaPhrase(libro, rolesPreferidos, idioma) {
 /**
  * pickRandomPalabra(libro) — selecciona palabra random de libro.palabras
  *
- * Usada para:
- *   - Bola mágica → buscalibre search
- *   - Penguin Random House → mot_q search
+ * Usada para (B417, por la liga /ir/):
+ *   - «Descubre» → la palabra en Casa del Libro (fuera de México, en Amazon)
+ *   - «Explorar» → la palabra en Gandhi
  *
  * Misma lógica que la viva línea 3352 (palabrasForCard random).
  */
@@ -911,35 +916,45 @@ function renderHighlights(text, palette) {
  * ══════════════════════════════════════════════════════════════════════════ */
 /* renderEyebrow está definida más abajo (V18d con label customizable) */
 
-/* ════════════════════ RENDER BOTONES INFERIORES V18c ═════════════════════
+/* ════════════════════ RENDER BOTONES INFERIORES (B417) ══════════════════
  *
- * V18c NIVEL DIOS: 3 botones apilados full-width con alineación cuántico-quark.
+ * 14 de noviembre de 2026: Casa del Libro y Gandhi en lugar de las dos tiendas anteriores, con la misma regla de la app
+ * y de las ediciones. Tres botones apilados a todo lo ancho (dos en inglés):
  *
  *   ┌──────────────────────────────────────┐
- *   │       [logo 20px] buscalibre         │  ← Buscalibre proporcionado
+ *   │   [logo de la tienda]  Comprar       │  ← la tienda que tiene el libro (Casa del Libro o Gandhi)
  *   ├──────────────────────────────────────┤  ← gap 10px
- *   │              Descubre                │  ← texto centrado
+ *   │              Descubre                │  ← la palabra, en Casa del Libro
  *   ├──────────────────────────────────────┤  ← gap 10px
- *   │   [logo 36px] Penguin Random House   │  ← Penguin proporcionado
+ *   │   [logo Gandhi]  Explorar            │  ← la palabra, en Gandhi (solo en español)
  *   └──────────────────────────────────────┘
  *
- * SECRETO CUÁNTICO-QUARK NIVEL DIOS:
- * Para alinear logos perfectamente verticalmente en iOS Mail/Outlook iOS,
- * el <a> debe tener font-size:0 (matar la altura residual de la línea
- * de texto). El <img> con vertical-align:middle queda perfectamente
- * centrado SIN compensar contra la línea-base del texto fantasma.
+ * Las ligas pasan por /ir/: el correo no sabe en qué país se abre, y /ir/ manda fuera de México a Amazon del
+ * país del lector. En inglés, «Buy the book» va sin logo: fuera de México no es ninguna de las dos tiendas.
+ * La tienda sale de libro.tienda_compra, que el horno marca en el catálogo; sin marca, Gandhi (por título).
  *
- * Para el botón Descubre (texto): font-size NO va a 0 porque hay texto.
+ * SECRETO CUÁNTICO-QUARK NIVEL DIOS (se conserva):
+ * El <a> con logo lleva font-size:0 para matar la altura residual de la línea en iOS Mail/Outlook iOS; la
+ * palabra junto al logo va en su propio <span> con su tamaño, alineada al centro igual que el logo.
  * ══════════════════════════════════════════════════════════════════════════ */
 function renderBotonesCompra(libro, palabraRandom, idioma) {
   const c = TRIGGUI_STYLE_CONFIG;
   const lang = (idioma === "en") ? "en" : "es";
-  const urls = URLS_BOTONES[lang];
+  const labels = URLS_BOTONES[lang];
 
-  const tituloAutor = String(libro.titulo || "") + " " + String(libro.autor || "");
-  const buscalibreURL = urls.buscalibre(tituloAutor.trim());
-  const descubreURL   = palabraRandom ? urls.descubre(palabraRandom) : buscalibreURL;
-  const penguinURL    = palabraRandom ? urls.penguin(palabraRandom)  : urls.penguin("");
+  const titulo = String(libro.titulo || "");
+  const tc = (libro.tienda_compra && typeof libro.tienda_compra === "object") ? libro.tienda_compra : {};
+  const marcada = (tc.tienda === "casadelibro" || tc.tienda === "gandhi");
+  const tienda = marcada ? tc.tienda : "gandhi";
+  const palabra = String(palabraRandom || "").trim() || titulo;
+  const comunes = { i: lang, s: libro._slug || "", o: "correo" };
+
+  const comprarURL = ligaIr(Object.assign({
+    a: "comprar", t: titulo, te: libro.titulo_en || "", au: libro.autor || "",
+    tn: marcada ? tc.tienda : "", u: marcada ? (tc.url || "") : ""
+  }, comunes));
+  const descubreURL = ligaIr(Object.assign({ a: "explorar", p: palabra }, comunes));
+  const gandhiURL   = ligaIr(Object.assign({ a: "gandhi", p: palabra }, comunes));
 
   const btnHeight = c.buttonHeight;
   const btnRadius = c.buttonRadius;
@@ -965,7 +980,7 @@ function renderBotonesCompra(libro, palabraRandom, idioma) {
     "line-height:0"
   ]).join(";");
 
-  // Estilo botón TEXTO (Descubre/Discover) — V18d más grande
+  // Estilo botón TEXTO (Descubre/Discover, y «Buy the book» en inglés) — V18d más grande
   const btnTextStyle = btnBaseStyle.concat([
     `font-family:${c.sans}`,
     `font-size:${fBtnDescubre.sz}`,
@@ -984,16 +999,29 @@ function renderBotonesCompra(libro, palabraRandom, idioma) {
     "text-decoration:none"
   ].join(";");
 
+  // La palabra junto al logo, con su propio tamaño (el <a> tiene font-size:0)
+  const txtJuntoAlLogo = (texto, ink) => `<span style="display:inline-block;vertical-align:middle;margin-left:10px;font-family:${c.sans};font-size:${fBtnDescubre.sz};font-weight:${fBtnDescubre.w};line-height:1;letter-spacing:0.02em;color:${ink};mso-line-height-rule:exactly;">${_esc(texto)}</span>`;
+
   // Ghost span para alineación vertical en clientes con font-size:0
   const ghostSpan = `<span style="display:inline-block;height:${btnHeight}px;vertical-align:middle;line-height:${btnHeight}px;font-size:0;">&zwj;</span>`;
 
-  // Botón 1: Buscalibre / Bookdelivery
-  const btnBuscalibre = `
-    <a href="${_esc(buscalibreURL)}" target="_blank" rel="noopener noreferrer" style="
+  // Botón 1: Comprar — en español con el logo de la tienda que tiene el libro; en inglés, solo texto
+  const logoComprar = tienda === "casadelibro"
+    ? { src: URL_LOGO_CASADELIBRO, alt: "Casa del Libro", h: c.buttonLogoCasaDelLibro }
+    : { src: URL_LOGO_GANDHI, alt: "Gandhi", h: c.buttonLogoGandhi };
+  const btnComprar = (lang === "es")
+    ? `
+    <a href="${_esc(comprarURL)}" target="_blank" rel="noopener noreferrer" style="
       ${btnLogoStyle};
-      background:${c.buscalibreBg};
-      color:${c.buscalibreInk};
-    ">${ghostSpan}<img src="${URL_BUSCALIBRE_LOGO}" alt="${lang==='en' ? 'Bookdelivery' : 'Buscalibre'}" height="${c.buttonLogoBuscalibre}" style="${imgStyle(c.buttonLogoBuscalibre)}"></a>`.trim();
+      background:${c.comprarBg};
+      color:${c.comprarInk};
+    ">${ghostSpan}<img src="${logoComprar.src}" alt="${logoComprar.alt}" height="${logoComprar.h}" style="${imgStyle(logoComprar.h)}">${txtJuntoAlLogo(labels.comprarLabel, c.comprarInk)}</a>`.trim()
+    : `
+    <a href="${_esc(comprarURL)}" target="_blank" rel="noopener noreferrer" style="
+      ${btnTextStyle};
+      background:${c.comprarBg};
+      color:${c.comprarInk};
+    ">${_esc(labels.comprarLabel)}</a>`.trim();
 
   // Botón 2: Descubre / Discover (texto, V18d más grande)
   const btnDescubre = `
@@ -1001,23 +1029,24 @@ function renderBotonesCompra(libro, palabraRandom, idioma) {
       ${btnTextStyle};
       background:${c.descubreBg};
       color:${c.descubreInk};
-    ">${urls.descubreLabel}</a>`.trim();
+    ">${labels.descubreLabel}</a>`.trim();
 
-  // Botón 3: Penguin Random House (logo más grande)
-  const btnPenguin = `
-    <a href="${_esc(penguinURL)}" target="_blank" rel="noopener noreferrer" style="
+  // Botón 3: Explorar en Gandhi (solo en español)
+  const btnGandhi = `
+    <a href="${_esc(gandhiURL)}" target="_blank" rel="noopener noreferrer" style="
       ${btnLogoStyle};
-      background:${c.penguinBg};
-      color:${c.penguinInk};
-    ">${ghostSpan}<img src="${URL_PENGUIN_LOGO}" alt="Penguin Random House" height="${c.buttonLogoPenguin}" style="${imgStyle(c.buttonLogoPenguin)}"></a>`.trim();
+      background:${c.gandhiBg};
+      color:${c.gandhiInk};
+    ">${ghostSpan}<img src="${URL_LOGO_GANDHI}" alt="Gandhi" height="${c.buttonLogoGandhi}" style="${imgStyle(c.buttonLogoGandhi)}">${txtJuntoAlLogo(labels.explorarLabel, c.gandhiInk)}</a>`.trim();
 
+  const separador = `<tr><td height="${c.buttonGap}" style="height:${c.buttonGap}px;line-height:${c.buttonGap}px;font-size:0;">&nbsp;</td></tr>`;
   return `
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:18px;">
-    <tr><td>${btnBuscalibre}</td></tr>
-    <tr><td height="${c.buttonGap}" style="height:${c.buttonGap}px;line-height:${c.buttonGap}px;font-size:0;">&nbsp;</td></tr>
-    <tr><td>${btnDescubre}</td></tr>
-    <tr><td height="${c.buttonGap}" style="height:${c.buttonGap}px;line-height:${c.buttonGap}px;font-size:0;">&nbsp;</td></tr>
-    <tr><td>${btnPenguin}</td></tr>
+    <tr><td>${btnComprar}</td></tr>
+    ${separador}
+    <tr><td>${btnDescubre}</td></tr>${lang === "es" ? `
+    ${separador}
+    <tr><td>${btnGandhi}</td></tr>` : ""}
   </table>`.trim();
 }
 
@@ -1073,8 +1102,9 @@ function renderLogoStrip() {
  *   ║ Subtítulo accent                      ║
  *   ║ Párrafo bottom con [highlights]       ║
  *   ╚═══════════════════════════════════════╝
- *   [Comprar Buscalibre] [🔮]
- *   [Penguin Random House]
+ *   [Comprar · Casa del Libro o Gandhi]
+ *   [Descubre]
+ *   [Explorar · Gandhi]            (en inglés: [Buy the book] [Discover])
  *   ─── logo Triggui ───
  *   @triggui · triggui.com
  *   FOOTER CTA: Recibe Triggui...
@@ -1278,10 +1308,10 @@ function renderTarjetaCard(libro, portadaRef, tarjetaKey, idioma, palabrasKey) {
  * Estructura:
  *   ┌─ Intro CTA (esporádico)
  *   ├─ TARJETA ES: EDICIÓN · #043 + Cuestión de límites
- *   │  └─ Botones: Buscalibre / Descubre / Penguin
+ *   │  └─ Botones: Comprar / Descubre / Explorar (por /ir/)
  *   ├─ Divisor "—  English version  —"
  *   ├─ TARJETA EN: EDITION · #043 + The Set Boundaries Workbook
- *   │  └─ Botones: Bookdelivery / Discover / Penguin RH
+ *   │  └─ Botones: Buy the book / Discover (por /ir/)
  *   ├─ Logo Triggui footer
  *   └─ Footer CTA permanente
  * ══════════════════════════════════════════════════════════════════════════ */
@@ -4362,9 +4392,12 @@ function rutaDiagnostico(params) {
     out.promoWhatsApp = (low.indexOf("whatsapp") >= 0 || h.indexOf("wa.me") >= 0);
     out.footerCta = (h.indexOf("triggui.com") >= 0);
     out.botones = {
-      buscalibre: low.indexOf("buscalibre") >= 0,
+      // 🛒 B417: los botones pasan por /ir/; las tiendas viejas ya no deben aparecer (se esperan en false).
+      ir: h.indexOf(URL_IR) >= 0,
+      casadelibro: low.indexOf("casadelibro") >= 0 || low.indexOf("casadellibro") >= 0,
+      gandhi: low.indexOf("gandhi") >= 0,
       amazon: low.indexOf("amazon") >= 0,
-      penguin: low.indexOf("penguin") >= 0
+      tiendasViejas: low.indexOf("busca" + "libre") >= 0 || low.indexOf("pen" + "guin") >= 0
     };
     out.placeholdersSinReemplazar = (h.indexOf("{{") >= 0);
     /* 🔬 Detección EXACTA (nada de regex adivinando): se compara contra los
