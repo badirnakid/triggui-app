@@ -198,14 +198,28 @@ export function clavesDeAutor(autor) {
   return [...new Set(claves)];
 }
 
-/** true si coincide; false si no; null si el autor de Triggui no se conoce */
+/** ¿a y b difieren en a lo más una letra (una de más, una de menos o una cambiada)? */
+function unaLetra(a, b) {
+  if (a === b) return true;
+  if (Math.abs(a.length - b.length) > 1) return false;
+  let i = 0;
+  while (i < a.length && i < b.length && a[i] === b[i]) i++;
+  if (a.length === b.length) return a.slice(i + 1) === b.slice(i + 1);
+  return a.length > b.length ? a.slice(i + 1) === b.slice(i) : a.slice(i) === b.slice(i + 1);
+}
+
+/**
+ * true si coincide; false si no; null si el autor de Triggui no se conoce.
+ * Un apellido de 6 letras o más se acepta con una letra de diferencia: las tiendas traen erratas («Jürgen Klari»
+ * por Klaric). El título ya tiene que coincidir aparte, así que el riesgo de confundir dos libros es mínimo.
+ */
 export function coincideAutor(autorTriggui, autoresCandidato) {
   const claves = clavesDeAutor(autorTriggui);
   if (!claves.length) return null;
   const lista = Array.isArray(autoresCandidato) ? autoresCandidato : [autoresCandidato];
   const delCandidato = new Set(lista.flatMap((a) => palabras(a)));
   if (!delCandidato.size) return false;
-  return claves.some((c) => delCandidato.has(c));
+  return claves.some((c) => delCandidato.has(c) || (c.length >= 6 && [...delCandidato].some((w) => w.length >= 5 && unaLetra(c, w))));
 }
 
 /** ¿aparece el apellido de algún autor de Triggui como palabra entera dentro de un texto? */
@@ -424,9 +438,16 @@ async function casaDelLibroPorTitulo(leer, libro, isbnsDescartados) {
     if (!f.ok) continue;
     const ficha = fichaCasaDelLibro(f.cuerpo);
     if (!coincideTitulo(libro.titulo, ficha.titulo || t.nombre)) continue;
-    if (autorEnTexto(libro.autor, `${ficha.titulo} ${ficha.descripcion}`) !== true) continue;
     const isbn = esIsbn13(ficha.sku) ? ficha.sku.replace(/[^0-9]/g, '') : null;
     if (isbn && isbnsDescartados.has(isbn)) continue;
+    // El autor: en la página (título o descripción), o, si la página no lo dice (muchas no lo traen), en Gandhi por
+    // el ISBN de esa misma ficha: el mismo ISBN con el mismo autor es el mismo libro.
+    let autorOk = autorEnTexto(libro.autor, `${ficha.titulo} ${ficha.descripcion}`) === true;
+    if (!autorOk && isbn) {
+      const porIsbn = await buscarGandhi(leer, isbn);
+      autorOk = porIsbn.some((c) => c.isbn === isbn && coincideAutor(libro.autor, c.autores) === true);
+    }
+    if (!autorOk) continue;
     return { nombre: ficha.titulo || t.nombre || null, url: t.url, isbn, disponible: ficha.disponible };
   }
   return null;

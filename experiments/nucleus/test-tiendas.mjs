@@ -90,6 +90,10 @@ prueba('autores', () => {
   assert.equal(coincideAutor('Osho', ['. Osho']), true);
   assert.equal(coincideAutor('Disney Books', ['Disney']), true);
   assert.equal(coincideAutor('Robin Sharma', ['Jordan B. Peterson']), false);
+  assert.equal(coincideAutor('Jürgen Klaric', ['Jürgen Klari']), true);
+  assert.equal(coincideAutor('Jürgen Klaric', ['Jürgen Klarico']), true);
+  assert.equal(coincideAutor('Brian Tracy', ['Brian Trace']), false);
+  assert.equal(coincideAutor('Greg McKeown', ['Greg McKean']), false);
   assert.equal(coincideAutor('Robin Sharma', []), false);
   assert.equal(coincideAutor('Autor desconocido', ['Jordan B. Peterson']), null);
   assert.equal(autorEnTexto('Jordan B. Peterson', 'Jordan Peterson, el pensador más polémico'), true);
