@@ -7,7 +7,7 @@ import { dirname, join } from 'node:path';
 import {
   normalizar, tituloCorto, coincideTitulo, coincideAutor, clavesDeAutor, autorEnTexto, esIsbn13,
   candidatoGandhi, esFisico, elegirGandhi, tarjetasCasaDelLibro, fichaCasaDelLibro, revisarLibro,
-  claveLibro, destinoComprar, TIENDAS,
+  claveLibro, destinoComprar, TIENDAS, crearLector,
 } from './tiendas.mjs';
 
 const aqui = dirname(fileURLToPath(import.meta.url));
@@ -188,4 +188,38 @@ prueba('clave del horno y búsquedas', () => {
 });
 
 await pruebasConRed();
+
+// El lector: un rechazo (403) es una falla sin reintentos; una página que no existe (404) es «no hay nada ahí».
+{
+  let llamadas = 0;
+  const responde = (status) => async () => { llamadas++; return { ok: status < 400, status, json: async () => ({}), text: async () => '' }; };
+  llamadas = 0;
+  const l403 = crearLector({ intervaloMs: 0, fetchImpl: responde(403) });
+  await assert.rejects(l403('https://casadelibro.com.mx/search/?q=x'), /HTTP 403/);
+  assert.equal(llamadas, 1, 'un 403 no se reintenta');
+  llamadas = 0;
+  const l404 = crearLector({ intervaloMs: 0, fetchImpl: responde(404) });
+  assert.deepEqual(await l404('https://casadelibro.com.mx/productos/no-existe/'), { ok: false, status: 404, cuerpo: '' });
+  assert.equal(llamadas, 1);
+  pruebas++;
+}
+
+// /tiendas.js (la regla de la app, las ediciones y /ir/): llaves raras y caracteres partidos no la rompen.
+{
+  const vm = await import('node:vm');
+  const ctx = { window: {}, navigator: { language: 'es-MX' }, Intl };
+  vm.createContext(ctx);
+  vm.runInContext(readFileSync(join(aqui, '..', '..', 'public', 'tiendas.js'), 'utf8'), ctx);
+  const T = ctx.window.TrigguiTiendas;
+  for (const tienda of ['constructor', 'toString', '__proto__', 'hasOwnProperty']) {
+    const r = T.comprar({ titulo: 'Esencialismo', tienda_compra: { tienda, url: 'https://www.gandhi.com.mx/a' } }, 'es', true);
+    assert.equal(r.url, 'https://www.gandhi.com.mx/?query=Esencialismo', tienda);
+  }
+  assert.equal(T.comprar({ titulo: 'a\ud800b' }, 'es', true).url, 'https://www.gandhi.com.mx/?query=a%EF%BF%BDb');
+  assert.equal(T.comprar({ titulo: 'x', tienda_compra: { tienda: 'casadelibro', url: 'https://casadelibro.com.mx.evil.example/p' } }, 'es', true).tienda, 'gandhi');
+  assert.equal(T.tituloCorto(' (Edición) Libro'), '(Edición) Libro');
+  assert.equal(T.tituloCorto('Título  - Sub'), 'Título');
+  pruebas++;
+}
+
 console.log(`✓ tiendas: ${pruebas} pruebas en verde`);

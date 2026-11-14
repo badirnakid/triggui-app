@@ -79,12 +79,24 @@ const ARTICULOS_INICIALES = new Set(['el', 'la', 'los', 'las', 'un', 'una', 'the
  */
 export function tituloCorto(t) {
   const s = String(t ?? '');
-  let corte = s.search(/\s*(?::|\s[-–—]\s|\(|\[|\|)/);
-  // [A-Za-zÀ-ÿ0-9], no \p{L}: así es idéntica a la de /tiendas.js, que corre también en navegadores viejos.
-  for (const m of s.matchAll(/([A-Za-zÀ-ÿ0-9]+)\.\s/g)) {
-    if (m[1].length >= 4 && (corte < 0 || m.index + m[1].length < corte)) { corte = m.index + m[1].length; break; }
+  // El separador se busca sin «\s*» delante (con él, muchos espacios seguidos volvían cuadrática la búsqueda) y
+  // después el corte retrocede sobre los espacios de antes: queda exactamente donde lo dejaba «\s*(…)».
+  let corte = s.search(/:|\s[-–—]\s|\(|\[|\|/);
+  while (corte > 0 && /\s/.test(s[corte - 1])) corte--;
+  // Una palabra de 4 letras o más seguida de «. » corta antes, si está antes del separador. Se recorre punto por
+  // punto hacia atrás (lineal) en lugar de con una expresión que retrocede; letras: [A-Za-zÀ-ÿ0-9], las mismas de
+  // /tiendas.js, que corre también en navegadores viejos.
+  for (let i = s.indexOf('.'); i !== -1; i = s.indexOf('.', i + 1)) {
+    if (!/\s/.test(s.charAt(i + 1))) continue;
+    let j = i;
+    while (j > 0 && esLetraCorta(s.charAt(j - 1))) j--;
+    if (i - j >= 4 && (corte < 0 || i < corte)) { corte = i; break; }
   }
   return (corte > 0 ? s.slice(0, corte) : s).trim();
+}
+
+function esLetraCorta(c) {
+  return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || (c >= '\u00C0' && c <= '\u00FF');
 }
 
 function palabras(s) {
@@ -328,10 +340,15 @@ export function crearLector({ intervaloMs = 1000, topeMs = 20000, reintentos = 3
         peticiones++;
         const r = await fetchImpl(url, { headers: { 'User-Agent': UA, ...encabezados }, signal: ctrl.signal, redirect: 'follow' });
         if (r.status === 429 || r.status >= 500) throw new Error(`HTTP ${r.status}`);
-        if (!r.ok) return { ok: false, status: r.status, cuerpo: json ? null : '' };
+        // 404 y 410 son «esa página no existe» (una ficha que se quitó): no hay libro ahí. Cualquier otro rechazo
+        // (403 de un muro contra robots, 401…) es una falla de lectura y no un «no se consigue»: se lanza, sin
+        // reintentar, para que el libro quede por revisar y no marcado como que no está.
+        if (r.status === 404 || r.status === 410) return { ok: false, status: r.status, cuerpo: json ? null : '' };
+        if (!r.ok) { const rechazo = new Error(`HTTP ${r.status}`); rechazo.definitivo = true; throw rechazo; }
         return { ok: true, status: r.status, cuerpo: json ? await r.json() : await r.text() };
       } catch (e) {
         error = e;
+        if (e && e.definitivo) break;
         await dormir(1500 * intento);
       } finally {
         clearTimeout(reloj);

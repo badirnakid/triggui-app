@@ -10,14 +10,15 @@
 //       Para «📘»: revisa el libro (de nuevo si su revisión tiene 25 días o más) y sale con 0 si se consigue. Si no,
 //       sale con 3 y dice por qué, salvo --forzar (la casilla «forzar_sin_tienda» del flujo).
 //
-//   node tiendas-horno.mjs marcar --contenido <contenido.json> [--contenido <otro.json>] --tiendas <tiendas.json> [--vencidos 0]
+//   node tiendas-horno.mjs marcar --contenido <contenido.json> [--contenido <otro.json>] --tiendas <tiendas.json> [--vencidos 0] [--nuevos 40]
 //       Escribe en cada libro el campo nuevo «tienda_compra» ({tienda, url, isbn, revisado}) con la marca de
 //       tiendas.json. Solo agrega o actualiza ese campo: no renombra ni cambia la forma de nada (las
 //       instalaciones viejas de Android solo admiten campos nuevos).
 //
 // Frescura sin tareas programadas: los libros que no están en tiendas.json (los nuevos) se revisan al filtrar hasta
-// --nuevos por corrida (80; los que pasen esperan a la siguiente y no se eligen mientras), y siempre al marcar y al
-// revisar. De los que tienen 25 días o más se revisan, por corrida, solo los --vencidos más viejos (40 al filtrar,
+// --nuevos por corrida (80 al filtrar, 40 al marcar; los que pasen esperan a la siguiente y mientras no se eligen o
+// llevan a la búsqueda de Gandhi), y siempre al revisar. Tres fallas de lectura seguidas detienen las revisiones de
+// la corrida. De los que tienen 25 días o más se revisan, por corrida, solo los --vencidos más viejos (40 al filtrar,
 // 0 al marcar), para que una corrida del horno nunca se alargue. La revisión completa la hace a mano tiendas.yml.
 // Una falla de red nunca borra una marca buena: se conserva la anterior y se reintenta en la siguiente corrida.
 // Si al revisar de nuevo más de la mitad de los que se conseguían (de 10 o más) dejan de conseguirse, lo más
@@ -57,9 +58,9 @@ function leerTiendas(ruta) {
   return { version: VERSION_TIENDAS, libros: {} };
 }
 
-function escribirJson(ruta, objeto, indent = 1) {
+function escribirJson(ruta, objeto, indent = 1, finDeRenglon = true) {
   const tmp = `${ruta}.tmp`;
-  writeFileSync(tmp, `${JSON.stringify(objeto, null, indent)}\n`, 'utf8');
+  writeFileSync(tmp, `${JSON.stringify(objeto, null, indent)}${finDeRenglon ? '\n' : ''}`, 'utf8');
   renameSync(tmp, ruta);
 }
 
@@ -96,12 +97,23 @@ async function asegurar(d, libros, leer, etiqueta, vencidos = 0, nuevos = Infini
     console.log(`::notice::🛒 ${viejos.length - tope} libro(s) de ${etiqueta} tienen su revisión de tiendas vencida y se usan así en esta corrida; la revisión completa es el flujo «🛒 Tiendas» (tiendas.yml).`);
   }
   const antes = {};
-  for (const [clave, l] of [...faltan, ...viejos.slice(0, tope)]) {
+  let fallasSeguidas = 0;
+  const cola = [...faltan, ...viejos.slice(0, tope)];
+  for (let n = 0; n < cola.length; n++) {
+    const [clave, l] = cola[n];
+    // Tres fallas de lectura seguidas: las tiendas no responden desde aquí. Se deja el resto para la siguiente
+    // corrida (así una red caída no alarga la corrida del horno ni marca nada en falso).
+    if (fallasSeguidas >= 3) {
+      console.log(`::warning::🛒 Casa del Libro o Gandhi no responden (3 fallas seguidas): ${cola.length - n} libro(s) de ${etiqueta} quedan para la siguiente corrida.`);
+      break;
+    }
     const previo = d.libros[clave];
     antes[clave] = previo;
     try {
       d.libros[clave] = { ...(await revisarLibro(l, leer, { hoy: hoy() })), fuentes: [...new Set([...(previo?.fuentes || []), etiqueta])] };
+      fallasSeguidas = 0;
     } catch (e) {
+      fallasSeguidas++;
       const error = String(e.message || e).slice(0, 200);
       d.libros[clave] = previo && !falta(previo)
         ? { ...previo, ultimo_error: error }   // la marca buena se queda; se reintenta en la siguiente corrida
@@ -143,7 +155,12 @@ async function filtrar(a) {
     if (libros[i].titulo && r && SE_CONSIGUE.has(r.tienda)) conservar.push(columnas.map((c) => celda(f[c])).join(','));
     else fuera++;
   });
-  if (!conservar.length) throw new Error(`Ningún libro de ${a.csv} se consigue: no se escribe una base vacía`);
+  if (!conservar.length) {
+    const sinLeer = libros.filter((l) => falta(d.libros[claveLibro(l.titulo, l.autor)])).length;
+    throw new Error(sinLeer
+      ? `Ningún libro de ${a.csv} quedó como que se consigue: ${sinLeer} no se pudieron revisar (las tiendas no respondieron). La base original no cambió; vuelve a correr más tarde, o corre el flujo «🛒 Tiendas».`
+      : `Ningún libro de ${a.csv} se consigue en Casa del Libro ni en Gandhi: no se escribe una base vacía.`);
+  }
   // La salida suele ser el enlace que el flujo hizo a la base original: escribir a través de él la cambiaría.
   // Se quita el enlace y se escribe un archivo propio; si la salida es la misma base, se detiene.
   if (realpathSync(a.csv) === (existsSync(a.salida) ? realpathSync(a.salida) : null) && !lstatSync(a.salida).isSymbolicLink()) {
@@ -165,7 +182,8 @@ async function revisar(a) {
   if (a.libroJson) {
     // El libro que dejó validate-book.js (/tmp/triggui-book.json): el que de verdad se va a generar.
     const b = JSON.parse(readFileSync(a.libroJson, 'utf8'));
-    libro = { titulo: String(b.titulo || '').trim(), autor: String(b.autor || '').trim() };
+    const isbn = String(b.isbn ?? '').replace(/[^0-9]/g, '');
+    libro = { titulo: String(b.titulo || '').trim(), autor: String(b.autor || '').trim(), isbn: esIsbn13(isbn) ? isbn : null };
   } else {
     libro = partirLibro(a.libro);
   }
@@ -206,7 +224,7 @@ async function marcar(a) {
     await asegurar(d, libros.map((b) => ({
       titulo: String(b.titulo || '').trim(), autor: String(b.autor || '').trim(),
       isbn: [b.verified_identity?.isbn13, b.verified_identity?.isbn].map((v) => String(v ?? '').replace(/[^0-9]/g, '')).find(esIsbn13) || null,
-    })), leer, ruta.split('/').pop(), a.vencidos ?? 0);
+    })), leer, ruta.split('/').pop(), a.vencidos ?? 0, a.nuevos ?? 40);
     let cambiados = 0;
     for (const b of libros) {
       const r = d.libros[claveLibro(b.titulo, b.autor)];
@@ -217,9 +235,11 @@ async function marcar(a) {
       if (JSON.stringify(b.tienda_compra) !== JSON.stringify(nuevo)) { b.tienda_compra = nuevo; cambiados++; }
     }
     if (cambiados) {
-      // Se respeta la sangría del archivo para que el diff solo muestre los campos nuevos.
-      const sangria = (readFileSync(ruta, 'utf8').match(/^\{\s*\n(\s+)"/) || [])[1] || '  ';
-      escribirJson(ruta, json, sangria.length);
+      // Se respetan la sangría y el final del archivo (con o sin salto de renglón) para que el diff solo muestre
+      // los campos nuevos.
+      const original = readFileSync(ruta, 'utf8');
+      const sangria = (original.match(/^\{\s*\n(\s+)"/) || [])[1] || '  ';
+      escribirJson(ruta, json, sangria.length, original.endsWith('\n'));
     }
     console.log(`🛒 ${ruta.split('/').pop()}: ${cambiados} libro(s) con su tienda_compra al día`);
   }

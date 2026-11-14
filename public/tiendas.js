@@ -66,16 +66,42 @@
     return 'amazon.com';
   }
 
-  function enc(s) { return encodeURIComponent(String(s == null ? '' : s).replace(/\s+/g, ' ').trim()); }
+  // Un carácter partido (medio par sustituto) haría fallar encodeURIComponent: se cambia por «�», como hace Python.
+  function bienFormado(s) {
+    if (!/[\uD800-\uDFFF]/.test(s)) return s;
+    var r = '';
+    for (var i = 0; i < s.length; i++) {
+      var c = s.charCodeAt(i);
+      if (c >= 0xD800 && c <= 0xDBFF) {
+        var d = s.charCodeAt(i + 1);
+        if (d >= 0xDC00 && d <= 0xDFFF) { r += s.charAt(i) + s.charAt(i + 1); i++; } else { r += '\uFFFD'; }
+      } else if (c >= 0xDC00 && c <= 0xDFFF) {
+        r += '\uFFFD';
+      } else {
+        r += s.charAt(i);
+      }
+    }
+    return r;
+  }
+  function enc(s) { return encodeURIComponent(bienFormado(String(s == null ? '' : s)).replace(/\s+/g, ' ').trim()); }
 
   // El título sin subtítulo. Es la misma regla, carácter por carácter, que tituloCorto() del horno
   // (experiments/nucleus/tiendas.mjs) y que tienda_titulo_corto() de las ediciones (scripts/build-editions.py).
+  function esLetra(c) {
+    return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || (c >= '\u00C0' && c <= '\u00FF');
+  }
+
   function tituloCorto(t) {
     var s = String(t == null ? '' : t);
-    var corte = s.search(/\s*(?::|\s[-–—]\s|\(|\[|\|)/);
-    var re = /([A-Za-zÀ-ÿ0-9]+)\.\s/g, m;
-    while ((m = re.exec(s))) {
-      if (m[1].length >= 4 && (corte < 0 || m.index + m[1].length < corte)) { corte = m.index + m[1].length; break; }
+    // El separador sin «\s*» delante y luego hacia atrás sobre los espacios: el mismo corte, en tiempo lineal.
+    var corte = s.search(/:|\s[-–—]\s|\(|\[|\|/);
+    while (corte > 0 && /\s/.test(s.charAt(corte - 1))) corte--;
+    // Una palabra de 4 letras o más seguida de «. », si está antes del separador.
+    for (var i = s.indexOf('.'); i !== -1; i = s.indexOf('.', i + 1)) {
+      if (!/\s/.test(s.charAt(i + 1))) continue;
+      var j = i;
+      while (j > 0 && esLetra(s.charAt(j - 1))) j--;
+      if (i - j >= 4 && (corte < 0 || i < corte)) { corte = i; break; }
     }
     return (corte > 0 ? s.slice(0, corte) : s).trim();
   }
@@ -97,7 +123,7 @@
     if (mexico == null) mexico = enMexico();
     if (mexico) {
       var tc = libro.tienda_compra;
-      if (tc && DOMINIO_DE[tc.tienda] && DOMINIO_DE[tc.tienda].test(String(tc.url || ''))) {
+      if (tc && Object.prototype.hasOwnProperty.call(DOMINIO_DE, tc.tienda) && DOMINIO_DE[tc.tienda].test(String(tc.url || ''))) {
         return { url: String(tc.url), tienda: tc.tienda };
       }
       return { url: gandhi(tituloCorto(libro.titulo)), tienda: 'gandhi' };

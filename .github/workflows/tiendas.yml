@@ -76,10 +76,8 @@ jobs:
           for f in contenido.json contenido_kids.json contenido_manual.json contenido_kids_manual.json; do
             if [ -f "$C/$f" ]; then args+=(--contenido "$C/$f"); fi
           done
+          # Los catálogos públicos (*_publico.json) no se tocan aquí: los vuelve a derivar el horno en su corrida.
           node experiments/nucleus/tiendas-horno.mjs marcar "${args[@]}" --tiendas "$C/data/tiendas.json"
-          for f in contenido.json contenido_kids.json; do
-            if [ -f "$C/$f" ]; then node scripts/derivar-publico.mjs "$C/$f"; fi
-          done
 
       - name: 📤 Guardar en triggui-content
         working-directory: triggui-content
@@ -87,8 +85,7 @@ jobs:
           set -euo pipefail
           git config user.name "Triggui Bot"
           git config user.email "bot@triggui.com"
-          for f in data/tiendas.json contenido.json contenido_kids.json contenido_manual.json contenido_kids_manual.json \
-                   contenido_publico.json contenido_kids_publico.json; do
+          for f in data/tiendas.json contenido.json contenido_kids.json contenido_manual.json contenido_kids_manual.json; do
             if [ -f "$f" ]; then git add "$f"; fi
           done
           if git diff --cached --quiet; then echo "🟡 Sin cambios"; exit 0; fi

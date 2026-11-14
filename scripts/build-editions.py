@@ -148,8 +148,7 @@ def js_string(value):
 # /tiendas.js (el «\s» de Python no es el mismo conjunto).
 _TG_ESPACIOS = "\t\n\v\f\r   " + "".join(chr(c) for c in range(0x2000, 0x200B)) + "    　﻿"
 _TG_ESP = "[" + re.escape(_TG_ESPACIOS) + "]"
-_TG_CORTE_RE = re.compile(_TG_ESP + r"*(?::|" + _TG_ESP + r"[-–—]" + _TG_ESP + r"|\(|\[|\|)")
-_TG_PUNTO_RE = re.compile(r"([A-Za-zÀ-ÿ0-9]+)\." + _TG_ESP)
+_TG_CORTE_RE = re.compile(r":|" + _TG_ESP + r"[-–—]" + _TG_ESP + r"|\(|\[|\|")
 _TG_RACHA_RE = re.compile(_TG_ESP + "+")
 TIENDA_DOMINIO = {
     "casadelibro": re.compile(r"^https://casadelibro\.com\.mx/"),
@@ -161,21 +160,36 @@ TIENDA_LOGO = {
 }
 
 
+def _tg_es_letra(c):
+    return ("A" <= c <= "Z") or ("a" <= c <= "z") or ("0" <= c <= "9") or ("\u00c0" <= c <= "\u00ff")
+
+
 def tienda_titulo_corto(titulo):
-    """El título sin subtítulo: tituloCorto() de /tiendas.js y de experiments/nucleus/tiendas.mjs."""
+    """El título sin subtítulo: tituloCorto() de /tiendas.js y de experiments/nucleus/tiendas.mjs, paso por paso."""
     s = str(titulo if titulo is not None else "")
     m = _TG_CORTE_RE.search(s)
     corte = m.start() if m else -1
-    for p in _TG_PUNTO_RE.finditer(s):
-        if len(p.group(1)) >= 4 and (corte < 0 or p.start() + len(p.group(1)) < corte):
-            corte = p.start() + len(p.group(1))
-            break
+    while corte > 0 and s[corte - 1] in _TG_ESPACIOS:   # el corte vuelve sobre los espacios de antes del separador
+        corte -= 1
+    i = s.find(".")
+    while i != -1:                                       # una palabra de 4 letras o más seguida de «. »
+        if i + 1 < len(s) and s[i + 1] in _TG_ESPACIOS:
+            j = i
+            while j > 0 and _tg_es_letra(s[j - 1]):
+                j -= 1
+            if i - j >= 4 and (corte < 0 or i < corte):
+                corte = i
+                break
+        i = s.find(".", i + 1)
     return (s[:corte] if corte > 0 else s).strip(_TG_ESPACIOS)
 
 
 def tienda_enc(texto):
-    """encodeURIComponent(String(s).replace(/\\s+/g, ' ').trim()), como enc() de /tiendas.js."""
-    s = _TG_RACHA_RE.sub(" ", str(texto if texto is not None else "")).strip(" ")
+    """encodeURIComponent(String(s).replace(/\\s+/g, ' ').trim()), como enc() de /tiendas.js (un medio par
+    sustituto suelto se vuelve «�», igual que allá)."""
+    s = str(texto if texto is not None else "")
+    s = s.encode("utf-16-le", "surrogatepass").decode("utf-16-le", "replace")
+    s = _TG_RACHA_RE.sub(" ", s).strip(" ")
     return urllib.parse.quote(s, safe="!*'()")
 
 
@@ -250,7 +264,7 @@ TIENDAS_FUNCION_JS = r"""/* 🛒 B417 · Tiendas, con la misma regla que la app 
    Casa del Libro o Gandhi, y 🔮 y «Explorar» buscan la palabra del momento en Casa del Libro y en Gandhi.
    Fuera de México, Amazon del país del lector, con el título en el idioma de la página. Mientras /tiendas.js
    no llega (o si no llega), se quedan las ligas de México que trae la página. */
-function tgEnc(s) { return encodeURIComponent(String(s == null ? '' : s).replace(/\s+/g, ' ').trim()); }
+function tgEnc(s) { try { return encodeURIComponent(String(s == null ? '' : s).replace(/\s+/g, ' ').trim()); } catch (e) { return ''; } }
 
 function tgPintaTienda(a, tienda, texto) {
   if (!a) return;

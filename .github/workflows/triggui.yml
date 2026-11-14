@@ -407,6 +407,7 @@ jobs:
       - name: 🛒 Base solo con libros que se consiguen (Casa del Libro o Gandhi)
         if: ${{ steps.modo.outputs.modo_tecnico == 'production_batch' || steps.modo.outputs.modo_tecnico == 'shadow_batch' || steps.modo.outputs.modo_tecnico == 'trigger_constrained' }}
         working-directory: experiments/nucleus
+        timeout-minutes: 20
         run: |
           set -euo pipefail
           if [ "$CATALOG_MODE" = "kids" ]; then CSV_FILE="libros_master_kids.csv"; else CSV_FILE="libros_master.csv"; fi
@@ -672,6 +673,7 @@ jobs:
       - name: 🛒 ¿Se consigue el libro? (Casa del Libro o Gandhi)
         if: ${{ steps.modo.outputs.modo_tecnico == 'single_book' || steps.modo.outputs.modo_tecnico == 'trigger_discover' }}
         working-directory: experiments/nucleus
+        timeout-minutes: 5
         env:
           FORZAR: ${{ inputs.forzar_sin_tienda && 'forzar_sin_tienda' || (github.event_name == 'schedule' && 'la Cola del Director' || '') }}
         run: |
@@ -1017,6 +1019,8 @@ jobs:
       # se renombra. Si falla, la edición sale igual («Comprar» cae en la búsqueda de Gandhi) y se avisa.
       - name: 🛒 Marcar la tienda de cada libro (tienda_compra)
         if: ${{ !inputs.modo_prueba && steps.modo.outputs.modo_tecnico != 'shadow_batch' }}
+        timeout-minutes: 10
+        continue-on-error: true
         env:
           CATALOGO: ${{ inputs.catalogo == 'kids' && 'contenido_kids.json' || 'contenido.json' }}
         run: |

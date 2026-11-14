@@ -91,8 +91,20 @@ async function main() {
 
   // 3) Revisar, con una petición por segundo a cada sitio.
   const leer = crearLector({ intervaloMs: 1000 });
-  const armar = () => {
-    const libros = ordenar(resultados);
+  // En los guardados de en medio, un libro que se conseguía y ahora no se conserva como estaba: ese cambio solo se
+  // guarda al final, después de la revisión de «¿una tienda cambió su página?». Así, si la corrida se corta, no
+  // quedan marcas falsas de «no se consigue».
+  const SE_CONSIGUE = new Set(['casadelibro', 'gandhi']);
+  const conservador = () => {
+    const out = { ...resultados };
+    for (const [k, r] of Object.entries(out)) {
+      const p = (previo.libros || {})[k];
+      if (p && SE_CONSIGUE.has(p.tienda) && !SE_CONSIGUE.has(r.tienda)) out[k] = p;
+    }
+    return out;
+  };
+  const armar = (final = false) => {
+    const libros = ordenar(final ? resultados : conservador());
     const resumen = {};
     for (const r of Object.values(libros)) resumen[r.tienda] = (resumen[r.tienda] || 0) + 1;
     const motivos = {};
@@ -139,7 +151,7 @@ async function main() {
   await Promise.all(Array.from({ length: a.trabajadores }, trabajador));
   // ¿Una tienda cambió su página? Si de 10 o más que se conseguían, más de la mitad dejó de conseguirse en esta
   // corrida, no se guarda ese cambio: se conservan las marcas anteriores y se avisa (hay que revisar tiendas.mjs).
-  const SE = new Set(['casadelibro', 'gandhi']);
+  const SE = SE_CONSIGUE;
   const previos = previo.libros || {};
   const seConsiguia = pendientes.map(([k]) => k).filter((k) => previos[k] && SE.has(previos[k].tienda));
   const yaNo = seConsiguia.filter((k) => !SE.has(resultados[k].tienda));
@@ -147,7 +159,7 @@ async function main() {
     for (const k of yaNo) resultados[k] = previos[k];
     console.log(`::warning::🛒 ${yaNo.length} de ${seConsiguia.length} libros que se conseguían dejaron de conseguirse en esta corrida: lo más probable es que Casa del Libro o Gandhi cambiaron su página. Se conservan las marcas anteriores.`);
   }
-  const final = armar();
+  const final = armar(true);
   escribirAtomico(a.salida, final);
   console.log(`✓ ${a.salida}: ${Object.keys(final.libros).length} libros · ${JSON.stringify(final.resumen)}`);
   if (errores) process.exitCode = 2;

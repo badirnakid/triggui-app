@@ -94,6 +94,11 @@ try {
     assert.deepEqual(nuevo.libros[1].tienda_compra, { tienda: 'ninguna', url: null, isbn: null, revisado: hoy });
     const sinCampo = { libros: nuevo.libros.map(({ tienda_compra, ...resto }) => resto) };
     assert.equal(`${JSON.stringify(sinCampo, null, 2)}\n`, texto, 'cambió algo más que tienda_compra');
+    // Un archivo sin salto de renglón al final se queda sin él.
+    const sinFin = join(dir, 'contenido_kids.json');
+    writeFileSync(sinFin, JSON.stringify(original, null, 2));
+    await silencio(marcar)({ contenido: [sinFin], tiendas, leer: nadaDeRed });
+    assert.equal(readFileSync(sinFin, 'utf8').endsWith('}'), true, 'agregó un salto de renglón al final');
   });
 
   await prueba('asegurar: una falla de red no borra una marca buena', async () => {
@@ -145,6 +150,16 @@ try {
     const { lineas } = await silencio(asegurar)(d, libros, contar, 'prueba', 0, 1);
     assert.equal(Object.keys(d.libros).length, 1);
     assert.ok(llamadas > 0);
+    assert.ok(lineas.some((l) => l.startsWith('::warning::') && l.includes('2 libro(s)')));
+  });
+  await prueba('asegurar: tres fallas seguidas detienen las revisiones de la corrida y avisan', async () => {
+    const d = { libros: {} };
+    const libros = [1, 2, 3, 4, 5].map((i) => ({ titulo: `Caído ${i}`, autor: 'Autora Real' }));
+    let llamadas = 0;
+    const caida = async () => { llamadas++; throw new Error('ETIMEDOUT'); };
+    const { lineas } = await silencio(asegurar)(d, libros, caida, 'prueba', 0, 99);
+    assert.equal(Object.keys(d.libros).length, 3, 'revisó más de tres');
+    assert.ok(Object.values(d.libros).every((r) => r.motivo === 'error_red'));
     assert.ok(lineas.some((l) => l.startsWith('::warning::') && l.includes('2 libro(s)')));
   });
 } finally {
