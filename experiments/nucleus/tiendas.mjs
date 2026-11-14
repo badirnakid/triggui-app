@@ -210,16 +210,30 @@ function unaLetra(a, b) {
 
 /**
  * true si coincide; false si no; null si el autor de Triggui no se conoce.
- * Un apellido de 6 letras o más se acepta con una letra de diferencia: las tiendas traen erratas («Jürgen Klari»
- * por Klaric). El título ya tiene que coincidir aparte, así que el riesgo de confundir dos libros es mínimo.
+ * Un apellido de 6 letras o más se acepta con una letra de diferencia, porque las tiendas traen erratas («Jürgen
+ * Klari» por Klaric), pero solo si también coincide la inicial del nombre: «Robert Greene» no es «Hank Green», ni
+ * «Jordan Peterson» es «Oliver Petersen». El título ya tiene que coincidir aparte.
  */
 export function coincideAutor(autorTriggui, autoresCandidato) {
   const claves = clavesDeAutor(autorTriggui);
   if (!claves.length) return null;
-  const lista = Array.isArray(autoresCandidato) ? autoresCandidato : [autoresCandidato];
+  const lista = (Array.isArray(autoresCandidato) ? autoresCandidato : [autoresCandidato]).filter((a) => a != null);
   const delCandidato = new Set(lista.flatMap((a) => palabras(a)));
   if (!delCandidato.size) return false;
-  return claves.some((c) => delCandidato.has(c) || (c.length >= 6 && [...delCandidato].some((w) => w.length >= 5 && unaLetra(c, w))));
+  if (claves.some((c) => delCandidato.has(c))) return true;
+  // Con errata: cada nombre de Triggui (apellido de 6 o más e inicial) contra cada autor del candidato.
+  const nombres = normalizar(autorTriggui).split(/\s+(?:y|and|e)\s+|\s*,\s*/).map((x) => x.trim()).filter(Boolean);
+  return nombres.some((nombre) => {
+    const ws = nombre.split(' ').filter((w) => w && !AUTORES_GENERICOS.has(w));
+    if (ws.length < 2) return false;
+    const largas = ws.filter((w) => w.length >= 3);
+    const clave = largas.length ? largas[largas.length - 1] : '';
+    if (clave.length < 6) return false;
+    return lista.some((a) => {
+      const cw = palabras(a);
+      return cw.length >= 2 && cw[0][0] === ws[0][0] && cw.slice(1).some((w) => w.length >= 5 && unaLetra(clave, w));
+    });
+  });
 }
 
 /** ¿aparece el apellido de algún autor de Triggui como palabra entera dentro de un texto? */
@@ -417,25 +431,41 @@ export function elegirGandhi(libro, candidatos) {
   return buenos;
 }
 
+// Una ficha que no se deja leer no tumba el libro: se sigue con la siguiente. Solo si fallan todas las fichas que se
+// intentaron, se lanza (así un muro contra robots en las fichas no se vuelve un «no se consigue» en silencio).
+async function leerFicha(leer, url, intento) {
+  try {
+    const f = await leer(url);
+    intento.leidas++;
+    return f;
+  } catch (e) {
+    intento.error = e;
+    return null;
+  }
+}
+
 async function casaDelLibroPorIsbn(leer, isbn) {
   const r = await leer(TIENDAS.casadelibro.busqueda(isbn));
   if (!r.ok) return null;
+  const intento = { leidas: 0, error: null };
   for (const t of tarjetasCasaDelLibro(r.cuerpo).slice(0, 4)) {
-    const f = await leer(t.url);
-    if (!f.ok) continue;
+    const f = await leerFicha(leer, t.url, intento);
+    if (!f || !f.ok) continue;
     const ficha = fichaCasaDelLibro(f.cuerpo);
     if (ficha.sku.replace(/[^0-9]/g, '') === isbn) return { nombre: ficha.titulo || t.nombre || null, url: t.url, isbn, disponible: ficha.disponible };
   }
+  if (!intento.leidas && intento.error) throw intento.error;
   return null;
 }
 
 async function casaDelLibroPorTitulo(leer, libro, isbnsDescartados) {
   const r = await leer(TIENDAS.casadelibro.busqueda(tituloCorto(libro.titulo)));
   if (!r.ok) return null;
+  const intento = { leidas: 0, error: null };
   for (const t of tarjetasCasaDelLibro(r.cuerpo).slice(0, 6)) {
     if (t.nombre && !coincideTitulo(libro.titulo, t.nombre)) continue;
-    const f = await leer(t.url);
-    if (!f.ok) continue;
+    const f = await leerFicha(leer, t.url, intento);
+    if (!f || !f.ok) continue;
     const ficha = fichaCasaDelLibro(f.cuerpo);
     if (!coincideTitulo(libro.titulo, ficha.titulo || t.nombre)) continue;
     const isbn = esIsbn13(ficha.sku) ? ficha.sku.replace(/[^0-9]/g, '') : null;
@@ -450,6 +480,7 @@ async function casaDelLibroPorTitulo(leer, libro, isbnsDescartados) {
     if (!autorOk) continue;
     return { nombre: ficha.titulo || t.nombre || null, url: t.url, isbn, disponible: ficha.disponible };
   }
+  if (!intento.leidas && intento.error) throw intento.error;
   return null;
 }
 

@@ -94,6 +94,11 @@ prueba('autores', () => {
   assert.equal(coincideAutor('Jürgen Klaric', ['Jürgen Klarico']), true);
   assert.equal(coincideAutor('Brian Tracy', ['Brian Trace']), false);
   assert.equal(coincideAutor('Greg McKeown', ['Greg McKean']), false);
+  assert.equal(coincideAutor('Robert Greene', ['Hank Green']), false);
+  assert.equal(coincideAutor('Jordan Peterson', ['Oliver Petersen']), false);
+  assert.equal(coincideAutor('Daniel Hernandez', ['Ana Fernandez']), false);
+  assert.equal(coincideAutor('Jürgen Klaric', ['J. Klari']), true);
+  assert.equal(coincideAutor('Jürgen Klaric', ['Klari']), false);
   assert.equal(coincideAutor('Robin Sharma', []), false);
   assert.equal(coincideAutor('Autor desconocido', ['Jordan B. Peterson']), null);
   assert.equal(autorEnTexto('Jordan B. Peterson', 'Jordan Peterson, el pensador más polémico'), true);
@@ -216,6 +221,25 @@ await pruebasConRed();
   const l404 = crearLector({ intervaloMs: 0, fetchImpl: responde(404) });
   assert.deepEqual(await l404('https://casadelibro.com.mx/productos/no-existe/'), { ok: false, status: 404, cuerpo: '' });
   assert.equal(llamadas, 1);
+  pruebas++;
+}
+
+// Una ficha de Casa del Libro que no se deja leer no tumba el libro; si no se deja leer ninguna, sí (sin marca falsa).
+{
+  const busqueda = fx('casadelibro-busqueda-12-reglas.html');
+  const ficha = fx('casadelibro-ficha-12-reglas.html');
+  const rechazo = () => { const e = new Error('HTTP 403'); e.definitivo = true; return e; };
+  const falso = (fallanTodas) => async (url, { json } = {}) => {
+    if (json) return { ok: true, status: 200, cuerpo: { catalog: { content: [] } } };
+    if (url.includes('/search/')) return { ok: true, status: 200, cuerpo: busqueda };
+    if (fallanTodas || url.endsWith('/12-reglas-para-vivir/')) throw rechazo();
+    return { ok: true, status: 200, cuerpo: ficha };
+  };
+  const libro = { titulo: '12 reglas para vivir: Un antídoto al caos', autor: 'Jordan B. Peterson' };
+  const r = await revisarLibro(libro, falso(false), { hoy: '2026-11-14' });
+  assert.equal(r.tienda, 'casadelibro');
+  assert.equal(r.url, 'https://casadelibro.com.mx/productos/12-reglas-para-vivir1/');
+  await assert.rejects(revisarLibro(libro, falso(true), { hoy: '2026-11-14' }), /HTTP 403/);
   pruebas++;
 }
 
