@@ -88,6 +88,11 @@ on:
         required: false
         type: string
 
+      forzar_sin_tienda:
+        description: '🛒 📘/🌍 Generar aunque no se consiga'
+        type: boolean
+        default: false
+
       sentimiento:
         description: '💭 Solo modos 💭/🌍. Ej: en duelo'
         required: false
@@ -395,6 +400,24 @@ jobs:
             echo "⚠️  $CSV_FILE no encontrado — modos constrained y batch fallarán"
           fi
 
+      # 🛒 B417 (Badir, 14 de noviembre de 2026) — el batch (🎲 y 🧪) y 💭 solo eligen libros que se consiguen
+      # físicos en Casa del Libro o en Gandhi. En lugar del enlace queda una copia filtrada de la base; la base de
+      # triggui-content no se toca y ningún libro se borra. La marca vive en triggui-content/data/tiendas.json: los
+      # libros nuevos se revisan aquí (hasta 80 por corrida) y, de los vencidos, los 40 más viejos.
+      - name: 🛒 Base solo con libros que se consiguen (Casa del Libro o Gandhi)
+        if: ${{ steps.modo.outputs.modo_tecnico == 'production_batch' || steps.modo.outputs.modo_tecnico == 'shadow_batch' || steps.modo.outputs.modo_tecnico == 'trigger_constrained' }}
+        working-directory: experiments/nucleus
+        run: |
+          set -euo pipefail
+          if [ "$CATALOG_MODE" = "kids" ]; then CSV_FILE="libros_master_kids.csv"; else CSV_FILE="libros_master.csv"; fi
+          ORIGEN="$GITHUB_WORKSPACE/triggui-content/data/$CSV_FILE"
+          if [ ! -f "$ORIGEN" ]; then
+            echo "::warning::🛒 $ORIGEN no existe: esta corrida no puede filtrar por tiendas"
+            exit 0
+          fi
+          node tiendas-horno.mjs filtrar --csv "$ORIGEN" --salida "data/$CSV_FILE" \
+            --tiendas "$GITHUB_WORKSPACE/triggui-content/data/tiendas.json"
+
       # ╔══════════════════════════════════════════════════════════════════╗
       # ║  FASE 2.5 — v3.4: Verificar/crear recent-books.json               ║
       # ║                                                                   ║
@@ -637,9 +660,25 @@ jobs:
           INPUT_MODE: trigger
           SELECTOR_MODE: discover
           ENTRADA_RAW: ${{ inputs.sentimiento }}
+          # 🛒 B417: Triggui solo propone libros que se consiguen (la puerta 🛒 de abajo lo confirma)
+          TIENDAS_JSON: ${{ github.workspace }}/triggui-content/data/tiendas.json
           # 🛡️ Audience guard: audiencia explícita para prompts del LLM
           TARGET_AUDIENCE: ${{ inputs.catalogo == 'kids' && 'kids' || 'adult' }}
         run: node validate-book.js
+
+      # 🛒 B417 — 📘 y 🌍 solo generan un libro que se consigue físico en Casa del Libro o en Gandhi. Si no, se detiene
+      # y dice por qué, salvo que se active «forzar_sin_tienda». La Cola del Director (cron) no se detiene: avisa y
+      # sigue, para que la edición del lunes no se pierda.
+      - name: 🛒 ¿Se consigue el libro? (Casa del Libro o Gandhi)
+        if: ${{ steps.modo.outputs.modo_tecnico == 'single_book' || steps.modo.outputs.modo_tecnico == 'trigger_discover' }}
+        working-directory: experiments/nucleus
+        env:
+          FORZAR: ${{ inputs.forzar_sin_tienda && 'forzar_sin_tienda' || (github.event_name == 'schedule' && 'la Cola del Director' || '') }}
+        run: |
+          set -euo pipefail
+          if [ ! -f /tmp/triggui-book.json ]; then echo "ℹ️  Sin libro validado: nada que revisar"; exit 0; fi
+          node tiendas-horno.mjs revisar --libro-json /tmp/triggui-book.json \
+            --tiendas "$GITHUB_WORKSPACE/triggui-content/data/tiendas.json" ${FORZAR:+--forzar --por "$FORZAR"}
 
       # ╔══════════════════════════════════════════════════════════════════╗
       # ║  FASE 4.5 — v3.4: Aplicar update del ring si validate-book lo     ║
@@ -972,6 +1011,19 @@ jobs:
             || echo "ℹ️  quedan libros pendientes en el catálogo (normal: se completan en próximas corridas); se sigue con el libro de este run"
           # 🎼 completar del día: el libro de ESTE run llega a 3 en esta misma corrida (juez suave, sin espera)
           python3 scripts/titulos-del-run.py | while IFS= read -r T; do [ -n "$T" ] && python3 scripts/resolve-musica.py --rutas=contenido.json --solo="$T" --completar-min=3 --armonia-min=4 --forzar --explicar || true; done
+
+      # 🛒 B417 — cada libro del catálogo lleva «tienda_compra»: a dónde manda «Comprar» en México (la ficha de Casa
+      # del Libro o la de Gandhi). Lo leen la app, la edición que se genera abajo y el correo. Es un campo nuevo: nada
+      # se renombra. Si falla, la edición sale igual («Comprar» cae en la búsqueda de Gandhi) y se avisa.
+      - name: 🛒 Marcar la tienda de cada libro (tienda_compra)
+        if: ${{ !inputs.modo_prueba && steps.modo.outputs.modo_tecnico != 'shadow_batch' }}
+        env:
+          CATALOGO: ${{ inputs.catalogo == 'kids' && 'contenido_kids.json' || 'contenido.json' }}
+        run: |
+          set -uo pipefail
+          if [ ! -f "$CATALOGO" ]; then echo "ℹ️  $CATALOGO no está en el workspace: nada que marcar"; exit 0; fi
+          node experiments/nucleus/tiendas-horno.mjs marcar --contenido "$CATALOGO" --tiendas triggui-content/data/tiendas.json \
+            || echo "::warning::🛒 No se pudo marcar la tienda de los libros: «Comprar» llevará a la búsqueda de Gandhi hasta la siguiente corrida"
 
       - name: 🌐 Generar edición viva HTML
         if: ${{ inputs.generar_imagenes && (steps.modo.outputs.modo_tecnico == 'single_book' || steps.modo.outputs.modo_tecnico == 'trigger_constrained' || steps.modo.outputs.modo_tecnico == 'trigger_discover' || steps.modo.outputs.modo_tecnico == 'production_batch') }}
@@ -1485,6 +1537,8 @@ jobs:
             # pero queda como modificacion no staged. Sin este git add el rebase aborta con
             # "You have unstaged changes" (bug detectado en test matilda kids 2026-05-13).
             [ -f edition-counter.json ] && git add edition-counter.json || true
+            # 🛒 B417: la marca de tiendas (lo que se revisó en esta corrida)
+            [ -f data/tiendas.json ] && git add data/tiendas.json || true
 
             if git diff --cached --quiet; then
               echo "🟡 triggui-content: sin cambios"

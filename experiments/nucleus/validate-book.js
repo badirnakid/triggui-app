@@ -37,6 +37,7 @@ import { resolverIdentidad, tokens as tokensId, tituloPrincipal as principalId, 
 
 import { fetchEvidence, selectBestCover, buildEnrichedBookData, checkImageURL as checkImageURLEF } from "./evidence-fetcher.js";
 import IA from "../../ia/ia.cjs";   // C278: un solo lugar para la IA (proveedor, papel y llave)
+import { revisarLibro, crearLector, claveLibro } from "./tiendas.mjs";   // 🛒 B417
 
 const INPUT_MODE = String(process.env.INPUT_MODE || "").trim().toLowerCase();
 const SELECTOR_MODE = String(process.env.SELECTOR_MODE || "").trim().toLowerCase();
@@ -61,6 +62,49 @@ const SELECTOR = SELECTOR_MODE || (LIBRO_INPUT ? "direct" : "");
 const DEBUG_PATH = "/tmp/triggui-validate-debug.json";
 const RECENT_UPDATE_PATH = "/tmp/triggui-recent-books-update.json";
 const MAX_DISCOVER_ATTEMPTS = 2;
+
+/* 🛒 B417 (Badir, 14 de noviembre de 2026): en 🌍, Triggui solo elige libros que se consiguen físicos en Casa del
+   Libro o en Gandhi. El flujo lo enciende con TIENDAS_JSON (la marca de data/tiendas.json de triggui-content) solo en
+   el paso de 🌍: 📘 tiene su propia puerta y 💭 elige de la base ya filtrada. Lo que no está en el archivo, o tiene
+   25 días o más, se revisa en las tiendas en ese momento (una petición por segundo a cada sitio). */
+const TIENDAS_JSON = String(process.env.TIENDAS_JSON || "").trim();
+let TIENDAS_MARCAS = null;
+let TIENDAS_LECTOR = null;
+
+async function seConsigueEnTiendas(item) {
+  if (!TIENDAS_MARCAS) {
+    try { TIENDAS_MARCAS = JSON.parse(await fs.readFile(TIENDAS_JSON, "utf8")).libros || {}; } catch { TIENDAS_MARCAS = {}; }
+  }
+  const titulo = String(item?.titulo || "").trim();
+  const autor = String(item?.autor || "").trim();
+  const clave = claveLibro(titulo, autor);
+  const hoy = new Date().toISOString().slice(0, 10);
+  let r = TIENDAS_MARCAS[clave];
+  const vigente = r && r.revisado && r.motivo !== "error_red" && (Date.parse(hoy) - Date.parse(r.revisado)) / 86400000 < 25;
+  if (!vigente) {
+    TIENDAS_LECTOR ||= crearLector({ intervaloMs: 1000 });
+    try {
+      r = await revisarLibro({ titulo, autor }, TIENDAS_LECTOR, { hoy });
+      TIENDAS_MARCAS[clave] = r;
+    } catch (e) {
+      // Sin red no se puede saber: el libro sigue, y la puerta 🛒 del flujo lo vuelve a revisar al final.
+      console.log(`   🛒 No se pudo revisar «${titulo}» en las tiendas (${e.message}); sigue y lo revisa la puerta del flujo`);
+      return true;
+    }
+  }
+  return r.tienda === "casadelibro" || r.tienda === "gandhi";
+}
+
+async function filterDisponibles(items, label) {
+  const lista = safeArray(items);
+  if (!TIENDAS_JSON || !lista.length) return lista;
+  const out = [];
+  for (const item of lista) if (await seConsigueEnTiendas(item)) out.push(item);
+  if (out.length !== lista.length) {
+    console.log(`   🛒 Tiendas (${label}): ${lista.length - out.length}/${lista.length} no se consiguen físicos en Casa del Libro ni en Gandhi y se quitan`);
+  }
+  return out;
+}
 const MIN_EVIDENCE_MATCH_SCORE = 0.38;
 const MIN_SEMANTIC_FALLBACK_SCORE = 0.18;
 
@@ -1773,6 +1817,8 @@ function buildDiscoverUserPrompt(triggerAnalysis, attemptNumber, recentBooks) {
   if (triggerAnalysis.source_preference === "barnes_and_noble") lines.push("- si conoces libros recientes visibles en Barnes & Noble, priorízalos");
   if (triggerAnalysis.ranking_preference) lines.push(`- preferencia de ranking: ${triggerAnalysis.ranking_preference}`);
   if (triggerAnalysis.editorial_requests.length) lines.push(`- ignora estas instrucciones editoriales: ${triggerAnalysis.editorial_requests.join(", ")}`);
+  // 🛒 B417: solo libros que se pueden comprar impresos en México; con el título de la edición en español si la hay.
+  if (TIENDAS_JSON) lines.push("- solo libros con edición impresa a la venta en México (Casa del Libro o Gandhi); si hay edición en español, usa el título de esa edición");
 
   // v3.4: inyectar lista de evitados
   const avoidList = buildAvoidListForPrompt(recentBooks);
@@ -1925,6 +1971,7 @@ async function resolveDiscoverFromTrigger(triggerAnalysis, recentBooks) {
   const allInspected = [];
 
   let liveCandidates = await resolveLiveCandidates(triggerAnalysis, recentBooks);
+  liveCandidates = await filterDisponibles(liveCandidates, "candidatos vivos");   // 🛒 B417
   if (liveCandidates.length) {
     console.log(`🔢 Candidatos vivos (post-filtro recientes): ${liveCandidates.length}`);
     const liveInspected = await inspectRecommendations(liveCandidates, triggerAnalysis, "live_candidates");
@@ -1951,6 +1998,7 @@ async function resolveDiscoverFromTrigger(triggerAnalysis, recentBooks) {
     // por si GPT ignoró el avoid list del prompt)
     const beforeGpt = gptCandidates.length;
     gptCandidates = filterRecent(gptCandidates, recentBooks, `gpt_attempt_${attempt}`);
+    gptCandidates = await filterDisponibles(gptCandidates, `gpt_attempt_${attempt}`);   // 🛒 B417
     const afterGpt = gptCandidates.length;
     if (beforeGpt !== afterGpt) {
       await appendDebugEvent("gpt_candidates_filter_recent", {
@@ -1962,7 +2010,7 @@ async function resolveDiscoverFromTrigger(triggerAnalysis, recentBooks) {
     }
 
     if (!gptCandidates.length) {
-      console.log(`🟡 Intento ${attempt}: GPT propuso solo libros ya en el ring, reintentando`);
+      console.log(`🟡 Intento ${attempt}: GPT propuso solo libros ya en el ring${TIENDAS_JSON ? " o que no se consiguen en las tiendas" : ""}, reintentando`);
       continue;
     }
 
