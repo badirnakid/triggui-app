@@ -28,8 +28,10 @@
 <meta name="twitter:description" content="How can such a small child overcome such great challenges?" />
 <meta name="twitter:image" content="https://app.triggui.com/t/pulgarcito/og_en.jpg" />
 
-<link rel="preconnect" href="https://www.penguinlibros.com" crossorigin>
-<link rel="preconnect" href="https://www.buscalibre.com.mx" crossorigin>
+<link rel="preconnect" href="https://casadelibro.com.mx" crossorigin>
+<link rel="preconnect" href="https://www.gandhi.com.mx" crossorigin>
+<!-- 🛒 B417: la regla de tiendas (México: Casa del Libro o Gandhi; fuera: Amazon), la misma de la app y del correo -->
+<script src="/tiendas.js" async></script>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,500;1,700&display=swap" rel="stylesheet">
 
 <style>
@@ -473,17 +475,23 @@ body::before {
 .btn-dark:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); border-color: rgba(255,255,255,0.1); }
 .btn-dark:active { transform: scale(0.97); }
 
-.btn-dark .btn-busca-logo {
-  height: 14px;
-  filter: none;
-  opacity: 0.95;
+/* 🛒 B417 · Tiendas: el logo de la tienda dentro del botón, con su palabra («Comprar», «Explorar»).
+   Las alturas guardan la proporción de la app (30:20 en botones de 48 px → 27:18 en estos de 46 px). */
+.btn-dark .btn-tienda-txt {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.1px;
+  color: #fff;
+  white-space: nowrap;
 }
-
-.btn-dark.btn-penguin-icon img {
-  height: 36px;
-  mix-blend-mode: screen;
-  filter: contrast(120%) grayscale(1);
-  opacity: 0.95;
+.btn-dark img.logo-casadelibro { height: 27px; width: auto; display: block; flex: none; }
+.btn-dark img.logo-gandhi { height: 18px; width: auto; display: block; flex: none; }
+.btn-row > .btn-dark { min-width: 0; overflow: hidden; }
+@media (max-width: 374px) {
+  .btn-dark .btn-tienda-txt { font-size: 12px; }
+  .btn-dark img.logo-casadelibro { height: 24px; }
+  .btn-dark img.logo-gandhi { height: 15px; }
 }
 
 .btn-crystal.btn-dark { background: #1A1A1A; }
@@ -911,17 +919,17 @@ body.tg-tarjeta .tg-cta{display:none !important}
           </a>
         </div>
 
-        <div class="btn-row btn-row-3">
-          <a class="btn-dark" href="https://www.buscalibre.com.mx/libros/search/?q=Pulgarcito%20Charles%20Perrault" target="_blank" rel="noopener noreferrer">
-            <img class="btn-busca-logo" src="/buscalibre.png" alt="Buscalibre">
+        <div class="btn-row btn-row-3" id="tgTiendas">
+          <a class="btn-dark btn-comprar" id="btnComprar" href="https://www.gandhi.com.mx/?query=Pulgarcito" data-tienda="gandhi" target="_blank" rel="noopener noreferrer">
+            <img class="logo-gandhi" src="/tiendas/gandhi-blanco.png" alt="Gandhi"><span class="btn-tienda-txt">Comprar</span>
           </a>
 
-          <a class="btn-dark btn-crystal" id="btnCrystal" href="https://www.buscalibre.com.mx/libros/search/?q=valent%C3%ADa" target="_blank" rel="noopener noreferrer">
+          <a class="btn-dark btn-crystal" id="btnCrystal" href="https://casadelibro.com.mx/search/?q=valent%C3%ADa" data-tienda="casadelibro" target="_blank" rel="noopener noreferrer">
             <span class="btn-emoji">🔮</span>
           </a>
 
-          <a class="btn-dark btn-penguin-icon" id="btnPenguin" href="https://www.penguinlibros.com/mx/?mot_q=valent%C3%ADa" target="_blank" rel="noopener noreferrer">
-            <img src="/logopenguin.png" alt="Penguin">
+          <a class="btn-dark btn-gandhi" id="btnGandhi" href="https://www.gandhi.com.mx/?query=valent%C3%ADa" data-tienda="gandhi" target="_blank" rel="noopener noreferrer">
+            <img class="logo-gandhi" src="/tiendas/gandhi-blanco.png" alt="Gandhi"><span class="btn-tienda-txt">Explorar</span>
           </a>
         </div>
       </div>
@@ -1077,7 +1085,7 @@ function tgPillPlace(){ try{ var p=document.getElementById('tgLangPill'); if(!p)
 window.addEventListener('resize', function(){ tgPillPlace(); });
 window.addEventListener('load', function(){ tgPillPlace(); setTimeout(tgPillPlace, 650); });
 function tgPillPaint(){ const a=document.getElementById('tgLangEs'), b=document.getElementById('tgLangEn'); if(a&&b){ a.classList.toggle('lang-active', tgLang==='es'); b.classList.toggle('lang-active', tgLang==='en'); } }
-function tgSetLang(l){ if(l===tgLang){ tgPillPaint(); return; } tgLang=l; window.tgLang=l; try{ localStorage.setItem('triggui_lang', JSON.stringify(l)); }catch(e){} tgApplyGrid(); tgRepaintGrid(); tgApplyCard(); tgApplySilence(); tgPillPaint(); tgApplyMisc(); }
+function tgSetLang(l){ if(l===tgLang){ tgPillPaint(); return; } tgLang=l; window.tgLang=l; try{ localStorage.setItem('triggui_lang', JSON.stringify(l)); }catch(e){} tgApplyGrid(); tgRepaintGrid(); tgApplyCard(); tgApplySilence(); tgPillPaint(); tgApplyMisc(); try{ applyDynamicActionLinks(); }catch(e){} }
 tgApplyGrid(); /* swap pre-pintado: el grid nace en el idioma correcto */
 document.addEventListener('DOMContentLoaded', function(){ window.tgLang=tgLang; tgPillPlace(); tgApplyMisc(); tgApplyCard(); tgApplySilence(); tgPillPaint(); const a=document.getElementById('tgLangEs'), b=document.getElementById('tgLangEn'); if(a)a.addEventListener('click',function(){tgSetLang('es');}); if(b)b.addEventListener('click',function(){tgSetLang('en');}); const pl=document.getElementById('tgLangPill'); if(pl)pl.addEventListener('click',function(ev){ if(ev.target&&ev.target.closest&&ev.target.closest('#tgLangEs,#tgLangEn'))return; tgSetLang(tgLang==='en'?'es':'en'); }); const _ro=document.getElementById('revealOverlay'); if(_ro&&pl){ const _sync=function(){ const cs=getComputedStyle(_ro); const abierto=(cs.display!=='none'); pl.style.display=abierto?'none':'flex'; }; new MutationObserver(_sync).observe(_ro,{attributes:true,attributeFilter:['class','style']}); _sync(); } });
 const grid = document.getElementById('grid');
@@ -1090,7 +1098,11 @@ const silenceScreen = document.getElementById('silenceScreen');
 const silPulse = document.getElementById('silPulse');
 const pulseEditionKey = 'triggui_lab_opened_' + state.id;
 const btnCrystal = document.getElementById('btnCrystal');
-const btnPenguin = document.getElementById('btnPenguin');
+const btnComprar = document.getElementById('btnComprar');
+const btnGandhi = document.getElementById('btnGandhi');
+const tgTiendas = document.getElementById('tgTiendas');
+/* 🛒 B417: la tienda del libro como la dejó el horno en la página (Casa del Libro o Gandhi). */
+const TG_COMPRA = btnComprar ? { tienda: btnComprar.getAttribute('data-tienda') || '', url: btnComprar.getAttribute('href') || '' } : null;
 
 const ANG = [115, 205, 35, 320];
 function grad(i) {
@@ -1293,20 +1305,78 @@ function getPrimaryChronoWord() {
   return String(candidate || '').trim();
 }
 
+/* 🛒 B417 · Tiendas, con la misma regla que la app y el correo (/tiendas.js). En México, «Comprar» lleva a
+   Casa del Libro o Gandhi, y 🔮 y «Explorar» buscan la palabra del momento en Casa del Libro y en Gandhi.
+   Fuera de México, Amazon del país del lector, con el título en el idioma de la página. Mientras /tiendas.js
+   no llega (o si no llega), se quedan las ligas de México que trae la página. */
+function tgEnc(s) { try { return encodeURIComponent(String(s == null ? '' : s).replace(/\s+/g, ' ').trim()); } catch (e) { return ''; } }
+
+function tgPintaTienda(a, tienda, texto) {
+  if (!a) return;
+  const img = a.querySelector('img');
+  const span = a.querySelector('.btn-tienda-txt');
+  const logo = tienda === 'casadelibro' ? ['/tiendas/casadellibro-blanco.png', 'Casa del Libro', 'logo-casadelibro']
+    : (tienda === 'gandhi' ? ['/tiendas/gandhi-blanco.png', 'Gandhi', 'logo-gandhi'] : null);
+  if (img) {
+    if (logo) {
+      if (img.getAttribute('src') !== logo[0]) img.setAttribute('src', logo[0]);
+      img.alt = logo[1];
+      img.className = logo[2];
+      img.style.display = '';
+    } else {
+      img.style.display = 'none';
+    }
+  }
+  if (span && span.textContent !== texto) span.textContent = texto;
+}
+
 function applyDynamicActionLinks() {
+  const T = window.TrigguiTiendas || null;
+  const EN = (typeof tgLang !== 'undefined' && tgLang === 'en');
+  const mx = T ? T.enMexico() : true;
+
+  if (btnComprar && TG_COMPRA) {
+    const c = T
+      ? T.comprar({ titulo: state._tes || state.titulo, titulo_en: state.titulo_en || '', autor: state.autor || '', tienda_compra: TG_COMPRA }, EN ? 'en' : 'es', mx)
+      : TG_COMPRA;
+    btnComprar.href = c.url;
+    btnComprar.setAttribute('data-tienda', c.tienda);
+    tgPintaTienda(btnComprar, c.tienda, c.tienda === 'amazon' ? (EN ? 'Buy on Amazon' : 'Comprar en Amazon') : (EN ? 'Buy' : 'Comprar'));
+  }
+
+  /* «Explorar en Gandhi» solo en México; fuera, el renglón queda en dos: «Comprar en Amazon» y 🔮. */
+  if (btnGandhi) {
+    btnGandhi.style.display = mx ? '' : 'none';
+    tgPintaTienda(btnGandhi, 'gandhi', EN ? 'Explore' : 'Explorar');
+  }
+  if (tgTiendas) tgTiendas.className = 'btn-row ' + (mx ? 'btn-row-3' : 'btn-row-2');
+
+  /* Sin palabra del momento, se quedan las búsquedas que trae la página. */
   const word = getPrimaryChronoWord();
   if (!word) return;
 
-  const encoded = encodeURIComponent(word);
-
   if (btnCrystal) {
-    btnCrystal.href = 'https://www.buscalibre.com.mx/libros/search/?q=' + encoded;
+    const x = T ? T.explorar(word, mx) : { url: 'https://casadelibro.com.mx/search/?q=' + tgEnc(word), tienda: 'casadelibro' };
+    btnCrystal.href = x.url;
+    btnCrystal.setAttribute('data-tienda', x.tienda);
   }
 
-  if (btnPenguin) {
-    btnPenguin.href = 'https://www.penguinlibros.com/mx/?mot_q=' + encoded;
+  if (btnGandhi && mx) {
+    const g = T ? T.explorarGandhi(word, true) : null;
+    btnGandhi.href = g ? g.url : 'https://www.gandhi.com.mx/?query=' + tgEnc(word);
   }
 }
+
+/* /tiendas.js carga sin detener la página: cuando llega, avisa y las ligas se rehacen con la regla completa. */
+window.addEventListener('trigguitiendas', function () { try { applyDynamicActionLinks(); } catch (e) {} });
+
+/* 🛒 B417: los clics a las tiendas se miden con los mismos nombres que en la app, con la tienda en su parámetro. */
+[['btnComprar', 'comprar'], ['btnCrystal', 'explorar'], ['btnGandhi', 'explorar_gandhi']].forEach(function (p) {
+  const el = document.getElementById(p[0]);
+  if (el) el.addEventListener('click', function () {
+    try { gtag('event', p[1] + '_clicked', { book: state._tes || state.titulo || '', tienda: el.getAttribute('data-tienda') || '', contexto: 'edicion', slug: state.id || '' }); } catch (e) {}
+  });
+});
 
 function fitRevealTypography() {
   const title = document.getElementById('editorialTitle');
