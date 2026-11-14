@@ -143,6 +143,16 @@ export function coincideTitulo(tituloTriggui, nombreCandidato) {
   }
 
   if (As.join(' ') === Bs.join(' ')) return true;
+  // Otro tomo: si un título corto es el otro más un solo número, es otro libro de la serie («Ana de las tejas verdes
+  // 4», «Torres de Malory 2: Segundo curso»). El 1 sí es el mismo («Diario de Greg 1 - Un renacuajo»). Un número
+  // seguido de más palabras es parte del título («Homo creativus 33 pensamientos…»), no un tomo.
+  // «Diario de Greg 2. La ley de Rodrick»: un número con punto también cierra el tomo (el título corto no corta ahí
+  // porque el punto va después de menos de 4 letras).
+  const otroTomo = (resto) => resto.length === 1 && /^\d+$/.test(resto[0]) && resto[0].replace(/^0+/, '') !== '1';
+  const hastaElTomo = (t) => { const m = String(t).slice(0, 200).match(/^(.*?\d+)\.\s/); return m ? m[1] : t; };
+  const AwT = sinArticuloInicial(palabras(hastaElTomo(tituloCorto(tituloTriggui))));
+  const BwT = sinArticuloInicial(palabras(hastaElTomo(tituloCorto(nombreCandidato))));
+  if ((empiezaCon(BwT, Aw) && otroTomo(BwT.slice(Aw.length))) || (empiezaCon(AwT, Bw) && otroTomo(AwT.slice(Bw.length)))) return false;
   // El candidato es la misma obra con algo al final que no se cortó; si el título es de una sola palabra,
   // solo se acepta una palabra significativa de más («Ok» no es «Ok hablemos de trabajo»).
   if (empiezaCon(Bw, Aw)) {

@@ -43,6 +43,9 @@ prueba('títulos que sí son el mismo libro', () => {
     ['Guía del autoestopista galáctico', 'Guía del autoestopista galáctico'],
     ['A New Earth', 'A New Earth: Awakening to Your Life\'s Purpose'],
     ['Percy Jackson y el último héroe del Olimpo', 'El ultimo heroe del Olimpo ( Percy Jackson y los dioses del Olimpo 5)'],
+    ['Homo creativus', 'HOMO CREATIVUS 33 Pensamientos para salvar tu vida'],
+    ['Diario de Greg', 'Diario de Greg 1 - Un renacuajo (Edición película)'],
+    ['Lecciones de liderazgo de Steve Jobs', 'Steve Jobs. Lecciones de liderazgo'],
   ];
   for (const [a, b] of si) assert.equal(coincideTitulo(a, b), true, `${a} ≟ ${b}`);
 });
@@ -60,6 +63,14 @@ prueba('títulos que no son el mismo libro', () => {
     ['Las reglas de oro para vivir', '12 reglas para vivir'],
     ['El principito', 'El principito para colorear'],
     ['Padre rico, padre pobre', 'Padre rico, padre pobre para jóvenes'],
+    ['Ana de las tejas verdes', 'Ana de las tejas verdes 4 - Más aventuras en Avonlea'],
+    ['Diario de Greg', 'Diario de Greg 2. La ley de Rodrick'],
+    ['Coraline', 'Coraline. Novela gráfica'],
+    ['Junie B Jones', 'Junie B. Jones y su gran bocota (Junie B. Jones. El cómic 3)'],
+    ['Torres de Malory', 'Torres de Malory 2: Segundo curso'],
+    ['Ansiedad', 'Ansiedad 3'],
+    ['Buenas noches luna', 'BUENAS NOCHES, LUNA 123: UN LIBRO PARA CONTAR'],
+    ['Los grandes iniciados 2', 'Los grandes iniciados'],
     ['Percy Jackson y el último héroe del Olimpo', 'Percy Jackson y los dioses del Olimpo 1: El ladrón del rayo'],
     ['El hombre en busca de sentido', 'Sentido'],
     ['Los secretos de la mente millonaria', 'Los secretos de la mente millonaria: cuaderno de trabajo'],
