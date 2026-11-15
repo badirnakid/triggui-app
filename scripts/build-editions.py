@@ -235,8 +235,9 @@ def tienda_marca(url, boton, contenido, lugar):
 
 
 def tienda_lugar_edicion():
-    """El lugar de las ediciones en la marca: las de Niños salen a public/kids/t (TRIGGUI_OUT_BASE)."""
-    return "edicion-ninos" if "kids" in str(SINGLE_OUT_DIR) else "edicion"
+    """El lugar de las ediciones en la marca: las de Niños salen a public/kids/t (TRIGGUI_OUT_BASE). Se mira el
+    final de la ruta, no cualquier «kids» que traiga una ruta absoluta."""
+    return "edicion-ninos" if tuple(Path(SINGLE_OUT_DIR).parts[-2:]) == ("kids", "t") else "edicion"
 
 
 def tiendas_botones_html(titulo, tienda_compra, palabra, slug=None, lugar=None):

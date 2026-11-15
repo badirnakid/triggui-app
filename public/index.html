@@ -3897,9 +3897,18 @@ btnShare.onclick = () => {
   // por su slug; el que no tiene edición, por su título hecho slug. Sin /tiendas.js, las ligas de respaldo llevan
   // la misma marca.
   const __lugar = IS_KIDS_MODE ? 'ninos' : 'app';
-  const __slugUtm = (libro && libro._slug) || String((libro && libro.titulo) || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-  const __utm = (u, b) => u + (u.indexOf('?') >= 0 ? '&' : '?') + 'utm_source=triggui&utm_medium=referral&utm_campaign=' + b
-    + (__slugUtm ? '&utm_content=' + encodeURIComponent(__slugUtm) : '') + '&utm_term=' + __lugar;
+  const __slugUtm = (libro && libro._slug) || String((libro && libro.titulo) || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  const __utm = (u, b) => {
+    let resto = '';
+    const g = u.indexOf('#');
+    if (g >= 0) { resto = u.slice(g); u = u.slice(0, g); }
+    const q = u.indexOf('?');
+    const quedan = (q >= 0 ? u.slice(q + 1).split('&') : []).filter((x) => x && !/^[uU][tT][mM]_/.test(x));
+    quedan.push('utm_source=triggui', 'utm_medium=referral', 'utm_campaign=' + b);
+    if (__slugUtm) quedan.push('utm_content=' + encodeURIComponent(__slugUtm));
+    quedan.push('utm_term=' + __lugar);
+    return (q >= 0 ? u.slice(0, q) : u) + '?' + quedan.join('&') + resto;
+  };
   const __comprar = __T ? __T.comprar(libro, __idiomaCard, __mx, __lugar, __slugUtm)
     : ((__tc && ((__tc.tienda === 'casadelibro' && /^https:\/\/casadelibro\.com\.mx\//.test(String(__tc.url || ''))) || (__tc.tienda === 'gandhi' && /^https:\/\/www\.gandhi\.com\.mx\//.test(String(__tc.url || '')))))
         ? { url: __utm(String(__tc.url), 'comprar'), tienda: __tc.tienda }

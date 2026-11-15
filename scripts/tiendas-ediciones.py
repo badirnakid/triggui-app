@@ -138,7 +138,7 @@ def tienda_del_libro(libros, indice_suelto, titulo, autor):
     return None, r
 
 
-def cambiar(texto, libros, indice_suelto):
+def cambiar(texto, libros, indice_suelto, lugar="edicion"):
     """Devuelve (texto nuevo, detalle). Lanza NoCuadra si algo no está exactamente como se espera."""
     m = ESTADO.search(texto)
     if not m:
@@ -177,7 +177,8 @@ def cambiar(texto, libros, indice_suelto):
             raise NoCuadra(f"la búsqueda vieja {g} no sale de los datos de la página: {b.group(g)!r} ≠ {v!r}")
 
     tienda_compra, revision = tienda_del_libro(libros, indice_suelto, titulo, autor)
-    nuevos_botones = be.tiendas_botones_html(titulo, tienda_compra, palabra)
+    # 🏷️ BC56: con las marcas UTM de la plantilla (el libro por el id del estado y el lugar por la carpeta).
+    nuevos_botones = be.tiendas_botones_html(titulo, tienda_compra, palabra, str(estado.get("id") or "").strip(), lugar)
 
     nuevo = texto
     nuevo = nuevo.replace(VIEJO_HEAD, be.TIENDAS_HEAD)
@@ -240,7 +241,8 @@ def main():
             (ya if 'id="btnComprar"' in texto else sin_tiendas).append(f)
             continue
         try:
-            nuevo, detalle = cambiar(texto, libros, indice_suelto)
+            nuevo, detalle = cambiar(texto, libros, indice_suelto,
+                                     "edicion-ninos" if f.relative_to(raiz).parts[0] == "kids" else "edicion")
         except NoCuadra as e:
             fallas.append((f, str(e)))
             continue
