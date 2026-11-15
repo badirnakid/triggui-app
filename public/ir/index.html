@@ -47,12 +47,13 @@
 
   if (T) {
     var mx = T.enMexico();
+    // 🏷️ BC56: la marca UTM del correo (utm_medium=email, utm_term=correo) y el libro por su slug (s).
     if (accion === 'comprar' && (v('t') || /^https:\/\/(casadelibro\.com\.mx|www\.gandhi\.com\.mx)\//.test(v('u')))) {
-      destino = T.comprar({ titulo: v('t'), titulo_en: v('te'), autor: v('au'), tienda_compra: { tienda: v('tn'), url: v('u') } }, idioma, mx);
+      destino = T.comprar({ titulo: v('t'), titulo_en: v('te'), autor: v('au'), tienda_compra: { tienda: v('tn'), url: v('u') } }, idioma, mx, 'correo', v('s'));
     } else if (accion === 'explorar' && v('p')) {
-      destino = T.explorar(v('p'), mx);
+      destino = T.explorar(v('p'), mx, 'correo', v('s'));
     } else if (accion === 'gandhi' && v('p')) {
-      destino = T.explorarGandhi(v('p'), mx) || T.explorar(v('p'), mx);
+      destino = T.explorarGandhi(v('p'), mx, 'correo', v('s')) || T.explorar(v('p'), mx, 'correo', v('s'));
     }
   }
 

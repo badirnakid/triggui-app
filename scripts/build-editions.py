@@ -194,7 +194,7 @@ def tienda_enc(texto):
 
 
 def tienda_comprar(titulo, tienda_compra):
-    """(url, tienda) de «Comprar» en México: comprar() de /tiendas.js con mexico = true."""
+    """(url, tienda) de «Comprar» en México: comprar() de /tiendas.js con mexico = true, antes de la marca."""
     tc = tienda_compra if isinstance(tienda_compra, dict) else {}
     tienda = tc.get("tienda")
     url = tc.get("url")
@@ -203,22 +203,66 @@ def tienda_comprar(titulo, tienda_compra):
     return "https://www.gandhi.com.mx/?query=" + tienda_enc(tienda_titulo_corto(titulo)), "gandhi"
 
 
-def tiendas_botones_html(titulo, tienda_compra, palabra):
-    """El renglón de las tres tiendas de una edición, idéntico en las nuevas y en las ya publicadas."""
+# 🏷️ BC56 · Las marcas UTM: marcar() de /tiendas.js, paso por paso. Aquí no hay página: sin lugar conocido, «app»,
+# como /tiendas.js cuando no tiene ruta.
+TIENDA_LUGARES = ("app", "ninos", "edicion", "edicion-ninos", "correo")
+_TG_UTM_RE = re.compile(r"[uU][tT][mM]_")
+
+
+def tienda_marca(url, boton, contenido, lugar):
+    """La liga con sus marcas UTM: las utm_ que ya trajera se quitan y van las de Triggui, en el mismo orden."""
+    u = str(url if url is not None else "")
+    if not u.startswith("https://"):
+        return u
+    if lugar not in TIENDA_LUGARES:
+        lugar = "app"
+    resto = ""
+    g = u.find("#")
+    if g >= 0:
+        resto, u = u[g:], u[:g]
+    q = u.find("?")
+    base = u[:q] if q >= 0 else u
+    partes = u[q + 1:].split("&") if q >= 0 else []
+    quedan = [p for p in partes if p and not _TG_UTM_RE.match(p)]
+    quedan.append("utm_source=triggui")
+    quedan.append("utm_medium=" + ("email" if lugar == "correo" else "referral"))
+    quedan.append("utm_campaign=" + tienda_enc(boton))
+    c = tienda_enc(contenido)
+    if c:
+        quedan.append("utm_content=" + c)
+    quedan.append("utm_term=" + lugar)
+    return base + "?" + "&".join(quedan) + resto
+
+
+def tienda_lugar_edicion():
+    """El lugar de las ediciones en la marca: las de Niños salen a public/kids/t (TRIGGUI_OUT_BASE)."""
+    return "edicion-ninos" if "kids" in str(SINGLE_OUT_DIR) else "edicion"
+
+
+def tiendas_botones_html(titulo, tienda_compra, palabra, slug=None, lugar=None):
+    """El renglón de las tres tiendas de una edición, idéntico en las nuevas y en las ya publicadas.
+    Con lugar, las tres ligas llevan su marca UTM (BC56); sin lugar, es el renglón de B417, sin marcas, que
+    scripts/utm-ediciones.py busca en las ediciones ya publicadas antes de cambiarlo."""
     url, tienda = tienda_comprar(titulo, tienda_compra)
     logo_src, logo_alt, logo_cls = TIENDA_LOGO[tienda]
     q = tienda_enc(palabra) or tienda_enc(tienda_titulo_corto(titulo))
+    url_x = "https://casadelibro.com.mx/search/?q=" + q
+    url_g = "https://www.gandhi.com.mx/?query=" + q
+    if lugar is not None:
+        url = tienda_marca(url, "comprar", slug, lugar)
+        url_x = tienda_marca(url_x, "descubre", slug, lugar)
+        url_g = tienda_marca(url_g, "explorar", slug, lugar)
     return (
         '<div class="btn-row btn-row-3" id="tgTiendas">\n'
         f'          <a class="btn-dark btn-comprar" id="btnComprar" href="{esc(url)}" data-tienda="{tienda}" target="_blank" rel="noopener noreferrer">\n'
         f'            <img class="{logo_cls}" src="{logo_src}" alt="{logo_alt}"><span class="btn-tienda-txt">Comprar</span>\n'
         '          </a>\n'
         '\n'
-        f'          <a class="btn-dark btn-crystal" id="btnCrystal" href="https://casadelibro.com.mx/search/?q={esc(q)}" data-tienda="casadelibro" target="_blank" rel="noopener noreferrer">\n'
+        f'          <a class="btn-dark btn-crystal" id="btnCrystal" href="{esc(url_x)}" data-tienda="casadelibro" target="_blank" rel="noopener noreferrer">\n'
         '            <span class="btn-emoji">🔮</span>\n'
         '          </a>\n'
         '\n'
-        f'          <a class="btn-dark btn-gandhi" id="btnGandhi" href="https://www.gandhi.com.mx/?query={esc(q)}" data-tienda="gandhi" target="_blank" rel="noopener noreferrer">\n'
+        f'          <a class="btn-dark btn-gandhi" id="btnGandhi" href="{esc(url_g)}" data-tienda="gandhi" target="_blank" rel="noopener noreferrer">\n'
         '            <img class="logo-gandhi" src="/tiendas/gandhi-blanco.png" alt="Gandhi"><span class="btn-tienda-txt">Explorar</span>\n'
         '          </a>\n'
         '        </div>'
@@ -266,6 +310,17 @@ TIENDAS_FUNCION_JS = r"""/* 🛒 B417 · Tiendas, con la misma regla que la app 
    no llega (o si no llega), se quedan las ligas de México que trae la página. */
 function tgEnc(s) { try { return encodeURIComponent(String(s == null ? '' : s).replace(/\s+/g, ' ').trim()); } catch (e) { return ''; } }
 
+/* 🏷️ BC56 · Cada liga a una tienda lleva su marca UTM, la misma de /tiendas.js: la tienda ve que la visita y la
+   venta vienen de Triggui. El lugar sale de la ruta (las ediciones de Niños viven en /kids/t/) y el libro, de su
+   slug. tgUtm es la liga de respaldo mientras /tiendas.js no llega. */
+function tgLugar() { try { return /^\/kids\//.test(location.pathname) ? 'edicion-ninos' : 'edicion'; } catch (e) { return 'edicion'; } }
+function tgSlug() { try { return (typeof state !== 'undefined' && state && state.id) ? String(state.id) : ''; } catch (e) { return ''; } }
+function tgUtm(u, b) {
+  const s = tgSlug();
+  return u + (u.indexOf('?') >= 0 ? '&' : '?') + 'utm_source=triggui&utm_medium=referral&utm_campaign=' + b
+    + (s ? '&utm_content=' + tgEnc(s) : '') + '&utm_term=' + tgLugar();
+}
+
 function tgPintaTienda(a, tienda, texto) {
   if (!a) return;
   const img = a.querySelector('img');
@@ -292,7 +347,7 @@ function applyDynamicActionLinks() {
 
   if (btnComprar && TG_COMPRA) {
     const c = T
-      ? T.comprar({ titulo: state._tes || state.titulo, titulo_en: state.titulo_en || '', autor: state.autor || '', tienda_compra: TG_COMPRA }, EN ? 'en' : 'es', mx)
+      ? T.comprar({ titulo: state._tes || state.titulo, titulo_en: state.titulo_en || '', autor: state.autor || '', tienda_compra: TG_COMPRA }, EN ? 'en' : 'es', mx, tgLugar(), tgSlug())
       : TG_COMPRA;
     btnComprar.href = c.url;
     btnComprar.setAttribute('data-tienda', c.tienda);
@@ -311,14 +366,14 @@ function applyDynamicActionLinks() {
   if (!word) return;
 
   if (btnCrystal) {
-    const x = T ? T.explorar(word, mx) : { url: 'https://casadelibro.com.mx/search/?q=' + tgEnc(word), tienda: 'casadelibro' };
+    const x = T ? T.explorar(word, mx, tgLugar(), tgSlug()) : { url: tgUtm('https://casadelibro.com.mx/search/?q=' + tgEnc(word), 'descubre'), tienda: 'casadelibro' };
     btnCrystal.href = x.url;
     btnCrystal.setAttribute('data-tienda', x.tienda);
   }
 
   if (btnGandhi && mx) {
-    const g = T ? T.explorarGandhi(word, true) : null;
-    btnGandhi.href = g ? g.url : 'https://www.gandhi.com.mx/?query=' + tgEnc(word);
+    const g = T ? T.explorarGandhi(word, true, tgLugar(), tgSlug()) : null;
+    btnGandhi.href = g ? g.url : tgUtm('https://www.gandhi.com.mx/?query=' + tgEnc(word), 'explorar');
   }
 }
 
@@ -1045,7 +1100,9 @@ def render_edicion(edicion, mode="lab"):
 
     primary_word_default = normalize_text((palabras[0] if palabras else "") or palabra or titulo)
     # 🛒 B417: «Comprar» va a la tienda que marcó el horno en «tienda_compra»; 🔮 y «Explorar» buscan la palabra.
-    tiendas_html = tiendas_botones_html(titulo, edicion.get("tienda_compra"), primary_word_default)
+    # 🏷️ BC56: las tres ligas con su marca UTM (el libro por su slug y el lugar: edicion o edicion-ninos).
+    tiendas_html = tiendas_botones_html(titulo, edicion.get("tienda_compra"), primary_word_default,
+                                        edicion_id, tienda_lugar_edicion())
 
     # 🖼️ Cover verificado a nivel partícula: local premium si EXISTE; si no, remota del libro; jamás roto
     _out_base_dir = SINGLE_OUT_DIR if mode == "single" else LAB_OUT_DIR

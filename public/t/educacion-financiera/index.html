@@ -603,15 +603,15 @@ body::before {
         </div>
 
         <div class="btn-row btn-row-3" id="tgTiendas">
-          <a class="btn-dark btn-comprar" id="btnComprar" href="https://www.gandhi.com.mx/educacion-financiera/p" data-tienda="gandhi" target="_blank" rel="noopener noreferrer">
+          <a class="btn-dark btn-comprar" id="btnComprar" href="https://www.gandhi.com.mx/educacion-financiera/p?utm_source=triggui&amp;utm_medium=referral&amp;utm_campaign=comprar&amp;utm_content=educacion-financiera&amp;utm_term=edicion" data-tienda="gandhi" target="_blank" rel="noopener noreferrer">
             <img class="logo-gandhi" src="/tiendas/gandhi-blanco.png" alt="Gandhi"><span class="btn-tienda-txt">Comprar</span>
           </a>
 
-          <a class="btn-dark btn-crystal" id="btnCrystal" href="https://casadelibro.com.mx/search/?q=empoderamiento" data-tienda="casadelibro" target="_blank" rel="noopener noreferrer">
+          <a class="btn-dark btn-crystal" id="btnCrystal" href="https://casadelibro.com.mx/search/?q=empoderamiento&amp;utm_source=triggui&amp;utm_medium=referral&amp;utm_campaign=descubre&amp;utm_content=educacion-financiera&amp;utm_term=edicion" data-tienda="casadelibro" target="_blank" rel="noopener noreferrer">
             <span class="btn-emoji">🔮</span>
           </a>
 
-          <a class="btn-dark btn-gandhi" id="btnGandhi" href="https://www.gandhi.com.mx/?query=empoderamiento" data-tienda="gandhi" target="_blank" rel="noopener noreferrer">
+          <a class="btn-dark btn-gandhi" id="btnGandhi" href="https://www.gandhi.com.mx/?query=empoderamiento&amp;utm_source=triggui&amp;utm_medium=referral&amp;utm_campaign=explorar&amp;utm_content=educacion-financiera&amp;utm_term=edicion" data-tienda="gandhi" target="_blank" rel="noopener noreferrer">
             <img class="logo-gandhi" src="/tiendas/gandhi-blanco.png" alt="Gandhi"><span class="btn-tienda-txt">Explorar</span>
           </a>
         </div>
@@ -845,6 +845,17 @@ function getPrimaryChronoWord() {
    no llega (o si no llega), se quedan las ligas de México que trae la página. */
 function tgEnc(s) { try { return encodeURIComponent(String(s == null ? '' : s).replace(/\s+/g, ' ').trim()); } catch (e) { return ''; } }
 
+/* 🏷️ BC56 · Cada liga a una tienda lleva su marca UTM, la misma de /tiendas.js: la tienda ve que la visita y la
+   venta vienen de Triggui. El lugar sale de la ruta (las ediciones de Niños viven en /kids/t/) y el libro, de su
+   slug. tgUtm es la liga de respaldo mientras /tiendas.js no llega. */
+function tgLugar() { try { return /^\/kids\//.test(location.pathname) ? 'edicion-ninos' : 'edicion'; } catch (e) { return 'edicion'; } }
+function tgSlug() { try { return (typeof state !== 'undefined' && state && state.id) ? String(state.id) : ''; } catch (e) { return ''; } }
+function tgUtm(u, b) {
+  const s = tgSlug();
+  return u + (u.indexOf('?') >= 0 ? '&' : '?') + 'utm_source=triggui&utm_medium=referral&utm_campaign=' + b
+    + (s ? '&utm_content=' + tgEnc(s) : '') + '&utm_term=' + tgLugar();
+}
+
 function tgPintaTienda(a, tienda, texto) {
   if (!a) return;
   const img = a.querySelector('img');
@@ -871,7 +882,7 @@ function applyDynamicActionLinks() {
 
   if (btnComprar && TG_COMPRA) {
     const c = T
-      ? T.comprar({ titulo: state._tes || state.titulo, titulo_en: state.titulo_en || '', autor: state.autor || '', tienda_compra: TG_COMPRA }, EN ? 'en' : 'es', mx)
+      ? T.comprar({ titulo: state._tes || state.titulo, titulo_en: state.titulo_en || '', autor: state.autor || '', tienda_compra: TG_COMPRA }, EN ? 'en' : 'es', mx, tgLugar(), tgSlug())
       : TG_COMPRA;
     btnComprar.href = c.url;
     btnComprar.setAttribute('data-tienda', c.tienda);
@@ -890,14 +901,14 @@ function applyDynamicActionLinks() {
   if (!word) return;
 
   if (btnCrystal) {
-    const x = T ? T.explorar(word, mx) : { url: 'https://casadelibro.com.mx/search/?q=' + tgEnc(word), tienda: 'casadelibro' };
+    const x = T ? T.explorar(word, mx, tgLugar(), tgSlug()) : { url: tgUtm('https://casadelibro.com.mx/search/?q=' + tgEnc(word), 'descubre'), tienda: 'casadelibro' };
     btnCrystal.href = x.url;
     btnCrystal.setAttribute('data-tienda', x.tienda);
   }
 
   if (btnGandhi && mx) {
-    const g = T ? T.explorarGandhi(word, true) : null;
-    btnGandhi.href = g ? g.url : 'https://www.gandhi.com.mx/?query=' + tgEnc(word);
+    const g = T ? T.explorarGandhi(word, true, tgLugar(), tgSlug()) : null;
+    btnGandhi.href = g ? g.url : tgUtm('https://www.gandhi.com.mx/?query=' + tgEnc(word), 'explorar');
   }
 }
 

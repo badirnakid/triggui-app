@@ -2,6 +2,7 @@
 // (recortadas en fixtures/tiendas/) y casos de título y autor que deben coincidir y que no.
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import {
@@ -250,14 +251,83 @@ await pruebasConRed();
   vm.createContext(ctx);
   vm.runInContext(readFileSync(join(aqui, '..', '..', 'public', 'tiendas.js'), 'utf8'), ctx);
   const T = ctx.window.TrigguiTiendas;
+  // Sin ruta (aquí no hay página) el lugar es «app»; sin slug, la marca va sin utm_content.
+  const marcaApp = '&utm_source=triggui&utm_medium=referral&utm_campaign=comprar&utm_term=app';
   for (const tienda of ['constructor', 'toString', '__proto__', 'hasOwnProperty']) {
     const r = T.comprar({ titulo: 'Esencialismo', tienda_compra: { tienda, url: 'https://www.gandhi.com.mx/a' } }, 'es', true);
-    assert.equal(r.url, 'https://www.gandhi.com.mx/?query=Esencialismo', tienda);
+    assert.equal(r.url, 'https://www.gandhi.com.mx/?query=Esencialismo' + marcaApp, tienda);
   }
-  assert.equal(T.comprar({ titulo: 'a\ud800b' }, 'es', true).url, 'https://www.gandhi.com.mx/?query=a%EF%BF%BDb');
+  assert.equal(T.comprar({ titulo: 'a\ud800b' }, 'es', true).url, 'https://www.gandhi.com.mx/?query=a%EF%BF%BDb' + marcaApp);
   assert.equal(T.comprar({ titulo: 'x', tienda_compra: { tienda: 'casadelibro', url: 'https://casadelibro.com.mx.evil.example/p' } }, 'es', true).tienda, 'gandhi');
   assert.equal(T.tituloCorto(' (Edición) Libro'), '(Edición) Libro');
   assert.equal(T.tituloCorto('Título  - Sub'), 'Título');
+  pruebas++;
+}
+
+// 🏷️ BC56 · Las marcas UTM de /tiendas.js: cada liga a una tienda dice que viene de Triggui, desde dónde y de qué libro.
+{
+  const vm = await import('node:vm');
+  const cargar = (pathname) => {
+    const ctx = { window: pathname == null ? {} : { location: { pathname } }, navigator: { language: 'es-MX' }, Intl };
+    vm.createContext(ctx);
+    vm.runInContext(readFileSync(join(aqui, '..', '..', 'public', 'tiendas.js'), 'utf8'), ctx);
+    return ctx.window.TrigguiTiendas;
+  };
+  const T = cargar(null);
+  assert.equal(T.version, 2);
+  const ficha = 'https://casadelibro.com.mx/productos/12-reglas-para-vivir1/';
+  const libro = { titulo: '12 reglas para vivir', autor: 'Jordan B. Peterson', _slug: '12-reglas-para-vivir', tienda_compra: { tienda: 'casadelibro', url: ficha } };
+
+  // La ficha sin «?» gana su «?»; el slug del libro va en utm_content si no se da otro.
+  assert.equal(T.comprar(libro, 'es', true, 'app').url,
+    ficha + '?utm_source=triggui&utm_medium=referral&utm_campaign=comprar&utm_content=12-reglas-para-vivir&utm_term=app');
+  // Desde el correo: utm_medium=email y utm_term=correo.
+  assert.equal(T.comprar(libro, 'es', true, 'correo', 'otro-slug').url,
+    ficha + '?utm_source=triggui&utm_medium=email&utm_campaign=comprar&utm_content=otro-slug&utm_term=correo');
+  // 🔮 y «Explorar»: las búsquedas conservan su consulta y suman la marca.
+  assert.equal(T.explorar('Orden', true, 'ninos', 'x').url,
+    'https://casadelibro.com.mx/search/?q=Orden&utm_source=triggui&utm_medium=referral&utm_campaign=descubre&utm_content=x&utm_term=ninos');
+  assert.equal(T.explorarGandhi('Caos y orden', true, 'edicion-ninos', 'y').url,
+    'https://www.gandhi.com.mx/?query=Caos%20y%20orden&utm_source=triggui&utm_medium=referral&utm_campaign=explorar&utm_content=y&utm_term=edicion-ninos');
+  assert.equal(T.explorarGandhi('Caos', false, 'app'), null);
+  // Fuera de México, Amazon también lleva la marca (la etiqueta de afiliado, cuando exista, va antes).
+  assert.match(T.comprar(libro, 'en', false, 'edicion').url,
+    /^https:\/\/www\.amazon\.com\/s\?k=12%20reglas%20para%20vivir%20Jordan%20B\.%20Peterson&i=stripbooks&utm_source=triggui&utm_medium=referral&utm_campaign=comprar&utm_content=12-reglas-para-vivir&utm_term=edicion$/);
+  // Las marcas que ya traiga una liga se cambian por las de Triggui; nunca se duplican, y marcar dos veces da lo mismo.
+  const u1 = T.marcar('https://www.gandhi.com.mx/?utm_source=x&query=a&UTM_MEDIUM=y&&utm_term=z', 'explorar', 's', 'app');
+  assert.equal(u1, 'https://www.gandhi.com.mx/?query=a&utm_source=triggui&utm_medium=referral&utm_campaign=explorar&utm_content=s&utm_term=app');
+  assert.equal(T.marcar(u1, 'explorar', 's', 'app'), u1);
+  // El «#» se queda al final; lo que no es https no se toca; un lugar desconocido toma el de la página.
+  assert.equal(T.marcar('https://casadelibro.com.mx/p/#parte', 'comprar', '', 'app'),
+    'https://casadelibro.com.mx/p/?utm_source=triggui&utm_medium=referral&utm_campaign=comprar&utm_term=app#parte');
+  assert.equal(T.marcar('javascript:alert(1)', 'comprar', 's', 'app'), 'javascript:alert(1)');
+  assert.equal(T.marcar('https://casadelibro.com.mx/p/', 'comprar', 'á b', 'otro'),
+    'https://casadelibro.com.mx/p/?utm_source=triggui&utm_medium=referral&utm_campaign=comprar&utm_content=%C3%A1%20b&utm_term=app');
+  // El lugar de la página, por su ruta.
+  for (const [ruta, lugar] of [['/', 'app'], ['/kids/', 'ninos'], ['/kids', 'ninos'], ['/t/esencialismo/', 'edicion'],
+    ['/t/esencialismo/en/', 'edicion'], ['/kids/t/coraline/', 'edicion-ninos'], ['/ir/', 'correo'], ['/mi/', 'app']]) {
+    assert.equal(cargar(ruta).lugarDeLaPagina(), lugar, ruta);
+  }
+  assert.match(cargar('/kids/t/coraline/').comprar(libro, 'es', true).url, /&utm_term=edicion-ninos$/);
+
+  // La misma marca, carácter por carácter, que tienda_marca() de las ediciones (scripts/build-editions.py).
+  const casos = [
+    [ficha, 'comprar', '12-reglas-para-vivir', 'edicion'],
+    ['https://www.gandhi.com.mx/?query=Caos%20y%20orden', 'explorar', 'coraline', 'edicion-ninos'],
+    ['https://casadelibro.com.mx/search/?q=a&utm_source=x', 'descubre', '', 'correo'],
+    ['https://casadelibro.com.mx/p/?#f', 'comprar', 'á\ud800 b', 'ninos'],
+    ['https://www.amazon.es/s?k=x&i=stripbooks&tag=t-21', 'comprar', 's', 'otro'],
+    ['http://casadelibro.com.mx/p', 'comprar', 's', 'app'],
+    ['https://casadelibro.com.mx/p?&&Utm_x=1&b=2#a#b', 'comprar', '  slug  con   espacios ', 'app'],
+  ];
+  const py = execFileSync('python3', ['-I', '-B', '-c', [
+    'import importlib.util, json, sys',
+    `spec = importlib.util.spec_from_file_location('be', ${JSON.stringify(join(aqui, '..', '..', 'scripts', 'build-editions.py'))})`,
+    'be = importlib.util.module_from_spec(spec); sys.argv = ["build-editions.py"]; spec.loader.exec_module(be)',
+    'casos = json.loads(sys.stdin.read())',
+    'print(json.dumps([be.tienda_marca(*c) for c in casos]))',
+  ].join('\n')], { input: JSON.stringify(casos), encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] });
+  assert.deepEqual(JSON.parse(py), casos.map((c) => T.marcar(...c)));
   pruebas++;
 }
 

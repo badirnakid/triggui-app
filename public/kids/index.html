@@ -3893,12 +3893,19 @@ btnShare.onclick = () => {
   const __T = window.TrigguiTiendas || null;
   const __mx = __T ? __T.enMexico() : true;
   const __tc = libro.tienda_compra || null;
-  const __comprar = __T ? __T.comprar(libro, __idiomaCard, __mx)
+  // 🏷️ BC56: cada liga lleva su marca UTM (la tienda ve que la visita y la venta vienen de Triggui). El libro va
+  // por su slug; el que no tiene edición, por su título hecho slug. Sin /tiendas.js, las ligas de respaldo llevan
+  // la misma marca.
+  const __lugar = IS_KIDS_MODE ? 'ninos' : 'app';
+  const __slugUtm = (libro && libro._slug) || String((libro && libro.titulo) || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  const __utm = (u, b) => u + (u.indexOf('?') >= 0 ? '&' : '?') + 'utm_source=triggui&utm_medium=referral&utm_campaign=' + b
+    + (__slugUtm ? '&utm_content=' + encodeURIComponent(__slugUtm) : '') + '&utm_term=' + __lugar;
+  const __comprar = __T ? __T.comprar(libro, __idiomaCard, __mx, __lugar, __slugUtm)
     : ((__tc && ((__tc.tienda === 'casadelibro' && /^https:\/\/casadelibro\.com\.mx\//.test(String(__tc.url || ''))) || (__tc.tienda === 'gandhi' && /^https:\/\/www\.gandhi\.com\.mx\//.test(String(__tc.url || '')))))
-        ? { url: String(__tc.url), tienda: __tc.tienda }
-        : { url: `https://www.gandhi.com.mx/?query=${encodeURIComponent(libro.titulo || tituloCard)}`, tienda: 'gandhi' });
-  const __explorar = __T ? __T.explorar(p, __mx) : { url: `https://casadelibro.com.mx/search/?q=${encodeURIComponent(p)}`, tienda: 'casadelibro' };
-  const __gandhi = __T ? __T.explorarGandhi(p, __mx) : { url: `https://www.gandhi.com.mx/?query=${encodeURIComponent(p)}`, tienda: 'gandhi' };
+        ? { url: __utm(String(__tc.url), 'comprar'), tienda: __tc.tienda }
+        : { url: __utm(`https://www.gandhi.com.mx/?query=${encodeURIComponent(libro.titulo || tituloCard)}`, 'comprar'), tienda: 'gandhi' });
+  const __explorar = __T ? __T.explorar(p, __mx, __lugar, __slugUtm) : { url: __utm(`https://casadelibro.com.mx/search/?q=${encodeURIComponent(p)}`, 'descubre'), tienda: 'casadelibro' };
+  const __gandhi = __T ? __T.explorarGandhi(p, __mx, __lugar, __slugUtm) : { url: __utm(`https://www.gandhi.com.mx/?query=${encodeURIComponent(p)}`, 'explorar'), tienda: 'gandhi' };
   const __logoComprar = __comprar.tienda === 'casadelibro'
     ? { src: '/tiendas/casadellibro-blanco.png', alt: 'Casa del Libro', cls: 'logo-casadelibro' }
     : (__comprar.tienda === 'gandhi' ? { src: '/tiendas/gandhi-blanco.png', alt: 'Gandhi', cls: 'logo-gandhi' } : null);
