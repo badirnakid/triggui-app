@@ -43,7 +43,8 @@ function filasBase() {
     fila("Hugo", "+52 1 55 1111 1111", "SUBSCRIBED", "es", "sí"),
     fila("Ines", "5566666666", "SUBSCRIBED_EXPIRED", "es", "sí"),
     fila("Juan", "123", "SUBSCRIBED", "es", "sí"),
-    fila("Kim", "5577777777", "TRIAL", "es", "sí", "vencido")];
+    fila("Kim", "5577777777", "TRIAL", "es", "sí", "vencido"),
+    fila("Luis", "5588888888", "SUBSCRIBED", "es", "sí ✔")];
 }
 
 function hojaFalsa(filas) {
@@ -73,7 +74,16 @@ function entorno(opciones) {
   const libroHojas = {
     hojas: { "Triggui Emails Prueba": hojaFalsa(opciones.filas || filasBase()) },
     getSheetByName: function (n) { return this.hojas[n] || null; },
-    insertSheet: function (n) { this.hojas[n] = hojaFalsa([]); return this.hojas[n]; }
+    insertSheet: function (n) {
+      const h = hojaFalsa([]);
+      if (opciones.fallaEnLlamada) {   // la llamada número N a appendRow de esta hoja truena (la 1 es el encabezado)
+        let veces = 0;
+        const original = h.appendRow;
+        h.appendRow = function (f) { veces++; if (veces === opciones.fallaEnLlamada) throw new Error("Servicio de hojas"); return original(f); };
+      }
+      this.hojas[n] = h;
+      return h;
+    }
   };
   let n = 0;
   const meta = opciones.meta || function () { return { code: 200, body: { messages: [{ id: "wamid.T" + n }] } }; };
@@ -154,10 +164,10 @@ prueba("el permiso: sí, kids, baja y lo demás", function () {
   assert.deepStrictEqual(p(""), { si: false, baja: false, kids: false });
   assert.deepStrictEqual(p(null), { si: false, baja: false, kids: false });
   assert.deepStrictEqual(p("no"), { si: false, baja: false, kids: false });
-  assert.deepStrictEqual(p("si no contesta, quitar"), { si: false, baja: false, kids: false });
+  assert.deepStrictEqual(p("si no contesta, quitar"), { si: false, baja: false, kids: false, raro: true });
   assert.deepStrictEqual(p("sí 15/11"), { si: true, baja: false, kids: false });
   assert.deepStrictEqual(p("Sí. 15/11/2026, kids"), { si: true, baja: false, kids: true });
-  assert.deepStrictEqual(p("sí, por WhatsApp"), { si: false, baja: false, kids: false });
+  assert.deepStrictEqual(p("sí, por WhatsApp"), { si: false, baja: false, kids: false, raro: true });
 });
 
 prueba("los teléfonos: lada, México con y sin 1, 044 y salida internacional", function () {
@@ -180,7 +190,16 @@ prueba("quiénes reciben: solo «sí», con la elegibilidad del lunes y sin repe
   const L = JSON.parse(JSON.stringify(E.ctx.waPersonas_()));
   assert.deepStrictEqual(L.personas.map(function (p) { return [p.nombre, p.tel, p.lang, p.cat]; }), [
     ["Ana", "525511111111", "es", "adultos"], ["Bob", "15125550101", "en", "adultos"], ["Carla", "525522222222", "es", "kids"]]);
-  assert.deepStrictEqual(L.resumen, { conSi: 9, sinTel: 1, telRaro: 1, baja: 1, unsub: 1, expirados: 2, repetidos: 1, lada52: 2 });
+  assert.deepStrictEqual(L.resumen, { conSi: 9, sinTel: 1, telRaro: 1, baja: 1, unsub: 1, expirados: 2, repetidos: 1, lada52: 2, siSinEntender: 1 });
+});
+
+prueba("si la hoja falla a medio envío, el aviso dice cuántos sí salieron", function () {
+  const E = entorno({ props: PROPS_OK, fallaEnLlamada: 3 });
+  const r = E.ctx.waEnviarLunes();
+  assert.ok(/^Se interrumpió: salieron 2 de 3\./.test(r.aviso), r.aviso);
+  assert.ok(/WA envíos/.test(r.aviso));
+  assert.strictEqual(E.llamadas.filter(function (l) { return /\/messages$/.test(l.url); }).length, 2);
+  assert.strictEqual(E.correos.length, 1);
 });
 
 prueba("si falta la columna, el lunes no sale nada y avisa por correo (no truena)", function () {

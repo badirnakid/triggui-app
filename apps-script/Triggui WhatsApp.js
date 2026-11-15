@@ -116,10 +116,11 @@ function waCorrer_(ensayo) {
     if (cache.get("wa_envio_en_curso")) return waAviso_("Ya hay un envío corriendo: no mandé nada.", true);
     cache.put("wa_envio_en_curso", "1", 1800);
   }
+  let resumen = { aceptados: 0, personas: 0 };   // afuera del try: si algo truena a medio ciclo, el aviso dice cuántos sí salieron
   try {
     const L = waPersonas_();
     const personas = L.personas;
-    const resumen = { ensayo: ensayo, personas: personas.length, filtros: L.resumen, porIdioma: { es: 0, en: 0 },
+    resumen = { ensayo: ensayo, personas: personas.length, filtros: L.resumen, porIdioma: { es: 0, en: 0 },
       porCatalogo: { adultos: 0, kids: 0 }, aceptados: 0, yaTenian: 0, errores: 0, detenido: "", muestra: null };
     if (personas.length > cfg.tope) {
       return waAviso_("Son " + personas.length + " personas con «sí» y el tope es " + cfg.tope +
@@ -159,10 +160,10 @@ function waCorrer_(ensayo) {
       const envio = Object.assign({}, a.cuerpo);
       delete envio._lang;
       const r = waMandar_(cfg, envio);
+      if (r.ok) { resumen.aceptados++; ya[slug][a.p.clave] = true; }   // se cuenta antes de anotar: si la hoja falla, el aviso no miente
       hoja.appendRow([new Date(), slug, "'" + a.p.tel, a.p.nombre, a.cuerpo._lang, a.p.cat,
         r.ok ? r.wamid : "", r.ok ? "aceptado" : "error " + r.codigo, r.ok ? "" : r.detalle]);
-      if (r.ok) { resumen.aceptados++; ya[slug][a.p.clave] = true; }
-      else {
+      if (!r.ok) {
         resumen.errores++;
         if (waEsFatal_(r)) { resumen.detenido = (r.codigo || ("HTTP " + r.http)) + " · " + r.detalle; break; }
       }
@@ -177,8 +178,14 @@ function waCorrer_(ensayo) {
     Logger.log("Envío: " + JSON.stringify(resumen));
     return resumen;
   } catch (e) {
-    // Falta la columna, la edición viene incompleta o no se pudo leer el catálogo: no sale nada, y se avisa.
-    return waAviso_("No salió nada: " + String((e && e.message) || e), !ensayo);
+    // Antes del ciclo (falta la columna, la edición viene incompleta, el catálogo no se lee): no salió nada.
+    // A medio ciclo (por ejemplo, la hoja no escribió una fila): se dice cuántos sí salieron.
+    const motivo = String((e && e.message) || e);
+    if (resumen.aceptados > 0) {
+      return waAviso_("Se interrumpió: salieron " + resumen.aceptados + " de " + resumen.personas +
+        ". Revisa la hoja «" + WA_HOJA_ENVIOS + "» antes de volver a correrlo. Motivo: " + motivo, !ensayo);
+    }
+    return waAviso_("No salió nada: " + motivo, !ensayo);
   } finally {
     if (!ensayo) cache.remove("wa_envio_en_curso");
   }
@@ -206,10 +213,11 @@ function waPersonas_() {
   if (!col) throw new Error("Falta la columna «WhatsApp» en la hoja: agrégala en la primera columna libre y escribe «sí» en cada persona que te dio permiso.");
   const vistos = {};
   const personas = [];
-  const r = { conSi: 0, sinTel: 0, telRaro: 0, baja: 0, unsub: 0, expirados: 0, repetidos: 0, lada52: 0 };
+  const r = { conSi: 0, sinTel: 0, telRaro: 0, baja: 0, unsub: 0, expirados: 0, repetidos: 0, lada52: 0, siSinEntender: 0 };
   for (let i = 1; i < data.length; i++) {
     const permiso = waLeerPermiso_(data[i][col - 1]);
     if (permiso.baja) { r.baja++; continue; }
+    if (permiso.raro) { r.siSinEntender++; continue; }
     if (!permiso.si) continue;
     r.conSi++;
     const crudo = String(data[i][3] || "");
@@ -485,7 +493,7 @@ function waLeerPermiso_(valor) {
   const valen = piezas.every(function (x) {
     return x === "kids" || x === "ninos" || /^\d{4}-\d{2}-\d{2}$/.test(x) || /^\d{1,2}\/\d{1,2}(\/\d{2,4})?$/.test(x);
   });
-  if (!valen) return nada;
+  if (!valen) return { si: false, baja: false, kids: false, raro: true };   // empieza con «sí» pero no se entiende: no cuenta y se cuenta
   return { si: true, baja: false, kids: piezas.indexOf("kids") !== -1 || piezas.indexOf("ninos") !== -1 };
 }
 
