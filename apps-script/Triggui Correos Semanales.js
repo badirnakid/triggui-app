@@ -2930,6 +2930,12 @@ function doPost(e) {
     const params = (e && e.parameter) ? e.parameter : {};
     const action = params.action || "lead";
 
+    // ─── WhatsApp de los lunes: el puente desde triggui.com/api/wa (bajas, estados y botones; con su clave) ───
+    if (action === "wa_puente") {
+      return ContentService.createTextOutput(JSON.stringify(waPuente_(params)))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
     // ─── RUTA 1: LIKE (App móvil) — preservada exactamente del captación viejo ───
     if (action === "like") {
       const ss = SpreadsheetApp.getActiveSpreadsheet();
