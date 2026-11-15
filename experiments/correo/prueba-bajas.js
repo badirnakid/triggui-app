@@ -19,9 +19,9 @@ function nuevoMundo(opciones = {}) {
   const bitacora = [];
   const encabezados = ['Nombre', 'Fecha', 'Correo', '', '', '', '', '', '', '', '', '', '', '', 'Estado', 'Envios', 'IDIOMA', 'IDIOMA_TS'];
   const filas = (opciones.filas || [
-    ['Ana', '', 'ana@correo.mx', '', '', '', '', '', '', '', '', '', '', '', '', '', 'es', ''],
-    ['Bob', '', 'bob@mail.com, otro@mail.com', '', '', '', '', '', '', '', '', '', '', '', '', '', 'en', ''],
-    ['Cris', '', 'cris@correo.mx', '', '', '', '', '', '', '', '', '', '', '', 'UNSUBSCRIBED 2026-11-01 10:00', '', 'es', ''],
+    ['Ana', '', 'ana@ejemplo.com', '', '', '', '', '', '', '', '', '', '', '', '', '', 'es', ''],
+    ['Bob', '', 'bob@ejemplo.org, otro@ejemplo.org', '', '', '', '', '', '', '', '', '', '', '', '', '', 'en', ''],
+    ['Cris', '', 'cris@ejemplo.com', '', '', '', '', '', '', '', '', '', '', '', 'UNSUBSCRIBED 2026-11-01 10:00', '', 'es', ''],
     ['Badir', '', 'badir@triggui.com', '', '', '', '', '', '', '', '', '', '', '', '', '', 'es', ''],
   ]).map(f => f.slice());
   const datos = [encabezados.slice()].concat(filas);
@@ -88,17 +88,18 @@ function prueba(nombre, fn) { fn(); pruebas++; console.log('✔ ' + nombre); }
 // ── Sin secreto: todo falla cerrado, con su nombre ─────────────────────────
 prueba('sin secreto, la firma se detiene con el nombre de la propiedad', () => {
   const m = nuevoMundo();
-  assert.throws(() => m.ctx.generarTokenUnsub('ana@correo.mx'), /BAJAS_SECRETO/);
-  assert.deepStrictEqual(pide(m, { action: 'unsubscribe', email: 'ana@correo.mx', token: 'a'.repeat(32), format: 'json' }), { ok: false, error: 'interno' });
-  assert.deepStrictEqual(pide(m, { action: 'lang', email: 'ana@correo.mx', token: 'a'.repeat(32), l: 'en', format: 'json' }), { ok: false, error: 'interno' });
-  assert.deepStrictEqual(pide(m, { action: 'nuevo_enlace', email: 'ana@correo.mx' }), { ok: false, error: 'interno' });
+  assert.throws(() => m.ctx.generarTokenUnsub('ana@ejemplo.com'), /BAJAS_SECRETO/);
+  assert.deepStrictEqual(pide(m, { action: 'unsubscribe', email: 'ana@ejemplo.com', token: 'a'.repeat(32), format: 'json' }), { ok: false, error: 'interno' });
+  assert.deepStrictEqual(pide(m, { action: 'lang', email: 'ana@ejemplo.com', token: 'a'.repeat(32), l: 'en', format: 'json' }), { ok: false, error: 'interno' });
+  assert.deepStrictEqual(pide(m, { action: 'nuevo_enlace', email: 'ana@ejemplo.com' }), { ok: false, error: 'interno' });
+  assert.deepStrictEqual(pide(m, { action: 'nuevo_enlace', email: 'nadie@ejemplo.com' }), { ok: false, error: 'interno' });
   assert.strictEqual(m.correos.length, 0);
   assert.strictEqual(m.datos[1][14], '');
 });
 
 prueba('un secreto corto no se acepta', () => {
   const m = nuevoMundo({ props: { BAJAS_SECRETO: 'corto' } });
-  assert.throws(() => m.ctx.generarTokenUnsub('ana@correo.mx'), /BAJAS_SECRETO/);
+  assert.throws(() => m.ctx.generarTokenUnsub('ana@ejemplo.com'), /BAJAS_SECRETO/);
 });
 
 // ── crearSecretoBajas ───────────────────────────────────────────────────────
@@ -121,7 +122,7 @@ function firmaEsperada(correo) {
 }
 prueba('la firma es el HMAC-SHA256 del correo normalizado, 32 hex', () => {
   const m = nuevoMundo({ props: { BAJAS_SECRETO: SECRETO } });
-  for (const c of ['ana@correo.mx', ' Ana@Correo.MX ', 'bob@mail.com', 'ñandú@correo.mx']) {
+  for (const c of ['ana@ejemplo.com', ' Ana@Correo.MX ', 'bob@ejemplo.org', 'ñandú@ejemplo.com']) {
     assert.strictEqual(m.ctx.generarTokenUnsub(c), firmaEsperada(c));
   }
 });
@@ -132,70 +133,70 @@ prueba('probarSecretoBajas: todo verdadero', () => {
 });
 prueba('validarTokenUnsub rechaza formas raras y la firma vieja', () => {
   const m = nuevoMundo({ props: { BAJAS_SECRETO: SECRETO } });
-  const t = firmaEsperada('ana@correo.mx');
-  const vieja = crypto.createHash('sha256').update('ana@correo.mx:' + SECRETO).digest('hex').slice(0, 16);
+  const t = firmaEsperada('ana@ejemplo.com');
+  const vieja = crypto.createHash('sha256').update('ana@ejemplo.com:' + SECRETO).digest('hex').slice(0, 16);
   for (const malo of ['', null, undefined, t.toUpperCase(), t + '0', t.slice(1), vieja, 'z'.repeat(32), { length: 32 }, t.slice(0, 31) + ' ']) {
-    assert.strictEqual(m.ctx.validarTokenUnsub('ana@correo.mx', malo), false, String(malo));
+    assert.strictEqual(m.ctx.validarTokenUnsub('ana@ejemplo.com', malo), false, String(malo));
   }
-  assert.strictEqual(m.ctx.validarTokenUnsub('ana@correo.mx', t), true);
+  assert.strictEqual(m.ctx.validarTokenUnsub('ana@ejemplo.com', t), true);
   assert.strictEqual(m.ctx.validarTokenUnsub('', t), false);
 });
 
 // ── La baja ─────────────────────────────────────────────────────────────────
 prueba('baja con firma válida: queda y dice el nombre', () => {
   const m = nuevoMundo({ props: { BAJAS_SECRETO: SECRETO } });
-  const r = pide(m, { action: 'unsubscribe', email: 'ana@correo.mx', token: firmaEsperada('ana@correo.mx'), format: 'json' });
+  const r = pide(m, { action: 'unsubscribe', email: 'ana@ejemplo.com', token: firmaEsperada('ana@ejemplo.com'), format: 'json' });
   assert.deepStrictEqual(r, { ok: true, first_name: 'Ana' });
   assert.match(m.datos[1][14], /^UNSUBSCRIBED \d{4}-\d{2}-\d{2} \d{2}:\d{2}$/);
 });
 prueba('baja con firma vieja o falsa: no toca la hoja y lo dice', () => {
   const m = nuevoMundo({ props: { BAJAS_SECRETO: SECRETO } });
-  const vieja = crypto.createHash('sha256').update('ana@correo.mx:' + SECRETO).digest('hex').slice(0, 16);
-  for (const t of [vieja, '0'.repeat(32), firmaEsperada('bob@mail.com')]) {
-    assert.deepStrictEqual(pide(m, { action: 'unsubscribe', email: 'ana@correo.mx', token: t, format: 'json' }), { ok: false, error: 'token' });
+  const vieja = crypto.createHash('sha256').update('ana@ejemplo.com:' + SECRETO).digest('hex').slice(0, 16);
+  for (const t of [vieja, '0'.repeat(32), firmaEsperada('bob@ejemplo.org')]) {
+    assert.deepStrictEqual(pide(m, { action: 'unsubscribe', email: 'ana@ejemplo.com', token: t, format: 'json' }), { ok: false, error: 'token' });
   }
   assert.strictEqual(m.datos[1][14], '');
-  assert.ok(m.bitacora.every(l => !l.includes('ana@correo.mx')), 'la bitácora no debe guardar el correo en una firma inválida');
+  assert.ok(m.bitacora.every(l => !l.includes('ana@ejemplo.com')), 'la bitácora no debe guardar el correo en una firma inválida');
 });
 prueba('baja sin datos: «parametros»; sin hoja: «interno»', () => {
   const m = nuevoMundo({ props: { BAJAS_SECRETO: SECRETO } });
   assert.deepStrictEqual(pide(m, { action: 'unsubscribe', format: 'json' }), { ok: false, error: 'parametros' });
-  assert.deepStrictEqual(pide(m, { action: 'unsubscribe', email: 'ana@correo.mx', format: 'json' }), { ok: false, error: 'parametros' });
+  assert.deepStrictEqual(pide(m, { action: 'unsubscribe', email: 'ana@ejemplo.com', format: 'json' }), { ok: false, error: 'parametros' });
   const s = nuevoMundo({ props: { BAJAS_SECRETO: SECRETO }, sinHoja: true });
-  assert.deepStrictEqual(pide(s, { action: 'unsubscribe', email: 'ana@correo.mx', token: firmaEsperada('ana@correo.mx'), format: 'json' }), { ok: false, error: 'interno' });
+  assert.deepStrictEqual(pide(s, { action: 'unsubscribe', email: 'ana@ejemplo.com', token: firmaEsperada('ana@ejemplo.com'), format: 'json' }), { ok: false, error: 'interno' });
 });
 prueba('baja con firma válida de un correo que no está: listo, sin nombre', () => {
   const m = nuevoMundo({ props: { BAJAS_SECRETO: SECRETO } });
-  assert.deepStrictEqual(pide(m, { action: 'unsubscribe', email: 'nadie@correo.mx', token: firmaEsperada('nadie@correo.mx'), format: 'json' }), { ok: true, first_name: '' });
+  assert.deepStrictEqual(pide(m, { action: 'unsubscribe', email: 'nadie@ejemplo.com', token: firmaEsperada('nadie@ejemplo.com'), format: 'json' }), { ok: true, first_name: '' });
 });
 prueba('ruta HTML vieja: con firma inválida dice que ya no sirve y manda a triggui.com', () => {
   const m = nuevoMundo({ props: { BAJAS_SECRETO: SECRETO } });
-  const r = pide(m, { action: 'unsubscribe', email: 'a"<b>@correo.mx', token: 'x"y' });
+  const r = pide(m, { action: 'unsubscribe', email: 'a"<b>@ejemplo.com', token: 'x"y' });
   assert.ok(r.html.includes('Este enlace ya no sirve'));
-  assert.ok(r.html.includes('href="https://triggui.com/entendido?email=a%22%3Cb%3E%40correo.mx&amp;token=x%22y"'), r.html.slice(-400));
+  assert.ok(r.html.includes('href="https://triggui.com/entendido?email=a%22%3Cb%3E%40ejemplo.com&amp;token=x%22y"'), r.html.slice(-400));
   assert.ok(!r.html.includes('<b>'));
-  const ok = pide(m, { action: 'unsubscribe', email: 'ana@correo.mx', token: firmaEsperada('ana@correo.mx') });
+  const ok = pide(m, { action: 'unsubscribe', email: 'ana@ejemplo.com', token: firmaEsperada('ana@ejemplo.com') });
   assert.ok(ok.html && !ok.html.includes('ya no sirve'));
 });
 
 // ── El idioma ───────────────────────────────────────────────────────────────
 prueba('idioma: firma válida al mismo idioma no cambia ni reenvía; firma falsa se rechaza', () => {
   const m = nuevoMundo({ props: { BAJAS_SECRETO: SECRETO } });
-  const r = pide(m, { action: 'lang', email: 'ana@correo.mx', token: firmaEsperada('ana@correo.mx'), l: 'es', format: 'json' });
+  const r = pide(m, { action: 'lang', email: 'ana@ejemplo.com', token: firmaEsperada('ana@ejemplo.com'), l: 'es', format: 'json' });
   assert.strictEqual(r.ok, true); assert.strictEqual(r.changed, false); assert.strictEqual(r.resent, false);
-  const r2 = pide(m, { action: 'lang', email: 'ana@correo.mx', token: firmaEsperada('ana@correo.mx'), l: 'en', format: 'json' });
+  const r2 = pide(m, { action: 'lang', email: 'ana@ejemplo.com', token: firmaEsperada('ana@ejemplo.com'), l: 'en', format: 'json' });
   assert.strictEqual(r2.ok, true); assert.strictEqual(r2.changed, true); assert.strictEqual(r2.resent, true);
-  assert.deepStrictEqual(pide(m, { action: 'lang', email: 'ana@correo.mx', token: '0'.repeat(32), l: 'es', format: 'json' }), { ok: false, error: 'token' });
-  assert.ok(String(pide(m, { action: 'lang', email: 'ana@correo.mx', token: '0'.repeat(32), l: 'es' }).texto).includes('ya no sirve'));
+  assert.deepStrictEqual(pide(m, { action: 'lang', email: 'ana@ejemplo.com', token: '0'.repeat(32), l: 'es', format: 'json' }), { ok: false, error: 'token' });
+  assert.ok(String(pide(m, { action: 'lang', email: 'ana@ejemplo.com', token: '0'.repeat(32), l: 'es' }).texto).includes('ya no sirve'));
 });
 
 // ── El enlace nuevo (B20) ───────────────────────────────────────────────────
 prueba('enlace nuevo: llega a quien está suscrito, en su idioma, y su liga sirve', () => {
   const m = nuevoMundo({ props: { BAJAS_SECRETO: SECRETO } });
-  assert.deepStrictEqual(pide(m, { action: 'nuevo_enlace', email: ' Bob@Mail.com ' }), { ok: true });
+  assert.deepStrictEqual(pide(m, { action: 'nuevo_enlace', email: ' Bob@Ejemplo.org ' }), { ok: true });
   assert.strictEqual(m.correos.length, 1);
   const c = m.correos[0];
-  assert.strictEqual(c.para, 'bob@mail.com');
+  assert.strictEqual(c.para, 'bob@ejemplo.org');
   assert.strictEqual(c.asunto, 'Your link to stop receiving Triggui');
   assert.strictEqual(c.op.name, 'Triggui');
   const liga = c.texto.match(/https:\/\/triggui\.com\/entendido\?email=[^\s]+/)[0];
@@ -204,35 +205,43 @@ prueba('enlace nuevo: llega a quien está suscrito, en su idioma, y su liga sirv
   assert.deepStrictEqual(pide(m, { action: 'unsubscribe', email: u.searchParams.get('email'), token: u.searchParams.get('token'), format: 'json' }), { ok: true, first_name: 'Bob' });
   assert.match(m.datos[2][14], /^UNSUBSCRIBED /);
   const es = nuevoMundo({ props: { BAJAS_SECRETO: SECRETO } });
-  pide(es, { action: 'nuevo_enlace', email: 'ana@correo.mx' });
+  pide(es, { action: 'nuevo_enlace', email: 'ana@ejemplo.com' });
   assert.strictEqual(es.correos[0].asunto, 'Tu enlace para dejar de recibir Triggui');
 });
-prueba('enlace nuevo: una vez por hora por correo, y responde igual', () => {
+prueba('enlace nuevo: una vez cada 6 horas por correo, y responde igual', () => {
   const m = nuevoMundo({ props: { BAJAS_SECRETO: SECRETO } });
-  assert.deepStrictEqual(pide(m, { action: 'nuevo_enlace', email: 'ana@correo.mx' }), { ok: true });
-  assert.deepStrictEqual(pide(m, { action: 'nuevo_enlace', email: 'ANA@correo.mx' }), { ok: true });
+  assert.deepStrictEqual(pide(m, { action: 'nuevo_enlace', email: 'ana@ejemplo.com' }), { ok: true });
+  assert.deepStrictEqual(pide(m, { action: 'nuevo_enlace', email: 'ANA@ejemplo.com' }), { ok: true });
   assert.strictEqual(m.correos.length, 1);
 });
 prueba('enlace nuevo: a quien no está o ya se dio de baja no se le manda nada, y responde igual', () => {
   const m = nuevoMundo({ props: { BAJAS_SECRETO: SECRETO } });
-  assert.deepStrictEqual(pide(m, { action: 'nuevo_enlace', email: 'nadie@correo.mx' }), { ok: true });
-  assert.deepStrictEqual(pide(m, { action: 'nuevo_enlace', email: 'cris@correo.mx' }), { ok: true });
+  assert.deepStrictEqual(pide(m, { action: 'nuevo_enlace', email: 'nadie@ejemplo.com' }), { ok: true });
+  assert.deepStrictEqual(pide(m, { action: 'nuevo_enlace', email: 'cris@ejemplo.com' }), { ok: true });
   assert.strictEqual(m.correos.length, 0);
 });
 prueba('enlace nuevo: correo inválido, tope del día y cuota baja se dicen', () => {
   const m = nuevoMundo({ props: { BAJAS_SECRETO: SECRETO } });
-  for (const e of ['', 'sin-arroba', 'a@b', 'a b@c.com', 'a@b.com,c@d.com', 'x'.repeat(250) + '@c.com']) {
+  for (const e of ['', 'sin-arroba', 'a@b', 'a b@c.com', 'a@ejemplo.com,c@ejemplo.com', 'x'.repeat(250) + '@ejemplo.com']) {
     assert.deepStrictEqual(pide(m, { action: 'nuevo_enlace', email: e }), { ok: false, error: 'correo' }, e);
   }
   const hoy = m.ctx.Utilities.formatDate(new Date(), 'America/Mexico_City', 'yyyy-MM-dd');
   m.props.NUEVO_ENLACE_DIA = hoy + ':100';
-  assert.deepStrictEqual(pide(m, { action: 'nuevo_enlace', email: 'ana@correo.mx' }), { ok: false, error: 'tope' });
+  assert.deepStrictEqual(pide(m, { action: 'nuevo_enlace', email: 'ana@ejemplo.com' }), { ok: false, error: 'tope' });
   m.props.NUEVO_ENLACE_DIA = '2000-01-01:100';
-  assert.deepStrictEqual(pide(m, { action: 'nuevo_enlace', email: 'ana@correo.mx' }), { ok: true });
+  assert.deepStrictEqual(pide(m, { action: 'nuevo_enlace', email: 'ana@ejemplo.com' }), { ok: true });
   assert.strictEqual(m.props.NUEVO_ENLACE_DIA, hoy + ':1');
   const q = nuevoMundo({ props: { BAJAS_SECRETO: SECRETO }, cuota: 10 });
-  assert.deepStrictEqual(pide(q, { action: 'nuevo_enlace', email: 'ana@correo.mx' }), { ok: false, error: 'tope' });
+  assert.deepStrictEqual(pide(q, { action: 'nuevo_enlace', email: 'ana@ejemplo.com' }), { ok: false, error: 'tope' });
   assert.strictEqual(q.correos.length, 0);
+});
+
+prueba('enlace nuevo: sin secreto y con cuota baja contesta igual esté o no el correo', () => {
+  const sin = nuevoMundo();
+  for (const e of ['ana@ejemplo.com', 'nadie@ejemplo.com']) assert.deepStrictEqual(pide(sin, { action: 'nuevo_enlace', email: e }), { ok: false, error: 'interno' }, e);
+  const q = nuevoMundo({ props: { BAJAS_SECRETO: SECRETO }, cuota: 10 });
+  for (const e of ['ana@ejemplo.com', 'nadie@ejemplo.com', 'cris@ejemplo.com']) assert.deepStrictEqual(pide(q, { action: 'nuevo_enlace', email: e }), { ok: false, error: 'tope' }, e);
+  assert.strictEqual(sin.correos.length + q.correos.length, 0);
 });
 
 // ── En vivo (simulado: la red se dirige al doGet de este mismo mundo) ───────
@@ -250,11 +259,11 @@ prueba('probarBajasEnVivo: firma nueva aceptada, falsa rechazada, sin cambiar na
 prueba('la bitácora nunca trae el secreto ni una firma', () => {
   const m = nuevoMundo({ props: { BAJAS_SECRETO: SECRETO } });
   m.ctx.probarSecretoBajas();
-  pide(m, { action: 'unsubscribe', email: 'ana@correo.mx', token: firmaEsperada('ana@correo.mx'), format: 'json' });
-  pide(m, { action: 'nuevo_enlace', email: 'bob@mail.com' });
+  pide(m, { action: 'unsubscribe', email: 'ana@ejemplo.com', token: firmaEsperada('ana@ejemplo.com'), format: 'json' });
+  pide(m, { action: 'nuevo_enlace', email: 'bob@ejemplo.org' });
   const todo = m.bitacora.join('\n');
   assert.ok(!todo.includes(SECRETO));
-  assert.ok(!todo.includes(firmaEsperada('ana@correo.mx')) && !todo.includes(firmaEsperada('bob@mail.com')));
+  assert.ok(!todo.includes(firmaEsperada('ana@ejemplo.com')) && !todo.includes(firmaEsperada('bob@ejemplo.org')));
 });
 
 console.log(`\n${pruebas} pruebas en verde`);

@@ -96,10 +96,11 @@ const REMITENTE_REPLY_TO     = "badir@triggui.com";  // FASE 2: cambiar a hola@t
  *   crearSecretoBajas() la primera vez, sin mostrarlo. Este archivo está en un
  *   repositorio público: aquí nunca va el valor.
  *
- *   Para rotarlo: borrar la propiedad, correr crearSecretoBajas(), correr
- *   probarSecretoBajas() y publicar una versión nueva de la aplicación web. Los
- *   enlaces de los correos ya enviados dejan de valer: la página de baja lo dice
- *   y ofrece mandar uno nuevo a ese correo (action=nuevo_enlace, con tope).
+ *   Para rotarlo: borrar la propiedad, correr crearSecretoBajas() y después
+ *   probarSecretoBajas(). La aplicación web y el activador leen la propiedad en
+ *   cada ejecución: no hace falta publicar otra versión. Los enlaces de los
+ *   correos ya enviados dejan de valer: la página de baja lo dice y ofrece mandar
+ *   uno nuevo a ese correo (action=nuevo_enlace, con tope).
  *
  * UNSUBSCRIBE_COL:
  *   Columna O (15) — guarda el status del suscriptor.
@@ -3223,9 +3224,10 @@ function doPost(e) {
  * Defensas:
  *   - Token HMAC anti-spoofing
  *   - LockService para evitar race conditions con doPost
- *   - Try/catch global → siempre retorna HTML al usuario
- *   - Si email no existe en sheet → "Entendido." igual (anti-enumeration)
+ *   - Try/catch global → un error se contesta como error («interno»), nunca como «Entendido»
+ *   - Firma válida de un email que ya no está en la hoja → "Entendido." (no recibe nada)
  *   - Si ya está unsubscribed → "Entendido." igual (idempotente)
+ *   - Firma vieja o inválida, o datos incompletos → se dice («token», «parametros»)
  * ══════════════════════════════════════════════════════════════════════════ */
 function doGet(e) {
   const params = (e && e.parameter) ? e.parameter : {};
@@ -3268,8 +3270,8 @@ function doGet(e) {
 /* ════════════════════ MANEJAR UNSUBSCRIBE V18m ═══════════════════════════
  *
  * Procesa el click en "Cancelar suscripción" del email.
- * Siempre retorna respuesta exitosa independientemente del resultado interno
- * (anti-enumeration: no decimos si el email existía).
+ * «Entendido» solo si la baja quedó (o si la firma es válida y el email ya no está en
+ * la hoja). Firma vieja o inválida, datos incompletos y error interno se dicen como tales.
  *
  * V18m: agrega soporte para format=json. Cuando el caller es triggui.com/entendido
  * (página estática que hace fetch en background), pasa format=json y recibe
@@ -3385,10 +3387,10 @@ a.b{display:inline-block;margin-top:20px;padding:12px 20px;border-radius:10px;ba
 
 /* 🔐 B20: a quien llega con un enlace viejo se le manda uno nuevo a su correo.
    - Responde igual exista o no el correo (no dice quién está en la lista).
-   - Uno por hora por correo y NUEVO_ENLACE_TOPE_DIA al día en total.
+   - Uno cada 6 horas por correo (el máximo de CacheService) y NUEVO_ENLACE_TOPE_DIA al día en total.
    - Solo a correos que están en la hoja y no se han dado de baja. */
 const NUEVO_ENLACE_TOPE_DIA = 100;
-const NUEVO_ENLACE_ESPERA_S = 60 * 60;
+const NUEVO_ENLACE_ESPERA_S = 6 * 60 * 60;
 function mandarEnlaceNuevoDeBaja_(email) {
   const emailNorm = normalizeEmail(email);
   if (!emailNorm || emailNorm.length > 254 || !/^[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+$/.test(emailNorm)) {
@@ -3397,6 +3399,7 @@ function mandarEnlaceNuevoDeBaja_(email) {
   const lock = LockService.getScriptLock();
   try { lock.waitLock(5000); } catch (e) { return { ok: false, error: "interno" }; }
   try {
+    secretoBajas_();   // sin secreto, «interno» para todos, antes de mirar la hoja
     const cache = CacheService.getScriptCache();
     const huella = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, emailNorm, Utilities.Charset.UTF_8);
     const llave = "nuevo_enlace_" + Utilities.base64EncodeWebSafe(huella).slice(0, 43);
@@ -3407,6 +3410,7 @@ function mandarEnlaceNuevoDeBaja_(email) {
     const cuenta = String(props.getProperty("NUEVO_ENLACE_DIA") || "");
     const n = (cuenta.indexOf(hoy + ":") === 0) ? (parseInt(cuenta.slice(hoy.length + 1), 10) || 0) : 0;
     if (n >= NUEVO_ENLACE_TOPE_DIA) return { ok: false, error: "tope" };
+    if (MailApp.getRemainingDailyQuota() < 20) return { ok: false, error: "tope" };
 
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
     if (!sheet) return { ok: false, error: "interno" };
@@ -3414,7 +3418,6 @@ function mandarEnlaceNuevoDeBaja_(email) {
     if (rowIdx < 2) return { ok: true };
     const estado = String(sheet.getRange(rowIdx, UNSUBSCRIBE_COL).getValue() || "").trim().toUpperCase();
     if (estado.indexOf("UNSUBSCRIBED") === 0) return { ok: true };
-    if (MailApp.getRemainingDailyQuota() < 20) return { ok: false, error: "tope" };
 
     const en = (leerIdiomaFila(sheet, rowIdx) === "en");
     const enlace = generarUrlUnsub(emailNorm);

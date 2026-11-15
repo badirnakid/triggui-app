@@ -38,7 +38,7 @@ const servidor = http.createServer((req, res) => {
     return { p, ctx, llamadas };
   }
   async function prueba(nombre, fn) { await fn(); pruebas++; console.log('✔ ' + nombre); }
-  const Q = '?email=ana%40correo.mx&token=' + 'a'.repeat(32);
+  const Q = '?email=ana%40ejemplo.com&token=' + 'a'.repeat(32);
 
   // ── /entendido ────────────────────────────────────────────────────────────
   await prueba('/entendido sin datos: dice cómo darse de baja, no «Entendido»', async () => {
@@ -58,7 +58,7 @@ const servidor = http.createServer((req, res) => {
     await p.waitForSelector('#state-success:not(.hidden)');
     assert.strictEqual(await p.textContent('#mensaje'), 'Entendido, Ana.');
     const u = new URL(llamadas[0]);
-    assert.deepStrictEqual([u.searchParams.get('action'), u.searchParams.get('email'), u.searchParams.get('token'), u.searchParams.get('format')], ['unsubscribe', 'ana@correo.mx', 'a'.repeat(32), 'json']);
+    assert.deepStrictEqual([u.searchParams.get('action'), u.searchParams.get('email'), u.searchParams.get('token'), u.searchParams.get('format')], ['unsubscribe', 'ana@ejemplo.com', 'a'.repeat(32), 'json']);
     await ctx.close();
   });
   await prueba('/entendido con la aplicación de hoy (ok sin nombre): «Entendido.»', async () => {
@@ -78,7 +78,7 @@ const servidor = http.createServer((req, res) => {
     await p.click('#btn-nuevo');
     await p.waitForSelector('#state-enviado:not(.hidden)');
     const u = new URL(llamadas[1]);
-    assert.deepStrictEqual([u.searchParams.get('action'), u.searchParams.get('email'), u.searchParams.get('token'), u.searchParams.get('format')], ['nuevo_enlace', 'ana@correo.mx', null, 'json']);
+    assert.deepStrictEqual([u.searchParams.get('action'), u.searchParams.get('email'), u.searchParams.get('token'), u.searchParams.get('format')], ['nuevo_enlace', 'ana@ejemplo.com', null, 'json']);
     await ctx.close();
   });
   await prueba('/entendido enlace viejo y «parametros» se tratan igual', async () => {
