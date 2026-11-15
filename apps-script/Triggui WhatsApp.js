@@ -134,6 +134,13 @@ function waCorrer_(ensayo) {
       resumen.porCatalogo[p.cat]++;
       return { p: p, libro: libro, cuerpo: cuerpo };
     });
+    // Cada imagen de encabezado tiene que existir antes de mandar: si Meta no la encuentra, falla después y ya no se repite.
+    const imagenes = {};
+    armados.forEach(function (a) { imagenes[a.cuerpo.template.components[0].parameters[0].image.link] = true; });
+    const faltan = Object.keys(imagenes).filter(function (u) {
+      try { return UrlFetchApp.fetch(u, { muteHttpExceptions: true }).getResponseCode() !== 200; } catch (e) { return true; }
+    });
+    if (faltan.length) return waAviso_("No encuentro la imagen de la edición (" + faltan.join(", ") + "): no mandé nada.", !ensayo);
     if (ensayo) {
       const a = armados[0];
       const copia = JSON.parse(JSON.stringify(a.cuerpo));
@@ -169,6 +176,9 @@ function waCorrer_(ensayo) {
       " · Niños: " + resumen.porCatalogo.kids + "\nEl detalle está en la hoja «" + WA_HOJA_ENVIOS + "». A las 21 llega el resumen de entregados y leídos.");
     Logger.log("Envío: " + JSON.stringify(resumen));
     return resumen;
+  } catch (e) {
+    // Falta la columna, la edición viene incompleta o no se pudo leer el catálogo: no sale nada, y se avisa.
+    return waAviso_("No salió nada: " + String((e && e.message) || e), !ensayo);
   } finally {
     if (!ensayo) cache.remove("wa_envio_en_curso");
   }
@@ -196,7 +206,7 @@ function waPersonas_() {
   if (!col) throw new Error("Falta la columna «WhatsApp» en la hoja: agrégala en la primera columna libre y escribe «sí» en cada persona que te dio permiso.");
   const vistos = {};
   const personas = [];
-  const r = { conSi: 0, sinTel: 0, telRaro: 0, baja: 0, unsub: 0, expirados: 0, repetidos: 0 };
+  const r = { conSi: 0, sinTel: 0, telRaro: 0, baja: 0, unsub: 0, expirados: 0, repetidos: 0, lada52: 0 };
   for (let i = 1; i < data.length; i++) {
     const permiso = waLeerPermiso_(data[i][col - 1]);
     if (permiso.baja) { r.baja++; continue; }
@@ -214,6 +224,7 @@ function waPersonas_() {
     vistos[clave] = true;
     let lang = "es";
     try { lang = leerIdiomaFila(sheet, i + 1) || "es"; } catch (e) {}
+    if (/^(04[45])?\d{10}$/.test(crudo.replace(/\D/g, ""))) r.lada52++;   // diez dígitos: se les puso el 52 de México
     personas.push({ fila: i + 1, nombre: String(data[i][0] || "").trim(), tel: tel, clave: clave,
       lang: lang === "en" ? "en" : "es", cat: permiso.kids ? "kids" : "adultos" });
   }
@@ -314,6 +325,7 @@ function waResumenDelLunes() {
   Object.keys(wamids).forEach(function (k) { cuenta[wamids[k]]++; });
   const r = { enviados: enviados, entregados: cuenta.delivered + cuenta.read, leidos: cuenta.read, fallidos: cuenta.failed,
     sinNoticia: cuenta.aceptado + cuenta.sent, botones: botones, bajas: bajas };
+  if (!enviados) { Logger.log("Hoy no salió nada: no mando resumen."); return r; }
   waCorreo_("Triggui WhatsApp: el resumen del lunes",
     "Salieron: " + r.enviados + "\nEntregados: " + r.entregados + "\nLeídos: " + r.leidos +
     " (solo cuentan quienes tienen activado el aviso de leído)\nFallidos: " + r.fallidos + "\nSin noticia todavía: " + r.sinNoticia +
@@ -460,12 +472,21 @@ function waConfig_() {
 
 function waSinAcentos_(s) { return String(s == null ? "" : s).normalize("NFD").replace(/\p{M}/gu, ""); }
 
-/** «sí», «si 2026-11-15», «Sí, kids» → recibe; «baja …» → no; vacío o cualquier otra cosa → no. */
+/** «sí», «sí 2026-11-15», «sí 15/11», «Sí, kids» → recibe; «baja …» → no. Después del «sí» solo se aceptan
+ *  fechas y «kids» o «niños»: «si no contesta, quitar» no es permiso. Vacío o cualquier otra cosa → no. */
 function waLeerPermiso_(valor) {
+  const nada = { si: false, baja: false, kids: false };
   const t = waSinAcentos_(valor).toLowerCase().trim();
   if (/^baja\b/.test(t)) return { si: false, baja: true, kids: false };
-  if (/^si\b/.test(t)) return { si: true, baja: false, kids: /\b(kids|ninos)\b/.test(t) };
-  return { si: false, baja: false, kids: false };
+  const m = /^si\b(.*)$/.exec(t);
+  if (!m) return nada;
+  const resto = m[1].replace(/[,;.]/g, " ").trim();
+  const piezas = resto ? resto.split(/\s+/) : [];
+  const valen = piezas.every(function (x) {
+    return x === "kids" || x === "ninos" || /^\d{4}-\d{2}-\d{2}$/.test(x) || /^\d{1,2}\/\d{1,2}(\/\d{2,4})?$/.test(x);
+  });
+  if (!valen) return nada;
+  return { si: true, baja: false, kids: piezas.indexOf("kids") !== -1 || piezas.indexOf("ninos") !== -1 };
 }
 
 /** Para mandar: solo dígitos con lada. 10 dígitos = México; 044/045 + 10 = celular viejo de México; 00 = salida internacional. */
@@ -524,8 +545,10 @@ function waEdiciones_(conKids) {
   const ed = { adultos: waLeerLibros_(CONTENIDO_URL)[0] || null, kids: conKids ? (waLeerLibros_(WA_KIDS_URL)[0] || null) : null };
   ["adultos"].concat(conKids ? ["kids"] : []).forEach(function (cat) {
     const b = ed[cat];
-    if (!b || !/^[a-z0-9-]{1,120}$/.test(String(b._slug || "")) || !(b.frases || []).length || !b.titulo) {
-      throw new Error("La edición de " + cat + " no trae slug, título o frases: no mandé nada.");
+    // Meta rechaza un parámetro vacío para todos: la primera frase (y la de inglés, si la edición trae inglés) tiene que tener texto.
+    if (!b || !/^[a-z0-9-]{1,120}$/.test(String(b._slug || "")) || !waLimpia_(b.titulo) || !waLimpia_((b.frases || [])[0]) ||
+        (waTieneEn_(b) && !waLimpia_(b.frases_en[0]))) {
+      throw new Error("La edición de " + cat + " no trae slug, título o primera frase: no mandé nada.");
     }
   });
   return ed;

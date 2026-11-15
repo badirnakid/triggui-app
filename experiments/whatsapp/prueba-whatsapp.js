@@ -110,7 +110,10 @@ function entorno(opciones) {
         if (/\/messages$/.test(url)) { n++; const r = meta(JSON.parse(o.payload), n); return resp(r.code, JSON.stringify(r.body)); }
         if (/\/uploads\?/.test(url)) return resp(200, JSON.stringify({ id: "upload:ABC" }));
         if (/\/upload:ABC$/.test(url)) return resp(200, JSON.stringify({ h: "HANDLE1" }));
-        if (/\/og(_en)?\.jpg$/.test(url)) return { getResponseCode: function () { return 200; }, getBlob: function () { return { getBytes: function () { return [1, 2, 3]; } }; } };
+        if (/\/og(_en)?\.jpg$/.test(url)) {
+          const codigo = (opciones.ogFalta && url.indexOf(opciones.ogFalta) !== -1) ? 404 : 200;
+          return { getResponseCode: function () { return codigo; }, getBlob: function () { return { getBytes: function () { return [1, 2, 3]; } }; } };
+        }
         if (/\/message_templates$/.test(url)) return resp(200, JSON.stringify({ id: "tpl", status: "PENDING" }));
         throw new Error("URL inesperada: " + url);
       }
@@ -151,6 +154,10 @@ prueba("el permiso: sí, kids, baja y lo demás", function () {
   assert.deepStrictEqual(p(""), { si: false, baja: false, kids: false });
   assert.deepStrictEqual(p(null), { si: false, baja: false, kids: false });
   assert.deepStrictEqual(p("no"), { si: false, baja: false, kids: false });
+  assert.deepStrictEqual(p("si no contesta, quitar"), { si: false, baja: false, kids: false });
+  assert.deepStrictEqual(p("sí 15/11"), { si: true, baja: false, kids: false });
+  assert.deepStrictEqual(p("Sí. 15/11/2026, kids"), { si: true, baja: false, kids: true });
+  assert.deepStrictEqual(p("sí, por WhatsApp"), { si: false, baja: false, kids: false });
 });
 
 prueba("los teléfonos: lada, México con y sin 1, 044 y salida internacional", function () {
@@ -173,7 +180,34 @@ prueba("quiénes reciben: solo «sí», con la elegibilidad del lunes y sin repe
   const L = JSON.parse(JSON.stringify(E.ctx.waPersonas_()));
   assert.deepStrictEqual(L.personas.map(function (p) { return [p.nombre, p.tel, p.lang, p.cat]; }), [
     ["Ana", "525511111111", "es", "adultos"], ["Bob", "15125550101", "en", "adultos"], ["Carla", "525522222222", "es", "kids"]]);
-  assert.deepStrictEqual(L.resumen, { conSi: 9, sinTel: 1, telRaro: 1, baja: 1, unsub: 1, expirados: 2, repetidos: 1 });
+  assert.deepStrictEqual(L.resumen, { conSi: 9, sinTel: 1, telRaro: 1, baja: 1, unsub: 1, expirados: 2, repetidos: 1, lada52: 2 });
+});
+
+prueba("si falta la columna, el lunes no sale nada y avisa por correo (no truena)", function () {
+  const filas = filasBase(); filas[0][16] = "Otra cosa";
+  const E = entorno({ props: PROPS_OK, filas: filas });
+  const r = E.ctx.waEnviarLunes();
+  assert.strictEqual(r.ok, false);
+  assert.ok(/Falta la columna «WhatsApp»/.test(r.aviso));
+  assert.strictEqual(E.correos.length, 1);
+  assert.strictEqual(E.llamadas.filter(function (l) { return /\/messages$/.test(l.url); }).length, 0);
+});
+
+prueba("sin la imagen de la edición no sale nada", function () {
+  const E = entorno({ props: PROPS_OK, ogFalta: "og_en.jpg" });
+  const r = E.ctx.waEnviarLunes();
+  assert.ok(/No encuentro la imagen/.test(r.aviso) && /og_en\.jpg/.test(r.aviso));
+  assert.strictEqual(E.llamadas.filter(function (l) { return /\/messages$/.test(l.url); }).length, 0);
+  assert.strictEqual(E.correos.length, 1);
+});
+
+prueba("con la primera frase vacía no sale nada", function () {
+  const E = entorno({ props: PROPS_OK, libroA: Object.assign({}, LIBRO_A, { frases: ["  ", "b"] }) });
+  const r = E.ctx.waEnviarLunes();
+  assert.ok(/primera frase/.test(r.aviso));
+  assert.strictEqual(E.llamadas.filter(function (l) { return /\/messages$/.test(l.url); }).length, 0);
+  const F = entorno({ props: PROPS_OK, libroA: Object.assign({}, LIBRO_A, { frases_en: ["", "x"] }) });
+  assert.ok(/primera frase/.test(F.ctx.waEnviarLunes().aviso));
 });
 
 prueba("sin la columna WhatsApp no sigue y lo dice", function () {
@@ -353,6 +387,10 @@ prueba("el resumen de la noche junta envíos, estados, botones y bajas de hoy", 
   assert.deepStrictEqual(r, { enviados: 3, entregados: 2, leidos: 1, fallidos: 0, sinNoticia: 1,
     botones: { tarjeta: 1, melodia: 0, video: 0 }, bajas: 1 });
   assert.ok(/el resumen del lunes/.test(E.correos[E.correos.length - 1].asunto));
+  const F = entorno({ props: PROPS_OK });
+  F.ctx.waHoja_("WA envíos", ["Fecha"]);
+  assert.strictEqual(JSON.parse(JSON.stringify(F.ctx.waResumenDelLunes())).enviados, 0);
+  assert.strictEqual(F.correos.length, 0, "si hoy no salió nada, no hay correo");
 });
 
 prueba("las cuatro plantillas a Meta: textos, muestras e imagen subida una vez por imagen", function () {
