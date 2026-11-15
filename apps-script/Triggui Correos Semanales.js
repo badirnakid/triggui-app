@@ -3403,14 +3403,15 @@ function mandarEnlaceNuevoDeBaja_(email) {
     const cache = CacheService.getScriptCache();
     const huella = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, emailNorm, Utilities.Charset.UTF_8);
     const llave = "nuevo_enlace_" + Utilities.base64EncodeWebSafe(huella).slice(0, 43);
-    if (cache.get(llave)) return { ok: true };
 
+    // Tope del día y cuota primero: con tope, todos ven «tope», hayan recibido enlace o no.
     const props = PropertiesService.getScriptProperties();
     const hoy = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd");
     const cuenta = String(props.getProperty("NUEVO_ENLACE_DIA") || "");
     const n = (cuenta.indexOf(hoy + ":") === 0) ? (parseInt(cuenta.slice(hoy.length + 1), 10) || 0) : 0;
     if (n >= NUEVO_ENLACE_TOPE_DIA) return { ok: false, error: "tope" };
     if (MailApp.getRemainingDailyQuota() < 20) return { ok: false, error: "tope" };
+    if (cache.get(llave)) return { ok: true };
 
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
     if (!sheet) return { ok: false, error: "interno" };

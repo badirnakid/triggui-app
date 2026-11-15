@@ -228,6 +228,11 @@ prueba('enlace nuevo: correo inválido, tope del día y cuota baja se dicen', ()
   const hoy = m.ctx.Utilities.formatDate(new Date(), 'America/Mexico_City', 'yyyy-MM-dd');
   m.props.NUEVO_ENLACE_DIA = hoy + ':100';
   assert.deepStrictEqual(pide(m, { action: 'nuevo_enlace', email: 'ana@ejemplo.com' }), { ok: false, error: 'tope' });
+  // con tope, también «tope» a quien ya recibió enlace en las últimas 6 horas (no revela pertenencia)
+  const r = nuevoMundo({ props: { BAJAS_SECRETO: SECRETO } });
+  pide(r, { action: 'nuevo_enlace', email: 'ana@ejemplo.com' });
+  r.props.NUEVO_ENLACE_DIA = hoy + ':100';
+  for (const e of ['ana@ejemplo.com', 'nadie@ejemplo.com']) assert.deepStrictEqual(pide(r, { action: 'nuevo_enlace', email: e }), { ok: false, error: 'tope' }, e);
   m.props.NUEVO_ENLACE_DIA = '2000-01-01:100';
   assert.deepStrictEqual(pide(m, { action: 'nuevo_enlace', email: 'ana@ejemplo.com' }), { ok: true });
   assert.strictEqual(m.props.NUEVO_ENLACE_DIA, hoy + ':1');
