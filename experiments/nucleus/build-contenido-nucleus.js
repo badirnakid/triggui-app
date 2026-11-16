@@ -2043,7 +2043,7 @@ async function mergeIntoContenidoJson(newBook, targetPath, options = {}) {
         for (const t of truncamientosResiduales) {
           console.warn(`     • ${t.field}`);
           console.warn(`       razón: ${t.reason}`);
-          console.warn(`       cola:  "...${t.tail}"`);
+          console.warn(`       final: "...${t.tail}"`);
         }
         console.warn(`   → Anotadas en _c5_flags. El libro SE COMMITEA; revisa el resultado final cuando quieras.`);
         console.warn(``);

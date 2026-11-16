@@ -53,7 +53,7 @@ class Fixture(unittest.TestCase):
         self.con = os.path.join(self.tmp.name, "triggui-content")
         os.makedirs(self.app)
         os.makedirs(os.path.join(self.con, "data"))
-        escribir(os.path.join(self.app, "cola-lunes.txt"), COMENTARIOS)
+        escribir(os.path.join(self.app, "lista-adultos.txt"), COMENTARIOS)
         escribir(os.path.join(self.app, "lista-kids.txt"), COMENTARIOS + "Heidi | Johanna Spyri\nMatilda | Roald Dahl\nPippi | Astrid Lindgren\n")
         escribir(os.path.join(self.con, "contenido_kids.json"),
                  json.dumps([{"titulo": "El principito", "autor": "Saint-Exupéry", "_slug": "el-principito"}]))
@@ -103,9 +103,9 @@ class Lista(Fixture):
         os.remove(os.path.join(self.app, "lista-kids.txt"))
         self.assertEqual(self.decidir()["hay"], "")
 
-    def test_adultos_usan_la_cola_del_director_con_la_misma_regla(self):
+    def test_adultos_usan_la_lista_del_director_con_la_misma_regla(self):
         self.assertEqual(self.decidir(cron=ls.CRON_ADULTOS)["hay"], "")
-        escribir(os.path.join(self.app, "cola-lunes.txt"), COMENTARIOS + "Libro raro | Nadie\nEsencialismo | Greg McKeown\n")
+        escribir(os.path.join(self.app, "lista-adultos.txt"), COMENTARIOS + "Libro raro | Nadie\nEsencialismo | Greg McKeown\n")
         r = self.decidir(cron=ls.CRON_ADULTOS, revisar=tiendas(no=("Libro raro",)))
         self.assertEqual((r["hay"], r["libro"], r["catalogo"]), ("true", "Esencialismo | Greg McKeown", "adulto"))
 
@@ -221,11 +221,11 @@ class Workflow(unittest.TestCase):
         self.assertIn(ls.CRON_KIDS, crones)
         self.assertIn(ls.CRON_ADULTOS, crones)
 
-    def test_el_boton_se_llama_publicar_y_ya_no_hornear_la_cola(self):
+    def test_el_boton_se_llama_publicar_y_no_hornear(self):
         opciones = self.on["workflow_dispatch"]["inputs"]["modo"]["options"]
         self.assertIn("🎬 Publicar ya el siguiente libro", opciones)
         self.assertNotIn("Hornear", self.texto)
-        self.assertNotIn("needs.cola.", self.texto)
+        self.assertIn("needs.lista.outputs.hay", self.texto)
 
     def test_la_lista_entrega_sus_salidas_y_revisa_tiendas(self):
         job = self.yml["jobs"]["lista"]
@@ -277,7 +277,8 @@ class Workflow(unittest.TestCase):
         self.assertIn("github.ref == 'refs/heads/main'", cond)
         self.assertIn("inputs.modo_prueba != true", cond)
         paso = next(p for p in self.yml["jobs"]["consumir"]["steps"] if p.get("name") == "🎬 Consumir linea y dejar acta")
-        self.assertIn('COLA="lista-kids.txt"', paso["run"])
+        self.assertIn('LISTA="lista-kids.txt"; ACTA="ultimo-publicado-kids.txt"', paso["run"])
+        self.assertIn('LISTA="lista-adultos.txt"; ACTA="ultimo-publicado.txt"', paso["run"])
         self.assertIn("encoding='utf-8-sig'", paso["run"])
 
     def test_consumir_limpia_la_linea_igual_que_el_script(self):
@@ -364,6 +365,38 @@ class RutasKids(unittest.TestCase):
                             if f"https://app.triggui.com/t/{slug}/" in f.read():
                                 malas.append(os.path.join(slug, n))
         self.assertEqual(malas, [])
+
+
+class SinEsaPalabra(unittest.TestCase):
+    """Decisión de Badir del 16 de noviembre de 2026, 17:43: en México esa palabra también es grosera. No aparece
+    en nada que una persona vea: nombres de archivos, flujos, pasos, mensajes, actas ni registros de las corridas."""
+
+    PALABRA = re.compile(r"(?i)\bcol(?:a|as)\b")
+    ARCHIVOS = (
+        ".github/workflows/triggui.yml", ".github/workflows/revisar-tiendas.yml",
+        "scripts/lista-semanal.py", "scripts/revisar-tiendas.py", "scripts/test_lista_semanal.py",
+        "lista-adultos.txt", "lista-kids.txt",
+        "experiments/nucleus/tiendas-horno.mjs", "experiments/nucleus/tiendas.mjs",
+        "experiments/nucleus/build-contenido-nucleus.js",
+    )
+
+    def test_ningun_archivo_de_la_lista_la_trae(self):
+        hallazgos = []
+        for rel in self.ARCHIVOS:
+            with open(os.path.join(RAIZ, rel), encoding="utf-8") as f:
+                for n, linea in enumerate(f, 1):
+                    if self.PALABRA.search(linea):
+                        hallazgos.append(f"{rel}:{n}")
+        self.assertEqual(hallazgos, [])
+
+    def test_ningun_nombre_de_archivo_la_trae(self):
+        nombres = subprocess.run(["git", "-C", RAIZ, "ls-files"], capture_output=True, text=True, check=True).stdout
+        malos = [n for n in nombres.splitlines() if self.PALABRA.search(os.path.basename(n).replace("-", " ").replace("_", " "))]
+        self.assertEqual(malos, [])
+
+    def test_la_lista_de_adultos_tiene_su_nombre_nuevo(self):
+        self.assertEqual(ls.LISTA_ADULTOS, "lista-adultos.txt")
+        self.assertTrue(os.path.exists(os.path.join(RAIZ, "lista-adultos.txt")))
 
 
 if __name__ == "__main__":

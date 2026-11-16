@@ -6,7 +6,7 @@ Decide qué libro publica el lunes, para adultos o para Kids, y lo escribe como 
 de GitHub Actions (hay, libro, catalogo, origen, saltados).
 
   · Lunes 5:00 (CDMX), cron «0 11 * * 1»  → Kids: lista-kids.txt
-  · Lunes 6:00 (CDMX), cron «0 12 * * 1»  → adultos: cola-lunes.txt (la Cola del Director)
+  · Lunes 6:00 (CDMX), cron «0 12 * * 1»  → adultos: lista-adultos.txt (la lista del Director)
   · A mano, con el modo «🎬 Publicar ya el siguiente libro», solo desde main → el catálogo que se elija
 
 Curaduría (decisión de Badir del 16 de noviembre, 14:17): solo se publica lo que Badir aprobó,
@@ -35,7 +35,7 @@ CRON_ADULTOS = "0 12 * * 1"
 MARCA_MODO_LISTA = "🎬"
 REF_MAIN = "refs/heads/main"
 
-LISTA_ADULTOS = "cola-lunes.txt"
+LISTA_ADULTOS = "lista-adultos.txt"
 LISTA_KIDS = "lista-kids.txt"
 CONTENIDO_KIDS = "contenido_kids.json"
 CONTENIDO_ADULTOS = "contenido.json"

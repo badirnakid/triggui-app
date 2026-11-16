@@ -40,7 +40,7 @@ on:
   # ───────────────────────────────────────────────────────────────────────
   schedule:
     - cron: '0 11 * * 1'          # LUNES 5 AM CDMX — la lista Kids (C477): solo títulos aprobados, el primero que se consiga
-    - cron: '0 12 * * 1'          # LUNES 6 AM CDMX — La Cola del Director
+    - cron: '0 12 * * 1'          # LUNES 6 AM CDMX — la lista del Director (adultos): solo títulos aprobados, el primero que se consiga
   # (otras cadencias disponibles abajo, comentadas)
   #   - cron: '0 12 * * 1,4'      # LUNES y JUEVES 6 AM CDMX
   #   - cron: '0 12 * * *'        # DIARIO 6 AM CDMX
@@ -204,8 +204,8 @@ permissions:
 
 jobs:
   # ╔════════════════════════════════════════════════════════════════════╗
-  # ║  JOB cola — 🎬 La Cola del Director (solo cron)                     ║
-  # ║  Lee la primera linea util de cola-lunes.txt (Titulo | Autor).      ║
+  # ║  JOB lista — 🎬 La lista de la semana (cron y modo 🎬)               ║
+  # ║  Kids: lista-kids.txt · adultos: lista-adultos.txt (Titulo | Autor). ║
   # ║  Vacia → generar se salta en gris, cero costo.                      ║
   # ╚════════════════════════════════════════════════════════════════════╝
   lista:
@@ -689,8 +689,8 @@ jobs:
         run: node validate-book.js
 
       # 🛒 B417 — 📘 y 🌍 solo generan un libro que se consigue físico en Casa del Libro o en Gandhi. Si no, se detiene
-      # y dice por qué, salvo que se active «forzar_sin_tienda». La Cola del Director (cron) no se detiene: avisa y
-      # sigue, para que la edición del lunes no se pierda.
+      # y dice por qué, salvo que se active «forzar_sin_tienda». La lista de la semana (cron y modo 🎬) también se
+      # detiene si el libro no se consigue; solo sigue si las tiendas no respondieron (la lista ya lo revisó).
       - name: 🛒 ¿Se consigue el libro? (Casa del Libro o Gandhi)
         if: ${{ steps.modo.outputs.modo_tecnico == 'single_book' || steps.modo.outputs.modo_tecnico == 'trigger_discover' }}
         working-directory: experiments/nucleus
@@ -1602,7 +1602,7 @@ jobs:
       # ║  FASE 10 — Summary (BLINDADO)                                     ║
       # ╚══════════════════════════════════════════════════════════════════╝
 
-      - name: 🔖 El libro que entró (para consumir la cola)
+      - name: 🔖 El libro que entró (para tachar de la lista)
         id: guardado
         shell: bash
         run: |
@@ -1841,7 +1841,7 @@ jobs:
           fi
 
   # ╔════════════════════════════════════════════════════════════════════╗
-  # ║  JOB consumir — 🎬 avanza la cola y deja acta (solo cron exitoso)   ║
+  # ║  JOB consumir — 🎬 tacha el libro de su lista y deja acta            ║
   # ╚════════════════════════════════════════════════════════════════════╝
   consumir:
     runs-on: ubuntu-latest
@@ -1864,7 +1864,7 @@ jobs:
         run: |
           set -euo pipefail
           # Comprobado, no supuesto: el «_slug» que guardó el horno está en contenido(_kids).json de triggui-content.
-          # Si no entró, la cola no se consume y el job queda en rojo.
+          # Si no entró, no se tacha de la lista y el job queda en rojo.
           python3 scripts/lista-semanal.py --verificar --catalogo "$CATALOGO" --libro "$LIBRO" --slug "$SLUG" --contenido triggui-content
       - name: 🎬 Consumir linea y dejar acta
         shell: bash
@@ -1875,31 +1875,31 @@ jobs:
         run: |
           set -euo pipefail
           git pull --rebase origin main || true
-          if [ "$CATALOGO" = "kids" ]; then COLA="lista-kids.txt"; ACTA="ultimo-publicado-kids.txt"; else COLA="cola-lunes.txt"; ACTA="ultimo-horneado.txt"; fi
-          export COLA ACTA
+          if [ "$CATALOGO" = "kids" ]; then LISTA="lista-kids.txt"; ACTA="ultimo-publicado-kids.txt"; else LISTA="lista-adultos.txt"; ACTA="ultimo-publicado.txt"; fi
+          export LISTA ACTA
           python3 - <<'PY'
           import os, re, datetime
           libro = os.environ['LIBRO']
-          cola = os.environ['COLA']
+          lista = os.environ['LISTA']
           def limpiar(t):
               # La misma limpieza que scripts/lista-semanal.py: así la línea se encuentra aunque traiga comillas o espacios dobles.
               t = re.sub(r'[\r\n\t]+', ' ', t)
               t = re.sub(r'["`$\\]', '', t)
               return ' '.join(t.split())[:200].strip()
-          lineas = open(cola, encoding='utf-8-sig').read().splitlines(keepends=True) if os.path.exists(cola) else []
+          lineas = open(lista, encoding='utf-8-sig').read().splitlines(keepends=True) if os.path.exists(lista) else []
           out, consumida = [], False
           for l in lineas:
               if not consumida and l.strip() and not l.strip().startswith('#') and limpiar(l.strip()) == libro:
                   consumida = True
                   continue
               out.append(l)
-          if os.path.exists(cola):
-              open(cola,'w',encoding='utf-8').writelines(out)
+          if os.path.exists(lista):
+              open(lista,'w',encoding='utf-8').writelines(out)
           hoy = datetime.datetime.now().strftime('%Y-%m-%d %H:%M UTC')
           kids = os.environ.get('CATALOGO') == 'kids'
           saltados = os.environ.get('SALTADOS')
           saltados = f"{saltados} (no se conseguían ese día; siguen en la lista)" if saltados else 'ninguno'
-          acta = f"""🎬 ULTIMO PUBLICADO — {'La lista Kids' if kids else 'La Cola del Director'}
+          acta = f"""🎬 ULTIMO PUBLICADO — {'La lista Kids' if kids else 'La lista del Director'}
           fecha:    {hoy}
           libro:    {libro} (de la lista aprobada)
           saltados: {saltados}
@@ -1911,7 +1911,7 @@ jobs:
           PY
           git config user.name "Triggui Bot"
           git config user.email "bot@triggui.com"
-          [ -f "$COLA" ] && git add "$COLA" || true
+          [ -f "$LISTA" ] && git add "$LISTA" || true
           git add "$ACTA"
           if git diff --cached --quiet; then echo "🟡 sin cambios"; else
             git commit -m "🎬 lista ${CATALOGO}: publicado — ${LIBRO}"
@@ -1920,5 +1920,5 @@ jobs:
               git pull --rebase --autostash origin main && git push origin HEAD:main && { PUSH_OK=1; break; }
               sleep 3
             done
-            if [ "$PUSH_OK" != "1" ]; then echo "🔴 Push de la cola falló 3 veces: la cola NO se consumió en el repo"; exit 1; fi
+            if [ "$PUSH_OK" != "1" ]; then echo "🔴 Push de la lista falló 3 veces: el libro NO se tachó de la lista en el repo"; exit 1; fi
           fi

@@ -353,14 +353,14 @@ export function fichaCasaDelLibro(html) {
 
 export function crearLector({ intervaloMs = 1000, topeMs = 20000, reintentos = 3, fetchImpl = globalThis.fetch } = {}) {
   const ultimo = new Map();
-  const colas = new Map();
+  const turnos = new Map();
   const dormir = (ms) => new Promise((r) => setTimeout(r, ms));
   let peticiones = 0;
   async function turno(host) {
-    const previo = colas.get(host) || Promise.resolve();
+    const previo = turnos.get(host) || Promise.resolve();
     let liberar;
     const actual = new Promise((r) => { liberar = r; });
-    colas.set(host, previo.then(() => actual));
+    turnos.set(host, previo.then(() => actual));
     await previo;
     const espera = (ultimo.get(host) || 0) + intervaloMs - Date.now();
     if (espera > 0) await dormir(espera);

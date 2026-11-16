@@ -98,13 +98,13 @@ async function asegurar(d, libros, leer, etiqueta, vencidos = 0, nuevos = Infini
   }
   const antes = {};
   let fallasSeguidas = 0;
-  const cola = [...faltan, ...viejos.slice(0, tope)];
-  for (let n = 0; n < cola.length; n++) {
-    const [clave, l] = cola[n];
+  const porRevisar = [...faltan, ...viejos.slice(0, tope)];
+  for (let n = 0; n < porRevisar.length; n++) {
+    const [clave, l] = porRevisar[n];
     // Tres fallas de lectura seguidas: las tiendas no responden desde aquí. Se deja el resto para la siguiente
     // corrida (así una red caída no alarga la corrida del horno ni marca nada en falso).
     if (fallasSeguidas >= 3) {
-      console.log(`::warning::🛒 Casa del Libro o Gandhi no responden (3 fallas seguidas): ${cola.length - n} libro(s) de ${etiqueta} quedan para la siguiente corrida.`);
+      console.log(`::warning::🛒 Casa del Libro o Gandhi no responden (3 fallas seguidas): ${porRevisar.length - n} libro(s) de ${etiqueta} quedan para la siguiente corrida.`);
       break;
     }
     const previo = d.libros[clave];
