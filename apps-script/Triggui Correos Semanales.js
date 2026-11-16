@@ -3024,8 +3024,8 @@ function doPost(e) {
         const estado = String(ahora[UNSUBSCRIBE_COL - 1] || "").trim();
         const recibe = !isRowUnsubscribed(ahora) && !estado.startsWith("SUBSCRIBED_EXPIRED") && !debeMarcarseExpired(ahora);
         const w = waPermisoFormulario_(sheetLeads, fila, telFila, params.phone || "", langFila, recibe);
-        Logger.log(`💬 doPost lead: WhatsApp en fila ${fila} — ${JSON.stringify(w)}`);
-      } catch (e) { Logger.log("⚠️ doPost lead: WhatsApp — " + e.message); }
+        Logger.log(`💬 doPost lead: WhatsApp en fila ${fila}: ${JSON.stringify(w)}`);
+      } catch (e) { Logger.log("⚠️ doPost lead: WhatsApp: " + e.message); }
     };
     for (let i = 1; i < data.length; i++) {
       const emailsInRow = parseEmailsFromCell(data[i][2]);
@@ -3126,7 +3126,7 @@ function doPost(e) {
     // 🌐 La página en inglés manda lang=en: la fila nace en inglés (la bienvenida, los lunes y el WhatsApp).
     if (langForm === "en") {
       try { sheetLeads.getRange(rowIdx, colIdioma(sheetLeads)).setValue("en"); }
-      catch (e) { Logger.log("⚠️ doPost lead: no pude marcar inglés — " + e.message); }
+      catch (e) { Logger.log("⚠️ doPost lead: no pude marcar inglés: " + e.message); }
     }
 
     // V18h: pasar nombre para personalización del email

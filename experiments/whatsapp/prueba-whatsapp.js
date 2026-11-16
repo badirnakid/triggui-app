@@ -132,10 +132,11 @@ function entorno(opciones) {
         if (url === CONTENIDO_URL) return resp(200, JSON.stringify({ libros: [opciones.libroA || LIBRO_A] }));
         if (url === KIDS_URL) return resp(200, JSON.stringify({ libros: [LIBRO_K] }));
         if (/\/messages$/.test(url)) { n++; const r = meta(JSON.parse(o.payload), n); return resp(r.code, JSON.stringify(r.body)); }
-        if (/\?fields=messaging_limit_tier$/.test(url)) {
+        if (/\?fields=whatsapp_business_manager_messaging_limit$/.test(url)) {
           if (!opciones.escalon) throw new Error("sin red");
-          return resp(200, JSON.stringify({ messaging_limit_tier: opciones.escalon, id: "1234567890" }));
+          return resp(200, JSON.stringify({ whatsapp_business_manager_messaging_limit: opciones.escalon, id: "1234567890" }));
         }
+        if (/messaging_limit_tier/.test(url)) return resp(400, JSON.stringify({ error: { code: 100, message: "campo retirado" } }));
         if (/\/uploads\?/.test(url)) return resp(200, JSON.stringify({ id: "upload:ABC" }));
         if (/\/upload:ABC$/.test(url)) return resp(200, JSON.stringify({ h: "HANDLE1" }));
         if (/\/og(_en)?\.jpg$/.test(url)) {
@@ -552,8 +553,8 @@ prueba("el permiso del formulario: columna nueva, «sí kids» se respeta, vuelv
     [["525511111111", "es_MX"], ["15125550101", "en_US"]]);
 });
 
-prueba("el límite de Meta: los escalones y, si no se puede leer, 250", function () {
-  [["TIER_250", 250], ["TIER_2K", 2000], ["TIER_10K", 10000], ["TIER_100K", 100000]].forEach(function (x) {
+prueba("el límite de Meta: el campo de hoy en el nodo del número, los escalones y, si no se puede leer, 250", function () {
+  [["TIER_250", 250], ["TIER_2K", 2000], ["TIER_10K", 10000], ["TIER_100K", 100000], ["TIER_1K", 1000]].forEach(function (x) {
     const E = entorno({ props: PROPS_OK, escalon: x[0] });
     const r = E.ctx.waLimiteMeta_(E.ctx.waConfig_());
     assert.deepStrictEqual([r.limite, r.escalon, r.leido], [x[1], x[0], true]);
@@ -565,8 +566,9 @@ prueba("el límite de Meta: los escalones y, si no se puede leer, 250", function
   assert.deepStrictEqual([rx.limite, rx.leido], [250, false]);
   const Y = entorno({ props: PROPS_OK, escalon: "TIER_RARO" });
   assert.strictEqual(Y.ctx.waLimiteMeta_(Y.ctx.waConfig_()).leido, false);
-  const l = X.llamadas.filter(function (z) { return /messaging_limit_tier/.test(z.url); })[0];
-  assert.strictEqual(l.url, "https://graph.facebook.com/v26.0/1234567890?fields=messaging_limit_tier");
+  const l = X.llamadas.filter(function (z) { return /messaging_limit/.test(z.url); })[0];
+  assert.strictEqual(l.url, "https://graph.facebook.com/v26.0/1234567890?fields=whatsapp_business_manager_messaging_limit");
+  assert.ok(!X.llamadas.some(function (z) { return /messaging_limit_tier/.test(z.url); }), "el campo retirado ya no se pide");
   assert.strictEqual(l.o.headers.Authorization, "Bearer TOKEN-DE-PRUEBA");
 });
 

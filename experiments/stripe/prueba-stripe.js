@@ -70,6 +70,7 @@ function entorno(opciones) {
     WA_ACTIVO: "si", WA_BIENVENIDA: "si" }, opciones.props || {});
   const correos = [], logs = [], llamadas = [], librosMandados = [];
   let cuota = opciones.cuota === undefined ? 90 : opciones.cuota;
+  let falloYa = false;
   const libro = {
     hojas: { "Triggui Emails Prueba": hojaFalsa(opciones.filas || filasBase(), { truena: opciones.truena }) },
     getSheetByName: function (n) { return this.hojas[n] || null; },
@@ -89,7 +90,10 @@ function entorno(opciones) {
     Session: { getScriptTimeZone: function () { return "UTC"; } },
     MailApp: {
       getRemainingDailyQuota: function () { return cuota; },
-      sendEmail: function (to, asunto, texto, o) { cuota--; correos.push({ to: to, asunto: asunto, texto: texto, o: o || {} }); }
+      sendEmail: function (to, asunto, texto, o) {
+        if (opciones.fallaCorreoA && to === opciones.fallaCorreoA && !falloYa) { falloYa = true; throw new Error("Servicio de correo: tiempo agotado"); }
+        cuota--; correos.push({ to: to, asunto: asunto, texto: texto, o: o || {} });
+      }
     },
     CacheService: { getScriptCache: function () { return { get: function () { return null; }, put: function () {}, remove: function () {} }; } },
     UrlFetchApp: {
@@ -103,7 +107,10 @@ function entorno(opciones) {
   const ctx = vm.createContext(sandbox);
   ARCHIVOS.forEach(function (a) { vm.runInContext(fs.readFileSync(path.join(RAIZ, a), "utf8"), ctx, { filename: a }); });
   // El correo con el libro de la semana es otra pieza (y otra prueba): aquí solo se anota a quién y con qué fila.
-  ctx.enviarTrigguiAUno = function (email, rowIdx, nombre) { librosMandados.push([email, rowIdx, nombre]); return { ok: true, libro: "L", edicion: 1 }; };
+  ctx.enviarTrigguiAUno = function (email, rowIdx, nombre) {
+    librosMandados.push([email, rowIdx, nombre]);
+    return opciones.libroFalla ? { ok: false, reason: "Sin quota Gmail (restantes: 2)" } : { ok: true, libro: "L", edicion: 1 };
+  };
   return { ctx: ctx, props: props, correos: correos, logs: logs, llamadas: llamadas, librosMandados: librosMandados, hojas: libro.hojas,
     principal: libro.hojas["Triggui Emails Prueba"], run: function (e) { return vm.runInContext(e, ctx); } };
 }
@@ -151,7 +158,8 @@ prueba("alta de quien estaba en prueba: miembro de $149, columna Stripe, «Ya er
   const c = alClient(E, "a@x.com");
   assert.strictEqual(c.length, 1);
   assert.strictEqual(c[0].asunto, "Ya eres miembro de Triggui");
-  assert.ok(/^Hola, Ana:\n\nTu suscripción de Triggui ya está activa/.test(c[0].texto) && /app\.triggui\.com\/espiral\//.test(c[0].texto));
+  assert.ok(/^Hola, Ana:\n\nTu suscripción de Triggui ya está activa: tus libros te llegan cada semana\./.test(c[0].texto) &&
+    /app\.triggui\.com\/espiral\//.test(c[0].texto));
   assert.ok(!/dos libros|2 por semana/i.test(c[0].texto), "no promete frecuencia");
   assert.deepStrictEqual([c[0].o.name, c[0].o.replyTo], [E.run("REMITENTE_DISPLAY_NAME"), E.run("REMITENTE_REPLY_TO")]);
   assert.deepStrictEqual(mensajes(E).map(function (m) { return [m.to, m.template.name, m.template.language.code]; }), [["525511111111", "triggui_bienvenida", "es_MX"]]);
@@ -159,8 +167,8 @@ prueba("alta de quien estaba en prueba: miembro de $149, columna Stripe, «Ya er
   assert.strictEqual(b.length, 1);
   assert.ok(/Nuevo miembro de Triggui \(\$149\): a@x\.com \(fila 2/.test(b[0].texto), b[0].texto);
   const bit = E.hojas["Stripe eventos"].filas;
-  assert.deepStrictEqual(J(bit[0]), ["Fecha", "Evento", "Tipo", "Cliente", "Correo", "Resultado", "Detalle"]);
-  assert.deepStrictEqual([bit[1][2], bit[1][3], bit[1][4], bit[1][5]], ["alta", "cus_ANA123", "a@x.com", "ok"]);
+  assert.deepStrictEqual(J(bit[0]), ["Fecha", "Evento", "Tipo", "Cliente", "Suscripción", "Correo", "Resultado", "Detalle"]);
+  assert.deepStrictEqual([bit[1][2], bit[1][3], bit[1][4], bit[1][5], bit[1][6]], ["alta", "cus_ANA123", "sub_ANA123", "a@x.com", "ok"]);
 });
 
 prueba("el mismo aviso dos veces no hace nada; el mismo pago por sesión y por factura tampoco duplica", function () {
@@ -208,7 +216,7 @@ prueba("cambio de plan y correo en inglés: de $129 a $149, y quien tiene IDIOMA
   puente(E, { tipo: "alta", email: "b@x.com", cliente: "cus_BOB123", suscripcion: "sub_BOB2", plan: "149" });
   const c = alClient(E, "b@x.com")[0];
   assert.strictEqual(c.asunto, "You're a Triggui member");
-  assert.ok(/^Hi Bob,\n\nYour Triggui subscription is active/.test(c.texto));
+  assert.ok(/^Hi Bob,\n\nYour Triggui subscription is active: your books arrive every week\./.test(c.texto));
   assert.strictEqual(alClient(E, "e@x.com, e2@x.com").length + alClient(E, "e2@x.com").length, 1);
 });
 
@@ -234,14 +242,56 @@ prueba("baja: por el cliente guardado deja de ser miembro; con otra suscripción
   puente(E, { tipo: "alta", email: "a@x.com", cliente: "cus_ANA123", suscripcion: "sub_ANA123", plan: "149" });
   assert.strictEqual(puente(E, { tipo: "baja", cliente: "cus_ANA123", suscripcion: "sub_VIEJA9" }).detalle, "fila 2; tiene otra suscripción");
   assert.ok(E.principal.filas[1][14].indexOf("SUBSCRIBED_MEMBER") === 0);
-  assert.strictEqual(puente(E, { tipo: "baja", cliente: "cus_ANA123", suscripcion: "sub_ANA123" }).detalle, "fila 2; ya no es miembro");
+  assert.strictEqual(puente(E, { tipo: "baja", cliente: "cus_ANA123", suscripcion: "sub_ANA123" }).detalle, "fila 2; ya no es miembro (cancelada)");
   assert.ok(E.principal.filas[1][14].indexOf("SUBSCRIBED_EXPIRED " + HOY + " (canceló en Stripe; era SUBSCRIBED_MEMBER " + HOY) === 0);
   assert.strictEqual(E.ctx.waPersonas_().personas.filter(function (p) { return p.fila === 2; }).length, 0, "ya no recibe WhatsApp los lunes");
   assert.strictEqual(E.ctx.getCapSemanal(E.principal.filas[1]), 0, "ni correo");
   const s = puente(E, { tipo: "baja", cliente: "cus_NADIE1", suscripcion: "sub_NADIE1" });
   assert.deepStrictEqual([s.ok, s.error], [false, "sin_fila"]);
-  assert.ok(/no encontré su fila \(cus_NADIE1\)/.test(avisosABadir(E).slice(-1)[0].texto));
-  assert.ok(/se fue un miembro: a@x\.com/.test(avisosABadir(E).slice(-2)[0].texto));
+  assert.ok(/Una suscripción en Stripe canceló \(cus_NADIE1\) y no está en la hoja de Triggui\. Si era de Triggui, quítale el estado de miembro a mano; si es de Trestme, no hay nada que hacer\./
+    .test(avisosABadir(E).slice(-1)[0].texto), avisosABadir(E).slice(-1)[0].texto);
+  assert.ok(/a@x\.com ya no es miembro: canceló en Stripe \(fila 2\)/.test(avisosABadir(E).slice(-2)[0].texto));
+});
+
+prueba("baja sin pago o pausada: deja de ser miembro con su motivo, y si después paga, vuelve; un aviso atrasado de una cancelada no la revive", function () {
+  const E = entorno();
+  puente(E, { tipo: "alta", email: "a@x.com", cliente: "cus_ANA123", suscripcion: "sub_ANA123", plan: "149" });
+  assert.strictEqual(puente(E, { tipo: "baja", motivo: "sin_pago", cliente: "cus_ANA123", suscripcion: "sub_ANA123" }).detalle, "fila 2; ya no es miembro (sin_pago)");
+  assert.ok(E.principal.filas[1][14].indexOf("SUBSCRIBED_EXPIRED " + HOY + " (quedó sin pagar en Stripe; era SUBSCRIBED_MEMBER") === 0);
+  assert.strictEqual(puente(E, { tipo: "renovacion", email: "a@x.com", cliente: "cus_ANA123", suscripcion: "sub_ANA123", plan: "149" }).detalle, "fila 2; vuelve a ser miembro");
+  assert.ok(E.principal.filas[1][14].indexOf("SUBSCRIBED_MEMBER " + HOY + " (renovó en Stripe; era SUBSCRIBED_EXPIRED") === 0);
+  puente(E, { tipo: "baja", motivo: "pausada", cliente: "cus_ANA123", suscripcion: "sub_ANA123" });
+  assert.ok(E.principal.filas[1][14].indexOf("SUBSCRIBED_EXPIRED " + HOY + " (pausó en Stripe;") === 0);
+  const F = entorno();
+  puente(F, { tipo: "alta", email: "a@x.com", cliente: "cus_ANA123", suscripcion: "sub_ANA123", plan: "149" });
+  puente(F, { tipo: "baja", cliente: "cus_ANA123", suscripcion: "sub_ANA123" });
+  const tarde = puente(F, { tipo: "renovacion", email: "a@x.com", cliente: "cus_ANA123", suscripcion: "sub_ANA123", plan: "149" });
+  assert.strictEqual(tarde.detalle, "fila 2; aviso atrasado de una suscripción cancelada");
+  assert.ok(F.principal.filas[1][14].indexOf("SUBSCRIBED_EXPIRED") === 0, "sigue fuera");
+  const nueva = puente(F, { tipo: "alta", email: "a@x.com", cliente: "cus_ANA123", suscripcion: "sub_ANA999", plan: "129" });
+  assert.strictEqual(nueva.ok, true, "una suscripción nueva sí la vuelve a hacer miembro");
+  assert.ok(F.principal.filas[1][14].indexOf("SUBSCRIBED_MEMBER_129 " + HOY) === 0);
+});
+
+prueba("renovación con cambio de plan: corrige el tope y avisa; un monto «otro» no cambia nada", function () {
+  const E = entorno();
+  assert.strictEqual(puente(E, { tipo: "renovacion", email: "e2@x.com", cliente: "cus_EVE123", suscripcion: "sub_EVE1", plan: "149" }).detalle, "fila 6; cambió a $149");
+  assert.ok(E.principal.filas[5][14].indexOf("SUBSCRIBED_MEMBER " + HOY + " (cambió de plan en Stripe; era SUBSCRIBED_MEMBER_129") === 0);
+  assert.strictEqual(E.ctx.getCapSemanal(E.principal.filas[5]), 2);
+  assert.ok(/e2@x\.com cambió de plan: ahora es miembro de \$149 \(fila 6\)/.test(avisosABadir(E)[0].texto));
+  assert.strictEqual(puente(E, { tipo: "renovacion", email: "b@x.com", cliente: "cus_BOB123", plan: "129" }).detalle, "fila 3; cambió a $129");
+  assert.strictEqual(E.ctx.getCapSemanal(E.principal.filas[2]), 1);
+  assert.strictEqual(puente(E, { tipo: "renovacion", email: "b@x.com", cliente: "cus_BOB123", plan: "otro" }).detalle, "fila 3; sigue como miembro");
+});
+
+prueba("una suscripción con un monto que no es de Triggui solo avisa a Badir; no toca la hoja", function () {
+  const E = entorno();
+  const antes = J(E.principal.filas);
+  const r = puente(E, { tipo: "ajeno", email: "cliente@trestme.com", cliente: "cus_TRES12", suscripcion: "sub_TRES12", monto: "5500.00", moneda: "mxn" });
+  assert.deepStrictEqual(r, { ok: true, detalle: "no es de Triggui: no se tocó la hoja" });
+  assert.deepStrictEqual(J(E.principal.filas), antes);
+  assert.ok(/Llegó una suscripción nueva en Stripe por 5500\.00 MXN \(cliente@trestme\.com\)\. No es un monto de Triggui/.test(avisosABadir(E)[0].texto));
+  assert.strictEqual(E.correos.length, 1, "al cliente no le llega nada");
 });
 
 prueba("cobro fallido: aviso a Badir con monto, intento y fecha del siguiente; nada cambia en la hoja", function () {
@@ -250,15 +300,48 @@ prueba("cobro fallido: aviso a Badir con monto, intento y fecha del siguiente; n
   assert.strictEqual(puente(E, { tipo: "fallo", email: "b@x.com", cliente: "cus_BOB123", monto: "149.00", moneda: "mxn", intento: "2", siguiente: "2026-11-20" }).ok, true);
   assert.ok(/no pasó el cobro de b@x\.com \(149\.00 MXN, intento 2\)\. Stripe lo vuelve a intentar el 2026-11-20\./.test(avisosABadir(E)[0].texto));
   assert.deepStrictEqual(J(E.principal.filas), antes);
+  puente(E, { tipo: "fallo", email: "b@x.com", monto: "149.00", moneda: "mxn", intento: "4" });
+  assert.ok(/intento 4\)\. Stripe no tiene otro intento programado: revísalo en Stripe\./.test(avisosABadir(E)[1].texto), "sin fecha no promete otro intento");
 });
 
-prueba("una falla de la hoja a medio camino contesta como pasajera y no se anota: el reintento de Stripe sí la atiende", function () {
+prueba("si la hoja falla antes de escribir, contesta como pasajera y no se anota", function () {
   const E = entorno({ truena: true });
   const id = ev();
   const r = J(E.ctx.stripePuente_({ clave: CLAVE, evento: id, tipo: "alta", email: "a@x.com", cliente: "cus_ANA123", plan: "149" }));
   assert.deepStrictEqual(r, { ok: false, error: "" });
   assert.strictEqual(E.hojas["Stripe eventos"].filas.length, 1, "solo el encabezado: no quedó como atendido");
   assert.strictEqual(E.correos.length, 0);
+});
+
+prueba("una falla a medio camino (el estado ya escrito, el correo truena): el reintento del mismo aviso termina lo que faltó", function () {
+  const E = entorno({ fallaCorreoA: "a@x.com" });
+  const datos = { clave: CLAVE, evento: ev(), tipo: "alta", email: "a@x.com", cliente: "cus_ANA123", suscripcion: "sub_ANA123", plan: "149" };
+  assert.deepStrictEqual(J(E.ctx.stripePuente_(datos)), { ok: false, error: "" }, "pasajero: Stripe lo repite");
+  const estado = E.principal.filas[1][14];
+  assert.ok(estado.indexOf("SUBSCRIBED_MEMBER " + HOY + " (pagó en Stripe; era SUBSCRIBED_TRIAL") === 0, "el estado sí quedó escrito");
+  assert.strictEqual(E.hojas["Stripe eventos"].filas.length, 1, "no quedó como atendido");
+  assert.deepStrictEqual([alClient(E, "a@x.com").length, avisosABadir(E).length, mensajes(E).length], [0, 0, 0]);
+  const r = J(E.ctx.stripePuente_(datos));   // el mismo aviso, otra vez
+  assert.strictEqual(r.ok, true);
+  assert.strictEqual(E.principal.filas[1][14], estado, "el estado no se reescribe: conserva lo que era antes");
+  assert.deepStrictEqual([alClient(E, "a@x.com").length, avisosABadir(E).length, mensajes(E).length], [1, 1, 1], "correo, aviso y bienvenida: una vez cada uno");
+  assert.strictEqual(E.hojas["Stripe eventos"].filas[1][6], "ok");
+  assert.deepStrictEqual(J(E.ctx.stripePuente_(datos)), { ok: true, repetido: true }, "ya atendido");
+  const F = entorno({ fallaCorreoA: "a@x.com" });   // y la factura de alta, con otro aviso, después de la falla de la sesión
+  F.ctx.stripePuente_({ clave: CLAVE, evento: ev(), tipo: "alta", email: "a@x.com", cliente: "cus_ANA123", suscripcion: "sub_ANA123", plan: "149" });
+  assert.strictEqual(puente(F, { tipo: "alta", email: "a@x.com", cliente: "cus_ANA123", suscripcion: "sub_ANA123", plan: "149" }).ok, true);
+  assert.deepStrictEqual([alClient(F, "a@x.com").length, avisosABadir(F).length], [1, 1], "la factura termina lo que la sesión no pudo");
+  assert.deepStrictEqual(puente(F, { tipo: "alta", email: "a@x.com", cliente: "cus_ANA123", suscripcion: "sub_ANA123", plan: "149" }),
+    { ok: true, detalle: "ya era miembro" }, "y desde ahí, el atajo vale");
+});
+
+prueba("fila nueva cuyo libro de bienvenida no salió: el aviso a Badir lo dice, no lo da por hecho", function () {
+  const E = entorno({ libroFalla: true });
+  puente(E, { tipo: "alta", email: "nueva@x.com", nombre: "Zoe Rojas", cliente: "cus_NUEVA1", suscripcion: "sub_NUEVA1", plan: "149" });
+  const aviso = avisosABadir(E)[0].texto;
+  assert.ok(/No pude mandarle la bienvenida con el libro de la semana \(Sin quota Gmail \(restantes: 2\)\); le llega con el envío del lunes\./.test(aviso), aviso);
+  assert.ok(!/le mandé la bienvenida/.test(aviso));
+  assert.ok(!E.principal.filas[6][15], "sin envío no se registra en la columna P");
 });
 
 prueba("sin cuota de correo no truena: la fila queda como miembro y el detalle lo dice", function () {

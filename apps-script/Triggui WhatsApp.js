@@ -55,8 +55,7 @@ const WA_PLANTILLA_BIENVENIDA = "triggui_bienvenida";
 const WA_EDICION_BIENVENIDA = "bienvenida";        // así se anota en «WA envíos» (columna Edición)
 const WA_USO_DEL_LIMITE = 0.9;                     // del límite diario de Meta se usa el 90 %: el resto, para bienvenidas
 const WA_DIAS_DE_CONTINUACION = 6;                 // lo que no cupo sigue al día siguiente, hasta 6 días después
-const WA_ESCALONES = { TIER_50: 50, TIER_250: 250, TIER_1K: 1000, TIER_2K: 2000, TIER_10K: 10000,
-  TIER_100K: 100000, TIER_UNLIMITED: Infinity };
+const WA_CAMPO_LIMITE = "whatsapp_business_manager_messaging_limit";   // el de hoy; messaging_limit_tier quedó retirado
 
 /* La bienvenida del formulario: utilidad, sin variables, sin imagen ni botones (la ÚNICA fuente de sus textos). */
 const WA_BIENVENIDAS = [
@@ -505,17 +504,26 @@ function waBienvenida_(telefono, lang) {
 
 /* ─────────────────────────────── el límite de Meta y la continuación ─────────────────────────────── */
 
-/** El escalón del número (desde octubre de 2025 es el del portafolio: lo comparten todos sus números).
+/** El límite del portafolio (lo comparten todos sus números), en el nodo del número, con el campo de hoy
+ *  (whatsapp_business_manager_messaging_limit, página de Meta del 15 de noviembre de 2026; messaging_limit_tier quedó retirado).
  *  Si no se puede leer, el más bajo (250): mejor que salgan menos hoy que fallar a media lista. */
 function waLimiteMeta_(cfg) {
   try {
     const r = UrlFetchApp.fetch("https://graph.facebook.com/" + cfg.version + "/" + encodeURIComponent(cfg.numeroId) +
-      "?fields=messaging_limit_tier", { muteHttpExceptions: true, headers: { Authorization: "Bearer " + cfg.token } });
+      "?fields=" + WA_CAMPO_LIMITE, { muteHttpExceptions: true, headers: { Authorization: "Bearer " + cfg.token } });
     const j = JSON.parse(r.getContentText("UTF-8") || "{}");
-    const escalon = String(j.messaging_limit_tier || "");
-    if (r.getResponseCode() === 200 && WA_ESCALONES[escalon] !== undefined) return { limite: WA_ESCALONES[escalon], escalon: escalon, leido: true };
+    const escalon = String(j[WA_CAMPO_LIMITE] || "");
+    const limite = waEscalon_(escalon);
+    if (r.getResponseCode() === 200 && limite) return { limite: limite, escalon: escalon, leido: true };
   } catch (e) {}
-  return { limite: WA_ESCALONES.TIER_250, escalon: "TIER_250", leido: false };
+  return { limite: 250, escalon: "TIER_250", leido: false };
+}
+
+/** «TIER_250» → 250 · «TIER_2K» → 2000 · «TIER_100K» → 100000 · «TIER_UNLIMITED» → Infinity · otra cosa → 0. */
+function waEscalon_(texto) {
+  if (texto === "TIER_UNLIMITED") return Infinity;
+  const m = /^TIER_(\d{1,6})(K?)$/.exec(String(texto || ""));
+  return m ? Number(m[1]) * (m[2] ? 1000 : 1) : 0;
 }
 
 /** Guarda qué edición se está continuando (y desde cuándo) y programa la vuelta de mañana. */
