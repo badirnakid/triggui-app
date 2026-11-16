@@ -1,0 +1,56 @@
+# 🛒 Revisar tiendas de una lista (C477 · 16 de noviembre de 2026)
+#
+# Para proponerle a Badir libros que de verdad se consiguen: revisa cada título en Casa del Libro y en
+# Gandhi con la misma revisión del horno (tiendas-horno.mjs revisar) y deja la tabla en el resumen.
+# Solo lee: no publica, no guarda nada y no hace commit.
+
+name: 🛒 Revisar tiendas de una lista
+
+run-name: 🛒 Revisar tiendas · ${{ inputs.nota || 'lista' }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      libros:
+        description: 'Títulos: «Título | Autor», separados por ;'
+        required: true
+        type: string
+      nota:
+        description: 'Para qué es (opcional)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: revisar-tiendas
+  cancel-in-progress: false
+
+jobs:
+  revisar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: 📦 Checkout triggui-content (solo lectura, por tiendas.json)
+        uses: actions/checkout@v4
+        with:
+          repository: badirnakid/triggui-content
+          token: ${{ secrets.CONTENT_REPO_TOKEN }}
+          path: triggui-content
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: 📚 Dependencias de la revisión de tiendas
+        working-directory: experiments/nucleus
+        run: npm ci || npm install --no-audit --no-fund
+      - name: 🛒 Revisar cada título (Casa del Libro o Gandhi)
+        shell: bash
+        env:
+          LIBROS: ${{ inputs.libros }}
+        run: |
+          set -euo pipefail
+          python3 -I -B scripts/revisar-tiendas.py --libros "$LIBROS" --nucleus experiments/nucleus \
+            --tiendas triggui-content/data/tiendas.json >> "$GITHUB_STEP_SUMMARY"

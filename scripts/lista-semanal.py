@@ -82,8 +82,10 @@ def revisar_con_horno(nucleus, tiendas):
             return "?", f"sin respuesta de la revisión ({type(e).__name__})"
         salida = " ".join((p.stdout + " " + p.stderr).split())
         if p.returncode == 0:
-            m = re.search(r"Se consigue en ([^:]+)", salida)
-            return "si", ("se consigue en " + m.group(1).strip()) if m else "se consigue"
+            m = re.search(r"Se consigue en ([^:]+):\s*(\S+)?", salida)
+            if not m:
+                return "si", "se consigue"
+            return "si", "se consigue en " + m.group(1).strip() + (f" ({m.group(2)})" if m.group(2) else "")
         if "no se pudo leer alguna de las tiendas" in salida:
             return "?", "las tiendas no respondieron"
         if p.returncode == 3:

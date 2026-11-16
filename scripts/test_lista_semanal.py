@@ -159,7 +159,10 @@ class Tiendas(unittest.TestCase):
             return ls.revisar_con_horno("/x", "/x/tiendas.json")("Heidi | Johanna Spyri")
 
     def test_se_consigue(self):
-        self.assertEqual(self.leer(0, "🛒 Se consigue en Gandhi: https://ejemplo/heidi"), ("si", "se consigue en Gandhi"))
+        self.assertEqual(self.leer(0, "🛒 Se consigue en Gandhi: https://ejemplo/heidi"), ("si", "se consigue en Gandhi (https://ejemplo/heidi)"))
+        self.assertEqual(self.leer(0, "🛒 Se consigue en Casa del Libro: https://casadelibro.com.mx/libro-x/9786070000000/1"),
+                         ("si", "se consigue en Casa del Libro (https://casadelibro.com.mx/libro-x/9786070000000/1)"))
+        self.assertEqual(self.leer(0, "listo"), ("si", "se consigue"))
 
     def test_no_se_consigue_con_su_motivo(self):
         estado, detalle = self.leer(3, "::error::«Heidi» no se consigue (está en el catálogo, pero agotado en las dos tiendas). No se genera nada.")
@@ -289,6 +292,38 @@ class Workflow(unittest.TestCase):
         i = self.texto.index("\n  reconstruir:\n")
         bloque = self.texto[i:self.texto.index("\n  consumir:\n")]
         self.assertNotIn("needs.lista", bloque)
+
+
+_spec_rt = importlib.util.spec_from_file_location("revisar_tiendas", os.path.join(AQUI, "revisar-tiendas.py"))
+rt = importlib.util.module_from_spec(_spec_rt)
+_spec_rt.loader.exec_module(rt)
+
+
+class RevisarTiendas(unittest.TestCase):
+    """El flujo «🛒 Revisar tiendas de una lista»: parte la lista, revisa cada título y no publica nada."""
+
+    def test_partir_por_punto_y_coma_o_renglon_sin_repetir(self):
+        self.assertEqual(rt.partir('Heidi | Johanna Spyri; matilda | Roald Dahl\nHEIDI | Johanna Spyri;  ;"Raro" $x | A'),
+                         ["Heidi | Johanna Spyri", "matilda | Roald Dahl", "Raro x | A"])
+        self.assertEqual(len(rt.partir(";".join(f"L{n} | A" for n in range(99)))), rt.TOPE)
+
+    def test_la_tabla_cuenta_y_escapa_las_barras(self):
+        texto, cuenta = rt.tabla(["Heidi | Johanna Spyri", "Matilda | Roald Dahl", "Pippi | A"],
+                                 tiendas(no=("Matilda",), desconocidos=("Pippi",)))
+        self.assertEqual(cuenta, {"si": 1, "no": 1, "?": 1})
+        self.assertIn("| 1 | Heidi ¦ Johanna Spyri | ✅ se consigue |", texto)
+        self.assertIn("Se consiguen 1 de 3", texto)
+
+    def test_el_flujo_solo_lee(self):
+        import yaml
+        with open(os.path.join(RAIZ, ".github", "workflows", "revisar-tiendas.yml"), encoding="utf-8") as f:
+            texto = f.read()
+        yml = yaml.safe_load(texto)
+        self.assertEqual(yml["permissions"], {"contents": "read"})
+        self.assertNotRegex(texto, r"git (push|commit)")
+        paso = yml["jobs"]["revisar"]["steps"][-1]
+        self.assertEqual(paso["env"]["LIBROS"], "${{ inputs.libros }}")
+        self.assertIn('--libros "$LIBROS"', paso["run"])
 
 
 class RutasKids(unittest.TestCase):
