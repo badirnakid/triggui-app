@@ -328,7 +328,8 @@ class RevisarTiendas(unittest.TestCase):
         self.assertNotRegex(texto, r"git (push|commit)")
         paso = yml["jobs"]["revisar"]["steps"][-1]
         self.assertEqual(paso["env"]["LIBROS"], "${{ inputs.libros }}")
-        self.assertIn('--libros "$LIBROS"', paso["run"])
+        self.assertIn('--libros="$LIBROS"', paso["run"])
+        self.assertFalse(yml["jobs"]["revisar"]["steps"][1]["with"]["persist-credentials"])
 
 
 class RutasKids(unittest.TestCase):

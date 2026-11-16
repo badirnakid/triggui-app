@@ -227,6 +227,7 @@ jobs:
           repository: badirnakid/triggui-content
           token: ${{ secrets.CONTENT_REPO_TOKEN }}
           path: triggui-content
+          persist-credentials: false
       - name: ⚙️ Setup Node.js (revisión de tiendas)
         if: ${{ github.event_name == 'schedule' || contains(inputs.modo, '🎬') }}
         uses: actions/setup-node@v4

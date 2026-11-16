@@ -39,6 +39,7 @@ jobs:
           repository: badirnakid/triggui-content
           token: ${{ secrets.CONTENT_REPO_TOKEN }}
           path: triggui-content
+          persist-credentials: false
       - name: ⚙️ Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -52,5 +53,5 @@ jobs:
           LIBROS: ${{ inputs.libros }}
         run: |
           set -euo pipefail
-          python3 -I -B scripts/revisar-tiendas.py --libros "$LIBROS" --nucleus experiments/nucleus \
+          python3 -I -B scripts/revisar-tiendas.py --libros="$LIBROS" --nucleus experiments/nucleus \
             --tiendas triggui-content/data/tiendas.json >> "$GITHUB_STEP_SUMMARY"
