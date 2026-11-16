@@ -89,12 +89,18 @@ const REMITENTE_REPLY_TO     = "badir@triggui.com";  // FASE 2: cambiar a hola@t
 
 /* ════════════════════ V18i UNSUBSCRIBE CONFIG ═══════════════════════════
  *
- * UNSUBSCRIBE_SECRET:
- *   Clave secreta para firmar tokens HMAC. Previene que alguien manipule
- *   URLs y de baja a tus suscriptores sin permiso.
+ * SECRETO DE BAJAS (propiedad del guion «BAJAS_SECRETO»; nunca en el código):
+ *   Firma con HMAC-SHA256 los enlaces de baja y de idioma de cada correo, para
+ *   que nadie dé de baja ni cambie el idioma de otra persona. Vive en
+ *   Configuración del proyecto › Propiedades del guion. Lo crea
+ *   crearSecretoBajas() la primera vez, sin mostrarlo. Este archivo está en un
+ *   repositorio público: aquí nunca va el valor.
  *
- *   ⚠️ NO cambies después de producción. Si cambias, todos los tokens
- *   en emails ya enviados quedarán inválidos.
+ *   Para rotarlo: borrar la propiedad, correr crearSecretoBajas() y después
+ *   probarSecretoBajas(). La aplicación web y el activador leen la propiedad en
+ *   cada ejecución: no hace falta publicar otra versión. Los enlaces de los
+ *   correos ya enviados dejan de valer: la página de baja lo dice y ofrece mandar
+ *   uno nuevo a ese correo (action=nuevo_enlace, con tope).
  *
  * UNSUBSCRIBE_COL:
  *   Columna O (15) — guarda el status del suscriptor.
@@ -104,15 +110,18 @@ const REMITENTE_REPLY_TO     = "badir@triggui.com";  // FASE 2: cambiar a hola@t
  *     - "RESUSCRITO [fecha]"    → reactivada tras unsub
  *
  * WEB_APP_URL:
- *   URL base del Web App para construir links de unsubscribe.
- *   ⚠️ ACTUALIZAR si re-deployas con nueva URL.
+ *   La aplicación web que llaman triggui.com/entendido y /idioma (la misma
+ *   implementación de siempre; su versión cambia al publicar). La usa
+ *   probarBajasEnVivo(). ⚠️ ACTUALIZAR si se crea otra implementación.
  * ══════════════════════════════════════════════════════════════════════════ */
-const UNSUBSCRIBE_SECRET = "triggui_unsub_v18i_axiomatic_quantum_quark_2026";
+const BAJAS_PROP         = "BAJAS_SECRETO";  // propiedad del guion con el secreto de bajas
+const BAJAS_LARGO_MINIMO = 32;               // si falta o es más corto, se detiene con su nombre
+const TOKEN_BAJAS_LARGO  = 32;               // caracteres hex de la firma (128 bits)
 const UNSUBSCRIBE_COL    = 15;
 // V18l — Cap semanal cuántico-quark
 const SENDS_WEEK_COL     = 16;   // Col P (1-based): historial timestamps últimos envíos
 const CAP_MAX_GLOBAL     = 2;    // Máximo global (MEMBER cap). FREE/RESUSCRITO/BULK usan 1.
-const WEB_APP_URL        = "https://script.google.com/macros/s/AKfycbwQHyASB3kiqKxdNszpZtxl2IZ9MXrvzrTp4mygKaSZzXVRKWae2VScJ9xCREcbOWk0/exec";
+const WEB_APP_URL        = "https://script.google.com/macros/s/AKfycby6OJhLRDItCPo6SonyFeX48mA4OqPEd84evMj_ektG7RT67VOL3CmYpr2QrfcKAKFN0w/exec";
 
 /* ═══════════════════════════ TOKENS ASCII ═══════════════════════════════ */
 const TOKEN_OPEN  = "{{H}}";
@@ -1689,17 +1698,17 @@ function dedupSheetByEmail(sheet) {
  * V18i NIVEL DIOS CUÁNTICO-QUARK: helpers para gestión de unsubscribe.
  *
  * generarTokenUnsub(email):
- *   Crea token HMAC anti-spoofing de un email.
- *   Token = primeros 16 chars de SHA256(email_normalized + SECRET).
- *   Garantía cuántica: nadie puede generar un token válido sin SECRET.
+ *   Firma del correo: los primeros 32 caracteres hex del HMAC-SHA256 del correo
+ *   normalizado con el secreto de bajas (propiedad del guion, ver arriba).
+ *   Sin el secreto nadie puede fabricar una firma válida.
  *
  * validarTokenUnsub(email, token):
- *   Verifica que el token coincida con email + SECRET.
- *   Retorna true si válido, false si manipulado.
+ *   true solo si el token tiene la forma de hoy y coincide con el correo.
+ *   Los tokens de antes de la rotación (16 caracteres) ya no valen.
  *
  * generarUrlUnsub(email):
- *   Construye URL completa con token incluido.
- *   Ej: https://script.../exec?action=unsubscribe&email=x@y.com&token=abc123
+ *   La liga de baja de cada correo:
+ *   https://triggui.com/entendido?email=x@y.com&token=<32 hex>
  *
  * buscarFilaPorEmail(sheet, email):
  *   Busca el índice 1-based de la fila donde aparece el email
@@ -1707,29 +1716,102 @@ function dedupSheetByEmail(sheet) {
  *   Retorna -1 si no encuentra.
  * ══════════════════════════════════════════════════════════════════════════ */
 
+/* 🔐 El secreto de bajas se lee de las propiedades del guion, una vez por ejecución.
+   Si falta o es corto, se detiene con su nombre: nunca cae a otro valor. */
+let _SECRETO_BAJAS_CACHE = "";
+function secretoBajas_() {
+  if (_SECRETO_BAJAS_CACHE) return _SECRETO_BAJAS_CACHE;
+  const s = String(PropertiesService.getScriptProperties().getProperty(BAJAS_PROP) || "");
+  if (s.length < BAJAS_LARGO_MINIMO) {
+    throw new Error("Falta el secreto de bajas: la propiedad del guion «" + BAJAS_PROP + "» no existe o es corta. Corre crearSecretoBajas() una vez.");
+  }
+  _SECRETO_BAJAS_CACHE = s;
+  return s;
+}
+
 function generarTokenUnsub(email) {
   const emailNorm = normalizeEmail(email);
-  const raw = emailNorm + ":" + UNSUBSCRIBE_SECRET;
-  const hash = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, raw);
-  // Convertir bytes a hex
+  const firma = Utilities.computeHmacSha256Signature(emailNorm, secretoBajas_(), Utilities.Charset.UTF_8);
   let hex = "";
-  for (let i = 0; i < hash.length; i++) {
-    const b = hash[i] & 0xFF;
+  for (let i = 0; i < firma.length; i++) {
+    const b = firma[i] & 0xFF;
     hex += (b < 16 ? "0" : "") + b.toString(16);
   }
-  return hex.substring(0, 16);  // primeros 16 chars del hex
+  return hex.substring(0, TOKEN_BAJAS_LARGO);
 }
 
 function validarTokenUnsub(email, token) {
   if (!email || !token) return false;
+  token = String(token);
+  if (token.length !== TOKEN_BAJAS_LARGO || !/^[0-9a-f]+$/.test(token)) return false;
   const expected = generarTokenUnsub(email);
   // Comparación constante en tiempo (anti-timing-attack)
-  if (expected.length !== token.length) return false;
   let diff = 0;
   for (let i = 0; i < expected.length; i++) {
     diff |= expected.charCodeAt(i) ^ token.charCodeAt(i);
   }
   return diff === 0;
+}
+
+/* 🔐 Se corre a mano una vez, desde el editor. Crea el secreto de bajas sin mostrarlo.
+   Si ya existe, no lo toca: para rotarlo, primero se borra la propiedad. */
+function crearSecretoBajas() {
+  const props = PropertiesService.getScriptProperties();
+  const actual = String(props.getProperty(BAJAS_PROP) || "");
+  if (actual.length >= BAJAS_LARGO_MINIMO) {
+    Logger.log("Ya hay un secreto de bajas (" + actual.length + " caracteres); no se cambió. Para rotarlo, borra la propiedad «" + BAJAS_PROP + "» y vuelve a correr esta función.");
+    return false;
+  }
+  // Tres UUID v4 (122 bits aleatorios cada uno) sin guiones: 96 caracteres hex.
+  const nuevo = (Utilities.getUuid() + Utilities.getUuid() + Utilities.getUuid()).replace(/-/g, "");
+  props.setProperty(BAJAS_PROP, nuevo);
+  _SECRETO_BAJAS_CACHE = "";
+  Logger.log("Secreto de bajas guardado: " + nuevo.length + " caracteres. El valor no se muestra en ningún lado.");
+  return true;
+}
+
+/* 🔐 Comprobación sin red y sin mostrar nada secreto: solo verdaderos y falsos. */
+function probarSecretoBajas() {
+  const prueba = "prueba-de-bajas@triggui.com";
+  const t = generarTokenUnsub(prueba);
+  const otro = (t.charAt(0) === "0" ? "1" : "0") + t.slice(1);
+  const r = {
+    largo: t.length === TOKEN_BAJAS_LARGO,
+    valida: validarTokenUnsub(prueba, t),
+    mismo_correo_con_mayusculas: validarTokenUnsub(" Prueba-De-Bajas@Triggui.com ", t),
+    rechaza_un_caracter_distinto: !validarTokenUnsub(prueba, otro),
+    rechaza_la_forma_vieja: !validarTokenUnsub(prueba, t.slice(0, 16)),
+    rechaza_otro_correo: !validarTokenUnsub("otra-prueba@triggui.com", t)
+  };
+  Logger.log("probarSecretoBajas: " + JSON.stringify(r));
+  return r;
+}
+
+/* 🔐 Comprobación en vivo, contra la aplicación web publicada (WEB_APP_URL), con el correo
+   de diagnóstico: una firma nueva debe aceptarse y una falsa rechazarse. Usa el cambio de
+   idioma al MISMO idioma que ya tiene la fila, así que no cambia nada ni reenvía correo. */
+function probarBajasEnVivo() {
+  const correo = DIAG_EMAIL;
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  const fila = sheet ? buscarFilaPorEmail(sheet, correo) : -1;
+  const idioma = fila >= 2 ? leerIdiomaFila(sheet, fila) : "es";
+  const base = WEB_APP_URL + "?action=lang&format=json&email=" + encodeURIComponent(correo) + "&l=" + idioma + "&token=";
+  const pide = function (token) {
+    try {
+      return JSON.parse(UrlFetchApp.fetch(base + token, { muteHttpExceptions: true, followRedirects: true }).getContentText());
+    } catch (e) {
+      return { ok: false, error: "red" };
+    }
+  };
+  const buena = pide(generarTokenUnsub(correo));
+  const falsa = pide("0".repeat(TOKEN_BAJAS_LARGO));
+  const r = {
+    fila_de_diagnostico: fila >= 2,
+    firma_nueva_aceptada: buena.ok === true && buena.changed === false && buena.resent === false,
+    firma_falsa_rechazada: falsa.ok === false && falsa.error === "token"
+  };
+  Logger.log("probarBajasEnVivo: " + JSON.stringify(r));
+  return r;
 }
 
 /**
@@ -1822,7 +1904,7 @@ function manejarCambioIdioma(email, token, l, format) {
   try {
     if (!email || !token || !validarTokenUnsub(email, token)) {
       return esJson ? json({ ok: false, error: "token" })
-                    : ContentService.createTextOutput("Token inválido").setMimeType(ContentService.MimeType.TEXT);
+                    : ContentService.createTextOutput("Este enlace ya no sirve. Tu próximo correo de Triggui trae uno nuevo.").setMimeType(ContentService.MimeType.TEXT);
     }
     const idioma = (String(l || "").toLowerCase() === "en") ? "en" : "es";
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
@@ -1863,6 +1945,10 @@ function manejarCambioIdioma(email, token, l, format) {
     return esJson
       ? json({ ok: true, first_name: _nombreLang, lang: idioma, resent: reenviado, changed: (_previo !== idioma), cooldown: enfriando })
       : renderPaginaIdioma(idioma, _nombreLang);
+  } catch (err) {
+    Logger.log("❌ lang ERROR: " + err.message);
+    return esJson ? json({ ok: false, error: "interno" })
+                  : ContentService.createTextOutput("No pudimos guardar tu idioma. Intenta de nuevo en unos minutos.").setMimeType(ContentService.MimeType.TEXT);
   } finally {
     try { lock.releaseLock(); } catch (e) {}
   }
@@ -2930,6 +3016,18 @@ function doPost(e) {
     const params = (e && e.parameter) ? e.parameter : {};
     const action = params.action || "lead";
 
+    // ─── WhatsApp de los lunes: el puente desde triggui.com/api/wa (bajas, estados y botones; con su clave) ───
+    if (action === "wa_puente") {
+      return ContentService.createTextOutput(JSON.stringify(waPuente_(params)))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // ─── Stripe: el puente desde triggui.com/api/stripe (altas, renovaciones, bajas y cobros fallidos; con su clave) ───
+    if (action === "stripe_puente") {
+      return ContentService.createTextOutput(JSON.stringify(stripePuente_(params)))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
     // ─── RUTA 1: LIKE (App móvil) — preservada exactamente del captación viejo ───
     if (action === "like") {
       const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -3000,10 +3098,27 @@ function doPost(e) {
     // implica consentimiento renovado. El histórico se preserva en col O
     // para trazabilidad y futura detección de abuso de ciclos.
     const data = sheetLeads.getDataRange().getValues();
+    // 💬 La casilla «Quiero recibirlo también por WhatsApp» (sin marcar por defecto): permiso explícito para esta fila.
+    const quiereWa = params.wa_ok === "1";
+    const langForm = params.lang === "en" ? "en" : "es";
+    // Se aplica al final de cada camino, con el estado ya escrito: la bienvenida solo sale si la fila recibe los lunes
+    // (la misma elegibilidad de waPersonas_: sin baja del correo y sin prueba vencida). El permiso se guarda siempre.
+    const aplicarWa = function (fila, telFila, langFila) {
+      if (!quiereWa) return;
+      try {
+        const ahora = sheetLeads.getRange(fila, 1, 1, SENDS_WEEK_COL).getValues()[0];
+        const estado = String(ahora[UNSUBSCRIBE_COL - 1] || "").trim();
+        const recibe = !isRowUnsubscribed(ahora) && !estado.startsWith("SUBSCRIBED_EXPIRED") && !debeMarcarseExpired(ahora);
+        const w = waPermisoFormulario_(sheetLeads, fila, telFila, params.phone || "", langFila, recibe);
+        Logger.log(`💬 doPost lead: WhatsApp en fila ${fila}: ${JSON.stringify(w)}`);
+      } catch (e) { Logger.log("⚠️ doPost lead: WhatsApp: " + e.message); }
+    };
     for (let i = 1; i < data.length; i++) {
       const emailsInRow = parseEmailsFromCell(data[i][2]);
       if (emailsInRow.some(e => e.toLowerCase() === email)) {
         const rowIdx1Based = i + 1;
+        let langFila = "es";
+        try { langFila = leerIdiomaFila(sheetLeads, rowIdx1Based) || "es"; } catch (e) {}
 
         if (isRowUnsubscribed(data[i])) {
           // ─── REACTIVACIÓN AUTOMÁTICA ─────────────────────────────────
@@ -3024,6 +3139,7 @@ function doPost(e) {
             // Cap activo: el usuario recibió hace <7 días. No re-enviar todavía.
             // Col J/M/N permanecen con el envío original (consistente: "ya recibió esa semana")
             Logger.log(`🛑 doPost lead: reactivación CAPPED — "${email}" recibió hace <7d, próximo envío diferido`);
+            aplicarWa(rowIdx1Based, data[i][3], langFila);
             return ContentService.createTextOutput(JSON.stringify({
               result: "reactivated_capped",
               first_name: sanitizarNombre(params.first_name) || ""
@@ -3044,6 +3160,7 @@ function doPost(e) {
           }
 
           // V18j: código específico "reactivated" para frontend
+          aplicarWa(rowIdx1Based, data[i][3], langFila);
           return ContentService.createTextOutput(JSON.stringify({
             result: "reactivated",
             first_name: sanitizarNombre(params.first_name) || ""
@@ -3052,6 +3169,7 @@ function doPost(e) {
 
         // ─── Duplicado regular (activo): silencioso ─────────────────────
         Logger.log(`🔇 doPost lead: duplicado SILENCIOSO — "${email}" ya en fila ${rowIdx1Based}`);
+        aplicarWa(rowIdx1Based, data[i][3], langFila);
         // V18j: código específico "already_active" para frontend
         return ContentService.createTextOutput(JSON.stringify({
           result: "already_active",
@@ -3091,6 +3209,12 @@ function doPost(e) {
 
     Logger.log(`✅ doPost lead: nuevo SUBSCRIBED_TRIAL en fila ${rowIdx} — ${email}`);
 
+    // 🌐 La página en inglés manda lang=en: la fila nace en inglés (la bienvenida, los lunes y el WhatsApp).
+    if (langForm === "en") {
+      try { sheetLeads.getRange(rowIdx, colIdioma(sheetLeads)).setValue("en"); }
+      catch (e) { Logger.log("⚠️ doPost lead: no pude marcar inglés: " + e.message); }
+    }
+
     // V18h: pasar nombre para personalización del email
     const envioResult = enviarTrigguiAUno(email, rowIdx, nombre);
 
@@ -3102,6 +3226,8 @@ function doPost(e) {
       Logger.log(`⚠️ doPost lead: bienvenida NO enviada — ${envioResult.reason}`);
       // No es crítico: el usuario quedó suscrito, el masivo lo cubrirá después
     }
+
+    aplicarWa(rowIdx, phone, langForm);
 
     // V18j: código específico "new" para frontend
     return ContentService.createTextOutput(JSON.stringify({
@@ -3138,9 +3264,10 @@ function doPost(e) {
  * Defensas:
  *   - Token HMAC anti-spoofing
  *   - LockService para evitar race conditions con doPost
- *   - Try/catch global → siempre retorna HTML al usuario
- *   - Si email no existe en sheet → "Entendido." igual (anti-enumeration)
+ *   - Try/catch global → un error se contesta como error («interno»), nunca como «Entendido»
+ *   - Firma válida de un email que ya no está en la hoja → "Entendido." (no recibe nada)
  *   - Si ya está unsubscribed → "Entendido." igual (idempotente)
+ *   - Firma vieja o inválida, o datos incompletos → se dice («token», «parametros»)
  * ══════════════════════════════════════════════════════════════════════════ */
 function doGet(e) {
   const params = (e && e.parameter) ? e.parameter : {};
@@ -3165,6 +3292,10 @@ function doGet(e) {
   if (action === "unsubscribe") {
     return manejarUnsubscribe(params.email || "", params.token || "", format);
   }
+  if (action === "nuevo_enlace") {
+    return ContentService.createTextOutput(JSON.stringify(mandarEnlaceNuevoDeBaja_(params.email || "")))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
 
   // ─── Default: diagnóstico Web App ────────────────────────────────────
   return ContentService.createTextOutput(
@@ -3179,8 +3310,8 @@ function doGet(e) {
 /* ════════════════════ MANEJAR UNSUBSCRIBE V18m ═══════════════════════════
  *
  * Procesa el click en "Cancelar suscripción" del email.
- * Siempre retorna respuesta exitosa independientemente del resultado interno
- * (anti-enumeration: no decimos si el email existía).
+ * «Entendido» solo si la baja quedó (o si la firma es válida y el email ya no está en
+ * la hoja). Firma vieja o inválida, datos incompletos y error interno se dicen como tales.
  *
  * V18m: agrega soporte para format=json. Cuando el caller es triggui.com/entendido
  * (página estática que hace fetch en background), pasa format=json y recibe
@@ -3214,6 +3345,15 @@ function manejarUnsubscribe(email, token, format) {
     return renderPaginaEntendido(primerNombre);
   }
 
+  // Lo que no quedó se dice: firma vieja o inválida, datos incompletos o error interno.
+  function fallo(codigo) {
+    if (isJson) {
+      return ContentService.createTextOutput(JSON.stringify({ ok: false, error: codigo }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    return renderPaginaEnlaceViejo_(codigo, email, token);
+  }
+
   // Lock para evitar conflictos con doPost
   const lock = LockService.getScriptLock();
   try { lock.waitLock(5000); } catch (e) { /* continuar igual */ }
@@ -3222,20 +3362,21 @@ function manejarUnsubscribe(email, token, format) {
     // 1. Validación básica
     if (!email || !token) {
       Logger.log("⚠️ unsubscribe: faltan parámetros email/token");
-      return respond("");
+      return fallo("parametros");
     }
 
-    // 2. Validar token HMAC (anti-spoofing)
+    // 2. Validar la firma. Una firma de antes de la rotación ya no vale, y se dice:
+    //    la página ofrece mandar un enlace nuevo a ese correo (action=nuevo_enlace).
     if (!validarTokenUnsub(email, token)) {
-      Logger.log(`⚠️ unsubscribe: token inválido para "${email}"`);
-      return respond("");
+      Logger.log("⚠️ unsubscribe: firma inválida");
+      return fallo("token");
     }
 
     // 3. Buscar fila por email
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
     if (!sheet) {
       Logger.log("❌ unsubscribe: sheet no existe");
-      return respond("");
+      return fallo("interno");
     }
 
     const rowIdx = buscarFilaPorEmail(sheet, email);
@@ -3258,7 +3399,87 @@ function manejarUnsubscribe(email, token, format) {
 
   } catch (err) {
     Logger.log("❌ unsubscribe ERROR: " + err.message);
-    return respond("");
+    return fallo("interno");
+  } finally {
+    try { lock.releaseLock(); } catch (e) {}
+  }
+}
+
+/* 🔐 Enlace viejo (de antes de la rotación) o incompleto, por la ruta HTML de los correos
+   muy viejos que apuntaban directo aquí: se dice la verdad y se manda a triggui.com/entendido,
+   que ofrece el enlace nuevo. */
+function renderPaginaEnlaceViejo_(codigo, email, token) {
+  const interno = (codigo === "interno");
+  const titulo = interno ? "No pudimos confirmar tu baja" : "Este enlace ya no sirve";
+  const sub = interno
+    ? "Intenta de nuevo en unos minutos."
+    : "Lo cambiamos para proteger tu correo. Pide uno nuevo y con él confirmas tu baja.";
+  const destino = "https://triggui.com/entendido?email=" + encodeURIComponent(email || "") + "&token=" + encodeURIComponent(token || "");
+  const html = `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Triggui</title>
+<style>html,body{margin:0;background:#0B0F1A;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+.c{max-width:460px;margin:0 auto;padding:72px 24px;text-align:center}h1{font-size:24px;margin:0 0 12px}p{color:rgba(255,255,255,.72);line-height:1.5}
+a.b{display:inline-block;margin-top:20px;padding:12px 20px;border-radius:10px;background:#fff;color:#0B0F1A;text-decoration:none;font-weight:600}</style></head>
+<body><div class="c"><h1>${_esc(titulo)}</h1><p>${_esc(sub)}</p>${interno ? "" : `<a class="b" href="${_esc(destino)}" target="_top">Pedir un enlace nuevo</a>`}</div></body></html>`;
+  return HtmlService.createHtmlOutput(html)
+    .setTitle("Triggui")
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+/* 🔐 B20: a quien llega con un enlace viejo se le manda uno nuevo a su correo.
+   - Responde igual exista o no el correo (no dice quién está en la lista).
+   - Uno cada 6 horas por correo (el máximo de CacheService) y NUEVO_ENLACE_TOPE_DIA al día en total.
+   - Solo a correos que están en la hoja y no se han dado de baja. */
+const NUEVO_ENLACE_TOPE_DIA = 100;
+const NUEVO_ENLACE_ESPERA_S = 6 * 60 * 60;
+function mandarEnlaceNuevoDeBaja_(email) {
+  const emailNorm = normalizeEmail(email);
+  if (!emailNorm || emailNorm.length > 254 || !/^[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+$/.test(emailNorm)) {
+    return { ok: false, error: "correo" };
+  }
+  const lock = LockService.getScriptLock();
+  try { lock.waitLock(5000); } catch (e) { return { ok: false, error: "interno" }; }
+  try {
+    secretoBajas_();   // sin secreto, «interno» para todos, antes de mirar la hoja
+    const cache = CacheService.getScriptCache();
+    const huella = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, emailNorm, Utilities.Charset.UTF_8);
+    const llave = "nuevo_enlace_" + Utilities.base64EncodeWebSafe(huella).slice(0, 43);
+
+    // Tope del día y cuota primero: con tope, todos ven «tope», hayan recibido enlace o no.
+    const props = PropertiesService.getScriptProperties();
+    const hoy = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd");
+    const cuenta = String(props.getProperty("NUEVO_ENLACE_DIA") || "");
+    const n = (cuenta.indexOf(hoy + ":") === 0) ? (parseInt(cuenta.slice(hoy.length + 1), 10) || 0) : 0;
+    if (n >= NUEVO_ENLACE_TOPE_DIA) return { ok: false, error: "tope" };
+    if (MailApp.getRemainingDailyQuota() < 20) return { ok: false, error: "tope" };
+    if (cache.get(llave)) return { ok: true };
+
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+    if (!sheet) return { ok: false, error: "interno" };
+    const rowIdx = buscarFilaPorEmail(sheet, emailNorm);
+    if (rowIdx < 2) return { ok: true };
+    const estado = String(sheet.getRange(rowIdx, UNSUBSCRIBE_COL).getValue() || "").trim().toUpperCase();
+    if (estado.indexOf("UNSUBSCRIBED") === 0) return { ok: true };
+
+    const en = (leerIdiomaFila(sheet, rowIdx) === "en");
+    const enlace = generarUrlUnsub(emailNorm);
+    const asunto = en ? "Your link to stop receiving Triggui" : "Tu enlace para dejar de recibir Triggui";
+    const texto = en
+      ? "You asked for a new link to stop receiving Triggui.\n\nConfirm here: " + enlace + "\n\nIf you didn't ask for it, ignore this email: nothing changes."
+      : "Pediste un enlace nuevo para dejar de recibir Triggui.\n\nConfírmalo aquí: " + enlace + "\n\nSi no lo pediste, ignora este correo: nada cambia.";
+    const boton = en ? "Confirm I want to stop receiving Triggui" : "Confirmar que ya no quiero recibir Triggui";
+    const html = `<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.5;color:#111;max-width:520px">
+<p>${en ? "You asked for a new link to stop receiving Triggui." : "Pediste un enlace nuevo para dejar de recibir Triggui."}</p>
+<p><a href="${_esc(enlace)}" style="display:inline-block;padding:12px 20px;border-radius:10px;background:#111;color:#fff;text-decoration:none;font-weight:600">${_esc(boton)}</a></p>
+<p style="color:#666;font-size:14px">${en ? "If you didn't ask for it, ignore this email: nothing changes." : "Si no lo pediste, ignora este correo: nada cambia."}</p>
+</div>`;
+    GmailApp.sendEmail(emailNorm, asunto, texto, { htmlBody: html, name: REMITENTE_DISPLAY_NAME, replyTo: REMITENTE_REPLY_TO });
+    cache.put(llave, "1", NUEVO_ENLACE_ESPERA_S);
+    props.setProperty("NUEVO_ENLACE_DIA", hoy + ":" + (n + 1));
+    Logger.log("📨 nuevo_enlace: enviado (" + (n + 1) + " hoy)");
+    return { ok: true };
+  } catch (err) {
+    Logger.log("❌ nuevo_enlace ERROR: " + err.message);
+    return { ok: false, error: "interno" };
   } finally {
     try { lock.releaseLock(); } catch (e) {}
   }
@@ -3709,9 +3930,9 @@ function sendToRow(row, batchInfo) {
 
     // V19.2: subject sin nombre del destinatario (display name "Triggui" + tarjeta.titulo)
     // Razón cuántica: nombre repetido en lista de Gmail = cansa. Mejor consistencia con tarjeta.
-    // V19.2.4: si la celda tiene múltiples correos (ej: "jana@3M.com, victor@3m.com"),
+    // V19.2.4: si la celda tiene múltiples correos (ej: "a@ejemplo.com, b@ejemplo.com"),
     // FORZAR saludo sin nombre. El nombre de col A solo aplica a uno de los destinatarios;
-    // saludar a Victor con "Hola Jaqueline" sería incoherente. Multi-email → saludo genérico.
+    // saludar a una persona con el nombre de otra sería incoherente. Multi-email → saludo genérico.
     const nombreFila = row.emails.length > 1 ? "" : sanitizarNombre(data[i][0]);
     /* 🌐 D4 v4: el idioma de ESTA fila gobierna su correo */
   EMAIL_ENVIO_ACTUAL = row.emails[0] || "";
