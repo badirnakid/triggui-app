@@ -252,8 +252,13 @@ class Workflow(unittest.TestCase):
         self.assertIn("LIBRO_DE_LA_LISTA: ${{ needs.lista.outputs.libro }}", self.texto)
         self.assertNotRegex(self.texto, r'LIBRO_FINAL="\$\{\{ needs\.')
 
-    def test_el_modo_publicar_pasa_la_puerta_de_tiendas_como_el_lunes(self):
-        self.assertIn("(github.event_name == 'schedule' || contains(inputs.modo, '🎬')) && 'la lista de la semana'", self.generar)
+    def test_la_puerta_de_tiendas_detiene_la_lista_salvo_si_las_tiendas_no_responden(self):
+        paso = next(p for p in self.yml["jobs"]["generar"]["steps"] if p.get("name") == "🛒 ¿Se consigue el libro? (Casa del Libro o Gandhi)")
+        self.assertEqual(paso["env"]["FORZAR"], "${{ inputs.forzar_sin_tienda && 'forzar_sin_tienda' || '' }}")
+        self.assertIn("contains(inputs.modo, '🎬')", paso["env"]["ES_LISTA"])
+        self.assertIn('grep -q "no se pudo leer alguna de las tiendas"', paso["run"])
+        self.assertIn('exit "$CODIGO"', paso["run"])
+        self.assertNotIn("la lista de la semana' ||", self.texto)
 
     def test_generar_entrega_el_slug_y_consumir_lo_verifica(self):
         self.assertEqual(self.yml["jobs"]["generar"]["outputs"]["slug"], "${{ steps.guardado.outputs.slug }}")

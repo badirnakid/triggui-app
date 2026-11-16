@@ -695,10 +695,27 @@ jobs:
         working-directory: experiments/nucleus
         timeout-minutes: 5
         env:
-          FORZAR: ${{ inputs.forzar_sin_tienda && 'forzar_sin_tienda' || ((github.event_name == 'schedule' || contains(inputs.modo, '🎬')) && 'la lista de la semana' || '') }}
+          FORZAR: ${{ inputs.forzar_sin_tienda && 'forzar_sin_tienda' || '' }}
+          # 🎬 C477 (decisión de Badir del 16 de noviembre, 14:17): en la lista de la semana solo se publica lo que se consigue.
+          ES_LISTA: ${{ (github.event_name == 'schedule' || contains(inputs.modo, '🎬')) && 'true' || '' }}
         run: |
           set -euo pipefail
           if [ ! -f /tmp/triggui-book.json ]; then echo "ℹ️  Sin libro validado: nada que revisar"; exit 0; fi
+          if [ -n "$ES_LISTA" ] && [ -z "$FORZAR" ]; then
+            # Si no se consigue, se detiene y no se publica; la línea se queda en la lista. Solo si las tiendas no
+            # responden sigue, porque el job lista ya revisó y es un título aprobado.
+            set +e
+            SALIDA=$(node tiendas-horno.mjs revisar --libro-json /tmp/triggui-book.json \
+              --tiendas "$GITHUB_WORKSPACE/triggui-content/data/tiendas.json" 2>&1)
+            CODIGO=$?
+            set -e
+            echo "$SALIDA"
+            if [ "$CODIGO" -ne 0 ] && printf '%s' "$SALIDA" | grep -q "no se pudo leer alguna de las tiendas"; then
+              echo "::warning::🛒 Las tiendas no respondieron: sigue el libro aprobado de la lista."
+              exit 0
+            fi
+            exit "$CODIGO"
+          fi
           node tiendas-horno.mjs revisar --libro-json /tmp/triggui-book.json \
             --tiendas "$GITHUB_WORKSPACE/triggui-content/data/tiendas.json" ${FORZAR:+--forzar --por "$FORZAR"}
 
@@ -1879,11 +1896,12 @@ jobs:
               open(cola,'w',encoding='utf-8').writelines(out)
           hoy = datetime.datetime.now().strftime('%Y-%m-%d %H:%M UTC')
           kids = os.environ.get('CATALOGO') == 'kids'
-          saltados = os.environ.get('SALTADOS') or 'ninguno'
+          saltados = os.environ.get('SALTADOS')
+          saltados = f"{saltados} (no se conseguían ese día; siguen en la lista)" if saltados else 'ninguno'
           acta = f"""🎬 ULTIMO PUBLICADO — {'La lista Kids' if kids else 'La Cola del Director'}
           fecha:    {hoy}
           libro:    {libro} (de la lista aprobada)
-          saltados: {saltados} (no se conseguían ese día; siguen en la lista)
+          saltados: {saltados}
           estado:   pipeline OK y el libro ya está en su catálogo (comprobado antes de consumir)
           correo:   {'el libro Kids de la semana (arriba de contenido_kids.json)' if kids else 'sale automatico ~7:30am CDMX via Apps Script (trigger lunes)'}
           """

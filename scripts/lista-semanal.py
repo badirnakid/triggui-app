@@ -13,8 +13,9 @@ Curaduría (decisión de Badir del 16 de noviembre, 14:17): solo se publica lo q
 es decir, lo que está en su lista. Nada se elige solo. Se toma el primer título de la lista que
 se consiga en Casa del Libro o en Gandhi (tiendas-horno.mjs revisar). Los que no se consiguen se
 saltan y se quedan en la lista. Si ninguno se consigue, o la lista está vacía, no se publica nada.
-Si las tiendas no responden, se toma el título aprobado: la puerta de tiendas del horno lo vuelve
-a revisar.
+Si las tiendas no responden, se toma el título aprobado y la puerta de tiendas del horno lo vuelve
+a revisar: si entonces no se consigue, se detiene y no se publica; solo sigue si las tiendas
+tampoco le responden a ella.
 
 Uso (lee el entorno: EVENTO, CRON, MODO, CATALOGO_MANUAL, REF):
   python3 scripts/lista-semanal.py --app . --contenido triggui-content --nucleus experiments/nucleus >> "$GITHUB_OUTPUT"
