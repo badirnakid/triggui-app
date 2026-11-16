@@ -39,7 +39,7 @@ on:
   # CRON SCHEDULES — descomenta UNA línea para activar automatización
   # ───────────────────────────────────────────────────────────────────────
   schedule:
-    - cron: '0 11 * * 1'          # LUNES 5 AM CDMX — la cola Kids (C477): cola-kids.txt o, vacía, el catálogo Kids
+    - cron: '0 11 * * 1'          # LUNES 5 AM CDMX — la lista Kids (C477): solo títulos aprobados, el primero que se consiga
     - cron: '0 12 * * 1'          # LUNES 6 AM CDMX — La Cola del Director
   # (otras cadencias disponibles abajo, comentadas)
   #   - cron: '0 12 * * 1,4'      # LUNES y JUEVES 6 AM CDMX
@@ -66,7 +66,7 @@ on:
           - '🎲 Batch para la app'
           - '🧪 Batch shadow (no toca app)'
           - '🔁 Reconstruir imágenes (sin LLM)'
-          - '🎬 Hornear la cola ahora'
+          - '🎬 Publicar ya el siguiente libro'
 
       catalogo:
         description: '🌒 Catálogo'
@@ -208,24 +208,35 @@ jobs:
   # ║  Lee la primera linea util de cola-lunes.txt (Titulo | Autor).      ║
   # ║  Vacia → generar se salta en gris, cero costo.                      ║
   # ╚════════════════════════════════════════════════════════════════════╝
-  cola:
+  lista:
     runs-on: ubuntu-latest
     outputs:
       hay: ${{ steps.leer.outputs.hay }}
       libro: ${{ steps.leer.outputs.libro }}
       catalogo: ${{ steps.leer.outputs.catalogo }}
       origen: ${{ steps.leer.outputs.origen }}
+      saltados: ${{ steps.leer.outputs.saltados }}
     steps:
       - uses: actions/checkout@v4
-      # 🎬 C477: el catálogo Kids y su cuarentena viven en triggui-content (solo lectura aquí).
-      - name: 📦 Checkout triggui-content (solo lectura, para el respaldo Kids)
-        if: ${{ (github.event_name == 'schedule' && github.event.schedule == '0 11 * * 1') || (contains(inputs.modo, '🎬') && inputs.catalogo == 'kids') }}
+      # 🎬 C477: solo se publica lo que Badir aprobó (su lista), y el primero que se consiga en Casa del Libro o Gandhi.
+      #    La revisión de tiendas usa tiendas-horno.mjs y data/tiendas.json de triggui-content (aquí solo se lee).
+      - name: 📦 Checkout triggui-content (solo lectura, para revisar tiendas)
+        if: ${{ github.event_name == 'schedule' || contains(inputs.modo, '🎬') }}
         uses: actions/checkout@v4
         with:
           repository: badirnakid/triggui-content
           token: ${{ secrets.CONTENT_REPO_TOKEN }}
           path: triggui-content
-      - name: 🎬 Leer la cola
+      - name: ⚙️ Setup Node.js (revisión de tiendas)
+        if: ${{ github.event_name == 'schedule' || contains(inputs.modo, '🎬') }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: 📚 Dependencias de la revisión de tiendas
+        if: ${{ github.event_name == 'schedule' || contains(inputs.modo, '🎬') }}
+        working-directory: experiments/nucleus
+        run: npm ci || npm install --no-audit --no-fund
+      - name: 🎬 Leer la lista de la semana
         id: leer
         shell: bash
         env:
@@ -236,16 +247,16 @@ jobs:
           REF: ${{ github.ref }}
         run: |
           set -euo pipefail
-          python3 scripts/cola-semanal.py --app . --contenido triggui-content >> "$GITHUB_OUTPUT"
+          python3 scripts/lista-semanal.py --app . --contenido triggui-content --nucleus experiments/nucleus >> "$GITHUB_OUTPUT"
 
   generar:
     runs-on: ubuntu-latest
-    needs: [cola]
+    needs: [lista]
     outputs:
       # 🔖 C477: el «_slug» del libro que entró al catálogo en esta corrida (vacío si no entró ninguno)
       slug: ${{ steps.guardado.outputs.slug }}
     # 🔁 El modo reconstruir NO usa este pipeline (no LLM); lo maneja el job `reconstruir`.
-    if: ${{ !contains(inputs.modo, '🔁') && ((github.event_name != 'schedule' && !contains(inputs.modo, '🎬')) || needs.cola.outputs.hay == 'true') }}
+    if: ${{ !contains(inputs.modo, '🔁') && ((github.event_name != 'schedule' && !contains(inputs.modo, '🎬')) || needs.lista.outputs.hay == 'true') }}
     timeout-minutes: 180
 
     env:
@@ -267,7 +278,7 @@ jobs:
       # v3.4: ruta absoluta al ring para que validate-book.js no dependa de cwd
       RECENT_BOOKS_PATH: ${{ github.workspace }}/recent-books.json
       # 🌒 Triggui Kids · soporte multi-catálogo (default: adulto)
-      CATALOG_MODE: ${{ inputs.catalogo || needs.cola.outputs.catalogo || 'adulto' }}
+      CATALOG_MODE: ${{ inputs.catalogo || needs.lista.outputs.catalogo || 'adulto' }}
 
       # === 🎯 SPRINT A v14 — Contexto curatorial ===
       TRIGGUI_PUNTO_CICLO: ${{ inputs.punto_ciclo || 'auto' }}
@@ -290,19 +301,18 @@ jobs:
         id: modo
         shell: bash
         env:
-          LIBRO_DE_LA_COLA: ${{ needs.cola.outputs.libro }}
-          CATALOGO_DE_LA_COLA: ${{ needs.cola.outputs.catalogo }}
-          ORIGEN_DE_LA_COLA: ${{ needs.cola.outputs.origen }}
+          LIBRO_DE_LA_LISTA: ${{ needs.lista.outputs.libro }}
+          CATALOGO_DE_LA_LISTA: ${{ needs.lista.outputs.catalogo }}
         run: |
           set -euo pipefail
           MODO_HUMANO="${{ inputs.modo }}"
 
-          # 🎬 La cola (Kids o adultos): el cron, o el modo «🎬 Hornear la cola ahora», hornea el libro que eligió el job cola
+          # 🎬 La lista (Kids o adultos): el cron, o el modo «🎬 Publicar ya el siguiente libro», publica el libro que eligió el job lista
           LIBRO_FINAL="${{ inputs.libro_input }}"
           if [ "${{ github.event_name }}" = "schedule" ] || [[ "${MODO_HUMANO}" == *"🎬"* ]]; then
             MODO_HUMANO="📘 Un libro específico"
-            LIBRO_FINAL="${LIBRO_DE_LA_COLA}"
-            echo "🎬 Cola (${CATALOGO_DE_LA_COLA}, ${ORIGEN_DE_LA_COLA}) → ${LIBRO_FINAL}"
+            LIBRO_FINAL="${LIBRO_DE_LA_LISTA}"
+            echo "🎬 Lista (${CATALOGO_DE_LA_LISTA}) → ${LIBRO_FINAL}"
           fi
 
           case "${MODO_HUMANO}" in
@@ -659,9 +669,9 @@ jobs:
           ENTRADA_RAW: ${{ inputs.sentimiento }}
           CATALOG_SCOPE: libros_master_csv
           # 🌒 Triggui Kids: CSV depende de CATALOG_MODE
-          CATALOG_CSV_PATH: ${{ (inputs.catalogo || needs.cola.outputs.catalogo) == 'kids' && 'data/libros_master_kids.csv' || 'data/libros_master.csv' }}
+          CATALOG_CSV_PATH: ${{ (inputs.catalogo || needs.lista.outputs.catalogo) == 'kids' && 'data/libros_master_kids.csv' || 'data/libros_master.csv' }}
           # 🛡️ Audience guard: audiencia explícita para prompts del LLM
-          TARGET_AUDIENCE: ${{ (inputs.catalogo || needs.cola.outputs.catalogo) == 'kids' && 'kids' || 'adult' }}
+          TARGET_AUDIENCE: ${{ (inputs.catalogo || needs.lista.outputs.catalogo) == 'kids' && 'kids' || 'adult' }}
         run: node validate-book.js
 
       - name: 📖 Validate DISCOVER (modo 🌍)
@@ -674,7 +684,7 @@ jobs:
           # 🛒 B417: Triggui solo propone libros que se consiguen (la puerta 🛒 de abajo lo confirma)
           TIENDAS_JSON: ${{ github.workspace }}/triggui-content/data/tiendas.json
           # 🛡️ Audience guard: audiencia explícita para prompts del LLM
-          TARGET_AUDIENCE: ${{ (inputs.catalogo || needs.cola.outputs.catalogo) == 'kids' && 'kids' || 'adult' }}
+          TARGET_AUDIENCE: ${{ (inputs.catalogo || needs.lista.outputs.catalogo) == 'kids' && 'kids' || 'adult' }}
         run: node validate-book.js
 
       # 🛒 B417 — 📘 y 🌍 solo generan un libro que se consigue físico en Casa del Libro o en Gandhi. Si no, se detiene
@@ -685,7 +695,7 @@ jobs:
         working-directory: experiments/nucleus
         timeout-minutes: 5
         env:
-          FORZAR: ${{ inputs.forzar_sin_tienda && 'forzar_sin_tienda' || ((github.event_name == 'schedule' || contains(inputs.modo, '🎬')) && 'la cola de la semana' || '') }}
+          FORZAR: ${{ inputs.forzar_sin_tienda && 'forzar_sin_tienda' || ((github.event_name == 'schedule' || contains(inputs.modo, '🎬')) && 'la lista de la semana' || '') }}
         run: |
           set -euo pipefail
           if [ ! -f /tmp/triggui-book.json ]; then echo "ℹ️  Sin libro validado: nada que revisar"; exit 0; fi
@@ -897,7 +907,7 @@ jobs:
         if: ${{ success() && steps.modo.outputs.modo_tecnico != 'shadow_batch' && inputs.modo_prueba != true }}
         shell: bash
         env:
-          CATALOG_MODE: ${{ inputs.catalogo || needs.cola.outputs.catalogo || 'adulto' }}
+          CATALOG_MODE: ${{ inputs.catalogo || needs.lista.outputs.catalogo || 'adulto' }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
           # 🧠 C278: el saneador de triggui-content llama por ia/ia.cjs (mismo proveedor y modelo que el resto)
           TRIGGUI_IA_LIB: ${{ github.workspace }}/ia/ia.cjs
@@ -961,7 +971,7 @@ jobs:
       # ═══════════════════════════════════════════════════════════════════════
       - name: 🧹 Sincronizar manifiesto con el catálogo (post-cuarentena)
         env:
-          CATALOGO: ${{ (inputs.catalogo || needs.cola.outputs.catalogo) == 'kids' && 'contenido_kids.json' || 'contenido.json' }}
+          CATALOGO: ${{ (inputs.catalogo || needs.lista.outputs.catalogo) == 'kids' && 'contenido_kids.json' || 'contenido.json' }}
         run: |
           set -euo pipefail
           if [ ! -f /tmp/triggui-batch.jsonl ]; then
@@ -1032,7 +1042,7 @@ jobs:
         timeout-minutes: 10
         continue-on-error: true
         env:
-          CATALOGO: ${{ (inputs.catalogo || needs.cola.outputs.catalogo) == 'kids' && 'contenido_kids.json' || 'contenido.json' }}
+          CATALOGO: ${{ (inputs.catalogo || needs.lista.outputs.catalogo) == 'kids' && 'contenido_kids.json' || 'contenido.json' }}
         run: |
           set -uo pipefail
           if [ ! -f "$CATALOGO" ]; then echo "ℹ️  $CATALOGO no está en el workspace: nada que marcar"; exit 0; fi
@@ -1042,8 +1052,8 @@ jobs:
       - name: 🌐 Generar edición viva HTML
         if: ${{ (inputs.generar_imagenes || github.event_name == 'schedule') && (steps.modo.outputs.modo_tecnico == 'single_book' || steps.modo.outputs.modo_tecnico == 'trigger_constrained' || steps.modo.outputs.modo_tecnico == 'trigger_discover' || steps.modo.outputs.modo_tecnico == 'production_batch') }}
         env:
-          TRIGGUI_EDICION_JSON: ${{ (inputs.catalogo || needs.cola.outputs.catalogo) == 'kids' && 'contenido_kids.json' || 'contenido.json' }}
-          TRIGGUI_OUT_BASE: ${{ (inputs.catalogo || needs.cola.outputs.catalogo) == 'kids' && 'public/kids/t' || 'public/t' }}
+          TRIGGUI_EDICION_JSON: ${{ (inputs.catalogo || needs.lista.outputs.catalogo) == 'kids' && 'contenido_kids.json' || 'contenido.json' }}
+          TRIGGUI_OUT_BASE: ${{ (inputs.catalogo || needs.lista.outputs.catalogo) == 'kids' && 'public/kids/t' || 'public/t' }}
         run: |
           # 🌒 Guarda nivel dios: este paso solo corre si el motor commiteó el libro de verdad
           # (mergeIntoContenidoJson devolvió true → escribió /tmp/triggui-committed.flag). Antes se
@@ -1068,8 +1078,8 @@ jobs:
       - name: 🎨 Generar tarjeta PNG 1080×1920
         if: ${{ (inputs.generar_imagenes || github.event_name == 'schedule') && (steps.modo.outputs.modo_tecnico == 'single_book' || steps.modo.outputs.modo_tecnico == 'trigger_constrained' || steps.modo.outputs.modo_tecnico == 'trigger_discover' || steps.modo.outputs.modo_tecnico == 'production_batch') }}
         env:
-          TRIGGUI_EDICION_JSON: ${{ (inputs.catalogo || needs.cola.outputs.catalogo) == 'kids' && 'contenido_kids.json' || 'contenido.json' }}
-          TRIGGUI_OUT_BASE: ${{ (inputs.catalogo || needs.cola.outputs.catalogo) == 'kids' && 'public/kids/t' || 'public/t' }}
+          TRIGGUI_EDICION_JSON: ${{ (inputs.catalogo || needs.lista.outputs.catalogo) == 'kids' && 'contenido_kids.json' || 'contenido.json' }}
+          TRIGGUI_OUT_BASE: ${{ (inputs.catalogo || needs.lista.outputs.catalogo) == 'kids' && 'public/kids/t' || 'public/t' }}
         run: |
           # 🌒 Guarda nivel dios: este paso solo corre si el motor commiteó el libro de verdad
           # (mergeIntoContenidoJson devolvió true → escribió /tmp/triggui-committed.flag). Antes se
@@ -1096,8 +1106,8 @@ jobs:
       - name: 🖼️ Generar OG image PNG 1200×630
         if: ${{ (inputs.generar_imagenes || github.event_name == 'schedule') && (steps.modo.outputs.modo_tecnico == 'single_book' || steps.modo.outputs.modo_tecnico == 'trigger_constrained' || steps.modo.outputs.modo_tecnico == 'trigger_discover' || steps.modo.outputs.modo_tecnico == 'production_batch') }}
         env:
-          TRIGGUI_EDICION_JSON: ${{ (inputs.catalogo || needs.cola.outputs.catalogo) == 'kids' && 'contenido_kids.json' || 'contenido.json' }}
-          TRIGGUI_OUT_BASE: ${{ (inputs.catalogo || needs.cola.outputs.catalogo) == 'kids' && 'public/kids/t' || 'public/t' }}
+          TRIGGUI_EDICION_JSON: ${{ (inputs.catalogo || needs.lista.outputs.catalogo) == 'kids' && 'contenido_kids.json' || 'contenido.json' }}
+          TRIGGUI_OUT_BASE: ${{ (inputs.catalogo || needs.lista.outputs.catalogo) == 'kids' && 'public/kids/t' || 'public/t' }}
         run: |
           # 🌒 Guarda nivel dios: este paso solo corre si el motor commiteó el libro de verdad
           # (mergeIntoContenidoJson devolvió true → escribió /tmp/triggui-committed.flag). Antes se
@@ -1133,8 +1143,8 @@ jobs:
         if: ${{ success() && steps.modo.outputs.modo_tecnico != 'shadow_batch' && inputs.modo_prueba != true }}
         shell: bash
         env:
-          CATALOG_MODE: ${{ inputs.catalogo || needs.cola.outputs.catalogo || 'adulto' }}
-          TARGET_AUDIENCE: ${{ (inputs.catalogo || needs.cola.outputs.catalogo) == 'kids' && 'kids' || 'adult' }}
+          CATALOG_MODE: ${{ inputs.catalogo || needs.lista.outputs.catalogo || 'adulto' }}
+          TARGET_AUDIENCE: ${{ (inputs.catalogo || needs.lista.outputs.catalogo) == 'kids' && 'kids' || 'adult' }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
         run: |
           set -euo pipefail
@@ -1817,8 +1827,8 @@ jobs:
   # ╚════════════════════════════════════════════════════════════════════╝
   consumir:
     runs-on: ubuntu-latest
-    needs: [cola, generar]
-    if: ${{ (github.event_name == 'schedule' || contains(inputs.modo, '🎬')) && github.ref == 'refs/heads/main' && inputs.modo_prueba != true && needs.cola.outputs.hay == 'true' && needs.generar.result == 'success' }}
+    needs: [lista, generar]
+    if: ${{ (github.event_name == 'schedule' || contains(inputs.modo, '🎬')) && github.ref == 'refs/heads/main' && inputs.modo_prueba != true && needs.lista.outputs.hay == 'true' && needs.generar.result == 'success' }}
     steps:
       - uses: actions/checkout@v4
       - name: 📦 Checkout triggui-content (solo lectura, para comprobar que el libro entró)
@@ -1830,31 +1840,31 @@ jobs:
       - name: 🔎 ¿El libro ya está en su catálogo?
         shell: bash
         env:
-          LIBRO: ${{ needs.cola.outputs.libro }}
-          CATALOGO: ${{ needs.cola.outputs.catalogo }}
+          LIBRO: ${{ needs.lista.outputs.libro }}
+          CATALOGO: ${{ needs.lista.outputs.catalogo }}
           SLUG: ${{ needs.generar.outputs.slug }}
         run: |
           set -euo pipefail
           # Comprobado, no supuesto: el «_slug» que guardó el horno está en contenido(_kids).json de triggui-content.
           # Si no entró, la cola no se consume y el job queda en rojo.
-          python3 scripts/cola-semanal.py --verificar --catalogo "$CATALOGO" --libro "$LIBRO" --slug "$SLUG" --contenido triggui-content
+          python3 scripts/lista-semanal.py --verificar --catalogo "$CATALOGO" --libro "$LIBRO" --slug "$SLUG" --contenido triggui-content
       - name: 🎬 Consumir linea y dejar acta
         shell: bash
         env:
-          LIBRO: ${{ needs.cola.outputs.libro }}
-          CATALOGO: ${{ needs.cola.outputs.catalogo }}
-          ORIGEN: ${{ needs.cola.outputs.origen }}
+          LIBRO: ${{ needs.lista.outputs.libro }}
+          CATALOGO: ${{ needs.lista.outputs.catalogo }}
+          SALTADOS: ${{ needs.lista.outputs.saltados }}
         run: |
           set -euo pipefail
           git pull --rebase origin main || true
-          if [ "$CATALOGO" = "kids" ]; then COLA="cola-kids.txt"; ACTA="ultimo-horneado-kids.txt"; else COLA="cola-lunes.txt"; ACTA="ultimo-horneado.txt"; fi
+          if [ "$CATALOGO" = "kids" ]; then COLA="lista-kids.txt"; ACTA="ultimo-publicado-kids.txt"; else COLA="cola-lunes.txt"; ACTA="ultimo-horneado.txt"; fi
           export COLA ACTA
           python3 - <<'PY'
           import os, re, datetime
           libro = os.environ['LIBRO']
           cola = os.environ['COLA']
           def limpiar(t):
-              # La misma limpieza que scripts/cola-semanal.py: así la línea se encuentra aunque traiga comillas o espacios dobles.
+              # La misma limpieza que scripts/lista-semanal.py: así la línea se encuentra aunque traiga comillas o espacios dobles.
               t = re.sub(r'[\r\n\t]+', ' ', t)
               t = re.sub(r'["`$\\]', '', t)
               return ' '.join(t.split())[:200].strip()
@@ -1869,22 +1879,23 @@ jobs:
               open(cola,'w',encoding='utf-8').writelines(out)
           hoy = datetime.datetime.now().strftime('%Y-%m-%d %H:%M UTC')
           kids = os.environ.get('CATALOGO') == 'kids'
-          de_donde = 'de la cola' if os.environ.get('ORIGEN') == 'cola' else 'del catálogo Kids (la cola estaba vacía)'
-          acta = f"""🎬 ULTIMO HORNEADO — {'La cola Kids' if kids else 'La Cola del Director'}
-          fecha:  {hoy}
-          libro:  {libro} ({de_donde})
-          estado: pipeline OK y el libro ya está en su catálogo (comprobado antes de consumir)
-          correo: {'el libro Kids de la semana (arriba de contenido_kids.json)' if kids else 'sale automatico ~7:30am CDMX via Apps Script (trigger lunes)'}
+          saltados = os.environ.get('SALTADOS') or 'ninguno'
+          acta = f"""🎬 ULTIMO PUBLICADO — {'La lista Kids' if kids else 'La Cola del Director'}
+          fecha:    {hoy}
+          libro:    {libro} (de la lista aprobada)
+          saltados: {saltados} (no se conseguían ese día; siguen en la lista)
+          estado:   pipeline OK y el libro ya está en su catálogo (comprobado antes de consumir)
+          correo:   {'el libro Kids de la semana (arriba de contenido_kids.json)' if kids else 'sale automatico ~7:30am CDMX via Apps Script (trigger lunes)'}
           """
           open(os.environ['ACTA'],'w',encoding='utf-8').write(acta)
-          print('consumida:', consumida, '| restantes en cola:', sum(1 for l in out if l.strip() and not l.strip().startswith('#')))
+          print('consumida:', consumida, '| restantes en la lista:', sum(1 for l in out if l.strip() and not l.strip().startswith('#')))
           PY
           git config user.name "Triggui Bot"
           git config user.email "bot@triggui.com"
           [ -f "$COLA" ] && git add "$COLA" || true
           git add "$ACTA"
           if git diff --cached --quiet; then echo "🟡 sin cambios"; else
-            git commit -m "🎬 cola ${CATALOGO}: horneado — ${LIBRO}"
+            git commit -m "🎬 lista ${CATALOGO}: publicado — ${LIBRO}"
             PUSH_OK=0
             for i in 1 2 3; do
               git pull --rebase --autostash origin main && git push origin HEAD:main && { PUSH_OK=1; break; }

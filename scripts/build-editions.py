@@ -234,6 +234,13 @@ def tienda_marca(url, boton, contenido, lugar):
     return base + "?" + "&".join(quedan) + resto
 
 
+def ruta_ediciones():
+    """La carpeta pública de las ediciones de este catálogo: /kids/t para Niños, /t para adultos (C477).
+    Antes las páginas de Niños apuntaban su imagen para compartir, su URL y su gemela en inglés a /t/,
+    donde no existen: la vista previa no salía y la portada de la gemela no cargaba."""
+    return "/kids/t" if tuple(Path(SINGLE_OUT_DIR).parts[-2:]) == ("kids", "t") else "/t"
+
+
 def tienda_lugar_edicion():
     """El lugar de las ediciones en la marca: las de Niños salen a public/kids/t (TRIGGUI_OUT_BASE). Se mira el
     final de la ruta, no cualquier «kids» que traiga una ruta absoluta."""
@@ -989,10 +996,10 @@ def escribir_gemela_en(html_es, out_dir, edicion, base_url):
         return None
 
     edicion_id = str(edicion.get("id") or "").strip()
-    og_img_es = f"{base_url}/t/{edicion_id}/og.jpg"
-    og_img_en = f"{base_url}/t/{edicion_id}/og_en.jpg"
-    url_es = f"{base_url}/t/{edicion_id}/"
-    url_en = f"{base_url}/t/{edicion_id}/en/"
+    og_img_es = f"{base_url}{ruta_ediciones()}/{edicion_id}/og.jpg"
+    og_img_en = f"{base_url}{ruta_ediciones()}/{edicion_id}/og_en.jpg"
+    url_es = f"{base_url}{ruta_ediciones()}/{edicion_id}/"
+    url_en = f"{base_url}{ruta_ediciones()}/{edicion_id}/en/"
 
     h = html_es
     # (1) encabezado social en inglés
@@ -1013,8 +1020,8 @@ def escribir_gemela_en(html_es, out_dir, edicion, base_url):
     # (4) ⚠️ la gemela vive en una SUBCARPETA: toda ruta relativa se rompería
     #     ("./portada.jpg" resolvería a /t/<slug>/en/portada.jpg → 404).
     #     Se absolutizan contra la carpeta de la edición.
-    h = h.replace('"./', f'"{base_url}/t/{edicion_id}/')
-    h = h.replace("'./", f"'{base_url}/t/{edicion_id}/")
+    h = h.replace('"./', f'"{base_url}{ruta_ediciones()}/{edicion_id}/')
+    h = h.replace("'./", f"'{base_url}{ruta_ediciones()}/{edicion_id}/")
     # hermanas declaradas para los buscadores
     h = h.replace("</head>",
                   f'<link rel="alternate" hreflang="es" href="{esc(url_es)}" />'
@@ -1039,8 +1046,8 @@ def render_edicion(edicion, mode="lab"):
     tagline = edicion.get("tagline", "")
 
     if mode == "single":
-        og_image = f"{BASE_URL}/t/{edicion_id}/og.jpg"
-        og_url = f"{BASE_URL}/t/{edicion_id}/"
+        og_image = f"{BASE_URL}{ruta_ediciones()}/{edicion_id}/og.jpg"
+        og_url = f"{BASE_URL}{ruta_ediciones()}/{edicion_id}/"
     else:
         og_image = f"{BASE_URL}/lab/t/{edicion_id}/og.jpg"
         og_url = f"{BASE_URL}/lab/t/{edicion_id}/"
