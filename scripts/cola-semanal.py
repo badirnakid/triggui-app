@@ -7,18 +7,22 @@ escribe como salidas de GitHub Actions (hay, libro, catalogo, origen).
 
   · Lunes 5:00 (CDMX), cron «0 11 * * 1»  → Kids
   · Lunes 6:00 (CDMX), cron «0 12 * * 1»  → adultos (la Cola del Director)
-  · Disparo manual con el modo «🎬 Hornear la cola ahora» → el catálogo que se elija
+  · Disparo manual con el modo «🎬 Hornear la cola ahora», solo desde main → el catálogo que se elija
 
 Kids: primero la primera línea útil de cola-kids.txt. Si está vacía, el respaldo:
-el primer título de triggui-content/data/libros_master_kids.csv que todavía no
-está en contenido_kids.json ni en su cuarentena. Así ningún lunes se queda sin
-libro Kids. Adultos: solo cola-lunes.txt, como siempre (sin respaldo).
+uno de los primeros títulos de triggui-content/data/libros_master_kids.csv que
+todavía no están en contenido_kids.json ni en su cuarentena. Se turnan por semana
+entre los tres primeros, así un título que falla no detiene a los demás. Ningún
+lunes se queda sin libro Kids. Adultos: solo cola-lunes.txt, como siempre.
 
-Uso (lee el entorno: EVENTO, CRON, MODO, CATALOGO_MANUAL):
+Uso (lee el entorno: EVENTO, CRON, MODO, CATALOGO_MANUAL, REF):
   python3 scripts/cola-semanal.py --app . --contenido triggui-content >> "$GITHUB_OUTPUT"
+Comprobar que un libro de la cola ya entró a su catálogo (para el job consumir):
+  python3 scripts/cola-semanal.py --verificar --catalogo kids --libro "Título | Autor" --contenido triggui-content
 """
 import argparse
 import csv
+import datetime
 import json
 import os
 import re
@@ -28,14 +32,17 @@ import unicodedata
 CRON_KIDS = "0 11 * * 1"
 CRON_ADULTOS = "0 12 * * 1"
 MARCA_MODO_COLA = "🎬"
+REF_MAIN = "refs/heads/main"
 
 COLA_ADULTOS = "cola-lunes.txt"
 COLA_KIDS = "cola-kids.txt"
 CSV_KIDS = os.path.join("data", "libros_master_kids.csv")
 CONTENIDO_KIDS = "contenido_kids.json"
+CONTENIDO_ADULTOS = "contenido.json"
 CUARENTENA_KIDS = "contenido_kids.quarantine.json"
 
 LARGO_MAXIMO = 200
+VENTANA_RESPALDO = 3
 
 
 def es_corrida_de_cola(evento, modo):
@@ -49,15 +56,23 @@ def catalogo_de(evento, cron, catalogo_manual):
     return "kids" if (catalogo_manual or "").strip() == "kids" else "adulto"
 
 
+def limpiar(libro):
+    """Una sola línea, sin caracteres que rompan el shell o las salidas de Actions."""
+    t = re.sub(r"[\r\n\t]+", " ", str(libro or ""))
+    t = re.sub(r'["`$\\]', "", t)
+    t = " ".join(t.split())
+    return t[:LARGO_MAXIMO].strip()
+
+
 def primera_linea_util(ruta):
-    """La primera línea que no está vacía ni empieza con «#»; vacío si no hay archivo."""
+    """La primera línea que no es comentario y que, ya limpia, no queda vacía; vacío si no hay."""
     if not os.path.exists(ruta):
         return ""
     with open(ruta, encoding="utf-8-sig") as f:
         for linea in f:
-            limpia = linea.strip()
-            if limpia and not limpia.startswith("#"):
-                return limpia
+            cruda = linea.strip()
+            if cruda and not cruda.startswith("#") and limpiar(cruda):
+                return limpiar(cruda)
     return ""
 
 
@@ -88,46 +103,52 @@ def titulos_de(ruta):
     return vistos
 
 
-def respaldo_kids(raiz_contenido):
-    """El primer título del catálogo maestro Kids que todavía no está horneado ni en cuarentena."""
+def semana_iso(hoy=None):
+    hoy = hoy or datetime.datetime.now(datetime.timezone.utc).date()
+    return hoy.isocalendar()[1]
+
+
+def respaldo_kids(raiz_contenido, semana):
+    """Uno de los primeros títulos del catálogo Kids que no están horneados ni en cuarentena, por turno semanal."""
     ruta_csv = os.path.join(raiz_contenido, CSV_KIDS)
     if not os.path.exists(ruta_csv):
         return ""
     ya = titulos_de(os.path.join(raiz_contenido, CONTENIDO_KIDS)) | titulos_de(
         os.path.join(raiz_contenido, CUARENTENA_KIDS)
     )
+    candidatos = []
     with open(ruta_csv, encoding="utf-8-sig", newline="") as f:
         for fila in csv.DictReader(f):
             titulo = (fila.get("titulo") or "").strip()
             autor = (fila.get("autor") or "").strip()
-            if not titulo or normalizar(titulo) in ya:
+            libro = limpiar(f"{titulo} | {autor}" if autor else titulo)
+            if not titulo or not libro or normalizar(titulo) in ya:
                 continue
-            return f"{titulo} | {autor}" if autor else titulo
-    return ""
+            candidatos.append(libro)
+            if len(candidatos) == VENTANA_RESPALDO:
+                break
+    if not candidatos:
+        return ""
+    return candidatos[semana % len(candidatos)]
 
 
-def limpiar(libro):
-    """Una sola línea, sin caracteres que rompan el shell o las salidas de Actions."""
-    t = re.sub(r"[\r\n\t]+", " ", str(libro or ""))
-    t = re.sub(r'["`$\\]', "", t)
-    t = " ".join(t.split())
-    return t[:LARGO_MAXIMO].strip()
-
-
-def decidir(evento, cron, modo, catalogo_manual, raiz_app, raiz_contenido):
+def decidir(evento, cron, modo, catalogo_manual, raiz_app, raiz_contenido, ref="", semana=None):
     """Devuelve un dict con hay, libro, catalogo, origen y un mensaje para el registro."""
     if not es_corrida_de_cola(evento, modo):
         return {"hay": "", "libro": "", "catalogo": "", "origen": "",
                 "mensaje": "ℹ️  Disparo manual: la cola no aplica"}
+    if evento != "schedule" and ref and ref != REF_MAIN:
+        return {"hay": "", "libro": "", "catalogo": "", "origen": "",
+                "mensaje": f"🛑 «🎬 Hornear la cola ahora» solo corre desde main (aquí: {ref}): no se hornea nada"}
     catalogo = catalogo_de(evento, cron, catalogo_manual)
     if catalogo == "kids":
-        libro = limpiar(primera_linea_util(os.path.join(raiz_app, COLA_KIDS)))
+        libro = primera_linea_util(os.path.join(raiz_app, COLA_KIDS))
         origen = "cola" if libro else ""
         if not libro:
-            libro = limpiar(respaldo_kids(raiz_contenido))
+            libro = respaldo_kids(raiz_contenido, semana_iso() if semana is None else semana)
             origen = "catalogo" if libro else ""
     else:
-        libro = limpiar(primera_linea_util(os.path.join(raiz_app, COLA_ADULTOS)))
+        libro = primera_linea_util(os.path.join(raiz_app, COLA_ADULTOS))
         origen = "cola" if libro else ""
     if not libro:
         nombre = "Kids" if catalogo == "kids" else "de adultos"
@@ -138,14 +159,35 @@ def decidir(evento, cron, modo, catalogo_manual, raiz_app, raiz_contenido):
             "mensaje": f"🎬 Próximo libro ({catalogo}), {de_donde}: {libro}"}
 
 
+def ya_entro(libro, catalogo, raiz_contenido):
+    """¿El título de la cola ya está en su catálogo? Acepta el título corto o el largo (con subtítulo)."""
+    buscado = normalizar(str(libro or "").split(" | ")[0])
+    if not buscado:
+        return False
+    archivo = CONTENIDO_KIDS if catalogo == "kids" else CONTENIDO_ADULTOS
+    for t in titulos_de(os.path.join(raiz_contenido, archivo)):
+        if t == buscado or t.startswith(buscado + " ") or buscado.startswith(t + " "):
+            return True
+    return False
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description="Decide el libro de la cola de la semana.")
     p.add_argument("--app", default=".", help="raíz de triggui-app (donde viven las colas)")
     p.add_argument("--contenido", default="triggui-content", help="raíz de triggui-content")
+    p.add_argument("--verificar", action="store_true", help="solo comprobar que --libro ya entró a su catálogo")
+    p.add_argument("--catalogo", default="adulto")
+    p.add_argument("--libro", default="")
     a = p.parse_args(argv)
+    if a.verificar:
+        ok = ya_entro(a.libro, a.catalogo, a.contenido)
+        print(("✅ Ya está en el catálogo: " if ok else "🔴 No está en el catálogo: ") + a.libro, file=sys.stderr)
+        return 0 if ok else 1
+    semana = os.environ.get("SEMANA")
     r = decidir(os.environ.get("EVENTO", ""), os.environ.get("CRON", ""),
                 os.environ.get("MODO", ""), os.environ.get("CATALOGO_MANUAL", ""),
-                a.app, a.contenido)
+                a.app, a.contenido, ref=os.environ.get("REF", ""),
+                semana=int(semana) if semana and semana.isdigit() else None)
     print(r["mensaje"], file=sys.stderr)
     for clave in ("hay", "libro", "catalogo", "origen"):
         print(f"{clave}={r[clave]}")

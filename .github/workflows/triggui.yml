@@ -219,7 +219,7 @@ jobs:
       - uses: actions/checkout@v4
       # 🎬 C477: el catálogo Kids y su cuarentena viven en triggui-content (solo lectura aquí).
       - name: 📦 Checkout triggui-content (solo lectura, para el respaldo Kids)
-        if: ${{ github.event_name == 'schedule' || contains(inputs.modo, '🎬') }}
+        if: ${{ (github.event_name == 'schedule' && github.event.schedule == '0 11 * * 1') || (contains(inputs.modo, '🎬') && inputs.catalogo == 'kids') }}
         uses: actions/checkout@v4
         with:
           repository: badirnakid/triggui-content
@@ -233,6 +233,7 @@ jobs:
           CRON: ${{ github.event.schedule }}
           MODO: ${{ inputs.modo }}
           CATALOGO_MANUAL: ${{ inputs.catalogo }}
+          REF: ${{ github.ref }}
         run: |
           set -euo pipefail
           python3 scripts/cola-semanal.py --app . --contenido triggui-content >> "$GITHUB_OUTPUT"
@@ -324,10 +325,10 @@ jobs:
           echo "═══════════════════════════════════════════"
           echo "🎯 Modo humano:       ${MODO_HUMANO}"
           echo "🔧 Modo técnico:      ${MODO_TECNICO}"
-          echo "🛡️  Preservar manuales: ${{ inputs.preservar_manuales }}"
-          echo "🖼️  Generar imágenes:   ${{ inputs.generar_imagenes }}"
-          echo "🕒 Cronobiología:      ${{ inputs.cronobiologia }}"
-          echo "🧪 Modo prueba:        ${{ inputs.modo_prueba }}"
+          echo "🛡️  Preservar manuales: ${{ inputs.preservar_manuales || github.event_name == 'schedule' }}"
+          echo "🖼️  Generar imágenes:   ${{ inputs.generar_imagenes || github.event_name == 'schedule' }}"
+          echo "🕒 Cronobiología:      ${{ github.event_name == 'schedule' && 'true' || inputs.cronobiologia }}"
+          echo "🧪 Modo prueba:        ${{ inputs.modo_prueba || false }}"
           echo "═══════════════════════════════════════════"
 
       # ╔══════════════════════════════════════════════════════════════════╗
@@ -1521,7 +1522,7 @@ jobs:
           fi
 
           # ─── triggui-content ───
-          if [ "${{ inputs.modo_prueba }}" = "false" ]; then
+          if [ "${{ inputs.modo_prueba }}" != "true" ]; then   # en el cron inputs viene vacío: vacío = producción
             cd triggui-content
             git config user.name "Triggui Bot"
             git config user.email "bot@triggui.com"
@@ -1593,9 +1594,9 @@ jobs:
           echo "| Modo | ${{ inputs.modo }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Catálogo | ${CATALOGO_LABEL} |" >> $GITHUB_STEP_SUMMARY
           echo "| Libro | ${TITULO} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Imágenes | ${{ inputs.generar_imagenes }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Manuales protegidos | ${{ inputs.preservar_manuales }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Modo prueba | ${{ inputs.modo_prueba }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Imágenes | ${{ inputs.generar_imagenes || github.event_name == 'schedule' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Manuales protegidos | ${{ inputs.preservar_manuales || github.event_name == 'schedule' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Modo prueba | ${{ inputs.modo_prueba || false }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
           # v3.4: contar ring de recientes para reporte
@@ -1803,6 +1804,21 @@ jobs:
     if: ${{ (github.event_name == 'schedule' || contains(inputs.modo, '🎬')) && github.ref == 'refs/heads/main' && inputs.modo_prueba != true && needs.cola.outputs.hay == 'true' && needs.generar.result == 'success' }}
     steps:
       - uses: actions/checkout@v4
+      - name: 📦 Checkout triggui-content (solo lectura, para comprobar que el libro entró)
+        uses: actions/checkout@v4
+        with:
+          repository: badirnakid/triggui-content
+          token: ${{ secrets.CONTENT_REPO_TOKEN }}
+          path: triggui-content
+      - name: 🔎 ¿El libro ya está en su catálogo?
+        shell: bash
+        env:
+          LIBRO: ${{ needs.cola.outputs.libro }}
+          CATALOGO: ${{ needs.cola.outputs.catalogo }}
+        run: |
+          set -euo pipefail
+          # Comprobado, no supuesto: si el libro no entró a contenido(_kids).json, la cola no se consume y el job queda en rojo.
+          python3 scripts/cola-semanal.py --verificar --catalogo "$CATALOGO" --libro "$LIBRO" --contenido triggui-content
       - name: 🎬 Consumir linea y dejar acta
         shell: bash
         env:
@@ -1823,7 +1839,7 @@ jobs:
               t = re.sub(r'[\r\n\t]+', ' ', t)
               t = re.sub(r'["`$\\]', '', t)
               return ' '.join(t.split())[:200].strip()
-          lineas = open(cola, encoding='utf-8').read().splitlines(keepends=True) if os.path.exists(cola) else []
+          lineas = open(cola, encoding='utf-8-sig').read().splitlines(keepends=True) if os.path.exists(cola) else []
           out, consumida = [], False
           for l in lineas:
               if not consumida and l.strip() and not l.strip().startswith('#') and limpiar(l.strip()) == libro:
@@ -1838,7 +1854,7 @@ jobs:
           acta = f"""🎬 ULTIMO HORNEADO — {'La cola Kids' if kids else 'La Cola del Director'}
           fecha:  {hoy}
           libro:  {libro} ({de_donde})
-          estado: pipeline completo OK (edicion viva + tarjeta + og + manual.json)
+          estado: pipeline OK y el libro ya está en su catálogo (comprobado antes de consumir)
           correo: {'el libro Kids de la semana (arriba de contenido_kids.json)' if kids else 'sale automatico ~7:30am CDMX via Apps Script (trigger lunes)'}
           """
           open(os.environ['ACTA'],'w',encoding='utf-8').write(acta)

@@ -46,8 +46,8 @@ class Fixture(unittest.TestCase):
     def tearDown(self):
         self.tmp.cleanup()
 
-    def decidir(self, evento="schedule", cron=cs.CRON_KIDS, modo="", catalogo=""):
-        return cs.decidir(evento, cron, modo, catalogo, self.app, self.con)
+    def decidir(self, evento="schedule", cron=cs.CRON_KIDS, modo="", catalogo="", ref="refs/heads/main", semana=0):
+        return cs.decidir(evento, cron, modo, catalogo, self.app, self.con, ref=ref, semana=semana)
 
 
 class Cola(Fixture):
@@ -111,18 +111,59 @@ class Cola(Fixture):
         self.assertEqual(self.decidir()["libro"], "Libro raro HOME | Autor")
 
     def test_main_escribe_cuatro_salidas_de_una_linea(self):
-        os.environ.update({"EVENTO": "schedule", "CRON": cs.CRON_KIDS, "MODO": "", "CATALOGO_MANUAL": ""})
+        os.environ.update({"EVENTO": "schedule", "CRON": cs.CRON_KIDS, "MODO": "", "CATALOGO_MANUAL": "", "SEMANA": "0", "REF": "refs/heads/main"})
         try:
             salida, err = io.StringIO(), io.StringIO()
             with redirect_stdout(salida), redirect_stderr(err):
                 cs.main(["--app", self.app, "--contenido", self.con])
         finally:
-            for k in ("EVENTO", "CRON", "MODO", "CATALOGO_MANUAL"):
+            for k in ("EVENTO", "CRON", "MODO", "CATALOGO_MANUAL", "SEMANA", "REF"):
                 os.environ.pop(k, None)
         lineas = salida.getvalue().splitlines()
         self.assertEqual([l.split("=", 1)[0] for l in lineas], ["hay", "libro", "catalogo", "origen"])
         self.assertEqual(lineas[1], "libro=Matilda | Roald Dahl")
         self.assertIn("Matilda", err.getvalue())
+
+    def test_una_linea_que_queda_vacia_al_limpiarla_no_tapa_las_siguientes(self):
+        escribir(os.path.join(self.app, "cola-kids.txt"), COMENTARIOS + "$$\n``\nHeidi | Johanna Spyri\n")
+        self.assertEqual(self.decidir()["libro"], "Heidi | Johanna Spyri")
+
+    def test_el_respaldo_se_turna_por_semana_entre_los_tres_primeros(self):
+        vistos = [self.decidir(semana=n)["libro"] for n in range(4)]
+        self.assertEqual(vistos, ["Matilda | Roald Dahl",
+                                  "Charlie y la fábrica de chocolate, edición especial | Roald Dahl",
+                                  "Heidi | Johanna Spyri", "Matilda | Roald Dahl"])
+
+    def test_con_un_solo_candidato_siempre_sale_ese(self):
+        escribir(os.path.join(self.con, "contenido_kids.json"),
+                 json.dumps([{"titulo": t} for t in ("El Principito", "Matilda", "Heidi")]))
+        self.assertEqual({self.decidir(semana=n)["libro"] for n in range(5)},
+                         {"Charlie y la fábrica de chocolate, edición especial | Roald Dahl"})
+
+    def test_la_semana_por_defecto_es_la_iso(self):
+        import datetime
+        self.assertEqual(cs.semana_iso(datetime.date(2026, 11, 23)), 48)
+
+    def test_el_modo_cola_fuera_de_main_no_hornea(self):
+        r = self.decidir(evento="workflow_dispatch", cron="", modo="🎬 Hornear la cola ahora", catalogo="kids", ref="refs/heads/kids-semanal")
+        self.assertEqual((r["hay"], r["libro"]), ("", ""))
+        self.assertIn("solo corre desde main", r["mensaje"])
+
+    def test_ya_entro_acepta_el_titulo_corto_o_el_largo(self):
+        escribir(os.path.join(self.con, "contenido.json"),
+                 json.dumps({"libros": [{"titulo": "12 reglas para vivir: Un antídoto al caos"}]}))
+        self.assertTrue(cs.ya_entro("12 reglas para vivir | Jordan B. Peterson", "adulto", self.con))
+        self.assertTrue(cs.ya_entro("12 Reglas para vivir: un antidoto al caos | J. B. Peterson", "adulto", self.con))
+        self.assertTrue(cs.ya_entro("El principito | Antoine", "kids", self.con))
+        self.assertFalse(cs.ya_entro("Reglas para vivir | Alguien", "adulto", self.con))   # solo cuenta desde el inicio del título
+        self.assertFalse(cs.ya_entro("Matilda | Roald Dahl", "kids", self.con))
+        self.assertFalse(cs.ya_entro("", "kids", self.con))
+
+    def test_verificar_sale_con_cero_o_uno(self):
+        err = io.StringIO()
+        with redirect_stderr(err):
+            self.assertEqual(cs.main(["--verificar", "--catalogo", "kids", "--libro", "El Principito | A", "--contenido", self.con]), 0)
+            self.assertEqual(cs.main(["--verificar", "--catalogo", "kids", "--libro", "Matilda | Roald Dahl", "--contenido", self.con]), 1)
 
 
 class Workflow(unittest.TestCase):
@@ -182,6 +223,25 @@ class Workflow(unittest.TestCase):
 
     def test_el_modo_cola_pasa_la_puerta_de_tiendas_como_el_lunes(self):
         self.assertIn("(github.event_name == 'schedule' || contains(inputs.modo, '🎬')) && 'la cola de la semana'", self.generar)
+
+    def test_el_cron_sube_el_catalogo_a_triggui_content(self):
+        self.assertNotIn('if [ "${{ inputs.modo_prueba }}" = "false" ]', self.texto)
+        self.assertIn('if [ "${{ inputs.modo_prueba }}" != "true" ]', self.generar)
+
+    def test_consumir_comprueba_antes_de_consumir_y_lee_como_el_script(self):
+        pasos = [p.get("name", "") for p in self.yml["jobs"]["consumir"]["steps"]]
+        i = pasos.index("🔎 ¿El libro ya está en su catálogo?")
+        self.assertLess(i, pasos.index("🎬 Consumir linea y dejar acta"))
+        run = self.yml["jobs"]["consumir"]["steps"][i]["run"]
+        self.assertIn("scripts/cola-semanal.py --verificar", run)
+        self.assertIn("encoding='utf-8-sig'", self.texto[self.texto.index("\n  consumir:\n"):])
+
+    def test_la_cola_solo_trae_triggui_content_para_kids_y_pasa_la_rama(self):
+        paso = next(p for p in self.yml["jobs"]["cola"]["steps"] if "triggui-content" in p.get("name", ""))
+        self.assertIn(cs.CRON_KIDS, paso["if"])
+        self.assertIn("inputs.catalogo == 'kids'", paso["if"])
+        leer = next(p for p in self.yml["jobs"]["cola"]["steps"] if p.get("id") == "leer")
+        self.assertEqual(leer["env"]["REF"], "${{ github.ref }}")
 
     def test_reconstruir_no_depende_de_la_cola(self):
         i = self.texto.index("\n  reconstruir:\n")
