@@ -13,12 +13,12 @@ Kids: primero la primera línea útil de cola-kids.txt. Si está vacía, el resp
 uno de los primeros títulos de triggui-content/data/libros_master_kids.csv que
 todavía no están en contenido_kids.json ni en su cuarentena. Se turnan por semana
 entre los tres primeros, así un título que falla no detiene a los demás. Ningún
-lunes se queda sin libro Kids. Adultos: solo cola-lunes.txt, como siempre.
+lunes se queda sin libro Kids por un título que falla. Adultos: solo cola-lunes.txt.
 
 Uso (lee el entorno: EVENTO, CRON, MODO, CATALOGO_MANUAL, REF):
   python3 scripts/cola-semanal.py --app . --contenido triggui-content >> "$GITHUB_OUTPUT"
 Comprobar que un libro de la cola ya entró a su catálogo (para el job consumir):
-  python3 scripts/cola-semanal.py --verificar --catalogo kids --libro "Título | Autor" --contenido triggui-content
+  python3 scripts/cola-semanal.py --verificar --catalogo kids --libro "Título | Autor" --slug "slug" --contenido triggui-content
 """
 import argparse
 import csv
@@ -103,9 +103,10 @@ def titulos_de(ruta):
     return vistos
 
 
-def semana_iso(hoy=None):
+def semana_del(hoy=None):
+    """Un contador de semanas que no se reinicia con el año (así el turno no se repite en enero)."""
     hoy = hoy or datetime.datetime.now(datetime.timezone.utc).date()
-    return hoy.isocalendar()[1]
+    return hoy.toordinal() // 7
 
 
 def respaldo_kids(raiz_contenido, semana):
@@ -145,7 +146,7 @@ def decidir(evento, cron, modo, catalogo_manual, raiz_app, raiz_contenido, ref="
         libro = primera_linea_util(os.path.join(raiz_app, COLA_KIDS))
         origen = "cola" if libro else ""
         if not libro:
-            libro = respaldo_kids(raiz_contenido, semana_iso() if semana is None else semana)
+            libro = respaldo_kids(raiz_contenido, semana_del() if semana is None else semana)
             origen = "catalogo" if libro else ""
     else:
         libro = primera_linea_util(os.path.join(raiz_app, COLA_ADULTOS))
@@ -159,14 +160,41 @@ def decidir(evento, cron, modo, catalogo_manual, raiz_app, raiz_contenido, ref="
             "mensaje": f"🎬 Próximo libro ({catalogo}), {de_donde}: {libro}"}
 
 
-def ya_entro(libro, catalogo, raiz_contenido):
-    """¿El título de la cola ya está en su catálogo? Acepta el título corto o el largo (con subtítulo)."""
+def slugs_de(ruta):
+    """Los «_slug» de un catálogo (lista, o un dict con «libros»)."""
+    try:
+        with open(ruta, encoding="utf-8-sig") as f:
+            datos = json.load(f)
+    except (OSError, ValueError):
+        return set()
+    libros = datos.get("libros", []) if isinstance(datos, dict) else datos
+    return {str(l.get("_slug")).strip() for l in (libros if isinstance(libros, list) else [])
+            if isinstance(l, dict) and l.get("_slug")}
+
+
+def _prefijo_suficiente(t):
+    """Un título corto solo vale como prefijo si no es casi nada: dos palabras o al menos ocho letras."""
+    return len(t.split()) >= 2 or len(t) >= 8
+
+
+def ya_entro(libro, catalogo, raiz_contenido, slug=""):
+    """¿El libro ya está en su catálogo?
+
+    Con «slug» (el que guardó el horno en esta corrida) la prueba es exacta: ese «_slug» está en el
+    catálogo. Sin él, por título: igual, o uno empieza con el otro (título corto o con subtítulo)."""
+    archivo = os.path.join(raiz_contenido, CONTENIDO_KIDS if catalogo == "kids" else CONTENIDO_ADULTOS)
+    slug = str(slug or "").strip()
+    if slug:
+        return slug in slugs_de(archivo)
     buscado = normalizar(str(libro or "").split(" | ")[0])
     if not buscado:
         return False
-    archivo = CONTENIDO_KIDS if catalogo == "kids" else CONTENIDO_ADULTOS
-    for t in titulos_de(os.path.join(raiz_contenido, archivo)):
-        if t == buscado or t.startswith(buscado + " ") or buscado.startswith(t + " "):
+    for t in titulos_de(archivo):
+        if t == buscado:
+            return True
+        if t.startswith(buscado + " ") and _prefijo_suficiente(buscado):
+            return True
+        if buscado.startswith(t + " ") and _prefijo_suficiente(t):
             return True
     return False
 
@@ -178,10 +206,12 @@ def main(argv=None):
     p.add_argument("--verificar", action="store_true", help="solo comprobar que --libro ya entró a su catálogo")
     p.add_argument("--catalogo", default="adulto")
     p.add_argument("--libro", default="")
+    p.add_argument("--slug", default="", help="el «_slug» que guardó el horno en esta corrida")
     a = p.parse_args(argv)
     if a.verificar:
-        ok = ya_entro(a.libro, a.catalogo, a.contenido)
-        print(("✅ Ya está en el catálogo: " if ok else "🔴 No está en el catálogo: ") + a.libro, file=sys.stderr)
+        ok = ya_entro(a.libro, a.catalogo, a.contenido, slug=a.slug)
+        que = f"{a.libro} (slug {a.slug})" if a.slug else a.libro
+        print(("✅ Ya está en el catálogo: " if ok else "🔴 No está en el catálogo: ") + que, file=sys.stderr)
         return 0 if ok else 1
     semana = os.environ.get("SEMANA")
     r = decidir(os.environ.get("EVENTO", ""), os.environ.get("CRON", ""),

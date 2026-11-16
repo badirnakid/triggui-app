@@ -140,9 +140,11 @@ class Cola(Fixture):
         self.assertEqual({self.decidir(semana=n)["libro"] for n in range(5)},
                          {"Charlie y la fábrica de chocolate, edición especial | Roald Dahl"})
 
-    def test_la_semana_por_defecto_es_la_iso(self):
+    def test_la_semana_no_se_reinicia_con_el_año(self):
         import datetime
-        self.assertEqual(cs.semana_iso(datetime.date(2026, 11, 23)), 48)
+        a, b = cs.semana_del(datetime.date(2026, 12, 28)), cs.semana_del(datetime.date(2027, 1, 4))
+        self.assertEqual(b - a, 1)
+        self.assertEqual(cs.semana_del(datetime.date(2026, 11, 23)) - cs.semana_del(datetime.date(2026, 11, 16)), 1)
 
     def test_el_modo_cola_fuera_de_main_no_hornea(self):
         r = self.decidir(evento="workflow_dispatch", cron="", modo="🎬 Hornear la cola ahora", catalogo="kids", ref="refs/heads/kids-semanal")
@@ -158,6 +160,13 @@ class Cola(Fixture):
         self.assertFalse(cs.ya_entro("Reglas para vivir | Alguien", "adulto", self.con))   # solo cuenta desde el inicio del título
         self.assertFalse(cs.ya_entro("Matilda | Roald Dahl", "kids", self.con))
         self.assertFalse(cs.ya_entro("", "kids", self.con))
+        self.assertFalse(cs.ya_entro("El | X", "kids", self.con))   # un prefijo de casi nada no cuenta
+
+    def test_ya_entro_con_slug_es_exacto(self):
+        escribir(os.path.join(self.con, "contenido_kids.json"),
+                 json.dumps({"libros": [{"titulo": "A través del espejo", "_slug": "a-traves-del-espejo"}]}))
+        self.assertTrue(cs.ya_entro("Doce cosas | X", "kids", self.con, slug="a-traves-del-espejo"))
+        self.assertFalse(cs.ya_entro("A través del espejo | Lewis Carroll", "kids", self.con, slug="otro-slug"))
 
     def test_verificar_sale_con_cero_o_uno(self):
         err = io.StringIO()
@@ -242,6 +251,14 @@ class Workflow(unittest.TestCase):
         self.assertIn("inputs.catalogo == 'kids'", paso["if"])
         leer = next(p for p in self.yml["jobs"]["cola"]["steps"] if p.get("id") == "leer")
         self.assertEqual(leer["env"]["REF"], "${{ github.ref }}")
+
+    def test_generar_entrega_el_slug_y_consumir_lo_verifica(self):
+        self.assertEqual(self.yml["jobs"]["generar"]["outputs"]["slug"], "${{ steps.guardado.outputs.slug }}")
+        guardado = next(p for p in self.yml["jobs"]["generar"]["steps"] if p.get("id") == "guardado")
+        self.assertIn("/tmp/triggui-committed.flag", guardado["run"])
+        paso = next(p for p in self.yml["jobs"]["consumir"]["steps"] if p.get("name") == "🔎 ¿El libro ya está en su catálogo?")
+        self.assertEqual(paso["env"]["SLUG"], "${{ needs.generar.outputs.slug }}")
+        self.assertIn('--slug "$SLUG"', paso["run"])
 
     def test_reconstruir_no_depende_de_la_cola(self):
         i = self.texto.index("\n  reconstruir:\n")

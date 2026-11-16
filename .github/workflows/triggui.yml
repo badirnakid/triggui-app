@@ -241,6 +241,9 @@ jobs:
   generar:
     runs-on: ubuntu-latest
     needs: [cola]
+    outputs:
+      # 🔖 C477: el «_slug» del libro que entró al catálogo en esta corrida (vacío si no entró ninguno)
+      slug: ${{ steps.guardado.outputs.slug }}
     # 🔁 El modo reconstruir NO usa este pipeline (no LLM); lo maneja el job `reconstruir`.
     if: ${{ !contains(inputs.modo, '🔁') && ((github.event_name != 'schedule' && !contains(inputs.modo, '🎬')) || needs.cola.outputs.hay == 'true') }}
     timeout-minutes: 180
@@ -1571,6 +1574,20 @@ jobs:
       # ║  FASE 10 — Summary (BLINDADO)                                     ║
       # ╚══════════════════════════════════════════════════════════════════╝
 
+      - name: 🔖 El libro que entró (para consumir la cola)
+        id: guardado
+        shell: bash
+        run: |
+          # Solo cuenta si el motor de verdad lo guardó (/tmp/triggui-committed.flag); el slug es el mismo «_slug» del catálogo.
+          if [ -f /tmp/triggui-committed.flag ] && [ -f /tmp/triggui-slug.txt ]; then
+            SLUG=$(tr -cd 'a-z0-9-' < /tmp/triggui-slug.txt | head -c 160)
+            echo "slug=${SLUG}" >> "$GITHUB_OUTPUT"
+            echo "🔖 Entró al catálogo: ${SLUG}"
+          else
+            echo "slug=" >> "$GITHUB_OUTPUT"
+            echo "🟡 Ningún libro entró al catálogo en esta corrida"
+          fi
+
       - name: 📋 Summary
         if: always()
         shell: bash
@@ -1815,10 +1832,12 @@ jobs:
         env:
           LIBRO: ${{ needs.cola.outputs.libro }}
           CATALOGO: ${{ needs.cola.outputs.catalogo }}
+          SLUG: ${{ needs.generar.outputs.slug }}
         run: |
           set -euo pipefail
-          # Comprobado, no supuesto: si el libro no entró a contenido(_kids).json, la cola no se consume y el job queda en rojo.
-          python3 scripts/cola-semanal.py --verificar --catalogo "$CATALOGO" --libro "$LIBRO" --contenido triggui-content
+          # Comprobado, no supuesto: el «_slug» que guardó el horno está en contenido(_kids).json de triggui-content.
+          # Si no entró, la cola no se consume y el job queda en rojo.
+          python3 scripts/cola-semanal.py --verificar --catalogo "$CATALOGO" --libro "$LIBRO" --slug "$SLUG" --contenido triggui-content
       - name: 🎬 Consumir linea y dejar acta
         shell: bash
         env:
