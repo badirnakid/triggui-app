@@ -14,6 +14,13 @@
  *   · Si los elegibles pasan de WA_TOPE (60 si falta), no manda a nadie y avisa por correo.
  *   · Nunca dos veces la misma edición al mismo número (hoja «WA envíos»).
  *   · Un error de cuenta, de token, de plantilla o de cobro detiene el envío; uno de una persona, no.
+ *   · El límite de Meta (personas distintas a las que el negocio escribe primero en 24 horas, del portafolio):
+ *     antes de mandar se lee el escalón del número y se usa el 90 %; lo que no cupo sigue al día siguiente
+ *     (waContinuarEnvio, una sola vez por día, hasta 6 días y solo con la misma edición), sin repetir a nadie.
+ *
+ * La bienvenida (plantilla de utilidad «triggui_bienvenida», sin variables): cuando alguien marca la casilla
+ * de WhatsApp en el formulario de triggui.com, el alta escribe «sí AAAA-MM-DD» en la columna y le manda la
+ * bienvenida, una sola vez por número. Sale solo si además WA_BIENVENIDA dice «si» (cuando Meta la aprobó).
  *
  * Propiedades del script (Configuración del proyecto › Propiedades del script; nunca en el código):
  *   WA_TOKEN        token del usuario del sistema con whatsapp_business_messaging
@@ -22,6 +29,7 @@
  *   WA_TOPE         máximo de personas por lunes (60 si falta)
  *   WA_PRUEBA_TEL   tu número con lada (52…), para waProbarConmigo()
  *   WA_PUENTE_CLAVE la misma clave que tiene triggui.com/api/wa en Vercel (32 caracteres o más)
+ *   WA_BIENVENIDA   «si» para mandar la bienvenida del formulario (después de que Meta apruebe la plantilla)
  *   Para waCrearPlantillas(): WA_WABA_ID y WA_APP_ID.
  *   Opcionales: WA_VERSION (v26.0) · WA_IDIOMA_ES (es_MX) · WA_IDIOMA_EN (en_US) · WA_HORA (9)
  *
@@ -43,6 +51,22 @@ const WA_ENC_ENVIOS = ["Fecha", "Edición", "Teléfono", "Nombre", "Idioma", "Ca
 const WA_ENC_EVENTOS = ["Fecha", "Tipo", "wamid", "Teléfono", "Valor", "Detalle"];
 const WA_PLANTILLA_ADULTOS = "triggui_lunes";
 const WA_PLANTILLA_NINOS = "triggui_lunes_ninos";
+const WA_PLANTILLA_BIENVENIDA = "triggui_bienvenida";
+const WA_EDICION_BIENVENIDA = "bienvenida";        // así se anota en «WA envíos» (columna Edición)
+const WA_USO_DEL_LIMITE = 0.9;                     // del límite diario de Meta se usa el 90 %: el resto, para bienvenidas
+const WA_DIAS_DE_CONTINUACION = 6;                 // lo que no cupo sigue al día siguiente, hasta 6 días después
+const WA_ESCALONES = { TIER_50: 50, TIER_250: 250, TIER_1K: 1000, TIER_2K: 2000, TIER_10K: 10000,
+  TIER_100K: 100000, TIER_UNLIMITED: Infinity };
+
+/* La bienvenida del formulario: utilidad, sin variables, sin imagen ni botones (la ÚNICA fuente de sus textos). */
+const WA_BIENVENIDAS = [
+  { nombre: WA_PLANTILLA_BIENVENIDA, idioma: "es",
+    cuerpo: "Listo: ya estás en Triggui por WhatsApp. Cada lunes te llega aquí tu libro de la semana.",
+    pie: "Responde BAJA si ya no quieres recibirlo" },
+  { nombre: WA_PLANTILLA_BIENVENIDA, idioma: "en",
+    cuerpo: "All set: you're on Triggui's WhatsApp. Every Monday your book of the week arrives here.",
+    pie: "Reply STOP if you no longer want it" }
+];
 
 /* Las cuatro plantillas: la ÚNICA fuente de sus textos (waCrearPlantillas las manda a Meta así). */
 const WA_PLANTILLAS = [
@@ -92,20 +116,29 @@ function waInstalarLunes() {
   return { ok: true, hora: h };
 }
 
-/** Quita los dos activadores. */
+/** Quita los dos activadores (y la continuación, si había una programada). */
 function waQuitarLunes() {
   let n = 0;
   ScriptApp.getProjectTriggers().forEach(function (t) {
     const f = t.getHandlerFunction();
-    if (f === "waEnviarLunes" || f === "waResumenDelLunes") { ScriptApp.deleteTrigger(t); n++; }
+    if (f === "waEnviarLunes" || f === "waResumenDelLunes" || f === "waContinuarEnvio") { ScriptApp.deleteTrigger(t); n++; }
   });
+  try { PropertiesService.getScriptProperties().deleteProperty("WA_CONTINUACION"); } catch (e) {}
   Logger.log("Quité " + n + " activador(es).");
   return { ok: true, quitados: n };
 }
 
+/** Lo corre el activador de un día después cuando el límite de Meta no alcanzó: sigue con quienes faltan. */
+function waContinuarEnvio() {
+  ScriptApp.getProjectTriggers().forEach(function (t) {
+    if (t.getHandlerFunction() === "waContinuarEnvio") ScriptApp.deleteTrigger(t);
+  });
+  return waCorrer_(false, true);
+}
+
 /* ─────────────────────────────── el envío ─────────────────────────────── */
 
-function waCorrer_(ensayo) {
+function waCorrer_(ensayo, continuacion) {
   const cfg = waConfig_();
   if (!ensayo) {
     if (!cfg.activo) return waAviso_("WA_ACTIVO no dice «si»: no mandé nada. Corre waEnsayo() para ver qué saldría.", true);
@@ -121,7 +154,8 @@ function waCorrer_(ensayo) {
     const L = waPersonas_();
     const personas = L.personas;
     resumen = { ensayo: ensayo, personas: personas.length, filtros: L.resumen, porIdioma: { es: 0, en: 0 },
-      porCatalogo: { adultos: 0, kids: 0 }, aceptados: 0, yaTenian: 0, errores: 0, detenido: "", muestra: null };
+      porCatalogo: { adultos: 0, kids: 0 }, aceptados: 0, yaTenian: 0, errores: 0, detenido: "", muestra: null,
+      pendientes: 0, limite: null, continua: false };
     if (personas.length > cfg.tope) {
       return waAviso_("Son " + personas.length + " personas con «sí» y el tope es " + cfg.tope +
         ": no mandé a nadie. Revisa la columna WhatsApp o sube WA_TOPE.", !ensayo);
@@ -142,6 +176,15 @@ function waCorrer_(ensayo) {
       try { return UrlFetchApp.fetch(u, { muteHttpExceptions: true }).getResponseCode() !== 200; } catch (e) { return true; }
     });
     if (faltan.length) return waAviso_("No encuentro la imagen de la edición (" + faltan.join(", ") + "): no mandé nada.", !ensayo);
+    const slugs = Object.keys(armados.reduce(function (s, a) { s[a.libro._slug] = true; return s; }, {})).sort();
+    if (continuacion) {
+      const motivo = waContinuacionVale_(slugs);
+      if (motivo) { waOlvidarContinuacion_(); return waAviso_("No seguí el envío: " + motivo, true); }
+    }
+    if (cfg.token && cfg.numeroId) {
+      resumen.limite = waLimiteMeta_(cfg);
+      resumen.limite.presupuesto = isFinite(resumen.limite.limite) ? Math.floor(resumen.limite.limite * WA_USO_DEL_LIMITE) : null;
+    }
     if (ensayo) {
       const a = armados[0];
       const copia = JSON.parse(JSON.stringify(a.cuerpo));
@@ -150,6 +193,7 @@ function waCorrer_(ensayo) {
       Logger.log("Ensayo: " + JSON.stringify(resumen));
       return resumen;
     }
+    const presupuesto = resumen.limite.presupuesto === null ? Infinity : resumen.limite.presupuesto;
     const hoja = waHoja_(WA_HOJA_ENVIOS, WA_ENC_ENVIOS);
     const ya = {};
     for (let i = 0; i < armados.length; i++) {
@@ -157,6 +201,7 @@ function waCorrer_(ensayo) {
       const slug = a.libro._slug;
       if (!ya[slug]) ya[slug] = waYaEnviados_(hoja, slug);
       if (ya[slug][a.p.clave]) { resumen.yaTenian++; continue; }
+      if (resumen.aceptados >= presupuesto) { resumen.pendientes++; continue; }   // no cupo hoy: sigue mañana
       const envio = Object.assign({}, a.cuerpo);
       delete envio._lang;
       const r = waMandar_(cfg, envio);
@@ -169,10 +214,17 @@ function waCorrer_(ensayo) {
       }
       Utilities.sleep(WA_PAUSA_MS);
     }
-    waCorreo_("Triggui WhatsApp: " + resumen.aceptados + " de " + resumen.personas + " este lunes",
+    if (resumen.pendientes > 0 && !resumen.detenido) resumen.continua = waProgramarContinuacion_(slugs, !!continuacion);
+    else waOlvidarContinuacion_();
+    const lim = resumen.limite;
+    waCorreo_("Triggui WhatsApp: " + resumen.aceptados + " de " + resumen.personas + (continuacion ? " (continuación)" : " este lunes"),
       "Salieron: " + resumen.aceptados + " de " + resumen.personas + "\n" +
       "Ya la tenían de antes: " + resumen.yaTenian + "\n" +
-      "Errores: " + resumen.errores + (resumen.detenido ? "\nSe detuvo: " + resumen.detenido : "") + "\n\n" +
+      "Errores: " + resumen.errores + (resumen.detenido ? "\nSe detuvo: " + resumen.detenido : "") + "\n" +
+      "Límite de Meta hoy: " + (isFinite(lim.limite) ? lim.limite + " (se usa " + lim.presupuesto + ")" : "ilimitado") +
+      (lim.leido ? "" : ", el más bajo, porque no se pudo leer el escalón") + "\n" +
+      (resumen.pendientes ? "No cupieron hoy: " + resumen.pendientes + (resumen.continua ? ". Siguen mañana a esta hora, sin repetir a nadie." :
+        ". No pude programar la continuación: corre waEnviarLunes() mañana.") + "\n" : "") + "\n" +
       "Español: " + resumen.porIdioma.es + " · inglés: " + resumen.porIdioma.en + " · adultos: " + resumen.porCatalogo.adultos +
       " · Niños: " + resumen.porCatalogo.kids + "\nEl detalle está en la hoja «" + WA_HOJA_ENVIOS + "». A las 21 llega el resumen de entregados y leídos.");
     Logger.log("Envío: " + JSON.stringify(resumen));
@@ -312,9 +364,11 @@ function waResumenDelLunes() {
   const hoy = Utilities.formatDate(new Date(), tz, "yyyy-MM-dd");
   const deHoy = function (f) { return f instanceof Date && Utilities.formatDate(f, tz, "yyyy-MM-dd") === hoy; };
   const wamids = {};
-  let enviados = 0;
+  let enviados = 0, bienvenidas = 0;
   envios.getDataRange().getValues().slice(1).forEach(function (f) {
-    if (deHoy(f[0]) && String(f[7]) === "aceptado" && f[6]) { wamids[String(f[6])] = "aceptado"; enviados++; }
+    if (!deHoy(f[0]) || String(f[7]) !== "aceptado" || !f[6]) return;
+    if (String(f[1]) === WA_EDICION_BIENVENIDA) { bienvenidas++; return; }   // las del formulario no son el envío del lunes
+    wamids[String(f[6])] = "aceptado"; enviados++;
   });
   const orden = { aceptado: 0, sent: 1, delivered: 2, read: 3, failed: 4 };
   const botones = { tarjeta: 0, melodia: 0, video: 0 };
@@ -332,13 +386,14 @@ function waResumenDelLunes() {
   const cuenta = { aceptado: 0, sent: 0, delivered: 0, read: 0, failed: 0 };
   Object.keys(wamids).forEach(function (k) { cuenta[wamids[k]]++; });
   const r = { enviados: enviados, entregados: cuenta.delivered + cuenta.read, leidos: cuenta.read, fallidos: cuenta.failed,
-    sinNoticia: cuenta.aceptado + cuenta.sent, botones: botones, bajas: bajas };
+    sinNoticia: cuenta.aceptado + cuenta.sent, botones: botones, bajas: bajas, bienvenidas: bienvenidas };
   if (!enviados) { Logger.log("Hoy no salió nada: no mando resumen."); return r; }
   waCorreo_("Triggui WhatsApp: el resumen del lunes",
     "Salieron: " + r.enviados + "\nEntregados: " + r.entregados + "\nLeídos: " + r.leidos +
     " (solo cuentan quienes tienen activado el aviso de leído)\nFallidos: " + r.fallidos + "\nSin noticia todavía: " + r.sinNoticia +
     "\n\nBotones: tarjeta " + botones.tarjeta + " · melodía " + botones.melodia + " · video " + botones.video +
-    "\nBajas: " + bajas + "\n\nLas visitas a la edición se ven en Analytics: fuente whatsapp, contenido lunes.");
+    "\nBajas: " + bajas + "\nBienvenidas del formulario, hoy: " + bienvenidas +
+    "\n\nLas visitas a la edición se ven en Analytics: fuente whatsapp, contenido lunes.");
   Logger.log("Resumen: " + JSON.stringify(r));
   return r;
 }
@@ -395,6 +450,115 @@ function waMarcarBaja_(clave, motivo) {
   return n;
 }
 
+/* ─────────────────────────────── la bienvenida del formulario ─────────────────────────────── */
+
+/** El alta del formulario con la casilla de WhatsApp marcada. La llama doPost con el candado puesto.
+ *  telFila: el teléfono que ya tiene la fila (vacío si no tiene). telForm: el que escribió la persona.
+ *  Si los dos son el mismo número (o la fila no tenía), escribe «sí AAAA-MM-DD» en la columna WhatsApp
+ *  (la crea en la primera columna libre si falta; un «sí kids» se respeta) y manda la bienvenida.
+ *  Con otro número en la fila no cambia nada: el formulario no reemplaza el teléfono de nadie.
+ *  recibe: si la fila recibe los lunes (sin baja del correo ni prueba vencida); si no, se guarda el permiso
+ *  pero no se manda la bienvenida, que promete el libro de cada lunes. Nunca truena. */
+function waPermisoFormulario_(sheet, rowIdx, telFila, telForm, lang, recibe) {
+  try {
+    const tel = waTel_(telForm);
+    if (!tel) return { permiso: false, motivo: "tel" };
+    const crudoFila = String(telFila == null ? "" : telFila).replace(/\D/g, "");
+    if (crudoFila && waClaveTel_(telFila) !== waClaveTel_(tel)) return { permiso: false, motivo: "otro_tel" };
+    if (!crudoFila) sheet.getRange(rowIdx, 4).setValue("'" + String(telForm).trim());
+    const ultima = Math.max(1, sheet.getLastColumn());
+    let col = waColumna_(sheet.getRange(1, 1, 1, ultima).getValues()[0], WA_COL_PERMISO);
+    if (!col) { col = ultima + 1; sheet.getRange(1, col).setValue("WhatsApp"); }
+    const actual = waLeerPermiso_(sheet.getRange(rowIdx, col).getValue());
+    if (!actual.si) sheet.getRange(rowIdx, col).setValue("sí " + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd"));
+    return { permiso: true, motivo: actual.si ? "ya_tenia" : "nuevo",
+      bienvenida: recibe ? waBienvenida_(tel, lang) : { ok: false, motivo: "no_recibe_los_lunes" } };
+  } catch (e) {
+    Logger.log("Permiso de WhatsApp del formulario: " + e.message);
+    return { permiso: false, motivo: "error" };
+  }
+}
+
+/** La bienvenida por WhatsApp (plantilla de utilidad, sin variables), una sola vez por número.
+ *  Solo si WA_ACTIVO y WA_BIENVENIDA dicen «si». Se anota en «WA envíos» con la edición «bienvenida». Nunca truena. */
+function waBienvenida_(telefono, lang) {
+  try {
+    const cfg = waConfig_();
+    if (!cfg.activo || !cfg.bienvenida) return { ok: false, motivo: "apagada" };
+    if (!cfg.token || !cfg.numeroId) return { ok: false, motivo: "sin_token" };
+    const tel = waTel_(telefono);
+    if (!tel) return { ok: false, motivo: "tel" };
+    const clave = waClaveTel_(tel);
+    const hoja = waHoja_(WA_HOJA_ENVIOS, WA_ENC_ENVIOS);
+    if (waYaEnviados_(hoja, WA_EDICION_BIENVENIDA)[clave]) return { ok: true, motivo: "ya_la_tenia" };
+    const idioma = lang === "en" ? "en" : "es";
+    const r = waMandar_(cfg, { messaging_product: "whatsapp", recipient_type: "individual", to: tel, type: "template",
+      template: { name: WA_PLANTILLA_BIENVENIDA, language: { code: cfg.idioma[idioma] } } });
+    hoja.appendRow([new Date(), WA_EDICION_BIENVENIDA, "'" + tel, "", idioma, WA_EDICION_BIENVENIDA,
+      r.ok ? r.wamid : "", r.ok ? "aceptado" : "error " + r.codigo, r.ok ? "" : r.detalle]);
+    return r.ok ? { ok: true, motivo: "mandada" } : { ok: false, motivo: "meta", codigo: r.codigo };
+  } catch (e) {
+    Logger.log("Bienvenida por WhatsApp: " + e.message);
+    return { ok: false, motivo: "error" };
+  }
+}
+
+/* ─────────────────────────────── el límite de Meta y la continuación ─────────────────────────────── */
+
+/** El escalón del número (desde octubre de 2025 es el del portafolio: lo comparten todos sus números).
+ *  Si no se puede leer, el más bajo (250): mejor que salgan menos hoy que fallar a media lista. */
+function waLimiteMeta_(cfg) {
+  try {
+    const r = UrlFetchApp.fetch("https://graph.facebook.com/" + cfg.version + "/" + encodeURIComponent(cfg.numeroId) +
+      "?fields=messaging_limit_tier", { muteHttpExceptions: true, headers: { Authorization: "Bearer " + cfg.token } });
+    const j = JSON.parse(r.getContentText("UTF-8") || "{}");
+    const escalon = String(j.messaging_limit_tier || "");
+    if (r.getResponseCode() === 200 && WA_ESCALONES[escalon] !== undefined) return { limite: WA_ESCALONES[escalon], escalon: escalon, leido: true };
+  } catch (e) {}
+  return { limite: WA_ESCALONES.TIER_250, escalon: "TIER_250", leido: false };
+}
+
+/** Guarda qué edición se está continuando (y desde cuándo) y programa la vuelta de mañana. */
+function waProgramarContinuacion_(slugs, yaEraContinuacion) {
+  try {
+    const props = PropertiesService.getScriptProperties();
+    let estado = null;
+    try { estado = JSON.parse(props.getProperty("WA_CONTINUACION") || "null"); } catch (e) {}
+    if (!yaEraContinuacion || !estado || String(estado.slugs) !== String(slugs)) {
+      estado = { inicio: new Date().toISOString(), slugs: slugs };
+      props.setProperty("WA_CONTINUACION", JSON.stringify(estado));
+    }
+    ScriptApp.getProjectTriggers().forEach(function (t) {
+      if (t.getHandlerFunction() === "waContinuarEnvio") ScriptApp.deleteTrigger(t);
+    });
+    ScriptApp.newTrigger("waContinuarEnvio").timeBased().after(24 * 60 * 60 * 1000).create();
+    return true;
+  } catch (e) {
+    Logger.log("No pude programar la continuación: " + e.message);
+    return false;
+  }
+}
+
+/** Vacío si la continuación vale; si no, por qué no: otra edición, o ya pasaron los 6 días. */
+function waContinuacionVale_(slugs) {
+  let estado = null;
+  try { estado = JSON.parse(PropertiesService.getScriptProperties().getProperty("WA_CONTINUACION") || "null"); } catch (e) {}
+  if (!estado || !estado.inicio || !Array.isArray(estado.slugs)) return "no encontré qué edición se estaba continuando.";
+  if (String(estado.slugs) !== String(slugs)) return "la edición cambió desde el lunes (" + estado.slugs.join(", ") + " → " + slugs.join(", ") + "); la nueva sale en el envío normal.";
+  const dias = (Date.now() - new Date(estado.inicio).getTime()) / (24 * 60 * 60 * 1000);
+  if (!(dias <= WA_DIAS_DE_CONTINUACION + 0.5)) return "ya pasaron " + WA_DIAS_DE_CONTINUACION + " días desde el primer envío de esta edición.";
+  return "";
+}
+
+function waOlvidarContinuacion_() {
+  try {
+    PropertiesService.getScriptProperties().deleteProperty("WA_CONTINUACION");
+    ScriptApp.getProjectTriggers().forEach(function (t) {
+      if (t.getHandlerFunction() === "waContinuarEnvio") ScriptApp.deleteTrigger(t);
+    });
+  } catch (e) { Logger.log("No pude limpiar la continuación: " + e.message); }
+}
+
 /* ─────────────────────────────── las plantillas en Meta ─────────────────────────────── */
 
 /** Manda las cuatro plantillas a revisión en la cuenta WA_WABA_ID (la de prueba o la de Triggui).
@@ -412,6 +576,17 @@ function waCrearPlantillas() {
     if (!handles[og]) handles[og] = waSubirMuestra_(cfg, og);
     const cuerpoMuestra = muestra.template.components[1].parameters.map(function (x) { return x.text; });
     const def2 = waDefinicionPlantilla_(def, cfg, handles[og], cuerpoMuestra);
+    const resp = UrlFetchApp.fetch("https://graph.facebook.com/" + cfg.version + "/" + encodeURIComponent(cfg.wabaId) + "/message_templates", {
+      method: "post", contentType: "application/json", muteHttpExceptions: true,
+      headers: { Authorization: "Bearer " + cfg.token }, payload: JSON.stringify(def2) });
+    let j = {};
+    try { j = JSON.parse(resp.getContentText("UTF-8") || "{}"); } catch (e) {}
+    resultados.push({ plantilla: def.nombre, idioma: def2.language, http: resp.getResponseCode(),
+      id: j.id || "", estado: j.status || "", error: (j.error && j.error.message) || "" });
+  });
+  WA_BIENVENIDAS.forEach(function (def) {
+    const def2 = { name: def.nombre, language: cfg.idioma[def.idioma], category: "UTILITY",
+      components: [{ type: "BODY", text: def.cuerpo }, { type: "FOOTER", text: def.pie }] };
     const resp = UrlFetchApp.fetch("https://graph.facebook.com/" + cfg.version + "/" + encodeURIComponent(cfg.wabaId) + "/message_templates", {
       method: "post", contentType: "application/json", muteHttpExceptions: true,
       headers: { Authorization: "Bearer " + cfg.token }, payload: JSON.stringify(def2) });
@@ -470,6 +645,7 @@ function waConfig_() {
     numeroId: waProp_("WA_NUMERO_ID", ""),
     version: /^v\d{2}\.\d$/.test(waProp_("WA_VERSION", "")) ? waProp_("WA_VERSION", "") : WA_VERSION_DEF,
     activo: waSinAcentos_(waProp_("WA_ACTIVO", "")).toLowerCase() === "si",
+    bienvenida: waSinAcentos_(waProp_("WA_BIENVENIDA", "")).toLowerCase() === "si",
     tope: (isFinite(tope) && tope > 0) ? tope : WA_TOPE_DEF,
     idioma: { es: waProp_("WA_IDIOMA_ES", "es_MX"), en: waProp_("WA_IDIOMA_EN", "en_US") },
     pruebaTel: waProp_("WA_PRUEBA_TEL", ""),

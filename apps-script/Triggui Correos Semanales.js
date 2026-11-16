@@ -2936,6 +2936,12 @@ function doPost(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
 
+    // ─── Stripe: el puente desde triggui.com/api/stripe (altas, renovaciones, bajas y cobros fallidos; con su clave) ───
+    if (action === "stripe_puente") {
+      return ContentService.createTextOutput(JSON.stringify(stripePuente_(params)))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
     // ─── RUTA 1: LIKE (App móvil) — preservada exactamente del captación viejo ───
     if (action === "like") {
       const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -3006,10 +3012,27 @@ function doPost(e) {
     // implica consentimiento renovado. El histórico se preserva en col O
     // para trazabilidad y futura detección de abuso de ciclos.
     const data = sheetLeads.getDataRange().getValues();
+    // 💬 La casilla «Quiero recibirlo también por WhatsApp» (sin marcar por defecto): permiso explícito para esta fila.
+    const quiereWa = params.wa_ok === "1";
+    const langForm = params.lang === "en" ? "en" : "es";
+    // Se aplica al final de cada camino, con el estado ya escrito: la bienvenida solo sale si la fila recibe los lunes
+    // (la misma elegibilidad de waPersonas_: sin baja del correo y sin prueba vencida). El permiso se guarda siempre.
+    const aplicarWa = function (fila, telFila, langFila) {
+      if (!quiereWa) return;
+      try {
+        const ahora = sheetLeads.getRange(fila, 1, 1, SENDS_WEEK_COL).getValues()[0];
+        const estado = String(ahora[UNSUBSCRIBE_COL - 1] || "").trim();
+        const recibe = !isRowUnsubscribed(ahora) && !estado.startsWith("SUBSCRIBED_EXPIRED") && !debeMarcarseExpired(ahora);
+        const w = waPermisoFormulario_(sheetLeads, fila, telFila, params.phone || "", langFila, recibe);
+        Logger.log(`💬 doPost lead: WhatsApp en fila ${fila} — ${JSON.stringify(w)}`);
+      } catch (e) { Logger.log("⚠️ doPost lead: WhatsApp — " + e.message); }
+    };
     for (let i = 1; i < data.length; i++) {
       const emailsInRow = parseEmailsFromCell(data[i][2]);
       if (emailsInRow.some(e => e.toLowerCase() === email)) {
         const rowIdx1Based = i + 1;
+        let langFila = "es";
+        try { langFila = leerIdiomaFila(sheetLeads, rowIdx1Based) || "es"; } catch (e) {}
 
         if (isRowUnsubscribed(data[i])) {
           // ─── REACTIVACIÓN AUTOMÁTICA ─────────────────────────────────
@@ -3030,6 +3053,7 @@ function doPost(e) {
             // Cap activo: el usuario recibió hace <7 días. No re-enviar todavía.
             // Col J/M/N permanecen con el envío original (consistente: "ya recibió esa semana")
             Logger.log(`🛑 doPost lead: reactivación CAPPED — "${email}" recibió hace <7d, próximo envío diferido`);
+            aplicarWa(rowIdx1Based, data[i][3], langFila);
             return ContentService.createTextOutput(JSON.stringify({
               result: "reactivated_capped",
               first_name: sanitizarNombre(params.first_name) || ""
@@ -3050,6 +3074,7 @@ function doPost(e) {
           }
 
           // V18j: código específico "reactivated" para frontend
+          aplicarWa(rowIdx1Based, data[i][3], langFila);
           return ContentService.createTextOutput(JSON.stringify({
             result: "reactivated",
             first_name: sanitizarNombre(params.first_name) || ""
@@ -3058,6 +3083,7 @@ function doPost(e) {
 
         // ─── Duplicado regular (activo): silencioso ─────────────────────
         Logger.log(`🔇 doPost lead: duplicado SILENCIOSO — "${email}" ya en fila ${rowIdx1Based}`);
+        aplicarWa(rowIdx1Based, data[i][3], langFila);
         // V18j: código específico "already_active" para frontend
         return ContentService.createTextOutput(JSON.stringify({
           result: "already_active",
@@ -3097,6 +3123,12 @@ function doPost(e) {
 
     Logger.log(`✅ doPost lead: nuevo SUBSCRIBED_TRIAL en fila ${rowIdx} — ${email}`);
 
+    // 🌐 La página en inglés manda lang=en: la fila nace en inglés (la bienvenida, los lunes y el WhatsApp).
+    if (langForm === "en") {
+      try { sheetLeads.getRange(rowIdx, colIdioma(sheetLeads)).setValue("en"); }
+      catch (e) { Logger.log("⚠️ doPost lead: no pude marcar inglés — " + e.message); }
+    }
+
     // V18h: pasar nombre para personalización del email
     const envioResult = enviarTrigguiAUno(email, rowIdx, nombre);
 
@@ -3108,6 +3140,8 @@ function doPost(e) {
       Logger.log(`⚠️ doPost lead: bienvenida NO enviada — ${envioResult.reason}`);
       // No es crítico: el usuario quedó suscrito, el masivo lo cubrirá después
     }
+
+    aplicarWa(rowIdx, phone, langForm);
 
     // V18j: código específico "new" para frontend
     return ContentService.createTextOutput(JSON.stringify({

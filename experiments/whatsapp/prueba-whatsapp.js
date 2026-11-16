@@ -51,14 +51,24 @@ function hojaFalsa(filas) {
   const h = {
     filas: filas.map(function (f) { return f.slice(); }), congeladas: 0,
     getDataRange: function () { return { getValues: function () { return h.filas.map(function (f) { return f.slice(); }); } }; },
-    getRange: function (r, c) {
+    getRange: function (r, c, nr, nc) {
       return {
-        getValue: function () { return (h.filas[r - 1] || [])[c - 1]; },
-        setValue: function (v) { while (h.filas.length < r) h.filas.push([]); h.filas[r - 1][c - 1] = v; }
+        getValue: function () { const v = (h.filas[r - 1] || [])[c - 1]; return v === undefined ? "" : v; },
+        setValue: function (v) { while (h.filas.length < r) h.filas.push([]); h.filas[r - 1][c - 1] = v; },
+        getValues: function () {
+          const out = [];
+          for (let i = 0; i < (nr || 1); i++) {
+            const f = [];
+            for (let j = 0; j < (nc || 1); j++) { const v = (h.filas[r - 1 + i] || [])[c - 1 + j]; f.push(v === undefined ? "" : v); }
+            out.push(f);
+          }
+          return out;
+        }
       };
     },
     appendRow: function (f) { h.filas.push(f.slice()); },
-    getLastColumn: function () { return Math.max.apply(null, h.filas.map(function (f) { return f.length; })); },
+    getLastRow: function () { return h.filas.length; },
+    getLastColumn: function () { return Math.max.apply(null, [0].concat(h.filas.map(function (f) { return f.length; }))); },
     setFrozenRows: function (n) { h.congeladas = n; }
   };
   return h;
@@ -93,7 +103,10 @@ function entorno(opciones) {
     isRowUnsubscribed: function (row) { return String(row[14] || "").toUpperCase().startsWith("UNSUBSCRIBED"); },
     debeMarcarseExpired: function (row) { return row[19] === "vencido"; },
     leerIdiomaFila: function (sheet, rowIdx) { return String(sheet.getRange(rowIdx, 16).getValue() || "").toLowerCase() === "en" ? "en" : "es"; },
-    PropertiesService: { getScriptProperties: function () { return { getProperty: function (k) { return props[k] === undefined ? null : props[k]; } }; } },
+    PropertiesService: { getScriptProperties: function () { return {
+      getProperty: function (k) { return props[k] === undefined ? null : props[k]; },
+      setProperty: function (k, v) { props[k] = String(v); },
+      deleteProperty: function (k) { delete props[k]; } }; } },
     CacheService: { getScriptCache: function () { return { get: function (k) { return cache[k] || null; }, put: function (k, v) { cache[k] = v; }, remove: function (k) { delete cache[k]; } }; } },
     SpreadsheetApp: { getActiveSpreadsheet: function () { return libroHojas; } },
     Utilities: { sleep: function () {}, formatDate: function (d) { return d.toISOString().slice(0, 10); } },
@@ -107,7 +120,8 @@ function entorno(opciones) {
       newTrigger: function (f) {
         const t = { f: f, getHandlerFunction: function () { return f; } };
         const cadena = { timeBased: function () { return cadena; }, onWeekDay: function (d) { t.dia = d; return cadena; },
-          atHour: function (h) { t.hora = h; return cadena; }, create: function () { activadores.push(t); return t; } };
+          atHour: function (h) { t.hora = h; return cadena; }, after: function (ms) { t.despues = ms; return cadena; },
+          create: function () { activadores.push(t); return t; } };
         return cadena;
       }
     },
@@ -118,6 +132,10 @@ function entorno(opciones) {
         if (url === CONTENIDO_URL) return resp(200, JSON.stringify({ libros: [opciones.libroA || LIBRO_A] }));
         if (url === KIDS_URL) return resp(200, JSON.stringify({ libros: [LIBRO_K] }));
         if (/\/messages$/.test(url)) { n++; const r = meta(JSON.parse(o.payload), n); return resp(r.code, JSON.stringify(r.body)); }
+        if (/\?fields=messaging_limit_tier$/.test(url)) {
+          if (!opciones.escalon) throw new Error("sin red");
+          return resp(200, JSON.stringify({ messaging_limit_tier: opciones.escalon, id: "1234567890" }));
+        }
         if (/\/uploads\?/.test(url)) return resp(200, JSON.stringify({ id: "upload:ABC" }));
         if (/\/upload:ABC$/.test(url)) return resp(200, JSON.stringify({ h: "HANDLE1" }));
         if (/\/og(_en)?\.jpg$/.test(url)) {
@@ -404,7 +422,7 @@ prueba("el resumen de la noche junta envíos, estados, botones y bajas de hoy", 
   E.ctx.waPuente_({ clave: C, tipo: "baja", tel: "525522222222" });
   const r = JSON.parse(JSON.stringify(E.ctx.waResumenDelLunes()));
   assert.deepStrictEqual(r, { enviados: 3, entregados: 2, leidos: 1, fallidos: 0, sinNoticia: 1,
-    botones: { tarjeta: 1, melodia: 0, video: 0 }, bajas: 1 });
+    botones: { tarjeta: 1, melodia: 0, video: 0 }, bajas: 1, bienvenidas: 0 });
   assert.ok(/el resumen del lunes/.test(E.correos[E.correos.length - 1].asunto));
   const F = entorno({ props: PROPS_OK });
   F.ctx.waHoja_("WA envíos", ["Fecha"]);
@@ -412,14 +430,20 @@ prueba("el resumen de la noche junta envíos, estados, botones y bajas de hoy", 
   assert.strictEqual(F.correos.length, 0, "si hoy no salió nada, no hay correo");
 });
 
-prueba("las cuatro plantillas a Meta: textos, muestras e imagen subida una vez por imagen", function () {
+prueba("las seis plantillas a Meta: textos, muestras, imagen subida una vez por imagen y la bienvenida de utilidad", function () {
   const E = entorno({ props: Object.assign({}, PROPS_OK, { WA_WABA_ID: "999", WA_APP_ID: "777" }) });
   const r = JSON.parse(JSON.stringify(E.ctx.waCrearPlantillas()));
-  assert.strictEqual(r.length, 4);
-  const altas = E.llamadas.filter(function (l) { return /\/message_templates$/.test(l.url); }).map(function (l) { return JSON.parse(l.o.payload); });
-  assert.deepStrictEqual(altas.map(function (d) { return [d.name, d.language, d.category]; }), [
+  assert.strictEqual(r.length, 6);
+  const todas = E.llamadas.filter(function (l) { return /\/message_templates$/.test(l.url); }).map(function (l) { return JSON.parse(l.o.payload); });
+  assert.deepStrictEqual(todas.map(function (d) { return [d.name, d.language, d.category]; }), [
     ["triggui_lunes", "es_MX", "MARKETING"], ["triggui_lunes", "en_US", "MARKETING"],
-    ["triggui_lunes_ninos", "es_MX", "MARKETING"], ["triggui_lunes_ninos", "en_US", "MARKETING"]]);
+    ["triggui_lunes_ninos", "es_MX", "MARKETING"], ["triggui_lunes_ninos", "en_US", "MARKETING"],
+    ["triggui_bienvenida", "es_MX", "UTILITY"], ["triggui_bienvenida", "en_US", "UTILITY"]]);
+  const bienv = JSON.parse(JSON.stringify(E.run("WA_BIENVENIDAS")));
+  todas.slice(4).forEach(function (d, i) {
+    assert.deepStrictEqual(d.components, [{ type: "BODY", text: bienv[i].cuerpo }, { type: "FOOTER", text: bienv[i].pie }]);
+  });
+  const altas = todas.slice(0, 4);
   const defs = JSON.parse(JSON.stringify(E.run("WA_PLANTILLAS")));
   altas.forEach(function (d, i) {
     assert.deepStrictEqual(d.components[0], { type: "HEADER", format: "IMAGE", example: { header_handle: ["HANDLE1"] } });
@@ -451,6 +475,14 @@ prueba("los textos de las plantillas cumplen las reglas de Meta", function () {
   });
   const cuerpos = defs.map(function (d) { return d.cuerpo + "|" + d.pie; });
   assert.strictEqual(new Set(cuerpos).size, cuerpos.length, "ninguna repite cuerpo y pie");
+  const bienv = JSON.parse(JSON.stringify(E.run("WA_BIENVENIDAS")));
+  assert.deepStrictEqual(bienv.map(function (d) { return d.idioma; }), ["es", "en"]);
+  bienv.forEach(function (d) {
+    assert.ok(!/\{\{/.test(d.cuerpo), "la bienvenida no lleva variables (nunca sale un parámetro vacío)");
+    assert.ok(d.cuerpo.length <= 1024 && d.pie.length <= 60, "largos");
+    assert.ok(!/[—]/.test(d.cuerpo + d.pie), "sin rayas largas");
+    assert.ok(!/https?:\/\//.test(d.cuerpo), "sin ligas: es de utilidad, confirma el alta y no promociona");
+  });
 });
 
 prueba("los activadores: lunes a la hora pedida y a las 21; sin duplicar", function () {
@@ -463,6 +495,139 @@ prueba("los activadores: lunes a la hora pedida y a las 21; sin duplicar", funct
   F.ctx.waInstalarLunes();
   assert.strictEqual(F.activadores[0].hora, 9);
   assert.strictEqual(F.ctx.waQuitarLunes().quitados, 2);
+});
+
+/* ─────────────── el flujo sin intervención (C463): bienvenida, permiso del formulario y límite de Meta ─────────────── */
+
+const HOY = new Date().toISOString().slice(0, 10);
+const mensajes = function (E) { return E.llamadas.filter(function (l) { return /\/messages$/.test(l.url); }); };
+
+prueba("la bienvenida: solo con WA_ACTIVO y WA_BIENVENIDA, una vez por número, sin variables y anotada", function () {
+  const apagada = entorno({ props: PROPS_OK });
+  assert.strictEqual(apagada.ctx.waBienvenida_("+52 55 9999 0000", "es").motivo, "apagada");
+  assert.strictEqual(apagada.llamadas.length, 0);
+  const E = entorno({ props: Object.assign({}, PROPS_OK, { WA_BIENVENIDA: "sí" }) });
+  assert.deepStrictEqual(JSON.parse(JSON.stringify(E.ctx.waBienvenida_("+52 55 9999 0000", "en"))), { ok: true, motivo: "mandada" });
+  assert.deepStrictEqual(mensajes(E).map(function (l) { return JSON.parse(l.o.payload); }), [{ messaging_product: "whatsapp",
+    recipient_type: "individual", to: "525599990000", type: "template", template: { name: "triggui_bienvenida", language: { code: "en_US" } } }]);
+  const f = E.hojas["WA envíos"].filas[1];
+  assert.deepStrictEqual([f[1], f[2], f[4], f[5], f[7]], ["bienvenida", "'525599990000", "en", "bienvenida", "aceptado"]);
+  assert.strictEqual(E.ctx.waBienvenida_("5215599990000", "es").motivo, "ya_la_tenia", "con el «1» viejo es el mismo número");
+  assert.strictEqual(mensajes(E).length, 1);
+  assert.strictEqual(E.ctx.waBienvenida_("123", "es").motivo, "tel");
+  const F = entorno({ props: Object.assign({}, PROPS_OK, { WA_BIENVENIDA: "si" }), meta: function () {
+    return { code: 400, body: { error: { code: 132001, message: "Template name does not exist in the translation" } } }; } });
+  assert.deepStrictEqual(JSON.parse(JSON.stringify(F.ctx.waBienvenida_("5599990000", "es"))), { ok: false, motivo: "meta", codigo: 132001 });
+  assert.strictEqual(F.hojas["WA envíos"].filas[1][7], "error 132001");
+});
+
+prueba("el permiso del formulario: columna nueva, «sí kids» se respeta, vuelve de «baja» y otro número no se toca", function () {
+  const filas = [["Nombre", "Apellido", "Email", "Teléfono"], ["Ana", "", "a@x.com", "'+525511111111"],
+    ["Bob", "", "b@x.com", ""], ["Cy", "", "c@x.com", "'+525533333333"]];
+  const E = entorno({ props: Object.assign({}, PROPS_OK, { WA_BIENVENIDA: "si" }), filas: filas });
+  const h = E.hojas["Triggui Emails Prueba"];
+  const P = function (fila, telFila, telForm, lang, recibe) {
+    return JSON.parse(JSON.stringify(E.ctx.waPermisoFormulario_(h, fila, telFila, telForm, lang, recibe)));
+  };
+  const r1 = P(2, "'+525511111111", "+525511111111", "es", true);
+  assert.deepStrictEqual([r1.permiso, r1.motivo, r1.bienvenida.motivo], [true, "nuevo", "mandada"]);
+  assert.strictEqual(h.filas[0][4], "WhatsApp", "nace en la primera columna libre");
+  assert.strictEqual(h.filas[1][4], "sí " + HOY);
+  const r2 = P(3, "", "+15125550101", "en", true);
+  assert.deepStrictEqual([r2.permiso, r2.bienvenida.motivo], [true, "mandada"]);
+  assert.strictEqual(h.filas[2][3], "'+15125550101", "sin teléfono en la fila, se escribe el del formulario");
+  const r3 = P(4, "'+525533333333", "+525544444444", "es", true);
+  assert.deepStrictEqual([r3.permiso, r3.motivo], [false, "otro_tel"]);
+  assert.ok(!h.filas[3][4], "con otro número no se escribe nada");
+  h.filas[1][4] = "sí kids";
+  const r4 = P(2, "'+525511111111", "+5215511111111", "es", true);
+  assert.deepStrictEqual([r4.motivo, r4.bienvenida.motivo], ["ya_tenia", "ya_la_tenia"]);
+  assert.strictEqual(h.filas[1][4], "sí kids");
+  h.filas[3][3] = "'+525544444444"; h.filas[3][4] = "baja 2026-11-01";
+  const r5 = P(4, "'+525544444444", "+525544444444", "es", false);
+  assert.deepStrictEqual([r5.permiso, r5.motivo, r5.bienvenida.motivo], [true, "nuevo", "no_recibe_los_lunes"]);
+  assert.strictEqual(h.filas[3][4], "sí " + HOY, "marcar la casilla es permiso nuevo");
+  assert.strictEqual(P(2, "", "12", "es", true).motivo, "tel");
+  assert.deepStrictEqual(mensajes(E).map(function (l) { const c = JSON.parse(l.o.payload); return [c.to, c.template.language.code]; }),
+    [["525511111111", "es_MX"], ["15125550101", "en_US"]]);
+});
+
+prueba("el límite de Meta: los escalones y, si no se puede leer, 250", function () {
+  [["TIER_250", 250], ["TIER_2K", 2000], ["TIER_10K", 10000], ["TIER_100K", 100000]].forEach(function (x) {
+    const E = entorno({ props: PROPS_OK, escalon: x[0] });
+    const r = E.ctx.waLimiteMeta_(E.ctx.waConfig_());
+    assert.deepStrictEqual([r.limite, r.escalon, r.leido], [x[1], x[0], true]);
+  });
+  const U = entorno({ props: PROPS_OK, escalon: "TIER_UNLIMITED" });
+  assert.strictEqual(U.ctx.waLimiteMeta_(U.ctx.waConfig_()).limite, Infinity);
+  const X = entorno({ props: PROPS_OK });
+  const rx = X.ctx.waLimiteMeta_(X.ctx.waConfig_());
+  assert.deepStrictEqual([rx.limite, rx.leido], [250, false]);
+  const Y = entorno({ props: PROPS_OK, escalon: "TIER_RARO" });
+  assert.strictEqual(Y.ctx.waLimiteMeta_(Y.ctx.waConfig_()).leido, false);
+  const l = X.llamadas.filter(function (z) { return /messaging_limit_tier/.test(z.url); })[0];
+  assert.strictEqual(l.url, "https://graph.facebook.com/v26.0/1234567890?fields=messaging_limit_tier");
+  assert.strictEqual(l.o.headers.Authorization, "Bearer TOKEN-DE-PRUEBA");
+});
+
+function filasMuchas(n) {
+  const filas = [ENC.slice()];
+  for (let i = 0; i < n; i++) filas.push(fila("P" + i, "55" + String(10000000 + i), "SUBSCRIBED", "es", "sí"));
+  return filas;
+}
+
+prueba("lo que no cupo hoy sigue mañana: 90 % del límite, continuación a las 24 horas y sin repetir a nadie", function () {
+  const E = entorno({ props: Object.assign({}, PROPS_OK, { WA_TOPE: "100" }), escalon: "TIER_50", filas: filasMuchas(60) });
+  const r = JSON.parse(JSON.stringify(E.ctx.waEnviarLunes()));
+  assert.deepStrictEqual([r.aceptados, r.pendientes, r.continua], [45, 15, true]);
+  assert.deepStrictEqual(E.activadores.map(function (t) { return [t.f, t.despues]; }), [["waContinuarEnvio", 86400000]]);
+  assert.deepStrictEqual(JSON.parse(E.props.WA_CONTINUACION).slugs, ["libro-de-prueba"]);
+  assert.ok(/Límite de Meta hoy: 50 \(se usa 45\)/.test(E.correos[0].texto), E.correos[0].texto);
+  assert.ok(/No cupieron hoy: 15\. Siguen mañana a esta hora, sin repetir a nadie\./.test(E.correos[0].texto));
+  const r2 = JSON.parse(JSON.stringify(E.ctx.waContinuarEnvio()));
+  assert.deepStrictEqual([r2.aceptados, r2.yaTenian, r2.pendientes, r2.continua], [15, 45, 0, false]);
+  assert.strictEqual(E.activadores.length, 0, "sin pendientes no queda continuación");
+  assert.strictEqual(E.props.WA_CONTINUACION, undefined);
+  assert.strictEqual(mensajes(E).length, 60, "nadie recibió dos veces");
+  assert.ok(/\(continuación\)/.test(E.correos[1].asunto));
+});
+
+prueba("la continuación se detiene si cambió la edición, si pasaron 6 días o si no sabe qué seguía, y avisa", function () {
+  const ambas = ["cuento-de-prueba", "libro-de-prueba"];
+  const E = entorno({ props: Object.assign({}, PROPS_OK, { WA_CONTINUACION: JSON.stringify({ inicio: new Date().toISOString(), slugs: ["otra-edicion"] }) }), escalon: "TIER_250" });
+  E.activadores.push({ f: "waContinuarEnvio", getHandlerFunction: function () { return "waContinuarEnvio"; } });
+  const r = E.ctx.waContinuarEnvio();
+  assert.ok(/^No seguí el envío: la edición cambió/.test(r.aviso), r.aviso);
+  assert.strictEqual(mensajes(E).length, 0);
+  assert.strictEqual(E.props.WA_CONTINUACION, undefined);
+  assert.strictEqual(E.activadores.length, 0, "el activador que la llamó ya no está");
+  assert.strictEqual(E.correos.length, 1);
+  const viejo = new Date(Date.now() - 7 * 86400000).toISOString();
+  const F = entorno({ props: Object.assign({}, PROPS_OK, { WA_CONTINUACION: JSON.stringify({ inicio: viejo, slugs: ambas }) }), escalon: "TIER_250" });
+  assert.ok(/ya pasaron 6 días/.test(F.ctx.waContinuarEnvio().aviso));
+  const G = entorno({ props: PROPS_OK, escalon: "TIER_250" });
+  assert.ok(/no encontré qué edición/.test(G.ctx.waContinuarEnvio().aviso));
+  const dos = new Date(Date.now() - 2 * 86400000).toISOString();
+  const H = entorno({ props: Object.assign({}, PROPS_OK, { WA_CONTINUACION: JSON.stringify({ inicio: dos, slugs: ambas }) }), escalon: "TIER_250" });
+  assert.strictEqual(JSON.parse(JSON.stringify(H.ctx.waContinuarEnvio())).aceptados, 3, "misma edición dentro de los 6 días: sigue");
+});
+
+prueba("el resumen de la noche no cuenta las bienvenidas como envío del lunes", function () {
+  const E = entorno({ props: Object.assign({}, PROPS_OK, { WA_BIENVENIDA: "si" }) });
+  E.ctx.waBienvenida_("5599990000", "es");
+  E.ctx.waEnviarLunes();
+  const r = JSON.parse(JSON.stringify(E.ctx.waResumenDelLunes()));
+  assert.deepStrictEqual([r.enviados, r.bienvenidas], [3, 1]);
+  assert.ok(/Bienvenidas del formulario, hoy: 1/.test(E.correos[E.correos.length - 1].texto));
+});
+
+prueba("quitar los activadores también quita la continuación", function () {
+  const E = entorno({ props: PROPS_OK });
+  E.ctx.waInstalarLunes();
+  assert.strictEqual(E.ctx.waProgramarContinuacion_(["libro-de-prueba"], false), true);
+  assert.strictEqual(E.activadores.length, 3);
+  assert.strictEqual(E.ctx.waQuitarLunes().quitados, 3);
+  assert.strictEqual(E.props.WA_CONTINUACION, undefined);
 });
 
 console.log((process.exitCode ? "FALLÓ" : "Todo en verde") + ": " + pasadas + " pruebas pasadas.");
