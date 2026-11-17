@@ -679,7 +679,9 @@ function waRegistrarNumero() {
   }
   Logger.log(r.ok
     ? "Listo: el número quedó registrado" + (pinCambiado ? ", con tu PIN en lugar del que tenía" : "") + ". Ahora corre waProbarConmigo."
-    : "No se registró: " + (r.codigo || ("HTTP " + r.http)) + " · " + r.detalle);
+    : "No se registró: " + (r.codigo || ("HTTP " + r.http)) + " · " + r.detalle +
+      (pinCambiado ? " · Tu PIN ya quedó puesto en el número: la próxima corrida registra con él." : "") +
+      (r.codigo === 133016 ? " · Meta no acepta más registros de este número durante 72 horas." : ""));
   return { ok: r.ok, pinCambiado: pinCambiado, codigo: r.codigo, http: r.http };
 }
 

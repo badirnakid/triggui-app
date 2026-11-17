@@ -735,13 +735,33 @@ prueba("registrar el número: si no puede poner tu PIN, se detiene y lo dice sin
   sinPin(E);
 });
 
+prueba("registrar el número: si cambió el PIN y el segundo registro falla, lo dice", function () {
+  let registros = 0;
+  const E = entorno({ props: Object.assign({}, PROPS_OK, { WA_PIN: PIN }), numero: function (url) {
+    if (/\/register$/.test(url)) {
+      registros++;
+      return registros === 1
+        ? { code: 400, body: { error: { code: 133005, message: "PIN mismatch" } } }
+        : { code: 400, body: { error: { code: 133015, message: "Wait a few minutes" } } };
+    }
+    return { code: 200, body: { success: true } };
+  } });
+  const r = JSON.parse(JSON.stringify(E.ctx.waRegistrarNumero()));
+  assert.deepStrictEqual(r, { ok: false, pinCambiado: true, codigo: 133015, http: 400 });
+  assert.strictEqual(E.llamadas.length, 3);
+  assert.ok(/No se registró: 133015 · Wait a few minutes · Tu PIN ya quedó puesto en el número: la próxima corrida registra con él\./
+    .test(E.logs.join("\n")));
+  sinPin(E);
+});
+
 prueba("registrar el número: otro error no cambia el PIN; sin red tampoco truena", function () {
   const E = entorno({ props: Object.assign({}, PROPS_OK, { WA_PIN: PIN }),
     numero: function () { return { code: 400, body: { error: { code: 133016, message: "Rate limit" } } }; } });
   const r = JSON.parse(JSON.stringify(E.ctx.waRegistrarNumero()));
   assert.deepStrictEqual(r, { ok: false, pinCambiado: false, codigo: 133016, http: 400 });
   assert.strictEqual(E.llamadas.length, 1, "solo el intento de registro");
-  assert.ok(/No se registró: 133016 · Rate limit/.test(E.logs.join("\n")));
+  assert.ok(/No se registró: 133016 · Rate limit · Meta no acepta más registros de este número durante 72 horas\./.test(E.logs.join("\n")));
+  assert.ok(!/Tu PIN ya quedó puesto/.test(E.logs.join("\n")), "no dice que cambió el PIN si no lo cambió");
   const F = entorno({ props: Object.assign({}, PROPS_OK, { WA_PIN: PIN }), numero: "sin red" });
   const s = JSON.parse(JSON.stringify(F.ctx.waRegistrarNumero()));
   assert.deepStrictEqual(s, { ok: false, pinCambiado: false, codigo: 0, http: 0 });
