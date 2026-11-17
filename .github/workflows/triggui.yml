@@ -39,10 +39,11 @@ on:
   # CRON SCHEDULES — descomenta UNA línea para activar automatización
   # ───────────────────────────────────────────────────────────────────────
   schedule:
-    - cron: '0 11 * * 1'          # LUNES 5 AM CDMX — la lista Kids (C477): solo títulos aprobados, el primero que se consiga
-    - cron: '0 12 * * 1'          # LUNES 6 AM CDMX — la lista del Director (adultos): solo títulos aprobados, el primero que se consiga
+    - cron: '0 11 * * 1,4'        # LUNES y JUEVES 5 AM CDMX: la lista Kids (C477): solo títulos aprobados, el primero que se consiga
+    - cron: '0 12 * * 1,4'        # LUNES y JUEVES 6 AM CDMX: la lista del Director (adultos): solo títulos aprobados, el primero que se consiga
+  # Dos ediciones por semana en cada catálogo (Badir, 17 de noviembre de 2026): la del jueves la lleva el correo diario
+  # del cartero a quien tiene tope de 2 por semana (miembros de $149, Anual y prueba).
   # (otras cadencias disponibles abajo, comentadas)
-  #   - cron: '0 12 * * 1,4'      # LUNES y JUEVES 6 AM CDMX
   #   - cron: '0 12 * * *'        # DIARIO 6 AM CDMX
   #   - cron: '0 12 1,15 * *'     # QUINCENAL (días 1 y 15)
   # ───────────────────────────────────────────────────────────────────────
@@ -1332,7 +1333,7 @@ jobs:
       # ║  → Single mode: el libro nuevo tiene _edicion_numero → aparece    ║
       # ║  → Batch mode:  los 20 nuevos NO tienen _edicion_numero → no apar.║
       # ║                                                                    ║
-      # ║  Usado por: Apps Script (email del lunes) — lee libros[0]         ║
+      # ║  Usado por: Apps Script (correo diario del cartero) — libros[0]   ║
       # ║                                                                    ║
       # ║  Defensas: atomic write, parse guard, unicode safe, idempotente   ║
       # ║  Tests cuántico-quark: 24/24 pasados antes de deployment          ║
@@ -1345,7 +1346,7 @@ jobs:
 
           # 🌒 DOCTRINA SINGLE-ONLY MANUAL.JSON — Nivel dios cuántico-quark axiomático
           # ─────────────────────────────────────────────────────────────────
-          # manual.json es la vista filtrada para Apps Script email del lunes.
+          # manual.json es la vista filtrada para el correo del cartero (Apps Script).
           # Solo se REGENERA en modos que asignan _edicion_numero (single-like).
           # Batch/shadow PRESERVAN manual.json intacto en disco.
           # ─────────────────────────────────────────────────────────────────
@@ -1439,7 +1440,7 @@ jobs:
               process.exit(1);
             }
 
-            // 6. Identificar libros[0] (el que recibirá el email del lunes)
+            // 6. Identificar libros[0] (el que lleva el correo del cartero)
             const top = filtered.length > 0 ? filtered[0] : null;
             const topInfo = top
               ? `"${top.titulo}" (#${String(top._edicion_numero).padStart(3, "0")}) — ${top.autor || "?"}`
@@ -1561,7 +1562,7 @@ jobs:
             [ -f "$CONTENIDO_FILE" ] && git add "$CONTENIDO_FILE" || true
             PUBLICO_FILE="${CONTENIDO_FILE%.json}_publico.json"
             [ -f "$PUBLICO_FILE" ] && git add "$PUBLICO_FILE" || true
-            # 🌒 V18: vista filtrada para email del lunes (Apps Script)
+            # 🌒 V18: vista filtrada para el correo del cartero (Apps Script)
             [ -f "$MANUAL_FILE" ] && git add "$MANUAL_FILE" || true
             # 🔬 FASE 8.7 audit: archivos modificados/creados por auto-fix
             QUARANTINE_FILE="${CONTENIDO_FILE%.json}.quarantine.json"
@@ -1904,7 +1905,7 @@ jobs:
           libro:    {libro} (de la lista aprobada)
           saltados: {saltados}
           estado:   pipeline OK y el libro ya está en su catálogo (comprobado antes de consumir)
-          correo:   {'el libro Kids de la semana (arriba de contenido_kids.json)' if kids else 'sale automatico ~7:30am CDMX via Apps Script (trigger lunes)'}
+          correo:   {'el libro Kids más reciente (arriba de contenido_kids.json)' if kids else 'lo lleva el correo diario del cartero (Apps Script, de 7 a 8 a.m. CDMX)'}
           """
           open(os.environ['ACTA'],'w',encoding='utf-8').write(acta)
           print('consumida:', consumida, '| restantes en la lista:', sum(1 for l in out if l.strip() and not l.strip().startswith('#')))

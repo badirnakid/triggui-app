@@ -1,11 +1,13 @@
 # 🎬 LA LISTA KIDS — Triggui
 # Solo títulos que Badir aprobó. Una línea por libro, formato exacto:  Título | Autor
 #
-# Cada lunes 5am el sistema toma el PRIMER título de esta lista que se consiga en
-# Casa del Libro o en Gandhi, lo publica completo (edición viva + tarjeta + og)
-# arriba de contenido_kids.json y lo borra de aquí solito. Los que ese día no se
-# consiguen se saltan y se quedan. Si la lista está vacía, o ninguno se consigue,
-# ese lunes no se publica nada Kids: nada se elige solo.
+# Cada lunes y cada jueves, a las 5am, el sistema toma el PRIMER título de esta lista
+# que se consiga en Casa del Libro o en Gandhi, lo publica completo (edición viva +
+# tarjeta + og) arriba de contenido_kids.json y lo borra de aquí solito. Los que ese
+# día no se consiguen se saltan y se quedan. Si la lista está vacía, o ninguno se
+# consigue, ese día no se publica nada Kids: nada se elige solo. Las propuestas del
+# robot (🗳️ Propuestas) llegan como pull request, con la edad de cada libro en
+# edades-kids.json: entran cuando Badir les da «Merge».
 #
 # Las lineas con # se ignoran. Ejemplo (borra el # para activarlo):
 # Donde viven los monstruos | Maurice Sendak

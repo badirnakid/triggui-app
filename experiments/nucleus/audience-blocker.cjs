@@ -103,7 +103,7 @@ const SYSTEM = `Eres un classifier estricto pero balanceado de audiencia editori
 
 function buildUserPrompt(titulo, autor, sinopsis, target) {
   if (target === "kids") {
-    return `Catálogo Triggui Kids — audiencia: NIÑOS de 4-12 años.
+    return `Catálogo Triggui Kids — audiencia: NIÑOS de 3-12 años.
 
 Libro a evaluar:
 - Título: ${titulo}
@@ -111,7 +111,7 @@ Libro a evaluar:
 - Contexto del libro:
 ${sinopsis}
 
-¿Este libro contiene contenido CLARAMENTE adulto que lo haga inapropiado para niños 4-12 años?
+¿Este libro contiene contenido CLARAMENTE adulto que lo haga inapropiado para niños 3-12 años?
 
 RECHAZA (matches=false) SOLO si encuentras señales EXPLÍCITAS de:
 - Negocios, estrategia empresarial, management, liderazgo corporativo

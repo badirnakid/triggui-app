@@ -54,8 +54,8 @@ const CATALOG_MODE_VB = String(process.env.CATALOG_MODE || "adulto").trim().toLo
 const IS_KIDS_VB = CATALOG_MODE_VB === "kids";
 // 🛡️ Audience guard: TARGET_AUDIENCE override o derivado de CATALOG_MODE
 const TARGET_AUDIENCE_VB = String(process.env.TARGET_AUDIENCE || (IS_KIDS_VB ? "kids" : "adult")).trim().toLowerCase();
-const AUDIENCE_LABEL_ES = TARGET_AUDIENCE_VB === "kids" ? "NIÑOS (4-12 años)" : "ADULTOS";
-const AUDIENCE_LABEL_EN = TARGET_AUDIENCE_VB === "kids" ? "CHILDREN (ages 4-12)" : "ADULTS";
+const AUDIENCE_LABEL_ES = TARGET_AUDIENCE_VB === "kids" ? "NIÑOS (3-12 años)" : "ADULTOS";
+const AUDIENCE_LABEL_EN = TARGET_AUDIENCE_VB === "kids" ? "CHILDREN (ages 3-12)" : "ADULTS";
 
 const MODE = INPUT_MODE || (LIBRO_INPUT ? "book" : "");
 const SELECTOR = SELECTOR_MODE || (LIBRO_INPUT ? "direct" : "");
@@ -1864,7 +1864,7 @@ Si te dan una lista de libros a evitar, NO los propongas; busca alternativas rea
 🛡️ AUDIENCIA OBLIGATORIA — RESTRICCIÓN DURA:
 Todos los libros propuestos DEBEN ser para audiencia ${AUDIENCE_LABEL_ES}.
 ${TARGET_AUDIENCE_VB === "kids"
-  ? "PROHIBIDO proponer libros de negocios, estrategia, autoayuda adulta, terapia, finanzas, liderazgo, management, política, filosofía adulta, o cualquier título escrito originalmente para lectores adultos. Solo literatura infantil, libros ilustrados, novelas juveniles, cuentos clásicos, fábulas, libros educativos para niños 4-12 años."
+  ? "PROHIBIDO proponer libros de negocios, estrategia, autoayuda adulta, terapia, finanzas, liderazgo, management, política, filosofía adulta, o cualquier título escrito originalmente para lectores adultos. Solo literatura infantil, libros ilustrados, novelas juveniles, cuentos clásicos, fábulas, libros educativos para niños 3-12 años."
   : "Proponer libros para lectores adultos. NO proponer literatura infantil ni libros ilustrados para niños."}
 Si la consulta del usuario podría interpretarse fuera de esta audiencia, REINTERPRETA el momento descrito desde la perspectiva de un lector ${AUDIENCE_LABEL_ES.toLowerCase()} y propón en consecuencia.
 
