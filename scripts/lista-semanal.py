@@ -5,12 +5,13 @@
 Decide qué libro se publica cada lunes y cada jueves, para adultos o para Kids, y lo escribe como
 salidas de GitHub Actions (hay, libro, catalogo, origen, saltados).
 
-  · Lunes y jueves 5:00 (CDMX), cron «0 11 * * 1,4»  → Kids: lista-kids.txt
-  · Lunes y jueves 6:00 (CDMX), cron «0 12 * * 1,4»  → adultos: lista-adultos.txt (la lista del Director)
+  · Lunes y jueves 5:00 (hora de México), cron «0 11 * * 1,4»  → Kids: lista-kids.txt
+  · Lunes y jueves 6:00 (hora de México), cron «0 12 * * 1,4»  → adultos: lista-adultos.txt (la lista del Director)
   · A mano, con el modo «🎬 Publicar ya el siguiente libro», solo desde main → el catálogo que se elija
 
 Dos ediciones por semana en cada catálogo (decisión de Badir del 17 de noviembre de 2026): la del jueves la lleva el
-correo diario del cartero a quien tiene tope de 2 por semana.
+correo diario del cartero a quien tiene tope de 2 por semana, siempre que el activador de enviarTrigguiSegundo no esté
+instalado.
 
 Curaduría (decisión de Badir del 16 de noviembre, 14:17): solo se publica lo que Badir aprobó,
 es decir, lo que está en su lista. Nada se elige solo. Se toma el primer título de la lista que

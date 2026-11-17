@@ -96,6 +96,8 @@ class RevisarFalso:
         self.vistos.append(libro)
         titulo, autor = [x.strip() for x in libro.split(" | ", 1)]
         r = self.respuestas.get(titulo, "no")
+        if r == "si-viejo":   # la red falló y el horno conservó la marca buena vieja: sale con 0, «se consigue»
+            return "si"
         if r in ("si", "no"):
             d = json.load(open(self.ruta, encoding="utf-8"))
             d["libros"][cu.clave(titulo, autor)] = marca(titulo, autor, "gandhi" if r == "si" else "ninguna", gandhi=(r == "si"))
@@ -285,11 +287,54 @@ class Propuesta(Base):
         codigo, _ = self.correr(juez, respuestas={"Libro E": "?"}, cuantos=5)
         r = self.registro()
         self.assertNotIn("Libro E", [c["titulo"] for c in r["elegidos"]])
-        self.assertTrue(any("no respondieron en 1 revisión" in a for a in r["avisos"]), r["avisos"])
+        self.assertTrue(any("En 1 revisión de hoy las tiendas no dieron una respuesta clara" in a for a in r["avisos"]), r["avisos"])
         # No se sabe si E se consigue: nadie entra «en su lugar» ni se dice que no se consigue.
         self.assertFalse(any(c.get("reemplaza") == "Libro E" for c in r["elegidos"]))
         self.assertEqual(r["resumen"]["no_se_consiguen"], 1)   # solo B, que su marca dice que no
         self.assertNotIn("«Libro E», que no se consigue", self.leer("propuesta-adultos.md"))
+
+    def test_una_marca_con_error_de_red_se_revisa_otra_vez(self):
+        # Como falta() de tiendas-horno.mjs: una marca «error_red» no dice que no se consigue; se revisa en el momento.
+        self.marcas["Libro D"] = dict(marca("Libro D", "Dani Cuatro", "ninguna"), motivo="error_red")
+        self.guardar_marcas()
+        codigo, rev = self.correr(JuezFalso(JUICIOS, parecidos={"Libro D": ("Libro C", 0.9)}),
+                                  respuestas={"Libro E": "si", "Libro D": "si"}, cuantos=5)
+        r = self.registro()
+        self.assertIn("Libro D | Dani Cuatro", rev.vistos)
+        self.assertIn("Libro D", [c["titulo"] for c in r["elegidos"]])
+        self.assertFalse(any(c.get("reemplaza") == "Libro D" for c in r["elegidos"]))
+        self.assertEqual(r["resumen"]["revisados_hoy"], 2)   # D y E respondieron
+
+    def test_dice_que_si_con_una_marca_vieja_no_entra(self):
+        # La red falló y el horno conservó la marca buena del 1 de septiembre: no es una respuesta de hoy.
+        codigo, rev = self.correr(JuezFalso(JUICIOS, parecidos={"Libro E": ("Libro D", 0.9)}),
+                                  respuestas={"Libro E": "si-viejo"}, cuantos=5)
+        r = self.registro()
+        self.assertEqual(rev.vistos, ["Libro E | Eva Cinco"])
+        self.assertNotIn("Libro E", [c["titulo"] for c in r["elegidos"]])
+        self.assertFalse(any(c.get("reemplaza") == "Libro E" for c in r["elegidos"]))
+        self.assertEqual(r["resumen"]["revisados_hoy"], 0)
+        self.assertTrue(any("no dieron una respuesta clara" in a for a in r["avisos"]), r["avisos"])
+
+    def test_tres_sin_respuesta_seguidas_y_deja_de_revisar(self):
+        for t, a, tienda in (("Libro A", "Ana Uno", "casadelibro"), ("Libro C", "Ceci Tres", "gandhi"),
+                             ("Libro D", "Dani Cuatro", "casadelibro")):
+            self.marcas[t] = marca(t, a, tienda, revisado="2026-09-01", cdl=True, gandhi=True)
+        self.guardar_marcas()
+        respuestas = {t: "?" for t in ("Libro A", "Libro C", "Libro D", "Libro E")}
+        codigo, rev = self.correr(JuezFalso(JUICIOS), respuestas=respuestas, cuantos=4)
+        self.assertEqual(codigo, 2)   # B no se consigue y nadie más se pudo revisar
+        # Por potencial: B (marca de hoy: no), A 66, E 62 y C 59 (sin portada) sin respuesta; D ya no se revisa.
+        self.assertEqual(rev.vistos, ["Libro A | Ana Uno", "Libro E | Eva Cinco", "Libro C | Ceci Tres"])
+        avisos = self.registro()["avisos"]
+        self.assertTrue(any("no respondieron 3 veces seguidas y dejé de revisarlas" in a and "1 libro sin marca vigente se quedó" in a
+                            for a in avisos), avisos)
+
+    def test_el_juez_que_deja_libros_sin_calificar_se_avisa(self):
+        juicios = {t: j for t, j in JUICIOS.items() if t != "Libro D"}
+        codigo, _ = self.correr(JuezFalso(juicios), respuestas={"Libro E": "si"}, cuantos=3)
+        avisos = self.registro()["avisos"]
+        self.assertTrue(any("El juez dejó sin calificar 1 candidato de un lote de 5" in a for a in avisos), avisos)
 
     def test_se_consigue_sin_isbn_no_entra_y_se_avisa(self):
         self.marcas["Libro D"] = marca("Libro D", "Dani Cuatro", "casadelibro", cdl=True, isbn="")
@@ -360,6 +405,16 @@ class Propuesta(Base):
         self.assertEqual([c["titulo"] for c in orden], ["Uno", "Tres", "Dos", "Cuatro"])
         empate = cu.ordenar([e("Beta", 80, "ira"), e("Alfa", 80, "miedo")])
         self.assertEqual([c["titulo"] for c in empate], ["Alfa", "Beta"])
+        # El voraz simple deja «C, C» al final; hay un orden sin dos seguidos y debe salir ese.
+        seis = cu.ordenar([e("A95", 95, "ira"), e("A90", 90, "ira"), e("B85", 85, "miedo"), e("B80", 80, "miedo"),
+                           e("C75", 75, "serena"), e("C70", 70, "serena")])
+        self.assertEqual([c["titulo"] for c in seis], ["A95", "B85", "A90", "C75", "B80", "C70"])
+        # El caso del ensayo real: 3 apatía, 3 ira, 2 miedo y 1 tristeza, sin dos seguidos.
+        nueve = cu.ordenar([e("m1", 93, "miedo"), e("a1", 92, "apatia"), e("i1", 92, "ira"), e("i2", 91, "ira"),
+                            e("t1", 90, "tristeza"), e("i3", 90, "ira"), e("m2", 89, "miedo"), e("a2", 89, "apatia"),
+                            e("a3", 87, "apatia")])
+        estados = [c["juicio"]["estado"] for c in nueve]
+        self.assertFalse(any(x == y for x, y in zip(estados, estados[1:])), estados)
 
     def test_cuantos_fuera_de_rango_no_corre(self):
         juez = JuezFalso(JUICIOS)
@@ -443,14 +498,69 @@ class Salida(Base):
         self.assertFalse(cu.errata("Dejar ir", "Dejar ir: el camino de la entrega"))           # subtítulo
         self.assertFalse(cu.errata("Libro A", ""))
         self.assertFalse(cu.errata("Libro A", "Libro A"))
+        self.assertTrue(cu.errata("Hermann Hese", "Hermann Hesse"))                            # palabra corta
+        self.assertTrue(cu.errata("Homo Deux", "Homo Deus"))
+        self.assertTrue(cu.errata("Tao Te Kin", "Tao Te King"))
+        self.assertTrue(cu.errata("El arte de amra", "El arte de amar"))                      # dos letras al revés
+        self.assertTrue(cu.errata("Elprincipito", "El principito"))                            # palabras pegadas
+        self.assertFalse(cu.errata("El arte de amar", "El arte de la guerra"))
 
     def test_el_esquema_del_juez(self):
         self.assertEqual(cu.esquema("kids")["properties"]["libros"]["items"]["properties"]["edad"]["enum"], ["3-5", "6-8", "9-12"])
         req = cu.esquema("adultos")["properties"]["libros"]["items"]["required"]
         self.assertIn("titulo_bien", req)
         self.assertIn("autor_bien", req)
-        self.assertEqual(cu.esquema("adultos")["properties"]["libros"]["items"]["properties"]["edad"]["enum"], [""])
+        self.assertEqual(cu.esquema("adultos")["properties"]["libros"]["items"]["properties"]["edad"], {"type": "string"})
         self.assertIn("NIÑ", cu.SISTEMA.format(perfil="Kids (niñas y niños de 3 a 12 años)", kids=cu.KIDS).upper())
+
+
+class IaFalsa:
+    """El módulo ia de ia/ia.py, con respuestas en orden: «» es lo que devuelve un rechazo de Claude."""
+
+    def __init__(self, respuestas):
+        self.respuestas, self.papeles = list(respuestas), []
+
+    def chat(self, payload, timeout=0):
+        self.papeles.append(payload["model"])
+        return {"choices": [{"message": {"content": self.respuestas.pop(0) if self.respuestas else ""}}]}
+
+
+class Juez(unittest.TestCase):
+    """El envoltorio del juez de verdad (juez_ia), con ia/ia.py cambiado por un doble."""
+
+    def setUp(self):
+        self.antes = sys.modules.get("ia")
+
+    def tearDown(self):
+        if self.antes is None:
+            sys.modules.pop("ia", None)
+        else:
+            sys.modules["ia"] = self.antes
+
+    def llamar(self, respuestas):
+        sys.modules["ia"] = falsa = IaFalsa(respuestas)
+        avisos = []
+        return cu.juez_ia("adultos", avisos), falsa, avisos
+
+    def test_un_rechazo_vacio_es_falla_y_se_reintenta(self):
+        llamar, falsa, avisos = self.llamar(["", json.dumps({"libros": []})])
+        self.assertEqual(llamar("s", "u", cu.esquema("adultos"), 100), {"libros": []})
+        self.assertEqual(falsa.papeles, ["grande", "grande"])
+        self.assertEqual(avisos, [])
+
+    def test_si_el_grande_no_responde_califica_el_mini_y_se_avisa(self):
+        llamar, falsa, avisos = self.llamar(["", "{}", json.dumps({"libros": []})])
+        self.assertEqual(llamar("s", "u", cu.esquema("adultos"), 100), {"libros": []})
+        self.assertEqual(falsa.papeles, ["grande", "grande", "mini"])
+        self.assertTrue(any("«mini»" in a for a in avisos), avisos)
+
+    def test_tres_fallas_tiran_el_lote_con_su_aviso(self):
+        llamar, falsa, avisos = self.llamar(["", "", ""])
+        with self.assertRaises(RuntimeError):
+            llamar("s", "u", cu.esquema("adultos"), 100)
+        juicios = cu.juzgar("adultos", [{"titulo": "X", "autor": "Y", "clave": "x__y"}], [], llamar, avisos)
+        self.assertEqual(juicios, {})
+        self.assertTrue(any("no se calificó" in a for a in avisos), avisos)
 
 
 class Flujo(unittest.TestCase):
@@ -475,15 +585,36 @@ class Flujo(unittest.TestCase):
         self.assertIn("secrets.CONTENT_REPO_TOKEN", self.texto)
         self.assertNotIn("OPENAI", self.texto)
 
+    def pasos(self):
+        return self.yml["jobs"]["proponer"]["steps"]
+
+    def guion(self):
+        return next(p["run"] for p in self.pasos() if "gh pr create" in str(p.get("run", "")))
+
     def test_un_pull_request_por_lista_y_no_dos_abiertos(self):
-        self.assertIn("scripts/curaduria.py", self.texto)
-        self.assertIn("gh pr create", self.texto)
-        self.assertIn("gh pr list", self.texto)
-        self.assertIn('--label "propuesta-', self.texto)
+        g = self.guion()
+        self.assertIn("scripts/curaduria.py", g)
+        self.assertIn("gh pr create --base main --head \"$rama\"", g)
+        # La propuesta abierta se reconoce por su rama (sin etiquetas: crearlas pide otro permiso).
+        self.assertIn('rama="propuestas/$hoy-$l-$(date -u +%H%M)"', g)
+        self.assertIn("gh pr list --state open --base main", g)
+        self.assertIn('test(\\"^propuestas/.*-$l-[0-9]{4}\\$\\")', g)
+        self.assertNotIn("gh label", g)
+        self.assertNotIn("|| true)", g)   # si gh falla, la corrida se detiene: no abre una segunda propuesta
 
     def test_no_sube_tiendas_ni_contenido(self):
-        self.assertNotIn("triggui-content push", self.texto)
-        self.assertIn("persist-credentials: false", self.texto)
+        contenido = next(p for p in self.pasos() if (p.get("with") or {}).get("repository") == "badirnakid/triggui-content")
+        self.assertIs(contenido["with"]["persist-credentials"], False)
+        g = self.guion()
+        empujes = [l.strip() for l in g.splitlines() if "git push" in l]
+        self.assertEqual(empujes, ['git push --quiet origin "$rama"'])
+        self.assertNotIn("cd triggui-content", g)
+        self.assertNotIn("-C triggui-content", g)
+
+    def test_tiempo_y_registro(self):
+        self.assertGreaterEqual(self.yml["jobs"]["proponer"]["timeout-minutes"], 120)
+        registro = next(p for p in self.pasos() if "upload-artifact" in str(p.get("uses", "")))
+        self.assertEqual(registro.get("if"), "always()")
 
 
 if __name__ == "__main__":

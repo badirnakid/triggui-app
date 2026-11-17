@@ -28,14 +28,16 @@ Qué hace, en orden:
 7. El orden de la lista: por puntaje, sin dos seguidos del mismo ánimo mientras se pueda (son dos ediciones por semana).
 
 Lo duro, que ningún puntaje compensa: que el juez conozca el libro, que la misión llegue a 0.6, que el catálogo lo traiga
-bien escrito (el horno publica el título y el autor del catálogo, así que una errata o un acento que falta llegarían a la
-edición: esos se listan para corregir el catálogo y no entran), que se consiga (con su ISBN) y, en Kids, que sea apto y
-traiga su edad.
+bien escrito (el horno publica el título y el autor de su catálogo maestro: adultos, data/libros_master.csv; Kids,
+data/libros_master_kids.csv; así que una errata o un acento que falta llegarían a la edición: esos se listan para
+corregir el catálogo y no entran; en Kids el filtro vale igual para data/libros_masterbkids.csv, que el horno no lee),
+que se consiga (con su ISBN) y, en Kids, que sea apto y traiga su edad.
 
 Uso:
   python3 -I -B scripts/curaduria.py --lista adultos|kids [--cuantos 9] [--forzar] [--app .] \
       [--contenido triggui-content] [--nucleus experiments/nucleus] [--salida DIR] [--fecha AAAA-MM-DD]
-Sin --forzar, solo propone si a la lista le quedan menos de UMBRAL títulos, y entonces completa hasta META.
+Sin --forzar, solo propone si a la lista le quedan menos de UMBRAL títulos, y entonces completa hasta META. Con --forzar
+propone aunque tenga más: los que falten para llegar a META, y al menos 4. --cuantos fija el número (de 1 a 40).
 Escribe en --salida: propuesta-<lista>.md (el cuerpo del pull request), lineas-<lista>.txt (lo que se agrega a la lista),
 propuesta-<lista>.json (todo, para el registro) y, en Kids, edades-kids.json (las edades, sumadas a las de la app).
 Sale con 0 si propuso, con 0 y sin archivos si no hacía falta, y con 2 si no encontró ninguno.
@@ -65,6 +67,7 @@ DIAS_VIGENCIA = 25   # lo mismo que el horno (tiendas-horno.mjs)
 LOTE = 25            # candidatos por llamada al juez
 RECIENTES = 12       # ediciones recientes para medir la variedad
 POOL_PARECIDO = 40   # candidatos que el juez compara al buscar el más parecido
+SEGUIDAS_SIN_RESPUESTA = 3   # como el horno: tras 3 revisiones de tiendas sin respuesta, seguidas, ya no se revisa más
 ESTADOS = ("apatia", "tristeza", "miedo", "ira", "serena")
 EDADES = ("3-5", "6-8", "9-12")
 NOMBRE_ESTADO = {"apatia": "apatía", "tristeza": "tristeza", "miedo": "miedo", "ira": "ira", "serena": "serena"}
@@ -151,16 +154,34 @@ def _letras(s):
     return " ".join(re.sub(r"[\W_]+", " ", unicodedata.normalize("NFC", str(s or "")).lower()).split())
 
 
+def a_una_letra(x, y):
+    """A lo más una errata de distancia, de cualquier largo: una letra cambiada, sobrante o faltante, o dos letras
+    vecinas al revés («amra» y «amar»)."""
+    if x == y:
+        return True
+    if abs(len(x) - len(y)) > 1:
+        return False
+    if len(x) == len(y):
+        dif = [k for k, (a, b) in enumerate(zip(x, y)) if a != b]
+        return len(dif) == 1 or (len(dif) == 2 and dif[1] == dif[0] + 1
+                                 and x[dif[0]] == y[dif[1]] and x[dif[1]] == y[dif[0]])
+    corta, larga = (x, y) if len(x) < len(y) else (y, x)
+    return any(larga[:k] + larga[k + 1:] == corta for k in range(len(larga)))
+
+
 def errata(original, bien):
-    """¿«bien» corrige un acento o una errata de «original»? Solo eso: mayúsculas y puntuación no cuentan, y otra
-    redacción, una traducción u otra edición no son errata (ahí manda el catálogo)."""
+    """¿«bien» corrige un acento, una errata o un espacio de «original»? Solo eso: mayúsculas y puntuación no cuentan,
+    y otra redacción, una traducción u otra edición no son errata (ahí manda el catálogo). Un falso positivo solo manda
+    el libro a la lista de erratas del catálogo, que Badir ve."""
     a, b = _letras(original), _letras(bien)
     if not a or not b or a == b:
         return False
+    if a.replace(" ", "") == b.replace(" ", ""):
+        return True   # palabras pegadas o separadas: «Elprincipito»
     pa, pb = a.split(), b.split()
     if len(pa) != len(pb):
         return False
-    return all(x == y or misma_palabra(normalizar(x), normalizar(y)) for x, y in zip(pa, pb))
+    return all(a_una_letra(normalizar(x), normalizar(y)) for x, y in zip(pa, pb))
 
 
 def titulo_en(titulo, titulos):
@@ -255,33 +276,47 @@ class Tiendas:
         self.ruta, self.nucleus, self.hoy = ruta, nucleus, hoy
         self.marcas = leer_marcas(ruta)
         self._revisar = revisar
-        self.revisados, self.sin_respuesta, self.sin_isbn = 0, 0, 0
+        self.revisados = 0       # las revisiones de hoy que respondieron («si» o «no»)
+        self.sin_respuesta = 0   # las que no dieron una respuesta clara
+        self.sin_isbn = 0
+        self.seguidas = 0        # revisiones sin respuesta, seguidas
+        self.cortado = False     # tras SEGUIDAS_SIN_RESPUESTA ya no se revisa más (como el horno)
+        self.sin_revisar = 0     # los que necesitaban revisión después del corte
+
+    def sin_marca(self, m):
+        """Como falta() y vencido() de tiendas-horno.mjs: sin marca, sin fecha, con error de red o de 25 días o más."""
+        return not m or not m.get("revisado") or m.get("motivo") == "error_red" or not vigente(m, self.hoy)
 
     def segun_marca(self, c):
         m = self.marcas.get(c["clave"])
-        return donde(m) if (m and vigente(m, self.hoy)) else None   # None: no se sabe todavía
+        return None if self.sin_marca(m) else donde(m)   # None: no se sabe todavía
 
     def confirmar(self, c):
         """La tienda de hoy, su ISBN y, si no entra, por qué: (dónde, isbn, motivo). Dónde es «ambas», «casadelibro»,
-        «gandhi» o «»; el motivo es «» si se consigue, «no» si no se consigue, «?» si las tiendas no respondieron y
-        «sin isbn» si se consigue pero sin ISBN registrado. Solo «no» autoriza a decir que no se consigue."""
+        «gandhi» o «»; el motivo es «» si se consigue, «no» si no se consigue, «?» si no hubo una respuesta clara de las
+        tiendas y «sin isbn» si se consigue pero sin ISBN registrado. Solo «no» autoriza a decir que no se consigue."""
         m = self.marcas.get(c["clave"])
-        if not (m and vigente(m, self.hoy)):
-            if self._revisar is None:
+        if self.sin_marca(m):
+            if self._revisar is None or self.cortado:
+                if self.cortado:
+                    self.sin_revisar += 1
                 return "", "", "?"
             estado = self._revisar(f"{c['titulo']} | {c['autor']}")
-            self.revisados += 1
-            if estado == "?":
-                self.sin_respuesta += 1
-                return "", "", "?"
-            if estado != "si":
-                return "", "", "no"
             self.marcas = leer_marcas(self.ruta)
-            m = self.marcas.get(c["clave"]) or {}
+            m = self.marcas.get(c["clave"])
+            if estado == "no":
+                self.revisados, self.seguidas = self.revisados + 1, 0
+                return "", "", "no"
+            if estado != "si" or self.sin_marca(m):
+                # No respondieron, o dijo que sí con una marca vieja (la red falló y el horno conservó la anterior).
+                self.sin_respuesta, self.seguidas = self.sin_respuesta + 1, self.seguidas + 1
+                self.cortado = self.seguidas >= SEGUIDAS_SIN_RESPUESTA
+                return "", "", "?"
+            self.revisados, self.seguidas = self.revisados + 1, 0
         d = donde(m)
         if d:
             return d, m.get("isbn") or "", ""
-        if m.get("tienda") in ("casadelibro", "gandhi") or not m:
+        if m.get("tienda") in ("casadelibro", "gandhi"):
             self.sin_isbn += 1
             return "", "", "sin isbn"
         return "", "", "no"
@@ -318,7 +353,7 @@ NO_KIDS = """- edad: siempre "".
 
 
 def esquema(perfil):
-    edades = list(EDADES) if perfil == "kids" else [""]
+    edad = {"type": "string", "enum": list(EDADES)} if perfil == "kids" else {"type": "string"}
     item = {"type": "object", "additionalProperties": False,
             "required": ["i", "conoce", "mision", "estado", "claridad", "parecido", "de_que_trata", "razon",
                          "titulo_bien", "autor_bien", "edad", "apto", "delicado"],
@@ -327,7 +362,7 @@ def esquema(perfil):
                 "estado": {"type": "string", "enum": list(ESTADOS)}, "claridad": {"type": "number"},
                 "parecido": {"type": "number"}, "de_que_trata": {"type": "string"}, "razon": {"type": "string"},
                 "titulo_bien": {"type": "string"}, "autor_bien": {"type": "string"},
-                "edad": {"type": "string", "enum": edades}, "apto": {"type": "boolean"}, "delicado": {"type": "string"}}}
+                "edad": edad, "apto": {"type": "boolean"}, "delicado": {"type": "string"}}}
     return {"type": "object", "additionalProperties": False, "required": ["libros"],
             "properties": {"libros": {"type": "array", "items": item}}}
 
@@ -353,8 +388,11 @@ def juez_ia(perfil, avisos=None):
                        "response_format": {"type": "json_schema", "json_schema": {"name": "juicio", "schema": esq}},
                        "messages": [{"role": "system", "content": sistema}, {"role": "user", "content": usuario}]}
             try:
-                d = ia.chat(payload, timeout=180)
+                d = ia.chat(payload, timeout=300)
                 r = json.loads(d["choices"][0]["message"]["content"] or "{}")
+                faltan = [k for k in esq.get("required", []) if k not in (r if isinstance(r, dict) else {})]
+                if faltan:   # un rechazo llega vacío: es una falla, no un lote sin libros
+                    raise ValueError(f"respuesta sin {', '.join(faltan)}")
                 if papel == "mini" and "mini" not in usado and avisos is not None:
                     avisos.append("El juez «grande» no respondió en alguna llamada; esa la calificó el «mini» del horno.")
                 usado.add(papel)
@@ -397,6 +435,7 @@ def juzgar(perfil, cands, recientes_, llamar, avisos):
         except Exception as e:
             avisos.append(f"Un lote de {len(lote)} candidatos no se calificó ({e}); esos no entran esta vez.")
             continue
+        antes = len(juicios)
         for j in (r or {}).get("libros") or []:
             i = j.get("i")
             if not isinstance(i, int) or not (k <= i < k + len(lote)):
@@ -411,9 +450,13 @@ def juzgar(perfil, cands, recientes_, llamar, avisos):
                 "razon": " ".join(str(j.get("razon") or "").split())[:220],
                 "titulo_bien": titulo_bien, "autor_bien": autor_bien,
                 "errata": errata(cands[i]["titulo"], titulo_bien) or errata(cands[i]["autor"], autor_bien),
-                "edad": j.get("edad") if j.get("edad") in EDADES else "",
+                "edad": (j.get("edad") if j.get("edad") in EDADES else "") if perfil == "kids" else "",
                 "apto": bool(j.get("apto")) if perfil == "kids" else True,
                 "delicado": " ".join(str(j.get("delicado") or "").split())[:160] if perfil == "kids" else ""}
+        sin_juicio = len(lote) - (len(juicios) - antes)
+        if sin_juicio:
+            avisos.append(f"El juez dejó sin calificar {_n(sin_juicio, 'candidato', 'candidatos')} de un lote de {len(lote)}: "
+                          "esos no entran esta vez.")
     return juicios
 
 
@@ -537,12 +580,21 @@ def elegir(perfil, cands, cuantos, tiendas, llamar, avisos):
 
 
 def ordenar(elegidos):
-    """El orden de la lista: por puntaje (y por título si empatan), sin dos seguidos del mismo ánimo mientras se pueda."""
+    """El orden de la lista: por puntaje (y por título si empatan), sin dos seguidos del mismo ánimo mientras se pueda.
+    En cada paso va el mejor de un ánimo distinto del anterior; si un ánimo distinto del anterior tiene más de la mitad
+    de lo que falta, va el mejor de ese ánimo, porque si no, al final quedarían dos seguidos que se podían evitar."""
     resto = sorted(elegidos, key=lambda c: (-c["total"], normalizar(c["titulo"])))
     orden = []
     while resto:
         previo = orden[-1]["juicio"]["estado"] if orden else None
-        k = next((n for n, c in enumerate(resto) if c["juicio"]["estado"] != previo), 0)
+        cuenta = {}
+        for c in resto:
+            cuenta[c["juicio"]["estado"]] = cuenta.get(c["juicio"]["estado"], 0) + 1
+        forzado = next((e for e, n in cuenta.items() if e != previo and 2 * n > len(resto)), None)
+        if forzado:
+            k = next(n for n, c in enumerate(resto) if c["juicio"]["estado"] == forzado)
+        else:
+            k = next((n for n, c in enumerate(resto) if c["juicio"]["estado"] != previo), 0)
         orden.append(resto.pop(k))
     return orden
 
@@ -690,8 +742,12 @@ def correr(a, juez=None, revisar=None):
     elegidos = ordenar(elegidos)
     malos = erratas(a.lista, cands)
     if tiendas.sin_respuesta:
-        avisos.append(f"Las tiendas no respondieron en {_n(tiendas.sin_respuesta, 'revisión', 'revisiones')}: "
-                      "esos libros no entraron esta vez, y nadie entró en su lugar.")
+        avisos.append(f"En {_n(tiendas.sin_respuesta, 'revisión', 'revisiones')} de hoy las tiendas no dieron una respuesta "
+                      "clara (no respondieron, o la red falló): esos libros no entraron esta vez, y nadie entró en su lugar.")
+    if tiendas.cortado:
+        avisos.append(f"Las tiendas no respondieron {SEGUIDAS_SIN_RESPUESTA} veces seguidas y dejé de revisarlas, como hace "
+                      f"el horno: {_n(tiendas.sin_revisar, 'libro sin marca vigente se quedó', 'libros sin marca vigente se quedaron')} "
+                      "sin revisar y no entraron.")
     if tiendas.sin_isbn:
         avisos.append(f"{_n(tiendas.sin_isbn, 'libro se consigue', 'libros se consiguen')} pero sin ISBN registrado: "
                       "no entraron esta vez.")

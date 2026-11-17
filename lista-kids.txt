@@ -1,4 +1,4 @@
-# 🎬 LA LISTA KIDS — Triggui
+# 🎬 LA LISTA KIDS · Triggui
 # Solo títulos que Badir aprobó. Una línea por libro, formato exacto:  Título | Autor
 #
 # Cada lunes y cada jueves, a las 5am, el sistema toma el PRIMER título de esta lista
@@ -9,7 +9,7 @@
 # robot (🗳️ Propuestas) llegan como pull request, con la edad de cada libro en
 # edades-kids.json: entran cuando Badir les da «Merge».
 #
-# Las lineas con # se ignoran. Ejemplo (borra el # para activarlo):
+# Las líneas con # se ignoran. Ejemplo (borra el # para activarlo):
 # Donde viven los monstruos | Maurice Sendak
 #
 # Aprobados por Badir el 16 de noviembre de 2026, 18:54 (B436). Se consiguen en

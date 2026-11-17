@@ -5,8 +5,9 @@
 # que menciona a Badir. Él aprueba con «Merge» (B436); nada se publica sin eso. No sube nada a triggui-content.
 #
 # Corre solo a mano hasta que Badir dé el go para su horario, porque un horario es una tarea programada. El horario
-# propuesto: cada martes a las 10 de la mañana (CDMX), y entonces solo propone si a la lista le quedan menos de 6 títulos
-# (sin «forzar»). Si ya hay una propuesta abierta de esa lista, no abre otra.
+# propuesto: cada martes a las 10 de la mañana (hora de México), y entonces solo propone si a la lista le quedan menos de
+# 6 títulos (sin «forzar»). Si ya hay una propuesta abierta de esa lista (su rama empieza con «propuestas/» y trae el
+# nombre de la lista), no abre otra.
 
 name: 🗳️ Propuestas de libros
 
@@ -25,7 +26,7 @@ on:
           - 'adultos'
           - 'kids'
       cuantos:
-        description: 'Cuántos libros por lista (vacío: hasta completar 12)'
+        description: 'Cuántos libros por lista, de 1 a 40 (vacío: los que falten para llegar a 12, y al menos 4)'
         required: false
         type: string
       forzar:
@@ -45,7 +46,7 @@ concurrency:
 jobs:
   proponer:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 150
     steps:
       - uses: actions/checkout@v4
         with:
@@ -94,7 +95,8 @@ jobs:
           mkdir -p /tmp/registros
           for l in adultos kids; do
             if [ "$LISTA" != "las dos" ] && [ "$LISTA" != "$l" ]; then continue; fi
-            abiertas="$(gh pr list --state open --label "propuesta-$l" --json number --jq '.[].number' || true)"
+            abiertas="$(gh pr list --state open --base main --limit 100 --json number,headRefName \
+              --jq ".[] | select(.headRefName | test(\"^propuestas/.*-$l-[0-9]{4}\$\")) | .number")"
             if [ -n "$abiertas" ]; then
               echo "::notice::Ya hay una propuesta abierta de $l (#$abiertas): no abro otra hasta que Badir la apruebe o la cierre."
               continue
@@ -124,9 +126,8 @@ jobs:
             fi
             git commit --quiet -m "🗳️ Propuesta de libros ($l) del $hoy: entra con el Merge de Badir"
             git push --quiet origin "$rama"
-            gh label create "propuesta-$l" --color 7B61FF --description "Propuesta del robot de libros" >/dev/null 2>&1 || true
             gh pr create --base main --head "$rama" --title "🗳️ Propuesta de libros ($l) · $hoy" \
-              --body-file "/tmp/propuesta/propuesta-$l.md" --label "propuesta-$l"
+              --body-file "/tmp/propuesta/propuesta-$l.md"
             cat "/tmp/propuesta/propuesta-$l.md" >> "$GITHUB_STEP_SUMMARY"
             git switch --quiet --detach origin/main
           done

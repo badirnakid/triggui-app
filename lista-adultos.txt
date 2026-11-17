@@ -1,10 +1,10 @@
-# 🎬 LA LISTA DEL DIRECTOR — Triggui (adultos)
-# Una linea por libro, formato exacto:  Título | Autor
+# 🎬 LA LISTA DEL DIRECTOR · Triggui (adultos)
+# Una línea por libro, formato exacto:  Título | Autor
 # Cada lunes y cada jueves, a las 6am, el sistema toma el PRIMER título
 # de esta lista que se consiga en Casa del Libro o en Gandhi, lo publica
 # completo (edición viva + tarjeta + og; el correo del día lo lleva) y lo
 # borra de aquí solito. Los que ese día no se consiguen se saltan y se
-# quedan. Si la lista está vacía, ese día no se publica nada. Las lineas
+# quedan. Si la lista está vacía, ese día no se publica nada. Las líneas
 # con # se ignoran. Las propuestas del robot (🗳️ Propuestas) llegan como
 # pull request: entran a esta lista cuando Badir les da «Merge».
 #
