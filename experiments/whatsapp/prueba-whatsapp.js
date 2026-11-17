@@ -209,7 +209,7 @@ prueba("quiénes reciben: solo «sí», con la elegibilidad del lunes y sin repe
   const L = JSON.parse(JSON.stringify(E.ctx.waPersonas_()));
   assert.deepStrictEqual(L.personas.map(function (p) { return [p.nombre, p.tel, p.lang, p.cat]; }), [
     ["Ana", "525511111111", "es", "adultos"], ["Bob", "15125550101", "en", "adultos"], ["Carla", "525522222222", "es", "kids"]]);
-  assert.deepStrictEqual(L.resumen, { conSi: 9, sinTel: 1, telRaro: 1, baja: 1, unsub: 1, expirados: 2, repetidos: 1, lada52: 2, siSinEntender: 1 });
+  assert.deepStrictEqual(L.resumen, { conSi: 9, sinTel: 1, telRaro: 1, baja: 1, unsub: 1, expirados: 2, prueba: 0, repetidos: 1, lada52: 2, siSinEntender: 1 });
 });
 
 prueba("si la hoja falla a medio envío, el aviso dice cuántos sí salieron", function () {
@@ -349,11 +349,32 @@ prueba("el envío: tres plantillas, su bitácora, su correo; y la segunda vez no
   assert.strictEqual(E.llamadas.filter(function (l) { return /\/messages$/.test(l.url); }).length, 3);
 });
 
-prueba("si pasan del tope no manda a nadie", function () {
+prueba("si pasan del tope salen los primeros del tope y el aviso dice cuántos quedaron fuera (C481)", function () {
   const E = entorno({ props: Object.assign({}, PROPS_OK, { WA_TOPE: "2" }) });
   const r = E.ctx.waEnviarLunes();
-  assert.ok(/tope es 2/.test(r.aviso));
-  assert.strictEqual(E.llamadas.filter(function (l) { return /\/messages$/.test(l.url); }).length, 0);
+  assert.strictEqual(r.aceptados, 2);
+  assert.strictEqual(r.fueraDelTope, 1);
+  assert.strictEqual(E.llamadas.filter(function (l) { return /\/messages$/.test(l.url); }).length, 2);
+  const aviso = E.correos.filter(function (c) { return /Fuera del tope/.test(c.texto); });
+  assert.strictEqual(aviso.length, 1, JSON.stringify(E.correos.map(function (c) { return c.asunto; })));
+  assert.ok(/Fuera del tope \(WA_TOPE, 2\): 1\. Salieron primero los que pagan/.test(aviso[0].texto));
+});
+
+prueba("los que pagan primero, y la prueba de 28 días sin WhatsApp los lunes (Badir, 18:54 del 16 de noviembre)", function () {
+  const filas = [ENC.slice(),
+    fila("Pia", "5512121212", "SUBSCRIBED_TRIAL 2026-11-10 09:00", "es", "sí"),
+    fila("Quim", "5513131313", "", "es", "sí"),
+    fila("Rosa", "5514141414", "SUBSCRIBED_MEMBER_129 2026-11-01", "es", "sí"),
+    fila("Sol", "5515151515", "SUBSCRIBED_MEMBER 2026-11-01", "es", "sí")];
+  const L = JSON.parse(JSON.stringify(entorno({ filas: filas }).ctx.waPersonas_()));
+  assert.deepStrictEqual(L.personas.map(function (p) { return p.nombre; }), ["Rosa", "Sol", "Quim"]);
+  assert.strictEqual(L.resumen.prueba, 1);
+  const E = entorno({ filas: filas, props: Object.assign({}, PROPS_OK, { WA_TOPE: "2" }) });
+  const r = E.ctx.waEnviarLunes();
+  assert.strictEqual(r.aceptados, 2);
+  assert.strictEqual(r.fueraDelTope, 1);
+  const a = E.llamadas.filter(function (l) { return /\/messages$/.test(l.url); }).map(function (l) { return JSON.parse(l.o.payload).to; });
+  assert.deepStrictEqual(a, ["525514141414", "525515151515"]);
 });
 
 prueba("el error de una persona no detiene a las demás", function () {

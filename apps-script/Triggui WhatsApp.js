@@ -11,7 +11,10 @@
  *
  * Candados:
  *   · Nada sale si la propiedad WA_ACTIVO no dice «si». Primero waEnsayo(): cuenta y arma, no manda.
- *   · Si los elegibles pasan de WA_TOPE (60 si falta), no manda a nadie y avisa por correo.
+ *   · Primero los que pagan. Si los elegibles pasan de WA_TOPE (60 si falta), salen los primeros WA_TOPE en ese orden
+ *     y el aviso dice cuántos quedaron fuera (C481).
+ *   · La prueba de 28 días (SUBSCRIBED_TRIAL) no recibe el WhatsApp de los lunes: solo la bienvenida al registrarse
+ *     y después correo (Badir, 16 de noviembre de 2026, 18:54).
  *   · Nunca dos veces la misma edición al mismo número (hoja «WA envíos»).
  *   · Un error de cuenta, de token, de plantilla o de cobro detiene el envío; uno de una persona, no.
  *   · El límite de Meta (personas distintas a las que el negocio escribe primero en 24 horas, del portafolio):
@@ -154,10 +157,11 @@ function waCorrer_(ensayo, continuacion) {
     const personas = L.personas;
     resumen = { ensayo: ensayo, personas: personas.length, filtros: L.resumen, porIdioma: { es: 0, en: 0 },
       porCatalogo: { adultos: 0, kids: 0 }, aceptados: 0, yaTenian: 0, errores: 0, detenido: "", muestra: null,
-      pendientes: 0, limite: null, continua: false };
+      pendientes: 0, limite: null, continua: false, fueraDelTope: 0 };
+    // C481: si son más que el tope, salen los primeros del tope en orden (primero los que pagan) y el aviso lo dice.
     if (personas.length > cfg.tope) {
-      return waAviso_("Son " + personas.length + " personas con «sí» y el tope es " + cfg.tope +
-        ": no mandé a nadie. Revisa la columna WhatsApp o sube WA_TOPE.", !ensayo);
+      resumen.fueraDelTope = personas.length - cfg.tope;
+      personas.splice(cfg.tope);
     }
     if (!personas.length) return waAviso_("Nadie tiene «sí» en la columna WhatsApp: no hay a quién mandar.", !ensayo);
     const ed = waEdiciones_(personas.some(function (p) { return p.cat === "kids"; }));
@@ -219,6 +223,8 @@ function waCorrer_(ensayo, continuacion) {
     waCorreo_("Triggui WhatsApp: " + resumen.aceptados + " de " + resumen.personas + (continuacion ? " (continuación)" : " este lunes"),
       "Salieron: " + resumen.aceptados + " de " + resumen.personas + "\n" +
       "Ya la tenían de antes: " + resumen.yaTenian + "\n" +
+      (resumen.fueraDelTope ? "Fuera del tope (WA_TOPE, " + cfg.tope + "): " + resumen.fueraDelTope +
+        ". Salieron primero los que pagan; sube WA_TOPE para llegar a todos.\n" : "") +
       "Errores: " + resumen.errores + (resumen.detenido ? "\nSe detuvo: " + resumen.detenido : "") + "\n" +
       "Límite de Meta hoy: " + (isFinite(lim.limite) ? lim.limite + " (se usa " + lim.presupuesto + ")" : "ilimitado") +
       (lim.leido ? "" : ", el más bajo, porque no se pudo leer el escalón") + "\n" +
@@ -264,7 +270,7 @@ function waPersonas_() {
   if (!col) throw new Error("Falta la columna «WhatsApp» en la hoja: agrégala en la primera columna libre y escribe «sí» en cada persona que te dio permiso.");
   const vistos = {};
   const personas = [];
-  const r = { conSi: 0, sinTel: 0, telRaro: 0, baja: 0, unsub: 0, expirados: 0, repetidos: 0, lada52: 0, siSinEntender: 0 };
+  const r = { conSi: 0, sinTel: 0, telRaro: 0, baja: 0, unsub: 0, expirados: 0, prueba: 0, repetidos: 0, lada52: 0, siSinEntender: 0 };
   for (let i = 1; i < data.length; i++) {
     const permiso = waLeerPermiso_(data[i][col - 1]);
     if (permiso.baja) { r.baja++; continue; }
@@ -278,6 +284,8 @@ function waPersonas_() {
     if (isRowUnsubscribed(data[i])) { r.unsub++; continue; }
     const status = String(data[i][UNSUBSCRIBE_COL - 1] || "").trim();
     if (status.startsWith("SUBSCRIBED_EXPIRED") || debeMarcarseExpired(data[i])) { r.expirados++; continue; }
+    // La prueba recibe la bienvenida por WhatsApp al registrarse y después solo correo (Badir, 16 de noviembre de 2026, 18:54).
+    if (status.toUpperCase().startsWith("SUBSCRIBED_TRIAL")) { r.prueba++; continue; }
     const clave = waClaveTel_(tel);
     if (vistos[clave]) { r.repetidos++; continue; }
     vistos[clave] = true;
@@ -285,8 +293,11 @@ function waPersonas_() {
     try { lang = leerIdiomaFila(sheet, i + 1) || "es"; } catch (e) {}
     if (/^(04[45])?\d{10}$/.test(crudo.replace(/\D/g, ""))) r.lada52++;   // diez dígitos: se les puso el 52 de México
     personas.push({ fila: i + 1, nombre: String(data[i][0] || "").trim(), tel: tel, clave: clave,
-      lang: lang === "en" ? "en" : "es", cat: permiso.kids ? "kids" : "adultos" });
+      lang: lang === "en" ? "en" : "es", cat: permiso.kids ? "kids" : "adultos",
+      miembro: status.toUpperCase().startsWith("SUBSCRIBED_MEMBER") });
   }
+  // C481: los que pagan primero; dentro de cada grupo, el orden de la hoja (el orden de JavaScript es estable).
+  personas.sort(function (a, b) { return (b.miembro ? 1 : 0) - (a.miembro ? 1 : 0); });
   return { personas: personas, resumen: r };
 }
 

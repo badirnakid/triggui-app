@@ -366,7 +366,13 @@ const INTRO_MESSAGES_EN = [
 // V19.2.2: bloque "Recibe TAMBIÉN Triggui en tu WhatsApp" — SOLO para arriba (aleatorio).
 // NO incluye triggui.com ni número de WhatsApp (eso vive permanentemente en el footer).
 // Mismo tipo de letra que el footer para coherencia visual cuántico-quark.
-function generarWhatsAppPromoTopHTML(cardWidth) {
+function generarWhatsAppPromoTopHTML(cardWidth, rowData) {
+  // Badir, 16 de noviembre de 2026 (18:54): «si quieres recibir por WhatsApp, paga aquí». El de $149 ya lo recibe: no se le
+  // muestra. La base sin sello no recibe venta (como en su banner): el recuadro va sin botón.
+  if (rowData && isRowSubscribedMember(rowData) && !isRowSubscribedMember129(rowData)) return "";
+  const boton = (rowData && !isRowBulkLegacy(rowData))
+    ? `<div style="margin:14px 0 0 0;"><a href="${STRIPE_LINK_PREMIUM_149}" style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;font-size:14px;line-height:1.4;font-weight:600;color:#B8740F;text-decoration:underline;">Recíbelo en tu WhatsApp por $149 al mes</a></div>`
+    : "";
   return aInglesCascara(`<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
     <tr><td align="center" style="padding:10px 12px 14px 12px;">
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:${cardWidth}px;">
@@ -392,7 +398,7 @@ function generarWhatsAppPromoTopHTML(cardWidth) {
             letter-spacing:-0.1px;
             margin:0;
             mso-line-height-rule:exactly;
-          ">Una tarjeta como esta en el momento exacto que mejore un poco tu ánimo.</div>
+          ">Una tarjeta como esta en el momento exacto que mejore un poco tu ánimo.</div>${boton}
         </td></tr>
       </table>
     </td></tr>
@@ -400,6 +406,13 @@ function generarWhatsAppPromoTopHTML(cardWidth) {
 }
 
 const WHATSAPP_PROMO_TOP_PLAIN = "\n────────────────────────────\nRECIBE TAMBIÉN TRIGGUI EN TU WHATSAPP\n\nUna tarjeta como esta en el momento exacto que mejore un poco tu ánimo.\n────────────────────────────\n";
+/** El recuadro de WhatsApp en texto plano, con la misma regla que el HTML (generarWhatsAppPromoTopHTML). */
+function whatsappPromoTopPlain_(rowData) {
+  if (rowData && isRowSubscribedMember(rowData) && !isRowSubscribedMember129(rowData)) return "";
+  if (!rowData || isRowBulkLegacy(rowData)) return WHATSAPP_PROMO_TOP_PLAIN;
+  return "\n────────────────────────────\nRECIBE TAMBIÉN TRIGGUI EN TU WHATSAPP\n\nUna tarjeta como esta en el momento exacto que mejore un poco tu ánimo.\n"
+    + "Recíbelo en tu WhatsApp por $149 al mes: " + STRIPE_LINK_PREMIUM_149 + "\n────────────────────────────\n";
+}
 
 // ═══════════════════════════════════════════════════════════════════════
 // V22 — ESPIRAL PROMO BANNER (gemela del patrón Kids, asiento de honor)
@@ -2819,8 +2832,8 @@ function prepararEmailParaEnvio(nombreDestinatario, emailDestinatario, rowIdx) {
         // Aleatoriedad WhatsApp promo: SOLO arriba (50%) o no aparece arriba
         // El footer SIEMPRE tiene triggui.com + número, sin importar este flag
         const mostrarWaArriba = Math.random() < 0.5;
-        const waTopHTML = mostrarWaArriba ? generarWhatsAppPromoTopHTML(c.cardWidth) : "";
-        const waTopPlain = mostrarWaArriba ? aInglesCascara(WHATSAPP_PROMO_TOP_PLAIN) : "";
+        const waTopHTML = mostrarWaArriba ? generarWhatsAppPromoTopHTML(c.cardWidth, rowData) : "";
+        const waTopPlain = mostrarWaArriba ? aInglesCascara(whatsappPromoTopPlain_(rowData)) : "";
 
         // V23 — accent del libro para los banners
         const _accCorreo = (typeof tarjeta !== "undefined" && tarjeta && tarjeta.style && tarjeta.style.accent) || "";
@@ -3101,8 +3114,9 @@ function doPost(e) {
     // 💬 La casilla «Quiero recibirlo también por WhatsApp» (sin marcar por defecto): permiso explícito para esta fila.
     const quiereWa = params.wa_ok === "1";
     const langForm = params.lang === "en" ? "en" : "es";
-    // Se aplica al final de cada camino, con el estado ya escrito: la bienvenida solo sale si la fila recibe los lunes
-    // (la misma elegibilidad de waPersonas_: sin baja del correo y sin prueba vencida). El permiso se guarda siempre.
+    // Se aplica al final de cada camino, con el estado ya escrito: la bienvenida sale si la fila recibe correo (sin baja
+    // y sin prueba vencida). La prueba sí la recibe, aunque los lunes por WhatsApp son de quien paga (Badir, 16 de
+    // noviembre de 2026, 18:54; waPersonas_). El permiso se guarda siempre.
     const aplicarWa = function (fila, telFila, langFila) {
       if (!quiereWa) return;
       try {
@@ -3713,9 +3727,20 @@ function renderPaginaEntendido(primerNombre) {
  *   - Tracking en columnas J-N (autor, frase, fecha, edición)
  *
  * ══════════════════════════════════════════════════════════════════════════ */
+/** C476: si falta la hoja o el correo no puede armarse, no sale a nadie: se le avisa a Badir (antes solo quedaba en el registro). */
+function avisarCorreoNoSalio_(motivo) {
+  try {
+    if (MailApp.getRemainingDailyQuota() > 0) {
+      MailApp.sendEmail(DIAG_EMAIL, "Triggui: el correo de hoy no salió",
+        "El envío (enviarTrigguiLunes) se detuvo antes de mandarle a nadie.\n\nMotivo: " + motivo +
+        "\n\nNo salió ningún correo. Cuando se arregle, la siguiente corrida le manda la edición a quien le falte.");
+    }
+  } catch (e) { Logger.log("⚠️ No pude avisar por correo: " + e.message); }
+}
+
 function enviarTrigguiLunes() {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
-  if (!sheet) { Logger.log("❌ No existe la hoja: " + SHEET_NAME); return; }
+  if (!sheet) { Logger.log("❌ No existe la hoja: " + SHEET_NAME); avisarCorreoNoSalio_("No existe la hoja «" + SHEET_NAME + "»."); return; }
 
   if (sheet.getLastRow() < 2) { Logger.log("❌ No hay destinatarios."); return; }
 
@@ -3725,6 +3750,7 @@ function enviarTrigguiLunes() {
   const prep = prepararEmailParaEnvio();
   if (!prep.ok) {
     Logger.log("❌ ABORT: " + prep.reason);
+    avisarCorreoNoSalio_(prep.reason);
     return;
   }
 
@@ -3765,7 +3791,7 @@ function enviarTrigguiLunes() {
   //   - Si una fila tiene múltiples emails, se envía a TODOS los emails de esa fila
   // ════════════════════════════════════════════════════════════════════════
 
-  const QUOTA_BUFFER = 5;
+  const QUOTA_BUFFER = 20;   // C476: lo que se deja del día para bienvenidas, avisos de Stripe y cambios de idioma
   const remainingQuota = MailApp.getRemainingDailyQuota();
   const maxEnviosBatch = Math.max(0, remainingQuota - QUOTA_BUFFER);
 
@@ -3865,7 +3891,7 @@ function enviarTrigguiLunes() {
     if (isRowSubscribedMember(data[i])) {
       if (!tieneRotacion) poolMemberNuevos.push(entry);
       else poolMemberRotacion.push(entry);
-    } else if (isRowSubscribedFree(data[i])) {
+    } else if (isRowSubscribedFree(data[i]) || isRowSubscribedTrial(data[i])) {   // C476: la prueba es consentida: con los gratis, antes de la base vieja
       if (!tieneRotacion) poolFreeNuevos.push(entry);
       else poolFreeRotacion.push(entry);
     } else {
@@ -3883,8 +3909,8 @@ function enviarTrigguiLunes() {
   Logger.log("");
   Logger.log(`💎 Pool 1 — MEMBER nuevos:        ${poolMemberNuevos.length} filas`);
   Logger.log(`💠 Pool 2 — MEMBER rotación:      ${poolMemberRotacion.length} filas`);
-  Logger.log(`🟢 Pool 3 — FREE nuevos:          ${poolFreeNuevos.length} filas`);
-  Logger.log(`🔵 Pool 4 — FREE rotación:        ${poolFreeRotacion.length} filas`);
+  Logger.log(`🟢 Pool 3 — PRUEBA y FREE nuevos:   ${poolFreeNuevos.length} filas`);
+  Logger.log(`🔵 Pool 4 — PRUEBA y FREE rotación: ${poolFreeRotacion.length} filas`);
   Logger.log(`🟡 Pool 5 — BULK_LEGACY nuevos:   ${poolBulkNuevos.length} filas`);
   Logger.log(`🟠 Pool 6 — BULK_LEGACY rotación: ${poolBulkRotacion.length} filas`);
   Logger.log(`⏭️  Ya recibieron este libro:     ${skippedYaRecibieron} filas`);
@@ -3952,8 +3978,8 @@ function sendToRow(row, batchInfo) {
     const trialTopPlainFila = generarTrialBannerTopPlain(data[i]);
 
     const mostrarWaArribaFila = Math.random() < 0.5;
-    const waTopHTMLFila = mostrarWaArribaFila ? generarWhatsAppPromoTopHTML(cFila.cardWidth) : "";
-    const waTopPlainFila = mostrarWaArribaFila ? aInglesCascara(WHATSAPP_PROMO_TOP_PLAIN) : "";
+    const waTopHTMLFila = mostrarWaArribaFila ? generarWhatsAppPromoTopHTML(cFila.cardWidth, data[i]) : "";
+    const waTopPlainFila = mostrarWaArribaFila ? aInglesCascara(whatsappPromoTopPlain_(data[i])) : "";
 
     // V23 — accent del libro para los banners (por fila)
     const _accFila = (libro && libro.tarjeta && libro.tarjeta.style && libro.tarjeta.style.accent) || "";
@@ -4010,6 +4036,10 @@ function sendToRow(row, batchInfo) {
       return enviadosEnEstaFila;
     } catch (e) {
       Logger.log(`⚠️  Error con ${emailsToSend}: ${e.message}`);
+      // C476: si el error es de cuota (el mensaje de Google, o la cuota ya en cero), el ciclo se detiene: lo demás sigue en la siguiente corrida.
+      let restante = 1;
+      try { restante = MailApp.getRemainingDailyQuota(); } catch (e2) {}
+      if (/too many times|demasiadas veces|quota|cuota/i.test(String((e && e.message) || "")) || restante <= 0) errorDeCuota = true;
       return 0;
     }
   }
@@ -4023,6 +4053,8 @@ function sendToRow(row, batchInfo) {
   let enviadosBulkRotacion    = 0;
   let filasProcesadas         = 0;
   let pendientesRestantes     = 0;
+  let destinatariosEnviados   = 0;      // C476: la cuota se mide por destinatarios, no por filas
+  let errorDeCuota            = false;  // C476: la cuota de Google se acabó a medio ciclo: se detiene
 
   // Helper: determina la categoría de cada row para reporting
   function tipoDeRow(row) {
@@ -4053,7 +4085,8 @@ function sendToRow(row, batchInfo) {
   }
 
   for (const row of pipeline) {
-    if (filasProcesadas >= maxEnviosBatch) {
+    // C476: se para en la cuota (contada por destinatarios: una fila puede traer varios correos) o al primer error de cuota.
+    if (errorDeCuota || destinatariosEnviados + row.emails.length > maxEnviosBatch) {
       pendientesRestantes++;
       continue;
     }
@@ -4068,6 +4101,7 @@ function sendToRow(row, batchInfo) {
 
     if (enviados > 0) {
       filasProcesadas++;
+      destinatariosEnviados += enviados;
       // V18l: registrar el envío en col P para respetar cap semanal
       recordSend(sheet, row.rowIdx + 1);  // +1 porque rowIdx es 0-based en data, 1-based en sheet
 
@@ -4082,6 +4116,8 @@ function sendToRow(row, batchInfo) {
       // 250ms es seguro (Gmail acepta ~4 req/s sin problemas).
       // Para 70 envíos: ~18s extra. Apps Script timeout manual 30min → margen amplio.
       Utilities.sleep(250);
+    } else if (errorDeCuota) {
+      pendientesRestantes++;   // C476: la que falló por cuota también queda para la siguiente corrida
     }
   }
 
@@ -4115,6 +4151,7 @@ function sendToRow(row, batchInfo) {
   Logger.log(`⚠️  Filas sin email válido:            ${skippedSinEmail}`);
   Logger.log("───────────────────────────────────────────────────────────────");
   Logger.log(`📊 Total filas en sheet:               ${data.length - 1}`);
+  Logger.log(`📨 Destinatarios enviados:             ${destinatariosEnviados}${errorDeCuota ? " (se detuvo: la cuota de Google se acabó)" : ""}`);
   Logger.log(`📬 Quota Gmail restante después:       ${MailApp.getRemainingDailyQuota()}`);
 
   // 📮 Marcador del cartero: memoria de la ultima edicion repartida
@@ -4142,6 +4179,9 @@ function sendToRow(row, batchInfo) {
   if (poolMemberNuevos.length === 0 && poolFreeNuevos.length === 0 && poolBulkNuevos.length === 0 && skippedYaRecibieron === data.length - 1 - skippedSinEmail) {
     Logger.log("");
     Logger.log(`🎯 TODA tu base ya recibió este libro. Genera uno nuevo.`);
+  } else if (pendientesRestantes > 0) {
+    Logger.log("");
+    Logger.log(`⏳ Quedan ${pendientesRestantes} para la siguiente corrida: ${errorDeCuota ? "la cuota de Google se acabó" : "la cuota del día ya se usó"}.`);
   } else {
     Logger.log("");
     Logger.log(`🎯 Base completa cubierta en este batch.`);
@@ -4315,7 +4355,7 @@ function previewMasivo() {
 
   // 2. Quota
   const quota = MailApp.getRemainingDailyQuota();
-  const QUOTA_BUFFER = 5;
+  const QUOTA_BUFFER = 20;   // C476: lo que se deja del día para bienvenidas, avisos de Stripe y cambios de idioma
   const maxEnvios = Math.max(0, quota - QUOTA_BUFFER);
   Logger.log("📬 Quota Gmail restante: " + quota);
   Logger.log("   Buffer seguridad: " + QUOTA_BUFFER);
@@ -4353,7 +4393,7 @@ function previewMasivo() {
     if (isRowSubscribedMember(data[i])) {
       if (!tieneRotacion) { memberNuevos++; if (muestras.member.length < 3) muestras.member.push((data[i][0] || "?") + " · " + emailsInRow[0]); }
       else { memberRotacion++; }
-    } else if (isRowSubscribedFree(data[i])) {
+    } else if (isRowSubscribedFree(data[i]) || isRowSubscribedTrial(data[i])) {   // C476: la prueba es consentida: con los gratis, antes de la base vieja
       if (!tieneRotacion) { freeNuevos++; if (muestras.free.length < 3) muestras.free.push((data[i][0] || "?") + " · " + emailsInRow[0]); }
       else { freeRotacion++; }
     } else {
@@ -4526,6 +4566,7 @@ const DIAG_EMAIL = "badir@triggui.com";
 const USD_APROX_129 = "8";
 const USD_APROX_149 = "9";
 const DIC_CASCARA_EN = [
+  ["Recíbelo en tu WhatsApp por $149 al mes", "Get it on your WhatsApp for MXN $149/month (about USD $" + USD_APROX_149 + ")"],
   ["Tu periodo gratis terminó, pero la barra mágica sigue gratis.", "Your free period has ended. The magic bar is still free."],
   ["¿Aún no quieres suscribirte? La barra mágica está en la app, gratis.", "Not ready to subscribe? The magic bar is in the app, free."],
   ["La barra mágica está en la app, gratis.", "The magic bar is in the app, free."],
