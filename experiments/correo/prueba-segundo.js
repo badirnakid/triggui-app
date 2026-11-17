@@ -19,7 +19,7 @@ const LUNES = '2026-11-16T13:00:00.000Z';            // el envío de este lunes
 function bytesFirmados(buf) { return Array.from(buf, b => (b > 127 ? b - 256 : b)); }
 
 const T = { titulo: 'Tarjeta', subtitulo: 'Sub', parrafoTop: 'Arriba.', parrafoBot: 'Abajo.', style: { accent: '#3355AA' } };
-const libro = (titulo, extra) => Object.assign({ titulo, autor: 'Autora', tarjeta: T }, extra || {});
+const libro = (titulo, extra) => Object.assign({ titulo, autor: 'Autora', tarjeta: T, portada: 'https://portadas.ejemplo.com/' + encodeURIComponent(titulo) + '.jpg' }, extra || {});
 // Las ediciones de adultos, la más nueva primero, con su fecha de publicación.
 const CUR = libro('Edición actual', { _slug: 'edicion-actual', _edicion_numero: 112, _manual_generated_at: '2026-11-14T01:00:00Z' });
 const MANUAL = [CUR,
@@ -110,7 +110,8 @@ function nuevoMundo(op) {
           if (op.fallaCatalogo === url) return { getResponseCode: () => 500, getContentText: () => '' };
           return { getResponseCode: () => 200, getContentText: () => JSON.stringify({ libros: catalogos[url] }) };
         }
-        if (/^https:\/\/app\.triggui\.com\//.test(url)) return { getResponseCode: () => ((op.sinPagina || []).some(s => url.indexOf('/' + s + '/') !== -1) ? 404 : 200) };
+        if (/^https:\/\/app\.triggui\.com\//.test(url)) return { getResponseCode: () => ((op.sinPagina || []).some(s => s === '*' || url.indexOf('/' + s + '/') !== -1) ? 404 : 200) };
+        if (/^https:\/\/portadas\.ejemplo\.com\//.test(url)) return { getResponseCode: () => 404 };   // la portada va por su liga, sin incrustar
         throw new Error('URL inesperada: ' + url);
       },
     },
@@ -151,7 +152,7 @@ prueba('quién recibe: tope 2 con su envío de este lunes; los demás, no', () =
     fila('Lu', 'lu@ejemplo.com', { estado: 'SUBSCRIBED_MEMBER_129 2026-10-01', alta: '2026-10-01' }),             // $129: tope 1
     fila('Tea', 'tea@ejemplo.com', { estado: 'SUBSCRIBED_TRIAL 2026-11-10 09:00', alta: '2026-11-10', envios: ['2026-11-10T09:00:00Z', LUNES] }),
     fila('Wen', 'wen@ejemplo.com', { estado: 'SUBSCRIBED_TRIAL 2026-11-18 09:00', alta: '2026-11-18', envios: ['2026-11-18T09:00:00Z'] }),   // llegó el miércoles
-    fila('Tom', 'tom@ejemplo.com', { estado: MIEMBRO, alta: '2026-10-01', envios: ['2026-11-09T13:00:00Z'] }),     // el de este lunes no le llegó
+    fila('Tom', 'tom@ejemplo.com', { estado: MIEMBRO, alta: '2026-10-01', envios: ['2026-11-09T13:00:00Z'], j: 'Edición 111' }),   // el de este lunes no le llegó
     fila('Uri', 'uri@ejemplo.com', { estado: 'UNSUBSCRIBED 2026-11-01', alta: '2026-10-01' }),
     fila('Eve', 'eve@ejemplo.com', { estado: 'SUBSCRIBED_TRIAL 2026-10-01 09:00', alta: '2026-10-01' }),         // prueba vencida
     fila('Ben', 'ben@ejemplo.com', { estado: '' }),                                                             // base vieja: tope 1
@@ -159,8 +160,12 @@ prueba('quién recibe: tope 2 con su envío de este lunes; los demás, no', () =
   ] });
   const r = m.ctx.enviarTrigguiSegundo();
   assert.deepStrictEqual(m.enviados.map(e => e.para).sort(), ['fer@ejemplo.com', 'mia@ejemplo.com', 'tea@ejemplo.com']);
-  assert.deepStrictEqual([r.candidatos, r.filas, r.enviados, r.sinLibro, r.errores], [3, 3, 3, 0, 0]);
-  assert.strictEqual(m.avisos.length, 0, 'sin novedades no se avisa');
+  assert.deepStrictEqual([r.candidatos, r.filas, r.enviados, r.sinLibro, r.errores, r.esperanLunes], [3, 3, 3, 0, 0, 1]);
+  assert.strictEqual(m.avisos.length, 1);
+  assert.ok(/No han recibido el correo de este lunes: 1\. Corre enviarTrigguiLunes\(\)/.test(m.avisos[0].texto), m.avisos[0].texto);
+  const sinNovedad = nuevoMundo({ filas: [fila('Mia', 'mia@ejemplo.com', { estado: MIEMBRO, alta: '2026-10-01', envios: ['2026-11-09T13:00:00Z', LUNES] })] });
+  sinNovedad.ctx.enviarTrigguiSegundo();
+  assert.strictEqual(sinNovedad.avisos.length, 0, 'sin novedades no se avisa');
 });
 
 prueba('después de mandar: su tope (P) y su historia (LIBROS) se anotan; J a N, que son del lunes, no cambian', () => {
@@ -168,7 +173,7 @@ prueba('después de mandar: su tope (P) y su historia (LIBROS) se anotan; J a N,
   m.ctx.enviarTrigguiSegundo();
   const f = m.datos[1];
   assert.deepStrictEqual(f[15].split(','), [LUNES, new Date(JUEVES).toISOString()]);
-  assert.strictEqual(f[19], 'e90', 'su alta es del 1 de octubre: el archivo anterior a la edición de entonces (la 100) es la 90 (con página)');
+  assert.strictEqual(f[19], 'e90,t:edicion-90', 'su alta es del 1 de octubre: el archivo anterior a la edición de entonces (la 100) es la 90 (con página); se anotan sus dos fichas');
   assert.deepStrictEqual([f[9], f[13]], [CUR.titulo, '#112']);
   assert.strictEqual(m.preparados[0].opciones.etiqueta, '(segundo de la semana)');
   assert.ok(m.preparados[0].opciones.segundo && m.preparados[0].opciones.soloHistoria);
@@ -185,7 +190,7 @@ prueba('el lunes no corre; el ensayo dice a quién le toca qué y no manda ni es
     fila('Kim', 'kim@ejemplo.com', { estado: MIEMBRO, alta: '2026-10-01', perfil: 'kids', j: 'Kids actual' })] });
   const antes = JSON.stringify(m.datos);
   const r = m.ctx.ensayoSegundoCorreo();
-  assert.deepStrictEqual(JSON.parse(JSON.stringify(r.plan)), [{ fila: 2, perfil: 'adultos', libro: 'e90', grupo: 0 }, { fila: 3, perfil: 'kids', libro: 'cuento-uno', grupo: 0 }]);
+  assert.deepStrictEqual(JSON.parse(JSON.stringify(r.plan)), [{ fila: 2, perfil: 'adultos', libro: 'e90', grupo: 0, segundo: true }, { fila: 3, perfil: 'kids', libro: 'cuento-uno', grupo: 0, segundo: true }]);
   assert.strictEqual(m.enviados.length + m.avisos.length, 0);
   assert.strictEqual(JSON.stringify(m.datos), antes);
 });
@@ -230,6 +235,10 @@ prueba('una página que no abre no se manda: se elige el siguiente', () => {
   m.ctx.enviarTrigguiSegundo();
   assert.strictEqual(m.datos[1][19], 't:edicion-80');
   assert.ok(m.pedidas.indexOf('https://app.triggui.com/t/e90/') !== -1);
+  const todas = nuevoMundo({ sinPagina: ['*'], catalogo: [CATALOGO[0]], filas: [fila('Mia', 'mia@ejemplo.com', { estado: MIEMBRO, alta: '2026-05-01', envios: ['2026-11-09T13:00:00Z', LUNES] })] });
+  todas.ctx.enviarTrigguiSegundo();
+  assert.strictEqual(todas.enviados.length, 0);
+  assert.ok(/Sin un libro cuya página abra: 1/.test(todas.avisos[0].texto) && !/se les acabaron/.test(todas.avisos[0].texto), todas.avisos[0].texto);
 });
 
 prueba('sin libro que no haya recibido, sin cuota o sin un catálogo: no sale a quien no toca y Badir recibe el aviso', () => {
@@ -279,23 +288,23 @@ prueba('el lunes anota su historia y no repite un libro que ya está en ella, au
   vm.runInContext('prepararEmailParaEnvio = function () { return { ok: true, libro: ' + JSON.stringify(CUR) + ', subject: "S", finalHTML: "<html><body>x</body></html>", finalPlain: "x", inlineImages: {} }; };', m.ctx);
   m.ctx.enviarTrigguiLunes();
   assert.deepStrictEqual(m.enviados.map(e => e.para), ['ana@ejemplo.com']);
-  assert.strictEqual(m.datos[1][19], 'edicion-actual');
+  assert.strictEqual(m.datos[1][19], 'edicion-actual,t:edicion-actual');
   assert.strictEqual(m.datos[2][19], 'e90,edicion-actual');
 });
 
-prueba('la historia: crea la columna si falta, no duplica el mismo libro seguido y guarda los últimos 150', () => {
+prueba('la historia: crea la columna si falta, anota las dos fichas de cada libro sin repetirlas y guarda las últimas 300', () => {
   const m = nuevoMundo({ filas: [fila('Ana', 'ana@ejemplo.com').slice(0, 19)] });
   m.datos[0] = ENC.slice(0, 19);
   const hoja = m.ctx.SpreadsheetApp.getActiveSpreadsheet().getSheetByName('x');
   m.ctx.anotarLibroEnviado_(hoja, 2, CUR);
-  assert.deepStrictEqual([m.datos[0][19], m.datos[1][19]], ['LIBROS', 'edicion-actual']);
+  assert.deepStrictEqual([m.datos[0][19], m.datos[1][19]], ['LIBROS', 'edicion-actual,t:edicion-actual']);
   m.ctx.anotarLibroEnviado_(hoja, 2, CUR);
   m.ctx.anotarLibroEnviado_(hoja, 2, libro('Sin Slug Ñandú'));
-  assert.strictEqual(m.datos[1][19], 'edicion-actual,t:sin-slug-nandu');
+  assert.strictEqual(m.datos[1][19], 'edicion-actual,t:edicion-actual,t:sin-slug-nandu');
   for (let k = 0; k < 160; k++) m.ctx.anotarLibroEnviado_(hoja, 2, libro('L' + k, { _slug: 'l' + k }));
   const fichas = m.datos[1][19].split(',');
-  assert.strictEqual(fichas.length, 150);
-  assert.deepStrictEqual([fichas[0], fichas[149]], ['l10', 'l159']);
+  assert.strictEqual(fichas.length, 300);
+  assert.deepStrictEqual([fichas[0], fichas[299]], ['l10', 't:l159']);
 });
 
 prueba('el activador: los jueves hacia las 7, sin duplicar; quitarlo lo quita', () => {
@@ -316,6 +325,67 @@ prueba('el ensayo del lunes (previewMasivo) también lee la historia, como el en
   const linea = re => (m.bitacora.find(l => re.test(l)) || '');
   assert.ok(/Ya recibieron este libro: 1/.test(linea(/Ya recibieron/)), linea(/Ya recibieron/));
   assert.ok(/TOTAL ENVIABLES:\s+1/.test(linea(/TOTAL ENVIABLES/)), linea(/TOTAL ENVIABLES/));
+});
+
+// ── los objetivos de la primera revisión ────────────────────────────────────────────────────────────────
+prueba('O1: un libro del catálogo sin slug que después es edición con slug no se repite (lo reconoce por su título)', () => {
+  const ESEN = libro('Esencialismo', { _slug: 'esencialismo', _edicion_numero: 113, _manual_generated_at: '2026-11-21T01:00:00Z' });
+  const m = nuevoMundo({ hoy: Date.UTC(2026, 10, 23, 13, 0, 0), filas: [
+    fila('Ana', 'ana@ejemplo.com', { j: 'Edición actual', envios: ['2026-11-16T13:00:00Z', '2026-11-19T15:00:00Z'], libros: 'edicion-actual,t:edicion-actual,t:esencialismo' })] });
+  vm.runInContext('prepararEmailParaEnvio = function () { return { ok: true, libro: ' + JSON.stringify(ESEN) + ', subject: "S", finalHTML: "x", finalPlain: "x", inlineImages: {} }; };', m.ctx);
+  m.ctx.enviarTrigguiLunes();
+  assert.strictEqual(m.enviados.length, 0, 'el lunes ya no se lo repite');
+  const cats = { manual: [ESEN].concat(MANUAL), catalogo: [libro('Esencialismo')].concat(CATALOGO), kids: KIDS, avisos: [] };
+  const r = m.ctx.elegirLibroSegundo_(fila('x', 'x@x.com', { alta: '2026-05-01', libros: 'esencialismo' }), ENC, cats, 0);
+  assert.notStrictEqual(m.ctx.normalTitulo_(r.libro && r.libro.titulo), 'esencialismo', 'ni al revés: con su slug en la historia, el del catálogo sin slug tampoco');
+});
+
+prueba('O2: quien ya tenía la edición de esta semana (el lunes lo saltó) recibe su correo de la semana el jueves, sin decir «segundo»', () => {
+  const m = nuevoMundo({ prepReal: true, filas: [
+    fila('Ana', 'ana@ejemplo.com', { estado: MIEMBRO, alta: '2026-10-01', envios: ['2026-11-09T13:00:00Z', '2026-11-12T15:00:00Z'], libros: 'edicion-actual,t:edicion-actual' })] });
+  const r = m.ctx.enviarTrigguiSegundo();
+  assert.deepStrictEqual([r.candidatos, r.filas, r.esperanLunes], [1, 1, 0]);
+  assert.ok(!/segundo libro de la semana/.test(m.enviados[0].html), 'es su único correo de la semana');
+  assert.strictEqual(m.avisos.length, 0);
+  // Y el lunes siguiente no se le bloquea: el jueves queda a 4 días del lunes, y el envío anterior a más de 7.
+  const tope = m.datos[1][15].split(',');
+  assert.deepStrictEqual(tope, ['2026-11-12T15:00:00Z', new Date(JUEVES).toISOString()]);
+});
+
+prueba('O3: un alta en las horas entre generar y publicar una edición no cuenta la anterior como «nunca le llegó»', () => {
+  const m = nuevoMundo();
+  const cats = { manual: MANUAL, catalogo: CATALOGO, kids: KIDS, avisos: [] };
+  const elige = (alta, s) => m.ctx.fichaLibro_(m.ctx.elegirLibroSegundo_(fila('x', 'x@x.com', { alta }), ENC, cats, s || 0).libro);
+  // La 111 se generó el 7 a la 01:00 UTC; a las 01:20 todavía podía estar llegando la 110 como bienvenida.
+  const cerca = [0, 1, 2].map(s => elige('2026-11-07T01:20:00Z', s));
+  assert.ok(cerca.indexOf('e110') === -1, 'la 110 queda fuera: ' + cerca);
+  const lejos = [0, 1, 2].map(s => elige('2026-11-07T09:00:00Z', s));
+  assert.ok(lejos.indexOf('e110') !== -1, 'pasado el margen, la 110 sí es del archivo: ' + lejos);
+});
+
+prueba('O5: si no se puede anotar el tope de una fila, se avisa y las demás siguen', () => {
+  const m = nuevoMundo({ filas: [
+    fila('Mia', 'mia@ejemplo.com', { estado: MIEMBRO, alta: '2026-10-01', envios: ['2026-11-09T13:00:00Z', LUNES] }),
+    fila('Tea', 'tea@ejemplo.com', { estado: MIEMBRO, alta: '2026-10-01', envios: ['2026-11-09T13:00:00Z', LUNES] })] });
+  vm.runInContext('var __rs = recordSend, __n = 0; recordSend = function (s, r) { if (++__n === 1) throw new Error("Servicio de hojas"); return __rs(s, r); };', m.ctx);
+  const r = m.ctx.enviarTrigguiSegundo();
+  assert.deepStrictEqual([r.filas, r.sinTope], [2, 1]);
+  assert.ok(/no pude anotar su tope \(columna P\): 1/.test(m.avisos[0].texto), m.avisos[0].texto);
+});
+
+prueba('O6: el domingo el aviso no promete «mañana»', () => {
+  const m = nuevoMundo({ hoy: Date.UTC(2026, 10, 22, 15, 0, 0), cuota: 20, filas: [
+    fila('Mia', 'mia@ejemplo.com', { estado: MIEMBRO, alta: '2026-10-01', envios: ['2026-11-09T13:00:00Z', LUNES] })] });
+  m.ctx.enviarTrigguiSegundo();
+  assert.ok(/Hoy es domingo: esta semana ya no les sale/.test(m.avisos[0].texto) && !/mañana/.test(m.avisos[0].texto), m.avisos[0].texto);
+});
+
+prueba('un libro sin portada nunca se elige', () => {
+  const m = nuevoMundo();
+  const sinPortada = libro('Sin portada', { _slug: 'aaa-sin-portada', portada: '' });
+  const cats = { manual: MANUAL, catalogo: [sinPortada].concat(CATALOGO), kids: KIDS, avisos: [] };
+  const vistos = [0, 1, 2, 3, 4].map(s => m.ctx.fichaLibro_(m.ctx.elegirLibroSegundo_(fila('x', 'x@x.com', { alta: '' }), ENC, cats, s).libro));
+  assert.ok(vistos.indexOf('aaa-sin-portada') === -1, vistos.join());
 });
 
 console.log(process.exitCode ? 'FALLÓ: ' + pruebas + ' pruebas pasadas.' : 'Todo en verde: ' + pruebas + ' pruebas pasadas.');
