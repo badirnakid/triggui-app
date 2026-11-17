@@ -209,10 +209,10 @@ function waCorrer_(ensayo, continuacion) {
       resumen.calidad = waCalidad_(cfg);
       if (!ensayo && !resumen.calidad.puede) {
         if (continuacion) waOlvidarContinuacion_();
-        return waAviso_("No salió nada: " + resumen.calidad.motivo + ". Calidad: " + waCalidadTexto_(resumen.calidad) +
-          (resumen.calidad.detalle ? ". Meta dice: " + resumen.calidad.detalle : "") +
-          ". Revísalo en WhatsApp Manager (calificación de calidad del número). Cuando vuelva a verde, corre waEnviarLunes():" +
-          " sale sin repetir a nadie." + (continuacion ? " La continuación de esta edición quedó cancelada." : ""), true);
+        return waAviso_("No salió nada: " + resumen.calidad.motivo + ". Calidad: " + waCalidadTexto_(resumen.calidad) + "." +
+          (resumen.calidad.detalle ? " Meta dice: " + resumen.calidad.detalle.replace(/[.\s]+$/, "") + "." : "") +
+          " Revísalo en WhatsApp Manager. Cuando esté resuelto, corre waEnviarLunes(): sale sin repetir a nadie." +
+          (continuacion ? " La continuación de esta edición quedó cancelada." : ""), true);
       }
       resumen.limite = waLimiteMeta_(cfg);
       resumen.limite.presupuesto = isFinite(resumen.limite.limite) ? Math.floor(resumen.limite.limite * WA_USO_DEL_LIMITE) : null;
@@ -422,7 +422,7 @@ function waResumenDelLunes() {
       if ((orden[nuevo] || 0) > (orden[actual] || 0)) wamids[String(f[2])] = nuevo;
     } else if (tipo === "boton" && botones[String(f[4])] !== undefined) botones[String(f[4])]++;
     else if (tipo === "baja") bajas++;
-    else if (tipo === "preferencia" && String(f[4]) === "stop") bajasMenu++;
+    else if (tipo === "preferencia" && String(f[4]) === "stop" && parseInt(String(f[5]), 10) > 0) bajasMenu++;   // solo quien estaba en la hoja
   });
   const cuenta = { aceptado: 0, sent: 0, delivered: 0, read: 0, failed: 0 };
   Object.keys(wamids).forEach(function (k) { cuenta[wamids[k]]++; });
@@ -447,7 +447,9 @@ function waResumenDelLunes() {
 
 /* ─────────────────────────────── el puente con triggui.com/api/wa ─────────────────────────────── */
 
-/** doPost(action=wa_puente): baja, estado de un mensaje o botón tocado. Lo manda triggui.com/api/wa con la clave. */
+/** doPost(action=wa_puente): baja, estado de un mensaje, botón tocado, preferencia de marketing o aviso de plantilla.
+ *  Lo manda triggui.com/api/wa con la clave. Una preferencia o un aviso de plantilla repetidos (mismo momento) se
+ *  atienden una sola vez en 6 horas: Meta puede repetir un aviso y caer en otra instancia de Vercel. */
 function waPuente_(p) {
   const clave = String(PropertiesService.getScriptProperties().getProperty("WA_PUENTE_CLAVE") || "");
   if (clave.length < 32 || !waIguales_(String((p && p.clave) || ""), clave)) return { ok: false, error: "clave" };
@@ -482,9 +484,12 @@ function waPuente_(p) {
   if (tipo === "preferencia") {
     const valor = String(p.valor || "");
     if (!tel || (valor !== "stop" && valor !== "resume")) return { ok: false, error: "preferencia" };
+    const visto = waYaVisto_(p.cuando ? ["up", tel, valor, p.cuando].join("|") : "");
+    if (visto.antes) return { ok: true, repetido: true };
     const n = valor === "stop" ? waMarcarBaja_(waClaveTel_(tel), "dejó de recibir marketing") : 0;
     waHoja_(WA_HOJA_EVENTOS, WA_ENC_EVENTOS).appendRow([new Date(), "preferencia", "", "'" + tel, valor,
       valor === "stop" ? n + " fila(s)" : "volvió a aceptar el marketing; su columna no cambia"]);
+    visto.marcar();
     if (valor === "stop" && n === 0) return { ok: false, filas: 0, error: "sin_fila" };
     return { ok: true, filas: n };
   }
@@ -493,6 +498,8 @@ function waPuente_(p) {
     const nombre = String(p.nombre || "");
     const evento = String(p.evento || "");
     if (!/^triggui_[a-z0-9_]{1,60}$/.test(nombre) || WA_EVENTOS_PLANTILLA.indexOf(evento) === -1) return { ok: false, error: "plantilla" };
+    const visto = waYaVisto_(p.cuando ? ["pl", String(p.id || nombre).slice(0, 40), String(p.idioma || "").slice(0, 12), evento, p.cuando].join("|") : "");
+    if (visto.antes) return { ok: true, repetido: true };
     const idioma = waLimpia_(p.idioma, 12), motivo = waLimpia_(p.motivo, 60), titulo = waLimpia_(p.titulo, 60);
     const descripcion = waLimpia_(p.descripcion, 300), cuenta = String(p.waba || "").replace(/\D/g, "").slice(0, 30);
     waHoja_(WA_HOJA_EVENTOS, WA_ENC_EVENTOS).appendRow([new Date(), "plantilla", "", "", evento,
@@ -503,12 +510,37 @@ function waPuente_(p) {
         "Meta avisó " + evento + " de la plantilla " + nombre + (idioma ? " en " + idioma : "") + (cuenta ? ", de la cuenta " + cuenta : "") + ".\n" +
         (motivo && motivo !== "NONE" ? "Motivo: " + motivo + "\n" : "") + (titulo ? "Detalle: " + titulo + "\n" : "") +
         (descripcion ? "Lo que dice Meta: " + descripcion + "\n" : "") +
-        "\nMientras una plantilla esté pausada o desactivada, el envío que la usa se detiene en el primer mensaje y te avisa." +
-        " Revísala en WhatsApp Manager › Plantillas de mensajes.");
+        "\n" + waConsecuenciaPlantilla_(evento, nombre) + "Revísala en WhatsApp Manager › Plantillas de mensajes.");
     }
+    visto.marcar();
     return { ok: true };
   }
   return { ok: false, error: "tipo" };
+}
+
+/** Lo que de verdad pasa con cada aviso de plantilla, en una frase (vacía si no hay nada que añadir). */
+function waConsecuenciaPlantilla_(evento, nombre) {
+  if (evento === "PAUSED" || evento === "DISABLED") {
+    if (nombre === WA_PLANTILLA_ADULTOS || nombre === WA_PLANTILLA_NINOS) return "Mientras esté así, el envío del lunes se detiene en el primer mensaje y te avisa. ";
+    if (nombre === WA_PLANTILLA_BIENVENIDA) return "Mientras esté así, la bienvenida del formulario no sale: queda como error en «" + WA_HOJA_ENVIOS + "». ";
+    return "Mientras esté así, no se puede mandar. ";
+  }
+  if (evento === "FLAGGED") return "Su calidad bajó: si no mejora, Meta puede pausarla. ";
+  if (evento === "REJECTED") return "No se puede usar hasta corregirla y mandarla a revisión otra vez. ";
+  if (evento === "DELETED" || evento === "PENDING_DELETION") return "Ya no se podrá mandar con este nombre. ";
+  return "";
+}
+
+/** Para avisos que Meta puede repetir: antes es true si la misma clave se atendió en las últimas 6 horas; marcar()
+ *  la guarda cuando ya se atendió. Sin clave (el aviso no traía su momento) no se compara: se atiende siempre. */
+function waYaVisto_(clave) {
+  const k = clave ? "wa_v|" + String(clave).slice(0, 200) : "";
+  let cache = null;
+  try { cache = k ? CacheService.getScriptCache() : null; } catch (e) {}
+  return {
+    antes: !!(cache && cache.get(k)),
+    marcar: function () { try { if (cache) cache.put(k, "1", 21600); } catch (e) {} }
+  };
 }
 
 /** Escribe «baja AAAA-MM-DD» en la columna WhatsApp de cada fila con ese número. Devuelve cuántas. */
@@ -586,12 +618,15 @@ function waBienvenida_(telefono, lang) {
  *  (health_status), y decide con waSemaforo_. Nunca truena: si no se puede leer, el semáforo dice que no sale. */
 function waCalidad_(cfg) {
   let j = null;
-  try {
-    const r = UrlFetchApp.fetch("https://graph.facebook.com/" + cfg.version + "/" + encodeURIComponent(cfg.numeroId) +
-      "?fields=" + WA_CAMPOS_CALIDAD, { muteHttpExceptions: true, headers: { Authorization: "Bearer " + cfg.token } });
-    const leido = JSON.parse(r.getContentText("UTF-8") || "{}");
-    if (r.getResponseCode() === 200) j = leido;
-  } catch (e) {}
+  for (let intento = 1; intento <= 2 && !j; intento++) {   // un tropiezo de red no deja a todos sin su libro: un segundo intento
+    if (intento === 2) Utilities.sleep(3000);
+    try {
+      const r = UrlFetchApp.fetch("https://graph.facebook.com/" + cfg.version + "/" + encodeURIComponent(cfg.numeroId) +
+        "?fields=" + WA_CAMPOS_CALIDAD, { muteHttpExceptions: true, headers: { Authorization: "Bearer " + cfg.token } });
+      const leido = JSON.parse(r.getContentText("UTF-8") || "{}");
+      if (r.getResponseCode() === 200 && leido && typeof leido === "object" && !leido.error) j = leido;
+    } catch (e) {}
+  }
   return waSemaforo_(j);
 }
 
