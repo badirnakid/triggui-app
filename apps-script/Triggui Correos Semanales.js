@@ -141,6 +141,57 @@ function colPerfil_(sheet, crear) {
   return ultima + 1;
 }
 
+/* 📚 C477, paso 3 — lo que cada persona ya recibió por correo, para que el segundo correo de la semana no repita.
+   Columna LIBROS (por su encabezado, nace con el primer envío): fichas separadas por coma, la más reciente al
+   final, hasta LIBROS_TOPE. La ficha es el _slug del libro; uno sin slug va como «t:» y su título normalizado.
+   Empieza vacía: lo de antes se deduce de la fecha de alta y de la columna J (elegirLibroSegundo_). */
+const LIBROS_HEADER = "LIBROS";
+const LIBROS_TOPE = 150;
+
+function normalTitulo_(t) {
+  return String(t == null ? "" : t).normalize("NFD").replace(/\p{M}/gu, "").toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 80);
+}
+
+function fichaLibro_(libro) {
+  const s = String((libro && libro._slug) || "").trim();
+  if (/^[a-z0-9-]{1,120}$/.test(s)) return s;
+  const t = normalTitulo_(libro && libro.titulo);
+  return t ? "t:" + t : "";
+}
+
+function fichasDeTexto_(crudo) {
+  return String(crudo == null ? "" : crudo).split(",").map(function (x) { return x.trim(); }).filter(Boolean);
+}
+
+/** Anota un libro enviado en la columna LIBROS de la fila. col y crudo: si ya se conocen (el envío del lunes los
+ *  trae en memoria), se ahorran dos lecturas. El mismo libro dos veces seguidas se anota una. Nunca truena. */
+function anotarLibroEnviado_(sheet, rowIdx, libro, col, crudo) {
+  try {
+    const ficha = fichaLibro_(libro);
+    if (!ficha || !sheet || !(rowIdx >= 2)) return;
+    let c = col || 0;
+    if (!c) {
+      const ultima = Math.max(1, sheet.getLastColumn());
+      c = columnaPorEncabezado_(sheet.getRange(1, 1, 1, ultima).getValues()[0], LIBROS_HEADER);
+      if (!c) { c = ultima + 1; sheet.getRange(1, c).setValue(LIBROS_HEADER); }
+    }
+    const actual = fichasDeTexto_(crudo === undefined ? sheet.getRange(rowIdx, c).getValue() : crudo);
+    if (actual[actual.length - 1] === ficha) return;
+    actual.push(ficha);
+    while (actual.length > LIBROS_TOPE) actual.shift();
+    sheet.getRange(rowIdx, c).setValue(actual.join(","));
+  } catch (e) { Logger.log("⚠️ No pude anotar el libro enviado: " + e.message); }
+}
+
+/** ¿La fila ya recibió este libro? Por la columna J (el último del lunes, como siempre) o por su historia. */
+function yaRecibioLibro_(fila, encabezados, libro) {
+  const j = String(fila[9] || "").trim().toLowerCase();
+  if (j && libro && j === String(libro.titulo || "").trim().toLowerCase()) return true;
+  const c = columnaPorEncabezado_(encabezados, LIBROS_HEADER);
+  return !!c && fichasDeTexto_(fila[c - 1]).indexOf(fichaLibro_(libro)) !== -1;
+}
+
 /* ════════════════════ V18h DELIVERABILITY CONFIG ════════════════════════
  * Estos valores controlan cómo aparece el remitente en el cliente de email.
  *
@@ -3005,11 +3056,15 @@ function prepararEmailParaEnvio(nombreDestinatario, emailDestinatario, rowIdx, o
       const sheetCheck = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
       if (sheetCheck) {
         const rowData = sheetCheck.getRange(rowIdx, 1, 1, SENDS_WEEK_COL).getValues()[0];
-        const nombreFila = sanitizarNombre(rowData[0]);
+        const nombreFila = (opciones && opciones.sinNombre) ? "" : sanitizarNombre(rowData[0]);   // C477: varios correos, saludo sin nombre
 
         // Saludo aleatorio (104 variantes)
-        const saludoHTML = generarSaludoHTML(nombreFila, c.sans, c.background, c.cardWidth);
-        const saludoPlain = generarSaludoTexto(nombreFila) + (nombreFila ? "\n\n" : "\n");
+        // C477, paso 3: el segundo correo de la semana se presenta antes del saludo.
+        const segundo = !!(opciones && opciones.segundo);
+        const lineaSegundo = (IDIOMA_ENVIO_ACTUAL === "en") ? "Your second book of the week" : "Tu segundo libro de la semana";
+        const saludoHTML = (segundo ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center" style="padding:10px 12px 0 12px;font-family:${c.sans};font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#8A8A8A;mso-line-height-rule:exactly;line-height:1.3;">${lineaSegundo}</td></tr></table>` : "") +
+          generarSaludoHTML(nombreFila, c.sans, c.background, c.cardWidth);
+        const saludoPlain = (segundo ? lineaSegundo + "\n\n" : "") + generarSaludoTexto(nombreFila) + (nombreFila ? "\n\n" : "\n");
 
         // Trial banner TOP (si aplica según fila)
         const trialTopHTML = generarTrialBannerTopHTML(rowData, c.sans, c.background, c.cardWidth);
@@ -3156,15 +3211,18 @@ function enviarTrigguiAUno(email, rowIdx, nombreDestinatario, opciones) {
       replyTo: REMITENTE_REPLY_TO          // hola@triggui.com (configurable)
     };
     sendOptions.htmlBody = String(sendOptions.htmlBody || "").replace(/\{\{[A-Z_]+\}\}/g, "");
-      GmailApp.sendEmail(email, prep.subject, String(prep.finalPlain || "").replace(/\{\{[A-Z_]+\}\}/g, ""), sendOptions);
+    // C477, paso 3: opciones.para manda a todos los correos de la fila (las ligas son del primero, como el lunes).
+      GmailApp.sendEmail((opciones && opciones.para) || email, prep.subject, String(prep.finalPlain || "").replace(/\{\{[A-Z_]+\}\}/g, ""), sendOptions);
   } catch (e) {
     return { ok: false, reason: "Error sendEmail: " + e.message };
   }
 
-  // 4. Marcar tracking en la fila
+  // 4. Marcar tracking en la fila. C477, paso 3: la historia (LIBROS) siempre; las columnas J a N, que son las del
+  // lunes («ya recibió este libro»), no con el segundo correo (opciones.soloHistoria).
   try {
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
-    if (sheet && rowIdx >= 2) {
+    if (sheet && rowIdx >= 2) anotarLibroEnviado_(sheet, rowIdx, prep.libro);
+    if (sheet && rowIdx >= 2 && !(opciones && opciones.soloHistoria)) {
       sheet.getRange(rowIdx, 10).setValue(prep.libro.titulo);
       sheet.getRange(rowIdx, 11).setValue(prep.libro.autor || "");
       sheet.getRange(rowIdx, 12).setValue(toPlainTextFromTokens(prep.libro.tarjeta.parrafoBot || "").slice(0, 200));
@@ -4067,8 +4125,15 @@ function enviarTrigguiLunes() {
     return null;
   }
   const encabezados = data[0] || [];
-
-  const tituloActualNorm = libro.titulo.toLowerCase().trim();
+  // 📚 C477, paso 3: la historia de cada fila (columna LIBROS). Si no existe, nace aquí, antes del ciclo, para
+  // anotar cada envío con una sola escritura por fila.
+  let colLibros = columnaPorEncabezado_(encabezados, LIBROS_HEADER);
+  if (!colLibros) {
+    try {
+      colLibros = Math.max(1, sheet.getLastColumn()) + 1;
+      sheet.getRange(1, colLibros).setValue(LIBROS_HEADER);
+    } catch (e) { colLibros = 0; Logger.log("⚠️ No pude crear la columna LIBROS: " + e.message); }
+  }
 
   for (let i = 1; i < data.length; i++) {
     const cellC       = data[i][2];               // Col C = email(s)
@@ -4102,15 +4167,15 @@ function enviarTrigguiLunes() {
 
     // 👧 C477: el perfil de la fila decide qué edición le toca (la de Kids solo si se pudo armar).
     const perfilFila = perfilDeFila_(data[i], encabezados);
-    let tituloDeSuEdicion = tituloActualNorm;
+    let libroDeSuEdicion = libro;
     if (perfilFila === "kids") {
       const baseKids = basePara("kids", "es");
       if (!baseKids) { skippedKidsSinEdicion++; continue; }
-      tituloDeSuEdicion = String(baseKids.libro.titulo || "").toLowerCase().trim();
+      libroDeSuEdicion = baseKids.libro;
     }
 
-    // ¿Ya recibió este libro?
-    if (ultimoLibro && ultimoLibro.toLowerCase() === tituloDeSuEdicion) {
+    // ¿Ya recibió este libro? Por la columna J, como siempre, o por su historia (C477, paso 3).
+    if (yaRecibioLibro_(data[i], encabezados, libroDeSuEdicion)) {
       skippedYaRecibieron++;
       continue;
     }
@@ -4257,6 +4322,7 @@ function sendToRow(row, batchInfo) {
       sheet.getRange(i + 1, 12).setValue(toPlainTextFromTokens(libroFila.tarjeta.parrafoBot || "").slice(0, 200));
       sheet.getRange(i + 1, 13).setValue(new Date());
       sheet.getRange(i + 1, 14).setValue(`#${formatEdicionNumero(libroFila._edicion_numero)}` + (kidsFila ? " Kids" : ""));
+      if (colLibros) anotarLibroEnviado_(sheet, i + 1, libroFila, colLibros, data[i][colLibros - 1] === undefined ? "" : data[i][colLibros - 1]);
 
       const tipoEmoji = batchInfo.emoji || "🆕";
       const tipoLabel = batchInfo.label || "Envío";
@@ -4431,6 +4497,242 @@ function sendToRow(row, batchInfo) {
     Logger.log("");
     Logger.log(`🎯 Base completa cubierta en este batch.`);
   }
+}
+
+/* ═════════════════════ 📚 EL SEGUNDO CORREO DE LA SEMANA (C477, paso 3) ═════════════════════
+ * El plan de $149, el Anual y la prueba prometen dos correos por semana (getCapSemanal = 2). El primero es el del
+ * lunes; este es el segundo: un libro de su perfil que a esa persona todavía no le ha llegado.
+ *   · Quién: tope 2, sin baja ni prueba vencida, sin llegar a su tope, y cuyo último envío fue el de ESTE lunes.
+ *     Si recibió algo después (una bienvenida a media semana) o si el del lunes no le ha llegado, espera: así el
+ *     lunes siguiente nunca se le bloquea.
+ *   · Qué libro (elegirLibroSegundo_): de adultos, primero una edición del archivo anterior a su alta (esas nunca
+ *     le llegaron) y después un libro del catálogo de la app que nunca fue edición; de Kids, uno del catálogo Kids
+ *     que no sea la edición de esta semana. Nunca uno de su historia (LIBROS) ni el de su columna J. Primero los
+ *     que tienen página (sus puertas abren), y entre ellos uno fijo por persona y semana (correr dos veces elige
+ *     lo mismo).
+ *   · Cómo: el mismo correo del lunes, con el libro elegido y la línea «Tu segundo libro de la semana», a todos
+ *     los correos de la fila; se anota en su historia y en su tope (columna P), no en las columnas J a N, que son
+ *     las del lunes.
+ * El lunes no corre. ensayoSegundoCorreo() dice a quién le tocaría qué, sin mandar nada. El activador lo instala
+ * instalarSegundoCorreo(), con el go de Badir (es una tarea programada).
+ * ══════════════════════════════════════════════════════════════════════════════════════════════════ */
+const CONTENIDO_CATALOGO_URL = "https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido.json";
+const SEGUNDO_DIA = "THURSDAY";   // el jueves; el del lunes sale hacia las 7:37
+const SEGUNDO_HORA = 7;
+const SEGUNDO_ETIQUETA = "(segundo de la semana)";
+
+function enviarTrigguiSegundo(e) { return correrSegundo_(esFecha_(e) ? e : new Date(), false); }
+function ensayoSegundoCorreo() { return correrSegundo_(new Date(), true); }
+
+function instalarSegundoCorreo() {
+  quitarSegundoCorreo();
+  ScriptApp.newTrigger("enviarTrigguiSegundo").timeBased().onWeekDay(ScriptApp.WeekDay[SEGUNDO_DIA]).atHour(SEGUNDO_HORA).create();
+  Logger.log("Listo: el segundo correo de la semana sale los jueves hacia las " + SEGUNDO_HORA + ".");
+}
+
+function quitarSegundoCorreo() {
+  ScriptApp.getProjectTriggers().forEach(function (t) {
+    if (t.getHandlerFunction() === "enviarTrigguiSegundo") ScriptApp.deleteTrigger(t);
+  });
+}
+
+function esFecha_(x) { return Object.prototype.toString.call(x) === "[object Date]" && !isNaN(x.getTime()); }
+
+/** La fecha local (yyyy-MM-dd) de un momento, en la zona del guion. */
+function diaLocal_(d) { return Utilities.formatDate(d, Session.getScriptTimeZone(), "yyyy-MM-dd"); }
+
+/** El lunes (yyyy-MM-dd) de la semana de un día local (yyyy-MM-dd). */
+function lunesDe_(dia) {
+  const d = new Date(dia + "T12:00:00Z");
+  const atras = (d.getUTCDay() + 6) % 7;   // lunes 0 … domingo 6
+  return new Date(d.getTime() - atras * 86400000).toISOString().slice(0, 10);
+}
+
+/** La fecha de alta de una fila: la columna F (la del formulario o de Stripe) o, si no hay, la de su prueba. */
+function fechaDeAlta_(fila) {
+  if (esFecha_(fila[5])) return fila[5];
+  const t = extractFechaInicioTrial(fila);
+  if (t) { const d = new Date(t + "T00:00:00"); if (!isNaN(d.getTime())) return d; }
+  return null;
+}
+
+function fechaDeLibro_(libro) {
+  const d = new Date(String((libro && libro._manual_generated_at) || ""));
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function semillaSegundo_(correo, lunes) {
+  const s = String(correo || "").toLowerCase() + "|" + lunes;
+  let h = 0;
+  for (let i = 0; i < s.length; i++) { h = ((h << 5) - h + s.charCodeAt(i)) | 0; }
+  return Math.abs(h);
+}
+
+/** Los tres catálogos, una vez por corrida. Sin el de adultos no se sigue (truena con su motivo); sin los otros
+ *  dos se sigue con lo que hay, y se dice. */
+function cargarCatalogosSegundo_() {
+  const leer = function (url) {
+    const r = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+    if (r.getResponseCode() !== 200) throw new Error("HTTP " + r.getResponseCode() + " al leer " + url.split("/").pop());
+    const j = JSON.parse(r.getContentText("UTF-8"));
+    return Array.isArray(j && j.libros) ? j.libros : [];
+  };
+  const manual = leer(CONTENIDO_URL);
+  if (!manual.length) throw new Error("contenido_manual.json sin libros");
+  const avisos = [];
+  let catalogo = [], kids = [];
+  try { catalogo = leer(CONTENIDO_CATALOGO_URL); } catch (e) { avisos.push(e.message); }
+  try { kids = leer(CONTENIDO_KIDS_URL); } catch (e) { avisos.push(e.message); }
+  return { manual: manual, catalogo: catalogo, kids: kids, avisos: avisos };
+}
+
+/** El libro del segundo correo de una fila (ver arriba). excluir: fichas que no valen en esta corrida (una página
+ *  que no abrió). Regresa { libro, perfil, grupo } con libro null si no queda ninguno. */
+function elegirLibroSegundo_(fila, encabezados, cats, semilla, excluir) {
+  const perfil = perfilDeFila_(fila, encabezados);
+  const cH = columnaPorEncabezado_(encabezados, LIBROS_HEADER);
+  const vistos = Object.assign({}, excluir || {});
+  fichasDeTexto_(cH ? fila[cH - 1] : "").forEach(function (f) { vistos[f] = true; });
+  const j = normalTitulo_(fila[9]);
+  const fuera = function (b) {
+    if (!b || !validarLibroEmail(b).ok) return true;
+    return !!vistos[fichaLibro_(b)] || (!!j && normalTitulo_(b.titulo) === j);
+  };
+  const ordenar = function (lista) {   // con página primero (slug), después sin página; cada grupo en un orden fijo
+    const fijo = function (a, b) { return fichaLibro_(a) < fichaLibro_(b) ? -1 : (fichaLibro_(a) > fichaLibro_(b) ? 1 : 0); };
+    return [lista.filter(function (b) { return fichaLibro_(b).indexOf("t:") !== 0; }).sort(fijo),
+            lista.filter(function (b) { return fichaLibro_(b).indexOf("t:") === 0; }).sort(fijo)];
+  };
+  let grupos;
+  if (perfil === "kids") {
+    const actual = fichaLibro_(cats.kids[0]);
+    grupos = ordenar(cats.kids.slice(1).filter(function (b) { return !fuera(b) && fichaLibro_(b) !== actual; }));
+  } else {
+    const ediciones = cats.manual;   // [0] es la de esta semana
+    const deEdicion = {};
+    ediciones.forEach(function (b) { if (b) deEdicion[normalTitulo_(b.titulo)] = true; });
+    const alta = fechaDeAlta_(fila);
+    let archivo = [];
+    if (alta) {
+      // La edición que estaba al día en su alta (la más nueva publicada hasta entonces) y las de después pudieron
+      // llegarle; las anteriores, nunca.
+      const fechas = ediciones.map(fechaDeLibro_);
+      let corte = null;
+      fechas.forEach(function (f) { if (f && f.getTime() <= alta.getTime() && (!corte || f.getTime() > corte.getTime())) corte = f; });
+      if (corte) archivo = ediciones.slice(1).filter(function (b, k) { const f = fechas[k + 1]; return !!f && f.getTime() < corte.getTime() && !fuera(b); });
+    }
+    const nuncaEdicion = (cats.catalogo || []).filter(function (b) {
+      return !!b && !b._edicion_numero && !b._manual && !deEdicion[normalTitulo_(b.titulo)] && !fuera(b);
+    });
+    grupos = ordenar(archivo).concat(ordenar(nuncaEdicion));
+  }
+  for (let g = 0; g < grupos.length; g++) {
+    if (grupos[g].length) return { libro: grupos[g][semilla % grupos[g].length], perfil: perfil, grupo: g };
+  }
+  return { libro: null, perfil: perfil, grupo: -1 };
+}
+
+/** ¿Abre la página de ese libro? Un libro sin slug no tiene página: su correo va sin puertas, y vale. */
+function paginaExiste_(libro, perfil, cache) {
+  const f = fichaLibro_(libro);
+  if (f.indexOf("t:") === 0) return true;
+  if (f in cache) return cache[f];
+  let ok = false;
+  try {
+    ok = UrlFetchApp.fetch("https://app.triggui.com/" + (perfil === "kids" ? "kids/t/" : "t/") + f + "/",
+      { muteHttpExceptions: true, followRedirects: true }).getResponseCode() === 200;
+  } catch (e) { ok = false; }
+  cache[f] = ok;
+  return ok;
+}
+
+function avisarSegundo_(texto) {
+  try {
+    if (MailApp.getRemainingDailyQuota() > 0) MailApp.sendEmail(DIAG_EMAIL, "Triggui: el segundo correo de la semana", texto);
+  } catch (e) { Logger.log("⚠️ No pude avisar del segundo correo: " + e.message); }
+}
+
+function correrSegundo_(hoy, ensayo) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  if (!sheet) { avisarSegundo_("No salió: no existe la hoja «" + SHEET_NAME + "»."); return { ok: false, motivo: "hoja" }; }
+  const hoyLocal = diaLocal_(hoy);
+  const lunes = lunesDe_(hoyLocal);
+  if (hoyLocal === lunes && !ensayo) {
+    Logger.log("Hoy es lunes: el segundo correo de la semana sale otro día.");
+    return { ok: true, motivo: "lunes", enviados: 0 };
+  }
+  let cats;
+  try { cats = cargarCatalogosSegundo_(); }
+  catch (err) {
+    if (!ensayo) avisarSegundo_("No salió: no pude leer los catálogos (" + err.message + "). Cuando se arregle, corre enviarTrigguiSegundo(): no repite a nadie.");
+    return { ok: false, motivo: err.message };
+  }
+  const maxEnvios = Math.max(0, MailApp.getRemainingDailyQuota() - 20);   // la misma reserva del lunes
+  const data = sheet.getDataRange().getValues();
+  const enc = data[0] || [];
+  const candidatos = [];
+  for (let i = 1; i < data.length; i++) {
+    const fila = data[i];
+    const correos = parseEmailsFromCell(fila[2]);
+    if (!correos.length || isRowUnsubscribed(fila)) continue;
+    const estado = String(fila[UNSUBSCRIBE_COL - 1] || "").trim().toUpperCase();
+    if (estado.indexOf("SUBSCRIBED_EXPIRED") === 0 || debeMarcarseExpired(fila)) continue;
+    if (getCapSemanal(fila) < 2) continue;
+    // La semana de calendario (de lunes a domingo): solo si su único envío de esta semana es el de este lunes.
+    // Así un segundo correo atrasado (el viernes) no le quita el de la semana siguiente.
+    const envios = parseTimestamps(fila[SENDS_WEEK_COL - 1]);
+    const deEstaSemana = envios.filter(function (t) { return diaLocal_(new Date(t)) >= lunes; });
+    if (deEstaSemana.length !== 1 || diaLocal_(new Date(deEstaSemana[0])) !== lunes) continue;
+    candidatos.push({ i: i, correos: correos, miembro: isRowSubscribedMember(fila) });
+  }
+  candidatos.sort(function (a, b) { return (b.miembro ? 1 : 0) - (a.miembro ? 1 : 0); });   // los que pagan primero
+
+  const r = { ok: true, candidatos: candidatos.length, filas: 0, enviados: 0, kids: 0, sinLibro: 0, errores: 0, pendientes: 0, plan: [] };
+  const paginas = {};
+  let errorDeCuota = false;
+  for (let k = 0; k < candidatos.length; k++) {
+    const c = candidatos[k];
+    if (!ensayo && (errorDeCuota || r.enviados + c.correos.length > maxEnvios)) { r.pendientes++; continue; }
+    const fila = data[c.i];
+    const excluir = {};
+    let elegido = null;
+    for (let intento = 0; intento < 5 && !elegido; intento++) {
+      const e2 = elegirLibroSegundo_(fila, enc, cats, semillaSegundo_(c.correos[0], lunes), excluir);
+      if (!e2.libro || paginaExiste_(e2.libro, e2.perfil, paginas)) elegido = e2;
+      else excluir[fichaLibro_(e2.libro)] = true;
+    }
+    if (!elegido || !elegido.libro) { r.sinLibro++; continue; }
+    if (ensayo) { r.plan.push({ fila: c.i + 1, perfil: elegido.perfil, libro: fichaLibro_(elegido.libro), grupo: elegido.grupo }); continue; }
+    const envio = enviarTrigguiAUno(c.correos[0], c.i + 1, c.correos.length > 1 ? "" : String(fila[0] || ""),
+      { libro: elegido.libro, etiqueta: SEGUNDO_ETIQUETA, para: c.correos.join(","), sinNombre: c.correos.length > 1, soloHistoria: true, segundo: true });
+    if (envio && envio.ok) {
+      recordSend(sheet, c.i + 1);
+      r.filas++;
+      r.enviados += c.correos.length;
+      if (elegido.perfil === "kids") r.kids++;
+      Utilities.sleep(250);
+    } else {
+      r.errores++;
+      const motivo = String((envio && envio.reason) || "sin motivo");
+      Logger.log("⚠️ Segundo correo, fila " + (c.i + 1) + ": " + motivo);
+      let restante = 1;
+      try { restante = MailApp.getRemainingDailyQuota(); } catch (x) {}
+      if (/too many times|demasiadas veces|quota|cuota/i.test(motivo) || restante <= 0) errorDeCuota = true;
+    }
+  }
+  PERFIL_ENVIO_ACTUAL = "adultos";
+  Logger.log("📚 Segundo correo" + (ensayo ? " (ensayo, no salió nada)" : "") + ": " + r.candidatos + " con derecho esta semana; " +
+    (ensayo ? r.plan.length + " con libro" : r.filas + " filas y " + r.enviados + " correos, " + r.kids + " de Kids") +
+    "; sin libro que no hayan recibido: " + r.sinLibro + "; errores: " + r.errores + "; para la siguiente corrida: " + r.pendientes);
+  if (ensayo) { Logger.log(JSON.stringify(r.plan)); return r; }
+  if (r.sinLibro || r.errores || r.pendientes || cats.avisos.length) {
+    avisarSegundo_("Salieron " + r.enviados + " correos (" + r.filas + " filas) de " + r.candidatos + " con derecho esta semana." +
+      (r.sinLibro ? "\nSin un libro que no hayan recibido: " + r.sinLibro + " (el archivo y el catálogo ya se les acabaron; no les salió)." : "") +
+      (r.errores ? "\nCon error al mandar: " + r.errores + " (el registro de la ejecución dice cuál)." : "") +
+      (r.pendientes ? "\nSin cuota hoy: " + r.pendientes + ". Corre enviarTrigguiSegundo() mañana: no repite a nadie." : "") +
+      (cats.avisos.length ? "\nCatálogos que no pude leer: " + cats.avisos.join("; ") + "." : ""));
+  }
+  return r;
 }
 
 /* ═══════════════════════ PREVIEW EN DRIVE ═══════════════════════════════
