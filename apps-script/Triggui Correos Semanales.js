@@ -69,6 +69,75 @@ let IDIOMA_ENVIO_ACTUAL = "es";
 let EMAIL_ENVIO_ACTUAL = "";
 const SHEET_NAME    = "Triggui Emails Prueba";
 
+/* 👧 C477 — el perfil de cada persona, como el idioma: «adultos» (el de entrada) o «kids», uno a la vez.
+   El plan dice cuántos mensajes llegan por semana; el perfil, de qué. La columna PERFIL se busca por su
+   encabezado y nace con el primer cambio (leer nunca la crea). Sin valor: «adultos», salvo un «sí kids» en la
+   columna WhatsApp, el permiso de antes de los perfiles. Cambiar no reinicia la semana: se cuenta por fila. */
+const PERFIL_HEADER = "PERFIL";
+const CONTENIDO_KIDS_URL = "https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido_kids.json";
+/* «sí» en las Propiedades del guion: el correo ofrece el cambio y el WhatsApp atiende «kids» y «adultos».
+   Lo prende Badir el día del lanzamiento (C477, paso 4). Apagado, el perfil igual decide el contenido. */
+const PERFIL_PROP = "PERFIL_ACTIVO";
+let PERFIL_ENVIO_ACTUAL = "adultos";
+
+function perfilActivo_() {
+  try {
+    const v = String(PropertiesService.getScriptProperties().getProperty(PERFIL_PROP) || "");
+    return v.normalize("NFD").replace(/\p{M}/gu, "").trim().toLowerCase() === "si";
+  } catch (e) { return false; }
+}
+
+/** «kids», «Kids», «niños» → "kids"; «adultos», «Adults» → "adultos"; cualquier otra cosa → "". */
+function perfilNormal_(v) {
+  const t = String(v == null ? "" : v).normalize("NFD").replace(/\p{M}/gu, "").trim().toLowerCase();
+  if (t === "kids" || t === "kid" || t === "ninos" || t === "nino" || t === "ninas" || t === "nina") return "kids";
+  if (t === "adultos" || t === "adulto" || t === "adults" || t === "adult") return "adultos";
+  return "";
+}
+
+/** El perfil de una fila con sus dos valores: el de la columna PERFIL manda; si está vacía, un «sí kids» de la
+ *  columna WhatsApp cuenta como «kids» (waLeerPermiso_, del módulo de WhatsApp); lo demás, «adultos». */
+function perfilDeValores_(valorPerfil, valorWhatsApp) {
+  const p = perfilNormal_(valorPerfil);
+  if (p) return p;
+  try { if (waLeerPermiso_(valorWhatsApp).kids) return "kids"; } catch (e) {}
+  return "adultos";
+}
+
+/** La columna de un encabezado, sin acentos ni mayúsculas que estorben (1-based; 0 si no está). */
+function columnaPorEncabezado_(encabezados, nombre) {
+  for (let j = 0; j < (encabezados || []).length; j++) {
+    if (String(encabezados[j] == null ? "" : encabezados[j]).normalize("NFD").replace(/\p{M}/gu, "").trim().toUpperCase() === nombre) return j + 1;
+  }
+  return 0;
+}
+
+/** El perfil de una fila leída con getValues(); encabezados: la fila 1. «WHATSAPP» es WA_COL_PERMISO. */
+function perfilDeFila_(fila, encabezados) {
+  const cP = columnaPorEncabezado_(encabezados, PERFIL_HEADER);
+  const cW = columnaPorEncabezado_(encabezados, "WHATSAPP");
+  return perfilDeValores_(cP ? fila[cP - 1] : "", cW ? fila[cW - 1] : "");
+}
+
+/** El perfil de la fila rowIdx (1-based) de la hoja. Nunca truena: ante cualquier falla, «adultos». */
+function leerPerfilFila_(sheet, rowIdx) {
+  try {
+    const ultima = Math.max(1, sheet.getLastColumn());
+    const enc = sheet.getRange(1, 1, 1, ultima).getValues()[0];
+    const fila = sheet.getRange(rowIdx, 1, 1, ultima).getValues()[0];
+    return perfilDeFila_(fila, enc);
+  } catch (e) { return "adultos"; }
+}
+
+/** La columna PERFIL; con crear, la agrega en la primera columna libre si falta (jamás pisa datos). */
+function colPerfil_(sheet, crear) {
+  const ultima = Math.max(1, sheet.getLastColumn());
+  const col = columnaPorEncabezado_(sheet.getRange(1, 1, 1, ultima).getValues()[0], PERFIL_HEADER);
+  if (col || !crear) return col;
+  sheet.getRange(1, ultima + 1).setValue(PERFIL_HEADER);
+  return ultima + 1;
+}
+
 /* ════════════════════ V18h DELIVERABILITY CONFIG ════════════════════════
  * Estos valores controlan cómo aparece el remitente en el cliente de email.
  *
@@ -1980,6 +2049,99 @@ function manejarCambioIdioma(email, token, l, format) {
   }
 }
 
+/* 👧 C477 — cambiar de perfil desde el correo: una liga firmada, como la del idioma (la misma firma), que abre
+   triggui.com/perfil; la página pide confirmar con un botón (los revisores de correo no tocan botones) y llama aquí
+   con format=json. A diferencia del idioma, no reenvía nada: vale desde el siguiente correo y no gasta la cuota. */
+function generarUrlPerfil_(email, perfil, idioma) {
+  return "https://triggui.com/perfil?email=" + encodeURIComponent(email) + "&token=" + generarTokenUnsub(email) +
+    "&p=" + encodeURIComponent(perfil) + "&l=" + (idioma === "en" ? "en" : "es");
+}
+
+/** La franja del correo que ofrece el otro perfil. Solo con PERFIL_ACTIVO y un correo de destino; en el idioma de
+ *  la persona. Mismo molde que la del idioma (tabla, botón VML para Outlook). */
+function generarPerfilBarHTML_(cardWidth, accent) {
+  if (!perfilActivo_()) return "";
+  const email = EMAIL_ENVIO_ACTUAL || "";
+  if (!email) return "";
+  const A = accent || "#B8862A";
+  const W = cardWidth || TRIGGUI_STYLE_CONFIG.cardWidth;
+  const en = (IDIOMA_ENVIO_ACTUAL === "en");
+  const kids = (PERFIL_ENVIO_ACTUAL === "kids");
+  const fuerte = function (t) { return `<strong style="font-weight:600;color:${A};">${t}</strong>`; };
+  const linea = kids
+    ? (en ? fuerte("Books for you again?") + " Switch back to Triggui for adults whenever you like."
+          : fuerte("¿Otra vez libros para ti?") + " Regresa a Triggui para adultos cuando quieras.")
+    : (en ? fuerte("Kids at home?") + " Get Triggui Kids instead of this one, at no extra cost. Switch back whenever you like."
+          : fuerte("¿Niños en casa?") + " Recibe Triggui Kids en lugar de este, sin costo extra. Regresa cuando quieras.");
+  const boton = kids ? (en ? "Switch to adults &rarr;" : "Cambiar a adultos &rarr;") : (en ? "Switch to Kids &rarr;" : "Cambiar a Kids &rarr;");
+  const url = generarUrlPerfil_(email, kids ? "adultos" : "kids", en ? "en" : "es");
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr><td align="center" style="padding:0 12px 10px 12px;">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:${W}px;">
+        <tr><td style="text-align:center;background:#FAFAFA;border:1px solid #F0E6D0;border-radius:8px;padding:12px 16px;">
+          <div style="
+            font-family:'Noto Serif Display',Georgia,'Times New Roman',serif;
+            font-size:14px; line-height:1.45; font-weight:400; color:#1A1A1A;
+            letter-spacing:-0.1px; margin:0 0 10px 0; mso-line-height-rule:exactly;
+          ">${linea}</div>
+          <!--[if mso]>
+          <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${url}" style="height:32px;v-text-anchor:middle;width:170px;" arcsize="18%" stroke="f" fillcolor="${A}">
+            <w:anchorlock/>
+            <center style="color:#FFFFFF;font-family:Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.04em;">${boton}</center>
+          </v:roundrect>
+          <![endif]-->
+          <!--[if !mso]><!-->
+          <a href="${url}" target="_blank" style="
+            display:inline-block; background:${A}; color:#FFFFFF; text-decoration:none;
+            padding:8px 18px; border-radius:6px;
+            font-family:'Inter',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
+            font-size:12px; font-weight:600; letter-spacing:0.04em;
+            mso-line-height-rule:exactly; line-height:1;
+          ">${boton}</a>
+          <!--<![endif]-->
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>`;
+}
+
+/** doGet(action=perfil): la firma del correo (la misma de la baja y del idioma) y el perfil nuevo. Escribe la columna
+ *  PERFIL de la fila (la crea si falta) y no manda nada. Si el correo no está en la hoja, responde igual que si
+ *  estuviera (sin cambio), para no decir quién está suscrito. Con format=json responde
+ *  { ok, first_name, perfil, changed }; sin él, un texto corto. */
+function manejarCambioPerfil_(email, token, p, format) {
+  const json = function (o) {
+    return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);
+  };
+  const texto = function (t) { return ContentService.createTextOutput(t).setMimeType(ContentService.MimeType.TEXT); };
+  const esJson = (String(format || "").toLowerCase() === "json");
+  const lock = LockService.getScriptLock();
+  try { lock.waitLock(5000); } catch (e) {}
+  try {
+    if (!email || !token || !validarTokenUnsub(email, token)) {
+      return esJson ? json({ ok: false, error: "token" }) : texto("Este enlace ya no sirve. Tu próximo correo de Triggui trae uno nuevo.");
+    }
+    const perfil = perfilNormal_(p);
+    if (!perfil) return esJson ? json({ ok: false, error: "parametros" }) : texto("Al enlace le falta el perfil.");
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+    if (!sheet) return esJson ? json({ ok: false, error: "hoja" }) : texto("No pudimos guardar tu cambio. Intenta de nuevo en unos minutos.");
+    const rowIdx = buscarFilaPorEmail(sheet, email);
+    let nombre = "", previo = perfil;
+    if (rowIdx >= 2) {
+      try { nombre = sanitizarNombre(sheet.getRange(rowIdx, 1).getValue()); } catch (e) {}
+      previo = leerPerfilFila_(sheet, rowIdx);
+      sheet.getRange(rowIdx, colPerfil_(sheet, true)).setValue(perfil);
+    }
+    if (esJson) return json({ ok: true, first_name: nombre, perfil: perfil, changed: previo !== perfil });
+    return texto(perfil === "kids" ? "Listo. Desde tu próximo correo recibes Triggui Kids." : "Listo. Desde tu próximo correo recibes Triggui para adultos.");
+  } catch (err) {
+    Logger.log("❌ perfil ERROR: " + err.message);
+    return esJson ? json({ ok: false, error: "interno" }) : texto("No pudimos guardar tu cambio. Intenta de nuevo en unos minutos.");
+  } finally {
+    try { lock.releaseLock(); } catch (e) {}
+  }
+}
+
 function generarUrlUnsub(email) {
   const token = generarTokenUnsub(email);
   return "https://triggui.com/entendido" +
@@ -2725,31 +2887,39 @@ function sanitizarNombre(raw) {
 }
 
 
-function prepararEmailParaEnvio(nombreDestinatario, emailDestinatario, rowIdx) {
+function prepararEmailParaEnvio(nombreDestinatario, emailDestinatario, rowIdx, opciones) {
   const c = TRIGGUI_STYLE_CONFIG;
+  // 👧 C477: el perfil del envío (PERFIL_ENVIO_ACTUAL) decide el catálogo: contenido_kids.json o contenido_manual.json.
+  // opciones.libro: un libro ya elegido (el segundo correo de la semana); entonces no se lee ningún catálogo.
+  const kidsEnvio = (PERFIL_ENVIO_ACTUAL === "kids");
+  const archivo = kidsEnvio ? "contenido_kids.json" : "contenido_manual.json";
+  const forzado = (opciones && opciones.libro) || null;
 
-  // 1. Cargar contenido_manual.json
-  let libros = [];
-  try {
-    const resp = UrlFetchApp.fetch(CONTENIDO_URL);
-    if (resp.getResponseCode() !== 200) {
-      return { ok: false, reason: `HTTP ${resp.getResponseCode()} al leer contenido_manual.json` };
+  let libro = forzado;
+  if (!libro) {
+    // 1. Cargar el catálogo del perfil
+    let libros = [];
+    try {
+      const resp = UrlFetchApp.fetch(kidsEnvio ? CONTENIDO_KIDS_URL : CONTENIDO_URL);
+      if (resp.getResponseCode() !== 200) {
+        return { ok: false, reason: `HTTP ${resp.getResponseCode()} al leer ${archivo}` };
+      }
+      const json = JSON.parse(resp.getContentText("UTF-8"));
+      libros = Array.isArray(json?.libros) ? json.libros : [];
+    } catch (e) {
+      return { ok: false, reason: `Error leyendo ${archivo}: ` + e.message };
     }
-    const json = JSON.parse(resp.getContentText("UTF-8"));
-    libros = Array.isArray(json?.libros) ? json.libros : [];
-  } catch (e) {
-    return { ok: false, reason: "Error leyendo contenido_manual.json: " + e.message };
+
+    if (!libros.length) return { ok: false, reason: `${archivo} sin libros` };
+
+    // 2. libros[0] (más reciente cronológicamente)
+    libro = libros[0];
   }
-
-  if (!libros.length) return { ok: false, reason: "contenido_manual.json sin libros" };
-
-  // 2. libros[0] (más reciente cronológicamente)
-  const libro = libros[0];
 
   // 3. Validar
   const validacion = validarLibroEmail(libro);
   if (!validacion.ok) {
-    return { ok: false, reason: "libros[0] inválido — " + validacion.reason };
+    return { ok: false, reason: (forzado ? "el libro elegido" : `libros[0] de ${archivo}`) + " inválido — " + validacion.reason };
   }
 
   // 4. Limpiar nombre destinatario — V18h NIVEL DIOS sanitización cuántica
@@ -2811,7 +2981,7 @@ function prepararEmailParaEnvio(nombreDestinatario, emailDestinatario, rowIdx) {
 
   let finalHTML = cuerpoHTML.replace(
     /(<body[^>]*>)/i,
-    `$1\n  ${previewTextHTML}\n  {{LANG_BAR}}`
+    `$1\n  ${previewTextHTML}\n  {{LANG_BAR}}\n  {{PERFIL_BAR}}`
   );
   let finalPlain = plainBody + aInglesCascara(FOOTER_CTA.plain);
 
@@ -2852,9 +3022,9 @@ function prepararEmailParaEnvio(nombreDestinatario, emailDestinatario, rowIdx) {
         const _accCorreo = (typeof tarjeta !== "undefined" && tarjeta && tarjeta.style && tarjeta.style.accent) || "";
         // V22 — ESPIRAL PROMO (asiento de honor)
         const espiralTopHTML = ESPIRAL_PROMO_ENABLED ? generarEspiralPromoTopHTML(c.cardWidth, _accCorreo) : "";
-        // V20 — KIDS PROMO siempre si KIDS_PROMO_ENABLED
-        const kidsTopHTML = KIDS_PROMO_ENABLED ? generarKidsPromoTopHTML(c.cardWidth, _accCorreo) : "";
-        const kidsTopPlain = KIDS_PROMO_ENABLED ? aInglesCascara(KIDS_PROMO_TOP_PLAIN) : "";
+        // V20 — KIDS PROMO si KIDS_PROMO_ENABLED; C477: no en el correo Kids
+        const kidsTopHTML = (KIDS_PROMO_ENABLED && !kidsEnvio) ? generarKidsPromoTopHTML(c.cardWidth, _accCorreo) : "";
+        const kidsTopPlain = (KIDS_PROMO_ENABLED && !kidsEnvio) ? aInglesCascara(KIDS_PROMO_TOP_PLAIN) : "";
 
         // V24 — las cuatro puertas también en la bienvenida (semilla = email del destinatario)
         const _semMedios = semillaMedios_(emailDestinatario || "", libro);
@@ -2953,13 +3123,15 @@ function prepararEmailParaEnvio(nombreDestinatario, emailDestinatario, rowIdx) {
  *
  * Returns: { ok: bool, reason: string }
  * ══════════════════════════════════════════════════════════════════════════ */
-function enviarTrigguiAUno(email, rowIdx, nombreDestinatario) {
+function enviarTrigguiAUno(email, rowIdx, nombreDestinatario, opciones) {
   // 🌐 D4: el idioma del suscriptor gobierna todo el envío (tarjeta, subject, barra)
+  // 👧 C477: y su perfil, el catálogo (correo Kids o de adultos). opciones.libro y opciones.etiqueta: el segundo correo.
   EMAIL_ENVIO_ACTUAL = email || "";
   try {
     const _sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
     IDIOMA_ENVIO_ACTUAL = _sh ? leerIdiomaFila(_sh, rowIdx) : "es";
-  } catch (e) { IDIOMA_ENVIO_ACTUAL = "es"; }
+    PERFIL_ENVIO_ACTUAL = (_sh && rowIdx >= 2) ? leerPerfilFila_(_sh, rowIdx) : "adultos";
+  } catch (e) { IDIOMA_ENVIO_ACTUAL = "es"; PERFIL_ENVIO_ACTUAL = "adultos"; }
   // 1. Verificar quota Gmail
   const remainingQuota = MailApp.getRemainingDailyQuota();
   if (remainingQuota < 5) {
@@ -2967,13 +3139,15 @@ function enviarTrigguiAUno(email, rowIdx, nombreDestinatario) {
   }
 
   // 2. Preparar email con personalización (V18i: pasa email para unsub link · V19: pasa rowIdx para trial banner)
-  const prep = prepararEmailParaEnvio(nombreDestinatario, email, rowIdx);
+  const prep = prepararEmailParaEnvio(nombreDestinatario, email, rowIdx, opciones);
   if (!prep.ok) return prep;
 
   // 3. Enviar con headers nivel dios deliverability
   try {
+    const _acento = (prep.libro && prep.libro.tarjeta && prep.libro.tarjeta.style && prep.libro.tarjeta.style.accent) || "";
     const sendOptions = {
-      htmlBody: prep.finalHTML.replace(/\{\{LANG_BAR\}\}/g, generarLangBarTopHTML(TRIGGUI_STYLE_CONFIG.cardWidth, (prep.libro && prep.libro.tarjeta && prep.libro.tarjeta.style && prep.libro.tarjeta.style.accent) || "")),
+      htmlBody: prep.finalHTML.replace(/\{\{LANG_BAR\}\}/g, generarLangBarTopHTML(TRIGGUI_STYLE_CONFIG.cardWidth, _acento))
+                              .replace(/\{\{PERFIL_BAR\}\}/g, generarPerfilBarHTML_(TRIGGUI_STYLE_CONFIG.cardWidth, _acento)),
       inlineImages: prep.inlineImages,
       name: REMITENTE_DISPLAY_NAME,        // "Triggui" en lugar de "badirnakid"
       replyTo: REMITENTE_REPLY_TO          // hola@triggui.com (configurable)
@@ -2992,13 +3166,14 @@ function enviarTrigguiAUno(email, rowIdx, nombreDestinatario) {
       sheet.getRange(rowIdx, 11).setValue(prep.libro.autor || "");
       sheet.getRange(rowIdx, 12).setValue(toPlainTextFromTokens(prep.libro.tarjeta.parrafoBot || "").slice(0, 200));
       sheet.getRange(rowIdx, 13).setValue(new Date());
-      sheet.getRange(rowIdx, 14).setValue(`#${formatEdicionNumero(prep.libro._edicion_numero)} (auto-bienvenida)`);
+      const _num = formatEdicionNumero(prep.libro._edicion_numero);
+      sheet.getRange(rowIdx, 14).setValue(((_num ? "#" + _num + " " : "") + ((opciones && opciones.etiqueta) || "(auto-bienvenida)")).trim());
     }
   } catch (e) {
     Logger.log("⚠️ Error marcando tracking: " + e.message);
   }
 
-  return { ok: true, libro: prep.libro.titulo, edicion: prep.libro._edicion_numero };
+  return { ok: true, libro: prep.libro.titulo, edicion: prep.libro._edicion_numero, perfil: PERFIL_ENVIO_ACTUAL };
 }
 
 
@@ -3242,6 +3417,15 @@ function doPost(e) {
       catch (e) { Logger.log("⚠️ doPost lead: no pude marcar inglés: " + e.message); }
     }
 
+    // 👧 C477: quien llega por Kids empieza en «Kids» (perfil=kids, o «kids» en sus utm), con la bienvenida Kids;
+    // los demás, en «Adultos», que es el de entrada y no se escribe. El formulario no suma preguntas.
+    const perfilAlta = perfilNormal_(params.perfil) ||
+      (/(^|[^a-z])kids([^a-z]|$)/i.test([params.utm_source, params.utm_medium, params.utm_campaign].join(" ")) ? "kids" : "");
+    if (perfilAlta === "kids") {
+      try { sheetLeads.getRange(rowIdx, colPerfil_(sheetLeads, true)).setValue("kids"); }
+      catch (e) { Logger.log("⚠️ doPost lead: no pude marcar el perfil Kids: " + e.message); }
+    }
+
     // V18h: pasar nombre para personalización del email
     const envioResult = enviarTrigguiAUno(email, rowIdx, nombre);
 
@@ -3315,6 +3499,9 @@ function doGet(e) {
   // ─── Ruta unsubscribe ────────────────────────────────────────────────
   if (action === "lang") {
     return manejarCambioIdioma(params.email || "", params.token || "", params.l || "", format);
+  }
+  if (action === "perfil") {
+    return manejarCambioPerfil_(params.email || "", params.token || "", params.p || "", format);
   }
   if (action === "unsubscribe") {
     return manejarUnsubscribe(params.email || "", params.token || "", format);
@@ -3851,6 +4038,30 @@ function enviarTrigguiLunes() {
   let skippedUnsubscribed = 0;
   let skippedCapSemanal   = 0;    // V18l NUEVO
   let skippedTrialExpirado = 0;   // V19 NUEVO
+  let skippedKidsSinEdicion = 0;  // C477: filas Kids que no recibieron porque el correo Kids no se pudo armar
+
+  /* 👧 C477 + 🌐 D4: un correo base por perfil e idioma, armado una sola vez y solo si alguna fila lo necesita.
+     El de adultos en español es el de arriba (prep). Si el inglés no se puede armar, va el español del mismo
+     perfil; si el de Kids no se puede armar, las filas Kids no reciben hoy y le llega un aviso a Badir. */
+  const _bases = { "adultos|es": prep };
+  function basePara(perfil, idioma) {
+    const k = perfil + "|" + (idioma === "en" ? "en" : "es");
+    if (!(k in _bases)) {
+      const svI = IDIOMA_ENVIO_ACTUAL, svP = PERFIL_ENVIO_ACTUAL;
+      IDIOMA_ENVIO_ACTUAL = (idioma === "en") ? "en" : "es";
+      PERFIL_ENVIO_ACTUAL = perfil;
+      let r = null;
+      try { r = prepararEmailParaEnvio(); } catch (e) { r = { ok: false, reason: e.message }; }
+      IDIOMA_ENVIO_ACTUAL = svI;
+      PERFIL_ENVIO_ACTUAL = svP;
+      _bases[k] = r;
+    }
+    const b = _bases[k];
+    if (b && b.ok) return b;
+    if (idioma === "en") return basePara(perfil, "es");
+    return null;
+  }
+  const encabezados = data[0] || [];
 
   const tituloActualNorm = libro.titulo.toLowerCase().trim();
 
@@ -3884,8 +4095,17 @@ function enviarTrigguiLunes() {
       continue;
     }
 
+    // 👧 C477: el perfil de la fila decide qué edición le toca (la de Kids solo si se pudo armar).
+    const perfilFila = perfilDeFila_(data[i], encabezados);
+    let tituloDeSuEdicion = tituloActualNorm;
+    if (perfilFila === "kids") {
+      const baseKids = basePara("kids", "es");
+      if (!baseKids) { skippedKidsSinEdicion++; continue; }
+      tituloDeSuEdicion = String(baseKids.libro.titulo || "").toLowerCase().trim();
+    }
+
     // ¿Ya recibió este libro?
-    if (ultimoLibro && ultimoLibro.toLowerCase() === tituloActualNorm) {
+    if (ultimoLibro && ultimoLibro.toLowerCase() === tituloDeSuEdicion) {
       skippedYaRecibieron++;
       continue;
     }
@@ -3899,7 +4119,7 @@ function enviarTrigguiLunes() {
     // Clasificar en uno de los 6 pools
     const tieneRotacion = !!ultimoLibro;
     const fechaMs = (fechaUltimo instanceof Date) ? fechaUltimo.getTime() : 0;
-    const entry = { rowIdx: i, emails: emailsInRow, fechaUltimoEnvio: fechaMs };
+    const entry = { rowIdx: i, emails: emailsInRow, fechaUltimoEnvio: fechaMs, perfil: perfilFila };
 
     if (isRowSubscribedMember(data[i])) {
       if (!tieneRotacion) poolMemberNuevos.push(entry);
@@ -3947,21 +4167,8 @@ function enviarTrigguiLunes() {
   
 /* ════════════════════════════════════════════════════════════════════════
  * 🌐 D4 v4 — el ENVÍO MASIVO también respeta el idioma de cada suscriptor.
- * Antes: prepararEmailParaEnvio() se llamaba UNA vez y todos recibían español.
- * Ahora: la versión inglesa se construye solo si alguna fila la necesita.
+ * 👧 C477 — y su perfil: cada fila recibe el correo base de su perfil y su idioma (basePara, arriba).
  * ════════════════════════════════════════════════════════════════════════ */
-let _PREP_EN_CACHE = null;
-function baseSegunIdioma(prepES, idioma) {
-  if (idioma !== "en") return prepES;
-  if (!_PREP_EN_CACHE) {
-    var sv = IDIOMA_ENVIO_ACTUAL;
-    IDIOMA_ENVIO_ACTUAL = "en";
-    try { _PREP_EN_CACHE = prepararEmailParaEnvio(); } catch (e) { _PREP_EN_CACHE = null; }
-    IDIOMA_ENVIO_ACTUAL = sv;
-  }
-  return (_PREP_EN_CACHE && _PREP_EN_CACHE.ok) ? _PREP_EN_CACHE : prepES;
-}
-
 function sendToRow(row, batchInfo) {
     const i = row.rowIdx;
     let enviadosEnEstaFila = 0;
@@ -3976,7 +4183,10 @@ function sendToRow(row, batchInfo) {
     /* 🌐 D4 v4: el idioma de ESTA fila gobierna su correo */
   EMAIL_ENVIO_ACTUAL = row.emails[0] || "";
   try { IDIOMA_ENVIO_ACTUAL = leerIdiomaFila(sheet, i + 1); } catch (e) { IDIOMA_ENVIO_ACTUAL = "es"; }
-  const _base = baseSegunIdioma(prep, IDIOMA_ENVIO_ACTUAL);
+  PERFIL_ENVIO_ACTUAL = (row.perfil === "kids") ? "kids" : "adultos";
+  const _base = basePara(PERFIL_ENVIO_ACTUAL, IDIOMA_ENVIO_ACTUAL) || prep;
+  const libroFila = _base.libro;      // C477: la edición de su perfil (la de Kids o la de adultos)
+  const kidsFila = (PERFIL_ENVIO_ACTUAL === "kids");
   const subjectFila = _base.subject;  // ya viene como "Edición #043 · Tu paz tiene precio"
 
     // V18i: link de unsubscribe personalizado por fila
@@ -3995,16 +4205,16 @@ function sendToRow(row, batchInfo) {
     const waTopPlainFila = mostrarWaArribaFila ? aInglesCascara(whatsappPromoTopPlain_(data[i], data[0])) : "";
 
     // V23 — accent del libro para los banners (por fila)
-    const _accFila = (libro && libro.tarjeta && libro.tarjeta.style && libro.tarjeta.style.accent) || "";
+    const _accFila = (libroFila && libroFila.tarjeta && libroFila.tarjeta.style && libroFila.tarjeta.style.accent) || "";
     // V22 — ESPIRAL PROMO por fila (asiento de honor)
     const espiralTopHTMLFila = ESPIRAL_PROMO_ENABLED ? generarEspiralPromoTopHTML(cFila.cardWidth, _accFila) : "";
-    // V20 — KIDS PROMO banner por fila (siempre si KIDS_PROMO_ENABLED)
-    const kidsTopHTMLFila = KIDS_PROMO_ENABLED ? generarKidsPromoTopHTML(cFila.cardWidth, _accFila) : "";
-    const kidsTopPlainFila = KIDS_PROMO_ENABLED ? aInglesCascara(KIDS_PROMO_TOP_PLAIN) : "";
+    // V20 — KIDS PROMO banner por fila (si KIDS_PROMO_ENABLED); C477: no en el correo Kids
+    const kidsTopHTMLFila = (KIDS_PROMO_ENABLED && !kidsFila) ? generarKidsPromoTopHTML(cFila.cardWidth, _accFila) : "";
+    const kidsTopPlainFila = (KIDS_PROMO_ENABLED && !kidsFila) ? aInglesCascara(KIDS_PROMO_TOP_PLAIN) : "";
 
     /* 🎧🎬 V24 — las cuatro puertas de la edición (edición · melodía · video · kids), en sus colores, con melodía/video repartidos por persona */
-    const mediosHTMLFila  = generarMediosTopHTML(libro, cFila.cardWidth, IDIOMA_ENVIO_ACTUAL, semillaMedios_(row.emails[0] || "", libro));
-    const mediosPlainFila = generarMediosTopPlain(libro, IDIOMA_ENVIO_ACTUAL, semillaMedios_(row.emails[0] || "", libro));
+    const mediosHTMLFila  = generarMediosTopHTML(libroFila, cFila.cardWidth, IDIOMA_ENVIO_ACTUAL, semillaMedios_(row.emails[0] || "", libroFila));
+    const mediosPlainFila = generarMediosTopPlain(libroFila, IDIOMA_ENVIO_ACTUAL, semillaMedios_(row.emails[0] || "", libroFila));
     let htmlPersonalizado  = _base.finalHTML
       .replace(/\{\{UNSUB_LINK\}\}/g, unsubLinkFila)
       .replace(/\{\{MEDIOS_TOP\}\}/g, mediosHTMLFila)
@@ -4013,7 +4223,8 @@ function sendToRow(row, batchInfo) {
       .replace(/\{\{ESPIRAL_PROMO_TOP\}\}/g, espiralTopHTMLFila)
       .replace(/\{\{KIDS_PROMO_BOTTOM\}\}/g, kidsTopHTMLFila)
       .replace(/\{\{WHATSAPP_PROMO_TOP\}\}/g, waTopHTMLFila)
-      .replace(/\{\{LANG_BAR\}\}/g, generarLangBarTopHTML(cFila.cardWidth, _accFila));
+      .replace(/\{\{LANG_BAR\}\}/g, generarLangBarTopHTML(cFila.cardWidth, _accFila))
+      .replace(/\{\{PERFIL_BAR\}\}/g, generarPerfilBarHTML_(cFila.cardWidth, _accFila));
     let plainPersonalizado = _base.finalPlain
       .replace(/\{\{UNSUB_LINK\}\}/g, unsubLinkFila)
       .replace(/\{\{MEDIOS_PLAIN\}\}/g, mediosPlainFila)
@@ -4029,18 +4240,18 @@ function sendToRow(row, batchInfo) {
       plainPersonalizado = plainPersonalizado.replace(/\{\{[A-Z_]+\}\}/g, "");
       GmailApp.sendEmail(emailsToSend, subjectFila, plainPersonalizado, {
         htmlBody: htmlPersonalizado,
-        inlineImages: inlineImages,
+        inlineImages: _base.inlineImages || inlineImages,   // C477: la portada de SU edición
         name: REMITENTE_DISPLAY_NAME,
         replyTo: REMITENTE_REPLY_TO
       });
       enviadosEnEstaFila = row.emails.length;
 
       // Tracking en sheet
-      sheet.getRange(i + 1, 10).setValue(libro.titulo);
-      sheet.getRange(i + 1, 11).setValue(libro.autor || "");
-      sheet.getRange(i + 1, 12).setValue(toPlainTextFromTokens(libro.tarjeta.parrafoBot || "").slice(0, 200));
+      sheet.getRange(i + 1, 10).setValue(libroFila.titulo);
+      sheet.getRange(i + 1, 11).setValue(libroFila.autor || "");
+      sheet.getRange(i + 1, 12).setValue(toPlainTextFromTokens(libroFila.tarjeta.parrafoBot || "").slice(0, 200));
       sheet.getRange(i + 1, 13).setValue(new Date());
-      sheet.getRange(i + 1, 14).setValue(`#${formatEdicionNumero(libro._edicion_numero)}`);
+      sheet.getRange(i + 1, 14).setValue(`#${formatEdicionNumero(libroFila._edicion_numero)}` + (kidsFila ? " Kids" : ""));
 
       const tipoEmoji = batchInfo.emoji || "🆕";
       const tipoLabel = batchInfo.label || "Envío";
@@ -4068,6 +4279,7 @@ function sendToRow(row, batchInfo) {
   let pendientesRestantes     = 0;
   let destinatariosEnviados   = 0;      // C476: la cuota se mide por destinatarios, no por filas
   let errorDeCuota            = false;  // C476: la cuota de Google se acabó a medio ciclo: se detiene
+  let filasKidsEnviadas       = 0;      // C477: filas con perfil Kids que recibieron el correo Kids
 
   // Helper: determina la categoría de cada row para reporting
   function tipoDeRow(row) {
@@ -4115,6 +4327,7 @@ function sendToRow(row, batchInfo) {
     if (enviados > 0) {
       filasProcesadas++;
       destinatariosEnviados += enviados;
+      if (row.perfil === "kids") filasKidsEnviadas++;   // C477
       // V18l: registrar el envío en col P para respetar cap semanal
       recordSend(sheet, row.rowIdx + 1);  // +1 porque rowIdx es 0-based en data, 1-based en sheet
 
@@ -4165,6 +4378,20 @@ function sendToRow(row, batchInfo) {
   Logger.log("───────────────────────────────────────────────────────────────");
   Logger.log(`📊 Total filas en sheet:               ${data.length - 1}`);
   Logger.log(`📨 Destinatarios enviados:             ${destinatariosEnviados}${errorDeCuota ? " (se detuvo: la cuota de Google se acabó)" : ""}`);
+  Logger.log(`👧 Filas con perfil Kids que recibieron: ${filasKidsEnviadas}`);
+  if (skippedKidsSinEdicion > 0) {
+    const _bk = _bases["kids|es"] || {};
+    Logger.log(`👧 Filas Kids sin correo (no se pudo armar): ${skippedKidsSinEdicion} · ${_bk.reason || "sin motivo"}`);
+    try {
+      if (MailApp.getRemainingDailyQuota() > 0) {
+        MailApp.sendEmail(DIAG_EMAIL, "Triggui: el correo Kids de hoy no salió",
+          "El correo de adultos siguió su curso; el de Kids no salió porque no se pudo armar con contenido_kids.json.\n\n" +
+          "Motivo: " + (_bk.reason || "sin motivo") + "\nFilas con perfil Kids que esperan: " + skippedKidsSinEdicion +
+          "\n\nCuando se arregle, la siguiente corrida de enviarTrigguiLunes se lo manda a quien le falte.");
+      }
+    } catch (e) { Logger.log("⚠️ No pude avisar del correo Kids: " + e.message); }
+  }
+  PERFIL_ENVIO_ACTUAL = "adultos";
   Logger.log(`📬 Quota Gmail restante después:       ${MailApp.getRemainingDailyQuota()}`);
 
   // 📮 Marcador del cartero: memoria de la ultima edicion repartida
@@ -4652,10 +4879,14 @@ function rutaDiagnostico(params) {
 
     EMAIL_ENVIO_ACTUAL = DIAG_EMAIL;
     IDIOMA_ENVIO_ACTUAL = (out.idiomaFila === "en") ? "en" : "es";
+    PERFIL_ENVIO_ACTUAL = leerPerfilFila_(sh, fila);   // C477: el diagnóstico arma el correo del perfil de la fila
+    out.perfilFila = PERFIL_ENVIO_ACTUAL;
 
     var prep = prepararEmailParaEnvio(nombre, DIAG_EMAIL, fila);
     if (!prep || !prep.ok) { out.ok = false; out.error = (prep && prep.reason) || "prep falló"; return json(out); }
-    var h = (prep.finalHTML || "").replace(/\{\{LANG_BAR\}\}/g, generarLangBarTopHTML(TRIGGUI_STYLE_CONFIG.cardWidth, (prep.libro && prep.libro.tarjeta && prep.libro.tarjeta.style && prep.libro.tarjeta.style.accent) || ""));
+    var accDiag = (prep.libro && prep.libro.tarjeta && prep.libro.tarjeta.style && prep.libro.tarjeta.style.accent) || "";
+    var h = (prep.finalHTML || "").replace(/\{\{LANG_BAR\}\}/g, generarLangBarTopHTML(TRIGGUI_STYLE_CONFIG.cardWidth, accDiag))
+      .replace(/\{\{PERFIL_BAR\}\}/g, generarPerfilBarHTML_(TRIGGUI_STYLE_CONFIG.cardWidth, accDiag));
     var low = h.toLowerCase();
     out.htmlChars = h.length;
     out.subject = prep.subject;
@@ -4727,9 +4958,10 @@ function rutaDiagnostico(params) {
           .replace(/\{\{MEDIOS_TOP\}\}/g, generarMediosTopHTML(pm.libro, c2.cardWidth, IDIOMA_ENVIO_ACTUAL, semillaMedios_(DIAG_EMAIL, pm.libro)))
           .replace(/\{\{TRIAL_BANNER_TOP\}\}/g, generarTrialBannerTopHTML(data[fila - 1], c2.sans, c2.background, c2.cardWidth))
           .replace(/\{\{ESPIRAL_PROMO_TOP\}\}/g, ESPIRAL_PROMO_ENABLED ? generarEspiralPromoTopHTML(c2.cardWidth, acc2) : "")
-          .replace(/\{\{KIDS_PROMO_BOTTOM\}\}/g, KIDS_PROMO_ENABLED ? generarKidsPromoTopHTML(c2.cardWidth, acc2) : "")
+          .replace(/\{\{KIDS_PROMO_BOTTOM\}\}/g, (KIDS_PROMO_ENABLED && PERFIL_ENVIO_ACTUAL !== "kids") ? generarKidsPromoTopHTML(c2.cardWidth, acc2) : "")
           .replace(/\{\{WHATSAPP_PROMO_TOP\}\}/g, generarWhatsAppPromoTopHTML(c2.cardWidth))
-          .replace(/\{\{LANG_BAR\}\}/g, generarLangBarTopHTML(c2.cardWidth, acc2));
+          .replace(/\{\{LANG_BAR\}\}/g, generarLangBarTopHTML(c2.cardWidth, acc2))
+          .replace(/\{\{PERFIL_BAR\}\}/g, generarPerfilBarHTML_(c2.cardWidth, acc2));
         var pmPlain = String(pm.finalPlain || "");
         var restos2 = [];
         if (IDIOMA_ENVIO_ACTUAL === "en") {
@@ -4799,7 +5031,8 @@ function semillaMedios_(email, libro) {
 function puertasMedios_(libro, idioma, semilla) {
   if (!libro || !libro._slug) return null;
   var en = (idioma === "en");
-  var base = "https://app.triggui.com/t/" + libro._slug;
+  var kids = (PERFIL_ENVIO_ACTUAL === "kids");   // 👧 C477: el correo Kids abre las páginas Kids
+  var base = "https://app.triggui.com/" + (kids ? "kids/t/" : "t/") + libro._slug;
   var mus = ((libro._musica || {}).candidatos || []).filter(function (c) { return c && c.preview; }).slice(0, 3);
   var vid = ((libro._video || {}).candidatos || []).filter(function (c) { return c && c.id; }).slice(0, 3);
   var m = mus.length ? (semilla % mus.length) : 0;
@@ -4816,7 +5049,8 @@ function puertasMedios_(libro, idioma, semilla) {
   p.push({ k: en ? "The edition" : "La edición", t: edTxt, cta: en ? "Open" : "Ver edición", u: base + (en ? "/en/" : "/") + "?w=e", bg: C(0, "#1A1A1A"), fg: T(0, "#FFFFFF") });
   if (mus.length) p.push({ k: en ? "Its melody" : "Su melodía", t: mus[m].cancion, cta: en ? "Listen" : "Escuchar", u: base + "/pieza/?w=e&m=" + m, bg: C(1, "#2A2A2A"), fg: T(1, "#FFFFFF") });
   if (vid.length) p.push({ k: en ? "Its video" : "Su video", t: vid[v].titulo || "", cta: en ? "Watch" : "Ver video", u: base + "/video/?w=e&v=" + v, bg: C(2, "#3A3A3A"), fg: T(2, "#FFFFFF") });
-  p.push({ k: "Kids", t: en ? "A value in 30 seconds" : "Un valor en 30 segundos", cta: en ? "Enter" : "Entrar", u: "https://app.triggui.com/kids/?utm_source=email&utm_medium=lunes&utm_campaign=" + encodeURIComponent(libro._slug), bg: C(3, "#0B6065"), fg: T(3, "#FFFFFF") });
+  if (kids) p.push({ k: en ? "More Kids" : "Más Kids", t: en ? "More Kids books" : "Más libros Kids", cta: en ? "Explore" : "Explorar", u: "https://app.triggui.com/kids/?utm_source=email&utm_medium=kids&utm_campaign=" + encodeURIComponent(libro._slug), bg: C(3, "#0B6065"), fg: T(3, "#FFFFFF") });
+  else p.push({ k: "Kids", t: en ? "A value in 30 seconds" : "Un valor en 30 segundos", cta: en ? "Enter" : "Entrar", u: "https://app.triggui.com/kids/?utm_source=email&utm_medium=lunes&utm_campaign=" + encodeURIComponent(libro._slug), bg: C(3, "#0B6065"), fg: T(3, "#FFFFFF") });
   return p.slice(0, 4);
 }
 function generarMediosTopHTML(libro, cardWidth, idioma, semilla) {

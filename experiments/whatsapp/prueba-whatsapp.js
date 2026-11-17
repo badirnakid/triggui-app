@@ -13,6 +13,9 @@ const CODIGO = fs.readFileSync(ARCHIVO, "utf8");
 const CARTERO = fs.readFileSync(path.join(__dirname, "..", "..", "apps-script", "Triggui Correos Semanales.js"), "utf8");
 const SANITIZAR = (CARTERO.match(/function sanitizarNombre\(raw\) \{[\s\S]*?\n\}\n/) || [""])[0];
 if (!SANITIZAR) throw new Error("No encontré sanitizarNombre en el cartero");
+// C477: el perfil (sus constantes y funciones) también vive en el cartero: se toma su bloque real.
+const PERFIL = (CARTERO.match(/\/\* 👧 C477 — el perfil de cada persona[\s\S]*?\nfunction colPerfil_\(sheet, crear\) \{[\s\S]*?\n\}\n/) || [""])[0];
+if (!PERFIL) throw new Error("No encontré el bloque del perfil en el cartero");
 const CONTENIDO_URL = "https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido_manual.json";
 const KIDS_URL = "https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido_kids.json";
 
@@ -166,6 +169,7 @@ function entorno(opciones) {
   };
   const ctx = vm.createContext(sandbox);
   vm.runInContext(SANITIZAR, ctx, { filename: "sanitizarNombre (cartero)" });
+  vm.runInContext(PERFIL, ctx, { filename: "perfil (cartero)" });
   vm.runInContext(CODIGO, ctx, { filename: "Triggui WhatsApp.js" });
   return { ctx: ctx, props: props, llamadas: llamadas, correos: correos, logs: logs, activadores: activadores, hojas: libroHojas.hojas,
     run: function (expr) { return vm.runInContext(expr, ctx); } };
@@ -1023,6 +1027,66 @@ prueba("crear la bienvenida A con una edición sin inglés: la de español sí, 
   assert.ok(/no trae inglés: no mandé la de inglés/.test(r[1].error), r[1].error);
   const todas = E.llamadas.filter(function (l) { return /\/message_templates$/.test(l.url); }).map(function (l) { return JSON.parse(l.o.payload); });
   assert.deepStrictEqual(todas.map(function (d) { return d.language; }), ["es_MX"], "a Meta solo va la de español");
+});
+
+// ── C477, paso 2: el perfil ──────────────────────────────────────────────────────────────────────────────
+prueba("C477, quiénes reciben: el perfil de la fila decide adultos o Kids; sin perfil, un «sí kids» sigue contando", function () {
+  const filas = filasBase();
+  filas[0].push("PERFIL");      // columna 21
+  filas[1][20] = "Kids";        // Ana: «sí» y perfil Kids → Kids
+  filas[3][20] = "adultos";     // Carla: «si kids» y perfil adultos → adultos (el perfil escrito manda)
+  const E = entorno({ props: PROPS_OK, filas: filas });
+  const cat = {};
+  E.run("waPersonas_()").personas.forEach(function (p) { cat[p.nombre] = p.cat; });
+  assert.deepStrictEqual([cat.Ana, cat.Bob, cat.Carla], ["kids", "adultos", "adultos"]);
+  const sinColumna = entorno({ props: PROPS_OK });
+  const cat2 = {};
+  sinColumna.run("waPersonas_()").personas.forEach(function (p) { cat2[p.nombre] = p.cat; });
+  assert.strictEqual(cat2.Carla, "kids", "sin columna PERFIL, «si kids» es Kids, como antes");
+});
+
+prueba("C477, el puente: «kids» y «adultos» cambian el perfil de cada fila con ese número y contestan con la liga de su edición", function () {
+  const C = "k".repeat(40);
+  const apagado = entorno({ props: PROPS_OK });
+  assert.strictEqual(apagado.ctx.waPuente_({ clave: C, tipo: "perfil", tel: "5215511111111", perfil: "kids" }).error, "apagado");
+  assert.strictEqual(apagado.hojas["Triggui Emails Prueba"].filas[0].indexOf("PERFIL"), -1, "apagado no escribe nada");
+  const E = entorno({ props: Object.assign({}, PROPS_OK, { PERFIL_ACTIVO: "sí" }) });
+  assert.strictEqual(E.ctx.waPuente_({ clave: "mala", tipo: "perfil", tel: "5215511111111", perfil: "kids" }).error, "clave");
+  const r = JSON.parse(JSON.stringify(E.ctx.waPuente_({ clave: C, tipo: "perfil", tel: "5215511111111", perfil: "Kids", wamid: "wamid.P1" })));
+  assert.deepStrictEqual(r, { ok: true, filas: 2, perfil: "kids", lang: "es", titulo: "Cuento",
+    liga: "https://app.triggui.com/kids/t/cuento-de-prueba/?w=s&utm_content=perfil" });
+  const h = E.hojas["Triggui Emails Prueba"];
+  const col = h.filas[0].indexOf("PERFIL");
+  assert.strictEqual(col, 20, "la columna nace en la primera libre");
+  assert.deepStrictEqual([h.filas[1][col], h.filas[8][col], h.filas[2][col] || ""], ["kids", "kids", ""], "Ana y Hugo (el mismo número), Bob no");
+  assert.deepStrictEqual(JSON.parse(JSON.stringify(E.ctx.waPuente_({ clave: C, tipo: "perfil", tel: "5215511111111", perfil: "kids", wamid: "wamid.P1" }))),
+    { ok: true, repetido: true }, "el mismo mensaje repetido no se contesta dos veces");
+  const en = JSON.parse(JSON.stringify(E.ctx.waPuente_({ clave: C, tipo: "perfil", tel: "+1 512 555 0101", perfil: "adultos", wamid: "wamid.P2" })));
+  assert.deepStrictEqual(en, { ok: true, filas: 1, perfil: "adultos", lang: "en", titulo: "Test book",
+    liga: "https://app.triggui.com/t/libro-de-prueba/en/?w=s&utm_content=perfil" });
+  assert.strictEqual(E.ctx.waPuente_({ clave: C, tipo: "perfil", tel: "5299999999", perfil: "kids", wamid: "wamid.P3" }).error, "sin_fila");
+  assert.strictEqual(E.ctx.waPuente_({ clave: C, tipo: "perfil", tel: "5215511111111", perfil: "todos" }).error, "perfil");
+  assert.deepStrictEqual(E.hojas["WA eventos"].filas.slice(1).map(function (f) { return [f[1], f[2], f[4], f[5]]; }),
+    [["perfil", "wamid.P1", "kids", "2 fila(s)"], ["perfil", "wamid.P2", "adultos", "1 fila(s)"], ["perfil", "wamid.P3", "kids", "0 fila(s)"]]);
+  assert.strictEqual(mensajes(E).length, 0, "el puente no manda mensajes: contesta /api/wa");
+});
+
+prueba("C477, la bienvenida A sigue al perfil: con Kids, la edición Kids, su imagen y su página", function () {
+  const E = entorno({ props: Object.assign({}, PROPS_OK, { WA_BIENVENIDA: "si" }) });
+  assert.deepStrictEqual(JSON.parse(JSON.stringify(E.ctx.waBienvenida_("5599990000", "es", "Ana", "kids"))), { ok: true, motivo: "mandada" });
+  const t = JSON.parse(mensajes(E)[0].o.payload).template;
+  assert.strictEqual(t.components[0].parameters[0].image.link, "https://app.triggui.com/kids/t/cuento-de-prueba/og.jpg");
+  assert.deepStrictEqual(t.components[1].parameters.map(function (p) { return p.text; }), ["Listo, Ana", "Cuento"]);
+  assert.strictEqual(t.components[2].parameters[0].text, "kids/t/cuento-de-prueba/?w=s&utm_content=bienvenida");
+  const f = E.hojas["WA envíos"].filas[1];
+  assert.deepStrictEqual([f[1], f[5], f[8]], ["bienvenida", "bienvenida kids", "cuento-de-prueba"]);
+  // El formulario le pasa el perfil de la fila: con PERFIL Kids, la bienvenida es Kids.
+  const filas = [["Nombre", "Apellido", "Email", "Teléfono", "PERFIL"], ["Kim", "", "k@x.com", "'+525522220000", "kids"]];
+  const F = entorno({ props: Object.assign({}, PROPS_OK, { WA_BIENVENIDA: "si" }), filas: filas });
+  const r = JSON.parse(JSON.stringify(F.ctx.waPermisoFormulario_(F.hojas["Triggui Emails Prueba"], 2, "'+525522220000", "+525522220000", "es", true)));
+  assert.strictEqual(r.bienvenida.motivo, "mandada");
+  assert.strictEqual(JSON.parse(mensajes(F)[0].o.payload).template.components[0].parameters[0].image.link,
+    "https://app.triggui.com/kids/t/cuento-de-prueba/og.jpg");
 });
 
 console.log((process.exitCode ? "FALLÓ" : "Todo en verde") + ": " + pasadas + " pruebas pasadas.");

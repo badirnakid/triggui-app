@@ -85,6 +85,7 @@ const WA_EVENTOS_DE_ALERTA = { PAUSED: "pausada por Meta", DISABLED: "desactivad
    de sus textos). {{1}} es el saludo: en español «Listo, Ana» o «Listo» si no hay nombre (un parámetro no puede ir vacío);
    en inglés, el nombre o «friend». {{2}} es el título. El primer botón lleva la ruta de la edición; el segundo es fijo. */
 const WA_MARCA_BIENVENIDA = "?w=s&utm_content=bienvenida";   // la página de la edición la vuelve utm_source=whatsapp · utm_medium=sala
+const WA_MARCA_PERFIL = "?w=s&utm_content=perfil";           // C477: la liga que confirma un cambio de perfil
 const WA_APP_EXPLORAR = "https://app.triggui.com/?utm_source=whatsapp&utm_medium=bienvenida&utm_campaign=explorar";
 const WA_BIENVENIDAS = [
   { nombre: WA_PLANTILLA_BIENVENIDA, idioma: "es",
@@ -305,6 +306,7 @@ function waPersonas_() {
   const data = sheet.getDataRange().getValues();
   const col = waColumna_(data[0] || [], WA_COL_PERMISO);
   if (!col) throw new Error("Falta la columna «WhatsApp» en la hoja: agrégala en la primera columna libre y escribe «sí» en cada persona que te dio permiso.");
+  const colPerfil = waColumna_(data[0] || [], PERFIL_HEADER);   // C477: el perfil decide de qué es su WhatsApp
   const vistos = {};
   const personas = [];
   const r = { conSi: 0, sinTel: 0, telRaro: 0, baja: 0, unsub: 0, expirados: 0, prueba: 0, repetidos: 0, lada52: 0, siSinEntender: 0 };
@@ -330,7 +332,7 @@ function waPersonas_() {
     try { lang = leerIdiomaFila(sheet, i + 1) || "es"; } catch (e) {}
     if (/^(04[45])?\d{10}$/.test(crudo.replace(/\D/g, ""))) r.lada52++;   // diez dígitos: se les puso el 52 de México
     personas.push({ fila: i + 1, nombre: String(data[i][0] || "").trim(), tel: tel, clave: clave,
-      lang: lang === "en" ? "en" : "es", cat: permiso.kids ? "kids" : "adultos",
+      lang: lang === "en" ? "en" : "es", cat: perfilDeValores_(colPerfil ? data[i][colPerfil - 1] : "", data[i][col - 1]),
       miembro: status.toUpperCase().startsWith("SUBSCRIBED_MEMBER") });
   }
   // C481: los que pagan primero; dentro de cada grupo, el orden de la hoja (el orden de JavaScript es estable).
@@ -454,7 +456,8 @@ function waResumenDelLunes() {
 
 /* ─────────────────────────────── el puente con triggui.com/api/wa ─────────────────────────────── */
 
-/** doPost(action=wa_puente): baja, estado de un mensaje, botón tocado, preferencia de marketing o aviso de plantilla.
+/** doPost(action=wa_puente): baja, estado de un mensaje, botón tocado, preferencia de marketing, aviso de plantilla
+ *  o cambio de perfil (C477).
  *  Lo manda triggui.com/api/wa con la clave. Una preferencia o un aviso de plantilla repetidos (mismo momento) se
  *  atienden una sola vez en 6 horas: Meta puede repetir un aviso y caer en otra instancia de Vercel. */
 function waPuente_(p) {
@@ -522,7 +525,45 @@ function waPuente_(p) {
     visto.marcar();
     return { ok: true };
   }
+  // C477 · escribió «kids» o «adultos»: su perfil cambia en cada fila con ese número (el número dice quién es) y se le
+  // contesta con la liga del libro de esta semana de su perfil nuevo. Solo con PERFIL_ACTIVO. El mismo mensaje
+  // repetido (mismo wamid) se atiende una sola vez en 6 horas, para no contestarle dos veces.
+  if (tipo === "perfil") {
+    const perfil = perfilNormal_(p.perfil);
+    if (!tel || !perfil) return { ok: false, error: "perfil" };
+    if (!perfilActivo_()) return { ok: false, error: "apagado" };
+    const wamid = String(p.wamid || "").slice(0, 200);
+    const visto = waYaVisto_(wamid ? "pf|" + wamid : "");
+    if (visto.antes) return { ok: true, repetido: true };
+    const r = waCambiarPerfil_(waClaveTel_(tel), perfil);
+    waHoja_(WA_HOJA_EVENTOS, WA_ENC_EVENTOS).appendRow([new Date(), "perfil", wamid, "'" + tel, perfil, r.filas + " fila(s)"]);
+    visto.marcar();
+    if (!r.filas) return { ok: false, filas: 0, error: "sin_fila" };
+    let libro = null;
+    try { libro = waEdiciones_(perfil === "kids")[perfil]; } catch (e) { libro = null; }
+    const en = r.lang === "en" && !!libro && waTieneEn_(libro);
+    return { ok: true, filas: r.filas, perfil: perfil, lang: r.lang === "en" ? "en" : "es",
+      titulo: libro ? waLimpia_(en ? (libro.titulo_en || libro.titulo) : libro.titulo, 200) : "",
+      liga: libro ? WA_APP_BASE + waRuta_(libro, perfil) + (en ? "en/" : "") + WA_MARCA_PERFIL : "" };
+  }
   return { ok: false, error: "tipo" };
+}
+
+/** C477: escribe el perfil en cada fila con ese número (crea la columna PERFIL si falta). Devuelve cuántas filas
+ *  y el idioma de la primera, para contestarle en su idioma. */
+function waCambiarPerfil_(clave, perfil) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  if (!sheet || !clave) return { filas: 0, lang: "es" };
+  const data = sheet.getDataRange().getValues();
+  let col = 0, n = 0, lang = "";
+  for (let i = 1; i < data.length; i++) {
+    if (waClaveTel_(data[i][3]) !== clave) continue;
+    if (!col) col = colPerfil_(sheet, true);
+    sheet.getRange(i + 1, col).setValue(perfil);
+    if (!lang) { try { lang = leerIdiomaFila(sheet, i + 1); } catch (e) { lang = "es"; } }
+    n++;
+  }
+  return { filas: n, lang: lang === "en" ? "en" : "es" };
 }
 
 /** Lo que de verdad pasa con cada aviso de plantilla, en una frase (vacía si no hay nada que añadir). */
@@ -588,18 +629,19 @@ function waPermisoFormulario_(sheet, rowIdx, telFila, telForm, lang, recibe) {
     const actual = waLeerPermiso_(sheet.getRange(rowIdx, col).getValue());
     if (!actual.si) sheet.getRange(rowIdx, col).setValue("sí " + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd"));
     return { permiso: true, motivo: actual.si ? "ya_tenia" : "nuevo",
-      bienvenida: recibe ? waBienvenida_(tel, lang, sheet.getRange(rowIdx, 1).getValue()) : { ok: false, motivo: "no_recibe_los_lunes" } };
+      bienvenida: recibe ? waBienvenida_(tel, lang, sheet.getRange(rowIdx, 1).getValue(), leerPerfilFila_(sheet, rowIdx)) : { ok: false, motivo: "no_recibe_los_lunes" } };
   } catch (e) {
     Logger.log("Permiso de WhatsApp del formulario: " + e.message);
     return { permiso: false, motivo: "error" };
   }
 }
 
-/** La bienvenida A por WhatsApp (C484), una sola vez por número, con la edición de esta semana (la de adultos).
- *  Solo si WA_ACTIVO y WA_BIENVENIDA dicen «si». nombre: el de la columna Nombre de la fila (puede faltar).
+/** La bienvenida A por WhatsApp (C484), una sola vez por número, con la edición de esta semana de su perfil (C477:
+ *  la de Kids si su perfil es Kids; si no, la de adultos). Solo si WA_ACTIVO y WA_BIENVENIDA dicen «si».
+ *  nombre: el de la columna Nombre de la fila (puede faltar). perfil: «kids» o «adultos» (de entrada, adultos).
  *  Si la imagen de la edición no está, no sale (queda «error sin imagen» y un alta posterior la vuelve a intentar).
  *  Se anota en «WA envíos» con la edición «bienvenida». Nunca truena. */
-function waBienvenida_(telefono, lang, nombre) {
+function waBienvenida_(telefono, lang, nombre, perfil) {
   try {
     const cfg = waConfig_();
     if (!cfg.activo || !cfg.bienvenida) return { ok: false, motivo: "apagada" };
@@ -609,8 +651,9 @@ function waBienvenida_(telefono, lang, nombre) {
     const clave = waClaveTel_(tel);
     const hoja = waHoja_(WA_HOJA_ENVIOS, WA_ENC_ENVIOS);
     if (waYaEnviados_(hoja, WA_EDICION_BIENVENIDA)[clave]) return { ok: true, motivo: "ya_la_tenia" };
-    const libro = waEdiciones_(false).adultos;
-    const cuerpo = waPayloadBienvenida_({ tel: tel, lang: lang === "en" ? "en" : "es", nombre: nombre }, libro, cfg);
+    const cat = (perfil === "kids") ? "kids" : "adultos";
+    const libro = waEdiciones_(cat === "kids")[cat];
+    const cuerpo = waPayloadBienvenida_({ tel: tel, lang: lang === "en" ? "en" : "es", nombre: nombre, cat: cat }, libro, cfg);
     const idioma = cuerpo._lang, nombreHoja = cuerpo._nombre;
     delete cuerpo._lang; delete cuerpo._nombre;
     const imagen = cuerpo.template.components[0].parameters[0].image.link;
@@ -621,7 +664,7 @@ function waBienvenida_(telefono, lang, nombre) {
       return { ok: false, motivo: "sin_imagen" };
     }
     const r = waMandar_(cfg, cuerpo);
-    hoja.appendRow([new Date(), WA_EDICION_BIENVENIDA, "'" + tel, nombreHoja, idioma, WA_EDICION_BIENVENIDA,
+    hoja.appendRow([new Date(), WA_EDICION_BIENVENIDA, "'" + tel, nombreHoja, idioma, cat === "kids" ? "bienvenida kids" : WA_EDICION_BIENVENIDA,
       r.ok ? r.wamid : "", r.ok ? "aceptado" : "error " + r.codigo, r.ok ? libro._slug : r.detalle]);
     return r.ok ? { ok: true, motivo: "mandada" } : { ok: false, motivo: "meta", codigo: r.codigo };
   } catch (e) {
@@ -635,7 +678,7 @@ function waBienvenida_(telefono, lang, nombre) {
 function waPayloadBienvenida_(persona, libro, cfg) {
   const en = persona.lang === "en" && waTieneEn_(libro);
   const lang = en ? "en" : "es";
-  const ruta = waRuta_(libro, "adultos");
+  const ruta = waRuta_(libro, persona.cat === "kids" ? "kids" : "adultos");   // C477: la página de su perfil
   let nombre = "";
   try { nombre = sanitizarNombre(persona.nombre) || ""; } catch (e) {}
   const saludo = en ? (nombre || "friend") : (nombre ? "Listo, " + nombre : "Listo");
