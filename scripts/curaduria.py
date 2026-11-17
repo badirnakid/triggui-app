@@ -665,9 +665,18 @@ def markdown(perfil, fecha, elegidos, resumen, avisos, malos=()):
         lineas.append(fila)
     quitados = _y([_n(v, *EXCLUSIONES[k]) for k, v in resumen["excluidos"].items() if v])
     revisados, no_se, reemplazos = resumen["revisados_hoy"], resumen["no_se_consiguen"], resumen["reemplazos"]
-    tiendas = (f"{_n(revisados, 'revisado', 'revisados')} hoy en Casa del Libro y Gandhi; el resto, con su marca de menos "
-               f"de {DIAS_VIGENCIA} días." if revisados else
-               f"con sus marcas de Casa del Libro y Gandhi de menos de {DIAS_VIGENCIA} días; ninguno hizo falta revisarlo hoy.")
+    dudas, sin_revisar = resumen.get("sin_respuesta", 0), resumen.get("sin_revisar", 0)
+    if revisados or dudas or sin_revisar:
+        hechas = []
+        if revisados:
+            hechas.append(f"{_n(revisados, 'revisado', 'revisados')} hoy en Casa del Libro y Gandhi")
+        if dudas:
+            hechas.append(f"{_n(dudas, 'revisión de hoy', 'revisiones de hoy')} sin respuesta clara")
+        if sin_revisar:
+            hechas.append(f"{_n(sin_revisar, 'libro', 'libros')} sin revisar porque las tiendas dejaron de responder")
+        tiendas = _y(hechas) + f"; el resto, con su marca de menos de {DIAS_VIGENCIA} días."
+    else:
+        tiendas = f"con sus marcas de Casa del Libro y Gandhi de menos de {DIAS_VIGENCIA} días; ninguno hizo falta revisarlo hoy."
     if no_se:
         tiendas += (f" {_n(no_se, 'de los mejores no se conseguía', 'de los mejores no se conseguían')}"
                     + (f"; {_n(reemplazos, 'entró en su lugar por parecido', 'entraron en su lugar por parecido')}"
@@ -759,7 +768,8 @@ def correr(a, juez=None, revisar=None):
     os.makedirs(a.salida, exist_ok=True)
     resumen = {"maestro": sum(len(leer_csv(os.path.join(a.contenido, r))) for r in MAESTROS[a.lista]),
                "candidatos": len(cands), "excluidos": excluidos, "juzgados": len(juicios), "validos": len(validos),
-               "revisados_hoy": tiendas.revisados, "no_se_consiguen": len(no_se_consiguen),
+               "revisados_hoy": tiendas.revisados, "sin_respuesta": tiendas.sin_respuesta, "sin_revisar": tiendas.sin_revisar,
+               "no_se_consiguen": len(no_se_consiguen),
                "reemplazos": sum(1 for c in elegidos if c.get("reemplaza")), "cuantos": cuantos,
                "tope_estado": max(1, math.ceil(cuantos / 3)), "en_lista": en_lista}
     registro = {"lista": a.lista, "fecha": hoy.isoformat(), "resumen": resumen, "avisos": avisos,

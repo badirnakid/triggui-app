@@ -291,7 +291,11 @@ class Propuesta(Base):
         # No se sabe si E se consigue: nadie entra «en su lugar» ni se dice que no se consigue.
         self.assertFalse(any(c.get("reemplaza") == "Libro E" for c in r["elegidos"]))
         self.assertEqual(r["resumen"]["no_se_consiguen"], 1)   # solo B, que su marca dice que no
-        self.assertNotIn("«Libro E», que no se consigue", self.leer("propuesta-adultos.md"))
+        md = self.leer("propuesta-adultos.md")
+        self.assertNotIn("«Libro E», que no se consigue", md)
+        self.assertIn("- **Tiendas:** 1 revisión de hoy sin respuesta clara; el resto, con su marca de menos de 25 días. "
+                      "1 de los mejores no se conseguía.", md)
+        self.assertNotIn("ninguno hizo falta revisarlo hoy", md)
 
     def test_una_marca_con_error_de_red_se_revisa_otra_vez(self):
         # Como falta() de tiendas-horno.mjs: una marca «error_red» no dice que no se consigue; se revisa en el momento.
@@ -329,6 +333,16 @@ class Propuesta(Base):
         avisos = self.registro()["avisos"]
         self.assertTrue(any("no respondieron 3 veces seguidas y dejé de revisarlas" in a and "1 libro sin marca vigente se quedó" in a
                             for a in avisos), avisos)
+        resumen = self.registro()["resumen"]
+        self.assertEqual((resumen["revisados_hoy"], resumen["sin_respuesta"], resumen["sin_revisar"]), (0, 3, 1))
+
+    def test_la_frase_de_tiendas_con_respuestas_dudas_y_corte(self):
+        resumen = {"maestro": 9, "candidatos": 5, "excluidos": {}, "juzgados": 5, "validos": 5, "revisados_hoy": 2,
+                   "sin_respuesta": 3, "sin_revisar": 1, "no_se_consiguen": 0, "reemplazos": 0, "cuantos": 4, "tope_estado": 2}
+        md = cu.markdown("adultos", HOY, [], resumen, [])
+        self.assertIn("- **Tiendas:** 2 revisados hoy en Casa del Libro y Gandhi, 3 revisiones de hoy sin respuesta clara y "
+                      "1 libro sin revisar porque las tiendas dejaron de responder; el resto, con su marca de menos de 25 días.", md)
+        self.assertIn("todos son candidatos.", md)
 
     def test_el_juez_que_deja_libros_sin_calificar_se_avisa(self):
         juicios = {t: j for t, j in JUICIOS.items() if t != "Libro D"}
