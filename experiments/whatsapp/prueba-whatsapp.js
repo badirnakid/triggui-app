@@ -144,6 +144,11 @@ function entorno(opciones) {
           return { getResponseCode: function () { return codigo; }, getBlob: function () { return { getBytes: function () { return [1, 2, 3]; } }; } };
         }
         if (/\/message_templates$/.test(url)) return resp(200, JSON.stringify({ id: "tpl", status: "PENDING" }));
+        if (opciones.numero && /^https:\/\/graph\.facebook\.com\/v\d{2}\.\d\/\d+(\/register)?$/.test(url)) {
+          if (opciones.numero === "sin red") throw new Error("sin red");
+          const r = opciones.numero(url, JSON.parse(o.payload));
+          return resp(r.code, JSON.stringify(r.body));
+        }
         throw new Error("URL inesperada: " + url);
       }
     }
@@ -657,6 +662,94 @@ prueba("quitar los activadores también quita la continuación", function () {
   assert.strictEqual(E.activadores.length, 3);
   assert.strictEqual(E.ctx.waQuitarLunes().quitados, 3);
   assert.strictEqual(E.props.WA_CONTINUACION, undefined);
+});
+
+/* ─────────────── el registro del número (133010 después de que Meta aprueba el nombre visible) ─────────────── */
+
+const PIN = "482913";
+const sinPin = function (E) {
+  const todo = E.logs.join("\n") + JSON.stringify(E.correos);
+  assert.ok(todo.indexOf(PIN) === -1, "el PIN nunca sale en el registro ni en un correo");
+};
+
+prueba("registrar el número: sin WA_PIN de seis dígitos no llama a Meta y lo dice", function () {
+  [undefined, "12345", "1234567", "12a456", "   "].forEach(function (pin) {
+    const props = Object.assign({}, PROPS_OK);
+    if (pin !== undefined) props.WA_PIN = pin;
+    const E = entorno({ props: props, numero: function () { throw new Error("no debía llamar"); } });
+    const r = JSON.parse(JSON.stringify(E.ctx.waRegistrarNumero()));
+    assert.strictEqual(r.ok, false);
+    assert.strictEqual(E.llamadas.length, 0, "ni una llamada con WA_PIN " + JSON.stringify(pin));
+    assert.ok(/Falta WA_PIN/.test(E.logs.join("\n")));
+    assert.strictEqual(E.correos.length, 0);
+  });
+  const F = entorno({ props: { WA_PIN: PIN }, numero: function () { throw new Error("no debía llamar"); } });
+  assert.strictEqual(JSON.parse(JSON.stringify(F.ctx.waRegistrarNumero())).ok, false);
+  assert.strictEqual(F.llamadas.length, 0, "sin token ni número tampoco llama");
+});
+
+prueba("registrar el número: una llamada a /register con el PIN, y el PIN no sale en ningún lado", function () {
+  const E = entorno({ props: Object.assign({}, PROPS_OK, { WA_PIN: " " + PIN + " ", WA_VERSION: "v25.0" }),
+    numero: function () { return { code: 200, body: { success: true } }; } });
+  const r = JSON.parse(JSON.stringify(E.ctx.waRegistrarNumero()));
+  assert.deepStrictEqual(r, { ok: true, pinCambiado: false, codigo: 0, http: 200 });
+  assert.strictEqual(E.llamadas.length, 1);
+  assert.strictEqual(E.llamadas[0].url, "https://graph.facebook.com/v25.0/1234567890/register");
+  assert.strictEqual(E.llamadas[0].o.method, "post");
+  assert.strictEqual(E.llamadas[0].o.headers.Authorization, "Bearer TOKEN-DE-PRUEBA");
+  assert.deepStrictEqual(JSON.parse(E.llamadas[0].o.payload), { messaging_product: "whatsapp", pin: PIN });
+  assert.ok(/Listo: el número quedó registrado\. Ahora corre waProbarConmigo\./.test(E.logs.join("\n")));
+  assert.ok(JSON.stringify(r).indexOf(PIN) === -1, "lo que regresa no trae el PIN");
+  sinPin(E);
+});
+
+prueba("registrar el número: si ya tenía otro PIN (133005), pone el tuyo y registra otra vez", function () {
+  let registros = 0;
+  const E = entorno({ props: Object.assign({}, PROPS_OK, { WA_PIN: PIN }), numero: function (url, cuerpo) {
+    if (/\/register$/.test(url)) {
+      registros++;
+      return registros === 1
+        ? { code: 400, body: { error: { code: 133005, message: "Two step verification PIN mismatch for " + cuerpo.pin } } }
+        : { code: 200, body: { success: true } };
+    }
+    assert.deepStrictEqual(cuerpo, { pin: PIN }, "el cambio de PIN manda solo el PIN");
+    return { code: 200, body: { success: true } };
+  } });
+  const r = JSON.parse(JSON.stringify(E.ctx.waRegistrarNumero()));
+  assert.deepStrictEqual(r, { ok: true, pinCambiado: true, codigo: 0, http: 200 });
+  assert.deepStrictEqual(E.llamadas.map(function (l) { return l.url.replace("https://graph.facebook.com/v26.0/1234567890", "N"); }),
+    ["N/register", "N", "N/register"]);
+  assert.ok(/con tu PIN en lugar del que tenía/.test(E.logs.join("\n")));
+  sinPin(E);
+});
+
+prueba("registrar el número: si no puede poner tu PIN, se detiene y lo dice sin el PIN", function () {
+  const E = entorno({ props: Object.assign({}, PROPS_OK, { WA_PIN: PIN }), numero: function (url, cuerpo) {
+    if (/\/register$/.test(url)) return { code: 400, body: { error: { code: 133005, message: "PIN mismatch" } } };
+    return { code: 400, body: { error: { code: 100, message: "Invalid parameter pin " + cuerpo.pin } } };
+  } });
+  const r = JSON.parse(JSON.stringify(E.ctx.waRegistrarNumero()));
+  assert.deepStrictEqual(r, { ok: false, pinCambiado: false, codigo: 100, http: 400 });
+  assert.strictEqual(E.llamadas.length, 2, "no vuelve a registrar");
+  assert.ok(/no pude poner el tuyo: 100 · Invalid parameter pin ••••••/.test(E.logs.join("\n")));
+  sinPin(E);
+});
+
+prueba("registrar el número: otro error no cambia el PIN; sin red tampoco truena", function () {
+  const E = entorno({ props: Object.assign({}, PROPS_OK, { WA_PIN: PIN }),
+    numero: function () { return { code: 400, body: { error: { code: 133016, message: "Rate limit" } } }; } });
+  const r = JSON.parse(JSON.stringify(E.ctx.waRegistrarNumero()));
+  assert.deepStrictEqual(r, { ok: false, pinCambiado: false, codigo: 133016, http: 400 });
+  assert.strictEqual(E.llamadas.length, 1, "solo el intento de registro");
+  assert.ok(/No se registró: 133016 · Rate limit/.test(E.logs.join("\n")));
+  const F = entorno({ props: Object.assign({}, PROPS_OK, { WA_PIN: PIN }), numero: "sin red" });
+  const s = JSON.parse(JSON.stringify(F.ctx.waRegistrarNumero()));
+  assert.deepStrictEqual(s, { ok: false, pinCambiado: false, codigo: 0, http: 0 });
+  assert.ok(/No se registró: HTTP 0 · Sin conexión con Meta: sin red/.test(F.logs.join("\n")));
+  const G = entorno({ props: Object.assign({}, PROPS_OK, { WA_PIN: PIN }),
+    numero: function () { return { code: 200, body: { error: { code: 1, message: "raro" } } }; } });
+  assert.strictEqual(JSON.parse(JSON.stringify(G.ctx.waRegistrarNumero())).ok, false, "200 sin success no es registro");
+  sinPin(E); sinPin(F); sinPin(G);
 });
 
 console.log((process.exitCode ? "FALLÓ" : "Todo en verde") + ": " + pasadas + " pruebas pasadas.");

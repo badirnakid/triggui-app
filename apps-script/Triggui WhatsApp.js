@@ -34,6 +34,7 @@
  *   WA_PUENTE_CLAVE la misma clave que tiene triggui.com/api/wa en Vercel (32 caracteres o más)
  *   WA_BIENVENIDA   «si» para mandar la bienvenida del formulario (después de que Meta apruebe la plantilla)
  *   Para waCrearPlantillas(): WA_WABA_ID y WA_APP_ID.
+ *   Para waRegistrarNumero(): WA_PIN, los seis dígitos de la verificación en dos pasos del número (los pone Badir).
  *   Opcionales: WA_VERSION (v26.0) · WA_IDIOMA_ES (es_MX) · WA_IDIOMA_EN (en_US) · WA_HORA (9)
  *
  * Usa del cartero: SHEET_NAME, UNSUBSCRIBE_COL, CONTENIDO_URL, DIAG_EMAIL, isRowUnsubscribed,
@@ -650,6 +651,55 @@ function waSubirMuestra_(cfg, url) {
   const h = JSON.parse(subida.getContentText("UTF-8") || "{}");
   if (!h.h) throw new Error("Meta no aceptó la imagen: " + ((h.error && h.error.message) || ("HTTP " + subida.getResponseCode())));
   return h.h;
+}
+
+/* ─────────────────────────────── el número en Meta ─────────────────────────────── */
+
+/** Registra el número WA_NUMERO_ID en la API de WhatsApp con el PIN de verificación en dos pasos de WA_PIN.
+ *  Meta lo pide al dar de alta el número y otra vez cada vez que aprueba un cambio de su nombre visible:
+ *  mientras tanto el número sale «Pendiente» y cada envío regresa 133010 («Account not registered»).
+ *  El PIN es la clave de seguridad del número: lo elige y lo escribe Badir en las propiedades del script,
+ *  y este guion nunca lo escribe en el registro. Si el número ya tenía otro PIN (133005), lo cambia por el
+ *  de WA_PIN y registra otra vez. Lo corre Badir. Meta acepta diez registros por número en 72 horas (133016). */
+function waRegistrarNumero() {
+  const cfg = waConfig_();
+  if (!cfg.token || !cfg.numeroId) return waAviso_("Faltan WA_TOKEN o WA_NUMERO_ID.", false);
+  const pin = waProp_("WA_PIN", "");
+  if (!/^\d{6}$/.test(pin)) return waAviso_("Falta WA_PIN: seis dígitos que eliges tú, en las propiedades del script.", false);
+  let r = waLlamarNumero_(cfg, "/register", { messaging_product: "whatsapp", pin: pin }, pin);
+  let pinCambiado = false;
+  if (!r.ok && r.codigo === 133005) {
+    const p = waLlamarNumero_(cfg, "", { pin: pin }, pin);
+    if (!p.ok) {
+      Logger.log("El número tiene otro PIN y no pude poner el tuyo: " + (p.codigo || ("HTTP " + p.http)) + " · " + p.detalle);
+      return { ok: false, pinCambiado: false, codigo: p.codigo, http: p.http };
+    }
+    pinCambiado = true;
+    r = waLlamarNumero_(cfg, "/register", { messaging_product: "whatsapp", pin: pin }, pin);
+  }
+  Logger.log(r.ok
+    ? "Listo: el número quedó registrado" + (pinCambiado ? ", con tu PIN en lugar del que tenía" : "") + ". Ahora corre waProbarConmigo."
+    : "No se registró: " + (r.codigo || ("HTTP " + r.http)) + " · " + r.detalle);
+  return { ok: r.ok, pinCambiado: pinCambiado, codigo: r.codigo, http: r.http };
+}
+
+/** Un POST al nodo del número (ruta "" o "/register"). Lo que regresa nunca trae el PIN. */
+function waLlamarNumero_(cfg, ruta, cuerpo, pin) {
+  const url = "https://graph.facebook.com/" + cfg.version + "/" + encodeURIComponent(cfg.numeroId) + ruta;
+  const tapa = function (t) { return pin ? String(t).split(pin).join("••••••") : String(t); };
+  let resp;
+  try {
+    resp = UrlFetchApp.fetch(url, { method: "post", contentType: "application/json", muteHttpExceptions: true,
+      headers: { Authorization: "Bearer " + cfg.token }, payload: JSON.stringify(cuerpo) });
+  } catch (e) {
+    return { ok: false, http: 0, codigo: 0, detalle: tapa("Sin conexión con Meta: " + String(e.message || e)).slice(0, 200) };
+  }
+  const code = resp.getResponseCode();
+  let j = {};
+  try { j = JSON.parse(resp.getContentText("UTF-8") || "{}"); } catch (e) {}
+  const err = j.error || {};
+  return { ok: code === 200 && j.success === true, http: code, codigo: Number(err.code) || 0,
+    detalle: tapa(err.message || ("HTTP " + code)).slice(0, 300) };
 }
 
 /* ─────────────────────────────── piezas pequeñas ─────────────────────────────── */
