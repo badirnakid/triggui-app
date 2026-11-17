@@ -20,6 +20,15 @@
  *   · El límite de Meta (personas distintas a las que el negocio escribe primero en 24 horas, del portafolio):
  *     antes de mandar se lee el escalón del número y se usa el 90 %; lo que no cupo sigue al día siguiente
  *     (waContinuarEnvio, una sola vez por día, hasta 6 días y solo con la misma edición), sin repetir a nadie.
+ *   · La calidad del número (C485): antes de mandar se leen su calificación, su estado y lo que dice Meta de él
+ *     (quality_rating, status y health_status). Si la calidad es amarilla o roja, si no está conectado, si Meta lo
+ *     tiene bloqueado o si no se pudo leer, ese envío no sale y llega el aviso; con verde, o sin calificación
+ *     todavía (número nuevo), sí. El resumen de la noche dice cómo quedó.
+ *
+ * Lo que avisa Meta por triggui.com/api/wa además de los mensajes (C485):
+ *   · user_preferences: alguien dejó de aceptar el marketing desde el menú de WhatsApp → «baja» en la hoja.
+ *     Si lo vuelve a aceptar, se anota y su columna no cambia: volver a mandarle es decisión de Badir.
+ *   · message_template_status_update: Meta pausó, desactivó, marcó o rechazó una plantilla nuestra → correo a Badir.
  *
  * La bienvenida (plantilla de utilidad «triggui_bienvenida», sin variables): cuando alguien marca la casilla
  * de WhatsApp en el formulario de triggui.com, el alta escribe «sí AAAA-MM-DD» en la columna y le manda la
@@ -60,6 +69,14 @@ const WA_EDICION_BIENVENIDA = "bienvenida";        // así se anota en «WA env�
 const WA_USO_DEL_LIMITE = 0.9;                     // del límite diario de Meta se usa el 90 %: el resto, para bienvenidas
 const WA_DIAS_DE_CONTINUACION = 6;                 // lo que no cupo sigue al día siguiente, hasta 6 días después
 const WA_CAMPO_LIMITE = "whatsapp_business_manager_messaging_limit";   // el de hoy; messaging_limit_tier quedó retirado
+const WA_CAMPOS_CALIDAD = "quality_rating,status,health_status";       // del nodo del número (páginas de Meta del 17 de noviembre de 2026)
+const WA_CALIDADES_QUE_SALEN = ["GREEN", "NA", "UNKNOWN"];             // verde, o sin calificación todavía
+/* Lo que Meta puede avisar de una plantilla (message_template_status_update) y lo que amerita un correo a Badir. */
+const WA_EVENTOS_PLANTILLA = ["APPROVED", "ARCHIVED", "UNARCHIVED", "DELETED", "DISABLED", "FLAGGED", "IN_APPEAL",
+  "LIMIT_EXCEEDED", "LOCKED", "PAUSED", "PENDING", "REINSTATED", "PENDING_DELETION", "REJECTED"];
+const WA_EVENTOS_DE_ALERTA = { PAUSED: "pausada por Meta", DISABLED: "desactivada por Meta", FLAGGED: "marcada por Meta con calidad baja",
+  REJECTED: "rechazada por Meta", PENDING_DELETION: "por borrarse en Meta", DELETED: "borrada en Meta", LOCKED: "bloqueada por Meta",
+  ARCHIVED: "archivada en Meta", LIMIT_EXCEEDED: "con el aviso LIMIT_EXCEEDED de Meta" };
 
 /* La bienvenida del formulario: utilidad, sin variables, sin imagen ni botones (la ÚNICA fuente de sus textos). */
 const WA_BIENVENIDAS = [
@@ -188,6 +205,15 @@ function waCorrer_(ensayo, continuacion) {
       if (motivo) { waOlvidarContinuacion_(); return waAviso_("No seguí el envío: " + motivo, true); }
     }
     if (cfg.token && cfg.numeroId) {
+      // C485: con la calidad amarilla o roja, sin conexión, bloqueado por Meta o sin poder leerla, no sale nada.
+      resumen.calidad = waCalidad_(cfg);
+      if (!ensayo && !resumen.calidad.puede) {
+        if (continuacion) waOlvidarContinuacion_();
+        return waAviso_("No salió nada: " + resumen.calidad.motivo + ". Calidad: " + waCalidadTexto_(resumen.calidad) +
+          (resumen.calidad.detalle ? ". Meta dice: " + resumen.calidad.detalle : "") +
+          ". Revísalo en WhatsApp Manager (calificación de calidad del número). Cuando vuelva a verde, corre waEnviarLunes():" +
+          " sale sin repetir a nadie." + (continuacion ? " La continuación de esta edición quedó cancelada." : ""), true);
+      }
       resumen.limite = waLimiteMeta_(cfg);
       resumen.limite.presupuesto = isFinite(resumen.limite.limite) ? Math.floor(resumen.limite.limite * WA_USO_DEL_LIMITE) : null;
     }
@@ -231,6 +257,7 @@ function waCorrer_(ensayo, continuacion) {
       "Errores: " + resumen.errores + (resumen.detenido ? "\nSe detuvo: " + resumen.detenido : "") + "\n" +
       "Límite de Meta hoy: " + (isFinite(lim.limite) ? lim.limite + " (se usa " + lim.presupuesto + ")" : "ilimitado") +
       (lim.leido ? "" : ", el más bajo, porque no se pudo leer el escalón") + "\n" +
+      "Calidad del número: " + waCalidadTexto_(resumen.calidad) + "\n" +
       (resumen.pendientes ? "No cupieron hoy: " + resumen.pendientes + (resumen.continua ? ". Siguen mañana a esta hora, sin repetir a nadie." :
         ". No pude programar la continuación: corre waEnviarLunes() mañana.") + "\n" : "") + "\n" +
       "Español: " + resumen.porIdioma.es + " · inglés: " + resumen.porIdioma.en + " · adultos: " + resumen.porCatalogo.adultos +
@@ -385,7 +412,7 @@ function waResumenDelLunes() {
   });
   const orden = { aceptado: 0, sent: 1, delivered: 2, read: 3, failed: 4 };
   const botones = { tarjeta: 0, melodia: 0, video: 0 };
-  let bajas = 0;
+  let bajas = 0, bajasMenu = 0;
   const ev = ss.getSheetByName(WA_HOJA_EVENTOS);
   if (ev) ev.getDataRange().getValues().slice(1).forEach(function (f) {
     if (!deHoy(f[0])) return;
@@ -395,17 +422,24 @@ function waResumenDelLunes() {
       if ((orden[nuevo] || 0) > (orden[actual] || 0)) wamids[String(f[2])] = nuevo;
     } else if (tipo === "boton" && botones[String(f[4])] !== undefined) botones[String(f[4])]++;
     else if (tipo === "baja") bajas++;
+    else if (tipo === "preferencia" && String(f[4]) === "stop") bajasMenu++;
   });
   const cuenta = { aceptado: 0, sent: 0, delivered: 0, read: 0, failed: 0 };
   Object.keys(wamids).forEach(function (k) { cuenta[wamids[k]]++; });
   const r = { enviados: enviados, entregados: cuenta.delivered + cuenta.read, leidos: cuenta.read, fallidos: cuenta.failed,
-    sinNoticia: cuenta.aceptado + cuenta.sent, botones: botones, bajas: bajas, bienvenidas: bienvenidas };
+    sinNoticia: cuenta.aceptado + cuenta.sent, botones: botones, bajas: bajas, bajasMenu: bajasMenu, bienvenidas: bienvenidas };
   if (!enviados) { Logger.log("Hoy no salió nada: no mando resumen."); return r; }
+  const cfg = waConfig_();
+  const calidad = (cfg.token && cfg.numeroId) ? waCalidad_(cfg) : null;   // C485: cómo quedó el número después del envío
+  r.calidad = calidad ? waCalidadTexto_(calidad) : "no la leí: faltan WA_TOKEN o WA_NUMERO_ID";
   waCorreo_("Triggui WhatsApp: el resumen del lunes",
     "Salieron: " + r.enviados + "\nEntregados: " + r.entregados + "\nLeídos: " + r.leidos +
     " (solo cuentan quienes tienen activado el aviso de leído)\nFallidos: " + r.fallidos + "\nSin noticia todavía: " + r.sinNoticia +
     "\n\nBotones: tarjeta " + botones.tarjeta + " · melodía " + botones.melodia + " · video " + botones.video +
-    "\nBajas: " + bajas + "\nBienvenidas del formulario, hoy: " + bienvenidas +
+    "\nBajas: " + bajas + (bajasMenu ? "\nDejaron el marketing desde el menú de WhatsApp: " + bajasMenu : "") +
+    "\nBienvenidas del formulario, hoy: " + bienvenidas +
+    "\n\nCalidad del número ahora: " + r.calidad +
+    (calidad && !calidad.puede ? "\nAtención: " + calidad.motivo + ". Si sigue así a la hora del próximo envío, no sale nada y te aviso." : "") +
     "\n\nLas visitas a la edición se ven en Analytics: fuente whatsapp, contenido lunes.");
   Logger.log("Resumen: " + JSON.stringify(r));
   return r;
@@ -442,6 +476,36 @@ function waPuente_(p) {
     if (["tarjeta", "melodia", "video"].indexOf(accion) === -1 || !tel) return { ok: false, error: "boton" };
     waHoja_(WA_HOJA_EVENTOS, WA_ENC_EVENTOS).appendRow([new Date(), "boton", String(p.wamid || "").slice(0, 200), "'" + tel,
       accion, String(p.slug || "").replace(/[^a-z0-9-]/g, "").slice(0, 120)]);
+    return { ok: true };
+  }
+  // C485 · user_preferences: dejó de aceptar el marketing desde el menú de WhatsApp («stop») o lo volvió a aceptar («resume»).
+  if (tipo === "preferencia") {
+    const valor = String(p.valor || "");
+    if (!tel || (valor !== "stop" && valor !== "resume")) return { ok: false, error: "preferencia" };
+    const n = valor === "stop" ? waMarcarBaja_(waClaveTel_(tel), "dejó de recibir marketing") : 0;
+    waHoja_(WA_HOJA_EVENTOS, WA_ENC_EVENTOS).appendRow([new Date(), "preferencia", "", "'" + tel, valor,
+      valor === "stop" ? n + " fila(s)" : "volvió a aceptar el marketing; su columna no cambia"]);
+    if (valor === "stop" && n === 0) return { ok: false, filas: 0, error: "sin_fila" };
+    return { ok: true, filas: n };
+  }
+  // C485 · message_template_status_update: lo que Meta hizo con una plantilla nuestra. Si amerita, correo a Badir.
+  if (tipo === "plantilla") {
+    const nombre = String(p.nombre || "");
+    const evento = String(p.evento || "");
+    if (!/^triggui_[a-z0-9_]{1,60}$/.test(nombre) || WA_EVENTOS_PLANTILLA.indexOf(evento) === -1) return { ok: false, error: "plantilla" };
+    const idioma = waLimpia_(p.idioma, 12), motivo = waLimpia_(p.motivo, 60), titulo = waLimpia_(p.titulo, 60);
+    const descripcion = waLimpia_(p.descripcion, 300), cuenta = String(p.waba || "").replace(/\D/g, "").slice(0, 30);
+    waHoja_(WA_HOJA_EVENTOS, WA_ENC_EVENTOS).appendRow([new Date(), "plantilla", "", "", evento,
+      [nombre + (idioma ? " (" + idioma + ")" : ""), motivo, titulo, descripcion].filter(String).join(" · ").slice(0, 500)]);
+    const frase = WA_EVENTOS_DE_ALERTA[evento];
+    if (frase) {
+      waCorreo_("Triggui WhatsApp: la plantilla " + nombre + (idioma ? " (" + idioma + ")" : "") + ", " + frase,
+        "Meta avisó " + evento + " de la plantilla " + nombre + (idioma ? " en " + idioma : "") + (cuenta ? ", de la cuenta " + cuenta : "") + ".\n" +
+        (motivo && motivo !== "NONE" ? "Motivo: " + motivo + "\n" : "") + (titulo ? "Detalle: " + titulo + "\n" : "") +
+        (descripcion ? "Lo que dice Meta: " + descripcion + "\n" : "") +
+        "\nMientras una plantilla esté pausada o desactivada, el envío que la usa se detiene en el primer mensaje y te avisa." +
+        " Revísala en WhatsApp Manager › Plantillas de mensajes.");
+    }
     return { ok: true };
   }
   return { ok: false, error: "tipo" };
@@ -514,6 +578,59 @@ function waBienvenida_(telefono, lang) {
     Logger.log("Bienvenida por WhatsApp: " + e.message);
     return { ok: false, motivo: "error" };
   }
+}
+
+/* ─────────────────────────────── la calidad del número (C485) ─────────────────────────────── */
+
+/** Lee del nodo del número su calificación (quality_rating), su estado (status) y lo que dice Meta de él
+ *  (health_status), y decide con waSemaforo_. Nunca truena: si no se puede leer, el semáforo dice que no sale. */
+function waCalidad_(cfg) {
+  let j = null;
+  try {
+    const r = UrlFetchApp.fetch("https://graph.facebook.com/" + cfg.version + "/" + encodeURIComponent(cfg.numeroId) +
+      "?fields=" + WA_CAMPOS_CALIDAD, { muteHttpExceptions: true, headers: { Authorization: "Bearer " + cfg.token } });
+    const leido = JSON.parse(r.getContentText("UTF-8") || "{}");
+    if (r.getResponseCode() === 200) j = leido;
+  } catch (e) {}
+  return waSemaforo_(j);
+}
+
+/** El semáforo del envío, sin red (se prueba solo). Sale con la calidad verde, o sin calificación todavía (NA o
+ *  UNKNOWN: número nuevo), con el número conectado y sin bloqueo de Meta. No sale con amarilla o roja, con otro
+ *  estado, con BLOCKED, con una calidad que no conocemos o si no se pudo leer. LIMITED sale, y se dice. */
+function waSemaforo_(j) {
+  if (!j || typeof j !== "object" || j.error) {
+    return { leida: false, puede: false, calidad: "", estado: "", meta: "", motivo: "no pude leer la calidad del número en Meta", detalle: "" };
+  }
+  const calidad = String(j.quality_rating || "").toUpperCase();
+  const estado = String(j.status || "").toUpperCase();
+  const salud = (j.health_status && typeof j.health_status === "object") ? j.health_status : {};
+  const meta = String(salud.can_send_message || "").toUpperCase();
+  const notas = [];
+  (Array.isArray(salud.entities) ? salud.entities : []).forEach(function (e) {
+    if (!e || typeof e !== "object") return;
+    (Array.isArray(e.errors) ? e.errors : []).forEach(function (x) {
+      if (x && (x.error_description || x.error_code)) notas.push(String(e.entity_type || "") + ": " + String(x.error_description || ("error " + x.error_code)));
+    });
+    (Array.isArray(e.additional_info) ? e.additional_info : []).forEach(function (x) { if (x) notas.push(String(e.entity_type || "") + ": " + String(x)); });
+  });
+  let motivo = "";
+  if (meta === "BLOCKED") motivo = "Meta tiene bloqueado el envío (BLOCKED)";
+  else if (calidad === "RED" || calidad === "YELLOW") motivo = "la calidad del número es " + (calidad === "RED" ? "roja" : "amarilla");
+  else if (estado && estado !== "CONNECTED") motivo = "el número no está conectado (" + estado + ")";
+  else if (!calidad) motivo = "Meta no dijo la calidad del número";
+  else if (WA_CALIDADES_QUE_SALEN.indexOf(calidad) === -1) motivo = "la calidad del número es «" + calidad + "», que no conozco";
+  return { leida: true, puede: !motivo, calidad: calidad, estado: estado, meta: meta, motivo: motivo,
+    detalle: waLimpia_(notas.join(" · "), 500) };
+}
+
+/** «verde · conectado · Meta: AVAILABLE», para los correos. */
+function waCalidadTexto_(c) {
+  if (!c) return "no se leyó";
+  if (!c.leida) return "no se pudo leer";
+  const nombres = { GREEN: "verde", YELLOW: "amarilla", RED: "roja", NA: "sin calificación todavía", UNKNOWN: "sin calificación todavía" };
+  return [nombres[c.calidad] || c.calidad || "sin dato", c.estado === "CONNECTED" ? "conectado" : (c.estado || ""),
+    c.meta ? "Meta: " + c.meta : ""].filter(String).join(" · ");
 }
 
 /* ─────────────────────────────── el límite de Meta y la continuación ─────────────────────────────── */

@@ -137,6 +137,12 @@ function entorno(opciones) {
           return resp(200, JSON.stringify({ whatsapp_business_manager_messaging_limit: opciones.escalon, id: "1234567890" }));
         }
         if (/messaging_limit_tier/.test(url)) return resp(400, JSON.stringify({ error: { code: 100, message: "campo retirado" } }));
+        if (/\?fields=quality_rating,status,health_status$/.test(url)) {   // C485: verde por defecto
+          if (opciones.calidad === "sin red") throw new Error("sin red");
+          const c = opciones.calidad || { code: 200, body: { quality_rating: "GREEN", status: "CONNECTED", id: "1234567890",
+            health_status: { can_send_message: "AVAILABLE", entities: [] } } };
+          return resp(c.code, JSON.stringify(c.body));
+        }
         if (/\/uploads\?/.test(url)) return resp(200, JSON.stringify({ id: "upload:ABC" }));
         if (/\/upload:ABC$/.test(url)) return resp(200, JSON.stringify({ h: "HANDLE1" }));
         if (/\/og(_en)?\.jpg$/.test(url)) {
@@ -455,7 +461,10 @@ prueba("el resumen de la noche junta envíos, estados, botones y bajas de hoy", 
   E.ctx.waPuente_({ clave: C, tipo: "baja", tel: "525522222222" });
   const r = JSON.parse(JSON.stringify(E.ctx.waResumenDelLunes()));
   assert.deepStrictEqual(r, { enviados: 3, entregados: 2, leidos: 1, fallidos: 0, sinNoticia: 1,
-    botones: { tarjeta: 1, melodia: 0, video: 0 }, bajas: 1, bienvenidas: 0 });
+    botones: { tarjeta: 1, melodia: 0, video: 0 }, bajas: 1, bajasMenu: 0, bienvenidas: 0,
+    calidad: "verde · conectado · Meta: AVAILABLE" });
+  assert.ok(/Calidad del número ahora: verde · conectado · Meta: AVAILABLE\n/.test(E.correos[E.correos.length - 1].texto));
+  assert.ok(!/Atención/.test(E.correos[E.correos.length - 1].texto));
   assert.ok(/el resumen del lunes/.test(E.correos[E.correos.length - 1].asunto));
   const F = entorno({ props: PROPS_OK });
   F.ctx.waHoja_("WA envíos", ["Fecha"]);
@@ -770,6 +779,151 @@ prueba("registrar el número: otro error no cambia el PIN; sin red tampoco truen
     numero: function () { return { code: 200, body: { error: { code: 1, message: "raro" } } }; } });
   assert.strictEqual(JSON.parse(JSON.stringify(G.ctx.waRegistrarNumero())).ok, false, "200 sin success no es registro");
   sinPin(E); sinPin(F); sinPin(G);
+});
+
+/* ─────────────── C485: la calidad del número y lo que avisa Meta ─────────────── */
+
+const VERDE = { quality_rating: "GREEN", status: "CONNECTED", health_status: { can_send_message: "AVAILABLE", entities: [] } };
+function con(cambios) { return JSON.parse(JSON.stringify(Object.assign({}, VERDE, cambios))); }
+
+prueba("el semáforo: verde o sin calificación sale; amarilla, roja, otro estado, BLOCKED, desconocida o sin leer, no", function () {
+  const E = entorno();
+  const s = function (j) { return JSON.parse(JSON.stringify(E.ctx.waSemaforo_(j))); };
+  assert.deepStrictEqual(s(VERDE), { leida: true, puede: true, calidad: "GREEN", estado: "CONNECTED", meta: "AVAILABLE", motivo: "", detalle: "" });
+  assert.strictEqual(s(con({ quality_rating: "NA" })).puede, true, "número nuevo, sin calificación");
+  assert.strictEqual(s(con({ quality_rating: "UNKNOWN" })).puede, true);
+  assert.strictEqual(s(con({ quality_rating: "green" })).puede, true, "en minúsculas también");
+  assert.strictEqual(s({ quality_rating: "GREEN" }).puede, true, "sin estado ni health_status: con verde sale");
+  assert.deepStrictEqual([s(con({ quality_rating: "YELLOW" })).puede, s(con({ quality_rating: "YELLOW" })).motivo], [false, "la calidad del número es amarilla"]);
+  assert.deepStrictEqual([s(con({ quality_rating: "RED" })).puede, s(con({ quality_rating: "RED" })).motivo], [false, "la calidad del número es roja"]);
+  assert.strictEqual(s(con({ status: "FLAGGED" })).motivo, "el número no está conectado (FLAGGED)");
+  assert.strictEqual(s(con({ status: "RESTRICTED" })).puede, false);
+  const bloqueado = s(con({ health_status: { can_send_message: "BLOCKED", entities: [
+    { entity_type: "WABA", can_send_message: "BLOCKED", errors: [{ error_code: 141010, error_description: "Falta el método de pago", possible_solution: "x" }] },
+    { entity_type: "APP", can_send_message: "AVAILABLE" }] } }));
+  assert.deepStrictEqual([bloqueado.puede, bloqueado.motivo, bloqueado.detalle], [false, "Meta tiene bloqueado el envío (BLOCKED)", "WABA: Falta el método de pago"]);
+  const limitado = s(con({ health_status: { can_send_message: "LIMITED", entities: [{ entity_type: "PHONE_NUMBER", additional_info: ["Límite bajo"] }] } }));
+  assert.deepStrictEqual([limitado.puede, limitado.meta, limitado.detalle], [true, "LIMITED", "PHONE_NUMBER: Límite bajo"]);
+  assert.strictEqual(s({ status: "CONNECTED" }).motivo, "Meta no dijo la calidad del número");
+  assert.strictEqual(s(con({ quality_rating: "PURPLE" })).motivo, "la calidad del número es «PURPLE», que no conozco");
+  assert.deepStrictEqual([s(null).leida, s(null).puede, s(null).motivo], [false, false, "no pude leer la calidad del número en Meta"]);
+  assert.strictEqual(s({ error: { code: 100, message: "x" } }).leida, false);
+  assert.strictEqual(s("texto").leida, false);
+  assert.strictEqual(E.ctx.waCalidadTexto_(E.ctx.waSemaforo_(con({ quality_rating: "NA" }))), "sin calificación todavía · conectado · Meta: AVAILABLE");
+  assert.strictEqual(E.ctx.waCalidadTexto_(E.ctx.waSemaforo_(null)), "no se pudo leer");
+  assert.strictEqual(E.ctx.waCalidadTexto_(null), "no se leyó");
+});
+
+prueba("la calidad se lee del nodo del número con sus tres campos y con el token", function () {
+  const E = entorno({ props: PROPS_OK });
+  E.ctx.waEnviarLunes();
+  const l = E.llamadas.filter(function (x) { return /fields=quality_rating/.test(x.url); });
+  assert.strictEqual(l.length, 1);
+  assert.strictEqual(l[0].url, "https://graph.facebook.com/v26.0/1234567890?fields=quality_rating,status,health_status");
+  assert.strictEqual(l[0].o.headers.Authorization, "Bearer TOKEN-DE-PRUEBA");
+  assert.ok(/Calidad del número: verde · conectado · Meta: AVAILABLE\n/.test(E.correos[0].texto), E.correos[0].texto);
+});
+
+prueba("con la calidad amarilla, roja, bloqueada o sin leer, el lunes no sale nada y avisa; el ensayo la muestra", function () {
+  const casos = [
+    [{ code: 200, body: con({ quality_rating: "YELLOW" }) }, /la calidad del número es amarilla/],
+    [{ code: 200, body: con({ quality_rating: "RED" }) }, /la calidad del número es roja/],
+    [{ code: 200, body: con({ health_status: { can_send_message: "BLOCKED", entities: [{ entity_type: "WABA", errors: [{ error_code: 1, error_description: "Pago" }] }] } }) },
+      /Meta tiene bloqueado el envío \(BLOCKED\)\. Calidad: verde · conectado · Meta: BLOCKED\. Meta dice: WABA: Pago\./],
+    ["sin red", /no pude leer la calidad del número en Meta\. Calidad: no se pudo leer\./],
+    [{ code: 500, body: { error: { code: 2, message: "Service unavailable" } } }, /no pude leer la calidad/],
+    [{ code: 200, body: { status: "CONNECTED" } }, /Meta no dijo la calidad del número/]];
+  casos.forEach(function (caso) {
+    const E = entorno({ props: PROPS_OK, calidad: caso[0], escalon: "TIER_250" });
+    const r = E.ctx.waEnviarLunes();
+    assert.strictEqual(mensajes(E).length, 0, "no sale nada: " + JSON.stringify(caso[0]));
+    assert.ok(caso[1].test(r.aviso), r.aviso);
+    assert.ok(/^No salió nada: /.test(r.aviso) && /Cuando vuelva a verde, corre waEnviarLunes\(\): sale sin repetir a nadie\.$/.test(r.aviso), r.aviso);
+    assert.strictEqual(E.correos.length, 1);
+    assert.strictEqual(E.correos[0].asunto, "Triggui WhatsApp: no salió");
+    assert.strictEqual(E.hojas["WA envíos"], undefined, "ni siquiera crea la hoja de envíos");
+    assert.ok(!E.llamadas.some(function (x) { return /messaging_limit/.test(x.url); }), "ni lee el límite");
+    const F = entorno({ props: PROPS_OK, calidad: caso[0], escalon: "TIER_250" });
+    const ensayo = JSON.parse(JSON.stringify(F.ctx.waEnsayo()));
+    assert.strictEqual(ensayo.calidad.puede, false);
+    assert.ok(ensayo.muestra, "el ensayo arma la muestra igual");
+    assert.strictEqual(mensajes(F).length + F.correos.length, 0, "el ensayo no manda ni avisa por correo");
+  });
+});
+
+prueba("una continuación con la calidad roja no sigue, se cancela y lo dice", function () {
+  const ambas = ["cuento-de-prueba", "libro-de-prueba"];
+  const E = entorno({ props: Object.assign({}, PROPS_OK, { WA_CONTINUACION: JSON.stringify({ inicio: new Date().toISOString(), slugs: ambas }) }),
+    calidad: { code: 200, body: con({ quality_rating: "RED" }) }, escalon: "TIER_250" });
+  E.activadores.push({ f: "waContinuarEnvio", getHandlerFunction: function () { return "waContinuarEnvio"; } });
+  const r = E.ctx.waContinuarEnvio();
+  assert.ok(/la calidad del número es roja/.test(r.aviso) && / La continuación de esta edición quedó cancelada\.$/.test(r.aviso), r.aviso);
+  assert.strictEqual(mensajes(E).length, 0);
+  assert.strictEqual(E.props.WA_CONTINUACION, undefined);
+  assert.strictEqual(E.activadores.length, 0);
+});
+
+prueba("el resumen de la noche dice la calidad y avisa si ya no es verde", function () {
+  const op = { props: PROPS_OK };
+  const E = entorno(op);
+  E.ctx.waEnviarLunes();
+  op.calidad = { code: 200, body: con({ quality_rating: "YELLOW" }) };
+  const r = JSON.parse(JSON.stringify(E.ctx.waResumenDelLunes()));
+  assert.strictEqual(r.calidad, "amarilla · conectado · Meta: AVAILABLE");
+  const texto = E.correos[E.correos.length - 1].texto;
+  assert.ok(/Calidad del número ahora: amarilla · conectado · Meta: AVAILABLE\nAtención: la calidad del número es amarilla\. Si sigue así a la hora del próximo envío, no sale nada y te aviso\./.test(texto), texto);
+});
+
+prueba("el puente, user_preferences: «stop» da de baja, «resume» se anota sin cambiar la columna", function () {
+  const E = entorno({ props: PROPS_OK });
+  const C = "k".repeat(40);
+  const hoy = new Date().toISOString().slice(0, 10);
+  const principal = E.hojas["Triggui Emails Prueba"];
+  assert.deepStrictEqual(JSON.parse(JSON.stringify(E.ctx.waPuente_({ clave: C, tipo: "preferencia", tel: "5215511111111", valor: "stop" }))), { ok: true, filas: 2 });
+  assert.strictEqual(principal.filas[1][16], "baja " + hoy + " (dejó de recibir marketing)");
+  assert.strictEqual(principal.filas[8][16], "baja " + hoy + " (dejó de recibir marketing)");
+  assert.deepStrictEqual(JSON.parse(JSON.stringify(E.ctx.waPuente_({ clave: C, tipo: "preferencia", tel: "5299999999", valor: "stop" }))), { ok: false, filas: 0, error: "sin_fila" });
+  assert.deepStrictEqual(JSON.parse(JSON.stringify(E.ctx.waPuente_({ clave: C, tipo: "preferencia", tel: "15125550101", valor: "resume" }))), { ok: true, filas: 0 });
+  assert.strictEqual(principal.filas[2][16], "Sí", "volver a aceptar no cambia la columna");
+  assert.strictEqual(E.ctx.waPuente_({ clave: C, tipo: "preferencia", tel: "15125550101", valor: "otro" }).error, "preferencia");
+  assert.strictEqual(E.ctx.waPuente_({ clave: C, tipo: "preferencia", tel: "", valor: "stop" }).error, "preferencia");
+  assert.strictEqual(E.ctx.waPuente_({ clave: "mala", tipo: "preferencia", tel: "15125550101", valor: "stop" }).error, "clave");
+  const ev = E.hojas["WA eventos"].filas;
+  assert.deepStrictEqual(ev.slice(1).map(function (f) { return [f[1], f[3], f[4], f[5]]; }), [
+    ["preferencia", "'5215511111111", "stop", "2 fila(s)"], ["preferencia", "'525299999999", "stop", "0 fila(s)"],
+    ["preferencia", "'15125550101", "resume", "volvió a aceptar el marketing; su columna no cambia"]]);
+  assert.strictEqual(E.correos.length, 0);
+  E.ctx.waEnviarLunes();
+  assert.strictEqual(JSON.parse(JSON.stringify(E.ctx.waResumenDelLunes())).bajasMenu, 2, "el resumen cuenta los «stop» de hoy");
+  assert.ok(/Dejaron el marketing desde el menú de WhatsApp: 2\n/.test(E.correos[E.correos.length - 1].texto));
+});
+
+prueba("el puente, message_template_status_update: correo si Meta pausa, desactiva o rechaza; solo plantillas nuestras", function () {
+  const E = entorno({ props: PROPS_OK });
+  const C = "k".repeat(40);
+  const pausa = { clave: C, tipo: "plantilla", nombre: "triggui_lunes", idioma: "es_MX", evento: "PAUSED", motivo: "NONE",
+    titulo: "FIRST_PAUSE", descripcion: "Your template has been paused\nfor 3 hours.", waba: "102290129340398" };
+  assert.deepStrictEqual(JSON.parse(JSON.stringify(E.ctx.waPuente_(pausa))), { ok: true });
+  assert.strictEqual(E.correos.length, 1);
+  assert.strictEqual(E.correos[0].asunto, "Triggui WhatsApp: la plantilla triggui_lunes (es_MX), pausada por Meta");
+  assert.strictEqual(E.correos[0].texto, "Meta avisó PAUSED de la plantilla triggui_lunes en es_MX, de la cuenta 102290129340398.\n" +
+    "Detalle: FIRST_PAUSE\nLo que dice Meta: Your template has been paused for 3 hours.\n\n" +
+    "Mientras una plantilla esté pausada o desactivada, el envío que la usa se detiene en el primer mensaje y te avisa." +
+    " Revísala en WhatsApp Manager › Plantillas de mensajes.");
+  assert.strictEqual(JSON.parse(JSON.stringify(E.ctx.waPuente_({ clave: C, tipo: "plantilla", nombre: "triggui_bienvenida", idioma: "en_US", evento: "REJECTED", motivo: "PROMOTIONAL" }))).ok, true);
+  assert.ok(/^Triggui WhatsApp: la plantilla triggui_bienvenida \(en_US\), rechazada por Meta$/.test(E.correos[1].asunto));
+  assert.ok(/\nMotivo: PROMOTIONAL\n/.test(E.correos[1].texto));
+  assert.strictEqual(JSON.parse(JSON.stringify(E.ctx.waPuente_({ clave: C, tipo: "plantilla", nombre: "triggui_lunes", idioma: "es_MX", evento: "APPROVED" }))).ok, true);
+  assert.strictEqual(E.correos.length, 2, "una aprobada se anota sin correo");
+  assert.strictEqual(E.ctx.waPuente_({ clave: C, tipo: "plantilla", nombre: "otra_marca", idioma: "es", evento: "PAUSED" }).error, "plantilla");
+  assert.strictEqual(E.ctx.waPuente_({ clave: C, tipo: "plantilla", nombre: "triggui_lunes", idioma: "es", evento: "RARO" }).error, "plantilla");
+  assert.strictEqual(E.ctx.waPuente_({ clave: C, tipo: "plantilla", nombre: "Triggui_Lunes", idioma: "es", evento: "PAUSED" }).error, "plantilla");
+  assert.strictEqual(E.correos.length, 2);
+  const ev = E.hojas["WA eventos"].filas;
+  assert.deepStrictEqual(ev.slice(1).map(function (f) { return [f[1], f[4], f[5]]; }), [
+    ["plantilla", "PAUSED", "triggui_lunes (es_MX) · NONE · FIRST_PAUSE · Your template has been paused for 3 hours."],
+    ["plantilla", "REJECTED", "triggui_bienvenida (en_US) · PROMOTIONAL"],
+    ["plantilla", "APPROVED", "triggui_lunes (es_MX)"]]);
 });
 
 console.log((process.exitCode ? "FALLÓ" : "Todo en verde") + ": " + pasadas + " pruebas pasadas.");
