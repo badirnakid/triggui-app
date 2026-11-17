@@ -163,7 +163,9 @@ function waCorrer_(ensayo, continuacion) {
       resumen.fueraDelTope = personas.length - cfg.tope;
       personas.splice(cfg.tope);
     }
-    if (!personas.length) return waAviso_("Nadie tiene «sí» en la columna WhatsApp: no hay a quién mandar.", !ensayo);
+    if (!personas.length) return waAviso_(L.resumen.prueba
+      ? "Nadie con «sí» recibe este lunes: los que lo tienen están en la prueba (" + L.resumen.prueba + "), que solo recibe la bienvenida."
+      : "Nadie tiene «sí» en la columna WhatsApp: no hay a quién mandar.", !ensayo);
     const ed = waEdiciones_(personas.some(function (p) { return p.cat === "kids"; }));
     const armados = personas.map(function (p) {
       const libro = ed[p.cat];

@@ -366,10 +366,22 @@ const INTRO_MESSAGES_EN = [
 // V19.2.2: bloque "Recibe TAMBIÉN Triggui en tu WhatsApp" — SOLO para arriba (aleatorio).
 // NO incluye triggui.com ni número de WhatsApp (eso vive permanentemente en el footer).
 // Mismo tipo de letra que el footer para coherencia visual cuántico-quark.
-function generarWhatsAppPromoTopHTML(cardWidth, rowData) {
+/** ¿Esta fila ya recibe el WhatsApp de los lunes? Su «sí» en la columna WhatsApp, fuera de la prueba (que solo recibe la
+ *  bienvenida). Usa las piezas de «Triggui WhatsApp» del mismo proyecto; sin ellas, o sin encabezados, dice que no. */
+function yaRecibeWhatsApp_(rowData, encabezados) {
+  try {
+    if (!rowData || !encabezados || typeof WA_COL_PERMISO === "undefined" || typeof waColumna_ !== "function" || typeof waLeerPermiso_ !== "function") return false;
+    if (isRowSubscribedTrial(rowData)) return false;
+    const col = waColumna_(encabezados, WA_COL_PERMISO);
+    return !!col && !!waLeerPermiso_(rowData[col - 1]).si;
+  } catch (e) { return false; }
+}
+
+function generarWhatsAppPromoTopHTML(cardWidth, rowData, encabezados) {
   // Badir, 16 de noviembre de 2026 (18:54): «si quieres recibir por WhatsApp, paga aquí». El de $149 ya lo recibe: no se le
   // muestra. La base sin sello no recibe venta (como en su banner): el recuadro va sin botón.
   if (rowData && isRowSubscribedMember(rowData) && !isRowSubscribedMember129(rowData)) return "";
+  if (yaRecibeWhatsApp_(rowData, encabezados)) return "";   // ya lo recibe: no se le ofrece
   const boton = (rowData && !isRowBulkLegacy(rowData))
     ? `<div style="margin:14px 0 0 0;"><a href="${STRIPE_LINK_PREMIUM_149}" style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;font-size:14px;line-height:1.4;font-weight:600;color:#B8740F;text-decoration:underline;">Recíbelo en tu WhatsApp por $149 al mes</a></div>`
     : "";
@@ -407,8 +419,9 @@ function generarWhatsAppPromoTopHTML(cardWidth, rowData) {
 
 const WHATSAPP_PROMO_TOP_PLAIN = "\n────────────────────────────\nRECIBE TAMBIÉN TRIGGUI EN TU WHATSAPP\n\nUna tarjeta como esta en el momento exacto que mejore un poco tu ánimo.\n────────────────────────────\n";
 /** El recuadro de WhatsApp en texto plano, con la misma regla que el HTML (generarWhatsAppPromoTopHTML). */
-function whatsappPromoTopPlain_(rowData) {
+function whatsappPromoTopPlain_(rowData, encabezados) {
   if (rowData && isRowSubscribedMember(rowData) && !isRowSubscribedMember129(rowData)) return "";
+  if (yaRecibeWhatsApp_(rowData, encabezados)) return "";
   if (!rowData || isRowBulkLegacy(rowData)) return WHATSAPP_PROMO_TOP_PLAIN;
   return "\n────────────────────────────\nRECIBE TAMBIÉN TRIGGUI EN TU WHATSAPP\n\nUna tarjeta como esta en el momento exacto que mejore un poco tu ánimo.\n"
     + "Recíbelo en tu WhatsApp por $149 al mes: " + STRIPE_LINK_PREMIUM_149 + "\n────────────────────────────\n";
@@ -3115,7 +3128,7 @@ function doPost(e) {
     const quiereWa = params.wa_ok === "1";
     const langForm = params.lang === "en" ? "en" : "es";
     // Se aplica al final de cada camino, con el estado ya escrito: la bienvenida sale si la fila recibe correo (sin baja
-    // y sin prueba vencida). La prueba sí la recibe, aunque los lunes por WhatsApp son de quien paga (Badir, 16 de
+    // y sin prueba vencida). La prueba sí la recibe, aunque el WhatsApp de los lunes ya no le llega (Badir, 16 de
     // noviembre de 2026, 18:54; waPersonas_). El permiso se guarda siempre.
     const aplicarWa = function (fila, telFila, langFila) {
       if (!quiereWa) return;
@@ -3978,8 +3991,8 @@ function sendToRow(row, batchInfo) {
     const trialTopPlainFila = generarTrialBannerTopPlain(data[i]);
 
     const mostrarWaArribaFila = Math.random() < 0.5;
-    const waTopHTMLFila = mostrarWaArribaFila ? generarWhatsAppPromoTopHTML(cFila.cardWidth, data[i]) : "";
-    const waTopPlainFila = mostrarWaArribaFila ? aInglesCascara(whatsappPromoTopPlain_(data[i])) : "";
+    const waTopHTMLFila = mostrarWaArribaFila ? generarWhatsAppPromoTopHTML(cFila.cardWidth, data[i], data[0]) : "";
+    const waTopPlainFila = mostrarWaArribaFila ? aInglesCascara(whatsappPromoTopPlain_(data[i], data[0])) : "";
 
     // V23 — accent del libro para los banners (por fila)
     const _accFila = (libro && libro.tarjeta && libro.tarjeta.style && libro.tarjeta.style.accent) || "";

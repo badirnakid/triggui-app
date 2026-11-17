@@ -397,6 +397,12 @@ prueba("un error de token detiene el envío", function () {
   assert.ok(/^190 · /.test(r.detenido));
 });
 
+prueba("si todos los que tienen «sí» están en la prueba, el aviso lo dice así", function () {
+  const filas = [ENC.slice(), fila("Pia", "5512121212", "SUBSCRIBED_TRIAL 2026-11-10 09:00", "es", "sí")];
+  const r = entorno({ filas: filas, props: PROPS_OK }).ctx.waEnviarLunes();
+  assert.ok(/los que lo tienen están en la prueba \(1\), que solo recibe la bienvenida/.test(r.aviso), r.aviso);
+});
+
 prueba("los parámetros salen sin saltos de línea ni espacios de más, y con tope de largo", function () {
   const E = entorno();
   assert.strictEqual(E.ctx.waLimpia_("a\nb\t c     d  "), "a b c d");

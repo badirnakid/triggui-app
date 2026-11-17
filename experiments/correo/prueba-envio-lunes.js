@@ -243,4 +243,18 @@ prueba('en el envío del lunes, la prueba ve el botón y el miembro de $149 no v
   assert.ok(!/\{\{[A-Z_]+\}\}/.test(pia.html + pia.texto + sol.html + sol.texto));
 });
 
+prueba('a quien ya recibe el WhatsApp de los lunes no se le ofrece; a la prueba con «sí» sí (con «Triggui WhatsApp» cargado)', () => {
+  const m = nuevoMundo();
+  vm.runInContext(fs.readFileSync(path.join(path.dirname(ruta), 'Triggui WhatsApp.js'), 'utf8'), m.ctx, { filename: 'Triggui WhatsApp.js' });
+  const L149 = vm.runInContext('STRIPE_LINK_PREMIUM_149', m.ctx);
+  const enc = ENC.concat(['WhatsApp']);
+  const conWa = (estado, wa) => { const f = fila('X', 'x@ejemplo.com', estado); f[18] = wa; return f; };
+  assert.strictEqual(m.ctx.generarWhatsAppPromoTopHTML(600, conWa('SUBSCRIBED_FREE 2026-11-01', 'sí'), enc), '');
+  assert.strictEqual(m.ctx.whatsappPromoTopPlain_(conWa('SUBSCRIBED_FREE 2026-11-01', 'sí 2026-11-15'), enc), '');
+  assert.strictEqual(m.ctx.generarWhatsAppPromoTopHTML(600, conWa('', 'sí'), enc), '');
+  assert.ok(m.ctx.generarWhatsAppPromoTopHTML(600, conWa(PRUEBA, 'sí'), enc).includes(L149));
+  assert.ok(m.ctx.generarWhatsAppPromoTopHTML(600, conWa('SUBSCRIBED_FREE 2026-11-01', 'baja 2026-11-01'), enc).includes(L149));
+  assert.ok(m.ctx.generarWhatsAppPromoTopHTML(600, conWa('SUBSCRIBED_FREE 2026-11-01', ''), enc).includes(L149));
+});
+
 console.log(pruebas + ' pruebas en verde');
