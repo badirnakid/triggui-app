@@ -611,17 +611,17 @@ function waBienvenida_(telefono, lang, nombre) {
     if (waYaEnviados_(hoja, WA_EDICION_BIENVENIDA)[clave]) return { ok: true, motivo: "ya_la_tenia" };
     const libro = waEdiciones_(false).adultos;
     const cuerpo = waPayloadBienvenida_({ tel: tel, lang: lang === "en" ? "en" : "es", nombre: nombre }, libro, cfg);
-    const idioma = cuerpo._lang, saludo = cuerpo._nombre;
+    const idioma = cuerpo._lang, nombreHoja = cuerpo._nombre;
     delete cuerpo._lang; delete cuerpo._nombre;
     const imagen = cuerpo.template.components[0].parameters[0].image.link;
     let hay = false;
     try { hay = UrlFetchApp.fetch(imagen, { muteHttpExceptions: true }).getResponseCode() === 200; } catch (e) {}
     if (!hay) {
-      hoja.appendRow([new Date(), WA_EDICION_BIENVENIDA, "'" + tel, saludo, idioma, WA_EDICION_BIENVENIDA, "", "error sin imagen", imagen]);
+      hoja.appendRow([new Date(), WA_EDICION_BIENVENIDA, "'" + tel, nombreHoja, idioma, WA_EDICION_BIENVENIDA, "", "error sin imagen", imagen]);
       return { ok: false, motivo: "sin_imagen" };
     }
     const r = waMandar_(cfg, cuerpo);
-    hoja.appendRow([new Date(), WA_EDICION_BIENVENIDA, "'" + tel, saludo, idioma, WA_EDICION_BIENVENIDA,
+    hoja.appendRow([new Date(), WA_EDICION_BIENVENIDA, "'" + tel, nombreHoja, idioma, WA_EDICION_BIENVENIDA,
       r.ok ? r.wamid : "", r.ok ? "aceptado" : "error " + r.codigo, r.ok ? libro._slug : r.detalle]);
     return r.ok ? { ok: true, motivo: "mandada" } : { ok: false, motivo: "meta", codigo: r.codigo };
   } catch (e) {
@@ -819,9 +819,14 @@ function waCrearBienvenida() {
   return resultados;
 }
 
-/** Manda a revisión las dos plantillas de la bienvenida A, con la muestra armada por waPayloadBienvenida_ (Ana). */
+/** Manda a revisión las dos plantillas de la bienvenida A, con la muestra armada por waPayloadBienvenida_ (Ana).
+ *  Si la edición no trae inglés, la de inglés no se manda y se dice: su muestra saldría en español. */
 function waMandarBienvenidas_(cfg, libro, handles) {
   return WA_BIENVENIDAS.map(function (def) {
+    if (def.idioma === "en" && !waTieneEn_(libro)) {
+      return { plantilla: def.nombre, idioma: cfg.idioma.en, http: 0, id: "", estado: "",
+        error: "La edición de esta semana no trae inglés: no mandé la de inglés (su muestra saldría en español). Córrelo con una edición en inglés." };
+    }
     const muestra = waPayloadBienvenida_({ tel: "520000000000", lang: def.idioma, nombre: "Ana" }, libro, cfg);
     const og = muestra.template.components[0].parameters[0].image.link;
     if (!handles[og]) handles[og] = waSubirMuestra_(cfg, og);

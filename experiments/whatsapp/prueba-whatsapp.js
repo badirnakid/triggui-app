@@ -1014,4 +1014,15 @@ prueba("crear solo la bienvenida A en Meta: dos plantillas de marketing, una ima
   assert.ok(!E.llamadas.some(function (l) { return /kids/.test(l.url); }), "la bienvenida no lee Kids");
 });
 
+prueba("crear la bienvenida A con una edición sin inglés: la de español sí, la de inglés no y lo dice", function () {
+  const sinIngles = JSON.parse(JSON.stringify(LIBRO_A));
+  delete sinIngles.tarjeta_en; delete sinIngles.frases_en; delete sinIngles.titulo_en;
+  const E = entorno({ props: Object.assign({}, PROPS_OK, { WA_WABA_ID: "999", WA_APP_ID: "777" }), libroA: sinIngles });
+  const r = JSON.parse(JSON.stringify(E.ctx.waCrearBienvenida()));
+  assert.deepStrictEqual(r.map(function (x) { return [x.idioma, x.http]; }), [["es_MX", 200], ["en_US", 0]]);
+  assert.ok(/no trae inglés: no mandé la de inglés/.test(r[1].error), r[1].error);
+  const todas = E.llamadas.filter(function (l) { return /\/message_templates$/.test(l.url); }).map(function (l) { return JSON.parse(l.o.payload); });
+  assert.deepStrictEqual(todas.map(function (d) { return d.language; }), ["es_MX"], "a Meta solo va la de español");
+});
+
 console.log((process.exitCode ? "FALLÓ" : "Todo en verde") + ": " + pasadas + " pruebas pasadas.");
