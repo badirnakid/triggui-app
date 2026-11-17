@@ -14,7 +14,7 @@ const CARTERO = fs.readFileSync(path.join(__dirname, "..", "..", "apps-script", 
 const SANITIZAR = (CARTERO.match(/function sanitizarNombre\(raw\) \{[\s\S]*?\n\}\n/) || [""])[0];
 if (!SANITIZAR) throw new Error("No encontré sanitizarNombre en el cartero");
 // C477: el perfil (sus constantes y funciones) también vive en el cartero: se toma su bloque real.
-const PERFIL = (CARTERO.match(/\/\* 👧 C477 — el perfil de cada persona[\s\S]*?\nfunction colPerfil_\(sheet, crear\) \{[\s\S]*?\n\}\n/) || [""])[0];
+const PERFIL = (CARTERO.match(/\/\* 👧 C477: el perfil de cada persona[\s\S]*?\nfunction colPerfil_\(sheet, crear\) \{[\s\S]*?\n\}\n/) || [""])[0];
 if (!PERFIL) throw new Error("No encontré el bloque del perfil en el cartero");
 const CONTENIDO_URL = "https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido_manual.json";
 const KIDS_URL = "https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido_kids.json";
@@ -1060,7 +1060,7 @@ prueba("C477, el puente: «kids» y «adultos» cambian el perfil de cada fila c
   assert.strictEqual(col, 20, "la columna nace en la primera libre");
   assert.deepStrictEqual([h.filas[1][col], h.filas[8][col], h.filas[2][col] || ""], ["kids", "kids", ""], "Ana y Hugo (el mismo número), Bob no");
   assert.deepStrictEqual(JSON.parse(JSON.stringify(E.ctx.waPuente_({ clave: C, tipo: "perfil", tel: "5215511111111", perfil: "kids", wamid: "wamid.P1" }))),
-    { ok: true, repetido: true }, "el mismo mensaje repetido no se contesta dos veces");
+    Object.assign({}, r, { repetido: true }), "el mismo mensaje repetido recibe la misma respuesta, sin volver a escribir");
   const en = JSON.parse(JSON.stringify(E.ctx.waPuente_({ clave: C, tipo: "perfil", tel: "+1 512 555 0101", perfil: "adultos", wamid: "wamid.P2" })));
   assert.deepStrictEqual(en, { ok: true, filas: 1, perfil: "adultos", lang: "en", titulo: "Test book",
     liga: "https://app.triggui.com/t/libro-de-prueba/en/?w=s&utm_content=perfil" });

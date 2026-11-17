@@ -527,26 +527,45 @@ function waPuente_(p) {
   }
   // C477 · escribió «kids» o «adultos»: su perfil cambia en cada fila con ese número (el número dice quién es) y se le
   // contesta con la liga del libro de esta semana de su perfil nuevo. Solo con PERFIL_ACTIVO. El mismo mensaje
-  // repetido (mismo wamid) se atiende una sola vez en 6 horas, para no contestarle dos veces.
+  // repetido (mismo wamid) se atiende una sola vez en 6 horas y recibe la MISMA respuesta (con repetido): si la
+  // primera vez /api/wa no alcanzó a esperar y pidió a Meta que repitiera, la confirmación no se pierde.
   if (tipo === "perfil") {
     const perfil = perfilNormal_(p.perfil);
     if (!tel || !perfil) return { ok: false, error: "perfil" };
     if (!perfilActivo_()) return { ok: false, error: "apagado" };
     const wamid = String(p.wamid || "").slice(0, 200);
-    const visto = waYaVisto_(wamid ? "pf|" + wamid : "");
-    if (visto.antes) return { ok: true, repetido: true };
+    const guardada = waRespuestaGuardada_(wamid);
+    if (guardada) return Object.assign(guardada, { repetido: true });
     const r = waCambiarPerfil_(waClaveTel_(tel), perfil);
     waHoja_(WA_HOJA_EVENTOS, WA_ENC_EVENTOS).appendRow([new Date(), "perfil", wamid, "'" + tel, perfil, r.filas + " fila(s)"]);
-    visto.marcar();
-    if (!r.filas) return { ok: false, filas: 0, error: "sin_fila" };
-    let libro = null;
-    try { libro = waEdiciones_(perfil === "kids")[perfil]; } catch (e) { libro = null; }
-    const en = r.lang === "en" && !!libro && waTieneEn_(libro);
-    return { ok: true, filas: r.filas, perfil: perfil, lang: r.lang === "en" ? "en" : "es",
-      titulo: libro ? waLimpia_(en ? (libro.titulo_en || libro.titulo) : libro.titulo, 200) : "",
-      liga: libro ? WA_APP_BASE + waRuta_(libro, perfil) + (en ? "en/" : "") + WA_MARCA_PERFIL : "" };
+    let respuesta;
+    if (!r.filas) respuesta = { ok: false, filas: 0, error: "sin_fila" };
+    else {
+      let libro = null;
+      try { libro = waEdiciones_(perfil === "kids")[perfil]; } catch (e) { libro = null; }
+      const en = r.lang === "en" && !!libro && waTieneEn_(libro);
+      respuesta = { ok: true, filas: r.filas, perfil: perfil, lang: r.lang === "en" ? "en" : "es",
+        titulo: libro ? waLimpia_(en ? (libro.titulo_en || libro.titulo) : libro.titulo, 200) : "",
+        liga: libro ? WA_APP_BASE + waRuta_(libro, perfil) + (en ? "en/" : "") + WA_MARCA_PERFIL : "" };
+    }
+    waGuardarRespuesta_(wamid, respuesta);
+    return respuesta;
   }
   return { ok: false, error: "tipo" };
+}
+
+/** C477: la respuesta que ya se dio a ese mensaje (por su wamid), guardada 6 horas en CacheService. */
+function waRespuestaGuardada_(wamid) {
+  if (!wamid) return null;
+  try {
+    const t = CacheService.getScriptCache().get("wa_pf|" + wamid);
+    return t ? JSON.parse(t) : null;
+  } catch (e) { return null; }
+}
+
+function waGuardarRespuesta_(wamid, respuesta) {
+  if (!wamid) return;
+  try { CacheService.getScriptCache().put("wa_pf|" + wamid, JSON.stringify(respuesta), 21600); } catch (e) {}
 }
 
 /** C477: escribe el perfil en cada fila con ese número (crea la columna PERFIL si falta). Devuelve cuántas filas

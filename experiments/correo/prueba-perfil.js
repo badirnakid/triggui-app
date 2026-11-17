@@ -275,7 +275,7 @@ prueba('la bienvenida (y el reenvío por idioma) sale del perfil de la fila', ()
   const r = m.ctx.enviarTrigguiAUno('kim@ejemplo.com', 2, 'Kim');
   assert.deepStrictEqual([r.ok, r.perfil], [true, 'kids']);
   assert.ok(/KIDS-es/.test(m.enviados[0].html));
-  assert.strictEqual(m.datos[1][13], '#113 (auto-bienvenida)');
+  assert.strictEqual(m.datos[1][13], '#113 Kids (auto-bienvenida)', 'como el lunes, la columna N dice Kids');
   const r2 = m.ctx.enviarTrigguiAUno('ana@ejemplo.com', 3, 'Ana');
   assert.deepStrictEqual([r2.ok, r2.perfil], [true, 'adultos']);
   assert.ok(/ADULTOS-es/.test(m.enviados[1].html));
@@ -295,7 +295,7 @@ prueba('el alta que llega por Kids nace con perfil Kids y su bienvenida es Kids;
   assert.strictEqual(p.datos[1][18], 'kids');
   const a = nuevoMundo({ encabezados: sinPerfil, filas: [] });
   alta(a, { utm_source: 'instagram', utm_campaign: 'kidsbooks' });
-  assert.strictEqual(a.datos[0].length, 18, 'sin Kids no se crea la columna');
+  assert.strictEqual(a.datos[0].indexOf('PERFIL'), -1, 'sin Kids no se crea la columna PERFIL');
   assert.ok(/ADULTOS-es/.test(a.enviados[0].html));
 });
 
@@ -333,6 +333,24 @@ prueba('las puertas del correo Kids abren las páginas Kids y ofrecen más Kids;
   const a = m.ctx.puertasMedios_(libro, 'es', 7);
   assert.ok(a[0].u.startsWith('https://app.triggui.com/t/cuento-de-kids/'), a[0].u);
   assert.strictEqual(a[a.length - 1].k, 'Kids');
+});
+
+prueba('el ensayo del lunes (previewMasivo) mide cada fila contra la edición de su perfil, como el envío', () => {
+  const m = nuevoMundo({ filas: [
+    fila('Kim', 'kim@ejemplo.com', { perfil: 'kids', ultimo: LIBRO_K.titulo, dias: 10 }),   // ya tiene la de Kids
+    fila('Leo', 'leo@ejemplo.com', { perfil: 'kids', ultimo: LIBRO_A.titulo, dias: 10 }),   // le toca la de Kids
+    fila('Ana', 'ana@ejemplo.com', { ultimo: LIBRO_A.titulo, dias: 10 }),                   // ya tiene la de adultos
+  ] });
+  m.ctx.previewMasivo();
+  const linea = re => (m.bitacora.find(l => re.test(l)) || '');
+  assert.ok(/Ya recibieron este libro: 2/.test(linea(/Ya recibieron/)), linea(/Ya recibieron/));
+  assert.ok(/Con perfil Kids:\s+2$/.test(linea(/Con perfil Kids/)), linea(/Con perfil Kids/));
+  assert.ok(/TOTAL ENVIABLES:\s+1/.test(linea(/TOTAL ENVIABLES/)), linea(/TOTAL ENVIABLES/));
+  assert.strictEqual(m.enviados.length, 0);
+  const f = nuevoMundo({ fallaKids: true, filas: [fila('Kim', 'kim@ejemplo.com', { perfil: 'kids' }), fila('Ana', 'ana@ejemplo.com')] });
+  f.ctx.previewMasivo();
+  assert.ok(/1 sin correo: no se pudo armar el de Kids: HTTP 500 al leer contenido_kids\.json/.test(f.bitacora.join('\n')), f.bitacora.join('\n'));
+  assert.ok(/TOTAL ENVIABLES:\s+1/.test(f.bitacora.find(l => /TOTAL ENVIABLES/.test(l))));
 });
 
 console.log(process.exitCode ? 'FALLÓ: ' + pruebas + ' pruebas pasadas.' : 'Todo en verde: ' + pruebas + ' pruebas pasadas.');
