@@ -307,4 +307,15 @@ prueba('el activador: los jueves hacia las 7, sin duplicar; quitarlo lo quita', 
   assert.strictEqual(m.activadores.length, 0);
 });
 
+prueba('el ensayo del lunes (previewMasivo) también lee la historia, como el envío', () => {
+  const m = nuevoMundo({ hoy: Date.UTC(2026, 10, 23, 13, 0, 0), filas: [
+    fila('Leo', 'leo@ejemplo.com', { j: 'Otro libro', envios: ['2026-11-16T13:00:00Z'], libros: 'e90,edicion-actual' }),
+    fila('Ana', 'ana@ejemplo.com', { j: 'Otro libro', envios: ['2026-11-16T13:00:00Z'] })] });
+  vm.runInContext('prepararEmailParaEnvio = function () { return { ok: true, libro: ' + JSON.stringify(CUR) + ', subject: "S", finalHTML: "x", finalPlain: "x", inlineImages: {} }; };', m.ctx);
+  m.ctx.previewMasivo();
+  const linea = re => (m.bitacora.find(l => re.test(l)) || '');
+  assert.ok(/Ya recibieron este libro: 1/.test(linea(/Ya recibieron/)), linea(/Ya recibieron/));
+  assert.ok(/TOTAL ENVIABLES:\s+1/.test(linea(/TOTAL ENVIABLES/)), linea(/TOTAL ENVIABLES/));
+});
+
 console.log(process.exitCode ? 'FALLÓ: ' + pruebas + ' pruebas pasadas.' : 'Todo en verde: ' + pruebas + ' pruebas pasadas.');

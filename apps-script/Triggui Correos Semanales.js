@@ -141,7 +141,7 @@ function colPerfil_(sheet, crear) {
   return ultima + 1;
 }
 
-/* 📚 C477, paso 3 — lo que cada persona ya recibió por correo, para que el segundo correo de la semana no repita.
+/* 📚 C477, paso 3: lo que cada persona ya recibió por correo, para que el segundo correo de la semana no repita.
    Columna LIBROS (por su encabezado, nace con el primer envío): fichas separadas por coma, la más reciente al
    final, hasta LIBROS_TOPE. La ficha es el _slug del libro; uno sin slug va como «t:» y su título normalizado.
    Empieza vacía: lo de antes se deduce de la fecha de alta y de la columna J (elegirLibroSegundo_). */
@@ -4911,22 +4911,21 @@ function previewMasivo() {
 
   // 3. Análisis del sheet
   const data = sheet.getDataRange().getValues();
-  const tituloActualNorm = libro.titulo.toLowerCase().trim();
   // 👧 C477: como el envío del lunes, cada fila se mide contra la edición de su perfil (la de Kids, si se puede armar).
-  let tituloKidsNorm = null, motivoKids = "", conPerfilKids = 0, kidsSinEdicion = 0;
-  const tituloDeSuPerfil = function (fila) {
-    if (perfilDeFila_(fila, data[0] || []) !== "kids") return tituloActualNorm;
+  let libroKids = null, motivoKids = "", conPerfilKids = 0, kidsSinEdicion = 0;
+  const libroDeSuPerfil = function (fila) {
+    if (perfilDeFila_(fila, data[0] || []) !== "kids") return libro;
     conPerfilKids++;
-    if (tituloKidsNorm === null && !motivoKids) {
+    if (!libroKids && !motivoKids) {
       const sv = PERFIL_ENVIO_ACTUAL;
       PERFIL_ENVIO_ACTUAL = "kids";
       let pk = null;
       try { pk = prepararEmailParaEnvio(); } catch (e) { pk = { ok: false, reason: e.message }; }
       PERFIL_ENVIO_ACTUAL = sv;
-      if (pk && pk.ok) tituloKidsNorm = String(pk.libro.titulo || "").toLowerCase().trim();
+      if (pk && pk.ok) libroKids = pk.libro;
       else motivoKids = (pk && pk.reason) || "sin motivo";
     }
-    return tituloKidsNorm;   // null: el correo Kids no se puede armar
+    return libroKids;   // null: el correo Kids no se puede armar
   };
 
   let totalFilas = 0;
@@ -4949,9 +4948,9 @@ function previewMasivo() {
     if (emailsInRow.length === 0) { sinEmail++; continue; }
     if (isRowUnsubscribed(data[i])) { unsubscribed++; continue; }
     if (debeMarcarseExpired(data[i])) { trialExpirado++; continue; }
-    const tituloSuyo = tituloDeSuPerfil(data[i]);
-    if (tituloSuyo === null) { kidsSinEdicion++; continue; }
-    if (ultimoLibro && ultimoLibro.toLowerCase() === tituloSuyo) { yaRecibieron++; continue; }
+    const libroSuyo = libroDeSuPerfil(data[i]);
+    if (!libroSuyo) { kidsSinEdicion++; continue; }
+    if (yaRecibioLibro_(data[i], data[0] || [], libroSuyo)) { yaRecibieron++; continue; }   // la J o su historia, como el lunes
     if (hasReachedWeeklyLimit(data[i])) { capSemanal++; continue; }
 
     const tieneRotacion = !!ultimoLibro;
