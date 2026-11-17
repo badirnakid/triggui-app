@@ -129,7 +129,7 @@ function stripeAlta_(d, previos) {
   const correo = stripeCorreoMiembro_(d.email, String(data[fila - 1][0] || ""), lang);
   let whatsapp = "sin permiso de WhatsApp";
   const colWa = waColumna_(data[0] || [], WA_COL_PERMISO);
-  if (colWa && waLeerPermiso_(data[fila - 1][colWa - 1]).si) whatsapp = "WhatsApp: " + waBienvenida_(data[fila - 1][3], lang).motivo;
+  if (colWa && waLeerPermiso_(data[fila - 1][colWa - 1]).si) whatsapp = "WhatsApp: " + waBienvenida_(data[fila - 1][3], lang, data[fila - 1][0]).motivo;
   return stripeAvisar_({ ok: true, detalle: "fila " + fila + "; correo " + (correo ? "mandado" : "sin cuota") + "; " + whatsapp },
     "Nuevo miembro de Triggui (" + etiqueta + "): " + d.email + " (fila " + fila + ", antes «" + (previo || "sin estado") + "»)." + otro +
     (correo ? "" : " No había cuota de correo para su «Ya eres miembro»."));

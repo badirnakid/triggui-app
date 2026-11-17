@@ -100,6 +100,10 @@ function entorno(opciones) {
       fetch: function (url, o) {
         llamadas.push({ url: url, o: o || {} });
         if (/\/messages$/.test(url)) { n++; return resp(200, JSON.stringify({ messages: [{ id: "wamid.B" + n }] })); }
+        // La bienvenida A (C484) lleva la edición de esta semana y mira que su imagen exista.
+        if (/\/contenido_manual\.json$/.test(url)) return resp(200, JSON.stringify({ libros: [{ _slug: "libro-de-la-semana", titulo: "Libro de la semana",
+          titulo_en: "Book of the week", frases: ["Una frase."], frases_en: ["A phrase."], tarjeta_en: { titulo: "x" }, _edicion_numero: 113 }] }));
+        if (/^https:\/\/app\.triggui\.com\/t\/libro-de-la-semana\/og(_en)?\.jpg$/.test(url)) return resp(200, "");
         throw new Error("URL inesperada: " + url);
       }
     }
@@ -162,7 +166,8 @@ prueba("alta de quien estaba en prueba: miembro de $149, columna Stripe, «Ya er
     /app\.triggui\.com\/espiral\//.test(c[0].texto));
   assert.ok(!/dos libros|2 por semana/i.test(c[0].texto), "no promete frecuencia");
   assert.deepStrictEqual([c[0].o.name, c[0].o.replyTo], [E.run("REMITENTE_DISPLAY_NAME"), E.run("REMITENTE_REPLY_TO")]);
-  assert.deepStrictEqual(mensajes(E).map(function (m) { return [m.to, m.template.name, m.template.language.code]; }), [["525511111111", "triggui_bienvenida", "es_MX"]]);
+  assert.deepStrictEqual(mensajes(E).map(function (m) { return [m.to, m.template.name, m.template.language.code, m.template.components[1].parameters[0].text]; }),
+    [["525511111111", "triggui_bienvenida_libro", "es_MX", "Listo, Ana"]], "la bienvenida A con el nombre de la fila");
   const b = avisosABadir(E);
   assert.strictEqual(b.length, 1);
   assert.ok(/Nuevo miembro de Triggui \(\$149\): a@x\.com \(fila 2/.test(b[0].texto), b[0].texto);
@@ -365,7 +370,7 @@ prueba("formulario nuevo con la casilla y en inglés: fila en inglés, «sí» c
   const f = E.principal.filas[6];
   assert.deepStrictEqual([f[2], f[3], f[14].indexOf("SUBSCRIBED_TRIAL"), f[16], f[17]], ["z@x.com", "'+525599998888", 0, "en", "sí " + HOY]);
   assert.deepStrictEqual(E.librosMandados, [["z@x.com", 7, "Zoe"]]);
-  assert.deepStrictEqual(mensajes(E).map(function (m) { return [m.to, m.template.name, m.template.language.code]; }), [["525599998888", "triggui_bienvenida", "en_US"]]);
+  assert.deepStrictEqual(mensajes(E).map(function (m) { return [m.to, m.template.name, m.template.language.code]; }), [["525599998888", "triggui_bienvenida_libro", "en_US"]]);
 });
 
 prueba("formulario nuevo sin la casilla: solo correo, y en español", function () {

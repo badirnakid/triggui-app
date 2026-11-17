@@ -9,6 +9,10 @@ const assert = require("assert");
 
 const ARCHIVO = path.join(__dirname, "..", "..", "apps-script", "Triggui WhatsApp.js");
 const CODIGO = fs.readFileSync(ARCHIVO, "utf8");
+// sanitizarNombre es del cartero (la usa también el correo): se toma el texto real de su función, no una copia.
+const CARTERO = fs.readFileSync(path.join(__dirname, "..", "..", "apps-script", "Triggui Correos Semanales.js"), "utf8");
+const SANITIZAR = (CARTERO.match(/function sanitizarNombre\(raw\) \{[\s\S]*?\n\}\n/) || [""])[0];
+if (!SANITIZAR) throw new Error("No encontré sanitizarNombre en el cartero");
 const CONTENIDO_URL = "https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido_manual.json";
 const KIDS_URL = "https://raw.githubusercontent.com/badirnakid/triggui-content/main/contenido_kids.json";
 
@@ -161,6 +165,7 @@ function entorno(opciones) {
     }
   };
   const ctx = vm.createContext(sandbox);
+  vm.runInContext(SANITIZAR, ctx, { filename: "sanitizarNombre (cartero)" });
   vm.runInContext(CODIGO, ctx, { filename: "Triggui WhatsApp.js" });
   return { ctx: ctx, props: props, llamadas: llamadas, correos: correos, logs: logs, activadores: activadores, hojas: libroHojas.hojas,
     run: function (expr) { return vm.runInContext(expr, ctx); } };
@@ -473,7 +478,7 @@ prueba("el resumen de la noche junta envíos, estados, botones y bajas de hoy", 
   assert.strictEqual(F.correos.length, 0, "si hoy no salió nada, no hay correo");
 });
 
-prueba("las seis plantillas a Meta: textos, muestras, imagen subida una vez por imagen y la bienvenida de utilidad", function () {
+prueba("las seis plantillas a Meta: textos, muestras, imagen subida una vez por imagen y la bienvenida A de marketing", function () {
   const E = entorno({ props: Object.assign({}, PROPS_OK, { WA_WABA_ID: "999", WA_APP_ID: "777" }) });
   const r = JSON.parse(JSON.stringify(E.ctx.waCrearPlantillas()));
   assert.strictEqual(r.length, 6);
@@ -481,11 +486,20 @@ prueba("las seis plantillas a Meta: textos, muestras, imagen subida una vez por 
   assert.deepStrictEqual(todas.map(function (d) { return [d.name, d.language, d.category]; }), [
     ["triggui_lunes", "es_MX", "MARKETING"], ["triggui_lunes", "en_US", "MARKETING"],
     ["triggui_lunes_ninos", "es_MX", "MARKETING"], ["triggui_lunes_ninos", "en_US", "MARKETING"],
-    ["triggui_bienvenida", "es_MX", "UTILITY"], ["triggui_bienvenida", "en_US", "UTILITY"]]);
+    ["triggui_bienvenida_libro", "es_MX", "MARKETING"], ["triggui_bienvenida_libro", "en_US", "MARKETING"]]);
   const bienv = JSON.parse(JSON.stringify(E.run("WA_BIENVENIDAS")));
-  todas.slice(4).forEach(function (d, i) {
-    assert.deepStrictEqual(d.components, [{ type: "BODY", text: bienv[i].cuerpo }, { type: "FOOTER", text: bienv[i].pie }]);
-  });
+  const explorar = "https://app.triggui.com/?utm_source=whatsapp&utm_medium=bienvenida&utm_campaign=explorar";
+  assert.deepStrictEqual(todas[4].components, [
+    { type: "HEADER", format: "IMAGE", example: { header_handle: ["HANDLE1"] } },
+    { type: "BODY", text: bienv[0].cuerpo, example: { body_text: [["Listo, Ana", "Libro de prueba"]] } },
+    { type: "FOOTER", text: bienv[0].pie },
+    { type: "BUTTONS", buttons: [
+      { type: "URL", text: "Abrir mi libro", url: "https://app.triggui.com/{{1}}", example: ["https://app.triggui.com/t/libro-de-prueba/?w=s&utm_content=bienvenida"] },
+      { type: "URL", text: "Explorar la app", url: explorar }] }]);
+  assert.deepStrictEqual(todas[5].components[1].example, { body_text: [["Ana", "Test book"]] });
+  assert.deepStrictEqual(todas[5].components[3].buttons.map(function (b) { return [b.text, b.url, b.example || null]; }), [
+    ["Open my book", "https://app.triggui.com/{{1}}", ["https://app.triggui.com/t/libro-de-prueba/en/?w=s&utm_content=bienvenida"]],
+    ["Explore the app", explorar, null]]);
   const altas = todas.slice(0, 4);
   const defs = JSON.parse(JSON.stringify(E.run("WA_PLANTILLAS")));
   altas.forEach(function (d, i) {
@@ -521,11 +535,17 @@ prueba("los textos de las plantillas cumplen las reglas de Meta", function () {
   const bienv = JSON.parse(JSON.stringify(E.run("WA_BIENVENIDAS")));
   assert.deepStrictEqual(bienv.map(function (d) { return d.idioma; }), ["es", "en"]);
   bienv.forEach(function (d) {
-    assert.ok(!/\{\{/.test(d.cuerpo), "la bienvenida no lleva variables (nunca sale un parámetro vacío)");
+    const vars = (d.cuerpo.match(/\{\{\d+\}\}/g) || []).map(function (x) { return Number(x.replace(/\D/g, "")); });
+    assert.deepStrictEqual(vars, [1, 2], d.idioma + ": el saludo y el título, en orden");
+    assert.ok(!/^\s*\{\{/.test(d.cuerpo) && !/\}\}\s*$/.test(d.cuerpo), "no empieza ni termina con variable");
+    assert.ok(!/\}\}\s*\{\{/.test(d.cuerpo), "sin variables pegadas");
     assert.ok(d.cuerpo.length <= 1024 && d.pie.length <= 60, "largos");
-    assert.ok(!/[—]/.test(d.cuerpo + d.pie), "sin rayas largas");
-    assert.ok(!/https?:\/\//.test(d.cuerpo), "sin ligas: es de utilidad, confirma el alta y no promociona");
+    assert.ok(d.botones.length === 2 && d.botones.every(function (b) { return b.length <= 25; }), "dos botones de liga, cortos");
+    assert.ok(!/[—]/.test(d.cuerpo + d.pie + d.botones.join("")), "sin rayas largas");
+    assert.ok(!/https?:\/\//.test(d.cuerpo), "las ligas van en los botones, no en el cuerpo");
+    assert.ok(!/lunes|monday|\d{1,2}:\d{2}|a las \d/i.test(d.cuerpo + d.pie), "sin «lunes» ni hora (Badir, 21:32 del 16 de noviembre)");
   });
+  assert.strictEqual(bienv[0].cuerpo, "¡{{1}}! Ya estás en Triggui. Tu primer libro llega ya: *{{2}}*. Cada semana, otro aquí.");
 });
 
 prueba("los activadores: lunes a la hora pedida y a las 21; sin duplicar", function () {
@@ -545,16 +565,34 @@ prueba("los activadores: lunes a la hora pedida y a las 21; sin duplicar", funct
 const HOY = new Date().toISOString().slice(0, 10);
 const mensajes = function (E) { return E.llamadas.filter(function (l) { return /\/messages$/.test(l.url); }); };
 
-prueba("la bienvenida: solo con WA_ACTIVO y WA_BIENVENIDA, una vez por número, sin variables y anotada", function () {
+prueba("la bienvenida A: solo con WA_ACTIVO y WA_BIENVENIDA, una vez por número, con la edición, el saludo y sus dos ligas", function () {
   const apagada = entorno({ props: PROPS_OK });
-  assert.strictEqual(apagada.ctx.waBienvenida_("+52 55 9999 0000", "es").motivo, "apagada");
+  assert.strictEqual(apagada.ctx.waBienvenida_("+52 55 9999 0000", "es", "Ana").motivo, "apagada");
   assert.strictEqual(apagada.llamadas.length, 0);
   const E = entorno({ props: Object.assign({}, PROPS_OK, { WA_BIENVENIDA: "sí" }) });
   assert.deepStrictEqual(JSON.parse(JSON.stringify(E.ctx.waBienvenida_("+52 55 9999 0000", "en"))), { ok: true, motivo: "mandada" });
   assert.deepStrictEqual(mensajes(E).map(function (l) { return JSON.parse(l.o.payload); }), [{ messaging_product: "whatsapp",
-    recipient_type: "individual", to: "525599990000", type: "template", template: { name: "triggui_bienvenida", language: { code: "en_US" } } }]);
+    recipient_type: "individual", to: "525599990000", type: "template", template: { name: "triggui_bienvenida_libro", language: { code: "en_US" },
+      components: [
+        { type: "header", parameters: [{ type: "image", image: { link: "https://app.triggui.com/t/libro-de-prueba/og_en.jpg" } }] },
+        { type: "body", parameters: [{ type: "text", text: "friend" }, { type: "text", text: "Test book" }] },
+        { type: "button", sub_type: "url", index: "0", parameters: [{ type: "text", text: "t/libro-de-prueba/en/?w=s&utm_content=bienvenida" }] }] } }]);
+  assert.ok(E.llamadas.some(function (l) { return l.url === "https://app.triggui.com/t/libro-de-prueba/og_en.jpg"; }), "mira que la imagen exista");
   const f = E.hojas["WA envíos"].filas[1];
-  assert.deepStrictEqual([f[1], f[2], f[4], f[5], f[7]], ["bienvenida", "'525599990000", "en", "bienvenida", "aceptado"]);
+  assert.deepStrictEqual([f[1], f[2], f[3], f[4], f[5], f[7], f[8]], ["bienvenida", "'525599990000", "", "en", "bienvenida", "aceptado", "libro-de-prueba"]);
+  const N = entorno({ props: Object.assign({}, PROPS_OK, { WA_BIENVENIDA: "si" }) });
+  N.ctx.waBienvenida_("5511112222", "es", "  maría josé ");
+  N.ctx.waBienvenida_("5511113333", "es", "");
+  N.ctx.waBienvenida_("5511114444", "es", "<script>");
+  assert.deepStrictEqual(mensajes(N).map(function (l) { return JSON.parse(l.o.payload).template.components[1].parameters[0].text; }),
+    ["Listo, María", "Listo", "Listo"], "el nombre pasa por sanitizarNombre; sin nombre, «¡Listo!»");
+  assert.strictEqual(JSON.parse(mensajes(N)[0].o.payload).template.components[0].parameters[0].image.link, "https://app.triggui.com/t/libro-de-prueba/og.jpg");
+  assert.strictEqual(N.hojas["WA envíos"].filas[1][3], "María");
+  const S = entorno({ props: Object.assign({}, PROPS_OK, { WA_BIENVENIDA: "si" }), ogFalta: "/og.jpg" });
+  assert.strictEqual(S.ctx.waBienvenida_("5511115555", "es", "Ana").motivo, "sin_imagen");
+  assert.strictEqual(mensajes(S).length, 0, "sin la imagen de la edición no sale");
+  assert.deepStrictEqual(JSON.parse(JSON.stringify(S.hojas["WA envíos"].filas[1].slice(7))), ["error sin imagen", "https://app.triggui.com/t/libro-de-prueba/og.jpg"]);
+  assert.strictEqual(S.ctx.waBienvenida_("5511115555", "es", "Ana").motivo, "sin_imagen", "un error no cuenta como enviada: se vuelve a intentar");
   assert.strictEqual(E.ctx.waBienvenida_("5215599990000", "es").motivo, "ya_la_tenia", "con el «1» viejo es el mismo número");
   assert.strictEqual(mensajes(E).length, 1);
   assert.strictEqual(E.ctx.waBienvenida_("123", "es").motivo, "tel");
@@ -591,8 +629,8 @@ prueba("el permiso del formulario: columna nueva, «sí kids» se respeta, vuelv
   assert.deepStrictEqual([r5.permiso, r5.motivo, r5.bienvenida.motivo], [true, "nuevo", "no_recibe_los_lunes"]);
   assert.strictEqual(h.filas[3][4], "sí " + HOY, "marcar la casilla es permiso nuevo");
   assert.strictEqual(P(2, "", "12", "es", true).motivo, "tel");
-  assert.deepStrictEqual(mensajes(E).map(function (l) { const c = JSON.parse(l.o.payload); return [c.to, c.template.language.code]; }),
-    [["525511111111", "es_MX"], ["15125550101", "en_US"]]);
+  assert.deepStrictEqual(mensajes(E).map(function (l) { const c = JSON.parse(l.o.payload); return [c.to, c.template.language.code, c.template.components[1].parameters[0].text]; }),
+    [["525511111111", "es_MX", "Listo, Ana"], ["15125550101", "en_US", "Bob"]], "el saludo lleva el nombre de la fila");
 });
 
 prueba("el límite de Meta: el campo de hoy en el nodo del número, los escalones y, si no se puede leer, 250", function () {
@@ -946,7 +984,7 @@ prueba("el puente, message_template_status_update: correo si Meta pausa, desacti
   assert.strictEqual(E.correos.length, 2);
   const ev = E.hojas["WA eventos"].filas.slice();
   const F = entorno({ props: PROPS_OK });
-  const aviso = { clave: C, tipo: "plantilla", nombre: "triggui_bienvenida", idioma: "es_MX", evento: "DISABLED", id: "806312974732579", cuando: "1731000000" };
+  const aviso = { clave: C, tipo: "plantilla", nombre: "triggui_bienvenida_libro", idioma: "es_MX", evento: "DISABLED", id: "806312974732579", cuando: "1731000000" };
   F.ctx.waPuente_(aviso);
   assert.deepStrictEqual(JSON.parse(JSON.stringify(F.ctx.waPuente_(aviso))), { ok: true, repetido: true });
   assert.strictEqual(F.correos.length, 1, "el aviso repetido no manda otro correo");
@@ -959,6 +997,21 @@ prueba("el puente, message_template_status_update: correo si Meta pausa, desacti
     ["plantilla", "PAUSED", "triggui_lunes (es_MX) · NONE · FIRST_PAUSE · Your template has been paused for 3 hours."],
     ["plantilla", "REJECTED", "triggui_bienvenida (en_US) · PROMOTIONAL"],
     ["plantilla", "APPROVED", "triggui_lunes (es_MX)"]]);
+});
+
+prueba("crear solo la bienvenida A en Meta: dos plantillas de marketing, una imagen por idioma y nada del lunes", function () {
+  const sin = entorno({ props: PROPS_OK });
+  assert.ok(/Faltan WA_TOKEN, WA_WABA_ID o WA_APP_ID/.test(sin.ctx.waCrearBienvenida().aviso));
+  const E = entorno({ props: Object.assign({}, PROPS_OK, { WA_WABA_ID: "999", WA_APP_ID: "777" }) });
+  const r = JSON.parse(JSON.stringify(E.ctx.waCrearBienvenida()));
+  assert.deepStrictEqual(r.map(function (x) { return [x.plantilla, x.idioma, x.http, x.estado]; }), [
+    ["triggui_bienvenida_libro", "es_MX", 200, "PENDING"], ["triggui_bienvenida_libro", "en_US", 200, "PENDING"]]);
+  const todas = E.llamadas.filter(function (l) { return /\/message_templates$/.test(l.url); });
+  assert.strictEqual(todas.length, 2);
+  assert.ok(todas.every(function (l) { return /^https:\/\/graph\.facebook\.com\/v26\.0\/999\/message_templates$/.test(l.url); }));
+  assert.ok(todas.every(function (l) { return JSON.parse(l.o.payload).category === "MARKETING"; }));
+  assert.strictEqual(E.llamadas.filter(function (l) { return /\/uploads\?/.test(l.url); }).length, 2, "og.jpg y og_en.jpg, una vez cada una");
+  assert.ok(!E.llamadas.some(function (l) { return /kids/.test(l.url); }), "la bienvenida no lee Kids");
 });
 
 console.log((process.exitCode ? "FALLÓ" : "Todo en verde") + ": " + pasadas + " pruebas pasadas.");

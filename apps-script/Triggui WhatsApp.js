@@ -30,9 +30,12 @@
  *     Si lo vuelve a aceptar, se anota y su columna no cambia: volver a mandarle es decisión de Badir.
  *   · message_template_status_update: Meta pausó, desactivó, marcó o rechazó una plantilla nuestra → correo a Badir.
  *
- * La bienvenida (plantilla de utilidad «triggui_bienvenida», sin variables): cuando alguien marca la casilla
- * de WhatsApp en el formulario de triggui.com, el alta escribe «sí AAAA-MM-DD» en la columna y le manda la
- * bienvenida, una sola vez por número. Sale solo si además WA_BIENVENIDA dice «si» (cuando Meta la aprobó).
+ * La bienvenida A (C484, plantilla de marketing «triggui_bienvenida_libro»): cuando alguien marca la casilla de
+ * WhatsApp en el formulario de triggui.com (o paga en Stripe con permiso de WhatsApp), el alta escribe «sí AAAA-MM-DD»
+ * en la columna y le manda, una sola vez por número, la imagen de la edición de la semana, «¡Listo, (nombre)! Ya estás
+ * en Triggui. Tu primer libro llega ya: (título). Cada semana, otro aquí.», el pie de BAJA y dos botones de liga:
+ * «Abrir mi libro» (la edición) y «Explorar la app». Sin «lunes» ni hora (Badir, 16 de noviembre de 2026, 21:32).
+ * Sale solo si además WA_BIENVENIDA dice «si» (cuando Meta la aprobó). La crea en Meta waCrearBienvenida() (con go).
  *
  * Propiedades del script (Configuración del proyecto › Propiedades del script; nunca en el código):
  *   WA_TOKEN        token del usuario del sistema con whatsapp_business_messaging
@@ -42,7 +45,7 @@
  *   WA_PRUEBA_TEL   tu número con lada (52…), para waProbarConmigo()
  *   WA_PUENTE_CLAVE la misma clave que tiene triggui.com/api/wa en Vercel (32 caracteres o más)
  *   WA_BIENVENIDA   «si» para mandar la bienvenida del formulario (después de que Meta apruebe la plantilla)
- *   Para waCrearPlantillas(): WA_WABA_ID y WA_APP_ID.
+ *   Para waCrearPlantillas() y waCrearBienvenida(): WA_WABA_ID y WA_APP_ID.
  *   Para waRegistrarNumero(): WA_PIN, los seis dígitos de la verificación en dos pasos del número (los pone Badir).
  *   Opcionales: WA_VERSION (v26.0) · WA_IDIOMA_ES (es_MX) · WA_IDIOMA_EN (en_US) · WA_HORA (9)
  *
@@ -64,7 +67,7 @@ const WA_ENC_ENVIOS = ["Fecha", "Edición", "Teléfono", "Nombre", "Idioma", "Ca
 const WA_ENC_EVENTOS = ["Fecha", "Tipo", "wamid", "Teléfono", "Valor", "Detalle"];
 const WA_PLANTILLA_ADULTOS = "triggui_lunes";
 const WA_PLANTILLA_NINOS = "triggui_lunes_ninos";
-const WA_PLANTILLA_BIENVENIDA = "triggui_bienvenida";
+const WA_PLANTILLA_BIENVENIDA = "triggui_bienvenida_libro";   // C484; la de utilidad «triggui_bienvenida» quedó atrás
 const WA_EDICION_BIENVENIDA = "bienvenida";        // así se anota en «WA envíos» (columna Edición)
 const WA_USO_DEL_LIMITE = 0.9;                     // del límite diario de Meta se usa el 90 %: el resto, para bienvenidas
 const WA_DIAS_DE_CONTINUACION = 6;                 // lo que no cupo sigue al día siguiente, hasta 6 días después
@@ -78,14 +81,18 @@ const WA_EVENTOS_DE_ALERTA = { PAUSED: "pausada por Meta", DISABLED: "desactivad
   REJECTED: "rechazada por Meta", PENDING_DELETION: "por borrarse en Meta", DELETED: "borrada en Meta", LOCKED: "bloqueada por Meta",
   ARCHIVED: "archivada en Meta", LIMIT_EXCEEDED: "con el aviso LIMIT_EXCEEDED de Meta" };
 
-/* La bienvenida del formulario: utilidad, sin variables, sin imagen ni botones (la ÚNICA fuente de sus textos). */
+/* La bienvenida A (C484): marketing, con la imagen de la edición, dos variables y dos botones de liga (la ÚNICA fuente
+   de sus textos). {{1}} es el saludo: en español «Listo, Ana» o «Listo» si no hay nombre (un parámetro no puede ir vacío);
+   en inglés, el nombre o «friend». {{2}} es el título. El primer botón lleva la ruta de la edición; el segundo es fijo. */
+const WA_MARCA_BIENVENIDA = "?w=s&utm_content=bienvenida";   // la página de la edición la vuelve utm_source=whatsapp · utm_medium=sala
+const WA_APP_EXPLORAR = "https://app.triggui.com/?utm_source=whatsapp&utm_medium=bienvenida&utm_campaign=explorar";
 const WA_BIENVENIDAS = [
   { nombre: WA_PLANTILLA_BIENVENIDA, idioma: "es",
-    cuerpo: "Listo: ya estás en Triggui por WhatsApp. Cada lunes te llega aquí tu libro de la semana.",
-    pie: "Responde BAJA si ya no quieres recibirlo" },
+    cuerpo: "¡{{1}}! Ya estás en Triggui. Tu primer libro llega ya: *{{2}}*. Cada semana, otro aquí.",
+    pie: "Responde BAJA si ya no quieres recibirlo", botones: ["Abrir mi libro", "Explorar la app"] },
   { nombre: WA_PLANTILLA_BIENVENIDA, idioma: "en",
-    cuerpo: "All set: you're on Triggui's WhatsApp. Every Monday your book of the week arrives here.",
-    pie: "Reply STOP if you no longer want it" }
+    cuerpo: "All set, {{1}}! You're in Triggui. Your first book is here: *{{2}}*. A new one here every week.",
+    pie: "Reply STOP if you no longer want it", botones: ["Open my book", "Explore the app"] }
 ];
 
 /* Las cuatro plantillas: la ÚNICA fuente de sus textos (waCrearPlantillas las manda a Meta así). */
@@ -527,7 +534,7 @@ function waConsecuenciaPlantilla_(evento, nombre) {
   }
   if (evento === "FLAGGED") return "Su calidad bajó: si no mejora, Meta puede pausarla. ";
   if (evento === "REJECTED") return "No se puede usar hasta corregirla y mandarla a revisión otra vez. ";
-  if (evento === "DELETED" || evento === "PENDING_DELETION") return "Ya no se podrá mandar con este nombre. ";
+  if (evento === "DELETED" || evento === "PENDING_DELETION") return "No se podrá mandar hasta volver a crearla y que Meta la apruebe. ";
   return "";
 }
 
@@ -535,10 +542,10 @@ function waConsecuenciaPlantilla_(evento, nombre) {
  *  la guarda cuando ya se atendió. Sin clave (el aviso no traía su momento) no se compara: se atiende siempre. */
 function waYaVisto_(clave) {
   const k = clave ? "wa_v|" + String(clave).slice(0, 200) : "";
-  let cache = null;
-  try { cache = k ? CacheService.getScriptCache() : null; } catch (e) {}
+  let cache = null, antes = false;
+  try { cache = k ? CacheService.getScriptCache() : null; antes = !!(cache && cache.get(k)); } catch (e) { cache = null; }
   return {
-    antes: !!(cache && cache.get(k)),
+    antes: antes,
     marcar: function () { try { if (cache) cache.put(k, "1", 21600); } catch (e) {} }
   };
 }
@@ -581,16 +588,18 @@ function waPermisoFormulario_(sheet, rowIdx, telFila, telForm, lang, recibe) {
     const actual = waLeerPermiso_(sheet.getRange(rowIdx, col).getValue());
     if (!actual.si) sheet.getRange(rowIdx, col).setValue("sí " + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd"));
     return { permiso: true, motivo: actual.si ? "ya_tenia" : "nuevo",
-      bienvenida: recibe ? waBienvenida_(tel, lang) : { ok: false, motivo: "no_recibe_los_lunes" } };
+      bienvenida: recibe ? waBienvenida_(tel, lang, sheet.getRange(rowIdx, 1).getValue()) : { ok: false, motivo: "no_recibe_los_lunes" } };
   } catch (e) {
     Logger.log("Permiso de WhatsApp del formulario: " + e.message);
     return { permiso: false, motivo: "error" };
   }
 }
 
-/** La bienvenida por WhatsApp (plantilla de utilidad, sin variables), una sola vez por número.
- *  Solo si WA_ACTIVO y WA_BIENVENIDA dicen «si». Se anota en «WA envíos» con la edición «bienvenida». Nunca truena. */
-function waBienvenida_(telefono, lang) {
+/** La bienvenida A por WhatsApp (C484), una sola vez por número, con la edición de esta semana (la de adultos).
+ *  Solo si WA_ACTIVO y WA_BIENVENIDA dicen «si». nombre: el de la columna Nombre de la fila (puede faltar).
+ *  Si la imagen de la edición no está, no sale (queda «error sin imagen» y un alta posterior la vuelve a intentar).
+ *  Se anota en «WA envíos» con la edición «bienvenida». Nunca truena. */
+function waBienvenida_(telefono, lang, nombre) {
   try {
     const cfg = waConfig_();
     if (!cfg.activo || !cfg.bienvenida) return { ok: false, motivo: "apagada" };
@@ -600,16 +609,54 @@ function waBienvenida_(telefono, lang) {
     const clave = waClaveTel_(tel);
     const hoja = waHoja_(WA_HOJA_ENVIOS, WA_ENC_ENVIOS);
     if (waYaEnviados_(hoja, WA_EDICION_BIENVENIDA)[clave]) return { ok: true, motivo: "ya_la_tenia" };
-    const idioma = lang === "en" ? "en" : "es";
-    const r = waMandar_(cfg, { messaging_product: "whatsapp", recipient_type: "individual", to: tel, type: "template",
-      template: { name: WA_PLANTILLA_BIENVENIDA, language: { code: cfg.idioma[idioma] } } });
-    hoja.appendRow([new Date(), WA_EDICION_BIENVENIDA, "'" + tel, "", idioma, WA_EDICION_BIENVENIDA,
-      r.ok ? r.wamid : "", r.ok ? "aceptado" : "error " + r.codigo, r.ok ? "" : r.detalle]);
+    const libro = waEdiciones_(false).adultos;
+    const cuerpo = waPayloadBienvenida_({ tel: tel, lang: lang === "en" ? "en" : "es", nombre: nombre }, libro, cfg);
+    const idioma = cuerpo._lang, saludo = cuerpo._nombre;
+    delete cuerpo._lang; delete cuerpo._nombre;
+    const imagen = cuerpo.template.components[0].parameters[0].image.link;
+    let hay = false;
+    try { hay = UrlFetchApp.fetch(imagen, { muteHttpExceptions: true }).getResponseCode() === 200; } catch (e) {}
+    if (!hay) {
+      hoja.appendRow([new Date(), WA_EDICION_BIENVENIDA, "'" + tel, saludo, idioma, WA_EDICION_BIENVENIDA, "", "error sin imagen", imagen]);
+      return { ok: false, motivo: "sin_imagen" };
+    }
+    const r = waMandar_(cfg, cuerpo);
+    hoja.appendRow([new Date(), WA_EDICION_BIENVENIDA, "'" + tel, saludo, idioma, WA_EDICION_BIENVENIDA,
+      r.ok ? r.wamid : "", r.ok ? "aceptado" : "error " + r.codigo, r.ok ? libro._slug : r.detalle]);
     return r.ok ? { ok: true, motivo: "mandada" } : { ok: false, motivo: "meta", codigo: r.codigo };
   } catch (e) {
     Logger.log("Bienvenida por WhatsApp: " + e.message);
     return { ok: false, motivo: "error" };
   }
+}
+
+/** La plantilla de la bienvenida A para una persona. _lang y _nombre son para la hoja: se quitan antes de mandar.
+ *  El nombre pasa por sanitizarNombre del cartero (el mismo del correo: primera palabra, con mayúscula). */
+function waPayloadBienvenida_(persona, libro, cfg) {
+  const en = persona.lang === "en" && waTieneEn_(libro);
+  const lang = en ? "en" : "es";
+  const ruta = waRuta_(libro, "adultos");
+  let nombre = "";
+  try { nombre = sanitizarNombre(persona.nombre) || ""; } catch (e) {}
+  const saludo = en ? (nombre || "friend") : (nombre ? "Listo, " + nombre : "Listo");
+  const titulo = waLimpia_(en ? (libro.titulo_en || libro.titulo) : libro.titulo, 200) || libro._slug;
+  return {
+    messaging_product: "whatsapp",
+    recipient_type: "individual",
+    to: persona.tel,
+    type: "template",
+    template: {
+      name: WA_PLANTILLA_BIENVENIDA,
+      language: { code: cfg.idioma[lang] },
+      components: [
+        { type: "header", parameters: [{ type: "image", image: { link: WA_APP_BASE + ruta + (en ? "og_en.jpg" : "og.jpg") } }] },
+        { type: "body", parameters: [{ type: "text", text: saludo }, { type: "text", text: titulo }] },
+        { type: "button", sub_type: "url", index: "0", parameters: [{ type: "text", text: ruta + (en ? "en/" : "") + WA_MARCA_BIENVENIDA }] }
+      ]
+    },
+    _lang: lang,
+    _nombre: nombre
+  };
 }
 
 /* ─────────────────────────────── la calidad del número (C485) ─────────────────────────────── */
@@ -735,8 +782,8 @@ function waOlvidarContinuacion_() {
 
 /* ─────────────────────────────── las plantillas en Meta ─────────────────────────────── */
 
-/** Manda las cuatro plantillas a revisión en la cuenta WA_WABA_ID (la de prueba o la de Triggui).
- *  Es un envío de formulario a Meta: pide el go de Badir. Con muestras de la edición de esta semana. */
+/** Manda a revisión, en la cuenta WA_WABA_ID (la de prueba o la de Triggui), las cuatro plantillas del lunes y las dos de
+ *  la bienvenida A. Es un envío de formulario a Meta: pide el go de Badir. Con muestras de la edición de esta semana. */
 function waCrearPlantillas() {
   const cfg = waConfig_();
   if (!cfg.token || !cfg.wabaId || !cfg.appId) return waAviso_("Faltan WA_TOKEN, WA_WABA_ID o WA_APP_ID.", false);
@@ -758,19 +805,54 @@ function waCrearPlantillas() {
     resultados.push({ plantilla: def.nombre, idioma: def2.language, http: resp.getResponseCode(),
       id: j.id || "", estado: j.status || "", error: (j.error && j.error.message) || "" });
   });
-  WA_BIENVENIDAS.forEach(function (def) {
-    const def2 = { name: def.nombre, language: cfg.idioma[def.idioma], category: "UTILITY",
-      components: [{ type: "BODY", text: def.cuerpo }, { type: "FOOTER", text: def.pie }] };
+  waMandarBienvenidas_(cfg, ed.adultos, handles).forEach(function (r) { resultados.push(r); });
+  Logger.log("Plantillas: " + JSON.stringify(resultados));
+  return resultados;
+}
+
+/** Solo las dos de la bienvenida A (C484), en la cuenta WA_WABA_ID. Es un envío de formulario a Meta: pide el go de Badir. */
+function waCrearBienvenida() {
+  const cfg = waConfig_();
+  if (!cfg.token || !cfg.wabaId || !cfg.appId) return waAviso_("Faltan WA_TOKEN, WA_WABA_ID o WA_APP_ID.", false);
+  const resultados = waMandarBienvenidas_(cfg, waEdiciones_(false).adultos, {});
+  Logger.log("Bienvenida: " + JSON.stringify(resultados));
+  return resultados;
+}
+
+/** Manda a revisión las dos plantillas de la bienvenida A, con la muestra armada por waPayloadBienvenida_ (Ana). */
+function waMandarBienvenidas_(cfg, libro, handles) {
+  return WA_BIENVENIDAS.map(function (def) {
+    const muestra = waPayloadBienvenida_({ tel: "520000000000", lang: def.idioma, nombre: "Ana" }, libro, cfg);
+    const og = muestra.template.components[0].parameters[0].image.link;
+    if (!handles[og]) handles[og] = waSubirMuestra_(cfg, og);
+    const def2 = waDefinicionBienvenida_(def, cfg, handles[og],
+      muestra.template.components[1].parameters.map(function (x) { return x.text; }),
+      WA_APP_BASE + muestra.template.components[2].parameters[0].text);
     const resp = UrlFetchApp.fetch("https://graph.facebook.com/" + cfg.version + "/" + encodeURIComponent(cfg.wabaId) + "/message_templates", {
       method: "post", contentType: "application/json", muteHttpExceptions: true,
       headers: { Authorization: "Bearer " + cfg.token }, payload: JSON.stringify(def2) });
     let j = {};
     try { j = JSON.parse(resp.getContentText("UTF-8") || "{}"); } catch (e) {}
-    resultados.push({ plantilla: def.nombre, idioma: def2.language, http: resp.getResponseCode(),
-      id: j.id || "", estado: j.status || "", error: (j.error && j.error.message) || "" });
+    return { plantilla: def.nombre, idioma: def2.language, http: resp.getResponseCode(),
+      id: j.id || "", estado: j.status || "", error: (j.error && j.error.message) || "" };
   });
-  Logger.log("Plantillas: " + JSON.stringify(resultados));
-  return resultados;
+}
+
+function waDefinicionBienvenida_(def, cfg, handle, cuerpoMuestra, ligaMuestra) {
+  return {
+    name: def.nombre,
+    language: cfg.idioma[def.idioma],
+    category: "MARKETING",
+    components: [
+      { type: "HEADER", format: "IMAGE", example: { header_handle: [handle] } },
+      { type: "BODY", text: def.cuerpo, example: { body_text: [cuerpoMuestra] } },
+      { type: "FOOTER", text: def.pie },
+      { type: "BUTTONS", buttons: [
+        { type: "URL", text: def.botones[0], url: WA_APP_BASE + "{{1}}", example: [ligaMuestra] },
+        { type: "URL", text: def.botones[1], url: WA_APP_EXPLORAR }
+      ] }
+    ]
+  };
 }
 
 function waDefinicionPlantilla_(def, cfg, handle, cuerpoMuestra) {
