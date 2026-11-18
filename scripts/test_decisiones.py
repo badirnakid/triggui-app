@@ -628,6 +628,11 @@ class Flujo(unittest.TestCase):
         cls.on = cls.yml.get("on") or cls.yml.get(True)
         cls.trabajo = cls.yml["jobs"]["decidir"]
 
+    def test_el_nombre_de_cada_corrida_no_se_corta(self):
+        # Sin comillas, « #» empieza un comentario de YAML y la corrida se llamaba solo «🗳️ Decisiones ·» (17 de noviembre).
+        self.assertEqual(self.yml["run-name"], "🗳️ Decisiones · #${{ github.event.pull_request.number || inputs.pr }} · "
+                         "${{ inputs.accion || (github.event.action == 'closed' && 'cerrar' || 'revisar') }}")
+
     def test_cuando_corre(self):
         self.assertEqual(self.on["pull_request_target"], {"types": ["edited", "closed"]})
         self.assertNotIn("pull_request", self.on)

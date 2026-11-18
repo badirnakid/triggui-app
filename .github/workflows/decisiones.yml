@@ -16,7 +16,8 @@
 
 name: 🗳️ Decisiones
 
-run-name: 🗳️ Decisiones · #${{ github.event.pull_request.number || inputs.pr }} · ${{ inputs.accion || (github.event.action == 'closed' && 'cerrar' || 'revisar') }}
+# Entre comillas: sin ellas, YAML lee « #» como el principio de un comentario y el nombre se corta.
+run-name: "🗳️ Decisiones · #${{ github.event.pull_request.number || inputs.pr }} · ${{ inputs.accion || (github.event.action == 'closed' && 'cerrar' || 'revisar') }}"
 
 on:
   pull_request_target:
