@@ -1,0 +1,9 @@
+{
+  "_nota": "La edad de cada libro Kids (3-5, 6-8 o 9-12), con la clave de data/tiendas.json (título y autor en minúsculas). La pone el robot de propuestas (C480) y entra con el Merge de Badir.",
+  "edades": {
+    "el patito feo__hans christian andersen": "3-5",
+    "el príncipe feliz__oscar wilde": "6-8",
+    "el viento en los sauces__kenneth grahame": "6-8",
+    "mafalda__quino": "9-12"
+  }
+}
