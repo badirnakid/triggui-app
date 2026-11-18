@@ -62,13 +62,15 @@ class JuezFalso:
     """Contesta por título; para «el más parecido», según el mapa parecidos {título que falta: (título elegido, parecido)}."""
 
     def __init__(self, juicios, parecidos=None, falla_en=None, momento=None, momento_falla=False, segundo=None,
-                 segundo_falla=False):
+                 segundo_falla=False, mini_en=()):
         self.juicios, self.parecidos, self.falla_en = juicios, parecidos or {}, falla_en
         self.momento, self.momento_falla = momento, momento_falla
         self.segundo, self.segundo_falla = segundo or {}, segundo_falla   # segundo: {título: (conoce, apto, por qué) o None}
         self.llamadas, self.parecido_llamadas, self.momento_llamadas, self.segundo_llamadas = 0, 0, 0, 0
         self.momento_usuario = self.momento_sistema = self.sistema = self.segundo_sistema = ""
         self.segundo_vistos = []
+        self.mini_en = set(mini_en)   # los títulos cuyo lote «calificó el mini» (el «grande» no respondió)
+        self.ultimo_papel = None
 
     def __call__(self, sistema, usuario, esq, tope):
         if "variables" in esq["properties"]:   # el momento de cada fecha y las variables sugeridas
@@ -105,6 +107,7 @@ class JuezFalso:
         lista = json.loads(usuario.split("\n", 2)[-1].split(":\n", 1)[1])
         if self.falla_en and any(p["titulo"] == self.falla_en for p in lista):
             raise RuntimeError("se cayó")
+        self.ultimo_papel = "mini" if any(p["titulo"] in self.mini_en for p in lista) else "grande"
         salida = []
         for p in lista:
             j = self.juicios.get(p["titulo"])
@@ -562,6 +565,10 @@ class Salida(Base):
         md = self.leer("propuesta-kids.md")
         self.assertIn("| Edad |", md)
         self.assertIn("Para saber antes: Una bruja da miedo.", md)
+        md_errata = cu.markdown("kids", HOY, [], dict(self.registro("kids")["resumen"]), [],
+                                [{"titulo": "Raton", "autor": "A", "titulo_bien": "Ratón", "autor_bien": "A"}])
+        self.assertIn("Estos pasarían lo demás del primer juez (el segundo los revisa cuando el catálogo los traiga bien "
+                      "escritos), pero", md_errata)
         titulos = [c["titulo"] for c in self.registro("kids")["elegidos"]]
         # K1 entra aunque Matilda (Roald Dahl) ya esté en la app; K2 no, porque es del mismo autor que K1 (uno por autor
         # en cada propuesta); la franquicia no es apta y K3 no trae edad.
@@ -753,6 +760,21 @@ class Criterio(Base):
         self.assertIn("- **Variables a prueba:** «Temporada» (Si acompaña diciembre.). El juez las califica", md)
         self.assertIn("Temporada (a prueba); Lectura breve (activa)", juez.momento_sistema)   # no las sugiere otra vez
 
+    def test_ninguna_variable_se_llama_como_una_parte_del_puntaje(self):
+        escribir(os.path.join(self.app, "curaduria", "variables.json"), json.dumps({"variables": [
+            {"id": "variedad", "estado": "activa", "peso": 10, "que_mide": "x"},
+            {"id": "tienda", "estado": "a prueba", "que_mide": "y"},
+            {"id": "otra", "estado": "activa", "peso": 5, "que_mide": "z"}]}))
+        self.assertEqual([v["id"] for v in cu.leer_variables(self.app)[0]], ["otra"])
+
+    def test_el_registro_trae_el_costo(self):
+        self.assertIsNone(cu.registro_compacto("adultos", HOY, [], [])["costo_usd"])
+        self.assertEqual(cu.registro_compacto("adultos", HOY, [], [], 1.1)["costo_usd"], 1.1)
+
+    def test_un_solo_plazo_para_las_palomitas(self):
+        self.assertIn("en unos minutos", cu.texto_entran("kids"))
+        self.assertNotIn("un minuto", cu.texto_entran("kids"))
+
     def test_las_activas_que_pesan_de_mas_no_cuentan_y_se_avisa(self):
         escribir(os.path.join(self.app, "curaduria", "variables.json"), json.dumps({"variables": [
             {"id": "a", "estado": "activa", "peso": 20, "que_mide": "x"},
@@ -796,6 +818,27 @@ class Criterio(Base):
         r = self.registro("kids")
         self.assertEqual([c["titulo"] for c in r["elegidos"]], ["Cuento K1"])
         self.assertTrue(any("dejó sin revisar 1 candidato" in a for a in r["avisos"]), r["avisos"])
+
+    def test_sin_el_si_del_segundo_juez_no_pasa(self):
+        c = {"titulo": "X", "juicio": dict(juicio(mision=0.9, edad="6-8"), errata=False)}
+        self.assertEqual(cu.pasa(c, "kids"), "sin el «sí» del segundo juez")
+        self.assertEqual(cu.pasa(c, "kids", con_segundo=False), "")
+        c["juicio"]["segundo"] = "no"
+        self.assertEqual(cu.pasa(c, "kids"), "el segundo juez no lo ve apto")
+        c["juicio"]["segundo"] = "si"
+        self.assertEqual(cu.pasa(c, "kids"), "")
+        self.assertEqual(cu.pasa({"titulo": "Y", "juicio": dict(juicio(), errata=False)}, "adultos"), "")
+
+    def test_si_al_primer_juez_le_califico_el_mini_no_hay_doble_revision(self):
+        juicios = {"Cuento K1": juicio(mision=0.9, edad="6-8"), "Cuento K3": juicio(mision=0.85, edad="9-12")}
+        juez = JuezFalso(juicios, mini_en={"Cuento K1"})   # el único lote lo calificó el «mini»
+        codigo, _ = self.correr(juez, lista="kids", cuantos=2)
+        self.assertEqual(codigo, 2)
+        r = self.registro("kids")
+        self.assertEqual(r["elegidos"], [])
+        self.assertEqual(juez.segundo_llamadas, 0)
+        self.assertTrue(any("2 candidatos Kids los calificó el «mini» porque el «grande» no respondió" in a
+                            for a in r["avisos"]), r["avisos"])
 
     def test_en_adultos_no_hay_segundo_juez(self):
         juez = JuezFalso(JUICIOS)

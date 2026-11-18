@@ -21,6 +21,7 @@ _spec.loader.exec_module(de)
 cu = de.cu
 
 RAMA = "propuestas/2026-11-17-adultos-1017"
+REPO = "badirnakid/triggui-app"
 AHORA = datetime.datetime(2026, 11, 18, 3, 31, tzinfo=datetime.timezone.utc)   # martes 17, 21:31 en México
 LIBROS = [("El hombre en busca de sentido", "Viktor E. Frankl", "tristeza", 91.0),
           ("El Alquimista", "Paulo Coelho", "apatia", 88.5),
@@ -47,10 +48,16 @@ RESUMEN = {"maestro": 100, "candidatos": 80, "excluidos": {}, "juzgados": 80, "v
            "en_lista": 2, "criterio": 0, "casos": 0}
 
 
-def cuerpo_nuevo(fecha="2026-11-17"):
+def cuerpo_nuevo(fecha="2026-11-17", costo_usd=None):
     """Una descripción como la escribe hoy curaduria.py: casillas, tabla, variables y registro."""
     elegidos = [elegido(t, a, e, s, n) for n, (t, a, e, s) in enumerate(LIBROS, 1)]
-    return cu.markdown("adultos", fecha, elegidos, RESUMEN, [], (), SUGERIDAS)
+    return cu.markdown("adultos", fecha, elegidos, RESUMEN, [], (), SUGERIDAS, (), costo_usd)
+
+
+def sin_entran(cuerpo):
+    """La descripción con la sección «¿Entran?» borrada (el registro se queda)."""
+    a = cuerpo.index(de.ENTRAN)
+    return cuerpo[:a] + cuerpo[cuerpo.index("| # |"):]
 
 
 def cuerpo_viejo():
@@ -194,6 +201,8 @@ class Archivos(unittest.TestCase):
         datos["variables"].append({"id": "lectura_breve_2", "nombre": "Otra cosa", "estado": "a prueba", "que_mide": "y"})
         texto2, agregadas2 = de.agregar_variables(json.dumps(datos), otra, "2026-11-19", 3)
         self.assertEqual(agregadas2, ["Lectura breve 2"])
+        reservada, _ = de.agregar_variables(None, [{"nombre": "Variedad", "que_mide": "x"}], "2026-11-19", 3)
+        self.assertEqual(json.loads(reservada)["variables"][0]["id"], "variedad_2")   # nunca pisa una parte del puntaje
         self.assertEqual(json.loads(texto2)["variables"][-1]["id"], "lectura_breve_2_2")
         tmp = tempfile.mkdtemp()
         os.makedirs(os.path.join(tmp, "curaduria"))
@@ -237,7 +246,7 @@ class Archivos(unittest.TestCase):
 
 class GitHubFalso:
     def __init__(self, prs, comentarios=None):
-        self.prs, self.coms = prs, comentarios or {}
+        self.prs, self.coms, self.repo = prs, comentarios or {}, REPO
         self.comentados, self.cuerpos = [], []
 
     def pr(self, n):
@@ -278,7 +287,8 @@ class ConGit(unittest.TestCase):
         self.flujo = self.clonar("flujo")
         self.repo = de.Repo(self.flujo)
         self.gh = GitHubFalso({1: {"number": 1, "state": "OPEN", "body": cuerpo_nuevo(), "headRefName": RAMA,
-                                   "baseRefName": "main", "mergedAt": None, "closedAt": None}})
+                                   "baseRefName": "main", "mergedAt": None, "closedAt": None,
+                                   "autor": "github-actions[bot]", "repo_cabeza": REPO}})
 
     def tearDown(self):
         shutil.rmtree(self.tmp, ignore_errors=True)
@@ -309,6 +319,18 @@ class ConGit(unittest.TestCase):
         git(self.trabajo, "merge", "--quiet", "--no-ff", f"origin/{RAMA}", "-m", "Merge pull request #1")
         git(self.trabajo, "push", "--quiet", "origin", "HEAD:refs/heads/main", f"origin/{RAMA}:refs/pull/1/head")
         self.gh.prs[1].update(state="MERGED", body=cuerpo, mergedAt="2026-11-18T03:30:00Z", closedAt="2026-11-18T03:30:00Z")
+
+    def horno_publica(self, linea):
+        """El horno publica un libro de main: quita su línea de la lista (job consumir de triggui.yml)."""
+        git(self.trabajo, "fetch", "--quiet", "origin")
+        git(self.trabajo, "switch", "--quiet", "main")
+        git(self.trabajo, "reset", "--quiet", "--hard", "origin/main")
+        ruta = os.path.join(self.trabajo, cu.LISTAS["adultos"])
+        with open(ruta, encoding="utf-8") as f:
+            texto = f.read()
+        self.escribir(self.trabajo, cu.LISTAS["adultos"], texto.replace(linea + "\n", "", 1))
+        git(self.trabajo, "commit", "--quiet", "-am", f"publicado {linea}")
+        git(self.trabajo, "push", "--quiet", "origin", "HEAD:refs/heads/main")
 
     def test_quitar_y_volver_a_poner_una_palomita(self):
         self.gh.prs[1]["body"] = desmarcar(cuerpo_nuevo(), 2)
@@ -400,6 +422,63 @@ class ConGit(unittest.TestCase):
         self.assertEqual(self.commits("main"), antes)
         self.assertEqual(len(self.en_origen("main", cu.DECISIONES).splitlines()), 1)
 
+    def test_cerrar_otra_vez_no_regresa_lo_que_el_horno_publico(self):
+        self.unir(cuerpo_nuevo(costo_usd=1.1))
+        de.cerrar(self.gh, self.repo, 1, AHORA)
+        self.assertEqual(json.loads(self.en_origen("main", cu.DECISIONES))["costo_usd"], 1.1)
+        frankl = lineas_de_libros()[0]
+        self.horno_publica(frankl)
+        antes = self.commits("main")
+        de.cerrar(self.gh, self.repo, 1, AHORA)   # alguien la vuelve a correr a mano días después
+        self.assertEqual(self.commits("main"), antes)
+        self.assertNotIn(frankl, self.en_origen("main", cu.LISTAS["adultos"]))
+        # Y si después le quita la palomita a lo ya publicado: se anota, pero no se descarta ni se toca nada.
+        self.gh.prs[1]["body"] = desmarcar(cuerpo_nuevo(costo_usd=1.1), 1)
+        texto = de.revisar(self.gh, self.repo, 1, AHORA)
+        self.assertIn("«El hombre en busca de sentido | Viktor E. Frankl» ya no estaba en la lista (ya se publicó o alguien "
+                      "lo quitó): no lo toqué.", texto)
+        self.assertEqual(self.en_origen("main", cu.DESCARTADOS["adultos"]), CABEZA_DESC)
+        self.assertEqual(json.loads(self.en_origen("main", cu.DECISIONES))["libros"][0]["decision"], "quitado")
+        # Ni volviéndosela a poner regresa: lo publicado no vuelve a la lista.
+        self.gh.prs[1]["body"] = cuerpo_nuevo(costo_usd=1.1)
+        de.revisar(self.gh, self.repo, 1, AHORA)
+        self.assertNotIn(frankl, self.en_origen("main", cu.LISTAS["adultos"]))
+
+    def test_quitar_y_poner_despues_del_merge(self):
+        self.unir(cuerpo_nuevo())
+        de.cerrar(self.gh, self.repo, 1, AHORA)
+        comentarios = len(self.gh.comentados)
+        self.assertIn("ya está cerrada", de.revisar(self.gh, self.repo, 1, AHORA))   # nada cambió: no contesta
+        self.assertEqual(len(self.gh.comentados), comentarios)
+        self.gh.prs[1]["body"] = desmarcar(cuerpo_nuevo(), 4)
+        texto = de.revisar(self.gh, self.repo, 1, AHORA)
+        self.assertNotIn("Open | Andre Agassi", self.en_origen("main", cu.LISTAS["adultos"]))
+        self.assertTrue(self.en_origen("main", cu.DESCARTADOS["adultos"]).endswith("#1 (2026-11-17)\nOpen | Andre Agassi\n"))
+        self.assertEqual(json.loads(self.en_origen("main", cu.DECISIONES))["libros"][3]["decision"], "quitado")
+        self.assertIn("entraron 3 y quitaste «Open | Andre Agassi», que quedó en `descartados-adultos.txt`.", texto)
+        self.gh.prs[1]["body"] = cuerpo_nuevo()
+        texto = de.revisar(self.gh, self.repo, 1, AHORA)
+        self.assertEqual(self.en_origen("main", cu.LISTAS["adultos"]), CABEZA_LISTA + bloque_de_lista())
+        self.assertEqual(self.en_origen("main", cu.DESCARTADOS["adultos"]), CABEZA_DESC)
+        self.assertIn("Volví a poner «Open | Andre Agassi» en la lista, en su lugar.", texto)
+
+    def test_si_se_borran_todas_las_palomitas_no_se_adivina(self):
+        self.gh.prs[1]["body"] = sin_entran(desmarcar(cuerpo_nuevo(), 2))
+        antes = self.commits(RAMA)
+        texto = de.revisar(self.gh, self.repo, 1, AHORA)
+        self.assertEqual(self.commits(RAMA), antes)
+        self.assertIn("La descripción ya no trae las palomitas de «¿Entran?»: no toqué la propuesta.", texto)
+        with self.assertRaises(de.Fallo):
+            de.palomitas(self.gh, self.repo, 1, AHORA)   # ya tuvo palomitas: no se las pone a ciegas
+        self.unir(self.gh.prs[1]["body"])
+        texto = de.cerrar(self.gh, self.repo, 1, AHORA)
+        self.assertEqual(self.en_origen("main", cu.LISTAS["adultos"]), CABEZA_LISTA + bloque_de_lista())
+        self.assertEqual(self.en_origen("main", cu.DESCARTADOS["adultos"]), CABEZA_DESC)
+        entrada = json.loads(self.en_origen("main", cu.DECISIONES))
+        self.assertTrue(entrada["palomitas_borradas"])
+        self.assertEqual([l["decision"] for l in entrada["libros"]], ["entró"] * 4)   # lo que de verdad entró a main
+        self.assertIn("no toqué la lista ni los descartados", texto)
+
     def test_cerrar_con_una_casilla_borrada(self):
         self.unir(cuerpo_nuevo().replace("- [x] 2 · El Alquimista | Paulo Coelho\n", ""))
         texto = de.cerrar(self.gh, self.repo, 1, AHORA)
@@ -453,14 +532,16 @@ class ConGit(unittest.TestCase):
         self.assertEqual(self.gh.cuerpos, [])
 
     def test_lo_que_no_es_propuesta_o_no_toca(self):
-        self.gh.prs[1]["headRefName"] = "otra-rama"
-        with self.assertRaises(de.Fallo):
-            de.revisar(self.gh, self.repo, 1, AHORA)
-        self.gh.prs[1]["headRefName"] = RAMA
+        for campo, valor in (("headRefName", "otra-rama"), ("autor", "badirnakid"), ("repo_cabeza", "otro/repo"),
+                             ("baseRefName", "otra")):
+            original = self.gh.prs[1][campo]
+            self.gh.prs[1][campo] = valor
+            with self.assertRaises(de.Fallo):
+                de.revisar(self.gh, self.repo, 1, AHORA)
+            self.gh.prs[1][campo] = original
         with self.assertRaises(de.Fallo):
             de.cerrar(self.gh, self.repo, 1, AHORA)          # sigue abierta
         self.gh.prs[1]["state"] = "CLOSED"
-        self.assertIn("ya no está abierta", de.revisar(self.gh, self.repo, 1, AHORA))
         with self.assertRaises(de.Fallo):
             de.palomitas(self.gh, self.repo, 1, AHORA)
         self.gh.prs[1].update(state="OPEN", body=cuerpo_viejo())
@@ -488,6 +569,40 @@ class ConGit(unittest.TestCase):
         self.assertEqual(git(self.origen, "rev-parse", "main").strip(), sha)
         self.assertEqual(self.repo.leer, real)
         self.assertNotIn("decisiones-", " ".join(os.listdir(tempfile.gettempdir())))   # no deja árboles
+
+
+class GitHubDeVerdad(unittest.TestCase):
+    """La clase GitHub, con gh cambiado por un doble que guarda lo que se le pidió."""
+
+    def falso(self, respuestas):
+        pedidos = []
+
+        class Falso(de.GitHub):
+            def _gh(self, *args, entrada=None):
+                pedidos.append((args, entrada))
+                return respuestas.pop(0) if respuestas else "{}"
+        return Falso(REPO), pedidos
+
+    def test_la_propuesta_por_su_api(self):
+        rest = {"number": 1, "state": "closed", "merged": True, "body": None, "merged_at": "2026-11-18T01:46:16Z",
+                "closed_at": "2026-11-18T01:46:16Z", "user": {"login": "github-actions[bot]"},
+                "head": {"ref": RAMA, "repo": {"full_name": REPO}}, "base": {"ref": "main"}}
+        gh, pedidos = self.falso([json.dumps(rest), json.dumps(dict(rest, merged=False)), json.dumps(dict(rest, state="open", merged=False))])
+        pr = gh.pr(1)
+        self.assertEqual((pr["state"], pr["headRefName"], pr["baseRefName"], pr["autor"], pr["repo_cabeza"], pr["body"]),
+                         ("MERGED", RAMA, "main", "github-actions[bot]", REPO, ""))
+        self.assertEqual(gh.pr(1)["state"], "CLOSED")
+        self.assertEqual(gh.pr(1)["state"], "OPEN")
+        self.assertEqual(pedidos[0][0], ("api", f"repos/{REPO}/pulls/1"))
+
+    def test_editar_y_comentar_por_su_api(self):
+        gh, pedidos = self.falso([])
+        gh.editar_cuerpo(1, "cuerpo «nuevo» -->")
+        gh.comentar(1, "hola")
+        self.assertEqual(pedidos[0][0], ("api", "-X", "PATCH", f"repos/{REPO}/pulls/1", "--input", "-"))
+        self.assertEqual(json.loads(pedidos[0][1]), {"body": "cuerpo «nuevo» -->"})
+        self.assertEqual(pedidos[1][0], ("api", "-X", "POST", f"repos/{REPO}/issues/1/comments", "--input", "-"))
+        self.assertEqual(json.loads(pedidos[1][1]), {"body": "hola"})
 
 
 class ComentariosDeGitHub(unittest.TestCase):
@@ -531,8 +646,9 @@ class Flujo(unittest.TestCase):
 
     def test_permisos_y_turnos(self):
         self.assertEqual(self.yml["permissions"], {"contents": "write", "pull-requests": "write", "issues": "write"})
-        self.assertIs(self.yml["concurrency"]["cancel-in-progress"], False)
-        self.assertIn("'cerrar' || 'editar'", self.yml["concurrency"]["group"])
+        self.assertNotIn("concurrency", self.yml)   # en el trabajo: una corrida saltada no ocupa el turno
+        self.assertIs(self.trabajo["concurrency"]["cancel-in-progress"], False)
+        self.assertIn("'cerrar' || 'editar'", self.trabajo["concurrency"]["group"])
 
     def test_nunca_corre_el_codigo_de_la_propuesta(self):
         pasos = self.trabajo["steps"]

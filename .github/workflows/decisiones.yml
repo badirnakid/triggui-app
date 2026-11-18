@@ -42,12 +42,13 @@ permissions:
   pull-requests: write
   issues: write
 
-concurrency:
-  group: decisiones-${{ github.event.pull_request.number || inputs.pr }}-${{ (github.event.action == 'closed' || inputs.accion == 'cerrar') && 'cerrar' || 'editar' }}
-  cancel-in-progress: false
-
 jobs:
   decidir:
+    # Los turnos van en el trabajo y no en el flujo: así una corrida que se salta por su «if» (un cambio de título, una
+    # propuesta ajena) no ocupa el turno ni cancela la que espera.
+    concurrency:
+      group: decisiones-${{ github.event.pull_request.number || inputs.pr }}-${{ (github.event.action == 'closed' || inputs.accion == 'cerrar') && 'cerrar' || 'editar' }}
+      cancel-in-progress: false
     if: >-
       github.event_name == 'workflow_dispatch' || (
         github.event.pull_request.head.repo.full_name == github.repository &&

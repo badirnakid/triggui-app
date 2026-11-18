@@ -7,7 +7,8 @@ github?»), y dio su go a las 19:58. Lo corre el flujo «🗳️ Decisiones» (.
 
 Las palomitas mandan. Cada propuesta del robot trae una casilla por libro en «¿Entran?», todas marcadas, y una por variable
 sugerida («Probar»), sin marcar. Lo que tiene palomita entra; lo que no, no. Si la casilla de un libro desaparece de la
-descripción, ese libro no entra, pero tampoco se descarta.
+descripción, ese libro no entra, pero tampoco se descarta. Si desaparecen todas (se borró la sección), no se toca nada y se
+le avisa a Badir.
 
 Tres acciones:
 - revisar: cada vez que Badir cambia la descripción de una propuesta abierta, deja su rama como dicen las palomitas. En
@@ -19,8 +20,10 @@ Tres acciones:
     en la propuesta, que son sus porqués; el juez los lee desde la siguiente propuesta;
   - pone a prueba en curaduria/variables.json las variables que marcó;
   - revisa en main que la lista (si dio Merge) y los descartados digan lo mismo que las palomitas, por si dio Merge antes de
-    que «revisar» terminara.
-  Después le contesta. Una propuesta de antes de las palomitas (sin casillas) cuenta como si todas estuvieran marcadas.
+    que «revisar» terminara. En main solo vuelve a la lista un libro que salió por una palomita (está en el bloque de
+    quitados de esa propuesta): lo que el horno ya publicó nunca regresa, aunque «cerrar» corra otra vez.
+  Después le contesta. Una propuesta de antes de las palomitas (sin casillas ni registro) cuenta como si todas estuvieran
+  marcadas. Si Badir cambia una palomita después de cerrar, «revisar» se lo pasa a «cerrar».
 - palomitas (a mano): les pone sus casillas y su registro a una propuesta abierta de antes de C492 (la #1).
 
 Lo que lee de una propuesta (descripción, comentarios, archivos) es dato: nunca se ejecuta. Solo cuentan los comentarios de
@@ -49,6 +52,7 @@ cu = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(cu)
 
 AUTOR = "badirnakid"                    # solo lo que escribe Badir cuenta como su porqué
+ROBOT = "github-actions[bot]"           # quien abre las propuestas
 RAMA_PROPUESTA = re.compile(r"^propuestas/.+-(adultos|kids)-\d{4}$")
 RE_LIBRO = re.compile(r"^- \[([ xX])\] (\d+) · (.+?)\s*$")
 RE_PROBAR = re.compile(r"^- \[([ xX])\] Probar «([^«»]+)»")
@@ -160,6 +164,22 @@ def decidir(libros, cuerpo, sin_casillas_entran=False):
 
 # ─────────────────────────────── los archivos ───────────────────────────────
 
+def leer_bloque(texto, marca, permitidas):
+    """Las líneas del bloque de la propuesta, debajo de su marca (buscada desde el final), o None si no está o si trae una
+    línea que no es de la propuesta."""
+    if not marca:
+        return None
+    lineas = (texto or "").split("\n")
+    for k in range(len(lineas) - 1, -1, -1):
+        if lineas[k].strip() != marca:
+            continue
+        a, b = bloque(lineas, k)
+        antes = [l.strip() for l in lineas[a:b]]
+        if all(l in permitidas for l in antes):
+            return antes
+    return None
+
+
 def poner_bloque_de_lista(texto, marca, permitidas, entran):
     """(texto nuevo, líneas que había) con el bloque de la propuesta, debajo de su marca, igual a entran. Busca la marca
     desde el final y solo toca un bloque cuyas líneas son todas de la propuesta. (texto, None) si no lo encuentra."""
@@ -216,7 +236,7 @@ def agregar_variables(texto, marcadas, hoy, pr):
             continue
         base = vid = slug(v["nombre"])
         k = 2
-        while vid in ids:
+        while vid in ids or vid in cu.RESERVADOS:
             vid, k = f"{base[:37]}_{k}", k + 1
         variables.append({"id": vid, "nombre": v["nombre"], "estado": "a prueba", "peso": 0,
                           "que_mide": v.get("que_mide", ""), "de_donde": v.get("de_donde", ""),
@@ -259,7 +279,7 @@ def fecha_mx(iso):
 # ─────────────────────────────── GitHub y git ───────────────────────────────
 
 class GitHub:
-    """Lo poco que hace falta de GitHub, con gh (GH_TOKEN del flujo)."""
+    """Lo poco que hace falta de GitHub, por su API REST con gh api (GH_TOKEN del flujo)."""
 
     def __init__(self, repo):
         self.repo = repo
@@ -267,12 +287,18 @@ class GitHub:
     def _gh(self, *args, entrada=None):
         p = subprocess.run(["gh", *args], capture_output=True, text=True, input=entrada, timeout=120)
         if p.returncode:
-            raise Fallo(f"gh {' '.join(args[:2])} falló: {p.stderr.strip()[:300]}")
+            ruta = next((a for a in args if a.startswith("repos/")), " ".join(args[:2]))
+            raise Fallo(f"GitHub no respondió bien a {ruta}: {p.stderr.strip()[:300]}")
         return p.stdout
 
     def pr(self, n):
-        return json.loads(self._gh("pr", "view", str(n), "--repo", self.repo, "--json",
-                                   "number,state,body,headRefName,baseRefName,mergedAt,closedAt"))
+        d = json.loads(self._gh("api", f"repos/{self.repo}/pulls/{n}"))
+        cabeza, base = d.get("head") or {}, d.get("base") or {}
+        return {"number": d.get("number"), "body": d.get("body") or "",
+                "state": "MERGED" if d.get("merged") else ("OPEN" if d.get("state") == "open" else "CLOSED"),
+                "headRefName": cabeza.get("ref"), "baseRefName": base.get("ref"),
+                "repo_cabeza": (cabeza.get("repo") or {}).get("full_name"), "autor": (d.get("user") or {}).get("login"),
+                "mergedAt": d.get("merged_at"), "closedAt": d.get("closed_at")}
 
     def comentarios(self, n):
         """[(login, texto)] de los comentarios y de las reseñas con texto, en orden."""
@@ -283,10 +309,11 @@ class GitHub:
         return [(login, texto) for _, login, texto in sorted(todos, key=lambda x: x[0])]
 
     def editar_cuerpo(self, n, cuerpo):
-        self._gh("pr", "edit", str(n), "--repo", self.repo, "--body-file", "-", entrada=cuerpo)
+        self._gh("api", "-X", "PATCH", f"repos/{self.repo}/pulls/{n}", "--input", "-", entrada=json.dumps({"body": cuerpo}))
 
     def comentar(self, n, texto):
-        self._gh("pr", "comment", str(n), "--repo", self.repo, "--body-file", "-", entrada=texto)
+        self._gh("api", "-X", "POST", f"repos/{self.repo}/issues/{n}/comments", "--input", "-",
+                 entrada=json.dumps({"body": texto}))
 
 
 class Repo:
@@ -312,7 +339,7 @@ class Repo:
 
     def aplicar(self, rama, calcular, mensaje, intentos=3):
         """calcular(leer) -> ({ruta: texto nuevo}, resumen). Devuelve (resumen, sha del commit o None si no hubo cambios)."""
-        local = f"refs/decisiones/{rama}"
+        local, ultimo = f"refs/decisiones/{rama}", ""
         for _ in range(intentos):
             self.traer(f"refs/heads/{rama}", local)
             cambios, resumen = calcular(lambda ruta: self.leer(local, ruta))
@@ -333,31 +360,41 @@ class Repo:
                                    capture_output=True, text=True, timeout=180)
                 if p.returncode == 0:
                     return resumen, self._git("rev-parse", "HEAD", cwd=arbol).strip()
+                ultimo = p.stderr.strip()[:300]
             finally:
                 subprocess.run(["git", "worktree", "remove", "--force", arbol], cwd=self.raiz, capture_output=True)
                 shutil.rmtree(arbol, ignore_errors=True)
-        raise Fallo(f"No pude subir a {rama} después de {intentos} intentos (alguien más subía cambios al mismo tiempo).")
+        raise Fallo(f"No pude subir a {rama} después de {intentos} intentos. Lo último que dijo git: {ultimo}")
 
 
 # ─────────────────────────────── las acciones ───────────────────────────────
 
 def propuesta(gh, n):
-    """La propuesta n y su lista, o Fallo si no es una propuesta del robot."""
+    """La propuesta n y su lista, o Fallo si no es una propuesta del robot (su rama, hacia main, de este repositorio y
+    abierta por github-actions)."""
     pr = gh.pr(n)
     m = RAMA_PROPUESTA.match(pr.get("headRefName") or "")
-    if not m or pr.get("baseRefName") != "main":
-        raise Fallo(f"La #{n} no es una propuesta del robot (rama «{pr.get('headRefName')}»): no hago nada.")
+    if not m or pr.get("baseRefName") != "main" or pr.get("autor") != ROBOT or pr.get("repo_cabeza") != gh.repo:
+        raise Fallo(f"La #{n} no es una propuesta del robot (rama «{pr.get('headRefName')}», de {pr.get('autor')}): "
+                    "no hago nada.")
     return pr, m.group(1)
 
 
 def revisar(gh, repo, n, ahora):
     pr, lista = propuesta(gh, n)
     if pr["state"] != "OPEN":
-        return f"La #{n} ya no está abierta: de su cierre se encarga «cerrar»."
+        # Ya se cerró: si cambió una palomita, también cuenta, y lo hace «cerrar» (que en main nunca regresa lo que el horno
+        # ya publicó); solo contesta si algo cambió.
+        return cerrar(gh, repo, n, ahora, pr=pr, solo_si_cambia=True)
     cuerpo = pr.get("body") or ""
-    if not casillas(cuerpo)[0]:
-        return f"La #{n} no tiene palomitas: no hay nada que revisar."
     reg = cu.leer_registro(cuerpo)
+    if not casillas(cuerpo)[0]:
+        if reg:   # tenía palomitas y ya no: no se adivina
+            texto = (f"La descripción ya no trae las palomitas de «¿Entran?»: no toqué la propuesta. Si fue sin querer, "
+                     "pídele a Claude en el chat que se las vuelva a poner antes de dar Merge.")
+            gh.comentar(n, texto)
+            return texto
+        return f"La #{n} no tiene palomitas: no hay nada que revisar."
     ruta_lista, ruta_desc = cu.LISTAS[lista], cu.DESCARTADOS[lista]
 
     def calcular(leer):
@@ -412,93 +449,127 @@ def frase_revisar(lista, r):
     return " ".join(partes)
 
 
-def cerrar(gh, repo, n, ahora):
-    pr, lista = propuesta(gh, n)
+def cerrar(gh, repo, n, ahora, pr=None, solo_si_cambia=False):
+    if pr is None:
+        pr, lista = propuesta(gh, n)
+    else:
+        lista = RAMA_PROPUESTA.match(pr["headRefName"]).group(1)
     if pr["state"] == "OPEN":
         raise Fallo(f"La #{n} sigue abierta: se anota cuando le des Merge o la cierres.")
     unida = pr["state"] == "MERGED"
     cuerpo = pr.get("body") or ""
     reg = cu.leer_registro(cuerpo)
     cabeza = repo.traer(f"refs/pull/{n}/head", f"refs/decisiones/pr-{n}")
-    libros, marca, ignoradas = libros_de(reg, cuerpo, repo.leer(cabeza, cu.LISTAS[lista]) or "",
-                                         repo.leer(cabeza, cu.DESCARTADOS[lista]) or "", n)
+    lista_cabeza = repo.leer(cabeza, cu.LISTAS[lista]) or ""
+    desc_cabeza = repo.leer(cabeza, cu.DESCARTADOS[lista]) or ""
+    libros, marca, ignoradas = libros_de(reg, cuerpo, lista_cabeza, desc_cabeza, n)
     if not libros:
         raise Fallo(f"No encontré los libros de la #{n} (ni en su registro ni en su rama): no anoto nada.")
-    sin_casillas = not casillas(cuerpo)[0]
-    estado = decidir(libros, cuerpo, sin_casillas_entran=True)
+    hay_casillas = bool(casillas(cuerpo)[0])
+    borradas = bool(reg) and not hay_casillas      # tenía palomitas y se borraron: no se adivina, se avisa
+    legado = not reg and not hay_casillas           # de antes de las palomitas: todas cuentan como marcadas
+    estado = decidir(libros, cuerpo, sin_casillas_entran=legado)
+    permitidas = {l for _, l in libros}
     datos = {l["n"]: l for l in (reg or {}).get("libros") or [] if isinstance(l, dict) and isinstance(l.get("n"), int)}
     if not reg:   # de antes de las palomitas: los datos de su tabla, si cuadra fila por fila con su lista
         tabla = datos_de_la_tabla(cuerpo, lista)
         datos = {k: tabla[k] for k, linea in libros
                  if k in tabla and cu.normalizar(tabla[k]["titulo"]) == cu.normalizar(cu._celda(linea.split(" | ")[0]))}
-    nombre_decision = {"entra": "entró" if unida else "no entró", "quitado": "quitado", "fuera": "fuera"}
     fecha = (reg or {}).get("fecha") or marca[len(cu.MARCA_PROPUESTA):][:10]
-    entrada = {
-        "pr": n, "lista": lista, "propuesta": fecha, "cerrada": fecha_mx(pr.get("mergedAt") or pr.get("closedAt")),
-        "resultado": "merge" if unida else "cerrada sin merge", "sin_palomitas": sin_casillas,
-        "libros": [dict({"n": k, "linea": linea, "decision": nombre_decision[estado[linea]]},
-                        **{c: datos[k][c] for c in ("estado", "total", "edad", "variables") if c in datos.get(k, {})})
-                   for k, linea in libros],
-        "comentarios": [" ".join(t.split())[:TOPE_COMENTARIO] for login, t in gh.comentarios(n)
-                        if login == AUTOR and t.strip()],
-    }
+    comentarios = [" ".join(t.split())[:TOPE_COMENTARIO] for login, t in gh.comentarios(n) if login == AUTOR and t.strip()]
     _, probar = casillas(cuerpo)
     sugeridas = {v.get("nombre"): v for v in (reg or {}).get("variables") or [] if isinstance(v, dict) and v.get("nombre")}
     marcadas = [sugeridas[nombre] for nombre, si in probar.items() if si and nombre in sugeridas]
-    entrada["variables_marcadas"] = [v["nombre"] for v in marcadas]
-    entran = [l for _, l in libros if estado[l] == "entra"]
-    quitados = [l for _, l in libros if estado[l] == "quitado"]
-    fuera = [l for _, l in libros if estado[l] == "fuera"]
     hoy = cu.fecha_de_mexico(ahora).isoformat()
+    nombre_decision = {"entra": "entró" if unida else "no entró", "quitado": "quitado", "fuera": "fuera"}
 
     def calcular(leer):
-        cambios = {cu.DECISIONES: poner_en_bitacora(leer(cu.DECISIONES), entrada),
-                   cu.DESCARTADOS[lista]: poner_quitados(leer(cu.DESCARTADOS[lista]) or "", n, fecha, quitados)}
+        texto_lista, texto_desc = leer(cu.LISTAS[lista]) or "", leer(cu.DESCARTADOS[lista]) or ""
+        previos = set(quitados_actuales(texto_desc, n))   # lo que salió por una palomita: lo único que puede volver
+        antes = leer_bloque(texto_lista, marca, permitidas) if unida else None
+        est = dict(estado)
+        if borradas:   # se anota lo que quedó en cada archivo, sin tocar nada
+            if unida:
+                bloque_, quit_ = antes or [], previos
+            else:
+                bloque_, quit_ = leer_bloque(lista_cabeza, marca, permitidas) or [], set(quitados_actuales(desc_cabeza, n))
+            est = {l: "entra" if l in bloque_ else "quitado" if l in quit_ else "fuera" for _, l in libros}
+        entrada = {
+            "pr": n, "lista": lista, "propuesta": fecha, "cerrada": fecha_mx(pr.get("mergedAt") or pr.get("closedAt")),
+            "resultado": "merge" if unida else "cerrada sin merge", "sin_palomitas": legado, "palomitas_borradas": borradas,
+            "libros": [dict({"n": k, "linea": linea, "decision": nombre_decision[est[linea]]},
+                            **{c: datos[k][c] for c in ("estado", "total", "edad", "variables") if c in datos.get(k, {})})
+                       for k, linea in libros],
+            "comentarios": comentarios, "variables_marcadas": [v["nombre"] for v in marcadas]}
+        if isinstance((reg or {}).get("costo_usd"), (int, float)):
+            entrada["costo_usd"] = reg["costo_usd"]
+        cambios = {cu.DECISIONES: poner_en_bitacora(leer(cu.DECISIONES), entrada)}
         texto_vars, agregadas = agregar_variables(leer(cu.VARIABLES), marcadas, hoy, n)
         if agregadas:
             cambios[cu.VARIABLES] = texto_vars
-        antes = None
+        resumen = {"entrada": entrada, "agregadas": agregadas, "antes": antes, "no_estaban": [], "volvieron": []}
+        quitados = [l for _, l in libros if est[l] == "quitado"]
+        if borradas or (unida and antes is None):
+            return cambios, resumen   # ni la lista ni los descartados: se avisa
         if unida:
-            nueva, antes = poner_bloque_de_lista(leer(cu.LISTAS[lista]) or "", marca, {l for _, l in libros}, entran)
-            if antes is not None:
-                cambios[cu.LISTAS[lista]] = nueva
-        return cambios, {"agregadas": agregadas, "antes": antes}
+            entran = [l for _, l in libros if est[l] == "entra" and (l in antes or l in previos)]
+            resumen["volvieron"] = [l for l in entran if l not in antes]
+            resumen["no_estaban"] = [l for l in quitados if l not in antes and l not in previos]
+            quitados = [l for l in quitados if l in antes or l in previos]
+            cambios[cu.LISTAS[lista]] = poner_bloque_de_lista(texto_lista, marca, permitidas, entran)[0]
+        cambios[cu.DESCARTADOS[lista]] = poner_quitados(texto_desc, n, fecha, quitados)
+        return cambios, resumen
 
     resumen, sha = repo.aplicar("main", calcular, f"🗳️ Decisión de Badir sobre la propuesta #{n} (C492)")
-    texto = frase_cerrar(lista, unida, entrada, entran, quitados, fuera, resumen, ignoradas)
+    if solo_si_cambia and sha is None:
+        return f"La #{n} ya está cerrada y su decisión ya estaba anotada así: nada que cambiar."
+    texto = frase_cerrar(lista, unida, resumen, ignoradas)
     gh.comentar(n, texto)
-    if unida and resumen["antes"] is None:   # la corrida queda en rojo: GitHub le avisa a Badir por correo
-        raise Fallo(texto)
+    if unida and resumen["antes"] is None and not resumen["entrada"]["palomitas_borradas"]:
+        raise Fallo(texto)   # la corrida queda en rojo: GitHub le avisa a Badir por correo
     return texto
 
 
-def frase_cerrar(lista, unida, entrada, entran, quitados, fuera, r, ignoradas):
-    partes = [f"Anoté tu decisión en `{cu.DECISIONES}`"]
-    if unida:
-        partes[0] += f": {'entró' if len(entran) == 1 else 'entraron'} {len(entran)}"
-    else:
-        partes[0] += ": cerraste la propuesta sin Merge, así que no entró ningún libro"
+def frase_cerrar(lista, unida, r, ignoradas):
+    e = r["entrada"]
+    por = {d: [l["linea"] for l in e["libros"] if l["decision"] == d] for d in ("entró", "quitado", "fuera")}
+    quitados, no_estaban = por["quitado"], r["no_estaban"]
+    una = len(quitados) == 1
+    partes = [f"Anoté tu decisión en `{cu.DECISIONES}`" + (
+        f": {'entró' if len(por['entró']) == 1 else 'entraron'} {len(por['entró'])}" if unida
+        else ": cerraste la propuesta sin Merge, así que no entró ningún libro")]
     if quitados:
-        partes[0] += f" y quitaste {_lista_de(quitados)}, que " + ("quedó" if len(quitados) == 1 else "quedaron") + \
-                     f" en `{cu.DESCARTADOS[lista]}`"
+        partes[0] += f" y quitaste {_lista_de(quitados)}"
+        if not no_estaban and not e["palomitas_borradas"]:
+            partes[0] += f", que {'quedó' if una else 'quedaron'} en `{cu.DESCARTADOS[lista]}`"
     partes[0] += "."
-    if fuera:
-        partes.append(f"{_lista_de(fuera)} ya no " + ("tenía" if len(fuera) == 1 else "tenían") + " casilla en la "
-                      "descripción: no " + ("entró" if len(fuera) == 1 else "entraron") + " y tampoco " +
-                      ("lo" if len(fuera) == 1 else "los") + " descarté.")
-    if entrada["comentarios"]:
-        partes.append(f"Guardé {cu._n(len(entrada['comentarios']), 'comentario tuyo', 'comentarios tuyos')} como tu porqué.")
+    if no_estaban:
+        uno = len(no_estaban) == 1
+        partes.append(f"{_lista_de(no_estaban)} ya no {'estaba' if uno else 'estaban'} en la lista (ya se "
+                      f"{'publicó' if uno else 'publicaron'} o alguien {'lo' if uno else 'los'} quitó): no "
+                      f"{'lo' if uno else 'los'} toqué.")
+    if r["volvieron"]:
+        partes.append(f"Volví a poner {_lista_de(r['volvieron'])} en la lista, en su lugar.")
+    if por["fuera"]:
+        uno = len(por["fuera"]) == 1
+        partes.append(f"{_lista_de(por['fuera'])} ya no {'tenía' if uno else 'tenían'} casilla en la descripción: no "
+                      f"{'entró' if uno else 'entraron'} y tampoco {'lo' if uno else 'los'} descarté.")
+    if e["comentarios"]:
+        partes.append(f"Guardé {cu._n(len(e['comentarios']), 'comentario tuyo', 'comentarios tuyos')} como tu porqué.")
     partes.append("El juez la lee desde la próxima propuesta.")
     if r["agregadas"]:
-        partes.append(f"Desde la próxima, {_lista_de(r['agregadas'])} " + ("queda" if len(r["agregadas"]) == 1 else "quedan")
-                      + " a prueba: el juez " + ("la califica" if len(r["agregadas"]) == 1 else "las califica")
-                      + " con lo que sabe de cada libro, sin mover el puntaje; si pide un dato de fuera, sale «sin dato» "
-                      "hasta que una sesión lo conecte.")
-    if unida and r["antes"] is None:
+        uno = len(r["agregadas"]) == 1
+        partes.append(f"Desde la próxima, {_lista_de(r['agregadas'])} {'queda' if uno else 'quedan'} a prueba: el juez "
+                      f"{'la califica' if uno else 'las califica'} con lo que sabe de cada libro, sin mover el puntaje; si "
+                      "pide un dato de fuera, sale «sin dato» hasta que una sesión lo conecte.")
+    if e["palomitas_borradas"]:
+        partes.append("La descripción ya no traía las palomitas de «¿Entran?»: no toqué la lista ni los descartados y anoté "
+                      "lo que quedó en cada archivo. Si querías quitar alguno, dímelo en el chat con Claude.")
+    elif unida and r["antes"] is None:
         partes.append(f"Ojo: no encontré en main los libros de esta propuesta juntos debajo de su línea en "
                       f"`{cu.LISTAS[lista]}` y no toqué la lista; si quitaste alguno, puede seguir ahí. Revísalo con Claude "
                       "en el chat.")
-    if entrada["sin_palomitas"]:
+    if e["sin_palomitas"]:
         partes.append("Esta propuesta es de antes de las palomitas: conté todos sus libros como aprobados con tu Merge.")
     if ignoradas:
         partes.append("No tomé en cuenta estas casillas, que no son de ningún libro de la propuesta: "
@@ -544,9 +615,9 @@ def con_palomitas(cuerpo, lista, libros, reg):
                 lineas[i] = cu.TEXTO_PROBAR
             m = RE_VIEJA_VARIABLE.match(lineas[i])
             if m:
-                v = {"nombre": re.sub(r"[«»]", "", m.group(1)).rstrip(".").strip()[:80], "que_mide": m.group(2),
+                v = {"nombre": re.sub(r"[«»]", "", m.group(1)).rstrip(".").strip()[:80], "que_mide": m.group(2).strip(),
                      "de_donde": m.group(3), "como_cambia": m.group(4)}
-                if v["nombre"]:
+                if v["nombre"] and v["que_mide"]:
                     sugeridas.append(v)
                     lineas[i] = cu.casilla_probar(v)
             i += 1
@@ -561,6 +632,8 @@ def palomitas(gh, repo, n, ahora):
     cuerpo = pr.get("body") or ""
     if ENTRAN in cuerpo or casillas(cuerpo)[0]:
         return f"La #{n} ya tiene sus palomitas."
+    if cu.leer_registro(cuerpo):
+        raise Fallo(f"La #{n} ya tuvo palomitas y se borraron: se las vuelve a poner una sesión, a mano, con su estado.")
     rama = repo.traer(f"refs/heads/{pr['headRefName']}", f"refs/decisiones/{pr['headRefName']}")
     marca, lineas = ultima_marca(repo.leer(rama, cu.LISTAS[lista]) or "")
     if not marca or not lineas:
@@ -578,7 +651,7 @@ def palomitas(gh, repo, n, ahora):
     gh.editar_cuerpo(n, nuevo)
     con_variables = bool(reg["variables"])
     texto = ("Le puse palomitas a esta propuesta: cada libro trae su casilla en «¿Entran?», todas marcadas. Si no quieres "
-             "alguno, quítale su palomita y en un minuto lo saco de la propuesta y lo anoto en "
+             "alguno, quítale su palomita y en unos minutos lo saco de la propuesta y lo anoto en "
              f"`{cu.DESCARTADOS[lista]}`. Si quieres decir por qué, deja un comentario aquí." +
              (" Las ideas de «🧭 Para afinar la curaduría» también traen su casilla «Probar»." if con_variables else ""))
     gh.comentar(n, texto)
