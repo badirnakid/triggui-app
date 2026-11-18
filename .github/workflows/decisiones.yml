@@ -1,0 +1,94 @@
+# 🗳️ Decisiones (C492 · 17 de noviembre de 2026)
+#
+# Las palomitas de Badir en las propuestas del robot (scripts/decisiones.py). Lo pidió el 17 de noviembre de 2026, 19:45
+# («si no me gusta alguno, no puedo quitarlo más fácil ahí mismo en github?»), y dio su go a las 19:58.
+#
+# - Cuando Badir cambia la descripción de una propuesta abierta (quita o pone una palomita): «revisar» deja la rama de la
+#   propuesta como dicen las palomitas y le contesta.
+# - Cuando da Merge o la cierra: «cerrar» anota su decisión en curaduria/decisiones.jsonl, pone a prueba las variables que
+#   marcó y revisa en main la lista y los descartados; un solo commit a main.
+# - A mano: «palomitas» les pone sus casillas a una propuesta abierta de antes de C492; «revisar» y «cerrar», para volver a
+#   correrlas.
+#
+# Seguridad: corre con pull_request_target para usar siempre el código de main (el de la propuesta nunca se ejecuta: sus
+# archivos solo se leen con git show). Solo atiende propuestas del robot (ramas «propuestas/…» de este mismo repositorio,
+# abiertas por github-actions) y lo que hace Badir.
+
+name: 🗳️ Decisiones
+
+run-name: 🗳️ Decisiones · #${{ github.event.pull_request.number || inputs.pr }} · ${{ inputs.accion || (github.event.action == 'closed' && 'cerrar' || 'revisar') }}
+
+on:
+  pull_request_target:
+    types: [edited, closed]
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: 'Número de la propuesta'
+        required: true
+        type: string
+      accion:
+        description: 'Qué hacer'
+        required: true
+        default: 'palomitas'
+        type: choice
+        options:
+          - 'palomitas'
+          - 'revisar'
+          - 'cerrar'
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: decisiones-${{ github.event.pull_request.number || inputs.pr }}-${{ (github.event.action == 'closed' || inputs.accion == 'cerrar') && 'cerrar' || 'editar' }}
+  cancel-in-progress: false
+
+jobs:
+  decidir:
+    if: >-
+      github.event_name == 'workflow_dispatch' || (
+        github.event.pull_request.head.repo.full_name == github.repository &&
+        startsWith(github.event.pull_request.head.ref, 'propuestas/') &&
+        github.event.pull_request.user.login == 'github-actions[bot]' &&
+        github.event.sender.login == 'badirnakid' &&
+        (github.event.action == 'closed' || github.event.changes.body != null)
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: 🐍 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 🧪 Pruebas de las decisiones
+        run: |
+          python -m pip install --quiet pyyaml
+          python -I -B scripts/test_decisiones.py
+
+      - name: 🗳️ Decidir
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number || inputs.pr }}
+          ACCION: ${{ inputs.accion || (github.event.action == 'closed' && 'cerrar' || 'revisar') }}
+        run: |
+          set -euo pipefail
+          if ! [[ "$PR" =~ ^[0-9]+$ ]]; then echo "::error::«$PR» no es un número de propuesta."; exit 1; fi
+          git config user.name "Triggui Bot"
+          git config user.email "bot@triggui.com"
+          set +e
+          python -I -B scripts/decisiones.py --pr "$PR" --accion "$ACCION" --raiz . > /tmp/decision.txt 2>&1
+          codigo=$?
+          set -e
+          cat /tmp/decision.txt
+          { echo "### 🗳️ Propuesta #$PR · $ACCION"; echo; cat /tmp/decision.txt; } >> "$GITHUB_STEP_SUMMARY"
+          exit "$codigo"

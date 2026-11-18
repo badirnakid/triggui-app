@@ -47,29 +47,50 @@ def marca(titulo, autor, tienda, revisado=HOY, cdl=None, gandhi=None, isbn="9780
 
 
 def juicio(mision=0.8, estado="tristeza", claridad=0.8, parecido=0.1, conoce=True, edad="", apto=True, delicado="",
-           trata="Un libro que ayuda.", razon="Mejora el ánimo.", titulo_bien=None, autor_bien=None):
-    """titulo_bien y autor_bien en None: el doble del juez devuelve los del candidato (bien escritos)."""
-    return {"conoce": conoce, "mision": mision, "estado": estado, "claridad": claridad, "parecido": parecido,
-            "de_que_trata": trata, "razon": razon, "edad": edad, "apto": apto, "delicado": delicado,
-            "titulo_bien": titulo_bien, "autor_bien": autor_bien}
+           trata="Un libro que ayuda.", razon="Mejora el ánimo.", titulo_bien=None, autor_bien=None, variables=None):
+    """titulo_bien y autor_bien en None: el doble del juez devuelve los del candidato (bien escritos). variables: la lista
+    [{"id", "valor"}] que devolvería el juez cuando hay variables a prueba o activas."""
+    j = {"conoce": conoce, "mision": mision, "estado": estado, "claridad": claridad, "parecido": parecido,
+         "de_que_trata": trata, "razon": razon, "edad": edad, "apto": apto, "delicado": delicado,
+         "titulo_bien": titulo_bien, "autor_bien": autor_bien}
+    if variables is not None:
+        j["variables"] = variables
+    return j
 
 
 class JuezFalso:
     """Contesta por título; para «el más parecido», según el mapa parecidos {título que falta: (título elegido, parecido)}."""
 
-    def __init__(self, juicios, parecidos=None, falla_en=None, momento=None, momento_falla=False):
+    def __init__(self, juicios, parecidos=None, falla_en=None, momento=None, momento_falla=False, segundo=None,
+                 segundo_falla=False):
         self.juicios, self.parecidos, self.falla_en = juicios, parecidos or {}, falla_en
         self.momento, self.momento_falla = momento, momento_falla
-        self.llamadas, self.parecido_llamadas, self.momento_llamadas = 0, 0, 0
-        self.momento_usuario = ""
+        self.segundo, self.segundo_falla = segundo or {}, segundo_falla   # segundo: {título: (conoce, apto, por qué) o None}
+        self.llamadas, self.parecido_llamadas, self.momento_llamadas, self.segundo_llamadas = 0, 0, 0, 0
+        self.momento_usuario = self.momento_sistema = self.sistema = self.segundo_sistema = ""
+        self.segundo_vistos = []
 
     def __call__(self, sistema, usuario, esq, tope):
         if "variables" in esq["properties"]:   # el momento de cada fecha y las variables sugeridas
             self.momento_llamadas += 1
-            self.momento_usuario = usuario
+            self.momento_usuario, self.momento_sistema = usuario, sistema
             if self.momento_falla:
                 raise RuntimeError("no respondió")
             return self.momento or {"momento": [], "variables": []}
+        item = ((esq["properties"].get("libros") or {}).get("items") or {}).get("properties") or {}
+        if "por_que" in item:   # el segundo juez de Kids
+            self.segundo_llamadas += 1
+            self.segundo_sistema = sistema
+            if self.segundo_falla:
+                raise RuntimeError("no respondió")
+            lista = json.loads(usuario.split(":\n", 1)[1])
+            salida = []
+            for p in lista:
+                self.segundo_vistos.append(p["titulo"])
+                r = self.segundo.get(p["titulo"], (True, True, ""))
+                if r is not None:
+                    salida.append({"i": p["i"], "conoce": r[0], "apto": r[1], "por_que": r[2]})
+            return {"libros": salida}
         if "por_que" in esq["properties"]:
             self.parecido_llamadas += 1
             falta = usuario.split("«", 1)[1].split("»", 1)[0]
@@ -80,6 +101,7 @@ class JuezFalso:
                     return {"i": p["i"], "parecido": par, "por_que": "Mismo fondo."}
             return {"i": -1, "parecido": par, "por_que": ""}
         self.llamadas += 1
+        self.sistema = sistema
         lista = json.loads(usuario.split("\n", 2)[-1].split(":\n", 1)[1])
         if self.falla_en and any(p["titulo"] == self.falla_en for p in lista):
             raise RuntimeError("se cayó")
@@ -468,7 +490,8 @@ class Propuesta(Base):
         self.assertIn("| Dónde | Sale | Por qué |", md)
         self.assertIn("| lun 23 nov<br><sub>📅 Cae en Nochebuena: acompaña la reunión</sub> |", md)
         self.assertIn("### 🧭 Para afinar la curaduría", md)
-        self.assertIn("- **El pulso del mundo al publicar.** La emoción que sube hoy por país. Dato: El Pulse de Triggui", md)
+        self.assertIn("- [ ] Probar «El pulso del mundo al publicar» · La emoción que sube hoy por país. Dato: El Pulse de "
+                      "Triggui (Wikipedia y el tono de las noticias). Cambiaría: El horno elegiría", md)
         self.assertIn("- **Sale:** la fecha estimada, a dos por semana (lunes y jueves) después de 1 título que ya está en la lista", md)
         self.assertIn("y si das Merge antes de la primera fecha.", md)
 
@@ -616,6 +639,196 @@ class Salida(Base):
         self.assertIn("NIÑ", cu.SISTEMA.format(perfil="Kids (niñas y niños de 3 a 12 años)", kids=cu.KIDS).upper())
 
 
+class Criterio(Base):
+    """C492: las casillas, el registro escondido, el criterio y los casos que lee el juez, las variables y el segundo juez."""
+
+    def test_la_marca_de_la_lista_es_la_del_registro(self):
+        self.correr(JuezFalso(JUICIOS), respuestas={"Libro E": "si"}, cuantos=2)
+        marca = self.leer("lineas-adultos.txt").splitlines()[0]
+        self.assertEqual(marca, cu.leer_registro(self.leer("propuesta-adultos.md"))["marca"])
+        self.assertTrue(marca.startswith(cu.MARCA_PROPUESTA))
+
+    def test_las_casillas_van_antes_de_la_tabla_y_de_lo_plegable_y_cuadran_con_las_lineas(self):
+        juicios = dict(JUICIOS)
+        juicios["Libro A"] = juicio(mision=0.9, estado="tristeza", titulo_bien="Libro Á")   # errata: abre el <details>
+        self.correr(JuezFalso(juicios, parecidos={"Libro B": ("Libro C", 0.7)}), respuestas={"Libro E": "si"}, cuantos=3)
+        md = self.leer("propuesta-adultos.md")
+        casillas = [l for l in md.splitlines() if l.startswith("- [")]
+        lineas = self.leer("lineas-adultos.txt").splitlines()[1:]
+        self.assertEqual(casillas, [f"- [x] {n} · {l}" for n, l in enumerate(lineas, 1)])
+        self.assertLess(md.index("### ¿Entran?"), md.index("| # |"))
+        self.assertLess(md.index("- [x] 1 · "), md.index("<details>"))
+        plegado = md[md.index("<details>"):md.index("</details>")]
+        self.assertNotIn("- [", plegado)
+        self.assertNotIn("pídeselo a una sesión", md.lower())
+
+    def test_el_registro_escondido_trae_cada_libro(self):
+        self.correr(JuezFalso(JUICIOS, parecidos={"Libro B": ("Libro C", 0.7)}), respuestas={"Libro E": "si"}, cuantos=4)
+        md = self.leer("propuesta-adultos.md")
+        reg = cu.leer_registro(md)
+        self.assertEqual(reg["lista"], "adultos")
+        self.assertEqual(reg["fecha"], HOY)
+        self.assertEqual([(l["n"], l["linea"], l["total"]) for l in reg["libros"]],
+                         [(1, "Libro A | Ana Uno", 91.0), (2, "Libro E | Eva Cinco", 83.0), (3, "Libro C | Ceci Tres", 80.0),
+                          (4, "Libro D | Dani Cuatro", 76.0)])
+        self.assertTrue(md.rstrip().endswith("-->"))
+        self.assertEqual(md.count(cu.REGISTRO_INICIO), 1)
+        # Con «-->» en el texto, el comentario no se rompe (va en base64), y lo que no es registro no se lee.
+        raro = cu.registro_a_texto({"libros": [{"linea": "Un --> raro | Alguien"}]})
+        self.assertEqual(raro.count("-->"), 1)
+        self.assertEqual(cu.leer_registro(raro)["libros"][0]["linea"], "Un --> raro | Alguien")
+        self.assertIsNone(cu.leer_registro("sin registro"))
+        self.assertIsNone(cu.leer_registro(cu.REGISTRO_INICIO + "no-es-base64 -->"))
+        self.assertIsNone(cu.leer_registro(cu.REGISTRO_INICIO + "e30= -->"))   # {} sin libros
+
+    def test_el_juez_lee_el_criterio_y_las_decisiones_de_esa_lista(self):
+        escribir(os.path.join(self.app, "curaduria", "criterio.md"),
+                 "# Criterio\n\nTexto que no es regla.\n- Que mejore el ánimo.   Con espacios.\n-  \n- Nada de autoayuda vacía.\n")
+        escribir(os.path.join(self.app, "curaduria", "decisiones.jsonl"), "\n".join(json.dumps(d, ensure_ascii=False) for d in [
+            {"pr": 2, "lista": "kids", "libros": [{"linea": "Mafalda | Quino", "decision": "entró"}]},
+            {"pr": 3, "lista": "adultos", "libros": [{"linea": "Libro X | Equis", "decision": "entró"},
+                                                     {"linea": "Libro Y | Ye", "decision": "quitado"},
+                                                     {"linea": "Libro Z | Zeta", "decision": "no entró"}],
+             "comentarios": ["Quité Libro Y:\n   demasiado técnico."]}]) + "\n")
+        juez = JuezFalso(JUICIOS)
+        self.correr(juez, respuestas={"Libro E": "si"}, cuantos=2)
+        self.assertIn("El criterio de Badir, con sus palabras (manda sobre todo lo demás):\n- Que mejore el ánimo. Con espacios.\n"
+                      "- Nada de autoayuda vacía.", juez.sistema)
+        self.assertIn("- Aprobó «Libro X | Equis» (propuesta #3).", juez.sistema)
+        self.assertIn("- Quitó «Libro Y | Ye» (propuesta #3).", juez.sistema)
+        self.assertIn("- Comentó en la propuesta #3: «Quité Libro Y: demasiado técnico.»", juez.sistema)
+        self.assertNotIn("Mafalda", juez.sistema)        # es de la lista Kids
+        self.assertNotIn("Libro Z", juez.sistema)        # «no entró» (cerrada sin Merge) no enseña nada
+        r = self.registro()
+        self.assertEqual((r["resumen"]["criterio"], r["resumen"]["casos"]), (2, 3))
+        md = self.leer("propuesta-adultos.md")
+        self.assertIn("- **Tu criterio:** el juez leyó 2 reglas de tu criterio (`curaduria/criterio.md`) y 3 decisiones "
+                      "tuyas de esta lista (`curaduria/decisiones.jsonl`).", md)
+
+    def test_los_casos_son_los_ultimos_y_un_archivo_roto_no_tumba_nada(self):
+        lineas = [{"pr": n, "lista": "adultos", "libros": [{"linea": f"L{n} | A", "decision": "entró"}]} for n in range(40)]
+        escribir(os.path.join(self.app, "curaduria", "decisiones.jsonl"), "\n".join(json.dumps(d) for d in lineas) + "\n")
+        casos = cu.leer_casos(self.app, "adultos")
+        self.assertEqual(len(casos), cu.CASOS)
+        self.assertEqual(casos[-1], "Aprobó «L39 | A» (propuesta #39).")
+        escribir(os.path.join(self.app, "curaduria", "decisiones.jsonl"), "{roto\n")
+        self.assertEqual(cu.leer_casos(self.app, "adultos"), [])
+        self.assertEqual(cu.leer_criterio(os.path.join(self.tmp.name, "no-existe")), [])
+
+    def test_las_variables_a_prueba_y_activas(self):
+        escribir(os.path.join(self.app, "curaduria", "variables.json"), json.dumps({"variables": [
+            {"id": "Temporada-Navidad!", "nombre": "Temporada", "estado": "a prueba", "peso": 9, "que_mide": "Si acompaña diciembre."},
+            {"id": "lectura_breve", "nombre": "Lectura breve", "estado": "activa", "peso": 10, "que_mide": "Si se lee en una semana."},
+            {"id": "sugerida", "estado": "sugerida", "que_mide": "x"},
+            {"id": "sin_que_mide", "estado": "a prueba"},
+            {"id": "", "estado": "activa", "peso": 5, "que_mide": "x"}]}))
+        en_juego, aviso = cu.leer_variables(self.app)
+        self.assertEqual(aviso, "")
+        self.assertEqual([(v["id"], v["estado"], v["peso"]) for v in en_juego],
+                         [("temporadanavidad", "a prueba", 0), ("lectura_breve", "activa", 10)])
+        juicios = {t: dict(j, variables=[{"id": "temporadanavidad", "valor": 0.8}, {"id": "lectura_breve", "valor": 0.5}])
+                   for t, j in JUICIOS.items()}
+        juicios["Libro E"] = dict(JUICIOS["Libro E"], variables=[{"id": "temporadanavidad", "valor": -1},
+                                                               {"id": "lectura_breve", "valor": 1.0}])
+        juez = JuezFalso(juicios, parecidos={"Libro B": ("Libro C", 0.7)})
+        self.correr(juez, respuestas={"Libro E": "si"}, cuantos=4)
+        self.assertIn("temporadanavidad: Si acompaña diciembre.", juez.sistema)
+        self.assertIn("-1", juez.sistema)
+        r = self.registro()
+        a = next(c for c in r["elegidos"] if c["titulo"] == "Libro A")
+        # Lo de siempre vale 90 de 100: A tenía 91 → 81.9 (redondeado por parte), y la activa suma 10 × 0.5 = 5.
+        self.assertEqual(a["partes"], {"mision": 32.4, "animo": 14.4, "libro_real": 13.5, "tienda": 13.5, "variedad": 8.1,
+                                       "lectura_breve": 5.0})
+        self.assertEqual(a["total"], 86.9)
+        self.assertAlmostEqual(sum(a["partes"].values()), a["total"], places=6)
+        e = next(c for c in r["elegidos"] if c["titulo"] == "Libro E")
+        self.assertIsNone(e["juicio"]["variables"]["temporadanavidad"])   # -1: le falta un dato de fuera
+        self.assertEqual(e["partes"]["lectura_breve"], 10.0)
+        self.assertEqual(r["en_juego"][1]["id"], "lectura_breve")
+        md = self.leer("propuesta-adultos.md")
+        self.assertIn("· variedad 8.1 · Lectura breve 5</sub>", md)
+        self.assertIn("<sub>A prueba: «Temporada» 0.80</sub>", md)
+        self.assertIn("<sub>A prueba: «Temporada» sin dato</sub>", md)
+        self.assertIn("Con las variables activas, eso vale 90 de 100, en proporción, y se suman «Lectura breve» 10.", md)
+        self.assertIn("- **Variables a prueba:** «Temporada» (Si acompaña diciembre.). El juez las califica", md)
+        self.assertIn("Temporada (a prueba); Lectura breve (activa)", juez.momento_sistema)   # no las sugiere otra vez
+
+    def test_las_activas_que_pesan_de_mas_no_cuentan_y_se_avisa(self):
+        escribir(os.path.join(self.app, "curaduria", "variables.json"), json.dumps({"variables": [
+            {"id": "a", "estado": "activa", "peso": 20, "que_mide": "x"},
+            {"id": "b", "estado": "activa", "peso": 15, "que_mide": "y"},
+            {"id": "c", "estado": "activa", "peso": 31, "que_mide": "z"}]}))
+        en_juego, aviso = cu.leer_variables(self.app)
+        self.assertEqual([v["peso"] for v in en_juego], [0, 0, 0])   # c pasa el tope sola: 0; a y b juntas pasan 30
+        self.assertIn("pesan más de 30 de 100 juntas", aviso)
+        self.correr(JuezFalso(JUICIOS, parecidos={"Libro B": ("Libro C", 0.7)}), respuestas={"Libro E": "si"}, cuantos=4)
+        r = self.registro()
+        self.assertEqual([c["total"] for c in r["elegidos"]], [91.0, 83.0, 80.0, 76.0])   # el puntaje de siempre
+        self.assertTrue(any("pesan más de 30" in a for a in r["avisos"]), r["avisos"])
+
+    def test_el_segundo_juez_de_kids_deja_fuera_lo_que_no_ve_apto(self):
+        juicios = {"Cuento K1": juicio(mision=0.9, edad="6-8", estado="miedo"),
+                   "Franquicia": juicio(mision=0.95, edad="3-5", estado="serena"),
+                   "Cuento K3": juicio(mision=0.85, edad="9-12", estado="ira")}
+        juez = JuezFalso(juicios, segundo={"Franquicia": (True, False, "Es de una serie de televisión."),
+                                           "Cuento K3": (False, False, "")})
+        codigo, _ = self.correr(juez, lista="kids", cuantos=3)
+        self.assertEqual(codigo, 0)
+        r = self.registro("kids")
+        self.assertEqual([c["titulo"] for c in r["elegidos"]], ["Cuento K1"])
+        self.assertEqual(r["elegidos"][0]["juicio"]["segundo"], "si")
+        self.assertEqual(juez.segundo_llamadas, 1)
+        self.assertEqual(sorted(juez.segundo_vistos), ["Cuento K1", "Cuento K3", "Franquicia"])   # Cuento K2 no pasa: mismo
+        self.assertTrue(any("El segundo juez de Kids (otro modelo) dejó fuera 2 libros: «Franquicia» (Es de una serie de "
+                            "televisión.) y «Cuento K3» (no lo conoce con certeza)." in a for a in r["avisos"]), r["avisos"])
+        self.assertEqual(r["resumen"]["validos"], 1)
+        self.assertIn("y el segundo juez, de otro modelo, también lo vio apto", self.leer("propuesta-kids.md"))
+
+    def test_sin_el_segundo_juez_no_entra_nada_de_kids(self):
+        juicios = {"Cuento K1": juicio(mision=0.9, edad="6-8"), "Cuento K3": juicio(mision=0.85, edad="9-12")}
+        codigo, _ = self.correr(JuezFalso(juicios, segundo_falla=True), lista="kids", cuantos=2)
+        self.assertEqual(codigo, 2)
+        r = self.registro("kids")
+        self.assertEqual(r["elegidos"], [])
+        self.assertTrue(any("El segundo juez de Kids no respondió en un lote de 2" in a for a in r["avisos"]), r["avisos"])
+        # El que deja fuera de su respuesta tampoco entra.
+        codigo, _ = self.correr(JuezFalso(juicios, segundo={"Cuento K3": None}), lista="kids", cuantos=2)
+        r = self.registro("kids")
+        self.assertEqual([c["titulo"] for c in r["elegidos"]], ["Cuento K1"])
+        self.assertTrue(any("dejó sin revisar 1 candidato" in a for a in r["avisos"]), r["avisos"])
+
+    def test_en_adultos_no_hay_segundo_juez(self):
+        juez = JuezFalso(JUICIOS)
+        self.correr(juez, respuestas={"Libro E": "si"}, cuantos=2)
+        self.assertEqual(juez.segundo_llamadas, 0)
+        self.assertNotIn("segundo", self.registro()["elegidos"][0]["juicio"])
+
+    def test_el_segundo_juez_lee_el_criterio(self):
+        escribir(os.path.join(self.app, "curaduria", "criterio.md"), "- En Kids, nada de miedo antes de dormir.\n")
+        juez = JuezFalso({"Cuento K1": juicio(mision=0.9, edad="6-8")})
+        self.correr(juez, lista="kids", cuantos=1)
+        self.assertIn("- En Kids, nada de miedo antes de dormir.", juez.segundo_sistema)
+        self.assertNotIn("{criterio}", juez.segundo_sistema)
+
+    def test_la_fecha_de_mexico(self):
+        utc = datetime.timezone.utc
+        self.assertEqual(cu.fecha_de_mexico(datetime.datetime(2026, 11, 18, 1, 17, tzinfo=utc)), datetime.date(2026, 11, 17))
+        self.assertEqual(cu.fecha_de_mexico(datetime.datetime(2026, 11, 18, 6, 0, tzinfo=utc)), datetime.date(2026, 11, 18))
+        self.assertEqual(cu.fecha_de_mexico(datetime.datetime(2026, 11, 17, 16, 17, tzinfo=utc)), datetime.date(2026, 11, 17))
+
+    def test_el_nombre_de_la_variable_sugerida_no_rompe_su_casilla(self):
+        momento = {"momento": [], "variables": [{"nombre": "El «pulso» del mundo", "que_mide": "a", "de_donde": "b",
+                                                 "como_cambia": "c"}]}
+        self.correr(JuezFalso(JUICIOS, momento=momento), respuestas={"Libro E": "si"}, cuantos=2)
+        self.assertIn("- [ ] Probar «El pulso del mundo» · a. Dato: b. Cambiaría: c.", self.leer("propuesta-adultos.md"))
+
+    def test_el_recordatorio_habla_de_las_palomitas(self):
+        app = tempfile.mkdtemp()
+        escribir(os.path.join(app, "lista-adultos.txt"), "Uno | A\n")
+        texto = cu.recordatorio("adultos", app, datetime.datetime(2026, 11, 17, 16, 17, tzinfo=datetime.timezone.utc))
+        self.assertTrue(texto.endswith("si quieres quitar alguno, quítale su palomita."))
+
+
 class IaFalsa:
     """El módulo ia de ia/ia.py, con respuestas en orden: «» es lo que devuelve un rechazo de Claude."""
 
@@ -655,6 +868,14 @@ class Juez(unittest.TestCase):
         self.assertEqual(llamar("s", "u", cu.esquema("adultos"), 100), {"libros": []})
         self.assertEqual(falsa.papeles, ["grande", "grande", "mini"])
         self.assertTrue(any("«mini»" in a for a in avisos), avisos)
+
+    def test_el_segundo_juez_es_el_mini(self):
+        sys.modules["ia"] = falsa = IaFalsa(["", json.dumps({"libros": []})])
+        avisos = []
+        llamar = cu.juez_ia("kids", avisos, papeles=("mini", "mini"))
+        self.assertEqual(llamar("s", "u", cu.esquema_segundo(), 100), {"libros": []})
+        self.assertEqual(falsa.papeles, ["mini", "mini"])
+        self.assertEqual(avisos, [])
 
     def test_tres_fallas_tiran_el_lote_con_su_aviso(self):
         llamar, falsa, avisos = self.llamar(["", "", ""])
@@ -711,7 +932,7 @@ class Flujo(unittest.TestCase):
         self.assertIn("scripts/curaduria.py", g)
         self.assertIn("gh pr create --base main --head \"$rama\"", g)
         # La propuesta abierta se reconoce por su rama (sin etiquetas: crearlas pide otro permiso).
-        self.assertIn('rama="propuestas/$hoy-$l-$(date -u +%H%M)"', g)
+        self.assertIn('rama="propuestas/$hoy-$l-$(date -u -d \'6 hours ago\' +%H%M)"', g)
         self.assertIn("gh pr list --state open --base main", g)
         self.assertIn('test(\\"^propuestas/.*-$l-[0-9]{4}\\$\\")', g)
         self.assertNotIn("gh label", g)
@@ -734,6 +955,23 @@ class Flujo(unittest.TestCase):
         self.assertIn("fallas=$((fallas + 1))", g)
         self.assertIn('if [ "$fallas" -gt 0 ]; then', g)
         self.assertTrue(g.rstrip().endswith("fi"))
+
+    def test_las_fechas_en_hora_de_mexico(self):
+        g = self.guion()
+        self.assertIn("hoy=\"$(date -u -d '6 hours ago' +%F)\"", g)
+        self.assertNotIn("date -u +%F", g)
+        self.assertNotIn("date -u +%H%M", g)
+
+    def test_el_ensayo_no_abre_nada(self):
+        self.assertEqual(self.on["workflow_dispatch"]["inputs"]["ensayo"]["default"], False)
+        g = self.guion()
+        ensayo = g.index('if [ "${ENSAYO:-false}" = "true" ]; then')
+        self.assertLess(ensayo, g.index("git switch --quiet -c"))       # antes de crear la rama
+        self.assertLess(ensayo, g.index("gh pr create"))
+        bloque = g[ensayo:g.index("fi", ensayo)]
+        self.assertIn("continue", bloque)
+        self.assertNotIn("git", bloque.replace("GITHUB_STEP_SUMMARY", ""))
+        self.assertIn('if [ "${ENSAYO:-false}" != "true" ]; then', g)    # ni busca la abierta ni le comenta
 
     def test_tiempo_y_registro(self):
         self.assertGreaterEqual(self.yml["jobs"]["proponer"]["timeout-minutes"], 120)

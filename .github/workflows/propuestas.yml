@@ -13,10 +13,15 @@
 # (16:17 UTC; México no cambia de horario). Así solo propone si a la lista le quedan menos de 6 títulos. A mano se puede
 # correr con «forzar». Si ya hay una propuesta abierta de esa lista (su rama empieza con «propuestas/» y trae el nombre de
 # la lista), no abre otra: deja el recordatorio.
+#
+# Palomitas y criterio (C492, go de Badir del 17 de noviembre de 2026, 19:58): cada propuesta trae una casilla por libro y
+# su registro escondido; las palomitas las atiende el flujo «🗳️ Decisiones» (decisiones.yml). Las fechas que lee Badir (el
+# título, la rama y la marca en la lista) van en la hora de México. Con «ensayo», el robot propone sin abrir pull requests:
+# la propuesta queda en el resumen de la corrida y en su registro, para probar sin molestar a Badir.
 
 name: 🗳️ Propuestas de libros
 
-run-name: 🗳️ Propuestas · ${{ inputs.lista || 'martes' }}
+run-name: 🗳️ Propuestas · ${{ inputs.lista || 'martes' }}${{ inputs.ensayo && ' · ensayo' || '' }}
 
 on:
   schedule:
@@ -40,6 +45,11 @@ on:
         description: 'Proponer aunque a la lista le queden 6 o más'
         required: false
         default: true
+        type: boolean
+      ensayo:
+        description: 'Ensayo: proponer sin abrir pull requests (la propuesta queda en el resumen de la corrida)'
+        required: false
+        default: false
         type: boolean
 
 permissions:
@@ -95,19 +105,23 @@ jobs:
           LISTA: ${{ inputs.lista }}
           CUANTOS: ${{ inputs.cuantos }}
           FORZAR: ${{ inputs.forzar }}
+          ENSAYO: ${{ inputs.ensayo }}
         run: |
           set -euo pipefail
           LISTA="${LISTA:-las dos}"   # el horario no trae entradas: las dos listas y sin forzar
           git config user.name "Triggui Bot"
           git config user.email "bot@triggui.com"
-          hoy="$(date -u +%F)"
+          hoy="$(date -u -d '6 hours ago' +%F)"   # la fecha en México (UTC-6: México no cambia de horario)
           fallas=0
           mkdir -p /tmp/registros
           for l in adultos kids; do
             if [ "$LISTA" != "las dos" ] && [ "$LISTA" != "$l" ]; then continue; fi
             if [ "$l" = "kids" ]; then nombre="Kids"; else nombre="de adultos"; fi
-            abiertas="$(gh pr list --state open --base main --limit 100 --json number,headRefName \
-              --jq ".[] | select(.headRefName | test(\"^propuestas/.*-$l-[0-9]{4}\$\")) | .number")"
+            abiertas=""
+            if [ "${ENSAYO:-false}" != "true" ]; then
+              abiertas="$(gh pr list --state open --base main --limit 100 --json number,headRefName \
+                --jq ".[] | select(.headRefName | test(\"^propuestas/.*-$l-[0-9]{4}\$\")) | .number")"
+            fi
             if [ -n "$abiertas" ]; then
               numero="$(printf '%s\n' "$abiertas" | head -n 1)"
               echo "::notice::Ya hay una propuesta abierta de $l (#$numero): no abro otra; le dejo a Badir el recordatorio."
@@ -132,7 +146,13 @@ jobs:
               echo "- Lista $nombre: sin propuesta esta vez (código $codigo)." >> "$GITHUB_STEP_SUMMARY"
               continue
             fi
-            rama="propuestas/$hoy-$l-$(date -u +%H%M)"
+            if [ "${ENSAYO:-false}" = "true" ]; then
+              cp "/tmp/propuesta/propuesta-$l.md" /tmp/registros/
+              { echo "## Ensayo de la propuesta $nombre: no se abrió ningún pull request"; echo
+                cat "/tmp/propuesta/propuesta-$l.md"; } >> "$GITHUB_STEP_SUMMARY"
+              continue
+            fi
+            rama="propuestas/$hoy-$l-$(date -u -d '6 hours ago' +%H%M)"
             git switch --quiet -c "$rama" origin/main
             printf '\n' >> "lista-$l.txt"
             cat "/tmp/propuesta/lineas-$l.txt" >> "lista-$l.txt"

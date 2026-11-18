@@ -1,5 +1,5 @@
 # 🚫 DESCARTADOS · lista de adultos de Triggui
 # Libros que Badir ya no quiere que el robot de propuestas (🗳️ Propuestas, scripts/curaduria.py) le vuelva a
 # proponer. Una línea por libro, con el mismo formato de la lista:  Título | Autor
-# Cuando Badir pide quitar uno de una propuesta, la sesión lo quita de lista-adultos.txt en ese pull request y lo
+# Cuando Badir le quita su palomita a un libro en una propuesta, el flujo «🗳️ Decisiones» (scripts/decisiones.py) lo quita de lista-adultos.txt en ese pull request y lo
 # anota aquí, con la fecha en un comentario. Las líneas con # se ignoran. Este archivo no publica nada.

@@ -32,12 +32,20 @@ Qué hace, en orden:
 9. Para afinar la curaduría (pedido de Badir del 17 de noviembre de 2026, 18:50): el juez sugiere hasta tres variables
    nuevas para la próxima vez, con qué miden, de dónde saldría el dato y cómo cambiarían la elección. Son ideas sin
    comprobar: entran al puntaje solo si Badir lo decide.
+10. Palomitas y criterio (C492, go de Badir del 17 de noviembre de 2026, 19:58):
+   - la propuesta trae una casilla por libro («¿Entran?»): quitar la palomita lo saca (scripts/decisiones.py, flujo
+     «🗳️ Decisiones»), y una casilla por variable sugerida («Probar»): marcarla la pone a prueba;
+   - el juez lee el criterio de Badir (curaduria/criterio.md) y sus decisiones recientes (curaduria/decisiones.jsonl);
+   - las variables de curaduria/variables.json: «a prueba» se calculan y se muestran sin mover el puntaje; «activa» suma
+     su peso (los demás se ajustan en proporción para que el total siga de 0 a 100);
+   - en Kids, un segundo juez de otro modelo (el papel «mini» de ia/ia.py) revisa lo delicado de todos los que pasan lo
+     demás: sin su «sí», no entra.
 
 Lo duro, que ningún puntaje compensa: que el juez conozca el libro, que la misión llegue a 0.6, que el catálogo lo traiga
 bien escrito (el horno publica el título y el autor de su catálogo maestro: adultos, data/libros_master.csv; Kids,
 data/libros_master_kids.csv; así que una errata o un acento que falta llegarían a la edición: esos se listan para
 corregir el catálogo y no entran; en Kids el filtro vale igual para data/libros_masterbkids.csv, que el horno no lee),
-que se consiga (con su ISBN) y, en Kids, que sea apto y traiga su edad.
+que se consiga (con su ISBN) y, en Kids, que sea apto, traiga su edad y tenga el «sí» del segundo juez.
 
 Uso:
   python3 -I -B scripts/curaduria.py --lista adultos|kids [--cuantos 9] [--forzar] [--app .] \
@@ -51,6 +59,7 @@ Con --recordatorio no propone: escribe en la salida estándar el recordatorio pa
 títulos le quedan a la lista y hasta qué día alcanzan), que el flujo deja como comentario con la mención de Badir.
 """
 import argparse
+import base64
 import csv
 import datetime
 import importlib.util
@@ -94,6 +103,16 @@ MARGEN_DEL_HORNO = 3   # horas: la demora de GitHub más lo que tarda el horno e
 DIAS_CORTOS = ("lun", "mar", "mié", "jue", "vie", "sáb", "dom")
 MESES_CORTOS = ("ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic")
 DE_LA_LISTA = {"adultos": "de adultos", "kids": "Kids"}
+CRITERIO = os.path.join("curaduria", "criterio.md")          # el criterio de Badir, con sus palabras (lo lee el juez)
+DECISIONES = os.path.join("curaduria", "decisiones.jsonl")   # la bitácora de decisiones (la escribe scripts/decisiones.py)
+VARIABLES = os.path.join("curaduria", "variables.json")      # las variables a prueba y activas
+CASOS = 30              # decisiones recientes que el juez lee
+TOPE_PESOS = 30         # lo más que pueden pesar juntas las variables activas, de 100
+LOTE_SEGUNDO = 40       # en Kids, candidatos por llamada al segundo juez
+MEXICO = datetime.timezone(datetime.timedelta(hours=-6))   # la hora de México (sin horario de verano desde 2022)
+REGISTRO_INICIO = "<!-- triggui-registro:"   # el registro de la propuesta, escondido al final de su descripción
+MARCA_PROPUESTA = "# 🗳️ Propuesta del robot del "   # la línea que abre, en la lista, los libros de una propuesta
+SIN_DATO = None         # el valor de una variable que el juez no puede calificar sin un dato de fuera
 # Lo que ya mide el robot: el juez no las sugiere otra vez.
 VARIABLES_EN_USO = ("la misión (que mejore el ánimo y den ganas de abrir el libro físico)", "el estado de ánimo al que le "
                     "habla y qué tan claro", "el libro real (ISBN y portada)", "la tienda (Casa del Libro y Gandhi)",
@@ -371,7 +390,7 @@ NO_KIDS = """- edad: siempre "".
 - delicado: siempre ""."""
 
 
-def esquema(perfil):
+def esquema(perfil, variables=()):
     edad = {"type": "string", "enum": list(EDADES)} if perfil == "kids" else {"type": "string"}
     item = {"type": "object", "additionalProperties": False,
             "required": ["i", "conoce", "mision", "estado", "claridad", "parecido", "de_que_trata", "razon",
@@ -382,6 +401,11 @@ def esquema(perfil):
                 "parecido": {"type": "number"}, "de_que_trata": {"type": "string"}, "razon": {"type": "string"},
                 "titulo_bien": {"type": "string"}, "autor_bien": {"type": "string"},
                 "edad": edad, "apto": {"type": "boolean"}, "delicado": {"type": "string"}}}
+    if variables:
+        item["required"] = item["required"] + ["variables"]
+        item["properties"]["variables"] = {"type": "array", "items": {
+            "type": "object", "additionalProperties": False, "required": ["id", "valor"],
+            "properties": {"id": {"type": "string", "enum": [v["id"] for v in variables]}, "valor": {"type": "number"}}}}
     return {"type": "object", "additionalProperties": False, "required": ["libros"],
             "properties": {"libros": {"type": "array", "items": item}}}
 
@@ -393,16 +417,17 @@ def _acotar(x, lo=0.0, hi=1.0):
         return lo
 
 
-def juez_ia(perfil, avisos=None):
+def juez_ia(perfil, avisos=None, papeles=("grande", "grande", "mini")):
     """El juez de verdad: Claude por ia/ia.py (la misma llave y el mismo registro de uso que el horno). El papel «grande»
-    (el del núcleo del horno), con un reintento; si no responde, el papel «mini» (el del reordenador del horno), y se dice."""
+    (el del núcleo del horno), con un reintento; si no responde, el papel «mini» (el del reordenador del horno), y se dice.
+    El segundo juez de Kids usa solo el «mini», con su reintento: otro modelo que el primero."""
     sys.path.insert(0, os.path.join(os.path.dirname(AQUI), "ia"))
     import ia  # noqa: E402
     usado = set()
 
     def llamar(sistema, usuario, esq, tope):
         ultimo = None
-        for papel in ("grande", "grande", "mini"):
+        for papel in papeles:
             payload = {"model": papel, "max_tokens": tope, "temperature": 0.05,
                        "response_format": {"type": "json_schema", "json_schema": {"name": "juicio", "schema": esq}},
                        "messages": [{"role": "system", "content": sistema}, {"role": "user", "content": usuario}]}
@@ -412,7 +437,7 @@ def juez_ia(perfil, avisos=None):
                 faltan = [k for k in esq.get("required", []) if k not in (r if isinstance(r, dict) else {})]
                 if faltan:   # un rechazo llega vacío: es una falla, no un lote sin libros
                     raise ValueError(f"respuesta sin {', '.join(faltan)}")
-                if papel == "mini" and "mini" not in usado and avisos is not None:
+                if papel == "mini" and papeles[0] != "mini" and "mini" not in usado and avisos is not None:
                     avisos.append("El juez «grande» no respondió en alguna llamada; esa la calificó el «mini» del horno.")
                 usado.add(papel)
                 return r
@@ -425,9 +450,11 @@ def juez_ia(perfil, avisos=None):
 def costo_ia(ruta_registro, ruta_config):
     """Llamadas y dólares del juez, con el registro de ia/ia.py y los precios de ia/config.json. (0, 0.0) si no hay registro."""
     try:
-        precios = json.load(open(ruta_config, encoding="utf-8")).get("precios_usd_por_millon") or {}
-        lineas = [json.loads(l) for l in open(ruta_registro, encoding="utf-8") if l.strip()]
-    except (OSError, ValueError):
+        with open(ruta_config, encoding="utf-8") as f:
+            precios = json.load(f).get("precios_usd_por_millon") or {}
+        with open(ruta_registro, encoding="utf-8") as f:
+            lineas = [json.loads(l) for l in f if l.strip()]
+    except (OSError, ValueError, AttributeError):
         return 0, 0.0
     usd = 0.0
     for r in lineas:
@@ -438,10 +465,26 @@ def costo_ia(ruta_registro, ruta_config):
     return len(lineas), round(usd, 4)
 
 
-def juzgar(perfil, cands, recientes_, llamar, avisos):
+def sistema_del_juez(perfil, criterio=(), casos=(), variables=()):
     sistema = SISTEMA.format(perfil="Kids (niñas y niños de 3 a 12 años)" if perfil == "kids" else "adultos",
                              kids=KIDS if perfil == "kids" else NO_KIDS)
-    esq = esquema(perfil)
+    if variables:
+        sistema += ("\n- variables: para cada una de estas (por su id), un valor de 0 a 1 de qué tanto el libro la cumple, "
+                    "por lo que sabes del libro; si calificarla pide un dato que no tienes (ventas, noticias, el Pulse, el "
+                    "clima), -1:\n" + "\n".join(f"  {v['id']}: {v['que_mide']}" for v in variables))
+    if criterio:
+        sistema += "\n\nEl criterio de Badir, con sus palabras (manda sobre todo lo demás):\n" + "\n".join(f"- {r}" for r in criterio)
+    if casos:
+        sistema += ("\n\nSus decisiones recientes en este catálogo (aprende de ellas; no las copies a ciegas):\n"
+                    + "\n".join(f"- {c}" for c in casos))
+    return sistema
+
+
+def juzgar(perfil, cands, recientes_, llamar, avisos, criterio=(), casos=(), variables=()):
+    sistema = sistema_del_juez(perfil, criterio, casos, variables)
+    esq = esquema(perfil, variables)
+    activas = [v for v in variables if v["estado"] == "activa" and v["peso"]]
+    factor = (100 - sum(v["peso"] for v in activas)) / 100
     juicios = {}
     for k in range(0, len(cands), LOTE):
         lote = cands[k:k + LOTE]
@@ -472,6 +515,14 @@ def juzgar(perfil, cands, recientes_, llamar, avisos):
                 "edad": (j.get("edad") if j.get("edad") in EDADES else "") if perfil == "kids" else "",
                 "apto": bool(j.get("apto")) if perfil == "kids" else True,
                 "delicado": " ".join(str(j.get("delicado") or "").split())[:160] if perfil == "kids" else ""}
+            valores = {v["id"]: SIN_DATO for v in variables}
+            for x in (j.get("variables") or []) if variables else []:
+                if isinstance(x, dict) and x.get("id") in valores and isinstance(x.get("valor"), (int, float)) \
+                        and not isinstance(x.get("valor"), bool) and x["valor"] >= 0:
+                    valores[x["id"]] = round(_acotar(x["valor"]), 2)
+            juicios[i]["variables"] = valores
+            juicios[i]["factor"] = factor
+            juicios[i]["extras"] = {v["id"]: round(v["peso"] * (valores[v["id"]] or 0.0), 1) for v in activas}
         sin_juicio = len(lote) - (len(juicios) - antes)
         if sin_juicio:
             avisos.append(f"El juez dejó sin calificar {_n(sin_juicio, 'candidato', 'candidatos')} de un lote de {len(lote)}: "
@@ -508,6 +559,71 @@ def mas_parecido(c, pool, llamar, avisos):
     return pool[i], par, " ".join(str(r.get("por_que") or "").split())[:200]
 
 
+# ─────────────────────────── el criterio, los casos y las variables ───────────────────────────
+
+def leer_criterio(app_raiz):
+    """Las reglas del criterio de Badir: los renglones que empiezan con «- » en curaduria/criterio.md."""
+    try:
+        with open(os.path.join(app_raiz, CRITERIO), encoding="utf-8") as f:
+            texto = f.read()
+    except OSError:
+        return []
+    return [" ".join(l[2:].split()) for l in texto.splitlines() if l.startswith("- ") and l[2:].strip()]
+
+
+def leer_casos(app_raiz, perfil, n=CASOS):
+    """Las decisiones recientes de Badir en esa lista, en frases para el juez (las más nuevas al final)."""
+    casos = []
+    try:
+        with open(os.path.join(app_raiz, DECISIONES), encoding="utf-8") as f:
+            lineas = [json.loads(l) for l in f if l.strip()]
+    except (OSError, ValueError):
+        return []
+    for d in lineas:
+        if not isinstance(d, dict) or d.get("lista") != perfil:
+            continue
+        for libro in d.get("libros") or []:
+            if not isinstance(libro, dict):
+                continue
+            linea = str(libro.get("linea") or "").strip()
+            if libro.get("decision") == "entró":
+                casos.append(f"Aprobó «{linea}» (propuesta #{d.get('pr')}).")
+            elif libro.get("decision") == "quitado":
+                casos.append(f"Quitó «{linea}» (propuesta #{d.get('pr')}).")
+        for c in d.get("comentarios") or []:
+            casos.append(f"Comentó en la propuesta #{d.get('pr')}: «{' '.join(str(c).split())[:300]}»")
+    return casos[-n:]
+
+
+def leer_variables(app_raiz):
+    """Las variables a prueba y activas, sanas: id, nombre, estado, peso y qué miden. Las activas pesan juntas lo más
+    TOPE_PESOS; si pasan, se avisa y ninguna activa cuenta (mejor sin variables que con un puntaje roto)."""
+    try:
+        with open(os.path.join(app_raiz, VARIABLES), encoding="utf-8") as f:
+            datos = json.load(f)
+    except (OSError, ValueError):
+        return [], ""
+    salida = []
+    for v in (datos.get("variables") if isinstance(datos, dict) else datos) or []:
+        if not isinstance(v, dict):
+            continue
+        vid = re.sub(r"[^a-z0-9_]", "", str(v.get("id") or "").lower())[:40]
+        estado = v.get("estado")
+        if not vid or estado not in ("a prueba", "activa") or not v.get("que_mide"):
+            continue
+        peso = v.get("peso") if estado == "activa" else 0
+        peso = peso if isinstance(peso, (int, float)) and 0 < peso <= TOPE_PESOS else 0
+        salida.append({"id": vid, "nombre": str(v.get("nombre") or vid)[:80], "estado": estado, "peso": peso,
+                       "que_mide": " ".join(str(v["que_mide"]).split())[:300]})
+    aviso = ""
+    if sum(v["peso"] for v in salida) > TOPE_PESOS:
+        aviso = (f"Las variables activas pesan más de {TOPE_PESOS} de 100 juntas: esta vez ninguna movió el puntaje "
+                 "(se calcularon y se muestran).")
+        for v in salida:
+            v["peso"] = 0
+    return salida, aviso
+
+
 # ─────────────────────────────── el puntaje ───────────────────────────────
 
 def puntos_portada(c, perfil):
@@ -517,15 +633,20 @@ def puntos_portada(c, perfil):
 
 
 def potencial(c, perfil):
+    """Todo menos la tienda. Con variables activas, lo de siempre se ajusta en proporción y se suma lo suyo."""
     j = c["juicio"]
-    return round(40 * j["mision"] + 20 * j["claridad"] + 10 * (1 - j["parecido"]) + puntos_portada(c, perfil), 2)
+    base = 40 * j["mision"] + 20 * j["claridad"] + 10 * (1 - j["parecido"]) + puntos_portada(c, perfil)
+    return round(base * j.get("factor", 1) + sum((j.get("extras") or {}).values()), 2)
 
 
 def puntaje(c, donde_, isbn, perfil):
     j = c["juicio"]
+    factor = j.get("factor", 1)
     libro_real = (15 if isbn else 0) if perfil == "kids" else (10 if isbn else 0) + puntos_portada(c, perfil)
-    partes = {"mision": round(40 * j["mision"], 1), "animo": round(20 * j["claridad"], 1), "libro_real": libro_real,
-              "tienda": PUNTOS_TIENDA.get(donde_, 0), "variedad": round(10 * (1 - j["parecido"]), 1)}
+    partes = {"mision": 40 * j["mision"], "animo": 20 * j["claridad"], "libro_real": libro_real,
+              "tienda": PUNTOS_TIENDA.get(donde_, 0), "variedad": 10 * (1 - j["parecido"])}
+    partes = {k: round(v * factor, 1) for k, v in partes.items()}
+    partes.update(j.get("extras") or {})
     return round(sum(partes.values()), 1), partes
 
 
@@ -546,7 +667,74 @@ def pasa(c, perfil, con_errata=True):
         return "no apto para Kids"
     if perfil == "kids" and not j["edad"]:
         return "sin edad"
+    if perfil == "kids" and j.get("segundo") == "no":
+        return "el segundo juez no lo ve apto"
+    if perfil == "kids" and j.get("segundo") == "sin revisar":
+        return "el segundo juez no lo revisó"
     return ""
+
+
+SEGUNDO_SISTEMA = """Eres el segundo juez de Triggui Kids: un modelo distinto del primero, que revisa solo lo delicado. Triggui Kids recomienda libros para leer con niñas y niños de 3 a 12 años.
+Para cada libro, con la edad que le puso el primer juez:
+- conoce: true solo si sabes con certeza qué libro es (título y autor).
+- apto: false si no lo conoces con certeza, o si trae violencia gráfica, insultos raciales, guerra u Holocausto contados para mayores, sexualidad o terror intenso para esa edad, o si es de una franquicia comercial (series de televisión, juguetes). Si no, true.
+- por_que: hasta 20 palabras en español; si es apto, puede ir vacío.
+Califica todos, con su mismo número i.{criterio}"""
+
+
+def esquema_segundo():
+    return {"type": "object", "additionalProperties": False, "required": ["libros"], "properties": {"libros": {
+        "type": "array", "items": {"type": "object", "additionalProperties": False,
+                                   "required": ["i", "conoce", "apto", "por_que"],
+                                   "properties": {"i": {"type": "integer"}, "conoce": {"type": "boolean"},
+                                                  "apto": {"type": "boolean"}, "por_que": {"type": "string"}}}}}}
+
+
+def segundo_juez(perfil, cands, llamar2, avisos, criterio=()):
+    """En Kids, un segundo juez de otro modelo revisa lo delicado de todos los que pasan lo demás, por lotes (los de más
+    potencial primero). Marca juicio["segundo"]: «si»; «no», con su porqué; o «sin revisar», si su lote falló o lo dejó
+    fuera. Solo «si» entra: sin la segunda revisión un libro Kids no entra, igual que sin la primera."""
+    if perfil != "kids":
+        return
+    validos = sorted((c for c in cands if not pasa(c, perfil)), key=lambda c: (-potencial(c, perfil), normalizar(c["titulo"])))
+    sistema = SEGUNDO_SISTEMA.format(criterio=("\n\nEl criterio de Badir, con sus palabras (manda sobre todo lo demás):\n"
+                                               + "\n".join(f"- {r}" for r in criterio)) if criterio else "")
+    fuera, sin_revisar = [], 0
+    for k in range(0, len(validos), LOTE_SEGUNDO):
+        lote = validos[k:k + LOTE_SEGUNDO]
+        usuario = "Libros, con la edad que les puso el primer juez:\n" + json.dumps(
+            [{"i": n, "titulo": c["titulo"], "autor": c["autor"], "edad": c["juicio"]["edad"],
+              "de_que_trata": c["juicio"]["de_que_trata"]} for n, c in enumerate(lote)], ensure_ascii=False)
+        try:
+            r = llamar2(sistema, usuario, esquema_segundo(), 400 + 80 * len(lote))
+        except Exception as e:
+            for c in lote:
+                c["juicio"]["segundo"] = "sin revisar"
+            avisos.append(f"El segundo juez de Kids no respondió en un lote de {len(lote)} ({e}): esos no entran esta vez.")
+            continue
+        vistos = {}
+        for x in (r or {}).get("libros") or []:
+            if isinstance(x, dict) and isinstance(x.get("i"), int) and 0 <= x["i"] < len(lote):
+                vistos[x["i"]] = x
+        for n, c in enumerate(lote):
+            x = vistos.get(n)
+            if x is None:
+                c["juicio"]["segundo"] = "sin revisar"
+                sin_revisar += 1
+            elif x.get("conoce") is True and x.get("apto") is True:
+                c["juicio"]["segundo"] = "si"
+            else:
+                c["juicio"]["segundo"] = "no"
+                motivo = " ".join(str(x.get("por_que") or "").split())[:200]
+                c["juicio"]["segundo_por_que"] = motivo if x.get("conoce") is True else "no lo conoce con certeza"
+                fuera.append(c)
+    if fuera:
+        avisos.append(f"El segundo juez de Kids (otro modelo) dejó fuera {_n(len(fuera), 'libro', 'libros')}: "
+                      + _y([f"«{c['titulo']}» ({c['juicio']['segundo_por_que'] or 'sin porqué'})" for c in fuera[:8]])
+                      + (f" y {len(fuera) - 8} más (en el registro)" if len(fuera) > 8 else "") + ".")
+    if sin_revisar:
+        avisos.append(f"El segundo juez de Kids dejó sin revisar {_n(sin_revisar, 'candidato', 'candidatos')}: esos no entran "
+                      "esta vez.")
 
 
 def elegir(perfil, cands, cuantos, tiendas, llamar, avisos):
@@ -652,6 +840,11 @@ def ahora_de(a):
     return datetime.datetime.now(datetime.timezone.utc)
 
 
+def fecha_de_mexico(ahora):
+    """La fecha en México de un momento en UTC: la que lee Badir (la del título, la de la marca en la lista)."""
+    return ahora.astimezone(MEXICO).date()
+
+
 def fecha_corta(d, hoy):
     """«lun 21 dic»; con el año si no es el de hoy («lun 4 ene 2027»)."""
     texto = f"{DIAS_CORTOS[d.weekday()]} {d.day} {MESES_CORTOS[d.month - 1]}"
@@ -676,7 +869,7 @@ def recordatorio(perfil, app_raiz, ahora):
         quedan = (f"La lista {nombre} está vacía: si no das Merge antes, el {fecha_corta(siguiente, hoy)} no sale "
                   f"edición {nombre}.")
     return (f"@badirnakid, esta propuesta sigue esperando tu Merge. {quedan} Si ya no la quieres, ciérrala; si quieres "
-            "quitar alguno, pídeselo a una sesión de Claude.")
+            "quitar alguno, quítale su palomita.")
 
 
 MOMENTO_SISTEMA = """Eres el juez editorial de Triggui. Triggui manda la idea de un gran libro para mejorar el ánimo de quien la lee y darle ganas de abrir el libro físico; desde noviembre de 2026 sale lunes y jueves. Te doy los libros propuestos, en orden, con la fecha en que saldría cada uno.
@@ -696,7 +889,7 @@ def esquema_momento():
                                                                 ("nombre", "que_mide", "de_donde", "como_cambia")}}}}}
 
 
-def momento_y_variables(perfil, elegidos, hoy, llamar, avisos):
+def momento_y_variables(perfil, elegidos, hoy, llamar, avisos, en_juego=()):
     """Una llamada al juez: el momento del calendario de cada fecha y hasta tres variables sugeridas. Si falla, la propuesta
     sale sin esa parte y con su aviso. Devuelve ({i: nota}, [variables])."""
     libros = [{"i": i, "titulo": c["titulo"], "autor": c["autor"], "estado": NOMBRE_ESTADO[c["juicio"]["estado"]],
@@ -709,7 +902,8 @@ def momento_y_variables(perfil, elegidos, hoy, llamar, avisos):
     usuario = (f"Catálogo: {catalogo}. Hoy es {hoy.isoformat()}.\n"
                f"Libros propuestos, en orden:\n{json.dumps(libros, ensure_ascii=False)}")
     try:
-        r = llamar(MOMENTO_SISTEMA.format(en_uso="; ".join(VARIABLES_EN_USO)), usuario, esquema_momento(),
+        en_uso = list(VARIABLES_EN_USO) + [f"{v['nombre']} ({v['estado']})" for v in en_juego]
+        r = llamar(MOMENTO_SISTEMA.format(en_uso="; ".join(en_uso)), usuario, esquema_momento(),
                    1500 + 150 * len(libros))
     except Exception as e:
         avisos.append(f"No pude pedirle al juez el momento de cada fecha ni las variables sugeridas ({e}); la propuesta "
@@ -723,6 +917,7 @@ def momento_y_variables(perfil, elegidos, hoy, llamar, avisos):
     variables = []
     for v in ((r or {}).get("variables") or [])[:3]:
         limpia = {k: " ".join(str(v.get(k) or "").split())[:220] for k in ("nombre", "que_mide", "de_donde", "como_cambia")}
+        limpia["nombre"] = re.sub(r"[«»]", "", limpia["nombre"]).strip()[:80]   # el nombre va entre «» en su casilla
         if limpia["nombre"] and limpia["que_mide"]:
             variables.append(limpia)
     return notas, variables
@@ -753,9 +948,60 @@ def _n(cantidad, singular, plural):
 TOPE_ERRATAS = 30   # las que se muestran en la propuesta; todas van en el registro de la corrida
 
 
-def markdown(perfil, fecha, elegidos, resumen, avisos, malos=(), variables=()):
+def linea_de(c):
+    """La línea de la lista para un libro elegido: la misma que el robot agrega a lista-<lista>.txt."""
+    return lista_semanal.limpiar(f"{c['titulo']} | {c['autor']}")
+
+
+def registro_compacto(perfil, fecha, elegidos, sugeridas):
+    """Lo que scripts/decisiones.py necesita de la propuesta: cada libro con su número, su línea y sus datos, y las
+    variables sugeridas (para ponerlas a prueba con su casilla)."""
+    return {"v": 1, "lista": perfil, "fecha": fecha, "marca": f"{MARCA_PROPUESTA}{fecha}: entra con el Merge de Badir",
+            "libros": [{"n": n, "linea": linea_de(c), "clave": c["clave"], "estado": c["juicio"]["estado"],
+                        "total": c["total"], "edad": c["juicio"].get("edad", ""),
+                        "variables": c["juicio"].get("variables") or {}} for n, c in enumerate(elegidos, 1)],
+            "variables": [dict(v) for v in sugeridas]}
+
+
+def registro_a_texto(reg):
+    """El registro escondido al final de la descripción: un comentario HTML con el JSON en base64 (sin «-->» posible)."""
+    crudo = json.dumps(reg, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+    return f"{REGISTRO_INICIO}{base64.b64encode(crudo).decode('ascii')} -->"
+
+
+def leer_registro(cuerpo):
+    """El registro de una descripción, o None si no lo trae o no se puede leer."""
+    m = re.search(re.escape(REGISTRO_INICIO) + r"([A-Za-z0-9+/=]+) -->", cuerpo or "")
+    if not m:
+        return None
+    try:
+        reg = json.loads(base64.b64decode(m.group(1), validate=True).decode("utf-8"))
+    except (ValueError, UnicodeDecodeError):
+        return None
+    return reg if isinstance(reg, dict) and isinstance(reg.get("libros"), list) else None
+
+
+def texto_entran(perfil):
+    return (f"Todos llevan palomita. Si no quieres alguno, quítasela: en uno o dos minutos el robot lo saca de esta propuesta, lo "
+            f"anota en `{DESCARTADOS[perfil]}` para no volver a proponértelo y te contesta aquí. Si fue un error, vuelve a "
+            "ponérsela. Si quieres decir por qué, deja un comentario: el juez lo lee desde la próxima propuesta.")
+
+
+TEXTO_PROBAR = ("Ideas del juez para medir mejor el momento, sin comprobar. Si quieres probar una, márcala: al cerrar esta "
+                "propuesta (con Merge o sin él) queda a prueba, y desde la siguiente el juez la califica y la tabla la muestra "
+                "sin mover el puntaje. Para que cuente en el puntaje, dilo en el chat con Claude.")
+
+
+def casilla_probar(v):
+    return (f"- [ ] Probar «{v['nombre']}» · {_frase(_celda(v['que_mide']))} Dato: {_frase(_celda(v.get('de_donde')))} "
+            f"Cambiaría: {_frase(_celda(v.get('como_cambia')))}")
+
+
+def markdown(perfil, fecha, elegidos, resumen, avisos, malos=(), variables=(), en_juego=()):
     kids = perfil == "kids"
-    de_la_lista = "Kids" if kids else "de adultos"
+    de_la_lista = DE_LA_LISTA[perfil]
+    activas = [v for v in en_juego if v["estado"] == "activa" and v["peso"]]
+    a_prueba = [v for v in en_juego if v not in activas]
     lineas = [
         f"## 🗳️ Propuesta de libros · {'Kids' if kids else 'adultos'} · {fecha}",
         "",
@@ -763,11 +1009,15 @@ def markdown(perfil, fecha, elegidos, resumen, avisos, malos=(), variables=()):
         "**Merge**: entran al final de la lista en este orden, y el horno los publica los lunes y los jueves, el primero "
         "que se consiga ese día. Nada se publica sin tu Merge.",
         "",
-        f"¿Quitar alguno? Pídeselo a una sesión de Claude («quita el 3 de la propuesta {de_la_lista}»): lo quita de "
-        f"`{LISTAS[perfil]}` en este pull request y lo anota en `{DESCARTADOS[perfil]}`, para que el robot no lo vuelva "
-        "a proponer.",
+        "### ¿Entran?",
+        "",
+        texto_entran(perfil),
         "",
     ]
+    # Las casillas van antes de cualquier sección plegable: en la app de GitHub, un toque puede caer en una casilla
+    # escondida dentro de una sección plegada (error conocido de mayo de 2026). Dentro de lo plegable no hay casillas.
+    lineas += [f"- [x] {n} · {linea_de(c)}" for n, c in enumerate(elegidos, 1)]
+    lineas.append("")
     hoy = datetime.date.fromisoformat(fecha)
     cab = "| # | Portada | Libro | " + ("Edad | " if kids else "") + "Puntaje | Ánimo | Dónde | Sale | Por qué |"
     sep = "|---|---|---|" + ("---|" if kids else "") + "---|---|---|---|---|"
@@ -779,13 +1029,19 @@ def markdown(perfil, fecha, elegidos, resumen, avisos, malos=(), variables=()):
         if j.get("de_que_trata"):
             libro += f"<br><sub>{_celda(j['de_que_trata'])}</sub>"
         desglose = (f"**{c['total']:g}**<br><sub>misión {p['mision']:g} · ánimo {p['animo']:g} · libro {p['libro_real']:g}"
-                    f" · tienda {p['tienda']:g} · variedad {p['variedad']:g}</sub>")
+                    f" · tienda {p['tienda']:g} · variedad {p['variedad']:g}"
+                    + "".join(f" · {_celda(v['nombre'])} {p.get(v['id'], 0):g}" for v in activas) + "</sub>")
         por_que = _celda(j["razon"])
         if c.get("reemplaza"):
             por_que += (f"<br><sub>En lugar de «{_celda(c['reemplaza']['titulo'])}», que no se consigue "
                         f"(parecido {c['parecido_al_reemplazado']:.2f})</sub>")
         if kids and j.get("delicado"):
             por_que += f"<br><sub>Para saber antes: {_celda(j['delicado'])}</sub>"
+        if a_prueba:
+            valores = j.get("variables") or {}
+            por_que += "<br><sub>A prueba: " + "; ".join(
+                f"«{_celda(v['nombre'])}» " + ("sin dato" if valores.get(v["id"]) is None else f"{valores[v['id']]:.2f}")
+                for v in a_prueba) + "</sub>"
         sale = fecha_corta(datetime.date.fromisoformat(c["sale"]), hoy) if c.get("sale") else ""
         if c.get("momento"):
             sale += f"<br><sub>📅 {_celda(c['momento'])}</sub>"
@@ -810,6 +1066,19 @@ def markdown(perfil, fecha, elegidos, resumen, avisos, malos=(), variables=()):
         tiendas += (f" {_n(no_se, 'de los mejores no se conseguía', 'de los mejores no se conseguían')}"
                     + (f"; {_n(reemplazos, 'entró en su lugar por parecido', 'entraron en su lugar por parecido')}"
                        if reemplazos else "") + ".")
+    n_criterio, n_casos = resumen.get("criterio", 0), resumen.get("casos", 0)
+    if n_criterio or n_casos:
+        criterio = (f"el juez leyó {_n(n_criterio, 'regla', 'reglas')} de tu criterio (`{CRITERIO}`) y "
+                    f"{_n(n_casos, 'decisión tuya', 'decisiones tuyas')} de esta lista (`{DECISIONES}`).")
+    else:
+        criterio = f"todavía no hay reglas en `{CRITERIO}` ni decisiones tuyas anotadas de esta lista."
+    puntaje = ("- **Puntaje de Triggui (0 a 100):** misión 40, ánimo 20, libro real 15 ("
+               + ("ISBN de la tienda" if kids else "ISBN de la tienda 10 y portada 5") + "), tienda 15 (las dos tiendas 15, "
+               "solo Casa del Libro 13, solo Gandhi 11) y variedad 10 (que no se parezca a las últimas ediciones).")
+    if activas:
+        resto = 100 - sum(v["peso"] for v in activas)
+        puntaje += (f" Con las variables activas, eso vale {resto:g} de 100, en proporción, y se suman "
+                    + _y([f"«{_celda(v['nombre'])}» {v['peso']:g}" for v in activas]) + ".")
     lineas += [
         "",
         "### Cómo se eligió",
@@ -817,11 +1086,16 @@ def markdown(perfil, fecha, elegidos, resumen, avisos, malos=(), variables=()):
         f"- **Candidatos:** {resumen['maestro']} del catálogo maestro; "
         + (f"quedaron {resumen['candidatos']} al quitar {quitados}." if quitados else "todos son candidatos."),
         f"- **El juez de Triggui** calificó {resumen['juzgados']}; pasaron lo duro {resumen['validos']} (lo conoce, el "
-        f"catálogo lo trae bien escrito, misión de {MIN_MISION:g} o más" + (", apto y con edad" if kids else "") + ").",
+        f"catálogo lo trae bien escrito, misión de {MIN_MISION:g} o más"
+        + (", apto y con edad, y el segundo juez, de otro modelo, también lo vio apto" if kids else "") + ").",
+        f"- **Tu criterio:** {criterio}",
         f"- **Tiendas:** {tiendas}",
-        "- **Puntaje de Triggui (0 a 100):** misión 40, ánimo 20, libro real 15 ("
-        + ("ISBN de la tienda" if kids else "ISBN de la tienda 10 y portada 5") + "), tienda 15 (las dos tiendas 15, "
-        "solo Casa del Libro 13, solo Gandhi 11) y variedad 10 (que no se parezca a las últimas ediciones).",
+        puntaje,
+    ]
+    if a_prueba:
+        lineas.append("- **Variables a prueba:** " + _y([f"«{_celda(v['nombre'])}» ({_celda(v['que_mide'])})" for v in a_prueba])
+                      + ". El juez las califica de 0 a 1 en cada libro y no mueven el puntaje.")
+    lineas += [
         f"- **Variedad de ánimo:** ningún estado con más de {resumen['tope_estado']} de {resumen['cuantos']}, mientras hubo con qué.",
         "- **Orden:** por puntaje, sin dos seguidos del mismo ánimo mientras se pudo.",
         f"- **Sale:** la fecha estimada, a dos por semana (lunes y jueves) después de "
@@ -830,11 +1104,8 @@ def markdown(perfil, fecha, elegidos, resumen, avisos, malos=(), variables=()):
                                  if any(c.get("momento") for c in elegidos) else ""),
     ]
     if variables:
-        lineas += ["", "### 🧭 Para afinar la curaduría", "",
-                   "Ideas del juez para medir mejor el momento, sin comprobar. Si quieres sumar una al puntaje, pídeselo a una "
-                   "sesión de Claude («suma la variable …»).", ""]
-        lineas += [f"- **{_frase(_celda(v['nombre']))}** {_frase(_celda(v['que_mide']))} Dato: "
-                   f"{_frase(_celda(v['de_donde']))} Cambiaría: {_frase(_celda(v['como_cambia']))}" for v in variables]
+        lineas += ["", "### 🧭 Para afinar la curaduría", "", TEXTO_PROBAR, ""]
+        lineas += [casilla_probar(v) for v in variables]
     if malos:
         lineas += ["", f"<details><summary>Erratas del catálogo ({len(malos)})</summary>", "",
                    "Estos pasarían lo demás, pero el catálogo maestro los trae con una errata o sin un acento, y el horno "
@@ -847,8 +1118,9 @@ def markdown(perfil, fecha, elegidos, resumen, avisos, malos=(), variables=()):
         lineas += ["", "</details>"]
     if avisos:
         lineas += ["", "### Avisos", ""] + [f"- {a}" for a in avisos]
-    lineas += ["", "<sub>Lo armó el robot de propuestas (`scripts/curaduria.py`, C480). Al publicar, el horno vuelve a revisar "
-               "que se consiga; si un libro ya no está, lo salta y lo deja en la lista.</sub>", ""]
+    lineas += ["", "<sub>Lo armó el robot de propuestas (`scripts/curaduria.py`, C480 y C492). Al publicar, el horno vuelve a "
+               "revisar que se consiga; si un libro ya no está, lo salta y lo deja en la lista.</sub>", "",
+               registro_a_texto(registro_compacto(perfil, fecha, elegidos, variables)), ""]
     return "\n".join(lineas)
 
 
@@ -870,10 +1142,12 @@ def main(argv=None):
     return correr(a, juez=None, revisar=None)
 
 
-def correr(a, juez=None, revisar=None):
-    """El cuerpo de main, con el juez y la revisión de tiendas inyectables (las pruebas no tocan la red)."""
+def correr(a, juez=None, revisar=None, juez2=None):
+    """El cuerpo de main, con los jueces y la revisión de tiendas inyectables (las pruebas no tocan la red). Las fechas que
+    lee Badir van en la hora de México; las marcas de tiendas, en UTC, como las escribe el horno."""
     ahora = ahora_de(a)
     hoy = ahora.date()
+    hoy_mx = fecha_de_mexico(ahora)
     cands, excluidos, en_lista = candidatos(a.lista, a.contenido, a.app)
     if not a.forzar and en_lista >= UMBRAL:
         print(f"ℹ️  La lista {a.lista} tiene {en_lista} títulos (el robot propone con menos de {UMBRAL}): no hace falta.", file=sys.stderr)
@@ -884,18 +1158,25 @@ def correr(a, juez=None, revisar=None):
     cuantos = a.cuantos or max(META - en_lista, 4)
     avisos = []
     llamar = juez or juez_ia(a.lista, avisos)
+    llamar2 = juez2 or juez or juez_ia(a.lista, avisos, papeles=("mini", "mini"))
+    criterio = leer_criterio(a.app)
+    casos = leer_casos(a.app, a.lista)
+    en_juego, aviso_variables = leer_variables(a.app)
+    if aviso_variables:
+        avisos.append(aviso_variables)
     ruta_tiendas = os.path.join(a.contenido, "data", "tiendas.json")
     if revisar is None:
         revisar = revisar_con_horno(a.nucleus, ruta_tiendas)
     tiendas = Tiendas(ruta_tiendas, a.nucleus, hoy, revisar)
-    juicios = juzgar(a.lista, cands, recientes(a.lista, a.contenido), llamar, avisos)
+    juicios = juzgar(a.lista, cands, recientes(a.lista, a.contenido), llamar, avisos, criterio, casos, en_juego)
     for i, c in enumerate(cands):
         c["juicio"] = juicios.get(i)
+    segundo_juez(a.lista, cands, llamar2, avisos, criterio)
     elegidos, no_se_consiguen, validos = elegir(a.lista, cands, cuantos, tiendas, llamar, avisos)
     elegidos = ordenar(elegidos)
     for c, d in zip(elegidos, fechas_de_publicacion(ahora, en_lista, len(elegidos), a.lista)):
         c["sale"] = d.isoformat()
-    notas, variables = momento_y_variables(a.lista, elegidos, hoy, llamar, avisos) if elegidos else ({}, [])
+    notas, variables = momento_y_variables(a.lista, elegidos, hoy_mx, llamar, avisos, en_juego) if elegidos else ({}, [])
     for i, c in enumerate(elegidos):
         c["momento"] = notas.get(i, "")
     malos = erratas(a.lista, cands)
@@ -920,8 +1201,9 @@ def correr(a, juez=None, revisar=None):
                "revisados_hoy": tiendas.revisados, "sin_respuesta": tiendas.sin_respuesta, "sin_revisar": tiendas.sin_revisar,
                "no_se_consiguen": len(no_se_consiguen),
                "reemplazos": sum(1 for c in elegidos if c.get("reemplaza")), "cuantos": cuantos,
-               "tope_estado": max(1, math.ceil(cuantos / 3)), "en_lista": en_lista}
-    registro = {"lista": a.lista, "fecha": hoy.isoformat(), "resumen": resumen, "avisos": avisos,
+               "tope_estado": max(1, math.ceil(cuantos / 3)), "en_lista": en_lista,
+               "criterio": len(criterio), "casos": len(casos)}
+    registro = {"lista": a.lista, "fecha": hoy_mx.isoformat(), "resumen": resumen, "avisos": avisos, "en_juego": en_juego,
                 "elegidos": [{k: v for k, v in c.items() if k != "reemplaza"} | ({"reemplaza": c["reemplaza"]["titulo"]} if c.get("reemplaza") else {})
                              for c in elegidos],
                 "erratas": malos, "variables": variables}
@@ -933,9 +1215,9 @@ def correr(a, juez=None, revisar=None):
         print(f"🟡 No encontré ningún libro que pase todo para la lista {a.lista}.", file=sys.stderr)
         return 2
     with open(os.path.join(a.salida, f"propuesta-{a.lista}.md"), "w", encoding="utf-8") as f:
-        f.write(markdown(a.lista, hoy.isoformat(), elegidos, resumen, avisos, malos, variables))
+        f.write(markdown(a.lista, hoy_mx.isoformat(), elegidos, resumen, avisos, malos, variables, en_juego))
     with open(os.path.join(a.salida, f"lineas-{a.lista}.txt"), "w", encoding="utf-8") as f:
-        f.write(f"# 🗳️ Propuesta del robot del {hoy.isoformat()}: entra con el Merge de Badir\n")
+        f.write(f"{MARCA_PROPUESTA}{hoy_mx.isoformat()}: entra con el Merge de Badir\n")
         for c in elegidos:
             f.write(lista_semanal.limpiar(f"{c['titulo']} | {c['autor']}") + "\n")
     if a.lista == "kids":
