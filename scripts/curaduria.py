@@ -89,6 +89,8 @@ LISTAS = {"adultos": "lista-adultos.txt", "kids": "lista-kids.txt"}
 DESCARTADOS = {"adultos": "descartados-adultos.txt", "kids": "descartados-kids.txt"}
 EDADES_ARCHIVO = "edades-kids.json"
 DIAS_DE_EDICION = (0, 3)   # lunes y jueves (datetime: lunes = 0)
+HORA_DEL_HORNO = {"kids": 11, "adultos": 12}   # en UTC: los crons del horno en triggui.yml (5 y 6 de la mañana en México)
+MARGEN_DEL_HORNO = 3   # horas: la demora de GitHub más lo que tarda el horno en publicar y quitar el título de la lista
 DIAS_CORTOS = ("lun", "mar", "mié", "jue", "vie", "sáb", "dom")
 MESES_CORTOS = ("ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic")
 DE_LA_LISTA = {"adultos": "de adultos", "kids": "Kids"}
@@ -626,15 +628,28 @@ def erratas(perfil, cands):
 
 # ─────────────────────────────── la salida ───────────────────────────────
 
-def fechas_de_publicacion(hoy, despues_de, cuantas):
+def fechas_de_publicacion(ahora, despues_de, cuantas, perfil):
     """Las fechas en que saldrían los libros nuevos si cada uno se consigue el día que le toca: los lunes y jueves que
-    vienen después de hoy, saltando los que ocupan los títulos que ya están en la lista."""
-    fechas, d = [], hoy
+    vienen, saltando los que ocupan los títulos que ya están en la lista. Un lunes o jueves cuenta mientras su horno no
+    haya pasado (su hora en UTC más el margen): hasta entonces, el primer título de la lista todavía es de ese día.
+    «ahora» es un datetime en UTC."""
+    d = ahora.date()
+    corte = datetime.datetime.combine(d, datetime.time(HORA_DEL_HORNO[perfil] + MARGEN_DEL_HORNO),
+                                      tzinfo=datetime.timezone.utc)
+    fechas = [d] if d.weekday() in DIAS_DE_EDICION and ahora < corte else []
     while len(fechas) < despues_de + cuantas:
         d += datetime.timedelta(days=1)
         if d.weekday() in DIAS_DE_EDICION:
             fechas.append(d)
-    return fechas[despues_de:]
+    return fechas[despues_de:despues_de + cuantas]
+
+
+def ahora_de(a):
+    """El momento de la corrida en UTC; con --fecha, el final de ese día (como si su horno ya hubiera pasado)."""
+    if getattr(a, "fecha", ""):
+        return datetime.datetime.combine(datetime.date.fromisoformat(a.fecha), datetime.time(23, 59),
+                                         tzinfo=datetime.timezone.utc)
+    return datetime.datetime.now(datetime.timezone.utc)
 
 
 def fecha_corta(d, hoy):
@@ -647,16 +662,17 @@ def titulos_en_lista(app_raiz, perfil):
     return len(lista_semanal.lineas_utiles(os.path.join(app_raiz, LISTAS[perfil])))
 
 
-def recordatorio(perfil, app_raiz, hoy):
+def recordatorio(perfil, app_raiz, ahora):
     """El comentario para la propuesta que sigue abierta: menciona a Badir y dice hasta cuándo alcanza la lista."""
     n = titulos_en_lista(app_raiz, perfil)
     nombre = DE_LA_LISTA[perfil]
+    hoy = ahora.date()
     if n:
-        ultima = fechas_de_publicacion(hoy, 0, n)[-1]
-        quedan = (f"A la lista {nombre} le quedan {_n(n, 'título', 'títulos')}: alcanzan hasta el "
-                  f"{fecha_corta(ultima, hoy)}, si cada uno se consigue el día que le toca.")
+        ultima = fechas_de_publicacion(ahora, 0, n, perfil)[-1]
+        quedan = (f"A la lista {nombre} " + ("le queda 1 título: alcanza" if n == 1 else f"le quedan {n} títulos: alcanzan")
+                  + f" hasta el {fecha_corta(ultima, hoy)}, si cada uno se consigue el día que le toca.")
     else:
-        siguiente = fechas_de_publicacion(hoy, 0, 1)[0]
+        siguiente = fechas_de_publicacion(ahora, 0, 1, perfil)[0]
         quedan = (f"La lista {nombre} está vacía: si no das Merge antes, el {fecha_corta(siguiente, hoy)} no sale "
                   f"edición {nombre}.")
     return (f"@badirnakid, esta propuesta sigue esperando tu Merge. {quedan} Si ya no la quieres, ciérrala; si quieres "
@@ -694,7 +710,7 @@ def momento_y_variables(perfil, elegidos, hoy, llamar, avisos):
                f"Libros propuestos, en orden:\n{json.dumps(libros, ensure_ascii=False)}")
     try:
         r = llamar(MOMENTO_SISTEMA.format(en_uso="; ".join(VARIABLES_EN_USO)), usuario, esquema_momento(),
-                   600 + 120 * len(libros))
+                   1500 + 150 * len(libros))
     except Exception as e:
         avisos.append(f"No pude pedirle al juez el momento de cada fecha ni las variables sugeridas ({e}); la propuesta "
                       "sale sin esa parte.")
@@ -714,6 +730,12 @@ def momento_y_variables(perfil, elegidos, hoy, llamar, avisos):
 
 def _celda(t):
     return str(t or "").replace("|", "/").replace("\n", " ").strip()
+
+
+def _frase(t):
+    """La frase cerrada con punto si no trae su signo: así las partes no quedan pegadas."""
+    t = str(t or "").strip()
+    return t if not t or t[-1] in ".!?…»)" else t + "."
 
 
 def _y(partes):
@@ -804,15 +826,15 @@ def markdown(perfil, fecha, elegidos, resumen, avisos, malos=(), variables=()):
         "- **Orden:** por puntaje, sin dos seguidos del mismo ánimo mientras se pudo.",
         f"- **Sale:** la fecha estimada, a dos por semana (lunes y jueves) después de "
         f"{_n(resumen.get('en_lista', 0), 'título que ya está', 'títulos que ya están')} en la lista, si cada uno se consigue "
-        "el día que le toca." + (" El 📅 es el momento del calendario que ve el juez; no cambia el puntaje."
+        "el día que le toca y si das Merge antes de la primera fecha." + (" El 📅 es el momento del calendario que ve el juez; no cambia el puntaje."
                                  if any(c.get("momento") for c in elegidos) else ""),
     ]
     if variables:
         lineas += ["", "### 🧭 Para afinar la curaduría", "",
                    "Ideas del juez para medir mejor el momento, sin comprobar. Si quieres sumar una al puntaje, pídeselo a una "
                    "sesión de Claude («suma la variable …»).", ""]
-        lineas += [f"- **{_celda(v['nombre'])}.** {_celda(v['que_mide'])} Dato: {_celda(v['de_donde'])} Cambiaría: "
-                   f"{_celda(v['como_cambia'])}" for v in variables]
+        lineas += [f"- **{_frase(_celda(v['nombre']))}** {_frase(_celda(v['que_mide']))} Dato: "
+                   f"{_frase(_celda(v['de_donde']))} Cambiaría: {_frase(_celda(v['como_cambia']))}" for v in variables]
     if malos:
         lineas += ["", f"<details><summary>Erratas del catálogo ({len(malos)})</summary>", "",
                    "Estos pasarían lo demás, pero el catálogo maestro los trae con una errata o sin un acento, y el horno "
@@ -843,15 +865,15 @@ def main(argv=None):
     p.add_argument("--recordatorio", action="store_true", help="solo escribir el recordatorio de la propuesta abierta")
     a = p.parse_args(argv)
     if a.recordatorio:
-        hoy = datetime.date.fromisoformat(a.fecha) if a.fecha else datetime.datetime.now(datetime.timezone.utc).date()
-        print(recordatorio(a.lista, a.app, hoy))
+        print(recordatorio(a.lista, a.app, ahora_de(a)))
         return 0
     return correr(a, juez=None, revisar=None)
 
 
 def correr(a, juez=None, revisar=None):
     """El cuerpo de main, con el juez y la revisión de tiendas inyectables (las pruebas no tocan la red)."""
-    hoy = datetime.date.fromisoformat(a.fecha) if a.fecha else datetime.datetime.now(datetime.timezone.utc).date()
+    ahora = ahora_de(a)
+    hoy = ahora.date()
     cands, excluidos, en_lista = candidatos(a.lista, a.contenido, a.app)
     if not a.forzar and en_lista >= UMBRAL:
         print(f"ℹ️  La lista {a.lista} tiene {en_lista} títulos (el robot propone con menos de {UMBRAL}): no hace falta.", file=sys.stderr)
@@ -871,7 +893,7 @@ def correr(a, juez=None, revisar=None):
         c["juicio"] = juicios.get(i)
     elegidos, no_se_consiguen, validos = elegir(a.lista, cands, cuantos, tiendas, llamar, avisos)
     elegidos = ordenar(elegidos)
-    for c, d in zip(elegidos, fechas_de_publicacion(hoy, en_lista, len(elegidos))):
+    for c, d in zip(elegidos, fechas_de_publicacion(ahora, en_lista, len(elegidos), a.lista)):
         c["sale"] = d.isoformat()
     notas, variables = momento_y_variables(a.lista, elegidos, hoy, llamar, avisos) if elegidos else ({}, [])
     for i, c in enumerate(elegidos):

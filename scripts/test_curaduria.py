@@ -470,6 +470,7 @@ class Propuesta(Base):
         self.assertIn("### 🧭 Para afinar la curaduría", md)
         self.assertIn("- **El pulso del mundo al publicar.** La emoción que sube hoy por país. Dato: El Pulse de Triggui", md)
         self.assertIn("- **Sale:** la fecha estimada, a dos por semana (lunes y jueves) después de 1 título que ya está en la lista", md)
+        self.assertIn("y si das Merge antes de la primera fecha.", md)
 
     def test_si_el_momento_falla_la_propuesta_sale_sin_esa_parte(self):
         juez = JuezFalso(JUICIOS, momento_falla=True)
@@ -564,18 +565,33 @@ class Salida(Base):
         self.assertFalse(cu.errata("El arte de amar", "El arte de la guerra"))
 
     def test_las_fechas_de_publicacion(self):
-        martes = datetime.date(2026, 11, 17)
-        self.assertEqual(cu.fechas_de_publicacion(martes, 9, 3),
+        utc = datetime.timezone.utc
+        martes = datetime.datetime(2026, 11, 17, 16, 17, tzinfo=utc)   # el horario: martes 10:17 de la mañana en México
+        self.assertEqual(cu.fechas_de_publicacion(martes, 9, 3, "adultos"),
                          [datetime.date(2026, 12, 21), datetime.date(2026, 12, 24), datetime.date(2026, 12, 28)])
-        lunes = datetime.date(2026, 11, 23)   # un lunes: la de hoy ya salió a las 5 o 6 de la mañana
-        self.assertEqual(cu.fechas_de_publicacion(lunes, 0, 2), [datetime.date(2026, 11, 26), datetime.date(2026, 11, 30)])
-        self.assertEqual(cu.fecha_corta(datetime.date(2026, 12, 24), martes), "jue 24 dic")
-        self.assertEqual(cu.fecha_corta(datetime.date(2027, 1, 4), martes), "lun 4 ene 2027")
+        # Un lunes, ya pasado su horno (12:00 UTC más el margen): la de hoy ya salió.
+        lunes_tarde = datetime.datetime(2026, 11, 23, 20, 0, tzinfo=utc)
+        self.assertEqual(cu.fechas_de_publicacion(lunes_tarde, 0, 2, "adultos"),
+                         [datetime.date(2026, 11, 26), datetime.date(2026, 11, 30)])
+        # Miércoles 7 de la noche en México = jueves 01:00 UTC: el horno del jueves todavía no pasa; el jueves cuenta.
+        jueves_madrugada = datetime.datetime(2026, 11, 19, 1, 0, tzinfo=utc)
+        self.assertEqual(cu.fechas_de_publicacion(jueves_madrugada, 0, 2, "kids"),
+                         [datetime.date(2026, 11, 19), datetime.date(2026, 11, 23)])
+        # Mientras el horno corre (dentro del margen) el título de hoy sigue en la lista: el jueves cuenta.
+        jueves_horno = datetime.datetime(2026, 11, 19, 13, 30, tzinfo=utc)
+        self.assertEqual(cu.fechas_de_publicacion(jueves_horno, 0, 1, "adultos"), [datetime.date(2026, 11, 19)])
+        self.assertEqual(cu.fechas_de_publicacion(jueves_horno, 0, 1, "kids"), [datetime.date(2026, 11, 19)])
+        jueves_pasado = datetime.datetime(2026, 11, 19, 14, 30, tzinfo=utc)   # Kids: 11 + 3 = 14:00 UTC ya pasó
+        self.assertEqual(cu.fechas_de_publicacion(jueves_pasado, 0, 1, "kids"), [datetime.date(2026, 11, 23)])
+        self.assertEqual(cu.fechas_de_publicacion(jueves_pasado, 0, 1, "adultos"), [datetime.date(2026, 11, 19)])
+        hoy = datetime.date(2026, 11, 17)
+        self.assertEqual(cu.fecha_corta(datetime.date(2026, 12, 24), hoy), "jue 24 dic")
+        self.assertEqual(cu.fecha_corta(datetime.date(2027, 1, 4), hoy), "lun 4 ene 2027")
 
     def test_el_recordatorio_de_la_propuesta_abierta(self):
         app = tempfile.mkdtemp()
         escribir(os.path.join(app, "lista-adultos.txt"), "# lista\nUno | A\nDos | B\nTres | C\n")
-        martes = datetime.date(2026, 11, 17)
+        martes = datetime.datetime(2026, 11, 17, 16, 17, tzinfo=datetime.timezone.utc)
         texto = cu.recordatorio("adultos", app, martes)
         self.assertTrue(texto.startswith("@badirnakid, esta propuesta sigue esperando tu Merge."))
         self.assertIn("A la lista de adultos le quedan 3 títulos: alcanzan hasta el jue 26 nov", texto)
@@ -583,7 +599,13 @@ class Salida(Base):
         self.assertIn("La lista Kids está vacía: si no das Merge antes, el jue 19 nov no sale edición Kids.",
                       cu.recordatorio("kids", app, martes))
         escribir(os.path.join(app, "lista-kids.txt"), "Uno | A\n")
-        self.assertIn("le quedan 1 título: alcanzan hasta el jue 19 nov", cu.recordatorio("kids", app, martes))
+        self.assertIn("A la lista Kids le queda 1 título: alcanza hasta el jue 19 nov", cu.recordatorio("kids", app, martes))
+
+    def test_las_frases_de_las_variables_quedan_cerradas(self):
+        self.assertEqual(cu._frase("mide tal"), "mide tal.")
+        self.assertEqual(cu._frase("mide tal."), "mide tal.")
+        self.assertEqual(cu._frase("¿mide tal?"), "¿mide tal?")
+        self.assertEqual(cu._frase(""), "")
 
     def test_el_esquema_del_juez(self):
         self.assertEqual(cu.esquema("kids")["properties"]["libros"]["items"]["properties"]["edad"]["enum"], ["3-5", "6-8", "9-12"])
@@ -700,9 +722,18 @@ class Flujo(unittest.TestCase):
         self.assertIs(contenido["with"]["persist-credentials"], False)
         g = self.guion()
         empujes = [l.strip() for l in g.splitlines() if "git push" in l]
-        self.assertEqual(empujes, ['git push --quiet origin "$rama"'])
+        self.assertEqual(empujes, ['git push --quiet origin "$rama"',
+                                   'git push --quiet origin --delete "$rama" || echo "::warning::Tampoco pude borrar la rama $rama."'])
         self.assertNotIn("cd triggui-content", g)
         self.assertNotIn("-C triggui-content", g)
+
+    def test_si_no_se_abre_la_propuesta_se_borra_su_rama_y_termina_en_rojo(self):
+        g = self.guion()
+        self.assertIn('if ! url="$(gh pr create --base main --head "$rama"', g)
+        self.assertIn('git push --quiet origin --delete "$rama"', g)
+        self.assertIn("fallas=$((fallas + 1))", g)
+        self.assertIn('if [ "$fallas" -gt 0 ]; then', g)
+        self.assertTrue(g.rstrip().endswith("fi"))
 
     def test_tiempo_y_registro(self):
         self.assertGreaterEqual(self.yml["jobs"]["proponer"]["timeout-minutes"], 120)
