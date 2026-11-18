@@ -57,11 +57,19 @@ def juicio(mision=0.8, estado="tristeza", claridad=0.8, parecido=0.1, conoce=Tru
 class JuezFalso:
     """Contesta por título; para «el más parecido», según el mapa parecidos {título que falta: (título elegido, parecido)}."""
 
-    def __init__(self, juicios, parecidos=None, falla_en=None):
+    def __init__(self, juicios, parecidos=None, falla_en=None, momento=None, momento_falla=False):
         self.juicios, self.parecidos, self.falla_en = juicios, parecidos or {}, falla_en
-        self.llamadas, self.parecido_llamadas = 0, 0
+        self.momento, self.momento_falla = momento, momento_falla
+        self.llamadas, self.parecido_llamadas, self.momento_llamadas = 0, 0, 0
+        self.momento_usuario = ""
 
     def __call__(self, sistema, usuario, esq, tope):
+        if "variables" in esq["properties"]:   # el momento de cada fecha y las variables sugeridas
+            self.momento_llamadas += 1
+            self.momento_usuario = usuario
+            if self.momento_falla:
+                raise RuntimeError("no respondió")
+            return self.momento or {"momento": [], "variables": []}
         if "por_que" in esq["properties"]:
             self.parecido_llamadas += 1
             falta = usuario.split("«", 1)[1].split("»", 1)[0]
@@ -389,6 +397,7 @@ class Propuesta(Base):
         self.assertEqual(codigo, 0)
         self.assertTrue(any("no se calificó" in a for a in r["avisos"]), r["avisos"])
         self.assertEqual(juez.llamadas, 2)
+        self.assertEqual(juez.momento_llamadas, 1)
 
     def test_si_nada_pasa_sale_con_2_y_sin_tabla(self):
         juicios = {t: juicio(mision=0.2) for t in JUICIOS}
@@ -437,6 +446,41 @@ class Propuesta(Base):
         self.assertEqual(juez.llamadas, 0)
         self.assertFalse(os.path.exists(self.sal))
         self.assertIn("va de 1 a 40", self.err)
+
+    def test_la_fecha_de_cada_uno_su_momento_y_las_variables_sugeridas(self):
+        momento = {"momento": [{"i": 0, "nota": "Cae en Nochebuena: acompaña la reunión"}, {"i": 7, "nota": "fuera de rango"}],
+                   "variables": [{"nombre": "El pulso del mundo al publicar", "que_mide": "La emoción que sube hoy por país.",
+                                  "de_donde": "El Pulse de Triggui (Wikipedia y el tono de las noticias).",
+                                  "como_cambia": "El horno elegiría entre los primeros aprobados el que sube un nivel."},
+                                 {"nombre": "", "que_mide": "sin nombre"}, {"nombre": "Dos", "que_mide": "b", "de_donde": "c",
+                                  "como_cambia": "d"}, {"nombre": "Tres", "que_mide": "b", "de_donde": "c", "como_cambia": "d"},
+                                 {"nombre": "Cuatro", "que_mide": "b", "de_donde": "c", "como_cambia": "d"}]}
+        juez = JuezFalso(JUICIOS, parecidos={"Libro B": ("Libro C", 0.7)}, momento=momento)
+        self.correr(juez, respuestas={"Libro E": "si"}, cuantos=4)
+        r = self.registro()
+        # Hoy es martes 17 de noviembre y la lista tiene 1 título (el jueves 19): los nuevos salen del lunes 23 en adelante.
+        self.assertEqual([c["sale"] for c in r["elegidos"]], ["2026-11-23", "2026-11-26", "2026-11-30", "2026-12-03"])
+        self.assertEqual(r["elegidos"][0]["momento"], "Cae en Nochebuena: acompaña la reunión")
+        self.assertEqual([v["nombre"] for v in r["variables"]], ["El pulso del mundo al publicar", "Dos"])   # 3 como mucho; sin nombre, fuera
+        self.assertEqual(juez.momento_llamadas, 1)
+        self.assertIn('"sale": "lun 23 nov (2026-11-23)"', juez.momento_usuario)
+        md = self.leer("propuesta-adultos.md")
+        self.assertIn("| Dónde | Sale | Por qué |", md)
+        self.assertIn("| lun 23 nov<br><sub>📅 Cae en Nochebuena: acompaña la reunión</sub> |", md)
+        self.assertIn("### 🧭 Para afinar la curaduría", md)
+        self.assertIn("- **El pulso del mundo al publicar.** La emoción que sube hoy por país. Dato: El Pulse de Triggui", md)
+        self.assertIn("- **Sale:** la fecha estimada, a dos por semana (lunes y jueves) después de 1 título que ya está en la lista", md)
+
+    def test_si_el_momento_falla_la_propuesta_sale_sin_esa_parte(self):
+        juez = JuezFalso(JUICIOS, momento_falla=True)
+        codigo, _ = self.correr(juez, respuestas={"Libro E": "si"}, cuantos=2)
+        self.assertEqual(codigo, 0)
+        r = self.registro()
+        self.assertEqual(r["variables"], [])
+        self.assertTrue(any("No pude pedirle al juez el momento de cada fecha" in a for a in r["avisos"]), r["avisos"])
+        md = self.leer("propuesta-adultos.md")
+        self.assertNotIn("Para afinar la curaduría", md)
+        self.assertNotIn("📅", md)
 
     def test_la_misma_entrada_da_la_misma_propuesta(self):
         self.correr(JuezFalso(JUICIOS, parecidos={"Libro B": ("Libro C", 0.7)}), respuestas={"Libro E": "si"}, cuantos=4)
@@ -519,6 +563,28 @@ class Salida(Base):
         self.assertTrue(cu.errata("Elprincipito", "El principito"))                            # palabras pegadas
         self.assertFalse(cu.errata("El arte de amar", "El arte de la guerra"))
 
+    def test_las_fechas_de_publicacion(self):
+        martes = datetime.date(2026, 11, 17)
+        self.assertEqual(cu.fechas_de_publicacion(martes, 9, 3),
+                         [datetime.date(2026, 12, 21), datetime.date(2026, 12, 24), datetime.date(2026, 12, 28)])
+        lunes = datetime.date(2026, 11, 23)   # un lunes: la de hoy ya salió a las 5 o 6 de la mañana
+        self.assertEqual(cu.fechas_de_publicacion(lunes, 0, 2), [datetime.date(2026, 11, 26), datetime.date(2026, 11, 30)])
+        self.assertEqual(cu.fecha_corta(datetime.date(2026, 12, 24), martes), "jue 24 dic")
+        self.assertEqual(cu.fecha_corta(datetime.date(2027, 1, 4), martes), "lun 4 ene 2027")
+
+    def test_el_recordatorio_de_la_propuesta_abierta(self):
+        app = tempfile.mkdtemp()
+        escribir(os.path.join(app, "lista-adultos.txt"), "# lista\nUno | A\nDos | B\nTres | C\n")
+        martes = datetime.date(2026, 11, 17)
+        texto = cu.recordatorio("adultos", app, martes)
+        self.assertTrue(texto.startswith("@badirnakid, esta propuesta sigue esperando tu Merge."))
+        self.assertIn("A la lista de adultos le quedan 3 títulos: alcanzan hasta el jue 26 nov", texto)
+        escribir(os.path.join(app, "lista-kids.txt"), "# vacía\n")
+        self.assertIn("La lista Kids está vacía: si no das Merge antes, el jue 19 nov no sale edición Kids.",
+                      cu.recordatorio("kids", app, martes))
+        escribir(os.path.join(app, "lista-kids.txt"), "Uno | A\n")
+        self.assertIn("le quedan 1 título: alcanzan hasta el jue 19 nov", cu.recordatorio("kids", app, martes))
+
     def test_el_esquema_del_juez(self):
         self.assertEqual(cu.esquema("kids")["properties"]["libros"]["items"]["properties"]["edad"]["enum"], ["3-5", "6-8", "9-12"])
         req = cu.esquema("adultos")["properties"]["libros"]["items"]["required"]
@@ -578,7 +644,7 @@ class Juez(unittest.TestCase):
 
 
 class Flujo(unittest.TestCase):
-    """El flujo .github/workflows/propuestas.yml: a mano hasta el go de Badir, con su llave, y un pull request por lista."""
+    """El flujo .github/workflows/propuestas.yml: los martes y a mano, con su llave, un pull request por lista y el aviso a Badir."""
 
     @classmethod
     def setUpClass(cls):
@@ -589,12 +655,25 @@ class Flujo(unittest.TestCase):
         cls.yml = yaml.safe_load(cls.texto)
         cls.on = cls.yml.get("on") or cls.yml.get(True)
 
-    def test_solo_a_mano_hasta_el_go(self):
+    def test_los_martes_y_a_mano(self):
+        # Go de Badir del 17 de noviembre de 2026, 18:50 (B438): martes 10:17 de la mañana, hora de México (UTC-6).
+        self.assertEqual(self.on["schedule"], [{"cron": "17 16 * * 2"}])
         self.assertIn("workflow_dispatch", self.on)
-        self.assertNotIn("schedule", self.on)
+        g = self.guion()
+        self.assertIn('LISTA="${LISTA:-las dos}"', g)          # el horario no trae entradas
+        self.assertIn('if [ "${FORZAR:-false}" = "true" ]', g)  # y sin forzar: solo si a la lista le quedan menos de 6
+
+    def test_el_aviso_a_badir(self):
+        g = self.guion()
+        self.assertIn('--title "🗳️ Para autorizar: libros $nombre · $hoy"', g)
+        self.assertIn('gh pr edit "$url" --add-assignee badirnakid', g)
+        self.assertIn('gh pr edit "$url" --add-reviewer badirnakid', g)
+        # Mientras siga abierta, el recordatorio con su mención (el texto lo arma curaduria.py --recordatorio).
+        self.assertIn('scripts/curaduria.py --lista "$l" --app . --recordatorio', g)
+        self.assertIn('gh pr comment "$numero" --body "$texto"', g)
 
     def test_permisos_y_llaves(self):
-        self.assertEqual(self.yml["permissions"], {"contents": "write", "pull-requests": "write"})
+        self.assertEqual(self.yml["permissions"], {"contents": "write", "pull-requests": "write", "issues": "write"})
         self.assertIn("secrets.ANTHROPIC_API_KEY", self.texto)
         self.assertIn("secrets.CONTENT_REPO_TOKEN", self.texto)
         self.assertNotIn("OPENAI", self.texto)

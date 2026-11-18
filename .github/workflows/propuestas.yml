@@ -2,18 +2,25 @@
 #
 # El robot de propuestas: elige con el puntaje de Triggui los libros que siguen en cada lista (scripts/curaduria.py),
 # revisa que se consigan en Casa del Libro o en Gandhi con la misma revisión del horno y abre un pull request por lista
-# que menciona a Badir. Él aprueba con «Merge» (B436); nada se publica sin eso. No sube nada a triggui-content.
+# para que Badir lo apruebe con «Merge» (B436); nada se publica sin eso. No sube nada a triggui-content.
 #
-# Corre solo a mano hasta que Badir dé el go para su horario, porque un horario es una tarea programada. El horario
-# propuesto: cada martes a las 10 de la mañana (hora de México), y entonces solo propone si a la lista le quedan menos de
-# 6 títulos (sin «forzar»). Si ya hay una propuesta abierta de esa lista (su rama empieza con «propuestas/» y trae el
-# nombre de la lista), no abre otra.
+# El aviso a Badir, para que no se le pase (su pedido del 17 de noviembre de 2026, 18:50): cada propuesta lo menciona, se
+# la asigna y le pide su revisión, y GitHub se lo manda a su correo (leído en sus ajustes el 17 de noviembre: «Participating,
+# @mentions and custom» con correo). Mientras una propuesta siga abierta, cada corrida le deja un recordatorio con su
+# mención y hasta qué día alcanza la lista.
+#
+# Horario (go de Badir del 17 de noviembre de 2026, 18:50, B438): cada martes a las 10:17 de la mañana, hora de México
+# (16:17 UTC; México no cambia de horario). Así solo propone si a la lista le quedan menos de 6 títulos. A mano se puede
+# correr con «forzar». Si ya hay una propuesta abierta de esa lista (su rama empieza con «propuestas/» y trae el nombre de
+# la lista), no abre otra: deja el recordatorio.
 
 name: 🗳️ Propuestas de libros
 
-run-name: 🗳️ Propuestas · ${{ inputs.lista }}
+run-name: 🗳️ Propuestas · ${{ inputs.lista || 'martes' }}
 
 on:
+  schedule:
+    - cron: '17 16 * * 2'   # martes, 10:17 de la mañana, hora de México
   workflow_dispatch:
     inputs:
       lista:
@@ -38,6 +45,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  issues: write   # asignarle la propuesta a Badir y dejarle el recordatorio
 
 concurrency:
   group: propuestas
@@ -89,16 +97,23 @@ jobs:
           FORZAR: ${{ inputs.forzar }}
         run: |
           set -euo pipefail
+          LISTA="${LISTA:-las dos}"   # el horario no trae entradas: las dos listas y sin forzar
           git config user.name "Triggui Bot"
           git config user.email "bot@triggui.com"
           hoy="$(date -u +%F)"
           mkdir -p /tmp/registros
           for l in adultos kids; do
             if [ "$LISTA" != "las dos" ] && [ "$LISTA" != "$l" ]; then continue; fi
+            if [ "$l" = "kids" ]; then nombre="Kids"; else nombre="de adultos"; fi
             abiertas="$(gh pr list --state open --base main --limit 100 --json number,headRefName \
               --jq ".[] | select(.headRefName | test(\"^propuestas/.*-$l-[0-9]{4}\$\")) | .number")"
             if [ -n "$abiertas" ]; then
-              echo "::notice::Ya hay una propuesta abierta de $l (#$abiertas): no abro otra hasta que Badir la apruebe o la cierre."
+              numero="$(printf '%s\n' "$abiertas" | head -n 1)"
+              echo "::notice::Ya hay una propuesta abierta de $l (#$numero): no abro otra; le dejo a Badir el recordatorio."
+              texto="$(python -I -B scripts/curaduria.py --lista "$l" --app . --recordatorio)"
+              gh pr comment "$numero" --body "$texto" \
+                || echo "::warning::No pude dejar el recordatorio en la #$numero."
+              echo "- Propuesta $nombre abierta (#$numero): recordatorio a Badir." >> "$GITHUB_STEP_SUMMARY"
               continue
             fi
             rm -rf /tmp/propuesta
@@ -113,6 +128,7 @@ jobs:
             if [ -f "/tmp/propuesta/propuesta-$l.json" ]; then cp "/tmp/propuesta/propuesta-$l.json" /tmp/registros/; fi
             if [ "$codigo" -ne 0 ] || [ ! -f "/tmp/propuesta/propuesta-$l.md" ]; then
               echo "::warning::Sin propuesta de $l esta vez (código $codigo)."
+              echo "- Lista $nombre: sin propuesta esta vez (código $codigo)." >> "$GITHUB_STEP_SUMMARY"
               continue
             fi
             rama="propuestas/$hoy-$l-$(date -u +%H%M)"
@@ -126,8 +142,13 @@ jobs:
             fi
             git commit --quiet -m "🗳️ Propuesta de libros ($l) del $hoy: entra con el Merge de Badir"
             git push --quiet origin "$rama"
-            gh pr create --base main --head "$rama" --title "🗳️ Propuesta de libros ($l) · $hoy" \
-              --body-file "/tmp/propuesta/propuesta-$l.md"
+            url="$(gh pr create --base main --head "$rama" --title "🗳️ Para autorizar: libros $nombre · $hoy" \
+              --body-file "/tmp/propuesta/propuesta-$l.md")"
+            # El aviso a su correo: la mención del texto ya le avisa; asignársela y pedirle la revisión lo refuerzan.
+            gh pr edit "$url" --add-assignee badirnakid \
+              || echo "::warning::No pude asignarle la propuesta a Badir; la mención del texto le avisa igual."
+            gh pr edit "$url" --add-reviewer badirnakid \
+              || echo "::warning::No pude pedirle la revisión a Badir; la mención del texto le avisa igual."
             cat "/tmp/propuesta/propuesta-$l.md" >> "$GITHUB_STEP_SUMMARY"
             git switch --quiet --detach origin/main
           done

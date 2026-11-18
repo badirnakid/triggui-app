@@ -26,6 +26,12 @@ Qué hace, en orden:
    cuál reemplaza. Si las tiendas no respondieron, o se consigue sin ISBN, no entra ni nadie en su lugar, y se avisa.
 6. Variedad de ánimo: ningún estado con más de un tercio de la propuesta (redondeado hacia arriba), mientras haya con qué.
 7. El orden de la lista: por puntaje, sin dos seguidos del mismo ánimo mientras se pueda (son dos ediciones por semana).
+8. La fecha en que saldría cada uno (los lunes y jueves que siguen a los títulos que ya están en la lista, si cada uno se
+   consigue el día que le toca) y, del juez, qué momento del calendario acompaña cada fecha (una fiesta, una temporada, el
+   inicio de año): solo el calendario que se conoce de antemano, nunca noticias. Es dato para Badir; no cambia el puntaje.
+9. Para afinar la curaduría (pedido de Badir del 17 de noviembre de 2026, 18:50): el juez sugiere hasta tres variables
+   nuevas para la próxima vez, con qué miden, de dónde saldría el dato y cómo cambiarían la elección. Son ideas sin
+   comprobar: entran al puntaje solo si Badir lo decide.
 
 Lo duro, que ningún puntaje compensa: que el juez conozca el libro, que la misión llegue a 0.6, que el catálogo lo traiga
 bien escrito (el horno publica el título y el autor de su catálogo maestro: adultos, data/libros_master.csv; Kids,
@@ -41,6 +47,8 @@ propone aunque tenga más: los que falten para llegar a META, y al menos 4. --cu
 Escribe en --salida: propuesta-<lista>.md (el cuerpo del pull request), lineas-<lista>.txt (lo que se agrega a la lista),
 propuesta-<lista>.json (todo, para el registro) y, en Kids, edades-kids.json (las edades, sumadas a las de la app).
 Sale con 0 si propuso, con 0 y sin archivos si no hacía falta, y con 2 si no encontró ninguno.
+Con --recordatorio no propone: escribe en la salida estándar el recordatorio para la propuesta que sigue abierta (cuántos
+títulos le quedan a la lista y hasta qué día alcanzan), que el flujo deja como comentario con la mención de Badir.
 """
 import argparse
 import csv
@@ -80,6 +88,15 @@ EDICIONES = {"adultos": "contenido_manual.json", "kids": "contenido_kids_manual.
 LISTAS = {"adultos": "lista-adultos.txt", "kids": "lista-kids.txt"}
 DESCARTADOS = {"adultos": "descartados-adultos.txt", "kids": "descartados-kids.txt"}
 EDADES_ARCHIVO = "edades-kids.json"
+DIAS_DE_EDICION = (0, 3)   # lunes y jueves (datetime: lunes = 0)
+DIAS_CORTOS = ("lun", "mar", "mié", "jue", "vie", "sáb", "dom")
+MESES_CORTOS = ("ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic")
+DE_LA_LISTA = {"adultos": "de adultos", "kids": "Kids"}
+# Lo que ya mide el robot: el juez no las sugiere otra vez.
+VARIABLES_EN_USO = ("la misión (que mejore el ánimo y den ganas de abrir el libro físico)", "el estado de ánimo al que le "
+                    "habla y qué tan claro", "el libro real (ISBN y portada)", "la tienda (Casa del Libro y Gandhi)",
+                    "la variedad contra las últimas ediciones", "un libro por autor", "la escritura del catálogo",
+                    "en Kids, la edad, si es apto y lo delicado", "la fecha en que saldría y su momento del calendario")
 # Lo que se quitó de los candidatos, en el orden en que se revisa, con su frase en singular y en plural.
 EXCLUSIONES = {
     "repetido en el maestro": ("repetido en el catálogo", "repetidos en el catálogo"),
@@ -609,6 +626,92 @@ def erratas(perfil, cands):
 
 # ─────────────────────────────── la salida ───────────────────────────────
 
+def fechas_de_publicacion(hoy, despues_de, cuantas):
+    """Las fechas en que saldrían los libros nuevos si cada uno se consigue el día que le toca: los lunes y jueves que
+    vienen después de hoy, saltando los que ocupan los títulos que ya están en la lista."""
+    fechas, d = [], hoy
+    while len(fechas) < despues_de + cuantas:
+        d += datetime.timedelta(days=1)
+        if d.weekday() in DIAS_DE_EDICION:
+            fechas.append(d)
+    return fechas[despues_de:]
+
+
+def fecha_corta(d, hoy):
+    """«lun 21 dic»; con el año si no es el de hoy («lun 4 ene 2027»)."""
+    texto = f"{DIAS_CORTOS[d.weekday()]} {d.day} {MESES_CORTOS[d.month - 1]}"
+    return texto if d.year == hoy.year else f"{texto} {d.year}"
+
+
+def titulos_en_lista(app_raiz, perfil):
+    return len(lista_semanal.lineas_utiles(os.path.join(app_raiz, LISTAS[perfil])))
+
+
+def recordatorio(perfil, app_raiz, hoy):
+    """El comentario para la propuesta que sigue abierta: menciona a Badir y dice hasta cuándo alcanza la lista."""
+    n = titulos_en_lista(app_raiz, perfil)
+    nombre = DE_LA_LISTA[perfil]
+    if n:
+        ultima = fechas_de_publicacion(hoy, 0, n)[-1]
+        quedan = (f"A la lista {nombre} le quedan {_n(n, 'título', 'títulos')}: alcanzan hasta el "
+                  f"{fecha_corta(ultima, hoy)}, si cada uno se consigue el día que le toca.")
+    else:
+        siguiente = fechas_de_publicacion(hoy, 0, 1)[0]
+        quedan = (f"La lista {nombre} está vacía: si no das Merge antes, el {fecha_corta(siguiente, hoy)} no sale "
+                  f"edición {nombre}.")
+    return (f"@badirnakid, esta propuesta sigue esperando tu Merge. {quedan} Si ya no la quieres, ciérrala; si quieres "
+            "quitar alguno, pídeselo a una sesión de Claude.")
+
+
+MOMENTO_SISTEMA = """Eres el juez editorial de Triggui. Triggui manda la idea de un gran libro para mejorar el ánimo de quien la lee y darle ganas de abrir el libro físico; desde noviembre de 2026 sale lunes y jueves. Te doy los libros propuestos, en orden, con la fecha en que saldría cada uno.
+
+1. momento: para cada libro (por su i), hasta 15 palabras en español sobre el momento del calendario que esa fecha trae y que el libro acompaña bien o mal: una fiesta, una temporada, el fin o el inicio de año, el regreso a clases, en México y en los países de habla hispana. Solo el calendario que se conoce de antemano; nunca noticias ni sucesos que no puedes saber. Si la fecha no trae nada que decir, nota "".
+2. variables: hasta 3 variables nuevas que harían más precisa la curaduría para el momento del mundo, como el Pulse de Triggui (la atmósfera del mundo por país, leída de Wikipedia y del tono de las noticias). Para cada una: nombre (hasta 6 palabras), que_mide (hasta 20 palabras), de_donde (de dónde saldría el dato, hasta 20 palabras; si pide una cuenta o una llave, dilo) y como_cambia (cómo cambiaría la elección, hasta 25 palabras). No repitas las que ya se usan: {en_uso}.
+Responde solo con el JSON pedido."""
+
+
+def esquema_momento():
+    return {"type": "object", "additionalProperties": False, "required": ["momento", "variables"], "properties": {
+        "momento": {"type": "array", "items": {"type": "object", "additionalProperties": False, "required": ["i", "nota"],
+                                               "properties": {"i": {"type": "integer"}, "nota": {"type": "string"}}}},
+        "variables": {"type": "array", "items": {"type": "object", "additionalProperties": False,
+                                                 "required": ["nombre", "que_mide", "de_donde", "como_cambia"],
+                                                 "properties": {k: {"type": "string"} for k in
+                                                                ("nombre", "que_mide", "de_donde", "como_cambia")}}}}}
+
+
+def momento_y_variables(perfil, elegidos, hoy, llamar, avisos):
+    """Una llamada al juez: el momento del calendario de cada fecha y hasta tres variables sugeridas. Si falla, la propuesta
+    sale sin esa parte y con su aviso. Devuelve ({i: nota}, [variables])."""
+    libros = [{"i": i, "titulo": c["titulo"], "autor": c["autor"], "estado": NOMBRE_ESTADO[c["juicio"]["estado"]],
+               "de_que_trata": c["juicio"].get("de_que_trata", ""),
+               "sale": f"{fecha_corta(datetime.date.fromisoformat(c['sale']), hoy)} ({c['sale']})"}
+              for i, c in enumerate(elegidos) if c.get("sale")]
+    if not libros:
+        return {}, []
+    catalogo = "Kids (niñas y niños de 3 a 12 años)" if perfil == "kids" else "adultos"
+    usuario = (f"Catálogo: {catalogo}. Hoy es {hoy.isoformat()}.\n"
+               f"Libros propuestos, en orden:\n{json.dumps(libros, ensure_ascii=False)}")
+    try:
+        r = llamar(MOMENTO_SISTEMA.format(en_uso="; ".join(VARIABLES_EN_USO)), usuario, esquema_momento(),
+                   600 + 120 * len(libros))
+    except Exception as e:
+        avisos.append(f"No pude pedirle al juez el momento de cada fecha ni las variables sugeridas ({e}); la propuesta "
+                      "sale sin esa parte.")
+        return {}, []
+    notas = {}
+    for m in (r or {}).get("momento") or []:
+        i = m.get("i")
+        if isinstance(i, int) and 0 <= i < len(elegidos):
+            notas[i] = " ".join(str(m.get("nota") or "").split())[:140]
+    variables = []
+    for v in ((r or {}).get("variables") or [])[:3]:
+        limpia = {k: " ".join(str(v.get(k) or "").split())[:220] for k in ("nombre", "que_mide", "de_donde", "como_cambia")}
+        if limpia["nombre"] and limpia["que_mide"]:
+            variables.append(limpia)
+    return notas, variables
+
+
 def _celda(t):
     return str(t or "").replace("|", "/").replace("\n", " ").strip()
 
@@ -628,7 +731,7 @@ def _n(cantidad, singular, plural):
 TOPE_ERRATAS = 30   # las que se muestran en la propuesta; todas van en el registro de la corrida
 
 
-def markdown(perfil, fecha, elegidos, resumen, avisos, malos=()):
+def markdown(perfil, fecha, elegidos, resumen, avisos, malos=(), variables=()):
     kids = perfil == "kids"
     de_la_lista = "Kids" if kids else "de adultos"
     lineas = [
@@ -643,8 +746,9 @@ def markdown(perfil, fecha, elegidos, resumen, avisos, malos=()):
         "a proponer.",
         "",
     ]
-    cab = "| # | Portada | Libro | " + ("Edad | " if kids else "") + "Puntaje | Ánimo | Dónde | Por qué |"
-    sep = "|---|---|---|" + ("---|" if kids else "") + "---|---|---|---|"
+    hoy = datetime.date.fromisoformat(fecha)
+    cab = "| # | Portada | Libro | " + ("Edad | " if kids else "") + "Puntaje | Ánimo | Dónde | Sale | Por qué |"
+    sep = "|---|---|---|" + ("---|" if kids else "") + "---|---|---|---|---|"
     lineas += [cab, sep]
     for n, c in enumerate(elegidos, 1):
         j, p = c["juicio"], c["partes"]
@@ -660,8 +764,11 @@ def markdown(perfil, fecha, elegidos, resumen, avisos, malos=()):
                         f"(parecido {c['parecido_al_reemplazado']:.2f})</sub>")
         if kids and j.get("delicado"):
             por_que += f"<br><sub>Para saber antes: {_celda(j['delicado'])}</sub>"
+        sale = fecha_corta(datetime.date.fromisoformat(c["sale"]), hoy) if c.get("sale") else ""
+        if c.get("momento"):
+            sale += f"<br><sub>📅 {_celda(c['momento'])}</sub>"
         fila = f"| {n} | {portada} | {libro} | " + (f"{j['edad']} | " if kids else "") + \
-               f"{desglose} | {NOMBRE_ESTADO[j['estado']]} ({j['claridad']:.2f}) | {NOMBRE_TIENDA.get(c['donde'], '')} | {por_que} |"
+               f"{desglose} | {NOMBRE_ESTADO[j['estado']]} ({j['claridad']:.2f}) | {NOMBRE_TIENDA.get(c['donde'], '')} | {sale} | {por_que} |"
         lineas.append(fila)
     quitados = _y([_n(v, *EXCLUSIONES[k]) for k, v in resumen["excluidos"].items() if v])
     revisados, no_se, reemplazos = resumen["revisados_hoy"], resumen["no_se_consiguen"], resumen["reemplazos"]
@@ -695,7 +802,17 @@ def markdown(perfil, fecha, elegidos, resumen, avisos, malos=()):
         "solo Casa del Libro 13, solo Gandhi 11) y variedad 10 (que no se parezca a las últimas ediciones).",
         f"- **Variedad de ánimo:** ningún estado con más de {resumen['tope_estado']} de {resumen['cuantos']}, mientras hubo con qué.",
         "- **Orden:** por puntaje, sin dos seguidos del mismo ánimo mientras se pudo.",
+        f"- **Sale:** la fecha estimada, a dos por semana (lunes y jueves) después de "
+        f"{_n(resumen.get('en_lista', 0), 'título que ya está', 'títulos que ya están')} en la lista, si cada uno se consigue "
+        "el día que le toca." + (" El 📅 es el momento del calendario que ve el juez; no cambia el puntaje."
+                                 if any(c.get("momento") for c in elegidos) else ""),
     ]
+    if variables:
+        lineas += ["", "### 🧭 Para afinar la curaduría", "",
+                   "Ideas del juez para medir mejor el momento, sin comprobar. Si quieres sumar una al puntaje, pídeselo a una "
+                   "sesión de Claude («suma la variable …»).", ""]
+        lineas += [f"- **{_celda(v['nombre'])}.** {_celda(v['que_mide'])} Dato: {_celda(v['de_donde'])} Cambiaría: "
+                   f"{_celda(v['como_cambia'])}" for v in variables]
     if malos:
         lineas += ["", f"<details><summary>Erratas del catálogo ({len(malos)})</summary>", "",
                    "Estos pasarían lo demás, pero el catálogo maestro los trae con una errata o sin un acento, y el horno "
@@ -723,7 +840,12 @@ def main(argv=None):
     p.add_argument("--nucleus", default=os.path.join("experiments", "nucleus"))
     p.add_argument("--salida", default="/tmp/triggui-propuesta")
     p.add_argument("--fecha", default="")
+    p.add_argument("--recordatorio", action="store_true", help="solo escribir el recordatorio de la propuesta abierta")
     a = p.parse_args(argv)
+    if a.recordatorio:
+        hoy = datetime.date.fromisoformat(a.fecha) if a.fecha else datetime.datetime.now(datetime.timezone.utc).date()
+        print(recordatorio(a.lista, a.app, hoy))
+        return 0
     return correr(a, juez=None, revisar=None)
 
 
@@ -749,6 +871,11 @@ def correr(a, juez=None, revisar=None):
         c["juicio"] = juicios.get(i)
     elegidos, no_se_consiguen, validos = elegir(a.lista, cands, cuantos, tiendas, llamar, avisos)
     elegidos = ordenar(elegidos)
+    for c, d in zip(elegidos, fechas_de_publicacion(hoy, en_lista, len(elegidos))):
+        c["sale"] = d.isoformat()
+    notas, variables = momento_y_variables(a.lista, elegidos, hoy, llamar, avisos) if elegidos else ({}, [])
+    for i, c in enumerate(elegidos):
+        c["momento"] = notas.get(i, "")
     malos = erratas(a.lista, cands)
     if tiendas.sin_respuesta:
         avisos.append(f"En {_n(tiendas.sin_respuesta, 'revisión', 'revisiones')} de hoy las tiendas no dieron una respuesta "
@@ -775,7 +902,7 @@ def correr(a, juez=None, revisar=None):
     registro = {"lista": a.lista, "fecha": hoy.isoformat(), "resumen": resumen, "avisos": avisos,
                 "elegidos": [{k: v for k, v in c.items() if k != "reemplaza"} | ({"reemplaza": c["reemplaza"]["titulo"]} if c.get("reemplaza") else {})
                              for c in elegidos],
-                "erratas": malos}
+                "erratas": malos, "variables": variables}
     with open(os.path.join(a.salida, f"propuesta-{a.lista}.json"), "w", encoding="utf-8") as f:
         json.dump(registro, f, ensure_ascii=False, indent=2)
     if malos:
@@ -784,7 +911,7 @@ def correr(a, juez=None, revisar=None):
         print(f"🟡 No encontré ningún libro que pase todo para la lista {a.lista}.", file=sys.stderr)
         return 2
     with open(os.path.join(a.salida, f"propuesta-{a.lista}.md"), "w", encoding="utf-8") as f:
-        f.write(markdown(a.lista, hoy.isoformat(), elegidos, resumen, avisos, malos))
+        f.write(markdown(a.lista, hoy.isoformat(), elegidos, resumen, avisos, malos, variables))
     with open(os.path.join(a.salida, f"lineas-{a.lista}.txt"), "w", encoding="utf-8") as f:
         f.write(f"# 🗳️ Propuesta del robot del {hoy.isoformat()}: entra con el Merge de Badir\n")
         for c in elegidos:
