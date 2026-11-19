@@ -1,8 +1,8 @@
 # 🔬 AUDIT_REPORT — Agente revisor Triggui
 
-**Fecha:** 2026-11-12 · **Modo:** solo sugerencias (nada se implementa solo) · **Hallazgos:** 🔴 1 · 🟠 2 · 🟡 3 · 🟢 20
+**Fecha:** 2026-11-19 · **Modo:** solo sugerencias (nada se implementa solo) · **Hallazgos:** 🔴 2 · 🟠 2 · 🟡 3 · 🟢 20
 
-**Inventario:** 178 libros adultos (43 ediciones) · 133 libros kids (16 ediciones) · cartero V24
+**Inventario:** 180 libros adultos (45 ediciones) · 135 libros kids (18 ediciones) · cartero V24
 
 
 ## Hallazgos
@@ -12,14 +12,19 @@
 - **Impacto:** portada SVG generada: ninguna fuente encontró el libro — puede no existir (así vivieron #77 y #102 «Ok»): #77 «Ok» — Eric Jorgenson
 - **Propuesta:** verificar identidad (título/autor reales); retirar o regenerar con el título correcto
 
+### 🔴 P1·tiendas.yml · Robustez
+- **Dónde:** /home/runner/work/triggui-app/triggui-app/.github/workflows/tiendas.yml
+- **Impacto:** 1 bucle(s) de push reintentan y NO fallan el run si las 3 fallan (R2: éxito mentiroso)
+- **Propuesta:** envolver con PUSH_OK y `exit 1`
+
 ### 🟠 C1 · Consistencia semántica
-- **Dónde:** contenido.json · 3 ediciones
-- **Impacto:** la sala y el correo prometen elegir entre 3 melodías; estas tienen «Why We Sleep»=2, «What We Owe the Future»=2, «The Algorithm»=2
+- **Dónde:** contenido.json · 1 ediciones
+- **Impacto:** la sala y el correo prometen elegir entre 3 melodías; estas tienen «The Algorithm»=2
 - **Propuesta:** disparar musica-uno con `*+` (completar ediciones a 3, conserva lo existente); el pipeline completa 10 por corrida
 
 ### 🟠 S2 · Consistencia semántica
-- **Dónde:** public/ · 3 subpáginas
-- **Impacto:** melodías del catálogo sin su página/OG propio: the-importance-of-being-little/pieza/2, a-random-walk-down-wall-street/pieza/2, words-that-work/pieza/2
+- **Dónde:** public/ · 5 subpáginas
+- **Impacto:** melodías del catálogo sin su página/OG propio: why-we-sleep/pieza/2, what-we-owe-the-future/pieza/2, the-importance-of-being-little/pieza/2, a-random-walk-down-wall-street/pieza/2, words-that-work/pieza/2
 - **Propuesta:** re-hornear con build-editions.py + build-pieza-og.py (o `🔁 Reconstruir`)
 
 ### 🟡 C2b · Consistencia semántica
@@ -34,7 +39,7 @@
 
 ### 🟡 C8 · Costo
 - **Dónde:** contenido.json
-- **Impacto:** ediciones que aún suenan con el cajón de emergencia (no con música propia): Don't Believe Everything You Think, A Random Walk Down Wall Street, Words that work
+- **Impacto:** ediciones que aún suenan con el cajón de emergencia (no con música propia): Tiende tu cama, Don't Believe Everything You Think, A Random Walk Down Wall Street, Words that work
 - **Propuesta:** `*+` completar les buscará música propia manteniendo el cajón como respaldo
 
 
@@ -42,13 +47,13 @@
 
 - jamás silencio: 0 ediciones mudas (adulto + kids)
 - ninguna edición viva con portada Google zoom=1
-- los 311 libros de ambos catálogos tienen su portada de la app verificada
+- los 315 libros de ambos catálogos tienen su portada de la app verificada
 - todas las ediciones traen 4 colores + 4 textColors
 - todas las ediciones adultas tienen tarjeta_en
 - 0 marcadores de contaminación LLM en frases y tarjetas
 - slugs de edición únicos
 - ninguna portada viva es placeholder (detector por píxeles)
-- activos base completos (index, en, og, og_en, tarjeta, portada) en las 59 ediciones vivas
+- activos base completos (index, en, og, og_en, tarjeta, portada) en las 63 ediciones vivas
 - cada video del catálogo tiene su página y su OG
 - node --check limpio en todos los scripts inline de las ediciones vivas
 - paridad byte a byte public/index.html = public/kids/index.html
@@ -58,12 +63,13 @@
 - triggui.yml: caché de navegadores Playwright (E2 cerrado)
 - triggui.yml: run-name sin texto libre del usuario (S2 cerrado)
 - triggui.yml: el paso de música completa candidatas en cada corrida
-- producción responde 200 en app, kids, /mi, sitio, sala y la última edición (esencialismo)
+- producción responde 200 en app, kids, /mi, sitio, sala y la última edición (tiende-tu-cama)
 - cartero vivo (V24)
 
 ## Para el «va» de Badir
 
 - [ ] 🔴 **C0b** → verificar identidad (título/autor reales); retirar o regenerar con el título correcto
+- [ ] 🔴 **P1·tiendas.yml** → envolver con PUSH_OK y `exit 1`
 - [ ] 🟠 **C1** → disparar musica-uno con `*+` (completar ediciones a 3, conserva lo existente); el pipeline completa 10 por corrida
 - [ ] 🟠 **S2** → re-hornear con build-editions.py + build-pieza-og.py (o `🔁 Reconstruir`)
 
